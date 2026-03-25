@@ -24,16 +24,19 @@ System identifiziert zuständige Politiker:
     ↓
 KI-Briefgenerierung
   - Thema analysieren → welche Ebene ist primär zuständig?
+  - Scheiterns-Kontext: Warum stockt das Anliegen gerade? (Gesetz, Partei, Ausschuss)
   - Brief(e) schreiben: 1 Seite, klar, sachlich, mit persönlicher Note
-  - Ggf. mehrere Versionen (Bund vs. Land vs. Kommune)
+  - Ggf. mehrere Versionen (Bund vs. Land vs. Kommune vs. EU/Brüssel)
     ↓
 Nutzer-Review:
   - Brief lesen, ggf. leicht editieren
-  - Empfänger auswählen
+  - Empfänger auswählen (inkl. EU-Abgeordnete für Brüssel)
   - Adresse angezeigt bekommen
     ↓
 [Optional v2: Auto-Pen-Versand]
 [v1: "Jetzt abschreiben & abschicken"]
+    ↓
+[Spendenaufruf: "Dieser Brief war kostenlos – hilf uns, das so zu halten"]
 ```
 
 ---
@@ -88,15 +91,18 @@ Nutzer-Review:
 - [ ] Soll der Nutzer den Namen im Brief selbst eintragen, oder gibt es ein Konto?
 - [ ] Braucht es eine Vorschau, wie der Brief handschriftlich aussieht (Schriftart-Simulation)?
 - [ ] Wie verhindert man Missbrauch (Hassbriefe, Spam an Politiker)?
+- [ ] **Brüssel als Zielort**: Briefe auch ans EU-Parlament adressieren können – offene Frage: werden handschriftliche Briefe dort ähnlich aufmerksam gelesen wie im Bundestag? Recherche nötig (EU-Abgeordnetenbüros, Petitionsausschuss). Ggf. anderer Kanal effektiver (z.B. EU-Petitionsplattform als Ergänzung)?
+- [ ] **Scheiterns-Kontext anzeigen**: Dem Nutzer erklären, *warum* sein Anliegen aktuell politisch scheitert oder stockt – z.B. welches Gesetz es blockiert, welche Partei dagegen ist, welcher Ausschuss zuständig ist. Gibt dem Brief mehr Substanz und dem Nutzer Verständnis. Umsetzung: KI-Recherche zum Thema vor Briefgenerierung, ggf. mit aktuellen Nachrichten/Parlamentsdaten anreichern.
+- [ ] **Spendenaufruf / Finanzierung**: Nach Briefgenerierung dezenten Spendenaufruf einblenden, um den Betrieb der Seite zu finanzieren. Mögliche Umsetzung: "Dieser Brief war kostenlos – hilf uns, das so zu halten" mit Spenden-Button (z.B. Stripe, PayPal, Ko-fi). Alternativ: monatliche Supporter-Mitgliedschaft. Passt gut zur gemeinnützigen Struktur.
 
 ### Business
-- [ ] Monetarisierung: Freemium? (1 Brief gratis, dann Abo?) Oder komplett kostenlos mit Förderung?
+- [ ] Monetarisierung: Freemium? (1 Brief gratis, dann Abo?) Oder komplett kostenlos mit Spenden/Förderung?
 - [ ] Zielgruppe primär: ältere Nutzer (Rentner, die handschreiben wollen) oder auch jüngere?
 - [ ] Gemeinnützige Struktur vs. klassisches SaaS?
 - [ ] Auto-Pen-Partner in DE/EU identifizieren (z.B. Handwrytten, Bond, oder DE-Anbieter)
 
 ### Technisch
-- [ ] Voice-to-Text: Whisper (OpenAI) oder deutschsprachige Alternative?
+- [ ] **Speech-to-Text als primärer Eingabekanal**: Nutzer schildert sein Anliegen per Sprache direkt im Browser (Web Speech API oder Whisper). Senkt die Hürde massiv – man muss nichts tippen, sondern redet einfach drauflos. Umsetzung v1: Browser-native Web Speech API (kostenlos, kein Backend nötig). Umsetzung v2: Whisper/Deepgram für bessere Qualität bei Dialekten und Hintergrundgeräuschen.
 - [ ] Briefgenerierung: GPT-4 / Claude mit System-Prompt-Engineering oder Fine-Tuning?
 - [ ] Hosting: wo sollen Nutzerdaten (PLZ, Thema) liegen? DSGVO beachten!
 - [ ] Minimale Datenspeicherung – kein Account nötig für v1?

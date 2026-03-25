@@ -1,0 +1,3 @@
+name,description,module,path
+"brainstorming","Facilitate interactive brainstorming sessions using diverse creative techniques and ideation methods. Use when the user says 'help me brainstorm' or 'help me ideate'.","core","_bmad/core/workflows/brainstorming/workflow.md"
+"party-mode","Orchestrates group discussions between all installed BMAD agents, enabling natural multi-agent conversations. Use when user requests 'party mode' only.","core","_bmad/core/workflows/party-mode/workflow.md"

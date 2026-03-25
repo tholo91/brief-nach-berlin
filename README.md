@@ -37,10 +37,12 @@ Das Ergebnis: politische Ohnmacht, obwohl ein einfacher Kanal existiert.
 ## Roadmap (grob)
 
 ### v1 – Kern-MVP
-- [ ] PLZ-basierte Politiker-Zuordnung (Bund, Land, Kommune)
-- [ ] Eingabe via Text, Sprache, Bild
+- [ ] PLZ-basierte Politiker-Zuordnung (Bund, Land, Kommune, EU)
+- [ ] Eingabe via Text, Speech-to-Text (Sprache), Bild
 - [ ] KI-Briefgenerierung (1 Seite, ebenenspezifisch)
-- [ ] Empfänger-Auswahl + Anzeige der Adresse
+- [ ] Scheiterns-Kontext: Warum stockt das Anliegen politisch?
+- [ ] Empfänger-Auswahl inkl. Brüssel (EU-Abgeordnete) + Anzeige der Adresse
+- [ ] Spendenaufruf nach Briefgenerierung
 - [ ] Einfache Landing Page
 
 ### v2 – Auto-Pen-Integration

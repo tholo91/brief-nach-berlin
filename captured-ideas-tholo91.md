@@ -17,13 +17,16 @@
 
 <!-- code-tasks:managed-start -->
 
-- [ ] **Gsd Oder lovable?** ([Created: 2026-03-27]) (Priority: ⚪ Normal)
-  Mit Claude prompt erstellen lassen
-
 - [ ] **Images kreieren** ([Created: 2026-03-27]) (Priority: ⚪ Normal)
   Für header // ggf. unsplash?
 
 - [ ] **Konkurrenz?** ([Created: 2026-03-27]) (Priority: 🔴 Important)
   Gibt es bereits einen ähnlichen service?
+
+
+## Completed
+
+- [x] **Gsd Oder lovable?** ([Created: 2026-03-27]) (Priority: ⚪ Normal) [Completed: 2026-04-08]
+  Mit Claude prompt erstellen lassen
 
 <!-- code-tasks:managed-end -->

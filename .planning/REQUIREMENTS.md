@@ -102,13 +102,42 @@
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| *(populated during roadmap creation)* | | |
+| LAND-01 | Phase 1 | Pending |
+| LAND-02 | Phase 1 | Pending |
+| LAND-03 | Phase 1 | Pending |
+| LAND-04 | Phase 1 | Pending |
+| LAND-05 | Phase 1 | Pending |
+| LAND-06 | Phase 1 | Pending |
+| PRIV-02 | Phase 1 | Pending |
+| PRIV-03 | Phase 1 | Pending |
+| INPT-01 | Phase 2 | Pending |
+| INPT-02 | Phase 2 | Pending |
+| INPT-03 | Phase 2 | Pending |
+| INPT-04 | Phase 2 | Pending |
+| POLI-01 | Phase 2 | Pending |
+| POLI-02 | Phase 2 | Pending |
+| POLI-03 | Phase 2 | Pending |
+| POLI-04 | Phase 2 | Pending |
+| POLI-05 | Phase 2 | Pending |
+| SAFE-01 | Phase 2 | Pending |
+| SAFE-02 | Phase 2 | Pending |
+| SAFE-03 | Phase 2 | Pending |
+| LETR-01 | Phase 2 | Pending |
+| LETR-02 | Phase 2 | Pending |
+| LETR-03 | Phase 2 | Pending |
+| LETR-04 | Phase 2 | Pending |
+| LETR-05 | Phase 2 | Pending |
+| MAIL-01 | Phase 3 | Pending |
+| MAIL-02 | Phase 3 | Pending |
+| MAIL-03 | Phase 3 | Pending |
+| PRIV-01 | Phase 3 | Pending |
+| PRIV-04 | Phase 3 | Pending |
 
 **Coverage:**
-- v1 requirements: 23 total
-- Mapped to phases: 0
-- Unmapped: 23
+- v1 requirements: 30 total
+- Mapped to phases: 30
+- Unmapped: 0
 
 ---
 *Requirements defined: 2026-04-10*
-*Last updated: 2026-04-10 after initial definition*
+*Last updated: 2026-04-10 — traceability populated during roadmap creation*

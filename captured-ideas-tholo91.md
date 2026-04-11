@@ -18,6 +18,9 @@
 
 <!-- code-tasks:managed-start -->
 
+- [ ] **Kläre value proposition / 3 steps** ([Created: 2026-04-11]) (Priority: 🔴 Important)
+  Du/schilderst dein Anliegen, unsere Datenschutz konform KI (Mistral? EU?) schreibt den vor mit besten Argumenten + du bekommst den per Mail
+
 - [ ] **Landing page design verbessern** ([Created: 2026-04-11]) (Priority: ⚪ Normal) [Updated: 2026-04-11]
   Bislang wirkt es eher wie eine powerpoint Präsentation - Texte müssen besser werden und wir sollten auch magic mcp nutzen (teste, ob das klappt). Vielleicht better mit Gemini cli oder antigravity?
 

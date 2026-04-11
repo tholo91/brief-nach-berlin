@@ -18,6 +18,12 @@
 
 <!-- code-tasks:managed-start -->
 
+- [ ] **UI: in list view kleines Kalender icon anzeigen** ([Created: 2026-04-11]) (Priority: ⚪ Normal)
+  Nur wenn man einen Kalender link hinterlegt hat
+
+- [ ] **Kläre value proposition / 3 steps** ([Created: 2026-04-11]) (Priority: 🔴 Important)
+  [Archived] Du/schilderst dein Anliegen, unsere Datenschutz konform KI (Mistral? EU?) schreibt den vor mit besten Argumenten + du bekommst den per Mail
+
 - [ ] **Landing page design verbessern** ([Created: 2026-04-11]) (Priority: ⚪ Normal) [Updated: 2026-04-11]
   Bislang wirkt es eher wie eine powerpoint Präsentation - Texte müssen besser werden und wir sollten auch magic mcp nutzen (teste, ob das klappt). Vielleicht better mit Gemini cli oder antigravity?
 
@@ -26,9 +32,6 @@
 
 - [ ] **Konkurrenz?** ([Created: 2026-03-27]) (Priority: 🔴 Important)
   Gibt es bereits einen ähnlichen service?
-
-
-## Completed
 
 - [x] **Gsd Oder lovable?** ([Created: 2026-03-27]) (Priority: ⚪ Normal) [Completed: 2026-04-08]
   Mit Claude prompt erstellen lassen

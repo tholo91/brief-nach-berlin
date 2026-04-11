@@ -11,11 +11,15 @@
 > - Priority: 🔴 Important or ⚪ Normal
 > - Mark tasks as done (`- [x]`) after processing, add `[Processed by: YourAgentName]` to the task line, and optionally append notes to the task body
 > - Do NOT delete or remove tasks from this file — only the mobile app manages task lifecycle
+> - **At the start of each session**, check for new open tasks (unchecked `- [ ]` items) and suggest which to tackle — develop into stories for larger work, or fix right away for small issues
 > - You may add notes or context below the `managed-end` marker — they will not be overwritten
 
 ---
 
 <!-- code-tasks:managed-start -->
+
+- [ ] **Landing page design verbessern** ([Created: 2026-04-11]) (Priority: ⚪ Normal) [Updated: 2026-04-11]
+  Bislang wirkt es eher wie eine powerpoint Präsentation - Texte müssen besser werden und wir sollten auch magic mcp nutzen (teste, ob das klappt). Vielleicht better mit Gemini cli oder antigravity?
 
 - [ ] **Images kreieren** ([Created: 2026-03-27]) (Priority: ⚪ Normal)
   Für header // ggf. unsplash?

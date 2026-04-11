@@ -1,0 +1,8 @@
+# macOS
+.DS_Store
+
+# Prompt reference assets (Gemini-generated, too large for git)
+prompts/**/assets/images/*
+prompts/**/assets/videos/*
+!prompts/**/assets/images/.gitkeep
+!prompts/**/assets/videos/.gitkeep

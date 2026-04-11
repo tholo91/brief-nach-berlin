@@ -26,7 +26,12 @@ A frustrated citizen can go from "this is broken" to "here's a letter to the per
 - [ ] AI-powered letter generation (formal, personal, 1-page handwriting length)
 - [ ] AI determines which political level is primarily responsible
 - [ ] Letter display with politician name, address, and instructions
+- [ ] Optional personal context to strengthen the letter (profession, affiliations, how personally affected) — presented as optional "Brief verstärken" step after first draft
+- [ ] Legal disclaimer under generated letter: "KI-gestützter Formulierungsvorschlag — bitte vor dem Versand prüfen und personalisieren"
+- [ ] AI neutrality: system prompt must produce sachlich-bürgerlich tone, no political bias, no activism — test with issues across the political spectrum
+- [ ] Gender-neutral language throughout (neutral formulations like "Abgeordnete", "Ihr Bundestagsbüro" — no Gendersternchen/Doppelpunkt/Binnen-I)
 - [ ] Optional email collection to send the letter draft
+- [ ] Post-flow user feedback collection (via surv.ai link — "Hat der Brief geholfen?")
 - [ ] Mobile-responsive design
 
 ### Out of Scope
@@ -56,13 +61,16 @@ A frustrated citizen can go from "this is broken" to "here's a letter to the per
 - **Frontend**: Landing page built in Lovable first (beautiful UI fast), exported to GitHub, then extended with Claude Code
 - **Data privacy**: DSGVO-compliant — minimal data collection, no accounts, no persistent storage of user data in v1
 - **Language**: German-only UI and letter output
+- **Domain**: brief-nach-berlin.de is available (as of 2026-04-10)
 - **Letter format**: ~200-280 words (1 handwritten page), flowing prose, personal but formal tone
+- **Tone/language**: Gender-neutral without gendering (no *, :, Binnen-I). Sachlich-bürgerlich, not activist. AI must not impose political direction — the user's concern drives the letter, not the model's tendencies.
+- **Legal**: Generated letters are explicitly marked as "Formulierungsvorschlag" — no legal advice, no implied authority
 
 ## Key Decisions
 
 | Decision | Rationale | Outcome |
 |----------|-----------|---------|
-| Lovable for landing page, Claude Code for backend | Best of both: design quality + full-stack capability. Lovable too expensive for API/AI work. | — Pending |
+| Next.js directly (skip Lovable) | Existing Next.js app in /web already has landing page structure. Lovable exports Vite, not Next.js — migration overhead not worth it. | ✓ Good |
 | OpenAI API over Claude API for letter generation | Thomas has existing OpenAI API key, cost matters | — Pending |
 | No user accounts in v1 | Zero friction > feature completeness. Optional email only. | — Pending |
 | Handwrite-and-mail-yourself (no auto-pen in v1) | Authenticity + simplicity. Auto-pen is v2 with Pensaki. | — Pending |

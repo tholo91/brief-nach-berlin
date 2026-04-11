@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" fill="none">
+  <!-- Envelope body -->
+  <rect x="2" y="7" width="28" height="18" rx="2.5" fill="#FAF8F5" stroke="#2D6A4F" stroke-width="1.8"/>
+  <!-- Airmail stripes top -->
+  <rect x="2" y="7" width="28" height="3" rx="2" fill="url(#airmail)"/>
+  <!-- Envelope flap -->
+  <path d="M2 9.5 L16 20 L30 9.5" stroke="#2D6A4F" stroke-width="1.8" fill="none" stroke-linejoin="round"/>
+  <!-- Airmail stripe pattern -->
+  <defs>
+    <pattern id="airmail" x="0" y="0" width="8" height="4" patternUnits="userSpaceOnUse" patternTransform="rotate(-45)">
+      <rect width="3" height="4" fill="#C1121F"/>
+      <rect x="3" width="2" height="4" fill="#FAF8F5"/>
+      <rect x="5" width="3" height="4" fill="#1D3557"/>
+    </pattern>
+  </defs>
+</svg>

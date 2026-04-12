@@ -31,7 +31,7 @@ A frustrated citizen can go from "this is broken" to "here's a letter to the per
 - [ ] AI neutrality: system prompt must produce sachlich-bürgerlich tone, no political bias, no activism — test with issues across the political spectrum
 - [ ] Gender-neutral language throughout (neutral formulations like "Abgeordnete", "Ihr Bundestagsbüro" — no Gendersternchen/Doppelpunkt/Binnen-I)
 - [ ] Optional email collection to send the letter draft
-- [ ] Post-flow user feedback collection (via surv.ai link — "Hat der Brief geholfen?")
+- [ ] Post-flow user feedback collection (via surv.ai link) — **backlog 999.1**, post-launch
 - [ ] Mobile-responsive design
 
 ### Out of Scope

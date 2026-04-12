@@ -54,6 +54,35 @@ Decimal phases appear between their surrounding integers in numeric order.
   3. The Datenschutzerklaerung accurately covers PLZ processing, email usage, and OpenAI API data handling
 **Plans**: TBD
 
+## Backlog
+
+### Phase 999.1: surv.ai User-Feedback Integration (BACKLOG)
+
+**Goal:** Embed a surv.ai feedback link after the letter generation flow to collect real user feedback ("Hat der Brief geholfen?"). Enables validation without building custom analytics.
+**Requirements:** TBD
+**Plans:** 0 plans
+
+Plans:
+- [ ] TBD (promote with /gsd:review-backlog when ready)
+
+### Phase 999.2: surv.ai Persönlicher Kontext-Abfrage (BACKLOG)
+
+**Goal:** Use surv.ai to collect personal context (profession, affiliations, how personally affected) instead of a simple in-app form. Richer data = stronger letters, and surv.ai handles the conversational UX.
+**Requirements:** TBD
+**Plans:** 0 plans
+
+Plans:
+- [ ] TBD (promote with /gsd:review-backlog when ready)
+
+### Phase 999.3: Research — Wirksamkeit persönlicher Infos auf Abgeordnete (BACKLOG)
+
+**Goal:** Research and quantify how much personal details (profession, union/association membership, direct personal impact) influence whether a letter gets read, forwarded, or acted on by an Abgeordnete. Informs how aggressively to push context collection in the UX.
+**Requirements:** TBD
+**Plans:** 0 plans
+
+Plans:
+- [ ] TBD (promote with /gsd:review-backlog when ready)
+
 ## Progress
 
 **Execution Order:**

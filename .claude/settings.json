@@ -2,7 +2,11 @@
   "permissions": {
     "allow": [
       "Read(//tmp/**)",
-      "Read(//private/tmp/**)"
+      "Read(//private/tmp/**)",
+      "mcp___21st-dev_magic__21st_magic_component_inspiration"
+    ],
+    "additionalDirectories": [
+      "/Users/thomas/.claude"
     ]
   }
 }

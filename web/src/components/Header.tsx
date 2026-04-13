@@ -3,9 +3,9 @@
 export default function Header() {
   return (
     <>
-      {/* Airmail stripe — 3px */}
+      {/* Airmail stripe */}
       <div
-        className="h-[3px] w-full"
+        className="h-2 w-full"
         style={{
           background: `repeating-linear-gradient(
             -45deg,
@@ -21,7 +21,7 @@ export default function Header() {
         }}
       />
       <header className="sticky top-0 z-50 bg-creme/95 backdrop-blur-sm border-b border-warmgrau/8">
-        <nav className="max-w-6xl mx-auto px-6 md:px-10 py-4 flex items-center justify-between">
+        <nav className="max-w-5xl mx-auto px-6 py-4 flex items-center justify-between">
           <span className="font-typewriter text-base md:text-lg font-bold text-waldgruen-dark tracking-tight">
             Brief nach Berlin
           </span>

@@ -3,9 +3,9 @@ import Link from "next/link";
 export default function Footer() {
   return (
     <footer className="bg-creme">
-      {/* Airmail stripe — 3px */}
+      {/* Airmail stripe */}
       <div
-        className="h-[3px] w-full"
+        className="h-2 w-full"
         style={{
           background: `repeating-linear-gradient(
             -45deg,
@@ -21,7 +21,7 @@ export default function Footer() {
         }}
       />
 
-      <div className="max-w-6xl mx-auto px-6 md:px-10 py-8 flex flex-col sm:flex-row items-center justify-between gap-4">
+      <div className="max-w-5xl mx-auto px-6 py-8 flex flex-col sm:flex-row items-center justify-between gap-4">
         <span className="font-typewriter text-sm text-warmgrau/40">
           Brief nach Berlin &copy; {new Date().getFullYear()}
         </span>

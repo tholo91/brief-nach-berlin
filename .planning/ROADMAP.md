@@ -44,9 +44,9 @@ Decimal phases appear between their surrounding integers in numeric order.
 **Plans**: 4 plans
 
 Plans:
-- [ ] 02-01-PLAN.md — Foundation: types, Zod schemas, PLZ lookup, moderation wrapper
-- [ ] 02-02-PLAN.md — Voice recording subsystem: AudioRecorder, VoiceRecorder, /api/transcribe
-- [ ] 02-03-PLAN.md — AI pipeline: Mistral letter generation, server actions
+- [x] 02-01-PLAN.md — Foundation: types, Zod schemas, PLZ lookup, moderation wrapper
+- [x] 02-02-PLAN.md — Voice recording subsystem: AudioRecorder, VoiceRecorder, /api/transcribe
+- [x] 02-03-PLAN.md — AI pipeline: Mistral letter generation, server actions
 - [ ] 02-04-PLAN.md — Wizard UI: WizardShell, Step1-3 components, full integration
 
 **UI hint**: yes

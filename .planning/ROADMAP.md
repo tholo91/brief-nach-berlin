@@ -59,7 +59,12 @@ Plans:
   1. User receives the generated letter by email, including the politician's full postal address and clear instructions for handwriting and mailing
   2. No user frustration text or generated letter is stored after the email is sent
   3. The Datenschutzerklaerung accurately covers PLZ processing, email usage, and OpenAI API data handling
-**Plans**: TBD
+**Plans**: 3 plans
+
+Plans:
+- [ ] 03-01-PLAN.md — Brevo email module and HTML email template
+- [ ] 03-02-PLAN.md — Wire email into server actions, remove letter from client, add ?text= pre-fill
+- [ ] 03-03-PLAN.md — Rewrite Datenschutzerklaerung with full DSGVO Art. 13 disclosures
 
 ## Backlog
 
@@ -99,4 +104,4 @@ Phases execute in numeric order: 1 → 2 → 3
 |-------|----------------|--------|-----------|
 | 1. Landing Page & Data Infrastructure | 0/TBD | Not started | - |
 | 2. Core Engine | 0/4 | Planned | - |
-| 3. Email Delivery & Privacy Compliance | 0/TBD | Not started | - |
+| 3. Email Delivery & Privacy Compliance | 0/3 | Planned | - |

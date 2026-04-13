@@ -13,7 +13,7 @@ export default function Hero() {
 
   return (
     <section className="relative min-h-[92vh] flex items-center justify-center overflow-hidden">
-      {/* Background video — slow, plays once, stops at end */}
+      {/* Background video */}
       <video
         ref={videoRef}
         autoPlay
@@ -55,44 +55,23 @@ export default function Hero() {
               fill="none"
               className="text-waldgruen rotate-[-5deg]"
             >
-              <rect
-                x="4"
-                y="10"
-                width="40"
-                height="28"
-                rx="3"
-                stroke="currentColor"
-                strokeWidth="2.5"
-                fill="none"
-              />
-              <path
-                d="M4 13 L24 28 L44 13"
-                stroke="currentColor"
-                strokeWidth="2.5"
-                fill="none"
-                strokeLinejoin="round"
-              />
+              <rect x="4" y="10" width="40" height="28" rx="3" stroke="currentColor" strokeWidth="2.5" fill="none" />
+              <path d="M4 13 L24 28 L44 13" stroke="currentColor" strokeWidth="2.5" fill="none" strokeLinejoin="round" />
             </svg>
           </div>
 
-          <h1 className="font-typewriter text-[2.25rem] leading-[1.15] md:text-5xl lg:text-6xl font-bold text-waldgruen-dark mb-6">
+          <h1 className="font-body text-4xl md:text-5xl lg:text-6xl font-bold text-waldgruen-dark leading-[1.1] tracking-tight mb-6">
+            Dein Anliegen.
+            <br />
             Dein Brief.
             <br />
-            Deine Stimme.
+            <span className="text-waldgruen">An die Richtigen.</span>
           </h1>
 
-          <p className="font-body text-lg md:text-xl text-warmgrau leading-relaxed mb-4 max-w-md mx-auto">
-            Was ärgert dich?
-            <br />
-            In deinem Viertel, deiner Stadt oder in der großen Politik?
-          </p>
-
-          <p className="font-body text-base md:text-lg text-waldgruen-dark font-semibold leading-relaxed mb-10 max-w-md mx-auto">
-            Wir finden den richtigen Abgeordneten
-            <br className="hidden md:block" />
-            {" "}und formulieren deinen Brief.
-            <br />
-            Du schreibst ihn ab. Fünf Minuten, mehr nicht.
+          <p className="font-body text-lg md:text-xl text-warmgrau leading-relaxed mb-10 max-w-md mx-auto">
+            Schilder uns, was dich stört. Wir finden den zuständigen
+            Abgeordneten, formulieren deinen Brief und du schreibst ihn
+            ab. Fertig.
           </p>
 
           <a

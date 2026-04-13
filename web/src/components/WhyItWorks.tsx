@@ -17,10 +17,10 @@ export default function WhyItWorks() {
   return (
     <section className="py-20 md:py-28 px-6 bg-white">
       <div className="max-w-5xl mx-auto">
-        <p className="font-body text-sm font-semibold tracking-widest uppercase text-waldgruen text-center mb-3">
+        <p className="font-typewriter text-sm font-bold tracking-widest uppercase text-waldgruen/50 text-center mb-3">
           Belegt, nicht behauptet
         </p>
-        <h2 className="font-typewriter text-3xl md:text-4xl font-bold text-waldgruen-dark text-center mb-14 md:mb-16">
+        <h2 className="font-body text-3xl md:text-4xl font-bold text-waldgruen-dark text-center tracking-tight mb-14 md:mb-16">
           Warum ein Brief mehr bewegt
           <br />
           als tausend Klicks

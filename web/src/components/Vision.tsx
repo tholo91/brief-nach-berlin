@@ -2,10 +2,10 @@ export default function Vision() {
   return (
     <section className="py-20 md:py-28 px-6">
       <div className="max-w-2xl mx-auto text-center">
-        <p className="font-body text-sm font-semibold tracking-widest uppercase text-waldgruen mb-3">
+        <p className="font-typewriter text-sm font-bold tracking-widest uppercase text-waldgruen/50 mb-3">
           Warum wir das bauen
         </p>
-        <h2 className="font-typewriter text-3xl md:text-4xl font-bold text-waldgruen-dark mb-10">
+        <h2 className="font-body text-3xl md:text-4xl font-bold text-waldgruen-dark tracking-tight mb-10">
           Die Idee dahinter
         </h2>
 

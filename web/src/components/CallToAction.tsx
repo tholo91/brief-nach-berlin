@@ -16,7 +16,7 @@ export default function CallToAction() {
       </div>
 
       <div className="max-w-2xl mx-auto text-center relative z-10">
-        <h2 className="font-typewriter text-3xl md:text-4xl font-bold text-creme mb-6 leading-snug">
+        <h2 className="font-body text-3xl md:text-4xl font-bold text-creme mb-6 leading-snug tracking-tight">
           Wir bauen gerade an
           <br />
           Brief nach Berlin.

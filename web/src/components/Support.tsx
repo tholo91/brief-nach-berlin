@@ -2,10 +2,10 @@ export default function Support() {
   return (
     <section className="py-20 md:py-28 px-6 bg-white">
       <div className="max-w-3xl mx-auto">
-        <p className="font-body text-sm font-semibold tracking-widest uppercase text-waldgruen text-center mb-3">
+        <p className="font-typewriter text-sm font-bold tracking-widest uppercase text-waldgruen/50 text-center mb-3">
           Ein Projekt für alle
         </p>
-        <h2 className="font-typewriter text-3xl md:text-4xl font-bold text-waldgruen-dark text-center mb-12">
+        <h2 className="font-body text-3xl md:text-4xl font-bold text-waldgruen-dark text-center tracking-tight mb-12">
           Unterstützen, mitmachen, fördern
         </h2>
 

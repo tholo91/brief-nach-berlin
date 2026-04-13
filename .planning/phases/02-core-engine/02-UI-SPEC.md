@@ -21,7 +21,7 @@ created: 2026-04-13
 | Preset | not applicable |
 | Component library | none (custom components, no Radix/shadcn) |
 | Icon library | inline SVG (as per existing codebase pattern in Hero.tsx) |
-| Font — typewriter | Courier Prime (`font-typewriter`), weights 400 + 700 |
+| Font — typewriter | Courier Prime (`font-typewriter`), weights 400 + 600 |
 | Font — body | Source Sans 3 (`font-body`), weights 400 + 600 |
 | Font — handwriting | Caveat (`font-handwriting`), weight 400 |
 
@@ -45,7 +45,7 @@ Declared values (must be multiples of 4):
 
 Exceptions:
 - Mic button touch target: minimum 44px (WCAG 2.5.5 AA compliance)
-- Progress indicator dots: 8px diameter, 12px gap between dots
+- Progress indicator dots: 8px diameter, 8px gap between dots
 - Recording elapsed timer: 4px gap between timer icon and text
 
 ---
@@ -57,9 +57,9 @@ Exceptions:
 | Body | Source Sans 3 (`font-body`) | 16px | 400 | 1.5 | Form field labels, helper text, descriptions |
 | Label | Source Sans 3 (`font-body`) | 14px | 600 | 1.4 | Step labels, input labels, optional badges |
 | Heading | Source Sans 3 (`font-body`) | 20px | 600 | 1.3 | Step headings (e.g. "Dein Anliegen") |
-| Display | Courier Prime (`font-typewriter`) | 28px | 700 | 1.2 | Step number + title display (e.g. "Schritt 1") |
+| Display | Courier Prime (`font-typewriter`) | 28px | 600 | 1.2 | Step number + title display (e.g. "Schritt 1") |
 
-Handwriting accent (Caveat, 18px, weight 400, line-height 1.4): reserved for success page confirmation text only.
+Handwriting accent (Caveat, 16px, weight 400, line-height 1.4): reserved for success page confirmation text only.
 
 Source: `web/src/app/layout.tsx` (font definitions), `web/src/components/Hero.tsx` (sizing reference)
 
@@ -125,9 +125,9 @@ Fields (in order):
 Two sub-states:
 
 **Sub-state A: Single Wahlkreis (D-10)**
-- Heading (Courier Prime 28px/700): "Dein Brief wird erstellt..."
+- Heading (Courier Prime 28px/600): "Dein Brief wird erstellt..."
 - Body copy (Source Sans 16px/400): see Copywriting Contract
-- Handwriting accent (Caveat 18px): confirmation line below body
+- Handwriting accent (Caveat 16px): confirmation line below body
 - Processing animation: typewriter cursor blinking after heading text
 
 **Sub-state B: Disambiguation needed (D-09)**

@@ -33,7 +33,7 @@ Three distinct workstreams:
   - Research: Mistral API docs, appropriate model (mistral-large or mistral-small — planner to recommend based on German language quality and cost)
   - Voxtral (Mistral) is used for voice-to-text transcription — same vendor as letter generation, EU-hosted, no OpenAI dependency for STT
 
-- **D-04:** Letter format: ~200–280 words (1 handwritten page), formal German Briefstil (Sie-Form), personal but sachlich — not aggressive, not devot. AI system prompt must:
+- **D-04:** Letter format: **default 1 handwritten page (~200–280 words)**. The Mistral system prompt must target 1 page by default. Maximum is 2 pages (~400–560 words) — reserved for v2 when a length setting is added to the optional fields in Step 1. For v1, the system prompt hardcodes 1-page length. Formal German Briefstil (Sie-Form), personal but sachlich — not aggressive, not devot. AI system prompt must:
   - Produce gender-neutral language (no Gendersternchen/Doppelpunkt/Binnen-I)
   - Not impose political bias or activism tone — neutral, citizen-voice
   - Include date, salutation, body, closing, placeholder for sender name
@@ -190,6 +190,7 @@ Three distinct workstreams:
 - Email magic link implementation for "Neu generieren"
 
 ### v2+ Ideas
+- **Letter length setting** — Add a length selector to the optional fields in Step 1 (default: 1 page, option: 2 pages). Maps to different word-count targets in the Mistral system prompt (~200–280 words vs ~400–560 words).
 - "Brief verstärken" as a dedicated post-generation step (show draft first, then ask for enrichment context) — currently merged into Step 1 as optional fields
 - EU Parliament (Brussels) coverage — teased in Phase 1 landing page
 - Multiple language support (currently German only)

@@ -41,7 +41,14 @@ Decimal phases appear between their surrounding integers in numeric order.
   3. Hateful, threatening, or abusive input is rejected with a clear German error message before any letter is generated
   4. A generated letter is displayed: properly addressed to the politician by name and title, ~200-280 words, formal German Briefstil, referencing the specific local issue
   5. The letter output passes moderation before being shown to the user
-**Plans**: TBD
+**Plans**: 4 plans
+
+Plans:
+- [ ] 02-01-PLAN.md — Foundation: types, Zod schemas, PLZ lookup, moderation wrapper
+- [ ] 02-02-PLAN.md — Voice recording subsystem: AudioRecorder, VoiceRecorder, /api/transcribe
+- [ ] 02-03-PLAN.md — AI pipeline: Mistral letter generation, server actions
+- [ ] 02-04-PLAN.md — Wizard UI: WizardShell, Step1-3 components, full integration
+
 **UI hint**: yes
 
 ### Phase 3: Email Delivery & Privacy Compliance
@@ -91,5 +98,5 @@ Phases execute in numeric order: 1 → 2 → 3
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Landing Page & Data Infrastructure | 0/TBD | Not started | - |
-| 2. Core Engine | 0/TBD | Not started | - |
+| 2. Core Engine | 0/4 | Planned | - |
 | 3. Email Delivery & Privacy Compliance | 0/TBD | Not started | - |

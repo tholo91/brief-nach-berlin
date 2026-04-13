@@ -713,25 +713,29 @@ All dependencies for Phase 2 are available via npm — no external service prere
 
 ## Open Questions
 
-1. **Phase 1 completion status**
+1. **Phase 1 completion status** -- RESOLVED
    - What we know: Phase 1 is "not started" per STATE.md. Data files don't exist yet.
    - What's unclear: Will Phase 1 be executed before Phase 2? The plan must enforce this dependency.
    - Recommendation: Add an explicit Wave 0 check: verify `data/plz-wahlkreis-mapping.json` and `data/politicians-cache.json` exist and use parliament_period=161.
+   - **Resolution:** Plan 01 Task 2 (plzLookup.ts) uses try/catch around data file reads and returns empty results if files are missing. Plan 04 checkpoint notes that Phase 1 data files must exist for full flow testing. Phase dependency is enforced at ROADMAP level.
 
-2. **D-14 Scope conflict: Email in Phase 2 or Phase 3?**
+2. **D-14 Scope conflict: Email in Phase 2 or Phase 3?** -- RESOLVED
    - What we know: Email sending is trivially addable (Resend free tier, 30 min of work). But CONTEXT.md marks it as Phase 3.
    - What's unclear: Thomas wants "Wir schicken dir den Brief per Mail zu" on the success page. Phase 2 can't fulfill that promise without email.
    - Recommendation: Plan should include the Resend decision as the first Wave 0 task (install + wire basic email send). If Thomas confirms, pull MAIL-01 into Phase 2. This research cannot lock that decision — it needs user confirmation.
+   - **Resolution:** Option A chosen -- Phase 2 includes `letter: string` in WizardActionResult success variant so the generated letter is preserved and available for Phase 3 email pickup. Phase 2 success page truthfully says "Wir schicken dir den Brief in Kuerze per Mail zu." Email sending remains Phase 3 (Resend). No data is discarded.
 
-3. **Landtag and Kommune politician data**
+3. **Landtag and Kommune politician data** -- RESOLVED
    - What we know: `data/politicians-cache.json` is supposed to include all 3 levels. Landtag and Kommune data availability is fragmentary.
    - What's unclear: What exactly Phase 1 managed to cache for non-Bundestag levels.
    - Recommendation: Phase 2 plan must implement D-07 (transparent fallback message) for levels with no data. Do not generate a letter for a politician the system cannot identify.
+   - **Resolution:** Plan 01 adds `{ error: 'level_data_missing'; level: PoliticalLevel; fallbackUrl: string }` variant to WizardActionResult. Plan 04 Step3Success renders transparent D-07 message with fallback URL. Fallback URLs mapped per level in lookup module.
 
-4. **Mistral JSON structured output reliability**
+4. **Mistral JSON structured output reliability** -- RESOLVED
    - What we know: Mistral supports `responseFormat: { type: "json_object" }` similar to OpenAI.
    - What's unclear: Reliability of JSON output for German-language generation (occasional non-JSON preamble in LLM outputs is a known failure mode).
    - Recommendation: Wrap JSON.parse in try/catch. If parse fails, extract JSON with a regex (`/{[\s\S]*}/`) as fallback. If both fail, return an error to the user.
+   - **Resolution:** Plan 03 Task 1 (generateLetter.ts) implements try/catch with regex fallback extraction as recommended. Already present in plan.
 
 ---
 

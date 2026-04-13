@@ -17,20 +17,24 @@ export default function CallToAction() {
 
       <div className="max-w-2xl mx-auto text-center relative z-10">
         <h2 className="font-body text-3xl md:text-4xl font-bold text-creme mb-6 leading-snug tracking-tight">
-          Wir bauen gerade an
-          <br />
-          Brief nach Berlin.
+          Bereit für deinen Brief?
         </h2>
 
         <p className="font-body text-base md:text-lg text-creme/85 leading-relaxed mb-10 max-w-md mx-auto">
-          Bald kannst du deinen ersten Brief schreiben.
-          <br />
-          An den Abgeordneten, der für dein Anliegen zuständig ist.
+          Beschreib dein Anliegen — wir finden die zuständige Person
+          und formulieren einen Brief, der ankommt.
           <br className="hidden md:block" />
-          {" "}Echte Demokratie, fünf Minuten.
+          {" "}Kostenlos, in drei Minuten.
         </p>
 
-        <p className="mt-4 font-handwriting text-xl text-creme/50 leading-relaxed">
+        <a
+          href="/app"
+          className="inline-block bg-creme text-waldgruen-dark font-body font-semibold text-base md:text-lg px-10 py-4 rounded-xl hover:bg-creme/90 transition-colors cursor-pointer shadow-lg active:scale-[0.98]"
+        >
+          Jetzt Brief schreiben &rarr;
+        </a>
+
+        <p className="mt-10 font-handwriting text-xl text-creme/50 leading-relaxed">
           Demokratie braucht deine Stimme.
           <br />
           Und vielleicht deinen Brief.

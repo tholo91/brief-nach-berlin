@@ -23,7 +23,7 @@ export default function Footer() {
 
       <div className="max-w-5xl mx-auto px-6 py-8 flex flex-col sm:flex-row items-center justify-between gap-4">
         <span className="font-typewriter text-sm text-warmgrau/40">
-          Brief nach Berlin &copy; {new Date().getFullYear()}
+          Brief-nach-Berlin &copy; {new Date().getFullYear()}
         </span>
 
         <div className="flex gap-6">

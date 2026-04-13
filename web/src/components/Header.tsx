@@ -1,5 +1,14 @@
 "use client";
 
+import Link from "next/link";
+
+const navLinks = [
+  { label: "Wie es funktioniert", href: "#so-funktionierts" },
+  { label: "Warum Briefe?", href: "#warum-briefe" },
+  { label: "Die Idee", href: "#idee" },
+  { label: "Mitmachen", href: "#mitmachen" },
+];
+
 export default function Header() {
   return (
     <>
@@ -25,16 +34,26 @@ export default function Header() {
           <span className="font-typewriter text-base md:text-lg font-bold text-waldgruen-dark tracking-tight">
             Brief nach Berlin
           </span>
-          <button
-            onClick={() =>
-              document
-                .getElementById("cta")
-                ?.scrollIntoView({ behavior: "smooth" })
-            }
-            className="font-body text-sm font-semibold text-creme bg-waldgruen hover:bg-waldgruen-dark px-4 py-2 rounded-lg transition-colors cursor-pointer"
+
+          {/* Section links — desktop only */}
+          <div className="hidden md:flex items-center gap-6">
+            {navLinks.map((link) => (
+              <a
+                key={link.href}
+                href={link.href}
+                className="font-body text-sm text-warmgrau/60 hover:text-waldgruen-dark transition-colors duration-200"
+              >
+                {link.label}
+              </a>
+            ))}
+          </div>
+
+          <Link
+            href="/app"
+            className="font-body text-sm font-semibold text-creme bg-waldgruen hover:bg-waldgruen-dark px-4 py-2 rounded-lg transition-colors"
           >
-            Mehr erfahren
-          </button>
+            Brief schreiben
+          </Link>
         </nav>
       </header>
     </>

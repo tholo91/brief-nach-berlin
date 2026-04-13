@@ -1,7 +1,7 @@
 import Link from "next/link";
 
 export const metadata = {
-  title: "Impressum | Brief nach Berlin",
+  title: "Impressum | Brief-nach-Berlin",
 };
 
 export default function Impressum() {

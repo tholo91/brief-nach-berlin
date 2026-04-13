@@ -2,6 +2,7 @@ import Header from "@/components/Header";
 import Hero from "@/components/Hero";
 import HowItWorks from "@/components/HowItWorks";
 import WhyItWorks from "@/components/WhyItWorks";
+import LetterCounter from "@/components/LetterCounter";
 import Vision from "@/components/Vision";
 import Support from "@/components/Support";
 import CallToAction from "@/components/CallToAction";
@@ -15,6 +16,7 @@ export default function Home() {
         <Hero />
         <HowItWorks />
         <WhyItWorks />
+        <LetterCounter />
         <Vision />
         <Support />
         <CallToAction />

@@ -6,9 +6,13 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "build:data": "ts-node scripts/parse-plz-mapping.ts && ts-node scripts/fetch-politician-data.ts",
+    "build:plz": "ts-node scripts/parse-plz-mapping.ts",
+    "fetch:politicians": "ts-node scripts/fetch-politician-data.ts"
   },
   "dependencies": {
+    "csv-parse": "^5.6",
     "next": "16.2.3",
     "react": "19.2.4",
     "react-dom": "19.2.4"
@@ -23,6 +27,7 @@
     "playwright": "^1.59.1",
     "sharp": "^0.34.5",
     "tailwindcss": "^4",
+    "ts-node": "^10.9.2",
     "typescript": "^5"
   }
 }

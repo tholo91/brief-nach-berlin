@@ -2,7 +2,7 @@ import { ImageResponse } from "next/og";
 
 export const runtime = "edge";
 export const alt =
-  "Brief nach Berlin — Dein Brief. Deine Stimme. Handgeschrieben an die Politik.";
+  "Brief-nach-Berlin - Dein persönliches Anliegen, direkt an die Verantwortlichen.";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 

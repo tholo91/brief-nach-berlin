@@ -1,6 +1,6 @@
 export default function Support() {
   return (
-    <section className="py-20 md:py-28 px-6 bg-white">
+    <section id="mitmachen" className="py-20 md:py-28 px-6 bg-white">
       <div className="max-w-3xl mx-auto">
         <p className="font-typewriter text-sm font-bold tracking-widest uppercase text-waldgruen/50 text-center mb-3">
           Ein Projekt für alle
@@ -37,7 +37,7 @@ export default function Support() {
               Weitersagen
             </h3>
             <p className="font-body text-base text-warmgrau/80 leading-relaxed">
-              Erzähl Freund:innen, Familie oder deiner Bürgerinitiative davon.
+              Erzähl Freunden, Familie oder deiner Bürgerinitiative davon.
               Je mehr Menschen schreiben, desto mehr bewegt sich.
             </p>
           </div>
@@ -52,19 +52,26 @@ export default function Support() {
               Fördern
             </h3>
             <p className="font-body text-base text-warmgrau/80 leading-relaxed">
-              Brief nach Berlin ist gemeinnützig gedacht und werbefrei.
+              Brief-nach-Berlin ist gemeinnützig gedacht und werbefrei.
               Wir finanzieren uns über Fördermittel und Spenden, nicht über Daten.
             </p>
           </div>
         </div>
 
-        <div className="text-center">
+        <div className="text-center flex flex-col items-center gap-4">
           <a
             href="mailto:thomas_lorenz@posteo.de"
-            className="inline-block bg-waldgruen text-creme font-body font-semibold text-base px-8 py-4 rounded-xl hover:bg-waldgruen-dark transition-colors cursor-pointer shadow-lg shadow-waldgruen/20"
+            className="inline-flex items-center gap-2 bg-waldgruen text-creme font-body font-semibold text-base px-8 py-4 rounded-xl hover:bg-waldgruen-dark transition-colors cursor-pointer shadow-lg shadow-waldgruen/20"
           >
-            Schreib mir &rarr;
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" className="shrink-0">
+              <rect x="2" y="4" width="20" height="16" rx="3" stroke="currentColor" strokeWidth="2" fill="none" />
+              <path d="M2 8l10 7 10-7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+            Schreib uns gerne eine Mail
           </a>
+          <p className="font-body text-sm text-warmgrau/60 leading-relaxed max-w-sm italic">
+            Du hast Ideen, willst dich einfach mal melden oder möchtest mitmachen? Ich freu mich über deine Nachricht.<br />Beste Grüße aus Bremen – Thomas ✌️
+          </p>
         </div>
       </div>
     </section>

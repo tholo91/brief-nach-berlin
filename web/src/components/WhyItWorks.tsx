@@ -2,7 +2,7 @@ const stats = [
   {
     number: "96\u00A0%",
     label:
-      "der Mitarbeiter:innen im US-Kongress sagen: Handschriftliche Briefe sind das wirkungsvollste Mittel, das Bürger:innen haben.",
+      "der Abgeordneten im US-Kongress sagen: Handschriftliche Briefe sind das wirkungsvollste Mittel, das die Bevölkerung hat.",
     source: "Congressional Management Foundation",
   },
   {
@@ -15,7 +15,7 @@ const stats = [
 
 export default function WhyItWorks() {
   return (
-    <section className="py-20 md:py-28 px-6 bg-white">
+    <section id="warum-briefe" className="py-20 md:py-28 px-6 bg-white">
       <div className="max-w-5xl mx-auto">
         <p className="font-typewriter text-sm font-bold tracking-widest uppercase text-waldgruen/50 text-center mb-3">
           Belegt, nicht behauptet

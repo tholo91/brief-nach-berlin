@@ -3,7 +3,7 @@ const steps = [
     number: "01",
     title: "Erzähl, was dich beschäftigt",
     description:
-      "Tipp es ein oder sprich es aus. Du brauchst kein politisches Vorwissen und keine Fachsprache. Nur deine Meinung.",
+      "Schilder dein Anliegen so detailliert wie möglich: Zu viel Müll auf dem Spielplatz um die Ecke? Mehr Förderung nachhaltiger Projekte? Du hast Angst vor dem Rechtsruck?",
     icon: (
       <svg width="48" height="48" viewBox="0 0 48 48" fill="none" className="text-waldgruen">
         <path d="M10 10h28v24H22l-7 6v-6h-5V10z" stroke="currentColor" strokeWidth="2" strokeLinejoin="round" fill="none" />
@@ -14,7 +14,7 @@ const steps = [
   },
   {
     number: "02",
-    title: "Wir finden den richtigen Empfänger",
+    title: "Wir finden die passende Adresse",
     description:
       "Anhand deiner PLZ ermitteln wir, wer politisch zuständig ist: Bundestag, Landtag oder Rathaus. Datenschutzkonform.",
     icon: (
@@ -27,9 +27,9 @@ const steps = [
   },
   {
     number: "03",
-    title: "Dein Brief, fertig zum Abschreiben",
+    title: "Dein Brief, fertig zum Abschicken",
     description:
-      "Unsere KI formuliert einen persönlichen, sachlichen Brief mit den besten Argumenten. Eine Seite, fünf Minuten abschreiben.",
+      "Unsere KI formuliert einen persönlichen, sachlichen Brief mit den besten Argumenten. Eine Seite, per E-Mail in deinem Postfach.",
     icon: (
       <svg width="48" height="48" viewBox="0 0 48 48" fill="none" className="text-waldgruen">
         <rect x="8" y="6" width="28" height="36" rx="2" stroke="currentColor" strokeWidth="2" fill="none" />

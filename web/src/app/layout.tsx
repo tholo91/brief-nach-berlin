@@ -20,22 +20,22 @@ const caveat = Caveat({
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://brief-nach-berlin.vercel.app"),
-  title: "Brief nach Berlin | Dein Anliegen an die Politik, in fünf Minuten",
+  title: "Brief-nach-Berlin | Dein Anliegen an die Politik, in fünf Minuten",
   description:
-    "Was stört dich? Wir finden den richtigen Abgeordneten, formulieren deinen Brief und du schreibst ihn ab. Handgeschrieben, persönlich, wirkungsvoll.",
+    "Was stört dich? Wir finden die zuständigen Abgeordneten und formulieren deinen Brief, damit dein Anliegen dort ankommt, wo es hingehört.",
   openGraph: {
-    title: "Brief nach Berlin | Dein Anliegen an die Politik, in fünf Minuten",
+    title: "Brief-nach-Berlin | Dein Anliegen an die Politik, in fünf Minuten",
     description:
-      "Was stört dich? Wir finden den richtigen Abgeordneten, formulieren deinen Brief und du schreibst ihn ab. Handgeschrieben, persönlich, wirkungsvoll.",
+      "Was stört dich? Wir finden die zuständigen Abgeordneten und formulieren deinen Brief, damit dein Anliegen dort ankommt, wo es hingehört.",
     type: "website",
     locale: "de_DE",
     url: "https://brief-nach-berlin.vercel.app",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Brief nach Berlin | Dein Anliegen an die Politik, in fünf Minuten",
+    title: "Brief-nach-Berlin | Dein Anliegen an die Politik, in fünf Minuten",
     description:
-      "Was stört dich? Wir finden den richtigen Abgeordneten, formulieren deinen Brief und du schreibst ihn ab. Handgeschrieben, persönlich, wirkungsvoll.",
+      "Was stört dich? Wir finden die zuständigen Abgeordneten und formulieren deinen Brief, damit dein Anliegen dort ankommt, wo es hingehört.",
   },
 };
 

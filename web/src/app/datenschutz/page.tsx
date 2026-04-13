@@ -1,7 +1,7 @@
 import Link from "next/link";
 
 export const metadata = {
-  title: "Datenschutz | Brief nach Berlin",
+  title: "Datenschutz | Brief-nach-Berlin",
 };
 
 export default function Datenschutz() {
@@ -102,6 +102,49 @@ export default function Datenschutz() {
                 https://ec.europa.eu/consumers/odr
               </a>
               .
+            </p>
+          </div>
+
+          <div>
+            <h2 className="font-semibold text-waldgruen-dark mb-2">
+              6. KI-generierte Inhalte und Disclaimer
+            </h2>
+            <p className="mb-3">
+              Brief nach Berlin nutzt künstliche Intelligenz, um Ihr Anliegen
+              schnell und einfach in einen formalen Brief umzuwandeln.
+              KI-Systeme können jedoch Fehler machen — und das sollten Sie
+              wissen, bevor Sie einen Brief versenden.
+            </p>
+            <p className="mb-3">
+              <strong className="text-waldgruen-dark">Wir garantieren nicht</strong> die
+              Richtigkeit der Politikerdaten (Name, Titel, Adresse, Zuständigkeit).
+              Diese Daten stammen aus öffentlichen Quellen (Abgeordnetenwatch,
+              Bundeswahlleiter) und können veraltet oder unvollständig sein.
+              Wir garantieren ebenfalls nicht die inhaltliche Korrektheit oder
+              Angemessenheit des generierten Brieftexts — KI kann Kontext
+              falsch einschätzen, Nuancen übersehen oder Fehlannahmen treffen.
+            </p>
+            <p className="mb-3">
+              <strong className="text-waldgruen-dark">Bitte prüfen Sie vor dem Versand:</strong>{" "}
+              Name, Titel und Adresse des Abgeordneten anhand offizieller
+              Quellen — zum Beispiel{" "}
+              <a
+                href="https://www.bundestag.de/abgeordnete"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-waldgruen hover:underline"
+              >
+                bundestag.de
+              </a>
+              , die Website Ihres Landtags oder die Website Ihres Rathauses.
+              Lesen Sie außerdem den generierten Brieftext sorgfältig durch und
+              passen Sie ihn an, wo nötig.
+            </p>
+            <p>
+              Brief nach Berlin ist ein Werkzeug zur Beschleunigung — kein
+              Ersatz für Ihre eigene Urteilsfähigkeit. Sie schreiben den Brief,
+              wir helfen Ihnen nur, ihn schneller zu formulieren.
+              Die Verantwortung für den versendeten Inhalt liegt bei Ihnen.
             </p>
           </div>
 

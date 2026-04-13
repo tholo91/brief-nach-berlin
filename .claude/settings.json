@@ -2,7 +2,11 @@
   "permissions": {
     "allow": [
       "Read(//tmp/**)",
-      "Read(//private/tmp/**)"
+      "Read(//private/tmp/**)",
+      "Skill(gsd:discuss-phase)",
+      "Skill(gsd:discuss-phase:*)",
+      "Skill(gsd-plan-phase)",
+      "Skill(gsd-plan-phase:*)"
     ]
   }
 }

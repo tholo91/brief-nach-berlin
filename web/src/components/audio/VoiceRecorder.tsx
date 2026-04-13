@@ -9,6 +9,7 @@ import {
 
 interface VoiceRecorderProps {
   onTranscription: (text: string) => void;
+  onStateChange?: (state: UIState) => void;
   disabled?: boolean;
 }
 
@@ -22,9 +23,16 @@ function formatElapsed(seconds: number): string {
   );
 }
 
-export function VoiceRecorder({ onTranscription, disabled }: VoiceRecorderProps) {
-  const [uiState, setUiState] = useState<UIState>("idle");
+export type { UIState as VoiceRecorderState };
+
+export function VoiceRecorder({ onTranscription, onStateChange, disabled }: VoiceRecorderProps) {
+  const [uiState, setUiStateInternal] = useState<UIState>("idle");
   const [elapsedSeconds, setElapsedSeconds] = useState(0);
+
+  const setUiState = useCallback((state: UIState) => {
+    setUiStateInternal(state);
+    onStateChange?.(state);
+  }, [onStateChange]);
 
   const audioRecorderRef = useRef<AudioRecorder | null>(null);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);

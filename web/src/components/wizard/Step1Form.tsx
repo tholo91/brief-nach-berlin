@@ -13,10 +13,10 @@ export function Step1Form({ onNext, defaultValues }: Step1FormProps) {
   const {
     register,
     handleSubmit,
-    formState: { errors, isValid },
+    formState: { errors, isValid, touchedFields },
   } = useForm<Step1Data>({
     resolver: zodResolver(step1Schema),
-    mode: "onChange",
+    mode: "onTouched",
     defaultValues: {
       plz: defaultValues?.plz ?? "",
       email: defaultValues?.email ?? "",
@@ -40,7 +40,7 @@ export function Step1Form({ onNext, defaultValues }: Step1FormProps) {
         Dein Brief beginnt hier
       </h1>
       <p className="font-body text-sm text-warmgrau/70 mb-8">
-        Damit wir den richtigen Abgeordneten finden und dir deinen Brief zuschicken können.
+        Damit wir die richtigen Abgeordneten, bzw. politisch verantwortliche Stelle finden und dir deinen Brief zuschicken können.
       </p>
 
       <div className="space-y-4">
@@ -55,15 +55,15 @@ export function Step1Form({ onNext, defaultValues }: Step1FormProps) {
             inputMode="numeric"
             maxLength={5}
             placeholder="z.B. 10115"
-            className={inputClassName(!!errors.plz)}
-            aria-describedby={errors.plz ? "plz-error" : "plz-hint"}
-            aria-invalid={!!errors.plz}
+            className={inputClassName(!!errors.plz && !!touchedFields.plz)}
+            aria-describedby={errors.plz && touchedFields.plz ? "plz-error" : "plz-hint"}
+            aria-invalid={!!errors.plz && !!touchedFields.plz}
             {...register("plz")}
           />
           <p id="plz-hint" className="text-sm text-warmgrau/60 mt-1">
             Damit finden wir deinen zuständigen Abgeordneten
           </p>
-          {errors.plz && (
+          {errors.plz && touchedFields.plz && (
             <p id="plz-error" role="alert" className="text-sm text-airmail-rot mt-1">
               {errors.plz.message}
             </p>
@@ -79,15 +79,15 @@ export function Step1Form({ onNext, defaultValues }: Step1FormProps) {
             id="email"
             type="email"
             placeholder="deine@email.de"
-            className={inputClassName(!!errors.email)}
-            aria-describedby={errors.email ? "email-error" : "email-hint"}
-            aria-invalid={!!errors.email}
+            className={inputClassName(!!errors.email && !!touchedFields.email)}
+            aria-describedby={errors.email && touchedFields.email ? "email-error" : "email-hint"}
+            aria-invalid={!!errors.email && !!touchedFields.email}
             {...register("email")}
           />
           <p id="email-hint" className="text-sm text-warmgrau/60 mt-1">
             Wir schicken dir deinen Brief per Mail zu
           </p>
-          {errors.email && (
+          {errors.email && touchedFields.email && (
             <p id="email-error" role="alert" className="text-sm text-airmail-rot mt-1">
               {errors.email.message}
             </p>

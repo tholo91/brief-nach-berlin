@@ -1,7 +1,7 @@
 "use client";
 
-import { useState } from "react";
-import { VoiceRecorder } from "@/components/audio/VoiceRecorder";
+import { useState, useCallback } from "react";
+import { VoiceRecorder, type VoiceRecorderState } from "@/components/audio/VoiceRecorder";
 
 interface Step2IssueProps {
   onSubmit: (issueText: string) => void;
@@ -17,7 +17,12 @@ export function Step2Issue({
   onErrorDismiss,
 }: Step2IssueProps) {
   const [issueText, setIssueText] = useState("");
+  const [voiceDone, setVoiceDone] = useState(false);
   const charCount = issueText.length;
+
+  const handleVoiceStateChange = useCallback((state: VoiceRecorderState) => {
+    if (state === "done") setVoiceDone(true);
+  }, []);
 
   const handleTextChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setIssueText(e.target.value);
@@ -55,16 +60,17 @@ export function Step2Issue({
         </div>
       )}
 
-      {/* Voice recorder — easy path first */}
-      <div className="mb-4">
+      {/* Voice recorder — easy path first, fades out after transcription */}
+      <div className={`transition-all duration-700 ease-out ${voiceDone ? "opacity-0 max-h-0 overflow-hidden mb-0" : "opacity-100 max-h-40 mb-4"}`}>
         <VoiceRecorder
           onTranscription={handleTranscription}
+          onStateChange={handleVoiceStateChange}
           disabled={isSubmitting}
         />
       </div>
 
-      {/* Divider */}
-      <div className="flex items-center gap-3 my-4">
+      {/* Divider — fades out with voice recorder */}
+      <div className={`flex items-center gap-3 my-4 transition-all duration-700 ease-out ${voiceDone ? "opacity-0 max-h-0 overflow-hidden !my-0" : "opacity-100 max-h-8"}`}>
         <div className="flex-1 h-px bg-warmgrau/20" />
         <span className="font-body text-xs text-warmgrau/50">oder schreib es selbst</span>
         <div className="flex-1 h-px bg-warmgrau/20" />

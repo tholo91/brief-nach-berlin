@@ -88,7 +88,7 @@ export function Step3Success({ result, wizardData, politicians }: Step3SuccessPr
     return (
       <div>
         <h1 className="font-typewriter text-[28px] font-semibold leading-[1.2] text-waldgruen-dark">
-          Daten nicht verfuegbar
+          Daten nicht verfügbar
         </h1>
         <p className="font-body text-base text-warmgrau leading-relaxed mt-6">
           {result.message}
@@ -122,9 +122,9 @@ export function Step3Success({ result, wizardData, politicians }: Step3SuccessPr
           />
         </h1>
         <p className="font-body text-base text-warmgrau leading-relaxed mt-6">
-          Wir analysieren dein Anliegen, finden den zustaendigen Abgeordneten und
+          Wir analysieren dein Anliegen, finden den zuständigen Abgeordneten und
           formulieren deinen Brief mit den besten Argumenten. Das kann einen
-          Moment dauern -- wir schicken dir den Brief per Mail zu.
+          Moment dauern — wir schicken dir den Brief per Mail zu.
         </p>
         <p className="font-handwriting text-base text-warmgrau mt-8">
           Dein Anliegen ist auf dem Weg.
@@ -155,7 +155,7 @@ export function Step3Success({ result, wizardData, politicians }: Step3SuccessPr
         )}
 
         {/* Politician cards */}
-        <div role="radiogroup" aria-label="Abgeordnete auswaehlen" className="space-y-3 mt-6">
+        <div role="radiogroup" aria-label="Abgeordnete auswählen" className="space-y-3 mt-6">
           {politicians.map((p, index) => (
             <button
               key={p.id}

@@ -22,7 +22,7 @@ export async function POST(req: NextRequest) {
     // Use Mistral's dedicated audio transcription endpoint (Voxtral)
     // MISTRAL_API_KEY is accessed server-side only — never exposed to client (T-02-07)
     const result = await mistral.audio.transcriptions.complete({
-      model: "mistral-large-pixtral-latest",
+      model: "voxtral-mini-latest",
       file: audioBlob,
       language: "de",
     });

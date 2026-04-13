@@ -12,16 +12,19 @@
     "fetch:politicians": "ts-node scripts/fetch-politician-data.ts"
   },
   "dependencies": {
+    "@mistralai/mistralai": "^2.2.0",
     "csv-parse": "^5.6",
     "next": "16.2.3",
     "react": "19.2.4",
-    "react-dom": "19.2.4"
+    "react-dom": "19.2.4",
+    "recordrtc": "^5.6.2"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "@types/recordrtc": "^5.6.15",
     "eslint": "^9",
     "eslint-config-next": "16.2.3",
     "playwright": "^1.59.1",

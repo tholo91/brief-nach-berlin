@@ -12,6 +12,7 @@
     "fetch:politicians": "ts-node scripts/fetch-politician-data.ts"
   },
   "dependencies": {
+    "@getbrevo/brevo": "^5.0.4",
     "@hookform/resolvers": "^5.2.2",
     "@mistralai/mistralai": "^2.2.0",
     "csv-parse": "^5.6",

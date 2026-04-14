@@ -8,6 +8,7 @@ interface Step2IssueProps {
   isSubmitting: boolean;
   errorMessage: string | null;
   onErrorDismiss: () => void;
+  defaultValue?: string;
 }
 
 export function Step2Issue({
@@ -15,8 +16,9 @@ export function Step2Issue({
   isSubmitting,
   errorMessage,
   onErrorDismiss,
+  defaultValue,
 }: Step2IssueProps) {
-  const [issueText, setIssueText] = useState("");
+  const [issueText, setIssueText] = useState(defaultValue ?? "");
   const [voiceDone, setVoiceDone] = useState(false);
   const charCount = issueText.length;
 

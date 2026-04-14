@@ -227,6 +227,7 @@ export function WizardShell() {
             isSubmitting={isSubmitting}
             errorMessage={errorMessage}
             onErrorDismiss={handleErrorDismiss}
+            defaultValue={wizardData.issueText}
           />
         )}
         {step === 3 && (

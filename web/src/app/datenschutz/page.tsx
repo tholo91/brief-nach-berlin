@@ -48,20 +48,29 @@ export default function Datenschutz() {
               2. Allgemeines zur Datenverarbeitung
             </h2>
             <p>
-              Diese Website erhebt und verarbeitet derzeit keine
-              personenbezogenen Daten. Es werden keine Cookies gesetzt, kein
-              Tracking eingesetzt und keine Nutzerdaten gespeichert.
+              Brief nach Berlin verarbeitet personenbezogene Daten
+              ausschließlich zur Erbringung des Dienstes: die Erstellung eines
+              personalisierten Briefs an Ihren zuständigen Abgeordneten. Wir
+              speichern keine Nutzerdaten dauerhaft auf unseren Servern. Alle
+              eingegebenen Daten (Postleitzahl, E-Mail-Adresse, Anliegen) werden
+              ausschließlich während der Verarbeitung Ihrer Anfrage verwendet
+              und danach verworfen. Es werden keine Cookies gesetzt, kein
+              Tracking eingesetzt und keine Nutzerkonten angelegt.
             </p>
           </div>
 
           <div>
             <h2 className="font-semibold text-waldgruen-dark mb-2">
-              3. Hosting
+              3. Hosting (Vercel)
             </h2>
             <p>
-              Diese Website wird bei Vercel Inc. gehostet. Beim Aufruf der Seite
-              werden technisch notwendige Verbindungsdaten (z.B. IP-Adresse)
-              kurzzeitig verarbeitet. Weitere Informationen finden Sie in der{" "}
+              Diese Website wird bei Vercel Inc., 340 S Lemon Ave #4133,
+              Walnut, CA 91789, USA gehostet. Vercel verarbeitet technisch
+              notwendige Verbindungsdaten (IP-Adresse, Zugriffszeitpunkt).
+              Rechtsgrundlage: Art. 6 Abs. 1 lit. f DSGVO (berechtigtes
+              Interesse an zuverlässigem Hosting). Drittlandtransfer: USA — auf
+              Basis von EU-Standardvertragsklauseln (SCCs) und dem EU-US Data
+              Privacy Framework. Weitere Informationen finden Sie in der{" "}
               <a
                 href="https://vercel.com/legal/privacy-policy"
                 target="_blank"
@@ -76,7 +85,157 @@ export default function Datenschutz() {
 
           <div>
             <h2 className="font-semibold text-waldgruen-dark mb-2">
-              4. Ihre Rechte
+              4. Verarbeitung von Postleitzahlen
+            </h2>
+            <p>
+              Zweck: Zuordnung Ihrer Postleitzahl zum zuständigen
+              Bundestagswahlkreis und dem dortigen Abgeordneten.
+              Rechtsgrundlage: Art. 6 Abs. 1 lit. b DSGVO (Durchführung
+              vorvertraglicher Maßnahmen auf Anfrage der betroffenen Person).
+              Verarbeitete Daten: Postleitzahl (5 Ziffern). Empfänger: Keine —
+              die Zuordnung erfolgt vollständig lokal anhand statischer Daten
+              auf dem Server. Speicherdauer: Keine Speicherung. Die
+              Postleitzahl wird ausschließlich während der Verarbeitung Ihrer
+              Anfrage verwendet.
+            </p>
+          </div>
+
+          <div>
+            <h2 className="font-semibold text-waldgruen-dark mb-2">
+              5. Verarbeitung der E-Mail-Adresse
+            </h2>
+            <p>
+              Zweck: Zustellung des generierten Briefs per E-Mail.
+              Rechtsgrundlage: Art. 6 Abs. 1 lit. b DSGVO (Durchführung
+              vorvertraglicher Maßnahmen). Verarbeitete Daten: E-Mail-Adresse.
+              Empfänger: Brevo SAS (siehe Abschnitt 10). Speicherdauer: Ihre
+              E-Mail-Adresse wird ausschließlich für den einmaligen Versand des
+              Briefs an Brevo übermittelt und nicht auf unseren Servern
+              gespeichert. Brevo speichert Transaktionsprotokolle gemäß eigener
+              Aufbewahrungsfristen.
+            </p>
+          </div>
+
+          <div>
+            <h2 className="font-semibold text-waldgruen-dark mb-2">
+              6. Verarbeitung des Anliegens (Freitext und Spracheingabe)
+            </h2>
+            <p className="mb-3">
+              Zweck: Erstellung eines personalisierten Briefs auf Basis Ihres
+              beschriebenen Anliegens. Rechtsgrundlage: Art. 6 Abs. 1 lit. b
+              DSGVO.
+            </p>
+            <p className="mb-3">
+              <strong className="text-waldgruen-dark">Freitexteingabe:</strong>{" "}
+              Ihr Anliegen wird in Textform an Mistral AI (siehe Abschnitt 8)
+              zur Brieferstellung und an OpenAI (siehe Abschnitt 9) zur
+              Inhaltsprüfung übermittelt. Der Text wird nicht auf unseren
+              Servern gespeichert.
+            </p>
+            <p>
+              <strong className="text-waldgruen-dark">
+                Spracheingabe (optional):
+              </strong>{" "}
+              Wenn Sie die Spracheingabe nutzen, wird Ihre Audioaufnahme an die
+              Mistral Voxtral API zur Transkription übermittelt. Die
+              Audioaufnahme wird ausschließlich im Browser während der Aufnahme
+              gehalten und nach der Transkription verworfen. Sie wird nicht auf
+              unseren Servern gespeichert.
+            </p>
+          </div>
+
+          <div>
+            <h2 className="font-semibold text-waldgruen-dark mb-2">
+              7. Politikerdaten
+            </h2>
+            <p>
+              Die auf dieser Website angezeigten Politikerdaten (Name, Titel,
+              Parteizugehörigkeit, Wahlkreis, Postadresse) stammen aus öffentlich
+              zugänglichen Quellen: der Datenbank von Abgeordnetenwatch.de
+              (Lizenz: CC0) sowie den offenen Daten der Bundeswahlleiterin.
+              Diese Daten sind keine personenbezogenen Daten der
+              Websitenutzer, sondern öffentliche Informationen über Amtsträger.
+            </p>
+          </div>
+
+          <div>
+            <h2 className="font-semibold text-waldgruen-dark mb-2">
+              8. KI-gestützte Briefgenerierung (Mistral AI)
+            </h2>
+            <p>
+              Zweck: Erstellung eines formalen, persönlichen Briefs auf Basis
+              Ihres Anliegens. Rechtsgrundlage: Art. 6 Abs. 1 lit. b DSGVO.
+              Verarbeitete Daten: Ihr Anliegen (Freitext oder transkribierte
+              Spracheingabe), optionale Angaben (Name, Parteimitgliedschaft,
+              Organisationszugehörigkeit). Empfänger: Mistral AI, 15 rue des
+              Halles, 75001 Paris, Frankreich. Serverstandort: EU.
+              Drittlandtransfer: Keiner — Mistral AI ist ein französisches
+              Unternehmen mit Servern in der EU. Speicherdauer: Keine
+              dauerhafte Speicherung auf unseren Servern. Mistral AI
+              verarbeitet die Daten gemäß ihrer eigenen Datenschutzrichtlinie
+              und ihrem Auftragsverarbeitungsvertrag (AVV). Weitere
+              Informationen:{" "}
+              <a
+                href="https://legal.mistral.ai/terms/data-processing-addendum"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-waldgruen hover:underline"
+              >
+                legal.mistral.ai/terms/data-processing-addendum
+              </a>
+            </p>
+          </div>
+
+          <div>
+            <h2 className="font-semibold text-waldgruen-dark mb-2">
+              9. Inhaltsprüfung (OpenAI Moderation API)
+            </h2>
+            <p>
+              Zweck: Sicherheitsprüfung der Nutzereingabe und des generierten
+              Briefs auf beleidigende, bedrohliche oder schädliche Inhalte.
+              Rechtsgrundlage: Art. 6 Abs. 1 lit. f DSGVO (berechtigtes
+              Interesse an der Verhinderung von Missbrauch). Verarbeitete
+              Daten: Ihr Anliegen (Freitext) und der generierte Brieftext.
+              Empfänger: OpenAI, L.L.C., 3180 18th Street, San Francisco, CA
+              94110, USA. Serverstandort: USA. Drittlandtransfer: USA — auf
+              Basis von EU-Standardvertragsklauseln (SCCs). Speicherdauer:
+              Keine Speicherung auf unseren Servern. OpenAI verarbeitet die
+              Daten gemäß dem Auftragsverarbeitungsvertrag (DPA). Weitere
+              Informationen:{" "}
+              <a
+                href="https://openai.com/policies/data-processing-addendum"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-waldgruen hover:underline"
+              >
+                openai.com/policies/data-processing-addendum
+              </a>
+            </p>
+          </div>
+
+          <div>
+            <h2 className="font-semibold text-waldgruen-dark mb-2">
+              10. E-Mail-Versand (Brevo)
+            </h2>
+            <p>
+              Zweck: Zustellung des generierten Briefs per E-Mail an Sie.
+              Rechtsgrundlage: Art. 6 Abs. 1 lit. b DSGVO. Verarbeitete Daten:
+              Ihre E-Mail-Adresse, der generierte Brieftext, die Postadresse
+              des Abgeordneten. Empfänger: Brevo SAS (ehemals Sendinblue), 106
+              boulevard Haussmann, 75008 Paris, Frankreich. Serverstandort: EU
+              (OVH-Rechenzentren in Frankreich und Deutschland).
+              Drittlandtransfer: Keiner — Brevo ist ein französisches
+              Unternehmen mit Servern in der EU. Speicherdauer: Brevo
+              speichert Transaktionsprotokolle gemäß eigener
+              Aufbewahrungsrichtlinien. Wir speichern keine E-Mail-Daten auf
+              unseren Servern. Auftragsverarbeitung: Es besteht ein
+              Auftragsverarbeitungsvertrag (AVV) mit Brevo.
+            </p>
+          </div>
+
+          <div>
+            <h2 className="font-semibold text-waldgruen-dark mb-2">
+              11. Ihre Rechte
             </h2>
             <p>
               Sie haben gemäß DSGVO das Recht auf Auskunft (Art. 15),
@@ -88,7 +247,7 @@ export default function Datenschutz() {
 
           <div>
             <h2 className="font-semibold text-waldgruen-dark mb-2">
-              5. Streitschlichtung
+              12. Streitschlichtung
             </h2>
             <p>
               Die Europäische Kommission stellt eine Plattform zur
@@ -107,7 +266,7 @@ export default function Datenschutz() {
 
           <div>
             <h2 className="font-semibold text-waldgruen-dark mb-2">
-              6. KI-generierte Inhalte und Disclaimer
+              13. KI-generierte Inhalte und Disclaimer
             </h2>
             <p className="mb-3">
               Brief nach Berlin nutzt künstliche Intelligenz, um Ihr Anliegen

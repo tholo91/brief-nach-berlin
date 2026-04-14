@@ -51,13 +51,21 @@ export function WizardShell() {
   const searchParams = useSearchParams();
   const router = useRouter();
 
-  const [wizardData, setWizardData] = useState<Partial<WizardData>>(() =>
-    readParamsToData(searchParams)
-  );
+  const [wizardData, setWizardData] = useState<Partial<WizardData>>(() => {
+    const data = readParamsToData(searchParams);
+    const textParam = searchParams.get("text");
+    if (textParam) {
+      data.issueText = textParam;
+    }
+    return data;
+  });
   const [step, setStep] = useState<WizardStep>(() => {
     const sp = searchParams.get("step");
+    const textParam = searchParams.get("text");
     if (sp === "1b") return "1b";
     if (sp === "2") return 2;
+    // If ?text= is present but no step param, start at step 2 (issue pre-filled)
+    if (textParam) return 2;
     return 1;
   });
   const [politicians, setPoliticians] = useState<Politician[]>([]);

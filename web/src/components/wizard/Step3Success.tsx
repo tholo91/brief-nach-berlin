@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useCallback } from "react";
 import type { WizardData, WizardActionResult } from "@/lib/types/wizard";
 import type { Politician } from "@/lib/types/politician";
 import { selectPoliticianAction } from "@/lib/actions/selectPolitician";
@@ -16,15 +16,6 @@ export function Step3Success({ result, wizardData, politicians }: Step3SuccessPr
   const [isGenerating, setIsGenerating] = useState(false);
   const [generationComplete, setGenerationComplete] = useState(false);
   const [generationError, setGenerationError] = useState<string | null>(null);
-  // Letter text stored in component state for Phase 3 email pickup (forward contract)
-  const [letterText, setLetterText] = useState<string | null>(null);
-
-  // Store letter text when result arrives with success
-  useEffect(() => {
-    if (result && "success" in result && result.success) {
-      setLetterText(result.letter);
-    }
-  }, [result]);
 
   const handleSelectPolitician = useCallback(
     async () => {
@@ -47,7 +38,6 @@ export function Step3Success({ result, wizardData, politicians }: Step3SuccessPr
         }
 
         if ("success" in selectResult && selectResult.success) {
-          setLetterText(selectResult.letter);
           setGenerationComplete(true);
         }
       } catch {

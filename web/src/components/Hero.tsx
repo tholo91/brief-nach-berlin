@@ -60,12 +60,12 @@ export default function Hero() {
         </div>
 
         <h1 className="font-body text-4xl md:text-5xl lg:text-6xl font-bold text-waldgruen-dark leading-[1.1] tracking-tight mb-6">
-          Dein persönliches Anliegen.
+          <span className="whitespace-nowrap">Dein persönliches Anliegen.</span>
           <br />
           <span className="text-waldgruen">Direkt an die Politik.</span>
         </h1>
 
-        <p className="font-handwriting text-lg md:text-xl text-warmgrau leading-relaxed mb-10 max-w-md mx-auto">
+        <p className="font-handwriting text-xl md:text-2xl text-warmgrau leading-relaxed mb-10 max-w-md mx-auto">
           Ob Beschwerde, Vorschlag oder Frage: sag uns, was dich bewegt.
           <br />
           Wir identifizieren die Zuständigen und formulieren einen Brief, der überzeugt.

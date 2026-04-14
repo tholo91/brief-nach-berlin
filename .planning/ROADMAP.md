@@ -62,9 +62,9 @@ Plans:
 **Plans**: 3 plans
 
 Plans:
-- [ ] 03-01-PLAN.md — Brevo email module and HTML email template
-- [ ] 03-02-PLAN.md — Wire email into server actions, remove letter from client, add ?text= pre-fill
-- [ ] 03-03-PLAN.md — Rewrite Datenschutzerklaerung with full DSGVO Art. 13 disclosures
+- [x] 03-01-PLAN.md — Brevo email module and HTML email template
+- [x] 03-02-PLAN.md — Wire email into server actions, remove letter from client, add ?text= pre-fill
+- [x] 03-03-PLAN.md — Rewrite Datenschutzerklaerung with full DSGVO Art. 13 disclosures
 
 ## Backlog
 

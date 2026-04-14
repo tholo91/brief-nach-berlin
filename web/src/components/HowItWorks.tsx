@@ -16,7 +16,7 @@ const steps = [
     number: "02",
     title: "Wir finden die passende Adresse",
     description:
-      "Anhand deiner PLZ ermitteln wir, wer politisch zuständig ist: Bundestag, Landtag oder Rathaus. Datenschutzkonform.",
+      "Anhand deiner PLZ ermitteln wir, wer politisch zuständig ist: Bundestag, Landtag oder Rathaus. Und das alles datenschutzkonform.",
     icon: (
       <svg width="48" height="48" viewBox="0 0 48 48" fill="none" className="text-waldgruen">
         <circle cx="24" cy="18" r="8" stroke="currentColor" strokeWidth="2" fill="none" />

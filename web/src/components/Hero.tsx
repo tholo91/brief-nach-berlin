@@ -65,10 +65,9 @@ export default function Hero() {
           <span className="text-waldgruen">Direkt an die Politik.</span>
         </h1>
 
-        <p className="font-handwriting text-xl md:text-2xl text-warmgrau leading-relaxed mb-10 max-w-md mx-auto">
-          Ob Beschwerde, Vorschlag oder Frage: sag uns, was dich bewegt.
-          <br />
-          Wir identifizieren die Zuständigen und formulieren einen Brief, der überzeugt.
+        <p className="font-handwriting text-xl md:text-2xl text-warmgrau leading-relaxed mb-10 max-w-md md:max-w-none mx-auto text-pretty">
+          <span className="block">Ob Beschwerde, Vorschlag oder Frage: sag uns, was dich bewegt.</span>
+          <span className="block">Wir identifizieren die Zuständigen in der Politik und formulieren einen Brief, der überzeugt.</span>
         </p>
 
         {/* CTA buttons */}

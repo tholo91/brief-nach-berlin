@@ -21,7 +21,7 @@ export default function CallToAction() {
         </h2>
 
         <p className="font-body text-base md:text-lg text-creme/85 leading-relaxed mb-10 max-w-md mx-auto">
-          Beschreib dein Anliegen — wir finden die zuständige Person
+          Beschreib dein Anliegen, wir finden die zuständige Person
           und formulieren einen Brief, der ankommt.
           <br className="hidden md:block" />
           {" "}Kostenlos, in drei Minuten.

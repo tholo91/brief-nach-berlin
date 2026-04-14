@@ -4,8 +4,7 @@ import Link from "next/link";
 
 const navLinks = [
   { label: "Wie es funktioniert", href: "#so-funktionierts" },
-  { label: "Warum Briefe?", href: "#warum-briefe" },
-  { label: "Die Idee", href: "#idee" },
+  { label: "Die Idee", href: "#warum-briefe" },
   { label: "Mitmachen", href: "#mitmachen" },
 ];
 

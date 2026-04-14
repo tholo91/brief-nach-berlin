@@ -6,3 +6,4 @@ prompts/**/assets/images/*
 prompts/**/assets/videos/*
 !prompts/**/assets/images/.gitkeep
 !prompts/**/assets/videos/.gitkeep
+.vercel

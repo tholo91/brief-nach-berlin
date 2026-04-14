@@ -6,7 +6,20 @@
       "Skill(gsd:discuss-phase)",
       "Skill(gsd:discuss-phase:*)",
       "Skill(gsd-plan-phase)",
-      "Skill(gsd-plan-phase:*)"
+      "Skill(gsd-plan-phase:*)",
+      "WebFetch(domain:www.npmjs.com)",
+      "WebFetch(domain:www.e-recht24.de)",
+      "WebFetch(domain:www.brevo.com)",
+      "Skill(gsd-code-review)",
+      "Skill(gsd-code-review:*)",
+      "Skill(gsd-add-todo)",
+      "Skill(gsd-add-todo:*)",
+      "WebFetch(domain:donare.info)",
+      "WebFetch(domain:www.parentsforfuture.de)",
+      "WebFetch(domain:ctb.ku.edu)",
+      "WebFetch(domain:www.wissenleben.de)",
+      "WebFetch(domain:agentur-adverb.de)",
+      "WebFetch(domain:www.vgsd.de)"
     ]
   }
 }

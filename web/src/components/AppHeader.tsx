@@ -31,12 +31,6 @@ export default function AppHeader() {
             Brief nach Berlin
           </Link>
 
-          <Link
-            href="/"
-            className="font-body text-sm text-warmgrau/60 hover:text-waldgruen-dark transition-colors duration-200"
-          >
-            ← Zur Startseite
-          </Link>
         </nav>
       </header>
     </>

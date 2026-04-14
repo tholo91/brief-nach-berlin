@@ -3,6 +3,7 @@
 import { after } from "next/server";
 import type { WizardData, WizardActionResult } from "@/lib/types/wizard";
 import type { Politician } from "@/lib/types/politician";
+import { step1Schema, step2Schema } from "@/lib/validation/wizardSchemas";
 import { moderateText } from "@/lib/moderation/moderateText";
 import { generateLetter } from "@/lib/generation/generateLetter";
 import { sendLetterEmail } from "@/lib/email/sendLetterEmail";
@@ -13,6 +14,32 @@ export async function selectPoliticianAction(
   politicians: Politician[]
 ): Promise<WizardActionResult> {
   try {
+    // Re-validate user-supplied input (WR-02: prevent bypassing initial validation)
+    const step1Result = step1Schema.safeParse({
+      plz: data.plz,
+      email: data.email,
+      name: data.name,
+      party: data.party,
+      ngo: data.ngo,
+    });
+    if (!step1Result.success) {
+      return { error: "server_error", message: "Ungültige Eingabe." };
+    }
+    const step2Result = step2Schema.safeParse({ issueText: data.issueText });
+    if (!step2Result.success) {
+      return { error: "server_error", message: "Bitte beschreibe dein Anliegen." };
+    }
+
+    // Re-moderate user input before AI call (WR-02: prevent bypassing initial moderation)
+    const inputModeration = await moderateText(data.issueText);
+    if (inputModeration.flagged) {
+      return {
+        error: "moderation_rejected",
+        message:
+          "Wir können dieses Anliegen nicht weiterverarbeiten. Bitte formuliere dein Anliegen sachlich.",
+      };
+    }
+
     const selectedPolitician = politicians.find(
       (p) => p.id === selectedPoliticianId
     );

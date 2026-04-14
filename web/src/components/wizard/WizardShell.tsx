@@ -12,7 +12,7 @@ import { Step1bOptional } from "./Step1bOptional";
 import { Step2Issue } from "./Step2Issue";
 import { Step3Success } from "./Step3Success";
 
-const PARAM_KEYS = ["plz", "email", "name", "party", "ngo"] as const;
+const PARAM_KEYS = ["plz"] as const;
 
 const STEP_LABELS = [
   "Kontaktdaten",

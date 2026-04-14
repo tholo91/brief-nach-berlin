@@ -1,4 +1,5 @@
 import type { SendLetterEmailParams } from "./sendLetterEmail";
+import { APP_NAME, APP_URL, WIZARD_PATH, WIZARD_TEXT_PARAM_MAX_LENGTH } from "@/lib/config";
 
 // Escape HTML entities to prevent HTML injection in email (T-03-02)
 function escapeHtml(text: string): string {
@@ -27,16 +28,15 @@ export function buildEmailHtml(data: SendLetterEmailParams): string {
     .join("<br>");
 
   // URL-encode issueText for "Neuen Brief schreiben" link (T-03-03, pitfall 3)
-  const maxTextLength = 1500;
   const truncatedText =
-    data.issueText.length > maxTextLength
-      ? data.issueText.slice(0, maxTextLength) + "..."
+    data.issueText.length > WIZARD_TEXT_PARAM_MAX_LENGTH
+      ? data.issueText.slice(0, WIZARD_TEXT_PARAM_MAX_LENGTH) + "..."
       : data.issueText;
-  const regenerateUrl = `https://brief-nach-berlin.de/app?text=${encodeURIComponent(truncatedText)}`;
+  const regenerateUrl = `${APP_URL}${WIZARD_PATH}?text=${encodeURIComponent(truncatedText)}`;
 
   // Share text for WhatsApp and Twitter buttons (D-09)
   const shareText = encodeURIComponent(
-    "Ich habe gerade einen Brief an meinen Abgeordneten geschrieben \u2014 in unter 3 Minuten. Probier es selbst: https://brief-nach-berlin.de"
+    `Ich habe gerade einen Brief an meinen Abgeordneten geschrieben \u2014 in unter 3 Minuten. Probier es selbst: ${APP_URL}`
   );
   const whatsappUrl = `https://wa.me/?text=${shareText}`;
   const twitterUrl = `https://twitter.com/intent/tweet?text=${shareText}`;

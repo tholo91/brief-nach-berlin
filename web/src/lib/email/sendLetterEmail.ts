@@ -1,9 +1,11 @@
 import { BrevoClient } from "@getbrevo/brevo";
 import { buildEmailHtml } from "./buildEmailHtml";
 
-const brevo = new BrevoClient({
-  apiKey: process.env.BREVO_API_KEY!,
-});
+const apiKey = process.env.BREVO_API_KEY;
+if (!apiKey) {
+  throw new Error("[brief-nach-berlin] BREVO_API_KEY environment variable is not set");
+}
+const brevo = new BrevoClient({ apiKey });
 
 export interface SendLetterEmailParams {
   recipientEmail: string;

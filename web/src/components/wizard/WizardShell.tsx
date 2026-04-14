@@ -118,9 +118,11 @@ export function WizardShell() {
       };
 
       try {
+        console.log("[wizard] submitting", { issueTextLength: issueText.length, plz: fullData.plz });
         const result = await submitWizardAction(fullData);
 
         if ("error" in result) {
+          console.warn("[wizard] server returned error", result);
           setErrorMessage(result.message);
           setIsSubmitting(false);
           return;
@@ -136,7 +138,8 @@ export function WizardShell() {
           setWizardData((prev) => ({ ...prev, issueText }));
           setStep(3);
         }
-      } catch {
+      } catch (error) {
+        console.error("[wizard] submit threw", error);
         setErrorMessage("Es ist ein Fehler aufgetreten. Bitte versuche es erneut.");
       } finally {
         setIsSubmitting(false);

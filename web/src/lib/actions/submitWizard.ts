@@ -11,6 +11,18 @@ import { sendLetterEmail } from "@/lib/email/sendLetterEmail";
 export async function submitWizardAction(
   data: WizardData
 ): Promise<WizardActionResult> {
+  const log = (stage: string, extra?: Record<string, unknown>) => {
+    console.log(`[submitWizard] ${stage}`, extra ?? "");
+  };
+
+  log("start", {
+    plz: data.plz,
+    issueTextLength: data.issueText?.length ?? 0,
+    hasName: Boolean(data.name),
+    hasParty: Boolean(data.party),
+    hasNgo: Boolean(data.ngo),
+  });
+
   try {
     // 1. Validate input server-side with Zod (T-02-09)
     const step1Result = step1Schema.safeParse({
@@ -21,19 +33,23 @@ export async function submitWizardAction(
       ngo: data.ngo,
     });
     if (!step1Result.success) {
+      console.warn("[submitWizard] step1 validation failed", step1Result.error.flatten());
       return { error: "server_error", message: "Ungueltige Eingabe." };
     }
 
     const step2Result = step2Schema.safeParse({ issueText: data.issueText });
     if (!step2Result.success) {
+      console.warn("[submitWizard] step2 validation failed", step2Result.error.flatten());
       return {
         error: "server_error",
         message: "Bitte beschreibe dein Anliegen.",
       };
     }
+    log("validated");
 
     // 2. Moderate user input BEFORE any AI call (SAFE-01, T-02-10, D-15)
     const inputModeration = await moderateText(data.issueText);
+    log("input moderation", { flagged: inputModeration.flagged });
     if (inputModeration.flagged) {
       return {
         error: "moderation_rejected",
@@ -44,6 +60,7 @@ export async function submitWizardAction(
 
     // 3. PLZ lookup using Phase 1 static data
     const { wahlkreisIds, politicians } = lookupPLZ(data.plz);
+    log("plz lookup", { wahlkreisCount: wahlkreisIds.length, politicianCount: politicians.length });
     if (wahlkreisIds.length === 0 || politicians.length === 0) {
       return {
         error: "plz_not_found",
@@ -58,6 +75,7 @@ export async function submitWizardAction(
     }
 
     // 5. Single Wahlkreis (D-10) → generate letter immediately
+    log("generating letter");
     const result = await generateLetter({
       issueText: data.issueText,
       politicians,
@@ -65,9 +83,11 @@ export async function submitWizardAction(
       party: data.party,
       ngo: data.ngo,
     });
+    log("letter generated", { letterLength: result.letter.length });
 
     // 6. Moderate generated letter output (SAFE-02, T-02-15, D-15)
     const outputModeration = await moderateText(result.letter);
+    log("output moderation", { flagged: outputModeration.flagged });
     if (outputModeration.flagged) {
       return {
         error: "output_moderation_rejected",
@@ -95,7 +115,17 @@ export async function submitWizardAction(
       // letter field removed — sent by email only (D-03, PRIV-01)
     };
   } catch (error) {
-    console.error("[brief-nach-berlin] submitWizardAction error:", error);
+    const err = error as Error & { status?: number; code?: string; cause?: unknown };
+    console.error("[submitWizard] FAILED", {
+      name: err?.name,
+      message: err?.message,
+      status: err?.status,
+      code: err?.code,
+      cause: err?.cause,
+      issueTextLength: data.issueText?.length ?? 0,
+      plz: data.plz,
+      stack: err?.stack,
+    });
     return {
       error: "server_error",
       message:

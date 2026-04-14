@@ -62,10 +62,14 @@ export function WizardShell() {
   const [step, setStep] = useState<WizardStep>(() => {
     const sp = searchParams.get("step");
     const textParam = searchParams.get("text");
+    // Email is never persisted to URL (privacy), so direct navigation to step 1b/2
+    // always lacks email — force back to step 1.
+    const hasEmail = Boolean(searchParams.get("email"));
+    if ((sp === "1b" || sp === "2") && !hasEmail) return 1;
     if (sp === "1b") return "1b";
     if (sp === "2") return 2;
-    // If ?text= is present but no step param, start at step 2 (issue pre-filled)
-    if (textParam) return 2;
+    // If ?text= is present but no step param, pre-fill text but stay on step 1
+    if (textParam) return 1;
     return 1;
   });
   const [politicians, setPoliticians] = useState<Politician[]>([]);

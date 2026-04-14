@@ -1,4 +1,6 @@
-import { openai } from "../openai";
+import { Mistral } from "@mistralai/mistralai";
+
+const mistral = new Mistral({ apiKey: process.env.MISTRAL_API_KEY });
 
 export interface ModerationResult {
   flagged: boolean;
@@ -6,13 +8,14 @@ export interface ModerationResult {
 }
 
 export async function moderateText(text: string): Promise<ModerationResult> {
-  const response = await openai.moderations.create({
-    model: "omni-moderation-latest",
-    input: text,
+  const response = await mistral.classifiers.moderate({
+    model: "mistral-moderation-latest",
+    inputs: [text],
   });
   const result = response.results[0];
-  const flaggedCategories = Object.entries(result.categories)
+  const categoryMap = result?.categories ?? {};
+  const flaggedCategories = Object.entries(categoryMap)
     .filter(([, flagged]) => flagged)
     .map(([category]) => category);
-  return { flagged: result.flagged, categories: flaggedCategories };
+  return { flagged: flaggedCategories.length > 0, categories: flaggedCategories };
 }

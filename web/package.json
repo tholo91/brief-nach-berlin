@@ -17,7 +17,6 @@
     "@mistralai/mistralai": "^2.2.0",
     "csv-parse": "^5.6",
     "next": "16.2.3",
-    "openai": "^6.34.0",
     "react": "19.2.4",
     "react-dom": "19.2.4",
     "react-hook-form": "^7.72.1",

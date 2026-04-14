@@ -47,9 +47,7 @@ export default function WhyItWorks() {
           <div className="w-16 h-px bg-waldgruen/20 mx-auto mb-8" />
           <blockquote>
             <p className="font-handwriting text-2xl md:text-3xl text-waldgruen-dark leading-snug mb-4">
-              &ldquo;Handgeschriebene Briefe landen
-              <br className="hidden md:block" />
-              {" "}auf dem Schreibtisch.
+              &ldquo;Handgeschriebene Briefe landen auf dem Schreibtisch.
               <br />
               E-Mails landen im Spam.&rdquo;
             </p>

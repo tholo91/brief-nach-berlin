@@ -65,9 +65,10 @@ export default function Hero() {
           <span className="text-waldgruen">Direkt an die Politik.</span>
         </h1>
 
-        <p className="font-body text-lg md:text-xl text-warmgrau leading-relaxed mb-10 max-w-md mx-auto">
-          Ob Beschwerde, Vorschlag oder Frage: sag uns, was dich
-          bewegt. Wir identifizieren die Zuständigen und formulieren einen Brief, der überzeugt.
+        <p className="font-handwriting text-lg md:text-xl text-warmgrau leading-relaxed mb-10 max-w-md mx-auto">
+          Ob Beschwerde, Vorschlag oder Frage: sag uns, was dich bewegt.
+          <br />
+          Wir identifizieren die Zuständigen und formulieren einen Brief, der überzeugt.
         </p>
 
         {/* CTA buttons */}
@@ -89,13 +90,13 @@ export default function Hero() {
 
         {/* Trust badges */}
         <div className="flex flex-wrap items-center justify-center gap-2">
-          <span className="inline-flex items-center gap-1.5 bg-waldgruen/10 text-waldgruen font-body text-sm px-3 py-1.5 rounded-full">
+          <span className="inline-flex items-center gap-1.5 text-waldgruen font-body text-sm font-semibold px-3 py-1.5">
             <svg width="13" height="13" viewBox="0 0 16 16" fill="none" className="shrink-0">
               <path d="M3 8l4 4 6-6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
             Vollständig kostenlos
           </span>
-          <span className="inline-flex items-center gap-1.5 bg-waldgruen/10 text-waldgruen font-body text-sm px-3 py-1.5 rounded-full">
+          <span className="inline-flex items-center gap-1.5 text-waldgruen font-body text-sm font-semibold px-3 py-1.5">
             <svg width="13" height="13" viewBox="0 0 16 16" fill="none" className="shrink-0">
               <path d="M3 8l4 4 6-6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
@@ -103,11 +104,6 @@ export default function Hero() {
           </span>
         </div>
 
-        <p className="mt-8 font-handwriting text-lg md:text-xl text-waldgruen/70 leading-relaxed">
-          Dein Anliegen, perfekt formuliert
-          <br />
-          für den zuständigen Schreibtisch.
-        </p>
       </div>
     </section>
   );

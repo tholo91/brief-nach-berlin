@@ -26,7 +26,7 @@ export interface GenerateLetterResult {
 }
 
 export type WizardActionResult =
-  | { success: true; politician: Politician; politicalLevel: PoliticalLevel; letter: string }
+  | { success: true; politician: Politician; politicalLevel: PoliticalLevel }
   | { disambiguationNeeded: true; politicians: Politician[] }
   | { error: "moderation_rejected"; message: string }
   | { error: "output_moderation_rejected"; message: string }

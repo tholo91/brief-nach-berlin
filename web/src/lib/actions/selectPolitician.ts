@@ -1,9 +1,11 @@
 "use server";
 
+import { after } from "next/server";
 import type { WizardData, WizardActionResult } from "@/lib/types/wizard";
 import type { Politician } from "@/lib/types/politician";
 import { moderateText } from "@/lib/moderation/moderateText";
 import { generateLetter } from "@/lib/generation/generateLetter";
+import { sendLetterEmail } from "@/lib/email/sendLetterEmail";
 
 export async function selectPoliticianAction(
   data: WizardData,
@@ -37,20 +39,23 @@ export async function selectPoliticianAction(
       };
     }
 
-    // Log for Phase 3 email pickup (D-14 resolution)
-    console.log("[brief-nach-berlin] Letter generated (disambiguation):", {
-      politician: `${result.selectedPolitician.firstName} ${result.selectedPolitician.lastName}`,
-      level: result.politicalLevel,
-      email: data.email,
-      letterLength: result.letter.length,
-      timestamp: new Date().toISOString(),
+    // Phase 3: Send letter by email (fire-and-forget, D-04 disambiguation path)
+    after(async () => {
+      await sendLetterEmail({
+        recipientEmail: data.email,
+        politicianName: `${result.selectedPolitician.firstName} ${result.selectedPolitician.lastName}`,
+        politicianTitle: result.selectedPolitician.title,
+        politicianPostalAddress: result.selectedPolitician.postalAddress,
+        letterText: result.letter,
+        issueText: data.issueText,
+      });
     });
 
     return {
       success: true,
       politician: result.selectedPolitician,
       politicalLevel: result.politicalLevel,
-      letter: result.letter, // Preserved for Phase 3 email pickup (D-14 resolution)
+      // letter field removed — sent by email only (D-03, PRIV-01)
     };
   } catch (error) {
     console.error("[brief-nach-berlin] selectPoliticianAction error:", error);

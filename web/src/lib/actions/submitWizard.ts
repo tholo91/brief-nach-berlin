@@ -1,10 +1,12 @@
 "use server";
 
+import { after } from "next/server";
 import type { WizardData, WizardActionResult } from "@/lib/types/wizard";
 import { step1Schema, step2Schema } from "@/lib/validation/wizardSchemas";
 import { lookupPLZ } from "@/lib/lookup/plzLookup";
 import { moderateText } from "@/lib/moderation/moderateText";
 import { generateLetter } from "@/lib/generation/generateLetter";
+import { sendLetterEmail } from "@/lib/email/sendLetterEmail";
 
 export async function submitWizardAction(
   data: WizardData
@@ -74,21 +76,23 @@ export async function submitWizardAction(
       };
     }
 
-    // 7. Log generated letter for Phase 3 email pickup (D-14 resolution: no persistent storage per D-16)
-    // Phase 3 will wire actual email delivery. For now, log the data server-side.
-    console.log("[brief-nach-berlin] Letter generated:", {
-      politician: `${result.selectedPolitician.firstName} ${result.selectedPolitician.lastName}`,
-      level: result.politicalLevel,
-      email: data.email,
-      letterLength: result.letter.length,
-      timestamp: new Date().toISOString(),
+    // 7. Send letter by email (fire-and-forget, D-03)
+    after(async () => {
+      await sendLetterEmail({
+        recipientEmail: data.email,
+        politicianName: `${result.selectedPolitician.firstName} ${result.selectedPolitician.lastName}`,
+        politicianTitle: result.selectedPolitician.title,
+        politicianPostalAddress: result.selectedPolitician.postalAddress,
+        letterText: result.letter,
+        issueText: data.issueText,
+      });
     });
 
     return {
       success: true,
       politician: result.selectedPolitician,
       politicalLevel: result.politicalLevel,
-      letter: result.letter, // Preserved for Phase 3 email pickup (D-14 resolution)
+      // letter field removed — sent by email only (D-03, PRIV-01)
     };
   } catch (error) {
     console.error("[brief-nach-berlin] submitWizardAction error:", error);

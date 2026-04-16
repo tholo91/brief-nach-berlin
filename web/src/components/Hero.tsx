@@ -60,7 +60,8 @@ export default function Hero() {
         </div>
 
         <h1 className="font-body text-4xl md:text-5xl lg:text-6xl font-bold text-waldgruen-dark leading-[1.1] tracking-tight mb-6">
-          <span className="whitespace-nowrap">Dein persönliches Anliegen.</span>
+          <span className="md:hidden">Dein Anliegen.</span>
+          <span className="hidden md:inline whitespace-nowrap">Dein persönliches Anliegen.</span>
           <br />
           <span className="text-waldgruen">Direkt an die Politik.</span>
         </h1>

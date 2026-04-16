@@ -4,7 +4,7 @@ import { useState, useCallback } from "react";
 import type { WizardData, WizardActionResult } from "@/lib/types/wizard";
 import type { Politician } from "@/lib/types/politician";
 import { selectPoliticianAction } from "@/lib/actions/selectPolitician";
-import { SHARE_URL_WHATSAPP, SHARE_URL_TWITTER } from "@/lib/config";
+import { APP_URL, SHARE_TEXT, SHARE_URL_WHATSAPP, SHARE_URL_TWITTER } from "@/lib/config";
 
 interface Step3SuccessProps {
   result: WizardActionResult | null;
@@ -72,6 +72,22 @@ export function Step3Success({ result, wizardData, politicians }: Step3SuccessPr
     }
   };
 
+  const handleNativeShare = async () => {
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: "Brief nach Berlin",
+          text: SHARE_TEXT,
+          url: APP_URL,
+        });
+      } catch {
+        // User cancelled — no action needed
+      }
+    }
+  };
+
+  const emailShareHref = `mailto:?subject=${encodeURIComponent("Brief nach Berlin — schreib deinem Abgeordneten")}&body=${encodeURIComponent(SHARE_TEXT)}`;
+
   if (!result) return null;
 
   // Sub-state C: Level data missing (D-07)
@@ -105,28 +121,83 @@ export function Step3Success({ result, wizardData, politicians }: Step3SuccessPr
   ) {
     return (
       <div>
+        {/* Envelope icon */}
+        <div className="mb-6">
+          <svg width="48" height="48" viewBox="0 0 48 48" fill="none" className="text-waldgruen" aria-hidden="true">
+            <rect x="4" y="10" width="40" height="28" rx="3" stroke="currentColor" strokeWidth="2.5" fill="none" />
+            <path d="M4 13 L24 28 L44 13" stroke="currentColor" strokeWidth="2.5" fill="none" strokeLinejoin="round" />
+            <path d="M30 22l6 6m0-6l-6 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" opacity="0" />
+            <circle cx="36" cy="14" r="5" fill="#4ade80" stroke="white" strokeWidth="2" />
+            <path d="M34 14l1.5 1.5L37.5 13" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
+        </div>
+
         <h1 className="font-typewriter text-[28px] font-semibold leading-[1.2] text-waldgruen-dark">
-          Dein Brief wird erstellt ...
-          <span
-            className="inline-block w-[2px] h-[28px] bg-waldgruen-dark animate-pulse ml-1 align-middle"
-            aria-hidden="true"
-          />
+          Dein Brief ist fertig!
         </h1>
-        <p className="font-body text-base text-warmgrau leading-relaxed mt-6">
-          Wir analysieren dein Anliegen, finden den zuständigen Abgeordneten und
-          formulieren deinen Brief mit den besten Argumenten. Das kann einen
-          Moment dauern — wir schicken dir den Brief per Mail zu.
-        </p>
-        <p className="font-handwriting text-base text-warmgrau mt-8">
-          Dein Anliegen ist auf dem Weg.
+        <p className="font-body text-base text-warmgrau leading-relaxed mt-3">
+          Wir haben dir den Brief per E-Mail geschickt. Schau in dein Postfach.
         </p>
 
-        {/* Share buttons */}
+        {/* Step-by-step instructions */}
+        <div className="mt-8 space-y-4">
+          <h2 className="font-body text-sm font-semibold text-warmgrau/70 uppercase tracking-wide">
+            So geht es weiter
+          </h2>
+          <ol className="space-y-3">
+            <li className="flex gap-3">
+              <span className="flex-shrink-0 w-6 h-6 rounded-full bg-waldgruen/15 text-waldgruen font-body text-xs font-bold flex items-center justify-center mt-0.5">1</span>
+              <p className="font-body text-sm text-warmgrau leading-relaxed">
+                <strong>Brief abschreiben.</strong> Schreib den Brief von Hand ab und pass ihn an deinen Schreibstil an. Handgeschriebene Briefe werden im Bundestag tatsächlich gelesen und besprochen.
+              </p>
+            </li>
+            <li className="flex gap-3">
+              <span className="flex-shrink-0 w-6 h-6 rounded-full bg-waldgruen/15 text-waldgruen font-body text-xs font-bold flex items-center justify-center mt-0.5">2</span>
+              <p className="font-body text-sm text-warmgrau leading-relaxed">
+                <strong>Adresse aufschreiben, Briefmarke drauf, ab zur Post.</strong> Die Adresse findest du im Brief.
+              </p>
+            </li>
+            <li className="flex gap-3">
+              <span className="flex-shrink-0 w-6 h-6 rounded-full bg-waldgruen/15 text-waldgruen font-body text-xs font-bold flex items-center justify-center mt-0.5">3</span>
+              <p className="font-body text-sm text-warmgrau leading-relaxed">
+                <strong>Weitersagen.</strong> Je mehr Menschen schreiben, desto mehr Gewicht hat jeder einzelne Brief.
+              </p>
+            </li>
+          </ol>
+        </div>
+
+        {/* Share section */}
         <div className="mt-10 pt-8 border-t border-warmgrau/15">
           <p className="font-body text-sm text-warmgrau/60 mb-4">
             Andere auch motivieren mitzumachen?
           </p>
           <div className="flex flex-wrap gap-3">
+            {/* Native share — mobile only */}
+            {"share" in navigator && (
+              <button
+                type="button"
+                onClick={handleNativeShare}
+                className="inline-flex items-center gap-2 font-body text-sm font-semibold text-creme bg-waldgruen hover:bg-waldgruen-dark px-5 py-2.5 rounded-lg transition-colors cursor-pointer"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                  <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8" />
+                  <polyline points="16 6 12 2 8 6" />
+                  <line x1="12" x2="12" y1="2" y2="15" />
+                </svg>
+                Teilen
+              </button>
+            )}
+
+            <a
+              href={emailShareHref}
+              className="inline-flex items-center gap-2 font-body text-sm font-semibold text-waldgruen border-2 border-waldgruen/40 hover:border-waldgruen px-4 py-2.5 rounded-lg transition-colors"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                <rect width="20" height="16" x="2" y="4" rx="2" />
+                <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
+              </svg>
+              Per E-Mail
+            </a>
             <a
               href={SHARE_URL_WHATSAPP}
               target="_blank"
@@ -206,7 +277,7 @@ export function Step3Success({ result, wizardData, politicians }: Step3SuccessPr
           ))}
         </div>
 
-        {/* Submit after selection */}
+        {/* Submit after selection — full width to match cards */}
         {selectedPoliticianId !== null && (
           <div className="mt-8">
             <button
@@ -214,8 +285,8 @@ export function Step3Success({ result, wizardData, politicians }: Step3SuccessPr
               onClick={handleSelectPolitician}
               disabled={isGenerating}
               className={[
-                "bg-waldgruen text-creme font-semibold text-base px-8 py-4 rounded-xl",
-                "hover:bg-waldgruen-dark transition-colors min-h-[44px] w-full sm:w-auto",
+                "w-full bg-waldgruen text-creme font-semibold text-base px-8 py-4 rounded-xl",
+                "hover:bg-waldgruen-dark transition-colors min-h-[44px]",
                 isGenerating ? "opacity-60 cursor-not-allowed" : "cursor-pointer",
               ].join(" ")}
             >

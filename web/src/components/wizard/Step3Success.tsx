@@ -302,10 +302,10 @@ export function Step3Success({ result, wizardData, politicians }: Step3SuccessPr
     return (
       <div>
         <h1 className="font-typewriter text-[28px] font-semibold leading-[1.2] text-waldgruen-dark">
-          Wir haben mehrere Abgeordnete gefunden
+          Wer vertritt deinen Wahlkreis?
         </h1>
         <p className="font-body text-base text-warmgrau mt-2">
-          Wer soll deinen Brief erhalten?
+          Deine PLZ liegt in mehreren Wahlkreisen. Wähle den Wahlkreis, in dem du wohnst — der dortige Abgeordnete ist dein direkter Ansprechpartner im Bundestag.
         </p>
 
         {/* Error banner */}
@@ -341,8 +341,8 @@ export function Step3Success({ result, wizardData, politicians }: Step3SuccessPr
                 {p.firstName} {p.lastName}
               </p>
               <p className="font-body text-sm text-warmgrau mt-0.5">{p.party}</p>
-              <p className="font-body text-sm text-warmgrau/70 mt-0.5">
-                {p.wahlkreisName}
+              <p className="font-body text-sm text-warmgrau/70 mt-1">
+                Wahlkreis {p.wahlkreisId}: {p.wahlkreisName}
               </p>
             </button>
           ))}

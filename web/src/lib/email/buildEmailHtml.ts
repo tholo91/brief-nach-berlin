@@ -61,15 +61,9 @@ export function buildEmailHtml(data: SendLetterEmailParams): string {
 
         <table role="presentation" width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;background-color:#ffffff;border-collapse:collapse;">
 
-          <!-- Airmail stripe header (D-06): alternating red/white/blue cells -->
+          <!-- Airmail stripe header (D-06): thin diagonal red/white/blue like landing page -->
           <tr>
-            <td style="height:8px;width:20%;background-color:#C62828;font-size:0;line-height:0;">&nbsp;</td>
-            <td style="height:8px;width:10%;background-color:#ffffff;font-size:0;line-height:0;">&nbsp;</td>
-            <td style="height:8px;width:20%;background-color:#1565C0;font-size:0;line-height:0;">&nbsp;</td>
-            <td style="height:8px;width:10%;background-color:#ffffff;font-size:0;line-height:0;">&nbsp;</td>
-            <td style="height:8px;width:20%;background-color:#C62828;font-size:0;line-height:0;">&nbsp;</td>
-            <td style="height:8px;width:10%;background-color:#ffffff;font-size:0;line-height:0;">&nbsp;</td>
-            <td style="height:8px;width:10%;background-color:#1565C0;font-size:0;line-height:0;">&nbsp;</td>
+            <td colspan="7" style="height:4px;font-size:0;line-height:0;background:repeating-linear-gradient(-45deg,#C1121F,#C1121F 8px,#FAF8F5 8px,#FAF8F5 12px,#1D3557 12px,#1D3557 20px,#FAF8F5 20px,#FAF8F5 24px);">&nbsp;</td>
           </tr>
 
           <!-- Title: "Brief nach Berlin" -->
@@ -84,7 +78,6 @@ export function buildEmailHtml(data: SendLetterEmailParams): string {
           <tr>
             <td colspan="7" style="padding:0 32px 24px;background-color:#ffffff;">
               <div style="background-color:#FAF8F5;border:1px solid #E0DCD7;border-radius:4px;padding:24px;">
-                <p style="margin:0 0 12px;font-family:Georgia,'Times New Roman',serif;font-size:12px;color:#999999;text-transform:uppercase;letter-spacing:1px;">Dein generierter Brief</p>
                 <p style="margin:0;font-family:'Courier New',Courier,monospace;font-size:14px;line-height:1.7;color:#4A4A4A;white-space:pre-wrap;">${letterHtml}</p>
               </div>
             </td>
@@ -93,25 +86,26 @@ export function buildEmailHtml(data: SendLetterEmailParams): string {
           <!-- Postadresse (D-08, section 2) -->
           <tr>
             <td colspan="7" style="padding:0 32px 24px;background-color:#ffffff;">
-              <h2 style="margin:0 0 12px;font-family:Georgia,'Times New Roman',serif;font-size:16px;color:#2D5016;font-weight:bold;">Postadresse</h2>
+              <h2 style="margin:0 0 12px;font-family:Georgia,'Times New Roman',serif;font-size:16px;color:#2D5016;font-weight:bold;">Empfänger (auf den Umschlag)</h2>
               <div style="background-color:#FAF8F5;border:1px solid #E0DCD7;border-radius:4px;padding:16px 20px;">
                 <p style="margin:0;font-family:'Courier New',Courier,monospace;font-size:14px;line-height:1.8;color:#4A4A4A;">
-                  <strong>${fullName}</strong><br>
+                  <strong>${fullName}, MdB</strong><br>
+                  Deutscher Bundestag<br>
                   ${addressLines}
                 </p>
               </div>
-              <p style="margin:10px 0 0;font-family:Georgia,'Times New Roman',serif;font-size:12px;color:#666666;">Diese Adresse auf den Umschlag schreiben (mittig, als Empfaenger).</p>
+              <p style="margin:10px 0 0;font-family:Georgia,'Times New Roman',serif;font-size:12px;color:#666666;">Vergiss nicht, deine eigene Adresse oben links auf den Umschlag und oben rechts in den Brief zu schreiben.</p>
             </td>
           </tr>
 
           <!-- Naechste Schritte (D-08, section 3) -->
           <tr>
             <td colspan="7" style="padding:0 32px 24px;background-color:#ffffff;">
-              <h2 style="margin:0 0 16px;font-family:Georgia,'Times New Roman',serif;font-size:16px;color:#2D5016;font-weight:bold;">Naechste Schritte</h2>
+              <h2 style="margin:0 0 16px;font-family:Georgia,'Times New Roman',serif;font-size:16px;color:#2D5016;font-weight:bold;">Nächste Schritte</h2>
 
               <p style="margin:0 0 8px;font-family:Georgia,'Times New Roman',serif;font-size:15px;color:#333333;font-weight:bold;">Empfehlung: Brief von Hand abschreiben</p>
-              <p style="margin:0 0 12px;font-family:Georgia,'Times New Roman',serif;font-size:14px;color:#4A4A4A;line-height:1.6;">Handgeschriebene Briefe werden im Bundestag tatsaechlich gelesen und besprochen. Sie signalisieren echtes persoenliches Engagement und werden nicht wie Massenpost behandelt. Die Handschrift macht Ihren Brief unverwechselbar persoenlich.</p>
-              <p style="margin:0 0 16px;font-family:Georgia,'Times New Roman',serif;font-size:14px;color:#666666;line-height:1.6;">Sie koennen den Brief auch ausdrucken &mdash; das ist immer noch besser als gar nichts.</p>
+              <p style="margin:0 0 12px;font-family:Georgia,'Times New Roman',serif;font-size:14px;color:#4A4A4A;line-height:1.6;">Handgeschriebene Briefe werden im Bundestag tatsächlich gelesen und besprochen. Sie signalisieren echtes persönliches Engagement und werden nicht wie Massenpost behandelt. Die Handschrift macht Ihren Brief unverwechselbar persönlich.</p>
+              <p style="margin:0 0 16px;font-family:Georgia,'Times New Roman',serif;font-size:14px;color:#666666;line-height:1.6;">Sie können den Brief auch ausdrucken &mdash; das ist immer noch besser als gar nichts.</p>
 
               <table role="presentation" cellpadding="0" cellspacing="0" width="100%">
                 <tr>
@@ -123,7 +117,7 @@ export function buildEmailHtml(data: SendLetterEmailParams): string {
                 <tr>
                   <td style="padding:6px 0;font-family:Georgia,'Times New Roman',serif;font-size:14px;color:#4A4A4A;line-height:1.5;">
                     <span style="display:inline-block;width:24px;height:24px;background-color:#2D5016;color:#ffffff;border-radius:50%;text-align:center;line-height:24px;font-size:12px;font-weight:bold;margin-right:10px;vertical-align:middle;">2</span>
-                    Empfaenger-Adresse mittig auf den Umschlag schreiben
+                    Empfänger-Adresse mittig auf den Umschlag schreiben
                   </td>
                 </tr>
                 <tr>
@@ -135,7 +129,7 @@ export function buildEmailHtml(data: SendLetterEmailParams): string {
                 <tr>
                   <td style="padding:6px 0;font-family:Georgia,'Times New Roman',serif;font-size:14px;color:#4A4A4A;line-height:1.5;">
                     <span style="display:inline-block;width:24px;height:24px;background-color:#2D5016;color:#ffffff;border-radius:50%;text-align:center;line-height:24px;font-size:12px;font-weight:bold;margin-right:10px;vertical-align:middle;">4</span>
-                    Briefmarke aufkleben (aktuell 0,95 EUR fuer Standardbrief)
+                    Briefmarke aufkleben (aktuell 0,95 EUR für Standardbrief)
                   </td>
                 </tr>
                 <tr>
@@ -153,11 +147,11 @@ export function buildEmailHtml(data: SendLetterEmailParams): string {
             <td colspan="7" style="padding:0 32px 24px;background-color:#ffffff;">
               <div style="border-top:1px solid #E0DCD7;padding-top:16px;">
                 <p style="margin:0 0 6px;font-family:Georgia,'Times New Roman',serif;font-size:12px;color:#999999;line-height:1.6;">
-                  <strong>Hinweis:</strong> Brief nach Berlin nutzt kuenstliche Intelligenz zur Brieferstellung. KI kann Fehler machen. Bitte pruefen Sie Politikerdaten und Brieftext vor dem Versand anhand offizieller Quellen
+                  <strong>Hinweis:</strong> Brief nach Berlin nutzt künstliche Intelligenz zur Brieferstellung. KI kann Fehler machen. Bitte prüfen Sie Politikerdaten und Brieftext vor dem Versand anhand offizieller Quellen
                   (<a href="https://www.bundestag.de" style="color:#2D5016;">bundestag.de</a>, Landtags- oder Rathauswebsite).
                 </p>
                 <p style="margin:0;font-family:Georgia,'Times New Roman',serif;font-size:12px;color:#999999;line-height:1.6;">
-                  <a href="https://brief-nach-berlin.de/datenschutz" style="color:#2D5016;">Datenschutzerklaerung</a> &mdash; Ihre Daten werden nach Versand dieser E-Mail nicht gespeichert.
+                  <a href="https://brief-nach-berlin.de/datenschutz" style="color:#2D5016;">Datenschutzerklärung</a> &mdash; Ihre Daten werden nach Versand dieser E-Mail nicht gespeichert.
                 </p>
               </div>
             </td>
@@ -193,7 +187,7 @@ export function buildEmailHtml(data: SendLetterEmailParams): string {
           <tr>
             <td colspan="7" style="padding:16px 32px 24px;background-color:#FAF8F5;border-top:1px solid #E0DCD7;text-align:center;">
               <p style="margin:0;font-family:Georgia,'Times New Roman',serif;font-size:12px;color:#999999;">
-                <a href="https://brief-nach-berlin.de" style="color:#2D5016;text-decoration:none;">Brief nach Berlin</a> &mdash; Deine Stimme zaehlt.
+                <a href="https://brief-nach-berlin.de" style="color:#2D5016;text-decoration:none;">Brief nach Berlin</a> &mdash; Deine Stimme zählt.
               </p>
             </td>
           </tr>

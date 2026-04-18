@@ -95,6 +95,24 @@ Plans:
 Plans:
 - [ ] TBD (promote with /gsd:review-backlog when ready)
 
+### Phase 999.4: Link Petitionsseiten (Change.org, WeAct) auf Landing/Success Page (BACKLOG)
+
+**Goal:** Auf Landing Page und/oder Success Page zu Petitionsplattformen (Change.org, WeAct, weitere) verlinken, um progressive Causes zu unterstützen und dem Nutzer nach dem Brief weitere Handlungsoptionen anzubieten. Offene Fragen: Welche Plattformen taggen? Wo platzieren (Landing vs. Success)? Thematisch gefiltert nach Issue?
+**Requirements:** TBD
+**Plans:** 0 plans
+
+Plans:
+- [ ] TBD (promote with /gsd:review-backlog when ready)
+
+### Phase 999.5: CTA Copy — "Schreib der Politik!!" als Alternative diskutieren (BACKLOG)
+
+**Goal:** Alternative CTA-Formulierungen evaluieren. Thomas's Idee: "Schreib der Politik!!" könnte klarer/direkter sein als aktuelle Variante. Noch zu diskutieren — keine Entscheidung getroffen. Ggf. A/B-Testing oder Nutzerfeedback einholen.
+**Requirements:** TBD
+**Plans:** 0 plans
+
+Plans:
+- [ ] TBD (promote with /gsd:review-backlog when ready)
+
 ## Progress
 
 **Execution Order:**

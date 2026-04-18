@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { mistral } from "@/lib/mistral";
 import { checkRateLimit, LIMITS } from "@/lib/rateLimit";
 
+export const maxDuration = 60;
+
 function ipFromRequest(req: NextRequest): string {
   const forwarded = req.headers.get("x-forwarded-for");
   if (forwarded) return forwarded.split(",")[0]!.trim();

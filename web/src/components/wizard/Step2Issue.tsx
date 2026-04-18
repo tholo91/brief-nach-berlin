@@ -9,6 +9,42 @@ const SUBMIT_STAGES = [
   "Brief wird geprüft...",
 ];
 
+const TOPIC_EXAMPLES: { label: string; placeholder: string }[] = [
+  {
+    label: "Verkehr",
+    placeholder:
+      "z.B. Die Radwege in meiner Stadt sind in einem katastrophalen Zustand. Als Vater von zwei Kindern fahre ich täglich...",
+  },
+  {
+    label: "Wohnen",
+    placeholder:
+      "z.B. Die Mieten in meiner Nachbarschaft sind in den letzten Jahren massiv gestiegen. Junge Familien können sich die Stadt nicht mehr leisten...",
+  },
+  {
+    label: "Bildung",
+    placeholder:
+      "z.B. An der Grundschule meines Kindes teilen sich 340 Kinder zwölf Tablets. Der Digitalpakt Schule kommt nicht an...",
+  },
+  {
+    label: "Klima & Umwelt",
+    placeholder:
+      "z.B. In unserer Region wird eine Waldfläche für ein Logistikzentrum gerodet, obwohl Alternativstandorte existieren...",
+  },
+  {
+    label: "Gesundheit",
+    placeholder:
+      "z.B. In meinem Landkreis gibt es keinen freien Kinderarzt mehr. Die nächste Praxis mit Kapazität ist 45 Kilometer entfernt...",
+  },
+  {
+    label: "Demokratie",
+    placeholder:
+      "z.B. Ich mache mir Sorgen um den Umgangston in politischen Debatten und den wachsenden Vertrauensverlust in demokratische Institutionen...",
+  },
+];
+
+const DEFAULT_PLACEHOLDER =
+  "z.B. Die Radwege in meiner Stadt sind in einem katastrophalen Zustand...";
+
 interface Step2IssueProps {
   onSubmit: (issueText: string) => void;
   isSubmitting: boolean;
@@ -27,6 +63,8 @@ export function Step2Issue({
   const [issueText, setIssueText] = useState(defaultValue ?? "");
   const [voiceDone, setVoiceDone] = useState(false);
   const [submitStage, setSubmitStage] = useState(0);
+  const [placeholder, setPlaceholder] = useState<string>(DEFAULT_PLACEHOLDER);
+  const [activeTopic, setActiveTopic] = useState<string | null>(null);
   const charCount = issueText.length;
 
   // Cycle through progress stages while submitting — rough pacing based on
@@ -100,13 +138,40 @@ export function Step2Issue({
         <div className="flex-1 h-px bg-warmgrau/20" />
       </div>
 
+      {/* Topic chips — help users get unstuck with a concrete starting example */}
+      <div className="flex flex-wrap gap-2 mb-3">
+        {TOPIC_EXAMPLES.map((topic) => {
+          const isActive = activeTopic === topic.label;
+          return (
+            <button
+              key={topic.label}
+              type="button"
+              onClick={() => {
+                setActiveTopic(topic.label);
+                setPlaceholder(topic.placeholder);
+              }}
+              disabled={isSubmitting}
+              className={[
+                "font-body text-sm px-3 py-1.5 rounded-full border transition-colors cursor-pointer",
+                isActive
+                  ? "bg-waldgruen text-creme border-waldgruen"
+                  : "bg-creme text-waldgruen-dark border-warmgrau/30 hover:border-waldgruen",
+                isSubmitting ? "opacity-50 cursor-not-allowed" : "",
+              ].join(" ")}
+            >
+              {topic.label}
+            </button>
+          );
+        })}
+      </div>
+
       {/* Textarea */}
       <div>
         <textarea
           id="issueText"
           value={issueText}
           onChange={handleTextChange}
-          placeholder="z.B. Die Radwege in meiner Stadt sind in einem katastrophalen Zustand..."
+          placeholder={placeholder}
           disabled={isSubmitting}
           className={[
             "bg-creme border border-warmgrau/30 rounded-lg px-4 py-3 text-base font-body text-warmgrau",

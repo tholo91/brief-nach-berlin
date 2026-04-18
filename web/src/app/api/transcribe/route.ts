@@ -1,8 +1,32 @@
 import { NextRequest, NextResponse } from "next/server";
 import { mistral } from "@/lib/mistral";
+import { checkRateLimit, LIMITS } from "@/lib/rateLimit";
+
+function ipFromRequest(req: NextRequest): string {
+  const forwarded = req.headers.get("x-forwarded-for");
+  if (forwarded) return forwarded.split(",")[0]!.trim();
+  const real = req.headers.get("x-real-ip");
+  if (real) return real.trim();
+  return "unknown";
+}
 
 export async function POST(req: NextRequest) {
   try {
+    // Rate limit transcription per IP — Voxtral is the most expensive
+    // per-call surface and a prime target for abuse.
+    const ip = ipFromRequest(req);
+    const limit = checkRateLimit(
+      `transcribe:ip:${ip}`,
+      LIMITS.TRANSCRIBE_PER_IP.max,
+      LIMITS.TRANSCRIBE_PER_IP.windowMs
+    );
+    if (!limit.allowed) {
+      return NextResponse.json(
+        { error: "Zu viele Transkriptionen in kurzer Zeit. Bitte später erneut." },
+        { status: 429, headers: { "Retry-After": String(limit.retryAfterSeconds ?? 60) } }
+      );
+    }
+
     const formData = await req.formData();
     const audioBlob = formData.get("audio") as Blob | null;
 

@@ -113,6 +113,79 @@ Plans:
 Plans:
 - [ ] TBD (promote with /gsd:review-backlog when ready)
 
+### Phase 999.6: Landtag + Kommune politician coverage expansion (BACKLOG)
+
+**Goal:** Expand politician data beyond Bund-level MdBs to Landtag and Kommune representatives. Currently only Bundestag MdBs are cached — ~80% of real citizen concerns (local infrastructure, education, housing, policing, waste, Bauanträge) are routed to the wrong level of government. The letter prompt papers over this by asking the AI to justify contacting a Bund-MdB about a local issue; proper fix = real multi-level coverage.
+
+Research before building: have an AI agent evaluate candidate data sources and produce a strategy doc in `.planning/research/` ranking by coverage/freshness/license/effort. Sources to evaluate: (1) Abgeordnetenwatch.de v2 API — check Landtag/Stadtrat coverage (likely partial); (2) per-Landtag APIs (heterogeneous formats, prioritise by population); (3) **OParl standard** — uniform schema adopted by ~100 German cities (Köln, München, Münster...), ideal for scalable Kommune coverage; (4) Ratsinformationssysteme (SessionNet, ALLRIS) for smaller Kommunen without OParl; (5) bpb / GovData / Destatis for occasional curated datasets.
+
+Deliverable: phased rollout (e.g. Landtage via Abgeordnetenwatch → OParl cities → top-N manual Kommunen) with effort estimate per phase.
+
+Integration points: extend `fetch-politician-data.ts` with per-level fetchers; `PoliticalLevel` type already supports Bund/Land/Kommune; letter prompt already does level detection; disambiguation UI must surface the level prominently so users pick the right recipient.
+
+**Requirements:** TBD
+**Plans:** 0 plans
+
+Plans:
+- [ ] TBD (promote with /gsd:review-backlog when ready)
+
+### Phase 999.7: Partner with abgeordnetenwatch.de for credibility (BACKLOG)
+
+**Goal:** Formalise a partnership / mutual mention with abgeordnetenwatch.de. We already depend on their v2 API for all politician data — a visible partnership would massively boost legitimacy with the target audience (politically engaged German citizens who trust aw.de), open a channel for official logo use / backlinks, and could unlock Landtag/Kommune data access ahead of 999.6.
+
+Actions to explore (cheapest first):
+1. Add an attribution line on the landing page + email footer ("Politikerdaten von abgeordnetenwatch.de — CC0") — unilateral, no negotiation needed, goes live today.
+2. Write a short outreach email to aw.de (info@abgeordnetenwatch.de) introducing Brief nach Berlin, asking if they'd link back / mention it in a newsletter, and whether they'd collaborate on cross-level coverage.
+3. Propose a feature swap: they link to Brief-nach-Berlin from constituent-engagement pages, we link prominently to their MdB-profile and vote history.
+4. Offer to contribute: give them anonymised aggregate data on which topics drive real handwritten letters per Wahlkreis (valuable signal they don't currently have).
+5. Long-term: co-branded campaigns around Bundestagswahlen / Petitionsausschuss-Jahresbericht moments.
+
+**Requirements:** TBD
+**Plans:** 0 plans
+
+Plans:
+- [ ] TBD (promote with /gsd:review-backlog when ready)
+
+### Phase 999.8: Disambiguation UI — show district / Kreis context (BACKLOG)
+
+**Goal:** When a PLZ spans multiple Wahlkreise (26% of PLZs, up to 12 politicians for Berlin), users currently see only "Wahlkreis {ID}: {wahlkreisName}" + party. For Berlin this works — wahlkreisNames already contain districts ("Berlin-Mitte", "Berlin-Steglitz-Zehlendorf"). For other cities the information is too thin for a citizen to pick the right representative.
+
+Investigation (2026-04-17) confirmed:
+- politicians-cache.json has only `wahlkreisId` and `wahlkreisName`, no Gemeinde / Kreis / neighborhood field.
+- `geonames_de.txt` (already in the data pipeline) carries admin2Name (Kreis) per PLZ — unused today.
+- `btw25_wkr_gemeinden.csv` has `Gemeindename` and `Gemeindeteil` but only for each Gemeinde's administrative PLZ, not comprehensively.
+
+Approach (cheapest first):
+1. **Extend the build script** (`parse-plz-mapping.ts` / `fetch-politician-data.ts`) to surface admin2Name (Kreis) when materialising politicians-cache, keyed by the wahlkreis. Add a `kreisName` or `areaHint` field per politician.
+2. **Disambiguation UI** shows the extra line under the party badge: e.g. "CDU · Kreis Darmstadt-Dieburg" — disambiguates the two Darmstadt WKs.
+3. **Optional Phase B:** full PLZ → Gemeinde enrichment via geonames reverse lookup during cache generation, so the user sees their actual city/town.
+
+Success criteria: for every PLZ with ambiguity, the disambiguation cards show enough geographic context that a non-expert can confidently pick the right Wahlkreis in under 10 seconds.
+
+**Requirements:** TBD
+**Plans:** 0 plans
+
+Plans:
+- [ ] TBD (promote with /gsd:review-backlog when ready)
+
+### Phase 999.9: Test coverage — PLZ lookup, Zod schemas, Mistral parse fallback (BACKLOG)
+
+**Goal:** Playwright is in devDependencies but no tests exist. The highest-leverage targets are:
+1. **PLZ lookup** (`lib/lookup/plzLookup.ts`) — every known PLZ returns ≥1 Wahlkreis; a deliberately invalid PLZ returns empty; disambiguation case (multiple WKs) returns expected politician list.
+2. **Zod schemas** (`lib/validation/wizardSchemas.ts`) — step1/step1b/step2 reject malformed inputs (non-5-digit PLZ, invalid email, oversized issueText).
+3. **Mistral JSON parse fallback** (`lib/generation/generateLetter.ts` lines ~113–119) — handles both clean JSON and markdown-wrapped JSON responses without throwing; politician-ID validation falls back to first-in-list on unknown ID.
+4. **Moderation wrapper** — flagged vs. unflagged category handling.
+5. **Rate limiter** (`lib/rateLimit.ts`) — allows up to N, rejects N+1, resets after window.
+6. **Email HTML builder** — HTML escaping covers <, >, &, quotes, apostrophes; address splitting works for multi-line postal addresses.
+
+Not MVP-critical; schedule after first real user cohort. Estimated effort: 2–4 hours using Vitest (or Node's built-in test runner) for unit tests, Playwright for a single end-to-end happy path (PLZ → email sent). Should run in CI on every push.
+
+**Requirements:** TBD
+**Plans:** 0 plans
+
+Plans:
+- [ ] TBD (promote with /gsd:review-backlog when ready)
+
 ## Progress
 
 **Execution Order:**

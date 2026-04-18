@@ -6,7 +6,7 @@ export default function Support() {
           Ein Projekt für alle
         </p>
         <h2 className="font-body text-3xl md:text-4xl font-bold text-waldgruen-dark text-center tracking-tight mb-12">
-          Unterstützen, mitmachen, fördern
+          Unterstützen, mitmachen, mitgestalten
         </h2>
 
         <div className="grid md:grid-cols-3 gap-6 md:gap-8 mb-12">
@@ -49,11 +49,10 @@ export default function Support() {
               </svg>
             </div>
             <h3 className="font-typewriter text-lg font-bold text-waldgruen-dark mb-2">
-              Fördern
+              Mitgestalten
             </h3>
             <p className="font-body text-base text-warmgrau/80 leading-relaxed">
-              Brief-nach-Berlin ist gemeinnützig gedacht und werbefrei.
-              Wir finanzieren uns über Fördermittel und Spenden, nicht über Daten.
+              Du möchtest mitbauen, bist Teil einer Organisation oder hast eine Idee, die hier reinpasst? Schreib mir — ich bin Thomas, Gründer hinter Brief-nach-Berlin.
             </p>
           </div>
         </div>

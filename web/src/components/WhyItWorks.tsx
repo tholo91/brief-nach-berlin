@@ -1,15 +1,15 @@
 const stats = [
   {
-    number: "96\u00A0%",
+    number: "9.260",
     label:
-      "der Abgeordneten im US-Kongress sagen: Handschriftliche Briefe sind das wirkungsvollste Mittel, das die Bevölkerung hat.",
-    source: "Congressional Management Foundation",
+      "Petitionen gingen 2024 beim Petitionsausschuss des Bundestags ein — nur 607 wurden im Ausschuss einzeln beraten. Ein direkter Brief an deinen Wahlkreisabgeordneten landet nicht in dieser Warteschlange.",
+    source: "Petitionsausschuss, Jahresbericht 2024",
   },
   {
-    number: "5\u20137",
+    number: "~50",
     label:
-      "Briefe zum selben Thema reichen aus, damit ein Abgeordnetenbüro anfängt, das Thema ernsthaft zu verfolgen.",
-    source: "Congressional Management Foundation",
+      "Anfragen treffen täglich in einem Abgeordnetenbüro ein. Wer durch Handschrift, Wahlkreisbezug und ein konkretes Anliegen auffällt, landet oben auf dem Stapel.",
+    source: "Deutscher Bundestag",
   },
 ];
 
@@ -52,7 +52,7 @@ export default function WhyItWorks() {
               E-Mails landen im Spam.&rdquo;
             </p>
             <cite className="font-body text-sm text-warmgrau/50 not-italic">
-              Erfahrung aus einem Bundestags-Praktikum
+              Thomas Lorenz, Gründer — aus seiner Zeit im Bundestag (2011)
             </cite>
           </blockquote>
         </div>

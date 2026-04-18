@@ -29,10 +29,12 @@ export function Step3Success({ result, wizardData, politicians }: Step3SuccessPr
       setGenerationError(null);
 
       try {
+        // NOTE: we deliberately no longer pass the `politicians` array here —
+        // the server re-derives it from PLZ to prevent tampering. Only the
+        // numeric ID is accepted as user-supplied input.
         const selectResult = await selectPoliticianAction(
           wizardData,
-          selectedPoliticianId,
-          politicians
+          selectedPoliticianId
         );
 
         if ("error" in selectResult) {

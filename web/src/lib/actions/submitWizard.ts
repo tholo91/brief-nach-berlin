@@ -7,6 +7,10 @@ import { lookupPLZ } from "@/lib/lookup/plzLookup";
 import { moderateText } from "@/lib/moderation/moderateText";
 import { generateLetter } from "@/lib/generation/generateLetter";
 import { sendLetterEmail } from "@/lib/email/sendLetterEmail";
+import { checkRateLimit, getClientIp, LIMITS } from "@/lib/rateLimit";
+
+const RATE_LIMIT_MESSAGE =
+  "Du hast in kurzer Zeit viele Briefe erstellt. Bitte versuche es später erneut.";
 
 export async function submitWizardAction(
   data: WizardData
@@ -47,6 +51,31 @@ export async function submitWizardAction(
     }
     log("validated");
 
+    // 1b. Rate limit check (IP + email) BEFORE moderation/AI spend.
+    const ip = await getClientIp();
+    const ipLimit = checkRateLimit(`letter:ip:${ip}`, LIMITS.LETTERS_PER_IP.max, LIMITS.LETTERS_PER_IP.windowMs);
+    if (!ipLimit.allowed) {
+      log("rate limited by ip", { ip, retryAfterSeconds: ipLimit.retryAfterSeconds });
+      return {
+        error: "rate_limited",
+        message: RATE_LIMIT_MESSAGE,
+        retryAfterSeconds: ipLimit.retryAfterSeconds,
+      };
+    }
+    const emailLimit = checkRateLimit(
+      `letter:email:${data.email.toLowerCase()}`,
+      LIMITS.LETTERS_PER_EMAIL.max,
+      LIMITS.LETTERS_PER_EMAIL.windowMs
+    );
+    if (!emailLimit.allowed) {
+      log("rate limited by email", { retryAfterSeconds: emailLimit.retryAfterSeconds });
+      return {
+        error: "rate_limited",
+        message: RATE_LIMIT_MESSAGE,
+        retryAfterSeconds: emailLimit.retryAfterSeconds,
+      };
+    }
+
     // 2. Moderate user input BEFORE any AI call (SAFE-01, T-02-10, D-15)
     const inputModeration = await moderateText(data.issueText);
     log("input moderation", { flagged: inputModeration.flagged });
@@ -65,7 +94,7 @@ export async function submitWizardAction(
       return {
         error: "plz_not_found",
         message:
-          "Für diese Postleitzahl haben wir keine Daten. Bitte prüfe deine Eingabe.",
+          "Für diese Postleitzahl haben wir derzeit keinen direkt gewählten Wahlkreisabgeordneten in unseren Daten. Entweder stimmt die PLZ nicht — oder dein Wahlkreis wird aktuell nur durch Listenabgeordnete vertreten. Du findest deine Abgeordneten unter bundestag.de.",
       };
     }
 

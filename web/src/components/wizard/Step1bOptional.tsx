@@ -38,19 +38,9 @@ export function Step1bOptional({ onNext, onSkip, defaultValues }: Step1bOptional
       </p>
 
       <div className="space-y-4">
-        {/* Name */}
-        <div>
-          <label htmlFor="name" className="block font-body text-sm font-semibold text-warmgrau mb-1">
-            Dein Name
-          </label>
-          <input
-            id="name"
-            type="text"
-            placeholder="Max Mustermann"
-            className={inputClassName}
-            {...register("name")}
-          />
-        </div>
+        {/* Name field hidden for now — user feedback: reduces friction without
+            losing functionality, name defaults to "[Ihr Name]" placeholder in
+            letter so recipient can fill it in themselves when copying by hand. */}
 
         {/* Party */}
         <div>

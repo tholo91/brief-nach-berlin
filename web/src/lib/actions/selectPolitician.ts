@@ -2,12 +2,13 @@
 
 import { after } from "next/server";
 import type { WizardData, WizardActionResult } from "@/lib/types/wizard";
-import { step1Schema, step2Schema } from "@/lib/validation/wizardSchemas";
+import { step1Schema, step1bSchema, step2Schema } from "@/lib/validation/wizardSchemas";
 import { lookupPLZ } from "@/lib/lookup/plzLookup";
 import { moderateText } from "@/lib/moderation/moderateText";
 import { generateLetter } from "@/lib/generation/generateLetter";
 import { sendLetterEmail } from "@/lib/email/sendLetterEmail";
 import { checkRateLimit, getClientIp, LIMITS } from "@/lib/rateLimit";
+import { DEFAULT_LETTER_LENGTH } from "@/lib/config";
 
 const RATE_LIMIT_MESSAGE =
   "Du hast in kurzer Zeit viele Briefe erstellt. Bitte versuche es später erneut.";
@@ -27,16 +28,16 @@ export async function selectPoliticianAction(
 ): Promise<WizardActionResult> {
   try {
     // Re-validate user-supplied input (WR-02: prevent bypassing initial validation)
-    const step1Result = step1Schema.safeParse({
-      plz: data.plz,
-      email: data.email,
-      name: data.name,
-      party: data.party,
-      ngo: data.ngo,
-    });
+    const step1Result = step1Schema.safeParse(data);
     if (!step1Result.success) {
       return { error: "server_error", message: "Ungültige Eingabe." };
     }
+
+    const step1bResult = step1bSchema.safeParse(data);
+    if (!step1bResult.success) {
+      data.letterLength = DEFAULT_LETTER_LENGTH;
+    }
+
     const step2Result = step2Schema.safeParse({ issueText: data.issueText });
     if (!step2Result.success) {
       return { error: "server_error", message: "Bitte beschreibe dein Anliegen." };
@@ -109,6 +110,7 @@ export async function selectPoliticianAction(
       name: data.name,
       party: data.party,
       ngo: data.ngo,
+      letterLength: data.letterLength,
     });
 
     // Moderate output (SAFE-02, T-02-15)

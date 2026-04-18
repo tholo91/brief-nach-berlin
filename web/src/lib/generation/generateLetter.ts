@@ -1,7 +1,7 @@
 import { mistral } from "@/lib/mistral";
 import type { GenerateLetterInput, GenerateLetterResult } from "@/lib/types/wizard";
 import type { PoliticalLevel } from "@/lib/types/politician";
-import { LETTER_MIN_WORDS, LETTER_MAX_WORDS } from "@/lib/config";
+import { LETTER_LENGTHS, DEFAULT_LETTER_LENGTH } from "@/lib/config";
 
 // Lean knowledge block — distilled from research on effective German political letters.
 // ~180 tokens. Kept separate from format rules for clarity and future iteration.
@@ -54,7 +54,7 @@ Alle verfügbaren Politiker sind Mitglieder des Deutschen Bundestags. Wenn das A
 AUFGABE:
 1. Analysiere das Anliegen und bestimme die zuständige politische Ebene (Bund, Land, Kommune).
 2. Wähle aus der Politikerliste den geeignetsten Vertreter der zuständigen Ebene.
-3. Schreibe einen formellen Brief (${LETTER_MIN_WORDS}–${LETTER_MAX_WORDS} Wörter) in gepflegtem Deutsch, Sie-Form.
+3. Schreibe einen formellen Brief (__MIN_WORDS__–__MAX_WORDS__ Wörter) in gepflegtem Deutsch, Sie-Form.
 
 BRIEFFORMAT:
 - Datum: Verwende das oben angegebene HEUTIGE DATUM (Format TT.MM.JJJJ)
@@ -100,7 +100,14 @@ function buildUserPrompt(input: GenerateLetterInput): string {
 export async function generateLetter(
   input: GenerateLetterInput
 ): Promise<GenerateLetterResult> {
-  const systemPrompt = SYSTEM_PROMPT_TEMPLATE.replace("__TODAY__", todayInGerman());
+  const lengthKey = input.letterLength ?? DEFAULT_LETTER_LENGTH;
+  const { min: minWords, max: maxWords } = LETTER_LENGTHS[lengthKey];
+
+  const systemPrompt = SYSTEM_PROMPT_TEMPLATE
+    .replace("__TODAY__", todayInGerman())
+    .replace("__MIN_WORDS__", minWords.toString())
+    .replace("__MAX_WORDS__", maxWords.toString());
+
   const response = await mistral.chat.complete({
     model: "mistral-small-latest",
     messages: [

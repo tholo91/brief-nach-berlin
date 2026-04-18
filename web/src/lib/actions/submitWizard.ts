@@ -2,12 +2,13 @@
 
 import { after } from "next/server";
 import type { WizardData, WizardActionResult } from "@/lib/types/wizard";
-import { step1Schema, step2Schema } from "@/lib/validation/wizardSchemas";
+import { step1Schema, step1bSchema, step2Schema } from "@/lib/validation/wizardSchemas";
 import { lookupPLZ } from "@/lib/lookup/plzLookup";
 import { moderateText } from "@/lib/moderation/moderateText";
 import { generateLetter } from "@/lib/generation/generateLetter";
 import { sendLetterEmail } from "@/lib/email/sendLetterEmail";
 import { checkRateLimit, getClientIp, LIMITS } from "@/lib/rateLimit";
+import { DEFAULT_LETTER_LENGTH } from "@/lib/config";
 
 const RATE_LIMIT_MESSAGE =
   "Du hast in kurzer Zeit viele Briefe erstellt. Bitte versuche es später erneut.";
@@ -25,20 +26,22 @@ export async function submitWizardAction(
     hasName: Boolean(data.name),
     hasParty: Boolean(data.party),
     hasNgo: Boolean(data.ngo),
+    letterLength: data.letterLength,
   });
 
   try {
     // 1. Validate input server-side with Zod (T-02-09)
-    const step1Result = step1Schema.safeParse({
-      plz: data.plz,
-      email: data.email,
-      name: data.name,
-      party: data.party,
-      ngo: data.ngo,
-    });
+    const step1Result = step1Schema.safeParse(data);
     if (!step1Result.success) {
       console.warn("[submitWizard] step1 validation failed", step1Result.error.flatten());
       return { error: "server_error", message: "Ungültige Eingabe." };
+    }
+
+    const step1bResult = step1bSchema.safeParse(data);
+    if (!step1bResult.success) {
+      console.warn("[submitWizard] step1b validation failed", step1bResult.error.flatten());
+      // Fallback to default length if validation fails
+      data.letterLength = DEFAULT_LETTER_LENGTH;
     }
 
     const step2Result = step2Schema.safeParse({ issueText: data.issueText });
@@ -104,13 +107,14 @@ export async function submitWizardAction(
     }
 
     // 5. Single Wahlkreis (D-10) → generate letter immediately
-    log("generating letter");
+    log("generating letter", { length: data.letterLength });
     const result = await generateLetter({
       issueText: data.issueText,
       politicians,
       name: data.name,
       party: data.party,
       ngo: data.ngo,
+      letterLength: data.letterLength,
     });
     log("letter generated", { letterLength: result.letter.length });
 

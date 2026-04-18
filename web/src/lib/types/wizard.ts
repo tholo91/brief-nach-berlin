@@ -1,4 +1,5 @@
 import type { Politician, PoliticalLevel } from "./politician";
+import type { LetterLength } from "@/lib/config";
 
 export type WizardStep = 1 | "1b" | 2 | 3;
 
@@ -9,6 +10,14 @@ export interface WizardData {
   party?: string;
   ngo?: string;
   issueText: string;
+  letterLength?: LetterLength;
+}
+
+export interface Step1bData {
+  name?: string;
+  party?: string;
+  ngo?: string;
+  letterLength: LetterLength;
 }
 
 export interface GenerateLetterInput {
@@ -17,6 +26,7 @@ export interface GenerateLetterInput {
   name?: string;
   party?: string;
   ngo?: string;
+  letterLength?: LetterLength;
 }
 
 export interface GenerateLetterResult {

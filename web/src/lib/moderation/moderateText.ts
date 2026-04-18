@@ -1,6 +1,4 @@
-import { Mistral } from "@mistralai/mistralai";
-
-const mistral = new Mistral({ apiKey: process.env.MISTRAL_API_KEY });
+import { mistral } from "@/lib/mistral";
 
 export interface ModerationResult {
   flagged: boolean;

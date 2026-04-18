@@ -1,7 +1,13 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { VoiceRecorder, type VoiceRecorderState } from "@/components/audio/VoiceRecorder";
+
+const SUBMIT_STAGES = [
+  "Zuständigkeit wird ermittelt...",
+  "Brief wird formuliert...",
+  "Brief wird geprüft...",
+];
 
 interface Step2IssueProps {
   onSubmit: (issueText: string) => void;
@@ -20,7 +26,23 @@ export function Step2Issue({
 }: Step2IssueProps) {
   const [issueText, setIssueText] = useState(defaultValue ?? "");
   const [voiceDone, setVoiceDone] = useState(false);
+  const [submitStage, setSubmitStage] = useState(0);
   const charCount = issueText.length;
+
+  // Cycle through progress stages while submitting — rough pacing based on
+  // typical Mistral latency (~3–8s per generation + moderation round-trip).
+  useEffect(() => {
+    if (!isSubmitting) {
+      setSubmitStage(0);
+      return;
+    }
+    const t1 = setTimeout(() => setSubmitStage(1), 1800);
+    const t2 = setTimeout(() => setSubmitStage(2), 5500);
+    return () => {
+      clearTimeout(t1);
+      clearTimeout(t2);
+    };
+  }, [isSubmitting]);
 
   const handleVoiceStateChange = useCallback((state: VoiceRecorderState) => {
     if (state === "done") setVoiceDone(true);
@@ -133,7 +155,7 @@ export function Step2Issue({
               >
                 <path d="M21 12a9 9 0 1 1-6.219-8.56" />
               </svg>
-              Brief wird erstellt...
+              {SUBMIT_STAGES[submitStage]}
             </span>
           ) : (
             <span className="flex items-center justify-center gap-2">

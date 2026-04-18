@@ -85,7 +85,7 @@ export function Step1Form({ onNext, defaultValues }: Step1FormProps) {
             {...register("email")}
           />
           <p id="email-hint" className="text-sm text-warmgrau/60 mt-1">
-            Wir schicken dir deinen Brief per Mail zu
+            Wir schicken dir deinen Brief per Mail zu. Deine Adresse wird nur für den Versand genutzt und danach gelöscht.
           </p>
           {errors.email && touchedFields.email && (
             <p id="email-error" role="alert" className="text-sm text-airmail-rot mt-1">

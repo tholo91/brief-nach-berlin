@@ -1,5 +1,11 @@
+const COUNTER_DISPLAY_THRESHOLD = 20;
+
 export default function LetterCounter() {
   const count = 0; // Phase 2: wire to real counter
+
+  // Hide the section until we have meaningful numbers — a "0" (or very low number)
+  // reads as anti-social-proof on the landing page.
+  if (count < COUNTER_DISPLAY_THRESHOLD) return null;
 
   return (
     <section className="py-16 px-6 bg-white">

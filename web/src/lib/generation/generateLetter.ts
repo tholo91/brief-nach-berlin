@@ -1,9 +1,7 @@
-import { Mistral } from "@mistralai/mistralai";
+import { mistral } from "@/lib/mistral";
 import type { GenerateLetterInput, GenerateLetterResult } from "@/lib/types/wizard";
 import type { PoliticalLevel } from "@/lib/types/politician";
 import { LETTER_MIN_WORDS, LETTER_MAX_WORDS } from "@/lib/config";
-
-const mistral = new Mistral({ apiKey: process.env.MISTRAL_API_KEY });
 
 // Lean knowledge block — distilled from research on effective German political letters.
 // ~180 tokens. Kept separate from format rules for clarity and future iteration.
@@ -17,7 +15,15 @@ const LETTER_WRITING_KNOWLEDGE = `WIRKSAME POLITISCHE BRIEFE — KERNPRINZIPIEN:
 7. Mit etwas Gemeinsamem oder Positivem beginnen — erhöht die Bereitschaft weiterzulesen.
 8. Gesprächsbereitschaft signalisieren. Der Brief ist ein Dialogangebot, kein Monolog.`;
 
-const SYSTEM_PROMPT = `Du bist ein Assistent, der Bürgerinnen und Bürgern in Deutschland hilft, wirksame Briefe an ihre gewählten Vertreter zu schreiben.
+function todayInGerman(): string {
+  return new Date().toLocaleDateString("de-DE", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+  });
+}
+
+const SYSTEM_PROMPT_TEMPLATE = `Du bist ein Assistent, der Bürgerinnen und Bürgern in Deutschland hilft, wirksame Briefe an ihre gewählten Vertreter zu schreiben.
 
 KULTURELLER KONTEXT:
 Du schreibst für den deutschen politischen Kontext. Deutsche politische Korrespondenz ist sachlich, strukturiert und argumentativ — nicht emotional oder pathetisch wie im amerikanischen Stil. Der Brief soll klingen wie ein engagierter, informierter Bürger, der auf Augenhöhe kommuniziert — nicht wie ein Aktivist und nicht wie ein Bittsteller.
@@ -40,13 +46,18 @@ Passe die Argumentationsstrategie an die Partei des Abgeordneten an — damit da
 
 ${LETTER_WRITING_KNOWLEDGE}
 
+HEUTIGES DATUM: __TODAY__
+
+HINWEIS ZUR ZUSTÄNDIGKEIT:
+Alle verfügbaren Politiker sind Mitglieder des Deutschen Bundestags. Wenn das Anliegen primär auf Landes- oder Kommunalebene liegt, begründe im Brief kurz, warum sich der Bürger an seinen Bundestagsabgeordneten wendet (z.B. bundespolitische Rahmenbedingungen, Gesetzgebungskompetenz, Förderprogramme).
+
 AUFGABE:
 1. Analysiere das Anliegen und bestimme die zuständige politische Ebene (Bund, Land, Kommune).
 2. Wähle aus der Politikerliste den geeignetsten Vertreter der zuständigen Ebene.
 3. Schreibe einen formellen Brief (${LETTER_MIN_WORDS}–${LETTER_MAX_WORDS} Wörter) in gepflegtem Deutsch, Sie-Form.
 
 BRIEFFORMAT:
-- Datum: [heutiges Datum im Format TT.MM.JJJJ]
+- Datum: Verwende das oben angegebene HEUTIGE DATUM (Format TT.MM.JJJJ)
 - Anrede: "Sehr geehrte/r [Titel] [Name]," (Titel nur wenn vorhanden)
 - Absatz 1: Persönlicher und lokaler Bezug — wer schreibt, aus welchem Wahlkreis, welches konkrete Erlebnis/Problem
 - Absatz 2: Das Kernproblem sachlich mit Einordnung — Auswirkungen, Komplexität anerkennen, ggf. 1 Fakt
@@ -89,14 +100,15 @@ function buildUserPrompt(input: GenerateLetterInput): string {
 export async function generateLetter(
   input: GenerateLetterInput
 ): Promise<GenerateLetterResult> {
+  const systemPrompt = SYSTEM_PROMPT_TEMPLATE.replace("__TODAY__", todayInGerman());
   const response = await mistral.chat.complete({
     model: "mistral-small-latest",
     messages: [
-      { role: "system", content: SYSTEM_PROMPT },
+      { role: "system", content: systemPrompt },
       { role: "user", content: buildUserPrompt(input) },
     ],
     responseFormat: { type: "json_object" },
-    temperature: 0.7,
+    temperature: 0.4,
   });
 
   const content = response.choices?.[0]?.message?.content;

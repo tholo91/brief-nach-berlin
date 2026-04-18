@@ -19,7 +19,12 @@
       "WebFetch(domain:ctb.ku.edu)",
       "WebFetch(domain:www.wissenleben.de)",
       "WebFetch(domain:agentur-adverb.de)",
-      "WebFetch(domain:www.vgsd.de)"
+      "WebFetch(domain:www.vgsd.de)",
+      "WebFetch(domain:www.bundeswahlleiterin.de)",
+      "WebFetch(domain:www.openplzapi.org)",
+      "WebFetch(domain:www.bundeswahlleiter.de)",
+      "WebFetch(domain:www.destatis.de)",
+      "WebFetch(domain:bundeswahlleiterin.de)"
     ]
   }
 }

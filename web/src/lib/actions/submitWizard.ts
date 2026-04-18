@@ -34,7 +34,7 @@ export async function submitWizardAction(
     });
     if (!step1Result.success) {
       console.warn("[submitWizard] step1 validation failed", step1Result.error.flatten());
-      return { error: "server_error", message: "Ungueltige Eingabe." };
+      return { error: "server_error", message: "Ungültige Eingabe." };
     }
 
     const step2Result = step2Schema.safeParse({ issueText: data.issueText });
@@ -54,7 +54,7 @@ export async function submitWizardAction(
       return {
         error: "moderation_rejected",
         message:
-          "Wir koennen dieses Anliegen nicht weiterverarbeiten. Bitte formuliere dein Anliegen sachlich und ohne beleidigende Formulierungen.",
+          "Wir können dieses Anliegen nicht weiterverarbeiten. Bitte formuliere dein Anliegen sachlich und ohne beleidigende Formulierungen.",
       };
     }
 
@@ -65,7 +65,7 @@ export async function submitWizardAction(
       return {
         error: "plz_not_found",
         message:
-          "Fuer diese Postleitzahl haben wir keine Daten. Bitte pruefe deine Eingabe.",
+          "Für diese Postleitzahl haben wir keine Daten. Bitte prüfe deine Eingabe.",
       };
     }
 

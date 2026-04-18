@@ -20,6 +20,7 @@ export function Step3Success({ result, wizardData, politicians }: Step3SuccessPr
   const [generationError, setGenerationError] = useState<string | null>(null);
   const [resendOpen, setResendOpen] = useState(false);
   const [resendState, setResendState] = useState<"idle" | "sending" | "sent" | "error">("idle");
+  const [resendEmail, setResendEmail] = useState(wizardData.email);
 
   const handleSelectPolitician = useCallback(
     async () => {
@@ -96,12 +97,12 @@ export function Step3Success({ result, wizardData, politicians }: Step3SuccessPr
     if (!result || !("success" in result) || !result.politician) return;
     setResendState("sending");
     try {
-      const res = await resendLetterAction(wizardData, result.politician);
+      const res = await resendLetterAction({ ...wizardData, email: resendEmail }, result.politician);
       setResendState("success" in res ? "sent" : "error");
     } catch {
       setResendState("error");
     }
-  }, [resendState, result, wizardData]);
+  }, [resendState, result, wizardData, resendEmail]);
 
   const emailShareHref = `mailto:?subject=${encodeURIComponent("Brief nach Berlin — schreib deinem Abgeordneten")}&body=${encodeURIComponent(SHARE_TEXT)}`;
 
@@ -250,19 +251,34 @@ export function Step3Success({ result, wizardData, politicians }: Step3SuccessPr
             Keine E-Mail erhalten?
           </button>
           {resendOpen && (
-            <div className="mt-3 p-4 bg-warmgrau/5 rounded-lg">
+            <div className="mt-3 p-4 bg-warmgrau/5 rounded-lg space-y-3">
               <p className="font-body text-sm text-warmgrau leading-relaxed">
-                Prüfe deinen Spam-Ordner. Falls nichts ankommt, können wir den Brief erneut generieren und senden.
+                Prüfe deinen Spam-Ordner. Falls nichts ankommt, überprüfe deine E-Mail-Adresse und sende den Brief erneut.
               </p>
-              <div className="mt-3">
+              {resendState !== "sent" && (
+                <div>
+                  <label htmlFor="resend-email" className="font-body text-xs text-warmgrau/60 mb-1 block">
+                    E-Mail-Adresse
+                  </label>
+                  <input
+                    id="resend-email"
+                    type="email"
+                    value={resendEmail}
+                    onChange={(e) => { setResendEmail(e.target.value); setResendState("idle"); }}
+                    className="w-full font-body text-sm text-warmgrau bg-white border border-warmgrau/25 rounded-lg px-3 py-2 focus:outline-none focus:border-waldgruen transition-colors"
+                    disabled={resendState === "sending"}
+                  />
+                </div>
+              )}
+              <div>
                 {resendState === "sent" ? (
                   <p className="font-body text-sm text-waldgruen font-semibold flex items-center gap-1.5">
                     <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>
                     Brief wurde erneut gesendet
                   </p>
                 ) : resendState === "error" ? (
-                  <div>
-                    <p className="font-body text-sm text-airmail-rot mb-2">Senden fehlgeschlagen. Bitte versuche es später erneut.</p>
+                  <div className="space-y-2">
+                    <p className="font-body text-sm text-airmail-rot">Senden fehlgeschlagen. Bitte versuche es später erneut.</p>
                     <button
                       type="button"
                       onClick={handleResend}
@@ -275,10 +291,10 @@ export function Step3Success({ result, wizardData, politicians }: Step3SuccessPr
                   <button
                     type="button"
                     onClick={handleResend}
-                    disabled={resendState === "sending"}
+                    disabled={resendState === "sending" || !resendEmail.trim()}
                     className={[
                       "font-body text-sm font-semibold text-waldgruen border border-waldgruen/30 px-4 py-2 rounded-lg transition-colors",
-                      resendState === "sending" ? "opacity-60 cursor-not-allowed" : "hover:bg-waldgruen/8 cursor-pointer",
+                      resendState === "sending" || !resendEmail.trim() ? "opacity-60 cursor-not-allowed" : "hover:bg-waldgruen/8 cursor-pointer",
                     ].join(" ")}
                   >
                     {resendState === "sending" ? (
@@ -294,6 +310,16 @@ export function Step3Success({ result, wizardData, politicians }: Step3SuccessPr
               </div>
             </div>
           )}
+        </div>
+
+        {/* Back to homepage */}
+        <div className="mt-6">
+          <a
+            href="/"
+            className="font-body text-xs text-warmgrau/50 hover:text-warmgrau/70 transition-colors"
+          >
+            ← Zurück zur Startseite
+          </a>
         </div>
       </div>
     );

@@ -24,7 +24,9 @@
       "WebFetch(domain:www.openplzapi.org)",
       "WebFetch(domain:www.bundeswahlleiter.de)",
       "WebFetch(domain:www.destatis.de)",
-      "WebFetch(domain:bundeswahlleiterin.de)"
+      "WebFetch(domain:bundeswahlleiterin.de)",
+      "Skill(gsd-add-backlog)",
+      "Skill(gsd-add-backlog:*)"
     ]
   }
 }

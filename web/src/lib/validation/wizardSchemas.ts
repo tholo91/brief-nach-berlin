@@ -22,4 +22,5 @@ export const step2Schema = z.object({
 });
 
 export type Step1Data = z.infer<typeof step1Schema>;
+export type Step1bData = z.infer<typeof step1bSchema>;
 export type Step2Data = z.infer<typeof step2Schema>;

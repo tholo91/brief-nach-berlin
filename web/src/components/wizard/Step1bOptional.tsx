@@ -48,38 +48,6 @@ export function Step1bOptional({ onNext, onSkip, defaultValues }: Step1bOptional
       </p>
 
       <div className="space-y-6">
-        {/* Letter Length Selection */}
-        <div>
-          <label className="block font-body text-sm font-semibold text-warmgrau mb-3">
-            Brieflänge
-          </label>
-          <div className="flex gap-2">
-            {(Object.keys(LETTER_LENGTHS) as LetterLength[]).map((len) => {
-              const isActive = selectedLength === len;
-              return (
-                <button
-                  key={len}
-                  type="button"
-                  onClick={() => setValue("letterLength", len)}
-                  className={[
-                    "flex-1 font-body text-sm py-2.5 rounded-lg border transition-all cursor-pointer",
-                    isActive
-                      ? "bg-waldgruen text-creme border-waldgruen shadow-sm"
-                      : "bg-creme text-waldgruen-dark border-warmgrau/30 hover:border-waldgruen/50",
-                  ].join(" ")}
-                >
-                  {LETTER_LENGTHS[len].label}
-                </button>
-              );
-            })}
-          </div>
-          <p className="text-xs text-warmgrau/50 mt-2 italic">
-            Standardmäßig sind 1,5 Seiten voreingestellt für eine gute Balance aus Tiefe und Prägnanz.
-          </p>
-        </div>
-
-        <div className="w-full h-px bg-warmgrau/10" />
-
         {/* Party */}
         <div>
           <label htmlFor="party" className="block font-body text-sm font-semibold text-warmgrau mb-1">
@@ -106,6 +74,38 @@ export function Step1bOptional({ onNext, onSkip, defaultValues }: Step1bOptional
             className={inputClassName}
             {...register("ngo")}
           />
+        </div>
+
+        <div className="w-full h-px bg-warmgrau/10" />
+
+        {/* Letter Length Selection */}
+        <div>
+          <label className="block font-body text-sm font-semibold text-warmgrau mb-3">
+            Gewünschte Brieflänge
+          </label>
+          <div className="flex gap-2">
+            {(["1", "1.5", "2"] as LetterLength[]).map((len) => {
+              const isActive = selectedLength === len;
+              return (
+                <button
+                  key={len}
+                  type="button"
+                  onClick={() => setValue("letterLength", len)}
+                  className={[
+                    "flex-1 font-body text-sm py-2.5 rounded-lg border transition-all cursor-pointer",
+                    isActive
+                      ? "bg-waldgruen text-creme border-waldgruen shadow-sm"
+                      : "bg-creme text-waldgruen-dark border-warmgrau/30 hover:border-waldgruen/50",
+                  ].join(" ")}
+                >
+                  {LETTER_LENGTHS[len].label}
+                </button>
+              );
+            })}
+          </div>
+          <p className="text-xs text-warmgrau/50 mt-2 italic">
+            Standardmäßig sind 1,5 Seiten voreingestellt für eine gute Balance aus Tiefe und Prägnanz.
+          </p>
         </div>
       </div>
 

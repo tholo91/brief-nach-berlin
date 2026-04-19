@@ -234,7 +234,7 @@ export function VoiceRecorder({ onTranscription, onStateChange, disabled }: Voic
 
         {uiState === "error" && (
           <span className="text-airmail-rot">
-            Aufnahme fehlgeschlagen — bitte erneut versuchen
+            Aufnahme fehlgeschlagen – bitte erneut versuchen
           </span>
         )}
       </button>

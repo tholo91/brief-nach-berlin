@@ -2,7 +2,7 @@ const stats = [
   {
     number: "9.260",
     label:
-      "Petitionen gingen 2024 beim Petitionsausschuss des Bundestags ein — nur 607 wurden im Ausschuss einzeln beraten. Ein direkter Brief an deinen Wahlkreisabgeordneten landet nicht in dieser Warteschlange.",
+      "Petitionen gingen 2024 beim Petitionsausschuss des Bundestags ein – nur 607 wurden im Ausschuss einzeln beraten. Ein direkter Brief an deinen Wahlkreisabgeordneten landet nicht in dieser Warteschlange.",
     source: "Petitionsausschuss, Jahresbericht 2024",
   },
   {
@@ -52,7 +52,7 @@ export default function WhyItWorks() {
               E-Mails landen im Spam.&rdquo;
             </p>
             <cite className="font-body text-sm text-warmgrau/50 not-italic">
-              Thomas Lorenz, Gründer — aus seiner Zeit im Bundestag (2011)
+              Thomas Lorenz, Gründer – aus seiner Zeit im Bundestag (2011)
             </cite>
           </blockquote>
         </div>

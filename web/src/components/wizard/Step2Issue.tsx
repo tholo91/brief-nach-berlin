@@ -109,7 +109,7 @@ export function Step2Issue({
         Was möchtest du ändern?
       </h1>
       <p className="font-body text-sm text-warmgrau/70 mb-8">
-        Beschreibe dein Anliegen — per Sprache oder Text. Je konkreter, desto überzeugender wird dein Brief.
+        Beschreibe dein Anliegen – per Sprache oder Text. Je konkreter, desto überzeugender wird dein Brief.
       </p>
 
       {/* Moderation rejection banner */}

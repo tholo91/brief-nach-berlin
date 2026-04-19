@@ -52,7 +52,7 @@ export default function Support() {
               Mitgestalten
             </h3>
             <p className="font-body text-base text-warmgrau/80 leading-relaxed">
-              Du möchtest mitbauen, bist Teil einer Organisation oder hast eine Idee, die hier reinpasst? Schreib mir — ich bin Thomas, Gründer hinter Brief-nach-Berlin.
+              Du möchtest mitbauen, bist Teil einer Organisation oder hast eine Idee, die hier reinpasst? Schreib mir – ich bin Thomas, Gründer hinter Brief-nach-Berlin.
             </p>
           </div>
         </div>

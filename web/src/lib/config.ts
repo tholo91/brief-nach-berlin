@@ -19,7 +19,7 @@ export type LetterLength = keyof typeof LETTER_LENGTHS;
 export const DEFAULT_LETTER_LENGTH: LetterLength = "1.5";
 
 // Sharing — used in email template and success page
-export const SHARE_TEXT = `Ich habe gerade einen Brief an meinen Abgeordneten geschrieben — in unter 3 Minuten. Probier es selbst: ${APP_URL}` as const;
+export const SHARE_TEXT = `Ich habe gerade einen Brief an meinen Abgeordneten geschrieben – in unter 3 Minuten. Probier es selbst: ${APP_URL}` as const;
 export const SHARE_URL_WHATSAPP = `https://wa.me/?text=${encodeURIComponent(SHARE_TEXT)}` as const;
 export const SHARE_URL_TWITTER = `https://twitter.com/intent/tweet?text=${encodeURIComponent(SHARE_TEXT)}` as const;
 

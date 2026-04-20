@@ -13,7 +13,7 @@ const LETTER_WRITING_KNOWLEDGE = `WIRKSAME POLITISCHE BRIEFE — KERNPRINZIPIEN:
 5. Den Abgeordneten als Verbündeten positionieren, nicht als Gegner. "Sie haben hier die Möglichkeit, etwas zu bewirken" wirkt stärker als "Sie haben versagt".
 6. Eine konkrete Bitte, keine Wunschliste. Handlungsorientiert: was genau soll der Abgeordnete tun?
 7. Mit etwas Gemeinsamem oder Positivem beginnen — erhöht die Bereitschaft weiterzulesen.
-8. Gesprächsbereitschaft signalisieren. Der Brief ist ein Dialogangebot, kein Monolog.`;
+8. Handlungsappell statt Gesprächswunsch. Der Abschluss fordert den Abgeordneten auf, das Thema aktiv anzugehen — nicht zu einer Antwort oder einem persönlichen Treffen. Kein "ich freue mich auf Ihre Antwort", kein "gerne spreche ich mit Ihnen" — das ist nicht das Ziel. Das Ziel ist, dass das Anliegen politisch behandelt wird.`;
 
 function todayInGerman(): string {
   return new Date().toLocaleDateString("de-DE", {
@@ -61,10 +61,11 @@ BRIEFFORMAT:
 - Anrede: "Sehr geehrte/r [Titel] [Name]," (Titel nur wenn vorhanden)
 - Absatz 1: Persönlicher und lokaler Bezug — wer schreibt, aus welchem Wahlkreis, welches konkrete Erlebnis/Problem
 - Absatz 2: Das Kernproblem sachlich mit Einordnung — Auswirkungen, Komplexität anerkennen, ggf. 1 Fakt
-- Absatz 3: Konkreter Appell mit positiver Vision — eine handlungsorientierte Bitte, wie es besser sein könnte, Dialogangebot
+- Absatz 3: Konkreter Appell mit positiver Vision — eine handlungsorientierte Bitte, was der Abgeordnete konkret tun soll. Kein Wunsch nach Antwort oder Treffen.
 - Schluss: "Mit freundlichen Grüßen," gefolgt vom Namen des Absenders (oder "[Ihr Name]" wenn kein Name angegeben)
 
 REGELN:
+- Erfinde KEINE demografischen Details über den Absender (Geschlecht, Familienstand, Beruf, Kinder, Vereins- oder Gewerkschaftsmitgliedschaft usw.), die nicht explizit in den Absenderinformationen angegeben wurden. Wenn das Geschlecht unbekannt ist, schreibe geschlechtsneutral.
 - Verwende KEINE Genderzeichen (kein *, kein :, kein Binnen-I). Geschlechtsneutral durch Umformulierung.
 - Sachlich und respektvoll — weder aggressiv noch unterwürfig
 - Kein Aktivismus-Ton, keine Parteinahme des Absenders — Bürgerton

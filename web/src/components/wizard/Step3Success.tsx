@@ -157,6 +157,22 @@ export function Step3Success({ result, wizardData, politicians }: Step3SuccessPr
           Wir haben dir den Brief per E-Mail geschickt. Schau in dein Postfach.
         </p>
 
+        {/* Notice: Brief ist Entwurf, eigene Stimme */}
+        <div className="mt-6 border-l-4 border-waldgruen/50 bg-waldgruen/8 rounded-r-lg p-4 space-y-2">
+          <p className="font-body text-sm font-semibold text-waldgruen-dark flex items-center gap-2">
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="flex-shrink-0 text-waldgruen" aria-hidden="true">
+              <path d="M17 3a2.85 2.85 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/>
+            </svg>
+            Mach diesen Brief zu deinem.
+          </p>
+          <p className="font-body text-sm text-warmgrau/75 leading-relaxed">
+            Lies ihn durch und pass ihn vor dem Abschreiben an — Ton, Formulierungen, einzelne Argumente. Der Entwurf kommt von KI, die Unterschrift ist deine.
+          </p>
+        </div>
+        <p className="font-body text-xs text-warmgrau/50 mt-2 leading-relaxed">
+          KI kann Fehler machen — bitte prüfe Politikerdaten und Inhalt vor dem Versand anhand offizieller Quellen (<a href="https://www.bundestag.de" target="_blank" rel="noopener noreferrer" className="underline underline-offset-2 hover:text-warmgrau/70 transition-colors">bundestag.de</a>).
+        </p>
+
         {/* Step-by-step instructions */}
         <div className="mt-8 space-y-4">
           <h2 className="font-body text-sm font-semibold text-warmgrau/70 uppercase tracking-wide">

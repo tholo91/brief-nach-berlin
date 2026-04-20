@@ -74,6 +74,15 @@ export function buildEmailHtml(data: SendLetterEmailParams): string {
             </td>
           </tr>
 
+          <!-- Intro: Briefentwurf — lies durch, mach ihn zu deinem -->
+          <tr>
+            <td colspan="7" style="padding:0 32px 20px;background-color:#ffffff;">
+              <div style="border-left:3px solid rgba(45,80,22,0.45);padding-left:16px;">
+                <p style="margin:0;font-family:Georgia,'Times New Roman',serif;font-size:15px;color:#4A4A4A;line-height:1.75;font-style:italic;">Hier ist dein Briefentwurf. Lies ihn durch, bevor du ihn abschreibst &mdash; und pass ihn an, wo nötig. Formulierungen, Ton, einzelne Argumente: alles darf von dir kommen. Die KI liefert den Rahmen, du trägst ihn mit deiner Unterschrift.</p>
+              </div>
+            </td>
+          </tr>
+
           <!-- Brief block (D-08, section 1) -->
           <tr>
             <td colspan="7" style="padding:0 32px 24px;background-color:#ffffff;">
@@ -147,7 +156,10 @@ export function buildEmailHtml(data: SendLetterEmailParams): string {
             <td colspan="7" style="padding:0 32px 24px;background-color:#ffffff;">
               <div style="border-top:1px solid #E0DCD7;padding-top:16px;">
                 <p style="margin:0 0 6px;font-family:Georgia,'Times New Roman',serif;font-size:12px;color:#999999;line-height:1.6;">
-                  <strong>Hinweis:</strong> Brief nach Berlin nutzt künstliche Intelligenz zur Brieferstellung. KI kann Fehler machen. Bitte prüfen Sie Politikerdaten und Brieftext vor dem Versand anhand offizieller Quellen
+                  <strong>Hinweis:</strong> Dieser Brief ist ein KI-generierter Entwurf &mdash; keine Meinungsäußerung von Brief nach Berlin. Wir empfehlen, ihn an deinen eigenen Stil und deine persönliche Haltung anzupassen, bevor du ihn verschickst. Die Verantwortung für den Inhalt liegt bei dir.
+                </p>
+                <p style="margin:0 0 6px;font-family:Georgia,'Times New Roman',serif;font-size:12px;color:#999999;line-height:1.6;">
+                  KI kann Fehler machen. Bitte prüfe Politikerdaten und Brieftext vor dem Versand anhand offizieller Quellen
                   (<a href="https://www.bundestag.de" style="color:#2D5016;">bundestag.de</a>, Landtags- oder Rathauswebsite).
                 </p>
                 <p style="margin:0;font-family:Georgia,'Times New Roman',serif;font-size:12px;color:#999999;line-height:1.6;">

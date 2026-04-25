@@ -115,6 +115,7 @@ export async function submitWizardAction(
       party: data.party,
       ngo: data.ngo,
       letterLength: data.letterLength,
+      toneLevel: data.toneLevel,
     });
     log("letter generated", {
       letterLength: result.letter.length,

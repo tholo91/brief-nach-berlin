@@ -33,7 +33,7 @@ function writeDataToParams(router: ReturnType<typeof useRouter>, data: Partial<W
   const params = new URLSearchParams();
   for (const key of PARAM_KEYS) {
     const val = data[key as keyof WizardData];
-    if (val) params.set(key, val);
+    if (val) params.set(key, String(val));
   }
   params.set("step", String(step));
   router.replace(`?${params.toString()}`, { scroll: false });
@@ -104,7 +104,7 @@ export function WizardShell() {
   }, [step]);
 
   const handleStep2Submit = useCallback(
-    async (issueText: string) => {
+    async (issueText: string, toneLevel: number) => {
       setIsSubmitting(true);
       setErrorMessage(null);
 
@@ -116,6 +116,7 @@ export function WizardShell() {
         ngo: wizardData.ngo,
         letterLength: wizardData.letterLength,
         issueText,
+        toneLevel,
       };
 
       try {

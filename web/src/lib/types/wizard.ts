@@ -11,6 +11,7 @@ export interface WizardData {
   ngo?: string;
   issueText: string;
   letterLength?: LetterLength;
+  toneLevel?: number;
 }
 
 export interface Step1bData {
@@ -27,6 +28,7 @@ export interface GenerateLetterInput {
   party?: string;
   ngo?: string;
   letterLength?: LetterLength;
+  toneLevel?: number;
 }
 
 export interface GenerateLetterResult {

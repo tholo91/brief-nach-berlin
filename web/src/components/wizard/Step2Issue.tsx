@@ -45,8 +45,10 @@ const TOPIC_EXAMPLES: { label: string; placeholder: string }[] = [
 const DEFAULT_PLACEHOLDER =
   "z.B. Die Radwege in meiner Stadt sind in einem katastrophalen Zustand...";
 
+const TONE_LABELS = ["freundlich", "höflich", "sachlich", "bestimmt", "nachdrücklich"] as const;
+
 interface Step2IssueProps {
-  onSubmit: (issueText: string) => void;
+  onSubmit: (issueText: string, toneLevel: number) => void;
   isSubmitting: boolean;
   errorMessage: string | null;
   onErrorDismiss: () => void;
@@ -65,6 +67,7 @@ export function Step2Issue({
   const [submitStage, setSubmitStage] = useState(0);
   const [placeholder, setPlaceholder] = useState<string>(DEFAULT_PLACEHOLDER);
   const [activeTopic, setActiveTopic] = useState<string | null>(null);
+  const [toneLevel, setToneLevel] = useState(3);
   const charCount = issueText.length;
 
   // Cycle through progress stages while submitting — rough pacing based on
@@ -99,7 +102,7 @@ export function Step2Issue({
 
   const handleSubmit = () => {
     if (issueText.trim().length > 0) {
-      onSubmit(issueText);
+      onSubmit(issueText, toneLevel);
     }
   };
 
@@ -189,8 +192,39 @@ export function Step2Issue({
         </p>
       </div>
 
+      {/* Tone slider */}
+      <div className="mt-6">
+        <label className="block font-body text-sm text-warmgrau/70 mb-3">
+          Ton des Briefes
+        </label>
+        <input
+          type="range"
+          min={1}
+          max={5}
+          step={1}
+          value={toneLevel}
+          onChange={(e) => setToneLevel(Number(e.target.value))}
+          disabled={isSubmitting}
+          className="w-full accent-waldgruen cursor-pointer disabled:opacity-50"
+          aria-label="Tonlage des Briefes"
+        />
+        <div className="flex justify-between mt-1">
+          {TONE_LABELS.map((label, i) => (
+            <span
+              key={label}
+              className={[
+                "font-body text-xs transition-colors",
+                toneLevel === i + 1 ? "text-waldgruen font-semibold" : "text-warmgrau/40",
+              ].join(" ")}
+            >
+              {label}
+            </span>
+          ))}
+        </div>
+      </div>
+
       {/* Submit button */}
-      <div className="mt-8">
+      <div className="mt-6">
         <button
           type="button"
           onClick={handleSubmit}

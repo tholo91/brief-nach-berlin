@@ -2,6 +2,7 @@ import { mistral } from "@/lib/mistral";
 import type { GenerateLetterInput, GenerateLetterResult } from "@/lib/types/wizard";
 import type { PoliticalLevel } from "@/lib/types/politician";
 import { LETTER_LENGTHS, DEFAULT_LETTER_LENGTH } from "@/lib/config";
+import { traceLetterGeneration } from "@/lib/observability/langfuse";
 
 // Lean knowledge block — distilled from research on effective German political letters.
 // ~180 tokens. Kept separate from format rules for clarity and future iteration.
@@ -109,33 +110,63 @@ export async function generateLetter(
     .replace("__MIN_WORDS__", minWords.toString())
     .replace("__MAX_WORDS__", maxWords.toString());
 
-  const response = await mistral.chat.complete({
+  // Open Langfuse trace before the Mistral call (no-op when env vars are unset)
+  const trace = traceLetterGeneration({
+    name: "generateLetter",
     model: "mistral-small-latest",
-    messages: [
-      { role: "system", content: systemPrompt },
-      { role: "user", content: buildUserPrompt(input) },
-    ],
-    responseFormat: { type: "json_object" },
-    temperature: 0.4,
+    input: {
+      issueTextPreview: input.issueText.slice(0, 500), // DSGVO: preview only, not full text
+      issueTextLength: input.issueText.length,
+      politicianCount: input.politicians.length,
+      politicianIds: input.politicians.map((p) => p.id),
+      lengthKey,
+      minWords,
+      maxWords,
+      hasName: Boolean(input.name),
+      hasParty: Boolean(input.party),
+      hasNgo: Boolean(input.ngo),
+    },
+    metadata: { temperature: 0.4, responseFormat: "json_object" },
   });
 
-  const content = response.choices?.[0]?.message?.content;
-  if (!content || typeof content !== "string") {
-    throw new Error("Mistral returned empty response");
-  }
-
-  // Parse JSON with fallback regex extraction (handles cases where Mistral wraps JSON in markdown)
   let parsed: {
     political_level: string;
     selected_politician_id: number;
     letter: string;
   };
+  let response: Awaited<ReturnType<typeof mistral.chat.complete>>;
+
   try {
-    parsed = JSON.parse(content);
-  } catch {
-    const match = content.match(/\{[\s\S]*\}/);
-    if (!match) throw new Error("Failed to parse Mistral response as JSON");
-    parsed = JSON.parse(match[0]);
+    response = await mistral.chat.complete({
+      model: "mistral-small-latest",
+      messages: [
+        { role: "system", content: systemPrompt },
+        { role: "user", content: buildUserPrompt(input) },
+      ],
+      responseFormat: { type: "json_object" },
+      temperature: 0.4,
+    });
+
+    const content = response.choices?.[0]?.message?.content;
+    if (!content || typeof content !== "string") {
+      throw new Error("Mistral returned empty response");
+    }
+
+    // Parse JSON with fallback regex extraction (handles cases where Mistral wraps JSON in markdown)
+    try {
+      parsed = JSON.parse(content);
+    } catch {
+      const match = content.match(/\{[\s\S]*\}/);
+      if (!match) throw new Error("Failed to parse Mistral response as JSON");
+      parsed = JSON.parse(match[0]);
+    }
+  } catch (err) {
+    await trace.end({
+      output: null,
+      statusMessage: (err as Error)?.message ?? "unknown",
+      level: "ERROR",
+    });
+    throw err;
   }
 
   // Word count instrumentation (warn-only — letter still ships regardless)
@@ -172,6 +203,22 @@ export async function generateLetter(
     });
     chosenPolitician = fallback;
   }
+
+  // Close trace with success output (fire-and-forget flush, never blocks response)
+  await trace.end({
+    output: {
+      selectedPoliticianId: chosenPolitician.id,
+      selectedPoliticianName: `${chosenPolitician.firstName} ${chosenPolitician.lastName}`,
+      selectedPoliticianParty: chosenPolitician.party,
+      politicalLevel: parsed.political_level,
+      wordCount,
+      wordCountInRange,
+      fallbackUsed,
+      letterPreview: parsed.letter.slice(0, 300), // DSGVO: preview only
+    },
+    usage: response.usage,
+    level: fallbackUsed || !wordCountInRange ? "WARNING" : "DEFAULT",
+  });
 
   return {
     letter: parsed.letter,

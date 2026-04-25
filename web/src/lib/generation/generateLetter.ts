@@ -2,8 +2,6 @@ import { mistral } from "@/lib/mistral";
 import type { GenerateLetterInput, GenerateLetterResult } from "@/lib/types/wizard";
 import type { PoliticalLevel } from "@/lib/types/politician";
 import { LETTER_LENGTHS, DEFAULT_LETTER_LENGTH } from "@/lib/config";
-import { traceLetterGeneration } from "@/lib/observability/langfuse";
-
 // Lean knowledge block — distilled from research on effective German political letters.
 // ~180 tokens. Kept separate from format rules for clarity and future iteration.
 const LETTER_WRITING_KNOWLEDGE = `WIRKSAME POLITISCHE BRIEFE — KERNPRINZIPIEN:
@@ -15,6 +13,14 @@ const LETTER_WRITING_KNOWLEDGE = `WIRKSAME POLITISCHE BRIEFE — KERNPRINZIPIEN:
 6. Eine konkrete Bitte, keine Wunschliste. Handlungsorientiert: was genau soll der Abgeordnete tun?
 7. Mit etwas Gemeinsamem oder Positivem beginnen — erhöht die Bereitschaft weiterzulesen.
 8. Handlungsappell statt Gesprächswunsch. Der Abschluss fordert den Abgeordneten auf, das Thema aktiv anzugehen — nicht zu einer Antwort oder einem persönlichen Treffen. Kein "ich freue mich auf Ihre Antwort", kein "gerne spreche ich mit Ihnen" — das ist nicht das Ziel. Das Ziel ist, dass das Anliegen politisch behandelt wird.`;
+
+const TONE_INSTRUCTIONS: Record<number, string> = {
+  1: "Der Bürger möchte einen sehr freundlichen, einladenden Ton. Verwende weiche Formulierungen wie 'Ich würde mich sehr freuen, wenn...' oder 'Ich bitte Sie herzlich...'. Warm, aber nicht unterwürfig.",
+  2: "Der Bürger möchte einen freundlich-höflichen Ton. Konstruktiv und zugewandt, mit offenem Gesprächsangebot.",
+  3: "Der Bürger möchte einen sachlich-respektvollen Ton — engagierter Bürger auf Augenhöhe, weder fordernd noch devot.",
+  4: "Der Bürger möchte einen bestimmten, klaren Ton. Direkte Formulierungen wie 'Ich erwarte von Ihnen...' oder 'Es ist notwendig, dass...' sind angemessen.",
+  5: "Der Bürger möchte einen nachdrücklichen, fordernden Ton. Formulierungen wie 'Ich fordere Sie auf...' oder 'Ich erwarte konkrete Maßnahmen' sind ausdrücklich erwünscht. Der Ernst des Anliegens soll unmissverständlich spürbar sein.",
+};
 
 function todayInGerman(): string {
   return new Date().toLocaleDateString("de-DE", {
@@ -65,13 +71,15 @@ BRIEFFORMAT:
 - Absatz 3: Konkreter Appell mit positiver Vision — eine handlungsorientierte Bitte, was der Abgeordnete konkret tun soll. Kein Wunsch nach Antwort oder Treffen.
 - Schluss: "Mit freundlichen Grüßen," gefolgt vom Namen des Absenders (oder "[Ihr Name]" wenn kein Name angegeben)
 
+TONHINWEIS (vom Bürger gewählt — hat Priorität gegenüber eigenem Urteil):
+__TONE_INSTRUCTION__
+
 REGELN:
 - Erfinde KEINE demografischen Details über den Absender (Geschlecht, Familienstand, Beruf, Kinder, Vereins- oder Gewerkschaftsmitgliedschaft usw.), die nicht explizit in den Absenderinformationen angegeben wurden. Wenn das Geschlecht unbekannt ist, schreibe geschlechtsneutral.
 - Verwende KEINE Genderzeichen (kein *, kein :, kein Binnen-I). Geschlechtsneutral durch Umformulierung.
 - Sachlich und respektvoll — weder aggressiv noch unterwürfig
 - Kein Aktivismus-Ton, keine Parteinahme des Absenders — Bürgerton
 - Einfache Satzstruktur (Brief wird handschriftlich kopiert)
-- Ton der Intensität des Anliegens anpassen: Alltagsproblem = freundlich-sachlich, dringendes Problem = bestimmt-nachdrücklich
 
 Antworte ausschließlich im JSON-Format:
 {
@@ -105,29 +113,12 @@ export async function generateLetter(
   const lengthKey = input.letterLength ?? DEFAULT_LETTER_LENGTH;
   const { min: minWords, max: maxWords } = LETTER_LENGTHS[lengthKey];
 
+  const toneInstruction = TONE_INSTRUCTIONS[input.toneLevel ?? 3] ?? TONE_INSTRUCTIONS[3];
   const systemPrompt = SYSTEM_PROMPT_TEMPLATE
     .replace("__TODAY__", todayInGerman())
     .replace("__MIN_WORDS__", minWords.toString())
-    .replace("__MAX_WORDS__", maxWords.toString());
-
-  // Open Langfuse trace before the Mistral call (no-op when env vars are unset)
-  const trace = traceLetterGeneration({
-    name: "generateLetter",
-    model: "mistral-small-latest",
-    input: {
-      issueTextPreview: input.issueText.slice(0, 500), // DSGVO: preview only, not full text
-      issueTextLength: input.issueText.length,
-      politicianCount: input.politicians.length,
-      politicianIds: input.politicians.map((p) => p.id),
-      lengthKey,
-      minWords,
-      maxWords,
-      hasName: Boolean(input.name),
-      hasParty: Boolean(input.party),
-      hasNgo: Boolean(input.ngo),
-    },
-    metadata: { temperature: 0.4, responseFormat: "json_object" },
-  });
+    .replace("__MAX_WORDS__", maxWords.toString())
+    .replace("__TONE_INSTRUCTION__", toneInstruction);
 
   let parsed: {
     political_level: string;
@@ -161,11 +152,6 @@ export async function generateLetter(
       parsed = JSON.parse(match[0]);
     }
   } catch (err) {
-    await trace.end({
-      output: null,
-      statusMessage: (err as Error)?.message ?? "unknown",
-      level: "ERROR",
-    });
     throw err;
   }
 
@@ -203,22 +189,6 @@ export async function generateLetter(
     });
     chosenPolitician = fallback;
   }
-
-  // Close trace with success output (fire-and-forget flush, never blocks response)
-  await trace.end({
-    output: {
-      selectedPoliticianId: chosenPolitician.id,
-      selectedPoliticianName: `${chosenPolitician.firstName} ${chosenPolitician.lastName}`,
-      selectedPoliticianParty: chosenPolitician.party,
-      politicalLevel: parsed.political_level,
-      wordCount,
-      wordCountInRange,
-      fallbackUsed,
-      letterPreview: parsed.letter.slice(0, 300), // DSGVO: preview only
-    },
-    usage: response.usage,
-    level: fallbackUsed || !wordCountInRange ? "WARNING" : "DEFAULT",
-  });
 
   return {
     letter: parsed.letter,

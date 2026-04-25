@@ -26,7 +26,9 @@
       "WebFetch(domain:www.destatis.de)",
       "WebFetch(domain:bundeswahlleiterin.de)",
       "Skill(gsd-add-backlog)",
-      "Skill(gsd-add-backlog:*)"
+      "Skill(gsd-add-backlog:*)",
+      "Skill(gsd-quick)",
+      "Skill(gsd-quick:*)"
     ]
   }
 }

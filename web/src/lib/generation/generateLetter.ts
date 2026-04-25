@@ -138,25 +138,47 @@ export async function generateLetter(
     parsed = JSON.parse(match[0]);
   }
 
+  // Word count instrumentation (warn-only — letter still ships regardless)
+  const wordCount = parsed.letter.trim().split(/\s+/).filter(Boolean).length;
+  const wordCountInRange = wordCount >= minWords && wordCount <= maxWords;
+  if (!wordCountInRange) {
+    console.warn("[generateLetter] word count out of range", {
+      wordCount,
+      minWords,
+      maxWords,
+      lengthKey,
+      politicianCount: input.politicians.length,
+    });
+  }
+
   // Validate selected politician against input list (T-02-13: no arbitrary ID injection)
   const selectedPolitician = input.politicians.find(
     (p) => p.id === parsed.selected_politician_id
   );
 
-  if (!selectedPolitician) {
-    // Fallback: use first politician in the list
+  let fallbackUsed = false;
+  let chosenPolitician = selectedPolitician;
+  if (!chosenPolitician) {
     const fallback = input.politicians[0];
     if (!fallback) throw new Error("No politicians available");
-    return {
-      letter: parsed.letter,
-      selectedPolitician: fallback,
-      politicalLevel: (parsed.political_level as PoliticalLevel) || "Bund",
-    };
+    fallbackUsed = true;
+    console.error("[generateLetter] FALLBACK politicians[0] used — Mistral returned unknown ID", {
+      returnedId: parsed.selected_politician_id,
+      availableIds: input.politicians.map((p) => p.id),
+      availableLevels: input.politicians.map((p) => p.level),
+      issueTextPreview: input.issueText.slice(0, 120),
+      fallbackPoliticianId: fallback.id,
+      fallbackPoliticianName: `${fallback.firstName} ${fallback.lastName}`,
+    });
+    chosenPolitician = fallback;
   }
 
   return {
     letter: parsed.letter,
-    selectedPolitician,
-    politicalLevel: parsed.political_level as PoliticalLevel,
+    selectedPolitician: chosenPolitician,
+    politicalLevel: (parsed.political_level as PoliticalLevel) || "Bund",
+    wordCount,
+    wordCountInRange,
+    fallbackUsed,
   };
 }

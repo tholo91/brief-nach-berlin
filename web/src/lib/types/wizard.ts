@@ -33,6 +33,9 @@ export interface GenerateLetterResult {
   letter: string;
   selectedPolitician: Politician;
   politicalLevel: PoliticalLevel;
+  wordCount: number;
+  wordCountInRange: boolean;
+  fallbackUsed: boolean; // true when Mistral returned an unknown selected_politician_id
 }
 
 export type WizardActionResult =

@@ -116,7 +116,12 @@ export async function submitWizardAction(
       ngo: data.ngo,
       letterLength: data.letterLength,
     });
-    log("letter generated", { letterLength: result.letter.length });
+    log("letter generated", {
+      letterLength: result.letter.length,
+      wordCount: result.wordCount,
+      wordCountInRange: result.wordCountInRange,
+      fallbackUsed: result.fallbackUsed,
+    });
 
     // 6. Moderate generated letter output (SAFE-02, T-02-15, D-15)
     const outputModeration = await moderateText(result.letter);

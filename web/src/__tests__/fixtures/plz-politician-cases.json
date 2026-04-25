@@ -1,0 +1,62 @@
+[
+  {
+    "plz": "10858",
+    "expectedWahlkreisIds": [61],
+    "expectedPoliticianLastNames": ["Vandre", "Scholz"],
+    "category": "single-wahlkreis"
+  },
+  {
+    "plz": "10910",
+    "expectedWahlkreisIds": [95],
+    "expectedPoliticianLastNames": ["Uhlig", "Streeck"],
+    "category": "single-wahlkreis"
+  },
+  {
+    "plz": "12521",
+    "expectedWahlkreisIds": [62],
+    "expectedPoliticianLastNames": ["Lübcke", "Kotré"],
+    "category": "single-wahlkreis"
+  },
+  {
+    "plz": "12712",
+    "expectedWahlkreisIds": [62],
+    "expectedPoliticianLastNames": ["Lübcke", "Kotré"],
+    "category": "single-wahlkreis"
+  },
+  {
+    "plz": "10026",
+    "expectedMinPoliticianCount": 24,
+    "expectedMinWahlkreisCount": 12,
+    "category": "ambiguous-multi-wahlkreis"
+  },
+  {
+    "plz": "10082",
+    "expectedMinPoliticianCount": 24,
+    "expectedMinWahlkreisCount": 12,
+    "category": "ambiguous-multi-wahlkreis"
+  },
+  {
+    "plz": "10083",
+    "expectedMinPoliticianCount": 24,
+    "expectedMinWahlkreisCount": 12,
+    "category": "ambiguous-multi-wahlkreis"
+  },
+  {
+    "plz": "29216",
+    "expectedWahlkreisIds": [44],
+    "expectedPoliticianLastNames": [],
+    "category": "silent-fallback-no-politicians"
+  },
+  {
+    "plz": "29218",
+    "expectedWahlkreisIds": [44],
+    "expectedPoliticianLastNames": [],
+    "category": "silent-fallback-no-politicians"
+  },
+  {
+    "plz": "00000",
+    "expectedWahlkreisIds": [],
+    "expectedPoliticianLastNames": [],
+    "category": "plz-not-found"
+  }
+]

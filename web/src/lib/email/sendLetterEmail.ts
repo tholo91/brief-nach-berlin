@@ -8,6 +8,27 @@ if (!apiKey) {
 }
 const brevo = new BrevoClient({ apiKey });
 
+export interface LetterDebugPayload {
+  toneLevel: number | undefined;
+  toneLabel: string;
+  letterLengthKey: string;
+  letterLengthMin: number;
+  letterLengthMax: number;
+  issueTextLength: number;
+  wordCount: number;
+  wordCountInRange: boolean;
+  fallbackUsed: boolean;
+  politicalLevel: string;
+  selectedPoliticianParty: string | null;
+  availablePoliticianCount: number;
+  model: string;
+  temperature: number;
+  generationMs: number;
+  hasName: boolean;
+  hasParty: boolean;
+  hasNgo: boolean;
+}
+
 export interface SendLetterEmailParams {
   recipientEmail: string;
   politicianName: string;
@@ -18,7 +39,9 @@ export interface SendLetterEmailParams {
   politicianAbgeordnetenwatchUrl: string | null;
   letterText: string;
   issueText: string;
+  debug?: LetterDebugPayload;
 }
+
 
 export async function sendLetterEmail(
   params: SendLetterEmailParams

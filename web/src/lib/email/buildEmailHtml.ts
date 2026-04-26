@@ -1,12 +1,24 @@
-import type { SendLetterEmailParams } from "./sendLetterEmail";
+import type { SendLetterEmailParams, LetterDebugPayload } from "./sendLetterEmail";
 import {
   APP_URL,
   WIZARD_PATH,
   WIZARD_TEXT_PARAM_MAX_LENGTH,
   SHARE_TEXT_CAUSE,
   FOUNDER_HOMEPAGE,
+  FOUNDER_FEEDBACK_URL,
   abgeordnetenwatchProfileUrl,
 } from "@/lib/config";
+
+function buildDebugUrl(d: LetterDebugPayload): string {
+  // base64url-encode JSON payload so it survives URLs without padding/+/ issues
+  const json = JSON.stringify(d);
+  const b64 = Buffer.from(json, "utf8")
+    .toString("base64")
+    .replace(/\+/g, "-")
+    .replace(/\//g, "_")
+    .replace(/=+$/, "");
+  return `${APP_URL}/debug?d=${b64}`;
+}
 
 // Escape HTML entities to prevent HTML injection in email (T-03-02)
 function escapeHtml(text: string): string {
@@ -94,7 +106,7 @@ export function buildEmailHtml(data: SendLetterEmailParams): string {
                 <tr>
                   <td colspan="7" style="padding:0 32px 20px;background-color:#ffffff;">
                     <div style="border-left:3px solid rgba(45,80,22,0.45);padding-left:16px;">
-                      <p style="margin:0;font-family:Georgia,'Times New Roman',serif;font-size:15px;color:#4A4A4A;line-height:1.75;">Hier ist dein Briefentwurf. Lies ihn gründlich durch und pass ihn an, damit es <em style="font-style:italic;">dein Brief</em> wird. Wir bieten dir einen Schnellstart, damit dein Anliegen ratzfatz auf dem richtigen Schreibtisch landet. Riesen Dankeschön, dass du dich engagierst.</p>
+                      <p style="margin:0;font-family:Georgia,'Times New Roman',serif;font-size:15px;color:#4A4A4A;line-height:1.75;">Hier ist dein Briefentwurf. Lies ihn gründlich durch und pass ihn an, damit es <em style="font-style:italic;">dein Brief</em> wird. Wir bieten dir einen Schnellstart, damit dein Anliegen ratzfatz auf dem richtigen Schreibtisch landet.<br><br>Riesen Dankeschön, dass du dich engagierst!</p>
                     </div>
                   </td>
                 </tr>
@@ -119,9 +131,17 @@ export function buildEmailHtml(data: SendLetterEmailParams): string {
                         ${addressLines}
                       </p>
                       <p style="margin:0;padding-top:10px;border-top:1px solid #E0DCD7;font-family:Georgia,'Times New Roman',serif;font-size:13px;line-height:1.5;">
-                        <a href="${profileUrl}" target="_blank" rel="noopener noreferrer" style="color:#2D5016;text-decoration:none;font-weight:bold;">Profil auf abgeordnetenwatch ansehen &rarr;</a>
+                        <a href="${profileUrl}" target="_blank" rel="noopener noreferrer" style="color:#2D5016;text-decoration:none;font-weight:bold;">Profil auf abgeordnetenwatch ansehen &#x2197;&#xFE0E;</a>
                       </p>
                     </div>
+                  </td>
+                </tr>
+
+                <!-- Empfehlung: Brief von Hand abschreiben (sets the frame before the steps) -->
+                <tr>
+                  <td colspan="7" style="padding:0 32px 20px;background-color:#ffffff;">
+                    <p style="margin:0 0 8px;font-family:Georgia,'Times New Roman',serif;font-size:15px;color:#333333;font-weight:bold;">Unsere Empfehlung: Brief von Hand abschreiben</p>
+                    <p style="margin:0;font-family:Georgia,'Times New Roman',serif;font-size:14px;color:#4A4A4A;line-height:1.6;">Handgeschriebene Briefe werden im Bundestag tatsächlich gelesen und besprochen. Sie signalisieren echtes persönliches Engagement und werden nicht wie Massenpost behandelt. Die Handschrift macht deinen Brief unverwechselbar persönlich.</p>
                   </td>
                 </tr>
 
@@ -129,9 +149,6 @@ export function buildEmailHtml(data: SendLetterEmailParams): string {
                 <tr>
                   <td colspan="7" style="padding:0 32px 24px;background-color:#ffffff;">
                     <h2 style="margin:0 0 16px;font-family:Georgia,'Times New Roman',serif;font-size:16px;color:#2D5016;font-weight:bold;">Nächste Schritte</h2>
-
-                    <p style="margin:0 0 8px;font-family:Georgia,'Times New Roman',serif;font-size:15px;color:#333333;font-weight:bold;">Unsere Empfehlung: Brief von Hand abschreiben</p>
-                    <p style="margin:0 0 16px;font-family:Georgia,'Times New Roman',serif;font-size:14px;color:#4A4A4A;line-height:1.6;">Handgeschriebene Briefe werden im Bundestag tatsächlich gelesen und besprochen. Sie signalisieren echtes persönliches Engagement und werden nicht wie Massenpost behandelt. Die Handschrift macht deinen Brief unverwechselbar persönlich.</p>
 
                     <table role="presentation" cellpadding="0" cellspacing="0" width="100%">
                       <tr>
@@ -168,10 +185,34 @@ export function buildEmailHtml(data: SendLetterEmailParams): string {
                   </td>
                 </tr>
 
-                <!-- Primary CTA: Neuen Brief schreiben -->
+                <!-- Personal sign-off from Thomas (handwritten Caveat) -->
                 <tr>
-                  <td colspan="7" style="padding:0 32px 20px;background-color:#ffffff;">
-                    <a href="${regenerateUrl}" style="display:inline-block;background-color:#2D5016;color:#ffffff;font-family:Georgia,'Times New Roman',serif;font-size:14px;font-weight:bold;text-decoration:none;padding:12px 24px;border-radius:6px;">Neuen Brief schreiben</a>
+                  <td colspan="7" style="padding:8px 32px 16px;background-color:#ffffff;text-align:left;">
+                    <p style="margin:0 0 4px;font-family:Georgia,'Times New Roman',serif;font-size:14px;color:#4A4A4A;line-height:1.6;">
+                      Toll, dass du dir die Zeit für unsere Demokratie nimmst. Melde dich super gerne bei Fragen oder weiteren Anregungen. Beste Grüße aus Bremen ✌️
+                    </p>
+                    <p style="margin:0;font-family:'Caveat','Brush Script MT','Lucida Handwriting',cursive;font-size:32px;color:#1D3557;line-height:1.1;">
+                      Thomas
+                    </p>
+                    <p style="margin:6px 0 0;font-family:Georgia,'Times New Roman',serif;font-size:12px;color:#bcbcbc;line-height:1.5;">
+                      Eine Initiative von <a href="${FOUNDER_HOMEPAGE}" target="_blank" rel="noopener noreferrer" style="color:#bcbcbc;text-decoration:underline;">www.thomas-lorenz.eu</a>
+                    </p>
+                  </td>
+                </tr>
+
+                <!-- Action buttons: stretched two-column row, equal width -->
+                <tr>
+                  <td colspan="7" style="padding:8px 32px 20px;background-color:#ffffff;">
+                    <table role="presentation" cellpadding="0" cellspacing="0" width="100%" style="border-collapse:separate;">
+                      <tr>
+                        <td style="padding-right:6px;width:50%;" valign="top">
+                          <a href="${regenerateUrl}" style="display:block;text-align:center;background-color:#2D5016;color:#ffffff;font-family:Georgia,'Times New Roman',serif;font-size:14px;font-weight:bold;text-decoration:none;padding:12px 16px;border-radius:6px;border:2px solid #2D5016;">Neuen Brief schreiben</a>
+                        </td>
+                        <td style="padding-left:6px;width:50%;" valign="top">
+                          <a href="${FOUNDER_FEEDBACK_URL}" target="_blank" rel="noopener noreferrer" style="display:block;text-align:center;background-color:#ffffff;color:#2D5016;font-family:Georgia,'Times New Roman',serif;font-size:14px;font-weight:bold;text-decoration:none;padding:12px 16px;border-radius:6px;border:2px solid #2D5016;">Feedback &amp; Anregungen</a>
+                        </td>
+                      </tr>
+                    </table>
                   </td>
                 </tr>
 
@@ -201,21 +242,6 @@ export function buildEmailHtml(data: SendLetterEmailParams): string {
                   </td>
                 </tr>
 
-                <!-- Personal sign-off from Thomas (handwritten Caveat) -->
-                <tr>
-                  <td colspan="7" style="padding:8px 32px 8px;background-color:#ffffff;text-align:left;">
-                    <p style="margin:0 0 4px;font-family:Georgia,'Times New Roman',serif;font-size:14px;color:#4A4A4A;line-height:1.6;">
-                      Toll, dass du dir die Zeit nimmst. Melde dich super gerne bei Fragen oder weiteren Anregungen. Beste Grüße aus Bremen 
-                    </p>
-                    <p style="margin:0;font-family:'Caveat','Brush Script MT','Lucida Handwriting',cursive;font-size:32px;color:#1D3557;line-height:1.1;">
-                      Thomas
-                    </p>
-                    <p style="margin:6px 0 0;font-family:Georgia,'Times New Roman',serif;font-size:12px;color:#bcbcbc;line-height:1.5;">
-                      Eine Initiative von <a href="${FOUNDER_HOMEPAGE}" target="_blank" rel="noopener noreferrer" style="color:#bcbcbc;text-decoration:underline;">www.thomas-lorenz.eu</a>
-                    </p>
-                  </td>
-                </tr>
-
                 <!-- Airmail stripe before footer (mirrors header) -->
                 <tr>
                   <td colspan="7" style="height:4px;font-size:0;line-height:0;background:repeating-linear-gradient(-45deg,#C1121F,#C1121F 8px,#FAF8F5 8px,#FAF8F5 12px,#1D3557 12px,#1D3557 20px,#FAF8F5 20px,#FAF8F5 24px);">&nbsp;</td>
@@ -242,6 +268,7 @@ export function buildEmailHtml(data: SendLetterEmailParams): string {
                     <p style="margin:0;font-family:Georgia,'Times New Roman',serif;font-size:11px;color:#aaaaaa;line-height:1.5;">
                       <a href="${APP_URL}/datenschutz" style="color:#888888;">Datenschutzerklärung</a>: deine Daten werden nach Versand dieser E-Mail nicht gespeichert.
                     </p>
+                    ${data.debug ? `<p style="margin:8px 0 0;font-family:Georgia,'Times New Roman',serif;font-size:10px;color:#cccccc;line-height:1.5;"><a href="${buildDebugUrl(data.debug)}" style="color:#cccccc;text-decoration:none;">Debug</a></p>` : ""}
                   </td>
                 </tr>
 

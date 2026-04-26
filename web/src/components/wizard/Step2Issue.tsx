@@ -158,7 +158,7 @@ export function Step2Issue({
       {/* Tone slider */}
       <div className="mt-6">
         <label className="block font-body text-sm text-warmgrau/70 mb-3">
-          Ton des Briefes
+          Tonalität des Briefes
         </label>
         <input
           type="range"

@@ -8,10 +8,8 @@ import { resendLetterAction } from "@/lib/actions/resendLetter";
 import {
   APP_URL,
   SHARE_TEXT_CAUSE,
-  SHARE_URL_WHATSAPP,
-  SHARE_URL_TELEGRAM,
   SHARE_URL_EMAIL,
-  SHARE_URL_LINKEDIN,
+  FOUNDER_FEEDBACK_URL,
 } from "@/lib/config";
 
 interface Step3SuccessProps {
@@ -98,27 +96,26 @@ export function Step3Success({ result, wizardData, politicians }: Step3SuccessPr
 
   const [copied, setCopied] = useState(false);
 
-  const handleNativeShare = async () => {
-    if (navigator.share) {
+  // Single "Teilen" button: native share when available, fall back to clipboard copy.
+  const handleShare = async () => {
+    if (typeof navigator !== "undefined" && "share" in navigator) {
       try {
         await navigator.share({
           title: "Brief nach Berlin",
           text: SHARE_TEXT_CAUSE,
           url: APP_URL,
         });
+        return;
       } catch {
-        // User cancelled, no action needed
+        // User cancelled or share failed — fall through to copy fallback below
       }
     }
-  };
-
-  const handleCopyLink = async () => {
     try {
       await navigator.clipboard.writeText(SHARE_TEXT_CAUSE);
       setCopied(true);
       setTimeout(() => setCopied(false), 2200);
     } catch {
-      // Clipboard API blocked, fail silently
+      // Clipboard blocked, fail silently
     }
   };
 
@@ -192,140 +189,12 @@ export function Step3Success({ result, wizardData, politicians }: Step3SuccessPr
             Mach diesen Brief zu deinem Brief.
           </p>
           <p className="font-body text-sm text-warmgrau/75 leading-relaxed">
-            Lies dir die Mail durch und pass den Brief an, damit er sich nach dir anfühlt und dein Anliegen perfekt platziert. Ton, Formulierungen, einzelne Argumente: Der Entwurf kommt von uns, die Unterschrift ist deine .
-          </p>
-        </div>
-        {/* Step-by-step instructions */}
-        <div className="mt-8 space-y-4">
-          <h2 className="font-body text-sm font-semibold text-warmgrau/70 uppercase tracking-wide">
-            So geht es weiter
-          </h2>
-          <ol className="space-y-3">
-            <li className="flex gap-3">
-              <span className="flex-shrink-0 w-6 h-6 rounded-full bg-waldgruen/15 text-waldgruen font-body text-xs font-bold flex items-center justify-center mt-0.5">1</span>
-              <p className="font-body text-sm text-warmgrau leading-relaxed">
-                <strong>Brief abschreiben.</strong> Schreib den Brief von Hand ab und pass ihn an deinen Schreibstil an. Handgeschriebene Briefe werden im Bundestag tatsächlich gelesen und besprochen.
-              </p>
-            </li>
-            <li className="flex gap-3">
-              <span className="flex-shrink-0 w-6 h-6 rounded-full bg-waldgruen/15 text-waldgruen font-body text-xs font-bold flex items-center justify-center mt-0.5">2</span>
-              <p className="font-body text-sm text-warmgrau leading-relaxed">
-                <strong>Adresse aufschreiben, Briefmarke drauf, ab zur Post.</strong> Die Adresse findest du im Brief.
-              </p>
-            </li>
-            <li className="flex gap-3">
-              <span className="flex-shrink-0 w-6 h-6 rounded-full bg-waldgruen/15 text-waldgruen font-body text-xs font-bold flex items-center justify-center mt-0.5">3</span>
-              <p className="font-body text-sm text-warmgrau leading-relaxed">
-                <strong>Weitersagen.</strong> Je mehr Menschen schreiben, desto mehr Gewicht hat jeder einzelne Brief.
-              </p>
-            </li>
-          </ol>
-        </div>
-
-        {/* Cause-recruit share section: motivate Wahlkreis-Bürger to write their own letters */}
-        <div className="mt-10 pt-8 border-t border-warmgrau/15">
-          <div className="rounded-xl bg-waldgruen/8 border border-waldgruen/20 p-5">
-            <h2 className="font-typewriter text-lg font-semibold text-waldgruen-dark">
-              Gemeinsam noch lauter
-            </h2>
-            <p className="font-body text-sm text-warmgrau/85 leading-relaxed mt-2 italic">
-              Motiviere gern andere, mitzumachen! Über Politik meckern fühlt sich noch besser an, wenn man einen Brief schreibt 😉
-            </p>
-            <p className="font-body text-sm text-warmgrau leading-relaxed mt-2">
-              Dein Brief wirkt. Und er wirkt noch stärker, wenn weitere Stimmen aus deinem Wahlkreis dazukommen. Briefe aus derselben Gegend zum gleichen Thema bekommen im Bundestag besonderes Gewicht. Wem in deinem Umfeld geht es wie dir?
-            </p>
-
-            <div className="grid grid-cols-2 gap-2.5 mt-4">
-              <a
-                href={SHARE_URL_WHATSAPP}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center justify-center gap-2 font-body text-sm font-semibold text-waldgruen bg-creme border-2 border-waldgruen/40 hover:border-waldgruen hover:bg-white px-3 py-2.5 rounded-lg transition-colors"
-              >
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-                  <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347"/>
-                </svg>
-                WhatsApp
-              </a>
-              <a
-                href={SHARE_URL_TELEGRAM}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center justify-center gap-2 font-body text-sm font-semibold text-waldgruen bg-creme border-2 border-waldgruen/40 hover:border-waldgruen hover:bg-white px-3 py-2.5 rounded-lg transition-colors"
-              >
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-                  <path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.139-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/>
-                </svg>
-                Telegram
-              </a>
-              <a
-                href={emailShareHref}
-                className="inline-flex items-center justify-center gap-2 font-body text-sm font-semibold text-waldgruen bg-creme border-2 border-waldgruen/40 hover:border-waldgruen hover:bg-white px-3 py-2.5 rounded-lg transition-colors"
-              >
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                  <rect width="20" height="16" x="2" y="4" rx="2" />
-                  <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
-                </svg>
-                Per E-Mail
-              </a>
-              <button
-                type="button"
-                onClick={handleCopyLink}
-                className="inline-flex items-center justify-center gap-2 font-body text-sm font-semibold text-waldgruen bg-creme border-2 border-waldgruen/40 hover:border-waldgruen hover:bg-white px-3 py-2.5 rounded-lg transition-colors cursor-pointer"
-              >
-                {copied ? (
-                  <>
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                      <path d="M20 6 9 17l-5-5"/>
-                    </svg>
-                    Kopiert
-                  </>
-                ) : (
-                  <>
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                      <rect width="14" height="14" x="8" y="8" rx="2" ry="2"/>
-                      <path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/>
-                    </svg>
-                    Text kopieren
-                  </>
-                )}
-              </button>
-              {"share" in navigator && (
-                <button
-                  type="button"
-                  onClick={handleNativeShare}
-                  className="col-span-2 inline-flex items-center justify-center gap-2 font-body text-sm font-semibold text-creme bg-waldgruen hover:bg-waldgruen-dark px-3 py-2.5 rounded-lg transition-colors cursor-pointer"
-                >
-                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                    <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8" />
-                    <polyline points="16 6 12 2 8 6" />
-                    <line x1="12" x2="12" y1="2" y2="15" />
-                  </svg>
-                  Mehr Teilen-Optionen
-                </button>
-              )}
-            </div>
-            <p className="font-body text-xs text-warmgrau/60 mt-3 leading-relaxed italic">
-              Wichtig: jeder schreibt mit eigenen Worten. Identische Briefe gelten im Bundestag als Massenpost und verlieren ihre Wirkung.
-            </p>
-          </div>
-
-          {/* Tool-promo, separate and quieter */}
-          <p className="font-body text-xs text-warmgrau/55 text-center mt-5">
-            Brief nach Berlin gefällt dir?{" "}
-            <a
-              href={SHARE_URL_LINKEDIN}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-waldgruen hover:text-waldgruen-dark font-semibold underline underline-offset-2 transition-colors"
-            >
-              Auf LinkedIn teilen
-            </a>
+            Lies dir die Mail durch und pass den Brief an, damit er sich nach dir anfühlt und dein Anliegen perfekt platziert. Ton, Formulierungen, einzelne Argumente: Der Entwurf kommt von uns, die Unterschrift ist deine.
           </p>
         </div>
 
-        {/* Tertiary actions: resend + back home (same size as share buttons) */}
-        <div className="mt-8 flex gap-6 justify-center">
+        {/* "Keine E-Mail erhalten?" — placed close to the email notice for context */}
+        <div className="mt-3 flex justify-center">
           <button
             type="button"
             onClick={() => setResendOpen((o) => !o)}
@@ -333,12 +202,6 @@ export function Step3Success({ result, wizardData, politicians }: Step3SuccessPr
           >
             Keine E-Mail erhalten?
           </button>
-          <a
-            href="/"
-            className="font-body text-sm text-warmgrau/55 hover:text-warmgrau/75 transition-colors underline underline-offset-2"
-          >
-            ← Zurück zur Startseite
-          </a>
         </div>
         {resendOpen && (
           <div className="mt-3 p-4 bg-warmgrau/5 rounded-lg space-y-3">
@@ -400,6 +263,108 @@ export function Step3Success({ result, wizardData, politicians }: Step3SuccessPr
               </div>
             </div>
           )}
+
+        {/* Step-by-step instructions */}
+        <div className="mt-8 space-y-4">
+          <h2 className="font-body text-sm font-semibold text-warmgrau/70 uppercase tracking-wide">
+            So geht es weiter
+          </h2>
+          <ol className="space-y-3">
+            <li className="flex gap-3">
+              <span className="flex-shrink-0 w-6 h-6 rounded-full bg-waldgruen/15 text-waldgruen font-body text-xs font-bold flex items-center justify-center mt-0.5">1</span>
+              <p className="font-body text-sm text-warmgrau leading-relaxed">
+                <strong>Brief abschreiben.</strong> Schreib den Brief von Hand ab und pass ihn an deinen Schreibstil an. Handgeschriebene Briefe werden im Bundestag tatsächlich gelesen und besprochen.
+              </p>
+            </li>
+            <li className="flex gap-3">
+              <span className="flex-shrink-0 w-6 h-6 rounded-full bg-waldgruen/15 text-waldgruen font-body text-xs font-bold flex items-center justify-center mt-0.5">2</span>
+              <p className="font-body text-sm text-warmgrau leading-relaxed">
+                <strong>Adresse aufschreiben, Briefmarke drauf, ab zur Post.</strong> Die Adresse findest du im Brief.
+              </p>
+            </li>
+            <li className="flex gap-3">
+              <span className="flex-shrink-0 w-6 h-6 rounded-full bg-waldgruen/15 text-waldgruen font-body text-xs font-bold flex items-center justify-center mt-0.5">3</span>
+              <p className="font-body text-sm text-warmgrau leading-relaxed">
+                <strong>Weitersagen.</strong> Je mehr Menschen schreiben, desto mehr Gewicht hat jeder einzelne Brief.
+              </p>
+            </li>
+          </ol>
+        </div>
+
+        {/* Cause-recruit share section: motivate Wahlkreis-Bürger to write their own letters */}
+        <div className="mt-10 pt-8 border-t border-warmgrau/15">
+          <div className="rounded-xl bg-waldgruen/8 border border-waldgruen/20 p-5">
+            <h2 className="font-typewriter text-lg font-semibold text-waldgruen-dark">
+              Gemeinsam noch lauter
+            </h2>
+            <p className="font-body text-sm text-warmgrau leading-relaxed mt-2">
+              Dein Brief wirkt. Und er wirkt noch stärker, wenn weitere Stimmen aus deinem Wahlkreis dazukommen. Briefe aus derselben Gegend zum gleichen Thema bekommen im Bundestag besonderes Gewicht.
+            </p>
+            <p className="font-body text-sm text-warmgrau leading-relaxed mt-3">
+              Motiviere gern andere, mitzumachen! Über Politik meckern fühlt sich noch besser an, wenn man einen Brief schreibt 😉
+            </p>
+
+            {/* Two primary share buttons, equal width */}
+            <div className="grid grid-cols-2 gap-3 mt-5">
+              <a
+                href={emailShareHref}
+                className="inline-flex items-center justify-center gap-2 font-body text-sm font-semibold text-creme bg-waldgruen hover:bg-waldgruen-dark px-3 py-3 rounded-lg transition-colors"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                  <rect width="20" height="16" x="2" y="4" rx="2" />
+                  <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
+                </svg>
+                Per E-Mail
+              </a>
+              <button
+                type="button"
+                onClick={handleShare}
+                className="inline-flex items-center justify-center gap-2 font-body text-sm font-semibold text-creme bg-waldgruen hover:bg-waldgruen-dark px-3 py-3 rounded-lg transition-colors cursor-pointer"
+              >
+                {copied ? (
+                  <>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                      <path d="M20 6 9 17l-5-5"/>
+                    </svg>
+                    Kopiert
+                  </>
+                ) : (
+                  <>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                      <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8" />
+                      <polyline points="16 6 12 2 8 6" />
+                      <line x1="12" x2="12" y1="2" y2="15" />
+                    </svg>
+                    Teilen
+                  </>
+                )}
+              </button>
+            </div>
+
+            {/* Secondary feedback button */}
+            <a
+              href={FOUNDER_FEEDBACK_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="mt-3 inline-flex w-full items-center justify-center gap-2 font-body text-sm font-semibold text-waldgruen bg-creme border-2 border-waldgruen/40 hover:border-waldgruen hover:bg-white px-3 py-2.5 rounded-lg transition-colors"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+              </svg>
+              Feedback &amp; Anregung
+            </a>
+          </div>
+        </div>
+
+        {/* Back to home, centered at the very bottom */}
+        <div className="mt-10 flex justify-center">
+          <a
+            href="/"
+            className="font-body text-sm text-warmgrau/55 hover:text-warmgrau/75 transition-colors underline underline-offset-2"
+          >
+            ← Zurück zur Startseite
+          </a>
+        </div>
 
       </div>
     );

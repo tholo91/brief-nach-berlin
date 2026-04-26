@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { FOUNDER_FEEDBACK_URL } from "@/lib/config";
 
 export default function Footer() {
   return (
@@ -27,6 +28,14 @@ export default function Footer() {
         </span>
 
         <div className="flex gap-6">
+          <a
+            href={FOUNDER_FEEDBACK_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="font-body text-sm text-warmgrau/40 hover:text-warmgrau transition-colors duration-200"
+          >
+            Feedback
+          </a>
           <Link
             href="/impressum"
             className="font-body text-sm text-warmgrau/40 hover:text-warmgrau transition-colors duration-200"

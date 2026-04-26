@@ -2,6 +2,9 @@ import { mistral } from "@/lib/mistral";
 import type { GenerateLetterInput, GenerateLetterResult } from "@/lib/types/wizard";
 import type { PoliticalLevel } from "@/lib/types/politician";
 import { LETTER_LENGTHS, DEFAULT_LETTER_LENGTH } from "@/lib/config";
+
+const MISTRAL_MODEL = "mistral-small-latest";
+const MISTRAL_TEMPERATURE = 0.4;
 // Lean knowledge block, distilled from research on effective German political letters.
 // ~180 tokens. Kept separate from format rules for clarity and future iteration.
 const LETTER_WRITING_KNOWLEDGE = `WIRKSAME POLITISCHE BRIEFE, KERNPRINZIPIEN:
@@ -127,16 +130,17 @@ export async function generateLetter(
     letter: string;
   };
   let response: Awaited<ReturnType<typeof mistral.chat.complete>>;
+  const generationStart = Date.now();
 
   try {
     response = await mistral.chat.complete({
-      model: "mistral-small-latest",
+      model: MISTRAL_MODEL,
       messages: [
         { role: "system", content: systemPrompt },
         { role: "user", content: buildUserPrompt(input) },
       ],
       responseFormat: { type: "json_object" },
-      temperature: 0.4,
+      temperature: MISTRAL_TEMPERATURE,
     });
 
     const content = response.choices?.[0]?.message?.content;
@@ -198,5 +202,8 @@ export async function generateLetter(
     wordCount,
     wordCountInRange,
     fallbackUsed,
+    model: MISTRAL_MODEL,
+    temperature: MISTRAL_TEMPERATURE,
+    generationMs: Date.now() - generationStart,
   };
 }

@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Courier_Prime, Source_Sans_3, Caveat } from "next/font/google";
+import { APP_URL } from "@/lib/config";
 import "./globals.css";
 
 const courierPrime = Courier_Prime({
@@ -19,7 +20,7 @@ const caveat = Caveat({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://brief-nach-berlin.de"),
+  metadataBase: new URL(APP_URL),
   title: "Brief-nach-Berlin | Dein Anliegen an die Politik, in drei Minuten",
   description:
     "Was stört dich? Wir finden die zuständigen Abgeordneten und formulieren deinen Brief, damit dein Anliegen dort ankommt, wo es hingehört.",
@@ -29,7 +30,7 @@ export const metadata: Metadata = {
       "Was stört dich? Wir finden die zuständigen Abgeordneten und formulieren deinen Brief, damit dein Anliegen dort ankommt, wo es hingehört.",
     type: "website",
     locale: "de_DE",
-    url: "https://brief-nach-berlin.de",
+    url: APP_URL,
   },
   twitter: {
     card: "summary_large_image",

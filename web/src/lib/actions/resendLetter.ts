@@ -6,6 +6,7 @@ import { step1Schema, step1bSchema, step2Schema } from "@/lib/validation/wizardS
 import { moderateText } from "@/lib/moderation/moderateText";
 import { generateLetter } from "@/lib/generation/generateLetter";
 import { sendLetterEmail } from "@/lib/email/sendLetterEmail";
+import { buildDebugPayload } from "@/lib/email/buildDebugPayload";
 import { DEFAULT_LETTER_LENGTH } from "@/lib/config";
 
 export async function resendLetterAction(
@@ -38,6 +39,7 @@ export async function resendLetterAction(
       party: data.party,
       ngo: data.ngo,
       letterLength: data.letterLength,
+      toneLevel: data.toneLevel,
     });
 
     const outMod = await moderateText(result.letter);
@@ -55,6 +57,7 @@ export async function resendLetterAction(
       politicianAbgeordnetenwatchUrl: result.selectedPolitician.abgeordnetenwatchUrl,
       letterText: result.letter,
       issueText: data.issueText,
+      debug: buildDebugPayload(data, result, 1),
     });
 
     if (!emailResult.success) {

@@ -1,7 +1,7 @@
 // Central app configuration — change once, updates everywhere
 
 export const APP_NAME = "Brief nach Berlin" as const;
-export const APP_URL = "https://brief-nach-berlin.de" as const;
+export const APP_URL = "https://www.brief-nach-berlin.de" as const;
 export const APP_TAGLINE = "Deine Stimme zählt." as const;
 
 // Email
@@ -42,6 +42,7 @@ export const SHARE_URL_TWITTER = `https://twitter.com/intent/tweet?text=${encode
 export const FOUNDER_NAME = "Thomas Lorenz" as const;
 export const FOUNDER_HOMEPAGE = "https://www.thomas-lorenz.eu" as const;
 export const FOUNDER_LINKEDIN = "https://www.linkedin.com/in/tholo91/" as const;
+export const FOUNDER_FEEDBACK_URL = "https://heyspeak.io/l/WIOENjqJn6z6WKtkWgDEFg" as const;
 
 // Build a public abgeordnetenwatch.de profile URL from a politician's name.
 // Format: lowercase, German umlaut transliteration, hyphen-joined.

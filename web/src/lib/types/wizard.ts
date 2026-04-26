@@ -38,6 +38,9 @@ export interface GenerateLetterResult {
   wordCount: number;
   wordCountInRange: boolean;
   fallbackUsed: boolean; // true when Mistral returned an unknown selected_politician_id
+  model: string;
+  temperature: number;
+  generationMs: number;
 }
 
 export type WizardActionResult =

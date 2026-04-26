@@ -28,7 +28,14 @@
       "Skill(gsd-add-backlog)",
       "Skill(gsd-add-backlog:*)",
       "Skill(gsd-quick)",
-      "Skill(gsd-quick:*)"
+      "Skill(gsd-quick:*)",
+      "WebFetch(domain:www.bundestag.de)",
+      "WebFetch(domain:de.wikipedia.org)",
+      "Skill(gsd-plant-seed)",
+      "Skill(gsd-plant-seed:*)",
+      "WebFetch(domain:www.suche-postleitzahl.org)",
+      "WebFetch(domain:www.in-berlin-brandenburg.com)",
+      "WebFetch(domain:www.berlin-erlebnis-guide.de)"
     ]
   }
 }

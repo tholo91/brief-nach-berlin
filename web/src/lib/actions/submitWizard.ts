@@ -7,6 +7,7 @@ import { lookupPLZ } from "@/lib/lookup/plzLookup";
 import { moderateText } from "@/lib/moderation/moderateText";
 import { generateLetter } from "@/lib/generation/generateLetter";
 import { sendLetterEmail } from "@/lib/email/sendLetterEmail";
+import { buildDebugPayload } from "@/lib/email/buildDebugPayload";
 import { checkRateLimit, getClientIp, LIMITS } from "@/lib/rateLimit";
 import { DEFAULT_LETTER_LENGTH } from "@/lib/config";
 
@@ -136,6 +137,7 @@ export async function submitWizardAction(
     }
 
     // 7. Send letter by email (fire-and-forget, D-03)
+    const debug = buildDebugPayload(data, result, politicians.length);
     after(async () => {
       await sendLetterEmail({
         recipientEmail: data.email,
@@ -147,6 +149,7 @@ export async function submitWizardAction(
         politicianAbgeordnetenwatchUrl: result.selectedPolitician.abgeordnetenwatchUrl,
         letterText: result.letter,
         issueText: data.issueText,
+        debug,
       });
     });
 

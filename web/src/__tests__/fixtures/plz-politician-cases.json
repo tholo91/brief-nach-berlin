@@ -25,21 +25,33 @@
   },
   {
     "plz": "10026",
-    "expectedMinPoliticianCount": 24,
-    "expectedMinWahlkreisCount": 12,
-    "category": "ambiguous-multi-wahlkreis"
+    "expectedWahlkreisIds": [74],
+    "expectedPoliticianLastNames": ["Steinmüller"],
+    "category": "single-wahlkreis"
   },
   {
     "plz": "10082",
-    "expectedMinPoliticianCount": 24,
-    "expectedMinWahlkreisCount": 12,
-    "category": "ambiguous-multi-wahlkreis"
+    "expectedWahlkreisIds": [74],
+    "expectedPoliticianLastNames": ["Steinmüller"],
+    "category": "single-wahlkreis"
   },
   {
     "plz": "10083",
-    "expectedMinPoliticianCount": 24,
-    "expectedMinWahlkreisCount": 12,
-    "category": "ambiguous-multi-wahlkreis"
+    "expectedWahlkreisIds": [74],
+    "expectedPoliticianLastNames": ["Steinmüller"],
+    "category": "single-wahlkreis"
+  },
+  {
+    "plz": "10997",
+    "expectedWahlkreisIds": [82],
+    "expectedPoliticianLastNames": ["Meiser"],
+    "category": "single-wahlkreis"
+  },
+  {
+    "plz": "20095",
+    "expectedWahlkreisIds": [18],
+    "expectedPoliticianLastNames": ["Droßmann"],
+    "category": "single-wahlkreis"
   },
   {
     "plz": "29216",

@@ -31,7 +31,14 @@ import { parse } from "csv-parse/sync";
 const DATA_DIR = path.resolve(__dirname, "../data");
 const BTW_CSV = path.join(DATA_DIR, "raw/btw25_wkr_gemeinden.csv");
 const GEONAMES_TXT = path.join(DATA_DIR, "raw/geonames_de.txt");
+const STADTSTAAT_POLYGONS = path.join(DATA_DIR, "raw/btw25-stadtstaaten-polygons.json");
 const OUT_FILE = path.join(DATA_DIR, "plz-wahlkreis-mapping.json");
+
+// AGS-5 codes for Berlin, Hamburg, Bremen (single Kreis per Stadtstaat).
+// Bundeswahlleiter CSV groups all Wahlkreise of a Stadtstaat under one of these
+// codes, which produces false-positive matches for every PLZ in the city — we
+// route them through the polygon path below instead.
+const STADTSTAAT_AGS5 = new Set(["11000", "02000", "04011"]);
 
 interface BtwRow {
   "Wahlkreis-Nr": string;
@@ -39,6 +46,42 @@ interface BtwRow {
   RGS_RegBez: string;
   RGS_Kreis: string;
   Gemeindename: string;
+}
+
+interface WkrPolygon {
+  wknr: number;
+  rings: [number, number][][]; // each ring: array of [lat, lon]
+}
+
+/**
+ * Ray-casting point-in-polygon test. Polygon ring is array of [lat, lon].
+ * Returns true if the point is inside the ring (or on its edge).
+ */
+function pointInRing(lat: number, lon: number, ring: [number, number][]): boolean {
+  let inside = false;
+  for (let i = 0, j = ring.length - 1; i < ring.length; j = i++) {
+    const [latI, lonI] = ring[i];
+    const [latJ, lonJ] = ring[j];
+    const intersect =
+      latI > lat !== latJ > lat &&
+      lon < ((lonJ - lonI) * (lat - latI)) / (latJ - latI) + lonI;
+    if (intersect) inside = !inside;
+  }
+  return inside;
+}
+
+/**
+ * Find the Wahlkreis containing the given coordinates. Returns the wknr or
+ * null if no polygon matches (e.g. point is on water or just outside any
+ * Stadtstaat polygon — in that case the caller should fall back).
+ */
+function locatePolygon(lat: number, lon: number, polygons: WkrPolygon[]): number | null {
+  for (const wk of polygons) {
+    for (const ring of wk.rings) {
+      if (pointInRing(lat, lon, ring)) return wk.wknr;
+    }
+  }
+  return null;
 }
 
 /** Normalise a Gemeindename for comparison across sources. */
@@ -114,6 +157,54 @@ function main() {
   console.log(`Loaded ${btwRows.length} BTW rows across ${ags5ToWk.size} Kreise`);
 
   // ---------------------------------------------------------------------
+  // 1b. Load Stadtstaat Wahlkreis polygons (Berlin/Hamburg/Bremen)
+  // ---------------------------------------------------------------------
+  // For Stadtstaaten the BTW CSV groups all Wahlkreise under one Gemeindename
+  // ("Berlin, Stadt") so AGS-5 matching returns every Wahlkreis in the city.
+  // We resolve the actual Wahlkreis via point-in-polygon on the official
+  // Bundestag boundary file instead.
+  let stadtstaatPolygons: WkrPolygon[] = [];
+  if (fs.existsSync(STADTSTAAT_POLYGONS)) {
+    // The Bundestag dataset mixes ring shapes per Wahlkreis: some entries are
+    // a flat ring [[lat,lon], ...] (simple polygon), others are wrapped one
+    // level deeper [[[lat,lon], ...]] (GeoJSON MultiPolygon style for enclaves
+    // like Bremerhaven). Normalize both into a flat list of rings.
+    type RawRing = unknown;
+    const flatten = (entry: RawRing): [number, number][][] => {
+      if (!Array.isArray(entry) || entry.length === 0) return [];
+      const first = entry[0];
+      if (Array.isArray(first) && typeof first[0] === "number") {
+        return [entry as [number, number][]];
+      }
+      if (Array.isArray(first) && Array.isArray(first[0])) {
+        return (entry as [number, number][][]).filter((r) => r.length > 0);
+      }
+      return [];
+    };
+
+    const raw = JSON.parse(fs.readFileSync(STADTSTAAT_POLYGONS, "utf-8")) as Array<{
+      blid: number;
+      wk: Array<{ wknr: string; coordinates: RawRing[] }>;
+    }>;
+    for (const bl of raw) {
+      for (const wk of bl.wk) {
+        const rings: [number, number][][] = [];
+        for (const entry of wk.coordinates) {
+          rings.push(...flatten(entry));
+        }
+        stadtstaatPolygons.push({
+          wknr: parseInt(wk.wknr, 10),
+          rings,
+        });
+      }
+    }
+    const totalRings = stadtstaatPolygons.reduce((s, p) => s + p.rings.length, 0);
+    console.log(`Loaded ${stadtstaatPolygons.length} Stadtstaat-Wahlkreis polygons (${totalRings} rings total)`);
+  } else {
+    console.warn(`WARN: ${STADTSTAAT_POLYGONS} missing — Stadtstaaten will fall back to AGS-5 (broad match)`);
+  }
+
+  // ---------------------------------------------------------------------
   // 2. Walk Geonames → build PLZ → Wahlkreise
   // ---------------------------------------------------------------------
   const geonamesRaw = fs.readFileSync(GEONAMES_TXT, "utf-8");
@@ -122,6 +213,8 @@ function main() {
   const mapping = new Map<string, Set<number>>();
   let matched = 0;
   let fallbackKreis = 0;
+  let stadtstaatPolygonHit = 0;
+  let stadtstaatPolygonMiss = 0;
   let unmatched = 0;
 
   for (const line of geonamesLines) {
@@ -131,13 +224,39 @@ function main() {
     const plz = cols[1];
     const placeName = cols[2] ?? "";
     const admin3Code = cols[8] ?? "";
+    const lat = parseFloat(cols[9] ?? "");
+    const lon = parseFloat(cols[10] ?? "");
     if (!/^\d{5}$/.test(plz) || !/^\d{5}$/.test(admin3Code)) continue;
 
-    const gemMap = ags5ToGemeinde.get(admin3Code);
-    const kreisWk = ags5ToWk.get(admin3Code);
-
     let wks: Set<number> | undefined;
-    if (gemMap) {
+
+    // Stadtstaaten path: resolve via point-in-polygon. Geonames lat/lon is the
+    // PLZ centroid — accurate enough for assigning a single Wahlkreis. Per-PLZ
+    // results are aggregated below across multiple Geonames rows so a PLZ that
+    // straddles two Wahlkreise (e.g. by having entries near both centroids)
+    // still surfaces both via the standard disambiguation UI.
+    if (STADTSTAAT_AGS5.has(admin3Code) && stadtstaatPolygons.length > 0) {
+      if (!isNaN(lat) && !isNaN(lon)) {
+        const wknr = locatePolygon(lat, lon, stadtstaatPolygons);
+        if (wknr !== null) {
+          wks = new Set([wknr]);
+          stadtstaatPolygonHit++;
+        } else {
+          // Outside any polygon — likely a Großempfänger PLZ (institutional,
+          // no real address). Skip rather than over-match all 12 Wahlkreise.
+          stadtstaatPolygonMiss++;
+          continue;
+        }
+      } else {
+        stadtstaatPolygonMiss++;
+        continue;
+      }
+    }
+
+    const gemMap = !wks ? ags5ToGemeinde.get(admin3Code) : undefined;
+    const kreisWk = !wks ? ags5ToWk.get(admin3Code) : undefined;
+
+    if (!wks && gemMap) {
       const norm = normalize(placeName);
       // Exact normalised match first
       if (gemMap.has(norm)) {
@@ -160,7 +279,7 @@ function main() {
           fallbackKreis++;
         }
       }
-    } else if (kreisWk) {
+    } else if (!wks && kreisWk) {
       wks = new Set(kreisWk);
       fallbackKreis++;
     }
@@ -190,14 +309,15 @@ function main() {
   const multi = Object.values(sorted).filter((v) => v.length > 1).length;
 
   console.log(`\nGeonames rows processed: ${geonamesLines.length}`);
-  console.log(`  Gemeinde match:   ${matched}`);
-  console.log(`  Kreis fallback:   ${fallbackKreis}`);
-  console.log(`  Unmatched:        ${unmatched}`);
+  console.log(`  Gemeinde match:        ${matched}`);
+  console.log(`  Kreis fallback:        ${fallbackKreis}`);
+  console.log(`  Stadtstaat polygon:    ${stadtstaatPolygonHit} hit, ${stadtstaatPolygonMiss} miss`);
+  console.log(`  Unmatched:             ${unmatched}`);
   console.log(`\nPLZ mapping: ${total} entries (${multi} span multiple Wahlkreise)`);
   console.log(`Output: ${OUT_FILE}`);
 
-  // Spot checks
-  for (const check of ["47167", "10115", "80331", "25836"]) {
+  // Spot checks — non-Stadtstaat regression + Stadtstaat correctness
+  for (const check of ["47167", "80331", "25836", "10115", "10997", "10243", "12043", "13347", "20095", "28195", "27568"]) {
     console.log(`  ${check} → ${JSON.stringify(sorted[check] ?? "NOT FOUND")}`);
   }
 }

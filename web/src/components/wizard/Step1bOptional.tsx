@@ -104,7 +104,7 @@ export function Step1bOptional({ onNext, onSkip, defaultValues }: Step1bOptional
             })}
           </div>
           <p className="text-xs text-warmgrau/50 mt-2 italic">
-            Standardmäßig sind 1,5 Seiten voreingestellt für eine gute Balance aus Tiefe und Prägnanz.
+            Standardmäßig ist 1 Seite voreingestellt — kurz, prägnant und in 5 Minuten abgeschrieben.
           </p>
         </div>
       </div>

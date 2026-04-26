@@ -9,14 +9,15 @@ export const EMAIL_SUBJECT = "Dein Brief nach Berlin ist fertig" as const;
 export const EMAIL_SENDER_NAME = APP_NAME;
 
 // Letter generation targets
+// Bands calibrated for handwritten DIN A4 (~180-220 words per page with normal handwriting)
 export const LETTER_LENGTHS = {
-  "1": { min: 200, max: 300, label: "1 Seite" },
-  "1.5": { min: 400, max: 550, label: "1,5 Seiten" },
-  "2": { min: 600, max: 800, label: "2 Seiten" },
+  "1": { min: 180, max: 240, label: "1 Seite" },
+  "1.5": { min: 280, max: 360, label: "1,5 Seiten" },
+  "2": { min: 380, max: 480, label: "2 Seiten" },
 } as const;
 
 export type LetterLength = keyof typeof LETTER_LENGTHS;
-export const DEFAULT_LETTER_LENGTH: LetterLength = "1.5";
+export const DEFAULT_LETTER_LENGTH: LetterLength = "1";
 
 // Sharing — used in email template and success page
 export const SHARE_TEXT = `Ich habe gerade einen Brief an meinen Abgeordneten geschrieben – in unter 3 Minuten. Probier es selbst: ${APP_URL}` as const;

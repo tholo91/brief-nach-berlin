@@ -186,6 +186,16 @@ Not MVP-critical; schedule after first real user cohort. Estimated effort: 2–4
 Plans:
 - [ ] TBD (promote with /gsd:review-backlog when ready)
 
+### Phase 999.10: v2 — Optionales zweites Eingabefeld "Zielvorstellung / Wunsch" (BACKLOG)
+
+**Goal:** Nutzer beschreibt nicht nur das Problem, sondern auch wie eine Lösung aussehen könnte. Macht den Brief konkreter und konstruktiver — nicht nur Beschwerde, sondern Forderung. Offene Frage: erhöht das die Hürde am Anfang zu sehr? Eventuell als optionaler Klappschritt nach dem Hauptinput. Erstmal parken, in v2 testen.
+
+**Requirements:** TBD
+**Plans:** 0 plans
+
+Plans:
+- [ ] TBD (promote with /gsd:review-backlog when ready)
+
 ## Progress
 
 **Execution Order:**

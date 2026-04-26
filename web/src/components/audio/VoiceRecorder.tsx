@@ -203,7 +203,7 @@ export function VoiceRecorder({ onTranscription, onStateChange, disabled }: Voic
             <span className="font-typewriter text-sm text-warmgrau tabular-nums">
               {formatElapsed(elapsedSeconds)}
             </span>
-            <span>Aufnahme stoppen</span>
+            <span>Beschreibe dein Anliegen...</span>
           </>
         )}
 

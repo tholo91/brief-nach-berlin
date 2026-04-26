@@ -196,6 +196,16 @@ Plans:
 Plans:
 - [ ] TBD (promote with /gsd:review-backlog when ready)
 
+### Phase 999.11: Spenden annehmen via Buy Me a Coffee (BACKLOG)
+
+**Goal:** Nach erfolgreichem Brief eine niedrigschwellige Möglichkeit anbieten, das Tool finanziell zu unterstützen. Primärer Ort: am Ende der Email mit dem fertigen Briefentwurf, optional auch dezent auf der Success-Page. Kanäle prüfen: Buy Me a Coffee, Ko-fi, Stripe-Donate-Link. Niedrige Friction, kein Account, keine PII-Erfassung. Open Questions: (1) Platzierung — vor/nach Footer in der Mail? Auch auf Success-Page oder nur Mail? (2) Tonalität — locker ("Spendier mir einen Kaffee") vs. seriös ("Initiative unterstützen"). (3) Impact-Messung — Conversion-Rate, durchschnittliche Spendenhöhe. (4) DSGVO-Implikationen für Buy-Me-a-Coffee/Ko-fi (Drittanbieter-Tracking).
+
+**Requirements:** TBD
+**Plans:** 0 plans
+
+Plans:
+- [ ] TBD (promote with /gsd:review-backlog when ready)
+
 ## Progress
 
 **Execution Order:**

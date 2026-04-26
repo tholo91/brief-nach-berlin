@@ -1,0 +1,561 @@
+Return-Path: <bounces-452420662-1017809499@ha.d.sender-sib.com>
+Delivered-To: tho.lorenz@posteo.de
+Received: from proxy02.posteo.name ([127.0.0.1])
+	by dovecot04.posteo.name (Dovecot) with LMTP id RDsuBUiq7WlV5gAA0kU8NQ
+	for <tho.lorenz@posteo.de>; Sun, 26 Apr 2026 09:41:41 +0200
+Received: from proxy02.posteo.de ([127.0.0.1])
+	by proxy02.posteo.name (Dovecot) with LMTP id YC2yAjm/7WkUrgIAGFAyLg
+	; Sun, 26 Apr 2026 09:41:41 +0200
+Received: from mailin02.posteo.de (unknown [10.0.0.62])
+	by proxy02.posteo.de (Postfix) with ESMTPS id 4g3JYK0PJQzys2
+	for <tho.lorenz@posteo.de>; Sun, 26 Apr 2026 09:41:41 +0200 (CEST)
+Received: from mx01.posteo.de (localhost [IPv6:::1])
+	by mailin02.posteo.de (Postfix) with ESMTP id F3C0C2021D
+	for <tho.lorenz@posteo.de>; Sun, 26 Apr 2026 09:41:40 +0200 (CEST)
+X-Virus-Scanned: amavisd-new at posteo.de
+X-Posteo-Spam-Status: v=1; e=base64; a=aes-256-gcm;
+ d=Fl/f7JrUCBqBIptTlrjLI7QFOhsBZ7nQKS3y0I1jgEF1uFaLbGX+jDlVWdQz4XaKkT7i5hFJb
+ Rcsv6lQn4KEgymjd759UsWf8aho2nlkmX8UYz1K+wmXTTHbB/GC+/YjHfvFWv8zJP6e+g2laEW5
+ ZMIM1OZ6YKbWoHS9gJyDCFHwlJ9Y08yDk88N8fJRKaR97d7VV5CRWXNxyrdhotcisp0T4iLfDOo
+ i8mGJHyETCrm3K/xg3rhvoDhEqvGbRwzt1nSUMLe8kJ8cVCdFf6B3FYs6TsFz/dsW56YUKUqIEl
+ i3OmRfCpMDhepjWtfeRzPPOPfW42r29tRgw/CyjGCAF0d3MHFECMXnUjRYFcSJPfA8cFF9TcZBb
+ 2nc8kPhsTD1hXxH7eEafQBMlpf4gPMoNHnQveWWZjh6U4Sq9+g/5Ck2RfnKY2jIxSiSd/W3YkA8
+ tcknMt8O+w+vGOQU9CeQJ3zlbqY6pTkHtsUdtGhERhS8tslZ1K7H7gq+0Fq86OQ3mm3w6dyfDEB
+ aF4lsSQv+BWojElFBUq++p8gkJ1nq2HqP4TVM181Y8ceZRHBz6UY/Pbl8MedSXne2e+uDEAvX/D
+ o37CiUZt4vQ5+Z9DEt5fVGaResgMsS1C2CxFD0SWIbQsQdPQGlQYnO4Y5vB7zWPJ1d+cQNBVcjx
+ cWBXl/+KKJVyC/kZwxqWF31HZnloMr/e/oVredhH6DbqauYzg==
+Authentication-Results: posteo.de; dmarc=fail (p=none dis=none) header.from=posteo.de
+Authentication-Results: posteo.de; spf=pass smtp.mailfrom=ha.d.sender-sib.com
+X-Posteo-Antispam-Signature: v=1; e=base64; a=aes-256-gcm; d=qhYi9f/o6vnCeWyGucjrsuxFgxsV9ejM9kX3tGtYWYfNzCeHWkyLWNKBVqs36MJG2czcMXBI1NyCs5iYff59zDMWrrHUxZEkYerEE+f5q9SDC+BInKnXd/vpyvQZKPM7r9rFteG1
+Authentication-Results: posteo.de;
+	dkim=pass (1024-bit key) header.d=sendinblue.com header.i=@sendinblue.com header.b=Uh1RHXc9;
+	dkim-atps=neutral
+X-Posteo-TLS-Received-Status: TLSv1.3
+Received: from ha.d.sender-sib.com (ha.d.sender-sib.com [77.32.148.27])
+	by mx01.posteo.de (Postfix) with ESMTPS id 4g3JYJ3YslzykM
+	for <tho.lorenz@posteo.de>; Sun, 26 Apr 2026 09:41:40 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sendinblue.com;
+ q=dns/txt; s=mail; bh=ihu6zLkKZgKoHPspTrYgmVr/uB9BvDUWT3tDu3dxpEE=;
+ h=from:subject:date:to:mime-version:content-type:content-transfer-encoding:list-unsubscribe:x-csa-complaints:list-unsubscribe-post:message-id:x-sib-id:feedback-id;
+        b=Uh1RHXc91JbAbWQDF8Joi23GQVD8KtTc4MH7vs1Q/gSWFDbQSnzJ7VQf4YKvpjiwKjO7IuvMkgAl
+        W8EQgduen5SvpoxJc3HBKAA96wYNcCOjK98Ayi9FkaljldtJIWKwKZ2bljEMc16PaX+bd3TE0R8o
+        mCmygOky9dY/hdt68Mw=
+X-Mailin-EID: NDUyNDIwNjYyfnRoby5sb3JlbnpAcG9zdGVvLmRlfjwyMDI2MDQyNjA3NDEuMjk4MDI4NzkyMDBAc210cC1yZWxheS5tYWlsaW4uZnI%2BfmhhLmQuc2VuZGVyLXNpYi5jb20%3D
+Subject: Dein Brief nach Berlin ist fertig
+X-sib-id: FIwQjhsK1QUodTNxhbjKVlqEZceLIq8wuyAaAr-NxlF3ujO9S91W2bc7oT8H8za5TrOLV3ZNFUFZRgT94qU-_dg2CTnxyVG2FElpG3dwnqmpddbEUQ7s-qV6StdfPNJdqAbsQKRMISgMzB9JpivebpkG0BD2ElklWx78OYK7j0HBzXw
+Message-Id: <202604260741.29802879200@smtp-relay.mailin.fr>
+List-Unsubscribe-Post: List-Unsubscribe=One-Click
+To: <tho.lorenz@posteo.de>
+Date: Sun, 26 Apr 2026 07:41:34 +0000
+Origin-messageId: <202604260741.29802879200@smtp-relay.mailin.fr>
+Feedback-ID: 77.32.148.27:10762161_-1:10762161:Sendinblue
+From: "Brief nach Berlin" <thomas_lorenz@posteo.de>
+List-Unsubscribe: <https://bahgcbgb.r.af.d.sendibt2.com/tr/un/li/2wSJQvkSQPg0W36RtMkCZioCYDw5BsTodtobC4htU98JDKlIwD6h2Tm9hpsCh3-PLUs--1_5e-2VojJO6AGw9Mq_VY18aHZyRktZQjEf5uHQLuPiaD1n9nkWzOYLZiJRzGsZEc06_-HNpNbB9n06vKodKDUggHaxRLT2Y0em-XXlmLXQdtWq0pDhb3hy3MNlryZ72cPC5iF8g0nvn_gmUUUoytl3TiJBWBgJ-EAtAoZy85zhTBhLaQ>
+X-CSA-Complaints: csa-complaints@eco.de
+Content-Transfer-Encoding: quoted-printable
+Content-Type: text/html; charset=utf-8
+Mime-Version: 1.0
+X-Api-Version: v3
+
+<!DOCTYPE html><html lang=3D"de"><head>
+  <meta charset=3D"utf-8"/>
+  <meta name=3D"viewport" content=3D"width=3Ddevice-width, initial-scale=3D=
+1.0"/>
+  <link href=3D"https://fonts.googleapis.com/css2?family=3DCaveat:wght@500&=
+amp;display=3Dswap" rel=3D"stylesheet"/>
+  <!--[if mso]>
+  <style>td { font-family: 'Courier New', Courier, monospace !important; }<=
+/style>
+  <![endif]-->
+</head>
+<body style=3D"margin:0;padding:0;background-color:#FAF8F5;font-family:Geor=
+gia,&#39;Times New Roman&#39;,serif;"><img width=3D"1" height=3D"1" src=3D"=
+https://bahgcbgb.r.af.d.sendibt2.com/tr/op/_oBXicwSF1HmcONXlmMQkDoeYgNKxZt-=
+9vasFyq7ZoHTxM489vIIGcH-MTNiV25PYUfB74YFf21kS7-A04PecsJM0Jbk1BuXInk41QXGAtc=
+TG7Fp1VfMACm6in2R9nGi9dWa0OwR5BeqN5CHnNJPJ1PIVzHTv--uj3d9YHFyYzS5ULjZTkdCgK=
+l0pUsjO8qtwfgzXimPCRLu5jBXRkpBJl5KeV2qUQ" style=3D"mso-hide:all"/>
+
+  <table role=3D"presentation" width=3D"100%" cellpadding=3D"0" cellspacing=
+=3D"0" style=3D"background-color:#FAF8F5;">
+    <tbody><tr>
+      <td align=3D"center" style=3D"padding:20px 0;">
+
+        <!-- Outer 2-column wrapper: vertical airmail stripe + content -->
+        <table role=3D"presentation" width=3D"608" cellpadding=3D"0" cellsp=
+acing=3D"0" style=3D"max-width:608px;width:100%;border-collapse:collapse;">
+          <tbody><tr>
+            <!-- Vertical airmail stripe (left edge): solid red fallback fo=
+r Outlook/Gmail; gradient for modern clients -->
+            <td valign=3D"top" width=3D"8" bgcolor=3D"#C1121F" style=3D"wid=
+th:8px;font-size:0;line-height:0;background:repeating-linear-gradient(180de=
+g,#C1121F 0 14px,#FAF8F5 14px 18px,#1D3557 18px 32px,#FAF8F5 32px 36px);">=
+=C2=A0</td>
+
+            <!-- Content column -->
+            <td valign=3D"top" style=3D"padding:0;">
+
+              <table role=3D"presentation" width=3D"600" cellpadding=3D"0" =
+cellspacing=3D"0" style=3D"max-width:600px;width:100%;background-color:#fff=
+fff;border-collapse:collapse;">
+
+                <!-- Airmail stripe header (D-06): thin diagonal red/white/=
+blue like landing page -->
+                <tbody><tr>
+                  <td colspan=3D"7" style=3D"height:4px;font-size:0;line-he=
+ight:0;background:repeating-linear-gradient(-45deg,#C1121F,#C1121F 8px,#FAF=
+8F5 8px,#FAF8F5 12px,#1D3557 12px,#1D3557 20px,#FAF8F5 20px,#FAF8F5 24px);"=
+>=C2=A0</td>
+                </tr>
+
+                <!-- Title: "Brief nach Berlin" -->
+                <tr>
+                  <td colspan=3D"7" style=3D"padding:28px 32px 16px;text-al=
+ign:center;background-color:#ffffff;">
+                    <h1 style=3D"margin:0;font-family:Georgia,&#39;Times Ne=
+w Roman&#39;,serif;font-size:22px;color:#2D5016;font-weight:bold;letter-spa=
+cing:0.5px;">Brief nach Berlin</h1>
+                    <p style=3D"margin:8px 0 0;font-family:Georgia,&#39;Tim=
+es New Roman&#39;,serif;font-size:14px;color:#666666;">Dein Brief ist ferti=
+g zum Absenden.</p>
+                  </td>
+                </tr>
+
+                <!-- Intro: warm founder voice, no AI mention -->
+                <tr>
+                  <td colspan=3D"7" style=3D"padding:0 32px 20px;background=
+-color:#ffffff;">
+                    <div style=3D"border-left:3px solid rgba(45,80,22,0.45)=
+;padding-left:16px;">
+                      <p style=3D"margin:0;font-family:Georgia,&#39;Times N=
+ew Roman&#39;,serif;font-size:15px;color:#4A4A4A;line-height:1.75;font-styl=
+e:italic;">Hier ist dein Briefentwurf. Lies ihn gr=C3=BCndlich durch, bevor=
+ du ihn abschreibst, und pass ihn an, damit es dein Brief wird. Formulierun=
+gen, Ton, einzelne Argumente: alles darf von dir kommen. Wir helfen dir hof=
+fentlich, damit dein Anliegen schneller auf dem richtigen Schreibtisch land=
+et. Danke, dass du dich engagierst.</p>
+                    </div>
+                  </td>
+                </tr>
+
+                <!-- Brief block (D-08, section 1) -->
+                <tr>
+                  <td colspan=3D"7" style=3D"padding:0 32px 8px;background-=
+color:#ffffff;">
+                    <div style=3D"background-color:#FAF8F5;border:1px solid=
+ #E0DCD7;border-radius:4px;padding:24px;">
+                      <p style=3D"margin:0;font-family:&#39;Courier New&#39=
+;,Courier,monospace;font-size:14px;line-height:1.7;color:#4A4A4A;white-spac=
+e:pre-wrap;">26.04.2026<br/><br/>Sehr geehrter Herr =C3=96zdemir,<br/><br/>=
+als Duisburgerin beobachte ich seit L=C3=A4ngerem mit Sorge, wie sich die L=
+ebensbedingungen im Norden unserer Stadt verschlechtern. Besonders f=C3=BCr=
+ junge Menschen fehlen attraktive Freizeitangebote und Perspektiven. Gleich=
+zeitig ist der =C3=B6ffentliche Nahverkehr unzureichend, was die Abwanderun=
+g noch beschleunigt. Die strukturellen Probleme =E2=80=93 Leerstand, wirtsc=
+haftliche Stagnation und soziale Spannungen =E2=80=93 erfordern dringend ei=
+ne =C3=BCbergreifende L=C3=B6sung.<br/><br/>Die Ruhrgebietskommunen teilen =
+diese Herausforderungen, doch bisher fehlt eine gemeinsame Strategie. Gerad=
+e in traditionellen SPD-Hochburgen w=C3=A4chst die Unzufriedenheit, was rec=
+htspopulistischen Kr=C3=A4ften in die H=C3=A4nde spielt. Hier sehe ich die =
+Chance, durch eine verbindliche Ruhrpott-Agenda 2040 die Weichen f=C3=BCr e=
+ine lebenswerte Zukunft zu stellen.<br/><br/>Ich bitte Sie daher, sich im B=
+undestag f=C3=BCr eine enge Abstimmung mit den SPD-Abgeordneten aus dem Ruh=
+rgebiet einzusetzen. Ziel sollte ein ressort=C3=BCbergreifendes F=C3=B6rder=
+programm sein, das wirtschaftliche Entwicklung, soziale Teilhabe und Mobili=
+t=C3=A4tsinfrastruktur gleicherma=C3=9Fen st=C3=A4rkt. Nur so k=C3=B6nnen w=
+ir die Abwanderung stoppen und den Zusammenhalt sichern.<br/><br/>Mit freun=
+dlichen Gr=C3=BC=C3=9Fen<br/>[Ihr Name]</p>
+                    </div>
+                    <p style=3D"margin:8px 0 0;font-family:Georgia,&#39;Tim=
+es New Roman&#39;,serif;font-size:11px;color:#999999;font-style:italic;line=
+-height:1.5;">
+                      Lieber per Hand abschreiben. Aber wenn du den Text zw=
+ischendurch in Word brauchst: ins Feld klicken, Cmd/Strg + A, dann Cmd/Strg=
+ + C.
+                    </p>
+                  </td>
+                </tr>
+
+                <!-- Postadresse (D-08, section 2) -->
+                <tr>
+                  <td colspan=3D"7" style=3D"padding:16px 32px 24px;backgro=
+und-color:#ffffff;">
+                    <h2 style=3D"margin:0 0 12px;font-family:Georgia,&#39;T=
+imes New Roman&#39;,serif;font-size:16px;color:#2D5016;font-weight:bold;">E=
+mpf=C3=A4nger (auf den Umschlag)</h2>
+                    <div style=3D"background-color:#FAF8F5;border:1px solid=
+ #E0DCD7;border-radius:4px;padding:16px 20px;">
+                      <p style=3D"margin:0 0 10px;font-family:&#39;Courier =
+New&#39;,Courier,monospace;font-size:14px;line-height:1.8;color:#4A4A4A;">
+                        <strong>Mahmut =C3=96zdemir, MdB</strong><br/>
+                        Deutscher Bundestag<br/>
+                        Platz der Republik 1<br/>11011 Berlin
+                      </p>
+                      <p style=3D"margin:0;padding-top:10px;border-top:1px =
+solid #E0DCD7;font-family:Georgia,&#39;Times New Roman&#39;,serif;font-size=
+:13px;line-height:1.5;">
+                        <a href=3D"https://bahgcbgb.r.af.d.sendibt2.com/tr/=
+cl/ordOIL5sCono0ixdZ26NCUdhEedGNPk7RD7-SQMf7i16gqZQ68e7-9z_CF2G7HacNGG47_cF=
+qWb67djyiJkj_KgCilzIOvwRCnml4w7czHEF0bkxeYlRRGkrdzZfaafpygmLIRXdOfdm7jtCWgn=
+PasirrH5nev2aDkkPY0xr81O6ByN-jbCLjVAM2JhYXm3FL1hzQHUZAP1jsqUtbspIYeKDmii2BL=
+oq34Wod3EiqVRkqOA2OIM89OXlRaaZWME77ez09mkIWpMYGdETvYb7AJGk9Cu37d1bvGKlkuraj=
+13QGtc2mFbI6Cy7JoQc4I1A" target=3D"_blank" rel=3D"noopener noreferrer" styl=
+e=3D"color:#2D5016;text-decoration:none;font-weight:bold;">Profil ansehen =
+=E2=86=92</a>
+                        <span style=3D"color:#666666;">=C2=A0Stimmverhalten=
+ und Anfragen auf abgeordnetenwatch.de</span>
+                      </p>
+                    </div>
+                    <p style=3D"margin:10px 0 0;font-family:Georgia,&#39;Ti=
+mes New Roman&#39;,serif;font-size:12px;color:#666666;">Vergiss nicht, dein=
+e eigene Adresse oben links auf den Umschlag und oben rechts in den Brief z=
+u schreiben.</p>
+                  </td>
+                </tr>
+
+                <!-- Naechste Schritte (D-08, section 3) -->
+                <tr>
+                  <td colspan=3D"7" style=3D"padding:0 32px 24px;background=
+-color:#ffffff;">
+                    <h2 style=3D"margin:0 0 16px;font-family:Georgia,&#39;T=
+imes New Roman&#39;,serif;font-size:16px;color:#2D5016;font-weight:bold;">N=
+=C3=A4chste Schritte</h2>
+
+                    <p style=3D"margin:0 0 8px;font-family:Georgia,&#39;Tim=
+es New Roman&#39;,serif;font-size:15px;color:#333333;font-weight:bold;">Emp=
+fehlung: Brief von Hand abschreiben</p>
+                    <p style=3D"margin:0 0 12px;font-family:Georgia,&#39;Ti=
+mes New Roman&#39;,serif;font-size:14px;color:#4A4A4A;line-height:1.6;">Han=
+dgeschriebene Briefe werden im Bundestag tats=C3=A4chlich gelesen und bespr=
+ochen. Sie signalisieren echtes pers=C3=B6nliches Engagement und werden nic=
+ht wie Massenpost behandelt. Die Handschrift macht deinen Brief unverwechse=
+lbar pers=C3=B6nlich.</p>
+                    <p style=3D"margin:0 0 16px;font-family:Georgia,&#39;Ti=
+mes New Roman&#39;,serif;font-size:14px;color:#666666;line-height:1.6;">Du =
+kannst den Brief auch ausdrucken. Das ist immer noch besser als gar nichts.=
+</p>
+
+                    <table role=3D"presentation" cellpadding=3D"0" cellspac=
+ing=3D"0" width=3D"100%">
+                      <tbody><tr>
+                        <td style=3D"padding:6px 0;font-family:Georgia,&#39=
+;Times New Roman&#39;,serif;font-size:14px;color:#4A4A4A;line-height:1.5;">
+                          <span style=3D"display:inline-block;width:24px;he=
+ight:24px;background-color:#2D5016;color:#ffffff;border-radius:50%;text-ali=
+gn:center;line-height:24px;font-size:12px;font-weight:bold;margin-right:10p=
+x;vertical-align:middle;">1</span>
+                          Brief von Hand abschreiben oder ausdrucken
+                        </td>
+                      </tr>
+                      <tr>
+                        <td style=3D"padding:6px 0;font-family:Georgia,&#39=
+;Times New Roman&#39;,serif;font-size:14px;color:#4A4A4A;line-height:1.5;">
+                          <span style=3D"display:inline-block;width:24px;he=
+ight:24px;background-color:#2D5016;color:#ffffff;border-radius:50%;text-ali=
+gn:center;line-height:24px;font-size:12px;font-weight:bold;margin-right:10p=
+x;vertical-align:middle;">2</span>
+                          Empf=C3=A4nger-Adresse mittig auf den Umschlag sc=
+hreiben
+                        </td>
+                      </tr>
+                      <tr>
+                        <td style=3D"padding:6px 0;font-family:Georgia,&#39=
+;Times New Roman&#39;,serif;font-size:14px;color:#4A4A4A;line-height:1.5;">
+                          <span style=3D"display:inline-block;width:24px;he=
+ight:24px;background-color:#2D5016;color:#ffffff;border-radius:50%;text-ali=
+gn:center;line-height:24px;font-size:12px;font-weight:bold;margin-right:10p=
+x;vertical-align:middle;">3</span>
+                          Eigene Adresse oben links als Absender eintragen
+                        </td>
+                      </tr>
+                      <tr>
+                        <td style=3D"padding:6px 0;font-family:Georgia,&#39=
+;Times New Roman&#39;,serif;font-size:14px;color:#4A4A4A;line-height:1.5;">
+                          <span style=3D"display:inline-block;width:24px;he=
+ight:24px;background-color:#2D5016;color:#ffffff;border-radius:50%;text-ali=
+gn:center;line-height:24px;font-size:12px;font-weight:bold;margin-right:10p=
+x;vertical-align:middle;">4</span>
+                          Briefmarke aufkleben (aktuell 0,95 EUR f=C3=BCr S=
+tandardbrief)
+                        </td>
+                      </tr>
+                      <tr>
+                        <td style=3D"padding:6px 0;font-family:Georgia,&#39=
+;Times New Roman&#39;,serif;font-size:14px;color:#4A4A4A;line-height:1.5;">
+                          <span style=3D"display:inline-block;width:24px;he=
+ight:24px;background-color:#2D5016;color:#ffffff;border-radius:50%;text-ali=
+gn:center;line-height:24px;font-size:12px;font-weight:bold;margin-right:10p=
+x;vertical-align:middle;">5</span>
+                          Ab in den Briefkasten!
+                        </td>
+                      </tr>
+                    </tbody></table>
+                  </td>
+                </tr>
+
+                <!-- Primary CTA: Neuen Brief schreiben -->
+                <tr>
+                  <td colspan=3D"7" style=3D"padding:0 32px 20px;background=
+-color:#ffffff;">
+                    <a href=3D"https://bahgcbgb.r.af.d.sendibt2.com/tr/cl/S=
+hUkPn_zueeDO3qpPsbBR59UVwhlByFi_3_XZz7xuhgFtAumAWG4okmUIlfgGJgmv-LzawQ2i3hR=
+A4eyPg7F3GYz2_VLwIZ72LClPzE7sqRVUAVonMBvbufukx3ODYarJpR60EGbKZiGBl74psViQDj=
+B96byhnihH1KeMbS-21Fln-MLg1rDX41wQBn7z6P1GSh3GAFZs7cmUranV1ueVrJD3gTELJxd9Y=
+vn3wx4ZfbyB1Qr5TF_qdMgLDNnqYGSxlC7LZm8yQ-WYaaFyNmy8ohU7TQR69B21X1H9IOztMXP5=
+MuvJa_YRBoLq9MTUdMNbYNkpoDJQSIDp61ZekwoA8LYcRtSZ8Q7Xg9qEbZyAqRw4YEnbyqxU2BG=
+Uqlzn2siAphGU46fEWklq0NTb0m7eqyknGfKus7e6a4ggas9ZhRwkM02indlWICt0JWgSRwyLX-=
+MJDEfr6NbbP0f89mbGnZW_To4XOR5wz_61MXGH-GzqOGt8STQ5DcTPGBAjxwKYRr07nTl-oHt6V=
+fVUT0BaTEkSQeYDkioO8VbqkfFBanwdD8B8fkY074vejBro_jBeV3KCXXjsRMX9iR3mLaowOpS7=
+V4R2BFAmfLxBcZZJA6A6rZ7_fSitKaFi8ooCJp_MMi3FWi_J0PmSkqSZxG1wNT-w22qX8tongZZ=
+bgIKBS1ZuEi7L8l_W4bxfnkkYT6UX5eAtIM1hPOBAK9M2p-J0YESm9DqcSjMPXanaWltS6vsgle=
+fvjKj87AflsWZ8pcG1nO3aNhDlw6RnVC-71cYWhJT8I6MwcJaDYbhIlyc4AoeeAq-VovCPa63jW=
+eZHEgDH0WoLpuV6_eNUNf6V8tQ_44NkqCbuc3Wx1KfrOtIkMpbRYBuy1VLP1Ly15W0x1kZD1kBI=
+46Nq0CxgK957AYWqnRW5WF1c1LpdDjxqsifoLq6wwzotc4JM1ocFZv4OfXOwmhiC4gRwPYCd2fo=
+miBXyPmkTUgjKOmCkqffZ2uaTgdet9-jPpXmWWgfJLejJZBYa16eRhslZd_H3_MHNDGa1WXMQlk=
+l_s8GCRI95nayvshvPAUebmV1VfJp7NCrySQ6_vHbsQ5Jk1xdBEiWEPFxFBQzJgJW2ACBjxTRCc=
+oe-8D5ONmv6pi3quhlKcWnMiYFOAOOnco80bzd5tgoKBAyJvQYhphvvPkk_jhrAJqndGJtmnRLG=
+ldyM2_NI3wPfiZHr_yhJ_EbCtEAcZ1lrYfnlaE2N9pqm6L3kQvjmSn8BlVI5Bh0yK7o9xfgu4QI=
+tR5gglOW88a6Ch2SSM0FEKEYa2A6GK3_9IPhr4Wp27xUzaGsQiXSd3EhqqglfbdzkHe8uexsmuq=
+xKcEQ6E47vT4smVyx5E59as8e4RUq9gcWMUsQbG3369U74TFHsANkjxLrWMdo3NDON6rLwrqhfw=
+f-O0SeJL4c7wRV50RqZ4TOVaB_xJDhj80RYxnjVA6fSR8WrgCjJ8ul3lHNNMKNnbWHRU8HWHjlV=
+TepSC1vMzKnGDZUoGmz1UTMlgHBnkdOMQwGSQUuC7sd5l1xTDwLiyMdHy2wQc2OGJMgiXyXgmia=
+fqIo7b6gqIpBjMIquUWqE1yujc-ghvdGzMA1Sp-022ABXbqcRAFDRYBUOZWFPCGSuVmk4qk295L=
+LhYLqhTU57O0mklAoTMnhrCKzG6MV7JieNJ0vBjL5QaKK8oprvqUq_ZQOm9_IECWlBKgnpqnips=
+0EcpYdbjFo9bF4ekKPq453iCwHKBjW6ABph-G7zx018jE7AIAORn2iUSjutPp5qrclERUGIr-0X=
+VlBJdkV7KTYSVPRoXgcSGo475g4M7Fg" style=3D"display:inline-block;background-c=
+olor:#2D5016;color:#ffffff;font-family:Georgia,&#39;Times New Roman&#39;,se=
+rif;font-size:14px;font-weight:bold;text-decoration:none;padding:12px 24px;=
+border-radius:6px;">Neuen Brief schreiben</a>
+                  </td>
+                </tr>
+
+                <!-- Cause-recruit block: motivate sender to invite Wahlkre=
+is-people to write their own letters -->
+                <tr>
+                  <td colspan=3D"7" style=3D"padding:8px 32px 24px;backgrou=
+nd-color:#ffffff;">
+                    <div style=3D"background-color:#FAF8F5;border:1px solid=
+ #E0DCD7;border-radius:6px;padding:20px 22px;">
+                      <h2 style=3D"margin:0 0 8px;font-family:Georgia,&#39;=
+Times New Roman&#39;,serif;font-size:16px;color:#2D5016;font-weight:bold;">=
+Gemeinsam noch lauter</h2>
+                      <p style=3D"margin:0 0 14px;font-family:Georgia,&#39;=
+Times New Roman&#39;,serif;font-size:14px;color:#4A4A4A;line-height:1.6;">
+                        Dein Brief wirkt. Und er wirkt noch st=C3=A4rker, w=
+enn weitere Stimmen aus deinem Wahlkreis dazukommen. Briefe aus derselben G=
+egend zum gleichen Thema bekommen im Bundestag besonderes Gewicht. Wem in d=
+einem Umfeld geht es wie dir?
+                      </p>
+                      <table role=3D"presentation" cellpadding=3D"0" cellsp=
+acing=3D"0" width=3D"100%">
+                        <tbody><tr>
+                          <td style=3D"padding-right:6px;width:34%;" valign=
+=3D"top">
+                            <a href=3D"https://bahgcbgb.r.af.d.sendibt2.com=
+/tr/cl/yC4zLH_pM59PC0-yvVHlxC4o48zLsKoAkyBI_NuCfFnbDTIyLLgFuvq7SxwqE1SoyEMu=
+8uJShOg6QvfAoY0e3uDS728et9MQ8cL-orwJnUlZNVykJ0-1HRfOMkwSqCg6Iz1XtpwpBwPC_HD=
+BPFsbwxMz7j3ZdwWAmENiDG2o8JW9o6G_EwgJpltw_7953jRm2k0AVNuxl5STSRXoPGvUjGd9uD=
+S2t_kpWGMgMmCocnYS3OR_zzghhobLvCPk1zzGUuSg18732sp81gs7ilHQECGlHdaMhNdJxGxpx=
+spdnPCODwREDcrYtgGlaTJB3s4KwpkpLIIXOGSmIH0MRAmfjARaW9m22s6Wz2-_zeO4cgBFNm7X=
+kZDf0BnKPxbQPaejv3NakSlKso1TdsGcFfGePTKZ1MxSaa0RZc-IG-C-uI7O4LllwXrwGnjA6Pj=
+wly2rzGblztSYH9ErPiWFh2c2Oqt-gjqywG4a8w1E2t7W_Sjb5pY6Wu_0gdl8TUJcE_nK5KWmKV=
+lFLIePaoEaP5-Usmq0RGnlqpSLAmkj-0WpEytShNFT9CPOahMBEK5C_VXe1K_Mzq1nsHXBpPBkK=
+n_i--7fKfMSGnZZw6S4n9Jit4kL1UgQFv4YVLb1KO627hg6dXIDrf_8y9SHEK34WuY2m_VmopyG=
+6tvgsjjfx2W4NVDzrv3O2OtVDpc9uZ3Ta46JkQ9cIWphOKccb1Xn3XvQlJD6DXfqgIY6ZGW_0VE=
+zjMJaER1ZoS-Jt93ARGdKhboMvZ2Y1c7I74Mr0bPIyC0zXTsOtNf4VEpWVGi9wcNvMmgguanz-q=
+pwSPQsaNY0fr5P0BQfCfMwV_KtsjW8qms9Ok6qCb3zuBZvlQINFrcXc1WRewg9bFdLfcTFPlQMf=
+k9cv2KVOaOWfiHNzl-y9o9TxrilzQX-_vv8G40lvgVrvRpHKgU6WLeC910Kb_lnel6Vzpc8Rvl2=
+e9XMH7LiyOEpTcYLaREv31ax-4kEjsi7Ukne2vhvV7pp6U-G9RzEuN5zCgcNwmWwVQv_xjeXTHD=
+bHWuYLVWCXY7bc_2sRNg5dcLch2x38Wm5rTcO4y4oU9NemvvesmonR8K_ZtT1JLthZjimEpgpNS=
+O77y4L4iitIDdtsFxEJEFwDWxRd8E7wselcAe1y9ENxP2Tl_q1jl0Dc8yV2TElfk7rcEue06pUc=
+XsiuQXgIriW0bR8Qf3KYHRYsaI33trK" style=3D"display:block;text-align:center;b=
+ackground-color:#ffffff;color:#2D5016;font-family:Georgia,&#39;Times New Ro=
+man&#39;,serif;font-size:13px;font-weight:bold;text-decoration:none;padding=
+:10px 8px;border-radius:6px;border:2px solid #2D5016;">WhatsApp</a>
+                          </td>
+                          <td style=3D"padding:0 3px;width:33%;" valign=3D"=
+top">
+                            <a href=3D"https://bahgcbgb.r.af.d.sendibt2.com=
+/tr/cl/gWG0dGaTkN94XugJ20evKD9V3jfkaTT-OKqcRKHLfbpAOSqvTXZhosIYshPcuJJcavT1=
+1kgO7AsqZoyqjv4cTVLTF1x_QOgM05420RRm3C1GG1hoG3mZwTl8bcdtSpaFbF7-T1LHcTnfww2=
+q5F7owmODxvhWwjA4Ga_7BLXFDjKlZVt5Jnq6EE8-ZVR1hf3NdBFgICGu85KY6sr_LK2VrFP5cU=
+yvBZiDe7zWrm99X-W7D1l_a9CdsQ90lWwgUQ_dZB1jj2UrxQ-xkDO1mVYLTR5AlDbrp8GP3eZy4=
+ITV62qeQlQ7TcBFpMdVxPbcbXDW2c5w8QuvwTVo7_TDBdzNfcKUwORMp3LhLQOwZQqszIXiuWWv=
+zr5fU4IJCft2D7u0PL_UsXEmD0-Cou0I9auRAw4W-OTiooT7aMxHyvbZRtLy2o2jk1U8z6U4nE8=
+C41NwaopB5mMzy7OYPcptH3JZsNMg0ucyER1LIhhqcv4zAWylMgqdBzVdvG0UeEOIP5vML2S2_L=
+DZHX-k1sr8Wxhq-9JGYMjhXcGuhewEQGuj9TaEHBDACOvx0YPRzfxGTMFPglVAP6ym1aNvl0OKx=
+sYIXKsF2pZpuE-hmgplaJs2Q2IC4E4EbPyxUcWShX7K5YSshseskMnWg3jEcv5T7DzojUPWggbu=
+-f_qEHaaeagAEivDbzpZc7Iwc8d0TcII-C4riLhzhqsPXibk2rX6Q9a8lk6NVSktrxkfzYzrFKR=
+YtftzTQcYq1MY0kVfEpimkPTGG_x6lxw-LLtycLzrHLmk4h6pdsJFDMVMvisPFnwKXlL8c1t0E1=
+zhFHb5lylRZILjKCw9MDk6A7dEIxhwW0CRQUyHIejdArQ4YmkbpxxiHM0nqPeP04lJhkqGj5Rzk=
+0ifpYs7TFjSZHXXCAguRrWGmM7ZG8739Edmhue78yYjyjeLx1EaUCuaznV81o9pESiZVYS8Xqm7=
+UZSCk4ZQDHXmt3_9lqS08zfQd-kmEJeqiXqccneU8wsVXTKvVQC9uuJ0di1g4mecsFGP4aGBdsQ=
+m06_GYEvc_9ejVaVBp773rEWFma2x6tLX_KkeID1XUyKmHQTHLXbJrojPSRQtZP8m9ZO4Aaz0lg=
+0rGeAHqtYBwmiLZM8acFmO5qlWQLdeW9cgTd7zJVYIs6SgM6TT-QZOx31te64wkb2pgTqfREcpi=
+XWJI27I9eWWmgcEQsFMaKPhXYho9o7AmTgUO8hUN7n4F56Q1AnWmz2TU3B6y67a_nvu_Vwl10Mj=
+ueZtwSuMDGMLJMwjKc6ZML7ARvMZply4dl0" style=3D"display:block;text-align:cent=
+er;background-color:#ffffff;color:#2D5016;font-family:Georgia,&#39;Times Ne=
+w Roman&#39;,serif;font-size:13px;font-weight:bold;text-decoration:none;pad=
+ding:10px 8px;border-radius:6px;border:2px solid #2D5016;">Telegram</a>
+                          </td>
+                          <td style=3D"padding-left:6px;width:33%;" valign=
+=3D"top">
+                            <a href=3D"mailto:?subject=3DSchreibst%20du%20a=
+uch%20einen%20Brief%20nach%20Berlin%3F&amp;body=3DIch%20habe%20heute%20mein=
+em%20Abgeordneten%20im%20Bundestag%20geschrieben%2C%20weil%20mich%20ein%20l=
+okales%20Thema%20besch%C3%A4ftigt.%20Briefe%20aus%20dem%20eigenen%20Wahlkre=
+is%20bekommen%20besonderes%20Gewicht%3A%20wenn%20mehrere%20Stimmen%20aus%20=
+derselben%20Gegend%20zum%20gleichen%20Thema%20schreiben%2C%20wird%20das%20A=
+nliegen%20nachweislich%20st%C3%A4rker%20geh%C3%B6rt.%20Magst%20du%20auch%20=
+einen%20Brief%20schreiben%2C%20mit%20deinen%20eigenen%20Worten%3F%20Brief%2=
+0nach%20Berlin%20macht%20es%20einfach%20und%20kostenlos%3A%20https%3A%2F%2F=
+brief-nach-berlin.de" style=3D"display:block;text-align:center;background-c=
+olor:#ffffff;color:#2D5016;font-family:Georgia,&#39;Times New Roman&#39;,se=
+rif;font-size:13px;font-weight:bold;text-decoration:none;padding:10px 8px;b=
+order-radius:6px;border:2px solid #2D5016;">Per E-Mail</a>
+                          </td>
+                        </tr>
+                      </tbody></table>
+                      <p style=3D"margin:12px 0 0;font-family:Georgia,&#39;=
+Times New Roman&#39;,serif;font-size:12px;color:#888888;line-height:1.5;fon=
+t-style:italic;">
+                        Wichtig: jeder schreibt mit eigenen Worten. Identis=
+che Briefe gelten im Bundestag als Massenpost und verlieren ihre Wirkung.
+                      </p>
+                    </div>
+                  </td>
+                </tr>
+
+                <!-- Tool-promo (smaller, separate from cause block) -->
+                <tr>
+                  <td colspan=3D"7" style=3D"padding:0 32px 24px;background=
+-color:#ffffff;text-align:center;">
+                    <p style=3D"margin:0;font-family:Georgia,&#39;Times New=
+ Roman&#39;,serif;font-size:13px;color:#888888;line-height:1.6;">
+                      Brief nach Berlin gef=C3=A4llt dir? <a href=3D"https:=
+//bahgcbgb.r.af.d.sendibt2.com/tr/cl/tvjEXNLGm40wBMMbtYZSKVXRK_SWM3Sa7raK-M=
+TA5MXjhmGKhvpIVdZXUW7s07LyAzJhBB_11ykrAIisAZUliPXJ_x1UZbsYhmoQosHopMdqL253j=
+eDjn_7DUjPb3G1lsbvft0mTnfWhbBzvmKJnVEUrqCdIRc-pvSZXV-qbSv6Xy7GB3WbSssaCgFp3=
+18aFDH1OYdJuhYCpb_x47HNKs4wM0FYVUzp3kB1FoYbU6MNFwPBctkFuOdGYRYkW7eHue39gThZ=
+YQmoQb7nTUtN1_8OiB8GDudvntaIPa0liEiSqJY7ShEaSCZkb5qWBRBQkuZotUr_3oUIBr_PNck=
+KpOX_1Wax8cVwGPiB8_nLC1oyg-0GAdAnFs0XBhEyvOoV_e4_X8lfPxS6B1EzvmSN9JL0E7QIo0=
+MldO704GkdICcXHp5r16vJspc0vhxoO_jXhRq8fuJbDBy6oh49tMmO-tHO4OOvO_M7K9YYRNNHm=
+8Bjbcby_ucu1v5XfkA4_xHYQJwk6tsTWZAVJQob0Cb3cM0Ksz8HFkJsRrUadr_InxfKkojTBFrD=
+On5rRb7c6q1z26umqRy9p5kK3mBQvFpUkLflyXtEnZPXfhagudV1_nkDZuiNA2fWsFPUkZRoefP=
+vd2PtK4RpobXWt-x3mz0bB1_T8v8J__6SvF3ljpaAl7AQqUz4bWF3x-X9CcFMD9vYKnYst6SMK6=
+4KC59l3no_fjdgeIdZ-httxYOCaSfHydnxnYAWWK7neEg3ej2xsvnN_5peKd_M3O4QIVhbedr6D=
+UjLGksHTgjKhKMk_9szhKcfOf_wJ94foz1DLo2VyBopv9Z0BW2ypjDBc9uSd0HjZnGOGuxSc5gS=
+wjfGhFphNcztHm6wUn92ti3Ey5DMnAD6XzgUBPcTp-ZNy8J2-fyzRD9VpcsyWcZ4GL2uf4CbHDJ=
+bqlw5PEqlQfBzSRybX1nImWwfqPA6yvQojQcBKZjUxBuItOz9_urFYVDvoZNwzDvtAkKyti8en1=
+d8L5mFOkqLC7R-JMJt4pfTTDpdsOoqIUKNsgjo" target=3D"_blank" rel=3D"noopener n=
+oreferrer" style=3D"color:#2D5016;text-decoration:none;font-weight:bold;">A=
+uf LinkedIn teilen =E2=86=92</a>
+                    </p>
+                  </td>
+                </tr>
+
+                <!-- Personal sign-off from Thomas (handwritten Caveat) -->
+                <tr>
+                  <td colspan=3D"7" style=3D"padding:8px 32px 8px;backgroun=
+d-color:#ffffff;text-align:left;">
+                    <p style=3D"margin:0 0 4px;font-family:Georgia,&#39;Tim=
+es New Roman&#39;,serif;font-size:14px;color:#4A4A4A;line-height:1.6;">
+                      Vielen Dank, dass du schreibst.
+                    </p>
+                    <p style=3D"margin:0;font-family:&#39;Caveat&#39;,&#39;=
+Brush Script MT&#39;,&#39;Lucida Handwriting&#39;,cursive;font-size:32px;co=
+lor:#1D3557;line-height:1.1;">
+                      Thomas
+                    </p>
+                    <p style=3D"margin:6px 0 0;font-family:Georgia,&#39;Tim=
+es New Roman&#39;,serif;font-size:12px;color:#888888;line-height:1.5;">
+                      <a href=3D"https://bahgcbgb.r.af.d.sendibt2.com/tr/cl=
+/Zhi28y8GVpavbxMQuZY-prWEfghoZKdVQ7FLCrKIIh6FQDiRnyhwiF-AHILpVw56a5a5271Yf0=
+MtWfDZWvKQC5XoaV2SuwGB9wBuQXlORYD1AtzNEKcFX5P2tE_Fc6WltgHGW4gokoZcetL4jmbZa=
+M5Jos6wwGJeAFTi_Di2EJaLjghCZwJvoX9CK4OdMf_CMKmq4pQd78v8ycoQ3gfGX_r9ZSJsfNKm=
+x1pSspGCi7EUbJNjwhigdaWWnIJu1PmoMcr2K1Ohny65w3YNoGcNYA" target=3D"_blank" r=
+el=3D"noopener noreferrer" style=3D"color:#888888;text-decoration:underline=
+;">thomas-lorenz.eu</a>
+                      =C2=A0=C2=B7=C2=A0
+                      <a href=3D"https://bahgcbgb.r.af.d.sendibt2.com/tr/cl=
+/BBIMBQcRZZO0j2F0ikmKJjgkH8q10Frn5ehitR9jR8UQ7nFMwea6v2_4GdlYjtNEyxQ2oYTDX1=
+pi9e_SDfla7ommbaeEsjN5ZGLCBzCwglGWz_P6TwPDd5uaPQWvWf9Rkjh28kjMrxx5fBLUAUFFD=
+eliETqiJe1KHfeIWhzNZAaFtbVojdJBsP1lCjT86sOkvQ-eMQgry2zU9c7rouuoMMh5_1QpPhOT=
+QnXSXRB5DGtvJnT9pDhfHph0HkXyBeHVhIr3VtLVGy-sD8uuJEPLU-eiF67QJozLnKCmC_DR" t=
+arget=3D"_blank" rel=3D"noopener noreferrer" style=3D"color:#888888;text-de=
+coration:underline;">LinkedIn</a>
+                    </p>
+                  </td>
+                </tr>
+
+                <!-- Footer -->
+                <tr>
+                  <td colspan=3D"7" style=3D"padding:24px 32px 16px;backgro=
+und-color:#FAF8F5;border-top:1px solid #E0DCD7;text-align:center;">
+                    <p style=3D"margin:0;font-family:Georgia,&#39;Times New=
+ Roman&#39;,serif;font-size:12px;color:#999999;">
+                      <a href=3D"https://bahgcbgb.r.af.d.sendibt2.com/tr/cl=
+/i4Hb8v8MZr098egv7f7mlRXrT62--9zSYC9q2A130IqcO5Nt0cCEmu5rpoMah1IBust-NnFOLU=
+yG28PXpOcSO8wdNgE9n8ZYVDBcg2SNGFTUPixRJ7aX6PWwiqfN2Kqdh7oovPiosphv_7zxqpxcK=
+zBiSYzXAxiX0FuyBaoVvbHd6vG9lMjZ-vcjrIVcVMZNj9U7I7wRYibSAraP9m6MDZoezGvIBJHB=
+HuqVo8bsKJPHuaws1SQoR3Ap61vEEqh3YzgwbL5WNcCaL0_vpiBl_A" style=3D"color:#2D5=
+016;text-decoration:none;">Brief nach Berlin</a> =C2=B7 Deine Stimme z=C3=
+=A4hlt.
+                    </p>
+                  </td>
+                </tr>
+
+                <!-- Legal / disclaimer block (smaller, below footer) -->
+                <tr>
+                  <td colspan=3D"7" style=3D"padding:8px 32px 24px;backgrou=
+nd-color:#FAF8F5;text-align:center;">
+                    <p style=3D"margin:0 0 6px;font-family:Georgia,&#39;Tim=
+es New Roman&#39;,serif;font-size:11px;color:#aaaaaa;line-height:1.5;">
+                      <strong>Hinweis:</strong> Dieser Brief ist ein generi=
+erter Entwurf, keine Meinungs=C3=A4u=C3=9Ferung von Brief nach Berlin. Wir =
+empfehlen, ihn an deinen eigenen Stil und deine pers=C3=B6nliche Haltung an=
+zupassen, bevor du ihn verschickst. Die Verantwortung f=C3=BCr den Inhalt l=
+iegt bei dir.
+                    </p>
+                    <p style=3D"margin:0 0 6px;font-family:Georgia,&#39;Tim=
+es New Roman&#39;,serif;font-size:11px;color:#aaaaaa;line-height:1.5;">
+                      Bitte pr=C3=BCfe Politikerdaten und Brieftext vor dem=
+ Versand anhand offizieller Quellen (<a href=3D"https://bahgcbgb.r.af.d.sen=
+dibt2.com/tr/cl/_L8SUfkdHVkkEMusI3Eqvnth46XYmT1RJy1Hw_vSl44F4hCaxDcm9VxjO7j=
+mMTDlWXjaptJAySjLxmnje5c2EU74tCEnExsG6LmriifFNr-Z9qrv3YL4e7avTPlPa9JPTrAUkg=
+kJnD7iDPmLNT8d_v9eEZeLvHk2GF3dEof-bfp4LVdZs76abAxNvY3V2QLLq1b7qEz0kFz2BBj1h=
+vttrcln_3P2T9NJb_hCkeBkIYTYUye7UpmgMTM-FgxgqiajBoVxSz52o1t_0WYHJ1p4RQV81Cmn=
+i59pXNfXhUeOhjtmPvgoNxeS3mQ9dsaivhaV" target=3D"_blank" rel=3D"noopener nor=
+eferrer" style=3D"color:#888888;">abgeordnetenwatch.de</a>, <a href=3D"http=
+s://bahgcbgb.r.af.d.sendibt2.com/tr/cl/FWhKGqJuD6qkDq2G29ZGkD41uISYd0Wl4U0_=
+Sr23duheYworPBibqMDCTj8uEivCHDnfpKfFTaMkRswPpafaH1gk-9_T-30MNFwuO7DjZatiBdN=
+i6pUkD4I49Wenufb9AQv6JlJZ_tN15wS78VQO_ORX8Q6eQDcvsKouFQswdqZti0ItXbisTAk1Vq=
+LPhbke31vFPvGAc9IhGGOZyCTQDVspV4SqKv86lG9O55xHMb0rdhZKP8_HfQcNLIFQgedWEJRiv=
+Zf1UgtwR1kA" style=3D"color:#888888;">bundestag.de</a>, Landtags- oder Rath=
+auswebsite).
+                    </p>
+                    <p style=3D"margin:0;font-family:Georgia,&#39;Times New=
+ Roman&#39;,serif;font-size:11px;color:#aaaaaa;line-height:1.5;">
+                      <a href=3D"https://bahgcbgb.r.af.d.sendibt2.com/tr/cl=
+/nuEe_WzH1Z03tUtVVB00zU5bJiKOmAWahHZDNta0mZPa8LfMqyw_SJ_e3SQh4wOcyXwNgVvy3f=
+gCM2S_WG7HI93KTZ5gSbfRa0iykXoAnsmj7t8Gd0q_41gApjbS_MiO-B1LXE0txGxDc3nSmqBUz=
+x6Bh3HgD9PmN-TSgxyWeb6JUs9DAk9_2FrpVp9A2MgSB164sEQ80zU9FEOgVn7Tf_QOaA8xh0sN=
+v5wW6JKWLqVuzMLHIIp2BzPC62LTSFd0fcx5lO9iLra2XOL6oe-uKgX8cfWNWfxvbAzgdBQq" s=
+tyle=3D"color:#888888;">Datenschutzerkl=C3=A4rung</a>: deine Daten werden n=
+ach Versand dieser E-Mail nicht gespeichert.
+                    </p>
+                  </td>
+                </tr>
+
+              </tbody></table>
+
+            </td>
+          </tr>
+        </tbody></table>
+
+      </td>
+    </tr>
+  </tbody></table>
+
+
+
+</body></html>

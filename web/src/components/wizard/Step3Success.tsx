@@ -12,9 +12,6 @@ import {
   SHARE_URL_TELEGRAM,
   SHARE_URL_EMAIL,
   SHARE_URL_LINKEDIN,
-  WIZARD_PATH,
-  FOUNDER_HOMEPAGE,
-  FOUNDER_LINKEDIN,
 } from "@/lib/config";
 
 interface Step3SuccessProps {
@@ -172,20 +169,16 @@ export function Step3Success({ result, wizardData, politicians }: Step3SuccessPr
   ) {
     return (
       <div>
-        {/* Envelope icon */}
-        <div className="mb-6">
-          <svg width="48" height="48" viewBox="0 0 48 48" fill="none" className="text-waldgruen" aria-hidden="true">
+        {/* Header: envelope + headline side by side */}
+        <div className="flex items-center gap-3 mb-3">
+          <svg width="44" height="44" viewBox="0 0 48 48" fill="none" className="text-waldgruen flex-shrink-0" aria-hidden="true">
             <rect x="4" y="10" width="40" height="28" rx="3" stroke="currentColor" strokeWidth="2.5" fill="none" />
             <path d="M4 13 L24 28 L44 13" stroke="currentColor" strokeWidth="2.5" fill="none" strokeLinejoin="round" />
-            <path d="M30 22l6 6m0-6l-6 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" opacity="0" />
-            <circle cx="36" cy="14" r="5" fill="#4ade80" stroke="white" strokeWidth="2" />
-            <path d="M34 14l1.5 1.5L37.5 13" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
           </svg>
+          <h1 className="font-typewriter text-[28px] font-semibold leading-[1.2] text-waldgruen-dark m-0">
+            Dein Brief ist fertig!
+          </h1>
         </div>
-
-        <h1 className="font-typewriter text-[28px] font-semibold leading-[1.2] text-waldgruen-dark">
-          Dein Brief ist fertig!
-        </h1>
         <p className="font-body text-base text-warmgrau leading-relaxed mt-3">
           Wir haben dir den Brief per E-Mail geschickt. Schau in dein Postfach.
         </p>
@@ -196,16 +189,12 @@ export function Step3Success({ result, wizardData, politicians }: Step3SuccessPr
             <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="flex-shrink-0 text-waldgruen" aria-hidden="true">
               <path d="M17 3a2.85 2.85 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/>
             </svg>
-            Mach diesen Brief zu deinem.
+            Mach diesen Brief zu deinem Brief.
           </p>
           <p className="font-body text-sm text-warmgrau/75 leading-relaxed">
-            Lies ihn durch und pass ihn vor dem Abschreiben an. Ton, Formulierungen, einzelne Argumente: alles darf von dir kommen. Der Entwurf kommt von KI, die Unterschrift ist deine.
+            Lies dir die Mail durch und pass den Brief an, damit er sich nach dir anfühlt und dein Anliegen perfekt platziert. Ton, Formulierungen, einzelne Argumente: Der Entwurf kommt von uns, die Unterschrift ist deine .
           </p>
         </div>
-        <p className="font-body text-xs text-warmgrau/50 mt-2 leading-relaxed">
-          KI kann Fehler machen. Bitte prüfe Politikerdaten und Inhalt vor dem Versand anhand offizieller Quellen (<a href="https://www.abgeordnetenwatch.de" target="_blank" rel="noopener noreferrer" className="underline underline-offset-2 hover:text-warmgrau/70 transition-colors">abgeordnetenwatch.de</a>, <a href="https://www.bundestag.de" target="_blank" rel="noopener noreferrer" className="underline underline-offset-2 hover:text-warmgrau/70 transition-colors">bundestag.de</a>).
-        </p>
-
         {/* Step-by-step instructions */}
         <div className="mt-8 space-y-4">
           <h2 className="font-body text-sm font-semibold text-warmgrau/70 uppercase tracking-wide">
@@ -239,6 +228,9 @@ export function Step3Success({ result, wizardData, politicians }: Step3SuccessPr
             <h2 className="font-typewriter text-lg font-semibold text-waldgruen-dark">
               Gemeinsam noch lauter
             </h2>
+            <p className="font-body text-sm text-warmgrau/85 leading-relaxed mt-2 italic">
+              Motiviere gern andere, mitzumachen! Über Politik meckern fühlt sich noch besser an, wenn man einen Brief schreibt 😉
+            </p>
             <p className="font-body text-sm text-warmgrau leading-relaxed mt-2">
               Dein Brief wirkt. Und er wirkt noch stärker, wenn weitere Stimmen aus deinem Wahlkreis dazukommen. Briefe aus derselben Gegend zum gleichen Thema bekommen im Bundestag besonderes Gewicht. Wem in deinem Umfeld geht es wie dir?
             </p>
@@ -332,17 +324,24 @@ export function Step3Success({ result, wizardData, politicians }: Step3SuccessPr
           </p>
         </div>
 
-        {/* Resend help */}
-        <div className="mt-8">
+        {/* Tertiary actions: resend + back home (same size as share buttons) */}
+        <div className="mt-8 flex gap-6 justify-center">
           <button
             type="button"
             onClick={() => setResendOpen((o) => !o)}
-            className="font-body text-xs text-warmgrau/50 hover:text-warmgrau/70 transition-colors cursor-pointer underline underline-offset-2"
+            className="font-body text-sm text-warmgrau/55 hover:text-warmgrau/75 transition-colors cursor-pointer underline underline-offset-2"
           >
             Keine E-Mail erhalten?
           </button>
-          {resendOpen && (
-            <div className="mt-3 p-4 bg-warmgrau/5 rounded-lg space-y-3">
+          <a
+            href="/"
+            className="font-body text-sm text-warmgrau/55 hover:text-warmgrau/75 transition-colors underline underline-offset-2"
+          >
+            ← Zurück zur Startseite
+          </a>
+        </div>
+        {resendOpen && (
+          <div className="mt-3 p-4 bg-warmgrau/5 rounded-lg space-y-3">
               <p className="font-body text-sm text-warmgrau leading-relaxed">
                 Prüfe deinen Spam-Ordner. Falls nichts ankommt, überprüfe deine E-Mail-Adresse und sende den Brief erneut.
               </p>
@@ -401,52 +400,7 @@ export function Step3Success({ result, wizardData, politicians }: Step3SuccessPr
               </div>
             </div>
           )}
-        </div>
 
-        {/* Bottom actions */}
-        <div className="mt-6 space-y-3">
-          <a
-            href={WIZARD_PATH}
-            className="w-full inline-flex items-center justify-center gap-2 font-body text-sm font-semibold text-waldgruen border-2 border-waldgruen/40 hover:border-waldgruen px-4 py-2.5 rounded-lg transition-colors"
-          >
-            <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-              <path d="M12 5v14M5 12l7-7 7 7"/>
-            </svg>
-            Neuen Brief schreiben
-          </a>
-          <p className="text-center">
-            <a
-              href="/"
-              className="font-body text-xs text-warmgrau/50 hover:text-warmgrau/70 transition-colors"
-            >
-              ← Zurück zur Startseite
-            </a>
-          </p>
-        </div>
-
-        {/* Founder credit */}
-        <div className="mt-10 pt-6 border-t border-warmgrau/10 text-center">
-          <p className="font-body text-xs text-warmgrau/55 leading-relaxed">
-            Gebaut von{" "}
-            <a
-              href={FOUNDER_HOMEPAGE}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-waldgruen/80 hover:text-waldgruen-dark underline underline-offset-2 transition-colors"
-            >
-              Thomas Lorenz
-            </a>
-            {" · "}
-            <a
-              href={FOUNDER_LINKEDIN}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-waldgruen/80 hover:text-waldgruen-dark underline underline-offset-2 transition-colors"
-            >
-              LinkedIn
-            </a>
-          </p>
-        </div>
       </div>
     );
   }
@@ -550,7 +504,7 @@ export function Step3Success({ result, wizardData, politicians }: Step3SuccessPr
                   Brief wird erstellt...
                 </span>
               ) : (
-                "Brief anfordern"
+                "Brief erstellen"
               )}
             </button>
           </div>

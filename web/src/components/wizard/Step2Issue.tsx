@@ -9,41 +9,17 @@ const SUBMIT_STAGES = [
   "Brief wird geprüft...",
 ];
 
-const TOPIC_EXAMPLES: { label: string; placeholder: string }[] = [
-  {
-    label: "Verkehr",
-    placeholder:
-      "z.B. Die Radwege in meiner Stadt sind in einem katastrophalen Zustand. Als Vater von zwei Kindern fahre ich täglich...",
-  },
-  {
-    label: "Wohnen",
-    placeholder:
-      "z.B. Die Mieten in meiner Nachbarschaft sind in den letzten Jahren massiv gestiegen. Junge Familien können sich die Stadt nicht mehr leisten...",
-  },
-  {
-    label: "Bildung",
-    placeholder:
-      "z.B. An der Grundschule meines Kindes teilen sich 340 Kinder zwölf Tablets. Der Digitalpakt Schule kommt nicht an...",
-  },
-  {
-    label: "Klima & Umwelt",
-    placeholder:
-      "z.B. In unserer Region wird eine Waldfläche für ein Logistikzentrum gerodet, obwohl Alternativstandorte existieren...",
-  },
-  {
-    label: "Gesundheit",
-    placeholder:
-      "z.B. In meinem Landkreis gibt es keinen freien Kinderarzt mehr. Die nächste Praxis mit Kapazität ist 45 Kilometer entfernt...",
-  },
-  {
-    label: "Demokratie",
-    placeholder:
-      "z.B. Ich mache mir Sorgen um den Umgangston in politischen Debatten und den wachsenden Vertrauensverlust in demokratische Institutionen...",
-  },
+const PLACEHOLDER_EXAMPLES: string[] = [
+  "z.B. Die Radwege in meiner Stadt sind in einem katastrophalen Zustand. Als Vater von zwei Kindern fahre ich täglich...",
+  "z.B. Die Mieten in meiner Nachbarschaft sind in den letzten Jahren massiv gestiegen. Junge Familien können sich die Stadt nicht mehr leisten...",
+  "z.B. An der Grundschule meines Kindes teilen sich 340 Kinder zwölf Tablets. Der Digitalpakt Schule kommt nicht an...",
+  "z.B. In unserer Region wird eine Waldfläche für ein Logistikzentrum gerodet, obwohl Alternativstandorte existieren...",
+  "z.B. In meinem Landkreis gibt es keinen freien Kinderarzt mehr. Die nächste Praxis mit Kapazität ist 45 Kilometer entfernt...",
+  "z.B. Ich mache mir Sorgen um den Umgangston in politischen Debatten und den wachsenden Vertrauensverlust in demokratische Institutionen...",
 ];
 
-const DEFAULT_PLACEHOLDER =
-  "z.B. Die Radwege in meiner Stadt sind in einem katastrophalen Zustand...";
+const PLACEHOLDER_ROTATE_MS = 4000;
+const MIN_CHARS = 50;
 
 const TONE_LABELS = ["freundlich", "höflich", "sachlich", "bestimmt", "nachdrücklich"] as const;
 
@@ -63,12 +39,15 @@ export function Step2Issue({
   defaultValue,
 }: Step2IssueProps) {
   const [issueText, setIssueText] = useState(defaultValue ?? "");
+  const [voiceState, setVoiceState] = useState<VoiceRecorderState>("idle");
   const [voiceDone, setVoiceDone] = useState(false);
   const [submitStage, setSubmitStage] = useState(0);
-  const [placeholder, setPlaceholder] = useState<string>(DEFAULT_PLACEHOLDER);
-  const [activeTopic, setActiveTopic] = useState<string | null>(null);
+  const [placeholderIndex, setPlaceholderIndex] = useState(0);
   const [toneLevel, setToneLevel] = useState(3);
-  const charCount = issueText.length;
+  const charCount = issueText.trim().length;
+  const tooShort = charCount < MIN_CHARS;
+  const placeholder = PLACEHOLDER_EXAMPLES[placeholderIndex];
+  const voiceTouched = voiceState !== "idle";
 
   // Cycle through progress stages while submitting — rough pacing based on
   // typical Mistral latency (~3–8s per generation + moderation round-trip).
@@ -86,8 +65,19 @@ export function Step2Issue({
   }, [isSubmitting]);
 
   const handleVoiceStateChange = useCallback((state: VoiceRecorderState) => {
+    setVoiceState(state);
     if (state === "done") setVoiceDone(true);
   }, []);
+
+  // Rotate placeholder every few seconds while textarea is empty, so users
+  // get a sense of the kinds of issues that work without a category picker.
+  useEffect(() => {
+    if (issueText.length > 0) return;
+    const interval = setInterval(() => {
+      setPlaceholderIndex((i) => (i + 1) % PLACEHOLDER_EXAMPLES.length);
+    }, PLACEHOLDER_ROTATE_MS);
+    return () => clearInterval(interval);
+  }, [issueText]);
 
   const handleTextChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setIssueText(e.target.value);
@@ -101,7 +91,7 @@ export function Step2Issue({
   };
 
   const handleSubmit = () => {
-    if (issueText.trim().length > 0) {
+    if (!tooShort) {
       onSubmit(issueText, toneLevel);
     }
   };
@@ -134,38 +124,11 @@ export function Step2Issue({
         />
       </div>
 
-      {/* Divider — fades out with voice recorder */}
-      <div className={`flex items-center gap-3 my-4 transition-all duration-700 ease-out ${voiceDone ? "opacity-0 max-h-0 overflow-hidden !my-0" : "opacity-100 max-h-8"}`}>
+      {/* Divider — hidden as soon as voice recording starts (or after) */}
+      <div className={`flex items-center gap-3 my-4 transition-all duration-700 ease-out ${voiceTouched ? "opacity-0 max-h-0 overflow-hidden !my-0" : "opacity-100 max-h-8"}`}>
         <div className="flex-1 h-px bg-warmgrau/20" />
         <span className="font-body text-xs text-warmgrau/50">oder schreib es selbst</span>
         <div className="flex-1 h-px bg-warmgrau/20" />
-      </div>
-
-      {/* Topic chips — help users get unstuck with a concrete starting example */}
-      <div className="flex flex-wrap gap-2 mb-3">
-        {TOPIC_EXAMPLES.map((topic) => {
-          const isActive = activeTopic === topic.label;
-          return (
-            <button
-              key={topic.label}
-              type="button"
-              onClick={() => {
-                setActiveTopic(topic.label);
-                setPlaceholder(topic.placeholder);
-              }}
-              disabled={isSubmitting}
-              className={[
-                "font-body text-sm px-3 py-1.5 rounded-full border transition-colors cursor-pointer",
-                isActive
-                  ? "bg-waldgruen text-creme border-waldgruen"
-                  : "bg-creme text-waldgruen-dark border-warmgrau/30 hover:border-waldgruen",
-                isSubmitting ? "opacity-50 cursor-not-allowed" : "",
-              ].join(" ")}
-            >
-              {topic.label}
-            </button>
-          );
-        })}
       </div>
 
       {/* Textarea */}
@@ -186,9 +149,9 @@ export function Step2Issue({
         />
         <p
           id="issueText-counter"
-          className="text-right text-sm text-warmgrau/60 mt-1"
+          className={`text-right text-sm mt-1 ${tooShort ? "text-warmgrau/60" : "text-waldgruen"}`}
         >
-          {charCount} Zeichen
+          {tooShort ? `noch ${MIN_CHARS - charCount} Zeichen bis zum Brief` : `${charCount} Zeichen`}
         </p>
       </div>
 
@@ -228,11 +191,11 @@ export function Step2Issue({
         <button
           type="button"
           onClick={handleSubmit}
-          disabled={isSubmitting || issueText.trim().length === 0}
+          disabled={isSubmitting || tooShort}
           className={[
             "bg-waldgruen text-creme font-semibold text-base px-8 py-4 rounded-xl",
             "hover:bg-waldgruen-dark transition-colors min-h-[44px] w-full",
-            isSubmitting || issueText.trim().length === 0
+            isSubmitting || tooShort
               ? "opacity-60 cursor-not-allowed"
               : "cursor-pointer",
           ].join(" ")}

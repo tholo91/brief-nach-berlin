@@ -129,7 +129,7 @@ export default async function OGImage() {
               fontWeight: 600,
             }}
           >
-            brief-nach-berlin.vercel.app
+            brief-nach-berlin.de
           </div>
         </div>
 

@@ -20,9 +20,45 @@ export type LetterLength = keyof typeof LETTER_LENGTHS;
 export const DEFAULT_LETTER_LENGTH: LetterLength = "1";
 
 // Sharing — used in email template and success page
-export const SHARE_TEXT = `Hey, ich hab eben meinem Abgeordneten in Berlin geschrieben und fand's hiermit total einfach. Wenn du dir auch mal Luft verschaffen willst, kann ich Brief nach Berlin nur empfehlen, ist komplett kostenlos: ${APP_URL}` as const;
-export const SHARE_URL_WHATSAPP = `https://wa.me/?text=${encodeURIComponent(SHARE_TEXT)}` as const;
-export const SHARE_URL_TWITTER = `https://twitter.com/intent/tweet?text=${encodeURIComponent(SHARE_TEXT)}` as const;
+// Two distinct intents:
+//   1. SHARE_TEXT_CAUSE  — invites RECIPIENT to write their own letter (movement)
+//   2. SHARE_TEXT_TOOL   — promotes the product itself (e.g. for LinkedIn / X)
+export const SHARE_TEXT_CAUSE = `Ich habe heute meinem Abgeordneten im Bundestag geschrieben, weil mich ein lokales Thema beschäftigt. Briefe aus dem eigenen Wahlkreis bekommen besonderes Gewicht: wenn mehrere Stimmen aus derselben Gegend zum gleichen Thema schreiben, wird das Anliegen nachweislich stärker gehört. Magst du auch einen Brief schreiben, mit deinen eigenen Worten? Brief nach Berlin macht es einfach und kostenlos: ${APP_URL}` as const;
+export const SHARE_TEXT_TOOL = `Ich habe gerade Brief nach Berlin ausprobiert: ein kostenloses Tool, das aus ein paar Sätzen Frust einen formellen Brief an deinen MdB im Bundestag macht. Idee dahinter: handgeschriebene Briefe werden im Bundestag tatsächlich gelesen und besprochen. Probier's aus: ${APP_URL}` as const;
+
+// Backwards-compat alias (some callers may still import SHARE_TEXT)
+export const SHARE_TEXT = SHARE_TEXT_CAUSE;
+
+// Cause-recruit URLs
+export const SHARE_URL_WHATSAPP = `https://wa.me/?text=${encodeURIComponent(SHARE_TEXT_CAUSE)}` as const;
+export const SHARE_URL_TELEGRAM = `https://t.me/share/url?url=${encodeURIComponent(APP_URL)}&text=${encodeURIComponent(SHARE_TEXT_CAUSE)}` as const;
+export const SHARE_URL_EMAIL = `mailto:?subject=${encodeURIComponent("Schreibst du auch einen Brief nach Berlin?")}&body=${encodeURIComponent(SHARE_TEXT_CAUSE)}` as const;
+
+// Tool-promo URLs (LinkedIn share dialog only takes a URL, not text)
+export const SHARE_URL_LINKEDIN = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(APP_URL)}` as const;
+export const SHARE_URL_TWITTER = `https://twitter.com/intent/tweet?text=${encodeURIComponent(SHARE_TEXT_TOOL)}` as const;
+
+// Founder credit (footer of email + success page)
+export const FOUNDER_NAME = "Thomas Lorenz" as const;
+export const FOUNDER_HOMEPAGE = "https://www.thomas-lorenz.eu" as const;
+export const FOUNDER_LINKEDIN = "https://www.linkedin.com/in/tholo91/" as const;
+
+// Build a public abgeordnetenwatch.de profile URL from a politician's name.
+// Format: lowercase, German umlaut transliteration, hyphen-joined.
+// Verified 2026-04-26 against e.g. /profile/kirsten-kappert-gonther, /profile/thomas-roewekamp.
+export function abgeordnetenwatchProfileUrl(firstName: string, lastName: string): string {
+  const slug = (s: string) =>
+    s
+      .toLowerCase()
+      .replace(/ä/g, "ae")
+      .replace(/ö/g, "oe")
+      .replace(/ü/g, "ue")
+      .replace(/ß/g, "ss")
+      .replace(/[^a-z0-9-]+/g, "-")
+      .replace(/^-+|-+$/g, "")
+      .replace(/-+/g, "-");
+  return `https://www.abgeordnetenwatch.de/profile/${slug(firstName)}-${slug(lastName)}`;
+}
 
 // Wizard
 export const WIZARD_PATH = "/app" as const;

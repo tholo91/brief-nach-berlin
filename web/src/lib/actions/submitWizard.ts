@@ -140,8 +140,11 @@ export async function submitWizardAction(
       await sendLetterEmail({
         recipientEmail: data.email,
         politicianName: `${result.selectedPolitician.firstName} ${result.selectedPolitician.lastName}`,
+        politicianFirstName: result.selectedPolitician.firstName,
+        politicianLastName: result.selectedPolitician.lastName,
         politicianTitle: result.selectedPolitician.title,
         politicianPostalAddress: result.selectedPolitician.postalAddress,
+        politicianAbgeordnetenwatchUrl: result.selectedPolitician.abgeordnetenwatchUrl,
         letterText: result.letter,
         issueText: data.issueText,
       });

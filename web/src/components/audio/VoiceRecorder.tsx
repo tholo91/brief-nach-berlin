@@ -160,8 +160,8 @@ export function VoiceRecorder({ onTranscription, onStateChange, disabled }: Voic
         disabled={isButtonDisabled}
         aria-label={ariaLabel}
         className={[
-          "flex items-center justify-center gap-2 px-4 py-3 rounded-lg",
-          "bg-creme border transition-colors min-h-[44px] w-full sm:w-auto",
+          "flex items-center justify-center gap-2 px-4 py-3.5 rounded-lg",
+          "bg-creme border transition-colors min-h-[44px] w-full",
           "font-body text-sm",
           uiState === "recording"
             ? "border-airmail-rot text-warmgrau"
@@ -239,8 +239,8 @@ export function VoiceRecorder({ onTranscription, onStateChange, disabled }: Voic
         )}
       </button>
       {uiState === "idle" && (
-        <p className="font-body text-xs text-warmgrau/60">
-          Sprich frei über dein Anliegen, um nicht alles tippen zu müssen und füge danach deine Punkte ein.
+        <p className="font-body text-xs text-warmgrau/60 text-center">
+          Sprich dein Anliegen ein, wir tippen deinen Brief vor.
         </p>
       )}
     </div>

@@ -125,19 +125,27 @@ function extractParty(mandate: Record<string, unknown>): string {
 }
 
 function toPolitician(mandate: Record<string, unknown>): Politician | null {
-  const politician = (mandate.politician ?? {}) as { id?: number; label?: string };
+  const politician = (mandate.politician ?? {}) as {
+    id?: number;
+    label?: string;
+    abgeordnetenwatch_url?: string;
+  };
   const electoralData = (mandate.electoral_data ?? {}) as {
     constituency?: { label?: string } | null;
+    mandate_won?: string | null;
   };
   const constituencyLabel = electoralData.constituency?.label ?? "";
   const { nr: wahlkreisNr, name: wahlkreisName } = parseConstituencyLabel(constituencyLabel);
 
-  // Politicians elected purely via Landesliste (no Direktmandat) may have no
-  // constituency — skip those for this mapping. They're still in parliament
-  // but don't represent a specific Wahlkreis the way the letter flow needs.
+  // Politicians without a Wahlkreis assignment can't be mapped to a PLZ.
+  // (Pure Landesliste candidates without constituency entry — rare.)
   if (wahlkreisNr == null || isNaN(wahlkreisNr)) return null;
 
   const { title, firstName, lastName } = splitName(politician.label ?? "");
+
+  // mandate_won: "constituency" = Direktmandat, "list" = Listenmandat,
+  // "moved_up" = Nachrücker (effectively always via list under Wahlrechtsreform 2025).
+  const isDirect = electoralData.mandate_won === "constituency";
 
   return {
     id: (mandate.id as number) ?? 0,
@@ -150,6 +158,8 @@ function toPolitician(mandate: Record<string, unknown>): Politician | null {
     wahlkreisName,
     level: "Bund",
     postalAddress: BUNDESTAG_ADDRESS,
+    isDirect,
+    abgeordnetenwatchUrl: politician.abgeordnetenwatch_url ?? null,
   };
 }
 
@@ -183,10 +193,14 @@ async function main() {
   console.log(`  Bundestag entries written:   ${bundestag.length}`);
   console.log(`  Skipped (no constituency):   ${skippedNoConstituency}`);
   console.log(`  Output: ${OUT_FILE}`);
+  const directCount = bundestag.filter((p) => p.isDirect).length;
+  console.log(`  Direktmandate:               ${directCount}`);
+  console.log(`  Listen/Nachrücker:           ${bundestag.length - directCount}`);
   if (bundestag.length > 0) {
     const sample = bundestag[0];
     console.log(`  Sample: ${sample.title ?? ""} ${sample.firstName} ${sample.lastName} `
-      + `(${sample.party}) — WK ${sample.wahlkreisId} ${sample.wahlkreisName}`);
+      + `(${sample.party}) — WK ${sample.wahlkreisId} ${sample.wahlkreisName}`
+      + ` [${sample.isDirect ? "Direkt" : "Liste"}]`);
   }
 }
 

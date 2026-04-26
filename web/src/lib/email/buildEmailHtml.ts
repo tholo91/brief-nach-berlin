@@ -3,7 +3,11 @@ import {
   APP_URL,
   WIZARD_PATH,
   WIZARD_TEXT_PARAM_MAX_LENGTH,
-  SHARE_TEXT,
+  SHARE_TEXT_CAUSE,
+  SHARE_TEXT_TOOL,
+  FOUNDER_HOMEPAGE,
+  FOUNDER_LINKEDIN,
+  abgeordnetenwatchProfileUrl,
 } from "@/lib/config";
 
 // Escape HTML entities to prevent HTML injection in email (T-03-02)
@@ -39,10 +43,23 @@ export function buildEmailHtml(data: SendLetterEmailParams): string {
       : data.issueText;
   const regenerateUrl = `${APP_URL}${WIZARD_PATH}?text=${encodeURIComponent(truncatedText)}`;
 
-  // Share text for WhatsApp and Twitter buttons (D-09): single source of truth in config.ts
-  const shareText = encodeURIComponent(SHARE_TEXT);
-  const whatsappUrl = `https://wa.me/?text=${shareText}`;
-  const twitterUrl = `https://twitter.com/intent/tweet?text=${shareText}`;
+  // Profile link (Abgeordnetenwatch: voting record, public Q&A, transparent source).
+  // Prefer the API-provided URL; fall back to a slug-derived URL.
+  const profileUrl =
+    data.politicianAbgeordnetenwatchUrl ??
+    abgeordnetenwatchProfileUrl(
+      data.politicianFirstName,
+      data.politicianLastName
+    );
+
+  // Cause-recruit shares (motivate recipient to write their own letter)
+  const causeText = encodeURIComponent(SHARE_TEXT_CAUSE);
+  const whatsappUrl = `https://wa.me/?text=${causeText}`;
+  const telegramUrl = `https://t.me/share/url?url=${encodeURIComponent(APP_URL)}&text=${causeText}`;
+  const emailShareUrl = `mailto:?subject=${encodeURIComponent("Schreibst du auch einen Brief nach Berlin?")}&body=${causeText}`;
+
+  // Tool-promo share (LinkedIn only takes a URL)
+  const linkedInUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(APP_URL)}&summary=${encodeURIComponent(SHARE_TEXT_TOOL)}`;
 
   // Letter text: escape then convert newlines to <br> for email clients
   const letterHtml = nlToBr(data.letterText);
@@ -113,10 +130,14 @@ export function buildEmailHtml(data: SendLetterEmailParams): string {
                   <td colspan="7" style="padding:16px 32px 24px;background-color:#ffffff;">
                     <h2 style="margin:0 0 12px;font-family:Georgia,'Times New Roman',serif;font-size:16px;color:#2D5016;font-weight:bold;">Empfänger (auf den Umschlag)</h2>
                     <div style="background-color:#FAF8F5;border:1px solid #E0DCD7;border-radius:4px;padding:16px 20px;">
-                      <p style="margin:0;font-family:'Courier New',Courier,monospace;font-size:14px;line-height:1.8;color:#4A4A4A;">
+                      <p style="margin:0 0 10px;font-family:'Courier New',Courier,monospace;font-size:14px;line-height:1.8;color:#4A4A4A;">
                         <strong>${fullName}, MdB</strong><br>
                         Deutscher Bundestag<br>
                         ${addressLines}
+                      </p>
+                      <p style="margin:0;padding-top:10px;border-top:1px solid #E0DCD7;font-family:Georgia,'Times New Roman',serif;font-size:13px;line-height:1.5;">
+                        <a href="${profileUrl}" target="_blank" rel="noopener noreferrer" style="color:#2D5016;text-decoration:none;font-weight:bold;">Profil ansehen &rarr;</a>
+                        <span style="color:#666666;">&nbsp;Stimmverhalten und Anfragen auf abgeordnetenwatch.de</span>
                       </p>
                     </div>
                     <p style="margin:10px 0 0;font-family:Georgia,'Times New Roman',serif;font-size:12px;color:#666666;">Vergiss nicht, deine eigene Adresse oben links auf den Umschlag und oben rechts in den Brief zu schreiben.</p>
@@ -129,8 +150,8 @@ export function buildEmailHtml(data: SendLetterEmailParams): string {
                     <h2 style="margin:0 0 16px;font-family:Georgia,'Times New Roman',serif;font-size:16px;color:#2D5016;font-weight:bold;">Nächste Schritte</h2>
 
                     <p style="margin:0 0 8px;font-family:Georgia,'Times New Roman',serif;font-size:15px;color:#333333;font-weight:bold;">Empfehlung: Brief von Hand abschreiben</p>
-                    <p style="margin:0 0 12px;font-family:Georgia,'Times New Roman',serif;font-size:14px;color:#4A4A4A;line-height:1.6;">Handgeschriebene Briefe werden im Bundestag tatsächlich gelesen und besprochen. Sie signalisieren echtes persönliches Engagement und werden nicht wie Massenpost behandelt. Die Handschrift macht Ihren Brief unverwechselbar persönlich.</p>
-                    <p style="margin:0 0 16px;font-family:Georgia,'Times New Roman',serif;font-size:14px;color:#666666;line-height:1.6;">Sie können den Brief auch ausdrucken. Das ist immer noch besser als gar nichts.</p>
+                    <p style="margin:0 0 12px;font-family:Georgia,'Times New Roman',serif;font-size:14px;color:#4A4A4A;line-height:1.6;">Handgeschriebene Briefe werden im Bundestag tatsächlich gelesen und besprochen. Sie signalisieren echtes persönliches Engagement und werden nicht wie Massenpost behandelt. Die Handschrift macht deinen Brief unverwechselbar persönlich.</p>
+                    <p style="margin:0 0 16px;font-family:Georgia,'Times New Roman',serif;font-size:14px;color:#666666;line-height:1.6;">Du kannst den Brief auch ausdrucken. Das ist immer noch besser als gar nichts.</p>
 
                     <table role="presentation" cellpadding="0" cellspacing="0" width="100%">
                       <tr>
@@ -167,49 +188,72 @@ export function buildEmailHtml(data: SendLetterEmailParams): string {
                   </td>
                 </tr>
 
-                <!-- Action buttons (D-08, section 5 / D-09) -->
+                <!-- Primary CTA: Neuen Brief schreiben -->
                 <tr>
-                  <td colspan="7" style="padding:0 32px 24px;background-color:#ffffff;">
-                    <table role="presentation" cellpadding="0" cellspacing="0" width="100%">
-                      <tr>
-                        <td style="padding-bottom:12px;">
-                          <!-- "Neuen Brief schreiben" (primary) -->
-                          <a href="${regenerateUrl}" style="display:inline-block;background-color:#2D5016;color:#ffffff;font-family:Georgia,'Times New Roman',serif;font-size:14px;font-weight:bold;text-decoration:none;padding:12px 24px;border-radius:6px;">Neuen Brief schreiben</a>
-                        </td>
-                      </tr>
-                      <tr>
-                        <td style="padding-bottom:12px;">
-                          <!-- "Brief nach Berlin teilen" via WhatsApp -->
-                          <a href="${whatsappUrl}" style="display:inline-block;background-color:#ffffff;color:#2D5016;font-family:Georgia,'Times New Roman',serif;font-size:14px;font-weight:bold;text-decoration:none;padding:12px 24px;border-radius:6px;border:2px solid #2D5016;">Brief nach Berlin teilen (WhatsApp)</a>
-                        </td>
-                      </tr>
-                      <tr>
-                        <td>
-                          <!-- "Teilen auf X" via Twitter -->
-                          <a href="${twitterUrl}" style="display:inline-block;background-color:#ffffff;color:#2D5016;font-family:Georgia,'Times New Roman',serif;font-size:14px;font-weight:bold;text-decoration:none;padding:12px 24px;border-radius:6px;border:2px solid #2D5016;">Teilen auf X</a>
-                        </td>
-                      </tr>
-                    </table>
+                  <td colspan="7" style="padding:0 32px 20px;background-color:#ffffff;">
+                    <a href="${regenerateUrl}" style="display:inline-block;background-color:#2D5016;color:#ffffff;font-family:Georgia,'Times New Roman',serif;font-size:14px;font-weight:bold;text-decoration:none;padding:12px 24px;border-radius:6px;">Neuen Brief schreiben</a>
+                  </td>
+                </tr>
+
+                <!-- Cause-recruit block: motivate sender to invite Wahlkreis-people to write their own letters -->
+                <tr>
+                  <td colspan="7" style="padding:8px 32px 24px;background-color:#ffffff;">
+                    <div style="background-color:#FAF8F5;border:1px solid #E0DCD7;border-radius:6px;padding:20px 22px;">
+                      <h2 style="margin:0 0 8px;font-family:Georgia,'Times New Roman',serif;font-size:16px;color:#2D5016;font-weight:bold;">Gemeinsam noch lauter</h2>
+                      <p style="margin:0 0 14px;font-family:Georgia,'Times New Roman',serif;font-size:14px;color:#4A4A4A;line-height:1.6;">
+                        Dein Brief wirkt. Und er wirkt noch stärker, wenn weitere Stimmen aus deinem Wahlkreis dazukommen. Briefe aus derselben Gegend zum gleichen Thema bekommen im Bundestag besonderes Gewicht. Wem in deinem Umfeld geht es wie dir?
+                      </p>
+                      <table role="presentation" cellpadding="0" cellspacing="0" width="100%">
+                        <tr>
+                          <td style="padding-right:6px;width:34%;" valign="top">
+                            <a href="${whatsappUrl}" style="display:block;text-align:center;background-color:#ffffff;color:#2D5016;font-family:Georgia,'Times New Roman',serif;font-size:13px;font-weight:bold;text-decoration:none;padding:10px 8px;border-radius:6px;border:2px solid #2D5016;">WhatsApp</a>
+                          </td>
+                          <td style="padding:0 3px;width:33%;" valign="top">
+                            <a href="${telegramUrl}" style="display:block;text-align:center;background-color:#ffffff;color:#2D5016;font-family:Georgia,'Times New Roman',serif;font-size:13px;font-weight:bold;text-decoration:none;padding:10px 8px;border-radius:6px;border:2px solid #2D5016;">Telegram</a>
+                          </td>
+                          <td style="padding-left:6px;width:33%;" valign="top">
+                            <a href="${emailShareUrl}" style="display:block;text-align:center;background-color:#ffffff;color:#2D5016;font-family:Georgia,'Times New Roman',serif;font-size:13px;font-weight:bold;text-decoration:none;padding:10px 8px;border-radius:6px;border:2px solid #2D5016;">Per E-Mail</a>
+                          </td>
+                        </tr>
+                      </table>
+                      <p style="margin:12px 0 0;font-family:Georgia,'Times New Roman',serif;font-size:12px;color:#888888;line-height:1.5;font-style:italic;">
+                        Wichtig: jeder schreibt mit eigenen Worten. Identische Briefe gelten im Bundestag als Massenpost und verlieren ihre Wirkung.
+                      </p>
+                    </div>
+                  </td>
+                </tr>
+
+                <!-- Tool-promo (smaller, separate from cause block) -->
+                <tr>
+                  <td colspan="7" style="padding:0 32px 24px;background-color:#ffffff;text-align:center;">
+                    <p style="margin:0;font-family:Georgia,'Times New Roman',serif;font-size:13px;color:#888888;line-height:1.6;">
+                      Brief nach Berlin gefällt dir? <a href="${linkedInUrl}" target="_blank" rel="noopener noreferrer" style="color:#2D5016;text-decoration:none;font-weight:bold;">Auf LinkedIn teilen &rarr;</a>
+                    </p>
                   </td>
                 </tr>
 
                 <!-- Personal sign-off from Thomas (handwritten Caveat) -->
                 <tr>
-                  <td colspan="7" style="padding:0 32px 24px;background-color:#ffffff;text-align:left;">
+                  <td colspan="7" style="padding:8px 32px 8px;background-color:#ffffff;text-align:left;">
                     <p style="margin:0 0 4px;font-family:Georgia,'Times New Roman',serif;font-size:14px;color:#4A4A4A;line-height:1.6;">
                       Vielen Dank, dass du schreibst.
                     </p>
                     <p style="margin:0;font-family:'Caveat','Brush Script MT','Lucida Handwriting',cursive;font-size:32px;color:#1D3557;line-height:1.1;">
                       Thomas
                     </p>
+                    <p style="margin:6px 0 0;font-family:Georgia,'Times New Roman',serif;font-size:12px;color:#888888;line-height:1.5;">
+                      <a href="${FOUNDER_HOMEPAGE}" target="_blank" rel="noopener noreferrer" style="color:#888888;text-decoration:underline;">thomas-lorenz.eu</a>
+                      &nbsp;·&nbsp;
+                      <a href="${FOUNDER_LINKEDIN}" target="_blank" rel="noopener noreferrer" style="color:#888888;text-decoration:underline;">LinkedIn</a>
+                    </p>
                   </td>
                 </tr>
 
                 <!-- Footer -->
                 <tr>
-                  <td colspan="7" style="padding:16px 32px 24px;background-color:#FAF8F5;border-top:1px solid #E0DCD7;text-align:center;">
+                  <td colspan="7" style="padding:24px 32px 16px;background-color:#FAF8F5;border-top:1px solid #E0DCD7;text-align:center;">
                     <p style="margin:0;font-family:Georgia,'Times New Roman',serif;font-size:12px;color:#999999;">
-                      <a href="https://brief-nach-berlin.de" style="color:#2D5016;text-decoration:none;">Brief nach Berlin</a> · Deine Stimme zählt.
+                      <a href="${APP_URL}" style="color:#2D5016;text-decoration:none;">Brief nach Berlin</a> · Deine Stimme zählt.
                     </p>
                   </td>
                 </tr>
@@ -221,10 +265,10 @@ export function buildEmailHtml(data: SendLetterEmailParams): string {
                       <strong>Hinweis:</strong> Dieser Brief ist ein generierter Entwurf, keine Meinungsäußerung von Brief nach Berlin. Wir empfehlen, ihn an deinen eigenen Stil und deine persönliche Haltung anzupassen, bevor du ihn verschickst. Die Verantwortung für den Inhalt liegt bei dir.
                     </p>
                     <p style="margin:0 0 6px;font-family:Georgia,'Times New Roman',serif;font-size:11px;color:#aaaaaa;line-height:1.5;">
-                      Bitte prüfe Politikerdaten und Brieftext vor dem Versand anhand offizieller Quellen (<a href="https://www.bundestag.de" style="color:#888888;">bundestag.de</a>, Landtags- oder Rathauswebsite).
+                      Bitte prüfe Politikerdaten und Brieftext vor dem Versand anhand offizieller Quellen (<a href="${profileUrl}" target="_blank" rel="noopener noreferrer" style="color:#888888;">abgeordnetenwatch.de</a>, <a href="https://www.bundestag.de" style="color:#888888;">bundestag.de</a>, Landtags- oder Rathauswebsite).
                     </p>
                     <p style="margin:0;font-family:Georgia,'Times New Roman',serif;font-size:11px;color:#aaaaaa;line-height:1.5;">
-                      <a href="https://brief-nach-berlin.de/datenschutz" style="color:#888888;">Datenschutzerklärung</a>: deine Daten werden nach Versand dieser E-Mail nicht gespeichert.
+                      <a href="${APP_URL}/datenschutz" style="color:#888888;">Datenschutzerklärung</a>: deine Daten werden nach Versand dieser E-Mail nicht gespeichert.
                     </p>
                   </td>
                 </tr>

@@ -1,11 +1,21 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useMemo } from "react";
 import type { WizardData, WizardActionResult } from "@/lib/types/wizard";
 import type { Politician } from "@/lib/types/politician";
 import { selectPoliticianAction } from "@/lib/actions/selectPolitician";
 import { resendLetterAction } from "@/lib/actions/resendLetter";
-import { APP_URL, SHARE_TEXT, SHARE_URL_WHATSAPP, SHARE_URL_TWITTER, WIZARD_PATH } from "@/lib/config";
+import {
+  APP_URL,
+  SHARE_TEXT_CAUSE,
+  SHARE_URL_WHATSAPP,
+  SHARE_URL_TELEGRAM,
+  SHARE_URL_EMAIL,
+  SHARE_URL_LINKEDIN,
+  WIZARD_PATH,
+  FOUNDER_HOMEPAGE,
+  FOUNDER_LINKEDIN,
+} from "@/lib/config";
 
 interface Step3SuccessProps {
   result: WizardActionResult | null;
@@ -14,13 +24,24 @@ interface Step3SuccessProps {
 }
 
 export function Step3Success({ result, wizardData, politicians }: Step3SuccessProps) {
-  const [selectedPoliticianId, setSelectedPoliticianId] = useState<number | null>(null);
+  // Pre-select the first Direktmandat-holder so users land on the most
+  // politically relevant option without an extra click. If no Direktmandat
+  // exists (Wahlrechtsreform 2025: 23 Wahlkreise sind unbesetzt), the user
+  // chooses manually.
+  const [selectedPoliticianId, setSelectedPoliticianId] = useState<number | null>(
+    () => politicians.find((p) => p.isDirect)?.id ?? null
+  );
   const [isGenerating, setIsGenerating] = useState(false);
   const [generationComplete, setGenerationComplete] = useState(false);
   const [generationError, setGenerationError] = useState<string | null>(null);
   const [resendOpen, setResendOpen] = useState(false);
   const [resendState, setResendState] = useState<"idle" | "sending" | "sent" | "error">("idle");
   const [resendEmail, setResendEmail] = useState(wizardData.email);
+
+  // Direktmandate first, then list/Nachrücker (stable within each group)
+  const sortedPoliticians = useMemo(() => {
+    return [...politicians].sort((a, b) => Number(b.isDirect) - Number(a.isDirect));
+  }, [politicians]);
 
   const handleSelectPolitician = useCallback(
     async () => {
@@ -78,17 +99,29 @@ export function Step3Success({ result, wizardData, politicians }: Step3SuccessPr
     }
   };
 
+  const [copied, setCopied] = useState(false);
+
   const handleNativeShare = async () => {
     if (navigator.share) {
       try {
         await navigator.share({
           title: "Brief nach Berlin",
-          text: SHARE_TEXT,
+          text: SHARE_TEXT_CAUSE,
           url: APP_URL,
         });
       } catch {
-        // User cancelled — no action needed
+        // User cancelled, no action needed
       }
+    }
+  };
+
+  const handleCopyLink = async () => {
+    try {
+      await navigator.clipboard.writeText(SHARE_TEXT_CAUSE);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2200);
+    } catch {
+      // Clipboard API blocked, fail silently
     }
   };
 
@@ -104,7 +137,7 @@ export function Step3Success({ result, wizardData, politicians }: Step3SuccessPr
     }
   }, [resendState, result, wizardData, resendEmail]);
 
-  const emailShareHref = `mailto:?subject=${encodeURIComponent("Brief nach Berlin – schreib deinem Abgeordneten")}&body=${encodeURIComponent(SHARE_TEXT)}`;
+  const emailShareHref = SHARE_URL_EMAIL;
 
   if (!result) return null;
 
@@ -166,11 +199,11 @@ export function Step3Success({ result, wizardData, politicians }: Step3SuccessPr
             Mach diesen Brief zu deinem.
           </p>
           <p className="font-body text-sm text-warmgrau/75 leading-relaxed">
-            Lies ihn durch und pass ihn vor dem Abschreiben an — Ton, Formulierungen, einzelne Argumente. Der Entwurf kommt von KI, die Unterschrift ist deine.
+            Lies ihn durch und pass ihn vor dem Abschreiben an. Ton, Formulierungen, einzelne Argumente: alles darf von dir kommen. Der Entwurf kommt von KI, die Unterschrift ist deine.
           </p>
         </div>
         <p className="font-body text-xs text-warmgrau/50 mt-2 leading-relaxed">
-          KI kann Fehler machen — bitte prüfe Politikerdaten und Inhalt vor dem Versand anhand offizieller Quellen (<a href="https://www.bundestag.de" target="_blank" rel="noopener noreferrer" className="underline underline-offset-2 hover:text-warmgrau/70 transition-colors">bundestag.de</a>).
+          KI kann Fehler machen. Bitte prüfe Politikerdaten und Inhalt vor dem Versand anhand offizieller Quellen (<a href="https://www.abgeordnetenwatch.de" target="_blank" rel="noopener noreferrer" className="underline underline-offset-2 hover:text-warmgrau/70 transition-colors">abgeordnetenwatch.de</a>, <a href="https://www.bundestag.de" target="_blank" rel="noopener noreferrer" className="underline underline-offset-2 hover:text-warmgrau/70 transition-colors">bundestag.de</a>).
         </p>
 
         {/* Step-by-step instructions */}
@@ -200,73 +233,103 @@ export function Step3Success({ result, wizardData, politicians }: Step3SuccessPr
           </ol>
         </div>
 
-        {/* Share section */}
+        {/* Cause-recruit share section: motivate Wahlkreis-Bürger to write their own letters */}
         <div className="mt-10 pt-8 border-t border-warmgrau/15">
-          <p className="font-body text-sm text-warmgrau/60 mb-4">
-            Andere auch motivieren mitzumachen?
-          </p>
-          <div className="grid grid-cols-2 gap-3">
-            <a
-              href={SHARE_URL_WHATSAPP}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center justify-center gap-2 font-body text-sm font-semibold text-waldgruen border-2 border-waldgruen/40 hover:border-waldgruen px-4 py-2.5 rounded-lg transition-colors"
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-                <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347"/>
-              </svg>
-              WhatsApp
-            </a>
-            <a
-              href={emailShareHref}
-              className="inline-flex items-center justify-center gap-2 font-body text-sm font-semibold text-waldgruen border-2 border-waldgruen/40 hover:border-waldgruen px-4 py-2.5 rounded-lg transition-colors"
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                <rect width="20" height="16" x="2" y="4" rx="2" />
-                <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
-              </svg>
-              Per E-Mail
-            </a>
-            {"share" in navigator ? (
-              <>
-                <a
-                  href={SHARE_URL_TWITTER}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center justify-center gap-2 font-body text-sm font-semibold text-waldgruen border-2 border-waldgruen/40 hover:border-waldgruen px-4 py-2.5 rounded-lg transition-colors"
-                >
-                  <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-                    <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.744l7.737-8.835L1.254 2.25H8.08l4.253 5.622zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
-                  </svg>
-                  Auf X teilen
-                </a>
+          <div className="rounded-xl bg-waldgruen/8 border border-waldgruen/20 p-5">
+            <h2 className="font-typewriter text-lg font-semibold text-waldgruen-dark">
+              Gemeinsam noch lauter
+            </h2>
+            <p className="font-body text-sm text-warmgrau leading-relaxed mt-2">
+              Dein Brief wirkt. Und er wirkt noch stärker, wenn weitere Stimmen aus deinem Wahlkreis dazukommen. Briefe aus derselben Gegend zum gleichen Thema bekommen im Bundestag besonderes Gewicht. Wem in deinem Umfeld geht es wie dir?
+            </p>
+
+            <div className="grid grid-cols-2 gap-2.5 mt-4">
+              <a
+                href={SHARE_URL_WHATSAPP}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center justify-center gap-2 font-body text-sm font-semibold text-waldgruen bg-creme border-2 border-waldgruen/40 hover:border-waldgruen hover:bg-white px-3 py-2.5 rounded-lg transition-colors"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                  <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347"/>
+                </svg>
+                WhatsApp
+              </a>
+              <a
+                href={SHARE_URL_TELEGRAM}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center justify-center gap-2 font-body text-sm font-semibold text-waldgruen bg-creme border-2 border-waldgruen/40 hover:border-waldgruen hover:bg-white px-3 py-2.5 rounded-lg transition-colors"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                  <path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.139-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/>
+                </svg>
+                Telegram
+              </a>
+              <a
+                href={emailShareHref}
+                className="inline-flex items-center justify-center gap-2 font-body text-sm font-semibold text-waldgruen bg-creme border-2 border-waldgruen/40 hover:border-waldgruen hover:bg-white px-3 py-2.5 rounded-lg transition-colors"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                  <rect width="20" height="16" x="2" y="4" rx="2" />
+                  <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
+                </svg>
+                Per E-Mail
+              </a>
+              <button
+                type="button"
+                onClick={handleCopyLink}
+                className="inline-flex items-center justify-center gap-2 font-body text-sm font-semibold text-waldgruen bg-creme border-2 border-waldgruen/40 hover:border-waldgruen hover:bg-white px-3 py-2.5 rounded-lg transition-colors cursor-pointer"
+              >
+                {copied ? (
+                  <>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                      <path d="M20 6 9 17l-5-5"/>
+                    </svg>
+                    Kopiert
+                  </>
+                ) : (
+                  <>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                      <rect width="14" height="14" x="8" y="8" rx="2" ry="2"/>
+                      <path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/>
+                    </svg>
+                    Text kopieren
+                  </>
+                )}
+              </button>
+              {"share" in navigator && (
                 <button
                   type="button"
                   onClick={handleNativeShare}
-                  className="inline-flex items-center justify-center gap-2 font-body text-sm font-semibold text-waldgruen border-2 border-waldgruen/40 hover:border-waldgruen px-4 py-2.5 rounded-lg transition-colors cursor-pointer"
+                  className="col-span-2 inline-flex items-center justify-center gap-2 font-body text-sm font-semibold text-creme bg-waldgruen hover:bg-waldgruen-dark px-3 py-2.5 rounded-lg transition-colors cursor-pointer"
                 >
                   <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
                     <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8" />
                     <polyline points="16 6 12 2 8 6" />
                     <line x1="12" x2="12" y1="2" y2="15" />
                   </svg>
-                  Teilen
+                  Mehr Teilen-Optionen
                 </button>
-              </>
-            ) : (
-              <a
-                href={SHARE_URL_TWITTER}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="col-span-2 inline-flex items-center justify-center gap-2 font-body text-sm font-semibold text-waldgruen border-2 border-waldgruen/40 hover:border-waldgruen px-4 py-2.5 rounded-lg transition-colors"
-              >
-                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-                  <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.744l7.737-8.835L1.254 2.25H8.08l4.253 5.622zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
-                </svg>
-                Auf X teilen
-              </a>
-            )}
+              )}
+            </div>
+            <p className="font-body text-xs text-warmgrau/60 mt-3 leading-relaxed italic">
+              Wichtig: jeder schreibt mit eigenen Worten. Identische Briefe gelten im Bundestag als Massenpost und verlieren ihre Wirkung.
+            </p>
           </div>
+
+          {/* Tool-promo, separate and quieter */}
+          <p className="font-body text-xs text-warmgrau/55 text-center mt-5">
+            Brief nach Berlin gefällt dir?{" "}
+            <a
+              href={SHARE_URL_LINKEDIN}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-waldgruen hover:text-waldgruen-dark font-semibold underline underline-offset-2 transition-colors"
+            >
+              Auf LinkedIn teilen
+            </a>
+          </p>
         </div>
 
         {/* Resend help */}
@@ -360,6 +423,30 @@ export function Step3Success({ result, wizardData, politicians }: Step3SuccessPr
             </a>
           </p>
         </div>
+
+        {/* Founder credit */}
+        <div className="mt-10 pt-6 border-t border-warmgrau/10 text-center">
+          <p className="font-body text-xs text-warmgrau/55 leading-relaxed">
+            Gebaut von{" "}
+            <a
+              href={FOUNDER_HOMEPAGE}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-waldgruen/80 hover:text-waldgruen-dark underline underline-offset-2 transition-colors"
+            >
+              Thomas Lorenz
+            </a>
+            {" · "}
+            <a
+              href={FOUNDER_LINKEDIN}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-waldgruen/80 hover:text-waldgruen-dark underline underline-offset-2 transition-colors"
+            >
+              LinkedIn
+            </a>
+          </p>
+        </div>
       </div>
     );
   }
@@ -372,7 +459,7 @@ export function Step3Success({ result, wizardData, politicians }: Step3SuccessPr
           Wer vertritt deinen Wahlkreis?
         </h1>
         <p className="font-body text-base text-warmgrau mt-2">
-          Deine PLZ liegt in mehreren Wahlkreisen. Wähle den Wahlkreis, in dem du wohnst – der dortige Abgeordnete ist dein direkter Ansprechpartner im Bundestag.
+          Deine PLZ liegt in mehreren Wahlkreisen. Standardmäßig haben wir die Person mit dem Direktmandat ausgewählt — sie ist dein:e direkt gewählte:r Ansprechpartner:in im Bundestag. Du kannst aber auch eine andere Person wählen.
         </p>
 
         {/* Error banner */}
@@ -387,10 +474,9 @@ export function Step3Success({ result, wizardData, politicians }: Step3SuccessPr
 
         {/* Politician cards */}
         <div role="radiogroup" aria-label="Abgeordnete auswählen" className="space-y-3 mt-6">
-          {politicians.map((p, index) => (
-            <button
+          {sortedPoliticians.map((p, index) => (
+            <div
               key={p.id}
-              type="button"
               role="radio"
               aria-checked={selectedPoliticianId === p.id}
               tabIndex={0}
@@ -403,6 +489,11 @@ export function Step3Success({ result, wizardData, politicians }: Step3SuccessPr
                   : "border-waldgruen/20 bg-creme hover:border-waldgruen/40",
               ].join(" ")}
             >
+              {p.isDirect && (
+                <span className="inline-block font-body text-[11px] font-semibold uppercase tracking-wide text-waldgruen-dark bg-waldgruen/15 px-2 py-0.5 rounded mb-1.5">
+                  Direktmandat
+                </span>
+              )}
               <p className="font-body text-base font-semibold text-warmgrau">
                 {p.title ? p.title + " " : ""}
                 {p.firstName} {p.lastName}
@@ -411,7 +502,18 @@ export function Step3Success({ result, wizardData, politicians }: Step3SuccessPr
               <p className="font-body text-sm text-warmgrau/70 mt-1">
                 Wahlkreis {p.wahlkreisId}: {p.wahlkreisName}
               </p>
-            </button>
+              {p.abgeordnetenwatchUrl && (
+                <a
+                  href={p.abgeordnetenwatchUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={(e) => e.stopPropagation()}
+                  className="inline-block font-body text-xs text-waldgruen hover:text-waldgruen-dark underline underline-offset-2 mt-2"
+                >
+                  Profil auf Abgeordnetenwatch.de ↗
+                </a>
+              )}
+            </div>
           ))}
         </div>
 

@@ -11,8 +11,11 @@ const brevo = new BrevoClient({ apiKey });
 export interface SendLetterEmailParams {
   recipientEmail: string;
   politicianName: string;
+  politicianFirstName: string;
+  politicianLastName: string;
   politicianTitle: string | null;
   politicianPostalAddress: string;
+  politicianAbgeordnetenwatchUrl: string | null;
   letterText: string;
   issueText: string;
 }

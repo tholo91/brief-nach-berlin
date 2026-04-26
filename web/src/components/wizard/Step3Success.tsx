@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback, useMemo } from "react";
+import { useState, useCallback, useMemo, useRef } from "react";
 import type { WizardData, WizardActionResult } from "@/lib/types/wizard";
 import type { Politician } from "@/lib/types/politician";
 import { selectPoliticianAction } from "@/lib/actions/selectPolitician";
@@ -32,6 +32,17 @@ export function Step3Success({ result, wizardData, politicians }: Step3SuccessPr
   const [resendOpen, setResendOpen] = useState(false);
   const [resendState, setResendState] = useState<"idle" | "sending" | "sent" | "error">("idle");
   const [resendEmail, setResendEmail] = useState(wizardData.email);
+  const submitButtonRef = useRef<HTMLButtonElement | null>(null);
+
+  // Smooth-scroll the submit button into view after a card is picked, so users
+  // on long lists don't have to hunt for the next step. Uses rAF to wait for
+  // the conditional render of the submit button before scrolling.
+  const handleCardSelect = useCallback((politicianId: number) => {
+    setSelectedPoliticianId(politicianId);
+    requestAnimationFrame(() => {
+      submitButtonRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
+    });
+  }, []);
 
   // Direktmandate first, then list/Nachrücker (stable within each group)
   const sortedPoliticians = useMemo(() => {
@@ -82,7 +93,7 @@ export function Step3Success({ result, wizardData, politicians }: Step3SuccessPr
   ) => {
     if (e.key === "Enter" || e.key === " ") {
       e.preventDefault();
-      setSelectedPoliticianId(politicianId);
+      handleCardSelect(politicianId);
     } else if (e.key === "ArrowDown" || e.key === "ArrowUp") {
       e.preventDefault();
       const cards = document.querySelectorAll<HTMLElement>('[role="radio"]');
@@ -391,15 +402,26 @@ export function Step3Success({ result, wizardData, politicians }: Step3SuccessPr
           </div>
         )}
 
-        {/* Politician cards */}
-        <div role="radiogroup" aria-label="Abgeordnete auswählen" className="space-y-3 mt-6">
+        {/* Politician cards — switch to 2-col grid on long lists (e.g. PLZs that
+            straddle several Wahlkreise) so the disambiguation step doesn't turn
+            into an endless scroll. */}
+        <div
+          role="radiogroup"
+          aria-label="Abgeordnete auswählen"
+          className={[
+            "mt-6",
+            sortedPoliticians.length > 5
+              ? "grid grid-cols-1 sm:grid-cols-2 gap-3"
+              : "space-y-3",
+          ].join(" ")}
+        >
           {sortedPoliticians.map((p, index) => (
             <div
               key={p.id}
               role="radio"
               aria-checked={selectedPoliticianId === p.id}
               tabIndex={0}
-              onClick={() => setSelectedPoliticianId(p.id)}
+              onClick={() => handleCardSelect(p.id)}
               onKeyDown={(e) => handleCardKeyDown(e, index, p.id)}
               className={[
                 "w-full text-left p-4 rounded-lg border-2 transition-colors cursor-pointer",
@@ -440,6 +462,7 @@ export function Step3Success({ result, wizardData, politicians }: Step3SuccessPr
         {selectedPoliticianId !== null && (
           <div className="mt-8">
             <button
+              ref={submitButtonRef}
               type="button"
               onClick={handleSelectPolitician}
               disabled={isGenerating}

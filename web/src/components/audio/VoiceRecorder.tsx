@@ -238,11 +238,6 @@ export function VoiceRecorder({ onTranscription, onStateChange, disabled }: Voic
           </span>
         )}
       </button>
-      {uiState === "idle" && (
-        <p className="font-body text-xs text-warmgrau/60 text-center">
-          Sprich dein Anliegen ein, wir tippen deinen Brief vor.
-        </p>
-      )}
     </div>
   );
 }

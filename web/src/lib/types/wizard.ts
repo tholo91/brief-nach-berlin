@@ -21,6 +21,11 @@ export interface Step1bData {
   letterLength: LetterLength;
 }
 
+export interface MdbContext {
+  committees: string[];
+  recentRelevant: { date: string; title: string; snippet: string }[];
+}
+
 export interface GenerateLetterInput {
   issueText: string;
   politicians: Politician[];
@@ -29,6 +34,7 @@ export interface GenerateLetterInput {
   ngo?: string;
   letterLength?: LetterLength;
   toneLevel?: number;
+  mdbContext?: MdbContext;
 }
 
 export interface GenerateLetterResult {
@@ -38,6 +44,7 @@ export interface GenerateLetterResult {
   wordCount: number;
   wordCountInRange: boolean;
   fallbackUsed: boolean; // true when Mistral returned an unknown selected_politician_id
+  mdbContextUsed: boolean;
   model: string;
   temperature: number;
   generationMs: number;

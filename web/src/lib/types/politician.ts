@@ -13,6 +13,7 @@ export interface Politician {
   postalAddress: string;  // Standard Bundestag formula for MdBs: 'Platz der Republik 1, 11011 Berlin'
   isDirect: boolean;     // Held the Direktmandat (Erststimmensieg) for this Wahlkreis
   abgeordnetenwatchUrl: string | null;  // Public profile URL on abgeordnetenwatch.de
+  committees?: string[]; // Committee labels for current legislature, fetched at build time
 }
 
 export interface PoliticiansCache {

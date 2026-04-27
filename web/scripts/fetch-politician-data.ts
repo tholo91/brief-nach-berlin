@@ -163,6 +163,48 @@ function toPolitician(mandate: Record<string, unknown>): Politician | null {
   };
 }
 
+/**
+ * Fetch committee memberships for a single mandate.
+ * Returns deduplicated committee labels (e.g. ["Ausschuss für Verkehr"]).
+ * Empty array on error — committee data is "nice to have", not blocking.
+ */
+async function fetchCommittees(mandateId: number): Promise<string[]> {
+  try {
+    const url = `${API_BASE}/committee-memberships?candidacy_mandate=${mandateId}&range_start=0&range_end=99`;
+    const data = (await fetchWithRetry(url)) as {
+      data?: Array<{ committee?: { label?: string } }>;
+    };
+    const labels = (data?.data ?? [])
+      .map((m) => m?.committee?.label)
+      .filter((l): l is string => typeof l === "string" && l.length > 0);
+    return [...new Set(labels)];
+  } catch (err) {
+    console.warn(`  committee fetch failed for mandate ${mandateId}: ${String(err)}`);
+    return [];
+  }
+}
+
+/**
+ * Run an async map with bounded concurrency. Avoids hammering the API
+ * while still being faster than fully sequential.
+ */
+async function mapWithConcurrency<T, U>(
+  items: T[],
+  concurrency: number,
+  worker: (item: T, index: number) => Promise<U>
+): Promise<U[]> {
+  const results: U[] = new Array(items.length);
+  let cursor = 0;
+  async function next(): Promise<void> {
+    while (cursor < items.length) {
+      const i = cursor++;
+      results[i] = await worker(items[i], i);
+    }
+  }
+  await Promise.all(Array.from({ length: Math.min(concurrency, items.length) }, () => next()));
+  return results;
+}
+
 async function main() {
   console.log(`\nFetching Bundestag mandates (parliament_period=${BUNDESTAG_PERIOD})...\n`);
 
@@ -177,6 +219,18 @@ async function main() {
     if (p) bundestag.push(p);
     else skippedNoConstituency++;
   }
+
+  console.log(`\nFetching committee memberships for ${bundestag.length} mandates...`);
+  const committeesByIndex = await mapWithConcurrency(bundestag, 5, async (p, i) => {
+    if (i > 0 && i % 50 === 0) console.log(`  …${i}/${bundestag.length}`);
+    return fetchCommittees(p.id);
+  });
+  for (let i = 0; i < bundestag.length; i++) {
+    const c = committeesByIndex[i];
+    if (c.length > 0) bundestag[i].committees = c;
+  }
+  const withCommittees = bundestag.filter((p) => p.committees && p.committees.length > 0).length;
+  console.log(`  Committees attached:         ${withCommittees}/${bundestag.length}`);
 
   const cache: PoliticiansCache = {
     bundestag,

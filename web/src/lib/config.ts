@@ -9,11 +9,20 @@ export const EMAIL_SUBJECT = "Dein Brief nach Berlin ist fertig" as const;
 export const EMAIL_SENDER_NAME = APP_NAME;
 
 // Letter generation targets
-// Bands calibrated for handwritten DIN A4 (~180-220 words per page with normal handwriting)
+// Formula: pages × WORDS_PER_PAGE ± TOLERANCE.
+// 220 words/page is a realistic mean for handwritten DIN A4.
+// Tight tolerance (±20) so the slider effect is actually felt by the LLM.
+const WORDS_PER_PAGE = 220 as const;
+const TOLERANCE = 20 as const;
+const band = (pages: number) => ({
+  min: Math.round(pages * WORDS_PER_PAGE - TOLERANCE),
+  max: Math.round(pages * WORDS_PER_PAGE + TOLERANCE),
+});
+
 export const LETTER_LENGTHS = {
-  "1": { min: 180, max: 240, label: "1 Seite" },
-  "1.5": { min: 280, max: 360, label: "1,5 Seiten" },
-  "2": { min: 380, max: 480, label: "2 Seiten" },
+  "1":   { ...band(1),   label: "1 Seite" },     // 200–240
+  "1.5": { ...band(1.5), label: "1,5 Seiten" },  // 310–350
+  "2":   { ...band(2),   label: "2 Seiten" },    // 420–460
 } as const;
 
 export type LetterLength = keyof typeof LETTER_LENGTHS;

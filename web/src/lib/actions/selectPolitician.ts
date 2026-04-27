@@ -8,6 +8,7 @@ import { moderateText } from "@/lib/moderation/moderateText";
 import { generateLetter } from "@/lib/generation/generateLetter";
 import { fetchMdbContext } from "@/lib/enrichment/fetchMdbContext";
 import { sendLetterEmail } from "@/lib/email/sendLetterEmail";
+import { buildDebugPayload } from "@/lib/email/buildDebugPayload";
 import { checkRateLimit, getClientIp, LIMITS } from "@/lib/rateLimit";
 import { DEFAULT_LETTER_LENGTH } from "@/lib/config";
 
@@ -146,6 +147,7 @@ export async function selectPoliticianAction(
         politicianAbgeordnetenwatchUrl: result.selectedPolitician.abgeordnetenwatchUrl,
         letterText: result.letter,
         issueText: data.issueText,
+        debug: buildDebugPayload(data, result, derivedPoliticians.length),
       });
     });
 

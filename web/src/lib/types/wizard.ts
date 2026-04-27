@@ -45,6 +45,7 @@ export interface GenerateLetterResult {
   wordCountInRange: boolean;
   fallbackUsed: boolean; // true when Mistral returned an unknown selected_politician_id
   mdbContextUsed: boolean;
+  retried: boolean; // true when length-corrective retry was fired
   model: string;
   temperature: number;
   generationMs: number;

@@ -200,9 +200,12 @@ export function Step2Issue({
       <h1 className="font-typewriter text-[28px] font-semibold leading-[1.2] text-waldgruen-dark mb-2">
         Was ist dein Anliegen an die Politik?
       </h1>
-      <p className="font-body text-sm text-warmgrau/70 mb-8">
+      <p className="font-body text-sm text-warmgrau/70 mb-4">
         Beschreibe dein Anliegen: schnell per Sprache oder direkt per Text. Je konkreter du dein Anliegen schilderst, desto überzeugender wird dein Brief.{!voiceTouched && " Sprich dein Anliegen ein, wir tippen deinen Brief vor."}
       </p>
+
+      {/* Tips disclosure — subtle nudge toward effective writing */}
+      <TipsDisclosure />
 
       {/* Moderation rejection banner */}
       {errorMessage && (
@@ -229,9 +232,6 @@ export function Step2Issue({
         <span className="font-body text-xs text-warmgrau/50">oder schreib es selbst</span>
         <div className="flex-1 h-px bg-warmgrau/20" />
       </div>
-
-      {/* Tips disclosure — subtle nudge toward effective writing */}
-      <TipsDisclosure />
 
       {/* Textarea */}
       <div>

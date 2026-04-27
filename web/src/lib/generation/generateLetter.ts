@@ -3,29 +3,65 @@ import type { GenerateLetterInput, GenerateLetterResult, MdbContext } from "@/li
 import type { PoliticalLevel } from "@/lib/types/politician";
 import { LETTER_LENGTHS, DEFAULT_LETTER_LENGTH } from "@/lib/config";
 
-const MISTRAL_MODEL = "mistral-small-latest";
+const MISTRAL_MODEL = "mistral-medium-latest";
 const MISTRAL_TEMPERATURE = 0.4;
 
-// Tone ladder: rule + concrete opener and closer the model can lean on.
-// We give actual sentences (few-shot anchors) instead of abstract adjectives,
-// because abstract tone instructions get ignored by the model.
-const TONE_INSTRUCTIONS: Record<number, string> = {
-  1: `Stufe 1 (sehr freundlich, einladend). Warm, bittend, ohne unterwürfig zu wirken. Du klingst wie jemand, der höflich anklopft.
-Beispiel-Opener: "Ich wende mich heute an Sie, weil mir ein Thema in unserem Stadtteil keine Ruhe lässt."
-Beispiel-Schluss vor Grußformel: "Ich würde mich sehr freuen, wenn Sie diesen Punkt in Ihre Arbeit aufnehmen."`,
-  2: `Stufe 2 (freundlich-höflich). Konstruktiv, zugewandt, klar. Du erklärst dein Anliegen offen, ohne dramatisch zu werden.
-Beispiel-Opener: "Ich schreibe Ihnen, weil mich eine konkrete Situation in unserer Nachbarschaft umtreibt."
-Beispiel-Schluss vor Grußformel: "Ich bitte Sie, sich für eine Lösung dieses Problems einzusetzen."`,
-  3: `Stufe 3 (sachlich-respektvoll, Augenhöhe). Engagierte Bürgerin, engagierter Bürger. Weder fordernd noch devot.
-Beispiel-Opener: "Es gibt etwas, das mich seit Wochen beschäftigt und das ich Ihnen schildern möchte."
-Beispiel-Schluss vor Grußformel: "Setzen Sie sich bitte dafür ein, dass dieses Anliegen politisch behandelt wird."`,
-  4: `Stufe 4 (bestimmt, klar). Direkte Sprache, ehrlich. Du bist nicht aggressiv, aber du redest nicht um den heißen Brei.
-Beispiel-Opener: "Ich schreibe Ihnen, weil ich nicht länger zusehen will, ohne etwas zu sagen."
-Beispiel-Schluss vor Grußformel: "Ich erwarte, dass Sie hier handeln und das Thema in Ihrer Fraktion auf den Tisch bringen."`,
-  5: `Stufe 5 (nachdrücklich, fordernd). Kantig, aber nicht beleidigend. Du machst klar, dass dir der Geduldsfaden ausgeht. Sätze wie "Ich verstehe nicht, warum..." oder "Ich bin sauer, weil..." sind ausdrücklich erlaubt und erwünscht.
-Beispiel-Opener: "Ich schreibe Ihnen, weil ich es leid bin, dass an diesem Punkt nichts passiert."
-Beispiel-Schluss vor Grußformel: "Ich fordere Sie auf, dieses Thema noch in dieser Sitzungsperiode konkret anzugehen."`,
+interface ToneRegister {
+  register: string;
+  beschreibung: string;
+  verboten: string;
+  opener: string;
+  schluss: string;
+}
+
+// Tone ladder: register name + concrete descriptor + verboten floor + opener/closer few-shot anchors.
+// Named registers help the model land the slider; verboten lines tell it what NOT to soften toward.
+const TONE_REGISTERS: Record<number, ToneRegister> = {
+  1: {
+    register: "freundlich-einladend",
+    beschreibung: "Warm, bittend, ohne unterwürfig zu wirken. Du klingst wie jemand, der höflich anklopft.",
+    verboten: "Unterwürfigkeit, Entschuldigungen für das Schreiben selbst",
+    opener: "Ich wende mich heute an Sie, weil mir ein Thema in unserem Stadtteil keine Ruhe lässt.",
+    schluss: "Ich würde mich sehr freuen, wenn Sie diesen Punkt in Ihre Arbeit aufnehmen.",
+  },
+  2: {
+    register: "höflich-konstruktiv",
+    beschreibung: "Konstruktiv, zugewandt, klar. Du erklärst dein Anliegen offen, ohne dramatisch zu werden.",
+    verboten: "Floskeln, dramatische Sprache, Schmeicheleien",
+    opener: "Ich schreibe Ihnen, weil mich eine konkrete Situation in unserer Nachbarschaft umtreibt.",
+    schluss: "Ich bitte Sie, sich für eine Lösung dieses Problems einzusetzen.",
+  },
+  3: {
+    register: "sachlich-engagiert",
+    beschreibung: "Engagierte Bürgerin, engagierter Bürger auf Augenhöhe. Weder fordernd noch devot.",
+    verboten: "Devotion, übertriebene Höflichkeit, Abstandstexte",
+    opener: "Es gibt etwas, das mich seit Wochen beschäftigt und das ich Ihnen schildern möchte.",
+    schluss: "Setzen Sie sich bitte dafür ein, dass dieses Anliegen politisch behandelt wird.",
+  },
+  4: {
+    register: "scharf-pointiert",
+    beschreibung: "Direkte Sprache, ehrlich, mit klarer Forderung. Persönliche Betroffenheit darf hervortreten. Du redest nicht um den heißen Brei.",
+    verboten: "Glätten, Diplomatie-Floskeln, Weichspül-Formulierungen, Sanitisieren der Anliegen",
+    opener: "Ich schreibe Ihnen, weil ich nicht länger zusehen will, ohne etwas zu sagen.",
+    schluss: "Ich erwarte, dass Sie hier handeln und das Thema in Ihrer Fraktion auf den Tisch bringen.",
+  },
+  5: {
+    register: "konfrontativ-aber-respektvoll",
+    beschreibung: 'Kantig, fordernd, ungeglättet. Du machst unmissverständlich klar, dass dir der Geduldsfaden ausgeht. Sätze wie "Ich verstehe nicht, warum...", "Ich bin frustriert, weil..." oder "Es reicht, dass..." sind ausdrücklich erwünscht. Politisch zugespitzte Beobachtungen des Bürgers werden NICHT gemildert, sondern in geeignete formelle Sprache übersetzt.',
+    verboten: "Beleidigungen, Unterstellungen, Pauschalurteile, Du-Form. ABER NICHT verboten: politische Schärfe, Ungeduld, klare Kritik an Untätigkeit",
+    opener: "Ich schreibe Ihnen, weil ich es leid bin, dass an diesem Punkt nichts passiert.",
+    schluss: "Ich fordere Sie auf, dieses Thema noch in dieser Sitzungsperiode konkret anzugehen.",
+  },
 };
+
+function tonalityBlock(level: number): string {
+  const reg = TONE_REGISTERS[level] ?? TONE_REGISTERS[3];
+  return `register: ${reg.register} (Stufe ${level} von 5)
+beschreibung: ${reg.beschreibung}
+verboten: ${reg.verboten}
+beispiel_opener: "${reg.opener}"
+beispiel_schluss_vor_grußformel: "${reg.schluss}"`;
+}
 
 function todayInGerman(): string {
   return new Date().toLocaleDateString("de-DE", {
@@ -36,6 +72,20 @@ function todayInGerman(): string {
 }
 
 const SYSTEM_PROMPT_TEMPLATE = `Du hilfst Bürgerinnen und Bürgern in Deutschland, einen wirksamen, handschriftlich abschreibbaren Brief an ihre gewählte Vertretung zu schreiben.
+
+EINGABEFORMAT (im User-Prompt mit XML-Tags markiert):
+- <transkript>: Wortlaut des Bürgers. Das ist die einzige Quelle für Fakten, Beobachtungen, Argumente und Einschätzungen.
+- <tonalitaet>: gewählte Tonstufe inkl. Register, Beschreibung, Verboten-Liste, Beispiel-Opener und Beispiel-Schluss.
+- <ziel>: Zielwortzahl und Absatzanzahl.
+- <empfaenger>: Liste der verfügbaren Politiker (JSON). Du wählst genau eine ID.
+- <mdb_kontext> (optional): Ausschüsse und jüngste Positionen der Empfängerin/des Empfängers.
+- <absender_optional> (optional): Name, Parteimitgliedschaft, Organisation des Absenders.
+
+REGEL — KEINE ERFINDUNGEN (nicht verhandelbar):
+Verwende ausschließlich Informationen aus <transkript>. Erfinde keine Daten, Uhrzeiten, Orte, Wegstrecken, Beobachtungen, Personen, Szenen, Zahlen, Studien oder Programmnamen. Wenn der Bürger keinen konkreten Anlass nennt, beschreibe das Problem allgemein und persönlich, aber erfinde keinen Anlass. Lieber abstrakter formulieren als Fakten erfinden. Kein "Gestern Abend...", kein "Letzte Woche...", keine Uhrzeit, kein Wegestreckendetail, das nicht im Transkript steht.
+
+REGEL — STIMME DES BÜRGERS BEWAHREN (nicht verhandelbar):
+Identifiziere die 1–3 stärksten Argumente und Einschätzungen des Bürgers, einschließlich politisch zugespitzter oder unbequemer. Übernimm sie sinngemäß im Brieftext. Glätte sie NICHT weg, sanitize sie NICHT. Wenn der Bürger einen politischen Zusammenhang herstellt (z. B. dass ein Problem extremen Parteien Auftrieb gibt, oder dass Untätigkeit politische Folgen hat), übernimm diesen Gedanken in geeigneter formeller Sprache. Empathie und Mitgefühl des Bürgers für Betroffene gehören ebenfalls in den Brief, wenn sie im Transkript stehen.
 
 KULTURELLER KONTEXT (deutsch, nicht amerikanisch):
 Deutsche politische Korrespondenz ist sachlich, strukturiert, argumentativ. Nicht emotional-pathetisch, nicht aktivistisch, nicht missionarisch. Der Brief klingt wie ein engagierter Mensch, der auf Augenhöhe schreibt: nicht wie ein Lobbyist und nicht wie ein Bittsteller.
@@ -49,7 +99,6 @@ VERBOTENE WÖRTER UND PHRASEN (KI-Tells, sofort streichen):
 - "weltoffen und lebenswert", "lebenswerte Stadt" als Floskel
 - "im Rahmen", "vor diesem Hintergrund", "in diesem Zusammenhang", "vor dem Hintergrund", "im Lichte", "gleichermaßen"
 - navigieren, fördern (im abstrakten Sinn), herauskristallisieren, hervorheben, betonen, unterstreichen, untermauern, beleuchten
-- "rechtspopulistische Parolen", "rechtspopulistische Kräfte", "spielt rechtspopulistischen Kräften in die Hände"
 - erfundene Programmnamen wie "Agenda 2040", "Pakt für X", "Initiative Y"
 - englische KI-Marker: delve, foster, garner, elevate, navigate, resonate, crucial, pivotal, vital, intricate, vibrant, tapestry, testament, seamless
 
@@ -84,8 +133,8 @@ Passe die Werte-Sprache an die Partei der Empfängerin/des Empfängers an, damit
 - AfD: streng sachlich, lokale Alltagsprobleme, keine ideologische Sprache in beide Richtungen, würdige Distanz wahren.
 - BSW / sonstige: rein sachlich, Fokus auf das konkrete Anliegen.
 
-MdB-KONTEXT NUTZEN (falls im User-Prompt mitgeliefert):
-Wenn ein Ausschuss zum Thema passt, das knapp und natürlich erwähnen ("Gerade als Mitglied des Ausschusses für ... haben Sie hier Einfluss"). Wenn eine jüngste Position zum Thema passt, knapp aufgreifen, ohne sie wörtlich zu zitieren. NIEMALS Ausschüsse, Reden oder Positionen erfinden, die nicht im MdB-Kontext stehen.
+MdB-KONTEXT NUTZEN (nur wenn <mdb_kontext> mitgeliefert):
+Wenn ein Ausschuss zum Thema passt, das knapp und natürlich erwähnen ("Gerade als Mitglied des Ausschusses für ... haben Sie hier Einfluss"). Wenn eine jüngste Position zum Thema passt, knapp aufgreifen, ohne sie wörtlich zu zitieren. NIEMALS Ausschüsse, Reden oder Positionen erfinden, die nicht in <mdb_kontext> stehen.
 
 HEUTIGES DATUM: __TODAY__
 
@@ -93,27 +142,27 @@ ZUSTÄNDIGKEITSHINWEIS:
 Alle verfügbaren Politiker sind Bundestagsabgeordnete. Wenn das Anliegen primär Landes- oder Kommunalebene betrifft, begründe im Brief kurz, warum sich der Bürger an die Bundestagsebene wendet (Gesetzgebungs­kompetenz, Förderprogramme, bundespolitischer Rahmen).
 
 AUFGABE:
-Schreibe einen formellen Brief in gepflegtem Deutsch (Sie-Form), Länge __MIN_WORDS__ bis __MAX_WORDS__ Wörter. Ziel ist die untere Hälfte der Spanne. Bei Übergröße kürze, ergänze nicht.
+Schreibe einen formellen Brief in gepflegtem Deutsch (Sie-Form). Länge und Absatzanzahl sind in <ziel> vorgegeben. Halte die Zielwortzahl ein (±15%). Wenn der Brief zu kurz wäre: stärker ausarbeiten (Kontext, Begründung, Empathie für Betroffene), aber NIEMALS Fakten erfinden, um Wörter zu füllen. Wenn zu lang: kürze, ergänze nicht.
 
 PFLICHT-ELEMENTE:
-1. MIKRO-MOMENT in Absatz 1: ein konkretes, sinnliches Detail aus dem Input (Ort, Zeit, was wurde erlebt). Wenn der Input das nicht hergibt, das nächst-konkrete Element nutzen. Nichts erfinden.
-2. KOMPLEXITÄT ANERKENNEN in Absatz 2: ein Satz, der zeigt, dass du verstehst, warum das Thema schwierig ist. Maximal eine Zahl oder ein Fakt aus dem Input, nicht mehr.
-3. EINE BITTE in Absatz 3: genau ein konkretes Verb plus ein konkretes Objekt. Keine Aufzählung, keine Wunschliste. Nicht "ich bitte um Maßnahmen", sondern z. B. "ich bitte Sie, sich im Verkehrsausschuss für die Aufnahme dieser Strecke ins Sonderprogramm einzusetzen".
+1. KONKRETER ANLASS in Absatz 1: ein Detail aus <transkript> (Ort, Erlebnis, Beobachtung). Wenn das Transkript keinen konkreten Anlass nennt, beschreibe das Problem persönlich-allgemein. Nichts erfinden.
+2. KOMPLEXITÄT ANERKENNEN: ein Satz, der zeigt, dass du verstehst, warum das Thema schwierig ist. Maximal eine Zahl oder ein Fakt aus <transkript>, nicht mehr.
+3. EINE BITTE: genau ein konkretes Verb plus ein konkretes Objekt. Keine Aufzählung, keine Wunschliste. Nicht "ich bitte um Maßnahmen", sondern z. B. "ich bitte Sie, sich im Verkehrsausschuss für die Aufnahme dieser Strecke ins Sonderprogramm einzusetzen".
 4. SCHLUSS-SATZ vor Grußformel: eine politische Handlungs­erwartung an die Empfängerin/den Empfänger. KEINE Bitte um Antwort, KEIN Gesprächs- oder Treffen-Wunsch, KEIN "ich freue mich auf Ihre Rückmeldung". Das Ziel ist politische Wirkung, nicht Korrespondenz.
 
 BRIEFFORMAT:
 - Datum oben (TT.MM.JJJJ, das oben angegebene HEUTIGE DATUM verwenden).
 - Anrede: "Sehr geehrte/r [Titel] [Name]," (Titel nur wenn vorhanden).
-- 3 bis maximal 4 Absätze, einfache Satzstruktur (der Brief wird handschriftlich abgeschrieben).
+- Absatzanzahl gemäß <ziel>, einfache Satzstruktur (der Brief wird handschriftlich abgeschrieben).
 - Schluss: "Mit freundlichen Grüßen," dann Name oder "[Ihr Name]".
 
-TONHINWEIS (vom Bürger gewählt, hat Vorrang vor deinem eigenen Urteil):
-__TONE_INSTRUCTION__
+TONHINWEIS:
+Folge dem Register, der Beschreibung und der Verboten-Liste aus <tonalitaet>. Diese Wahl des Bürgers hat Vorrang vor deinem eigenen Urteil. Wenn der Bürger Stufe 5 (konfrontativ-aber-respektvoll) wählt, glätte den Brief NICHT auf Stufe 3 zurück.
 
 REGELN:
-- Erfinde KEINE demografischen Details (Geschlecht, Familienstand, Beruf, Kinder, Mitgliedschaften), die nicht im Input stehen.
+- Erfinde KEINE demografischen Details (Geschlecht, Familienstand, Beruf, Kinder, Mitgliedschaften), die nicht in <transkript> oder <absender_optional> stehen.
 - Erfinde KEINE Zahlen, Programmnamen, Studien, Organisationen.
-- Sachlich und respektvoll, nie unterwürfig, nie aggressiv beleidigend.
+- Sachlich und respektvoll, nie unterwürfig, nie aggressiv beleidigend. Tonschärfe gemäß <tonalitaet> ist explizit erlaubt.
 - Mische Satzlängen. Kurze Sätze landen härter, ein längerer kann Nuancen tragen.
 
 VOR DER AUSGABE: Lies deinen Brief einmal in Gedanken laut. Klingt das wie ein Mensch, der zum ersten Mal an seinen Abgeordneten schreibt, oder wie ein Pressetext? Wenn Pressetext, schreibe um.
@@ -126,7 +175,7 @@ Antworte ausschließlich im JSON-Format:
   "letter": "<vollständiger Brieftext>"
 }`;
 
-function formatMdbContextBlock(ctx: MdbContext | undefined): string {
+function mdbContextBlock(ctx: MdbContext | undefined): string {
   if (!ctx) return "";
   const parts: string[] = [];
   if (ctx.committees.length > 0) {
@@ -139,12 +188,24 @@ function formatMdbContextBlock(ctx: MdbContext | undefined): string {
     parts.push(`- Jüngste relevante Positionen:\n${items}`);
   }
   if (parts.length === 0) return "";
-  return `\n\nMdB-Kontext zur Adressatin/zum Adressaten (nutze nur, was passt, niemals erfinden):\n${parts.join("\n")}`;
+  return `\n\n<mdb_kontext>\n${parts.join("\n")}\n</mdb_kontext>`;
 }
 
-function buildUserPrompt(input: GenerateLetterInput): string {
-  let prompt = `Anliegen des Bürgers:\n${input.issueText}\n\n`;
-  prompt += `Verfügbare Politiker:\n${JSON.stringify(
+function absenderBlock(input: GenerateLetterInput): string {
+  const lines: string[] = [];
+  if (input.name) lines.push(`name: ${input.name}`);
+  if (input.party) lines.push(`parteimitgliedschaft: ${input.party}`);
+  if (input.ngo) lines.push(`organisation: ${input.ngo}`);
+  if (lines.length === 0) return "";
+  return `\n\n<absender_optional>\n${lines.join("\n")}\n</absender_optional>`;
+}
+
+function buildUserPrompt(
+  input: GenerateLetterInput,
+  targetWords: number,
+  toneLevel: number
+): string {
+  const politiciansJson = JSON.stringify(
     input.politicians.map((p) => ({
       id: p.id,
       name: `${p.title ? p.title + " " : ""}${p.firstName} ${p.lastName}`,
@@ -154,12 +215,48 @@ function buildUserPrompt(input: GenerateLetterInput): string {
     })),
     null,
     2
-  )}`;
-  prompt += formatMdbContextBlock(input.mdbContext);
-  if (input.name) prompt += `\n\nName des Absenders: ${input.name}`;
-  if (input.party) prompt += `\nParteimitgliedschaft des Absenders: ${input.party}`;
-  if (input.ngo) prompt += `\nOrganisation/Gewerkschaft des Absenders: ${input.ngo}`;
-  return prompt;
+  );
+
+  return `<transkript>
+${input.issueText}
+</transkript>
+
+<tonalitaet>
+${tonalityBlock(toneLevel)}
+</tonalitaet>
+
+<ziel>
+woerter: ${targetWords} (±15%)
+absaetze: 3 bis 4
+</ziel>
+
+<empfaenger>
+${politiciansJson}
+</empfaenger>${mdbContextBlock(input.mdbContext)}${absenderBlock(input)}`;
+}
+
+interface ParsedLetter {
+  political_level: string;
+  selected_politician_id: number;
+  voice_check?: string;
+  letter: string;
+}
+
+function parseLetterResponse(content: unknown): ParsedLetter {
+  if (!content || typeof content !== "string") {
+    throw new Error("Mistral returned empty response");
+  }
+  try {
+    return JSON.parse(content) as ParsedLetter;
+  } catch {
+    const match = content.match(/\{[\s\S]*\}/);
+    if (!match) throw new Error("Failed to parse Mistral response as JSON");
+    return JSON.parse(match[0]) as ParsedLetter;
+  }
+}
+
+function countWords(text: string): number {
+  return text.trim().split(/\s+/).filter(Boolean).length;
 }
 
 export async function generateLetter(
@@ -167,68 +264,97 @@ export async function generateLetter(
 ): Promise<GenerateLetterResult> {
   const lengthKey = input.letterLength ?? DEFAULT_LETTER_LENGTH;
   const { min: minWords, max: maxWords } = LETTER_LENGTHS[lengthKey];
+  const targetWords = Math.round((minWords + maxWords) / 2);
+  const toneLevel = input.toneLevel ?? 3;
+  const maxTokens = Math.ceil(maxWords * 2.2) + 250;
 
-  const toneInstruction = TONE_INSTRUCTIONS[input.toneLevel ?? 3] ?? TONE_INSTRUCTIONS[3];
-  const systemPrompt = SYSTEM_PROMPT_TEMPLATE
-    .replace("__TODAY__", todayInGerman())
-    .replace("__MIN_WORDS__", minWords.toString())
-    .replace("__MAX_WORDS__", maxWords.toString())
-    .replace("__TONE_INSTRUCTION__", toneInstruction);
+  const systemPrompt = SYSTEM_PROMPT_TEMPLATE.replace("__TODAY__", todayInGerman());
+  const userPrompt = buildUserPrompt(input, targetWords, toneLevel);
 
-  let parsed: {
-    political_level: string;
-    selected_politician_id: number;
-    voice_check?: string;
-    letter: string;
-  };
-  let response: Awaited<ReturnType<typeof mistral.chat.complete>>;
   const generationStart = Date.now();
 
-  try {
-    response = await mistral.chat.complete({
+  const firstResponse = await mistral.chat.complete({
+    model: MISTRAL_MODEL,
+    messages: [
+      { role: "system", content: systemPrompt },
+      { role: "user", content: userPrompt },
+    ],
+    responseFormat: { type: "json_object" },
+    temperature: MISTRAL_TEMPERATURE,
+    maxTokens,
+  });
+
+  let parsed = parseLetterResponse(firstResponse.choices?.[0]?.message?.content);
+  let wordCount = countWords(parsed.letter);
+
+  // One corrective retry if length is materially off (±15% bounds).
+  // Only retries on length, not on hallucination. Caps cost at 2× per letter.
+  const minOk = Math.floor(minWords * 0.85);
+  const maxOk = Math.ceil(maxWords * 1.15);
+  let retried = false;
+  if (wordCount < minOk || wordCount > maxOk) {
+    retried = true;
+    const directive = wordCount < minOk
+      ? `Der vorherige Brief hatte nur ${wordCount} Wörter. Ziel sind ${targetWords} Wörter (±15%, also ${minOk}–${maxOk}). Schreibe den Brief neu mit der korrekten Länge: arbeite Kontext und Begründung stärker aus, übernimm mehr Argumente und Empathie aus <transkript>. Erfinde KEINE neuen Fakten, um Wörter zu füllen.`
+      : `Der vorherige Brief hatte ${wordCount} Wörter. Ziel sind ${targetWords} Wörter (±15%, also ${minOk}–${maxOk}). Schreibe den Brief neu mit der korrekten Länge: kürze, ohne die Stimme oder die Kernargumente des Bürgers zu verlieren.`;
+
+    console.warn("[generateLetter] word count out of range, retrying once", {
+      wordCount,
+      minWords,
+      maxWords,
+      lengthKey,
+      direction: wordCount < minOk ? "too_short" : "too_long",
+    });
+
+    const retryResponse = await mistral.chat.complete({
       model: MISTRAL_MODEL,
       messages: [
         { role: "system", content: systemPrompt },
-        { role: "user", content: buildUserPrompt(input) },
+        { role: "user", content: userPrompt },
+        { role: "assistant", content: firstResponse.choices?.[0]?.message?.content as string ?? "" },
+        { role: "user", content: directive },
       ],
       responseFormat: { type: "json_object" },
       temperature: MISTRAL_TEMPERATURE,
+      maxTokens,
     });
 
-    const content = response.choices?.[0]?.message?.content;
-    if (!content || typeof content !== "string") {
-      throw new Error("Mistral returned empty response");
-    }
-
-    // Parse JSON with fallback regex extraction (handles cases where Mistral wraps JSON in markdown)
     try {
-      parsed = JSON.parse(content);
-    } catch {
-      const match = content.match(/\{[\s\S]*\}/);
-      if (!match) throw new Error("Failed to parse Mistral response as JSON");
-      parsed = JSON.parse(match[0]);
+      const retryParsed = parseLetterResponse(retryResponse.choices?.[0]?.message?.content);
+      const retryWordCount = countWords(retryParsed.letter);
+      // Only accept the retry if it's actually closer to target than the first attempt.
+      const firstDelta = Math.abs(wordCount - targetWords);
+      const retryDelta = Math.abs(retryWordCount - targetWords);
+      if (retryDelta < firstDelta) {
+        parsed = retryParsed;
+        wordCount = retryWordCount;
+      } else {
+        console.warn("[generateLetter] retry was not closer to target, keeping original", {
+          firstWordCount: wordCount,
+          retryWordCount,
+          target: targetWords,
+        });
+      }
+    } catch (err) {
+      console.error("[generateLetter] retry parse failed, keeping original", err);
     }
-  } catch (err) {
-    throw err;
+  }
+
+  const wordCountInRange = wordCount >= minWords && wordCount <= maxWords;
+  if (!wordCountInRange) {
+    console.warn("[generateLetter] final word count still out of range", {
+      wordCount,
+      minWords,
+      maxWords,
+      lengthKey,
+      retried,
+    });
   }
 
   // voice_check is a self-reflection field that forces the model to read its own output.
   // We do not surface it to the user, but we log it for prompt iteration.
   if (parsed.voice_check) {
     console.log("[generateLetter] voice_check:", parsed.voice_check.slice(0, 200));
-  }
-
-  // Word count instrumentation (warn-only, letter still ships regardless)
-  const wordCount = parsed.letter.trim().split(/\s+/).filter(Boolean).length;
-  const wordCountInRange = wordCount >= minWords && wordCount <= maxWords;
-  if (!wordCountInRange) {
-    console.warn("[generateLetter] word count out of range", {
-      wordCount,
-      minWords,
-      maxWords,
-      lengthKey,
-      politicianCount: input.politicians.length,
-    });
   }
 
   // Validate selected politician against input list (T-02-13: no arbitrary ID injection)
@@ -266,6 +392,7 @@ export async function generateLetter(
     wordCountInRange,
     fallbackUsed,
     mdbContextUsed,
+    retried,
     model: MISTRAL_MODEL,
     temperature: MISTRAL_TEMPERATURE,
     generationMs: Date.now() - generationStart,

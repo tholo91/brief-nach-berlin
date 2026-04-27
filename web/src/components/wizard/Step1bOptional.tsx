@@ -104,7 +104,7 @@ export function Step1bOptional({ onNext, onSkip, defaultValues }: Step1bOptional
             })}
           </div>
           <p className="text-xs text-warmgrau/50 mt-2 italic">
-            Standardmäßig ist 1 Seite voreingestellt — kurz, prägnant und in 5 Minuten abgeschrieben.
+            Standardmäßig ist 1 Seite voreingestellt: kurz, prägnant und in 5 Minuten versandfertig auf dem Papier.
           </p>
         </div>
       </div>

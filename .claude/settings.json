@@ -41,7 +41,9 @@
       "WebFetch(domain:plz-check.de)",
       "Bash(kill 43491 43505 43485)",
       "Bash(rm -f \"/Users/thomas/Documents/Git Repos/brief-nach-berlin/.git/objects/pack/tmp_pack_ks7MU5\")",
-      "Edit(~/.claude/skills/fix-git-corruption/**)"
+      "Edit(~/.claude/skills/fix-git-corruption/**)",
+      "WebFetch(domain:www.promptingguide.ai)",
+      "WebFetch(domain:blog.promptlayer.com)"
     ]
   }
 }

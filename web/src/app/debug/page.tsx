@@ -32,6 +32,7 @@ function format(payload: LetterDebugPayload | { error: string }): string {
     `MdB-Kontext genutzt   ${d.mdbContextUsed}`,
     `Available politicians ${d.availablePoliticianCount}`,
     `Fallback used         ${d.fallbackUsed}`,
+    `Length retry fired    ${d.retried}`,
     `Sender hints          name=${d.hasName} party=${d.hasParty} ngo=${d.hasNgo}`,
     `Model                 ${d.model}`,
     `Temperature           ${d.temperature}`,

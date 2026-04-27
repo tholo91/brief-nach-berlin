@@ -21,6 +21,7 @@ export interface LetterDebugPayload {
   wordCount: number;
   wordCountInRange: boolean;
   fallbackUsed: boolean;
+  retried: boolean;
   politicalLevel: string;
   representativeName: string;
   representativeWahlkreis: string;

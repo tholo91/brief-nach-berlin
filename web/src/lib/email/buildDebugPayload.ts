@@ -3,11 +3,11 @@ import type { GenerateLetterResult, WizardData } from "@/lib/types/wizard";
 import { LETTER_LENGTHS, DEFAULT_LETTER_LENGTH } from "@/lib/config";
 
 const TONE_LABELS: Record<number, string> = {
-  1: "freundlich",
-  2: "höflich",
-  3: "sachlich",
-  4: "bestimmt",
-  5: "nachdrücklich",
+  1: "freundlich-einladend",
+  2: "höflich-konstruktiv",
+  3: "sachlich-engagiert",
+  4: "scharf-pointiert",
+  5: "konfrontativ-aber-respektvoll",
 };
 
 export function buildDebugPayload(
@@ -31,6 +31,7 @@ export function buildDebugPayload(
     wordCount: result.wordCount,
     wordCountInRange: result.wordCountInRange,
     fallbackUsed: result.fallbackUsed,
+    retried: result.retried,
     politicalLevel: result.politicalLevel,
     representativeName: fullName,
     representativeWahlkreis: p.wahlkreisName ?? "—",

@@ -206,6 +206,22 @@ Plans:
 Plans:
 - [ ] TBD (promote with /gsd:review-backlog when ready)
 
+### Phase 999.12: "Treppe der Selbstwirksamkeit" auf Success Page + Email verlinken (BACKLOG)
+
+**Goal:** Die Seite `/treppe-der-selbstwirksamkeit` ist fertig aber nirgendwo verlinkt — weder auf der Success Page noch in der Email. Nutzer, die gerade einen Brief geschrieben haben, haben maximale Motivation und sollten direkt zu weiteren Wegen der politischen Teilhabe geführt werden.
+
+Konzept (Gemini-Input, 2026-04-27):
+1. **Success Page (`Step3Success.tsx`):** Sektion "Und was kommt danach?" / "Lust auf mehr Wirkung?" mit Hook: "Du hast gerade Stufe 3 von 10 erklommen — damit bist du bereits weiter als 95% der Bevölkerung." Button/Link → `/treppe-der-selbstwirksamkeit`.
+2. **Email-Template (`buildEmailHtml.ts`):** Subtiler Block nach "Nächste Schritte": "Dein Brief ist ein starkes Zeichen. Es gibt noch 9 weitere Wege, wie du in Deutschland wirklich etwas bewegst — von 60-Sekunden-Petitionen bis zur eigenen Bürgerinitiative." + Link "Alle 10 Stufen ansehen".
+
+Warum es funktioniert: Gamification via Level-Logik ("du bist auf Stufe 3"), Neugier auf weitere Stufen, Momentum-Capture im richtigen Moment.
+
+**Requirements:** TBD
+**Plans:** 0 plans
+
+Plans:
+- [ ] TBD (promote with /gsd:review-backlog when ready)
+
 ## Progress
 
 **Execution Order:**

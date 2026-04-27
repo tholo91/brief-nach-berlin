@@ -9,9 +9,9 @@ export const step1Schema = z.object({
 });
 
 export const step1bSchema = z.object({
-  name: z.string().optional(),
-  party: z.string().optional(),
-  ngo: z.string().optional(),
+  name: z.string().trim().max(100, { message: "Name darf maximal 100 Zeichen lang sein." }).optional(),
+  party: z.string().trim().max(80, { message: "Partei darf maximal 80 Zeichen lang sein." }).optional(),
+  ngo: z.string().trim().max(100, { message: "Organisation darf maximal 100 Zeichen lang sein." }).optional(),
   letterLength: z.enum(["1", "1.5", "2"]),
 });
 

@@ -12,6 +12,17 @@ function ipFromRequest(req: NextRequest): string {
   return "unknown";
 }
 
+const MAX_AUDIO_BYTES = 25 * 1024 * 1024; // 25 MB — Mistral's file size limit
+const ALLOWED_MIME = new Set([
+  "audio/webm",
+  "audio/webm;codecs=opus",
+  "audio/mp4",
+  "audio/wav",
+  "audio/ogg",
+  "audio/mpeg",
+  "audio/x-m4a",
+]);
+
 export async function POST(req: NextRequest) {
   if (!process.env.MISTRAL_API_KEY) {
     console.error("Transcription error: MISTRAL_API_KEY is not set");
@@ -22,6 +33,12 @@ export async function POST(req: NextRequest) {
   }
 
   try {
+    // Reject oversized uploads before reading the body (cost + memory protection)
+    const contentLength = req.headers.get("content-length");
+    if (contentLength && parseInt(contentLength, 10) > MAX_AUDIO_BYTES) {
+      return NextResponse.json({ error: "Audiodatei zu groß." }, { status: 413 });
+    }
+
     const ip = ipFromRequest(req);
     const limit = checkRateLimit(
       `transcribe:ip:${ip}`,
@@ -43,6 +60,18 @@ export async function POST(req: NextRequest) {
         { error: "Keine Audiodatei empfangen." },
         { status: 400 }
       );
+    }
+
+    // Secondary size check after formData parse (Content-Length may be absent)
+    if (audioBlob.size > MAX_AUDIO_BYTES) {
+      return NextResponse.json({ error: "Audiodatei zu groß." }, { status: 413 });
+    }
+
+    // MIME type whitelist — reject anything that isn't a known audio format
+    const rawMime = audioBlob.type || "";
+    const baseMime = rawMime.split(";")[0]!.trim().toLowerCase();
+    if (!ALLOWED_MIME.has(rawMime) && !ALLOWED_MIME.has(baseMime)) {
+      return NextResponse.json({ error: "Nicht unterstütztes Audioformat." }, { status: 415 });
     }
 
     // Convert to ArrayBuffer then File to ensure consistent behavior across runtimes

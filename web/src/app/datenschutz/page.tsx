@@ -70,7 +70,10 @@ export default function Datenschutz() {
               E-Mail-Adresse, Anliegen, optionale Angaben, optionale
               Spracheingabe) werden ausschließlich während der Verarbeitung Ihrer
               Anfrage verwendet und danach verworfen. Eine dauerhafte Speicherung
-              auf unseren Servern findet nicht statt.
+              auf unseren Servern findet nicht statt. Die eingesetzten
+              Dienstleister Mistral AI (Abschnitt 9) und Brevo (Abschnitt 11)
+              speichern Daten im Rahmen ihrer eigenen Datenschutzbestimmungen und
+              Auftragsverarbeitungsvertr&auml;ge.
             </p>
           </div>
 

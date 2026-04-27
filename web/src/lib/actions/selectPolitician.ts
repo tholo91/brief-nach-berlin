@@ -155,7 +155,7 @@ export async function selectPoliticianAction(
       success: true,
       politician: result.selectedPolitician,
       politicalLevel: result.politicalLevel,
-      // letter field removed — sent by email only (D-03, PRIV-01)
+      letterText: result.letter,
     };
   } catch (error) {
     console.error("[brief-nach-berlin] selectPoliticianAction error:", error);

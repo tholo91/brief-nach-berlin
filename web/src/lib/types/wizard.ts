@@ -52,7 +52,7 @@ export interface GenerateLetterResult {
 }
 
 export type WizardActionResult =
-  | { success: true; politician: Politician; politicalLevel: PoliticalLevel }
+  | { success: true; politician: Politician; politicalLevel: PoliticalLevel; letterText: string }
   | { disambiguationNeeded: true; politicians: Politician[] }
   | { error: "moderation_rejected"; message: string }
   | { error: "output_moderation_rejected"; message: string }

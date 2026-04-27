@@ -33,6 +33,14 @@ export function Step3Success({ result, wizardData, politicians }: Step3SuccessPr
   const [resendState, setResendState] = useState<"idle" | "sending" | "sent" | "error" | "limited">("idle");
   const [resendLimitMessage, setResendLimitMessage] = useState<string | null>(null);
   const [resendEmail, setResendEmail] = useState(wizardData.email);
+  const [letterText, setLetterText] = useState<string>(() => {
+    if (result && "success" in result && result.success) return result.letterText;
+    return "";
+  });
+  const [generatedPoliticianId, setGeneratedPoliticianId] = useState<number | null>(() => {
+    if (result && "success" in result && result.success) return result.politician.id;
+    return null;
+  });
   const submitButtonRef = useRef<HTMLButtonElement | null>(null);
 
   // Smooth-scroll the submit button into view after a card is picked, so users
@@ -80,6 +88,8 @@ export function Step3Success({ result, wizardData, politicians }: Step3SuccessPr
 
         if ("success" in selectResult && selectResult.success) {
           setGenerationComplete(true);
+          setLetterText(selectResult.letterText);
+          setGeneratedPoliticianId(selectResult.politician.id);
         }
       } catch {
         setGenerationError(
@@ -139,10 +149,10 @@ export function Step3Success({ result, wizardData, politicians }: Step3SuccessPr
 
   const handleResend = useCallback(async () => {
     if (resendState === "sending" || resendState === "sent" || resendState === "limited") return;
-    if (!result || !("success" in result) || !result.politician) return;
+    if (!letterText || generatedPoliticianId === null) return;
     setResendState("sending");
     try {
-      const res = await resendLetterAction({ ...wizardData, email: resendEmail }, result.politician);
+      const res = await resendLetterAction({ ...wizardData, email: resendEmail }, generatedPoliticianId, letterText);
       if ("success" in res) {
         setResendState("sent");
       } else if (res.error === "rate_limited") {
@@ -154,7 +164,7 @@ export function Step3Success({ result, wizardData, politicians }: Step3SuccessPr
     } catch {
       setResendState("error");
     }
-  }, [resendState, result, wizardData, resendEmail]);
+  }, [resendState, letterText, generatedPoliticianId, wizardData, resendEmail]);
 
   const emailShareHref = SHARE_URL_EMAIL;
 

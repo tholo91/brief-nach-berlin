@@ -3,6 +3,105 @@
 import { useState, useCallback, useEffect } from "react";
 import { VoiceRecorder, type VoiceRecorderState } from "@/components/audio/VoiceRecorder";
 
+function TipsDisclosure() {
+  const [open, setOpen] = useState(false);
+  const [hint, setHint] = useState(true);
+
+  // Subtle pulse for ~3s on first mount to draw attention without being noisy.
+  useEffect(() => {
+    const t = setTimeout(() => setHint(false), 3000);
+    return () => clearTimeout(t);
+  }, []);
+
+  const toggle = () => {
+    setOpen((v) => !v);
+    setHint(false);
+  };
+
+  return (
+    <div className="mb-4 border-l-4 border-waldgruen bg-waldgruen/5 rounded-r-lg overflow-hidden">
+      <button
+        type="button"
+        onClick={toggle}
+        aria-expanded={open}
+        aria-controls="tips-content"
+        className={[
+          "w-full flex items-center justify-between gap-3 px-4 py-3 text-left",
+          "font-body text-sm font-semibold text-waldgruen-dark",
+          "hover:bg-waldgruen/10 transition-colors cursor-pointer",
+          hint && !open ? "animate-pulse" : "",
+        ].join(" ")}
+      >
+        <span className="flex items-center gap-2">
+          <svg
+            width="18"
+            height="18"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            aria-hidden="true"
+          >
+            <path d="M9 18h6" />
+            <path d="M10 22h4" />
+            <path d="M12 2a7 7 0 0 0-4 12.7c.6.5 1 1.3 1 2.1V18h6v-1.2c0-.8.4-1.6 1-2.1A7 7 0 0 0 12 2Z" />
+          </svg>
+          So wird dein Brief am wirksamsten
+        </span>
+        <svg
+          width="16"
+          height="16"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          aria-hidden="true"
+          className={`transition-transform duration-300 ${open ? "rotate-180" : "rotate-0"}`}
+        >
+          <polyline points="6 9 12 15 18 9" />
+        </svg>
+      </button>
+      <div
+        id="tips-content"
+        className={`transition-all duration-300 ease-out overflow-hidden ${
+          open ? "max-h-[680px] opacity-100" : "max-h-0 opacity-0"
+        }`}
+      >
+        <div className="px-4 pb-4 pt-1 font-body text-sm text-warmgrau leading-relaxed space-y-3">
+          <p>
+            <span className="font-semibold text-waldgruen-dark">Sei konkret.</span>{" "}
+            Wo wohnst du, was siehst du, was hast du erlebt? Ein Satz mit deiner Straße oder
+            deinem Stadtteil bringt mehr als jede Statistik.
+          </p>
+          <p>
+            <span className="font-semibold text-waldgruen-dark">Eine Bitte reicht.</span>{" "}
+            Was sollen Abgeordnete genau tun? Je klarer, desto wirkungsvoller. Lieber eine
+            präzise Forderung als eine lange Wunschliste.
+          </p>
+          <p>
+            <span className="font-semibold text-waldgruen-dark">Sag, wer du bist.</span>{" "}
+            Beruf, Verein, Gewerkschaft: solche Details geben deinem Brief Gewicht. Auf
+            der nächsten Seite kannst du das ergänzen.
+          </p>
+          <p>
+            <span className="font-semibold text-waldgruen-dark">Trau dich, ehrlich zu sein.</span>{" "}
+            Wut, Sorge, Hoffnung gehören rein. Du musst nicht wie ein Politiker klingen,
+            du sollst wie du klingen.
+          </p>
+          <div className="mt-3 rounded-md bg-creme/70 border border-warmgrau/15 px-3 py-2 font-typewriter text-[13px] text-warmgrau/85 italic">
+            Beispiel: &bdquo;Ich wohne in der Bremer Neustadt. Letzten Mittwoch stand ich morgens
+            am Hauptbahnhof und habe gesehen, wie...&ldquo;
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 const SUBMIT_STAGES = [
   "Zuständigkeit wird ermittelt...",
   "Brief wird formuliert...",
@@ -99,10 +198,10 @@ export function Step2Issue({
   return (
     <div>
       <h1 className="font-typewriter text-[28px] font-semibold leading-[1.2] text-waldgruen-dark mb-2">
-        Was möchtest du ändern?
+        Was ist dein Anliegen an die Politik?
       </h1>
       <p className="font-body text-sm text-warmgrau/70 mb-8">
-        Beschreibe dein Anliegen – per Sprache oder Text. Je konkreter, desto überzeugender wird dein Brief.
+        Beschreibe dein Anliegen: schnell per Sprache oder direkt per Text. Je konkreter du dein Anliegen schilderst, desto überzeugender wird dein Brief.{!voiceTouched && " Sprich dein Anliegen ein, wir tippen deinen Brief vor."}
       </p>
 
       {/* Moderation rejection banner */}
@@ -130,6 +229,9 @@ export function Step2Issue({
         <span className="font-body text-xs text-warmgrau/50">oder schreib es selbst</span>
         <div className="flex-1 h-px bg-warmgrau/20" />
       </div>
+
+      {/* Tips disclosure — subtle nudge toward effective writing */}
+      <TipsDisclosure />
 
       {/* Textarea */}
       <div>

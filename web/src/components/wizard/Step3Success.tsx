@@ -50,6 +50,7 @@ export function Step3Success({ result, wizardData, politicians }: Step3SuccessPr
   });
   const [generationFetchError, setGenerationFetchError] = useState<string | null>(null);
   const [retryCount, setRetryCount] = useState(0);
+  const [loadingDots, setLoadingDots] = useState(".");
   const submitButtonRef = useRef<HTMLButtonElement | null>(null);
 
   // Smooth-scroll the submit button into view after a card is picked, so users
@@ -80,6 +81,11 @@ export function Step3Success({ result, wizardData, politicians }: Step3SuccessPr
       setIsGenerating(true);
       setGenerationError(null);
 
+      // Minimum spinner duration — starts in parallel with the pre-check so the
+      // button loads for at least 2.5s before navigating. Splits perceived load
+      // time between the button and the success page.
+      const minDisplayTimer = new Promise<void>((resolve) => setTimeout(resolve, 2500));
+
       try {
         // NOTE: we deliberately no longer pass the `politicians` array here —
         // the server re-derives it from PLZ to prevent tampering. Only the
@@ -96,6 +102,7 @@ export function Step3Success({ result, wizardData, politicians }: Step3SuccessPr
         }
 
         if ("preCheckOk" in selectResult && selectResult.preCheckOk) {
+          await minDisplayTimer;
           setGenerationComplete(true);
           setGeneratedPoliticianId(selectResult.politician.id);
           // letterText arrives async via /api/generate-letter (see useEffect below)
@@ -110,6 +117,15 @@ export function Step3Success({ result, wizardData, politicians }: Step3SuccessPr
     },
     [selectedPoliticianId, wizardData]
   );
+
+  // Animate ". .. ..." while letter is still being generated.
+  useEffect(() => {
+    if (letterReady) return;
+    const interval = setInterval(() => {
+      setLoadingDots((d) => (d.length >= 3 ? "." : d + "."));
+    }, 500);
+    return () => clearInterval(interval);
+  }, [letterReady]);
 
   // Fetch the generated letter from the server once pre-checks pass.
   // Retries once automatically on failure, then shows a manual error banner.
@@ -265,7 +281,14 @@ export function Step3Success({ result, wizardData, politicians }: Step3SuccessPr
           </h1>
         </div>
         <p className="font-body text-base text-warmgrau leading-relaxed mt-3">
-          Dein Brief ist auf dem Weg zu dir. Schau gleich in dein E-Mail-Postfach.
+          {letterReady ? (
+            "Dein Brief ist auf dem Weg zu dir. Schau in dein E-Mail-Postfach."
+          ) : (
+            <>
+              Dein Brief ist auf dem Weg zu dir. Schau gleich in dein E-Mail-Postfach
+              <span aria-hidden="true">{loadingDots}</span>
+            </>
+          )}
         </p>
 
         {/* Notice: Brief ist Entwurf, eigene Stimme */}

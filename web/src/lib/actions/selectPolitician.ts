@@ -1,14 +1,9 @@
 "use server";
 
-import { after } from "next/server";
 import type { WizardData, WizardActionResult } from "@/lib/types/wizard";
 import { step1Schema, step1bSchema, step2Schema } from "@/lib/validation/wizardSchemas";
 import { lookupPLZ } from "@/lib/lookup/plzLookup";
 import { moderateText } from "@/lib/moderation/moderateText";
-import { generateLetter } from "@/lib/generation/generateLetter";
-import { fetchMdbContext } from "@/lib/enrichment/fetchMdbContext";
-import { sendLetterEmail } from "@/lib/email/sendLetterEmail";
-import { buildDebugPayload } from "@/lib/email/buildDebugPayload";
 import { checkRateLimit, getClientIp, LIMITS } from "@/lib/rateLimit";
 import { DEFAULT_LETTER_LENGTH } from "@/lib/config";
 
@@ -105,57 +100,11 @@ export async function selectPoliticianAction(
       return { error: "server_error", message: "Politiker nicht gefunden." };
     }
 
-    // Enrich with MdB context (committees + topic-relevant recent votes).
-    // Silent failure: if Abgeordnetenwatch is slow/unreachable, letter still ships.
-    const mdbContext = await fetchMdbContext(
-      selectedPolitician.id,
-      data.issueText,
-      selectedPolitician.committees
-    );
-
-    // Generate letter with only the selected politician in the list (D-09 disambiguation path)
-    const result = await generateLetter({
-      issueText: data.issueText,
-      politicians: [selectedPolitician],
-      name: data.name,
-      party: data.party,
-      ngo: data.ngo,
-      letterLength: data.letterLength,
-      toneLevel: data.toneLevel,
-      mdbContext,
-    });
-
-    // Moderate output (SAFE-02, T-02-15)
-    const outputModeration = await moderateText(result.letter);
-    if (outputModeration.flagged) {
-      return {
-        error: "output_moderation_rejected",
-        message:
-          "Beim Erstellen deines Briefes ist ein Problem aufgetreten. Bitte formuliere dein Anliegen anders und versuche es erneut.",
-      };
-    }
-
-    // Phase 3: Send letter by email (fire-and-forget, D-04 disambiguation path)
-    after(async () => {
-      await sendLetterEmail({
-        recipientEmail: data.email,
-        politicianName: `${result.selectedPolitician.firstName} ${result.selectedPolitician.lastName}`,
-        politicianFirstName: result.selectedPolitician.firstName,
-        politicianLastName: result.selectedPolitician.lastName,
-        politicianTitle: result.selectedPolitician.title,
-        politicianPostalAddress: result.selectedPolitician.postalAddress,
-        politicianAbgeordnetenwatchUrl: result.selectedPolitician.abgeordnetenwatchUrl,
-        letterText: result.letter,
-        issueText: data.issueText,
-        debug: buildDebugPayload(data, result, derivedPoliticians.length),
-      });
-    });
-
+    // Pre-checks passed — letter generation happens async via /api/generate-letter
+    // on the Success-Page, so we return immediately without blocking the user.
     return {
-      success: true,
-      politician: result.selectedPolitician,
-      politicalLevel: result.politicalLevel,
-      letterText: result.letter,
+      preCheckOk: true,
+      politician: selectedPolitician,
     };
   } catch (error) {
     console.error("[brief-nach-berlin] selectPoliticianAction error:", error);

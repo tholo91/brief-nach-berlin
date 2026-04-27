@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback, useMemo, useRef } from "react";
+import { useState, useCallback, useMemo, useRef, useEffect } from "react";
 import type { WizardData, WizardActionResult } from "@/lib/types/wizard";
 import type { Politician } from "@/lib/types/politician";
 import { selectPoliticianAction } from "@/lib/actions/selectPolitician";
@@ -41,6 +41,15 @@ export function Step3Success({ result, wizardData, politicians }: Step3SuccessPr
     if (result && "success" in result && result.success) return result.politician.id;
     return null;
   });
+  // letterReady gates the "Keine E-Mail erhalten?" section — true once the
+  // async /api/generate-letter fetch resolves (or immediately if letterText
+  // was already available from the synchronous success path).
+  const [letterReady, setLetterReady] = useState<boolean>(() => {
+    if (result && "success" in result && result.success) return true;
+    return false;
+  });
+  const [generationFetchError, setGenerationFetchError] = useState<string | null>(null);
+  const [retryCount, setRetryCount] = useState(0);
   const submitButtonRef = useRef<HTMLButtonElement | null>(null);
 
   // Smooth-scroll the submit button into view after a card is picked, so users
@@ -86,10 +95,10 @@ export function Step3Success({ result, wizardData, politicians }: Step3SuccessPr
           return;
         }
 
-        if ("success" in selectResult && selectResult.success) {
+        if ("preCheckOk" in selectResult && selectResult.preCheckOk) {
           setGenerationComplete(true);
-          setLetterText(selectResult.letterText);
           setGeneratedPoliticianId(selectResult.politician.id);
+          // letterText arrives async via /api/generate-letter (see useEffect below)
         }
       } catch {
         setGenerationError(
@@ -101,6 +110,50 @@ export function Step3Success({ result, wizardData, politicians }: Step3SuccessPr
     },
     [selectedPoliticianId, wizardData]
   );
+
+  // Fetch the generated letter from the server once pre-checks pass.
+  // Retries once automatically on failure, then shows a manual error banner.
+  useEffect(() => {
+    if (!generationComplete || letterReady || generatedPoliticianId === null) return;
+
+    setGenerationFetchError(null);
+    const controller = new AbortController();
+    let autoRetryTimer: ReturnType<typeof setTimeout> | null = null;
+
+    fetch("/api/generate-letter", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ wizardData, selectedPoliticianId: generatedPoliticianId }),
+      signal: controller.signal,
+    })
+      .then((res) => {
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        return res.json() as Promise<{ letterText?: string }>;
+      })
+      .then((data) => {
+        if (data.letterText) {
+          setLetterText(data.letterText);
+          setLetterReady(true);
+        } else {
+          throw new Error("No letterText");
+        }
+      })
+      .catch((err: Error) => {
+        if (err.name === "AbortError") return;
+        if (retryCount === 0) {
+          autoRetryTimer = setTimeout(() => setRetryCount(1), 3000);
+        } else {
+          setGenerationFetchError(
+            "Beim Erstellen deines Briefes ist ein Fehler aufgetreten."
+          );
+        }
+      });
+
+    return () => {
+      controller.abort();
+      if (autoRetryTimer) clearTimeout(autoRetryTimer);
+    };
+  }, [generationComplete, letterReady, retryCount, generatedPoliticianId, wizardData]);
 
   // Keyboard navigation for politician cards
   const handleCardKeyDown = (
@@ -212,7 +265,7 @@ export function Step3Success({ result, wizardData, politicians }: Step3SuccessPr
           </h1>
         </div>
         <p className="font-body text-base text-warmgrau leading-relaxed mt-3">
-          Wir haben dir den Brief per E-Mail geschickt. Schau in dein Postfach.
+          Dein Brief ist auf dem Weg zu dir. Schau gleich in dein E-Mail-Postfach.
         </p>
 
         {/* Notice: Brief ist Entwurf, eigene Stimme */}
@@ -228,17 +281,19 @@ export function Step3Success({ result, wizardData, politicians }: Step3SuccessPr
           </p>
         </div>
 
-        {/* "Keine E-Mail erhalten?" — placed close to the email notice for context */}
-        <div className="mt-3 flex justify-center">
-          <button
-            type="button"
-            onClick={() => setResendOpen((o) => !o)}
-            className="font-body text-sm text-warmgrau/55 hover:text-warmgrau/75 transition-colors cursor-pointer underline underline-offset-2"
-          >
-            Keine E-Mail erhalten?
-          </button>
+        {/* "Keine E-Mail erhalten?" — hidden until letter is ready in client state */}
+        <div className={`transition-opacity duration-500 ${letterReady ? "opacity-100" : "opacity-0 pointer-events-none select-none"}`}>
+          <div className="mt-3 flex justify-center">
+            <button
+              type="button"
+              onClick={() => setResendOpen((o) => !o)}
+              className="font-body text-sm text-warmgrau/55 hover:text-warmgrau/75 transition-colors cursor-pointer underline underline-offset-2"
+            >
+              Keine E-Mail erhalten?
+            </button>
+          </div>
         </div>
-        {resendOpen && (
+        {resendOpen && letterReady && (
           <div className="mt-3 p-4 bg-warmgrau/5 rounded-lg space-y-3">
               <p className="font-body text-sm text-warmgrau leading-relaxed">
                 Prüfe deinen Spam-Ordner. Falls nichts ankommt, überprüfe deine E-Mail-Adresse und sende den Brief erneut.
@@ -318,6 +373,27 @@ export function Step3Success({ result, wizardData, politicians }: Step3SuccessPr
               </div>
             </div>
           )}
+
+        {/* Generation error banner — shown if /api/generate-letter fails after auto-retry */}
+        {generationFetchError && (
+          <div
+            role="alert"
+            className="mt-6 bg-airmail-rot/10 border-l-4 border-airmail-rot p-4 rounded-r-lg font-body text-sm"
+          >
+            <p className="font-semibold text-airmail-rot mb-1">Brief konnte nicht erstellt werden</p>
+            <p className="text-airmail-rot/80 mb-3">{generationFetchError}</p>
+            <button
+              type="button"
+              onClick={() => {
+                setGenerationFetchError(null);
+                setRetryCount((c) => c + 1);
+              }}
+              className="font-semibold text-airmail-rot underline underline-offset-2 hover:text-airmail-rot/80 transition-colors cursor-pointer"
+            >
+              Nochmal versuchen
+            </button>
+          </div>
+        )}
 
         {/* Step-by-step instructions */}
         <div className="mt-8 space-y-4">

@@ -1,26 +1,20 @@
 [
   {
-    "plz": "10858",
-    "expectedWahlkreisIds": [61],
-    "expectedPoliticianLastNames": ["Vandre", "Scholz"],
+    "plz": "10115",
+    "expectedWahlkreisIds": [74],
+    "expectedPoliticianLastNames": ["Steinmüller"],
     "category": "single-wahlkreis"
   },
   {
-    "plz": "10910",
-    "expectedWahlkreisIds": [95],
-    "expectedPoliticianLastNames": ["Uhlig", "Streeck"],
+    "plz": "10243",
+    "expectedWahlkreisIds": [82],
+    "expectedPoliticianLastNames": ["Meiser"],
     "category": "single-wahlkreis"
   },
   {
-    "plz": "12521",
-    "expectedWahlkreisIds": [62],
-    "expectedPoliticianLastNames": ["Lübcke", "Kotré"],
-    "category": "single-wahlkreis"
-  },
-  {
-    "plz": "12712",
-    "expectedWahlkreisIds": [62],
-    "expectedPoliticianLastNames": ["Lübcke", "Kotré"],
+    "plz": "12043",
+    "expectedWahlkreisIds": [81],
+    "expectedPoliticianLastNames": [],
     "category": "single-wahlkreis"
   },
   {
@@ -42,16 +36,64 @@
     "category": "single-wahlkreis"
   },
   {
-    "plz": "10997",
-    "expectedWahlkreisIds": [82],
-    "expectedPoliticianLastNames": ["Meiser"],
+    "plz": "21149",
+    "expectedWahlkreisIds": [23],
+    "expectedPoliticianLastNames": [],
     "category": "single-wahlkreis"
   },
   {
-    "plz": "20095",
-    "expectedWahlkreisIds": [18],
-    "expectedPoliticianLastNames": ["Droßmann"],
+    "plz": "27568",
+    "expectedWahlkreisIds": [55],
+    "expectedPoliticianLastNames": ["Schmidt"],
     "category": "single-wahlkreis"
+  },
+  {
+    "plz": "28203",
+    "expectedWahlkreisIds": [54],
+    "expectedPoliticianLastNames": [],
+    "category": "single-wahlkreis"
+  },
+  {
+    "plz": "28717",
+    "expectedWahlkreisIds": [55],
+    "expectedPoliticianLastNames": ["Schmidt"],
+    "category": "single-wahlkreis"
+  },
+  {
+    "plz": "47167",
+    "expectedMinPoliticianCount": 1,
+    "expectedMinWahlkreisCount": 2,
+    "category": "ambiguous-multi-wahlkreis"
+  },
+  {
+    "plz": "10997",
+    "expectedMinPoliticianCount": 1,
+    "expectedMinWahlkreisCount": 1,
+    "category": "ambiguous-multi-wahlkreis"
+  },
+  {
+    "plz": "28195",
+    "expectedMinPoliticianCount": 1,
+    "expectedMinWahlkreisCount": 2,
+    "category": "ambiguous-multi-wahlkreis"
+  },
+  {
+    "plz": "13347",
+    "expectedMinPoliticianCount": 1,
+    "expectedMinWahlkreisCount": 2,
+    "category": "ambiguous-multi-wahlkreis"
+  },
+  {
+    "plz": "14199",
+    "expectedMinPoliticianCount": 1,
+    "expectedMinWahlkreisCount": 2,
+    "category": "ambiguous-multi-wahlkreis"
+  },
+  {
+    "plz": "22033",
+    "expectedMinPoliticianCount": 1,
+    "expectedMinWahlkreisCount": 6,
+    "category": "ambiguous-multi-wahlkreis"
   },
   {
     "plz": "29216",

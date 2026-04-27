@@ -9,9 +9,9 @@
     "lint": "eslint",
     "test": "jest",
     "test:watch": "jest --watch",
-    "build:data": "ts-node scripts/parse-plz-mapping.ts && ts-node scripts/fetch-politician-data.ts",
-    "build:plz": "ts-node scripts/parse-plz-mapping.ts",
-    "fetch:politicians": "ts-node scripts/fetch-politician-data.ts"
+    "build:data": "tsx scripts/parse-plz-mapping.ts && tsx scripts/fetch-politician-data.ts",
+    "build:plz": "tsx scripts/parse-plz-mapping.ts",
+    "fetch:politicians": "tsx scripts/fetch-politician-data.ts"
   },
   "dependencies": {
     "@getbrevo/brevo": "^5.0.4",
@@ -41,6 +41,7 @@
     "tailwindcss": "^4",
     "ts-jest": "^29.4.9",
     "ts-node": "^10.9.2",
+    "tsx": "^4.21.0",
     "typescript": "^5"
   }
 }

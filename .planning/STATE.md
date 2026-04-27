@@ -66,7 +66,7 @@ Recent decisions affecting current work:
 
 ### Pending Todos
 
-None yet.
+3 pending — see `.planning/todos/pending/`
 
 ### Blockers/Concerns
 

@@ -30,17 +30,24 @@ export function Step3Success({ result, wizardData, politicians }: Step3SuccessPr
   const [generationComplete, setGenerationComplete] = useState(false);
   const [generationError, setGenerationError] = useState<string | null>(null);
   const [resendOpen, setResendOpen] = useState(false);
-  const [resendState, setResendState] = useState<"idle" | "sending" | "sent" | "error">("idle");
+  const [resendState, setResendState] = useState<"idle" | "sending" | "sent" | "error" | "limited">("idle");
+  const [resendLimitMessage, setResendLimitMessage] = useState<string | null>(null);
   const [resendEmail, setResendEmail] = useState(wizardData.email);
   const submitButtonRef = useRef<HTMLButtonElement | null>(null);
 
   // Smooth-scroll the submit button into view after a card is picked, so users
-  // on long lists don't have to hunt for the next step. Uses rAF to wait for
-  // the conditional render of the submit button before scrolling.
+  // on long lists don't have to hunt for the next step. Honor
+  // prefers-reduced-motion (vestibular-disorder safety, WCAG 2.3.3).
   const handleCardSelect = useCallback((politicianId: number) => {
     setSelectedPoliticianId(politicianId);
     requestAnimationFrame(() => {
-      submitButtonRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
+      const reduce =
+        typeof window !== "undefined" &&
+        window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
+      submitButtonRef.current?.scrollIntoView({
+        behavior: reduce ? "auto" : "smooth",
+        block: "center",
+      });
     });
   }, []);
 
@@ -82,7 +89,7 @@ export function Step3Success({ result, wizardData, politicians }: Step3SuccessPr
         setIsGenerating(false);
       }
     },
-    [selectedPoliticianId, wizardData, politicians]
+    [selectedPoliticianId, wizardData]
   );
 
   // Keyboard navigation for politician cards
@@ -131,12 +138,19 @@ export function Step3Success({ result, wizardData, politicians }: Step3SuccessPr
   };
 
   const handleResend = useCallback(async () => {
-    if (resendState === "sending" || resendState === "sent") return;
+    if (resendState === "sending" || resendState === "sent" || resendState === "limited") return;
     if (!result || !("success" in result) || !result.politician) return;
     setResendState("sending");
     try {
       const res = await resendLetterAction({ ...wizardData, email: resendEmail }, result.politician);
-      setResendState("success" in res ? "sent" : "error");
+      if ("success" in res) {
+        setResendState("sent");
+      } else if (res.error === "rate_limited") {
+        setResendLimitMessage(res.message);
+        setResendState("limited");
+      } else {
+        setResendState("error");
+      }
     } catch {
       setResendState("error");
     }
@@ -219,7 +233,7 @@ export function Step3Success({ result, wizardData, politicians }: Step3SuccessPr
               <p className="font-body text-sm text-warmgrau leading-relaxed">
                 Prüfe deinen Spam-Ordner. Falls nichts ankommt, überprüfe deine E-Mail-Adresse und sende den Brief erneut.
               </p>
-              {resendState !== "sent" && (
+              {resendState !== "sent" && resendState !== "limited" && (
                 <div>
                   <label htmlFor="resend-email" className="font-body text-xs text-warmgrau/60 mb-1 block">
                     E-Mail-Adresse
@@ -240,6 +254,26 @@ export function Step3Success({ result, wizardData, politicians }: Step3SuccessPr
                     <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>
                     Brief wurde erneut gesendet
                   </p>
+                ) : resendState === "limited" ? (
+                  <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:gap-2.5 rounded-lg bg-waldgruen/5 border border-waldgruen/20 p-3">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" className="text-waldgruen flex-shrink-0 mt-0.5">
+                      <circle cx="12" cy="12" r="10"/><path d="M12 8v4"/><path d="M12 16h.01"/>
+                    </svg>
+                    <div className="space-y-1.5">
+                      <p className="font-body text-sm font-semibold text-waldgruen-dark">Maximal dreimal gesendet</p>
+                      <p className="font-body text-sm text-warmgrau leading-relaxed">
+                        {resendLimitMessage ?? "Wir haben dir den Brief jetzt mehrfach gesendet. Bitte prüfe noch einmal deinen Spam-Ordner und die E-Mail-Adresse."}
+                      </p>
+                      <a
+                        href={FOUNDER_FEEDBACK_URL}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-block font-body text-sm font-semibold text-waldgruen underline underline-offset-2 hover:text-waldgruen-dark"
+                      >
+                        Hilfe anfragen
+                      </a>
+                    </div>
+                  </div>
                 ) : resendState === "error" ? (
                   <div className="space-y-2">
                     <p className="font-body text-sm text-airmail-rot">Senden fehlgeschlagen. Bitte versuche es später erneut.</p>

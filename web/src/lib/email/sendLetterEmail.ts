@@ -6,6 +6,9 @@ const apiKey = process.env.BREVO_API_KEY;
 if (!apiKey) {
   throw new Error("[brief-nach-berlin] BREVO_API_KEY environment variable is not set");
 }
+// DSGVO: Open- und Click-Tracking muss im Brevo-Account deaktiviert sein
+// (Senders, Domains & Dedicated IPs → Tracking). Andernfalls würde Brevo einen
+// Tracking-Pixel in jede Mail einbetten und Consent wäre erforderlich.
 const brevo = new BrevoClient({ apiKey });
 
 export interface LetterDebugPayload {

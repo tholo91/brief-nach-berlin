@@ -61,6 +61,12 @@ export const LIMITS = {
   // Per IP: 30 transcription calls per hour. Voxtral is more expensive; users
   // typically record once or twice per session.
   TRANSCRIBE_PER_IP: { max: 30, windowMs: 60 * 60_000 },
+  // Resend per IP: 3 retries per hour. Real users need 1-2 if they typo'd
+  // their email or it landed in spam; more is almost always abuse.
+  RESEND_PER_IP: { max: 3, windowMs: 60 * 60_000 },
+  // Resend per email: 2 retries per hour. Anyone targeting one address
+  // hits this even faster.
+  RESEND_PER_EMAIL: { max: 2, windowMs: 60 * 60_000 },
 } as const;
 
 export async function getClientIp(): Promise<string> {

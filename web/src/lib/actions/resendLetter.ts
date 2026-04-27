@@ -8,11 +8,15 @@ import { generateLetter } from "@/lib/generation/generateLetter";
 import { sendLetterEmail } from "@/lib/email/sendLetterEmail";
 import { buildDebugPayload } from "@/lib/email/buildDebugPayload";
 import { DEFAULT_LETTER_LENGTH } from "@/lib/config";
+import { checkRateLimit, getClientIp, LIMITS } from "@/lib/rateLimit";
+
+const RESEND_LIMIT_MESSAGE =
+  "Wir haben dir den Brief jetzt mehrfach gesendet. Bitte prüfe noch einmal deinen Spam-Ordner und die E-Mail-Adresse. Falls weiterhin nichts ankommt, melde dich gerne direkt bei uns.";
 
 export async function resendLetterAction(
   data: WizardData,
   politician: Politician
-): Promise<{ success: true } | { error: string; message: string }> {
+): Promise<{ success: true } | { error: string; message: string; retryAfterSeconds?: number }> {
   try {
     console.log("[resendLetter] start", { email: "***", politicianId: politician.id });
 
@@ -26,6 +30,27 @@ export async function resendLetterAction(
 
     const s2 = step2Schema.safeParse({ issueText: data.issueText });
     if (!s2.success) return { error: "validation", message: "Anliegen fehlt." };
+
+    // Rate limit BEFORE moderation/AI spend (matches submitWizard pattern)
+    const ip = await getClientIp();
+    const ipLimit = checkRateLimit(
+      `resend:ip:${ip}`,
+      LIMITS.RESEND_PER_IP.max,
+      LIMITS.RESEND_PER_IP.windowMs
+    );
+    if (!ipLimit.allowed) {
+      console.log("[resendLetter] rate limited by ip", { retryAfterSeconds: ipLimit.retryAfterSeconds });
+      return { error: "rate_limited", message: RESEND_LIMIT_MESSAGE, retryAfterSeconds: ipLimit.retryAfterSeconds };
+    }
+    const emailLimit = checkRateLimit(
+      `resend:email:${data.email.toLowerCase()}`,
+      LIMITS.RESEND_PER_EMAIL.max,
+      LIMITS.RESEND_PER_EMAIL.windowMs
+    );
+    if (!emailLimit.allowed) {
+      console.log("[resendLetter] rate limited by email", { retryAfterSeconds: emailLimit.retryAfterSeconds });
+      return { error: "rate_limited", message: RESEND_LIMIT_MESSAGE, retryAfterSeconds: emailLimit.retryAfterSeconds };
+    }
 
     const mod = await moderateText(data.issueText);
     if (mod.flagged) {

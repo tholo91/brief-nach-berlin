@@ -35,7 +35,12 @@
       "Skill(gsd-plant-seed:*)",
       "WebFetch(domain:www.suche-postleitzahl.org)",
       "WebFetch(domain:www.in-berlin-brandenburg.com)",
-      "WebFetch(domain:www.berlin-erlebnis-guide.de)"
+      "WebFetch(domain:www.berlin-erlebnis-guide.de)",
+      "WebFetch(domain:download.geonames.org)",
+      "WebFetch(domain:www.plz-check.de)",
+      "WebFetch(domain:plz-check.de)",
+      "Bash(kill 43491 43505 43485)",
+      "Bash(rm -f \"/Users/thomas/Documents/Git Repos/brief-nach-berlin/.git/objects/pack/tmp_pack_ks7MU5\")"
     ]
   }
 }

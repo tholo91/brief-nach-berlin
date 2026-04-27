@@ -4,11 +4,7 @@ import type { WizardData, WizardActionResult } from "@/lib/types/wizard";
 import { step1Schema, step1bSchema, step2Schema } from "@/lib/validation/wizardSchemas";
 import { lookupPLZ } from "@/lib/lookup/plzLookup";
 import { moderateText } from "@/lib/moderation/moderateText";
-import { checkRateLimit, getClientIp, LIMITS } from "@/lib/rateLimit";
 import { DEFAULT_LETTER_LENGTH } from "@/lib/config";
-
-const RATE_LIMIT_MESSAGE =
-  "Du hast in kurzer Zeit viele Briefe erstellt. Bitte versuche es später erneut.";
 
 // SECURITY NOTE (2026-04-17):
 // The previous signature accepted `politicians: Politician[]` directly from the
@@ -38,30 +34,6 @@ export async function selectPoliticianAction(
     const step2Result = step2Schema.safeParse({ issueText: data.issueText });
     if (!step2Result.success) {
       return { error: "server_error", message: "Bitte beschreibe dein Anliegen." };
-    }
-
-    // Rate limit check (IP + email) — shares buckets with submitWizardAction,
-    // so disambiguation doesn't let users bypass the overall letter cap.
-    const ip = await getClientIp();
-    const ipLimit = checkRateLimit(`letter:ip:${ip}`, LIMITS.LETTERS_PER_IP.max, LIMITS.LETTERS_PER_IP.windowMs);
-    if (!ipLimit.allowed) {
-      return {
-        error: "rate_limited",
-        message: RATE_LIMIT_MESSAGE,
-        retryAfterSeconds: ipLimit.retryAfterSeconds,
-      };
-    }
-    const emailLimit = checkRateLimit(
-      `letter:email:${data.email.toLowerCase()}`,
-      LIMITS.LETTERS_PER_EMAIL.max,
-      LIMITS.LETTERS_PER_EMAIL.windowMs
-    );
-    if (!emailLimit.allowed) {
-      return {
-        error: "rate_limited",
-        message: RATE_LIMIT_MESSAGE,
-        retryAfterSeconds: emailLimit.retryAfterSeconds,
-      };
     }
 
     // Re-moderate user input before AI call (WR-02: prevent bypassing initial moderation)

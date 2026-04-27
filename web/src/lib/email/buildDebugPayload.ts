@@ -18,6 +18,8 @@ export function buildDebugPayload(
   const lengthKey = data.letterLength ?? DEFAULT_LETTER_LENGTH;
   const { min, max } = LETTER_LENGTHS[lengthKey];
   const tone = data.toneLevel ?? 3;
+  const p = result.selectedPolitician;
+  const fullName = [p.title, p.firstName, p.lastName].filter(Boolean).join(" ");
 
   return {
     toneLevel: data.toneLevel,
@@ -30,7 +32,11 @@ export function buildDebugPayload(
     wordCountInRange: result.wordCountInRange,
     fallbackUsed: result.fallbackUsed,
     politicalLevel: result.politicalLevel,
-    selectedPoliticianParty: result.selectedPolitician.party ?? null,
+    representativeName: fullName,
+    representativeWahlkreis: p.wahlkreisName ?? "—",
+    representativeLevel: p.level ?? "—",
+    representativeParty: p.party ?? null,
+    mdbContextUsed: result.mdbContextUsed ?? false,
     availablePoliticianCount,
     model: result.model,
     temperature: result.temperature,

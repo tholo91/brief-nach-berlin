@@ -22,7 +22,11 @@ export interface LetterDebugPayload {
   wordCountInRange: boolean;
   fallbackUsed: boolean;
   politicalLevel: string;
-  selectedPoliticianParty: string | null;
+  representativeName: string;
+  representativeWahlkreis: string;
+  representativeLevel: string;
+  representativeParty: string | null;
+  mdbContextUsed: boolean;
   availablePoliticianCount: number;
   model: string;
   temperature: number;

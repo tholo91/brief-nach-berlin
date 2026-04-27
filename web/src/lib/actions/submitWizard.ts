@@ -1,13 +1,9 @@
 "use server";
 
-import { after } from "next/server";
 import type { WizardData, WizardActionResult } from "@/lib/types/wizard";
 import { step1Schema, step1bSchema, step2Schema } from "@/lib/validation/wizardSchemas";
 import { lookupPLZ } from "@/lib/lookup/plzLookup";
 import { moderateText } from "@/lib/moderation/moderateText";
-import { generateLetter } from "@/lib/generation/generateLetter";
-import { sendLetterEmail } from "@/lib/email/sendLetterEmail";
-import { buildDebugPayload } from "@/lib/email/buildDebugPayload";
 import { checkRateLimit, getClientIp, LIMITS } from "@/lib/rateLimit";
 import { DEFAULT_LETTER_LENGTH } from "@/lib/config";
 
@@ -102,63 +98,15 @@ export async function submitWizardAction(
       };
     }
 
-    // 4. D-09: Multiple Wahlkreise → return politician list for disambiguation
-    if (wahlkreisIds.length > 1) {
-      return { disambiguationNeeded: true, politicians };
-    }
-
-    // 5. Single Wahlkreis (D-10) → generate letter immediately
-    log("generating letter", { length: data.letterLength });
-    const result = await generateLetter({
-      issueText: data.issueText,
-      politicians,
-      name: data.name,
-      party: data.party,
-      ngo: data.ngo,
-      letterLength: data.letterLength,
-      toneLevel: data.toneLevel,
-    });
-    log("letter generated", {
-      letterLength: result.letter.length,
-      wordCount: result.wordCount,
-      wordCountInRange: result.wordCountInRange,
-      fallbackUsed: result.fallbackUsed,
-    });
-
-    // 6. Moderate generated letter output (SAFE-02, T-02-15, D-15)
-    const outputModeration = await moderateText(result.letter);
-    log("output moderation", { flagged: outputModeration.flagged });
-    if (outputModeration.flagged) {
-      return {
-        error: "output_moderation_rejected",
-        message:
-          "Beim Erstellen deines Briefes ist ein Problem aufgetreten. Bitte formuliere dein Anliegen anders und versuche es erneut.",
-      };
-    }
-
-    // 7. Send letter by email (fire-and-forget, D-03)
-    const debug = buildDebugPayload(data, result, politicians.length);
-    after(async () => {
-      await sendLetterEmail({
-        recipientEmail: data.email,
-        politicianName: `${result.selectedPolitician.firstName} ${result.selectedPolitician.lastName}`,
-        politicianFirstName: result.selectedPolitician.firstName,
-        politicianLastName: result.selectedPolitician.lastName,
-        politicianTitle: result.selectedPolitician.title,
-        politicianPostalAddress: result.selectedPolitician.postalAddress,
-        politicianAbgeordnetenwatchUrl: result.selectedPolitician.abgeordnetenwatchUrl,
-        letterText: result.letter,
-        issueText: data.issueText,
-        debug,
-      });
-    });
-
-    return {
-      success: true,
-      politician: result.selectedPolitician,
-      politicalLevel: result.politicalLevel,
-      // letter field removed — sent by email only (D-03, PRIV-01)
-    };
+    // 4. Always route through the politician picker. Even for a single
+    // Wahlkreis there are typically 4-5 candidates (1 Direktmandat + list
+    // candidates) and the user benefits from being able to (a) see who
+    // they're writing to and (b) open the Abgeordnetenwatch profile before
+    // committing. The Direktmandat holder is pre-selected in Step3Success,
+    // so users on a confident-1-Wahlkreis flow can confirm with one click.
+    // Letter generation + email send happen in selectPoliticianAction once
+    // the user picks (or confirms the pre-selected) candidate.
+    return { disambiguationNeeded: true, politicians };
   } catch (error) {
     const err = error as Error & { status?: number; code?: string; cause?: unknown };
     console.error("[submitWizard] FAILED", {

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback, useMemo, useRef } from "react";
+import { useState, useCallback, useMemo, useRef, useEffect } from "react";
 import type { WizardData, WizardActionResult } from "@/lib/types/wizard";
 import type { Politician } from "@/lib/types/politician";
 import { selectPoliticianAction } from "@/lib/actions/selectPolitician";
@@ -11,6 +11,90 @@ import {
   SHARE_URL_EMAIL,
   FOUNDER_FEEDBACK_URL,
 } from "@/lib/config";
+
+const REPLY_REQUEST_SENTENCE =
+  "Ich würde mich über eine kurze Rückmeldung freuen, ob und wie Sie dieses Anliegen aufgreifen werden.";
+
+function ReplyHelperDisclosure() {
+  const [open, setOpen] = useState(false);
+  const [copied, setCopied] = useState(false);
+
+  const handleCopy = useCallback(async () => {
+    try {
+      await navigator.clipboard.writeText(REPLY_REQUEST_SENTENCE);
+      setCopied(true);
+    } catch {
+      // Clipboard blocked: leave the example visible for manual copy.
+    }
+  }, []);
+
+  useEffect(() => {
+    if (!copied) return;
+    const t = setTimeout(() => setCopied(false), 2000);
+    return () => clearTimeout(t);
+  }, [copied]);
+
+  return (
+    <div className="mt-6 border-l-4 border-airmail-blau/60 bg-airmail-blau/[0.04] rounded-r-lg overflow-hidden">
+      <button
+        type="button"
+        onClick={() => setOpen((v) => !v)}
+        aria-expanded={open}
+        aria-controls="reply-helper-content"
+        className="w-full flex items-center justify-between gap-3 px-4 py-3 text-left font-body text-sm font-semibold text-airmail-blau hover:bg-airmail-blau/[0.07] transition-colors cursor-pointer"
+      >
+        <span className="flex items-center gap-2">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+            <path d="M9 14 4 9l5-5" />
+            <path d="M4 9h10a6 6 0 0 1 6 6v0a6 6 0 0 1-6 6H8" />
+          </svg>
+          Antwort wünschen? Optional ergänzen
+        </span>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" className={`transition-transform duration-300 ${open ? "rotate-180" : "rotate-0"}`}>
+          <polyline points="6 9 12 15 18 9" />
+        </svg>
+      </button>
+      <div
+        id="reply-helper-content"
+        className={`transition-all duration-300 ease-out overflow-hidden ${open ? "max-h-[400px] opacity-100" : "max-h-0 opacity-0"}`}
+      >
+        <div className="px-4 pb-4 pt-1 font-body text-sm text-warmgrau leading-relaxed space-y-3">
+          <p>
+            Dein Brief zielt darauf, dass dein Anliegen politisch behandelt wird, nicht
+            unbedingt, dass du eine persönliche Antwort bekommst. Wenn du dir trotzdem
+            eine Rückmeldung wünschst, schreib einfach folgenden Satz von Hand am Ende
+            des Briefs dazu, vor der Grußformel:
+          </p>
+          <div className="rounded-md bg-creme/70 border border-warmgrau/15 px-3 py-2 font-typewriter text-[13px] text-warmgrau italic">
+            &bdquo;{REPLY_REQUEST_SENTENCE}&ldquo;
+          </div>
+          <button
+            type="button"
+            onClick={handleCopy}
+            className="inline-flex items-center gap-2 font-body text-xs font-semibold text-airmail-blau border border-airmail-blau/40 hover:bg-airmail-blau/[0.08] px-3 py-1.5 rounded-md transition-colors cursor-pointer"
+          >
+            {copied ? (
+              <>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                  <path d="M20 6 9 17l-5-5" />
+                </svg>
+                Kopiert
+              </>
+            ) : (
+              <>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                  <rect width="14" height="14" x="8" y="8" rx="2" ry="2" />
+                  <path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2" />
+                </svg>
+                Satz kopieren
+              </>
+            )}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
 
 interface Step3SuccessProps {
   result: WizardActionResult | null;
@@ -308,6 +392,9 @@ export function Step3Success({ result, wizardData, politicians }: Step3SuccessPr
               </div>
             </div>
           )}
+
+        {/* Optional reply-request helper — handwritten add-on, between letter and next-steps */}
+        <ReplyHelperDisclosure />
 
         {/* Step-by-step instructions */}
         <div className="mt-8 space-y-4">

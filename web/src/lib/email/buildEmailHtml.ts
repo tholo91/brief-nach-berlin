@@ -106,7 +106,7 @@ export function buildEmailHtml(data: SendLetterEmailParams): string {
                 <tr>
                   <td colspan="7" style="padding:0 32px 20px;background-color:#ffffff;">
                     <div style="border-left:3px solid rgba(45,80,22,0.45);padding-left:16px;">
-                      <p style="margin:0;font-family:Georgia,'Times New Roman',serif;font-size:15px;color:#4A4A4A;line-height:1.75;">Hier ist dein Briefentwurf. Lies ihn gründlich durch und pass ihn an, damit es <em style="font-style:italic;">dein Brief</em> wird. Wir bieten dir einen Schnellstart, damit dein Anliegen ratzfatz auf dem richtigen Schreibtisch landet.<br><br>Riesen Dankeschön, dass du dich engagierst!</p>
+                      <p style="margin:0;font-family:Georgia,'Times New Roman',serif;font-size:15px;color:#4A4A4A;line-height:1.75;">Hier ist dein Briefentwurf. Lies ihn gründlich durch und pass ihn an, damit es <em style="font-style:italic;">dein Brief</em> wird. Wir bieten dir einen Schnellstart, damit dein Anliegen ratzfatz auf dem richtigen Schreibtisch landet.<br>Riesen Dankeschön, dass du dich engagierst!</p>
                     </div>
                   </td>
                 </tr>

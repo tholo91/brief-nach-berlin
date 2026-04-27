@@ -131,7 +131,22 @@ export function buildEmailHtml(data: SendLetterEmailParams): string {
                         ${addressLines}
                       </p>
                       <p style="margin:0;padding-top:10px;border-top:1px solid #E0DCD7;font-family:Georgia,'Times New Roman',serif;font-size:13px;line-height:1.5;">
-                        <a href="${profileUrl}" target="_blank" rel="noopener noreferrer" style="color:#2D5016;text-decoration:none;font-weight:bold;">Profil auf abgeordnetenwatch ansehen &#x2197;&#xFE0E;</a>
+                        <a href="${profileUrl}" target="_blank" rel="noopener noreferrer" style="color:#2D5016;text-decoration:none;font-weight:bold;">Profil auf abgeordnetenwatch ansehen <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-1px;display:inline-block;"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg></a>
+                      </p>
+                    </div>
+                  </td>
+                </tr>
+
+                <!-- Optional reply-request helper: subtle, after address, before next steps -->
+                <tr>
+                  <td colspan="7" style="padding:0 32px 16px;background-color:#ffffff;">
+                    <div style="border-left:3px solid rgba(29,53,87,0.45);padding:10px 14px;background-color:#FAFBFC;border-radius:0 4px 4px 0;">
+                      <p style="margin:0 0 6px;font-family:Georgia,'Times New Roman',serif;font-size:13px;color:#1D3557;font-weight:bold;">Antwort wünschen? Optional ergänzen</p>
+                      <p style="margin:0 0 8px;font-family:Georgia,'Times New Roman',serif;font-size:13px;color:#4A4A4A;line-height:1.55;">
+                        Dein Brief zielt auf politische Wirkung, nicht auf eine persönliche Antwort. Wenn du dir trotzdem eine Rückmeldung wünschst, schreib diesen Satz von Hand am Ende des Briefs dazu, vor der Grußformel:
+                      </p>
+                      <p style="margin:0;padding:8px 12px;background-color:#ffffff;border:1px solid #E0DCD7;border-radius:4px;font-family:'Courier New',Courier,monospace;font-size:12px;color:#4A4A4A;font-style:italic;line-height:1.5;">
+                        &bdquo;Ich würde mich über eine kurze Rückmeldung freuen, ob und wie Sie dieses Anliegen aufgreifen werden.&ldquo;
                       </p>
                     </div>
                   </td>
@@ -266,9 +281,8 @@ export function buildEmailHtml(data: SendLetterEmailParams): string {
                       Bitte prüfe Politikerdaten und Brieftext vor dem Versand anhand offizieller Quellen (<a href="${profileUrl}" target="_blank" rel="noopener noreferrer" style="color:#888888;">abgeordnetenwatch.de</a>, <a href="https://www.bundestag.de" style="color:#888888;">bundestag.de</a>, Landtags- oder Rathauswebsite).
                     </p>
                     <p style="margin:0;font-family:Georgia,'Times New Roman',serif;font-size:11px;color:#aaaaaa;line-height:1.5;">
-                      <a href="${APP_URL}/datenschutz" style="color:#888888;">Datenschutzerklärung</a>: deine Daten werden nach Versand dieser E-Mail nicht gespeichert.
+                      <a href="${APP_URL}/datenschutz" style="color:#888888;">Datenschutzerklärung</a>: deine Daten werden nach Versand dieser E-Mail nicht gespeichert.${data.debug ? ` · <a href="${buildDebugUrl(data.debug)}" style="color:#888888;text-decoration:none;">Debug</a>` : ""}
                     </p>
-                    ${data.debug ? `<p style="margin:8px 0 0;font-family:Georgia,'Times New Roman',serif;font-size:10px;color:#cccccc;line-height:1.5;"><a href="${buildDebugUrl(data.debug)}" style="color:#cccccc;text-decoration:none;">Debug</a></p>` : ""}
                   </td>
                 </tr>
 

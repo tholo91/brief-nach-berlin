@@ -6,6 +6,7 @@ import { step1Schema, step1bSchema, step2Schema } from "@/lib/validation/wizardS
 import { lookupPLZ } from "@/lib/lookup/plzLookup";
 import { moderateText } from "@/lib/moderation/moderateText";
 import { generateLetter } from "@/lib/generation/generateLetter";
+import { fetchMdbContext } from "@/lib/enrichment/fetchMdbContext";
 import { sendLetterEmail } from "@/lib/email/sendLetterEmail";
 import { checkRateLimit, getClientIp, LIMITS } from "@/lib/rateLimit";
 import { DEFAULT_LETTER_LENGTH } from "@/lib/config";
@@ -103,6 +104,14 @@ export async function selectPoliticianAction(
       return { error: "server_error", message: "Politiker nicht gefunden." };
     }
 
+    // Enrich with MdB context (committees + topic-relevant recent votes).
+    // Silent failure: if Abgeordnetenwatch is slow/unreachable, letter still ships.
+    const mdbContext = await fetchMdbContext(
+      selectedPolitician.id,
+      data.issueText,
+      selectedPolitician.committees
+    );
+
     // Generate letter with only the selected politician in the list (D-09 disambiguation path)
     const result = await generateLetter({
       issueText: data.issueText,
@@ -111,6 +120,8 @@ export async function selectPoliticianAction(
       party: data.party,
       ngo: data.ngo,
       letterLength: data.letterLength,
+      toneLevel: data.toneLevel,
+      mdbContext,
     });
 
     // Moderate output (SAFE-02, T-02-15)

@@ -5,6 +5,7 @@ import type { Politician } from "@/lib/types/politician";
 import { step1Schema, step1bSchema, step2Schema } from "@/lib/validation/wizardSchemas";
 import { moderateText } from "@/lib/moderation/moderateText";
 import { generateLetter } from "@/lib/generation/generateLetter";
+import { fetchMdbContext } from "@/lib/enrichment/fetchMdbContext";
 import { sendLetterEmail } from "@/lib/email/sendLetterEmail";
 import { buildDebugPayload } from "@/lib/email/buildDebugPayload";
 import { DEFAULT_LETTER_LENGTH } from "@/lib/config";
@@ -57,6 +58,12 @@ export async function resendLetterAction(
       return { error: "moderation", message: "Anliegen kann nicht verarbeitet werden." };
     }
 
+    const mdbContext = await fetchMdbContext(
+      politician.id,
+      data.issueText,
+      politician.committees
+    );
+
     const result = await generateLetter({
       issueText: data.issueText,
       politicians: [politician],
@@ -65,6 +72,7 @@ export async function resendLetterAction(
       ngo: data.ngo,
       letterLength: data.letterLength,
       toneLevel: data.toneLevel,
+      mdbContext,
     });
 
     const outMod = await moderateText(result.letter);

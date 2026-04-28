@@ -47,12 +47,12 @@ export default function WhyItWorks() {
           <div className="w-16 h-px bg-waldgruen/20 mx-auto mb-8" />
           <blockquote>
             <p className="font-handwriting text-2xl md:text-3xl text-waldgruen-dark leading-snug mb-4">
-              &ldquo;Handgeschriebene Briefe landen auf dem Schreibtisch.
+              &ldquo;Was per Hand geschrieben ist, wird gelesen.
               <br />
-              E-Mails landen im Spam.&rdquo;
+              Was per Mail kommt, wird gefiltert.&rdquo;
             </p>
             <cite className="font-body text-sm text-warmgrau/50 not-italic">
-              Thomas Lorenz, Gründer – aus seiner Zeit im Bundestag (2011)
+              Faustregel aus deutschen Abgeordnetenbüros
             </cite>
           </blockquote>
         </div>

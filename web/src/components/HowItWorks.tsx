@@ -29,7 +29,7 @@ const steps = [
     number: "03",
     title: "Dein Brief, fertig zum Abschicken",
     description:
-      "Unsere KI formuliert einen persönlichen, sachlichen Brief mit den besten Argumenten. Eine Seite, per E-Mail in deinem Postfach.",
+      "Wir formulieren einen persönlichen, sachlichen Brief mit den besten Argumenten. Eine Seite, per E-Mail in deinem Postfach.",
     icon: (
       <svg width="48" height="48" viewBox="0 0 48 48" fill="none" className="text-waldgruen">
         <rect x="8" y="6" width="28" height="36" rx="2" stroke="currentColor" strokeWidth="2" fill="none" />

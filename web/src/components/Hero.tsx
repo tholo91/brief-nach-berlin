@@ -1,14 +1,47 @@
 "use client";
 
-import { useRef, useEffect } from "react";
+import { useRef, useEffect, useState } from "react";
+
+const SUB_HEADLINES: ReadonlyArray<readonly [string, string]> = [
+  [
+    "Tippen oder einfach drauf lossprechen.",
+    "Ratzfatz formulieren wir dir einen überzeugenden Brief.",
+  ],
+  [
+    "Was nervt dich? Was macht dir Sorgen?",
+    "Sag's uns, den Rest übernehmen wir.",
+  ],
+  [
+    "Du musst kein Politik-Profi sein.",
+    "Wir finden raus, wer zuständig ist und formulieren den Brief für dich.",
+  ],
+  [
+    "Egal ob Wut, halber Gedanke oder Sprachnachricht:",
+    "am Ende steht ein Brief, der gelesen wird.",
+  ],
+];
+
+const ROTATION_INTERVAL_MS = 6000;
 
 export default function Hero() {
   const videoRef = useRef<HTMLVideoElement>(null);
+  const [subIndex, setSubIndex] = useState(0);
 
   useEffect(() => {
     const video = videoRef.current;
     if (!video) return;
     video.playbackRate = 0.5;
+  }, []);
+
+  useEffect(() => {
+    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (reducedMotion) return;
+
+    const id = window.setInterval(() => {
+      setSubIndex((i) => (i + 1) % SUB_HEADLINES.length);
+    }, ROTATION_INTERVAL_MS);
+
+    return () => window.clearInterval(id);
   }, []);
 
   return (
@@ -66,10 +99,29 @@ export default function Hero() {
           <span className="text-waldgruen">Direkt an die Politik.</span>
         </h1>
 
-        <p className="font-handwriting text-xl md:text-2xl text-warmgrau leading-relaxed mb-10 max-w-md md:max-w-none mx-auto text-pretty">
-          <span className="block">Ob Beschwerde, Vorschlag oder Frage: sag uns, was dich bewegt.</span>
-          <span className="block">Wir identifizieren die Zuständigen in der Politik und formulieren einen Brief, der überzeugt.</span>
-        </p>
+        <div className="relative grid mb-10 max-w-md md:max-w-none mx-auto overflow-hidden">
+          {SUB_HEADLINES.map((sub, i) => {
+            const isActive = i === subIndex;
+            const isPrev = i === (subIndex - 1 + SUB_HEADLINES.length) % SUB_HEADLINES.length;
+            return (
+              <p
+                key={i}
+                style={{ gridArea: "1 / 1" }}
+                aria-hidden={!isActive}
+                className={`font-handwriting text-xl md:text-2xl text-warmgrau leading-relaxed text-pretty transition-all duration-500 ease-out motion-reduce:transition-none ${
+                  isActive
+                    ? "opacity-100 translate-x-0"
+                    : isPrev
+                      ? "opacity-0 -translate-x-8"
+                      : "opacity-0 translate-x-8"
+                }`}
+              >
+                <span className="block">{sub[0]}</span>
+                <span className="block">{sub[1]}</span>
+              </p>
+            );
+          })}
+        </div>
 
         {/* CTA buttons */}
         <div className="flex flex-wrap items-center justify-center gap-3 mb-6">

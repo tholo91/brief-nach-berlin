@@ -94,7 +94,7 @@ export async function submitWizardAction(
       return {
         error: "plz_not_found",
         message:
-          "Für diese Postleitzahl haben wir derzeit keinen direkt gewählten Wahlkreisabgeordneten in unseren Daten. Entweder stimmt die PLZ nicht — oder dein Wahlkreis wird aktuell nur durch Listenabgeordnete vertreten. Du findest deine Abgeordneten unter bundestag.de.",
+          "Für diese Postleitzahl haben wir derzeit keinen direkt gewählten Wahlkreisabgeordneten in unseren Daten. Entweder stimmt die PLZ nicht, oder dein Wahlkreis wird aktuell nur durch Listenabgeordnete vertreten. Du findest deine Abgeordneten unter bundestag.de.",
       };
     }
 

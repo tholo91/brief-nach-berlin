@@ -364,14 +364,25 @@ export function Step3Success({ result, wizardData, politicians }: Step3SuccessPr
                   </div>
                 ) : resendState === "error" ? (
                   <div className="space-y-2">
-                    <p className="font-body text-sm text-airmail-rot">Senden fehlgeschlagen. Bitte versuche es später erneut.</p>
-                    <button
-                      type="button"
-                      onClick={handleResend}
-                      className="font-body text-sm text-waldgruen font-semibold underline underline-offset-2 hover:text-waldgruen-dark transition-colors cursor-pointer"
-                    >
-                      Nochmal versuchen
-                    </button>
+                    <p className="font-body text-sm text-airmail-rot">
+                      Senden fehlgeschlagen. Bitte lade die Seite neu und versuche es erneut.
+                    </p>
+                    <div className="flex gap-3">
+                      <button
+                        type="button"
+                        onClick={() => window.location.reload()}
+                        className="font-body text-sm text-waldgruen font-semibold underline underline-offset-2 hover:text-waldgruen-dark transition-colors cursor-pointer"
+                      >
+                        Seite neu laden
+                      </button>
+                      <button
+                        type="button"
+                        onClick={handleResend}
+                        className="font-body text-sm text-warmgrau/70 underline underline-offset-2 hover:text-warmgrau transition-colors cursor-pointer"
+                      >
+                        Nochmal versuchen
+                      </button>
+                    </div>
                   </div>
                 ) : (
                   <button
@@ -532,7 +543,7 @@ export function Step3Success({ result, wizardData, politicians }: Step3SuccessPr
           Wer vertritt deinen Wahlkreis?
         </h1>
         <p className="font-body text-base text-warmgrau mt-2">
-          Deine PLZ liegt in mehreren Wahlkreisen. Standardmäßig haben wir die Person mit dem Direktmandat ausgewählt — sie ist dein:e direkt gewählte:r Ansprechpartner:in im Bundestag. Du kannst aber auch eine andere Person wählen.
+          Deine PLZ liegt in mehreren Wahlkreisen. Standardmäßig haben wir die Person mit dem Direktmandat ausgewählt: sie ist dein:e direkt gewählte:r Ansprechpartner:in im Bundestag. Du kannst aber auch eine andere Person wählen.
         </p>
 
         {/* Error banner */}

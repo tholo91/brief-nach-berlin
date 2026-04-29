@@ -3,7 +3,6 @@
 import type { WizardData, WizardActionResult } from "@/lib/types/wizard";
 import { step1Schema, step1bSchema, step2Schema } from "@/lib/validation/wizardSchemas";
 import { lookupPLZ } from "@/lib/lookup/plzLookup";
-import { moderateText } from "@/lib/moderation/moderateText";
 import { DEFAULT_LETTER_LENGTH } from "@/lib/config";
 
 // SECURITY NOTE (2026-04-17):
@@ -34,16 +33,6 @@ export async function selectPoliticianAction(
     const step2Result = step2Schema.safeParse({ issueText: data.issueText });
     if (!step2Result.success) {
       return { error: "server_error", message: "Bitte beschreibe dein Anliegen." };
-    }
-
-    // Re-moderate user input before AI call (WR-02: prevent bypassing initial moderation)
-    const inputModeration = await moderateText(data.issueText);
-    if (inputModeration.flagged) {
-      return {
-        error: "moderation_rejected",
-        message:
-          "Wir können dieses Anliegen nicht weiterverarbeiten. Bitte formuliere dein Anliegen sachlich.",
-      };
     }
 
     // Re-derive politicians server-side from PLZ — never trust a client-sent

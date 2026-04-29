@@ -3,7 +3,6 @@
 import type { WizardData, WizardActionResult } from "@/lib/types/wizard";
 import { step1Schema, step1bSchema, step2Schema } from "@/lib/validation/wizardSchemas";
 import { lookupPLZ } from "@/lib/lookup/plzLookup";
-import { moderateText } from "@/lib/moderation/moderateText";
 import { checkRateLimit, getClientIp, LIMITS } from "@/lib/rateLimit";
 import { DEFAULT_LETTER_LENGTH } from "@/lib/config";
 
@@ -76,18 +75,7 @@ export async function submitWizardAction(
       };
     }
 
-    // 2. Moderate user input BEFORE any AI call (SAFE-01, T-02-10, D-15)
-    const inputModeration = await moderateText(data.issueText);
-    log("input moderation", { flagged: inputModeration.flagged });
-    if (inputModeration.flagged) {
-      return {
-        error: "moderation_rejected",
-        message:
-          "Wir können dieses Anliegen nicht weiterverarbeiten. Bitte formuliere dein Anliegen sachlich und ohne beleidigende Formulierungen.",
-      };
-    }
-
-    // 3. PLZ lookup using Phase 1 static data
+    // PLZ lookup using Phase 1 static data
     const { wahlkreisIds, politicians } = lookupPLZ(data.plz);
     log("plz lookup", { wahlkreisCount: wahlkreisIds.length, politicianCount: politicians.length });
     if (wahlkreisIds.length === 0 || politicians.length === 0) {

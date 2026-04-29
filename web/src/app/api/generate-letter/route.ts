@@ -10,7 +10,7 @@ import { buildDebugPayload } from "@/lib/email/buildDebugPayload";
 import { checkRateLimit, LIMITS } from "@/lib/rateLimit";
 import { DEFAULT_LETTER_LENGTH } from "@/lib/config";
 
-export const maxDuration = 30;
+export const maxDuration = 60;
 
 const RATE_LIMIT_MESSAGE =
   "Du hast in kurzer Zeit viele Briefe erstellt. Bitte versuche es später erneut.";

@@ -66,15 +66,6 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Re-moderate input before LLM spend
-    const inputModeration = await moderateText(data.issueText);
-    if (inputModeration.flagged) {
-      return NextResponse.json(
-        { error: "Wir können dieses Anliegen nicht weiterverarbeiten. Bitte formuliere dein Anliegen sachlich." },
-        { status: 422 }
-      );
-    }
-
     // Re-derive politicians server-side — never trust the client-supplied ID alone
     const { politicians: derivedPoliticians } = lookupPLZ(data.plz);
     if (derivedPoliticians.length === 0) {

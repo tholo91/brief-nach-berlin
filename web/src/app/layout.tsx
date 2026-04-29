@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Courier_Prime, Source_Sans_3, Caveat } from "next/font/google";
+import { Analytics } from "@vercel/analytics/next";
 import { APP_URL } from "@/lib/config";
 import "./globals.css";
 
@@ -50,7 +51,10 @@ export default function RootLayout({
       lang="de"
       className={`${courierPrime.variable} ${sourceSans.variable} ${caveat.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col">{children}</body>
+      <body className="min-h-full flex flex-col">
+          {children}
+          <Analytics />
+        </body>
     </html>
   );
 }

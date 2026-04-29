@@ -363,7 +363,57 @@ export default function Datenschutz() {
 
           <div>
             <h2 className="font-semibold text-waldgruen-dark mb-2">
-              13. Ihre Rechte
+              13. Reichweitenmessung (Vercel Web Analytics)
+            </h2>
+            <p>
+              Wir nutzen Vercel Web Analytics, einen datenschutzfreundlichen
+              Analysedienst von Vercel Inc. (siehe Abschnitt 4). Dieser Dienst
+              wird ausschließlich eingesetzt, um Brief nach Berlin in der
+              Anfangsphase zu skalieren: Wir möchten verstehen, wie viele
+              Menschen die Seite besuchen, wo Fehler auftreten und wo der
+              Dienst zu langsam ist. Sobald die Plattform stabil läuft, werden
+              wir diese Funktion deaktivieren.
+            </p>
+            <p className="mt-2">
+              Vercel Web Analytics arbeitet <strong>cookielos</strong> und
+              ohne persistente Identifikatoren. Es werden keine
+              Nutzerprofile erstellt und keine persönlichen Nutzungsprofile
+              aufgebaut. Zur Zählung eindeutiger Besuche wird ein täglich
+              rotierender Hash aus IP-Adresse und User-Agent gebildet, der
+              nicht tagesübergreifend verknüpft werden kann.
+            </p>
+            <p className="mt-2">
+              <strong className="text-waldgruen-dark">
+                Die erhobenen Daten werden niemals verkauft, niemals zur
+                Profilbildung genutzt und niemals mit Werbenetzwerken oder
+                Drittparteien geteilt.
+              </strong>{" "}
+              Sie dienen ausschließlich der technischen Betriebsüberwachung
+              dieses Angebots.
+            </p>
+            <p className="mt-2">
+              Rechtsgrundlage: Art. 6 Abs. 1 lit. f DSGVO (berechtigtes
+              Interesse an Reichweitenmessung und Stabilität des Dienstes).
+              Ein Cookie-Banner ist nicht erforderlich, da kein Tracking-Cookie
+              gesetzt wird.
+            </p>
+            <p className="mt-2 text-sm">
+              Weitere Informationen:{" "}
+              <a
+                href="https://vercel.com/docs/analytics/privacy-policy"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-waldgruen hover:underline"
+              >
+                vercel.com/docs/analytics/privacy-policy
+              </a>
+              .
+            </p>
+          </div>
+
+          <div>
+            <h2 className="font-semibold text-waldgruen-dark mb-2">
+              14. Ihre Rechte
             </h2>
             <p>
               Sie haben gemäß DSGVO das Recht auf Auskunft (Art. 15),
@@ -389,7 +439,7 @@ export default function Datenschutz() {
 
           <div>
             <h2 className="font-semibold text-waldgruen-dark mb-2">
-              14. Streitschlichtung
+              15. Streitschlichtung
             </h2>
             <p>
               Die Europäische Kommission stellt eine Plattform zur
@@ -408,7 +458,7 @@ export default function Datenschutz() {
 
           <div>
             <h2 className="font-semibold text-waldgruen-dark mb-2">
-              15. KI-generierte Inhalte und Disclaimer
+              16. KI-generierte Inhalte und Disclaimer
             </h2>
             <p className="mb-3">
               Brief nach Berlin nutzt künstliche Intelligenz, um Ihr Anliegen

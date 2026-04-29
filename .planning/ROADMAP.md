@@ -222,6 +222,25 @@ Warum es funktioniert: Gamification via Level-Logik ("du bist auf Stufe 3"), Neu
 Plans:
 - [ ] TBD (promote with /gsd:review-backlog when ready)
 
+### Phase 999.13: Vercel Web Analytics deaktivieren + Datenschutz anpassen (BACKLOG)
+
+**Goal:** Vercel Web Analytics wurde initial aktiviert, um in der Pre-Validation-Phase Traffic-Insights zu sammeln (cookielos, anonymisiert, DSGVO-konform via berechtigtes Interesse Art. 6 Abs. 1 lit. f). Sobald genug Validierungsdaten vorliegen bzw. eine privacy-freundlichere Alternative gefunden ist, soll Analytics wieder ausgeschaltet werden, um das Datensparsamkeits-Versprechen v1 voll einzuhalten.
+
+**Wichtiger Datenschutz-Disclaimer (jetzt schon in der Datenschutzerklärung verankern):** Analytics wird ausschliesslich genutzt, um Brief nach Berlin in der Anfangsphase zu skalieren (Reichweite verstehen, Crashes/Fehler erkennen, Performance-Probleme finden). Daten werden niemals an Dritte verkauft, niemals zur Profilbildung verwendet, niemals mit Werbenetzwerken geteilt. Sobald die Plattform stabil läuft, wird Analytics deaktiviert.
+
+Tasks:
+1. Datenschutzerklärung JETZT um diesen Disclaimer ergänzen (Phase 1 — sofort, nicht erst bei Deaktivierung)
+2. Vercel Web Analytics im Dashboard deaktivieren (später, bei Reife der Plattform)
+3. Entsprechenden Absatz aus Datenschutzerklärung entfernen
+4. DSGVO-TODO.md aktualisieren
+5. Optional: privacy-freundliche Alternative evaluieren (z.B. Plausible Self-Hosted, Umami, oder komplett ohne Analytics)
+
+**Requirements:** TBD
+**Plans:** 0 plans
+
+Plans:
+- [ ] TBD (promote with /gsd:review-backlog when ready)
+
 ## Progress
 
 **Execution Order:**

@@ -12,6 +12,7 @@ export interface WizardData {
   issueText: string;
   letterLength?: LetterLength;
   toneLevel?: number;
+  usedSpeechToText?: boolean;
 }
 
 export interface Step1bData {

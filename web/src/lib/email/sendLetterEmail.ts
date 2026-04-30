@@ -35,6 +35,7 @@ export interface LetterDebugPayload {
   hasName: boolean;
   hasParty: boolean;
   hasNgo: boolean;
+  usedSpeechToText: boolean;
 }
 
 export interface SendLetterEmailParams {

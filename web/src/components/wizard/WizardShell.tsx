@@ -104,7 +104,7 @@ export function WizardShell() {
   }, [step]);
 
   const handleStep2Submit = useCallback(
-    async (issueText: string, toneLevel: number) => {
+    async (issueText: string, toneLevel: number, usedSpeechToText: boolean) => {
       setIsSubmitting(true);
       setErrorMessage(null);
 
@@ -117,6 +117,7 @@ export function WizardShell() {
         letterLength: wizardData.letterLength,
         issueText,
         toneLevel,
+        usedSpeechToText,
       };
 
       try {

@@ -45,5 +45,6 @@ export function buildDebugPayload(
     hasName: Boolean(data.name),
     hasParty: Boolean(data.party),
     hasNgo: Boolean(data.ngo),
+    usedSpeechToText: data.usedSpeechToText ?? false,
   };
 }

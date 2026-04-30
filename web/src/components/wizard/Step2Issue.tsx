@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback, useEffect, useRef } from "react";
 import { VoiceRecorder, type VoiceRecorderState } from "@/components/audio/VoiceRecorder";
 
 function TipsDisclosure() {
@@ -123,7 +123,7 @@ const MIN_CHARS = 50;
 const TONE_LABELS = ["freundlich", "höflich", "sachlich", "bestimmt", "nachdrücklich"] as const;
 
 interface Step2IssueProps {
-  onSubmit: (issueText: string, toneLevel: number) => void;
+  onSubmit: (issueText: string, toneLevel: number, usedSpeechToText: boolean) => void;
   isSubmitting: boolean;
   errorMessage: string | null;
   onErrorDismiss: () => void;
@@ -140,6 +140,7 @@ export function Step2Issue({
   const [issueText, setIssueText] = useState(defaultValue ?? "");
   const [voiceState, setVoiceState] = useState<VoiceRecorderState>("idle");
   const [voiceDone, setVoiceDone] = useState(false);
+  const usedVoiceRef = useRef(false);
   const [submitStage, setSubmitStage] = useState(0);
   const [placeholderIndex, setPlaceholderIndex] = useState(0);
   const [toneLevel, setToneLevel] = useState(3);
@@ -186,12 +187,13 @@ export function Step2Issue({
   };
 
   const handleTranscription = (text: string) => {
+    usedVoiceRef.current = true;
     setIssueText((prev) => (prev ? prev + "\n" + text : text));
   };
 
   const handleSubmit = () => {
     if (!tooShort) {
-      onSubmit(issueText, toneLevel);
+      onSubmit(issueText, toneLevel, usedVoiceRef.current);
     }
   };
 

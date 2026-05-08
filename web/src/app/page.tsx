@@ -4,6 +4,7 @@ import HowItWorks from "@/components/HowItWorks";
 import WhyItWorks from "@/components/WhyItWorks";
 import LetterCounter from "@/components/LetterCounter";
 import Vision from "@/components/Vision";
+import Roadmap from "@/components/Roadmap";
 import Support from "@/components/Support";
 import CallToAction from "@/components/CallToAction";
 import Footer from "@/components/Footer";
@@ -18,6 +19,7 @@ export default function Home() {
         <WhyItWorks />
         <LetterCounter />
         <Vision />
+        <Roadmap />
         <Support />
         <CallToAction />
       </main>

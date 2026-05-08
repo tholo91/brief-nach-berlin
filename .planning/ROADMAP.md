@@ -241,6 +241,25 @@ Tasks:
 Plans:
 - [ ] TBD (promote with /gsd:review-backlog when ready)
 
+### Phase 999.14: Petition-per-URL — Shareable Anliegen-Links (BACKLOG)
+
+**Goal:** User erstellt Brief → generiert shareable Link (URL-Parameter, kein Datenbank-Eintrag, DSGVO-konform). Andere User öffnen Link → Anliegen ist vorausgewählt, sie generieren ihren eigenen Brief frisch. Kein Backend nötig.
+
+Konzept (aus /gsd-explore Session, 2026-05-08):
+- Mistral generiert einen kurzen Anliegen-Slug (~60-80 Zeichen) für die URL
+- URL-Parameter encoded das Anliegen (kein Datenbankpersistenz, vollständig stateless)
+- Empfänger landen auf dem Wizard mit vorausgefülltem Anliegenfeld — können ergänzen oder direkt generieren
+- Jeder User erhält seinen eigenen, frisch generierten Brief (eigene PLZ, eigener Politiker) — Qualität bleibt hoch
+- Viral-Mechanismus: "Ich habe gerade einen Brief an meinen MdB zu Klimaschutz geschrieben — tu es auch" + Link
+- Design-Implementierung soll mit taste-skill / frontend-design skill passieren
+- Ausführung noch offen — v1-Konzept ist geklärt, technische Details (URL-Encoding-Strategie, Länge) müssen noch ausgearbeitet werden
+
+**Requirements:** TBD
+**Plans:** 0 plans
+
+Plans:
+- [ ] TBD (promote with /gsd:review-backlog when ready)
+
 ## Progress
 
 **Execution Order:**

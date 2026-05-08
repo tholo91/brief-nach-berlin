@@ -123,11 +123,15 @@ Deliverable: phased rollout (e.g. Landtage via Abgeordnetenwatch → OParl citie
 
 Integration points: extend `fetch-politician-data.ts` with per-level fetchers; `PoliticalLevel` type already supports Bund/Land/Kommune; letter prompt already does level detection; disambiguation UI must surface the level prominently so users pick the right recipient.
 
-**Requirements:** TBD
-**Plans:** 0 plans
+**Requirements:** POLI-10 (Sub-phase A: Landtag via Abgeordnetenwatch for NRW/BY/BW/NI + Mistral level routing + level badge in disambiguation UI; Sub-phase B Wikidata Bürgermeister deferred)
+**Plans:** 5 plans
 
 Plans:
-- [ ] TBD (promote with /gsd:review-backlog when ready)
+- [ ] 999.6-01-PLAN.md — Build-time PLZ→Stimmkreis pipeline for top-4 Länder + OpenPLZ enrichment (Wave 1)
+- [ ] 999.6-02-PLAN.md — Fetch Landtag mandates for all 16 parliaments via Abgeordnetenwatch (Wave 2)
+- [ ] 999.6-03-PLAN.md — Static landtag-addresses.json + zustaendigkeit-taxonomie.json (Wave 1)
+- [ ] 999.6-04-PLAN.md — routeToLevel Mistral server function + Land-aware lookupPLZ + graceful degradation (Wave 3)
+- [ ] 999.6-05-PLAN.md — Level badge component + disambiguation UI grouping + coverage hint banner (Wave 4)
 
 ### Phase 999.7: Partner with abgeordnetenwatch.de for credibility (BACKLOG)
 

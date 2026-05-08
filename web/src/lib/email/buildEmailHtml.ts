@@ -137,21 +137,6 @@ export function buildEmailHtml(data: SendLetterEmailParams): string {
                   </td>
                 </tr>
 
-                <!-- Optional reply-request helper: subtle, after address, before next steps -->
-                <tr>
-                  <td colspan="7" style="padding:0 32px 16px;background-color:#ffffff;">
-                    <div style="border-left:3px solid rgba(29,53,87,0.45);padding:10px 14px;background-color:#FAFBFC;border-radius:0 4px 4px 0;">
-                      <p style="margin:0 0 6px;font-family:Georgia,'Times New Roman',serif;font-size:13px;color:#1D3557;font-weight:bold;">Antwort wünschen? Optional ergänzen</p>
-                      <p style="margin:0 0 8px;font-family:Georgia,'Times New Roman',serif;font-size:13px;color:#4A4A4A;line-height:1.55;">
-                        Dein Brief zielt auf politische Wirkung, nicht auf eine persönliche Antwort. Wenn du dir trotzdem eine Rückmeldung wünschst, schreib diesen Satz von Hand am Ende des Briefs dazu, vor der Grußformel:
-                      </p>
-                      <p style="margin:0;padding:8px 12px;background-color:#ffffff;border:1px solid #E0DCD7;border-radius:4px;font-family:'Courier New',Courier,monospace;font-size:12px;color:#4A4A4A;font-style:italic;line-height:1.5;">
-                        &bdquo;Ich würde mich über eine kurze Rückmeldung freuen, ob und wie Sie dieses Anliegen aufgreifen werden.&ldquo;
-                      </p>
-                    </div>
-                  </td>
-                </tr>
-
                 <!-- Empfehlung: Brief von Hand abschreiben (sets the frame before the steps) -->
                 <tr>
                   <td colspan="7" style="padding:0 32px 20px;background-color:#ffffff;">
@@ -203,7 +188,7 @@ export function buildEmailHtml(data: SendLetterEmailParams): string {
                 <!-- Personal sign-off from Thomas (handwritten Caveat) -->
                 <tr>
                   <td colspan="7" style="padding:8px 32px 16px;background-color:#ffffff;text-align:left;">
-                    <p style="margin:0 0 4px;font-family:Georgia,'Times New Roman',serif;font-size:14px;color:#4A4A4A;line-height:1.6;">
+                    <p style="margin:0 0 20px;font-family:Georgia,'Times New Roman',serif;font-size:14px;color:#4A4A4A;line-height:1.6;">
                       Toll, dass du dir die Zeit für unsere Demokratie nimmst. Melde dich super gerne bei Fragen oder weiteren Anregungen. Beste Grüße aus Bremen ✌️
                     </p>
                     <p style="margin:0;font-family:'Caveat','Brush Script MT','Lucida Handwriting',cursive;font-size:32px;color:#1D3557;line-height:1.1;">
@@ -238,7 +223,7 @@ export function buildEmailHtml(data: SendLetterEmailParams): string {
                       <h2 style="margin:0 0 8px;font-family:Georgia,'Times New Roman',serif;font-size:16px;color:#2D5016;font-weight:bold;">Gemeinsam noch lauter</h2>
                       <p style="margin:0 0 14px;font-family:Georgia,'Times New Roman',serif;font-size:14px;color:#4A4A4A;line-height:1.6;">
                         Dein Brief wirkt. Und er wirkt noch stärker, wenn weitere Stimmen aus deinem Wahlkreis dazukommen. Briefe aus derselben Gegend zum gleichen Thema bekommen im Bundestag besonderes Gewicht.<br><br>
-                        Wem in deinem Umfeld geht es wie dir? Teile dieses Tool per…
+                        Wer regt sich noch gerne über die Zustände auf? Teile Brief-nach-Berlin per…
                       </p>
                       <table role="presentation" cellpadding="0" cellspacing="0" width="100%">
                         <tr>

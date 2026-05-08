@@ -102,12 +102,6 @@ function TipsDisclosure() {
   );
 }
 
-const SUBMIT_STAGES = [
-  "Zuständigkeit wird ermittelt...",
-  "Brief wird formuliert...",
-  "Brief wird geprüft...",
-];
-
 const PLACEHOLDER_EXAMPLES: string[] = [
   "z.B. Die Radwege in meiner Stadt sind in einem katastrophalen Zustand. Als Vater von zwei Kindern fahre ich täglich...",
   "z.B. Die Mieten in meiner Nachbarschaft sind in den letzten Jahren massiv gestiegen. Junge Familien können sich die Stadt nicht mehr leisten...",
@@ -124,45 +118,25 @@ const TONE_LABELS = ["freundlich", "höflich", "sachlich", "bestimmt", "nachdrü
 
 interface Step2IssueProps {
   onSubmit: (issueText: string, toneLevel: number, usedSpeechToText: boolean) => void;
-  isSubmitting: boolean;
-  errorMessage: string | null;
-  onErrorDismiss: () => void;
   defaultValue?: string;
+  defaultToneLevel?: number;
 }
 
 export function Step2Issue({
   onSubmit,
-  isSubmitting,
-  errorMessage,
-  onErrorDismiss,
   defaultValue,
+  defaultToneLevel,
 }: Step2IssueProps) {
   const [issueText, setIssueText] = useState(defaultValue ?? "");
   const [voiceState, setVoiceState] = useState<VoiceRecorderState>("idle");
   const [voiceDone, setVoiceDone] = useState(false);
   const usedVoiceRef = useRef(false);
-  const [submitStage, setSubmitStage] = useState(0);
   const [placeholderIndex, setPlaceholderIndex] = useState(0);
-  const [toneLevel, setToneLevel] = useState(3);
+  const [toneLevel, setToneLevel] = useState(defaultToneLevel ?? 3);
   const charCount = issueText.trim().length;
   const tooShort = charCount < MIN_CHARS;
   const placeholder = PLACEHOLDER_EXAMPLES[placeholderIndex];
   const voiceTouched = voiceState !== "idle";
-
-  // Cycle through progress stages while submitting — rough pacing based on
-  // typical Mistral latency (~3–8s per generation + moderation round-trip).
-  useEffect(() => {
-    if (!isSubmitting) {
-      setSubmitStage(0);
-      return;
-    }
-    const t1 = setTimeout(() => setSubmitStage(1), 1800);
-    const t2 = setTimeout(() => setSubmitStage(2), 5500);
-    return () => {
-      clearTimeout(t1);
-      clearTimeout(t2);
-    };
-  }, [isSubmitting]);
 
   const handleVoiceStateChange = useCallback((state: VoiceRecorderState) => {
     setVoiceState(state);
@@ -181,9 +155,6 @@ export function Step2Issue({
 
   const handleTextChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setIssueText(e.target.value);
-    if (errorMessage) {
-      onErrorDismiss();
-    }
   };
 
   const handleTranscription = (text: string) => {
@@ -200,31 +171,20 @@ export function Step2Issue({
   return (
     <div>
       <h1 className="font-typewriter text-[28px] font-semibold leading-[1.2] text-waldgruen-dark mb-2">
-        Was ist dein Anliegen an die Politik?
+        Was beschäftigt dich gerade?
       </h1>
       <p className="font-body text-sm text-warmgrau/70 mb-4">
-        Beschreibe dein Anliegen: schnell per Sprache oder direkt per Text. Je konkreter du dein Anliegen schilderst, desto überzeugender wird dein Brief.{!voiceTouched && " Sprich dein Anliegen ein, wir tippen deinen Brief vor."}
+        Schildere dein Anliegen: schnell per Sprache oder direkt per Text. Je konkreter du es schilderst, desto wirkungsvoller wird dein Brief.{!voiceTouched && " Sprich dein Anliegen ein, wir tippen deinen Brief vor."}
       </p>
 
       {/* Tips disclosure — subtle nudge toward effective writing */}
       <TipsDisclosure />
-
-      {/* Moderation rejection banner */}
-      {errorMessage && (
-        <div
-          role="alert"
-          className="bg-airmail-rot/10 border-l-4 border-airmail-rot text-airmail-rot p-4 rounded-r-lg text-sm font-body mb-4"
-        >
-          {errorMessage}
-        </div>
-      )}
 
       {/* Voice recorder — easy path first, fades out after transcription */}
       <div className={`transition-all duration-700 ease-out ${voiceDone ? "opacity-0 max-h-0 overflow-hidden mb-0" : "opacity-100 max-h-40 mb-4"}`}>
         <VoiceRecorder
           onTranscription={handleTranscription}
           onStateChange={handleVoiceStateChange}
-          disabled={isSubmitting}
         />
       </div>
 
@@ -242,12 +202,10 @@ export function Step2Issue({
           value={issueText}
           onChange={handleTextChange}
           placeholder={placeholder}
-          disabled={isSubmitting}
           className={[
             "bg-creme border border-warmgrau/30 rounded-lg px-4 py-3 text-base font-body text-warmgrau",
             "focus:outline-none focus:ring-2 focus:ring-waldgruen focus:border-waldgruen w-full",
             "min-h-[160px] max-h-[320px] resize-y",
-            isSubmitting ? "opacity-60" : "",
           ].join(" ")}
           aria-describedby="issueText-counter"
         />
@@ -271,7 +229,6 @@ export function Step2Issue({
           step={1}
           value={toneLevel}
           onChange={(e) => setToneLevel(Number(e.target.value))}
-          disabled={isSubmitting}
           className="w-full accent-waldgruen cursor-pointer disabled:opacity-50"
           aria-label="Tonlage des Briefes"
         />
@@ -295,54 +252,14 @@ export function Step2Issue({
         <button
           type="button"
           onClick={handleSubmit}
-          disabled={isSubmitting || tooShort}
+          disabled={tooShort}
           className={[
             "bg-waldgruen text-creme font-semibold text-base px-8 py-4 rounded-xl",
             "hover:bg-waldgruen-dark transition-colors min-h-[44px] w-full",
-            isSubmitting || tooShort
-              ? "opacity-60 cursor-not-allowed"
-              : "cursor-pointer",
+            tooShort ? "opacity-60 cursor-not-allowed" : "cursor-pointer",
           ].join(" ")}
         >
-          {isSubmitting ? (
-            <span className="flex items-center justify-center gap-2">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="18"
-                height="18"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                className="animate-spin"
-                aria-hidden="true"
-              >
-                <path d="M21 12a9 9 0 1 1-6.219-8.56" />
-              </svg>
-              {SUBMIT_STAGES[submitStage]}
-            </span>
-          ) : (
-            <span className="flex items-center justify-center gap-2">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="18"
-                height="18"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                aria-hidden="true"
-              >
-                <path d="M21.2 8.4c.5.38.8.97.8 1.6v10a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V10a2 2 0 0 1 .8-1.6l8-6a2 2 0 0 1 2.4 0l8 6Z" />
-                <path d="m22 10-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 10" />
-              </svg>
-              Brief erstellen
-            </span>
-          )}
+          Weiter
         </button>
       </div>
     </div>

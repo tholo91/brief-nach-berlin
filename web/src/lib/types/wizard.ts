@@ -1,7 +1,7 @@
 import type { Politician, PoliticalLevel } from "./politician";
 import type { LetterLength } from "@/lib/config";
 
-export type WizardStep = 1 | "1b" | 2 | 3;
+export type WizardStep = 1 | 2 | "2b" | 3;
 
 export interface WizardData {
   plz: string;

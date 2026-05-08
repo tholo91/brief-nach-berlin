@@ -37,10 +37,10 @@ export function Step1Form({ onNext, defaultValues }: Step1FormProps) {
   return (
     <form onSubmit={handleSubmit(onSubmit)} noValidate>
       <h1 className="font-typewriter text-[28px] font-semibold leading-[1.2] text-waldgruen-dark mb-2">
-        Dein Brief beginnt hier
+        Wer ist für dein Anliegen zuständig?
       </h1>
       <p className="font-body text-sm text-warmgrau/70 mb-8">
-        Damit wir die richtigen Abgeordneten, bzw. politisch verantwortliche Stelle finden und dir deinen Brief zuschicken können.
+        Deine Postleitzahl verrät uns, welche Abgeordneten dein Brief lesen werden. Den fertigen Brief schicken wir dir per E-Mail.
       </p>
 
       <div className="space-y-4">
@@ -61,7 +61,7 @@ export function Step1Form({ onNext, defaultValues }: Step1FormProps) {
             {...register("plz")}
           />
           <p id="plz-hint" className="text-sm text-warmgrau/60 mt-1">
-            Damit finden wir deinen zuständigen Abgeordneten
+            Damit finden wir deine zuständigen Abgeordneten
           </p>
           {errors.plz && touchedFields.plz && (
             <p id="plz-error" role="alert" className="text-sm text-airmail-rot mt-1">

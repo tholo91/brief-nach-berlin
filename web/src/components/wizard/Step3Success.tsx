@@ -543,7 +543,7 @@ export function Step3Success({ result, wizardData, politicians }: Step3SuccessPr
           Wer vertritt deinen Wahlkreis?
         </h1>
         <p className="font-body text-base text-warmgrau mt-2">
-          Deine PLZ liegt in mehreren Wahlkreisen. Standardmäßig haben wir die Person mit dem Direktmandat ausgewählt: sie ist dein:e direkt gewählte:r Ansprechpartner:in im Bundestag. Du kannst aber auch eine andere Person wählen.
+          Deine PLZ gehört zu mehreren Wahlkreisen. Wir haben die direkt gewählte Person vorausgewählt. Du kannst aber auch jemand anderen wählen.
         </p>
 
         {/* Error banner */}

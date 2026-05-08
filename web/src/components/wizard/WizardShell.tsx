@@ -15,9 +15,9 @@ import { Step3Success } from "./Step3Success";
 const PARAM_KEYS = ["plz", "letterLength"] as const;
 
 const STEP_LABELS = [
+  "Dein Anliegen",
   "Kontaktdaten",
   "Zusätzliche Infos",
-  "Dein Anliegen",
 ] as const;
 
 function readParamsToData(searchParams: URLSearchParams): Partial<WizardData> {
@@ -41,9 +41,9 @@ function writeDataToParams(router: ReturnType<typeof useRouter>, data: Partial<W
 
 // Map internal steps to the 3 progress dots
 function stepToProgress(step: WizardStep): number {
-  if (step === 1) return 1;
-  if (step === "1b") return 2;
-  if (step === 2) return 3;
+  if (step === 1) return 1; // Anliegen
+  if (step === 2) return 2; // Kontaktdaten
+  if (step === "2b") return 3; // Zusätzliche Infos
   return 3; // step 3 (success) — hide indicator
 }
 
@@ -60,16 +60,9 @@ export function WizardShell() {
     return data;
   });
   const [step, setStep] = useState<WizardStep>(() => {
-    const sp = searchParams.get("step");
-    const textParam = searchParams.get("text");
-    // Email is never persisted to URL (privacy), so direct navigation to step 1b/2
-    // always lacks email — force back to step 1.
-    const hasEmail = Boolean(searchParams.get("email"));
-    if ((sp === "1b" || sp === "2") && !hasEmail) return 1;
-    if (sp === "1b") return "1b";
-    if (sp === "2") return 2;
-    // If ?text= is present but no step param, pre-fill text but stay on step 1
-    if (textParam) return 1;
+    // Always start at step 1 (Anliegen) on cold load. issueText/email are
+    // never persisted to URL (privacy), so deep-linking to a later step would
+    // lose state — better to restart cleanly. ?text= just pre-fills step 1.
     return 1;
   });
   const [politicians, setPoliticians] = useState<Politician[]>([]);
@@ -84,44 +77,50 @@ export function WizardShell() {
     }
   }, [step, wizardData, router]);
 
-  const handleStep1Complete = useCallback((data: Step1Data) => {
-    setWizardData((prev) => ({ ...prev, ...data }));
-    setStep("1b");
-  }, []);
+  // Step 1: Anliegen — just stores state and advances. No backend call.
+  const handleStep1Complete = useCallback(
+    (issueText: string, toneLevel: number, usedSpeechToText: boolean) => {
+      setWizardData((prev) => ({ ...prev, issueText, toneLevel, usedSpeechToText }));
+      setStep(2);
+    },
+    []
+  );
 
-  const handleStep1bComplete = useCallback((data: Step1bData) => {
+  // Step 2: Contact (PLZ + Email) — just stores state and advances.
+  const handleStep2Complete = useCallback((data: Step1Data) => {
     setWizardData((prev) => ({ ...prev, ...data }));
-    setStep(2);
-  }, []);
-
-  const handleStep1bSkip = useCallback(() => {
-    setStep(2);
+    setStep("2b");
   }, []);
 
   const handleBack = useCallback(() => {
-    if (step === "1b") setStep(1);
-    else if (step === 2) setStep("1b");
+    if (step === 2) setStep(1);
+    else if (step === "2b") setStep(2);
   }, [step]);
 
-  const handleStep2Submit = useCallback(
-    async (issueText: string, toneLevel: number, usedSpeechToText: boolean) => {
+  // Step 2b: Optional — this is where we actually submit to the backend.
+  // Both "Weiter" (with values) and "Überspringen" (no values) end up here.
+  const submitWizard = useCallback(
+    async (optionalData: Partial<Step1bData>) => {
       setIsSubmitting(true);
       setErrorMessage(null);
 
       const fullData: WizardData = {
         plz: wizardData.plz ?? "",
         email: wizardData.email ?? "",
-        name: wizardData.name,
-        party: wizardData.party,
-        ngo: wizardData.ngo,
-        letterLength: wizardData.letterLength,
-        issueText,
-        toneLevel,
-        usedSpeechToText,
+        name: optionalData.name,
+        party: optionalData.party,
+        ngo: optionalData.ngo,
+        letterLength: optionalData.letterLength ?? wizardData.letterLength,
+        issueText: wizardData.issueText ?? "",
+        toneLevel: wizardData.toneLevel,
+        usedSpeechToText: wizardData.usedSpeechToText,
       };
 
       try {
-        console.log("[wizard] submitting", { issueTextLength: issueText.length, plz: fullData.plz });
+        console.log("[wizard] submitting", {
+          issueTextLength: fullData.issueText.length,
+          plz: fullData.plz,
+        });
         const result = await submitWizardAction(fullData);
 
         if ("error" in result) {
@@ -131,14 +130,21 @@ export function WizardShell() {
           return;
         }
 
+        // Persist the optional data into wizardData so Step3Success has the full payload
+        setWizardData((prev) => ({
+          ...prev,
+          name: optionalData.name,
+          party: optionalData.party,
+          ngo: optionalData.ngo,
+          letterLength: optionalData.letterLength ?? prev.letterLength,
+        }));
+
         if ("disambiguationNeeded" in result && result.disambiguationNeeded) {
           setPoliticians(result.politicians);
           setActionResult(result);
-          setWizardData((prev) => ({ ...prev, issueText }));
           setStep(3);
         } else if ("success" in result && result.success) {
           setActionResult(result);
-          setWizardData((prev) => ({ ...prev, issueText }));
           setStep(3);
         }
       } catch (error) {
@@ -151,13 +157,24 @@ export function WizardShell() {
     [wizardData]
   );
 
+  const handleStep2bComplete = useCallback(
+    (data: Step1bData) => {
+      void submitWizard(data);
+    },
+    [submitWizard]
+  );
+
+  const handleStep2bSkip = useCallback(() => {
+    void submitWizard({});
+  }, [submitWizard]);
+
   const handleErrorDismiss = useCallback(() => {
     setErrorMessage(null);
   }, []);
 
   const progress = stepToProgress(step);
   const showIndicator = step !== 3;
-  const showBack = step === "1b" || step === 2;
+  const showBack = step === 2 || step === "2b";
 
   return (
     <div className="max-w-xl mx-auto px-4 sm:px-8 py-16">
@@ -219,25 +236,31 @@ export function WizardShell() {
       {/* Step content */}
       <div className="transition-opacity duration-150 ease-in" key={step}>
         {step === 1 && (
-          <Step1Form
-            onNext={handleStep1Complete}
-            defaultValues={{ plz: wizardData.plz, email: wizardData.email }}
-          />
-        )}
-        {step === "1b" && (
-          <Step1bOptional
-            onNext={handleStep1bComplete}
-            onSkip={handleStep1bSkip}
-            defaultValues={{ name: wizardData.name, party: wizardData.party, ngo: wizardData.ngo }}
+          <Step2Issue
+            onSubmit={handleStep1Complete}
+            defaultValue={wizardData.issueText}
+            defaultToneLevel={wizardData.toneLevel}
           />
         )}
         {step === 2 && (
-          <Step2Issue
-            onSubmit={handleStep2Submit}
+          <Step1Form
+            onNext={handleStep2Complete}
+            defaultValues={{ plz: wizardData.plz, email: wizardData.email }}
+          />
+        )}
+        {step === "2b" && (
+          <Step1bOptional
+            onNext={handleStep2bComplete}
+            onSkip={handleStep2bSkip}
             isSubmitting={isSubmitting}
             errorMessage={errorMessage}
             onErrorDismiss={handleErrorDismiss}
-            defaultValue={wizardData.issueText}
+            defaultValues={{
+              name: wizardData.name,
+              party: wizardData.party,
+              ngo: wizardData.ngo,
+              letterLength: wizardData.letterLength,
+            }}
           />
         )}
         {step === 3 && (

@@ -27,9 +27,9 @@ export default function Impressum() {
             <p>
               Thomas Lorenz
               <br />
-              Zur Plangemühle 5
+              A.d. Schleifmühle 44
               <br />
-              47198 Duisburg
+              28203 Bremen
               <br />
               Deutschland
             </p>
@@ -55,9 +55,9 @@ export default function Impressum() {
             <p>
               Thomas Lorenz
               <br />
-              Zur Plangemühle 5
+              A.d. Schleifmühle 44
               <br />
-              47198 Duisburg
+              28203 Bremen
               <br />
               Deutschland
             </p>

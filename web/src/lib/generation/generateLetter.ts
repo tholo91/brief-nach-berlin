@@ -142,7 +142,7 @@ ZUSTÄNDIGKEITSHINWEIS:
 Alle verfügbaren Politiker sind Bundestagsabgeordnete. Wenn das Anliegen primär Landes- oder Kommunalebene betrifft, begründe im Brief kurz, warum sich der Bürger an die Bundestagsebene wendet (Gesetzgebungs­kompetenz, Förderprogramme, bundespolitischer Rahmen).
 
 AUFGABE:
-Schreibe einen formellen Brief in gepflegtem Deutsch (Sie-Form). Länge und Absatzanzahl sind in <ziel> vorgegeben. Halte die Zielwortzahl ein (±15%). Wenn der Brief zu kurz wäre: stärker ausarbeiten (Kontext, Begründung, Empathie für Betroffene), aber NIEMALS Fakten erfinden, um Wörter zu füllen. Wenn zu lang: kürze, ergänze nicht.
+Schreibe einen formellen Brief in gepflegtem Deutsch (Sie-Form). Länge und Absatzanzahl sind in <ziel> vorgegeben. Das Wortfenster in <ziel> ist eine harte Anforderung, keine Empfehlung. Wenn der Brief zu kurz wäre: stärker ausarbeiten (Kontext, Begründung, Empathie für Betroffene), aber NIEMALS Fakten erfinden, um Wörter zu füllen. Wenn zu lang: kürze, ergänze nicht.
 
 PFLICHT-ELEMENTE:
 1. KONKRETER ANLASS in Absatz 1: ein Detail aus <transkript> (Ort, Erlebnis, Beobachtung). Wenn das Transkript keinen konkreten Anlass nennt, beschreibe das Problem persönlich-allgemein. Nichts erfinden.
@@ -202,7 +202,8 @@ function absenderBlock(input: GenerateLetterInput): string {
 
 function buildUserPrompt(
   input: GenerateLetterInput,
-  targetWords: number,
+  minWords: number,
+  maxWords: number,
   toneLevel: number
 ): string {
   const politiciansJson = JSON.stringify(
@@ -226,7 +227,7 @@ ${tonalityBlock(toneLevel)}
 </tonalitaet>
 
 <ziel>
-woerter: ${targetWords} (±15%)
+woerter: ${minWords} bis ${maxWords}
 absaetze: 3 bis 4
 </ziel>
 
@@ -269,7 +270,7 @@ export async function generateLetter(
   const maxTokens = Math.ceil(maxWords * 2.2) + 250;
 
   const systemPrompt = SYSTEM_PROMPT_TEMPLATE.replace("__TODAY__", todayInGerman());
-  const userPrompt = buildUserPrompt(input, targetWords, toneLevel);
+  const userPrompt = buildUserPrompt(input, minWords, maxWords, toneLevel);
 
   const generationStart = Date.now();
 
@@ -287,23 +288,21 @@ export async function generateLetter(
   let parsed = parseLetterResponse(firstResponse.choices?.[0]?.message?.content);
   let wordCount = countWords(parsed.letter);
 
-  // One corrective retry if length is materially off (±15% bounds).
+  // One corrective retry if length lands outside the configured band.
   // Only retries on length, not on hallucination. Caps cost at 2× per letter.
-  const minOk = Math.floor(minWords * 0.85);
-  const maxOk = Math.ceil(maxWords * 1.15);
   let retried = false;
-  if (wordCount < minOk || wordCount > maxOk) {
+  if (wordCount < minWords || wordCount > maxWords) {
     retried = true;
-    const directive = wordCount < minOk
-      ? `Der vorherige Brief hatte nur ${wordCount} Wörter. Ziel sind ${targetWords} Wörter (±15%, also ${minOk}–${maxOk}). Schreibe den Brief neu mit der korrekten Länge: arbeite Kontext und Begründung stärker aus, übernimm mehr Argumente und Empathie aus <transkript>. Erfinde KEINE neuen Fakten, um Wörter zu füllen.`
-      : `Der vorherige Brief hatte ${wordCount} Wörter. Ziel sind ${targetWords} Wörter (±15%, also ${minOk}–${maxOk}). Schreibe den Brief neu mit der korrekten Länge: kürze, ohne die Stimme oder die Kernargumente des Bürgers zu verlieren.`;
+    const directive = wordCount < minWords
+      ? `Der vorherige Brief hatte nur ${wordCount} Wörter. Das Pflichtfenster ist ${minWords}–${maxWords} Wörter. Schreibe den Brief neu: arbeite Kontext und Begründung stärker aus, übernimm mehr Argumente und Empathie aus <transkript>. Erfinde KEINE neuen Fakten, um Wörter zu füllen.`
+      : `Der vorherige Brief hatte ${wordCount} Wörter. Das Pflichtfenster ist ${minWords}–${maxWords} Wörter. Schreibe den Brief neu: kürze, ohne die Stimme oder die Kernargumente des Bürgers zu verlieren.`;
 
     console.warn("[generateLetter] word count out of range, retrying once", {
       wordCount,
       minWords,
       maxWords,
       lengthKey,
-      direction: wordCount < minOk ? "too_short" : "too_long",
+      direction: wordCount < minWords ? "too_short" : "too_long",
     });
 
     const retryResponse = await mistral.chat.complete({

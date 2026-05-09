@@ -151,9 +151,29 @@ export function VoiceRecorder({ onTranscription, onStateChange, disabled }: Voic
           : "Sprachaufnahme starten";
 
   const isButtonDisabled = disabled || uiState === "processing" || uiState === "done";
+  const isRecording = uiState === "recording";
 
   return (
     <div className="space-y-2">
+      <div className={isRecording ? "flex items-center gap-3 flex-wrap" : ""}>
+        {isRecording && (
+          <div
+            className="flex items-center gap-2 px-3 py-2 rounded-lg bg-airmail-rot/5 border border-airmail-rot/20"
+            role="status"
+            aria-live="polite"
+          >
+            <span
+              className="w-3 h-3 rounded-full bg-airmail-rot animate-pulse"
+              aria-hidden="true"
+            />
+            <span className="font-typewriter text-sm text-airmail-rot font-semibold">
+              Rec
+            </span>
+            <span className="font-typewriter text-sm text-warmgrau tabular-nums">
+              {formatElapsed(elapsedSeconds)}
+            </span>
+          </div>
+        )}
       <button
         type="button"
         onClick={handleClick}
@@ -161,12 +181,14 @@ export function VoiceRecorder({ onTranscription, onStateChange, disabled }: Voic
         aria-label={ariaLabel}
         className={[
           "flex items-center justify-center gap-2 px-4 py-3.5 rounded-lg",
-          "bg-creme border transition-colors min-h-[44px] w-full",
+          "bg-creme border transition-colors min-h-[44px]",
           "font-body text-sm",
-          uiState === "recording"
-            ? "border-airmail-rot text-warmgrau"
+          isRecording ? "flex-1 min-w-[200px]" : "w-full",
+          isRecording
+            ? "border-airmail-rot text-warmgrau hover:bg-airmail-rot/5"
             : "border-warmgrau/30 text-warmgrau",
-          isButtonDisabled ? "opacity-60 cursor-not-allowed" : "cursor-pointer hover:bg-warmgrau/5",
+          isButtonDisabled ? "opacity-60 cursor-not-allowed" : "cursor-pointer",
+          !isRecording && !isButtonDisabled ? "hover:bg-warmgrau/5" : "",
         ]
           .filter(Boolean)
           .join(" ")}
@@ -196,14 +218,18 @@ export function VoiceRecorder({ onTranscription, onStateChange, disabled }: Voic
 
         {uiState === "recording" && (
           <>
-            <span
-              className="w-3 h-3 rounded-full bg-airmail-rot animate-pulse"
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="18"
+              height="18"
+              viewBox="0 0 24 24"
+              fill="currentColor"
+              className="text-airmail-rot"
               aria-hidden="true"
-            />
-            <span className="font-typewriter text-sm text-warmgrau tabular-nums">
-              {formatElapsed(elapsedSeconds)}
-            </span>
-            <span>Beschreibe dein Anliegen...</span>
+            >
+              <rect x="6" y="6" width="12" height="12" rx="2" />
+            </svg>
+            <span className="font-semibold">Aufnahme stoppen</span>
           </>
         )}
 
@@ -238,6 +264,7 @@ export function VoiceRecorder({ onTranscription, onStateChange, disabled }: Voic
           </span>
         )}
       </button>
+      </div>
     </div>
   );
 }

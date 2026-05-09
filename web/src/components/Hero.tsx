@@ -133,10 +133,10 @@ export default function Hero() {
             <span className="hidden md:inline">In 3 Minuten zum fertigen Brief &rarr;</span>
           </a>
           <a
-            href="#so-funktionierts"
+            href="/beispiele"
             className="inline-block border border-waldgruen/30 text-waldgruen-dark font-body font-semibold text-base md:text-lg px-8 py-4 rounded-xl hover:bg-waldgruen/8 transition-colors cursor-pointer active:scale-[0.98]"
           >
-            Mehr erfahren
+            Beispiel-Brief ansehen
           </a>
         </div>
 

@@ -36,7 +36,7 @@ const features = [
       </svg>
     ),
     label: "Mitgestalten",
-    title: "Dein Feedback formt das Produkt",
+    title: "Dein Feedback formt neue Briefe",
     description:
       "Wir validieren gerade. Jede Rückmeldung, jede Idee, jeder Hinweis hilft uns, Brief nach Berlin zu dem zu machen, was es sein kann. Demokratie lebt vom Mitmachen, und das gilt auch hier.",
   },

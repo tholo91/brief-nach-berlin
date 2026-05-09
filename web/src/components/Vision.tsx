@@ -9,15 +9,37 @@ export default function Vision() {
           Die Idee dahinter
         </h2>
 
+        {/* Airmail divider */}
+        <div
+          className="w-16 h-1 mx-auto mb-10 rounded-full"
+          style={{
+            background: `repeating-linear-gradient(
+              90deg,
+              var(--color-airmail-rot) 0px,
+              var(--color-airmail-rot) 4px,
+              transparent 4px,
+              transparent 6px,
+              var(--color-airmail-blau) 6px,
+              var(--color-airmail-blau) 10px,
+              transparent 10px,
+              transparent 12px
+            )`,
+          }}
+          aria-hidden="true"
+        />
+
         <div className="font-body text-base md:text-lg text-warmgrau leading-[1.8] space-y-5 text-left md:text-center">
           <p>
-            Ich habe selbst im Bundestag gearbeitet. Ein persönlicher Brief auf dem Schreibtisch?{" "}
-            <strong className="text-waldgruen-dark">Wird gelesen. Wird besprochen. Wird ernst genommen.</strong>
+            Ich habe selbst im Bundestag gearbeitet und gesehen, was passiert,
+            wenn ein persönlicher Brief auf einem Schreibtisch landet. Er wird
+            gelesen. Mit der Hand. Oft im Team besprochen.
           </p>
           <p>
-            E-Mails werden ignoriert. Petitionen sind ein Klick unter Tausenden.
-            Ein Brief ist eine Stimme, die ankommt. Die meisten wissen nur nicht, wem sie schreiben sollen. Oder wie sie ihr Anliegen am besten formulieren.{" "}
-            <strong className="text-waldgruen-dark">Brief-nach-Berlin ändert das.</strong>
+            Die meisten Leute wissen nur nicht, an wen sie schreiben sollen.
+            Oder wie sie ihr Anliegen so formulieren, dass es ankommt.{" "}
+            <span className="text-waldgruen-dark font-semibold">
+              Brief-nach-Berlin nimmt diese beiden Hürden weg.
+            </span>
           </p>
         </div>
       </div>

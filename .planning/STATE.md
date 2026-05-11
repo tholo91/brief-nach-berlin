@@ -28,7 +28,7 @@ See: .planning/PROJECT.md (updated 2026-04-10)
 Phase: 999.1
 Plan: Not started
 Status: Executing Phase 03
-Last activity: 2026-04-26 - Completed quick task 260426-c59: Polish letter email + kill em dashes + warmer share copy + OG fix
+Last activity: 2026-05-11 - Completed quick task 260511-wgf: Firefox hero video fallback - add WebM source, loop, preload
 
 Progress: [░░░░░░░░░░] 0%
 
@@ -79,6 +79,7 @@ Recent decisions affecting current work:
 |---|-------------|------|--------|-----------|
 | 260426-c59 | Polish letter email + kill em dashes + warmer share copy + OG fix | 2026-04-26 | 30b1d14 | [260426-c59-polish-letter-email-kill-em-dashes-warme](./quick/260426-c59-polish-letter-email-kill-em-dashes-warme/) |
 | 260511 | Retry Mistral on transient errors, surface 503 as specific user message | 2026-05-11 | 3a562ec | [260511-mistral-retry-backoff](./quick/260511-mistral-retry-backoff/) |
+| 260511-wgf | Firefox hero video fallback - add WebM source, loop, preload | 2026-05-11 | db9524b | [260511-wgf-firefox-hero-video-fallback-add-webm-sou](./quick/260511-wgf-firefox-hero-video-fallback-add-webm-sou/) |
 
 ## Session Continuity
 

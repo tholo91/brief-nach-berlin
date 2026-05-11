@@ -78,6 +78,7 @@ Recent decisions affecting current work:
 | # | Description | Date | Commit | Directory |
 |---|-------------|------|--------|-----------|
 | 260426-c59 | Polish letter email + kill em dashes + warmer share copy + OG fix | 2026-04-26 | 30b1d14 | [260426-c59-polish-letter-email-kill-em-dashes-warme](./quick/260426-c59-polish-letter-email-kill-em-dashes-warme/) |
+| 260511 | Retry Mistral on transient errors, surface 503 as specific user message | 2026-05-11 | 3a562ec | [260511-mistral-retry-backoff](./quick/260511-mistral-retry-backoff/) |
 
 ## Session Continuity
 

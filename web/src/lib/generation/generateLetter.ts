@@ -1,4 +1,4 @@
-import { mistral } from "@/lib/mistral";
+import { mistral, withMistralRetry } from "@/lib/mistral";
 import type { GenerateLetterInput, GenerateLetterResult, MdbContext } from "@/lib/types/wizard";
 import type { PoliticalLevel } from "@/lib/types/politician";
 import { LETTER_LENGTHS, DEFAULT_LETTER_LENGTH } from "@/lib/config";
@@ -274,16 +274,18 @@ export async function generateLetter(
 
   const generationStart = Date.now();
 
-  const firstResponse = await mistral.chat.complete({
-    model: MISTRAL_MODEL,
-    messages: [
-      { role: "system", content: systemPrompt },
-      { role: "user", content: userPrompt },
-    ],
-    responseFormat: { type: "json_object" },
-    temperature: MISTRAL_TEMPERATURE,
-    maxTokens,
-  });
+  const firstResponse = await withMistralRetry("generateLetter:first", () =>
+    mistral.chat.complete({
+      model: MISTRAL_MODEL,
+      messages: [
+        { role: "system", content: systemPrompt },
+        { role: "user", content: userPrompt },
+      ],
+      responseFormat: { type: "json_object" },
+      temperature: MISTRAL_TEMPERATURE,
+      maxTokens,
+    })
+  );
 
   let parsed = parseLetterResponse(firstResponse.choices?.[0]?.message?.content);
   let wordCount = countWords(parsed.letter);
@@ -305,18 +307,20 @@ export async function generateLetter(
       direction: wordCount < minWords ? "too_short" : "too_long",
     });
 
-    const retryResponse = await mistral.chat.complete({
-      model: MISTRAL_MODEL,
-      messages: [
-        { role: "system", content: systemPrompt },
-        { role: "user", content: userPrompt },
-        { role: "assistant", content: firstResponse.choices?.[0]?.message?.content as string ?? "" },
-        { role: "user", content: directive },
-      ],
-      responseFormat: { type: "json_object" },
-      temperature: MISTRAL_TEMPERATURE,
-      maxTokens,
-    });
+    const retryResponse = await withMistralRetry("generateLetter:length-retry", () =>
+      mistral.chat.complete({
+        model: MISTRAL_MODEL,
+        messages: [
+          { role: "system", content: systemPrompt },
+          { role: "user", content: userPrompt },
+          { role: "assistant", content: firstResponse.choices?.[0]?.message?.content as string ?? "" },
+          { role: "user", content: directive },
+        ],
+        responseFormat: { type: "json_object" },
+        temperature: MISTRAL_TEMPERATURE,
+        maxTokens,
+      })
+    );
 
     try {
       const retryParsed = parseLetterResponse(retryResponse.choices?.[0]?.message?.content);

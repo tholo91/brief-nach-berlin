@@ -9,6 +9,7 @@ import { sendLetterEmail } from "@/lib/email/sendLetterEmail";
 import { buildDebugPayload } from "@/lib/email/buildDebugPayload";
 import { checkRateLimit, LIMITS } from "@/lib/rateLimit";
 import { DEFAULT_LETTER_LENGTH } from "@/lib/config";
+import { MistralProviderUnavailableError } from "@/lib/mistral";
 
 export const maxDuration = 60;
 
@@ -130,6 +131,15 @@ export async function POST(req: NextRequest) {
     });
   } catch (error) {
     console.error("[generate-letter] error:", error);
+    if (error instanceof MistralProviderUnavailableError) {
+      return NextResponse.json(
+        {
+          error:
+            "Unser KI-Anbieter ist gerade kurz nicht erreichbar. Bitte versuche es in ein, zwei Minuten erneut.",
+        },
+        { status: 503, headers: { "Retry-After": "60" } }
+      );
+    }
     return NextResponse.json(
       { error: "Es ist ein Fehler aufgetreten. Bitte versuche es erneut." },
       { status: 500 }

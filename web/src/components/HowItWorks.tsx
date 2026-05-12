@@ -3,7 +3,7 @@ const steps = [
     number: "01",
     title: "Erzähl, was dich beschäftigt",
     description:
-      "Tipp oder sprich rein, worum es geht. Egal ob Müll auf dem Spielplatz, bezahlbarer Wohnraum oder Sorgen um die Demokratie.",
+      "Stichpunkte oder Gedanken per Sprachnachricht, wir übernehmen die Formulierung. Egal ob Müll auf dem Spielplatz, bezahlbarer Wohnraum oder Sorgen um die Demokratie.",
     icon: (
       <svg width="40" height="40" viewBox="0 0 48 48" fill="none" className="text-waldgruen">
         <path d="M10 10h28v24H22l-7 6v-6h-5V10z" stroke="currentColor" strokeWidth="2" strokeLinejoin="round" fill="none" />

@@ -73,9 +73,9 @@ function TipsDisclosure() {
       >
         <div className="px-4 pb-4 pt-1 font-body text-sm text-warmgrau leading-relaxed space-y-3">
           <p>
-            <span className="font-semibold text-waldgruen-dark">Sei konkret.</span>{" "}
-            Wo wohnst du, was siehst du, was hast du erlebt? Ein Satz mit deiner Straße oder
-            deinem Stadtteil bringt mehr als jede Statistik.
+            <span className="font-semibold text-waldgruen-dark">Stichpunkte genügen.</span>{" "}
+            Notier konkret, wo du wohnst, was du siehst, was dich nervt. Wir bauen daraus
+            die Sätze.
           </p>
           <p>
             <span className="font-semibold text-waldgruen-dark">Eine Bitte reicht.</span>{" "}
@@ -103,6 +103,8 @@ function TipsDisclosure() {
 }
 
 const PLACEHOLDER_EXAMPLES: string[] = [
+  "z.B. Radwege bei uns kaputt, Schlaglöcher überall, gefährlich für Schulkinder",
+  "z.B. Miete explodiert in unserem Viertel, Familien ziehen weg, was kann man tun?",
   "z.B. Die Radwege in meiner Stadt sind in einem katastrophalen Zustand. Als Vater von zwei Kindern fahre ich täglich...",
   "z.B. Die Mieten in meiner Nachbarschaft sind in den letzten Jahren massiv gestiegen. Junge Familien können sich die Stadt nicht mehr leisten...",
   "z.B. An der Grundschule meines Kindes teilen sich 340 Kinder zwölf Tablets. Der Digitalpakt Schule kommt nicht an...",
@@ -174,7 +176,7 @@ export function Step2Issue({
         Was beschäftigt dich gerade?
       </h1>
       <p className="font-body text-sm text-warmgrau/70 mb-4">
-        Schildere dein Anliegen: schnell per Sprache oder direkt per Text. Je konkreter du es schilderst, desto wirkungsvoller wird dein Brief.{!voiceTouched && " Sprich dein Anliegen ein, wir tippen deinen Brief vor."}
+        Stichpunkte reichen. Du musst keine ganzen Sätze schreiben. Sprich einfach drauf los oder tipp ein paar Notizen. Wir formulieren daraus deinen Brief.
       </p>
 
       {/* Tips disclosure — subtle nudge toward effective writing */}
@@ -191,7 +193,7 @@ export function Step2Issue({
       {/* Divider — hidden as soon as voice recording starts (or after) */}
       <div className={`flex items-center gap-3 my-4 transition-all duration-700 ease-out ${voiceTouched ? "opacity-0 max-h-0 overflow-hidden !my-0" : "opacity-100 max-h-8"}`}>
         <div className="flex-1 h-px bg-warmgrau/20" />
-        <span className="font-body text-xs text-warmgrau/50">oder schreib es selbst</span>
+        <span className="font-body text-xs text-warmgrau/50">oder tipp deine Stichpunkte</span>
         <div className="flex-1 h-px bg-warmgrau/20" />
       </div>
 

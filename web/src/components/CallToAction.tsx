@@ -28,8 +28,8 @@ export default function CallToAction() {
         </h2>
 
         <p className="font-body text-base md:text-lg text-creme/85 leading-relaxed mb-10 max-w-md mx-auto">
-          Beschreib dein Anliegen, wir finden die zuständige Person und
-          formulieren einen Brief, der ankommt.
+          Beschreib uns in Stichpunkten, was dich bewegt. Wir finden die
+          zuständigen Abgeordneten und formulieren einen Brief, der ankommt.
         </p>
 
         <a

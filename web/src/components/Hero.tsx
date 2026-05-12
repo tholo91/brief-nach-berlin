@@ -4,7 +4,11 @@ import { useRef, useEffect, useState } from "react";
 
 const SUB_HEADLINES: ReadonlyArray<readonly [string, string]> = [
   [
-    "Tippen oder einfach drauf lossprechen.",
+    "Drei Stichpunkte reichen, kein Aufsatz nötig.",
+    "Wir bauen daraus einen Brief, der gelesen wird.",
+  ],
+  [
+    "Sprich rein oder tipp ein paar Stichpunkte.",
     "Ratzfatz formulieren wir dir einen überzeugenden Brief.",
   ],
   [

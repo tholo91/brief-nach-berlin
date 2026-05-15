@@ -264,6 +264,131 @@ Konzept (aus /gsd-explore Session, 2026-05-08):
 Plans:
 - [ ] TBD (promote with /gsd:review-backlog when ready)
 
+### Phase 999.15: Public Letter-Generation API für Dritt-Plattformen (BACKLOG)
+
+**Goal:** Brief-nach-Berlin als Infrastruktur öffnen — Drittanbieter (Civic-Tech-Tools, NGOs, Journalisten, Petitionsplattformen, andere Bürger-Portale) sollen per HTTPS-API ihren Nutzer:innen Briefe an die richtigen Abgeordneten generieren lassen können, ohne das eigene UI verlassen zu müssen. Brief nach Berlin liefert dabei (a) PLZ → Politiker-Resolution (alle Ebenen), (b) Anliegen → personalisierter Brieftext, (c) optional Versand-Anleitung. Der Mehrwert für uns: technische Reichweite, Markenbekanntheit ("Powered by brief-nach-berlin.de"), und perspektivisch eine Einnahmequelle, die unabhängig von der B2C-Conversion ist.
+
+**Trigger (2026-05-16):** Erwähnung im Podcast *Lage der Nation* — größter politischer Podcast in DACH, Zielgruppe = exakt die politisch engagierten Multiplikatoren, die so eine API in eigenen Tools verbauen würden. Vor diesem Moment war API-Demand reine Spekulation; jetzt potenziell real. **Bevor irgendwas gebaut wird:** abwarten und zählen, wie viele inbound-Anfragen nach genau dieser Funktionalität in den nächsten 2-4 Wochen reinkommen.
+
+#### API-Design (Kern-Endpoints)
+
+Minimal-viable Surface: drei Endpoints, REST + JSON, kein GraphQL-Overengineering.
+
+1. **`POST /api/v1/politicians/lookup`** — PLZ-Auflösung
+   - Input: `{ plz: "10115", level?: "bund" | "land" | "kommune" | "auto" }`
+   - Output: `{ politicians: [{ id, name, party, level, wahlkreisName, kreisName?, address }], ambiguous: boolean }`
+   - Wiederverwendbar: viele Tools wollen NUR die Auflösung, nicht den Brief.
+
+2. **`POST /api/v1/letters/generate`** — Brief-Generierung
+   - Input (Minimum):
+     - `plz: string` (Pflicht, 5-stellig, Zod-validiert)
+     - `issueText: string` (Pflicht, 50-2000 Zeichen, Bürger-Anliegen)
+   - Input (Optional):
+     - `tone: "sachlich" | "bestimmt" | "drastisch"` — Default: `"bestimmt"` (siehe unten)
+     - `level: "bund" | "land" | "kommune" | "auto"` — Default: `"auto"` (LLM-Routing wie heute)
+     - `politicianId: string` — explizite Wahl, überspringt Disambiguierung
+     - `salutation: "Sie" | "Du"` — Default: `"Sie"`
+     - `signatureName: string` — wenn Anbieter den Namen schon hat
+     - `language: "de"` — v1 nur Deutsch, Feld reserviert
+     - `webhook: string` — async-Mode für lange Generierung (>10s Vercel-Limit umgehen)
+   - Output: `{ letterId, letter: { recipient, body, address }, generatedAt, tokensUsed }`
+   - Failure-Modi sauber: `400` bei Zod-Fail, `422` bei Moderation-Reject, `429` bei Rate-Limit, `503` bei Mistral-Down.
+
+3. **`POST /api/v1/letters/moderate`** — Standalone Safety-Check (optional)
+   - Input: `{ text: string }`
+   - Output: `{ flagged: boolean, categories: [...] }`
+   - Erlaubt Anbietern, schon vor dem teuren Generate-Call zu filtern → spart Kosten beidseits.
+
+#### Tonalität / "Defaultstärke" (das Thomas-Konzept)
+
+Drei Stufen, klar definiert im System-Prompt, nicht als Slider sondern als Enum:
+
+| Stufe | Charakter | Beispiel-Phrasing |
+|-------|-----------|-------------------|
+| `sachlich` | Faktenbasiert, höflich, kein emotionaler Aufschlag. Schwerpunkt auf Problembeschreibung und Frage nach Position. | "Ich bitte Sie um Ihre Einschätzung zu …" |
+| `bestimmt` *(Default)* | Klare Haltung, fordernd aber respektvoll, expliziter Handlungsappell. Sweet Spot für die meisten Anliegen. | "Ich erwarte von Ihnen als meiner gewählten Vertretung, dass …" |
+| `drastisch` | Maximale rhetorische Schärfe innerhalb der Grenzen des Respekts (keine Beleidigung, keine Drohung — sonst Moderation-Block). Macht Dringlichkeit + persönliche Betroffenheit unmissverständlich. | "Ihre bisherige Untätigkeit ist nicht hinnehmbar. Ich werde meine Wahlentscheidung an Ihrer Reaktion auf diesen Brief messen." |
+
+**Warum Default `bestimmt`:** Sachlich ist zu zahnlos für die emotionale Realität der Nutzer:innen (siehe Lage-der-Nation-Demographie). Drastisch ist riskant bei Bulk-Verwendung durch Drittanbieter (Image-Risiko für uns + Spam-Wirkung bei MdBs). Bestimmt ist die robusteste Default-Wahl.
+
+**Wichtig:** `drastisch` MUSS doppelte Moderation durchlaufen (vor + nach Generierung), und Drittanbieter sollten standardmäßig nur `sachlich` und `bestimmt` aktiviert haben — `drastisch` als opt-in mit separatem Approval pro API-Key.
+
+#### Auth & Identitäts-Modell
+
+- **API-Keys** (`Authorization: Bearer bnb_live_xxx...`), keine OAuth-Flows in v1 — overkill.
+- Key-Format: prefix `bnb_test_` (free, gedrosselt) und `bnb_live_` (registriert, mit Quota).
+- Registration: einfaches Formular auf `/api/signup` — Email + Name + Use-Case-Beschreibung. Manuelle Freischaltung in v1 (kein Self-Service). So filtern wir Spam-Anbieter raus, bevor sie unsere Mistral-Kosten verbrennen.
+- **Per-Key Tracking:** Postgres oder Vercel KV mit `{ keyId, requestsToday, requestsMonth, tokensThisMonth, plan }`.
+- KEIN User-Account auf API-Seite (analog zum B2C-Produkt — DSGVO-Minimalismus).
+
+#### Rate-Limiting & Kostenkontrolle
+
+- **Sliding Window** via Upstash Redis (analog zum existierenden `lib/rateLimit.ts`).
+- Default-Limits Test-Tier: 10 Letters/Tag, 100 Lookups/Tag.
+- Default-Limits Live-Tier (free): 100 Letters/Tag, 1000 Lookups/Tag.
+- Hard-Stop bei monatlichem Token-Budget pro Key (z.B. 100k Mistral-Tokens für Free-Tier ≈ 50 Briefe). Verhindert Mistral-Bill-Shock.
+- Globaler Notbremsen-Toggle: ENV-Variable `API_KILL_SWITCH=true` schaltet alle Drittanbieter-Calls sofort ab, ohne dass B2C betroffen ist.
+
+#### Missbrauchs-Risiken & Mitigation
+
+Das ist die kritischste Sektion — hier kann das Projekt ernsthaft Schaden nehmen.
+
+1. **MdB-Spam-Risiko:** Eine API macht es trivial, 1000+ generierte Briefe an einen einzelnen MdB zu schicken (Bot-Farmen, politische Aktivisten, ausländische Akteure). Das wäre nicht nur ethisch problematisch, sondern würde abgeordnetenwatch.de und die Bundestagsverwaltung gegen uns aufbringen.
+   - **Mitigation:** API liefert NUR den Brief-Text, NICHT den Versand. Drittanbieter müssen den Brief selbst zustellen (per User-Handschrift, wie im B2C-Flow). Email-Versand bleibt B2C-only.
+   - **Mitigation:** Briefe enthalten unsichtbares Wasserzeichen (`X-Generated-By: brief-nach-berlin-api/v1` in Email-Header oder als kleiner Footer im PDF), damit wir auffällige Muster bei MdBs erkennen können.
+
+2. **Hate-Speech-Vehikel:** Drittanbieter könnten User-Inputs vorab manipulieren, um drastische Inhalte durchzudrücken.
+   - **Mitigation:** Doppelte Moderation (Input + Output). Bei `drastisch` zusätzlich striktere Schwellen.
+   - **Mitigation:** Abuse-Reporting-Endpoint, plus Recht, Keys jederzeit zu sperren (in ToS verankert).
+
+3. **Brand-Hijacking:** Anbieter könnte mit „Powered by brief-nach-berlin.de" werben, aber selbst grenzwertige Tools sein.
+   - **Mitigation:** Approval-Schritt vor Live-Key-Vergabe. Klare ToS-Klauseln zu Branding und akzeptablen Use-Cases.
+
+4. **Mistral-Bill-Shock:** Ein Bug in Drittanbieter-Code könnte 10.000 Calls/Stunde verursachen.
+   - **Mitigation:** Per-Key Quotas (siehe Rate-Limiting), Vercel-Edge-Cap auf 50 req/min global pro Key.
+
+#### Pricing-Modelle (zu evaluieren, NICHT zu entscheiden bevor reale Demand validiert ist)
+
+| Modell | Pro | Contra |
+|--------|-----|--------|
+| **Free + manuelle Genehmigung** *(v1-Default)* | Niedrige Hürde, gut für Adoption, gute Filterung über Approval | Keine Einnahmen, Kosten wachsen mit Adoption |
+| **Freemium** (100 Briefe/Monat free, danach €0.10/Brief) | Echte Monetarisierung, deckt Mistral-Kosten 5x+ | Stripe-Integration, Billing-Komplexität, höhere Hürde |
+| **Spenden-basiert** ("Pay what you want") | Mission-Fit (Civic Tech), kein Vendor-Lock-Gefühl | Vermutlich <5% Pay-Through, deckt Kosten kaum |
+| **Tiered Subscriptions** (€9/29/99/Monat nach Volume) | SaaS-Standard, planbarer Revenue | Klassisches Vendor-Modell, passt schlecht zu Civic-Tech-Vibe |
+
+**Empfehlung für v1:** Free + manuelle Genehmigung, mit klarer Kommunikation "wir behalten uns vor, in v2 Bezahlmodelle einzuführen". So lernen wir, ob die Demand echt ist, ohne dass Pricing der Adoptions-Blocker wird.
+
+#### ToS-Eckpunkte
+
+1. Briefe dürfen nur an natürliche/juristische Personen versandt werden, die der User selbst kontaktieren würde — kein Bulk-Versand, keine Bot-Pipelines.
+2. Drittanbieter ist verpflichtet, User über die Herkunft des Brief-Textes zu informieren ("Generiert mit Brief-nach-Berlin-API").
+3. Verbot von: Hate Speech, Drohungen, Wahlbeeinflussung durch ausländische Akteure, Werbung, Spam.
+4. Wir behalten uns das Recht vor, Keys jederzeit ohne Ankündigung zu sperren.
+5. Haftungsausschluss: Briefe sind KI-generierte Drafts, finale Verantwortung beim Endnutzer.
+6. Logs (anonymisiert, ohne Brief-Inhalt) werden 30 Tage zur Missbrauchserkennung gespeichert — DSGVO-konform via Art. 6 (1) f.
+
+#### Wann macht das Sinn?
+
+**Voraussetzungen, bevor in Bau gehen:**
+
+1. **B2C-Validierung muss stehen:** Mindestens 100 Briefe von echten Nutzern, klare Conversion-Funnel-Metrics, stabile Mistral-Kosten pro Brief.
+2. **Mindestens 5 echte inbound API-Anfragen** von potenziellen Drittanbietern in den ~4 Wochen nach Lage-der-Nation-Erwähnung. Wenn keine kommen → nicht bauen, war Bauchgefühl.
+3. **Phase 999.6 (Multi-Level Politiker-Coverage) sollte vorher fertig sein** — eine API, die nur Bund liefert, wäre für 80% der realen Anliegen kaputt.
+
+**Entwicklungsaufwand-Schätzung** (wenn diese Voraussetzungen erfüllt sind): ~2 Wochen für MVP-Endpoints + Auth + Dokumentation + minimale Developer-Landing-Page (`/developers`).
+
+#### Konkrete nächste Schritte (vor Promotion zu aktiver Phase)
+
+1. **Nichts bauen.** Auf inbound Demand warten.
+2. **Demand quantifizieren:** Track in einer Notion/Sheet jede inbound Anfrage nach API/Integration → wenn 5+, ernsthaft promoten.
+3. **Falls 1-2 sehr ernsthafte Anfragen:** Manuelle Whitelabel-Integration für genau diesen Anbieter (Custom HTTP-Endpoint, ohne öffentliche API). Lernt 80% der Public-API-Lessons mit 20% des Aufwands.
+
+**Requirements:** TBD
+**Plans:** 0 plans
+
+Plans:
+- [ ] TBD (promote with /gsd:review-backlog when ready)
+
 ## Progress
 
 **Execution Order:**

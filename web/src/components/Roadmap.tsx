@@ -1,5 +1,3 @@
-import { CONTACT } from "@/lib/contact";
-
 const features = [
   {
     icon: (
@@ -58,7 +56,7 @@ export default function Roadmap() {
           Wir bauen gerade und lernen mit jedem Brief. Hier ist, worauf wir uns als nächstes konzentrieren:
         </p>
 
-        <div className="grid md:grid-cols-3 gap-8 mb-14">
+        <div className="grid md:grid-cols-3 gap-8">
           {features.map((f) => (
             <div
               key={f.label}
@@ -78,18 +76,6 @@ export default function Roadmap() {
               </div>
             </div>
           ))}
-        </div>
-
-        <div className="border-t border-waldgruen/10 pt-10 flex flex-col md:flex-row md:items-center gap-6">
-          <p className="font-body text-base text-warmgrau/80 leading-relaxed flex-1">
-            Hast du Ideen, was fehlt? Schreib mir direkt. Je mehr Menschen mitmachen und mitdenken, desto besser wird das hier.
-          </p>
-          <a
-            href={`mailto:${CONTACT.email}`}
-            className="inline-block shrink-0 font-body text-sm font-bold text-waldgruen border-2 border-waldgruen rounded-lg px-6 py-3 hover:bg-waldgruen hover:text-white transition-colors"
-          >
-            Idee mitteilen
-          </a>
         </div>
       </div>
     </section>

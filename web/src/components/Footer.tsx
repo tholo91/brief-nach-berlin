@@ -29,6 +29,12 @@ export default function Footer() {
           </span>
           <div className="flex flex-wrap gap-x-6 gap-y-2">
             <Link
+              href="/guide"
+              className="font-body text-sm text-warmgrau/70 hover:text-waldgruen-dark transition-colors duration-200"
+            >
+              Der Guide: Vom Frust zum Brief im Kasten
+            </Link>
+            <Link
               href="/treppe-der-selbstwirksamkeit"
               className="font-body text-sm text-warmgrau/70 hover:text-waldgruen-dark transition-colors duration-200"
             >

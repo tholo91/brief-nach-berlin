@@ -71,6 +71,16 @@ export default function BeispielePage() {
           <p className="mt-4 font-body text-sm text-warmgrau/60">
             Kostenlos · In 3 Minuten · Ohne Anmeldung
           </p>
+          <p className="mt-8 font-body text-sm text-warmgrau/70">
+            Unsicher, wie das genau geht? Der{" "}
+            <Link
+              href="/guide"
+              className="text-waldgruen hover:underline"
+            >
+              komplette Guide nimmt dich Schritt für Schritt mit
+            </Link>
+            .
+          </p>
         </div>
       </div>
     </div>

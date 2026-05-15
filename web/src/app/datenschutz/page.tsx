@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { CONTACT } from "@/lib/contact";
 
 export const metadata = {
   title: "Datenschutz | Brief-nach-Berlin",
@@ -35,10 +36,10 @@ export default function Datenschutz() {
               <br />
               E-Mail:{" "}
               <a
-                href="mailto:thomas_lorenz@posteo.de"
+                href={`mailto:${CONTACT.email}`}
                 className="text-waldgruen hover:underline"
               >
-                thomas_lorenz@posteo.de
+                {CONTACT.email}
               </a>
             </p>
             <p className="mt-2 text-sm">
@@ -425,10 +426,10 @@ export default function Datenschutz() {
               bei der oben genannten LDI NRW. Anfragen richten Sie bitte formlos
               per E-Mail an{" "}
               <a
-                href="mailto:thomas_lorenz@posteo.de"
+                href={`mailto:${CONTACT.email}`}
                 className="text-waldgruen hover:underline"
               >
-                thomas_lorenz@posteo.de
+                {CONTACT.email}
               </a>
               . Da wir selbst keine personenbezogenen Daten speichern, können
               Auskunfts- oder Löschanfragen, die Daten bei unseren

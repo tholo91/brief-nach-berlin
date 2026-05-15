@@ -1,7 +1,6 @@
 import Header from "@/components/Header";
 import Hero from "@/components/Hero";
-import HowItWorks from "@/components/HowItWorks";
-import LetterExample from "@/components/LetterExample";
+import HowItWorksWithExample from "@/components/HowItWorksWithExample";
 import WhyItWorks from "@/components/WhyItWorks";
 import LetterCounter from "@/components/LetterCounter";
 import Vision from "@/components/Vision";
@@ -17,8 +16,7 @@ export default function Home() {
       <Header />
       <main>
         <Hero />
-        <HowItWorks />
-        <LetterExample />
+        <HowItWorksWithExample />
         <WhyItWorks />
         <LetterCounter />
         <Vision />

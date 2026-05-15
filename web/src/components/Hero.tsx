@@ -25,7 +25,7 @@ const SUB_HEADLINES: ReadonlyArray<readonly [string, string]> = [
   ],
 ];
 
-const ROTATION_INTERVAL_MS = 6000;
+const ROTATION_INTERVAL_MS = 8000;
 
 export default function Hero() {
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -160,6 +160,12 @@ export default function Hero() {
               <path d="M3 8l4 4 6-6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
             Kein Account erforderlich
+          </span>
+          <span className="inline-flex items-center gap-1.5 text-waldgruen font-body text-sm font-semibold px-3 py-1.5">
+            <svg width="13" height="13" viewBox="0 0 16 16" fill="none" className="shrink-0">
+              <path d="M3 8l4 4 6-6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+            KI aus Europa, kein Datentracking
           </span>
         </div>
 

@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { CONTACT } from "@/lib/contact";
 
 export const metadata = {
   title: "Impressum | Brief-nach-Berlin",
@@ -40,10 +41,10 @@ export default function Impressum() {
             <p>
               E-Mail:{" "}
               <a
-                href="mailto:thomas_lorenz@posteo.de"
+                href={`mailto:${CONTACT.email}`}
                 className="text-waldgruen hover:underline"
               >
-                thomas_lorenz@posteo.de
+                {CONTACT.email}
               </a>
             </p>
           </div>

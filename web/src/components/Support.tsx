@@ -1,3 +1,5 @@
+import { CONTACT } from "@/lib/contact";
+
 export default function Support() {
   return (
     <section id="mitmachen" className="py-20 md:py-28 px-6 bg-white">
@@ -15,7 +17,7 @@ export default function Support() {
         </p>
 
         <a
-          href="mailto:thomas_lorenz@posteo.de"
+          href={`mailto:${CONTACT.email}`}
           className="inline-flex items-center gap-2 bg-waldgruen text-creme font-body font-semibold text-base px-8 py-4 rounded-xl hover:bg-waldgruen-dark transition-colors cursor-pointer shadow-lg shadow-waldgruen/20 active:scale-[0.98]"
         >
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" className="shrink-0">

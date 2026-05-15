@@ -1,3 +1,5 @@
+import { CONTACT } from "@/lib/contact";
+
 const features = [
   {
     icon: (
@@ -83,7 +85,7 @@ export default function Roadmap() {
             Hast du Ideen, was fehlt? Schreib mir direkt. Je mehr Menschen mitmachen und mitdenken, desto besser wird das hier.
           </p>
           <a
-            href="mailto:thomas@brief-nach-berlin.de"
+            href={`mailto:${CONTACT.email}`}
             className="inline-block shrink-0 font-body text-sm font-bold text-waldgruen border-2 border-waldgruen rounded-lg px-6 py-3 hover:bg-waldgruen hover:text-white transition-colors"
           >
             Idee mitteilen

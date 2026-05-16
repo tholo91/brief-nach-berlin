@@ -24,11 +24,11 @@ export const metadata: Metadata = {
   metadataBase: new URL(APP_URL),
   title: "Brief-nach-Berlin | Dein Anliegen an die Politik, in drei Minuten",
   description:
-    "Was stört dich? Wir finden die zuständigen Abgeordneten und formulieren deinen Brief, damit dein Anliegen dort ankommt, wo es hingehört.",
+    "Was stört dich? Wir finden die zuständigen Abgeordneten und formulieren deinen Brief, der wirklich ankommt. ✉️",
   openGraph: {
     title: "Brief-nach-Berlin | Dein Anliegen an die Politik, in drei Minuten",
     description:
-      "Was stört dich? Wir finden die zuständigen Abgeordneten und formulieren deinen Brief, damit dein Anliegen dort ankommt, wo es hingehört.",
+      "Was stört dich? Wir finden die zuständigen Abgeordneten und formulieren deinen Brief, der wirklich ankommt. ✉️",
     type: "website",
     locale: "de_DE",
     url: APP_URL,
@@ -37,7 +37,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Brief-nach-Berlin | Dein Anliegen an die Politik, in drei Minuten",
     description:
-      "Was stört dich? Wir finden die zuständigen Abgeordneten und formulieren deinen Brief, damit dein Anliegen dort ankommt, wo es hingehört.",
+      "Was stört dich? Wir finden die zuständigen Abgeordneten und formulieren deinen Brief, der wirklich ankommt. ✉️",
   },
 };
 

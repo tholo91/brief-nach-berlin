@@ -343,7 +343,7 @@ export default function GuidePage() {
           du lassen kannst, was niemand vorher sagt.
         </p>
 
-        <div className="font-body text-warmgrau leading-relaxed space-y-3 mb-14 text-base md:text-lg">
+        <div className="font-body text-warmgrau leading-relaxed space-y-3 mb-10 text-base md:text-lg">
           <p>
             Die meisten Menschen schreiben nie an ihre Abgeordneten. Nicht, weil
             sie nichts zu sagen hätten, sondern weil niemand ihnen je erklärt
@@ -357,11 +357,48 @@ export default function GuidePage() {
           </p>
         </div>
 
+        <nav
+          aria-label="Inhaltsverzeichnis"
+          className="mb-14 p-5 md:p-6 bg-waldgruen/[0.04] border border-waldgruen/15 rounded-xl"
+        >
+          <p className="font-typewriter text-xs font-bold tracking-widest uppercase text-waldgruen/60 mb-3">
+            Springe zu
+          </p>
+          <ol className="font-body text-base text-warmgrau space-y-1.5">
+            {steps.map((step) => (
+              <li key={step.n} className="flex gap-3">
+                <span
+                  aria-hidden
+                  className="font-typewriter text-sm font-bold text-waldgruen/70 tabular-nums w-5 shrink-0 pt-0.5"
+                >
+                  {step.n}.
+                </span>
+                <a
+                  href={`#schritt-${step.n}`}
+                  className="text-waldgruen-dark hover:text-waldgruen hover:underline underline-offset-4 decoration-waldgruen/40"
+                >
+                  {step.title}
+                </a>
+              </li>
+            ))}
+            <li className="flex gap-3 pt-2 mt-2 border-t border-waldgruen/15">
+              <span aria-hidden className="w-5 shrink-0" />
+              <a
+                href="#faq"
+                className="text-waldgruen-dark hover:text-waldgruen hover:underline underline-offset-4 decoration-waldgruen/40"
+              >
+                Fragen, die jetzt noch übrig sind
+              </a>
+            </li>
+          </ol>
+        </nav>
+
         <ol className="space-y-12">
           {steps.map((step) => (
             <li
               key={step.n}
-              className="border-l-2 border-waldgruen/20 pl-6 relative"
+              id={`schritt-${step.n}`}
+              className="border-l-2 border-waldgruen/20 pl-6 relative scroll-mt-8"
             >
               <span
                 aria-hidden
@@ -382,7 +419,7 @@ export default function GuidePage() {
           ))}
         </ol>
 
-        <section className="mt-20">
+        <section id="faq" className="mt-20 scroll-mt-8">
           <p className="font-typewriter text-sm font-bold tracking-widest uppercase text-waldgruen/60 mb-3">
             Kleingedrucktes
           </p>

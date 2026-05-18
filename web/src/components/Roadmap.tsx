@@ -7,15 +7,15 @@ export default function Roadmap() {
         <p className="font-typewriter text-sm font-bold tracking-widest uppercase text-waldgruen/50 mb-3">
           Wo wir hinwollen
         </p>
-        <h2 className="font-body text-3xl md:text-4xl font-bold text-waldgruen-dark tracking-tight mb-4 max-w-xl">
+        <h2 className="font-body text-3xl md:text-4xl font-bold text-waldgruen-dark tracking-tight mb-4 md:max-w-none max-w-xl">
           Brief nach Berlin wird mit euch immer besser
         </h2>
         <p className="font-body text-base md:text-lg text-warmgrau/80 leading-relaxed mb-14 max-w-2xl">
           Wir bauen gerade und lernen mit jedem Brief. Hier ist, worauf wir uns als nächstes konzentrieren:
         </p>
 
-        <div className="grid md:grid-cols-2 gap-8">
-          <div className="bg-white rounded-xl border border-waldgruen/10 p-7 flex flex-col gap-4">
+        <div className="grid md:grid-cols-3 gap-8">
+          <div className="bg-white rounded-xl border border-waldgruen/10 p-7 flex flex-col gap-4 md:col-span-1">
             <div>
               <svg width="36" height="36" viewBox="0 0 36 36" fill="none" className="text-waldgruen">
                 <line x1="13" y1="10" x2="23" y2="10" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
@@ -42,7 +42,7 @@ export default function Roadmap() {
 
           <div
             id="mitmachen"
-            className="bg-white rounded-xl border border-waldgruen/10 p-7 md:p-10 flex flex-col gap-5"
+            className="bg-white rounded-xl border border-waldgruen/10 p-7 md:p-10 flex flex-col gap-5 md:col-span-2"
           >
             <div>
               <svg width="36" height="36" viewBox="0 0 36 36" fill="none" className="text-waldgruen">

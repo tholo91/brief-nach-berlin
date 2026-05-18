@@ -10,6 +10,7 @@ import { buildDebugPayload } from "@/lib/email/buildDebugPayload";
 import { checkRateLimit, LIMITS } from "@/lib/rateLimit";
 import { DEFAULT_LETTER_LENGTH } from "@/lib/config";
 import { MistralProviderUnavailableError } from "@/lib/mistral";
+import { incrementLetterCount } from "@/lib/counter";
 
 export const maxDuration = 60;
 
@@ -108,8 +109,9 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Send email fire-and-forget
+    // Send email + increment counter fire-and-forget
     after(async () => {
+      await incrementLetterCount();
       await sendLetterEmail({
         recipientEmail: data.email,
         politicianName: `${result.selectedPolitician.firstName} ${result.selectedPolitician.lastName}`,

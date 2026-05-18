@@ -1,7 +1,9 @@
 import Link from "next/link";
 import { FOUNDER_FEEDBACK_URL } from "@/lib/config";
+import { getLetterCount } from "@/lib/counter";
 
-export default function Footer() {
+export default async function Footer() {
+  const letterCount = await getLetterCount();
   return (
     <footer className="bg-creme">
       {/* Airmail stripe */}
@@ -70,6 +72,9 @@ export default function Footer() {
         <div className="border-t border-warmgrau/10 pt-6 flex flex-col sm:flex-row items-center justify-between gap-4">
           <span className="font-typewriter text-sm text-warmgrau/40">
             Brief-nach-Berlin &copy; {new Date().getFullYear()}
+            {letterCount > 0 && (
+              <span className="ml-4">{letterCount} Briefe</span>
+            )}
           </span>
 
           <div className="flex gap-6">

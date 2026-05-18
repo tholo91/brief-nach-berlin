@@ -1,3 +1,4 @@
+import { unstable_noStore as noStore } from "next/cache";
 import { supabase } from "@/lib/supabase";
 
 export async function incrementLetterCount(): Promise<void> {
@@ -6,6 +7,7 @@ export async function incrementLetterCount(): Promise<void> {
 }
 
 export async function getLetterCount(): Promise<number> {
+  noStore();
   const { data, error } = await supabase
     .from("counters")
     .select("value")

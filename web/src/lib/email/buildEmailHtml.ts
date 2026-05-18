@@ -141,7 +141,7 @@ export function buildEmailHtml(data: SendLetterEmailParams): string {
                 <tr>
                   <td colspan="7" style="padding:0 32px 20px;background-color:#ffffff;">
                     <p style="margin:0 0 8px;font-family:Georgia,'Times New Roman',serif;font-size:15px;color:#333333;font-weight:bold;">Unsere Empfehlung: Brief von Hand abschreiben</p>
-                    <p style="margin:0;font-family:Georgia,'Times New Roman',serif;font-size:14px;color:#4A4A4A;line-height:1.6;">Handgeschriebene Briefe werden im Bundestag tatsächlich gelesen und besprochen. Sie signalisieren echtes persönliches Engagement und werden nicht wie Massenpost behandelt. Die Handschrift macht deinen Brief unverwechselbar persönlich.</p>
+                    <p style="margin:0;font-family:Georgia,'Times New Roman',serif;font-size:14px;color:#4A4A4A;line-height:1.6;">Handgeschriebene Briefe werden im Bundestag tatsächlich gelesen und besprochen. Sie signalisieren echtes persönliches Engagement und werden nicht wie Massenpost behandelt.</p>
                   </td>
                 </tr>
 
@@ -223,7 +223,7 @@ export function buildEmailHtml(data: SendLetterEmailParams): string {
                       <h2 style="margin:0 0 8px;font-family:Georgia,'Times New Roman',serif;font-size:16px;color:#2D5016;font-weight:bold;">Gemeinsam noch lauter</h2>
                       <p style="margin:0 0 14px;font-family:Georgia,'Times New Roman',serif;font-size:14px;color:#4A4A4A;line-height:1.6;">
                         Dein Brief wirkt. Und er wirkt noch stärker, wenn weitere Stimmen aus deinem Wahlkreis dazukommen. Briefe aus derselben Gegend zum gleichen Thema bekommen im Bundestag besonderes Gewicht.<br><br>
-                        Wer regt sich noch gerne über die Zustände auf? Teile Brief-nach-Berlin per…
+                        Wer regt sich gerne über die Zustände auf? Teile Brief-nach-Berlin per…
                       </p>
                       <table role="presentation" cellpadding="0" cellspacing="0" width="100%">
                         <tr>

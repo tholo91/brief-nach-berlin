@@ -34,6 +34,7 @@ function format(payload: LetterDebugPayload | { error: string }): string {
     `Fallback used         ${d.fallbackUsed}`,
     `Length retry fired    ${d.retried}`,
     `Sender hints          name=${d.hasName} party=${d.hasParty} ngo=${d.hasNgo}`,
+    `Voice input           ${d.usedSpeechToText}`,
     `Model                 ${d.model}`,
     `Temperature           ${d.temperature}`,
     `Generation            ${d.generationMs} ms`,

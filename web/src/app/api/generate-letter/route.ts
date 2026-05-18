@@ -116,6 +116,7 @@ export async function POST(req: NextRequest) {
         politicianFirstName: result.selectedPolitician.firstName,
         politicianLastName: result.selectedPolitician.lastName,
         politicianTitle: result.selectedPolitician.title,
+        politicianParty: result.selectedPolitician.party,
         politicianPostalAddress: result.selectedPolitician.postalAddress,
         politicianAbgeordnetenwatchUrl: result.selectedPolitician.abgeordnetenwatchUrl,
         letterText: result.letter,

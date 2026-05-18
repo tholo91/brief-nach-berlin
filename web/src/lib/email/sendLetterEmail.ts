@@ -44,6 +44,7 @@ export interface SendLetterEmailParams {
   politicianFirstName: string;
   politicianLastName: string;
   politicianTitle: string | null;
+  politicianParty: string;
   politicianPostalAddress: string;
   politicianAbgeordnetenwatchUrl: string | null;
   letterText: string;

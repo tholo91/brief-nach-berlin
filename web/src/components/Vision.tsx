@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Link from "next/link";
 
 export default function Vision() {
   return (
@@ -43,6 +44,16 @@ export default function Vision() {
               <span className="text-waldgruen-dark font-semibold">
                 Brief-nach-Berlin nimmt diese beiden Hürden weg.
               </span>
+            </p>
+            <p className="font-body text-sm md:text-base text-warmgrau/80 pt-2">
+              Die Idee brachte mir meine Mutter in Duisburg.{" "}
+              <Link
+                href="/warum"
+                className="text-waldgruen hover:text-waldgruen-dark underline decoration-waldgruen/40 underline-offset-4 hover:decoration-waldgruen transition-colors"
+              >
+                Die ganze Geschichte dahinter
+              </Link>
+              .
             </p>
           </div>
         </div>

@@ -39,6 +39,7 @@ export function buildEmailHtml(data: SendLetterEmailParams): string {
   const fullName = data.politicianTitle
     ? `${escapeHtml(data.politicianTitle)} ${escapeHtml(data.politicianName)}`
     : escapeHtml(data.politicianName);
+  const party = escapeHtml(data.politicianParty);
 
   // Format postal address: split on comma, one part per line
   const addressLines = data.politicianPostalAddress
@@ -125,14 +126,20 @@ export function buildEmailHtml(data: SendLetterEmailParams): string {
                   <td colspan="7" style="padding:16px 32px 24px;background-color:#ffffff;">
                     <h2 style="margin:0 0 12px;font-family:Georgia,'Times New Roman',serif;font-size:16px;color:#2D5016;font-weight:bold;">Adresse</h2>
                     <div style="background-color:#FAF8F5;border:1px solid #E0DCD7;border-radius:4px;padding:16px 20px;">
-                      <p style="margin:0 0 10px;font-family:'Courier New',Courier,monospace;font-size:14px;line-height:1.8;color:#4A4A4A;">
-                        <strong>${fullName}, MdB</strong><br>
-                        Deutscher Bundestag<br>
-                        ${addressLines}
-                      </p>
-                      <p style="margin:0;padding-top:10px;border-top:1px solid #E0DCD7;font-family:Georgia,'Times New Roman',serif;font-size:13px;line-height:1.5;">
-                        <a href="${profileUrl}" target="_blank" rel="noopener noreferrer" style="color:#2D5016;text-decoration:none;font-weight:bold;">Profil auf abgeordnetenwatch ansehen <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-1px;display:inline-block;"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg></a>
-                      </p>
+                      <table role="presentation" cellpadding="0" cellspacing="0" width="100%">
+                        <tr>
+                          <td style="vertical-align:top;padding-right:16px;width:60%;">
+                            <p style="margin:0;font-family:'Courier New',Courier,monospace;font-size:14px;line-height:1.8;color:#4A4A4A;">
+                              <strong>${fullName}, MdB (${party})</strong><br>
+                              Deutscher Bundestag<br>
+                              ${addressLines}
+                            </p>
+                          </td>
+                          <td style="vertical-align:middle;text-align:center;padding-left:16px;border-left:1px solid #E0DCD7;width:40%;">
+                            <a href="${profileUrl}" target="_blank" rel="noopener noreferrer" style="display:inline-block;background-color:#2D5016;color:#ffffff;font-family:Georgia,'Times New Roman',serif;font-size:12px;font-weight:bold;text-decoration:none;padding:10px 14px;border-radius:4px;line-height:1.5;text-align:center;">Profil auf<br>abgeordnetenwatch</a>
+                          </td>
+                        </tr>
+                      </table>
                     </div>
                   </td>
                 </tr>
@@ -185,17 +192,26 @@ export function buildEmailHtml(data: SendLetterEmailParams): string {
                   </td>
                 </tr>
 
+                <!-- Schreibtipps link — placed right after the steps so it hits when the user is thinking about writing -->
+                <tr>
+                  <td colspan="7" style="padding:0 32px 20px;background-color:#ffffff;">
+                    <p style="margin:0;font-family:Georgia,'Times New Roman',serif;font-size:13px;color:#888888;">
+                      Wie schreibt man den Brief am besten ab? <a href="${APP_URL}/tipps" style="color:#2D5016;text-decoration:underline;">Tipps für den perfekten Brief</a>
+                    </p>
+                  </td>
+                </tr>
+
                 <!-- Personal sign-off from Thomas (handwritten Caveat) -->
                 <tr>
                   <td colspan="7" style="padding:8px 32px 16px;background-color:#ffffff;text-align:left;">
                     <p style="margin:0 0 20px;font-family:Georgia,'Times New Roman',serif;font-size:14px;color:#4A4A4A;line-height:1.6;">
-                      Toll, dass du dir die Zeit für unsere Demokratie nimmst. Melde dich super gerne bei Fragen oder weiteren Anregungen. Beste Grüße aus Bremen ✌️
+                      Toll, dass du dir die Zeit für unsere Demokratie nimmst. Melde dich super gerne bei <a href="https://www.heyspeak.io/l/WIOENjqJn6z6WKtkWgDEFg" target="_blank" rel="noopener noreferrer" style="color:#2D5016;text-decoration:underline;">Fragen oder weiteren Anregungen</a>. Beste Grüße aus Bremen ✌️
                     </p>
                     <p style="margin:0;font-family:'Caveat','Brush Script MT','Lucida Handwriting',cursive;font-size:32px;color:#1D3557;line-height:1.1;">
                       Thomas
                     </p>
                     <p style="margin:6px 0 0;font-family:Georgia,'Times New Roman',serif;font-size:12px;color:#bcbcbc;line-height:1.5;">
-                      Eine Initiative von <a href="${FOUNDER_HOMEPAGE}" target="_blank" rel="noopener noreferrer" style="color:#bcbcbc;text-decoration:underline;">www.thomas-lorenz.eu</a>
+                      Eine Initiative von <a href="${FOUNDER_HOMEPAGE}" target="_blank" rel="noopener noreferrer" style="color:#bcbcbc;text-decoration:underline;">www.thomas-lorenz.eu</a> · <a href="${APP_URL}/warum" target="_blank" rel="noopener noreferrer" style="color:#bcbcbc;text-decoration:underline;">Die Geschichte hinter Brief nach Berlin</a>
                     </p>
                   </td>
                 </tr>

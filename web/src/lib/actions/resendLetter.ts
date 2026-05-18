@@ -94,6 +94,7 @@ export async function resendLetterAction(
       politicianFirstName: politician.firstName,
       politicianLastName: politician.lastName,
       politicianTitle: politician.title,
+      politicianParty: politician.party,
       politicianPostalAddress: politician.postalAddress,
       politicianAbgeordnetenwatchUrl: politician.abgeordnetenwatchUrl,
       letterText: cachedLetterText,

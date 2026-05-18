@@ -42,7 +42,7 @@ export default function Vision() {
               Die meisten Leute wissen nur nicht, an wen sie schreiben sollen.
               Oder wie sie ihr Anliegen so formulieren, dass es ankommt.{" "}
               <span className="text-waldgruen-dark font-semibold">
-                Brief-nach-Berlin nimmt diese beiden Hürden weg.
+                Brief-nach-Berlin nimmt dir diese Hürden.
               </span>
             </p>
             <p className="font-body text-sm md:text-base text-warmgrau/80 pt-2">

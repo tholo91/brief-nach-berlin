@@ -52,6 +52,18 @@ export default function Footer() {
             >
               Wer dahintersteht
             </Link>
+            <Link
+              href="/andere-tools"
+              className="font-body text-sm text-warmgrau/70 hover:text-waldgruen-dark transition-colors duration-200"
+            >
+              Andere Tools für Demokratie
+            </Link>
+            <Link
+              href="/lage-der-nation"
+              className="font-body text-sm text-warmgrau/70 hover:text-waldgruen-dark transition-colors duration-200"
+            >
+              Erwähnt in der Lage der Nation
+            </Link>
           </div>
         </div>
 

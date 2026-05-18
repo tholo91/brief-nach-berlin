@@ -148,7 +148,7 @@ export function buildEmailHtml(data: SendLetterEmailParams): string {
                 <tr>
                   <td colspan="7" style="padding:0 32px 20px;background-color:#ffffff;">
                     <p style="margin:0 0 8px;font-family:Georgia,'Times New Roman',serif;font-size:15px;color:#333333;font-weight:bold;">Unsere Empfehlung: Brief von Hand abschreiben</p>
-                    <p style="margin:0;font-family:Georgia,'Times New Roman',serif;font-size:14px;color:#4A4A4A;line-height:1.6;">Handgeschriebene Briefe werden im Bundestag tatsächlich gelesen und besprochen. Sie signalisieren echtes persönliches Engagement und werden nicht wie Massenpost behandelt.</p>
+                    <p style="margin:0;font-family:Georgia,'Times New Roman',serif;font-size:14px;color:#4A4A4A;line-height:1.6;">Handgeschriebene Briefe werden im Bundestag tatsächlich gelesen und besprochen. Sie signalisieren echtes persönliches Engagement und werden nicht wie Massenpost behandelt. &rarr; <a href="${APP_URL}/tipps" style="color:#2D5016;text-decoration:underline;">Tipps für den perfekten Brief</a></p>
                   </td>
                 </tr>
 
@@ -192,14 +192,6 @@ export function buildEmailHtml(data: SendLetterEmailParams): string {
                   </td>
                 </tr>
 
-                <!-- Schreibtipps link — placed right after the steps so it hits when the user is thinking about writing -->
-                <tr>
-                  <td colspan="7" style="padding:0 32px 20px;background-color:#ffffff;">
-                    <p style="margin:0;font-family:Georgia,'Times New Roman',serif;font-size:13px;color:#888888;">
-                      Wie schreibt man den Brief am besten ab? <a href="${APP_URL}/tipps" style="color:#2D5016;text-decoration:underline;">Tipps für den perfekten Brief</a>
-                    </p>
-                  </td>
-                </tr>
 
                 <!-- Personal sign-off from Thomas (handwritten Caveat) -->
                 <tr>
@@ -211,7 +203,7 @@ export function buildEmailHtml(data: SendLetterEmailParams): string {
                       Thomas
                     </p>
                     <p style="margin:6px 0 0;font-family:Georgia,'Times New Roman',serif;font-size:12px;color:#bcbcbc;line-height:1.5;">
-                      Eine Initiative von <a href="${FOUNDER_HOMEPAGE}" target="_blank" rel="noopener noreferrer" style="color:#bcbcbc;text-decoration:underline;">www.thomas-lorenz.eu</a> · <a href="${APP_URL}/warum" target="_blank" rel="noopener noreferrer" style="color:#bcbcbc;text-decoration:underline;">Die Geschichte hinter Brief nach Berlin</a>
+                      Eine Initiative von <a href="${FOUNDER_HOMEPAGE}" target="_blank" rel="noopener noreferrer" style="color:#bcbcbc;text-decoration:underline;">www.thomas-lorenz.eu</a> · <a href="${APP_URL}/aktiv-werden" target="_blank" rel="noopener noreferrer" style="color:#bcbcbc;text-decoration:underline;">Was du sonst noch tun kannst</a>
                     </p>
                   </td>
                 </tr>
@@ -225,7 +217,7 @@ export function buildEmailHtml(data: SendLetterEmailParams): string {
                           <a href="${regenerateUrl}" style="display:block;text-align:center;background-color:#2D5016;color:#ffffff;font-family:Georgia,'Times New Roman',serif;font-size:14px;font-weight:bold;text-decoration:none;padding:12px 16px;border-radius:6px;border:2px solid #2D5016;">Neuen Brief schreiben</a>
                         </td>
                         <td style="padding-left:6px;width:50%;" valign="top">
-                          <a href="${FOUNDER_FEEDBACK_URL}" target="_blank" rel="noopener noreferrer" style="display:block;text-align:center;background-color:#ffffff;color:#2D5016;font-family:Georgia,'Times New Roman',serif;font-size:14px;font-weight:bold;text-decoration:none;padding:12px 16px;border-radius:6px;border:2px solid #2D5016;">Feedback &amp; Anregungen</a>
+                          <a href="${FOUNDER_FEEDBACK_URL}" target="_blank" rel="noopener noreferrer" style="display:block;text-align:center;background-color:#ffffff;color:#2D5016;font-family:Georgia,'Times New Roman',serif;font-size:14px;font-weight:bold;text-decoration:none;padding:12px 16px;border-radius:6px;border:2px solid #2D5016;">Feedback geben</a>
                         </td>
                       </tr>
                     </table>
@@ -276,13 +268,10 @@ export function buildEmailHtml(data: SendLetterEmailParams): string {
                 <tr>
                   <td colspan="7" style="padding:8px 32px 24px;background-color:#FAF8F5;text-align:center;">
                     <p style="margin:0 0 6px;font-family:Georgia,'Times New Roman',serif;font-size:11px;color:#aaaaaa;line-height:1.5;">
-                      <strong>Hinweis:</strong> Dieser Brief ist ein generierter Entwurf, keine Meinungsäußerung von Brief nach Berlin. Wir empfehlen, ihn an deinen eigenen Stil und deine persönliche Haltung anzupassen, bevor du ihn verschickst. Die Verantwortung für den Inhalt liegt bei dir.
-                    </p>
-                    <p style="margin:0 0 6px;font-family:Georgia,'Times New Roman',serif;font-size:11px;color:#aaaaaa;line-height:1.5;">
-                      Bitte prüfe Politikerdaten und Brieftext vor dem Versand anhand offizieller Quellen (<a href="${profileUrl}" target="_blank" rel="noopener noreferrer" style="color:#888888;">abgeordnetenwatch.de</a>, <a href="https://www.bundestag.de" style="color:#888888;">bundestag.de</a>, Landtags- oder Rathauswebsite).
+                      <strong>Hinweis:</strong> Der Brief ist ein generierter Entwurf. Bitte passe ihn an und prüfe Politikerdaten vor dem Versand bei <a href="${profileUrl}" target="_blank" rel="noopener noreferrer" style="color:#888888;">abgeordnetenwatch.de</a>. Die Verantwortung für den Inhalt liegt bei dir.
                     </p>
                     <p style="margin:0;font-family:Georgia,'Times New Roman',serif;font-size:11px;color:#aaaaaa;line-height:1.5;">
-                      <a href="${APP_URL}/datenschutz" style="color:#888888;">Datenschutzerklärung</a>: deine Daten werden nach Versand dieser E-Mail nicht gespeichert.${data.debug ? ` · <a href="${buildDebugUrl(data.debug)}" style="color:#888888;text-decoration:none;">Debug</a>` : ""}
+                      <a href="${APP_URL}/datenschutz" style="color:#888888;">Datenschutz</a>: deine Daten werden nach Versand nicht gespeichert.${data.debug ? ` · <a href="${buildDebugUrl(data.debug)}" style="color:#888888;text-decoration:none;">Debug</a>` : ""}
                     </p>
                   </td>
                 </tr>

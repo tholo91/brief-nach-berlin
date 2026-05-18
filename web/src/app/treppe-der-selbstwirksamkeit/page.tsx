@@ -251,7 +251,8 @@ export default function TreppePage() {
           {steps.map((step) => (
             <li
               key={step.n}
-              className="border-l-2 border-waldgruen/20 pl-6 relative"
+              id={`stufe-${step.n}`}
+              className="border-l-2 border-waldgruen/20 pl-6 relative scroll-mt-24"
             >
               <span
                 aria-hidden

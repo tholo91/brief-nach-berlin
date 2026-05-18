@@ -100,11 +100,11 @@ export default function Hero() {
         </div>
 
         <h1 className="font-body text-4xl md:text-5xl font-bold text-waldgruen-dark leading-[1.1] tracking-tight mb-6 text-balance">
-          <span className="md:hidden">Dein Anliegen.</span>
-          <span className="hidden md:inline relative whitespace-nowrap">
+          <span className="sm:hidden">Dein Anliegen.</span>
+          <span className="hidden sm:inline relative whitespace-nowrap">
             Dein persönliches Anliegen.
             <LdNSticker
-              className="hidden md:block absolute top-1/2 left-full z-20"
+              className="hidden sm:block absolute top-1/2 left-full z-20"
               style={{
                 transform: "translate(-28%, calc(-52% + 0px)) rotate(8deg)",
                 filter: "drop-shadow(0 5px 16px rgba(0,0,0,0.22))",
@@ -183,7 +183,7 @@ export default function Hero() {
 
       {/* LdN Sticker - mobile: oben rechts auf dem Hero */}
       <LdNSticker
-        className="md:hidden absolute top-4 right-3 z-20"
+        className="sm:hidden absolute top-4 right-3 z-20"
         style={{ transform: "rotate(8deg)", filter: "drop-shadow(0 5px 16px rgba(0,0,0,0.22))" }}
         width={100}
         height={62}
@@ -192,7 +192,7 @@ export default function Hero() {
   );
 }
 
-function LdNSticker({ className, style, width = 170, height = 105 }: { className?: string; style?: React.CSSProperties; width?: number; height?: number }) {
+function LdNSticker({ className, style, width = 136, height = 84 }: { className?: string; style?: React.CSSProperties; width?: number; height?: number }) {
   return (
     <span className={`inline-block ${className ?? ""}`} style={style}>
       <a
@@ -219,9 +219,9 @@ function LdNSticker({ className, style, width = 170, height = 105 }: { className
           <path d="M365.4727,133.8115v66.5h-10.3v-66.5Zm-2,0h9.6l25.6,49.7q1.6992,3.501,3.7,8.05a74.1516,74.1516,0,0,1,2.9,7.45l.4,1.3h-9.8l-25.6-49.5Q364.7718,140.0112,363.4727,133.8115Zm50.2,0v66.5h-10.3v-66.5Z" fill="#fff" />
         </svg>
         <span className="block bg-white rounded-lg px-3 py-1 mt-0.5 text-center leading-tight whitespace-nowrap">
-          <span className="block font-body text-xs font-semibold text-warmgrau/80">Bekannt aus dem beliebten</span>
-          <span className="block font-body text-xs font-semibold text-warmgrau/80">Politik-Podcast</span>
-          <span className="block font-body text-[10px] text-warmgrau/40 mt-0.5">Folge 478 (14.05.26)</span>
+          <span className="block font-body text-[10px] lg:text-xs font-semibold text-warmgrau/80 tracking-wide">Bekannt aus dem beliebten</span>
+          <span className="block font-body text-[10px] lg:text-xs font-semibold text-warmgrau/80 tracking-wide">Politik-Podcast</span>
+          <span className="block font-body text-[9px] lg:text-[10px] text-warmgrau/40 mt-0.5 tracking-wide">Folge 478 (14.05.26)</span>
         </span>
       </a>
     </span>

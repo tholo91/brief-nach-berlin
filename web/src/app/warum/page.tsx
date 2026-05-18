@@ -51,6 +51,84 @@ export default function WarumPage() {
 
         <article className="font-body text-warmgrau leading-[1.85] space-y-7 text-base md:text-lg">
           <h2 className="font-body text-2xl font-bold text-waldgruen-dark pt-4">
+            Wer dahintersteht
+          </h2>
+
+          <div className="not-prose flex flex-col sm:flex-row gap-6 items-start sm:items-center my-6">
+            <div className="shrink-0">
+              <Image
+                src="/images/thomas-portrait.webp"
+                alt="Thomas Lorenz, der hinter Brief-nach-Berlin steht"
+                width={400}
+                height={360}
+                className="w-[200px] h-auto rounded-2xl border-4 border-creme shadow-lg shadow-waldgruen/20"
+              />
+            </div>
+            <div className="font-body text-warmgrau leading-relaxed text-base md:text-lg">
+              <p className="font-body text-lg font-bold text-waldgruen-dark mb-1">
+                Thomas Lorenz
+              </p>
+              <p className="font-typewriter text-sm text-waldgruen/70 mb-2">
+                Indie Builder, Bremen
+              </p>
+              <p className="mb-4">
+                Geboren in Duisburg, gelandet in Bremen. Politikwissenschaft
+                studiert in Lissabon, Leipzig und Bologna. Seitdem baue ich
+                Tools, die gute Initiativen voranbringen und Spaß machen
+                sollen.
+              </p>
+              <div className="flex flex-wrap gap-2">
+                <a
+                  href={FOUNDER_LINKEDIN}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 bg-waldgruen text-creme font-body text-sm font-semibold px-4 py-2 rounded-lg hover:bg-waldgruen-dark transition-colors"
+                >
+                  <svg
+                    width="16"
+                    height="16"
+                    viewBox="0 0 24 24"
+                    fill="currentColor"
+                    aria-hidden="true"
+                  >
+                    <path d="M20.45 20.45h-3.55v-5.57c0-1.33-.02-3.04-1.85-3.04-1.85 0-2.13 1.45-2.13 2.94v5.67H9.36V9h3.41v1.56h.05c.47-.9 1.64-1.85 3.37-1.85 3.6 0 4.27 2.37 4.27 5.46v6.28zM5.34 7.43a2.06 2.06 0 1 1 0-4.12 2.06 2.06 0 0 1 0 4.12zM7.12 20.45H3.56V9h3.56v11.45zM22.23 0H1.77C.79 0 0 .77 0 1.72v20.56C0 23.23.79 24 1.77 24h20.45c.98 0 1.78-.77 1.78-1.72V1.72C24 .77 23.21 0 22.23 0z" />
+                  </svg>
+                  LinkedIn
+                </a>
+                <a
+                  href={FOUNDER_FEEDBACK_URL}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 bg-creme border-2 border-waldgruen text-waldgruen font-body text-sm font-semibold px-4 py-2 rounded-lg hover:bg-waldgruen/5 transition-colors"
+                >
+                  <svg
+                    width="16"
+                    height="16"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    aria-hidden="true"
+                  >
+                    <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z" />
+                  </svg>
+                  Kontakt
+                </a>
+              </div>
+            </div>
+          </div>
+
+          <p>
+            Ich arbeite mit einem Tech-for-Good-Ansatz. Das heißt: Nicht alles,
+            was technisch geht, sollte auch gebaut werden. Aber wenn Technik
+            eine Hürde senken kann, die sonst Leute davon abhält, etwas
+            Sinnvolles zu tun, dann ist das genau der Punkt, an dem es sich
+            lohnt. Brief-nach-Berlin ist so ein Punkt.
+          </p>
+
+          <h2 className="font-body text-2xl font-bold text-waldgruen-dark pt-4">
             Frust ohne Adresse
           </h2>
           <p>
@@ -152,86 +230,6 @@ export default function WarumPage() {
               so verbreitet sich das hier.
             </p>
           </div>
-
-          <h2 className="font-body text-2xl font-bold text-waldgruen-dark pt-4">
-            Wer dahintersteht
-          </h2>
-
-          <div className="not-prose flex flex-col sm:flex-row gap-6 items-start sm:items-center my-6">
-            <div className="shrink-0">
-              <Image
-                src="/images/thomas-portrait.webp"
-                alt="Thomas Lorenz, der hinter Brief-nach-Berlin steht"
-                width={400}
-                height={360}
-                className="w-[200px] h-auto rounded-2xl border-4 border-creme shadow-lg shadow-waldgruen/20"
-              />
-            </div>
-            <div className="font-body text-warmgrau leading-relaxed text-base md:text-lg">
-              <p className="font-body text-lg font-bold text-waldgruen-dark mb-1">
-                Thomas Lorenz
-              </p>
-              <p className="font-typewriter text-sm text-waldgruen/70 mb-2">
-                Indie Builder, Bremen
-              </p>
-              <p className="mb-4">
-                Geboren in Duisburg, gelandet in Bremen. Politikwissenschaft
-                studiert in Lissabon, Leipzig und Bologna. Seitdem baue ich
-                Tools, die gute Initiativen voranbringen und Spaß machen
-                sollen.
-              </p>
-              <div className="flex flex-wrap gap-2">
-                <a
-                  href={FOUNDER_LINKEDIN}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 bg-waldgruen text-creme font-body text-sm font-semibold px-4 py-2 rounded-lg hover:bg-waldgruen-dark transition-colors"
-                >
-                  <svg
-                    width="16"
-                    height="16"
-                    viewBox="0 0 24 24"
-                    fill="currentColor"
-                    aria-hidden="true"
-                  >
-                    <path d="M20.45 20.45h-3.55v-5.57c0-1.33-.02-3.04-1.85-3.04-1.85 0-2.13 1.45-2.13 2.94v5.67H9.36V9h3.41v1.56h.05c.47-.9 1.64-1.85 3.37-1.85 3.6 0 4.27 2.37 4.27 5.46v6.28zM5.34 7.43a2.06 2.06 0 1 1 0-4.12 2.06 2.06 0 0 1 0 4.12zM7.12 20.45H3.56V9h3.56v11.45zM22.23 0H1.77C.79 0 0 .77 0 1.72v20.56C0 23.23.79 24 1.77 24h20.45c.98 0 1.78-.77 1.78-1.72V1.72C24 .77 23.21 0 22.23 0z" />
-                  </svg>
-                  LinkedIn
-                </a>
-                <a
-                  href={FOUNDER_FEEDBACK_URL}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 bg-creme border-2 border-waldgruen text-waldgruen font-body text-sm font-semibold px-4 py-2 rounded-lg hover:bg-waldgruen/5 transition-colors"
-                >
-                  <svg
-                    width="16"
-                    height="16"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    aria-hidden="true"
-                  >
-                    <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z" />
-                  </svg>
-                  Kontakt
-                </a>
-              </div>
-            </div>
-          </div>
-
-          <p>
-            Ich arbeite mit einem Tech-for-Good-Ansatz. Das heißt: Nicht alles,
-            was technisch geht, sollte auch gebaut werden. Aber wenn Technik
-            eine Hürde senken kann, die sonst Leute davon abhält, etwas
-            Sinnvolles zu tun, dann ist das genau der Punkt, an dem es sich
-            lohnt. Brief-nach-Berlin ist so ein Punkt. Es ersetzt kein
-            politisches Engagement. Es ersetzt nur die Stunde Recherche, die
-            zwischen meiner Mutter und ihrem ersten Brief gestanden hat.
-          </p>
 
           <h2 className="font-body text-2xl font-bold text-waldgruen-dark pt-4">
             Warum ich das aus eigener Tasche bezahle

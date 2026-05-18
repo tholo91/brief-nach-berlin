@@ -27,7 +27,7 @@ export default function Footer() {
           <span className="font-typewriter text-sm font-bold tracking-widest uppercase text-waldgruen/50">
             Mehr lesen
           </span>
-          <div className="flex flex-wrap gap-x-6 gap-y-2">
+          <div className="flex flex-col sm:flex-row sm:flex-wrap gap-x-6 gap-y-2">
             <Link
               href="/guide"
               className="font-body text-sm text-warmgrau/70 hover:text-waldgruen-dark transition-colors duration-200"

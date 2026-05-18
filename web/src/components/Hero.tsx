@@ -106,7 +106,7 @@ export default function Hero() {
             <LdNSticker
               className="hidden md:block absolute top-1/2 left-full z-20"
               style={{
-                transform: "translate(-28%, calc(-52% + 20px)) rotate(8deg)",
+                transform: "translate(-28%, calc(-52% + 0px)) rotate(8deg)",
                 filter: "drop-shadow(0 5px 16px rgba(0,0,0,0.22))",
               }}
             />
@@ -185,12 +185,14 @@ export default function Hero() {
       <LdNSticker
         className="md:hidden absolute top-4 right-3 z-20"
         style={{ transform: "rotate(8deg)", filter: "drop-shadow(0 5px 16px rgba(0,0,0,0.22))" }}
+        width={100}
+        height={62}
       />
     </section>
   );
 }
 
-function LdNSticker({ className, style }: { className?: string; style?: React.CSSProperties }) {
+function LdNSticker({ className, style, width = 170, height = 105 }: { className?: string; style?: React.CSSProperties; width?: number; height?: number }) {
   return (
     <span className={`inline-block ${className ?? ""}`} style={style}>
       <a
@@ -200,7 +202,7 @@ function LdNSticker({ className, style }: { className?: string; style?: React.CS
         className="flex flex-col items-center hover:scale-105 transition-transform duration-200"
         aria-label="Bekannt aus dem beliebten Politik-Podcast Lage der Nation, Folge 478"
       >
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 458.6457 283.4645" width="100" height="62" overflow="visible" aria-hidden="true">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 458.6457 283.4645" width={width} height={height} overflow="visible" aria-hidden="true">
           <path d="M458.6457,113.1069H391.6224L371.0551,46.2093H334.0258a141.7248,141.7248,0,0,0-209.4059,0H87.5906L67.0233,113.1069H0L33.7323,221.39h78.3511a141.7522,141.7522,0,0,0,234.4789,0h78.3511Z" fill="#1a3880" stroke="white" strokeWidth="20" strokeLinejoin="round" style={{ paintOrder: "stroke" }} />
           <path d="M154.4277,59.0078v41.23h-8.5556v-41.23ZM174.2061,93.48v6.7578H152.2578V93.48Z" fill="#fff" />
           <path d="M204.2759,59.0078l-14.8179,41.23h-8.4941l14.6943-41.23ZM214.6919,84.8v6.5718H189.7061V84.8Zm-6.0137-25.792,14.6939,41.23h-8.5562l-14.8179-41.23Z" fill="#fff" />

@@ -14,7 +14,7 @@ export default function Roadmap() {
           Wir bauen gerade und lernen mit jedem Brief. Hier ist, worauf wir uns als nächstes konzentrieren:
         </p>
 
-        <div className="grid md:grid-cols-3 gap-8">
+        <div className="grid md:grid-cols-2 gap-8">
           <div className="bg-white rounded-xl border border-waldgruen/10 p-7 flex flex-col gap-4">
             <div>
               <svg width="36" height="36" viewBox="0 0 36 36" fill="none" className="text-waldgruen">
@@ -31,7 +31,7 @@ export default function Roadmap() {
               <h3 className="font-body text-lg font-bold text-waldgruen-dark leading-snug mb-3">
                 Kommunal, Landes-, Bundes- oder Europapolitik
               </h3>
-              <p className="font-body text-sm text-warmgrau/80 leading-relaxed mb-4">
+              <p className="font-body text-base text-warmgrau/80 leading-relaxed mb-4">
                 Nicht jedes Anliegen gehört nach Berlin. Wir möchten automatisch erkennen, welches politische Level zuständig ist, damit dein Brief dort landet, wo er wirklich etwas bewirken kann.
               </p>
               <span className="inline-block font-typewriter text-[10px] font-bold tracking-wider uppercase text-waldgruen bg-waldgruen/10 px-2 py-0.5 rounded-full">
@@ -42,7 +42,7 @@ export default function Roadmap() {
 
           <div
             id="mitmachen"
-            className="md:col-span-2 bg-white rounded-xl border border-waldgruen/10 p-7 md:p-10 flex flex-col gap-5"
+            className="bg-white rounded-xl border border-waldgruen/10 p-7 md:p-10 flex flex-col gap-5"
           >
             <div>
               <svg width="36" height="36" viewBox="0 0 36 36" fill="none" className="text-waldgruen">

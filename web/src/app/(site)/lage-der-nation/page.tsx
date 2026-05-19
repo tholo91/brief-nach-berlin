@@ -1,4 +1,6 @@
 import Link from "next/link";
+import { Figure } from "@/components/editorial/Figure";
+import { Prose } from "@/components/editorial/Prose";
 import type { Metadata } from "next";
 import { APP_URL } from "@/lib/config";
 
@@ -36,18 +38,19 @@ export default function LageDerNationPage() {
           &larr; Zurück
         </Link>
 
-        <p className="font-typewriter text-sm font-bold tracking-widest uppercase text-waldgruen/60 mb-3">
-          Eine kleine Notiz
-        </p>
-        <h1 className="font-body text-3xl md:text-4xl font-bold text-waldgruen-dark tracking-tight mb-6">
-          Erwähnt in der Lage der Nation
-        </h1>
-        <p className="font-handwriting text-xl md:text-2xl text-warmgrau leading-relaxed mb-12 text-pretty">
-          Philip Banse und Ulf Buermeyer haben Brief-nach-Berlin in Folge 478
-          erwähnt. Was danach passiert ist, hat uns selbst überrascht.
-        </p>
+          <p className="font-typewriter text-sm font-bold tracking-widest uppercase text-waldgruen/60 mb-3">
+            Eine kleine Notiz
+          </p>
+          <h1 className="font-body text-3xl md:text-5xl font-bold text-waldgruen-dark tracking-tight mb-6 text-balance">
+            Erwähnt in der Lage der Nation
+          </h1>
 
-        <article className="font-body text-warmgrau leading-[1.85] space-y-7 text-base md:text-lg">
+          <p className="font-handwriting text-xl md:text-2xl text-warmgrau leading-relaxed mb-2 text-pretty">
+            Philip Banse und Ulf Buermeyer haben Brief-nach-Berlin in Folge 478
+            erwähnt. Was danach passiert ist, hat mich selbst überrascht.
+          </p>
+
+        <Prose>
           <div className="bg-waldgruen/5 border-l-4 border-waldgruen/40 px-6 py-5 rounded-r-lg">
             <p className="font-handwriting text-lg md:text-xl text-waldgruen-dark leading-relaxed">
               Brief-nach-Berlin wurde in{" "}
@@ -64,7 +67,7 @@ export default function LageDerNationPage() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 my-10">
-            <div className="bg-waldgruen/8 border border-waldgruen/15 rounded-xl px-6 py-8 text-center">
+            <div className="bg-waldgruen/8 border border-waldgruen/15 rounded-xl px-6 py-8 text-center hover:-translate-y-1 transition-transform">
               <p className="font-body text-5xl md:text-6xl font-bold text-waldgruen-dark mb-2">
                 6&times;
               </p>
@@ -75,7 +78,7 @@ export default function LageDerNationPage() {
                 seit der Erwähnung
               </p>
             </div>
-            <div className="bg-airmail-blau/8 border border-airmail-blau/20 rounded-xl px-6 py-8 text-center">
+            <div className="bg-airmail-blau/8 border border-airmail-blau/20 rounded-xl px-6 py-8 text-center hover:-translate-y-1 transition-transform">
               <p className="font-body text-5xl md:text-6xl font-bold text-waldgruen-dark mb-2">
                 #478
               </p>
@@ -88,27 +91,35 @@ export default function LageDerNationPage() {
             </div>
           </div>
 
+          <Figure
+            src="/images/img-brief-schwebt.webp"
+            width={260}
+            height={175}
+            side="right"
+            rotate="left"
+          />
+
           <p>
-            Wir bauen Brief-nach-Berlin als kleines, ehrenamtliches Projekt.
+            Ich baue Brief-nach-Berlin als kleines, ehrenamtliches Projekt.
             Kein Marketing-Budget, keine Werbung, keine Investoren. Ein paar
             Sätze in einem Podcast, den viele politisch interessierte Menschen
             hören, und plötzlich kommen sechsmal so viele Briefe zustande wie
             vorher.
           </p>
           <p>
-            Das ist für uns vor allem eines: ein Zeichen, dass es Bedarf gibt.
+            Das ist für mich vor allem eines: ein Zeichen, dass es Bedarf gibt.
             Dass viele Menschen den Schritt vom Frust zum konkreten Brief zwar
             machen wollen, aber Hilfe brauchen, um anzufangen. Genau diese
-            Hürde versuchen wir so klein wie möglich zu machen.
+            Hürde versuche ich so klein wie möglich zu machen.
           </p>
           <p>
-            Danke an Philip, Ulf und das ganze Lage-Team für die Erwähnung. Und
-            danke an alle, die seitdem einen Brief geschrieben haben. Jeder
-            einzelne zählt.
+            Danke an Philip Banse, Ulf Buermeyer und das ganze Lage-Team für
+            die Erwähnung. Und danke an alle, die seitdem einen Brief
+            geschrieben haben. Jeder einzelne zählt.
           </p>
-        </article>
+        </Prose>
 
-        <div className="mt-16 p-8 bg-waldgruen/5 border border-waldgruen/15 rounded-xl">
+        <div className="mt-16 p-8 bg-waldgruen/5 border border-waldgruen/15 rounded-xl hover:bg-waldgruen/10 transition-colors">
           <p className="font-body text-warmgrau leading-relaxed mb-6">
             Drei Minuten, kein Account, kein Tracking. Wir schicken dir den
             fertigen Brief per Mail, du schreibst ihn ab und steckst ihn in den

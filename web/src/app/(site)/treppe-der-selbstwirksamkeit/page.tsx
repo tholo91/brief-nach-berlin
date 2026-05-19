@@ -1,6 +1,9 @@
 import Link from "next/link";
 import type { Metadata } from "next";
 import { APP_URL } from "@/lib/config";
+import { Figure } from "@/components/editorial/Figure";
+import { PullQuote } from "@/components/editorial/PullQuote";
+import { FactCallout } from "@/components/editorial/FactCallout";
 
 export const metadata: Metadata = {
   title:
@@ -39,12 +42,17 @@ const steps: Step[] = [
     title: "Wählen gehen",
     effort: "5 Minuten, alle paar Jahre",
     body: (
-      <p>
-        Die Bundestagswahl 2025 hatte 82,5 % Beteiligung. Hoch, aber das heißt
-        immer noch: rund 11 Millionen Wahlberechtigte sind nicht hingegangen.
-        Wählen ist die unterste Stufe und das Mindeste. Wer hier nicht steht,
-        kann nirgendwo sonst stehen.
-      </p>
+      <>
+        <FactCallout
+          number="82,5 %"
+          label="Wahlbeteiligung bei der Bundestagswahl 2025. Hoch, aber rund 11 Millionen Wahlberechtigte sind nicht hingegangen."
+          source="Bundeswahlleiterin, 2025"
+        />
+        <p>
+          Wählen ist die unterste Stufe und das Mindeste. Wer hier nicht steht,
+          kann nirgendwo sonst stehen.
+        </p>
+      </>
     ),
   },
   {
@@ -75,20 +83,29 @@ const steps: Step[] = [
     title: "Einen Brief an deinen Abgeordneten schreiben",
     effort: "10 bis 30 Minuten",
     body: (
-      <p>
-        Ein handgeschriebener Brief landet auf dem Schreibtisch eines
-        Abgeordneten und wird gelesen. E-Mails laufen durch Filter, Tweets gehen
-        unter. Briefe werden geöffnet. Sie zählen in vielen Büros statistisch
-        mit, manche sortieren sie nach Wahlkreis und Thema. Wenn du nicht weißt,
-        an wen genau du schreiben sollst:{" "}
-        <Link
-          href="/app"
-          className="text-waldgruen hover:underline font-semibold"
-        >
-          dafür haben wir Brief-nach-Berlin gebaut
-        </Link>
-        .
-      </p>
+      <>
+        <Figure
+          src="/images/img-treppe.webp"
+          width={260}
+          height={175}
+          side="right"
+          rotate="right"
+        />
+        <p>
+          Ein handgeschriebener Brief landet auf dem Schreibtisch eines
+          Abgeordneten und wird gelesen. E-Mails laufen durch Filter, Tweets gehen
+          unter. Briefe werden geöffnet. Sie zählen in vielen Büros statistisch
+          mit, manche sortieren sie nach Wahlkreis und Thema. Wenn du nicht weißt,
+          an wen genau du schreiben sollst:{" "}
+          <Link
+            href="/app"
+            className="text-waldgruen hover:underline font-semibold"
+          >
+            dafür haben wir Brief-nach-Berlin gebaut
+          </Link>
+          .
+        </p>
+      </>
     ),
   },
   {
@@ -222,17 +239,18 @@ export default function TreppePage() {
           &larr; Zurück
         </Link>
 
-        <p className="font-typewriter text-sm font-bold tracking-widest uppercase text-waldgruen/60 mb-3">
-          10 Stufen
-        </p>
-        <h1 className="font-body text-3xl md:text-4xl font-bold text-waldgruen-dark tracking-tight mb-6">
-          Die Treppe der politischen Selbstwirksamkeit
-        </h1>
-        <p className="font-handwriting text-xl md:text-2xl text-warmgrau leading-relaxed mb-12 text-pretty">
-          Wählen alle vier Jahre ist nicht das Ende der Geschichte, sondern der
-          Anfang. Hier sind zehn konkrete Wege, wie du als Bürgerin oder Bürger
-          in Deutschland politisch wirklich etwas bewegst, sortiert nach Aufwand.
-        </p>
+          <p className="font-typewriter text-sm font-bold tracking-widest uppercase text-waldgruen/60 mb-3">
+            10 Stufen
+          </p>
+          <h1 className="font-body text-3xl md:text-5xl font-bold text-waldgruen-dark tracking-tight mb-6 text-balance">
+            Die Treppe der politischen Selbstwirksamkeit
+          </h1>
+
+          <p className="font-handwriting text-xl md:text-2xl text-warmgrau leading-relaxed mb-2 text-pretty">
+            Wählen alle vier Jahre ist nicht das Ende der Geschichte, sondern der
+            Anfang. Hier sind zehn konkrete Wege, wie du als Bürgerin oder Bürger
+            in Deutschland politisch wirklich etwas bewegst, sortiert nach Aufwand.
+          </p>
 
         <div className="font-body text-warmgrau leading-relaxed space-y-3 mb-14">
           <p>
@@ -242,15 +260,15 @@ export default function TreppePage() {
             eine Wählerstimme, ein Gesicht und einen Namen, der im Wahlkreisbüro
             bekannt ist.
           </p>
-          <p>
-            Such dir die nächste Stufe aus, die du dir zutraust. Dann nimm sie.
-          </p>
         </div>
+
+        <PullQuote align="right">
+          Such dir die nächste Stufe aus, die du dir zutraust. Dann nimm sie.
+        </PullQuote>
 
         <ol className="space-y-10">
           {steps.map((step) => (
             <li
-              key={step.n}
               id={`stufe-${step.n}`}
               className="border-l-2 border-waldgruen/20 pl-6 relative scroll-mt-24"
             >
@@ -266,14 +284,14 @@ export default function TreppePage() {
               <p className="font-typewriter text-xs uppercase tracking-wider text-warmgrau/60 mb-3">
                 Aufwand: {step.effort}
               </p>
-              <div className="font-body text-warmgrau leading-relaxed">
+              <div className="font-body text-warmgrau leading-relaxed flow-root">
                 {step.body}
               </div>
             </li>
           ))}
         </ol>
 
-        <div className="mt-16 p-8 bg-waldgruen/5 border border-waldgruen/15 rounded-xl">
+        <div className="mt-16 p-8 bg-waldgruen/5 border border-waldgruen/15 rounded-xl hover:bg-waldgruen/10 transition-colors">
           <h2 className="font-body text-2xl font-bold text-waldgruen-dark mb-4">
             Wo fängst du an?
           </h2>

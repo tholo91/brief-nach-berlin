@@ -1,4 +1,6 @@
 import Link from "next/link";
+import { Figure } from "@/components/editorial/Figure";
+import { Prose } from "@/components/editorial/Prose";
 import type { Metadata } from "next";
 import { APP_URL, FOUNDER_LINKEDIN, FOUNDER_FEEDBACK_URL } from "@/lib/config";
 
@@ -108,6 +110,22 @@ const categories: Category[] = [
       },
     ],
   },
+  {
+    id: "verwaltung",
+    label: "Verwaltung und Behörden besser machen",
+    intro:
+      "Wenn dein Frust nicht beim Gesetz, sondern beim Behördenweg anfängt: kaputte Anträge, endlose Formulare, fehlende Digitalisierung. Hier gibt es einen anderen Hebel als den Brief an den Bundestag.",
+    tools: [
+      {
+        name: "Deutschland, was geht? (SPRIN-D)",
+        url: "https://deutschland-was-geht.org",
+        what: "Eine Initiative der Bundesagentur für Sprunginnovationen (SPRIN-D). Bürger:innen melden, was sie an deutscher Verwaltung nervt. Aus den Einreichungen wählt eine Bürgerjury gemeinsam mit SPRIN-D Themen aus, 15 davon werden finanziert und fünf sollen bis Ende 2026 tatsächlich in Behörden eingeführt werden, als Open-Source-Software. Das Vorbild sind die Presidential Hackathons aus Taiwan.",
+        good: "Wenn dein Frust an einem konkreten Behördengang festgemacht ist: ein Antrag ist unverständlich, ein Portal stürzt ab, ein Prozess dauert neun Monate ohne Grund. Kurz: Probleme, die sich mit besserer Software oder klügerem Prozessdesign lösen lassen.",
+        different:
+          "Brief-nach-Berlin schreibt an Menschen, die Gesetze machen und politische Richtung bestimmen. „Deutschland, was geht?” zielt auf etwas anderes: Verwaltungsprozesse, die sich mit besserer Software reparieren lassen, ohne dass dafür ein neues Gesetz nötig wäre. Je nachdem, wo dein Problem sitzt, ist mal das eine, mal das andere das richtige Werkzeug. Manchmal auch beides.",
+      },
+    ],
+  },
 ];
 
 export default function AndereToolsPage() {
@@ -121,19 +139,20 @@ export default function AndereToolsPage() {
           &larr; Zurück
         </Link>
 
-        <p className="font-typewriter text-sm font-bold tracking-widest uppercase text-waldgruen/60 mb-3">
-          Im Vergleich
-        </p>
-        <h1 className="font-body text-3xl md:text-4xl font-bold text-waldgruen-dark tracking-tight mb-6">
-          Andere Tools für mehr Demokratie
-        </h1>
-        <p className="font-handwriting text-xl md:text-2xl text-warmgrau leading-relaxed mb-12 text-pretty">
-          Brief-nach-Berlin ist nicht die einzige Antwort auf die Frage &bdquo;Wie
-          mische ich mich ein?&ldquo;. Es gibt großartige Initiativen, die das
-          schon viel länger machen. Hier zeige ich dir, welche das sind, wann sie
-          die bessere Wahl sind, und warum Brief-nach-Berlin trotzdem etwas Eigenes
-          beitragen kann.
-        </p>
+          <p className="font-typewriter text-sm font-bold tracking-widest uppercase text-waldgruen/60 mb-3">
+            Im Vergleich
+          </p>
+          <h1 className="font-body text-3xl md:text-5xl font-bold text-waldgruen-dark tracking-tight mb-6 text-balance">
+            Andere Tools für mehr Demokratie
+          </h1>
+
+          <p className="font-handwriting text-xl md:text-2xl text-warmgrau leading-relaxed mb-2 text-pretty">
+            Brief-nach-Berlin ist nicht die einzige Antwort auf die Frage &bdquo;Wie
+            mische ich mich ein?&ldquo;. Es gibt großartige Initiativen, die das
+            schon viel länger machen. Hier zeige ich dir, welche das sind, wann sie
+            die bessere Wahl sind, und warum Brief-nach-Berlin trotzdem etwas Eigenes
+            beitragen kann.
+          </p>
 
         <nav
           aria-label="Inhaltsverzeichnis"
@@ -176,10 +195,19 @@ export default function AndereToolsPage() {
           </ol>
         </nav>
 
-        <article className="font-body text-warmgrau leading-[1.85] space-y-7 text-base md:text-lg">
+        <Prose>
           <h2 className="font-body text-2xl font-bold text-waldgruen-dark pt-2">
             Demokratie ist Teamarbeit
           </h2>
+
+          <Figure
+            src="/images/img-drei-briefe.webp"
+            width={280}
+            height={188}
+            side="left"
+            rotate="right"
+          />
+
           <p>
             Ich sehe Brief-nach-Berlin nicht als Konkurrenz zu anderen
             Demokratie-Tools, sondern als einen weiteren Hebel im selben
@@ -195,7 +223,6 @@ export default function AndereToolsPage() {
 
           {categories.map((cat, idx) => (
             <section
-              key={cat.id}
               id={cat.id}
               className="not-prose pt-10 scroll-mt-8"
             >
@@ -225,18 +252,30 @@ export default function AndereToolsPage() {
                         {tool.name}
                       </a>
                     </h3>
-                    <p className="font-body text-warmgrau leading-[1.85] text-base md:text-lg">
-                      <span className="font-bold text-waldgruen-dark">Was es ist: </span>
-                      {tool.what}
-                    </p>
-                    <p className="font-body text-warmgrau leading-[1.85] text-base md:text-lg">
-                      <span className="font-bold text-waldgruen-dark">Wann es die bessere Wahl ist: </span>
-                      {tool.good}
-                    </p>
-                    <p className="font-body text-warmgrau leading-[1.85] text-base md:text-lg">
-                      <span className="font-bold text-waldgruen-dark">Was Brief-nach-Berlin anders macht: </span>
-                      {tool.different}
-                    </p>
+                    <div>
+                      <p className="font-typewriter text-xs font-bold tracking-widest uppercase text-waldgruen/60 mb-1">
+                        Was es ist
+                      </p>
+                      <p className="font-body text-warmgrau leading-[1.85] text-base md:text-lg">
+                        {tool.what}
+                      </p>
+                    </div>
+                    <div>
+                      <p className="font-typewriter text-xs font-bold tracking-widest uppercase text-waldgruen/60 mb-1">
+                        Wann es die bessere Wahl ist
+                      </p>
+                      <p className="font-body text-warmgrau leading-[1.85] text-base md:text-lg">
+                        {tool.good}
+                      </p>
+                    </div>
+                    <div>
+                      <p className="font-typewriter text-xs font-bold tracking-widest uppercase text-waldgruen/60 mb-1">
+                        Was Brief nach Berlin anders macht
+                      </p>
+                      <p className="font-body text-warmgrau leading-[1.85] text-base md:text-lg">
+                        {tool.different}
+                      </p>
+                    </div>
                     {tool.extra && (
                       <div className="mt-4 p-4 bg-waldgruen/[0.06] border border-waldgruen/15 rounded-lg">
                         <p className="font-typewriter text-xs font-bold tracking-widest uppercase text-waldgruen/70 mb-2">
@@ -300,7 +339,7 @@ export default function AndereToolsPage() {
               Rückmeldung hilft, es besser zu machen.
             </p>
           </div>
-        </article>
+        </Prose>
 
         <section id="feedback" className="mt-12 scroll-mt-8">
           <div className="p-8 bg-waldgruen/5 border border-waldgruen/15 rounded-xl">
@@ -379,7 +418,7 @@ export default function AndereToolsPage() {
           </p>
         </div>
 
-        <div className="mt-16 p-8 bg-waldgruen/5 border border-waldgruen/15 rounded-xl">
+        <div className="mt-16 p-8 bg-waldgruen/5 border border-waldgruen/15 rounded-xl hover:bg-waldgruen/10 transition-colors">
           <h2 className="font-body text-2xl font-bold text-waldgruen-dark mb-4">
             Probier es aus
           </h2>

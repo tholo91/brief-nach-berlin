@@ -1,6 +1,8 @@
 import Link from "next/link";
 import type { Metadata } from "next";
 import { APP_URL } from "@/lib/config";
+import { Figure } from "@/components/editorial/Figure";
+import { PullQuote } from "@/components/editorial/PullQuote";
 
 export const metadata: Metadata = {
   title: "Tipps für den perfekten Brief | Brief nach Berlin",
@@ -57,7 +59,7 @@ const tips: Tip[] = [
       <>
         <p>Deine Schrift muss nicht schön sein. Sie muss lesbar sein.</p>
         <p className="mt-2">
-          Zu klein, zu eng, zu hastig &ndash; und ein Brief, der inhaltlich
+          Zu klein, zu eng, zu hastig, und ein Brief, der inhaltlich
           gut ist, landet als Letzter auf dem Stapel. Wer pro Tag dutzende
           Briefe bekommt, freut sich über einen, den man gerne liest. Nimm dir
           Zeit.
@@ -70,9 +72,16 @@ const tips: Tip[] = [
     title: "Um Rückmeldung bitten",
     body: (
       <>
+        <Figure
+          src="/images/img-schreibtisch.webp"
+          width={260}
+          height={175}
+          side="right"
+          rotate="left"
+        />
         <p>
-          Handgeschriebene Briefe aus dem Wahlkreis fallen auf. Es kommt vor
-          &ndash; öfter als man denkt &ndash; dass Abgeordnete tatsächlich
+          Handgeschriebene Briefe aus dem Wahlkreis fallen auf. Es kommt
+          häufiger vor als man denkt, dass Abgeordnete tatsächlich
           antworten: per Brief, manchmal per E-Mail, manchmal sogar per
           Telefon. Besonders wenn das Thema gerade auf der politischen Agenda
           steht.
@@ -101,7 +110,7 @@ const tips: Tip[] = [
         >
           mobile Briefmarke
         </a>{" "}
-        an &ndash; den Code kaufst du per App und schreibst ihn auf den
+        an: den Code kaufst du per App und schreibst ihn auf den
         Umschlag.
       </p>
     ),
@@ -117,7 +126,7 @@ const tips: Tip[] = [
           der zwei Tage vor einer Abstimmung ankommt, hat ein anderes Gewicht
           als einer, der eine Woche danach eintrifft.
         </p>
-        <p className="mt-2">Schreib ihn heute ab. Heute.</p>
+        <PullQuote>Schreib ihn heute ab. Heute.</PullQuote>
       </>
     ),
   },
@@ -134,16 +143,17 @@ export default function TippsPage() {
           &larr; Zurück
         </Link>
 
-        <p className="font-typewriter text-sm font-bold tracking-widest uppercase text-waldgruen/60 mb-3">
-          Schreibtipps
-        </p>
-        <h1 className="font-body text-3xl md:text-4xl font-bold text-waldgruen-dark tracking-tight mb-6">
-          Tipps für den perfekten Brief
-        </h1>
-        <p className="font-handwriting text-xl md:text-2xl text-warmgrau leading-relaxed mb-12 text-pretty">
-          Fünf Dinge, die den Unterschied machen &ndash; zwischen einem Brief,
-          der gelesen wird, und einem, der es schwer hat.
-        </p>
+          <p className="font-typewriter text-sm font-bold tracking-widest uppercase text-waldgruen/60 mb-3">
+            Schreibtipps
+          </p>
+          <h1 className="font-body text-3xl md:text-5xl font-bold text-waldgruen-dark tracking-tight mb-6 text-balance">
+            Tipps für den perfekten Brief
+          </h1>
+
+          <p className="font-handwriting text-xl md:text-2xl text-warmgrau leading-relaxed mb-12 text-pretty">
+            Fünf Dinge, die den Unterschied machen, zwischen einem Brief,
+            der gelesen wird, und einem, der es schwer hat.
+          </p>
 
         <nav
           aria-label="Inhaltsverzeichnis"
@@ -175,7 +185,6 @@ export default function TippsPage() {
         <ol className="space-y-12">
           {tips.map((tip) => (
             <li
-              key={tip.n}
               id={`tipp-${tip.n}`}
               className="border-l-2 border-waldgruen/20 pl-6 relative scroll-mt-8"
             >
@@ -188,14 +197,14 @@ export default function TippsPage() {
               <h2 className="font-body text-xl md:text-2xl font-bold text-waldgruen-dark mb-3 mt-1">
                 {tip.title}
               </h2>
-              <div className="font-body text-warmgrau leading-relaxed text-base md:text-lg">
+              <div className="font-body text-warmgrau leading-relaxed text-base md:text-lg flow-root">
                 {tip.body}
               </div>
             </li>
           ))}
         </ol>
 
-        <div className="mt-16 p-6 md:p-8 bg-waldgruen/5 border border-waldgruen/15 rounded-xl">
+        <div className="mt-16 p-6 md:p-8 bg-waldgruen/5 border border-waldgruen/15 rounded-xl hover:bg-waldgruen/10 transition-colors">
           <h2 className="font-body text-xl md:text-2xl font-bold text-waldgruen-dark mb-3">
             Unser Entwurf ist ein Anfang
           </h2>

@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { Figure } from "@/components/editorial/Figure";
 import { Prose } from "@/components/editorial/Prose";
 import type { Metadata } from "next";
@@ -346,11 +347,22 @@ export default function AndereToolsPage() {
             <h2 className="font-body text-2xl font-bold text-waldgruen-dark mb-3">
               Fehlt dir ein Tool? Funktioniert etwas nicht?
             </h2>
-            <p className="font-body text-warmgrau leading-relaxed mb-4">
-              Ich bin Thomas Lorenz, Indie Builder aus Bremen und der Mensch
-              hinter Brief-nach-Berlin. Ich baue das Projekt allein, neben
-              anderen Sachen, und ich bin stark auf Feedback angewiesen.
-            </p>
+            <div className="flex flex-col sm:flex-row gap-5 items-start sm:items-center mb-4">
+              <div className="shrink-0">
+                <Image
+                  src="/images/thomas-portrait.webp"
+                  alt="Thomas Lorenz, der hinter Brief-nach-Berlin steht"
+                  width={400}
+                  height={360}
+                  className="w-[140px] h-auto rounded-2xl border-4 border-creme shadow-lg shadow-waldgruen/20"
+                />
+              </div>
+              <p className="font-body text-warmgrau leading-relaxed">
+                Ich bin Thomas Lorenz, Indie Builder aus Bremen und der Mensch
+                hinter Brief-nach-Berlin. Ich baue das Projekt allein, neben
+                anderen Sachen, und ich bin stark auf Feedback angewiesen.
+              </p>
+            </div>
             <p className="font-body text-warmgrau leading-relaxed mb-6">
               Wenn dir hier ein wichtiges Tool fehlt, du eine bessere
               Einordnung hast, oder dir an Brief-nach-Berlin selbst etwas

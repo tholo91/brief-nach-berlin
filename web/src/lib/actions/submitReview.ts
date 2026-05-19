@@ -16,6 +16,10 @@ const reviewSchema = z.object({
   // Required — the form will not allow submit until the user picks Ja/Nein.
   letterSent: z.boolean(),
   token: z.string().min(20).max(4000),
+  // Set by the client after the user dismissed the rate-limit warning and
+  // confirmed they want to submit anyway. The unique-token DB constraint
+  // still prevents true duplicates — this only suppresses the IP throttle.
+  bypassRateLimit: z.boolean().optional(),
 });
 
 export type SubmitReviewResult =
@@ -53,18 +57,20 @@ export async function submitReviewAction(
   }
 
   const ip = await getClientIp();
-  const limit = checkRateLimit(
-    `review:ip:${ip}`,
-    LIMITS.REVIEW_PER_IP.max,
-    LIMITS.REVIEW_PER_IP.windowMs
-  );
-  if (!limit.allowed) {
-    return {
-      error: "rate_limited",
-      message:
-        "Du hast gerade eben schon eine Bewertung abgegeben. Bitte warte einen Moment.",
-      retryAfterSeconds: limit.retryAfterSeconds,
-    };
+  if (!data.bypassRateLimit) {
+    const limit = checkRateLimit(
+      `review:ip:${ip}`,
+      LIMITS.REVIEW_PER_IP.max,
+      LIMITS.REVIEW_PER_IP.windowMs
+    );
+    if (!limit.allowed) {
+      return {
+        error: "rate_limited",
+        message:
+          "Du hast gerade eben schon eine Bewertung abgegeben. Wenn du trotzdem eine zweite abschicken möchtest, klick einfach nochmal.",
+        retryAfterSeconds: limit.retryAfterSeconds,
+      };
+    }
   }
 
   // DSGVO: the IP hash must be irreversible. SHA-256 of an IPv4 is brute-forceable

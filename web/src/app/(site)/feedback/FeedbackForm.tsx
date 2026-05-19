@@ -43,6 +43,9 @@ export function FeedbackForm({
   const [letterSent, setLetterSent] = useState<boolean | null>(null);
   const [submitted, setSubmitted] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  // True once the server flagged a rate-limit. The next submit click bypasses
+  // the throttle — the warning becomes a soft "are you sure?" instead of a block.
+  const [bypassRateLimit, setBypassRateLimit] = useState(false);
   const [pending, startTransition] = useTransition();
 
   // Strip the signed token from the URL after the server-component handed it
@@ -76,6 +79,7 @@ export function FeedbackForm({
         consent,
         letterSent,
         token,
+        bypassRateLimit,
       });
       // "already_submitted" is functionally a success from the user's POV —
       // their rating exists in the DB, just from an earlier click. Show the
@@ -83,6 +87,9 @@ export function FeedbackForm({
       if ("success" in result || result.error === "already_submitted") {
         setSubmitted(true);
         return;
+      }
+      if (result.error === "rate_limited") {
+        setBypassRateLimit(true);
       }
       setErrorMessage(result.message);
     });

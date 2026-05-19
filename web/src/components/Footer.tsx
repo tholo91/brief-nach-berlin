@@ -55,6 +55,12 @@ export default async function Footer() {
               Wer dahintersteht
             </Link>
             <Link
+              href="/ki-transparenz"
+              className="font-body text-sm text-warmgrau/70 hover:text-waldgruen-dark transition-colors duration-200"
+            >
+              KI & Transparenz
+            </Link>
+            <Link
               href="/andere-tools"
               className="font-body text-sm text-warmgrau/70 hover:text-waldgruen-dark transition-colors duration-200"
             >
@@ -73,7 +79,7 @@ export default async function Footer() {
           <span className="font-typewriter text-sm text-warmgrau/40">
             Brief-nach-Berlin &copy; {new Date().getFullYear()}
             {letterCount > 0 && (
-              <span className="ml-4">{letterCount} Briefe</span>
+              <span className="ml-1"> · {letterCount} Briefe</span>
             )}
           </span>
 

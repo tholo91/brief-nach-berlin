@@ -38,23 +38,22 @@ export default function BeispielePage() {
           &larr; Zurück
         </Link>
 
-        <p className="font-typewriter text-sm font-bold tracking-widest uppercase text-waldgruen/60 mb-3">
-          Beispiele
-        </p>
-        <h1 className="font-body text-3xl md:text-4xl font-bold text-waldgruen-dark tracking-tight mb-5">
-          Drei Briefe, die wirklich rausgegangen sind
-        </h1>
-        <p className="font-body text-base md:text-lg text-warmgrau leading-relaxed mb-14 max-w-2xl text-pretty">
-          Alle drei Briefe wurden mit Brief nach Berlin formuliert und anschließend
-          von Hand abgeschrieben und verschickt. Namen und Wohnort der
-          Absender:innen sind anonymisiert. Der Rest ist genau so rausgegangen.
-        </p>
+          <p className="font-typewriter text-sm font-bold tracking-widest uppercase text-waldgruen/60 mb-3">
+            Beispiele
+          </p>
+          <h1 className="font-body text-3xl md:text-5xl font-bold text-waldgruen-dark tracking-tight mb-5 text-balance">
+            Drei Briefe, die wirklich rausgegangen sind
+          </h1>
+
+          <p className="font-body text-base md:text-lg text-warmgrau leading-relaxed mb-14 max-w-2xl text-pretty">
+            Alle drei Briefe wurden mit Brief nach Berlin formuliert und anschließend
+            von Hand abgeschrieben und verschickt. Namen und Wohnort der
+            Absender:innen sind anonymisiert. Der Rest ist genau so rausgegangen.
+          </p>
 
         <div className="space-y-16 md:space-y-20">
           {EXAMPLE_LETTERS.map((letter, i) => (
-            <div key={letter.slug}>
               <LetterPaper letter={letter} rotate={i % 2 === 0 ? "left" : "right"} />
-            </div>
           ))}
         </div>
 

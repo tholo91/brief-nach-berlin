@@ -1,4 +1,6 @@
 import Link from "next/link";
+import { Figure } from "@/components/editorial/Figure";
+import { Prose } from "@/components/editorial/Prose";
 import type { Metadata } from "next";
 import { APP_URL } from "@/lib/config";
 
@@ -36,28 +38,39 @@ export default function AbgeordnetenSchreibenPage() {
           &larr; Zurück
         </Link>
 
-        <p className="font-typewriter text-sm font-bold tracking-widest uppercase text-waldgruen/60 mb-3">
-          Anleitung
-        </p>
-        <h1 className="font-body text-3xl md:text-4xl font-bold text-waldgruen-dark tracking-tight mb-6">
-          Brief an Abgeordneten schreiben: So geht&apos;s
-        </h1>
-        <p className="font-handwriting text-xl md:text-2xl text-warmgrau leading-relaxed mb-12 text-pretty">
-          Einen Brief an einen Abgeordneten zu schreiben klingt nach mehr
-          Aufwand, als es ist. Du brauchst kein Vorwissen, kein Jura-Studium und
-          keine Mustervorgabe. Du brauchst nur ein konkretes Anliegen und ein
-          Blatt Papier.
-        </p>
+          <p className="font-typewriter text-sm font-bold tracking-widest uppercase text-waldgruen/60 mb-3">
+            Anleitung
+          </p>
+          <h1 className="font-body text-3xl md:text-5xl font-bold text-waldgruen-dark tracking-tight mb-6 text-balance">
+            Brief an Abgeordneten schreiben: So geht&apos;s
+          </h1>
 
-        <article className="font-body text-warmgrau leading-[1.85] space-y-7 text-base md:text-lg">
+          <p className="font-handwriting text-xl md:text-2xl text-warmgrau leading-relaxed mb-2 text-pretty">
+            Einen Brief an einen Abgeordneten zu schreiben klingt nach mehr
+            Aufwand, als es ist. Du brauchst kein Vorwissen, kein Jura-Studium und
+            keine Mustervorgabe. Du brauchst nur ein konkretes Anliegen und ein
+            Blatt Papier.
+          </p>
+
+        <Prose>
           <h2 className="font-body text-2xl font-bold text-waldgruen-dark pt-4">
             Was gehört in einen Brief an den Abgeordneten?
           </h2>
+
+          <Figure
+            src="/images/img-brief-schwebt.webp"
+            width={280}
+            height={188}
+            side="right"
+            rotate="left"
+          />
+
           <p>
             Ein guter Brief ist kurz und ehrlich. Kein akademisches Rundschreiben,
             keine Petition mit drei Seiten Forderungen. Das hier ist die Struktur,
             die tatsächlich gelesen wird:
           </p>
+          
           <ul className="list-none space-y-4 pl-0">
             <li className="p-4 bg-waldgruen/5 border border-waldgruen/15 rounded-xl">
               <span className="font-typewriter text-xs uppercase tracking-widest text-waldgruen/60 block mb-1">
@@ -177,9 +190,9 @@ export default function AbgeordnetenSchreibenPage() {
             Einen Brief zu tippen und auszudrucken ist besser als gar keinen zu
             schreiben. Aber wenn du die Wahl hast: Stift in die Hand.
           </p>
-        </article>
+        </Prose>
 
-        <div className="mt-16 p-8 bg-waldgruen/5 border border-waldgruen/15 rounded-xl">
+        <div className="mt-16 p-8 bg-waldgruen/5 border border-waldgruen/15 rounded-xl hover:bg-waldgruen/10 transition-colors">
           <p className="font-body text-warmgrau leading-relaxed mb-6">
             Drei Minuten, kein Account, kein Tracking. Wir finden den richtigen
             Abgeordneten für deine Postleitzahl und schlagen dir einen Brief vor,

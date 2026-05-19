@@ -1,6 +1,9 @@
 import Link from "next/link";
 import type { Metadata } from "next";
 import { APP_URL } from "@/lib/config";
+import { Figure } from "@/components/editorial/Figure";
+import { PullQuote } from "@/components/editorial/PullQuote";
+import { FactCallout } from "@/components/editorial/FactCallout";
 
 export const metadata: Metadata = {
   title:
@@ -174,6 +177,13 @@ const steps: Step[] = [
     effort: "10 bis 15 Minuten",
     body: (
       <>
+        <Figure
+          src="/images/img-schreibtisch.webp"
+          width={260}
+          height={175}
+          side="right"
+          rotate="right"
+        />
         <p>
           Das klingt nach Aufwand, ist aber der Punkt, an dem dein Brief sich
           von Mails und automatischen Kampagnen unterscheidet. Eine gedruckte
@@ -331,17 +341,17 @@ export default function GuidePage() {
           &larr; Zurück
         </Link>
 
-        <p className="font-typewriter text-sm font-bold tracking-widest uppercase text-waldgruen/60 mb-3">
-          Der Guide
-        </p>
-        <h1 className="font-body text-3xl md:text-4xl font-bold text-waldgruen-dark tracking-tight mb-6">
-          Vom Frust zum Brief im Kasten
-        </h1>
-        <p className="font-handwriting text-xl md:text-2xl text-warmgrau leading-relaxed mb-12 text-pretty">
-          In sechs Schritten von &bdquo;das ist doch absurd&ldquo; zu einem
-          unterschriebenen Brief auf dem Weg nach Berlin. Was du brauchst, was
-          du lassen kannst, was niemand vorher sagt.
-        </p>
+          <p className="font-typewriter text-sm font-bold tracking-widest uppercase text-waldgruen/60 mb-3">
+            Der Guide
+          </p>
+          <h1 className="font-body text-3xl md:text-5xl font-bold text-waldgruen-dark tracking-tight mb-6 text-balance">
+            Vom Frust zum Brief im Kasten
+          </h1>
+          <p className="font-handwriting text-xl md:text-2xl text-warmgrau leading-relaxed mb-12 text-pretty">
+            In sechs Schritten von &bdquo;das ist doch absurd&ldquo; zu einem
+            unterschriebenen Brief auf dem Weg nach Berlin. Was du brauchst, was
+            du lassen kannst, was niemand vorher sagt.
+          </p>
 
         <div className="font-body text-warmgrau leading-relaxed space-y-3 mb-10 text-base md:text-lg">
           <p>
@@ -351,11 +361,12 @@ export default function GuidePage() {
             Kleinigkeiten, die als Bürgerin oder Bürger niemand auf dem Schirm
             hat.
           </p>
-          <p>
-            Dieser Guide nimmt dich an die Hand. Am Ende hast du keinen
-            theoretischen Überblick. Du hast einen Brief.
-          </p>
         </div>
+
+        <PullQuote>
+          Am Ende hast du keinen theoretischen Überblick.<br />
+          Du hast einen Brief.
+        </PullQuote>
 
         <nav
           aria-label="Inhaltsverzeichnis"
@@ -396,7 +407,6 @@ export default function GuidePage() {
         <ol className="space-y-12">
           {steps.map((step) => (
             <li
-              key={step.n}
               id={`schritt-${step.n}`}
               className="border-l-2 border-waldgruen/20 pl-6 relative scroll-mt-8"
             >
@@ -412,7 +422,7 @@ export default function GuidePage() {
               <p className="font-typewriter text-xs uppercase tracking-wider text-warmgrau/60 mb-3">
                 Aufwand: {step.effort}
               </p>
-              <div className="font-body text-warmgrau leading-relaxed text-base md:text-lg">
+              <div className="font-body text-warmgrau leading-relaxed text-base md:text-lg flow-root">
                 {step.body}
               </div>
             </li>
@@ -462,7 +472,7 @@ export default function GuidePage() {
           </div>
         </section>
 
-        <div className="mt-16 p-8 bg-waldgruen/5 border border-waldgruen/15 rounded-xl">
+        <div className="mt-16 p-8 bg-waldgruen/5 border border-waldgruen/15 rounded-xl hover:bg-waldgruen/10 transition-colors">
           <h2 className="font-body text-2xl font-bold text-waldgruen-dark mb-4">
             Bereit?
           </h2>

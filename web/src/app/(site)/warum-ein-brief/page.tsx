@@ -1,6 +1,11 @@
 import Link from "next/link";
 import type { Metadata } from "next";
 import { APP_URL } from "@/lib/config";
+import { Figure } from "@/components/editorial/Figure";
+import { Prose } from "@/components/editorial/Prose";
+import { PullQuote } from "@/components/editorial/PullQuote";
+import { SectionDivider } from "@/components/editorial/SectionDivider";
+import { FactCallout } from "@/components/editorial/FactCallout";
 
 export const metadata: Metadata = {
   title:
@@ -40,20 +45,23 @@ export default function WarumPage() {
         <p className="font-typewriter text-sm font-bold tracking-widest uppercase text-waldgruen/60 mb-3">
           Ein Essay
         </p>
-        <h1 className="font-body text-3xl md:text-4xl font-bold text-waldgruen-dark tracking-tight mb-6">
+        <h1 className="font-body text-3xl md:text-5xl font-bold text-waldgruen-dark tracking-tight mb-6 text-balance">
           Warum ein Brief mehr ist als ein Brief
         </h1>
-        <p className="font-handwriting text-xl md:text-2xl text-warmgrau leading-relaxed mb-12 text-pretty">
+        <p className="font-handwriting text-xl md:text-2xl text-warmgrau leading-relaxed mb-4 text-pretty">
           Wer einmal einen Brief an seinen Abgeordneten geschrieben hat, gibt
           seine Stimme nicht mehr nur ab. Er erhebt sie. Und merkt dabei etwas,
           das sich danach schwer wieder vergessen lässt.
         </p>
+        <p className="font-typewriter text-xs uppercase tracking-widest text-warmgrau/50 mb-12">
+          7 Minuten Lesezeit
+        </p>
 
-        <article className="font-body text-warmgrau leading-[1.85] space-y-7 text-base md:text-lg">
-          <h2 className="font-body text-2xl font-bold text-waldgruen-dark pt-4">
+        <Prose>
+          <h2 className="font-body text-2xl md:text-3xl font-bold text-waldgruen-dark pt-4">
             &bdquo;Stimme abgeben&ldquo; ist ein verräterisches Wort
           </h2>
-          <p>
+          <p className="first-letter:float-left first-letter:font-body first-letter:text-7xl md:first-letter:text-8xl first-letter:font-bold first-letter:text-waldgruen-dark first-letter:leading-[0.85] first-letter:mr-2 first-letter:mt-1">
             Im Deutschen gehst du wählen und gibst deine Stimme ab. Du legst sie
             weg. Du übergibst sie. Vier Jahre lang gehört sie nicht mehr dir,
             sondern jemand anderem. Allein das Wort beschreibt eigentlich schon,
@@ -67,7 +75,13 @@ export default function WarumPage() {
             an einem Tag im Februar oder September.
           </p>
 
-          <h2 className="font-body text-2xl font-bold text-waldgruen-dark pt-4">
+          <PullQuote decorative>
+            Demokratie ist kein Pfand-Geschäft. Sie ist ein Verhältnis.
+          </PullQuote>
+
+          <SectionDivider />
+
+          <h2 className="font-body text-2xl md:text-3xl font-bold text-waldgruen-dark pt-4">
             Was passiert, wenn du tatsächlich schreibst
           </h2>
           <p>
@@ -92,23 +106,39 @@ export default function WarumPage() {
             dich.
           </p>
 
-          <h2 className="font-body text-2xl font-bold text-waldgruen-dark pt-4">
+          <SectionDivider />
+
+          <h2 className="font-body text-2xl md:text-3xl font-bold text-waldgruen-dark pt-4">
             Warum gerade Briefe und nicht E-Mails
           </h2>
+
+          <Figure
+            src="/images/img-brief-schwebt.webp"
+            width={280}
+            height={188}
+            side="right"
+            rotate="left"
+          />
+
           <p>
             Ein Bundestagsabgeordneter bekommt am Tag dutzende, manchmal hunderte
             E-Mails. Die meisten sind Massenversand. Postfächer haben Filter,
             Sekretariate sortieren in Antwortschablonen. Eine Mail ist billig.
             Genau deshalb ist sie wenig wert.
           </p>
+
+          <PullQuote align="right">
+            Niemand hat einen Spam-Filter für Papier.
+          </PullQuote>
+
           <p>
             Ein Brief ist anders. Er liegt physisch auf einem Schreibtisch.
-            Niemand hat einen Spam-Filter für Papier. Jemand hat ihn aufgemacht,
-            jemand hat ihn überflogen, vielleicht weitergegeben. Wenn er
-            handgeschrieben ist, ist klar: Da hat sich jemand zwanzig Minuten
-            hingesetzt, in einer Welt, in der zwanzig Minuten teuer sind. In
-            vielen Wahlkreisbüros werden Briefe nach Thema und Region sortiert
-            und der Abgeordnete bekommt am Wochenende den Stapel.
+            Jemand hat ihn aufgemacht, jemand hat ihn überflogen, vielleicht
+            weitergegeben. Wenn er handgeschrieben ist, ist klar: Da hat sich
+            jemand zwanzig Minuten hingesetzt, in einer Welt, in der zwanzig
+            Minuten teuer sind. In vielen Wahlkreisbüros werden Briefe nach
+            Thema und Region sortiert und der Abgeordnete bekommt am Wochenende
+            den Stapel.
           </p>
           <p>
             Ich habe selbst im Bundestag gearbeitet. Wir haben Briefe gelesen.
@@ -116,31 +146,41 @@ export default function WarumPage() {
             ausgelöst.
           </p>
 
-          <h2 className="font-body text-2xl font-bold text-waldgruen-dark pt-4">
-            Die Lobbyisten haben Vollzeit dafür. Du nicht. Aber du bist Wähler.
+          <SectionDivider />
+
+          <h2 className="font-body text-2xl md:text-3xl font-bold text-waldgruen-dark pt-4">
+            Die Lobbyisten haben Vollzeit dafür. Du nicht.
           </h2>
+
+          <FactCallout
+            number="5.000+"
+            label="registrierte Lobbyisten in Berlin. Ihr Vollzeitjob: mit Abgeordneten reden."
+            source="Lobbyregister des Bundestags"
+          />
+
           <p>
-            In Berlin sind über 5.000 Lobbyisten registriert. Ihr Job ist es,
-            jeden Tag mit Abgeordneten zu reden, Positionspapiere zu schicken,
-            Hintergrundgespräche zu führen. Sie sind gut. Sie werden dafür
-            bezahlt. Sie haben Zeit.
-          </p>
-          <p>
-            Du hast keine Zeit. Aber du hast etwas, das kein Lobbyist hat: eine
-            Stimme bei der nächsten Wahl. Genau deine, im Wahlkreis dieses
-            Abgeordneten. Wenn ein Abgeordneter zwanzig Briefe aus seinem
-            eigenen Wahlkreis zum gleichen Thema bekommt, wird er nervös. Sehr
-            zu Recht. Zwanzig Briefe sind oft das, was zwischen einem sicheren
-            und einem knappen Direktmandat liegt.
+            Sie sind gut. Sie werden dafür bezahlt. Sie haben Zeit. Du hast
+            keine Zeit. Aber du hast etwas, das kein Lobbyist hat: eine Stimme
+            bei der nächsten Wahl. Genau deine, im Wahlkreis dieses Abgeordneten.
+            Wenn ein Abgeordneter zwanzig Briefe aus seinem eigenen Wahlkreis
+            zum gleichen Thema bekommt, wird er nervös. Sehr zu Recht. Zwanzig
+            Briefe sind oft das, was zwischen einem sicheren und einem knappen
+            Direktmandat liegt.
           </p>
           <p>
             Lobbyisten verlassen sich darauf, dass du das nicht weißt. Oder dass
             du es weißt und trotzdem nicht schreibst, weil es sich zu klein
-            anfühlt. Dieses Sich-zu-klein-fühlen ist die wichtigste Ressource
-            jeder geschlossenen Politik.
+            anfühlt.
           </p>
 
-          <h2 className="font-body text-2xl font-bold text-waldgruen-dark pt-4">
+          <PullQuote>
+            Dieses Sich-zu-klein-fühlen ist die wichtigste Ressource jeder
+            geschlossenen Politik.
+          </PullQuote>
+
+          <SectionDivider />
+
+          <h2 className="font-body text-2xl md:text-3xl font-bold text-waldgruen-dark pt-4">
             Demokratie ist ein Muskel
           </h2>
           <p>
@@ -161,37 +201,45 @@ export default function WarumPage() {
             andere mitnehmen.
           </p>
 
-          <h2 className="font-body text-2xl font-bold text-waldgruen-dark pt-4">
+          <SectionDivider />
+
+          <h2 className="font-body text-2xl md:text-3xl font-bold text-waldgruen-dark pt-4">
             Was passiert, wenn 100.000 das Gleiche tun
           </h2>
-          <p>
-            Ein Brief ist ein Brief. Hundert Briefe sind eine Sortier-Aufgabe.
-            Tausend Briefe zum gleichen Thema sind eine Pressemitteilung. Zehntausend
-            Briefe sind eine Bewegung, der ein Abgeordneter im Wahlkampf nicht
-            ausweichen kann. Die Frage ist nicht, ob ein einzelner Brief die
-            Welt rettet. Die Frage ist, ob du den Mut hast, der erste in deinem
-            Bekanntenkreis zu sein, der schreibt.
-          </p>
 
-          <h2 className="font-body text-2xl font-bold text-waldgruen-dark pt-4">
+          <ol className="not-prose grid gap-3 my-4 font-body text-base md:text-lg">
+            {[
+              { n: "1", text: "Brief", mean: "ist ein Brief." },
+              { n: "100", text: "Briefe", mean: "sind eine Sortier-Aufgabe." },
+              { n: "1.000", text: "Briefe", mean: "sind eine Pressemitteilung." },
+              { n: "10.000", text: "Briefe", mean: "sind eine Bewegung, der niemand ausweichen kann." },
+            ].map((row) => (
+              <li
+                key={row.n}
+                className="grid grid-cols-[5rem_1fr] md:grid-cols-[6rem_1fr] items-baseline gap-x-4 border-l-2 border-waldgruen/20 pl-4"
+              >
+                <span className="font-body text-2xl md:text-3xl font-bold text-waldgruen tabular-nums">
+                  {row.n}
+                </span>
+                <span className="text-warmgrau">
+                  <strong className="text-waldgruen-dark">{row.text}</strong> {row.mean}
+                </span>
+              </li>
+            ))}
+          </ol>
+
+          <p>
+            Die Frage ist nicht, ob ein einzelner Brief die Welt rettet. Die
+            Frage ist, ob du den Mut hast, der erste in deinem Bekanntenkreis zu
+            sein, der schreibt.
+          </p>
+        </Prose>
+
+        <div className="mt-20 p-8 md:p-10 bg-waldgruen/5 border border-waldgruen/15 rounded-2xl hover:bg-waldgruen/10 transition-colors">
+          <p className="font-typewriter text-xs uppercase tracking-widest text-waldgruen/60 mb-3">
             Worauf wartest du?
-          </h2>
-          <p>
-            Der schwerste Teil ist nicht das Schreiben. Es ist das Anfangen.
-            Genau deshalb haben wir Brief-nach-Berlin gebaut. Du sagst uns, was
-            dich stört. Wir finden den richtigen Adressaten und schlagen dir
-            einen Brief vor, den du selbst noch in der Hand hast, anpassen
-            kannst und dann unterschreibst.
           </p>
-          <p>
-            Aus &bdquo;Stimme abgeben&ldquo; wird &bdquo;Stimme erheben&ldquo;.
-            Aus Ohnmacht wird Übung. Aus dir wird jemand, der weiß, wie das
-            funktioniert.
-          </p>
-        </article>
-
-        <div className="mt-16 p-8 bg-waldgruen/5 border border-waldgruen/15 rounded-xl">
-          <p className="font-body text-warmgrau leading-relaxed mb-6">
+          <p className="font-body text-warmgrau leading-relaxed mb-6 text-lg">
             Drei Minuten, kein Account, kein Tracking. Wir schicken dir den
             fertigen Brief per Mail, du schreibst ihn ab und steckst ihn in den
             Briefkasten.

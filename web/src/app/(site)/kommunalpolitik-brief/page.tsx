@@ -1,6 +1,8 @@
 import Link from "next/link";
 import type { Metadata } from "next";
 import { APP_URL } from "@/lib/config";
+import { Figure } from "@/components/editorial/Figure";
+import { Prose } from "@/components/editorial/Prose";
 
 export const metadata: Metadata = {
   title: "Brief an Stadtrat oder Gemeinderat schreiben | Brief nach Berlin",
@@ -36,23 +38,33 @@ export default function KommunalpolitikBriefPage() {
           &larr; Zurück
         </Link>
 
-        <p className="font-typewriter text-sm font-bold tracking-widest uppercase text-waldgruen/60 mb-3">
-          Kommunalpolitik
-        </p>
-        <h1 className="font-body text-3xl md:text-4xl font-bold text-waldgruen-dark tracking-tight mb-6">
-          Brief an Stadtrat oder Gemeinderat schreiben
-        </h1>
-        <p className="font-handwriting text-xl md:text-2xl text-warmgrau leading-relaxed mb-12 text-pretty">
-          Nicht jedes Problem gehört nach Berlin. Der kaputte Spielplatz, der
-          fehlende Kita-Platz, die Straße, die seit Jahren auf Sanierung wartet:
-          Das ist Kommunalpolitik. Und die findet im Rathaus statt, nicht im
-          Bundestag.
-        </p>
+          <p className="font-typewriter text-sm font-bold tracking-widest uppercase text-waldgruen/60 mb-3">
+            Kommunalpolitik
+          </p>
+          <h1 className="font-body text-3xl md:text-5xl font-bold text-waldgruen-dark tracking-tight mb-6 text-balance">
+            Brief an Stadtrat oder Gemeinderat schreiben
+          </h1>
 
-        <article className="font-body text-warmgrau leading-[1.85] space-y-7 text-base md:text-lg">
+          <p className="font-handwriting text-xl md:text-2xl text-warmgrau leading-relaxed mb-2 text-pretty">
+            Nicht jedes Problem gehört nach Berlin. Der kaputte Spielplatz, der
+            fehlende Kita-Platz, die Straße, die seit Jahren auf Sanierung wartet:
+            Das ist Kommunalpolitik. Und die findet im Rathaus statt, nicht im
+            Bundestag.
+          </p>
+
+        <Prose>
           <h2 className="font-body text-2xl font-bold text-waldgruen-dark pt-4">
             Wann ist der Stadtrat zuständig?
           </h2>
+
+          <Figure
+            src="/images/img-kiez.webp"
+            width={280}
+            height={188}
+            side="right"
+            rotate="left"
+          />
+
           <p>
             Der Gemeinderat oder Stadtrat entscheidet über alles, was in deiner
             Kommune passiert. Das klingt abstrakt, ist aber sehr konkret:
@@ -165,9 +177,9 @@ export default function KommunalpolitikBriefPage() {
             Wenn dein Thema den Bundestag betrifft, kannst du jetzt direkt
             starten.
           </p>
-        </article>
+        </Prose>
 
-        <div className="mt-16 p-8 bg-waldgruen/5 border border-waldgruen/15 rounded-xl">
+        <div className="mt-16 p-8 bg-waldgruen/5 border border-waldgruen/15 rounded-xl hover:bg-waldgruen/10 transition-colors">
           <p className="font-body text-warmgrau leading-relaxed mb-6">
             Bundesebene? Drei Minuten, kein Account, kein Tracking. Wir finden
             deinen MdB und schlagen dir einen Brief vor, den du selbst

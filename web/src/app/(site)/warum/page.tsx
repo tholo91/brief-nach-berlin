@@ -2,6 +2,8 @@ import Link from "next/link";
 import Image from "next/image";
 import type { Metadata } from "next";
 import { APP_URL, FOUNDER_LINKEDIN, FOUNDER_FEEDBACK_URL } from "@/lib/config";
+import { Figure } from "@/components/editorial/Figure";
+import { Prose } from "@/components/editorial/Prose";
 
 export const metadata: Metadata = {
   title: "Warum es Brief-nach-Berlin gibt | Brief-nach-Berlin",
@@ -37,22 +39,28 @@ export default function WarumPage() {
           &larr; Zurück
         </Link>
 
-        <p className="font-typewriter text-sm font-bold tracking-widest uppercase text-waldgruen/60 mb-3">
-          Hinter dem Projekt
-        </p>
-        <h1 className="font-body text-3xl md:text-4xl font-bold text-waldgruen-dark tracking-tight mb-6">
-          Warum es Brief-nach-Berlin gibt
-        </h1>
-        <p className="font-handwriting text-xl md:text-2xl text-warmgrau leading-relaxed mb-12 text-pretty">
-          Viele Menschen beschweren sich über Politik. Wenige schreiben. Nicht,
-          weil sie nichts zu sagen hätten, sondern weil zwischen Frust und
-          Briefkasten zu viele kleine Hürden liegen.
-        </p>
+          <p className="font-typewriter text-sm font-bold tracking-widest uppercase text-waldgruen/60 mb-3">
+            Hinter dem Projekt
+          </p>
+          <h1 className="font-body text-3xl md:text-4xl font-bold text-waldgruen-dark tracking-tight mb-6">
+            Warum es Brief-nach-Berlin gibt
+          </h1>
+          <p className="font-handwriting text-xl md:text-2xl text-warmgrau leading-relaxed mb-12 text-pretty">
+            Viele Menschen beschweren sich über Politik. Wenige schreiben. Nicht,
+            weil sie nichts zu sagen hätten, sondern weil zwischen Frust und
+            Briefkasten zu viele kleine Hürden liegen.
+          </p>
 
-        <article className="font-body text-warmgrau leading-[1.85] space-y-7 text-base md:text-lg">
-          <h2 className="font-body text-2xl font-bold text-waldgruen-dark pt-4">
-            Wer dahintersteht
-          </h2>
+        <Prose>
+            <h2 className="font-body text-2xl font-bold text-waldgruen-dark pt-4">
+              Wer dahintersteht
+            </h2>
+            <p>
+              Hinter Brief-nach-Berlin steht keine Organisation und kein Team,
+              sondern eine Person, die das Projekt aus eigener Tasche und in
+              eigener Verantwortung baut. Damit klar ist, an wen du dich
+              wendest:
+            </p>
 
           <div className="not-prose flex flex-col sm:flex-row gap-6 items-start sm:items-center my-6">
             <div className="shrink-0">
@@ -76,6 +84,12 @@ export default function WarumPage() {
                 studiert in Lissabon, Leipzig und Bologna. Seitdem baue ich
                 Tools, die gute Initiativen voranbringen und Spaß machen
                 sollen.
+              </p>
+              <p className="mb-4">
+                Und ja, ich bin bekennender Fan von Felix dem Hasen aus
+                meiner Kindheit. Das Design hier lehnt sich ein bisschen an
+                diese Erinnerungen an, und ich hoffe, es macht euch genauso
+                Freude wie mir.
               </p>
               <div className="flex flex-wrap gap-2">
                 <a
@@ -128,16 +142,24 @@ export default function WarumPage() {
             lohnt. Brief-nach-Berlin ist so ein Punkt.
           </p>
 
-          <h2 className="font-body text-2xl font-bold text-waldgruen-dark pt-4">
-            Frust ohne Adresse
-          </h2>
-          <p>
-            Mir ist über die Zeit aufgefallen: Fast alle Menschen, mit denen
-            ich rede, regen sich über irgendetwas in der Politik auf. Über das
-            Bahnchaos, über die Schule der Tochter, über den Zustand des
-            eigenen Stadtteils. Aber kaum jemand schreibt deswegen einen Brief
-            an die zuständige Person. Der Frust ist da, der Adressat fehlt.
-          </p>
+            <h2 className="font-body text-2xl font-bold text-waldgruen-dark pt-4">
+              Frust ohne Adresse
+            </h2>
+
+            <Figure
+              src="/images/img-schreibtisch.webp"
+              width={280}
+              height={188}
+              side="right"
+              rotate="left"
+            />
+            <p>
+              Mir ist über die Zeit aufgefallen: Fast alle Menschen, mit denen
+              ich rede, regen sich über irgendetwas in der Politik auf. Über das
+              Bahnchaos, über die Schule der Tochter, über den Zustand des
+              eigenen Stadtteils. Aber kaum jemand schreibt deswegen einen Brief
+              an die zuständige Person. Der Frust ist da, der Adressat fehlt.
+            </p>
           <p>
             Dabei sind die Hürden alle technischer Natur: Wer ist eigentlich
             mein Abgeordneter? Wie spreche ich den an? Was schreibe ich? Wie
@@ -146,9 +168,10 @@ export default function WarumPage() {
             das gleiche Spiel.
           </p>
 
-          <h2 className="font-body text-2xl font-bold text-waldgruen-dark pt-4">
-            Der Auslöser: ein Telefonat mit meiner Mutter
-          </h2>
+
+            <h2 className="font-body text-2xl font-bold text-waldgruen-dark pt-4">
+              Der Auslöser: ein Telefonat mit meiner Mutter
+            </h2>
           <p>
             Ein konkretes Beispiel dafür war meine Mutter. Sie wohnt in
             Duisburg und hat irgendwann am Telefon über ein paar Probleme im
@@ -170,9 +193,10 @@ export default function WarumPage() {
             Mutter speziell, sondern für alle, denen es so geht.
           </p>
 
-          <h2 className="font-body text-2xl font-bold text-waldgruen-dark pt-4">
-            Aus fünf Hürden wird eine
-          </h2>
+
+            <h2 className="font-body text-2xl font-bold text-waldgruen-dark pt-4">
+              Aus fünf Hürden wird eine
+            </h2>
           <p>
             Du sagst uns, was dich stört, und deine Postleitzahl. Den Rest
             übernehmen wir. Wir finden die richtige Ansprechperson, wir
@@ -190,9 +214,10 @@ export default function WarumPage() {
             der eigentliche Effekt, um den es geht.
           </p>
 
-          <h2 className="font-body text-2xl font-bold text-waldgruen-dark pt-4">
-            Das hier ist keine Petitionsseite
-          </h2>
+
+            <h2 className="font-body text-2xl font-bold text-waldgruen-dark pt-4">
+              Das hier ist keine Petitionsseite
+            </h2>
           <p>
             Petitionen sind eine andere Sache. Da unterschreiben tausend Leute
             denselben Text, und am Ende landet das Ergebnis in einem
@@ -263,19 +288,20 @@ export default function WarumPage() {
             Unterstützung. Bis dahin läuft es einfach weiter.
           </p>
 
-          <h2 className="font-body text-2xl font-bold text-waldgruen-dark pt-4">
-            Was mir bei den Daten wichtig ist
-          </h2>
+
+            <h2 className="font-body text-2xl font-bold text-waldgruen-dark pt-4">
+              Was mir bei den Daten wichtig ist
+            </h2>
           <p>
             Brief-nach-Berlin sammelt keine Daten, die es nicht braucht. Kein
             Account, kein Tracking, keine Profile. Dein Anliegen und dein
             Brief bleiben bei dir. Das ist nicht nur DSGVO-konform, es ist
             die einzige Art, wie eine politische Anwendung in meinen Augen
             funktionieren darf.
-          </p>
-        </article>
+            </p>
+        </Prose>
 
-        <div className="mt-16 p-8 bg-waldgruen/5 border border-waldgruen/15 rounded-xl">
+          <div className="mt-16 p-8 bg-waldgruen/5 border border-waldgruen/15 rounded-xl hover:bg-waldgruen/10 transition-colors">
           <h2 className="font-body text-2xl font-bold text-waldgruen-dark mb-4">
             Probier es aus
           </h2>

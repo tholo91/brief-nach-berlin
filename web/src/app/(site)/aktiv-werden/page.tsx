@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { Figure } from "@/components/editorial/Figure";
 import type { Metadata } from "next";
 import { APP_URL } from "@/lib/config";
 
@@ -40,14 +41,23 @@ const cards: ActionCard[] = [
     kicker: "Persönlich vor Ort",
     title: "Geh in die Bürgersprechstunde",
     body: (
-      <p>
-        Fast jeder Bundestags- und Landtagsabgeordnete bietet einmal im Monat
-        eine offene Sprechstunde im Wahlkreisbüro an. Termine stehen auf der
-        Website der oder des Abgeordneten, oder du rufst kurz dort an. Eine
-        halbe Stunde gegenüber einer Person, die in Berlin oder im Landtag
-        mitstimmt: das ist Demokratie auf Augenhöhe und kostet dich nur die
-        Anfahrt.
-      </p>
+      <>
+        <Figure
+          src="/images/img-treppe.webp"
+          width={220}
+          height={148}
+          side="right"
+          rotate="right"
+        />
+        <p>
+          Fast jeder Bundestags- und Landtagsabgeordnete bietet einmal im Monat
+          eine offene Sprechstunde im Wahlkreisbüro an. Termine stehen auf der
+          Website der oder des Abgeordneten, oder du rufst kurz dort an. Eine
+          halbe Stunde gegenüber einer Person, die in Berlin oder im Landtag
+          mitstimmt: das ist Demokratie auf Augenhöhe und kostet dich nur die
+          Anfahrt.
+        </p>
+      </>
     ),
     href: "/treppe-der-selbstwirksamkeit#stufe-6",
     cta: "Mehr zu Stufe 6",
@@ -95,17 +105,18 @@ export default function AktivWerdenPage() {
           &larr; Zurück
         </Link>
 
-        <p className="font-typewriter text-sm font-bold tracking-widest uppercase text-waldgruen/60 mb-3">
-          Du hast Blut geleckt?
-        </p>
-        <h1 className="font-body text-3xl md:text-4xl font-bold text-waldgruen-dark tracking-tight mb-6">
-          Was du sonst noch tun kannst
-        </h1>
-        <p className="font-handwriting text-xl md:text-2xl text-warmgrau leading-relaxed mb-12 text-pretty">
-          Du hast deinen Brief geschrieben. Stark. Und jetzt? Ein Brief ist
-          selten das Ende, oft der Anfang. Hier sind die nächsten Schritte,
-          sortiert nach Aufwand.
-        </p>
+          <p className="font-typewriter text-sm font-bold tracking-widest uppercase text-waldgruen/60 mb-3">
+            Du hast Blut geleckt?
+          </p>
+          <h1 className="font-body text-3xl md:text-4xl font-bold text-waldgruen-dark tracking-tight mb-6">
+            Was du sonst noch tun kannst
+          </h1>
+
+          <p className="font-handwriting text-xl md:text-2xl text-warmgrau leading-relaxed mb-2 text-pretty">
+            Du hast deinen Brief geschrieben. Stark. Und jetzt? Ein Brief ist
+            selten das Ende, oft der Anfang. Hier sind die nächsten Schritte,
+            sortiert nach Aufwand.
+          </p>
 
         <div className="font-body text-warmgrau leading-relaxed space-y-3 mb-14">
           <p>
@@ -120,8 +131,7 @@ export default function AktivWerdenPage() {
         <ul className="space-y-8">
           {cards.map((card) => (
             <li
-              key={card.href}
-              className="bg-white border border-waldgruen/15 rounded-xl p-6 md:p-8 shadow-sm"
+              className="bg-white border border-waldgruen/15 rounded-xl p-6 md:p-8 shadow-sm hover:shadow-md transition-shadow"
             >
               <p className="font-typewriter text-xs uppercase tracking-wider text-warmgrau/60 mb-2">
                 {card.kicker}
@@ -129,7 +139,7 @@ export default function AktivWerdenPage() {
               <h2 className="font-body text-xl md:text-2xl font-bold text-waldgruen-dark mb-3">
                 {card.title}
               </h2>
-              <div className="font-body text-warmgrau leading-relaxed mb-5">
+              <div className="font-body text-warmgrau leading-relaxed mb-5 flow-root">
                 {card.body}
               </div>
               {card.external ? (
@@ -153,7 +163,31 @@ export default function AktivWerdenPage() {
           ))}
         </ul>
 
-        <div className="mt-16 p-8 bg-waldgruen/5 border border-waldgruen/15 rounded-xl">
+        <div className="mt-16 mb-10">
+          <p className="font-typewriter text-sm font-bold tracking-widest uppercase text-waldgruen/60 mb-4">
+            Häufig gefragt
+          </p>
+          <ul className="space-y-3">
+            <li>
+              <Link
+                href="/was-tun-gegen-politische-ohnmacht"
+                className="font-body text-waldgruen-dark underline decoration-waldgruen/30 underline-offset-4 hover:decoration-waldgruen"
+              >
+                Was tun, wenn man sich politisch ohnmächtig fühlt?
+              </Link>
+            </li>
+            <li>
+              <Link
+                href="/lohnt-sich-brief-an-politiker"
+                className="font-body text-waldgruen-dark underline decoration-waldgruen/30 underline-offset-4 hover:decoration-waldgruen"
+              >
+                Lohnt es sich, einem Politiker zu schreiben?
+              </Link>
+            </li>
+          </ul>
+        </div>
+
+        <div className="p-8 bg-waldgruen/5 border border-waldgruen/15 rounded-xl hover:bg-waldgruen/10 transition-colors">
           <h2 className="font-body text-2xl font-bold text-waldgruen-dark mb-4">
             Noch keinen Brief geschrieben?
           </h2>

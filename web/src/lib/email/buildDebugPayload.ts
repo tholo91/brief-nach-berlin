@@ -46,5 +46,8 @@ export function buildDebugPayload(
     hasParty: Boolean(data.party),
     hasNgo: Boolean(data.ngo),
     usedSpeechToText: data.usedSpeechToText ?? false,
+    userEmail: data.email,
+    politicianId: p.id,
+    plz: data.plz,
   };
 }

@@ -367,39 +367,11 @@ export default function Datenschutz() {
               13. Reichweitenmessung (Vercel Web Analytics)
             </h2>
             <p>
-              Wir nutzen Vercel Web Analytics, einen datenschutzfreundlichen
-              Analysedienst von Vercel Inc. (siehe Abschnitt 4). Dieser Dienst
-              wird ausschließlich eingesetzt, um Brief nach Berlin in der
-              Anfangsphase zu skalieren: Wir möchten verstehen, wie viele
-              Menschen die Seite besuchen, wo Fehler auftreten und wo der
-              Dienst zu langsam ist. Sobald die Plattform stabil läuft, werden
-              wir diese Funktion deaktivieren.
-            </p>
-            <p className="mt-2">
-              Vercel Web Analytics arbeitet <strong>cookielos</strong> und
-              ohne persistente Identifikatoren. Es werden keine
-              Nutzerprofile erstellt und keine persönlichen Nutzungsprofile
-              aufgebaut. Zur Zählung eindeutiger Besuche wird ein täglich
-              rotierender Hash aus IP-Adresse und User-Agent gebildet, der
-              nicht tagesübergreifend verknüpft werden kann.
-            </p>
-            <p className="mt-2">
-              <strong className="text-waldgruen-dark">
-                Die erhobenen Daten werden niemals verkauft, niemals zur
-                Profilbildung genutzt und niemals mit Werbenetzwerken oder
-                Drittparteien geteilt.
-              </strong>{" "}
-              Sie dienen ausschließlich der technischen Betriebsüberwachung
-              dieses Angebots.
-            </p>
-            <p className="mt-2">
-              Rechtsgrundlage: Art. 6 Abs. 1 lit. f DSGVO (berechtigtes
-              Interesse an Reichweitenmessung und Stabilität des Dienstes).
-              Ein Cookie-Banner ist nicht erforderlich, da kein Tracking-Cookie
-              gesetzt wird.
-            </p>
-            <p className="mt-2 text-sm">
-              Weitere Informationen:{" "}
+              Wir nutzen Vercel Web Analytics, um zu sehen, wie viele Menschen
+              die Seite besuchen und wo technische Fehler auftreten. Der Dienst
+              arbeitet <strong>cookielos</strong>, erstellt keine
+              Nutzerprofile und verarbeitet keine Brief-Inhalte.
+              Rechtsgrundlage: Art. 6 Abs. 1 lit. f DSGVO. Details:{" "}
               <a
                 href="https://vercel.com/docs/analytics/privacy-policy"
                 target="_blank"
@@ -459,7 +431,82 @@ export default function Datenschutz() {
 
           <div>
             <h2 className="font-semibold text-waldgruen-dark mb-2">
-              16. KI-generierte Inhalte und Disclaimer
+              16. Bewertungen und Feedback
+            </h2>
+            <p className="mb-3">
+              Wenn Sie nach dem Brief-Versand auf einen Stern in der E-Mail
+              klicken und eine Bewertung absenden, speichern wir folgende
+              Daten bei Supabase (Server in Frankfurt am Main, Region eu-central-1):
+            </p>
+            <ul className="list-disc pl-6 space-y-1 mb-3">
+              <li>Sterne-Bewertung (1 bis 5)</li>
+              <li>Optional: Ihr Kommentar (max. 500 Zeichen)</li>
+              <li>Optional: Ihr Name oder Pseudonym (max. 80 Zeichen)</li>
+              <li>Ihr Häkchen für die öffentliche Anzeige (an oder aus)</li>
+              <li>
+                Ihre Angabe, ob der Brief tatsächlich verschickt wird (Ja / Nein)
+              </li>
+              <li>
+                Verknüpfung zum erstellten Brief (intern: Politiker-ID, PLZ,
+                technische Brief-Metadaten zur Produktverbesserung)
+              </li>
+              <li>
+                Ihre E-Mail-Adresse (kommt aus dem signierten Bewertungs-Link
+                in der Brief-Mail)
+              </li>
+              <li>Pseudonymisierter Hash Ihrer IP-Adresse (Spam-Schutz)</li>
+              <li>Zeitstempel</li>
+            </ul>
+            <p className="mb-3">
+              Ihre E-Mail nutzen wir <strong>ausschließlich</strong> für
+              eventuelle Rückfragen zu Ihrer Bewertung. Sie wird niemals
+              öffentlich gezeigt, nicht für Newsletter oder Marketing
+              verwendet und nicht an Dritte weitergegeben.
+            </p>
+            <p className="mb-3">
+              Wenn Sie dem Häkchen „öffentlich zeigen“ zustimmen, kann Ihre
+              Bewertung später anonymisiert auf brief-nach-berlin.de erscheinen,
+              gegebenenfalls mit dem von Ihnen angegebenen Namen oder
+              Pseudonym. Sie können das Häkchen vor dem Absenden jederzeit
+              entfernen.
+            </p>
+            <p className="mb-3">
+              <strong>Rechtsgrundlage:</strong> Art. 6 Abs. 1 lit. a DSGVO
+              (Einwilligung) für die öffentliche Anzeige; Art. 6 Abs. 1 lit. f
+              DSGVO (berechtigtes Interesse: Produktverbesserung) für die
+              interne Auswertung.
+            </p>
+            <p className="mb-3">
+              <strong>Speicherort:</strong> Supabase Inc. (Auftragsverarbeiter),
+              Server-Region Frankfurt (EU). Auftragsverarbeitungsvertrag (DPA):{" "}
+              <a
+                href="https://supabase.com/legal/dpa"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-waldgruen hover:underline"
+              >
+                supabase.com/legal/dpa
+              </a>
+              .
+            </p>
+            <p>
+              <strong>Aufbewahrung:</strong> Maximal 24 Monate. Sie können
+              Ihre Bewertung jederzeit löschen lassen, indem Sie eine kurze
+              E-Mail an{" "}
+              <a
+                href="mailto:datenschutz@brief-nach-berlin.de"
+                className="text-waldgruen hover:underline"
+              >
+                datenschutz@brief-nach-berlin.de
+              </a>{" "}
+              schreiben. Geben Sie dafür die E-Mail-Adresse an, mit der Sie
+              den Brief versendet haben.
+            </p>
+          </div>
+
+          <div>
+            <h2 className="font-semibold text-waldgruen-dark mb-2">
+              17. KI-generierte Inhalte und Disclaimer
             </h2>
             <p className="mb-3">
               Brief nach Berlin nutzt künstliche Intelligenz, um Ihr Anliegen

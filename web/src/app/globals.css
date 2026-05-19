@@ -32,3 +32,62 @@ body {
 html {
   scroll-behavior: smooth;
 }
+
+/* ---------- /feedback page animations ---------- */
+/* Form mount: gentle slide-up + fade. */
+@keyframes feedback-in {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.animate-feedback-in {
+  animation: feedback-in 360ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+/* Thank-you card: slightly bigger, with a soft bounce arrival. */
+@keyframes thank-you-in {
+  0%   { opacity: 0; transform: scale(0.94) translateY(12px); }
+  60%  { opacity: 1; transform: scale(1.02) translateY(0); }
+  100% { opacity: 1; transform: scale(1) translateY(0); }
+}
+.animate-thank-you-in {
+  animation: thank-you-in 520ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+/* "Danke!" headline: scale + tiny rotate, delayed so it lands after the card. */
+@keyframes danke-pop {
+  0%   { opacity: 0; transform: scale(0.6) rotate(-6deg); }
+  60%  { opacity: 1; transform: scale(1.08) rotate(2deg); }
+  100% { opacity: 1; transform: scale(1) rotate(-2deg); }
+}
+.animate-danke-pop {
+  animation: danke-pop 700ms cubic-bezier(0.34, 1.56, 0.64, 1) 120ms both;
+}
+
+/* Sparkle: gentle twinkle around the thank-you card. Infinite, eased. */
+@keyframes twinkle {
+  0%, 100% { opacity: 0; transform: scale(0.6) rotate(0deg); }
+  50%      { opacity: 1; transform: scale(1.1) rotate(8deg); }
+}
+.animate-twinkle {
+  animation: twinkle 1800ms ease-in-out infinite;
+}
+
+/* Auto-redirect progress bar at bottom of the thank-you card. */
+@keyframes redirect-progress {
+  from { transform: scaleX(0); }
+  to   { transform: scaleX(1); }
+}
+.animate-progress {
+  animation: redirect-progress 20000ms linear both;
+}
+
+/* Respect users who don't want motion. */
+@media (prefers-reduced-motion: reduce) {
+  .animate-feedback-in,
+  .animate-thank-you-in,
+  .animate-danke-pop,
+  .animate-twinkle,
+  .animate-progress {
+    animation: none !important;
+  }
+}

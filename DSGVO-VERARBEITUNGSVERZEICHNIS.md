@@ -69,11 +69,27 @@ Es ist kein Datenschutzbeauftragter bestellt (keine Pflicht nach § 38 BDSG, da 
 
 ---
 
+## VT-5 - Nutzer-Bewertungen (Reviews)
+
+| Punkt | Inhalt |
+|---|---|
+| Zweck | Produktverbesserung anhand von Nutzer-Feedback; optional: anonymisierte öffentliche Anzeige als Social Proof. |
+| Betroffene Personen | Nutzer, die nach Brief-Versand freiwillig auf den Sterne-Link in der Mail klicken und das Bewertungs-Formular absenden. |
+| Datenkategorien | Sterne-Bewertung (1-5), optional Kommentar, optional Name/Pseudonym, Consent-Flag, E-Mail-Adresse (aus signiertem Link), Politiker-ID + PLZ + technische Brief-Metadaten (intern), pseudonymisierter IP-Hash, Zeitstempel. |
+| Rechtsgrundlage | Art. 6 Abs. 1 lit. a DSGVO (Einwilligung) für die öffentliche Anzeige; Art. 6 Abs. 1 lit. f DSGVO (berechtigtes Interesse: Produktverbesserung) für die interne Auswertung. |
+| Empfänger | Supabase Inc. (Auftragsverarbeiter), Server-Region Frankfurt (eu-central-1). |
+| Drittlandtransfer | Keiner (Server in EU/DE). Supabase Inc. ist in den USA ansässig; Datenverarbeitung erfolgt in der EU-Region. |
+| Technische Sicherheit | Schreibzugriff nur server-seitig mit Service-Role-Key; RLS-Policy schränkt Lesezugriff via anon-Key auf consented Rows ein. Bewertungs-Link ist HMAC-signiert, ungültige Tokens werden ohne DB-Schreibvorgang abgewiesen. IP wird per HMAC-SHA256 (Salt: `REVIEW_IP_SALT`) pseudonymisiert. |
+| Speicherfrist | Maximal 24 Monate. Löschung auf Anfrage jederzeit per E-Mail an datenschutz@brief-nach-berlin.de. |
+
+---
+
 ## Auftragsverarbeiter im Überblick
 
 | Verarbeiter | Sitz | Zweck | DPA / AVV |
 |---|---|---|---|
 | Vercel Inc. | Walnut, CA, USA (Region fra1 / Frankfurt) | Hosting | https://vercel.com/legal/dpa |
-| Mistral AI SAS | Paris, FR | KI-Briefgenerierung, Moderation, Spracherkennung | https://mistral.ai/terms#data-processing-agreement |
+| Mistral AI SAS | Paris, FR | KI-Briefgenerierung, Moderation, Spracherkennung (Scale Plan seit 2026-05-19, Training auf Kundendaten standardmäßig deaktiviert) | https://mistral.ai/terms#data-processing-agreement |
 | Brevo SAS | Paris, FR | Transaktionsmail-Versand | https://www.brevo.com/legal/termsofuse/dpa/ |
+| Supabase Inc. | San Francisco, CA, USA (Region eu-central-1 / Frankfurt) | Datenbank-Speicherung Nutzer-Bewertungen | https://supabase.com/legal/dpa |
 | Posteo e.K. | Berlin, DE | E-Mail-Postfach für Verantwortlichen | https://posteo.de/site/datenschutz |

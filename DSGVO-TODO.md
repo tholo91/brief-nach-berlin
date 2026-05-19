@@ -22,18 +22,13 @@
 
 ---
 
-## ☐ Task 2: Mistral - Training-Opt-Out verifizieren + Screenshot
+## ☑ Task 2: Mistral - Training-Opt-Out verifizieren + Screenshot — ERLEDIGT 2026-05-19
 
-**Warum:** Datenschutzerklärung Abschnitt 9 sagt zu, dass deine API-Daten nicht für Modelltraining genutzt werden. Das musst du in der Console verifizieren und beweissicher dokumentieren.
+**Lösung:** Workspace auf **Scale Plan** (pay-per-use) upgegradet. Scale-Plan-Daten werden laut Mistral-Policy **standardmäßig nicht** zum Training verwendet (data isolation by default, im Gegensatz zum Experiment-Plan, wo Inputs/Outputs per Default ins Training fließen). Damit ist Abschnitt 9 der Datenschutzerklärung gedeckt.
 
-**Schritte:**
-1. Login: https://console.mistral.ai
-2. Workspace auswählen (das, dessen API-Key in `BREVO_API_KEY` ... äh, Verzeihung: in `MISTRAL_API_KEY` steckt)
-3. Navigation: **Settings** -> **Data Sharing** (oder **Workspace Settings** -> **Privacy**)
-4. Sicherstellen: **"Use my data to train models"** ist OFF / "Opt out"
-5. Falls Toggle nicht da: bei Mistral Support nachfragen (privacy@mistral.ai), schriftliche Bestätigung einholen.
+**Quelle:** https://help.mistral.ai/en/articles/347617-do-you-use-my-user-data-to-train-your-artificial-intelligence-models
 
-**Beweis sichern:** Screenshot vom Data-Sharing-Toggle -> `web/docs/compliance/mistral-training-optout.png` mit aktuellem Datum.
+**Resthinweis:** Bei nächstem Login zusätzlich in den Workspace Privacy Settings einen Screenshot des "Data Sharing"-Status sichern und unter `web/docs/compliance/mistral-scale-plan.png` ablegen (für die Akte, nicht blockierend).
 
 ---
 
@@ -52,7 +47,29 @@
 
 ---
 
-## Wenn alle drei Häkchen gesetzt sind
+## ☐ Task 4: Supabase - DPA herunterladen + EU-Region (Frankfurt) verifizieren
+
+**Warum:** Mit der `reviews`-Tabelle verarbeiten wir personenbezogene Daten (E-Mail, optional Name, Kommentar) in einer Datenbank. DSGVO Art. 28 verlangt einen Auftragsverarbeitungsvertrag (DPA) mit Supabase. Die Datenschutzerklärung Abschnitt 16 verweist auf den DPA und behauptet Server-Region Frankfurt - beides muss beweissicher belegt sein.
+
+**Schritte:**
+1. Login: https://supabase.com/dashboard
+2. Projekt `brief-nach-berlin` (Ref `fkejmnqkmmmjmesgpiop`) öffnen
+3. **Settings** -> **General**: Region prüfen - muss `Frankfurt (eu-central-1)` sein. Screenshot machen.
+4. **Settings** -> **Compliance** (oder Account-Settings -> Legal): DPA-PDF herunterladen unter https://supabase.com/legal/dpa
+5. PDF ablegen unter `web/docs/compliance/supabase-dpa-2026-XX.pdf` (mit aktuellem Monat)
+6. Verarbeitungsverzeichnis ([DSGVO-VERARBEITUNGSVERZEICHNIS.md](DSGVO-VERARBEITUNGSVERZEICHNIS.md)) prüfen: Eintrag „VT-5 Nutzer-Bewertungen" muss vorhanden sein.
+
+**Beweis sichern:** Region-Screenshot + signiertes/heruntergeladenes DPA-PDF.
+
+**Bonus-Check:** RLS-Verifikation in Supabase Studio SQL-Editor:
+```sql
+-- Mit anon-Key: muss nur consented Rows liefern
+SELECT count(*) FROM reviews;
+```
+
+---
+
+## Wenn alle vier Häkchen gesetzt sind
 
 - Diese Datei umbenennen in `DSGVO-TODO-DONE-2026-XX-XX.md` oder löschen
 - Compliance-Score: 95/100

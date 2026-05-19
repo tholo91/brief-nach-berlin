@@ -20,6 +20,26 @@ function buildDebugUrl(d: LetterDebugPayload): string {
   return `${APP_URL}/debug?d=${b64}`;
 }
 
+// Email-client-safe star rating bar. Used inside the Postadresse box
+// (replacing the static abgeordnetenwatch profile button). Each star is
+// its own anchor pointing at /feedback with the chosen rating; no JS,
+// no hover state (mail clients strip :hover).
+//
+// Visual: 4 gold-filled + 1 gold-outlined star. Looks inviting without
+// claiming a real average rating; the form on /feedback prefills with
+// whichever star was clicked and lets the user change it.
+function buildStarBarHtml(token: string): string {
+  const url = (n: number) => `${APP_URL}/feedback?r=${n}&t=${token}`;
+  // Padding bumped to clear the 44pt iOS HIG tap target on mobile mail.
+  const star = (n: number, glyph: "filled" | "outline") => `
+    <a href="${url(n)}" target="_blank" rel="noopener noreferrer"
+       style="color:#D4A017;mso-color-alt:#D4A017;text-decoration:none;font-size:26px;line-height:1;padding:8px 4px;display:inline-block;">${glyph === "filled" ? "&#9733;" : "&#9734;"}</a>`;
+  return `
+    <p style="margin:0 0 8px;font-family:Georgia,'Times New Roman',serif;font-size:13px;color:#2D5016;font-weight:bold;letter-spacing:0.2px;">Wie findest du<br>deinen Brief?</p>
+    <div style="white-space:nowrap;line-height:1;">${star(1, "filled")}${star(2, "filled")}${star(3, "filled")}${star(4, "filled")}${star(5, "outline")}</div>
+    <p style="margin:8px 0 0;font-family:Georgia,'Times New Roman',serif;font-size:11px;color:#b0b0b0;line-height:1.4;">Dauert 10 Sek, hilft mir sehr</p>`;
+}
+
 // Escape HTML entities to prevent HTML injection in email (T-03-02)
 function escapeHtml(text: string): string {
   return text
@@ -81,6 +101,15 @@ export function buildEmailHtml(data: SendLetterEmailParams): string {
   <!--[if mso]>
   <style>td { font-family: 'Courier New', Courier, monospace !important; }</style>
   <![endif]-->
+  <style>
+    @media only screen and (max-width: 600px) {
+      .bnb-pad { padding-left: 16px !important; padding-right: 16px !important; }
+      .bnb-inner-pad { padding-left: 14px !important; padding-right: 14px !important; }
+      .bnb-stack { display: block !important; width: 100% !important; }
+      .bnb-stack-left { padding: 0 0 14px 0 !important; width: 100% !important; }
+      .bnb-stack-right { padding: 14px 0 0 0 !important; border-left: 0 !important; border-top: 1px solid #E0DCD7 !important; width: 100% !important; text-align: center !important; }
+    }
+  </style>
 </head>
 <body style="margin:0;padding:0;background-color:#FAF8F5;font-family:Georgia,'Times New Roman',serif;">
 
@@ -97,7 +126,7 @@ export function buildEmailHtml(data: SendLetterEmailParams): string {
 
                 <!-- Title: "Brief nach Berlin" -->
                 <tr>
-                  <td colspan="7" style="padding:28px 32px 16px;text-align:center;background-color:#ffffff;">
+                  <td colspan="7" class="bnb-pad" style="padding:28px 32px 16px;text-align:center;background-color:#ffffff;">
                     <h1 style="margin:0;font-family:Georgia,'Times New Roman',serif;font-size:22px;color:#2D5016;font-weight:bold;letter-spacing:0.5px;">Brief nach Berlin</h1>
                     <p style="margin:8px 0 0;font-family:Georgia,'Times New Roman',serif;font-size:14px;color:#666666;">Dein Brief ist fertig zum Absenden.</p>
                   </td>
@@ -105,7 +134,7 @@ export function buildEmailHtml(data: SendLetterEmailParams): string {
 
                 <!-- Intro: warm founder voice, no AI mention -->
                 <tr>
-                  <td colspan="7" style="padding:0 32px 20px;background-color:#ffffff;">
+                  <td colspan="7" class="bnb-pad" style="padding:0 32px 20px;background-color:#ffffff;">
                     <div style="border-left:3px solid rgba(45,80,22,0.45);padding-left:16px;">
                       <p style="margin:0;font-family:Georgia,'Times New Roman',serif;font-size:15px;color:#4A4A4A;line-height:1.75;">Hier ist dein Briefentwurf. Lies ihn gründlich durch und pass ihn an, damit es <em style="font-style:italic;">dein Brief</em> wird. Wir bieten dir einen Schnellstart, damit dein Anliegen ratzfatz auf dem richtigen Schreibtisch landet.<br>Riesen Dankeschön, dass du dich engagierst!</p>
                     </div>
@@ -114,29 +143,30 @@ export function buildEmailHtml(data: SendLetterEmailParams): string {
 
                 <!-- Brief block (D-08, section 1) -->
                 <tr>
-                  <td colspan="7" style="padding:0 32px 8px;background-color:#ffffff;">
-                    <div style="background-color:#FAF8F5;border:1px solid #E0DCD7;border-radius:4px;padding:24px;">
+                  <td colspan="7" class="bnb-pad" style="padding:0 32px 8px;background-color:#ffffff;">
+                    <div class="bnb-inner-pad" style="background-color:#FAF8F5;border:1px solid #E0DCD7;border-radius:4px;padding:24px;">
                       <p style="margin:0;font-family:'Courier New',Courier,monospace;font-size:14px;line-height:1.7;color:#4A4A4A;white-space:pre-wrap;">${letterHtml}</p>
                     </div>
                   </td>
                 </tr>
 
-                <!-- Postadresse (D-08, section 2) -->
+                <!-- Postadresse (D-08, section 2): name links to abgeordnetenwatch,
+                     right column hosts the star-rating widget instead of a static profile button. -->
                 <tr>
-                  <td colspan="7" style="padding:16px 32px 24px;background-color:#ffffff;">
+                  <td colspan="7" class="bnb-pad" style="padding:16px 32px 24px;background-color:#ffffff;">
                     <h2 style="margin:0 0 12px;font-family:Georgia,'Times New Roman',serif;font-size:16px;color:#2D5016;font-weight:bold;">Adresse</h2>
-                    <div style="background-color:#FAF8F5;border:1px solid #E0DCD7;border-radius:4px;padding:16px 20px;">
+                    <div class="bnb-inner-pad" style="background-color:#FAF8F5;border:1px solid #E0DCD7;border-radius:4px;padding:16px 20px;">
                       <table role="presentation" cellpadding="0" cellspacing="0" width="100%">
                         <tr>
-                          <td style="vertical-align:top;padding-right:16px;width:60%;">
+                          <td class="bnb-stack bnb-stack-left" style="vertical-align:top;padding-right:16px;width:60%;">
                             <p style="margin:0;font-family:'Courier New',Courier,monospace;font-size:14px;line-height:1.8;color:#4A4A4A;">
-                              <strong>${fullName}, MdB (${party})</strong><br>
+                              <strong><a href="${profileUrl}" target="_blank" rel="noopener noreferrer" style="color:#2D5016;text-decoration:underline;">${fullName}, MdB (${party})</a></strong><br>
                               Deutscher Bundestag<br>
                               ${addressLines}
                             </p>
                           </td>
-                          <td style="vertical-align:middle;text-align:center;padding-left:16px;border-left:1px solid #E0DCD7;width:40%;">
-                            <a href="${profileUrl}" target="_blank" rel="noopener noreferrer" style="display:inline-block;background-color:#2D5016;color:#ffffff;font-family:Georgia,'Times New Roman',serif;font-size:12px;font-weight:bold;text-decoration:none;padding:10px 14px;border-radius:4px;line-height:1.5;text-align:center;">Profil auf<br>abgeordnetenwatch</a>
+                          <td class="bnb-stack bnb-stack-right" style="vertical-align:middle;text-align:center;padding-left:16px;border-left:1px solid #E0DCD7;width:40%;">
+                            ${data.feedbackToken ? buildStarBarHtml(data.feedbackToken) : `<a href="${profileUrl}" target="_blank" rel="noopener noreferrer" style="display:inline-block;background-color:#2D5016;color:#ffffff;font-family:Georgia,'Times New Roman',serif;font-size:12px;font-weight:bold;text-decoration:none;padding:10px 14px;border-radius:4px;line-height:1.5;text-align:center;">Profil auf<br>abgeordnetenwatch</a>`}
                           </td>
                         </tr>
                       </table>
@@ -146,7 +176,7 @@ export function buildEmailHtml(data: SendLetterEmailParams): string {
 
                 <!-- Empfehlung: Brief von Hand abschreiben (sets the frame before the steps) -->
                 <tr>
-                  <td colspan="7" style="padding:0 32px 20px;background-color:#ffffff;">
+                  <td colspan="7" class="bnb-pad" style="padding:0 32px 20px;background-color:#ffffff;">
                     <p style="margin:0 0 8px;font-family:Georgia,'Times New Roman',serif;font-size:15px;color:#333333;font-weight:bold;">Unsere Empfehlung: Brief von Hand abschreiben</p>
                     <p style="margin:0;font-family:Georgia,'Times New Roman',serif;font-size:14px;color:#4A4A4A;line-height:1.6;">Handgeschriebene Briefe werden im Bundestag tatsächlich gelesen und besprochen. Sie signalisieren echtes persönliches Engagement und werden nicht wie Massenpost behandelt. &rarr; <a href="${APP_URL}/tipps" style="color:#2D5016;text-decoration:underline;">Tipps für den perfekten Brief</a></p>
                   </td>
@@ -154,7 +184,7 @@ export function buildEmailHtml(data: SendLetterEmailParams): string {
 
                 <!-- Naechste Schritte (D-08, section 3) -->
                 <tr>
-                  <td colspan="7" style="padding:0 32px 24px;background-color:#ffffff;">
+                  <td colspan="7" class="bnb-pad" style="padding:0 32px 24px;background-color:#ffffff;">
                     <h2 style="margin:0 0 16px;font-family:Georgia,'Times New Roman',serif;font-size:16px;color:#2D5016;font-weight:bold;">Nächste Schritte</h2>
 
                     <table role="presentation" cellpadding="0" cellspacing="0" width="100%">
@@ -195,7 +225,7 @@ export function buildEmailHtml(data: SendLetterEmailParams): string {
 
                 <!-- Personal sign-off from Thomas (handwritten Caveat) -->
                 <tr>
-                  <td colspan="7" style="padding:8px 32px 16px;background-color:#ffffff;text-align:left;">
+                  <td colspan="7" class="bnb-pad" style="padding:8px 32px 16px;background-color:#ffffff;text-align:left;">
                     <p style="margin:0 0 20px;font-family:Georgia,'Times New Roman',serif;font-size:14px;color:#4A4A4A;line-height:1.6;">
                       Toll, dass du dir die Zeit für unsere Demokratie nimmst. Melde dich super gerne bei <a href="https://www.heyspeak.io/l/WIOENjqJn6z6WKtkWgDEFg" target="_blank" rel="noopener noreferrer" style="color:#2D5016;text-decoration:underline;">Fragen oder weiteren Anregungen</a>. Beste Grüße aus Bremen ✌️
                     </p>
@@ -210,7 +240,7 @@ export function buildEmailHtml(data: SendLetterEmailParams): string {
 
                 <!-- Action buttons: stretched two-column row, equal width -->
                 <tr>
-                  <td colspan="7" style="padding:8px 32px 20px;background-color:#ffffff;">
+                  <td colspan="7" class="bnb-pad" style="padding:8px 32px 20px;background-color:#ffffff;">
                     <table role="presentation" cellpadding="0" cellspacing="0" width="100%" style="border-collapse:separate;">
                       <tr>
                         <td style="padding-right:6px;width:50%;" valign="top">
@@ -226,8 +256,8 @@ export function buildEmailHtml(data: SendLetterEmailParams): string {
 
                 <!-- Cause-recruit block: motivate sender to invite Wahlkreis-people to write their own letters -->
                 <tr>
-                  <td colspan="7" style="padding:8px 32px 24px;background-color:#ffffff;">
-                    <div style="background-color:#FAF8F5;border:1px solid #E0DCD7;border-radius:6px;padding:20px 22px;">
+                  <td colspan="7" class="bnb-pad" style="padding:8px 32px 24px;background-color:#ffffff;">
+                    <div class="bnb-inner-pad" style="background-color:#FAF8F5;border:1px solid #E0DCD7;border-radius:6px;padding:20px 22px;">
                       <h2 style="margin:0 0 8px;font-family:Georgia,'Times New Roman',serif;font-size:16px;color:#2D5016;font-weight:bold;">Gemeinsam noch lauter</h2>
                       <p style="margin:0 0 14px;font-family:Georgia,'Times New Roman',serif;font-size:14px;color:#4A4A4A;line-height:1.6;">
                         Dein Brief wirkt. Und er wirkt noch stärker, wenn weitere Stimmen aus deinem Wahlkreis dazukommen. Briefe aus derselben Gegend zum gleichen Thema bekommen im Bundestag besonderes Gewicht.<br><br>
@@ -257,7 +287,7 @@ export function buildEmailHtml(data: SendLetterEmailParams): string {
 
                 <!-- Footer -->
                 <tr>
-                  <td colspan="7" style="padding:24px 32px 16px;background-color:#FAF8F5;text-align:center;">
+                  <td colspan="7" class="bnb-pad" style="padding:24px 32px 16px;background-color:#FAF8F5;text-align:center;">
                     <p style="margin:0;font-family:Georgia,'Times New Roman',serif;font-size:12px;color:#999999;">
                       <a href="${APP_URL}" style="color:#2D5016;text-decoration:none;">Brief nach Berlin</a> · Deine Stimme zählt.
                     </p>
@@ -266,12 +296,12 @@ export function buildEmailHtml(data: SendLetterEmailParams): string {
 
                 <!-- Legal / disclaimer block (smaller, below footer) -->
                 <tr>
-                  <td colspan="7" style="padding:8px 32px 24px;background-color:#FAF8F5;text-align:center;">
+                  <td colspan="7" class="bnb-pad" style="padding:8px 32px 24px;background-color:#FAF8F5;text-align:center;">
                     <p style="margin:0 0 6px;font-family:Georgia,'Times New Roman',serif;font-size:11px;color:#aaaaaa;line-height:1.5;">
                       <strong>Hinweis:</strong> Der Brief ist ein generierter Entwurf. Bitte passe ihn an und prüfe Politikerdaten vor dem Versand bei <a href="${profileUrl}" target="_blank" rel="noopener noreferrer" style="color:#888888;">abgeordnetenwatch.de</a>. Die Verantwortung für den Inhalt liegt bei dir.
                     </p>
                     <p style="margin:0;font-family:Georgia,'Times New Roman',serif;font-size:11px;color:#aaaaaa;line-height:1.5;">
-                      <a href="${APP_URL}/datenschutz" style="color:#888888;">Datenschutz</a>: deine Daten werden nach Versand nicht gespeichert.${data.debug ? ` · <a href="${buildDebugUrl(data.debug)}" style="color:#888888;text-decoration:none;">Debug</a>` : ""}
+                      <a href="${APP_URL}/datenschutz" style="color:#888888;">Datenschutz</a>: deine Brief-Daten werden nach Versand nicht gespeichert.${data.debug ? ` · <a href="${buildDebugUrl(data.debug)}" style="color:#888888;text-decoration:none;">Debug</a>` : ""}
                     </p>
                   </td>
                 </tr>

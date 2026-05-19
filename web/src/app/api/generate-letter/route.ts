@@ -7,6 +7,7 @@ import { generateLetter } from "@/lib/generation/generateLetter";
 import { fetchMdbContext } from "@/lib/enrichment/fetchMdbContext";
 import { sendLetterEmail } from "@/lib/email/sendLetterEmail";
 import { buildDebugPayload } from "@/lib/email/buildDebugPayload";
+import { signFeedbackToken } from "@/lib/feedback/token";
 import { checkRateLimit, LIMITS } from "@/lib/rateLimit";
 import { DEFAULT_LETTER_LENGTH } from "@/lib/config";
 import { MistralProviderUnavailableError } from "@/lib/mistral";
@@ -112,6 +113,8 @@ export async function POST(req: NextRequest) {
     // Send email + increment counter fire-and-forget
     after(async () => {
       await incrementLetterCount();
+      const debugPayload = buildDebugPayload(data, result, derivedPoliticians.length);
+      const feedbackToken = signFeedbackToken(debugPayload);
       await sendLetterEmail({
         recipientEmail: data.email,
         politicianName: `${result.selectedPolitician.firstName} ${result.selectedPolitician.lastName}`,
@@ -123,7 +126,8 @@ export async function POST(req: NextRequest) {
         politicianAbgeordnetenwatchUrl: result.selectedPolitician.abgeordnetenwatchUrl,
         letterText: result.letter,
         issueText: data.issueText,
-        debug: buildDebugPayload(data, result, derivedPoliticians.length),
+        debug: debugPayload,
+        feedbackToken,
       });
     });
 

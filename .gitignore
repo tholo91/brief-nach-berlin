@@ -7,3 +7,6 @@ prompts/**/assets/videos/*
 !prompts/**/assets/images/.gitkeep
 !prompts/**/assets/videos/.gitkeep
 .vercel
+
+# Supabase CLI cache
+supabase/.temp/

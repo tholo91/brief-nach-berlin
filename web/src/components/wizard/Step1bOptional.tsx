@@ -7,7 +7,6 @@ import { LETTER_LENGTHS, DEFAULT_LETTER_LENGTH, type LetterLength } from "@/lib/
 
 interface Step1bOptionalProps {
   onNext: (data: Step1bData) => void;
-  onSkip: () => void;
   isSubmitting?: boolean;
   errorMessage?: string | null;
   onErrorDismiss?: () => void;
@@ -44,7 +43,7 @@ function PartyExplainer() {
       {open && (
         <div className="mt-2 border-l-4 border-waldgruen/50 bg-waldgruen/5 rounded-r-lg p-3 leading-relaxed text-warmgrau">
           <p>
-            Wenn <span className="font-semibold text-waldgruen-dark">du selbst</span> Mitglied einer Partei bist und an eine Abgeordnete derselben Partei schreibst, kann der Brief das aufgreifen (&bdquo;als langjähriges Parteimitglied...&ldquo;). Das gibt deinem Anliegen mehr Gewicht.
+            Wenn <span className="font-semibold text-waldgruen-dark">du selbst</span>{" "}Mitglied einer Partei bist und an Abgeordnete derselben Partei schreibst, kann der Brief das aufgreifen (&bdquo;als langjähriges Parteimitglied...&ldquo;). Das gibt deinem Anliegen mehr Gewicht.
           </p>
           <p className="mt-2 text-warmgrau/75">
             Die Info bleibt bei dir und kommt nur in deinen Brief: keine Datenbank, keine Weitergabe.
@@ -57,7 +56,6 @@ function PartyExplainer() {
 
 export function Step1bOptional({
   onNext,
-  onSkip,
   isSubmitting = false,
   errorMessage,
   onErrorDismiss,
@@ -74,14 +72,6 @@ export function Step1bOptional({
 
   const values = watch();
   const selectedLength = values.letterLength;
-
-  // We consider "has value" if anything but the default length is changed,
-  // or if name/party/ngo are set.
-  const hasAnyValue =
-    (values.name?.trim().length ?? 0) > 0 ||
-    (values.party?.trim().length ?? 0) > 0 ||
-    (values.ngo?.trim().length ?? 0) > 0 ||
-    selectedLength !== DEFAULT_LETTER_LENGTH;
 
   const onSubmit = (data: Step1bData) => {
     onNext(data);
@@ -168,8 +158,8 @@ export function Step1bOptional({
               );
             })}
           </div>
-          <p className="text-xs text-warmgrau/50 mt-2 italic">
-            Standardmäßig ist 1 Seite voreingestellt: kurz, prägnant und in 5 Minuten versandfertig auf dem Papier.
+          <p className="text-xs text-warmgrau/50 mt-2">
+            Standardmäßig ist eine Seite voreingestellt: prägnant und in 5-10 Minuten versandfertig auf Papier.
           </p>
         </div>
       </div>
@@ -202,7 +192,7 @@ export function Step1bOptional({
               >
                 <path d="M21 12a9 9 0 1 1-6.219-8.56" />
               </svg>
-              Brief wird vorbereitet...
+              Wahlkreis finden...
             </span>
           ) : (
             <span className="flex items-center justify-center gap-2">
@@ -225,15 +215,6 @@ export function Step1bOptional({
             </span>
           )}
         </button>
-        {!hasAnyValue && !isSubmitting && (
-          <button
-            type="button"
-            onClick={onSkip}
-            className="font-body text-sm font-medium text-warmgrau/70 hover:text-warmgrau transition-colors py-2 cursor-pointer"
-          >
-            Ohne diese Angaben fortfahren
-          </button>
-        )}
       </div>
     </form>
   );

@@ -116,6 +116,14 @@ export function WizardShell() {
         usedSpeechToText: wizardData.usedSpeechToText,
       };
 
+      // Step1b is the PLZ-lookup step, not the final letter-generation click —
+      // the real wait happens after the user picks a politician in Step3Success.
+      // Keep a short min-display only to smooth out flickering on very fast
+      // server responses. Errors fall through immediately.
+      const minDisplayTimer = new Promise<void>((resolve) =>
+        setTimeout(resolve, 1500)
+      );
+
       try {
         console.log("[wizard] submitting", {
           issueTextLength: fullData.issueText.length,
@@ -129,6 +137,8 @@ export function WizardShell() {
           setIsSubmitting(false);
           return;
         }
+
+        await minDisplayTimer;
 
         // Persist the optional data into wizardData so Step3Success has the full payload
         setWizardData((prev) => ({
@@ -163,10 +173,6 @@ export function WizardShell() {
     },
     [submitWizard]
   );
-
-  const handleStep2bSkip = useCallback(() => {
-    void submitWizard({});
-  }, [submitWizard]);
 
   const handleErrorDismiss = useCallback(() => {
     setErrorMessage(null);
@@ -251,7 +257,6 @@ export function WizardShell() {
         {step === "2b" && (
           <Step1bOptional
             onNext={handleStep2bComplete}
-            onSkip={handleStep2bSkip}
             isSubmitting={isSubmitting}
             errorMessage={errorMessage}
             onErrorDismiss={handleErrorDismiss}

@@ -143,7 +143,7 @@ export function VoiceRecorder({ onTranscription, onStateChange, disabled }: Voic
 
   const ariaLabel =
     uiState === "recording"
-      ? "Aufnahme stoppen"
+      ? "Diktierten Text übernehmen"
       : uiState === "processing"
         ? "Transkription läuft"
         : uiState === "done"
@@ -185,11 +185,9 @@ export function VoiceRecorder({ onTranscription, onStateChange, disabled }: Voic
           "bg-creme border transition-colors min-h-[44px]",
           "font-body text-sm",
           isRecording ? "flex-1 min-w-[200px]" : "w-full",
-          isRecording
-            ? "border-airmail-rot text-warmgrau hover:bg-airmail-rot/5"
-            : "border-warmgrau/30 text-warmgrau",
+          "border-warmgrau/30 text-warmgrau",
           isButtonDisabled ? "opacity-60 cursor-not-allowed" : "cursor-pointer",
-          !isRecording && !isButtonDisabled ? "hover:bg-warmgrau/5" : "",
+          !isButtonDisabled ? "hover:bg-warmgrau/5" : "",
         ]
           .filter(Boolean)
           .join(" ")}
@@ -225,12 +223,12 @@ export function VoiceRecorder({ onTranscription, onStateChange, disabled }: Voic
               height="18"
               viewBox="0 0 24 24"
               fill="currentColor"
-              className="text-airmail-rot"
+              className="text-warmgrau"
               aria-hidden="true"
             >
               <rect x="6" y="6" width="12" height="12" rx="2" />
             </svg>
-            <span className="font-semibold">Aufnahme stoppen</span>
+            <span className="font-semibold">Diktierten Text übernehmen</span>
           </>
         )}
 

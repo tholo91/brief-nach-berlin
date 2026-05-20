@@ -4,21 +4,34 @@ import { createHmac } from "node:crypto";
 import { z } from "zod";
 import { getServiceRoleClient } from "@/lib/supabase/server";
 import { verifyFeedbackToken } from "@/lib/feedback/token";
+import {
+  FEEDBACK_TAG_SLUGS,
+  type FeedbackTagSlug,
+} from "@/lib/feedback/feedbackTags";
 import { checkRateLimit, getClientIp, LIMITS } from "@/lib/rateLimit";
 import type { LetterDebugPayload } from "@/lib/email/sendLetterEmail";
+
+// Zod requires a non-empty tuple for z.enum. Cast via [first, ...rest] so the
+// type is `[FeedbackTagSlug, ...FeedbackTagSlug[]]`, which z.enum accepts.
+const [firstTagSlug, ...restTagSlugs] = FEEDBACK_TAG_SLUGS;
+const feedbackTagSchema = z.enum([firstTagSlug, ...restTagSlugs] as [
+  FeedbackTagSlug,
+  ...FeedbackTagSlug[],
+]);
 
 const reviewSchema = z.object({
   rating: z.number().int().min(1).max(5),
   body: z.string().max(500),
   displayName: z.string().max(80),
   consent: z.boolean(),
-  // "Hast du deinen Brief schon verschickt oder verschickst ihn gleich?"
-  // Required — the form will not allow submit until the user picks Ja/Nein.
+  // Pflichtfeld. Form blockt submit bis Ja/Nein gesetzt ist.
   letterSent: z.boolean(),
+  // Quick-Tap-Chips: multi-select, server-side allowlist via z.enum.
+  feedbackTags: z.array(feedbackTagSchema).max(8).optional(),
   token: z.string().min(20).max(4000),
   // Set by the client after the user dismissed the rate-limit warning and
   // confirmed they want to submit anyway. The unique-token DB constraint
-  // still prevents true duplicates — this only suppresses the IP throttle.
+  // still prevents true duplicates; this only suppresses the IP throttle.
   bypassRateLimit: z.boolean().optional(),
 });
 
@@ -96,6 +109,8 @@ export async function submitReviewAction(
       body: data.body.trim() || null,
       consent: data.consent,
       letter_sent: data.letterSent,
+      // Empty array → null so the row doesn't show "{}" in the DB for "no chips".
+      feedback_tags: data.feedbackTags?.length ? data.feedbackTags : null,
       display_name: data.displayName.trim() || null,
       // Source of truth for these three fields is the signed token, never the
       // client form. Spoofing email/politicianId is therefore impossible.

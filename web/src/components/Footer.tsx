@@ -67,6 +67,12 @@ export default async function Footer() {
               Andere Tools für Demokratie
             </Link>
             <Link
+              href="/weitersagen"
+              className="font-body text-sm text-warmgrau/70 hover:text-waldgruen-dark transition-colors duration-200"
+            >
+              Brief nach Berlin weitersagen
+            </Link>
+            <Link
               href="/lage-der-nation"
               className="font-body text-sm text-warmgrau/70 hover:text-waldgruen-dark transition-colors duration-200"
             >

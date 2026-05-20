@@ -12,6 +12,59 @@ import {
   FOUNDER_FEEDBACK_URL,
 } from "@/lib/config";
 
+// Phased loading copy. Rotates while the politician-pick spinner runs. This is
+// the user's final click — they sit here waiting for the letter to be drafted,
+// so a single static spinner feels longer than chunked progress. Timings sum
+// to the LETTER_GEN_MIN_DISPLAY_MS budget below.
+const LETTER_GEN_PHASES: ReadonlyArray<{ at: number; label: string }> = [
+  { at: 0, label: "Wahlkreis prüfen..." },
+  { at: 1300, label: "Abgeordnete prüfen..." },
+  { at: 2600, label: "Brief wird formuliert..." },
+];
+const LETTER_GEN_MIN_DISPLAY_MS = 4000;
+
+// Webmail-Provider → öffentliche Inbox-URL. Used by the mobile-only
+// "Mail-App öffnen" button to deep-link users back to where the letter lands.
+// We only render the button when wizardData.email's domain matches one of
+// these entries — better no button than a broken one for custom domains.
+// Universal Links on iOS/Android usually route these to the installed app.
+const WEBMAIL_PROVIDERS: Record<string, { label: string; url: string }> = {
+  "gmail.com": { label: "Gmail öffnen", url: "https://mail.google.com/" },
+  "googlemail.com": { label: "Gmail öffnen", url: "https://mail.google.com/" },
+  "gmx.de": { label: "GMX öffnen", url: "https://www.gmx.net/" },
+  "gmx.net": { label: "GMX öffnen", url: "https://www.gmx.net/" },
+  "gmx.com": { label: "GMX öffnen", url: "https://www.gmx.com/" },
+  "web.de": { label: "Web.de öffnen", url: "https://web.de/" },
+  "outlook.com": { label: "Outlook öffnen", url: "https://outlook.live.com/mail/" },
+  "outlook.de": { label: "Outlook öffnen", url: "https://outlook.live.com/mail/" },
+  "hotmail.com": { label: "Outlook öffnen", url: "https://outlook.live.com/mail/" },
+  "hotmail.de": { label: "Outlook öffnen", url: "https://outlook.live.com/mail/" },
+  "live.de": { label: "Outlook öffnen", url: "https://outlook.live.com/mail/" },
+  "live.com": { label: "Outlook öffnen", url: "https://outlook.live.com/mail/" },
+  "msn.com": { label: "Outlook öffnen", url: "https://outlook.live.com/mail/" },
+  "yahoo.com": { label: "Yahoo öffnen", url: "https://mail.yahoo.com/" },
+  "yahoo.de": { label: "Yahoo öffnen", url: "https://mail.yahoo.de/" },
+  "icloud.com": { label: "iCloud Mail öffnen", url: "https://www.icloud.com/mail" },
+  "me.com": { label: "iCloud Mail öffnen", url: "https://www.icloud.com/mail" },
+  "mac.com": { label: "iCloud Mail öffnen", url: "https://www.icloud.com/mail" },
+  "t-online.de": { label: "T-Online öffnen", url: "https://email.t-online.de/" },
+  "aol.com": { label: "AOL Mail öffnen", url: "https://mail.aol.com/" },
+  "aol.de": { label: "AOL Mail öffnen", url: "https://mail.aol.de/" },
+  "proton.me": { label: "Proton Mail öffnen", url: "https://mail.proton.me/" },
+  "protonmail.com": { label: "Proton Mail öffnen", url: "https://mail.proton.me/" },
+  "pm.me": { label: "Proton Mail öffnen", url: "https://mail.proton.me/" },
+  "mailbox.org": { label: "mailbox.org öffnen", url: "https://login.mailbox.org/" },
+  "posteo.de": { label: "Posteo öffnen", url: "https://posteo.de/" },
+  "posteo.net": { label: "Posteo öffnen", url: "https://posteo.de/" },
+};
+
+function resolveWebmail(email: string | undefined): { label: string; url: string } | null {
+  if (!email) return null;
+  const domain = email.split("@")[1]?.toLowerCase().trim();
+  if (!domain) return null;
+  return WEBMAIL_PROVIDERS[domain] ?? null;
+}
+
 interface Step3SuccessProps {
   result: WizardActionResult | null;
   wizardData: WizardData;
@@ -51,7 +104,24 @@ export function Step3Success({ result, wizardData, politicians }: Step3SuccessPr
   const [generationFetchError, setGenerationFetchError] = useState<string | null>(null);
   const [retryCount, setRetryCount] = useState(0);
   const [loadingDots, setLoadingDots] = useState(".");
+  // "So geht es weiter" is collapsed by default — the same content lives in
+  // the email, so we save vertical space and let the rating teaser breathe.
+  const [stepsOpen, setStepsOpen] = useState(false);
+  // Index into LETTER_GEN_PHASES — advances on a setTimeout chain while
+  // isGenerating is true, resets when it ends. Drives the phased button copy
+  // during the final letter-generation wait.
+  const [genPhase, setGenPhase] = useState(0);
   const submitButtonRef = useRef<HTMLButtonElement | null>(null);
+
+  useEffect(() => {
+    if (!isGenerating) return;
+    const timers = LETTER_GEN_PHASES.slice(1).map((phase, idx) =>
+      setTimeout(() => setGenPhase(idx + 1), phase.at)
+    );
+    return () => timers.forEach(clearTimeout);
+  }, [isGenerating]);
+
+  const webmail = resolveWebmail(wizardData.email);
 
   // Smooth-scroll the submit button into view after a card is picked, so users
   // on long lists don't have to hunt for the next step. Honor
@@ -78,13 +148,19 @@ export function Step3Success({ result, wizardData, politicians }: Step3SuccessPr
     async () => {
       if (selectedPoliticianId === null) return;
 
+      // Reset phase so a second attempt starts at "Wahlkreis prüfen..." again,
+      // not at whatever phase the last attempt ended on.
+      setGenPhase(0);
       setIsGenerating(true);
       setGenerationError(null);
 
       // Minimum spinner duration — starts in parallel with the pre-check so the
-      // button loads for at least 2.5s before navigating. Splits perceived load
-      // time between the button and the success page.
-      const minDisplayTimer = new Promise<void>((resolve) => setTimeout(resolve, 2500));
+      // button shows phased progress for the full LETTER_GEN_MIN_DISPLAY_MS
+      // window before navigating. This is the user's final click; padding it
+      // here is the main perceived-wait reduction tool.
+      const minDisplayTimer = new Promise<void>((resolve) =>
+        setTimeout(resolve, LETTER_GEN_MIN_DISPLAY_MS)
+      );
 
       try {
         // NOTE: we deliberately no longer pass the `politicians` array here —
@@ -291,6 +367,25 @@ export function Step3Success({ result, wizardData, politicians }: Step3SuccessPr
           )}
         </p>
 
+        {/* Rating teaser: visible from the start so users internalize the ask
+            before they close the tab. Points at the star-rating link in the
+            email (which carries the signed token; the page itself cannot
+            initiate a rating). Hidden only when generation actually failed —
+            promising a link to a mail that never went out would be a lie. */}
+        <div
+          className={`mt-6 transition-opacity duration-500 ${generationFetchError ? "opacity-0 pointer-events-none select-none" : "opacity-100"}`}
+        >
+          <div className="border-l-4 border-[#D4A017] bg-[#D4A017]/8 rounded-r-lg p-4 space-y-1.5">
+            <p className="font-body text-sm font-semibold text-waldgruen-dark flex items-center gap-2">
+              <span aria-hidden="true" className="text-[#D4A017] text-base leading-none">★</span>
+              Bewerte deinen Brief gleich in der Mail.
+            </p>
+            <p className="font-body text-sm text-warmgrau/75 leading-relaxed">
+              Ein Klick auf die Sterne, hilft mir, die nächsten Briefe besser zu machen.
+            </p>
+          </div>
+        </div>
+
         {/* Notice: Brief ist Entwurf, eigene Stimme */}
         <div className="mt-6 border-l-4 border-waldgruen/50 bg-waldgruen/8 rounded-r-lg p-4 space-y-2">
           <p className="font-body text-sm font-semibold text-waldgruen-dark flex items-center gap-2">
@@ -304,9 +399,28 @@ export function Step3Success({ result, wizardData, politicians }: Step3SuccessPr
           </p>
         </div>
 
-        {/* "Keine E-Mail erhalten?" — hidden until letter is ready in client state */}
+        {/* "Keine E-Mail erhalten?" + (mobile) "Mail-App öffnen" — both hidden
+            until letter is ready. The webmail deep-link sits left of the
+            resend trigger on mobile only (sm:hidden) so users can jump into
+            their inbox with one tap; desktop users typically have mail open
+            elsewhere already. Generic label "Mail-App öffnen" — we don't
+            expose the user's email provider in the UI. */}
         <div className={`transition-opacity duration-500 ${letterReady ? "opacity-100" : "opacity-0 pointer-events-none select-none"}`}>
-          <div className="mt-3 flex justify-center">
+          <div className="mt-3 flex items-center justify-center gap-4">
+            {webmail && (
+              <a
+                href={webmail.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="sm:hidden inline-flex items-center gap-1.5 font-body text-sm font-semibold text-waldgruen-dark px-3 py-1.5 rounded-lg border border-waldgruen/30 hover:bg-waldgruen/5 transition-colors"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                  <rect width="20" height="16" x="2" y="4" rx="2" />
+                  <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
+                </svg>
+                Mail-App öffnen
+              </a>
+            )}
             <button
               type="button"
               onClick={() => setResendOpen((o) => !o)}
@@ -429,31 +543,52 @@ export function Step3Success({ result, wizardData, politicians }: Step3SuccessPr
           </div>
         )}
 
-        {/* Step-by-step instructions */}
-        <div className="mt-8 space-y-4">
-          <h2 className="font-body text-sm font-semibold text-warmgrau/70 uppercase tracking-wide">
-            So geht es weiter
-          </h2>
-          <ol className="space-y-3">
-            <li className="flex gap-3">
-              <span className="flex-shrink-0 w-6 h-6 rounded-full bg-waldgruen/15 text-waldgruen font-body text-xs font-bold flex items-center justify-center mt-0.5">1</span>
-              <p className="font-body text-sm text-warmgrau leading-relaxed">
-                <strong>Brief abschreiben.</strong> Schreib den Brief von Hand ab und pass ihn an deinen Schreibstil an. Handgeschriebene Briefe werden im Bundestag tatsächlich gelesen und besprochen.
-              </p>
-            </li>
-            <li className="flex gap-3">
-              <span className="flex-shrink-0 w-6 h-6 rounded-full bg-waldgruen/15 text-waldgruen font-body text-xs font-bold flex items-center justify-center mt-0.5">2</span>
-              <p className="font-body text-sm text-warmgrau leading-relaxed">
-                <strong>Adresse aufschreiben, Briefmarke drauf, ab zur Post.</strong> Die Adresse findest du im Brief.
-              </p>
-            </li>
-            <li className="flex gap-3">
-              <span className="flex-shrink-0 w-6 h-6 rounded-full bg-waldgruen/15 text-waldgruen font-body text-xs font-bold flex items-center justify-center mt-0.5">3</span>
-              <p className="font-body text-sm text-warmgrau leading-relaxed">
-                <strong>Weitersagen.</strong> Je mehr Menschen schreiben, desto mehr Gewicht hat jeder einzelne Brief.
-              </p>
-            </li>
-          </ol>
+        {/* Step-by-step instructions — collapsed accordion: same steps live in
+            the email, so we keep the success page lean and let curious users
+            expand if they want a peek now. */}
+        <div className="mt-8">
+          <button
+            type="button"
+            onClick={() => setStepsOpen((v) => !v)}
+            aria-expanded={stepsOpen}
+            className="w-full flex items-center justify-between gap-2 py-2 font-body text-sm font-semibold text-warmgrau/70 uppercase tracking-wide hover:text-warmgrau transition-colors cursor-pointer"
+          >
+            <span>So geht es weiter</span>
+            <span
+              aria-hidden="true"
+              className={`text-[10px] text-warmgrau/50 transition-transform duration-300 ${stepsOpen ? "rotate-180" : ""}`}
+            >
+              ▾
+            </span>
+          </button>
+          <div
+            className={`grid transition-all duration-300 ease-out ${
+              stepsOpen ? "grid-rows-[1fr] opacity-100 mt-3" : "grid-rows-[0fr] opacity-0"
+            }`}
+          >
+            <div className="overflow-hidden">
+              <ol className="space-y-3 pt-1">
+                <li className="flex gap-3">
+                  <span className="flex-shrink-0 w-6 h-6 rounded-full bg-waldgruen/15 text-waldgruen font-body text-xs font-bold flex items-center justify-center mt-0.5">1</span>
+                  <p className="font-body text-sm text-warmgrau leading-relaxed">
+                    <strong>Brief abschreiben.</strong> Schreib den Brief von Hand ab und pass ihn an deinen Schreibstil an. Handgeschriebene Briefe werden im Bundestag tatsächlich gelesen und besprochen.
+                  </p>
+                </li>
+                <li className="flex gap-3">
+                  <span className="flex-shrink-0 w-6 h-6 rounded-full bg-waldgruen/15 text-waldgruen font-body text-xs font-bold flex items-center justify-center mt-0.5">2</span>
+                  <p className="font-body text-sm text-warmgrau leading-relaxed">
+                    <strong>Adresse aufschreiben, Briefmarke drauf, ab zur Post.</strong> Die Adresse findest du im Brief.
+                  </p>
+                </li>
+                <li className="flex gap-3">
+                  <span className="flex-shrink-0 w-6 h-6 rounded-full bg-waldgruen/15 text-waldgruen font-body text-xs font-bold flex items-center justify-center mt-0.5">3</span>
+                  <p className="font-body text-sm text-warmgrau leading-relaxed">
+                    <strong>Weitersagen.</strong> Je mehr Menschen schreiben, desto mehr Gewicht hat jeder einzelne Brief.
+                  </p>
+                </li>
+              </ol>
+            </div>
+          </div>
         </div>
 
         {/* Cause-recruit share section: motivate Wahlkreis-Bürger to write their own letters */}
@@ -516,19 +651,9 @@ export function Step3Success({ result, wizardData, politicians }: Step3SuccessPr
               <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
                 <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
               </svg>
-              Feedback ans Team
+              Was kann am Tool besser werden?
             </a>
           </div>
-        </div>
-
-        {/* Back to home, centered at the very bottom */}
-        <div className="mt-10 flex justify-center">
-          <a
-            href="/"
-            className="font-body text-sm text-warmgrau/55 hover:text-warmgrau/75 transition-colors underline underline-offset-2"
-          >
-            ← Zurück zur Startseite
-          </a>
         </div>
 
       </div>
@@ -593,7 +718,11 @@ export function Step3Success({ result, wizardData, politicians }: Step3SuccessPr
                 {p.title ? p.title + " " : ""}
                 {p.firstName} {p.lastName}
               </p>
-              <p className="font-body text-sm text-warmgrau mt-0.5">{p.party}</p>
+              <p className="font-body text-sm text-warmgrau mt-0.5">
+                {p.party === "Bündnis 90/Die Grünen" || p.party === "Bündnis 90 / Die Grünen" || p.party === "Bündnis 90 / die Grünen"
+                  ? "GRÜNE"
+                  : p.party}
+              </p>
               <p className="font-body text-sm text-warmgrau/70 mt-1">
                 Wahlkreis {p.wahlkreisId}: {p.wahlkreisName}
               </p>
@@ -659,7 +788,9 @@ export function Step3Success({ result, wizardData, politicians }: Step3SuccessPr
                   >
                     <path d="M21 12a9 9 0 1 1-6.219-8.56" />
                   </svg>
-                  Brief wird erstellt...
+                  <span key={genPhase} className="animate-feedback-in">
+                    {LETTER_GEN_PHASES[genPhase].label}
+                  </span>
                 </span>
               ) : (
                 "Brief erstellen"

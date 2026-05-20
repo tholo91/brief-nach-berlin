@@ -2,10 +2,17 @@
 
 import { useState, useTransition, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import Image from "next/image";
 import { InteractiveStars } from "./InteractiveStars";
 import { PrivacyDisclosure } from "./PrivacyDisclosure";
+import { ChipToggle } from "./ChipToggle";
 import { FOUNDER_FEEDBACK_URL } from "@/lib/config";
+import {
+  NEGATIVE_FEEDBACK_TAGS,
+  POSITIVE_FEEDBACK_TAGS,
+  type FeedbackTagSlug,
+} from "@/lib/feedback/feedbackTags";
 import {
   submitReviewAction,
   type SubmitReviewResult,
@@ -22,12 +29,18 @@ const NAME_MAX = 80;
 const REDIRECT_MS = 20000;
 
 const RATING_HINTS: Record<number, string> = {
-  1: "Mhh.",
-  2: "Okay.",
-  3: "Ganz solide.",
-  4: "Hat geklappt!",
-  5: "Wow, danke!",
+  1: "Die KI hat Mist gebaut.",
+  2: "Verbesserungswürdig.",
+  3: "Grundsolide.",
+  4: "Richtig gut.",
+  5: "Tippi toppi!",
 };
+
+type ChipPolarity = "negative" | "positive";
+
+function getPolarity(rating: number): ChipPolarity {
+  return rating >= 4 ? "positive" : "negative";
+}
 
 export function FeedbackForm({
   initialRating,
@@ -41,12 +54,27 @@ export function FeedbackForm({
   const [consent, setConsent] = useState(false);
   // No default. The user picks one before submit; null blocks submission.
   const [letterSent, setLetterSent] = useState<boolean | null>(null);
+  const [feedbackTags, setFeedbackTags] = useState<FeedbackTagSlug[]>([]);
+  // Optional fields collapsed by default to keep the page lean.
+  const [moreOpen, setMoreOpen] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   // True once the server flagged a rate-limit. The next submit click bypasses
-  // the throttle — the warning becomes a soft "are you sure?" instead of a block.
+  // the throttle; the warning becomes a soft "are you sure?" instead of a block.
   const [bypassRateLimit, setBypassRateLimit] = useState(false);
   const [pending, startTransition] = useTransition();
+
+  const polarity = getPolarity(rating);
+
+  // Reset selected chips when the polarity flips so a user who picked 5 stars
+  // (positive chips), then changes to 1 (negative chips), doesn't smuggle stale
+  // positive selections into a negative submission. React's documented
+  // "store info from previous renders" pattern keeps this out of useEffect.
+  const [previousPolarity, setPreviousPolarity] = useState(polarity);
+  if (previousPolarity !== polarity) {
+    setPreviousPolarity(polarity);
+    setFeedbackTags([]);
+  }
 
   // Strip the signed token from the URL after the server-component handed it
   // to us. Keeps it out of browser history, out of Referer headers on outbound
@@ -56,6 +84,16 @@ export function FeedbackForm({
       window.history.replaceState({}, "", "/feedback");
     }
   }, []);
+
+  function toggleTag(slug: FeedbackTagSlug) {
+    const isRemoving = feedbackTags.includes(slug);
+    if (!isRemoving) setMoreOpen(true);
+    setFeedbackTags((prev) =>
+      prev.includes(slug)
+        ? prev.filter((s) => s !== slug)
+        : [...prev, slug]
+    );
+  }
 
   function onSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -78,10 +116,11 @@ export function FeedbackForm({
         displayName: displayName.trim(),
         consent,
         letterSent,
+        feedbackTags: feedbackTags.length ? feedbackTags : undefined,
         token,
         bypassRateLimit,
       });
-      // "already_submitted" is functionally a success from the user's POV —
+      // "already_submitted" is functionally a success from the user's POV:
       // their rating exists in the DB, just from an earlier click. Show the
       // same thank-you state instead of a confusing error.
       if ("success" in result || result.error === "already_submitted") {
@@ -96,8 +135,12 @@ export function FeedbackForm({
   }
 
   if (submitted) {
-    return <ThankYouCard onSkip={() => router.push("/")} />;
+    return <ThankYouCard onSkip={() => router.push("/")} rating={rating} />;
   }
+
+  const chips =
+    polarity === "negative" ? NEGATIVE_FEEDBACK_TAGS : POSITIVE_FEEDBACK_TAGS;
+  const chipsLabel = polarity === "negative" ? "Was war's?" : "Was hat geklappt?";
 
   return (
     <form
@@ -113,7 +156,7 @@ export function FeedbackForm({
           Bewerte deinen Brief
         </h1>
         <p className="font-body text-sm text-warmgrau/70 mt-2">
-          Dein ehrlicher Eindruck hilft uns, das Tool besser zu machen.
+          Wie war der Brief, den ich dir geschrieben habe?
         </p>
 
         <div className="flex items-start gap-3 mt-4 pt-4 border-t border-warmgrau/10">
@@ -125,7 +168,7 @@ export function FeedbackForm({
             className="rounded-full object-cover flex-shrink-0 ring-2 ring-waldgruen/20 mt-0.5"
           />
           <p className="font-body text-sm text-warmgrau/80 leading-relaxed">
-            Moin, ich bin Thomas. Ich hab das hier gebaut und lese jede Bewertung selbst. Sei gerne schonungslos direkt, gerade wenn was nervt. Lob nehm ich aber genau so ernst 😉{" "} Riesen Dank für deine Zeit!
+            Moin, ich bin Thomas. Ich hab das hier gebaut und lese jede Bewertung selbst. Sei gerne schonungslos direkt, gerade wenn was nervt. Lob nehm ich aber genau so ernst 😉{" "} Riesen Dank für deine Zeit!
           </p>
         </div>
       </header>
@@ -135,11 +178,31 @@ export function FeedbackForm({
         <InteractiveStars value={rating} onChange={setRating} />
         <p
           key={rating}
-          className="font-handwriting text-2xl text-waldgruen leading-none min-h-[1.5rem] animate-feedback-in"
+          className="font-handwriting text-2xl text-waldgruen leading-none min-h-[1.5rem] animate-feedback-in text-center px-2"
         >
           {RATING_HINTS[rating] ?? ""}
         </p>
       </div>
+
+      {/* Quick-Tap-Chips (Pilbert-Style) */}
+      <fieldset key={polarity} className="animate-feedback-in">
+        <legend className="block font-body text-sm font-semibold text-warmgrau mb-3">
+          {chipsLabel}{" "}
+          <span className="font-normal text-warmgrau/60">
+            (optional, mehrfach möglich)
+          </span>
+        </legend>
+        <div className="flex flex-wrap gap-2">
+          {chips.map((tag) => (
+            <ChipToggle
+              key={tag.slug}
+              checked={feedbackTags.includes(tag.slug)}
+              onToggle={() => toggleTag(tag.slug)}
+              label={tag.label}
+            />
+          ))}
+        </div>
+      </fieldset>
 
       {/* Verschickt-Frage (Pflichtfeld) */}
       <fieldset>
@@ -169,65 +232,93 @@ export function FeedbackForm({
         </div>
       </fieldset>
 
-      {/* Kommentar */}
+      {/* Optionale Felder hinter „Mehr sagen" einklappbar */}
       <div>
-        <label
-          htmlFor="body"
-          className="block font-body text-sm font-semibold text-warmgrau mb-2"
+        <button
+          type="button"
+          onClick={() => setMoreOpen((v) => !v)}
+          aria-expanded={moreOpen}
+          className="inline-flex items-center gap-1.5 text-sm font-semibold text-waldgruen hover:text-waldgruen-dark cursor-pointer"
         >
-          Was hat dir gefallen, was nicht?{" "}
-          <span className="font-normal text-warmgrau/60">(optional)</span>
-        </label>
-        <textarea
-          id="body"
-          value={body}
-          onChange={(e) => setBody(e.target.value.slice(0, COMMENT_MAX))}
-          maxLength={COMMENT_MAX}
-          rows={4}
-          placeholder="z.B. ‚Hat super geklappt, nur der Ton war etwas zu höflich für mein Anliegen.'"
-          className="bg-creme border border-warmgrau/25 rounded-lg px-4 py-3 text-base font-body text-warmgrau w-full focus:outline-none focus:ring-2 focus:ring-waldgruen focus:border-waldgruen resize-y"
-        />
-        <p className="text-xs text-warmgrau/60 mt-1 text-right">
-          {body.length} / {COMMENT_MAX}
-        </p>
-      </div>
+          Mehr sagen
+          <span
+            aria-hidden="true"
+            className={`text-[10px] transition-transform duration-300 ${moreOpen ? "rotate-180" : ""}`}
+          >
+            ▾
+          </span>
+        </button>
 
-      {/* Name */}
-      <div>
-        <label
-          htmlFor="displayName"
-          className="block font-body text-sm font-semibold text-warmgrau mb-2"
+        <div
+          className={`grid transition-all duration-300 ease-out ${
+            moreOpen ? "grid-rows-[1fr] opacity-100 mt-4" : "grid-rows-[0fr] opacity-0"
+          }`}
         >
-          Dein Name oder Pseudonym{" "}
-          <span className="font-normal text-warmgrau/60">(optional)</span>
-        </label>
-        <input
-          id="displayName"
-          type="text"
-          value={displayName}
-          onChange={(e) => setDisplayName(e.target.value.slice(0, NAME_MAX))}
-          maxLength={NAME_MAX}
-          placeholder="z.B. Anna aus Bremen"
-          className="bg-creme border border-warmgrau/25 rounded-lg px-4 py-3 text-base font-body text-warmgrau w-full focus:outline-none focus:ring-2 focus:ring-waldgruen focus:border-waldgruen"
-        />
-        <p className="text-xs text-warmgrau/60 mt-1">
-          Wird nur mit deiner Zustimmung gezeigt. Leer lassen = anonym.
-        </p>
-      </div>
+          <div className="overflow-hidden">
+            <div className="space-y-6 pt-1">
+              {/* Kommentar */}
+              <div>
+                <label
+                  htmlFor="body"
+                  className="block font-body text-sm font-semibold text-warmgrau mb-2"
+                >
+                  Was hat dir gefallen, was nicht?{" "}
+                  <span className="font-normal text-warmgrau/60">(optional)</span>
+                </label>
+                <textarea
+                  id="body"
+                  value={body}
+                  onChange={(e) => setBody(e.target.value.slice(0, COMMENT_MAX))}
+                  maxLength={COMMENT_MAX}
+                  rows={4}
+                  placeholder="z.B. ‚Hat super geklappt, nur der Ton war etwas zu höflich für mein Anliegen.'"
+                  className="bg-creme border border-warmgrau/25 rounded-lg px-4 py-3 text-base font-body text-warmgrau w-full focus:outline-none focus:ring-2 focus:ring-waldgruen focus:border-waldgruen resize-y"
+                />
+                <p className="text-xs text-warmgrau/60 mt-1 text-right">
+                  {body.length} / {COMMENT_MAX}
+                </p>
+              </div>
 
-      {/* Consent */}
-      <label className="flex items-start gap-3 cursor-pointer select-none">
-        <input
-          type="checkbox"
-          checked={consent}
-          onChange={(e) => setConsent(e.target.checked)}
-          className="mt-1 h-4 w-4 rounded border-warmgrau/40 text-waldgruen focus:ring-waldgruen accent-waldgruen cursor-pointer"
-        />
-        <span className="font-body text-sm text-warmgrau leading-relaxed">
-          Meine Bewertung darf später anonymisiert auf brief-nach-berlin.de
-          gezeigt werden. Deine E-Mail-Adresse wird niemals öffentlich gezeigt.
-        </span>
-      </label>
+              {/* Name */}
+              <div>
+                <label
+                  htmlFor="displayName"
+                  className="block font-body text-sm font-semibold text-warmgrau mb-2"
+                >
+                  Dein Name oder Pseudonym{" "}
+                  <span className="font-normal text-warmgrau/60">(optional)</span>
+                </label>
+                <input
+                  id="displayName"
+                  type="text"
+                  value={displayName}
+                  onChange={(e) => setDisplayName(e.target.value.slice(0, NAME_MAX))}
+                  maxLength={NAME_MAX}
+                  placeholder="z.B. Anna aus Bremen"
+                  className="bg-creme border border-warmgrau/25 rounded-lg px-4 py-3 text-base font-body text-warmgrau w-full focus:outline-none focus:ring-2 focus:ring-waldgruen focus:border-waldgruen"
+                />
+                <p className="text-xs text-warmgrau/60 mt-1">
+                  Wird nur mit deiner Zustimmung gezeigt. Leer lassen = anonym.
+                </p>
+              </div>
+
+              {/* Public-Display Consent */}
+              <label className="flex items-start gap-3 cursor-pointer select-none">
+                <input
+                  type="checkbox"
+                  checked={consent}
+                  onChange={(e) => setConsent(e.target.checked)}
+                  className="mt-1 h-4 w-4 rounded border-warmgrau/40 text-waldgruen focus:ring-waldgruen accent-waldgruen cursor-pointer"
+                />
+                <span className="font-body text-sm text-warmgrau leading-relaxed">
+                  Meine Bewertung darf später anonymisiert auf brief-nach-berlin.de
+                  gezeigt werden. Deine E-Mail-Adresse wird niemals öffentlich gezeigt.
+                </span>
+              </label>
+            </div>
+          </div>
+        </div>
+      </div>
 
       {errorMessage ? (
         <div
@@ -238,28 +329,42 @@ export function FeedbackForm({
         </div>
       ) : null}
 
-      <button
-        type="submit"
-        disabled={pending}
-        className={[
-          "bg-waldgruen text-creme font-semibold text-base px-8 py-4 rounded-xl",
-          "transition-all min-h-[44px] w-full",
-          pending
-            ? "opacity-60 cursor-not-allowed"
-            : "hover:bg-waldgruen-dark hover:shadow-md cursor-pointer",
-        ].join(" ")}
-      >
-        {pending ? "Wird gesendet…" : "Bewertung absenden"}
-      </button>
+      <div className="space-y-3">
+        <button
+          type="submit"
+          disabled={pending}
+          className={[
+            "bg-waldgruen text-creme font-semibold text-base px-8 py-4 rounded-xl",
+            "transition-all min-h-[44px] w-full",
+            "inline-flex items-center justify-center gap-2",
+            pending
+              ? "opacity-60 cursor-not-allowed"
+              : "hover:bg-waldgruen-dark hover:shadow-md cursor-pointer",
+          ].join(" ")}
+        >
+          {pending ? (
+            "Wird gesendet…"
+          ) : (
+            <>
+              <span>{rating}/5</span>
+              <span aria-hidden="true" className="text-[#D4A017]">★</span>
+              <span>Bewertung absenden</span>
+            </>
+          )}
+        </button>
+        <p className="font-body text-xs text-warmgrau/60 text-center leading-relaxed">
+          Thomas könnte dich bei Rückfragen zu deiner Bewertung per E-Mail kontaktieren.
+        </p>
+      </div>
 
       <PrivacyDisclosure />
     </form>
   );
 }
 
-// Segmented-control tab. Active = green pill, bold label, emoji visible.
-// Inactive = transparent, light label, no emoji — keeps the unselected side
-// quiet so the chosen answer reads as a clear commitment.
+// Segmented-control tab for the "letter sent" radio group. Distinct from
+// ChipToggle: this one sits in a 2-button bg-creme bar and uses transparent
+// inactive state to keep the unselected side visually quiet.
 function SentTab({
   checked,
   onSelect,
@@ -302,13 +407,15 @@ function SentTab({
   );
 }
 
-function ThankYouCard({ onSkip }: { onSkip: () => void }) {
+function ThankYouCard({ onSkip, rating }: { onSkip: () => void; rating: number }) {
   // Pausable auto-redirect. Hovering or focusing either button stops the
-  // countdown so users have time to read and decide — the bar visibly pauses
+  // countdown so users have time to read and decide; the bar visibly pauses
   // with them, then resumes from the same spot when they move away.
   const [paused, setPaused] = useState(false);
   const elapsedRef = useRef(0);
-  const runStartRef = useRef<number>(Date.now());
+  // Set inside the effect to keep the render phase pure; the effect always
+  // overwrites this on its first non-paused run anyway.
+  const runStartRef = useRef<number>(0);
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
@@ -341,10 +448,32 @@ function ThankYouCard({ onSkip }: { onSkip: () => void }) {
         <p className="font-body text-warmgrau mb-2 text-lg">
           Deine Bewertung ist gespeichert.
         </p>
-        <p className="font-body text-sm text-warmgrau/70 max-w-sm mx-auto mb-10 leading-relaxed">
+        <p className="font-body text-sm text-warmgrau/70 max-w-sm mx-auto mb-6 leading-relaxed">
           Das hilft uns wirklich. Briefe wirken am stärksten, wenn mehrere
           Stimmen zum selben Thema zusammenkommen.
         </p>
+        {rating <= 3 ? (
+          <div
+            className="rounded-lg border border-waldgruen/15 bg-creme/60 px-4 py-3 text-left max-w-sm mx-auto mb-8 animate-feedback-in"
+            onMouseEnter={() => setPaused(true)}
+            onMouseLeave={() => setPaused(false)}
+            onFocus={() => setPaused(true)}
+            onBlur={() => setPaused(false)}
+          >
+            <p className="font-body text-sm text-warmgrau leading-relaxed">
+              Schade, dass der Briefentwurf nicht so überzeugt hat. Möchtest du es nochmal versuchen und dein Anliegen konkreter schildern? Am schnellsten geht das mit der Mikrofon-Funktion, einfach drauflosreden und danach um fehlende Punkte ergänzen.
+            </p>
+            <Link
+              href="/app"
+              className="inline-block mt-2 font-body text-sm font-semibold text-waldgruen hover:text-waldgruen-dark underline underline-offset-2 decoration-waldgruen/40 hover:decoration-waldgruen transition-colors"
+            >
+              Neuen Brief schreiben →
+            </Link>
+            <p className="font-body text-xs text-warmgrau/60 mt-3">
+              Danke dir - Thomas ✌️
+            </p>
+          </div>
+        ) : null}
         <div
           className="flex flex-col sm:flex-row gap-3 max-w-md mx-auto"
           onMouseEnter={() => setPaused(true)}

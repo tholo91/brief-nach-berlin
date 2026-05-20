@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { CONTACT } from "@/lib/contact";
 
 export default function Roadmap() {
@@ -31,8 +32,13 @@ export default function Roadmap() {
               <h3 className="font-body text-lg font-bold text-waldgruen-dark leading-snug mb-3">
                 Kommunal, Landes-, Bundes- oder Europapolitik
               </h3>
-              <p className="font-body text-base text-warmgrau/80 leading-relaxed mb-4">
+              <p className="font-body text-base text-warmgrau/80 leading-relaxed mb-3">
                 Nicht jedes Anliegen gehört nach Berlin. Wir möchten automatisch erkennen, welches politische Level zuständig ist, damit dein Brief dort landet, wo er wirklich etwas bewirken kann.
+              </p>
+              <p className="font-body text-sm text-warmgrau/70 leading-relaxed mb-4">
+                <Link href="/kommune-land-bund-eu" className="text-waldgruen hover:text-waldgruen-dark underline decoration-waldgruen/30 underline-offset-2 hover:decoration-waldgruen transition-colors">
+                  Wer ist eigentlich wofür zuständig?
+                </Link>
               </p>
               <span className="inline-block font-typewriter text-[10px] font-bold tracking-wider uppercase text-waldgruen bg-waldgruen/10 px-2 py-0.5 rounded-full">
                 Coming soon

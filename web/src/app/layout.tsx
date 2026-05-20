@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { Courier_Prime, Source_Sans_3, Caveat } from "next/font/google";
-import { Analytics } from "@vercel/analytics/next";
+import { AnalyticsWrapper } from "@/components/AnalyticsWrapper";
 import { APP_URL } from "@/lib/config";
 import "./globals.css";
 
@@ -53,7 +53,7 @@ export default function RootLayout({
     >
       <body className="min-h-full flex flex-col">
           {children}
-          <Analytics />
+          <AnalyticsWrapper />
         </body>
     </html>
   );

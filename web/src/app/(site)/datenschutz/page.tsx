@@ -28,9 +28,9 @@ export default function Datenschutz() {
             <p>
               Thomas Lorenz
               <br />
-              Zur Plangemühle 5
+              A.d. Schleifmühle 44
               <br />
-              47198 Duisburg
+              28203 Bremen
               <br />
               Deutschland
               <br />
@@ -43,16 +43,16 @@ export default function Datenschutz() {
               </a>
             </p>
             <p className="mt-2 text-sm">
-              Zuständige Aufsichtsbehörde: Landesbeauftragte für Datenschutz und
-              Informationsfreiheit Nordrhein-Westfalen (LDI NRW), Kavalleriestr.
-              2-4, 40213 Düsseldorf,{" "}
+              Zuständige Aufsichtsbehörde: Die Landesbeauftragte für
+              Datenschutz und Informationsfreiheit der Freien Hansestadt Bremen,
+              Arndtstraße 1, 27570 Bremerhaven,{" "}
               <a
-                href="https://www.ldi.nrw.de"
+                href="https://www.datenschutz.bremen.de"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-waldgruen hover:underline"
               >
-                ldi.nrw.de
+                datenschutz.bremen.de
               </a>
               .
             </p>
@@ -65,15 +65,16 @@ export default function Datenschutz() {
             <p>
               Brief nach Berlin verarbeitet personenbezogene Daten ausschließlich
               zur Erbringung des Dienstes: die Erstellung eines personalisierten
-              Briefs an Ihren zuständigen Abgeordneten. Wir betreiben keine
-              Datenbank, legen keine Nutzerkonten an und setzen keine Cookies und
-              kein Tracking ein. Alle eingegebenen Daten (Postleitzahl,
-              E-Mail-Adresse, Anliegen, optionale Angaben, optionale
-              Spracheingabe) werden ausschließlich während der Verarbeitung Ihrer
-              Anfrage verwendet und danach verworfen. Eine dauerhafte Speicherung
-              auf unseren Servern findet nicht statt. Die eingesetzten
-              Dienstleister Mistral AI (Abschnitt 9) und Brevo (Abschnitt 11)
-              speichern Daten im Rahmen ihrer eigenen Datenschutzbestimmungen und
+              Briefs an Ihren zuständigen Abgeordneten. Wir legen keine
+              Nutzerkonten an und setzen keine Cookies ein. Alle eingegebenen
+              Daten (Postleitzahl, E-Mail-Adresse, Anliegen, optionale Angaben,
+              optionale Spracheingabe) werden ausschließlich während der
+              Verarbeitung Ihrer Anfrage verwendet und danach verworfen. Eine
+              dauerhafte Speicherung Ihrer Brief-Daten findet nicht statt.
+              Ausnahme: optionale Bewertungen nach dem Versand (siehe
+              Abschnitt 16). Die eingesetzten Dienstleister Mistral AI
+              (Abschnitt 9) und Brevo (Abschnitt 11) speichern Daten im Rahmen
+              ihrer eigenen Datenschutzbestimmungen und
               Auftragsverarbeitungsvertr&auml;ge.
             </p>
           </div>

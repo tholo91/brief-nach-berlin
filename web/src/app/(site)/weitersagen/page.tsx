@@ -4,13 +4,13 @@ import type { Metadata } from "next";
 import { FAQAccordion } from "@/components/FAQAccordion";
 import {
   APP_URL,
-  FOUNDER_LINKEDIN,
   FOUNDER_FEEDBACK_URL,
   SHARE_URL_WHATSAPP,
   SHARE_URL_TELEGRAM,
   SHARE_URL_EMAIL,
   SHARE_URL_LINKEDIN,
 } from "@/lib/config";
+import { CONTACT } from "@/lib/contact";
 
 const TITLE = "Brief nach Berlin weitersagen";
 const DESCRIPTION =
@@ -108,7 +108,7 @@ export default function WeitersagenPage() {
         </Link>
 
         <p className="font-typewriter text-sm font-bold tracking-widest uppercase text-waldgruen/60 mb-3">
-          Mund zu Mund
+          Mund zu Mund Propaganda
         </p>
         <h1 className="font-body text-3xl md:text-4xl font-bold text-waldgruen-dark tracking-tight mb-6">
           Brief nach Berlin weitersagen
@@ -263,20 +263,26 @@ export default function WeitersagenPage() {
           </p>
           <div className="flex flex-col sm:flex-row gap-3">
             <a
+              href={`mailto:${CONTACT.email}`}
+              className="flex-1 inline-flex items-center justify-center gap-2 bg-waldgruen text-creme font-body font-semibold px-5 py-3 rounded-xl hover:bg-waldgruen-dark transition-colors"
+            >
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" className="shrink-0">
+                <rect x="2" y="4" width="20" height="16" rx="3" stroke="currentColor" strokeWidth="2" fill="none" />
+                <path d="M2 8l10 7 10-7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+              Schreib mir eine Mail
+            </a>
+            <a
               href={FOUNDER_FEEDBACK_URL}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex-1 text-center bg-waldgruen text-creme font-body font-semibold px-5 py-3 rounded-xl hover:bg-waldgruen-dark transition-colors"
+              className="flex-1 inline-flex items-center justify-center gap-2 bg-white border border-waldgruen text-waldgruen-dark font-body font-semibold px-5 py-3 rounded-xl hover:bg-waldgruen/5 transition-colors"
             >
-              Sprachnachricht an Thomas
-            </a>
-            <a
-              href={FOUNDER_LINKEDIN}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex-1 text-center bg-white border border-waldgruen text-waldgruen-dark font-body font-semibold px-5 py-3 rounded-xl hover:bg-waldgruen/5 transition-colors"
-            >
-              Direkt auf LinkedIn
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" className="shrink-0">
+                <path d="M12 2a4 4 0 00-4 4v6a4 4 0 008 0V6a4 4 0 00-4-4z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                <path d="M5 11a7 7 0 0014 0M12 18v3" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+              </svg>
+              Feedback geben
             </a>
           </div>
         </section>

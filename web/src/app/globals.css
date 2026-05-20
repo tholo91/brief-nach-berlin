@@ -102,6 +102,14 @@ html {
   will-change: transform;
 }
 
+/* iOS Low Power Mode blocks muted autoplay and overlays a tap-to-play button
+   on top of the poster. Hide that overlay so the hero degrades to a clean
+   static poster image instead of showing iOS's play-button affordance. */
+video::-webkit-media-controls-start-playback-button {
+  display: none !important;
+  -webkit-appearance: none;
+}
+
 /* Respect users who don't want motion. */
 @media (prefers-reduced-motion: reduce) {
   .animate-feedback-in,

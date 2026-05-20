@@ -176,7 +176,7 @@ export function Step2Issue({
         Was beschäftigt dich gerade?
       </h1>
       <p className="font-body text-sm text-warmgrau/70 mb-4">
-        Stichpunkte reichen. Du musst keine ganzen Sätze schreiben. Sprich einfach drauf los oder tipp ein paar Notizen. Wir formulieren daraus deinen Brief.
+        Sprich drauflos und passe deinen Text danach an. Oder nenne ein paar Stichpunkte, du musst keine ganzen Sätze schreiben. Wir formulieren daraus deinen Brief.
       </p>
 
       {/* Tips disclosure — subtle nudge toward effective writing */}

@@ -28,6 +28,8 @@ export default function NotFound() {
               viewBox="0 0 280 260"
               className="w-64 drop-shadow-md"
               xmlns="http://www.w3.org/2000/svg"
+              role="img"
+              aria-label="Offener Briefumschlag mit rotem Stempel 404 — unzustellbar"
             >
               {/* Drop shadow filter */}
               <defs>

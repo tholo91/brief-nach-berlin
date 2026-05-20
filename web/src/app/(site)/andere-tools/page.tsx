@@ -5,27 +5,47 @@ import { Prose } from "@/components/editorial/Prose";
 import type { Metadata } from "next";
 import { APP_URL, FOUNDER_LINKEDIN, FOUNDER_FEEDBACK_URL } from "@/lib/config";
 
+const TITLE = "Andere Tools für mehr Demokratie";
+const DESCRIPTION =
+  "LiebeMdB, WeAct, innn.it, openPetition, Abgeordnetenwatch: Wo Brief-nach-Berlin sich abgrenzt und wo die anderen Tools die bessere Wahl sind. Ein ehrlicher Überblick.";
+const URL_PATH = "/andere-tools";
+const PUBLISHED = "2026-05-20";
+
 export const metadata: Metadata = {
-  title: "Andere Tools für mehr Demokratie | Brief-nach-Berlin",
-  description:
-    "LiebeMdB, WeAct, innn.it, openPetition, Abgeordnetenwatch: Wo Brief-nach-Berlin sich abgrenzt und wo die anderen Tools die bessere Wahl sind. Ein ehrlicher Überblick.",
+  title: `${TITLE} | Brief nach Berlin`,
+  description: DESCRIPTION,
   alternates: {
-    canonical: `${APP_URL}/andere-tools`,
+    canonical: `${APP_URL}${URL_PATH}`,
   },
   openGraph: {
-    title: "Andere Tools für mehr Demokratie",
-    description:
-      "LiebeMdB, WeAct, innn.it, openPetition, Abgeordnetenwatch: Wo Brief-nach-Berlin sich abgrenzt und wo die anderen Tools die bessere Wahl sind.",
+    title: TITLE,
+    description: DESCRIPTION,
     type: "article",
     locale: "de_DE",
-    url: `${APP_URL}/andere-tools`,
+    url: `${APP_URL}${URL_PATH}`,
   },
   twitter: {
     card: "summary_large_image",
-    title: "Andere Tools für mehr Demokratie",
-    description:
-      "LiebeMdB, WeAct, innn.it, openPetition, Abgeordnetenwatch: Wo Brief-nach-Berlin sich abgrenzt und wo die anderen Tools die bessere Wahl sind.",
+    title: TITLE,
+    description: DESCRIPTION,
   },
+};
+
+const articleJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Article",
+  headline: TITLE,
+  description: DESCRIPTION,
+  datePublished: PUBLISHED,
+  dateModified: PUBLISHED,
+  author: { "@type": "Organization", name: "Brief nach Berlin" },
+  publisher: {
+    "@type": "Organization",
+    name: "Brief nach Berlin",
+    url: APP_URL,
+  },
+  mainEntityOfPage: `${APP_URL}${URL_PATH}`,
+  inLanguage: "de-DE",
 };
 
 type Tool = {
@@ -132,6 +152,10 @@ const categories: Category[] = [
 export default function AndereToolsPage() {
   return (
     <div className="min-h-screen bg-creme px-6 py-20">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(articleJsonLd) }}
+      />
       <div className="max-w-2xl mx-auto">
         <Link
           href="/"
@@ -224,6 +248,7 @@ export default function AndereToolsPage() {
 
           {categories.map((cat, idx) => (
             <section
+              key={cat.id}
               id={cat.id}
               className="not-prose pt-10 scroll-mt-8"
             >

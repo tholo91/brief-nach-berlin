@@ -2,33 +2,99 @@ import Link from "next/link";
 import type { Metadata } from "next";
 import { APP_URL, FOUNDER_HOMEPAGE } from "@/lib/config";
 import { Prose } from "@/components/editorial/Prose";
+import { FAQAccordion } from "@/components/FAQAccordion";
+
+const TITLE = "KI & Transparenz";
+const DESCRIPTION =
+  "Welche KI Brief-nach-Berlin nutzt, warum wir uns für Mistral aus Europa entschieden haben und wie das Tool transparent mit Claude Code als Freizeitprojekt entstanden ist.";
+const URL_PATH = "/ki-transparenz";
+const PUBLISHED = "2026-05-20";
 
 export const metadata: Metadata = {
-  title: "KI & Transparenz | Brief-nach-Berlin",
-  description:
-    "Welche KI Brief-nach-Berlin nutzt, warum wir uns für Mistral aus Europa entschieden haben und wie das Tool transparent mit Claude Code als Freizeitprojekt entstanden ist.",
+  title: `${TITLE} | Brief nach Berlin`,
+  description: DESCRIPTION,
   alternates: {
-    canonical: `${APP_URL}/ki-transparenz`,
+    canonical: `${APP_URL}${URL_PATH}`,
   },
   openGraph: {
-    title: "KI & Transparenz",
-    description:
-      "Welche KI wir nutzen, warum aus Europa, und wie das Tool entstanden ist.",
+    title: TITLE,
+    description: DESCRIPTION,
     type: "article",
     locale: "de_DE",
-    url: `${APP_URL}/ki-transparenz`,
+    url: `${APP_URL}${URL_PATH}`,
   },
   twitter: {
     card: "summary_large_image",
-    title: "KI & Transparenz",
-    description:
-      "Welche KI wir nutzen, warum aus Europa, und wie das Tool entstanden ist.",
+    title: TITLE,
+    description: DESCRIPTION,
   },
+};
+
+const faqs = [
+  {
+    q: "Welche KI nutzt Brief-nach-Berlin?",
+    a: "Brief-nach-Berlin generiert die Brief-Entwürfe mit Mistral, einem KI-Anbieter mit Sitz in Paris. Konkret läuft die Textgenerierung über das Modell mistral-medium, die Inhaltsprüfung über mistral-moderation. Alle Aufrufe gehen direkt an Mistrals API in der EU.",
+  },
+  {
+    q: "Warum nicht OpenAI oder ein anderes US-Modell?",
+    a: "US-Anbieter unterliegen Gesetzen wie dem CLOUD Act, die US-Behörden Zugriff auf Daten geben können, auch wenn Server in Europa stehen. Für ein Tool, in dem Menschen politische Anliegen formulieren, ist das die falsche Grundlage. Mistral ist europäisch, unterliegt EU-Recht und nutzt deine Eingaben vertraglich nicht für Training.",
+  },
+  {
+    q: "Werden meine Eingaben gespeichert?",
+    a: "Nein. Brief-nach-Berlin speichert weder dein Anliegen noch den generierten Brief in einer Datenbank. Sobald du die Seite schließt, ist beides weg. Mistral verpflichtet sich vertraglich, deine Eingaben nicht für Modelltraining zu verwenden.",
+  },
+  {
+    q: "Werden meine Daten für KI-Training verwendet?",
+    a: "Nein. Mistral nutzt die Eingaben aus Brief-nach-Berlin laut Vertrag nicht für das Training neuer Modelle.",
+  },
+  {
+    q: "Wo läuft die App?",
+    a: "Auf europäischen Servern, ausgeliefert über ein Frankfurter Rechenzentrum. Auch die wenigen Metriken (etwa der Brief-Zähler) liegen bei einem europäischen Anbieter. Keine Daten verlassen den europäischen Rechtsraum.",
+  },
+  {
+    q: "Wurde Brief-nach-Berlin mit KI gebaut?",
+    a: "Ja, die Entwicklung erfolgte mit Claude Code von Anthropic. Aber Claude läuft nicht im Betrieb mit: Wenn du das Tool benutzt, verarbeitet ausschließlich Mistral in Europa deine Eingaben.",
+  },
+];
+
+const faqJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  mainEntity: faqs.map((f) => ({
+    "@type": "Question",
+    name: f.q,
+    acceptedAnswer: { "@type": "Answer", text: f.a },
+  })),
+};
+
+const articleJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Article",
+  headline: TITLE,
+  description: DESCRIPTION,
+  datePublished: PUBLISHED,
+  dateModified: PUBLISHED,
+  author: { "@type": "Organization", name: "Brief nach Berlin" },
+  publisher: {
+    "@type": "Organization",
+    name: "Brief nach Berlin",
+    url: APP_URL,
+  },
+  mainEntityOfPage: `${APP_URL}${URL_PATH}`,
+  inLanguage: "de-DE",
 };
 
 export default function KiTransparenzPage() {
   return (
     <div className="min-h-screen bg-creme px-6 py-20">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(articleJsonLd) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
+      />
       <div className="max-w-2xl mx-auto">
         <Link
           href="/"
@@ -197,6 +263,11 @@ export default function KiTransparenzPage() {
               Tools, die KI nutzen, ehrlich darüber sprechen sollten, wo KI
               überall mitspielt. Nicht erst, wenn jemand danach fragt.
             </p>
+
+            <h2 className="font-body text-2xl font-bold text-waldgruen-dark pt-4">
+              Häufige Fragen
+            </h2>
+            <FAQAccordion items={faqs} />
         </Prose>
 
           <div className="mt-16 p-8 bg-waldgruen/5 border border-waldgruen/15 rounded-xl hover:bg-waldgruen/10 transition-colors">

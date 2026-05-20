@@ -3,37 +3,98 @@ import type { Metadata } from "next";
 import { APP_URL } from "@/lib/config";
 import { Figure } from "@/components/editorial/Figure";
 import { Prose } from "@/components/editorial/Prose";
+import { FAQAccordion } from "@/components/FAQAccordion";
 import { PullQuote } from "@/components/editorial/PullQuote";
 import { SectionDivider } from "@/components/editorial/SectionDivider";
 import { FactCallout } from "@/components/editorial/FactCallout";
 
+const TITLE = "Warum ein Brief mehr ist als ein Brief";
+const DESCRIPTION =
+  "Wer einmal einen Brief an seinen Abgeordneten geschrieben hat, gibt seine Stimme nicht mehr nur ab. Er erhebt sie. Über politische Selbstwirksamkeit, das Demokratie-Muskel-Prinzip und warum Lobbyisten gerade auf deine Beteiligung hoffen, dass sie ausbleibt.";
+const URL_PATH = "/warum-ein-brief";
+const PUBLISHED = "2026-05-20";
+
 export const metadata: Metadata = {
-  title:
-    "Warum ein Brief mehr ist als ein Brief | Brief-nach-Berlin",
-  description:
-    "Wer einmal einen Brief an seinen Abgeordneten geschrieben hat, gibt seine Stimme nicht mehr nur ab. Er erhebt sie. Über politische Selbstwirksamkeit, das Demokratie-Muskel-Prinzip und warum Lobbyisten gerade auf deine Beteiligung hoffen, dass sie ausbleibt.",
+  title: `${TITLE} | Brief nach Berlin`,
+  description: DESCRIPTION,
   alternates: {
-    canonical: `${APP_URL}/warum-ein-brief`,
+    canonical: `${APP_URL}${URL_PATH}`,
   },
   openGraph: {
-    title: "Warum ein Brief mehr ist als ein Brief",
-    description:
-      "Wer einmal einen Brief an seinen Abgeordneten geschrieben hat, gibt seine Stimme nicht mehr nur ab. Er erhebt sie.",
+    title: TITLE,
+    description: DESCRIPTION,
     type: "article",
     locale: "de_DE",
-    url: `${APP_URL}/warum-ein-brief`,
+    url: `${APP_URL}${URL_PATH}`,
   },
   twitter: {
     card: "summary_large_image",
-    title: "Warum ein Brief mehr ist als ein Brief",
-    description:
-      "Wer einmal einen Brief an seinen Abgeordneten geschrieben hat, gibt seine Stimme nicht mehr nur ab. Er erhebt sie.",
+    title: TITLE,
+    description: DESCRIPTION,
   },
+};
+
+const faqs = [
+  {
+    q: "Warum ein Brief und keine E-Mail an den Abgeordneten?",
+    a: "Eine E-Mail ist billig: Postfächer werden gefiltert, Sekretariate antworten mit Schablonen. Ein Brief liegt physisch auf dem Schreibtisch, wird geöffnet, gelesen, manchmal weitergegeben. Niemand hat einen Spam-Filter für Papier.",
+  },
+  {
+    q: "Was bewirkt ein einzelner Brief wirklich?",
+    a: "Direkt vielleicht wenig. Aber er verändert dich: politische Selbstwirksamkeit steigt nachweislich, sobald du einmal eine politische Handlung jenseits des Wählens vollzogen hast. Außerdem kumulieren Briefe in den internen Themenlisten der Abgeordnetenbüros. Zwanzig Briefe aus einem Wahlkreis zum gleichen Thema sind ein politisches Signal.",
+  },
+  {
+    q: "Was ist politische Selbstwirksamkeit?",
+    a: "Das Gefühl, dass dein politisches Handeln einen Unterschied macht. Studien aus der politischen Bildung zeigen: Menschen, die einmal über das Wählen hinaus aktiv waren, schätzen ihre Wirksamkeit dauerhaft höher ein und geben weniger schnell auf.",
+  },
+  {
+    q: "Sollte ich nur schreiben, wenn ich Kritik habe?",
+    a: "Nein. Auch ein Danke ist ein Brief. Wenn sich eine Abgeordnete für etwas eingesetzt hat, das dir wichtig ist, schreib es ihr, auch wenn ihre Partei nicht deine ist. Lob ist seltener als Kritik und wirkt deshalb stärker.",
+  },
+  {
+    q: "Warum wirken Lobbyisten so viel stärker als Bürger?",
+    a: "Weil sie Vollzeit dafür bezahlt werden. In Berlin sind über 5.000 Lobbyisten registriert. Was du als Bürger hast und sie nicht: eine Stimme im Wahlkreis dieses Abgeordneten. Genau darauf reagieren direkt gewählte Abgeordnete besonders empfindlich.",
+  },
+];
+
+const faqJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  mainEntity: faqs.map((f) => ({
+    "@type": "Question",
+    name: f.q,
+    acceptedAnswer: { "@type": "Answer", text: f.a },
+  })),
+};
+
+const articleJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Article",
+  headline: TITLE,
+  description: DESCRIPTION,
+  datePublished: PUBLISHED,
+  dateModified: PUBLISHED,
+  author: { "@type": "Organization", name: "Brief nach Berlin" },
+  publisher: {
+    "@type": "Organization",
+    name: "Brief nach Berlin",
+    url: APP_URL,
+  },
+  mainEntityOfPage: `${APP_URL}${URL_PATH}`,
+  inLanguage: "de-DE",
 };
 
 export default function WarumPage() {
   return (
     <div className="min-h-screen bg-creme px-6 py-20">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(articleJsonLd) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
+      />
       <div className="max-w-2xl mx-auto">
         <Link
           href="/"
@@ -181,6 +242,25 @@ export default function WarumPage() {
           <SectionDivider />
 
           <h2 className="font-body text-2xl md:text-3xl font-bold text-waldgruen-dark pt-4">
+            Auch ein Danke ist ein Brief
+          </h2>
+          <p>
+            Briefe müssen nicht immer Kritik sein. Wenn sich eine Abgeordnete
+            für etwas eingesetzt hat, das dir wichtig ist, schreib ihr das.
+            Auch dann, wenn du sie nicht gewählt hast und ihre Partei sonst
+            nicht deine wäre. Der Job zehrt: Sitzungswochen bis nach
+            Mitternacht, Wahlkreis am Wochenende, ein Postfach voller Wut. Ein
+            handgeschriebenes Danke fällt aus diesem Stapel heraus und bleibt
+            hängen.
+          </p>
+
+          <PullQuote>
+            Lob ist seltener als Kritik. Genau deshalb wirkt es stärker.
+          </PullQuote>
+
+          <SectionDivider />
+
+          <h2 className="font-body text-2xl md:text-3xl font-bold text-waldgruen-dark pt-4">
             Demokratie ist ein Muskel
           </h2>
           <p>
@@ -233,6 +313,13 @@ export default function WarumPage() {
             Frage ist, ob du den Mut hast, der erste in deinem Bekanntenkreis zu
             sein, der schreibt.
           </p>
+
+          <SectionDivider />
+
+          <h2 className="font-body text-2xl md:text-3xl font-bold text-waldgruen-dark pt-4">
+            Häufige Fragen
+          </h2>
+          <FAQAccordion items={faqs} />
         </Prose>
 
         <div className="mt-20 p-8 md:p-10 bg-waldgruen/5 border border-waldgruen/15 rounded-2xl hover:bg-waldgruen/10 transition-colors">

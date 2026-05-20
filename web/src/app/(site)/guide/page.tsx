@@ -5,28 +5,102 @@ import { Figure } from "@/components/editorial/Figure";
 import { PullQuote } from "@/components/editorial/PullQuote";
 import { FactCallout } from "@/components/editorial/FactCallout";
 
+const TITLE = "Der komplette Guide: Vom Frust zum Brief im Kasten";
+const DESCRIPTION =
+  "In sechs Schritten von 'das ist doch absurd' bis zu einem Brief, der wirklich gelesen wird. Adresse, Porto, Anrede, Länge, Antwortzeiten: alles, was du wissen musst, ohne Politiksprech.";
+const URL_PATH = "/guide";
+const PUBLISHED = "2026-05-20";
+
 export const metadata: Metadata = {
-  title:
-    "Der komplette Guide: Vom Frust zum Brief im Kasten | Brief-nach-Berlin",
-  description:
-    "In sechs Schritten von 'das ist doch absurd' bis zu einem Brief, der wirklich gelesen wird. Adresse, Porto, Anrede, Länge, Antwortzeiten: alles, was du wissen musst, ohne Politiksprech.",
+  title: `${TITLE} | Brief nach Berlin`,
+  description: DESCRIPTION,
   alternates: {
-    canonical: `${APP_URL}/guide`,
+    canonical: `${APP_URL}${URL_PATH}`,
   },
   openGraph: {
-    title: "Der komplette Guide: Vom Frust zum Brief im Kasten",
-    description:
-      "In sechs Schritten zu einem Brief, der ankommt. Adresse, Porto, Anrede, Länge, Antwortzeiten.",
+    title: TITLE,
+    description: DESCRIPTION,
     type: "article",
     locale: "de_DE",
-    url: `${APP_URL}/guide`,
+    url: `${APP_URL}${URL_PATH}`,
   },
   twitter: {
     card: "summary_large_image",
-    title: "Der komplette Guide: Vom Frust zum Brief im Kasten",
-    description:
-      "In sechs Schritten zu einem Brief, der ankommt.",
+    title: TITLE,
+    description: DESCRIPTION,
   },
+};
+
+const faqJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  mainEntity: [
+    {
+      "@type": "Question",
+      name: "Brauche ich Briefkopf, Datum, Adresse oben rechts?",
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: "Nein. Das ist Firmenformat, nicht Bürgerformat. Eine handgeschriebene Anrede oben, der Brief drunter, am Ende dein Name und deine Adresse. Datum hilft, ist aber nicht zwingend.",
+      },
+    },
+    {
+      "@type": "Question",
+      name: "Muss ich meinen vollen Namen drunter setzen?",
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: "Ja. Anonyme Briefe werden in fast allen Abgeordnetenbüros aussortiert. Dein Name und deine Adresse zeigen, dass du eine echte Wählerin oder ein echter Wähler aus dem Wahlkreis bist. Genau deshalb wirkt der Brief.",
+      },
+    },
+    {
+      "@type": "Question",
+      name: "Kann ich denselben Brief an mehrere Abgeordnete schicken?",
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: "Technisch ja, inhaltlich besser nicht wortgleich. Wenn drei Abgeordnete denselben Brief Buchstaben für Buchstaben identisch bekommen, riecht das nach Kampagne und landet im Standardordner. Schreib lieber zwei oder drei leicht angepasste Varianten.",
+      },
+    },
+    {
+      "@type": "Question",
+      name: "Was kostet das Porto und wo bekomme ich die Briefmarke?",
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: "Ein Standardbrief in Deutschland kostet 95 Cent (Stand 2026). Briefmarken gibt es in jeder Postfiliale, an Automaten, online auf deutschepost.de und in vielen Kiosken. Bei elektronischer Bezahlung kannst du den Code auch handschriftlich auf den Umschlag schreiben.",
+      },
+    },
+    {
+      "@type": "Question",
+      name: "Bringt das wirklich etwas, wenn ich allein schreibe?",
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: "Ein einzelner Brief zwingt selten ein Gesetz herbei, aber er hinterlässt eine Spur im Abgeordnetenbüro. Zwanzig Briefe aus demselben Wahlkreis zum gleichen Thema werden im Büro besprochen. Hundert Briefe lösen eine Pressemitteilung aus.",
+      },
+    },
+    {
+      "@type": "Question",
+      name: "Was, wenn ich keine Antwort bekomme?",
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: "Häufig kommt eine Standardantwort, manchmal nichts. Beides ist okay. Du hast dein Anliegen in einem Büro auf einen Schreibtisch gelegt. Nach zwei Monaten ohne Antwort darfst du nachfassen, freundlich und kurz, per Mail oder Anruf im Wahlkreisbüro.",
+      },
+    },
+  ],
+};
+
+const articleJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Article",
+  headline: TITLE,
+  description: DESCRIPTION,
+  datePublished: PUBLISHED,
+  dateModified: PUBLISHED,
+  author: { "@type": "Organization", name: "Brief nach Berlin" },
+  publisher: {
+    "@type": "Organization",
+    name: "Brief nach Berlin",
+    url: APP_URL,
+  },
+  mainEntityOfPage: `${APP_URL}${URL_PATH}`,
+  inLanguage: "de-DE",
 };
 
 type Step = {
@@ -333,6 +407,14 @@ const faqs: FaqItem[] = [
 export default function GuidePage() {
   return (
     <div className="min-h-screen bg-creme px-6 py-20">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(articleJsonLd) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
+      />
       <div className="max-w-2xl mx-auto">
         <Link
           href="/"
@@ -407,6 +489,7 @@ export default function GuidePage() {
         <ol className="space-y-12">
           {steps.map((step) => (
             <li
+              key={step.n}
               id={`schritt-${step.n}`}
               className="border-l-2 border-waldgruen/20 pl-6 relative scroll-mt-8"
             >

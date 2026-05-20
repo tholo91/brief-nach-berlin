@@ -2,31 +2,84 @@ import Link from "next/link";
 import type { Metadata } from "next";
 import { APP_URL } from "@/lib/config";
 import { Figure } from "@/components/editorial/Figure";
+import { FAQAccordion } from "@/components/FAQAccordion";
 import { PullQuote } from "@/components/editorial/PullQuote";
 import { FactCallout } from "@/components/editorial/FactCallout";
 
+const TITLE = "Die Treppe der politischen Selbstwirksamkeit";
+const DESCRIPTION =
+  "Wählen alle vier Jahre ist die unterste Stufe. Hier sind zehn konkrete Wege, wie du als Bürgerin oder Bürger in Deutschland politisch wirklich etwas bewegst, sortiert nach Aufwand. Vom 1-Klick-Mitzeichnen einer Petition bis zum Gründen einer eigenen Bürgerinitiative.";
+const URL_PATH = "/treppe-der-selbstwirksamkeit";
+const PUBLISHED = "2026-05-20";
+
 export const metadata: Metadata = {
-  title:
-    "Die Treppe der politischen Selbstwirksamkeit | 10 Stufen, vom Wählen bis zum eigenen Verein",
-  description:
-    "Wählen alle vier Jahre ist die unterste Stufe. Hier sind zehn konkrete Wege, wie du als Bürgerin oder Bürger in Deutschland politisch wirklich etwas bewegst, sortiert nach Aufwand. Vom 1-Klick-Mitzeichnen einer Petition bis zum Gründen einer eigenen Bürgerinitiative.",
+  title: `${TITLE} | Brief nach Berlin`,
+  description: DESCRIPTION,
   alternates: {
-    canonical: `${APP_URL}/treppe-der-selbstwirksamkeit`,
+    canonical: `${APP_URL}${URL_PATH}`,
   },
   openGraph: {
-    title: "Die Treppe der politischen Selbstwirksamkeit",
-    description:
-      "10 Stufen, wie du in Deutschland politisch wirklich etwas bewegst. Vom Mitzeichnen einer Petition bis zur eigenen Bürgerinitiative.",
+    title: TITLE,
+    description: DESCRIPTION,
     type: "article",
     locale: "de_DE",
-    url: `${APP_URL}/treppe-der-selbstwirksamkeit`,
+    url: `${APP_URL}${URL_PATH}`,
   },
   twitter: {
     card: "summary_large_image",
-    title: "Die Treppe der politischen Selbstwirksamkeit",
-    description:
-      "10 Stufen, wie du in Deutschland politisch wirklich etwas bewegst.",
+    title: TITLE,
+    description: DESCRIPTION,
   },
+};
+
+const faqs = [
+  {
+    q: "Was kann ich politisch tun, außer wählen?",
+    a: "Zehn Stufen, sortiert nach Aufwand: 1) Wählen, 2) Petition mitzeichnen, 3) Brief an Abgeordnete schreiben, 4) Leserbrief schreiben, 5) Demonstration besuchen, 6) Bürgersprechstunde besuchen, 7) In Verein oder Initiative mitwirken, 8) Parteimitglied werden, 9) Eigene Bürgerinitiative gründen, 10) Selbst kandidieren.",
+  },
+  {
+    q: "Was ist politische Selbstwirksamkeit?",
+    a: "Das Gefühl, dass dein politisches Handeln einen Unterschied macht. Wer einmal über das Wählen hinaus aktiv war, schätzt seine Wirksamkeit dauerhaft höher ein und gibt weniger schnell auf.",
+  },
+  {
+    q: "Welche Stufe ist die wirkungsvollste für den Aufwand?",
+    a: "Der handgeschriebene Brief an die Abgeordnete (Stufe 3). Niedriger Aufwand (eine Stunde), hohe Wirkung im Wahlkreisbüro, und er stärkt deine eigene Selbstwirksamkeit nachweislich. Wer Stufe 3 erreicht hat, ist weiter als die große Mehrheit der Bevölkerung.",
+  },
+  {
+    q: "Wie wird man Parteimitglied?",
+    a: "Über die Website der jeweiligen Partei. Beitritt kostet meist 10 bis 30 Euro im Monat, einkommensabhängig oft weniger. Mit der Mitgliedschaft hast du Stimmrecht in Programm- und Personalfragen.",
+  },
+  {
+    q: "Wie gründe ich eine Bürgerinitiative?",
+    a: "Eine Bürgerinitiative ist formlos: drei bis fünf Menschen, ein Thema, ein erster Schritt (Flyer, Stammtisch, Treffen mit der Lokalpresse). Für Bürgerbegehren auf Kommunal- oder Landesebene gelten je nach Bundesland eigene Unterschriftenhürden.",
+  },
+];
+
+const faqJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  mainEntity: faqs.map((f) => ({
+    "@type": "Question",
+    name: f.q,
+    acceptedAnswer: { "@type": "Answer", text: f.a },
+  })),
+};
+
+const articleJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Article",
+  headline: TITLE,
+  description: DESCRIPTION,
+  datePublished: PUBLISHED,
+  dateModified: PUBLISHED,
+  author: { "@type": "Organization", name: "Brief nach Berlin" },
+  publisher: {
+    "@type": "Organization",
+    name: "Brief nach Berlin",
+    url: APP_URL,
+  },
+  mainEntityOfPage: `${APP_URL}${URL_PATH}`,
+  inLanguage: "de-DE",
 };
 
 type Step = {
@@ -231,6 +284,14 @@ const steps: Step[] = [
 export default function TreppePage() {
   return (
     <div className="min-h-screen bg-creme px-6 py-20">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(articleJsonLd) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
+      />
       <div className="max-w-2xl mx-auto">
         <Link
           href="/"
@@ -269,6 +330,7 @@ export default function TreppePage() {
         <ol className="space-y-10">
           {steps.map((step) => (
             <li
+              key={step.n}
               id={`stufe-${step.n}`}
               className="border-l-2 border-waldgruen/20 pl-6 relative scroll-mt-24"
             >
@@ -308,6 +370,13 @@ export default function TreppePage() {
             Brief schreiben &rarr;
           </Link>
         </div>
+
+        <section className="mt-16">
+          <h2 className="font-body text-2xl md:text-3xl font-bold text-waldgruen-dark mb-6">
+            Häufige Fragen
+          </h2>
+          <FAQAccordion items={faqs} />
+        </section>
 
         <div className="mt-12 font-body text-sm text-warmgrau/70 leading-relaxed">
           <p>

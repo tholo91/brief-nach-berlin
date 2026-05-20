@@ -3,33 +3,95 @@ import type { Metadata } from "next";
 import { APP_URL } from "@/lib/config";
 import { Figure } from "@/components/editorial/Figure";
 import { Prose } from "@/components/editorial/Prose";
+import { FAQAccordion } from "@/components/FAQAccordion";
+
+const TITLE = "Brief an Stadtrat oder Gemeinderat schreiben";
+const DESCRIPTION =
+  "Spielplatz, Kita-Platz, Straßenschaden: viele Probleme gehören ins Rathaus, nicht nach Berlin. Wie du deinen Stadtrat findest und kontaktierst.";
+const URL_PATH = "/kommunalpolitik-brief";
+const PUBLISHED = "2026-05-20";
 
 export const metadata: Metadata = {
-  title: "Brief an Stadtrat oder Gemeinderat schreiben | Brief nach Berlin",
-  description:
-    "Spielplatz, Kita-Platz, Straßenschaden: viele Probleme gehören ins Rathaus, nicht nach Berlin. Wie du deinen Stadtrat findest und kontaktierst.",
+  title: `${TITLE} | Brief nach Berlin`,
+  description: DESCRIPTION,
   alternates: {
-    canonical: `${APP_URL}/kommunalpolitik-brief`,
+    canonical: `${APP_URL}${URL_PATH}`,
   },
   openGraph: {
-    title: "Brief an Stadtrat oder Gemeinderat schreiben",
-    description:
-      "Spielplatz, Kita-Platz, Straßenschaden: viele Probleme gehören ins Rathaus, nicht nach Berlin. Wie du deinen Stadtrat findest und kontaktierst.",
+    title: TITLE,
+    description: DESCRIPTION,
     type: "article",
     locale: "de_DE",
-    url: `${APP_URL}/kommunalpolitik-brief`,
+    url: `${APP_URL}${URL_PATH}`,
   },
   twitter: {
     card: "summary_large_image",
-    title: "Brief an Stadtrat oder Gemeinderat schreiben",
-    description:
-      "Spielplatz, Kita-Platz, Straßenschaden: viele Probleme gehören ins Rathaus, nicht nach Berlin. Wie du deinen Stadtrat findest und kontaktierst.",
+    title: TITLE,
+    description: DESCRIPTION,
   },
+};
+
+const faqs = [
+  {
+    q: "Wann ist der Stadtrat oder Gemeinderat zuständig?",
+    a: "Bei allem, was in deiner Kommune passiert: Spielplätze, Straßen, Gehwege, Radwege, Kita-Plätze, lokaler ÖPNV, Baugenehmigungen, Bebauungspläne, Lärmschutz in Wohngebieten und kommunale Dienstleistungen wie Bürgerämter. Faustregel: was du täglich siehst oder spürst, ist meist Kommunalsache.",
+  },
+  {
+    q: "Wie finde ich den Stadtrat für meine Stadt?",
+    a: "Drei zuverlässige Wege: 1) Die offizielle Gemeinde-Website hat eine Rubrik 'Stadtrat', 'Gemeinderat' oder 'Politik' mit Namen und Kontaktadressen. 2) Google-Suche nach '[deine Stadt] Stadtrat Kontakt'. 3) In größeren Städten kannst du über manche Partei- oder Bürgerportale per PLZ filtern.",
+  },
+  {
+    q: "An wen genau soll ich schreiben?",
+    a: "Idealerweise an einen Stadtrat der Partei, die dein Anliegen thematisch vertritt, oder an eine Person, die in deinem Stadtteil kandidiert hat. Persönlicher Bezug schlägt politische Kalkulation.",
+  },
+  {
+    q: "Wann ist das Land statt der Kommune zuständig?",
+    a: "Bei Themen, die im gesamten Bundesland gelten: Schulen, Polizei, innere Sicherheit, Landesbehörden, Rundfunk und Wohnungspolitik auf Landesebene. Adresse ist dann der Landtag, nicht der Stadtrat.",
+  },
+  {
+    q: "Unterstützt Brief nach Berlin auch Briefe an den Stadtrat?",
+    a: "Aktuell unterstützt Brief nach Berlin Bundestag und Landtag. Kommunale Mandate folgen in einer der nächsten Versionen. Bis dahin hilft die Anleitung auf dieser Seite, den richtigen Stadtrat selbst zu finden.",
+  },
+];
+
+const faqJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  mainEntity: faqs.map((f) => ({
+    "@type": "Question",
+    name: f.q,
+    acceptedAnswer: { "@type": "Answer", text: f.a },
+  })),
+};
+
+const articleJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Article",
+  headline: TITLE,
+  description: DESCRIPTION,
+  datePublished: PUBLISHED,
+  dateModified: PUBLISHED,
+  author: { "@type": "Organization", name: "Brief nach Berlin" },
+  publisher: {
+    "@type": "Organization",
+    name: "Brief nach Berlin",
+    url: APP_URL,
+  },
+  mainEntityOfPage: `${APP_URL}${URL_PATH}`,
+  inLanguage: "de-DE",
 };
 
 export default function KommunalpolitikBriefPage() {
   return (
     <div className="min-h-screen bg-creme px-6 py-20">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(articleJsonLd) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
+      />
       <div className="max-w-2xl mx-auto">
         <Link
           href="/"
@@ -177,6 +239,11 @@ export default function KommunalpolitikBriefPage() {
             Wenn dein Thema den Bundestag betrifft, kannst du jetzt direkt
             starten.
           </p>
+
+          <h2 className="font-body text-2xl font-bold text-waldgruen-dark pt-4">
+            Häufige Fragen
+          </h2>
+          <FAQAccordion items={faqs} />
         </Prose>
 
         <div className="mt-16 p-8 bg-waldgruen/5 border border-waldgruen/15 rounded-xl hover:bg-waldgruen/10 transition-colors">

@@ -2,6 +2,7 @@ import Link from "next/link";
 import type { Metadata } from "next";
 import { APP_URL } from "@/lib/config";
 import { Prose } from "@/components/editorial/Prose";
+import { FAQAccordion } from "@/components/FAQAccordion";
 import { PullQuote } from "@/components/editorial/PullQuote";
 import { FactCallout } from "@/components/editorial/FactCallout";
 import { Figure } from "@/components/editorial/Figure";
@@ -272,16 +273,7 @@ export default function OhnmachtPage() {
           <h2 className="font-body text-2xl md:text-3xl font-bold text-waldgruen-dark pt-4">
             Häufige Fragen
           </h2>
-          <div className="space-y-6 mt-4">
-            {faqs.map((item) => (
-              <div key={item.q}>
-                <h3 className="font-body text-lg md:text-xl font-bold text-waldgruen-dark mb-2">
-                  {item.q}
-                </h3>
-                <p className="text-warmgrau">{item.a}</p>
-              </div>
-            ))}
-          </div>
+          <FAQAccordion items={faqs} />
 
           <h2 className="font-body text-2xl md:text-3xl font-bold text-waldgruen-dark pt-4">
             Weiterlesen

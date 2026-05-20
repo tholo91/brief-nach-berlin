@@ -2,29 +2,87 @@ import Link from "next/link";
 import type { Metadata } from "next";
 import { APP_URL } from "@/lib/config";
 import { Figure } from "@/components/editorial/Figure";
+import { FAQAccordion } from "@/components/FAQAccordion";
 import { PullQuote } from "@/components/editorial/PullQuote";
 
+const TITLE = "Tipps für den perfekten Brief";
+const DESCRIPTION =
+  "Welches Papier, wie die Zeilen gerade bleiben, warum Telefonnummer und E-Mail reingehören und wann es sich lohnt, sofort loszulegen.";
+const URL_PATH = "/tipps";
+const PUBLISHED = "2026-05-20";
+
 export const metadata: Metadata = {
-  title: "Tipps für den perfekten Brief | Brief nach Berlin",
-  description:
-    "Welches Papier, wie die Zeilen gerade bleiben, warum Telefonnummer und E-Mail reingehören und wann es sich lohnt, sofort loszulegen.",
+  title: `${TITLE} | Brief nach Berlin`,
+  description: DESCRIPTION,
   alternates: {
-    canonical: `${APP_URL}/tipps`,
+    canonical: `${APP_URL}${URL_PATH}`,
   },
   openGraph: {
-    title: "Tipps für den perfekten Brief",
-    description:
-      "Welches Papier, wie die Zeilen gerade bleiben, warum Telefonnummer und E-Mail reingehören.",
+    title: TITLE,
+    description: DESCRIPTION,
     type: "article",
     locale: "de_DE",
-    url: `${APP_URL}/tipps`,
+    url: `${APP_URL}${URL_PATH}`,
   },
   twitter: {
     card: "summary_large_image",
-    title: "Tipps für den perfekten Brief",
-    description:
-      "Welches Papier, wie die Zeilen gerade bleiben, warum Telefonnummer und E-Mail reingehören.",
+    title: TITLE,
+    description: DESCRIPTION,
   },
+};
+
+const faqs = [
+  {
+    q: "Welches Papier soll ich für einen handgeschriebenen Brief nehmen?",
+    a: "Weißes, unliniertes A4-Papier reicht. Wer kein Briefpapier hat, nimmt einfach Druckerpapier. Damit die Zeilen gerade bleiben, kann man ein liniertes Blatt unterlegen, die Linien scheinen durch und verschwinden, wenn man das Hilfsblatt herauszieht.",
+  },
+  {
+    q: "Muss meine Handschrift schön sein?",
+    a: "Nein, sie muss nur lesbar sein. Zu klein, zu eng oder zu hastig riskiert, dass selbst ein inhaltlich guter Brief untergeht. Nimm dir Zeit beim Schreiben.",
+  },
+  {
+    q: "Soll ich Telefonnummer und E-Mail in den Brief schreiben?",
+    a: "Ja. Je einfacher eine Antwort zu schicken ist, desto öfter passiert es. Schreib Telefonnummer und E-Mail unter deinen Namen, damit das Abgeordnetenbüro dich auch ohne Briefantwort erreichen kann.",
+  },
+  {
+    q: "Was kostet ein Standardbrief in Deutschland?",
+    a: "0,95 Euro (Stand 2026). Briefmarken gibt es an Postschaltern, an Automaten in Bahnhöfen und Supermärkten, in Kiosken und online. Die Deutsche Post bietet auch eine mobile Briefmarke, die per App gekauft und als Code auf den Umschlag geschrieben wird.",
+  },
+  {
+    q: "Wann sollte ich den Brief abschicken?",
+    a: "Sofort, wenn dein Anliegen mit einer laufenden Debatte oder einem aktuellen Gesetzgebungsverfahren zusammenhängt. Ein Brief zwei Tage vor einer Abstimmung wirkt anders als einer eine Woche danach.",
+  },
+  {
+    q: "Soll ich auch positives Feedback an Abgeordnete schicken?",
+    a: "Ja. Kritik kommt jeden Tag, Lob fast nie. Ein handgeschriebenes Danke fällt aus dem Postfach heraus und bleibt hängen, auch wenn du eine andere Partei gewählt hast.",
+  },
+];
+
+const faqJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  mainEntity: faqs.map((f) => ({
+    "@type": "Question",
+    name: f.q,
+    acceptedAnswer: { "@type": "Answer", text: f.a },
+  })),
+};
+
+const articleJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Article",
+  headline: TITLE,
+  description: DESCRIPTION,
+  datePublished: PUBLISHED,
+  dateModified: PUBLISHED,
+  author: { "@type": "Organization", name: "Brief nach Berlin" },
+  publisher: {
+    "@type": "Organization",
+    name: "Brief nach Berlin",
+    url: APP_URL,
+  },
+  mainEntityOfPage: `${APP_URL}${URL_PATH}`,
+  inLanguage: "de-DE",
 };
 
 type Tip = {
@@ -130,11 +188,38 @@ const tips: Tip[] = [
       </>
     ),
   },
+  {
+    n: 6,
+    title: "Auch mal Danke sagen",
+    body: (
+      <>
+        <p>
+          Kritik kommt jeden Tag, Lob fast nie. Wenn eine Abgeordnete sich für
+          etwas einsetzt, das dir wichtig ist, schreib ihr das. Auch dann, wenn
+          du eine andere Partei gewählt hast.
+        </p>
+        <p className="mt-2">
+          Der Job zehrt: Sitzungswochen bis nach Mitternacht, Wahlkreis am
+          Wochenende, ein Postfach voller Wut. Ein handgeschriebenes Danke
+          fällt aus diesem Stapel heraus und bleibt hängen. Fünf Minuten von
+          dir, eine Woche bessere Laune im Büro.
+        </p>
+      </>
+    ),
+  },
 ];
 
 export default function TippsPage() {
   return (
     <div className="min-h-screen bg-creme px-6 py-20">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(articleJsonLd) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
+      />
       <div className="max-w-2xl mx-auto">
         <Link
           href="/"
@@ -151,7 +236,7 @@ export default function TippsPage() {
           </h1>
 
           <p className="font-handwriting text-xl md:text-2xl text-warmgrau leading-relaxed mb-12 text-pretty">
-            Fünf Dinge, die den Unterschied machen, zwischen einem Brief,
+            Sechs Dinge, die den Unterschied machen, zwischen einem Brief,
             der gelesen wird, und einem, der es schwer hat.
           </p>
 
@@ -185,6 +270,7 @@ export default function TippsPage() {
         <ol className="space-y-12">
           {tips.map((tip) => (
             <li
+              key={tip.n}
               id={`tipp-${tip.n}`}
               className="border-l-2 border-waldgruen/20 pl-6 relative scroll-mt-8"
             >
@@ -203,6 +289,13 @@ export default function TippsPage() {
             </li>
           ))}
         </ol>
+
+        <section className="mt-16">
+          <h2 className="font-body text-2xl md:text-3xl font-bold text-waldgruen-dark mb-6">
+            Häufige Fragen
+          </h2>
+          <FAQAccordion items={faqs} />
+        </section>
 
         <div className="mt-16 p-6 md:p-8 bg-waldgruen/5 border border-waldgruen/15 rounded-xl hover:bg-waldgruen/10 transition-colors">
           <h2 className="font-body text-xl md:text-2xl font-bold text-waldgruen-dark mb-3">

@@ -4,32 +4,56 @@ import { APP_URL } from "@/lib/config";
 import { EXAMPLE_LETTERS } from "@/lib/example-letters";
 import LetterPaper from "@/components/LetterPaper";
 
+const TITLE = "Beispiel-Briefe an Politiker:innen";
+const DESCRIPTION =
+  "Echte Briefe, die mit Brief nach Berlin entstanden sind: zur Energiepolitik, zur Lage am Bremer Hauptbahnhof und zur Verdrängung in Berlin-Kreuzkölln. Anonymisiert.";
+const URL_PATH = "/beispiele";
+const PUBLISHED = "2026-05-20";
+
 export const metadata: Metadata = {
-  title: "Beispiel-Briefe an Politiker:innen | Brief nach Berlin",
-  description:
-    "Echte Briefe, die mit Brief nach Berlin entstanden sind: zur Energiepolitik, zur Lage am Bremer Hauptbahnhof und zur Verdrängung in Berlin-Kreuzkölln. Anonymisiert.",
+  title: `${TITLE} | Brief nach Berlin`,
+  description: DESCRIPTION,
   alternates: {
-    canonical: `${APP_URL}/beispiele`,
+    canonical: `${APP_URL}${URL_PATH}`,
   },
   openGraph: {
-    title: "Beispiel-Briefe an Politiker:innen",
-    description:
-      "Echte Briefe an Bundestagsabgeordnete, geschrieben mit Brief nach Berlin.",
+    title: TITLE,
+    description: DESCRIPTION,
     type: "article",
     locale: "de_DE",
-    url: `${APP_URL}/beispiele`,
+    url: `${APP_URL}${URL_PATH}`,
   },
   twitter: {
     card: "summary_large_image",
-    title: "Beispiel-Briefe an Politiker:innen",
-    description:
-      "Echte Briefe an Bundestagsabgeordnete, geschrieben mit Brief nach Berlin.",
+    title: TITLE,
+    description: DESCRIPTION,
   },
+};
+
+const articleJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Article",
+  headline: TITLE,
+  description: DESCRIPTION,
+  datePublished: PUBLISHED,
+  dateModified: PUBLISHED,
+  author: { "@type": "Organization", name: "Brief nach Berlin" },
+  publisher: {
+    "@type": "Organization",
+    name: "Brief nach Berlin",
+    url: APP_URL,
+  },
+  mainEntityOfPage: `${APP_URL}${URL_PATH}`,
+  inLanguage: "de-DE",
 };
 
 export default function BeispielePage() {
   return (
     <div className="min-h-screen bg-creme px-6 py-16 md:py-20">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(articleJsonLd) }}
+      />
       <div className="max-w-3xl mx-auto">
         <Link
           href="/"
@@ -53,7 +77,7 @@ export default function BeispielePage() {
 
         <div className="space-y-16 md:space-y-20">
           {EXAMPLE_LETTERS.map((letter, i) => (
-              <LetterPaper letter={letter} rotate={i % 2 === 0 ? "left" : "right"} />
+              <LetterPaper key={i} letter={letter} rotate={i % 2 === 0 ? "left" : "right"} />
           ))}
         </div>
 

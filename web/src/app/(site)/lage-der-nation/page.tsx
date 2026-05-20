@@ -4,32 +4,61 @@ import { Prose } from "@/components/editorial/Prose";
 import type { Metadata } from "next";
 import { APP_URL } from "@/lib/config";
 
+const TITLE = "Erwähnt in der Lage der Nation";
+const DESCRIPTION =
+  "Im April 2026 wurde Brief-nach-Berlin in Folge 478 der Lage der Nation erwähnt. Seitdem hat sich die Nutzung versechsfacht. Eine kleine Notiz.";
+const URL_PATH = "/lage-der-nation";
+const PUBLISHED = "2026-04-18";
+
 export const metadata: Metadata = {
-  title: "Erwähnt in der Lage der Nation | Brief-nach-Berlin",
-  description:
-    "Im April 2026 wurde Brief-nach-Berlin in Folge 478 der Lage der Nation erwähnt. Seitdem hat sich die Nutzung versechsfacht. Eine kleine Notiz.",
+  title: `${TITLE} | Brief nach Berlin`,
+  description: DESCRIPTION,
   alternates: {
-    canonical: `${APP_URL}/lage-der-nation`,
+    canonical: `${APP_URL}${URL_PATH}`,
   },
   openGraph: {
-    title: "Erwähnt in der Lage der Nation",
-    description:
-      "Folge 478, ab 1 Std. 19 Min. Seitdem schreiben sechsmal so viele Menschen einen Brief nach Berlin.",
+    title: TITLE,
+    description: DESCRIPTION,
     type: "article",
     locale: "de_DE",
-    url: `${APP_URL}/lage-der-nation`,
+    url: `${APP_URL}${URL_PATH}`,
   },
   twitter: {
     card: "summary_large_image",
-    title: "Erwähnt in der Lage der Nation",
-    description:
-      "Folge 478, ab 1 Std. 19 Min. Seitdem schreiben sechsmal so viele Menschen einen Brief nach Berlin.",
+    title: TITLE,
+    description: DESCRIPTION,
+  },
+};
+
+const articleJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "NewsArticle",
+  headline: TITLE,
+  description: DESCRIPTION,
+  datePublished: PUBLISHED,
+  dateModified: PUBLISHED,
+  author: { "@type": "Organization", name: "Brief nach Berlin" },
+  publisher: {
+    "@type": "Organization",
+    name: "Brief nach Berlin",
+    url: APP_URL,
+  },
+  mainEntityOfPage: `${APP_URL}${URL_PATH}`,
+  inLanguage: "de-DE",
+  mentions: {
+    "@type": "PodcastEpisode",
+    name: "Lage der Nation Folge 478",
+    url: "https://lagedernation.org/podcast/ldn478-hantavirus-warum-wir-heute-schlechter-dastehen-als-vor-corona/",
   },
 };
 
 export default function LageDerNationPage() {
   return (
     <div className="min-h-screen bg-creme px-6 py-20">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(articleJsonLd) }}
+      />
       <div className="max-w-2xl mx-auto">
         <Link
           href="/"

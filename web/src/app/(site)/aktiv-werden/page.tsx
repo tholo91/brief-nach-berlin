@@ -1,30 +1,79 @@
 import Link from "next/link";
 import { Figure } from "@/components/editorial/Figure";
+import { FAQAccordion } from "@/components/FAQAccordion";
 import type { Metadata } from "next";
 import { APP_URL } from "@/lib/config";
 
+const TITLE = "Was du sonst noch tun kannst";
+const DESCRIPTION =
+  "Du hast einen Brief geschrieben und Blut geleckt? Hier sind die nächsten Stufen: Bürgersprechstunde besuchen, eine Petition mitzeichnen, eine eigene Bürgerinitiative gründen. Konkrete Wege, wie du als Bürgerin oder Bürger wirklich etwas bewegst.";
+const URL_PATH = "/aktiv-werden";
+const PUBLISHED = "2026-05-20";
+
 export const metadata: Metadata = {
-  title:
-    "Was du sonst noch tun kannst | Bürgersprechstunde, Petitionen, eigene Initiative",
-  description:
-    "Du hast einen Brief geschrieben und Blut geleckt? Hier sind die nächsten Stufen: Bürgersprechstunde besuchen, eine Petition mitzeichnen, eine eigene Bürgerinitiative gründen. Konkrete Wege, wie du als Bürgerin oder Bürger wirklich etwas bewegst.",
+  title: `${TITLE} | Brief nach Berlin`,
+  description: DESCRIPTION,
   alternates: {
-    canonical: `${APP_URL}/aktiv-werden`,
+    canonical: `${APP_URL}${URL_PATH}`,
   },
   openGraph: {
-    title: "Was du sonst noch tun kannst",
-    description:
-      "Bürgersprechstunde, Petitionen, eigene Initiative: konkrete Wege nach deinem ersten Brief.",
+    title: TITLE,
+    description: DESCRIPTION,
     type: "article",
     locale: "de_DE",
-    url: `${APP_URL}/aktiv-werden`,
+    url: `${APP_URL}${URL_PATH}`,
   },
   twitter: {
     card: "summary_large_image",
-    title: "Was du sonst noch tun kannst",
-    description:
-      "Bürgersprechstunde, Petitionen, eigene Initiative: konkrete Wege nach deinem ersten Brief.",
+    title: TITLE,
+    description: DESCRIPTION,
   },
+};
+
+const faqs = [
+  {
+    q: "Was kann ich nach meinem ersten Brief politisch tun?",
+    a: "Mehrere Optionen, sortiert nach Aufwand: in die Bürgersprechstunde deines Abgeordneten gehen, Petitionen mitzeichnen, lokale Initiativen unterstützen, oder selbst eine Bürgerinitiative gründen. Politische Wirkung entsteht aus vielen kleinen Schritten, nicht aus einer großen Geste.",
+  },
+  {
+    q: "Was ist eine Bürgersprechstunde?",
+    a: "Fast jeder Bundestags- und Landtagsabgeordnete bietet einmal im Monat eine offene Sprechstunde im Wahlkreisbüro an. Termine stehen auf der Website der oder des Abgeordneten. Eine halbe Stunde direkter Austausch mit jemandem, der in Berlin oder im Landtag mitstimmt.",
+  },
+  {
+    q: "Wie viele Unterschriften braucht eine Bundestagspetition?",
+    a: "Bei 30.000 Mitzeichnungen wird eine Bundestags-Petition öffentlich angehört. Auf Landes- und Kommunalebene sind die Hürden niedriger.",
+  },
+  {
+    q: "Wie fühlt sich Selbstwirksamkeit konkret an?",
+    a: "Wer einmal selbst aktiv war (Brief, Sprechstunde, Petition), schätzt seine politische Wirksamkeit dauerhaft höher ein. Aus 'da müsste mal jemand etwas tun' wird 'ich habe etwas getan'. Das verändert mehr in einem selbst als in der Welt da draußen.",
+  },
+];
+
+const faqJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  mainEntity: faqs.map((f) => ({
+    "@type": "Question",
+    name: f.q,
+    acceptedAnswer: { "@type": "Answer", text: f.a },
+  })),
+};
+
+const articleJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Article",
+  headline: TITLE,
+  description: DESCRIPTION,
+  datePublished: PUBLISHED,
+  dateModified: PUBLISHED,
+  author: { "@type": "Organization", name: "Brief nach Berlin" },
+  publisher: {
+    "@type": "Organization",
+    name: "Brief nach Berlin",
+    url: APP_URL,
+  },
+  mainEntityOfPage: `${APP_URL}${URL_PATH}`,
+  inLanguage: "de-DE",
 };
 
 type ActionCard = {
@@ -97,6 +146,14 @@ const cards: ActionCard[] = [
 export default function AktivWerdenPage() {
   return (
     <div className="min-h-screen bg-creme px-6 py-20">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(articleJsonLd) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
+      />
       <div className="max-w-2xl mx-auto">
         <Link
           href="/"
@@ -131,6 +188,7 @@ export default function AktivWerdenPage() {
         <ul className="space-y-8">
           {cards.map((card) => (
             <li
+              key={card.href}
               className="bg-white border border-waldgruen/15 rounded-xl p-6 md:p-8 shadow-sm hover:shadow-md transition-shadow"
             >
               <p className="font-typewriter text-xs uppercase tracking-wider text-warmgrau/60 mb-2">
@@ -163,29 +221,32 @@ export default function AktivWerdenPage() {
           ))}
         </ul>
 
-        <div className="mt-16 mb-10">
-          <p className="font-typewriter text-sm font-bold tracking-widest uppercase text-waldgruen/60 mb-4">
-            Häufig gefragt
-          </p>
-          <ul className="space-y-3">
-            <li>
+        <section className="mt-16 mb-10">
+          <h2 className="font-body text-2xl md:text-3xl font-bold text-waldgruen-dark mb-6">
+            Häufige Fragen
+          </h2>
+          <FAQAccordion items={faqs} />
+          <div className="mt-8 font-body text-sm text-warmgrau/70 leading-relaxed space-y-2">
+            <p>
+              Weiterlesen:{" "}
               <Link
                 href="/was-tun-gegen-politische-ohnmacht"
-                className="font-body text-waldgruen-dark underline decoration-waldgruen/30 underline-offset-4 hover:decoration-waldgruen"
+                className="text-waldgruen hover:underline"
               >
                 Was tun, wenn man sich politisch ohnmächtig fühlt?
               </Link>
-            </li>
-            <li>
+            </p>
+            <p>
+              Oder:{" "}
               <Link
                 href="/lohnt-sich-brief-an-politiker"
-                className="font-body text-waldgruen-dark underline decoration-waldgruen/30 underline-offset-4 hover:decoration-waldgruen"
+                className="text-waldgruen hover:underline"
               >
                 Lohnt es sich, einem Politiker zu schreiben?
               </Link>
-            </li>
-          </ul>
-        </div>
+            </p>
+          </div>
+        </section>
 
         <div className="p-8 bg-waldgruen/5 border border-waldgruen/15 rounded-xl hover:bg-waldgruen/10 transition-colors">
           <h2 className="font-body text-2xl font-bold text-waldgruen-dark mb-4">

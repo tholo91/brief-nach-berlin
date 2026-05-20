@@ -4,33 +4,101 @@ import type { Metadata } from "next";
 import { APP_URL, FOUNDER_LINKEDIN, FOUNDER_FEEDBACK_URL } from "@/lib/config";
 import { Figure } from "@/components/editorial/Figure";
 import { Prose } from "@/components/editorial/Prose";
+import { FAQAccordion } from "@/components/FAQAccordion";
+
+const TITLE = "Warum es Brief-nach-Berlin gibt";
+const DESCRIPTION =
+  "Die Geschichte hinter Brief-nach-Berlin. Viele Menschen beschweren sich über Politik, aber kaum jemand schreibt. Brief-nach-Berlin nimmt die Hürden zwischen Frust und Briefkasten weg.";
+const URL_PATH = "/warum";
+const PUBLISHED = "2026-05-20";
 
 export const metadata: Metadata = {
-  title: "Warum es Brief-nach-Berlin gibt | Brief-nach-Berlin",
-  description:
-    "Die Geschichte hinter Brief-nach-Berlin. Viele Menschen beschweren sich über Politik, aber kaum jemand schreibt. Brief-nach-Berlin nimmt die Hürden zwischen Frust und Briefkasten weg.",
+  title: `${TITLE} | Brief nach Berlin`,
+  description: DESCRIPTION,
   alternates: {
-    canonical: `${APP_URL}/warum`,
+    canonical: `${APP_URL}${URL_PATH}`,
   },
   openGraph: {
-    title: "Warum es Brief-nach-Berlin gibt",
-    description:
-      "Viele Menschen beschweren sich über Politik, aber kaum jemand schreibt. Brief-nach-Berlin nimmt die Hürden zwischen Frust und Briefkasten weg.",
+    title: TITLE,
+    description: DESCRIPTION,
     type: "article",
     locale: "de_DE",
-    url: `${APP_URL}/warum`,
+    url: `${APP_URL}${URL_PATH}`,
   },
   twitter: {
     card: "summary_large_image",
-    title: "Warum es Brief-nach-Berlin gibt",
-    description:
-      "Viele Menschen beschweren sich über Politik, aber kaum jemand schreibt. Brief-nach-Berlin nimmt die Hürden zwischen Frust und Briefkasten weg.",
+    title: TITLE,
+    description: DESCRIPTION,
   },
+};
+
+const faqs = [
+  {
+    q: "Wer steckt hinter Brief-nach-Berlin?",
+    a: "Thomas Lorenz, ein Indie Builder aus Bremen. Politikwissenschaft studiert in Lissabon, Leipzig und Bologna. Brief-nach-Berlin wird aus eigener Tasche finanziert, ohne Organisation, ohne Team, ohne Werbung.",
+  },
+  {
+    q: "Was kostet Brief-nach-Berlin?",
+    a: "Nichts. Brief-nach-Berlin ist kostenlos, ohne Werbung, ohne Bezahlschranke. Server, KI-Kosten und Domain trägt der Gründer selbst.",
+  },
+  {
+    q: "Ist Brief-nach-Berlin eine Petitionsplattform?",
+    a: "Nein. Petitionen sammeln tausend Unterschriften unter einem Text. Brief-nach-Berlin produziert individuelle Briefe in deinen eigenen Worten an deinen konkreten Wahlkreisabgeordneten. Du schreibst von Hand ab und schickst selbst los.",
+  },
+  {
+    q: "Welche Daten sammelt Brief-nach-Berlin?",
+    a: "So wenig wie möglich. Kein Account, kein Tracking, keine Profile. Dein Anliegen und dein Brief bleiben bei dir. DSGVO-konform und bewusst minimal.",
+  },
+  {
+    q: "Wie kann ich Feedback geben?",
+    a: "Direkt an den Gründer über die Kontaktseite oder LinkedIn. Brief-nach-Berlin lebt vom Feedback der Nutzerinnen und Nutzer.",
+  },
+];
+
+const faqJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  mainEntity: faqs.map((f) => ({
+    "@type": "Question",
+    name: f.q,
+    acceptedAnswer: { "@type": "Answer", text: f.a },
+  })),
+};
+
+const articleJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "AboutPage",
+  name: TITLE,
+  description: DESCRIPTION,
+  datePublished: PUBLISHED,
+  dateModified: PUBLISHED,
+  author: {
+    "@type": "Person",
+    name: "Thomas Lorenz",
+    url: FOUNDER_LINKEDIN,
+    jobTitle: "Indie Builder",
+    address: { "@type": "PostalAddress", addressLocality: "Bremen", addressCountry: "DE" },
+  },
+  publisher: {
+    "@type": "Organization",
+    name: "Brief nach Berlin",
+    url: APP_URL,
+  },
+  mainEntityOfPage: `${APP_URL}${URL_PATH}`,
+  inLanguage: "de-DE",
 };
 
 export default function WarumPage() {
   return (
     <div className="min-h-screen bg-creme px-6 py-20">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(articleJsonLd) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
+      />
       <div className="max-w-2xl mx-auto">
         <Link
           href="/"
@@ -299,6 +367,11 @@ export default function WarumPage() {
             die einzige Art, wie eine politische Anwendung in meinen Augen
             funktionieren darf.
             </p>
+
+          <h2 className="font-body text-2xl font-bold text-waldgruen-dark pt-4">
+            Häufige Fragen
+          </h2>
+          <FAQAccordion items={faqs} />
         </Prose>
 
           <div className="mt-16 p-8 bg-waldgruen/5 border border-waldgruen/15 rounded-xl hover:bg-waldgruen/10 transition-colors">

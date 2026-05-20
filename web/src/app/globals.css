@@ -81,13 +81,36 @@ html {
   animation: redirect-progress 20000ms linear both;
 }
 
+/* Envelope flies in from lower-left, sweeping up to the endpoint along a soft
+   rising arc (like a growth graph). Outer wrapper handles X, inner handles Y;
+   different easings on each axis give the organic curve. */
+@keyframes envelope-fly-x {
+  0%   { transform: translateX(-50vw); opacity: 0; }
+  20%  { opacity: 1; }
+  100% { transform: translateX(0); opacity: 1; }
+}
+@keyframes envelope-fly-y {
+  0%   { transform: translateY(75%); }
+  100% { transform: translateY(0); }
+}
+.animate-envelope-fly-x {
+  animation: envelope-fly-x 750ms cubic-bezier(0.16, 1, 0.3, 1) 1000ms both;
+  will-change: transform, opacity;
+}
+.animate-envelope-fly-y {
+  animation: envelope-fly-y 750ms cubic-bezier(0.34, 1.06, 0.64, 1) 1000ms both;
+  will-change: transform;
+}
+
 /* Respect users who don't want motion. */
 @media (prefers-reduced-motion: reduce) {
   .animate-feedback-in,
   .animate-thank-you-in,
   .animate-danke-pop,
   .animate-twinkle,
-  .animate-progress {
+  .animate-progress,
+  .animate-envelope-fly-x,
+  .animate-envelope-fly-y {
     animation: none !important;
   }
 }

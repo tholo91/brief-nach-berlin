@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Courier_Prime, Source_Sans_3, Caveat } from "next/font/google";
 import { AnalyticsWrapper } from "@/components/AnalyticsWrapper";
 import { APP_URL } from "@/lib/config";
@@ -39,6 +39,10 @@ export const metadata: Metadata = {
     description:
       "Was stört dich? Wir finden die zuständigen Abgeordneten und formulieren deinen Brief, der wirklich ankommt. ✉️",
   },
+};
+
+export const viewport: Viewport = {
+  themeColor: "#FAF8F5",
 };
 
 export default function RootLayout({

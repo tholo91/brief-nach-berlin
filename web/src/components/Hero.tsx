@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useRef, useEffect, useState } from "react";
 
 const SUB_HEADLINES: ReadonlyArray<readonly [string, string]> = [
@@ -85,18 +86,18 @@ export default function Hero() {
 
       {/* Content */}
       <div className="relative z-10 text-center max-w-2xl mx-auto px-8 py-24">
-        {/* Envelope icon */}
-        <div className="inline-block mb-5">
-          <svg
-            width="44"
-            height="44"
-            viewBox="0 0 48 48"
-            fill="none"
-            className="text-waldgruen rotate-[-5deg]"
-          >
-            <rect x="4" y="10" width="40" height="28" rx="3" stroke="currentColor" strokeWidth="2.5" fill="none" />
-            <path d="M4 13 L24 28 L44 13" stroke="currentColor" strokeWidth="2.5" fill="none" strokeLinejoin="round" />
-          </svg>
+        {/* Envelope icon — flies in once on mount */}
+        <div className="inline-block -mb-4 md:-mb-5 animate-envelope-fly-x">
+          <div className="animate-envelope-fly-y">
+            <Image
+              src="/images/img-umschlag-icon.webp"
+              alt=""
+              width={256}
+              height={256}
+              priority
+              className="w-24 h-24 md:w-36 md:h-36"
+            />
+          </div>
         </div>
 
         <h1 className="font-body text-4xl md:text-5xl font-bold text-waldgruen-dark leading-[1.1] tracking-tight mb-6 text-balance">

@@ -92,7 +92,7 @@ export default function BeispielePage() {
             Jetzt deinen Brief schreiben &rarr;
           </Link>
           <p className="mt-4 font-body text-sm text-warmgrau/60">
-            Kostenlos · In 3 Minuten · Ohne Anmeldung
+            Kostenlos · in 3 Minuten · ohne Anmeldung
           </p>
           <p className="mt-8 font-body text-sm text-warmgrau/70">
             Unsicher, wie das genau geht? Der{" "}

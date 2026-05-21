@@ -40,7 +40,7 @@ export default function CallToAction() {
         </a>
 
         <p className="mt-5 font-body text-sm text-creme/70">
-          Kostenlos · In 3 Minuten · Ohne Anmeldung
+          Kostenlos · in 3 Minuten · ohne Anmeldung
         </p>
       </div>
     </section>

@@ -56,6 +56,12 @@ Erwähnt von Dr. Ulf Buermeyer, LL.M. und Philip Banse in Folge 478.
 |---|---|---|
 | Tilo Jung (Jung & Naiv) | tilo@jungundnaiv.de | Du-Form, kein Pressetext-Ton |
 
+### TV & Show-Formate
+
+| Outlet | Kontakt | Anmerkung |
+|---|---|---|
+| [Fun Facts](https://www.funfacts.de) | presse@funfacts.de | Tägliches 15-Min Comedy-News-Format, non-profit GmbH (Verantwortungseigentum), Kooperation mit CORRECTIV. V.i.S.d.P. Robin Alef. Werte: Demokratie, konstruktiver Journalismus. Starker thematischer Fit. |
+
 ### Digital & Netzpolitik
 
 | Outlet | Kontakt | Anmerkung |

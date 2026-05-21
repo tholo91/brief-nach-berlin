@@ -125,19 +125,19 @@ export function buildEmailHtml(data: SendLetterEmailParams): string {
                   <td colspan="7" style="height:4px;font-size:0;line-height:0;background:repeating-linear-gradient(-45deg,#C1121F,#C1121F 8px,#FAF8F5 8px,#FAF8F5 12px,#1D3557 12px,#1D3557 20px,#FAF8F5 20px,#FAF8F5 24px);">&nbsp;</td>
                 </tr>
 
-                <!-- Title: "Brief nach Berlin" -->
+                <!-- Title: "Brief nach Berlin" with watermark envelope centered behind the text -->
                 <tr>
-                  <td colspan="7" class="bnb-pad" style="padding:28px 32px 16px;text-align:center;background-color:#ffffff;">
-                    <h1 style="margin:0;font-family:Georgia,'Times New Roman',serif;font-size:22px;color:#2D5016;font-weight:bold;letter-spacing:0.5px;">Brief nach Berlin</h1>
-                    <p style="margin:8px 0 0;font-family:Georgia,'Times New Roman',serif;font-size:14px;color:#666666;">Dein Brief ist fertig zum Absenden.</p>
+                  <td colspan="7" class="bnb-pad" background="${APP_URL}/images/email-title-watermark.png" bgcolor="#ffffff" style="padding:28px 32px 28px;text-align:center;background-color:#ffffff;background-image:url('${APP_URL}/images/email-title-watermark.png');background-repeat:no-repeat;background-position:right 24px top 12px;background-size:90px 90px;">
+                    <h1 style="margin:0;font-family:Georgia,'Times New Roman',serif;font-size:22px;color:#2D5016;font-weight:bold;letter-spacing:0.5px;position:relative;">Brief nach Berlin</h1>
+                    <p style="margin:8px 0 0;font-family:Georgia,'Times New Roman',serif;font-size:14px;color:#666666;position:relative;">Dein Briefentwurf ist fertig zum Absenden.</p>
                   </td>
                 </tr>
 
-                <!-- Intro: warm founder voice, no AI mention -->
+                <!-- Intro: warm founder voice -->
                 <tr>
                   <td colspan="7" class="bnb-pad" style="padding:0 32px 20px;background-color:#ffffff;">
                     <div style="border-left:3px solid rgba(45,80,22,0.45);padding-left:16px;">
-                      <p style="margin:0;font-family:Georgia,'Times New Roman',serif;font-size:15px;color:#4A4A4A;line-height:1.75;">Hier ist dein Briefentwurf. Lies ihn gründlich durch und pass ihn an, damit es <em style="font-style:italic;">dein Brief</em> wird. Wir bieten dir einen Schnellstart, damit dein Anliegen ratzfatz auf dem richtigen Schreibtisch landet.<br>Riesen Dankeschön, dass du dich engagierst!</p>
+                      <p style="margin:0;font-family:Georgia,'Times New Roman',serif;font-size:15px;color:#4A4A4A;line-height:1.75;">Lies ihn gründlich durch und pass ihn an, damit es <em style="font-style:italic;">dein Brief</em> wird. Wir bieten dir einen Schnellstart, damit dein Anliegen ratzfatz auf dem richtigen Schreibtisch landet.<br>Bitte bewerte anschließend deinen Brief 🙏 Danke, dass du dich engagierst!</p>
                     </div>
                   </td>
                 </tr>
@@ -277,6 +277,10 @@ export function buildEmailHtml(data: SendLetterEmailParams): string {
                           </td>
                         </tr>
                       </table>
+                      <!-- Ghibli silhouette: letters flying to the Reichstag, melts into the cream box -->
+                      <div style="margin:18px -22px -20px;font-size:0;line-height:0;">
+                        <img src="${APP_URL}/images/email-bundestag-banner.png" alt="" width="556" height="130" style="display:block;width:100%;max-width:556px;height:auto;border:0;outline:none;text-decoration:none;-ms-interpolation-mode:bicubic;">
+                      </div>
                     </div>
                   </td>
                 </tr>

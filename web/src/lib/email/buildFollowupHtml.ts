@@ -27,7 +27,7 @@ export function buildFollowupHtml(params: BuildFollowupParams): FollowupRender {
   const { token } = params;
   const base = params.baseUrl ?? APP_URL;
 
-  const subject = "Wie fandest du deinen Brief?";
+  const subject = "Wie war dein Brief nach Berlin?";
 
   const text = [
     `Moin 👋`,

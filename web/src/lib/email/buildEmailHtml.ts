@@ -109,6 +109,7 @@ export function buildEmailHtml(data: SendLetterEmailParams): string {
       .bnb-stack { display: block !important; width: 100% !important; }
       .bnb-stack-left { padding: 0 0 14px 0 !important; width: 100% !important; }
       .bnb-stack-right { padding: 14px 0 0 0 !important; border-left: 0 !important; border-top: 1px solid #E0DCD7 !important; width: 100% !important; text-align: center !important; }
+      .bnb-bleed { margin-left: -14px !important; margin-right: -14px !important; }
     }
   </style>
 </head>
@@ -125,11 +126,11 @@ export function buildEmailHtml(data: SendLetterEmailParams): string {
                   <td colspan="7" style="height:4px;font-size:0;line-height:0;background:repeating-linear-gradient(-45deg,#C1121F,#C1121F 8px,#FAF8F5 8px,#FAF8F5 12px,#1D3557 12px,#1D3557 20px,#FAF8F5 20px,#FAF8F5 24px);">&nbsp;</td>
                 </tr>
 
-                <!-- Title: "Brief nach Berlin" with watermark envelope centered behind the text -->
+                <!-- Title: "Brief nach Berlin". Watermark wandert in den Brief-Kasten als Briefmarke. -->
                 <tr>
-                  <td colspan="7" class="bnb-pad" background="${APP_URL}/images/email-title-watermark.png" bgcolor="#ffffff" style="padding:28px 32px 28px;text-align:center;background-color:#ffffff;background-image:url('${APP_URL}/images/email-title-watermark.png');background-repeat:no-repeat;background-position:right 24px top 12px;background-size:90px 90px;">
-                    <h1 style="margin:0;font-family:Georgia,'Times New Roman',serif;font-size:22px;color:#2D5016;font-weight:bold;letter-spacing:0.5px;position:relative;">Brief nach Berlin</h1>
-                    <p style="margin:8px 0 0;font-family:Georgia,'Times New Roman',serif;font-size:14px;color:#666666;position:relative;">Dein Briefentwurf ist fertig zum Absenden.</p>
+                  <td colspan="7" class="bnb-pad" bgcolor="#ffffff" style="padding:28px 32px 28px;text-align:center;background-color:#ffffff;">
+                    <h1 style="margin:0;font-family:Georgia,'Times New Roman',serif;font-size:22px;color:#2D5016;font-weight:bold;letter-spacing:0.5px;">Brief nach Berlin</h1>
+                    <p style="margin:8px 0 0;font-family:Georgia,'Times New Roman',serif;font-size:14px;color:#666666;">Dein Briefentwurf ist fertig zum Absenden.</p>
                   </td>
                 </tr>
 
@@ -142,10 +143,13 @@ export function buildEmailHtml(data: SendLetterEmailParams): string {
                   </td>
                 </tr>
 
-                <!-- Brief block (D-08, section 1) -->
+                <!-- Brief block (D-08, section 1) — Briefmarke oben rechts, Text fließt drumherum.
+                     align="right" floatet das Bild zuverlässig in allen Mail-Clients; Opacity ist
+                     in die PNG eingebrannt (~80%), weil CSS opacity in Outlook nicht greift. -->
                 <tr>
                   <td colspan="7" class="bnb-pad" style="padding:0 32px 8px;background-color:#ffffff;">
                     <div class="bnb-inner-pad" style="background-color:#FAF8F5;border:1px solid #E0DCD7;border-radius:4px;padding:24px;">
+                      <img src="${APP_URL}/images/email-title-watermark.png" width="110" height="110" alt="" align="right" style="display:inline-block;width:110px;height:110px;margin:0 0 6px 14px;border:0;outline:none;text-decoration:none;-ms-interpolation-mode:bicubic;">
                       <p style="margin:0;font-family:'Courier New',Courier,monospace;font-size:14px;line-height:1.7;color:#4A4A4A;white-space:pre-wrap;">${letterHtml}</p>
                     </div>
                   </td>
@@ -198,7 +202,7 @@ export function buildEmailHtml(data: SendLetterEmailParams): string {
                       <tr>
                         <td style="padding:6px 0;font-family:Georgia,'Times New Roman',serif;font-size:14px;color:#4A4A4A;line-height:1.5;">
                           <span style="display:inline-block;width:24px;height:24px;background-color:#2D5016;color:#ffffff;border-radius:50%;text-align:center;line-height:24px;font-size:12px;font-weight:bold;margin-right:10px;vertical-align:middle;">2</span>
-                          Empfangs-Adresse mittig auf den Umschlag schreiben
+                          Empfangs-Adresse mittig auf den Umschlag
                         </td>
                       </tr>
                       <tr>
@@ -210,7 +214,7 @@ export function buildEmailHtml(data: SendLetterEmailParams): string {
                       <tr>
                         <td style="padding:6px 0;font-family:Georgia,'Times New Roman',serif;font-size:14px;color:#4A4A4A;line-height:1.5;">
                           <span style="display:inline-block;width:24px;height:24px;background-color:#2D5016;color:#ffffff;border-radius:50%;text-align:center;line-height:24px;font-size:12px;font-weight:bold;margin-right:10px;vertical-align:middle;">4</span>
-                          <a href="https://www.deutschepost.de/de/m/mobile-briefmarke.html" target="_blank" rel="noopener noreferrer" style="color:#2D5016;text-decoration:underline;">Briefmarke aufkleben</a> (aktuell 0,95 EUR für Standardbrief)
+                          <a href="https://www.deutschepost.de/de/m/mobile-briefmarke.html" target="_blank" rel="noopener noreferrer" style="color:#2D5016;text-decoration:underline;">Briefmarke aufkleben</a> (aktuell 0,95 EUR)
                         </td>
                       </tr>
                       <tr>
@@ -239,16 +243,18 @@ export function buildEmailHtml(data: SendLetterEmailParams): string {
                   </td>
                 </tr>
 
-                <!-- Action buttons: stretched two-column row, equal width -->
+                <!-- Action buttons: stretched two-column row, equal width.
+                     Both labels are forced to two lines via <br> so the buttons always match
+                     in height — min-height on <a> is unreliable in Outlook / Gmail. -->
                 <tr>
                   <td colspan="7" class="bnb-pad" style="padding:8px 32px 20px;background-color:#ffffff;">
                     <table role="presentation" cellpadding="0" cellspacing="0" width="100%" style="border-collapse:separate;">
                       <tr>
                         <td style="padding-right:6px;width:50%;" valign="top">
-                          <a href="${regenerateUrl}" style="display:block;text-align:center;background-color:#2D5016;color:#ffffff;font-family:Georgia,'Times New Roman',serif;font-size:14px;font-weight:bold;text-decoration:none;padding:12px 16px;border-radius:6px;border:2px solid #2D5016;">Neuen Brief schreiben</a>
+                          <a href="${regenerateUrl}" style="display:block;text-align:center;background-color:#2D5016;color:#ffffff;font-family:Georgia,'Times New Roman',serif;font-size:14px;font-weight:bold;text-decoration:none;padding:12px 16px;border-radius:6px;border:2px solid #2D5016;line-height:1.3;">Neuen Brief<br>schreiben</a>
                         </td>
                         <td style="padding-left:6px;width:50%;" valign="top">
-                          <a href="${FOUNDER_FEEDBACK_URL}" target="_blank" rel="noopener noreferrer" style="display:block;text-align:center;background-color:#ffffff;color:#2D5016;font-family:Georgia,'Times New Roman',serif;font-size:14px;font-weight:bold;text-decoration:none;padding:12px 16px;border-radius:6px;border:2px solid #2D5016;">Feedback geben</a>
+                          <a href="${FOUNDER_FEEDBACK_URL}" target="_blank" rel="noopener noreferrer" style="display:block;text-align:center;background-color:#ffffff;color:#2D5016;font-family:Georgia,'Times New Roman',serif;font-size:14px;font-weight:bold;text-decoration:none;padding:12px 16px;border-radius:6px;border:2px solid #2D5016;line-height:1.3;">Feedback<br>zum Tool</a>
                         </td>
                       </tr>
                     </table>
@@ -277,9 +283,11 @@ export function buildEmailHtml(data: SendLetterEmailParams): string {
                           </td>
                         </tr>
                       </table>
-                      <!-- Ghibli silhouette: letters flying to the Reichstag, melts into the cream box -->
-                      <div style="margin:18px -22px -20px;font-size:0;line-height:0;">
-                        <img src="${APP_URL}/images/email-bundestag-banner.png" alt="" width="556" height="130" style="display:block;width:100%;max-width:556px;height:auto;border:0;outline:none;text-decoration:none;-ms-interpolation-mode:bicubic;">
+                      <!-- Ghibli silhouette: letters flying to the Reichstag, melts into the cream box.
+                           Negative margin pulls the image to the card edges; .bnb-bleed switches the
+                           horizontal value to -14px on mobile so it matches the smaller inner padding. -->
+                      <div class="bnb-bleed" style="margin:18px -22px -20px;font-size:0;line-height:0;">
+                        <img src="${APP_URL}/images/email-bundestag-banner.png" alt="" width="556" height="130" style="display:block;width:100%;max-width:556px;height:auto;border:0;outline:none;text-decoration:none;-ms-interpolation-mode:bicubic;border-bottom-left-radius:6px;border-bottom-right-radius:6px;">
                       </div>
                     </div>
                   </td>

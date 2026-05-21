@@ -11,6 +11,7 @@ import { Step1Form } from "./Step1Form";
 import { Step1bOptional } from "./Step1bOptional";
 import { Step2Issue } from "./Step2Issue";
 import { Step3Success } from "./Step3Success";
+import FadeFooterImage from "../FadeFooterImage";
 
 const PARAM_KEYS = ["plz", "letterLength"] as const;
 
@@ -183,7 +184,8 @@ export function WizardShell() {
   const showBack = step === 2 || step === "2b";
 
   return (
-    <div className="max-w-xl mx-auto px-4 sm:px-8 py-16">
+    <>
+      <div className="max-w-xl mx-auto px-4 sm:px-8 py-16 w-full">
       {/* Progress indicator */}
       {showIndicator && (
         <div className="flex items-center justify-center gap-6 mb-12">
@@ -276,6 +278,8 @@ export function WizardShell() {
           />
         )}
       </div>
-    </div>
+      </div>
+      <FadeFooterImage variant={step === 3 ? "success" : "wizard"} />
+    </>
   );
 }

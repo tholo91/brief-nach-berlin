@@ -85,6 +85,29 @@ export function FeedbackForm({
     }
   }, []);
 
+  // Silent auto-submit: the click on a star in the email is itself the
+  // signal — we persist `initialRating` for this token even if the user
+  // closes the tab without engaging with the form. Bots that follow GET
+  // links (Outlook Safe Links, Microsoft Defender, Gmail link preview,
+  // Apple Mail link preview) do not execute JS, so this fires only for
+  // real browsers. Server-side `mode: 'initial'` is a no-op on conflict,
+  // so a later form-submit with full data cannot be overwritten by a
+  // late-arriving initial request.
+  const hasAutoSubmittedRef = useRef(false);
+  useEffect(() => {
+    if (hasAutoSubmittedRef.current) return;
+    hasAutoSubmittedRef.current = true;
+    // Fire-and-forget. No UI state changes — the form stays exactly as it
+    // would have without this side effect.
+    void submitReviewAction({
+      mode: "initial",
+      rating: initialRating,
+      token,
+    }).catch((err) => {
+      console.warn("[FeedbackForm] initial auto-submit failed:", err);
+    });
+  }, [initialRating, token]);
+
   function toggleTag(slug: FeedbackTagSlug) {
     const isRemoving = feedbackTags.includes(slug);
     if (!isRemoving) setMoreOpen(true);
@@ -111,6 +134,7 @@ export function FeedbackForm({
 
     startTransition(async () => {
       const result: SubmitReviewResult = await submitReviewAction({
+        mode: "full",
         rating,
         body: body.trim(),
         displayName: displayName.trim(),
@@ -120,10 +144,7 @@ export function FeedbackForm({
         token,
         bypassRateLimit,
       });
-      // "already_submitted" is functionally a success from the user's POV:
-      // their rating exists in the DB, just from an earlier click. Show the
-      // same thank-you state instead of a confusing error.
-      if ("success" in result || result.error === "already_submitted") {
+      if ("success" in result) {
         setSubmitted(true);
         return;
       }
@@ -148,6 +169,14 @@ export function FeedbackForm({
       noValidate
       className="bg-white border border-waldgruen/15 rounded-2xl px-6 py-8 sm:px-10 sm:py-10 shadow-sm space-y-7 animate-feedback-in"
     >
+      <noscript>
+        <div
+          role="alert"
+          className="rounded-lg border border-airmail-rot/30 bg-airmail-rot/5 px-4 py-3 text-sm text-airmail-rot mb-4"
+        >
+          Bitte aktiviere JavaScript, damit deine Bewertung gespeichert werden kann.
+        </div>
+      </noscript>
       <header>
         <p className="font-handwriting text-3xl text-waldgruen leading-none mb-1">
           Wie war’s?

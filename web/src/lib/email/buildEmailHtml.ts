@@ -25,8 +25,9 @@ function buildDebugUrl(d: LetterDebugPayload): string {
 // its own anchor pointing at /feedback with the chosen rating; no JS,
 // no hover state (mail clients strip :hover).
 //
-// Visual: 4 gold-filled + 1 gold-outlined star. Looks inviting without
-// claiming a real average rating; the form on /feedback prefills with
+// Visual: 3 gold-filled + 2 gold-outlined stars. The neutral midpoint
+// invites a "besser/schlechter"-Polarität — leaving it as 4/5 made the
+// rating look already-decided. The form on /feedback prefills with
 // whichever star was clicked and lets the user change it.
 export function buildStarBarHtml(token: string): string {
   const url = (n: number) => `${APP_URL}/feedback?r=${n}&t=${token}`;
@@ -36,7 +37,7 @@ export function buildStarBarHtml(token: string): string {
        style="color:#D4A017;mso-color-alt:#D4A017;text-decoration:none;font-size:26px;line-height:1;padding:8px 4px;display:inline-block;">${glyph === "filled" ? "&#9733;" : "&#9734;"}</a>`;
   return `
     <p style="margin:0 0 8px;font-family:Georgia,'Times New Roman',serif;font-size:13px;color:#2D5016;font-weight:bold;letter-spacing:0.2px;">Wie findest du<br>deinen Brief?</p>
-    <div style="white-space:nowrap;line-height:1;">${star(1, "filled")}${star(2, "filled")}${star(3, "filled")}${star(4, "filled")}${star(5, "outline")}</div>
+    <div style="white-space:nowrap;line-height:1;">${star(1, "filled")}${star(2, "filled")}${star(3, "filled")}${star(4, "outline")}${star(5, "outline")}</div>
     <p style="margin:8px 0 0;font-family:Georgia,'Times New Roman',serif;font-size:11px;color:#b0b0b0;line-height:1.4;">Dauert 10 Sek, hilft mir sehr</p>`;
 }
 

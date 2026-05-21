@@ -20,12 +20,18 @@ const feedbackTagSchema = z.enum([firstTagSlug, ...restTagSlugs] as [
 ]);
 
 const reviewSchema = z.object({
+  // 'initial': silent submit triggered by the email-link star click, only
+  // writes `rating` (+ token metadata). On conflict: no-op.
+  // 'full':    user pressed Submit on the form, overwrites all fields.
+  mode: z.enum(["initial", "full"]).default("full"),
   rating: z.number().int().min(1).max(5),
-  body: z.string().max(500),
-  displayName: z.string().max(80),
-  consent: z.boolean(),
-  // Pflichtfeld. Form blockt submit bis Ja/Nein gesetzt ist.
-  letterSent: z.boolean(),
+  body: z.string().max(500).default(""),
+  displayName: z.string().max(80).default(""),
+  consent: z.boolean().default(false),
+  // Nullable: 'initial' mode submits without a Ja/Nein selection, and a user
+  // who only filled the body but skipped the radio should still be able to
+  // submit the form.
+  letterSent: z.boolean().nullable().default(null),
   // Quick-Tap-Chips: multi-select, server-side allowlist via z.enum.
   feedbackTags: z.array(feedbackTagSchema).max(8).optional(),
   token: z.string().min(20).max(4000),
@@ -42,14 +48,10 @@ export type SubmitReviewResult =
         | "invalid_token"
         | "validation"
         | "rate_limited"
-        | "already_submitted"
         | "server_error";
       message: string;
       retryAfterSeconds?: number;
     };
-
-// Postgres unique-violation SQLSTATE.
-const PG_UNIQUE_VIOLATION = "23505";
 
 export async function submitReviewAction(
   input: unknown
@@ -78,8 +80,20 @@ export async function submitReviewAction(
   // über feedback_tags["backlog_campaign"] damit sie später gefiltert werden kann.
   const isBacklog = payload.source === "backlog_2026_05";
 
+  // Backlog tokens are shared across recipients and write debug_token=null,
+  // which means there is no UNIQUE constraint to deduplicate the initial
+  // auto-submit. Skipping silently avoids a duplicate row per page-load.
+  if (data.mode === "initial" && isBacklog) {
+    return { success: true };
+  }
+
   const ip = await getClientIp();
-  if (!data.bypassRateLimit) {
+  // Rate-limit only the user-driven full submit. The 'initial' mode is
+  // triggered automatically on page mount; throttling it would consume the
+  // IP budget before the user gets a chance to submit the actual form.
+  // Idempotency is guaranteed via the UNIQUE(debug_token) + ignoreDuplicates
+  // upsert path, so spam is impossible without a valid signed token.
+  if (data.mode === "full" && !data.bypassRateLimit) {
     const limit = checkRateLimit(
       `review:ip:${ip}`,
       LIMITS.REVIEW_PER_IP.max,
@@ -117,17 +131,10 @@ export async function submitReviewAction(
       ? Array.from(new Set([...userTags, "backlog_campaign"]))
       : userTags;
 
-    const { error } = await supabase.from("reviews").insert({
-      rating: data.rating,
-      // Empty string → null so the column reflects "no comment", not "blank string".
-      body: data.body.trim() || null,
-      consent: data.consent,
-      letter_sent: data.letterSent,
-      // Empty array → null so the row doesn't show "{}" in the DB for "no chips".
-      feedback_tags: tagsForInsert.length ? tagsForInsert : null,
-      display_name: data.displayName.trim() || null,
-      // Source of truth for these three fields is the signed token, never the
-      // client form. Spoofing email/politicianId is therefore impossible.
+    // Metadata derived from the signed token. Identical for both modes —
+    // 'initial' and 'full' over the same token resolve the same values, so
+    // overwriting on a 'full' upsert is a no-op for these columns.
+    const tokenMeta = {
       email: payload.userEmail ? payload.userEmail.toLowerCase() : null,
       politician_id:
         payload.politicianId != null ? String(payload.politicianId) : null,
@@ -136,17 +143,57 @@ export async function submitReviewAction(
       // Backlog-Token wird von vielen Empfängern geteilt → kein UNIQUE-Schreiben.
       debug_token: isBacklog ? null : data.token,
       ip_hash: ipHash,
-    });
-    if (error) {
-      // Unique-violation on debug_token → token already redeemed.
-      if (error.code === PG_UNIQUE_VIOLATION) {
+    };
+
+    if (data.mode === "initial") {
+      // ignoreDuplicates: existing row for this debug_token is left untouched.
+      // Crucial race protection: a 'full' submit that already happened (with
+      // body, tags, letter_sent) cannot be overwritten by a delayed 'initial'.
+      // Backlog tokens are filtered out above, so debug_token is non-null here
+      // and the UNIQUE conflict check actually fires.
+      //
+      // DSGVO: `consent` defaults to TRUE at the DB level (legacy from when
+      // every form-submit was opt-in). For the silent auto-submit there is
+      // no active user consent, so we must set it to FALSE explicitly.
+      const { error } = await supabase
+        .from("reviews")
+        .upsert(
+          {
+            rating: data.rating,
+            consent: false,
+            ...tokenMeta,
+          },
+          { onConflict: "debug_token", ignoreDuplicates: true }
+        );
+      if (error) {
+        console.error("[submitReview] initial upsert failed:", error);
         return {
-          error: "already_submitted",
-          message:
-            "Du hast diesen Brief schon bewertet. Danke dir nochmal dafür!",
+          error: "server_error",
+          message: "Bewertung konnte nicht gespeichert werden.",
         };
       }
-      console.error("[submitReview] supabase insert failed:", error);
+      return { success: true };
+    }
+
+    // mode === 'full': user pressed Submit. Overwrite any prior 'initial' row.
+    // For backlog (debug_token=null) this falls back to a plain INSERT because
+    // Postgres treats NULLs as distinct → no UNIQUE conflict possible.
+    const { error } = await supabase.from("reviews").upsert(
+      {
+        rating: data.rating,
+        // Empty string → null so the column reflects "no comment", not "blank string".
+        body: data.body.trim() || null,
+        consent: data.consent,
+        letter_sent: data.letterSent,
+        // Empty array → null so the row doesn't show "{}" in the DB for "no chips".
+        feedback_tags: tagsForInsert.length ? tagsForInsert : null,
+        display_name: data.displayName.trim() || null,
+        ...tokenMeta,
+      },
+      { onConflict: "debug_token", ignoreDuplicates: false }
+    );
+    if (error) {
+      console.error("[submitReview] full upsert failed:", error);
       return {
         error: "server_error",
         message: "Bewertung konnte nicht gespeichert werden.",

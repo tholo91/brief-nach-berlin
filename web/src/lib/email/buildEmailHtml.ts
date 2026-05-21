@@ -28,7 +28,7 @@ function buildDebugUrl(d: LetterDebugPayload): string {
 // Visual: 4 gold-filled + 1 gold-outlined star. Looks inviting without
 // claiming a real average rating; the form on /feedback prefills with
 // whichever star was clicked and lets the user change it.
-function buildStarBarHtml(token: string): string {
+export function buildStarBarHtml(token: string): string {
   const url = (n: number) => `${APP_URL}/feedback?r=${n}&t=${token}`;
   // Padding bumped to clear the 44pt iOS HIG tap target on mobile mail.
   const star = (n: number, glyph: "filled" | "outline") => `

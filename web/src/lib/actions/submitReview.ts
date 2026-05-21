@@ -60,7 +60,9 @@ export async function submitReviewAction(
   }
   const data = parsed.data;
 
-  const payload = verifyFeedbackToken<LetterDebugPayload>(data.token);
+  const payload = verifyFeedbackToken<LetterDebugPayload & { source?: string }>(
+    data.token
+  );
   if (!payload) {
     return {
       error: "invalid_token",
@@ -68,6 +70,13 @@ export async function submitReviewAction(
         "Dieser Bewertungs-Link ist nicht mehr gültig oder ist abgelaufen.",
     };
   }
+
+  // Backlog-Kampagne: ein einziger signierter Token geht an alle Empfänger einer
+  // einmaligen Follow-up-Mail (siehe scripts/send-backlog-followup.ts). Mehrere
+  // Empfänger werden denselben Token einreichen, deshalb darf `debug_token` nicht
+  // in die UNIQUE-Spalte geschrieben werden. Wir markieren die Zeile stattdessen
+  // über feedback_tags["backlog_campaign"] damit sie später gefiltert werden kann.
+  const isBacklog = payload.source === "backlog_2026_05";
 
   const ip = await getClientIp();
   if (!data.bypassRateLimit) {
@@ -103,6 +112,11 @@ export async function submitReviewAction(
 
   try {
     const supabase = getServiceRoleClient();
+    const userTags = data.feedbackTags?.length ? data.feedbackTags : [];
+    const tagsForInsert = isBacklog
+      ? Array.from(new Set([...userTags, "backlog_campaign"]))
+      : userTags;
+
     const { error } = await supabase.from("reviews").insert({
       rating: data.rating,
       // Empty string → null so the column reflects "no comment", not "blank string".
@@ -110,7 +124,7 @@ export async function submitReviewAction(
       consent: data.consent,
       letter_sent: data.letterSent,
       // Empty array → null so the row doesn't show "{}" in the DB for "no chips".
-      feedback_tags: data.feedbackTags?.length ? data.feedbackTags : null,
+      feedback_tags: tagsForInsert.length ? tagsForInsert : null,
       display_name: data.displayName.trim() || null,
       // Source of truth for these three fields is the signed token, never the
       // client form. Spoofing email/politicianId is therefore impossible.
@@ -119,7 +133,8 @@ export async function submitReviewAction(
         payload.politicianId != null ? String(payload.politicianId) : null,
       plz: payload.plz ?? null,
       debug_payload: payload,
-      debug_token: data.token,
+      // Backlog-Token wird von vielen Empfängern geteilt → kein UNIQUE-Schreiben.
+      debug_token: isBacklog ? null : data.token,
       ip_hash: ipHash,
     });
     if (error) {

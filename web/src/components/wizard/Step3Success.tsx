@@ -121,6 +121,16 @@ export function Step3Success({ result, wizardData, politicians }: Step3SuccessPr
     return () => timers.forEach(clearTimeout);
   }, [isGenerating]);
 
+  // After picking a politician the user lands mid-page (the submit button was
+  // scrolled into view). When the success state renders, jump back to the top
+  // so the "Brief ist fertig!" headline is the first thing they see.
+  useEffect(() => {
+    if (!generationComplete) return;
+    if (typeof window === "undefined") return;
+    const reduce = window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
+    window.scrollTo({ top: 0, behavior: reduce ? "auto" : "smooth" });
+  }, [generationComplete]);
+
   const webmail = resolveWebmail(wizardData.email);
 
   // Smooth-scroll the submit button into view after a card is picked, so users
@@ -381,7 +391,7 @@ export function Step3Success({ result, wizardData, politicians }: Step3SuccessPr
               Bewerte deinen Brief gleich in der Mail.
             </p>
             <p className="font-body text-sm text-warmgrau/75 leading-relaxed">
-              Ein Klick auf die Sterne, hilft mir, die nächsten Briefe besser zu machen.
+              Ein Klick auf die Sterne hilft mir, die nächsten Briefe besser zu machen.
             </p>
           </div>
         </div>
@@ -395,7 +405,9 @@ export function Step3Success({ result, wizardData, politicians }: Step3SuccessPr
             Mach diesen Brief zu deinem Brief.
           </p>
           <p className="font-body text-sm text-warmgrau/75 leading-relaxed">
-            Lies dir die Mail durch und pass den Brief an, damit er sich nach dir anfühlt und dein Anliegen perfekt platziert. Ton, Formulierungen, einzelne Argumente: Der Entwurf kommt von uns, die Unterschrift ist deine.
+            Lies dir die Mail durch und pass den Brief an, damit er sich nach dir anfühlt und dein Anliegen perfekt platziert. Ton, Formulierungen, einzelne Argumente:
+            <br />
+            Der Entwurf kommt von uns, die Unterschrift ist deine.
           </p>
         </div>
 

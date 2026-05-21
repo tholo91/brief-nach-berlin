@@ -6,6 +6,7 @@ import { moderateText } from "@/lib/moderation/moderateText";
 import { generateLetter } from "@/lib/generation/generateLetter";
 import { fetchMdbContext } from "@/lib/enrichment/fetchMdbContext";
 import { sendLetterEmail } from "@/lib/email/sendLetterEmail";
+import { sendFollowupEmail } from "@/lib/email/sendFollowupEmail";
 import { buildDebugPayload } from "@/lib/email/buildDebugPayload";
 import { signFeedbackToken } from "@/lib/feedback/token";
 import { checkRateLimit, LIMITS } from "@/lib/rateLimit";
@@ -115,19 +116,52 @@ export async function POST(req: NextRequest) {
       await incrementLetterCount();
       const debugPayload = buildDebugPayload(data, result, derivedPoliticians.length);
       const feedbackToken = signFeedbackToken(debugPayload);
-      await sendLetterEmail({
-        recipientEmail: data.email,
-        politicianName: `${result.selectedPolitician.firstName} ${result.selectedPolitician.lastName}`,
-        politicianFirstName: result.selectedPolitician.firstName,
-        politicianLastName: result.selectedPolitician.lastName,
-        politicianTitle: result.selectedPolitician.title,
-        politicianParty: result.selectedPolitician.party,
-        politicianPostalAddress: result.selectedPolitician.postalAddress,
-        politicianAbgeordnetenwatchUrl: result.selectedPolitician.abgeordnetenwatchUrl,
-        letterText: result.letter,
-        issueText: data.issueText,
-        debug: debugPayload,
-        feedbackToken,
+      const politicianFullName = `${result.selectedPolitician.firstName} ${result.selectedPolitician.lastName}`;
+
+      const sends: Array<Promise<{ success: boolean; messageId?: string }>> = [
+        sendLetterEmail({
+          recipientEmail: data.email,
+          politicianName: politicianFullName,
+          politicianFirstName: result.selectedPolitician.firstName,
+          politicianLastName: result.selectedPolitician.lastName,
+          politicianTitle: result.selectedPolitician.title,
+          politicianParty: result.selectedPolitician.party,
+          politicianPostalAddress: result.selectedPolitician.postalAddress,
+          politicianAbgeordnetenwatchUrl: result.selectedPolitician.abgeordnetenwatchUrl,
+          letterText: result.letter,
+          issueText: data.issueText,
+          debug: debugPayload,
+          feedbackToken,
+        }),
+      ];
+
+      // Brevos historische Obergrenze für scheduledAt ist 72h
+      // (developers.brevo.com/reference/sendtransacemail). Sweet Spot: Brief
+      // dürfte angekommen + eingeworfen sein, aber noch frisch im Kopf.
+      // BREVO_FOLLOWUP_ENABLED erlaubt Notabschaltung ohne Deploy.
+      if (process.env.BREVO_FOLLOWUP_ENABLED === "true") {
+        const FOLLOWUP_DELAY_HOURS = 72;
+        const scheduledAt = new Date(
+          Date.now() + FOLLOWUP_DELAY_HOURS * 60 * 60 * 1000,
+        );
+        sends.push(
+          sendFollowupEmail({
+            recipientEmail: data.email,
+            politicianName: politicianFullName,
+            feedbackToken,
+            scheduledAt,
+          }),
+        );
+      }
+
+      const settled = await Promise.allSettled(sends);
+      settled.forEach((r, i) => {
+        const label = i === 0 ? "letter" : "followup";
+        if (r.status === "rejected") {
+          console.error(`[brief-nach-berlin][after][${label}] rejected:`, r.reason);
+        } else if (!r.value.success) {
+          console.error(`[brief-nach-berlin][after][${label}] returned success=false`);
+        }
       });
     });
 

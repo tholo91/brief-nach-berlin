@@ -27,7 +27,7 @@ export function buildFollowupHtml(params: BuildFollowupParams): FollowupRender {
   const { token } = params;
   const base = params.baseUrl ?? APP_URL;
 
-  const subject = "Wie war dein Brief nach Berlin?";
+  const subject = "Wie fandest du deinen Brief?";
 
   const text = [
     `Moin 👋`,
@@ -77,7 +77,7 @@ export function buildFollowupHtml(params: BuildFollowupParams): FollowupRender {
 <body style="margin:0;padding:0;background-color:#FAF8F5;font-family:Georgia,'Times New Roman',serif;">
   <!-- Preview text (hidden) -->
   <div style="display:none;max-height:0;overflow:hidden;font-size:1px;line-height:1px;color:#FAF8F5;opacity:0;">
-    10 Sekunden Feedback, hilft mir sehr.
+    Dein Feedback mit nur 1 Klick, hilft mir sehr bei der Weiterentwicklung.
   </div>
 
   <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color:#FAF8F5;">

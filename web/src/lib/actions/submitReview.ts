@@ -73,19 +73,13 @@ export async function submitReviewAction(
     };
   }
 
-  // Backlog-Kampagne: ein einziger signierter Token geht an alle Empfänger einer
-  // einmaligen Follow-up-Mail (siehe scripts/send-backlog-followup.ts). Mehrere
-  // Empfänger werden denselben Token einreichen, deshalb darf `debug_token` nicht
-  // in die UNIQUE-Spalte geschrieben werden. Wir markieren die Zeile stattdessen
-  // über feedback_tags["backlog_campaign"] damit sie später gefiltert werden kann.
+  // Backlog-Kampagne: send-backlog-followup.ts signiert pro Empfänger:in einen
+  // eigenen Token (Email im Payload, unique debug_token). Wir erkennen den
+  // Token am `source`-Feld und markieren die Zeile mit feedback_tags
+  // ["backlog_campaign"], damit sie später vom regulären Letter-Feedback
+  // unterscheidbar ist. Der UNIQUE-Dedup-Pfad und der Silent-Auto-Submit
+  // funktionieren ansonsten identisch zur Letter-Mail.
   const isBacklog = payload.source === "backlog_2026_05";
-
-  // Backlog tokens are shared across recipients and write debug_token=null,
-  // which means there is no UNIQUE constraint to deduplicate the initial
-  // auto-submit. Skipping silently avoids a duplicate row per page-load.
-  if (data.mode === "initial" && isBacklog) {
-    return { success: true };
-  }
 
   const ip = await getClientIp();
   // Rate-limit only the user-driven full submit. The 'initial' mode is
@@ -140,8 +134,7 @@ export async function submitReviewAction(
         payload.politicianId != null ? String(payload.politicianId) : null,
       plz: payload.plz ?? null,
       debug_payload: payload,
-      // Backlog-Token wird von vielen Empfängern geteilt → kein UNIQUE-Schreiben.
-      debug_token: isBacklog ? null : data.token,
+      debug_token: data.token,
       ip_hash: ipHash,
     };
 
@@ -149,8 +142,6 @@ export async function submitReviewAction(
       // ignoreDuplicates: existing row for this debug_token is left untouched.
       // Crucial race protection: a 'full' submit that already happened (with
       // body, tags, letter_sent) cannot be overwritten by a delayed 'initial'.
-      // Backlog tokens are filtered out above, so debug_token is non-null here
-      // and the UNIQUE conflict check actually fires.
       //
       // DSGVO: `consent` defaults to TRUE at the DB level (legacy from when
       // every form-submit was opt-in). For the silent auto-submit there is
@@ -176,8 +167,6 @@ export async function submitReviewAction(
     }
 
     // mode === 'full': user pressed Submit. Overwrite any prior 'initial' row.
-    // For backlog (debug_token=null) this falls back to a plain INSERT because
-    // Postgres treats NULLs as distinct → no UNIQUE conflict possible.
     const { error } = await supabase.from("reviews").upsert(
       {
         rating: data.rating,

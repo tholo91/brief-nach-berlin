@@ -4,6 +4,12 @@
 // und Confirm-Prompt, schickt dann pro Empfänger:in einen Brevo
 // transactional send mit einer kleinen Throttle.
 //
+// Pro Empfänger:in wird ein eigener signierter Feedback-Token erzeugt, der
+// die Email-Adresse im Payload trägt. So fließt die Adresse in reviews.email
+// und der UNIQUE(debug_token)-Dedup-Pfad in submitReview funktioniert wie
+// bei der Letter-Mail. Damit ist der Silent-Auto-Submit beim Stern-Klick
+// auch für die Followup-Mail aktiv (kein early return mehr).
+//
 // Run:
 //   pnpm -F web tsx scripts/send-backlog-followup.ts <csv-path> [flags]
 //
@@ -15,13 +21,13 @@
 //   --reply-to=EMAIL Reply-To überschreiben (default: thomas@visualmakers.de)
 //
 // Voraussetzungen:
-//   1. web/.backlog-token.txt existiert (Output von generate-backlog-token.ts)
-//   2. web/.env.local enthält BREVO_API_KEY, BREVO_SENDER_EMAIL,
-//      NEXT_PUBLIC_SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY
-//   3. CSV: eine Spalte oder ein Header `email`; eine Adresse pro Zeile.
+//   1. web/.env.local enthält FEEDBACK_TOKEN_SECRET, BREVO_API_KEY,
+//      BREVO_SENDER_EMAIL, NEXT_PUBLIC_SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY
+//   2. CSV: eine Spalte oder ein Header `email`; eine Adresse pro Zeile.
 
 import { readFileSync, existsSync } from "node:fs";
 import { resolve } from "node:path";
+import { createHmac } from "node:crypto";
 import { createInterface } from "node:readline/promises";
 import { stdin as input, stdout as output } from "node:process";
 import { parse } from "csv-parse/sync";
@@ -49,16 +55,10 @@ async function main() {
   const brevoKey = process.env.BREVO_API_KEY;
   if (!brevoKey) fail("BREVO_API_KEY fehlt in web/.env.local");
 
-  const sender = process.env.BREVO_SENDER_EMAIL || "brief@brief-nach-berlin.de";
+  const tokenSecret = process.env.FEEDBACK_TOKEN_SECRET;
+  if (!tokenSecret) fail("FEEDBACK_TOKEN_SECRET fehlt in web/.env.local");
 
-  const tokenPath = resolve(__dirname, "..", ".backlog-token.txt");
-  if (!existsSync(tokenPath)) {
-    fail(
-      "web/.backlog-token.txt fehlt. Bitte zuerst generate-backlog-token.ts laufen lassen."
-    );
-  }
-  const token = readFileSync(tokenPath, "utf8").trim();
-  if (!token || token.length < 40) fail("Backlog-Token sieht kaputt aus.");
+  const sender = process.env.BREVO_SENDER_EMAIL || "brief@brief-nach-berlin.de";
 
   const rawRecipients = readCsvEmails(args.csvPath);
   const recipients = Array.from(
@@ -80,7 +80,9 @@ async function main() {
     );
   }
 
-  const { subject, html, text } = buildFollowupHtml({ token });
+  // Subject ist tokenunabhängig; HTML/Text werden pro Empfänger:in mit dem
+  // individuellen Token gerendert (innerhalb der Send-Schleife unten).
+  const { subject } = buildFollowupHtml({ token: "preview" });
 
   console.log("");
   console.log("=== Backlog Follow-up Versand ===");
@@ -94,6 +96,7 @@ async function main() {
   console.log(`Reply-To:          ${args.replyTo}`);
   console.log(`Throttle:          ${THROTTLE_MS} ms zwischen Sendungen`);
   console.log(`Dry-Run:           ${args.dryRun ? "JA" : "nein"}`);
+  console.log(`Token-Modus:       per Empfänger:in (Email im Payload signiert)`);
   console.log("");
 
   if (args.dryRun) {
@@ -120,6 +123,11 @@ async function main() {
 
   for (let i = 0; i < targets.length; i++) {
     const to = targets[i];
+    // Pro Empfänger:in einen eigenen signierten Token. Email landet damit in
+    // reviews.email, und der unique debug_token aktiviert den Silent-Auto-
+    // Submit-Pfad in submitReview (sonst wäre der für Backlog deaktiviert).
+    const token = signFeedbackToken(buildBacklogPayload(to), tokenSecret);
+    const { html, text } = buildFollowupHtml({ token });
     const res = await sendOne({
       to,
       subject,
@@ -273,6 +281,61 @@ async function sendOne(
       error: err instanceof Error ? err.message : String(err),
     };
   }
+}
+
+// Signiert pro Empfänger:in einen eigenen Feedback-Token. Format ist identisch
+// zu lib/feedback/token.ts (server-only Modul, deshalb hier inline). Der
+// Payload trägt `source: "backlog_2026_05"` (damit submitReview den Tag
+// "backlog_campaign" vergibt) und die echte Email-Adresse.
+function b64url(buf: Buffer): string {
+  return buf
+    .toString("base64")
+    .replace(/\+/g, "-")
+    .replace(/\//g, "_")
+    .replace(/=+$/, "");
+}
+
+function signFeedbackToken(payload: object, secret: string): string {
+  const enriched = { ...payload, iat: Math.floor(Date.now() / 1000) };
+  const body = b64url(Buffer.from(JSON.stringify(enriched), "utf8"));
+  const mac = b64url(createHmac("sha256", secret).update(body).digest());
+  return `${body}.${mac}`;
+}
+
+function buildBacklogPayload(email: string) {
+  return {
+    // submitReview erkennt diesen String und vergibt den Tag "backlog_campaign".
+    source: "backlog_2026_05",
+    // Empfänger:innen-Email — landet in reviews.email.
+    userEmail: email.toLowerCase(),
+    // Platzhalter, damit das Casting auf LetterDebugPayload nicht stolpert.
+    politicianId: "backlog",
+    plz: "00000",
+    representativeName: "Backlog Campaign",
+    representativeLevel: "Bund",
+    representativeParty: null,
+    representativeWahlkreis: "—",
+    politicalLevel: "Bund",
+    model: "n/a",
+    toneLevel: 0,
+    toneLabel: "n/a",
+    letterLengthKey: "n/a",
+    letterLengthMin: 0,
+    letterLengthMax: 0,
+    issueTextLength: 0,
+    wordCount: 0,
+    wordCountInRange: false,
+    fallbackUsed: false,
+    retried: false,
+    mdbContextUsed: false,
+    availablePoliticianCount: 0,
+    temperature: 0,
+    generationMs: 0,
+    hasName: false,
+    hasParty: false,
+    hasNgo: false,
+    usedSpeechToText: false,
+  };
 }
 
 function sleep(ms: number): Promise<void> {

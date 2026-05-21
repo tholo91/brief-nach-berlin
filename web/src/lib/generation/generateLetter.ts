@@ -304,21 +304,31 @@ export async function generateLetter(
   let parsed = parseLetterResponse(firstResponse.choices?.[0]?.message?.content);
   let wordCount = countWords(parsed.letter);
 
-  // One corrective retry if length lands outside the configured band.
+  // Retry corridor: ±15% around the configured band. Mistral usually lands
+  // close to the target; a strict band triggered costly retries (~10s extra
+  // latency) that were often discarded anyway. The user-prompt still asks
+  // for the original min/max as the *target* — we only soften the threshold
+  // for the expensive corrective call.
+  const acceptableMin = Math.floor(minWords * 0.85);
+  const acceptableMax = Math.ceil(maxWords * 1.15);
+
+  // One corrective retry if length lands outside the acceptance corridor.
   // Only retries on length, not on hallucination. Caps cost at 2× per letter.
   let retried = false;
-  if (wordCount < minWords || wordCount > maxWords) {
+  if (wordCount < acceptableMin || wordCount > acceptableMax) {
     retried = true;
-    const directive = wordCount < minWords
+    const directive = wordCount < acceptableMin
       ? `Der vorherige Brief hatte nur ${wordCount} Wörter. Das Pflichtfenster ist ${minWords}–${maxWords} Wörter. Schreibe den Brief neu: arbeite Kontext und Begründung stärker aus, übernimm mehr Argumente und Empathie aus <transkript>. Erfinde KEINE neuen Fakten, um Wörter zu füllen.`
       : `Der vorherige Brief hatte ${wordCount} Wörter. Das Pflichtfenster ist ${minWords}–${maxWords} Wörter. Schreibe den Brief neu: kürze, ohne die Stimme oder die Kernargumente des Bürgers zu verlieren.`;
 
-    console.warn("[generateLetter] word count out of range, retrying once", {
+    console.warn("[generateLetter] word count out of acceptance corridor, retrying once", {
       wordCount,
       minWords,
       maxWords,
+      acceptableMin,
+      acceptableMax,
       lengthKey,
-      direction: wordCount < minWords ? "too_short" : "too_long",
+      direction: wordCount < acceptableMin ? "too_short" : "too_long",
     });
 
     const retryResponse = await withMistralRetry("generateLetter:length-retry", () =>

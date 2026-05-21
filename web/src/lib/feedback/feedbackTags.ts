@@ -10,6 +10,9 @@ export const NEGATIVE_FEEDBACK_TAGS = [
   { slug: "zu_generisch", label: "Zu generisch" },
   { slug: "klingt_nicht_nach_mir", label: "Klingt nicht nach mir" },
   { slug: "mdb_passt_nicht", label: "MdB passt nicht" },
+  { slug: "details_erfunden", label: "Details über mich erfunden" },
+  { slug: "anliegen_verfehlt", label: "Anliegen falsch verstanden" },
+  { slug: "wiederholt_sich", label: "Wiederholt sich" },
 ] as const;
 
 export const POSITIVE_FEEDBACK_TAGS = [

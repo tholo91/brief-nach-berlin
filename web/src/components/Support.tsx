@@ -1,4 +1,5 @@
 import { CONTACT } from "@/lib/contact";
+import { FOUNDER_FEEDBACK_URL } from "@/lib/config";
 
 export default function Support() {
   return (
@@ -34,7 +35,7 @@ export default function Support() {
             Schreib mir eine Mail
           </a>
           <a
-            href="https://www.heyspeak.io/l/WIOENjqJn6z6WKtkWgDEFg"
+            href={FOUNDER_FEEDBACK_URL}
             target="_blank"
             rel="noopener noreferrer"
             className="inline-flex items-center justify-center gap-2 bg-white text-waldgruen border-2 border-waldgruen font-body font-semibold text-base px-8 py-[14px] rounded-xl hover:bg-waldgruen/5 transition-colors cursor-pointer active:scale-[0.98]"

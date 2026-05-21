@@ -84,6 +84,13 @@ EINGABEFORMAT (im User-Prompt mit XML-Tags markiert):
 REGEL — KEINE ERFINDUNGEN (nicht verhandelbar):
 Verwende ausschließlich Informationen aus <transkript>. Erfinde keine Daten, Uhrzeiten, Orte, Wegstrecken, Beobachtungen, Personen, Szenen, Zahlen, Studien oder Programmnamen. Wenn der Bürger keinen konkreten Anlass nennt, beschreibe das Problem allgemein und persönlich, aber erfinde keinen Anlass. Lieber abstrakter formulieren als Fakten erfinden. Kein "Gestern Abend...", kein "Letzte Woche...", keine Uhrzeit, kein Wegestreckendetail, das nicht im Transkript steht.
 
+ÜBER DEN ABSENDER (positive Vorgabe):
+Beschreibe den Absender ausschließlich mit Informationen, die wörtlich in
+<transkript> oder <absender_optional> stehen. Wenn der Bürger sich selbst
+nicht beschreibt, schreibe in allgemeiner Ich-Form ohne Vita, ohne
+Berufsangabe, ohne Familiensituation, ohne Wohnhistorie, ohne politische
+Vorgeschichte. Lieber abstrakt-allgemein als plausibel klingende Erfindung.
+
 REGEL — STIMME DES BÜRGERS BEWAHREN (nicht verhandelbar):
 Identifiziere die 1–3 stärksten Argumente und Einschätzungen des Bürgers, einschließlich politisch zugespitzter oder unbequemer. Übernimm sie sinngemäß im Brieftext. Glätte sie NICHT weg, sanitize sie NICHT. Wenn der Bürger einen politischen Zusammenhang herstellt (z. B. dass ein Problem extremen Parteien Auftrieb gibt, oder dass Untätigkeit politische Folgen hat), übernimm diesen Gedanken in geeigneter formeller Sprache. Empathie und Mitgefühl des Bürgers für Betroffene gehören ebenfalls in den Brief, wenn sie im Transkript stehen.
 
@@ -146,9 +153,8 @@ Schreibe einen formellen Brief in gepflegtem Deutsch (Sie-Form). Länge und Absa
 
 PFLICHT-ELEMENTE:
 1. KONKRETER ANLASS in Absatz 1: ein Detail aus <transkript> (Ort, Erlebnis, Beobachtung). Wenn das Transkript keinen konkreten Anlass nennt, beschreibe das Problem persönlich-allgemein. Nichts erfinden.
-2. KOMPLEXITÄT ANERKENNEN: ein Satz, der zeigt, dass du verstehst, warum das Thema schwierig ist. Maximal eine Zahl oder ein Fakt aus <transkript>, nicht mehr.
-3. EINE BITTE: genau ein konkretes Verb plus ein konkretes Objekt. Keine Aufzählung, keine Wunschliste. Nicht "ich bitte um Maßnahmen", sondern z. B. "ich bitte Sie, sich im Verkehrsausschuss für die Aufnahme dieser Strecke ins Sonderprogramm einzusetzen".
-4. SCHLUSS-SATZ vor Grußformel: eine politische Handlungs­erwartung an die Empfängerin/den Empfänger. KEINE Bitte um Antwort, KEIN Gesprächs- oder Treffen-Wunsch, KEIN "ich freue mich auf Ihre Rückmeldung". Das Ziel ist politische Wirkung, nicht Korrespondenz.
+2. EINE BITTE: genau ein konkretes Verb plus ein konkretes Objekt. Keine Aufzählung, keine Wunschliste. Nicht "ich bitte um Maßnahmen", sondern z. B. "ich bitte Sie, sich im Verkehrsausschuss für die Aufnahme dieser Strecke ins Sonderprogramm einzusetzen".
+3. SCHLUSS-SATZ vor Grußformel: eine politische Handlungs­erwartung an die Empfängerin/den Empfänger. KEINE Bitte um Antwort, KEIN Gesprächs- oder Treffen-Wunsch, KEIN "ich freue mich auf Ihre Rückmeldung". Das Ziel ist politische Wirkung, nicht Korrespondenz.
 
 BRIEFFORMAT:
 - Datum oben (TT.MM.JJJJ, das oben angegebene HEUTIGE DATUM verwenden).
@@ -218,6 +224,14 @@ function buildUserPrompt(
     2
   );
 
+  // For short inputs, remind the model to stay abstract. Hallucinated vita
+  // (Review 2, Jonathan) showed up most often when the citizen left little
+  // material — the model fills the gap with plausible-sounding fiction.
+  const shortInputHinweis =
+    input.issueText.length < 200
+      ? `\n\n<hinweis>\nDer Bürger hat sich knapp gehalten. Bleibe entsprechend abstrakt: keine Erlebnis-Szenen, keine Vita, keine konkreten Ortsangaben außer Stadt/Stadtteil, wenn vorhanden.\n</hinweis>`
+      : "";
+
   return `<transkript>
 ${input.issueText}
 </transkript>
@@ -233,7 +247,7 @@ absaetze: 3 bis 4
 
 <empfaenger>
 ${politiciansJson}
-</empfaenger>${mdbContextBlock(input.mdbContext)}${absenderBlock(input)}`;
+</empfaenger>${mdbContextBlock(input.mdbContext)}${absenderBlock(input)}${shortInputHinweis}`;
 }
 
 interface ParsedLetter {

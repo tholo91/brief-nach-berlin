@@ -141,7 +141,7 @@ export function buildFollowupHtml(params: BuildFollowupParams): FollowupRender {
           <!-- Sign-off paragraph + Caveat signature -->
           <tr>
             <td style="padding:16px 32px 24px;background-color:#ffffff;text-align:left;">
-              <p style="margin:0 0 10px;font-family:Georgia,'Times New Roman',serif;font-size:14px;color:#4A4A4A;line-height:1.7;">
+              <p style="margin:0 0 10px;font-family:Georgia,'Times New Roman',serif;font-size:15px;color:#4A4A4A;line-height:1.75;">
                 Falls du schon deinen Brief bewertet hast, kannst du diese Mail ignorieren.<br>
                 Tausend Dank dir! Beste Grüße aus Bremen
               </p>
@@ -160,7 +160,7 @@ export function buildFollowupHtml(params: BuildFollowupParams): FollowupRender {
               <div style="background-color:#FAF8F5;border:1px solid #E0DCD7;border-radius:6px;padding:20px 22px;">
                 <h2 style="margin:0 0 8px;font-family:Georgia,'Times New Roman',serif;font-size:16px;color:#2D5016;font-weight:bold;">Gemeinsam noch lauter</h2>
                 <p style="margin:0 0 14px;font-family:Georgia,'Times New Roman',serif;font-size:14px;color:#4A4A4A;line-height:1.6;">
-                  Briefe aus dem gleichen Wahlkreis bekommen im Bundestag mehr Gewicht. Teile <a href="${base}/weitersagen" style="color:#2D5016;text-decoration:underline;">Brief nach Berlin</a> supergerne in deinem Umfeld.
+                  Briefe aus dem gleichen Wahlkreis bekommen im Bundestag mehr Gewicht. Teile Brief nach Berlin supergerne in deinem Umfeld (<a href="${base}/weitersagen" style="color:#2D5016;text-decoration:underline;">mehr Infos</a>).
                 </p>
                 <table role="presentation" cellpadding="0" cellspacing="0" width="100%">
                   <tr>

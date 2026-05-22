@@ -263,6 +263,9 @@ export default async function StimmenPage() {
             <h2 className="font-body text-2xl md:text-3xl font-bold text-waldgruen-dark pt-4">
               Wo das hier herkommt
             </h2>
+            <p className="font-handwriting text-xl md:text-2xl text-waldgruen leading-snug text-balance border-l-2 border-waldgruen/30 pl-5 my-6 not-italic">
+              Drei Monate, dreihundert Briefe, und eine Liste an Dingen, die wir wegen euch geändert haben.
+            </p>
             <Figure
               src="/images/img-stimmen-tisch.webp"
               alt="Ein Tisch voller geschriebener Briefe und Umschläge in warmem Licht"
@@ -273,10 +276,10 @@ export default async function StimmenPage() {
               caption="Über 300 Briefe seit April 2026. Hier liegen einige davon, kurz bevor sie in die Post gingen."
             />
             <p>
-              Die Idee entstand Anfang 2026. Seitdem sind über 300 Briefe
-              entstanden, viele davon mit Anliegen, die sonst nirgendwo gelandet
-              wären: Schlaglöcher in der Straße, geschlossene Bibliotheken,
-              fehlende Radwege, Probleme in der Schule.
+              Seitdem sind über 300 Briefe entstanden, viele davon mit Anliegen,
+              die sonst nirgendwo gelandet wären: Schlaglöcher in der Straße,
+              geschlossene Bibliotheken, fehlende Radwege, Probleme in der
+              Schule.
             </p>
             <p>Konkrete Beispiele aus den letzten Wochen:</p>
             <ul className="list-disc pl-5 space-y-2 my-4 marker:text-waldgruen/40">

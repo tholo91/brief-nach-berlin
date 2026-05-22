@@ -105,13 +105,6 @@ export default function Hero() {
           <span className="sm:hidden">Dein Anliegen.</span>
           <span className="hidden sm:inline relative whitespace-nowrap">
             Dein persönliches Anliegen.
-            <RoadmapTeaserSticker
-              className="hidden sm:block absolute top-1/2 right-full z-20"
-              style={{
-                transform: "translate(-12%, calc(-52% + 0px)) rotate(-7deg)",
-                filter: "drop-shadow(0 5px 16px rgba(0,0,0,0.22))",
-              }}
-            />
             <LdNSticker
               className="hidden sm:block absolute top-1/2 left-full z-20"
               style={{
@@ -185,18 +178,27 @@ export default function Hero() {
             </svg>
             KI aus Europa, kein Datentracking
           </span>
+          <Link
+            href="/was-noch-kommt"
+            className="group inline-flex items-center gap-1.5 text-waldgruen-dark font-body text-sm font-semibold px-3 py-1.5 rounded-full bg-waldgruen/10 hover:bg-waldgruen/20 transition-colors"
+            aria-label="Roadmap: bald auch Land und Kommune"
+          >
+            <svg width="14" height="14" viewBox="0 0 16 16" fill="none" className="shrink-0" aria-hidden="true">
+              <circle cx="3" cy="8" r="1.4" fill="currentColor" />
+              <path d="M3 8 L11.5 3.5" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+              <path d="M11.5 3.5 L9.7 3.7 M11.5 3.5 L11.3 5.3" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+              <path d="M3 8 L12 8" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+              <path d="M12 8 L10.6 6.8 M12 8 L10.6 9.2" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+              <path d="M3 8 L11.5 12.5" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+              <path d="M11.5 12.5 L9.7 12.3 M11.5 12.5 L11.3 10.7" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+            Bald: Land &amp; Kommune
+            <span aria-hidden="true" className="text-waldgruen/70 group-hover:translate-x-0.5 transition-transform">&rarr;</span>
+          </Link>
         </div>
 
 
       </div>
-
-      {/* Roadmap Teaser - mobile: oben links auf dem Hero (mirror zu LdN) */}
-      <RoadmapTeaserSticker
-        className="sm:hidden absolute top-4 left-3 z-20"
-        style={{ transform: "rotate(-7deg)", filter: "drop-shadow(0 5px 16px rgba(0,0,0,0.22))" }}
-        width={85}
-        height={60}
-      />
 
       {/* LdN Sticker - mobile: oben rechts auf dem Hero */}
       <LdNSticker
@@ -206,57 +208,6 @@ export default function Hero() {
         height={62}
       />
     </section>
-  );
-}
-
-function RoadmapTeaserSticker({
-  className,
-  style,
-  width = 116,
-  height = 76,
-}: {
-  className?: string;
-  style?: React.CSSProperties;
-  width?: number;
-  height?: number;
-}) {
-  return (
-    <span className={`inline-block ${className ?? ""}`} style={style}>
-      <Link
-        href="/was-noch-kommt"
-        className="flex flex-col items-center hover:scale-105 transition-transform duration-200 motion-reduce:transform-none motion-reduce:transition-none"
-        aria-label="Bald neu: automatische Erkennung für Landtag und Kommune. Zur Roadmap."
-        style={{ width, minHeight: height }}
-      >
-        {/* Four-point sparkle, conveys "coming soon / new arrival" */}
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          viewBox="0 0 24 24"
-          width={22}
-          height={22}
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="1.8"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          aria-hidden="true"
-          className="text-waldgruen-dark mb-0.5"
-        >
-          <path d="M12 2 L13.6 10.4 L22 12 L13.6 13.6 L12 22 L10.4 13.6 L2 12 L10.4 10.4 Z" />
-        </svg>
-        <span className="block bg-white rounded-lg px-3 py-1.5 mt-0.5 text-center leading-tight whitespace-nowrap">
-          <span className="block font-body text-[9px] lg:text-[10px] font-semibold tracking-wider uppercase text-waldgruen">
-            Bald neu
-          </span>
-          <span className="block font-body text-[11px] lg:text-xs font-bold text-waldgruen-dark">
-            Land &amp; Kommune
-          </span>
-          <span className="block font-body text-[9px] text-warmgrau/60 mt-0.5">
-            automatisch erkannt
-          </span>
-        </span>
-      </Link>
-    </span>
   );
 }
 

@@ -1,6 +1,8 @@
+import Image from "next/image";
 import Link from "next/link";
 import type { Metadata } from "next";
-import { APP_URL } from "@/lib/config";
+import type { ReactNode } from "react";
+import { APP_URL, FOUNDER_FEEDBACK_URL } from "@/lib/config";
 import { Prose } from "@/components/editorial/Prose";
 import { FAQAccordion } from "@/components/FAQAccordion";
 import { RoadmapSignupForm } from "./RoadmapSignupForm";
@@ -37,8 +39,19 @@ interface Level {
   name: string;
   badge: string;
   status: LevelStatus;
-  body: string;
+  body: ReactNode;
 }
+
+const feedbackLink = (
+  <a
+    href={FOUNDER_FEEDBACK_URL}
+    target="_blank"
+    rel="noopener noreferrer"
+    className="text-waldgruen-dark underline decoration-waldgruen/40 hover:decoration-waldgruen-dark"
+  >
+    Feedback-Seite
+  </a>
+);
 
 const levels: Level[] = [
   {
@@ -67,7 +80,15 @@ const levels: Level[] = [
     name: "EU",
     badge: "Geplant",
     status: "geplant",
-    body: "Datenschutz, Klimaziele, Lieferketten, Agrarpolitik: vieles davon wird in Brüssel entschieden, nicht in Berlin. Die Erweiterung auf Europaabgeordnete steht auf der Roadmap, hat aber noch kein festes Datum. Wenn die EU-Ebene für dich wichtig ist, sag uns Bescheid über die Feedback-Seite.",
+    body: (
+      <>
+        Datenschutz, Klimaziele, Lieferketten, Agrarpolitik: vieles davon wird
+        in Brüssel entschieden, nicht in Berlin. Die Erweiterung auf
+        Europaabgeordnete steht auf der Roadmap, hat aber noch kein festes
+        Datum. Wenn die EU-Ebene für dich wichtig ist, sag uns Bescheid über
+        die {feedbackLink}.
+      </>
+    ),
   },
 ];
 
@@ -100,6 +121,14 @@ const faqs = [
   {
     q: "Kann ich vorschlagen, welche Ebene als nächstes kommt?",
     a: "Ja. Die Reihenfolge richtet sich nach zwei Dingen: wie oft eine Ebene im Feedback genannt wird, und wie schnell wir an saubere Daten kommen. Wenn du eine bestimmte Ebene priorisieren willst, sag es uns über die Feedback-Seite, das fließt direkt in unsere Reihenfolge ein.",
+    aNode: (
+      <>
+        Ja. Die Reihenfolge richtet sich nach zwei Dingen: wie oft eine Ebene
+        im Feedback genannt wird, und wie schnell wir an saubere Daten
+        kommen. Wenn du eine bestimmte Ebene priorisieren willst, sag es uns
+        über die {feedbackLink}, das fließt direkt in unsere Reihenfolge ein.
+      </>
+    ),
   },
   {
     q: "Was passiert mit meiner Anmeldung?",
@@ -164,10 +193,22 @@ export default function WasNochKommtPage() {
         <h1 className="font-body text-3xl md:text-5xl font-bold text-waldgruen-dark tracking-tight mb-6 text-balance">
           Was noch kommt
         </h1>
-        <p className="font-handwriting text-xl md:text-2xl text-warmgrau leading-relaxed mb-12 text-pretty">
+        <p className="font-handwriting text-xl md:text-2xl text-warmgrau leading-relaxed mb-10 text-pretty">
           Wir bauen offen. Das hier ist der Fahrplan, und dein Feedback formt
           die Reihenfolge mit.
         </p>
+
+        <figure className="mb-12 -mx-2 sm:mx-0">
+          <Image
+            src="/images/img-vier-ebenen.webp"
+            alt="Vier politische Ebenen: Rathaus, Landtag, Bundestag, EU-Parlament"
+            width={1024}
+            height={576}
+            sizes="(min-width: 768px) 42rem, 100vw"
+            className="w-full h-auto rounded-2xl shadow-sm"
+            priority
+          />
+        </figure>
 
         {/* GEO Answer Block */}
         <div className="mb-14 border-l-4 border-waldgruen pl-6 py-2">
@@ -232,8 +273,10 @@ export default function WasNochKommtPage() {
           das Projekt direkt zu beeinflussen:
         </p>
         <div className="grid sm:grid-cols-3 gap-4 mb-16">
-          <Link
-            href="/feedback"
+          <a
+            href={FOUNDER_FEEDBACK_URL}
+            target="_blank"
+            rel="noopener noreferrer"
             className="block bg-white border border-waldgruen/15 hover:border-waldgruen rounded-2xl p-5 transition-colors"
           >
             <p className="font-body text-base font-bold text-waldgruen-dark mb-1">
@@ -242,7 +285,7 @@ export default function WasNochKommtPage() {
             <p className="font-body text-sm text-warmgrau leading-snug">
               Sag uns, welche Ebene du als nächstes brauchst.
             </p>
-          </Link>
+          </a>
           <Link
             href="/aktiv-werden"
             className="block bg-white border border-waldgruen/15 hover:border-waldgruen rounded-2xl p-5 transition-colors"

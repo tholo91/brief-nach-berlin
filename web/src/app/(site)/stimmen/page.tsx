@@ -321,30 +321,22 @@ export default async function StimmenPage() {
           <FAQAccordion items={faqs} />
         </div>
 
-        {/* 8. Final-CTA */}
-        <div className="mt-4 p-8 border-2 border-waldgruen/20 bg-creme/50 rounded-sm">
-          <h2 className="font-body text-xl font-bold text-waldgruen-dark mb-3">
-            Schreib uns. Auch wenn du nichts schickst.
-          </h2>
-          <p className="font-body text-base text-warmgrau mb-6">
-            Jede Stimme, ob Lob oder Kritik, bringt das Tool ein Stück weiter.
+        {/* 8. Sign-off */}
+        <div className="mt-12 mb-8">
+          <p className="font-handwriting text-2xl md:text-3xl text-waldgruen-dark leading-snug max-w-md mx-auto text-center">
+            Wenn du bis hier gelesen hast: schreib mir. Auch eine Zeile reicht.
           </p>
-          <div className="flex flex-col sm:flex-row gap-3">
-            <a
-              href={FOUNDER_FEEDBACK_URL}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-block font-body font-bold text-creme bg-waldgruen-dark hover:bg-waldgruen px-6 py-3 rounded-sm transition-colors text-center"
-            >
-              Feedback zum Tool
-            </a>
+          <p className="font-typewriter text-xs uppercase tracking-widest text-waldgruen/60 mt-4 text-center">
+            Thomas, Bremen
+          </p>
+          <p className="text-center">
             <a
               href="mailto:thomas-lorenz@posteo.de?subject=Brief%20nach%20Berlin%20Feedback"
-              className="inline-block font-body font-bold text-waldgruen-dark border-2 border-waldgruen/40 hover:border-waldgruen px-6 py-3 rounded-sm transition-colors text-center"
+              className="font-body text-sm text-waldgruen-dark underline decoration-waldgruen/40 underline-offset-4 hover:decoration-waldgruen mt-2 inline-block"
             >
-              Direkt schreiben
+              thomas-lorenz@posteo.de
             </a>
-          </div>
+          </p>
         </div>
       </div>
     </div>

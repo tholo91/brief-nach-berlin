@@ -317,6 +317,7 @@ export default async function StimmenPage() {
             <h2 className="font-body text-2xl md:text-3xl font-bold text-waldgruen-dark pt-4">
               Häufige Fragen
             </h2>
+            <p className="font-body text-base text-warmgrau/80 mb-6 max-w-md">Was wir am häufigsten gefragt werden, kurz beantwortet.</p>
           </Prose>
           <FAQAccordion items={faqs} />
         </div>

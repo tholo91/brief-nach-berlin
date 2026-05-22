@@ -246,6 +246,7 @@ export default async function StimmenPage() {
         {quote1 && (
           <div className="mb-16">
             <Prose>
+              <p className="font-typewriter text-sm font-bold tracking-widest uppercase text-waldgruen/60 mb-4">Aus den Reviews / Mai 2026</p>
               <PullQuote
                 attribution={quote1.display_name || "Anonym, Brief nach Berlin"}
                 decorative
@@ -262,6 +263,9 @@ export default async function StimmenPage() {
             <h2 className="font-body text-2xl md:text-3xl font-bold text-waldgruen-dark pt-4">
               Wo das hier herkommt
             </h2>
+            <p className="font-handwriting text-xl md:text-2xl text-waldgruen leading-snug text-balance border-l-2 border-waldgruen/30 pl-5 my-6 not-italic">
+              Drei Monate, dreihundert Briefe, und eine Liste an Dingen, die wir wegen euch geändert haben.
+            </p>
             <Figure
               src="/images/img-stimmen-tisch.webp"
               alt="Ein Tisch voller geschriebener Briefe und Umschläge in warmem Licht"
@@ -272,21 +276,18 @@ export default async function StimmenPage() {
               caption="Über 300 Briefe seit April 2026. Hier liegen einige davon, kurz bevor sie in die Post gingen."
             />
             <p>
-              Die Idee entstand Anfang 2026. Seitdem sind über 300 Briefe
-              entstanden, viele davon mit Anliegen, die sonst nirgendwo gelandet
-              wären: Schlaglöcher in der Straße, geschlossene Bibliotheken,
-              fehlende Radwege, Probleme in der Schule.
+              Seitdem sind über 300 Briefe entstanden, viele davon mit Anliegen,
+              die sonst nirgendwo gelandet wären: Schlaglöcher in der Straße,
+              geschlossene Bibliotheken, fehlende Radwege, Probleme in der
+              Schule.
             </p>
-            <p>
-              Konkrete Beispiele aus den letzten Wochen: Nach mehreren Hinweisen, dass die
-              Brief-Einleitungen aufgesetzt klangen, haben wir die Komplexitäts-Floskel
-              aus dem Prompt geworfen und durch eine positive Anti-Halluzinations-Regel
-              ersetzt. Eine Rückmeldung über doppelte Sätze führte zum Wiederholungs-Fix,
-              eine andere über zu starre Briefe zur Längen-Korridor-Lockerung auf plus
-              minus fünfzehn Prozent. Und weil Kritik in den Reviews oft als Fließtext
-              kam, gibt es jetzt vorgefertigte Feedback-Chips für negative Hinweise,
-              damit wir Muster schneller erkennen.
-            </p>
+            <p>Konkrete Beispiele aus den letzten Wochen:</p>
+            <ul className="list-disc pl-5 space-y-2 my-4 marker:text-waldgruen/40">
+              <li>Komplexitäts-Floskel raus, ersetzt durch positive Anti-Halluzinations-Regel</li>
+              <li>Wiederholungs-Fix für doppelte Sätze</li>
+              <li>Längen-Korridor auf plus minus fünfzehn Prozent gelockert</li>
+              <li>Negative Feedback-Chips für strukturierte Kritik</li>
+            </ul>
             <p>
               Follow-up-Mails laufen automatisch. Jede Rückmeldung fließt in
               den nächsten Prompt-Zyklus ein, in die Politiker-Coverage und in
@@ -299,6 +300,7 @@ export default async function StimmenPage() {
         {quote2 && (
           <div className="mb-16">
             <Prose>
+              <p className="font-typewriter text-sm font-bold tracking-widest uppercase text-waldgruen/60 mb-4">Aus den Reviews / einen Monat später</p>
               <PullQuote
                 attribution={quote2.display_name || "Anonym, Brief nach Berlin"}
                 decorative
@@ -315,34 +317,27 @@ export default async function StimmenPage() {
             <h2 className="font-body text-2xl md:text-3xl font-bold text-waldgruen-dark pt-4">
               Häufige Fragen
             </h2>
+            <p className="font-body text-base text-warmgrau/80 mb-6 max-w-md">Was wir am häufigsten gefragt werden, kurz beantwortet.</p>
           </Prose>
           <FAQAccordion items={faqs} />
         </div>
 
-        {/* 8. Final-CTA */}
-        <div className="mt-4 p-8 border-2 border-waldgruen/20 bg-creme/50 rounded-sm">
-          <h2 className="font-body text-xl font-bold text-waldgruen-dark mb-3">
-            Schreib uns. Auch wenn du nichts schickst.
-          </h2>
-          <p className="font-body text-base text-warmgrau mb-6">
-            Jede Stimme, ob Lob oder Kritik, bringt das Tool ein Stück weiter.
+        {/* 8. Sign-off */}
+        <div className="mt-12 mb-8">
+          <p className="font-handwriting text-2xl md:text-3xl text-waldgruen-dark leading-snug max-w-md mx-auto text-center">
+            Wenn du bis hier gelesen hast: schreib mir. Auch eine Zeile reicht.
           </p>
-          <div className="flex flex-col sm:flex-row gap-3">
-            <a
-              href={FOUNDER_FEEDBACK_URL}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-block font-body font-bold text-creme bg-waldgruen-dark hover:bg-waldgruen px-6 py-3 rounded-sm transition-colors text-center"
-            >
-              Feedback zum Tool
-            </a>
+          <p className="font-typewriter text-xs uppercase tracking-widest text-waldgruen/60 mt-4 text-center">
+            Thomas, Bremen
+          </p>
+          <p className="text-center">
             <a
               href="mailto:thomas-lorenz@posteo.de?subject=Brief%20nach%20Berlin%20Feedback"
-              className="inline-block font-body font-bold text-waldgruen-dark border-2 border-waldgruen/40 hover:border-waldgruen px-6 py-3 rounded-sm transition-colors text-center"
+              className="font-body text-sm text-waldgruen-dark underline decoration-waldgruen/40 underline-offset-4 hover:decoration-waldgruen mt-2 inline-block"
             >
-              Direkt schreiben
+              thomas-lorenz@posteo.de
             </a>
-          </div>
+          </p>
         </div>
       </div>
     </div>

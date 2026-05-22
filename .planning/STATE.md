@@ -28,7 +28,7 @@ See: .planning/PROJECT.md (updated 2026-04-10)
 Phase: 999.1
 Plan: Not started
 Status: Executing Phase 03
-Last activity: 2026-05-22 - Completed quick task 260522-u2u: /stimmen Polish - Reviews-Filter ab 2026-05-21, Karten uniform, Copy/Captions
+Last activity: 2026-05-22 - Completed quick task 260522-upk: /stimmen Editorial Polish - eyebrows, signed close, FAQ intro, list, standfirst
 
 Progress: [░░░░░░░░░░] 0%
 
@@ -84,6 +84,7 @@ Recent decisions affecting current work:
 | 260521-tn1 | Review-Lernschleife: Chips, Anti-Halluzination, Length-Korridor, Wiederholungs-Fix | 2026-05-21 | 1a9e8e3 | [260521-tn1-review-lernschleife-chips-anti-halluzina](./quick/260521-tn1-review-lernschleife-chips-anti-halluzina/) |
 | 260522-k6t | Reviews-Seite /stimmen bauen mit reusable Komponenten | 2026-05-22 | (post-merge) | [260522-k6t-reviews-seite-stimmen-bauen-mit-reusable](./quick/260522-k6t-reviews-seite-stimmen-bauen-mit-reusable/) |
 | 260522-u2u | /stimmen Polish: Reviews-Filter ab 2026-05-21, Karten uniform, Copy/Captions | 2026-05-22 | b628913 | [260522-u2u-stimmen-polish-reviews-filter-ab-2026-05](./quick/260522-u2u-stimmen-polish-reviews-filter-ab-2026-05/) |
+| 260522-upk | /stimmen Editorial Polish: eyebrows, signed close, FAQ intro, list, standfirst | 2026-05-22 | fb35a26 | [260522-upk-stimmen-editorial-polish-eyebrows-signed](./quick/260522-upk-stimmen-editorial-polish-eyebrows-signed/) |
 
 ## Session Continuity
 

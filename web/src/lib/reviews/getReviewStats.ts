@@ -1,6 +1,10 @@
 import "server-only";
 import { getServiceRoleClient } from "@/lib/supabase/server";
-import type { RatingDistribution, ReviewStats } from "./types";
+import {
+  MIN_PUBLIC_REVIEW_DATE,
+  type RatingDistribution,
+  type ReviewStats,
+} from "./types";
 
 const EMPTY_STATS: ReviewStats = {
   averageRating: 0,
@@ -19,7 +23,8 @@ export async function getReviewStats(): Promise<ReviewStats> {
     // Fetch only the rating column for all rows (service role bypasses RLS)
     const { data, error, count } = await client
       .from("reviews")
-      .select("rating", { count: "exact", head: false });
+      .select("rating", { count: "exact", head: false })
+      .gte("created_at", MIN_PUBLIC_REVIEW_DATE);
 
     if (error) {
       console.error("[getReviewStats] Supabase error:", error.message);

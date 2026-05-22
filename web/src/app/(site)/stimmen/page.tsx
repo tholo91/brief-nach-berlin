@@ -222,6 +222,9 @@ export default async function StimmenPage() {
               height={956}
               className="rounded-3xl shadow-xl shadow-waldgruen/20 w-full h-auto"
             />
+            <p className="font-handwriting text-sm text-warmgrau/70 mt-3 text-center md:text-left italic leading-snug">
+              Aus jedem Postleitzahlgebiet ein Brief, jeder mit einem anderen Anliegen.
+            </p>
           </div>
         </div>
       </div>
@@ -266,12 +269,23 @@ export default async function StimmenPage() {
               height={758}
               side="right"
               rotate="right"
+              caption="Über 300 Briefe seit April 2026. Hier liegen einige davon, kurz bevor sie in die Post gingen."
             />
             <p>
               Die Idee entstand Anfang 2026. Seitdem sind über 300 Briefe
               entstanden, viele davon mit Anliegen, die sonst nirgendwo gelandet
               wären: Schlaglöcher in der Straße, geschlossene Bibliotheken,
               fehlende Radwege, Probleme in der Schule.
+            </p>
+            <p>
+              Konkrete Beispiele aus den letzten Wochen: Nach mehreren Hinweisen, dass die
+              Brief-Einleitungen aufgesetzt klangen, haben wir die Komplexitäts-Floskel
+              aus dem Prompt geworfen und durch eine positive Anti-Halluzinations-Regel
+              ersetzt. Eine Rückmeldung über doppelte Sätze führte zum Wiederholungs-Fix,
+              eine andere über zu starre Briefe zur Längen-Korridor-Lockerung auf plus
+              minus fünfzehn Prozent. Und weil Kritik in den Reviews oft als Fließtext
+              kam, gibt es jetzt vorgefertigte Feedback-Chips für negative Hinweise,
+              damit wir Muster schneller erkennen.
             </p>
             <p>
               Follow-up-Mails laufen automatisch. Jede Rückmeldung fließt in

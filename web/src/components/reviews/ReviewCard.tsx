@@ -42,7 +42,7 @@ export function ReviewCard({ review, isExpanded = false }: ReviewCardProps) {
       className={`bg-white/95 rounded-3xl border border-waldgruen/10 p-6 flex-shrink-0 flex flex-col gap-3 transition-all duration-300 ${
         isExpanded
           ? "min-w-[360px] max-w-[440px] shadow-2xl shadow-waldgruen/20 scale-[1.03] z-10"
-          : "min-w-[320px] max-w-[360px] shadow-sm hover:shadow-md"
+          : "w-[340px] min-h-[240px] shadow-sm hover:shadow-md"
       }`}
     >
       <StarRow rating={review.rating} />

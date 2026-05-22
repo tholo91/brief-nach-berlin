@@ -1,5 +1,5 @@
 import { supabase } from "@/lib/supabase";
-import type { PublicReview } from "./types";
+import { MIN_PUBLIC_REVIEW_DATE, type PublicReview } from "./types";
 
 /**
  * Fetches public, consented reviews with a non-empty body.
@@ -12,6 +12,7 @@ export async function getPublicReviews(limit = 30): Promise<PublicReview[]> {
       .from("reviews")
       .select("id, created_at, rating, body, display_name")
       .not("body", "is", null)
+      .gte("created_at", MIN_PUBLIC_REVIEW_DATE)
       .order("created_at", { ascending: false })
       .limit(limit);
 

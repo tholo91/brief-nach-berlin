@@ -28,7 +28,7 @@ See: .planning/PROJECT.md (updated 2026-04-10)
 Phase: 999.1
 Plan: Not started
 Status: Executing Phase 03
-Last activity: 2026-05-21 - Completed quick task 260521-tn1: Review-Lernschleife: Chips, Anti-Halluzination, Length-Korridor, Wiederholungs-Fix
+Last activity: 2026-05-22 - Completed quick task 260522-k6t: Reviews-Seite /stimmen bauen mit reusable Komponenten
 
 Progress: [░░░░░░░░░░] 0%
 
@@ -82,6 +82,7 @@ Recent decisions affecting current work:
 | 260511-wgf | Firefox hero video fallback - add WebM source, loop, preload | 2026-05-11 | db9524b | [260511-wgf-firefox-hero-video-fallback-add-webm-sou](./quick/260511-wgf-firefox-hero-video-fallback-add-webm-sou/) |
 | 260512-vco | Stichpunkte-Botschaft auf Landingpage + Wizard klarstellen (User-Feedback) | 2026-05-12 | 43e8d07 | [260512-vco-stichpunkte-copy-clarification](./quick/260512-vco-stichpunkte-copy-clarification/) |
 | 260521-tn1 | Review-Lernschleife: Chips, Anti-Halluzination, Length-Korridor, Wiederholungs-Fix | 2026-05-21 | 1a9e8e3 | [260521-tn1-review-lernschleife-chips-anti-halluzina](./quick/260521-tn1-review-lernschleife-chips-anti-halluzina/) |
+| 260522-k6t | Reviews-Seite /stimmen bauen mit reusable Komponenten | 2026-05-22 | (post-merge) | [260522-k6t-reviews-seite-stimmen-bauen-mit-reusable](./quick/260522-k6t-reviews-seite-stimmen-bauen-mit-reusable/) |
 
 ## Session Continuity
 

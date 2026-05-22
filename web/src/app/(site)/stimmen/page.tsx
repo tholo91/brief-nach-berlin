@@ -246,6 +246,7 @@ export default async function StimmenPage() {
         {quote1 && (
           <div className="mb-16">
             <Prose>
+              <p className="font-typewriter text-sm font-bold tracking-widest uppercase text-waldgruen/60 mb-4">Aus den Reviews / Mai 2026</p>
               <PullQuote
                 attribution={quote1.display_name || "Anonym, Brief nach Berlin"}
                 decorative
@@ -299,6 +300,7 @@ export default async function StimmenPage() {
         {quote2 && (
           <div className="mb-16">
             <Prose>
+              <p className="font-typewriter text-sm font-bold tracking-widest uppercase text-waldgruen/60 mb-4">Aus den Reviews / einen Monat später</p>
               <PullQuote
                 attribution={quote2.display_name || "Anonym, Brief nach Berlin"}
                 decorative

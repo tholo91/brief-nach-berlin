@@ -278,16 +278,13 @@ export default async function StimmenPage() {
               wären: Schlaglöcher in der Straße, geschlossene Bibliotheken,
               fehlende Radwege, Probleme in der Schule.
             </p>
-            <p>
-              Konkrete Beispiele aus den letzten Wochen: Nach mehreren Hinweisen, dass die
-              Brief-Einleitungen aufgesetzt klangen, haben wir die Komplexitäts-Floskel
-              aus dem Prompt geworfen und durch eine positive Anti-Halluzinations-Regel
-              ersetzt. Eine Rückmeldung über doppelte Sätze führte zum Wiederholungs-Fix,
-              eine andere über zu starre Briefe zur Längen-Korridor-Lockerung auf plus
-              minus fünfzehn Prozent. Und weil Kritik in den Reviews oft als Fließtext
-              kam, gibt es jetzt vorgefertigte Feedback-Chips für negative Hinweise,
-              damit wir Muster schneller erkennen.
-            </p>
+            <p>Konkrete Beispiele aus den letzten Wochen:</p>
+            <ul className="list-disc pl-5 space-y-2 my-4 marker:text-waldgruen/40">
+              <li>Komplexitäts-Floskel raus, ersetzt durch positive Anti-Halluzinations-Regel</li>
+              <li>Wiederholungs-Fix für doppelte Sätze</li>
+              <li>Längen-Korridor auf plus minus fünfzehn Prozent gelockert</li>
+              <li>Negative Feedback-Chips für strukturierte Kritik</li>
+            </ul>
             <p>
               Follow-up-Mails laufen automatisch. Jede Rückmeldung fließt in
               den nächsten Prompt-Zyklus ein, in die Politiker-Coverage und in

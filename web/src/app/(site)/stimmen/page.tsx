@@ -175,8 +175,15 @@ export default async function StimmenPage() {
             Wir lesen jede Rückmeldung. Das Tool wird damit Woche für Woche
             besser.
           </p>
-          <div className="flex justify-center">
-            <RatingStat stats={stats} showDistribution={false} />
+          <div className="flex flex-col md:flex-row items-center md:items-start justify-center gap-6 md:gap-8 max-w-xl mx-auto">
+            <div className="md:shrink-0">
+              <RatingStat stats={stats} showDistribution={false} />
+            </div>
+            <div className="md:border-l md:border-waldgruen/15 md:pl-8 md:pt-1 text-center md:text-left max-w-xs">
+              <p className="font-handwriting text-xl md:text-2xl text-waldgruen-dark leading-snug">
+                Mit eurem Feedback mache ich das Tool gerne besser. Und Schritt für Schritt zugänglicher.
+              </p>
+            </div>
           </div>
         </div>
       </div>

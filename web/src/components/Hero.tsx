@@ -183,7 +183,8 @@ export default function Hero() {
             className="group inline-flex items-center gap-1.5 text-waldgruen-dark font-body text-sm font-semibold px-3 py-1.5 rounded-full bg-waldgruen/10 hover:bg-waldgruen/20 transition-colors"
             aria-label="Roadmap: bald auch Land und Kommune"
           >
-            <svg width="14" height="14" viewBox="0 0 16 16" fill="none" className="shrink-0" aria-hidden="true">
+            BALD: Land &amp; Kommune
+            <svg width="14" height="14" viewBox="0 0 16 16" fill="none" className="shrink-0 group-hover:translate-x-0.5 transition-transform" aria-hidden="true">
               <circle cx="3" cy="8" r="1.4" fill="currentColor" />
               <path d="M3 8 L11.5 3.5" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
               <path d="M11.5 3.5 L9.7 3.7 M11.5 3.5 L11.3 5.3" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
@@ -192,8 +193,6 @@ export default function Hero() {
               <path d="M3 8 L11.5 12.5" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
               <path d="M11.5 12.5 L9.7 12.3 M11.5 12.5 L11.3 10.7" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
-            Bald: Land &amp; Kommune
-            <span aria-hidden="true" className="text-waldgruen/70 group-hover:translate-x-0.5 transition-transform">&rarr;</span>
           </Link>
         </div>
 

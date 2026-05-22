@@ -82,5 +82,8 @@ Bestehende Subpages in `src/app/(site)/` als Vorlage, besonders `/lohnt-sich-bri
 - `/roadmap`-Seite existiert noch nicht. Wenn sie gebaut wird, von dort auf `/stimmen` verlinken
 - Optional: Admin-View für Thomas, um Highlights manuell zu kuratieren (z.B. `is_featured` column)
 
+### Asset bereits da
+`web/public/images/img-stimmen-tisch.webp` (167 KB, 1280×768, Ghibli-Stil: Holztisch mit handgeschriebenen Briefen, Umschlägen, Teetassen, Papier-Fliegern). Direkt einsetzbar im Hero der Seite oder als Editorial-Figure.
+
 ### Ausführung
 Implementation via `/gsd-plan-phase` oder `/gsd-quick` in eigener Session. Diese Notiz hier ist nur der Brief.

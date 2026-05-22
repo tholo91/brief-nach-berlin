@@ -200,10 +200,10 @@ export default function WasNochKommtPage() {
 
         <figure className="mb-12 -mx-2 sm:mx-0">
           <Image
-            src="/images/img-vier-ebenen.webp"
-            alt="Vier politische Ebenen: Rathaus, Landtag, Bundestag, EU-Parlament"
-            width={1024}
-            height={576}
+            src="/images/img-vier-ebenen-pfade.webp"
+            alt="Vier Pfade einer Landschaft führen zu Rathaus, Landtag, Bundestag und EU-Parlament. Briefe wehen den Wegen entlang."
+            width={1280}
+            height={700}
             sizes="(min-width: 768px) 42rem, 100vw"
             className="w-full h-auto rounded-2xl shadow-sm"
             priority

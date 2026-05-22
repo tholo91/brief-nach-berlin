@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
 import { useRef, useEffect, useState } from "react";
 
 const SUB_HEADLINES: ReadonlyArray<readonly [string, string]> = [
@@ -104,6 +105,13 @@ export default function Hero() {
           <span className="sm:hidden">Dein Anliegen.</span>
           <span className="hidden sm:inline relative whitespace-nowrap">
             Dein persönliches Anliegen.
+            <RoadmapTeaserSticker
+              className="hidden sm:block absolute top-1/2 right-full z-20"
+              style={{
+                transform: "translate(-12%, calc(-52% + 0px)) rotate(-7deg)",
+                filter: "drop-shadow(0 5px 16px rgba(0,0,0,0.22))",
+              }}
+            />
             <LdNSticker
               className="hidden sm:block absolute top-1/2 left-full z-20"
               style={{
@@ -182,6 +190,14 @@ export default function Hero() {
 
       </div>
 
+      {/* Roadmap Teaser - mobile: oben links auf dem Hero (mirror zu LdN) */}
+      <RoadmapTeaserSticker
+        className="sm:hidden absolute top-4 left-3 z-20"
+        style={{ transform: "rotate(-7deg)", filter: "drop-shadow(0 5px 16px rgba(0,0,0,0.22))" }}
+        width={85}
+        height={60}
+      />
+
       {/* LdN Sticker - mobile: oben rechts auf dem Hero */}
       <LdNSticker
         className="sm:hidden absolute top-4 right-3 z-20"
@@ -190,6 +206,57 @@ export default function Hero() {
         height={62}
       />
     </section>
+  );
+}
+
+function RoadmapTeaserSticker({
+  className,
+  style,
+  width = 116,
+  height = 76,
+}: {
+  className?: string;
+  style?: React.CSSProperties;
+  width?: number;
+  height?: number;
+}) {
+  return (
+    <span className={`inline-block ${className ?? ""}`} style={style}>
+      <Link
+        href="/was-noch-kommt"
+        className="flex flex-col items-center hover:scale-105 transition-transform duration-200 motion-reduce:transform-none motion-reduce:transition-none"
+        aria-label="Bald neu: automatische Erkennung für Landtag und Kommune. Zur Roadmap."
+        style={{ width, minHeight: height }}
+      >
+        {/* Four-point sparkle, conveys "coming soon / new arrival" */}
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 24 24"
+          width={22}
+          height={22}
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="1.8"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          aria-hidden="true"
+          className="text-waldgruen-dark mb-0.5"
+        >
+          <path d="M12 2 L13.6 10.4 L22 12 L13.6 13.6 L12 22 L10.4 13.6 L2 12 L10.4 10.4 Z" />
+        </svg>
+        <span className="block bg-white rounded-lg px-3 py-1.5 mt-0.5 text-center leading-tight whitespace-nowrap">
+          <span className="block font-body text-[9px] lg:text-[10px] font-semibold tracking-wider uppercase text-waldgruen">
+            Bald neu
+          </span>
+          <span className="block font-body text-[11px] lg:text-xs font-bold text-waldgruen-dark">
+            Land &amp; Kommune
+          </span>
+          <span className="block font-body text-[9px] text-warmgrau/60 mt-0.5">
+            automatisch erkannt
+          </span>
+        </span>
+      </Link>
+    </span>
   );
 }
 

@@ -1,8 +1,10 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 import { APP_URL, FOUNDER_FEEDBACK_URL } from "@/lib/config";
 import { Prose } from "@/components/editorial/Prose";
 import { PullQuote } from "@/components/editorial/PullQuote";
+import { Figure } from "@/components/editorial/Figure";
 import { FAQAccordion } from "@/components/FAQAccordion";
 import { RatingStat } from "@/components/reviews/RatingStat";
 import { ReviewMarquee } from "@/components/reviews/ReviewMarquee";
@@ -153,7 +155,7 @@ export default async function StimmenPage() {
         />
       )}
 
-      <div className="max-w-2xl mx-auto">
+      <div className="max-w-4xl mx-auto">
         <Link
           href="/"
           className="font-typewriter text-sm text-waldgruen hover:text-waldgruen-dark transition-colors mb-8 inline-block"
@@ -161,24 +163,40 @@ export default async function StimmenPage() {
           &larr; Zurück
         </Link>
 
-        {/* 1. Hero */}
-        <p className="font-typewriter text-sm font-bold tracking-widest uppercase text-waldgruen/60 mb-3">
-          seit April 2026
-        </p>
-        <h1 className="font-body text-3xl md:text-5xl font-bold text-waldgruen-dark tracking-tight mb-6 text-balance">
-          Stimmen aus dem ganzen Land
-        </h1>
-        <p className="font-handwriting text-xl md:text-2xl text-warmgrau leading-relaxed mb-12 text-pretty">
-          Wir lesen jede Rückmeldung. Das Tool wird damit Woche für Woche
-          besser.
-        </p>
-
-        {/* 2. StatStrip */}
-        <div className="mb-12">
-          <RatingStat stats={stats} showDistribution={false} />
+        {/* 1. Hero: image left, title + stat right */}
+        <div className="mb-12 md:mb-16 grid md:grid-cols-2 gap-8 md:gap-12 items-center">
+          <div className="order-2 md:order-1">
+            <Image
+              src="/images/img-stimmen-deutschland.webp"
+              alt="Illustration von Deutschland mit aufsteigenden Stimmen aus dem ganzen Land und Briefen, die zum Reichstag in Berlin fliegen"
+              width={1280}
+              height={956}
+              className="rounded-2xl shadow-xl shadow-waldgruen/20 w-full h-auto"
+              priority
+            />
+          </div>
+          <div className="order-1 md:order-2 flex flex-col gap-6">
+            <div>
+              <p className="font-typewriter text-sm font-bold tracking-widest uppercase text-waldgruen/60 mb-3">
+                seit April 2026
+              </p>
+              <h1 className="font-body text-3xl md:text-5xl font-bold text-waldgruen-dark tracking-tight mb-4 text-balance">
+                Stimmen aus dem ganzen Land
+              </h1>
+              <p className="font-handwriting text-xl md:text-2xl text-warmgrau leading-relaxed text-pretty">
+                Wir lesen jede Rückmeldung. Das Tool wird damit Woche für Woche
+                besser.
+              </p>
+            </div>
+            <div className="pt-2">
+              <RatingStat stats={stats} showDistribution={false} />
+            </div>
+          </div>
         </div>
 
-        {/* 3. Feedback-CTA */}
+        <div className="max-w-2xl mx-auto">
+
+        {/* 2. Feedback-CTA */}
         <div className="mb-16 p-8 border-2 border-waldgruen/20 bg-white/60 rounded-sm">
           <h2 className="font-body text-xl font-bold text-waldgruen-dark mb-3">
             Auch ohne Brief: schreib uns.
@@ -194,7 +212,7 @@ export default async function StimmenPage() {
               rel="noopener noreferrer"
               className="inline-block font-body font-bold text-creme bg-waldgruen-dark hover:bg-waldgruen px-6 py-3 rounded-sm transition-colors text-center"
             >
-              Feedback geben
+              Feedback zum Tool
             </a>
             <a
               href="mailto:thomas-lorenz@posteo.de?subject=Brief%20nach%20Berlin%20Feedback"
@@ -247,6 +265,14 @@ export default async function StimmenPage() {
             <h2 className="font-body text-2xl md:text-3xl font-bold text-waldgruen-dark pt-4">
               Wo das hier herkommt
             </h2>
+            <Figure
+              src="/images/img-stimmen-tisch.webp"
+              alt="Ein Tisch voller geschriebener Briefe und Umschläge in warmem Licht"
+              width={1280}
+              height={758}
+              side="right"
+              rotate="right"
+            />
             <p>
               Die Idee entstand Anfang 2026. Seitdem sind über 300 Briefe
               entstanden, viele davon mit Anliegen, die sonst nirgendwo gelandet
@@ -286,7 +312,7 @@ export default async function StimmenPage() {
               rel="noopener noreferrer"
               className="inline-block font-body font-bold text-creme bg-waldgruen-dark hover:bg-waldgruen px-6 py-3 rounded-sm transition-colors text-center"
             >
-              Feedback geben
+              Feedback zum Tool
             </a>
             <a
               href="mailto:thomas-lorenz@posteo.de?subject=Brief%20nach%20Berlin%20Feedback"
@@ -295,6 +321,7 @@ export default async function StimmenPage() {
               Direkt schreiben
             </a>
           </div>
+        </div>
         </div>
       </div>
     </div>

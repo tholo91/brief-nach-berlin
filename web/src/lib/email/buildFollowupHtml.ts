@@ -43,7 +43,7 @@ export function buildFollowupHtml(params: BuildFollowupParams): FollowupRender {
     `5 Sterne: ${base}/feedback?r=5&t=${token}`,
     ``,
     `Falls du schon deinen Brief bewertet hast, kannst du diese Mail ignorieren.`,
-    `Tausend Dank dir! Beste Grüße aus Bremen`,
+    `Tausend Dank dir und beste Grüße aus Bremen`,
     ``,
     `Thomas`,
     `${FOUNDER_HOMEPAGE}`,
@@ -53,6 +53,11 @@ export function buildFollowupHtml(params: BuildFollowupParams): FollowupRender {
     `WhatsApp: ${SHARE_URL_WHATSAPP}`,
     `Telegram: ${SHARE_URL_TELEGRAM}`,
     `E-Mail:   ${SHARE_URL_EMAIL}`,
+    ``,
+    `--`,
+    `Einmalige automatische Nachfrage an Brief-Schreiber:innen. Kein Newsletter, kein Marketing, keine weiteren automatischen Mails von dieser Adresse.`,
+    `Datenschutz: ${base}/datenschutz`,
+    `Fragen oder Adresse löschen: thomas_lorenz@posteo.de`,
   ].join("\n");
 
   const html = `<!DOCTYPE html>
@@ -143,7 +148,7 @@ export function buildFollowupHtml(params: BuildFollowupParams): FollowupRender {
             <td style="padding:16px 32px 24px;background-color:#ffffff;text-align:left;">
               <p style="margin:0 0 10px;font-family:Georgia,'Times New Roman',serif;font-size:15px;color:#4A4A4A;line-height:1.75;">
                 Falls du schon deinen Brief bewertet hast, kannst du diese Mail ignorieren.<br>
-                Tausend Dank dir! Beste Grüße aus Bremen
+                Tausend Dank dir und beste Grüße aus Bremen
               </p>
               <p style="margin:0;font-family:'Caveat','Brush Script MT','Lucida Handwriting',cursive;font-size:32px;color:#1D3557;line-height:1.1;">
                 Thomas
@@ -191,7 +196,9 @@ export function buildFollowupHtml(params: BuildFollowupParams): FollowupRender {
                 <a href="${APP_URL}" style="color:#2D5016;text-decoration:none;">Brief nach Berlin</a> · Deine Stimme zählt.
               </p>
               <p style="margin:6px 0 0;font-family:Georgia,'Times New Roman',serif;font-size:11px;color:#aaaaaa;line-height:1.5;">
-                <a href="${APP_URL}/datenschutz" style="color:#888888;">Datenschutz</a>: deine Brief-Daten werden nach Versand nicht gespeichert.
+                Einmalige automatische Nachfrage an Brief-Schreiber:innen.<br>
+                Kein Newsletter, kein Marketing, keine weiteren automatischen Mails von dieser Adresse.<br>
+                <a href="${APP_URL}/datenschutz" style="color:#888888;">Datenschutz</a> · <a href="mailto:thomas_lorenz@posteo.de?subject=Brief%20nach%20Berlin%3A%20Adresse%20l%C3%B6schen" style="color:#888888;">Fragen oder Adresse löschen</a>
               </p>
             </td>
           </tr>

@@ -77,6 +77,7 @@ export async function sendLetterEmail(
         email: process.env.BREVO_SENDER_EMAIL || "brief@brief-nach-berlin.de",
       },
       to: [{ email: params.recipientEmail }],
+      tags: ["brief"],
     });
     return { success: true, messageId: result.messageId };
   } catch (error) {

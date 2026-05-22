@@ -1,6 +1,9 @@
+import type { ReactNode } from "react";
+
 type FAQItem = {
   q: string;
   a: string;
+  aNode?: ReactNode;
 };
 
 function ChevronIcon() {
@@ -39,7 +42,7 @@ export function FAQAccordion({ items }: { items: FAQItem[] }) {
             <ChevronIcon />
           </summary>
           <p className="font-body text-base text-warmgrau leading-relaxed pb-6 pr-8">
-            {item.a}
+            {item.aNode ?? item.a}
           </p>
         </details>
       ))}

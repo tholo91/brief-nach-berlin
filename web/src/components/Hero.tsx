@@ -148,7 +148,7 @@ export default function Hero() {
             className="inline-block bg-waldgruen text-creme font-body font-semibold text-base md:text-lg px-8 py-4 rounded-xl hover:bg-waldgruen-dark transition-colors cursor-pointer shadow-lg shadow-waldgruen/25 active:scale-[0.98]"
           >
             <span className="md:hidden">Brief schreiben</span>
-            <span className="hidden md:inline">In 3 Minuten zum fertigen Brief &rarr;</span>
+            <span className="hidden md:inline">in 3 Minuten zum fertigen Brief &rarr;</span>
           </a>
           <a
             href="/beispiele"

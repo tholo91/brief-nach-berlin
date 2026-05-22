@@ -73,6 +73,12 @@ export default async function Footer() {
               Brief nach Berlin weitersagen
             </Link>
             <Link
+              href="/was-noch-kommt"
+              className="font-body text-sm text-warmgrau/70 hover:text-waldgruen-dark transition-colors duration-200"
+            >
+              Was noch kommt: Roadmap
+            </Link>
+            <Link
               href="/lage-der-nation"
               className="font-body text-sm text-warmgrau/70 hover:text-waldgruen-dark transition-colors duration-200"
             >

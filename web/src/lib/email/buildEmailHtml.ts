@@ -8,6 +8,7 @@ import {
   FOUNDER_FEEDBACK_URL,
   abgeordnetenwatchProfileUrl,
 } from "@/lib/config";
+import { formatPartyShort } from "@/lib/formatParty";
 
 function buildDebugUrl(d: LetterDebugPayload): string {
   // base64url-encode JSON payload so it survives URLs without padding/+/ issues
@@ -60,7 +61,7 @@ export function buildEmailHtml(data: SendLetterEmailParams): string {
   const fullName = data.politicianTitle
     ? `${escapeHtml(data.politicianTitle)} ${escapeHtml(data.politicianName)}`
     : escapeHtml(data.politicianName);
-  const party = escapeHtml(data.politicianParty);
+  const party = escapeHtml(formatPartyShort(data.politicianParty));
 
   // Format postal address: split on comma, one part per line
   const addressLines = data.politicianPostalAddress

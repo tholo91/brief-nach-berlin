@@ -5,6 +5,7 @@ import type { WizardData, WizardActionResult } from "@/lib/types/wizard";
 import type { Politician } from "@/lib/types/politician";
 import { selectPoliticianAction } from "@/lib/actions/selectPolitician";
 import { resendLetterAction } from "@/lib/actions/resendLetter";
+import { formatPartyShort } from "@/lib/formatParty";
 import {
   APP_URL,
   SHARE_TEXT_CAUSE,
@@ -731,9 +732,7 @@ export function Step3Success({ result, wizardData, politicians }: Step3SuccessPr
                 {p.firstName} {p.lastName}
               </p>
               <p className="font-body text-sm text-warmgrau mt-0.5">
-                {p.party === "Bündnis 90/Die Grünen" || p.party === "Bündnis 90 / Die Grünen" || p.party === "Bündnis 90 / die Grünen"
-                  ? "GRÜNE"
-                  : p.party}
+                {formatPartyShort(p.party)}
               </p>
               <p className="font-body text-sm text-warmgrau/70 mt-1">
                 Wahlkreis {p.wahlkreisId}: {p.wahlkreisName}

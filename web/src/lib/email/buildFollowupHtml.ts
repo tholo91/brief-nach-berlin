@@ -46,7 +46,7 @@ export function buildFollowupHtml(params: BuildFollowupParams): FollowupRender {
     `Tausend Dank dir und beste Grüße aus Bremen`,
     ``,
     `Thomas`,
-    `${FOUNDER_HOMEPAGE}`,
+    `${FOUNDER_HOMEPAGE} · Roadmap mitgestalten: ${base}/was-noch-kommt`,
     ``,
     `--`,
     `Gemeinsam noch lauter: Briefe aus dem gleichen Wahlkreis bekommen im Bundestag mehr Gewicht. Teile Brief nach Berlin supergerne in deinem Umfeld: ${base}/weitersagen`,
@@ -56,7 +56,7 @@ export function buildFollowupHtml(params: BuildFollowupParams): FollowupRender {
     ``,
     `--`,
     `Einmalige Nachfrage, kein Newsletter.`,
-    `Datenschutz: ${base}/datenschutz · Adresse löschen: thomas_lorenz@posteo.de`,
+    `Datenschutz: ${base}/datenschutz · Adresse löschen: thomas_lorenz@posteo.de · Roadmap: ${base}/was-noch-kommt`,
   ].join("\n");
 
   const html = `<!DOCTYPE html>
@@ -153,7 +153,7 @@ export function buildFollowupHtml(params: BuildFollowupParams): FollowupRender {
                 Thomas
               </p>
               <p style="margin:10px 0 0;font-family:Georgia,'Times New Roman',serif;font-size:12px;color:#bcbcbc;line-height:1.5;">
-                Eine Initiative von <a href="${FOUNDER_HOMEPAGE}" target="_blank" rel="noopener noreferrer" style="color:#bcbcbc;text-decoration:underline;">www.thomas-lorenz.eu</a>
+                Eine Initiative von <a href="${FOUNDER_HOMEPAGE}" target="_blank" rel="noopener noreferrer" style="color:#bcbcbc;text-decoration:underline;">www.thomas-lorenz.eu</a> · <a href="${base}/was-noch-kommt" target="_blank" rel="noopener noreferrer" style="color:#bcbcbc;text-decoration:underline;">Roadmap mitgestalten</a>
               </p>
             </td>
           </tr>
@@ -195,7 +195,7 @@ export function buildFollowupHtml(params: BuildFollowupParams): FollowupRender {
                 <a href="${APP_URL}" style="color:#2D5016;text-decoration:none;">Brief nach Berlin</a> · Deine Stimme zählt.
               </p>
               <p style="margin:6px 0 0;font-family:Georgia,'Times New Roman',serif;font-size:11px;color:#aaaaaa;line-height:1.5;">
-                Einmalige Nachfrage, kein Newsletter. <a href="${APP_URL}/datenschutz" style="color:#888888;">Datenschutz</a> · <a href="mailto:thomas_lorenz@posteo.de?subject=Brief%20nach%20Berlin%3A%20Adresse%20l%C3%B6schen&body=Hallo%20Thomas%2C%0A%0Abitte%20l%C3%B6sche%20meine%20E-Mail-Adresse%20aus%20deinen%20Followup-Listen.%0A%0ADanke!" style="color:#888888;">Adresse löschen</a>
+                Einmalige Nachfrage, kein Newsletter. <a href="${APP_URL}/datenschutz" style="color:#888888;">Datenschutz</a> · <a href="mailto:thomas_lorenz@posteo.de?subject=Brief%20nach%20Berlin%3A%20Adresse%20l%C3%B6schen&body=Hallo%20Thomas%2C%0A%0Abitte%20l%C3%B6sche%20meine%20E-Mail-Adresse%20aus%20deinen%20Followup-Listen.%0A%0ADanke!" style="color:#888888;">Adresse löschen</a> · <a href="${APP_URL}/was-noch-kommt" style="color:#888888;">Roadmap</a>
               </p>
             </td>
           </tr>

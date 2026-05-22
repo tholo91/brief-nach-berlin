@@ -17,7 +17,7 @@ export const revalidate = 3600;
 const URL_PATH = "/stimmen";
 const TITLE = "Stimmen & Bewertungen | Brief nach Berlin";
 const DESCRIPTION =
-  "Echte Rückmeldungen von Menschen, die einen Brief generiert haben. Schnitt, durchlaufende Karten, ausgewählte Quotes. Seit April 2026.";
+  "Echte Rückmeldungen von Menschen, die einen Brief generiert haben. Schnitt, durchlaufende Karten, ausgewählte Quotes. Seit Mai 2026.";
 
 export const metadata: Metadata = {
   title: TITLE,
@@ -166,7 +166,7 @@ export default async function StimmenPage() {
         {/* 1. Hero: title + RatingStat, centered */}
         <div className="mb-16 text-center">
           <p className="font-typewriter text-sm font-bold tracking-widest uppercase text-waldgruen/60 mb-3">
-            seit April 2026
+            seit Mitte Mai 2026
           </p>
           <h1 className="font-body text-3xl md:text-5xl font-bold text-waldgruen-dark tracking-tight mb-6 text-balance">
             Stimmen aus dem ganzen Land
@@ -271,7 +271,7 @@ export default async function StimmenPage() {
               Wo das hier herkommt
             </h2>
             <p className="font-handwriting text-xl md:text-2xl text-waldgruen leading-snug text-balance border-l-2 border-waldgruen/30 pl-5 my-6 not-italic">
-              Drei Monate, dreihundert Briefe, und eine Liste an Dingen, die wir wegen euch geändert haben.
+              Seit Mitte Mai, dreihundertfünfzig Briefe und eine Liste an Dingen, die wir wegen euch geändert haben.
             </p>
             <Figure
               src="/images/img-stimmen-tisch.webp"
@@ -280,10 +280,10 @@ export default async function StimmenPage() {
               height={758}
               side="right"
               rotate="right"
-              caption="Über 300 Briefe seit April 2026. Hier liegen einige davon, kurz bevor sie in die Post gingen."
+              caption="Über 350 Briefe seit Mitte Mai 2026. Hier liegen einige davon, kurz bevor sie in die Post gingen."
             />
             <p>
-              Seitdem sind über 300 Briefe entstanden, viele davon mit Anliegen,
+              Seitdem sind über 350 Briefe entstanden, viele davon mit Anliegen,
               die sonst nirgendwo gelandet wären: Schlaglöcher in der Straße,
               geschlossene Bibliotheken, fehlende Radwege, Probleme in der
               Schule.

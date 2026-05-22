@@ -102,11 +102,11 @@ function pickHighlights(reviews: PublicReview[]): PublicReview[] {
     const curated = CURATED_REVIEW_IDS.map((id) =>
       reviews.find((r) => r.id === id)
     ).filter((r): r is PublicReview => r !== undefined);
-    if (curated.length > 0) return curated.slice(0, 3);
+    if (curated.length > 0) return curated.slice(0, 2);
   }
   return reviews
     .filter((r) => r.rating === 5 && r.body.length > 60)
-    .slice(0, 3);
+    .slice(0, 2);
 }
 
 export default async function StimmenPage() {
@@ -116,8 +116,8 @@ export default async function StimmenPage() {
   ]);
 
   const highlights = pickHighlights(reviews);
+  const [quote1, quote2] = highlights;
   const hasReviews = reviews.length > 0;
-  const hasHighlights = highlights.length > 0;
 
   const aggregateRatingJsonLd =
     stats.totalCount >= 5
@@ -137,7 +137,7 @@ export default async function StimmenPage() {
       : null;
 
   return (
-    <div className="min-h-screen bg-creme px-6 py-20">
+    <div className="min-h-screen bg-creme py-20">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(articleJsonLd) }}
@@ -155,7 +155,7 @@ export default async function StimmenPage() {
         />
       )}
 
-      <div className="max-w-4xl mx-auto">
+      <div className="max-w-2xl mx-auto px-6">
         <Link
           href="/"
           className="font-typewriter text-sm text-waldgruen hover:text-waldgruen-dark transition-colors mb-8 inline-block"
@@ -163,103 +163,97 @@ export default async function StimmenPage() {
           &larr; Zurück
         </Link>
 
-        {/* 1. Hero: image left, title + stat right */}
-        <div className="mb-12 md:mb-16 grid md:grid-cols-2 gap-8 md:gap-12 items-center">
-          <div className="order-2 md:order-1">
+        {/* 1. Hero: title + RatingStat, centered */}
+        <div className="mb-16 text-center">
+          <p className="font-typewriter text-sm font-bold tracking-widest uppercase text-waldgruen/60 mb-3">
+            seit April 2026
+          </p>
+          <h1 className="font-body text-3xl md:text-5xl font-bold text-waldgruen-dark tracking-tight mb-6 text-balance">
+            Stimmen aus dem ganzen Land
+          </h1>
+          <p className="font-handwriting text-xl md:text-2xl text-warmgrau leading-relaxed mb-10 text-pretty max-w-xl mx-auto">
+            Wir lesen jede Rückmeldung. Das Tool wird damit Woche für Woche
+            besser.
+          </p>
+          <div className="flex justify-center">
+            <RatingStat stats={stats} showDistribution={false} />
+          </div>
+        </div>
+      </div>
+
+      {/* 2. Feedback-CTA + Germany illustration, side by side */}
+      <div className="max-w-5xl mx-auto px-6 mb-20">
+        <div className="grid md:grid-cols-2 gap-8 md:gap-10 items-center">
+          <div className="order-2 md:order-1 p-8 border-2 border-waldgruen/20 bg-white/60 rounded-sm">
+            <h2 className="font-body text-xl font-bold text-waldgruen-dark mb-3">
+              Auch ohne Brief: schreib uns.
+            </h2>
+            <p className="font-body text-base text-warmgrau mb-6">
+              Du musst nichts verschickt haben. Jede Rückmeldung hilft uns, die
+              nächste Version besser zu machen.
+            </p>
+            <div className="flex flex-col sm:flex-row gap-3">
+              <a
+                href={FOUNDER_FEEDBACK_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-block font-body font-bold text-creme bg-waldgruen-dark hover:bg-waldgruen px-6 py-3 rounded-sm transition-colors text-center"
+              >
+                Feedback zum Tool
+              </a>
+              <a
+                href="mailto:thomas-lorenz@posteo.de?subject=Brief%20nach%20Berlin%20Feedback"
+                className="inline-block font-body font-bold text-waldgruen-dark border-2 border-waldgruen/40 hover:border-waldgruen px-6 py-3 rounded-sm transition-colors text-center"
+              >
+                Direkt schreiben
+              </a>
+            </div>
+            <p className="font-body text-xs italic text-warmgrau/60 mt-4">
+              Du hast schon einen Brief generiert und willst die Sterne-Bewertung
+              abgeben? Das geht über den Link in der Mail, die wir dir nach dem
+              Brief geschickt haben.
+            </p>
+          </div>
+          <div className="order-1 md:order-2">
             <Image
               src="/images/img-stimmen-deutschland.webp"
               alt="Illustration von Deutschland mit aufsteigenden Stimmen aus dem ganzen Land und Briefen, die zum Reichstag in Berlin fliegen"
               width={1280}
               height={956}
-              className="rounded-2xl shadow-xl shadow-waldgruen/20 w-full h-auto"
-              priority
+              className="rounded-3xl shadow-xl shadow-waldgruen/20 w-full h-auto"
             />
           </div>
-          <div className="order-1 md:order-2 flex flex-col gap-6">
-            <div>
-              <p className="font-typewriter text-sm font-bold tracking-widest uppercase text-waldgruen/60 mb-3">
-                seit April 2026
-              </p>
-              <h1 className="font-body text-3xl md:text-5xl font-bold text-waldgruen-dark tracking-tight mb-4 text-balance">
-                Stimmen aus dem ganzen Land
-              </h1>
-              <p className="font-handwriting text-xl md:text-2xl text-warmgrau leading-relaxed text-pretty">
-                Wir lesen jede Rückmeldung. Das Tool wird damit Woche für Woche
-                besser.
-              </p>
-            </div>
-            <div className="pt-2">
-              <RatingStat stats={stats} showDistribution={false} />
-            </div>
-          </div>
         </div>
+      </div>
 
-        <div className="max-w-2xl mx-auto">
-
-        {/* 2. Feedback-CTA */}
-        <div className="mb-16 p-8 border-2 border-waldgruen/20 bg-white/60 rounded-sm">
-          <h2 className="font-body text-xl font-bold text-waldgruen-dark mb-3">
-            Auch ohne Brief: schreib uns.
-          </h2>
-          <p className="font-body text-base text-warmgrau mb-6">
-            Du musst nichts verschickt haben. Jede Rückmeldung hilft uns, die
-            nächste Version besser zu machen.
-          </p>
-          <div className="flex flex-col sm:flex-row gap-3">
-            <a
-              href={FOUNDER_FEEDBACK_URL}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-block font-body font-bold text-creme bg-waldgruen-dark hover:bg-waldgruen px-6 py-3 rounded-sm transition-colors text-center"
-            >
-              Feedback zum Tool
-            </a>
-            <a
-              href="mailto:thomas-lorenz@posteo.de?subject=Brief%20nach%20Berlin%20Feedback"
-              className="inline-block font-body font-bold text-waldgruen-dark border-2 border-waldgruen/40 hover:border-waldgruen px-6 py-3 rounded-sm transition-colors text-center"
-            >
-              Direkt schreiben
-            </a>
-          </div>
-          <p className="font-body text-xs italic text-warmgrau/60 mt-4">
-            Du hast schon einen Brief generiert und willst die Sterne-Bewertung
-            abgeben? Das geht über den Link in der Mail, die wir dir nach dem
-            Brief geschickt haben.
-          </p>
-        </div>
-
-        {/* 4. ReviewMarquee */}
-        {hasReviews && (
-          <div className="mb-16 -mx-6">
-            <p className="font-typewriter text-sm font-bold tracking-widest uppercase text-waldgruen/60 mb-6 px-6">
-              Was Leute schreiben
+      {/* 3. ReviewMarquee: full viewport breakout with edge fade */}
+      {hasReviews && (
+        <div className="mb-20">
+          <div className="max-w-2xl mx-auto px-6 mb-4">
+            <p className="font-typewriter text-sm font-bold tracking-widest uppercase text-waldgruen/60">
+              Wie ihr eure Briefe bewertet
             </p>
-            <ReviewMarquee reviews={reviews} variant="full" limit={30} />
           </div>
-        )}
+          <ReviewMarquee reviews={reviews} variant="full" limit={30} />
+        </div>
+      )}
 
-        {/* 5. Curated Highlights */}
-        {hasHighlights && (
+      <div className="max-w-2xl mx-auto px-6">
+        {/* 4. Quote 1 */}
+        {quote1 && (
           <div className="mb-16">
             <Prose>
-              {highlights.map((r) => (
-                <PullQuote
-                  key={r.id}
-                  attribution={
-                    r.display_name
-                      ? r.display_name
-                      : "Anonym, Brief nach Berlin"
-                  }
-                  decorative
-                >
-                  {r.body}
-                </PullQuote>
-              ))}
+              <PullQuote
+                attribution={quote1.display_name || "Anonym, Brief nach Berlin"}
+                decorative
+              >
+                {quote1.body}
+              </PullQuote>
             </Prose>
           </div>
         )}
 
-        {/* 6. Wo wir herkommen */}
+        {/* 5. Wo wir herkommen */}
         <div className="mb-16">
           <Prose>
             <h2 className="font-body text-2xl md:text-3xl font-bold text-waldgruen-dark pt-4">
@@ -286,6 +280,20 @@ export default async function StimmenPage() {
             </p>
           </Prose>
         </div>
+
+        {/* 6. Quote 2 */}
+        {quote2 && (
+          <div className="mb-16">
+            <Prose>
+              <PullQuote
+                attribution={quote2.display_name || "Anonym, Brief nach Berlin"}
+                decorative
+              >
+                {quote2.body}
+              </PullQuote>
+            </Prose>
+          </div>
+        )}
 
         {/* 7. FAQ */}
         <div className="mb-16">
@@ -321,7 +329,6 @@ export default async function StimmenPage() {
               Direkt schreiben
             </a>
           </div>
-        </div>
         </div>
       </div>
     </div>

@@ -27,9 +27,10 @@ function StarRow({ rating }: { rating: number }) {
 
 interface ReviewCardProps {
   review: PublicReview;
+  isExpanded?: boolean;
 }
 
-export function ReviewCard({ review }: ReviewCardProps) {
+export function ReviewCard({ review, isExpanded = false }: ReviewCardProps) {
   const name = review.display_name || "Anonym";
   const date = new Date(review.created_at).toLocaleDateString("de-DE", {
     month: "long",
@@ -37,9 +38,19 @@ export function ReviewCard({ review }: ReviewCardProps) {
   });
 
   return (
-    <div className="bg-white/90 rounded-sm shadow-sm border border-waldgruen/10 p-5 min-w-[320px] max-w-[360px] flex-shrink-0 flex flex-col gap-3">
+    <div
+      className={`bg-white/95 rounded-3xl border border-waldgruen/10 p-6 flex-shrink-0 flex flex-col gap-3 transition-all duration-300 ${
+        isExpanded
+          ? "min-w-[360px] max-w-[440px] shadow-2xl shadow-waldgruen/20 scale-[1.03] z-10"
+          : "min-w-[320px] max-w-[360px] shadow-sm hover:shadow-md"
+      }`}
+    >
       <StarRow rating={review.rating} />
-      <p className="font-body text-sm text-warmgrau leading-relaxed line-clamp-4 flex-1">
+      <p
+        className={`font-body text-sm text-warmgrau leading-relaxed flex-1 ${
+          isExpanded ? "" : "line-clamp-4"
+        }`}
+      >
         {review.body}
       </p>
       <div className="flex items-center justify-between gap-2 mt-1">

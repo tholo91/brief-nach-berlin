@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useRef, useState } from "react";
 import type { PublicReview } from "@/lib/reviews/types";
 import { ReviewCard } from "./ReviewCard";
 
@@ -15,8 +16,31 @@ export function ReviewMarquee({
   limit = 30,
 }: ReviewMarqueeProps) {
   const items = reviews.slice(0, limit);
+  const [expandedKey, setExpandedKey] = useState<string | null>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!expandedKey) return;
+    function handleDocClick(event: MouseEvent) {
+      if (!containerRef.current) return;
+      if (!containerRef.current.contains(event.target as Node)) {
+        setExpandedKey(null);
+      }
+    }
+    function handleEscape(event: KeyboardEvent) {
+      if (event.key === "Escape") setExpandedKey(null);
+    }
+    document.addEventListener("mousedown", handleDocClick);
+    document.addEventListener("keydown", handleEscape);
+    return () => {
+      document.removeEventListener("mousedown", handleDocClick);
+      document.removeEventListener("keydown", handleEscape);
+    };
+  }, [expandedKey]);
 
   if (items.length === 0) return null;
+
+  const isPaused = expandedKey !== null;
 
   return (
     <>
@@ -28,8 +52,25 @@ export function ReviewMarquee({
         .marquee-track {
           animation: marquee 60s linear infinite;
         }
-        .marquee-container:hover .marquee-track {
+        .marquee-container:hover .marquee-track,
+        .marquee-container.is-paused .marquee-track {
           animation-play-state: paused;
+        }
+        .marquee-fade {
+          -webkit-mask-image: linear-gradient(
+            to right,
+            transparent 0,
+            black 6%,
+            black 94%,
+            transparent 100%
+          );
+          mask-image: linear-gradient(
+            to right,
+            transparent 0,
+            black 6%,
+            black 94%,
+            transparent 100%
+          );
         }
         @media (prefers-reduced-motion: reduce) {
           .marquee-track {
@@ -41,15 +82,35 @@ export function ReviewMarquee({
         }
       `}</style>
       <div
-        className="marquee-container overflow-x-hidden w-full"
+        ref={containerRef}
+        className={`marquee-container marquee-fade overflow-x-hidden w-full py-6 ${
+          isPaused ? "is-paused" : ""
+        }`}
         data-variant={variant}
         aria-label="Stimmen aus dem ganzen Land"
       >
-        <div className="marquee-track flex gap-4 w-max">
-          {/* Doppelte Liste fuer seamless loop */}
-          {[...items, ...items].map((review, index) => (
-            <ReviewCard key={`${review.id}-${index}`} review={review} />
-          ))}
+        <div className="marquee-track flex gap-5 w-max px-4">
+          {[...items, ...items].map((review, index) => {
+            const key = `${review.id}-${index}`;
+            const isThis = expandedKey === key;
+            return (
+              <button
+                key={key}
+                type="button"
+                onClick={(event) => {
+                  event.stopPropagation();
+                  setExpandedKey(isThis ? null : key);
+                }}
+                aria-expanded={isThis}
+                aria-label={
+                  isThis ? "Bewertung schließen" : "Bewertung vollständig lesen"
+                }
+                className="text-left rounded-3xl focus:outline-none focus-visible:ring-2 focus-visible:ring-waldgruen focus-visible:ring-offset-2 focus-visible:ring-offset-creme cursor-pointer"
+              >
+                <ReviewCard review={review} isExpanded={isThis} />
+              </button>
+            );
+          })}
         </div>
       </div>
     </>

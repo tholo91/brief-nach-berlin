@@ -343,7 +343,7 @@ export default function WasNochKommtPage() {
             Mithelfen
           </p>
           <h2 className="font-body text-xl md:text-2xl font-bold text-waldgruen-dark mb-3">
-            Ich baue allein. Mithilfe ist willkommen.
+            Mir liegt was dran. Mithilfe ist willkommen.
           </h2>
           <p className="font-body text-base text-warmgrau leading-relaxed mb-4">
             Brief nach Berlin ist ein Freizeitprojekt von einer Person. Wenn du

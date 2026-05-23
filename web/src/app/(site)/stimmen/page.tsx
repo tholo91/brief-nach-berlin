@@ -46,7 +46,7 @@ const CURATED_REVIEW_IDS: string[] = [];
 const faqs = [
   {
     q: "Was passiert mit meinem Feedback?",
-    a: "Ich lese jede Rückmeldung selbst. Konkrete Hinweise gehen direkt in den nächsten Prompt-Zyklus oder in die Ausbaustufen der Politiker-Coverage. Es gibt kein Ticket-System, in dem etwas vergessen wird.",
+    a: "Ich lese jede Rückmeldung. Konkrete Hinweise gehen direkt in den nächsten Prompt-Zyklus oder in die Ausbaustufen der Politiker-Coverage. Es gibt kein Ticket-System, in dem etwas vergessen wird.",
   },
   {
     q: "Werden alle Reviews veröffentlicht?",
@@ -335,7 +335,7 @@ export default async function StimmenPage() {
             Mithelfen
           </p>
           <h2 className="font-body text-xl md:text-2xl font-bold text-waldgruen-dark mb-3">
-            Ich baue allein. Mithilfe ist willkommen.
+            Mir liegt was dran. Mithilfe ist willkommen.
           </h2>
           <p className="font-body text-base text-warmgrau leading-relaxed mb-4">
             Brief nach Berlin ist ein Freizeitprojekt von einer Person. Wenn du

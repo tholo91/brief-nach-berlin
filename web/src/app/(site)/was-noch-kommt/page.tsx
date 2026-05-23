@@ -66,14 +66,14 @@ const levels: Level[] = [
     name: "Land",
     badge: "Im Juni 2026",
     status: "im-juni-2026",
-    body: "Schule, Polizei, Hochschulen, Wohnungspolitik: das gehört in den Landtag, nicht nach Berlin. Wir starten mit den vier bevölkerungsreichsten Bundesländern (NRW, Bayern, Baden-Württemberg, Niedersachsen) und ergänzen die anderen 12 nach und nach. Wenn dein Land noch nicht dabei ist, bekommst du erstmal weiterhin deine Bundestagsabgeordneten als pragmatischen Zwischenschritt.",
+    body: "Schule, Polizei, Hochschulen, Wohnungspolitik: das gehört in den Landtag, nicht nach Berlin. Ich starte mit den vier bevölkerungsreichsten Bundesländern (NRW, Bayern, Baden-Württemberg, Niedersachsen) und ergänze die anderen 12 nach und nach. Wenn dein Land noch nicht dabei ist, bekommst du erstmal weiterhin deine Bundestagsabgeordneten als pragmatischen Zwischenschritt.",
   },
   {
     key: "kommune",
     name: "Kommune",
     badge: "In Arbeit",
     status: "in-arbeit",
-    body: "Spielplatz, Kita, Radweg, Bauantrag: hier hilft kein Brief nach Berlin, hier hilft das Rathaus. Wir arbeiten an einem Verweis-Modus, der dich direkt zur richtigen Gemeindeverwaltung leitet, mit der offiziellen Adresse deiner Stadt oder Gemeinde. Eigene Bürgermeister-Daten kommen später.",
+    body: "Spielplatz, Kita, Radweg, Bauantrag: hier hilft kein Brief nach Berlin, hier hilft das Rathaus. Ich arbeite an einem Verweis-Modus, der dich direkt zur richtigen Gemeindeverwaltung leitet, mit der offiziellen Adresse deiner Stadt oder Gemeinde. Eigene Bürgermeister-Daten kommen später.",
   },
   {
     key: "eu",
@@ -85,7 +85,7 @@ const levels: Level[] = [
         Datenschutz, Klimaziele, Lieferketten, Agrarpolitik: vieles davon wird
         in Brüssel entschieden, nicht in Berlin. Die Erweiterung auf
         Europaabgeordnete steht auf der Roadmap, hat aber noch kein festes
-        Datum. Wenn die EU-Ebene für dich wichtig ist, sag uns Bescheid über
+        Datum. Wenn die EU-Ebene für dich wichtig ist, sag mir Bescheid über
         die {feedbackLink}.
       </>
     ),
@@ -112,31 +112,31 @@ const faqs = [
   },
   {
     q: "Wann kommt die Landtag-Ebene?",
-    a: "Voraussichtlich im Juni 2026, beginnend mit Nordrhein-Westfalen, Bayern, Baden-Württemberg und Niedersachsen. Damit sind rund die Hälfte aller Einwohnerinnen und Einwohner abgedeckt. Die übrigen 12 Bundesländer ergänzen wir in den Monaten danach.",
+    a: "Voraussichtlich im Juni 2026, beginnend mit Nordrhein-Westfalen, Bayern, Baden-Württemberg und Niedersachsen. Damit sind rund die Hälfte aller Einwohnerinnen und Einwohner abgedeckt. Die übrigen 12 Bundesländer ergänze ich in den Monaten danach.",
   },
   {
     q: "Warum nicht alle Ebenen auf einmal?",
-    a: "Jede Ebene hat eigene Datenquellen, eigene Adressformeln und eigene Zuständigkeitslogik. Wenn wir alles auf einmal gebaut hätten, wäre nichts davon belastbar. So testen wir Ebene für Ebene mit echten Nutzerinnen und Nutzern und ziehen Lehren in die nächste mit.",
+    a: "Jede Ebene hat eigene Datenquellen, eigene Adressformeln und eigene Zuständigkeitslogik. Wäre alles auf einmal gebaut worden, wäre nichts davon belastbar. So gehe ich Ebene für Ebene mit echten Nutzerinnen und Nutzern durch und ziehe Lehren in die nächste mit.",
   },
   {
     q: "Kann ich vorschlagen, welche Ebene als nächstes kommt?",
-    a: "Ja. Die Reihenfolge richtet sich nach zwei Dingen: wie oft eine Ebene im Feedback genannt wird, und wie schnell wir an saubere Daten kommen. Wenn du eine bestimmte Ebene priorisieren willst, sag es uns über die Feedback-Seite, das fließt direkt in unsere Reihenfolge ein.",
+    a: "Ja. Die Reihenfolge richtet sich nach zwei Dingen: wie oft eine Ebene im Feedback genannt wird, und wie schnell ich an saubere Daten komme. Wenn du eine bestimmte Ebene priorisieren willst, sag es mir über die Feedback-Seite, das fließt direkt in die Reihenfolge ein.",
     aNode: (
       <>
         Ja. Die Reihenfolge richtet sich nach zwei Dingen: wie oft eine Ebene
-        im Feedback genannt wird, und wie schnell wir an saubere Daten
-        kommen. Wenn du eine bestimmte Ebene priorisieren willst, sag es uns
-        über die {feedbackLink}, das fließt direkt in unsere Reihenfolge ein.
+        im Feedback genannt wird, und wie schnell ich an saubere Daten
+        komme. Wenn du eine bestimmte Ebene priorisieren willst, sag es mir
+        über die {feedbackLink}, das fließt direkt in die Reihenfolge ein.
       </>
     ),
   },
   {
     q: "Was passiert mit meiner Anmeldung?",
-    a: "Wir speichern nur deine Email und die Ebene, die du angekreuzt hast. Du bekommst eine einzige Mail, wenn die Ebene live geht. Danach werden deine Daten gelöscht. Kein Newsletter, keine Weitergabe an Dritte, kein Tracking.",
+    a: "Gespeichert werden nur deine Email und die Ebene, die du angekreuzt hast. Du bekommst eine einzige Mail, wenn die Ebene live geht. Danach werden deine Daten gelöscht. Kein Newsletter, keine Weitergabe an Dritte, kein Tracking.",
   },
   {
     q: "Werden auch Bundesländer-spezifische Besonderheiten berücksichtigt?",
-    a: "Ja. Jeder Landtag hat eigene Wahlkreis-Strukturen (Stimmkreise in Bayern, Landtagswahlkreise in NRW), eigene Anreden und eigene Adressformeln. Stadtstaaten wie Berlin, Hamburg und Bremen behandeln wir gesondert, weil dort Land und Kommune verfassungsrechtlich verschmelzen.",
+    a: "Ja. Jeder Landtag hat eigene Wahlkreis-Strukturen (Stimmkreise in Bayern, Landtagswahlkreise in NRW), eigene Anreden und eigene Adressformeln. Stadtstaaten wie Berlin, Hamburg und Bremen behandle ich gesondert, weil dort Land und Kommune verfassungsrechtlich verschmelzen.",
   },
 ];
 
@@ -194,7 +194,7 @@ export default function WasNochKommtPage() {
           Was noch kommt
         </h1>
         <p className="font-handwriting text-xl md:text-2xl text-warmgrau leading-relaxed mb-10 text-pretty">
-          Wir bauen offen. Das hier ist der Fahrplan, und dein Feedback formt
+          Ich baue offen. Das hier ist der Fahrplan, und dein Feedback formt
           die Reihenfolge mit.
         </p>
 
@@ -283,7 +283,7 @@ export default function WasNochKommtPage() {
               Feedback geben
             </p>
             <p className="font-body text-sm text-warmgrau leading-snug">
-              Sag uns, welche Ebene du als nächstes brauchst.
+              Sag mir, welche Ebene du als nächstes brauchst.
             </p>
           </a>
           <Link
@@ -318,7 +318,7 @@ export default function WasNochKommtPage() {
             Die Reihenfolge richtet sich nach zwei Größen. Erstens: wie oft
             eine Ebene im Nutzer-Feedback genannt wird. Wer Bildungspolitik
             adressieren will, braucht den Landtag. Wer einen Bauantrag oder
-            Radweg betrifft, braucht die Kommune. Diese Nennungen zählen wir.
+            Radweg betrifft, braucht die Kommune. Diese Nennungen zähle ich.
           </p>
           <p>
             Zweitens: die technische Komplexität der Datenquellen. Der
@@ -327,7 +327,7 @@ export default function WasNochKommtPage() {
             Strukturen heterogener, jedes Bundesland hat eigene
             Wahlkreis-Logik. Auf Kommunalebene gibt es kein zentrales
             Register, sondern rund 11.000 Gemeinden mit unterschiedlichen
-            Verwaltungsstrukturen. Deshalb gehen wir Ebene für Ebene, statt
+            Verwaltungsstrukturen. Deshalb gehe ich Ebene für Ebene, statt
             alles auf einmal zu versprechen.
           </p>
 
@@ -336,6 +336,28 @@ export default function WasNochKommtPage() {
           </h2>
           <FAQAccordion items={faqs} />
         </Prose>
+
+        {/* Mithelfen */}
+        <div className="mt-16 p-6 sm:p-8 border-2 border-waldgruen/20 bg-creme/40 rounded-sm">
+          <p className="font-typewriter text-xs font-bold tracking-widest uppercase text-waldgruen/60 mb-3">
+            Mithelfen
+          </p>
+          <h2 className="font-body text-xl md:text-2xl font-bold text-waldgruen-dark mb-3">
+            Ich baue allein. Mithilfe ist willkommen.
+          </h2>
+          <p className="font-body text-base text-warmgrau leading-relaxed mb-4">
+            Brief nach Berlin ist ein Freizeitprojekt von einer Person. Wenn du
+            Lust hast, an einer Stelle mitzuhelfen, sei es Politiker-Daten
+            recherchieren, Texte gegenlesen, Bugs melden oder weitersagen,
+            freue ich mich über jede Mail.
+          </p>
+          <a
+            href="mailto:thomas-lorenz@posteo.de?subject=Mithelfen%20bei%20Brief%20nach%20Berlin"
+            className="inline-block font-body font-bold text-creme bg-waldgruen-dark hover:bg-waldgruen px-6 py-3 rounded-sm transition-colors"
+          >
+            thomas-lorenz@posteo.de
+          </a>
+        </div>
 
         {/* Final CTA */}
         <div className="mt-16 p-8 border-2 border-waldgruen/20 bg-creme/50 rounded-sm">

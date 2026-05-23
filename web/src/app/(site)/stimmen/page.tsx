@@ -347,10 +347,10 @@ export default async function StimmenPage() {
             href="mailto:thomas-lorenz@posteo.de?subject=Mithelfen%20bei%20Brief%20nach%20Berlin"
             className="inline-block font-body font-bold text-creme bg-waldgruen-dark hover:bg-waldgruen px-6 py-3 rounded-sm transition-colors"
           >
-            Schreib mir
+            Melde dich gerne bei mir
           </a>
           <p className="font-typewriter text-xs uppercase tracking-widest text-waldgruen/60 mt-6">
-            Thomas, Bremen
+            Thomas aus Bremen
           </p>
         </div>
       </div>

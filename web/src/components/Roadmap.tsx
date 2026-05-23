@@ -7,13 +7,13 @@ export default function Roadmap() {
     <section id="roadmap" className="py-20 md:py-28 px-6 bg-waldgruen-dark/[0.03]">
       <div className="max-w-5xl mx-auto">
         <p className="font-typewriter text-sm font-bold tracking-widest uppercase text-waldgruen/50 mb-3">
-          Wo wir hinwollen
+          Wo es hingeht
         </p>
         <h2 className="font-body text-3xl md:text-4xl font-bold text-waldgruen-dark tracking-tight mb-4 md:max-w-none max-w-xl">
           Brief nach Berlin wird mit euch immer besser
         </h2>
         <p className="font-body text-base md:text-lg text-warmgrau/80 leading-relaxed mb-14 max-w-2xl">
-          Wir bauen gerade und lernen mit jedem Brief. Hier ist, worauf wir uns als nächstes konzentrieren:
+          Ich baue gerade und lerne mit jedem Brief. Hier ist, worauf ich mich als nächstes konzentriere:
         </p>
 
         <div className="grid md:grid-cols-3 gap-8">
@@ -34,7 +34,7 @@ export default function Roadmap() {
                 Kommunal, Landes-, Bundes- oder Europapolitik
               </h3>
               <p className="font-body text-base text-warmgrau/80 leading-relaxed mb-3">
-                Nicht jedes Anliegen gehört nach Berlin. Wir möchten automatisch erkennen, welches politische Level zuständig ist, damit dein Brief dort landet, wo er wirklich etwas bewirken kann.
+                Nicht jedes Anliegen gehört nach Berlin. Ich möchte automatisch erkennen lassen, welches politische Level zuständig ist, damit dein Brief dort landet, wo er wirklich etwas bewirken kann.
               </p>
               <p className="font-body text-sm text-warmgrau/70 leading-relaxed mb-4">
                 <Link href="/kommune-land-bund-eu" className="text-waldgruen hover:text-waldgruen-dark underline decoration-waldgruen/30 underline-offset-2 hover:decoration-waldgruen transition-colors">
@@ -64,7 +64,7 @@ export default function Roadmap() {
               Dein Feedback formt den nächsten Brief
             </h3>
             <p className="font-body text-base text-warmgrau leading-relaxed max-w-xl">
-              Jede Rückmeldung hilft uns, Brief-nach-Berlin zu verbessern. Demokratie lebt vom Mitmachen, und das gilt auch hier: Wenn Du Feedback hast, uns weiterempfehlen oder mitwirken willst, freu ich mich über jede Nachricht.
+              Jede Rückmeldung hilft mir, Brief-nach-Berlin zu verbessern. Demokratie lebt vom Mitmachen, und das gilt auch hier: Wenn du Feedback hast, das Tool weiterempfehlen oder mitwirken willst, freue ich mich über jede Nachricht.
             </p>
             <div className="mt-1">
               <p className="font-body text-base text-warmgrau leading-relaxed mb-1">

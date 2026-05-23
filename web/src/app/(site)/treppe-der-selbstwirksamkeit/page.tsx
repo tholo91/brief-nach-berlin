@@ -154,7 +154,7 @@ const steps: Step[] = [
             href="/app"
             className="text-waldgruen hover:underline font-semibold"
           >
-            dafür haben wir Brief-nach-Berlin gebaut
+            dafür habe ich Brief-nach-Berlin gebaut
           </Link>
           .
         </p>

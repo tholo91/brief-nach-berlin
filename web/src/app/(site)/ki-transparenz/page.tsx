@@ -6,7 +6,7 @@ import { FAQAccordion } from "@/components/FAQAccordion";
 
 const TITLE = "KI & Transparenz";
 const DESCRIPTION =
-  "Welche KI Brief-nach-Berlin nutzt, warum wir uns für Mistral aus Europa entschieden haben und wie das Tool transparent mit Claude Code als Freizeitprojekt entstanden ist.";
+  "Welche KI Brief-nach-Berlin nutzt, warum die Wahl auf Mistral aus Europa gefallen ist und wie das Tool transparent mit Claude Code als Freizeitprojekt entstanden ist.";
 const URL_PATH = "/ki-transparenz";
 const PUBLISHED = "2026-05-20";
 
@@ -107,7 +107,7 @@ export default function KiTransparenzPage() {
             KI & Transparenz
           </p>
           <h1 className="font-body text-3xl md:text-4xl font-bold text-waldgruen-dark tracking-tight mb-6">
-            Welche KI wir nutzen, und warum aus Europa
+            Welche KI ich nutze, und warum aus Europa
           </h1>
           <p className="font-handwriting text-xl md:text-2xl text-warmgrau leading-relaxed mb-12 text-pretty">
             Wer politische Briefe mit Hilfe von KI schreibt, sollte wissen,
@@ -116,7 +116,7 @@ export default function KiTransparenzPage() {
 
         <Prose>
             <h2 className="font-body text-2xl font-bold text-waldgruen-dark pt-4">
-              Wir nutzen Mistral
+              Ich nutze Mistral
             </h2>
             <p>
               Brief-nach-Berlin generiert die Brief-Entwürfe mit{" "}

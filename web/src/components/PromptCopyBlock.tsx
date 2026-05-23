@@ -1,12 +1,14 @@
 "use client";
 
-import { useState } from "react";
+import { Fragment, useState } from "react";
 
 interface PromptCopyBlockProps {
   text: string;
+  /** Exact line strings (after trim) to render in bold for visual emphasis. Paste output stays plain. */
+  boldLines?: string[];
 }
 
-export function PromptCopyBlock({ text }: PromptCopyBlockProps) {
+export function PromptCopyBlock({ text, boldLines }: PromptCopyBlockProps) {
   const [copied, setCopied] = useState(false);
 
   function handleCopy() {
@@ -15,6 +17,9 @@ export function PromptCopyBlock({ text }: PromptCopyBlockProps) {
       setTimeout(() => setCopied(false), 2500);
     });
   }
+
+  const boldSet = new Set((boldLines ?? []).map((l) => l.trim()));
+  const lines = text.split("\n");
 
   return (
     <div className="group relative bg-white border border-warmgrau/20 rounded-sm shadow-sm">
@@ -35,7 +40,16 @@ export function PromptCopyBlock({ text }: PromptCopyBlockProps) {
         )}
       </button>
       <pre className="font-typewriter text-sm text-warmgrau leading-relaxed whitespace-pre-wrap break-words p-6 pr-10">
-        {text}
+        {lines.map((line, i) => (
+          <Fragment key={i}>
+            {boldSet.has(line.trim()) ? (
+              <strong className="font-bold text-waldgruen-dark">{line}</strong>
+            ) : (
+              line
+            )}
+            {i < lines.length - 1 ? "\n" : ""}
+          </Fragment>
+        ))}
       </pre>
     </div>
   );

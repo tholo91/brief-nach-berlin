@@ -113,7 +113,13 @@ export default function BriefVerbessernPage() {
 
         {/* Prompt block directly after the first paragraph */}
         <div className="mt-6 mb-12">
-          <PromptCopyBlock text={IMPROVE_PROMPT} />
+          <PromptCopyBlock
+            text={IMPROVE_PROMPT}
+            boldLines={[
+              "Das möchte ich am Brief ändern oder ergänzen:",
+              "Hier ist der Entwurf, den du überarbeiten sollst:",
+            ]}
+          />
         </div>
 
         <Prose>

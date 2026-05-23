@@ -82,7 +82,7 @@ export default function Impressum() {
               .
             </p>
             <p className="mt-2">
-              Wir sind nicht bereit oder verpflichtet, an
+              Ich bin nicht bereit oder verpflichtet, an
               Streitbeilegungsverfahren vor einer Verbraucherschlichtungsstelle
               teilzunehmen.
             </p>
@@ -94,8 +94,8 @@ export default function Impressum() {
             </h2>
             <p>
               Die Inhalte dieser Seite wurden mit größter Sorgfalt erstellt. Für
-              die Richtigkeit, Vollständigkeit und Aktualität der Inhalte können
-              wir jedoch keine Gewähr übernehmen.
+              die Richtigkeit, Vollständigkeit und Aktualität der Inhalte kann
+              ich jedoch keine Gewähr übernehmen.
             </p>
           </div>
         </div>

@@ -65,8 +65,8 @@ export default function Datenschutz() {
             <p>
               Brief nach Berlin verarbeitet personenbezogene Daten ausschließlich
               zur Erbringung des Dienstes: die Erstellung eines personalisierten
-              Briefs an Ihren zuständigen Abgeordneten. Wir legen keine
-              Nutzerkonten an und setzen keine Cookies ein. Alle eingegebenen
+              Briefs an Ihren zuständigen Abgeordneten. Ich lege keine
+              Nutzerkonten an und setze keine Cookies ein. Alle eingegebenen
               Daten (Postleitzahl, E-Mail-Adresse, Anliegen, optionale Angaben,
               optionale Spracheingabe) werden ausschließlich während der
               Verarbeitung Ihrer Anfrage verwendet und danach verworfen. Eine
@@ -95,7 +95,7 @@ export default function Datenschutz() {
               <strong>Art. 9 Abs. 2 lit. a DSGVO</strong>, die Sie durch das
               freiwillige Eintragen Ihres Anliegens und das Absenden des
               Formulars erteilen. Sie können die Einwilligung jederzeit für die
-              Zukunft widerrufen; eine Speicherung der Daten findet bei uns
+              Zukunft widerrufen; eine Speicherung der Daten findet bei mir
               ohnehin nicht statt.
             </p>
           </div>
@@ -121,7 +121,7 @@ export default function Datenschutz() {
               Drittlandtransfer in die USA: Vercel Inc. ist nach dem{" "}
               <strong>EU-U.S. Data Privacy Framework (DPF)</strong> zertifiziert
               (Adäquanzbeschluss der EU-Kommission vom 10.07.2023). Ergänzend
-              haben wir mit Vercel die Standardvertragsklauseln (SCCs) der
+              habe ich mit Vercel die Standardvertragsklauseln (SCCs) der
               EU-Kommission abgeschlossen. Der Auftragsverarbeitungsvertrag (DPA)
               ist hier abrufbar:{" "}
               <a
@@ -157,7 +157,7 @@ export default function Datenschutz() {
               Zweck: Zuordnung Ihrer Postleitzahl zum zuständigen
               Bundestagswahlkreis und zu den dort gewählten Abgeordneten.
               Verarbeitete Daten: Postleitzahl (5 Ziffern). Die Zuordnung erfolgt
-              vollständig lokal auf unserem Server anhand statischer
+              vollständig lokal auf meinem Server anhand statischer
               Referenzdaten der Bundeswahlleiterin; die Postleitzahl wird nicht
               an Dritte übermittelt. Speicherdauer: keine Speicherung.
               Rechtsgrundlage: Art. 6 Abs. 1 lit. b DSGVO (Durchführung
@@ -172,8 +172,8 @@ export default function Datenschutz() {
             <p>
               Zweck: einmaliger Versand des generierten Briefs als
               Transaktionsmail. Verarbeitete Daten: E-Mail-Adresse. Empfänger:
-              Brevo SAS (siehe Abschnitt 11). Wir speichern die E-Mail-Adresse
-              nicht bei uns; es wird kein Newsletter und keine Empfängerliste
+              Brevo SAS (siehe Abschnitt 11). Ich speichere die E-Mail-Adresse
+              nicht bei mir; es wird kein Newsletter und keine Empfängerliste
               geführt. Rechtsgrundlage: Art. 6 Abs. 1 lit. b DSGVO (Erfüllung
               Ihrer Anfrage).
             </p>
@@ -191,7 +191,7 @@ export default function Datenschutz() {
               Spracheingabe), optionale Angaben (Name, Parteizugehörigkeit,
               Organisationszugehörigkeit, Tonalität, gewünschte Brieflänge), der
               im Anschluss generierte Brieftext. Empfänger: Mistral AI (siehe
-              Abschnitt 9). Speicherdauer: keine Speicherung auf unseren Servern.
+              Abschnitt 9). Speicherdauer: keine Speicherung auf meinem Server.
               Rechtsgrundlage: Art. 6 Abs. 1 lit. b DSGVO; soweit besondere
               Kategorien personenbezogener Daten betroffen sind (z. B. politische
               Meinung, Gesundheit), zusätzlich Art. 9 Abs. 2 lit. a DSGVO
@@ -202,10 +202,10 @@ export default function Datenschutz() {
                 Spracheingabe (optional):
               </strong>{" "}
               Wenn Sie die Spracheingabe nutzen, wird Ihre Audioaufnahme im
-              Browser erfasst, an unseren Server (Vercel, Region Frankfurt)
+              Browser erfasst, an meinen Server (Vercel, Region Frankfurt)
               übertragen und sofort zur Transkription an die Mistral Voxtral API
               (Mistral AI, Frankreich) weitergeleitet. Die Audiodatei wird weder
-              bei uns noch dauerhaft bei Mistral gespeichert; nach der
+              bei mir noch dauerhaft bei Mistral gespeichert; nach der
               Transkription wird sie verworfen.
             </p>
           </div>
@@ -353,7 +353,7 @@ export default function Datenschutz() {
             </h2>
             <p>
               Zur Abwehr von Missbrauch (z. B. massenhafte Anfragen, automatisierte
-              Skripte) speichern wir Ihre IP-Adresse sowie ggf. eine Hash-Form
+              Skripte) speichere ich Ihre IP-Adresse sowie ggf. eine Hash-Form
               Ihrer E-Mail-Adresse vorübergehend im Arbeitsspeicher der jeweiligen
               Server-Instanz. Diese Daten werden nicht persistiert; sie verfallen
               automatisch nach Ablauf des Zähl-Zeitfensters (1 bzw. 24 Stunden)
@@ -368,7 +368,7 @@ export default function Datenschutz() {
               13. Reichweitenmessung (Vercel Web Analytics)
             </h2>
             <p>
-              Wir nutzen Vercel Web Analytics, um zu sehen, wie viele Menschen
+              Ich nutze Vercel Web Analytics, um zu sehen, wie viele Menschen
               die Seite besuchen und wo technische Fehler auftreten. Der Dienst
               arbeitet <strong>cookielos</strong>, erstellt keine
               Nutzerprofile und verarbeitet keine Brief-Inhalte.
@@ -404,9 +404,9 @@ export default function Datenschutz() {
               >
                 {CONTACT.email}
               </a>
-              . Da wir selbst keine personenbezogenen Daten speichern, können
-              Auskunfts- oder Löschanfragen, die Daten bei unseren
-              Auftragsverarbeitern (Vercel, Mistral, Brevo) betreffen, von uns
+              . Da ich selbst keine personenbezogenen Daten speichere, können
+              Auskunfts- oder Löschanfragen, die Daten bei meinen
+              Auftragsverarbeitern (Vercel, Mistral, Brevo) betreffen, von mir
               nur mit deren Mitwirkung beantwortet werden.
             </p>
           </div>
@@ -436,7 +436,7 @@ export default function Datenschutz() {
             </h2>
             <p className="mb-3">
               Wenn Sie nach dem Brief-Versand auf einen Stern in der E-Mail
-              klicken und eine Bewertung absenden, speichern wir folgende
+              klicken und eine Bewertung absenden, speichere ich folgende
               Daten bei Supabase (Server in Frankfurt am Main, Region eu-central-1):
             </p>
             <ul className="list-disc pl-6 space-y-1 mb-3">
@@ -459,7 +459,7 @@ export default function Datenschutz() {
               <li>Zeitstempel</li>
             </ul>
             <p className="mb-3">
-              Ihre E-Mail nutzen wir <strong>ausschließlich</strong> für
+              Ihre E-Mail nutze ich <strong>ausschließlich</strong> für
               eventuelle Rückfragen zu Ihrer Bewertung. Sie wird niemals
               öffentlich gezeigt, nicht für Newsletter oder Marketing
               verwendet und nicht an Dritte weitergegeben.
@@ -517,12 +517,12 @@ export default function Datenschutz() {
             </p>
             <p className="mb-3">
               <strong className="text-waldgruen-dark">
-                Wir garantieren nicht
+                Ich garantiere nicht
               </strong>{" "}
               die Richtigkeit der Politikerdaten (Name, Titel, Adresse,
               Zuständigkeit). Diese Daten stammen aus öffentlichen Quellen
               (Abgeordnetenwatch, Bundeswahlleiterin) und können veraltet oder
-              unvollständig sein. Wir garantieren ebenfalls nicht die
+              unvollständig sein. Ich garantiere ebenfalls nicht die
               inhaltliche Korrektheit oder Angemessenheit des generierten
               Brieftexts; KI kann Kontext falsch einschätzen, Nuancen übersehen
               oder Fehlannahmen treffen.
@@ -547,8 +547,8 @@ export default function Datenschutz() {
             </p>
             <p>
               Brief nach Berlin ist ein Werkzeug zur Beschleunigung, kein Ersatz
-              für Ihre eigene Urteilsfähigkeit. Sie schreiben den Brief, wir
-              helfen Ihnen nur, ihn schneller zu formulieren. Die Verantwortung
+              für Ihre eigene Urteilsfähigkeit. Sie schreiben den Brief, das Tool
+              hilft Ihnen nur, ihn schneller zu formulieren. Die Verantwortung
               für den versendeten Inhalt liegt bei Ihnen.
             </p>
           </div>

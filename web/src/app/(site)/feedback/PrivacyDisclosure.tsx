@@ -31,8 +31,8 @@ export function PrivacyDisclosure() {
         <div className="overflow-hidden">
           <div className="rounded-lg border border-waldgruen/15 bg-creme/60 px-4 py-4 text-left text-sm text-warmgrau leading-relaxed space-y-3">
             <p>
-              Wir speichern deine Bewertung in einer Datenbank
-              (<strong>Supabase</strong>, Server in Frankfurt). Konkret landen
+              Deine Bewertung wird in einer Datenbank
+              (<strong>Supabase</strong>, Server in Frankfurt) gespeichert. Konkret landen
               dort:
             </p>
             <ul className="list-disc pl-5 space-y-1.5">
@@ -41,7 +41,7 @@ export function PrivacyDisclosure() {
               <li>Dein Name oder Pseudonym, falls du einen angibst</li>
               <li>Dein Häkchen für die öffentliche Anzeige</li>
               <li>Deine Antwort, ob der Brief tatsächlich rausgeht</li>
-              <li>Meine E-Mail-Adresse (aus dem Link in der Mail)</li>
+              <li>Deine E-Mail-Adresse (aus dem Link in der Mail)</li>
               <li>Eine technische Verknüpfung zum erstellten Brief</li>
               <li>
                 Einen anonymisierten Hash deiner IP-Adresse (nur Spam-Schutz,
@@ -49,7 +49,7 @@ export function PrivacyDisclosure() {
               </li>
             </ul>
             <p>
-              Wir benutzen deine E-Mail <strong>ausschließlich</strong> für
+              Ich benutze deine E-Mail <strong>ausschließlich</strong> für
               eventuelle Rückfragen zu deiner Bewertung. Keine Newsletter, kein
               Marketing, keine Weitergabe.
             </p>

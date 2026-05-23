@@ -129,6 +129,14 @@ const categories: Category[] = [
         extra:
           "Die Datenqualität von Abgeordnetenwatch ist in Deutschland einzigartig: CC0-lizenziert, sauber gepflegt, mit klarer API. Wer wissen will, wie politische Transparenz technisch aussehen kann, sollte sich das Projekt anschauen. Wir verlinken bei jedem generierten Brief direkt auf das Abgeordnetenwatch-Profil der jeweiligen Person, damit du nachschauen kannst, mit wem du es zu tun hast.",
       },
+      {
+        name: "FragDenStaat.de",
+        url: "https://fragdenstaat.de",
+        what: "Eine Plattform, über die du IFG-, UIG- und VIG-Anfragen an Behörden stellen kannst, ohne Jura-Studium. Anfragen und Antworten werden öffentlich dokumentiert, daraus entstehen oft Recherchen und Klagen, die echte Aktenfunde freilegen. Getragen von der Open Knowledge Foundation Deutschland.",
+        good: "Wenn dein Frust eine konkrete Frage hat, auf die eine Behörde eine Antwort kennt, sie aber nicht von selbst rausrückt. Bauanträge, Studien, interner Mailverkehr, Verträge, Gutachten. Auch stark als Recherche-Schritt, bevor du an Politik schreibst.",
+        different:
+          "FragDenStaat holt Informationen aus dem System heraus, Brief-nach-Berlin trägt deine Botschaft ins System hinein. Beides greift oft ineinander: eine IFG-Anfrage liefert die Fakten, der Brief an die MdB übersetzt sie in eine politische Forderung. Wer ein Anliegen ernsthaft betreibt, nutzt beides nacheinander.",
+      },
     ],
   },
   {

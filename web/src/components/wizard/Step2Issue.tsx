@@ -115,6 +115,7 @@ const PLACEHOLDER_EXAMPLES: string[] = [
 
 const PLACEHOLDER_ROTATE_MS = 4000;
 const MIN_CHARS = 50;
+const DETAIL_THRESHOLD = 80;
 
 const TONE_LABELS = ["freundlich", "höflich", "sachlich", "bestimmt", "nachdrücklich"] as const;
 
@@ -137,6 +138,7 @@ export function Step2Issue({
   const [toneLevel, setToneLevel] = useState(defaultToneLevel ?? 3);
   const charCount = issueText.trim().length;
   const tooShort = charCount < MIN_CHARS;
+  const hasEnoughDetail = charCount >= DETAIL_THRESHOLD;
   const placeholder = PLACEHOLDER_EXAMPLES[placeholderIndex];
   const voiceTouched = voiceState !== "idle";
 
@@ -211,16 +213,27 @@ export function Step2Issue({
           ].join(" ")}
           aria-describedby="issueText-counter"
         />
-        <p
-          id="issueText-counter"
-          className={`text-right text-sm mt-1 ${tooShort ? "text-warmgrau/60" : "text-waldgruen"}`}
-        >
-          {tooShort ? `noch ${MIN_CHARS - charCount} Zeichen bis zum Brief` : `${charCount} Zeichen`}
-        </p>
+        <div className="mt-2 relative" aria-live="polite">
+          <div className={`transition-all duration-500 ease-in-out overflow-hidden ${hasEnoughDetail ? "opacity-0 max-h-0" : "opacity-100 max-h-16"}`}>
+            <p className="inline-flex items-center gap-1.5 text-sm font-body text-waldgruen-dark bg-waldgruen/15 px-4 py-1.5 rounded-full">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" className="shrink-0">
+                <circle cx="12" cy="12" r="10" />
+                <line x1="12" y1="8" x2="12" y2="8" strokeWidth="3" />
+                <line x1="12" y1="12" x2="12" y2="16" />
+              </svg>
+              Je konkreter du wirst, desto näher beschreibt der Brief dein Anliegen.
+            </p>
+          </div>
+          <div className={`transition-all duration-500 ease-in-out overflow-hidden ${hasEnoughDetail ? "opacity-100 max-h-8" : "opacity-0 max-h-0"}`}>
+            <p id="issueText-counter" className="text-right text-sm text-warmgrau/50">
+              {charCount} Zeichen
+            </p>
+          </div>
+        </div>
       </div>
 
       {/* Tone slider */}
-      <div className="mt-6">
+      <div className="mt-6 md:mt-10">
         <label className="block font-body text-sm text-warmgrau/70 mb-3">
           Tonalität des Briefes
         </label>

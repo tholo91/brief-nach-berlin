@@ -28,7 +28,7 @@ See: .planning/PROJECT.md (updated 2026-04-10)
 Phase: 999.1
 Plan: Not started
 Status: Executing Phase 03
-Last activity: 2026-05-23 - Completed quick task 260523-e8o: Switch wir→ich auf Landing + Subpages, Mithelfen-Block auf /was-noch-kommt und /stimmen
+Last activity: 2026-05-23 - Completed quick task 260523-n2a: /stimmen dynamic letter count + consolidate Mithelfen and Sign-off (hide email)
 
 Progress: [░░░░░░░░░░] 0%
 
@@ -87,6 +87,7 @@ Recent decisions affecting current work:
 | 260522-upk | /stimmen Editorial Polish: eyebrows, signed close, FAQ intro, list, standfirst | 2026-05-22 | fb35a26 | [260522-upk-stimmen-editorial-polish-eyebrows-signed](./quick/260522-upk-stimmen-editorial-polish-eyebrows-signed/) |
 | 260522-v52 | /stimmen Hero-Note + Datums-Korrektur: Mitte Mai 2026, 350+ Briefe | 2026-05-22 | bd4e181 | [260522-v52-stimmen-hero-note-datums-korrektur-mitte](./quick/260522-v52-stimmen-hero-note-datums-korrektur-mitte/) |
 | 260523-e8o | Switch von "wir" auf "ich" über Landing + Subpages, plus Mithelfen-Block auf /was-noch-kommt und /stimmen | 2026-05-23 | a9b7c5a | [260523-e8o-switch-wir-auf-ich-ber-landing-und-subpa](./quick/260523-e8o-switch-wir-auf-ich-ber-landing-und-subpa/) |
+| 260523-n2a | /stimmen dynamic letter count + consolidate Mithelfen and Sign-off (hide email) | 2026-05-23 | d20ca74 | [260523-n2a-stimmen-dynamic-letter-count-consolidate](./quick/260523-n2a-stimmen-dynamic-letter-count-consolidate/) |
 
 ## Session Continuity
 

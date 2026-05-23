@@ -330,43 +330,27 @@ export default async function StimmenPage() {
           <FAQAccordion items={faqs} />
         </div>
 
-        {/* 7b. Mithelfen */}
-        <div className="mb-16 p-6 sm:p-8 border-2 border-waldgruen/20 bg-creme/40 rounded-sm">
-          <p className="font-typewriter text-xs font-bold tracking-widest uppercase text-waldgruen/60 mb-3">
+        {/* 8. Mithelfen + Sign-off (consolidated) */}
+        <div className="mt-12 mb-8 text-center">
+          <p className="font-typewriter text-xs font-bold tracking-widest uppercase text-waldgruen/60 mb-4">
             Mithelfen
           </p>
-          <h2 className="font-body text-xl md:text-2xl font-bold text-waldgruen-dark mb-3">
-            Mir liegt was dran. Mithilfe ist willkommen.
-          </h2>
-          <p className="font-body text-base text-warmgrau leading-relaxed mb-4">
-            Brief nach Berlin ist ein Freizeitprojekt von einer Person. Wenn du
-            Lust hast, an einer Stelle mitzuhelfen, sei es Politiker-Daten
-            recherchieren, Texte gegenlesen, Bugs melden oder weitersagen,
-            freue ich mich über jede Mail.
+          <p className="font-handwriting text-2xl md:text-3xl text-waldgruen-dark leading-snug max-w-md mx-auto mb-4">
+            Wenn du bis hier gelesen hast: schreib mir. Auch eine Zeile reicht.
+          </p>
+          <p className="font-body text-base text-warmgrau leading-relaxed max-w-md mx-auto mb-6">
+            Brief nach Berlin ist ein Freizeitprojekt von einer Person. Wer
+            Lust hat mitzuhelfen, sei es Politiker-Daten recherchieren, Texte
+            gegenlesen, Bugs melden oder weitersagen, ist herzlich willkommen.
           </p>
           <a
             href="mailto:thomas-lorenz@posteo.de?subject=Mithelfen%20bei%20Brief%20nach%20Berlin"
             className="inline-block font-body font-bold text-creme bg-waldgruen-dark hover:bg-waldgruen px-6 py-3 rounded-sm transition-colors"
           >
-            thomas-lorenz@posteo.de
+            Schreib mir
           </a>
-        </div>
-
-        {/* 8. Sign-off */}
-        <div className="mt-12 mb-8">
-          <p className="font-handwriting text-2xl md:text-3xl text-waldgruen-dark leading-snug max-w-md mx-auto text-center">
-            Wenn du bis hier gelesen hast: schreib mir. Auch eine Zeile reicht.
-          </p>
-          <p className="font-typewriter text-xs uppercase tracking-widest text-waldgruen/60 mt-4 text-center">
+          <p className="font-typewriter text-xs uppercase tracking-widest text-waldgruen/60 mt-6">
             Thomas, Bremen
-          </p>
-          <p className="text-center">
-            <a
-              href="mailto:thomas-lorenz@posteo.de?subject=Brief%20nach%20Berlin%20Feedback"
-              className="font-body text-sm text-waldgruen-dark underline decoration-waldgruen/40 underline-offset-4 hover:decoration-waldgruen mt-2 inline-block"
-            >
-              thomas-lorenz@posteo.de
-            </a>
           </p>
         </div>
       </div>

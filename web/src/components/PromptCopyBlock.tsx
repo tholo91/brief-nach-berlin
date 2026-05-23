@@ -21,7 +21,7 @@ export function PromptCopyBlock({ text }: PromptCopyBlockProps) {
       <button
         onClick={handleCopy}
         aria-label={copied ? "Kopiert" : "Prompt kopieren"}
-        className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity duration-150 p-1.5 rounded hover:bg-waldgruen/10 text-waldgruen/60 hover:text-waldgruen"
+        className="absolute top-3 right-3 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity duration-150 p-1.5 rounded bg-white/80 md:bg-transparent hover:bg-waldgruen/10 text-waldgruen/60 hover:text-waldgruen"
       >
         {copied ? (
           <svg width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden="true">

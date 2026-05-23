@@ -74,7 +74,7 @@ function TipsDisclosure() {
         <div className="px-4 pb-4 pt-1 font-body text-sm text-warmgrau leading-relaxed space-y-3">
           <p>
             <span className="font-semibold text-waldgruen-dark">Stichpunkte genügen.</span>{" "}
-            Notier konkret, wo du wohnst, was du siehst, was dich nervt. Wir bauen daraus
+            Notier konkret, wo du wohnst, was du siehst, was dich nervt. Daraus baut das Tool
             die Sätze.
           </p>
           <p>
@@ -176,7 +176,7 @@ export function Step2Issue({
         Was beschäftigt dich gerade?
       </h1>
       <p className="font-body text-sm text-warmgrau/70 mb-4">
-        Sprich drauflos und passe deinen Text danach an. Oder nenne ein paar Stichpunkte, du musst keine ganzen Sätze schreiben. Wir formulieren daraus deinen Brief.
+        Sprich drauflos und passe deinen Text danach an. Oder nenne ein paar Stichpunkte, du musst keine ganzen Sätze schreiben. Daraus wird dein Briefentwurf formuliert.
       </p>
 
       {/* Tips disclosure — subtle nudge toward effective writing */}

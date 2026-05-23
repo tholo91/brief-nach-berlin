@@ -239,7 +239,7 @@ export function FeedbackForm({
           Hast du deinen Brief schon verschickt oder verschickst ihn gleich?
         </legend>
         <p className="font-body text-xs text-warmgrau/60 mb-3">
-          Hilft mir zu sehen, wie viele unserer Briefe wirklich bis in den Briefkasten kommen.
+          Hilft mir zu sehen, wie viele Briefe wirklich bis in den Briefkasten kommen.
         </p>
         <div
           role="radiogroup"
@@ -478,7 +478,7 @@ function ThankYouCard({ onSkip, rating }: { onSkip: () => void; rating: number }
           Deine Bewertung ist gespeichert.
         </p>
         <p className="font-body text-sm text-warmgrau/70 max-w-sm mx-auto mb-6 leading-relaxed">
-          Das hilft uns wirklich. Briefe wirken am stärksten, wenn mehrere
+          Das hilft mir wirklich. Briefe wirken am stärksten, wenn mehrere
           Stimmen zum selben Thema zusammenkommen.
         </p>
         {rating <= 3 ? (

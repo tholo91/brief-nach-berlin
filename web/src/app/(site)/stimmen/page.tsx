@@ -46,7 +46,7 @@ const CURATED_REVIEW_IDS: string[] = [];
 const faqs = [
   {
     q: "Was passiert mit meinem Feedback?",
-    a: "Wir lesen jede Rückmeldung selbst. Konkrete Hinweise gehen direkt in den nächsten Prompt-Zyklus oder in die Ausbaustufen der Politiker-Coverage. Wir schreiben kein Ticket und vergessen es nicht.",
+    a: "Ich lese jede Rückmeldung selbst. Konkrete Hinweise gehen direkt in den nächsten Prompt-Zyklus oder in die Ausbaustufen der Politiker-Coverage. Es gibt kein Ticket-System, in dem etwas vergessen wird.",
   },
   {
     q: "Werden alle Reviews veröffentlicht?",
@@ -54,7 +54,7 @@ const faqs = [
   },
   {
     q: "Kann ich Feedback geben, ohne den Brief abzuschicken?",
-    a: "Ja, ausdrücklich. Du musst nichts abgeschickt haben. Auch wenn du den Brief nur gelesen, aber nicht abgeschrieben hast, zählt deine Meinung. Schreib uns über den Button oben oder direkt per Mail.",
+    a: "Ja, ausdrücklich. Du musst nichts abgeschickt haben. Auch wenn du den Brief nur gelesen, aber nicht abgeschrieben hast, zählt deine Meinung. Schreib mir über den Button oben oder direkt per Mail.",
   },
   {
     q: "Was wurde dank Feedback konkret verbessert?",
@@ -62,11 +62,11 @@ const faqs = [
   },
   {
     q: "Wie kann ich Feedback geben?",
-    a: "Offenes Feedback geht jederzeit über den Feedback-Button oben auf dieser Seite oder direkt per Mail. Wenn du bereits einen Brief generiert hast und die Sterne-Bewertung abgeben möchtest, geht das über den Link in der Mail, die wir dir nach dem Brief geschickt haben. Der Link ist signiert, damit jede Bewertung einem echten Brief zugeordnet werden kann.",
+    a: "Offenes Feedback geht jederzeit über den Feedback-Button oben auf dieser Seite oder direkt per Mail. Wenn du bereits einen Brief generiert hast und die Sterne-Bewertung abgeben möchtest, geht das über den Link in der Mail, die du nach dem Brief bekommen hast. Der Link ist signiert, damit jede Bewertung einem echten Brief zugeordnet werden kann.",
   },
   {
-    q: "Wie geht ihr mit kritischen Stimmen um?",
-    a: "Genauso wie mit positiven: wir lesen sie und notieren, was sich ändern lässt. Kritik ohne konkreten Hinweis hilft weniger als Kritik mit Beispiel, aber auch vage Unzufriedenheit ist ein Signal. Wenn etwas nicht stimmt, wollen wir es wissen.",
+    q: "Wie gehst du mit kritischen Stimmen um?",
+    a: "Genauso wie mit positiven: ich lese sie und notiere, was sich ändern lässt. Kritik ohne konkreten Hinweis hilft weniger als Kritik mit Beispiel, aber auch vage Unzufriedenheit ist ein Signal. Wenn etwas nicht stimmt, will ich es wissen.",
   },
 ];
 
@@ -172,7 +172,7 @@ export default async function StimmenPage() {
             Stimmen aus dem ganzen Land
           </h1>
           <p className="font-handwriting text-xl md:text-2xl text-warmgrau leading-relaxed mb-10 text-pretty max-w-xl mx-auto">
-            Wir lesen jede Rückmeldung. Das Tool wird damit Woche für Woche
+            Ich lese jede Rückmeldung. Das Tool wird damit Woche für Woche
             besser.
           </p>
           <div className="flex flex-col md:flex-row items-center md:items-start justify-center gap-6 md:gap-8 max-w-xl mx-auto">
@@ -193,10 +193,10 @@ export default async function StimmenPage() {
         <div className="grid md:grid-cols-2 gap-8 md:gap-10 items-center">
           <div className="order-2 md:order-1 p-8 border-2 border-waldgruen/20 bg-white/60 rounded-sm">
             <h2 className="font-body text-xl font-bold text-waldgruen-dark mb-3">
-              Auch ohne Brief: schreib uns.
+              Auch ohne Brief: schreib mir.
             </h2>
             <p className="font-body text-base text-warmgrau mb-6">
-              Du musst nichts verschickt haben. Jede Rückmeldung hilft uns, die
+              Du musst nichts verschickt haben. Jede Rückmeldung hilft mir, die
               nächste Version besser zu machen.
             </p>
             <div className="flex flex-col sm:flex-row gap-3">
@@ -217,8 +217,8 @@ export default async function StimmenPage() {
             </div>
             <p className="font-body text-xs italic text-warmgrau/60 mt-4">
               Du hast schon einen Brief generiert und willst die Sterne-Bewertung
-              abgeben? Das geht über den Link in der Mail, die wir dir nach dem
-              Brief geschickt haben.
+              abgeben? Das geht über den Link in der Mail, die du nach dem
+              Brief bekommen hast.
             </p>
           </div>
           <div className="order-1 md:order-2">
@@ -264,14 +264,14 @@ export default async function StimmenPage() {
           </div>
         )}
 
-        {/* 5. Wo wir herkommen */}
+        {/* 5. Wo das hier herkommt */}
         <div className="mb-16">
           <Prose>
             <h2 className="font-body text-2xl md:text-3xl font-bold text-waldgruen-dark pt-4">
               Wo das hier herkommt
             </h2>
             <p className="font-handwriting text-xl md:text-2xl text-waldgruen leading-snug text-balance border-l-2 border-waldgruen/30 pl-5 my-6 not-italic">
-              Seit Mitte Mai, dreihundertfünfzig Briefe und eine Liste an Dingen, die wir wegen euch geändert haben.
+              Seit Mitte Mai, dreihundertfünfzig Briefe und eine Liste an Dingen, die ich wegen euch geändert habe.
             </p>
             <Figure
               src="/images/img-stimmen-tisch.webp"
@@ -324,9 +324,31 @@ export default async function StimmenPage() {
             <h2 className="font-body text-2xl md:text-3xl font-bold text-waldgruen-dark pt-4">
               Häufige Fragen
             </h2>
-            <p className="font-body text-base text-warmgrau/80 mb-6 max-w-md">Was wir am häufigsten gefragt werden, kurz beantwortet.</p>
+            <p className="font-body text-base text-warmgrau/80 mb-6 max-w-md">Was ich am häufigsten gefragt werde, kurz beantwortet.</p>
           </Prose>
           <FAQAccordion items={faqs} />
+        </div>
+
+        {/* 7b. Mithelfen */}
+        <div className="mb-16 p-6 sm:p-8 border-2 border-waldgruen/20 bg-creme/40 rounded-sm">
+          <p className="font-typewriter text-xs font-bold tracking-widest uppercase text-waldgruen/60 mb-3">
+            Mithelfen
+          </p>
+          <h2 className="font-body text-xl md:text-2xl font-bold text-waldgruen-dark mb-3">
+            Ich baue allein. Mithilfe ist willkommen.
+          </h2>
+          <p className="font-body text-base text-warmgrau leading-relaxed mb-4">
+            Brief nach Berlin ist ein Freizeitprojekt von einer Person. Wenn du
+            Lust hast, an einer Stelle mitzuhelfen, sei es Politiker-Daten
+            recherchieren, Texte gegenlesen, Bugs melden oder weitersagen,
+            freue ich mich über jede Mail.
+          </p>
+          <a
+            href="mailto:thomas-lorenz@posteo.de?subject=Mithelfen%20bei%20Brief%20nach%20Berlin"
+            className="inline-block font-body font-bold text-creme bg-waldgruen-dark hover:bg-waldgruen px-6 py-3 rounded-sm transition-colors"
+          >
+            thomas-lorenz@posteo.de
+          </a>
         </div>
 
         {/* 8. Sign-off */}

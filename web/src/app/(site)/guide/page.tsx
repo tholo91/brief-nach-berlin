@@ -156,7 +156,7 @@ const steps: Step[] = [
           </li>
         </ul>
         <p className="mt-3">
-          Wenn du deine Postleitzahl bei Brief-nach-Berlin eingibst, finden wir
+          Wenn du deine Postleitzahl bei Brief-nach-Berlin eingibst, findet das Tool
           den richtigen Wahlkreisabgeordneten im Bundestag automatisch. Für
           kommunale Themen lies{" "}
           <Link
@@ -560,8 +560,8 @@ export default function GuidePage() {
             Bereit?
           </h2>
           <p className="font-body text-warmgrau leading-relaxed mb-6">
-            Du musst dir nicht den ganzen Guide merken. Sag uns einfach, was
-            dich stört. Wir finden die richtige Adresse und schlagen dir einen
+            Du musst dir nicht den ganzen Guide merken. Sag einfach, was
+            dich stört. Das Tool findet die richtige Adresse und schlägt dir einen
             Brief vor, den du noch anpassen und dann mit der Hand abschreiben
             kannst.
           </p>

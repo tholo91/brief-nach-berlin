@@ -62,8 +62,8 @@ export function RoadmapSignupForm({ ebene }: RoadmapSignupFormProps) {
         </p>
         <p className="font-body text-base text-warmgrau leading-relaxed">
           {alreadySignedUp
-            ? "Du stehst schon auf der Liste. Wir melden uns, sobald es so weit ist."
-            : "Wir melden uns, sobald die Ebene live geht, voraussichtlich im Juni 2026. Eine einzige Mail, danach werden deine Daten gelöscht. Kein Newsletter, keine Weitergabe."}
+            ? "Du stehst schon auf der Liste. Du bekommst eine Mail, sobald es so weit ist."
+            : "Du bekommst eine Mail, sobald die Ebene live geht, voraussichtlich im Juni 2026. Eine einzige Mail, danach werden deine Daten gelöscht. Kein Newsletter, keine Weitergabe."}
         </p>
       </div>
     );
@@ -119,7 +119,7 @@ export function RoadmapSignupForm({ ebene }: RoadmapSignupFormProps) {
         </p>
       ) : null}
       <p className="font-body text-xs text-warmgrau/70 leading-relaxed mt-4">
-        Wir speichern nur E-Mail und Ebene. Eine Benachrichtigung, dann
+        Gespeichert werden nur E-Mail und Ebene. Eine Benachrichtigung, dann
         gelöscht. Kein Newsletter.
       </p>
     </form>

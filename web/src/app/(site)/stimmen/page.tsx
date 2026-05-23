@@ -11,8 +11,7 @@ import { ReviewMarquee } from "@/components/reviews/ReviewMarquee";
 import { getPublicReviews } from "@/lib/reviews/getPublicReviews";
 import { getReviewStats } from "@/lib/reviews/getReviewStats";
 import type { PublicReview } from "@/lib/reviews/types";
-
-export const revalidate = 3600;
+import { getLetterCount } from "@/lib/counter";
 
 const URL_PATH = "/stimmen";
 const TITLE = "Stimmen & Bewertungen | Brief nach Berlin";
@@ -110,14 +109,16 @@ function pickHighlights(reviews: PublicReview[]): PublicReview[] {
 }
 
 export default async function StimmenPage() {
-  const [reviews, stats] = await Promise.all([
+  const [reviews, stats, letterCount] = await Promise.all([
     getPublicReviews(30),
     getReviewStats(),
+    getLetterCount(),
   ]);
 
   const highlights = pickHighlights(reviews);
   const [quote1, quote2] = highlights;
   const hasReviews = reviews.length > 0;
+  const displayCount = letterCount > 0 ? letterCount.toString() : "350";
 
   const aggregateRatingJsonLd =
     stats.totalCount >= 5
@@ -271,7 +272,7 @@ export default async function StimmenPage() {
               Wo das hier herkommt
             </h2>
             <p className="font-handwriting text-xl md:text-2xl text-waldgruen leading-snug text-balance border-l-2 border-waldgruen/30 pl-5 my-6 not-italic">
-              Seit Mitte Mai, dreihundertfünfzig Briefe und eine Liste an Dingen, die ich wegen euch geändert habe.
+              Seit Mitte Mai, {displayCount} Briefe und eine Liste an Dingen, die ich wegen euch geändert habe.
             </p>
             <Figure
               src="/images/img-stimmen-tisch.webp"
@@ -280,13 +281,13 @@ export default async function StimmenPage() {
               height={758}
               side="right"
               rotate="right"
-              caption="Über 350 Briefe seit Mitte Mai 2026. Hier liegen einige davon, kurz bevor sie in die Post gingen."
+              caption={`${displayCount} Briefe seit Mitte Mai 2026. Hier liegen einige davon, kurz bevor sie in die Post gingen.`}
             />
             <p>
-              Seitdem sind über 350 Briefe entstanden, viele davon mit Anliegen,
-              die sonst nirgendwo gelandet wären: Schlaglöcher in der Straße,
-              geschlossene Bibliotheken, fehlende Radwege, Probleme in der
-              Schule.
+              Seitdem sind {displayCount} Briefe entstanden, viele davon mit
+              Anliegen, die sonst nirgendwo gelandet wären: Schlaglöcher in
+              der Straße, geschlossene Bibliotheken, fehlende Radwege,
+              Probleme in der Schule.
             </p>
             <p>Konkrete Beispiele aus den letzten Wochen:</p>
             <ul className="list-disc pl-5 space-y-2 my-4 marker:text-waldgruen/40">

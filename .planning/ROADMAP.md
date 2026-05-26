@@ -510,6 +510,26 @@ Plans:
 Plans:
 - [ ] TBD (promote with /gsd-review-backlog when ready)
 
+### Phase 999.25: Named-MdB-Suche als zweiter Empfänger-Modus (BACKLOG)
+
+**Goal:** Empfänger-Auswahl erweitern, sodass Nutzer:innen statt der eigenen Wahlkreis-MdBs gezielt eine bestimmte Person anschreiben können (z. B. "ich will Karl Lauterbach schreiben" oder "die Innenministerin"). Heute zwingt der PLZ-Flow zur eigenen Wahlkreis-MdB.
+
+**Vorschlag:** Im Empfänger-Schritt ein Toggle "Meine Wahlkreis-MdBs" vs. "Anderer/andere MdB". Im zweiten Modus: Suchfeld mit Type-Ahead über alle Bundestagsabgeordneten. Datenquelle = bestehende Abgeordnetenwatch-API (`politicians`-Endpoint mit Namens-Filter), also kein neuer Daten-Layer.
+
+**Inspiration:** liebemdb.org bietet diesen Toggle (PLZ / Name) direkt auf der Landing. Konkurrenz-Feature, aktuell nicht von Usern explizit nachgefragt.
+
+**Warum nicht jetzt:** Keine Validierung, dass es ein echter Schmerz ist. PLZ-Flow funktioniert für ~95 % der Nutzer. Erst priorisieren, wenn jemand aktiv danach fragt oder Engagement-Daten es nahelegen.
+
+**Aufwand:** klein, ~halber Tag (Type-Ahead + ein API-Call).
+
+**Voraussetzungen:** Erst nach Abschluss von 999.6 (Landtag/Kommune), damit die Sucharchitektur nicht doppelt umgebaut wird.
+
+**Requirements:** TBD
+**Plans:** 0 plans
+
+Plans:
+- [ ] TBD (promote with /gsd-review-backlog when ready)
+
 ## Progress
 
 **Execution Order:**

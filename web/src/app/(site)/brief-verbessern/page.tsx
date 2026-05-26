@@ -3,6 +3,11 @@ import type { Metadata } from "next";
 import { APP_URL } from "@/lib/config";
 import { Prose } from "@/components/editorial/Prose";
 import { PromptCopyBlock } from "@/components/PromptCopyBlock";
+import {
+  buildHintBullets,
+  filterAllowedTags,
+  sanitizeNotiz,
+} from "@/lib/improve/feedbackHints";
 
 const TITLE = "Brief verbessern";
 const DESCRIPTION =
@@ -47,7 +52,7 @@ const articleJsonLd = {
   inLanguage: "de-DE",
 };
 
-const IMPROVE_PROMPT = `Du hast große Erfahrung im Schreiben politischer Briefe an Abgeordnete und ein Gespür für Sprache und Wirkung.
+const PROMPT_HEADER = `Du hast große Erfahrung im Schreiben politischer Briefe an Abgeordnete und ein Gespür für Sprache und Wirkung.
 
 Ich habe einen KI-generierten Entwurf für einen Brief an meinen Abgeordneten erhalten. Den möchte ich jetzt verbessern: sprachlich, inhaltlich und vor allem so, dass er sich nach mir anhört, nicht nach einem Computer.
 
@@ -56,15 +61,49 @@ Bitte halte dich beim Überarbeiten an folgende Regeln:
 - Verändere die Länge des Briefes möglichst wenig
 - Kein KI-Jargon, keine Floskeln, keine leeren Phrasen
 - Wenn ich eine konkrete Änderung nenne, setze sie direkt um
-- Was ich nicht erwähne, behalte so wie es ist
+- Was ich nicht erwähne, behalte so wie es ist`;
 
-Das möchte ich am Brief ändern oder ergänzen:
-[Hier deine Anmerkungen eintragen, z.B. "Absatz 2 klingt nicht nach mir", "Ton ist zu weich", "ich will auch X erwähnen"]
-
-Hier ist der Entwurf, den du überarbeiten sollst:
+const PROMPT_FOOTER = `Hier ist der Entwurf, den du überarbeiten sollst:
 [Hier deinen Brief-Entwurf aus der Mail einfügen]`;
 
-export default function BriefVerbessernPage() {
+const ANCHOR_AENDERN = "Das möchte ich am Brief ändern oder ergänzen:";
+const ANCHOR_ENTWURF = "Hier ist der Entwurf, den du überarbeiten sollst:";
+const DEFAULT_AENDERN_BODY = `[Hier deine Anmerkungen eintragen, z.B. "Absatz 2 klingt nicht nach mir", "Ton ist zu weich", "ich will auch X erwähnen"]`;
+
+function buildImprovePrompt(bullets: string[]): string {
+  const aendernBody = bullets.length > 0 ? bullets.join("\n") : DEFAULT_AENDERN_BODY;
+  return [
+    PROMPT_HEADER,
+    "",
+    ANCHOR_AENDERN,
+    aendernBody,
+    "",
+    PROMPT_FOOTER,
+  ].join("\n");
+}
+
+type SearchParamsShape = {
+  gruende?: string | string[];
+  notiz?: string | string[];
+};
+
+function firstParam(value: string | string[] | undefined): string | undefined {
+  if (Array.isArray(value)) return value[0];
+  return value;
+}
+
+export default async function BriefVerbessernPage({
+  searchParams,
+}: {
+  searchParams: Promise<SearchParamsShape>;
+}) {
+  const params = await searchParams;
+  const gruende = filterAllowedTags(firstParam(params.gruende));
+  const notiz = sanitizeNotiz(firstParam(params.notiz));
+  const bullets = buildHintBullets(gruende, notiz);
+  const hasFeedback = bullets.length > 0;
+  const prompt = buildImprovePrompt(bullets);
+
   return (
     <div className="min-h-screen bg-creme px-6 py-20">
       <script
@@ -111,14 +150,20 @@ export default function BriefVerbessernPage() {
           </p>
         </Prose>
 
+        {hasFeedback ? (
+          <div className="mt-6 rounded-lg border border-waldgruen/25 bg-waldgruen/5 px-4 py-3">
+            <p className="font-body text-sm text-waldgruen-dark leading-relaxed">
+              <span className="font-semibold">Dein Feedback ist im Prompt drin.</span>{" "}
+              Schau gerne nochmal drüber und ergänze, was fehlt.
+            </p>
+          </div>
+        ) : null}
+
         {/* Prompt block directly after the first paragraph */}
         <div className="mt-6 mb-12">
           <PromptCopyBlock
-            text={IMPROVE_PROMPT}
-            boldLines={[
-              "Das möchte ich am Brief ändern oder ergänzen:",
-              "Hier ist der Entwurf, den du überarbeiten sollst:",
-            ]}
+            text={prompt}
+            boldLines={[ANCHOR_AENDERN, ANCHOR_ENTWURF]}
           />
         </div>
 
@@ -183,6 +228,19 @@ export default function BriefVerbessernPage() {
             uns direkt ankommt.
           </p>
         </Prose>
+
+        {hasFeedback ? (
+          <div className="mt-12 rounded-lg border border-waldgruen/20 bg-creme/60 px-5 py-4">
+            <p className="font-body text-sm text-warmgrau leading-relaxed">
+              <span className="font-semibold text-waldgruen-dark">
+                Hat es geholfen?
+              </span>{" "}
+              Wenn der überarbeitete Brief jetzt besser passt, klick gern in
+              deiner ursprünglichen E-Mail noch einmal auf einen Stern. So sehen
+              wir, ob unser Verbesserungs-Prompt funktioniert hat.
+            </p>
+          </div>
+        ) : null}
       </div>
     </div>
   );

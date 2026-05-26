@@ -17,6 +17,7 @@ import {
   submitReviewAction,
   type SubmitReviewResult,
 } from "@/lib/actions/submitReview";
+import { ALLOWED_HINT_TAGS, NOTIZ_MAX } from "@/lib/improve/feedbackHints";
 
 interface FeedbackFormProps {
   initialRating: number;
@@ -156,7 +157,14 @@ export function FeedbackForm({
   }
 
   if (submitted) {
-    return <ThankYouCard onSkip={() => router.push("/")} rating={rating} />;
+    return (
+      <ThankYouCard
+        onSkip={() => router.push("/")}
+        rating={rating}
+        feedbackTags={feedbackTags}
+        body={body}
+      />
+    );
   }
 
   const chips =
@@ -436,7 +444,36 @@ function SentTab({
   );
 }
 
-function ThankYouCard({ onSkip, rating }: { onSkip: () => void; rating: number }) {
+function buildImproveHref(
+  feedbackTags: FeedbackTagSlug[],
+  body: string
+): string {
+  const usableTags = feedbackTags.filter((tag) =>
+    ALLOWED_HINT_TAGS.has(tag)
+  );
+  const notiz = body.trim().slice(0, NOTIZ_MAX);
+  const params = new URLSearchParams();
+  if (usableTags.length > 0) {
+    params.set("gruende", usableTags.join(","));
+  }
+  if (notiz) {
+    params.set("notiz", notiz);
+  }
+  const query = params.toString();
+  return query ? `/brief-verbessern?${query}` : "/brief-verbessern";
+}
+
+function ThankYouCard({
+  onSkip,
+  rating,
+  feedbackTags,
+  body,
+}: {
+  onSkip: () => void;
+  rating: number;
+  feedbackTags: FeedbackTagSlug[];
+  body: string;
+}) {
   // Pausable auto-redirect. Hovering or focusing either button stops the
   // countdown so users have time to read and decide; the bar visibly pauses
   // with them, then resumes from the same spot when they move away.
@@ -446,6 +483,15 @@ function ThankYouCard({ onSkip, rating }: { onSkip: () => void; rating: number }
   // overwrites this on its first non-paused run anyway.
   const runStartRef = useRef<number>(0);
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  // After submit the form unmounts in place; on mobile the viewport stays
+  // wherever the user was on the (taller) form, often hiding the "Danke!"
+  // headline. Scroll back to the top so the thank-you state is actually seen.
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+  }, []);
 
   useEffect(() => {
     if (paused) {
@@ -467,6 +513,11 @@ function ThankYouCard({ onSkip, rating }: { onSkip: () => void; rating: number }
     };
   }, [paused, onSkip]);
 
+  const showRecoveryCard = rating <= 3;
+  const improveHref = buildImproveHref(feedbackTags, body);
+  const hasMappableFeedback =
+    feedbackTags.some((tag) => ALLOWED_HINT_TAGS.has(tag)) || body.trim() !== "";
+
   return (
     <div className="relative bg-white border border-waldgruen/20 rounded-2xl px-6 py-14 sm:px-10 sm:py-16 text-center shadow-sm overflow-hidden animate-thank-you-in">
       <Sparkles />
@@ -481,25 +532,37 @@ function ThankYouCard({ onSkip, rating }: { onSkip: () => void; rating: number }
           Das hilft mir wirklich. Briefe wirken am stärksten, wenn mehrere
           Stimmen zum selben Thema zusammenkommen.
         </p>
-        {rating <= 3 ? (
+        {showRecoveryCard ? (
           <div
-            className="rounded-lg border border-waldgruen/15 bg-creme/60 px-4 py-3 text-left max-w-sm mx-auto mb-8 animate-feedback-in"
+            className="rounded-lg border border-waldgruen/25 bg-waldgruen/5 px-4 py-4 text-left max-w-sm mx-auto mb-8 animate-feedback-in"
             onMouseEnter={() => setPaused(true)}
             onMouseLeave={() => setPaused(false)}
             onFocus={() => setPaused(true)}
             onBlur={() => setPaused(false)}
           >
-            <p className="font-body text-sm text-warmgrau leading-relaxed">
-              Schade, dass der Briefentwurf nicht so überzeugt hat. Möchtest du es nochmal versuchen und dein Anliegen konkreter schildern? Am schnellsten geht das mit der Mikrofon-Funktion, einfach drauflosreden und danach um fehlende Punkte ergänzen.
+            <p className="font-body text-sm font-semibold text-waldgruen-dark leading-snug mb-1">
+              {hasMappableFeedback
+                ? "Dein Feedback ist da, und wir haben es schon in einen Verbesserungs-Prompt eingebaut."
+                : "Du kannst deinen Brief mit unserem Prompt verbessern."}
+            </p>
+            <p className="font-body text-sm text-warmgrau leading-relaxed mb-3">
+              Damit machst du in 2 Minuten aus dem Entwurf den Brief, den du
+              wirklich abschicken willst.
             </p>
             <Link
-              href="/app"
-              className="inline-block mt-2 font-body text-sm font-semibold text-waldgruen hover:text-waldgruen-dark underline underline-offset-2 decoration-waldgruen/40 hover:decoration-waldgruen transition-colors"
+              href={improveHref}
+              className="inline-flex items-center justify-center bg-waldgruen text-creme font-semibold px-4 py-2.5 rounded-lg hover:bg-waldgruen-dark transition-colors cursor-pointer text-sm w-full"
             >
-              Neuen Brief schreiben →
+              Brief jetzt verbessern →
             </Link>
-            <p className="font-body text-xs text-warmgrau/60 mt-3">
-              Danke dir - Thomas ✌️
+            <p className="font-body text-xs text-warmgrau/70 mt-3 text-center">
+              Lieber neu anfangen?{" "}
+              <Link
+                href="/app"
+                className="text-warmgrau hover:text-waldgruen-dark underline underline-offset-2 decoration-warmgrau/40 hover:decoration-waldgruen transition-colors"
+              >
+                Neuen Brief schreiben
+              </Link>
             </p>
           </div>
         ) : null}

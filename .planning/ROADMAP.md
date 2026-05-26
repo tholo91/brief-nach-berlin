@@ -123,7 +123,7 @@ Deliverable: phased rollout (e.g. Landtage via Abgeordnetenwatch → OParl citie
 
 Integration points: extend `fetch-politician-data.ts` with per-level fetchers; `PoliticalLevel` type already supports Bund/Land/Kommune; letter prompt already does level detection; disambiguation UI must surface the level prominently so users pick the right recipient.
 
-**Requirements:** POLI-10 (Sub-phase A: Landtag via Abgeordnetenwatch for NRW/BY/BW/NI + Mistral level routing + level badge in disambiguation UI; Sub-phase B Wikidata Bürgermeister replaced 2026-05-21 by Pragmatic-Verweis on Gemeinde-Website via P856, see PLAN 07)
+**Requirements:** POLI-10 (Sub-phase A: Landtag via Abgeordnetenwatch for NRW/BY/BW/NI + Mistral level routing + level badge in disambiguation UI; Kommune-Flow pivoted 2026-05-22 to Generic-Rathaus-Brief mit synthetischem Stadtverwaltung-Recipient, siehe PLAN 07)
 **Plans:** 7 plans (post-review 2026-05-21)
 
 Plans:
@@ -133,7 +133,7 @@ Plans:
 - [ ] 999.6-04-PLAN.md — routeToLevel Mistral server function + Land-aware lookupPLZ + graceful degradation (Wave 3)
 - [ ] 999.6-05-PLAN.md — LevelBadge + LevelOverrideChips + EuComingSoonCard + disambiguation grouping + coverage hint (Wave 4)
 - [ ] 999.6-06-PLAN.md — generateLetter level+mode adaptation (Anrede gender-resolved, no GG-Artikel, Stellvertretend-Framing) (Wave 4)
-- [ ] 999.6-07-PLAN.md — Pragmatic-Kommune-Verweis via Wikidata P856 + GemeindeVerweisCard + Stadtstaat re-route (Wave 4)
+- [ ] 999.6-07-PLAN.md — Generic-Rathaus-Brief mit synthetischem Stadtverwaltung / Bezirksamt-Recipient + RathausAdresseHint + Stadtstaat re-route (Wave 4)
 
 ### Phase 999.7: Partner with abgeordnetenwatch.de for credibility (BACKLOG)
 
@@ -390,6 +390,23 @@ Das ist die kritischste Sektion — hier kann das Projekt ernsthaft Schaden nehm
 
 Plans:
 - [ ] TBD (promote with /gsd:review-backlog when ready)
+
+### Phase 999.16: Follow-up-Email — Wirksamkeit zeigen & Stories sammeln (BACKLOG)
+
+**Goal:** In die zweite Follow-up-Email (Feedback-Mail) einen zusätzlichen Block einbauen: "Melde dich gerne, wenn sich in deinem Anliegen etwas getan hat oder jemand auf deinen Brief reagiert hat — wir würden deine Geschichte mit deiner Erlaubnis gerne veröffentlichen." Verlinkt einen HeySpeak-Link, über den die Person sich melden kann (Voice oder Call). Ziele: (1) Wirksamkeit des Tools sichtbar machen, (2) Social Proof für mehr Nutzer:innen generieren, (3) Stories für Marketing/Lage-der-Nation/LinkedIn gewinnen.
+
+**Offene Fragen:**
+- In welche Mail genau (Feedback-Email = die mit Star-Rating, token-gated)?
+- Wie formulieren ohne den Feedback-CTA zu kannibalisieren?
+- HeySpeak-Link mit eigenem Topic/Magic-Link pro Empfänger oder generisch?
+- Opt-in für Veröffentlichung explizit in der Anfrage klären (DSGVO + Vertrauen)?
+- Lohnt sich ein eigener `/stories`-Bereich auf der Site als Ziel/Anchor?
+
+**Requirements:** TBD
+**Plans:** 0 plans
+
+Plans:
+- [ ] TBD (promote with /gsd-review-backlog when ready)
 
 ## Progress
 

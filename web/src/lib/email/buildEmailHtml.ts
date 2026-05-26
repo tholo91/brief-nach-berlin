@@ -306,7 +306,7 @@ export function buildEmailHtml(data: SendLetterEmailParams): string {
                       <a href="${APP_URL}" style="color:#2D5016;text-decoration:none;">Brief nach Berlin</a> · Deine Stimme zählt.
                     </p>
                     <p style="margin:6px 0 0;font-family:Georgia,'Times New Roman',serif;font-size:12px;color:#999999;">
-                      <a href="${APP_URL}/wer-darf-mdb-schreiben" style="color:#2D5016;text-decoration:underline;">Wer darf eigentlich MdBs schreiben?</a>
+                      <a href="${APP_URL}/wer-darf-mdb-schreiben" style="color:#2D5016;text-decoration:underline;">Wer darf MdBs schreiben?</a>
                     </p>
                   </td>
                 </tr>

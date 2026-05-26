@@ -32,9 +32,9 @@
 
 **Schritte:**
 1. Login: https://vercel.com/dashboard
-2. Navigation: **Settings** (für deinen Account, nicht das Projekt) -> **Legal**
+2. Avatar oben rechts → **Account Settings** → linke Sidebar: **Legal** (direkter Versuch: https://vercel.com/account/settings → Tab Legal)
 3. Sektion **Data Processing Agreement**: aktuelle Version anzeigen
-4. Falls digitaler Sign-Button: ausführen. Falls schon akzeptiert: PDF runterladen.
+4. Falls digitaler Sign-Button: ausführen. Falls schon akzeptiert: Browser-Print → „Als PDF speichern".
 5. Optional: über https://vercel.com/contact/sales eine Counter-Signed-Version anfordern (für Vercel-Pro-Kunden Standard).
 
 **Beweis sichern:** PDF runterladen -> `web/docs/compliance/vercel-dpa-2026-05.pdf`. Compliance-Ordner liegt bereit, README dokumentiert das Naming-Schema.
@@ -47,7 +47,7 @@
 
 **Schritte (verbleibend):**
 1. Region-Screenshot: Supabase Dashboard → Projekt `brief-nach-berlin` → Settings → General → Region-Sektion abfotografieren → ablegen als `web/docs/compliance/supabase-region-frankfurt.png`
-2. DPA-PDF: https://supabase.com/legal/dpa öffnen → Browser → drucken → „Als PDF speichern" → ablegen als `web/docs/compliance/supabase-dpa-2026-05.pdf`
+2. DPA-PDF: direkter Download unter https://supabase.com/downloads/docs/Supabase+DPA+260317.pdf → ablegen als `web/docs/compliance/supabase-dpa-2026-03.pdf` (Datum aus Dateinamen, nicht heutiges)
 3. Verarbeitungsverzeichnis ([DSGVO-VERARBEITUNGSVERZEICHNIS.md](DSGVO-VERARBEITUNGSVERZEICHNIS.md)) prüfen: Eintrag „VT-5 Nutzer-Bewertungen" muss vorhanden sein.
 
 **Beweis sichern:** Region-Screenshot + DPA-PDF im Compliance-Ordner.

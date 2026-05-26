@@ -181,8 +181,16 @@ Antworte ausschließlich im JSON-Format:
   "letter": "<vollständiger Brieftext>"
 }`;
 
-function mdbContextBlock(ctx: MdbContext | undefined): string {
-  if (!ctx) return "";
+// When ctx is empty (build-time data missing, runtime fetch failed, or no
+// relevant votes), the model still needs an anchor. Without one it invents
+// committees and speeches (see Sven Ruttor / Jonathan Berlin review fixtures).
+// The defensive block tells the model explicitly what it does NOT know.
+const EMPTY_MDB_CONTEXT_BLOCK = `\n\n<mdb_kontext>\nEs liegen KEINE verifizierten Informationen über Ausschüsse, Reden oder Abstimmungen dieser/dieses Abgeordneten vor. Erwähne deshalb KEINE konkreten Ausschüsse, keine konkreten Reden und keine konkreten Abstimmungen — nur die Partei-Zugehörigkeit und den Wahlkreis aus dem <empfaenger>-Block.\n</mdb_kontext>`;
+
+export function mdbContextBlock(ctx: MdbContext | undefined): string {
+  if (!ctx || (ctx.committees.length === 0 && ctx.recentRelevant.length === 0)) {
+    return EMPTY_MDB_CONTEXT_BLOCK;
+  }
   const parts: string[] = [];
   if (ctx.committees.length > 0) {
     parts.push(`- Ausschüsse: ${ctx.committees.join(", ")}`);
@@ -193,7 +201,6 @@ function mdbContextBlock(ctx: MdbContext | undefined): string {
       .join("\n");
     parts.push(`- Jüngste relevante Positionen:\n${items}`);
   }
-  if (parts.length === 0) return "";
   return `\n\n<mdb_kontext>\n${parts.join("\n")}\n</mdb_kontext>`;
 }
 

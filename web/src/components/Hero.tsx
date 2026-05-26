@@ -6,20 +6,20 @@ import { useRef, useEffect, useState } from "react";
 
 const SUB_HEADLINES: ReadonlyArray<readonly [string, string]> = [
   [
-    "Drei Stichpunkte reichen, kein Aufsatz nötig.",
-    "Daraus wird ein Brief, der gelesen wird.",
+    "Sprich rein oder tipp drei Stichpunkte.",
+    "Daraus entsteht dein Briefentwurf.",
   ],
   [
-    "Sprich rein oder tipp ein paar Stichpunkte.",
-    "Ratzfatz hast du einen überzeugenden Briefentwurf.",
+    "Du musst kein Politik-Profi sein.",
+    "Das Tool findet die richtigen Worte und Adressen.",
   ],
   [
     "Was nervt dich? Was macht dir Sorgen?",
-    "Sag es, den Rest macht das Tool.",
+    "Hau raus, den Rest macht das Tool.",
   ],
   [
-    "Artikel 17 Grundgesetz garantiert dir,",
-    "dich an die Politik zu wenden. Hier ist dein Weg.",
+    "Dein Grundrecht aus Artikel 17:",
+    "der direkte Draht an die Politik.",
   ],
 ];
 

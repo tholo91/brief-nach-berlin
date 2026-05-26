@@ -177,6 +177,17 @@ export default async function BriefVerbessernPage({
           </p>
 
           <h2 className="font-body text-2xl font-bold text-waldgruen-dark pt-4">
+            Timing zählt
+          </h2>
+          <p>
+            Wenn dein Thema gerade im Bundestag debattiert wird oder kurz vor
+            einer Abstimmung steht, schreib das in den ersten Satz, z.B.
+            &bdquo;angesichts der Abstimmung am 12. Juni&ldquo;. Ein Brief, der
+            diese Woche aufschlägt, wirkt stärker als einer, der irgendwann
+            gelesen wird.
+          </p>
+
+          <h2 className="font-body text-2xl font-bold text-waldgruen-dark pt-4">
             Warum Mistral?
           </h2>
           <p>

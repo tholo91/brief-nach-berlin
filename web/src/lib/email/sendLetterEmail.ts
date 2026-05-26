@@ -18,6 +18,7 @@ export interface LetterDebugPayload {
   letterLengthMin: number;
   letterLengthMax: number;
   issueTextLength: number;
+  issueTextWordCount: number;
   wordCount: number;
   wordCountInRange: boolean;
   fallbackUsed: boolean;

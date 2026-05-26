@@ -28,6 +28,10 @@ export function buildDebugPayload(
     letterLengthMin: min,
     letterLengthMax: max,
     issueTextLength: data.issueText?.length ?? 0,
+    // mirrors countWords() in generateLetter.ts so input/output words match
+    issueTextWordCount: data.issueText
+      ? data.issueText.trim().split(/\s+/).filter(Boolean).length
+      : 0,
     wordCount: result.wordCount,
     wordCountInRange: result.wordCountInRange,
     fallbackUsed: result.fallbackUsed,

@@ -27,6 +27,7 @@ function format(payload: LetterDebugPayload | { error: string }): string {
     `Letter length         ${d.letterLengthKey} (${d.letterLengthMin}–${d.letterLengthMax} Wörter)`,
     `Word count            ${wcLabel}`,
     `Issue text length     ${d.issueTextLength} chars`,
+    `Issue text words      ${d.issueTextWordCount ?? "—"} words`,
     `Political level       ${d.politicalLevel}`,
     `MdB                   ${d.representativeName} (${d.representativeLevel}, ${d.representativeWahlkreis})`,
     `MdB Partei            ${d.representativeParty ?? "—"}`,

@@ -215,7 +215,7 @@ async function main() {
 
   // Client-side filters (cheaper than fighting Supabase's PostgREST syntax
   // for nested jsonb keys and not-empty checks).
-  let rows = data as ReviewRow[];
+  let rows = data as unknown as ReviewRow[];
 
   if (!args.includeTests) {
     rows = rows.filter((r) => !r.email || !TEST_EMAILS.has(r.email.toLowerCase()));

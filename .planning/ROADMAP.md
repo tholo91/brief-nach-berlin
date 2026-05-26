@@ -447,13 +447,15 @@ Plans:
 Plans:
 - [ ] TBD (promote with /gsd-review-backlog when ready)
 
-### Phase 999.19: Position-Probe — Pre-Check "Bist du FÜR oder GEGEN X?" + Echo auf Success-Page (BACKLOG)
+### Phase 999.19: Position-Probe — Pre-Check "Bist du FÜR oder GEGEN X?" + Echo auf Success-Page (BACKLOG, PARKED)
+
+**Status:** PARKED 2026-05-27 — Thomas: "find ich komisch, erstmal nicht wichtig". Reaktivierung, wenn Position-Inversion (Cluster 3) wieder häufiger in Reviews auftaucht oder ein konkreter User direkt nach einer "Verstanden?"-Checkschleife fragt. Bis dahin nicht ausarbeiten.
 
 **Goal:** Katja (Review d9c8fb60, 2★, E-Auto-Besitzerin gegen Heizungsgesetz → KI hat pro-Klima-Brief geschrieben). Florian (Review b2ec9816, 3★): "Im Brief wurde eine Änderung gefordert, statt die geplante Änderung zu kritisieren". 2 von 19 Body-Reviews zeigen aktive Position-Umkehrung. Schmerzpunkt rettet 1★/2★-Reviews.
 
 **Cluster:** Position-Inversion (Cluster 3).
 
-**Priorität:** P1 — Direkter Hebel gegen die schmerzhaftesten Negativ-Reviews.
+**Priorität:** P1 ursprünglich, jetzt geparkt.
 
 **Fix-Skizze:** Vor der Brief-Generation ein 1-Satz-Mistral-Small-Call (temp=0.1) "Bist du FÜR oder GEGEN X, und warum?". Output als `<position>`-Anker in den Hauptprompt. Auf der Success-Page über dem Brief 1 Zeile: "Wir haben verstanden: Du bist GEGEN X weil Y. Falls das nicht stimmt — Brief nachschärfen." Kostenseite: ~0,1ct pro Brief zusätzlich.
 

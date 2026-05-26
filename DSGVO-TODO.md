@@ -1,24 +1,18 @@
 # DSGVO - Offene manuelle Tasks
 
-> Diese drei Tasks sind die letzten Schritte aus dem DSGVO-Audit ([DSGVO-AUDIT.md](DSGVO-AUDIT.md)). Code ist live-fähig, **diese Schritte müssen aber in den Anbieter-Dashboards erledigt werden**, damit die Datenschutzerklärung mit der Realität übereinstimmt.
+> Stand 2026-05-27: **Brevo und Mistral erledigt, Supabase-Region bestätigt (Frankfurt).** Verbleibend: 2 PDF-Downloads (Vercel + Supabase DPA) plus optional Screenshots für die Akte. Compliance-Ordner liegt unter [web/docs/compliance/](web/docs/compliance/) mit README, die das Naming-Schema dokumentiert.
 >
-> **Aufwand gesamt: ~30 Minuten.** Erst danach ist Compliance-Score auf 95+.
+> **Aufwand verbleibend: ~10 Minuten.** Erst danach ist Compliance-Score auf 95+.
 
 ---
 
-## ☐ Task 1: Brevo - Open- und Click-Tracking deaktivieren
+## ☑ Task 1: Brevo - Open- und Click-Tracking deaktivieren — ERLEDIGT 2026-05-27
 
-**Warum:** Sonst bettet Brevo Tracking-Pixel in jede ausgehende Mail. Das macht die Datenschutzerklärung falsch (sagt: "kein Tracking") und löst eine Cookie-Banner-Diskussion aus.
+**Status:** Tracking ist im Brevo-Workspace abgeschaltet (Open + Click).
 
-**Schritte:**
-1. Login: https://app.brevo.com
-2. Navigation: **Senders, Domains & Dedicated IPs** -> Tab **Tracking** (oder: Account-Icon oben rechts -> Settings -> Email -> Tracking)
-3. **Open Tracking** auf OFF
-4. **Click Tracking** auf OFF
-5. Speichern
-6. Test: Eine Test-Mail an dich selbst schicken, im Mail-Source nach `<img` mit `brevo.com`-URL suchen - sollte weg sein.
+**Resthinweis:** Screenshot der Tracking-Settings noch ablegen unter `web/docs/compliance/brevo-tracking-off-2026-05.png` (für die Akte, nicht blockierend).
 
-**Beweis sichern:** Screenshot vom Tracking-Settings-Dialog -> ablegen unter `web/docs/compliance/brevo-tracking-off.png` (Ordner notfalls anlegen).
+**Quartals-Re-Check:** Setting kann durch Brevo-UI-Update oder versehentliches Klicken wieder anspringen. In Quartals-Routine aufnehmen (siehe [DSGVO-INCIDENT-RESPONSE.md](DSGVO-INCIDENT-RESPONSE.md) Abschnitt 7).
 
 ---
 
@@ -43,23 +37,20 @@
 4. Falls digitaler Sign-Button: ausführen. Falls schon akzeptiert: PDF runterladen.
 5. Optional: über https://vercel.com/contact/sales eine Counter-Signed-Version anfordern (für Vercel-Pro-Kunden Standard).
 
-**Beweis sichern:** PDF runterladen -> `web/docs/compliance/vercel-dpa-2026-04.pdf`.
+**Beweis sichern:** PDF runterladen -> `web/docs/compliance/vercel-dpa-2026-05.pdf`. Compliance-Ordner liegt bereit, README dokumentiert das Naming-Schema.
 
 ---
 
-## ☐ Task 4: Supabase - DPA herunterladen + EU-Region (Frankfurt) verifizieren
+## ◐ Task 4: Supabase - DPA herunterladen + EU-Region (Frankfurt) verifizieren — TEILWEISE 2026-05-27
 
-**Warum:** Mit der `reviews`-Tabelle verarbeiten wir personenbezogene Daten (E-Mail, optional Name, Kommentar) in einer Datenbank. DSGVO Art. 28 verlangt einen Auftragsverarbeitungsvertrag (DPA) mit Supabase. Die Datenschutzerklärung Abschnitt 16 verweist auf den DPA und behauptet Server-Region Frankfurt - beides muss beweissicher belegt sein.
+**Status:** Region bestätigt = `eu-central-1` (Frankfurt). Verbleibend: DPA-PDF + Region-Screenshot ablegen.
 
-**Schritte:**
-1. Login: https://supabase.com/dashboard
-2. Projekt `brief-nach-berlin` (Ref `fkejmnqkmmmjmesgpiop`) öffnen
-3. **Settings** -> **General**: Region prüfen - muss `Frankfurt (eu-central-1)` sein. Screenshot machen.
-4. **Settings** -> **Compliance** (oder Account-Settings -> Legal): DPA-PDF herunterladen unter https://supabase.com/legal/dpa
-5. PDF ablegen unter `web/docs/compliance/supabase-dpa-2026-XX.pdf` (mit aktuellem Monat)
-6. Verarbeitungsverzeichnis ([DSGVO-VERARBEITUNGSVERZEICHNIS.md](DSGVO-VERARBEITUNGSVERZEICHNIS.md)) prüfen: Eintrag „VT-5 Nutzer-Bewertungen" muss vorhanden sein.
+**Schritte (verbleibend):**
+1. Region-Screenshot: Supabase Dashboard → Projekt `brief-nach-berlin` → Settings → General → Region-Sektion abfotografieren → ablegen als `web/docs/compliance/supabase-region-frankfurt.png`
+2. DPA-PDF: https://supabase.com/legal/dpa öffnen → Browser → drucken → „Als PDF speichern" → ablegen als `web/docs/compliance/supabase-dpa-2026-05.pdf`
+3. Verarbeitungsverzeichnis ([DSGVO-VERARBEITUNGSVERZEICHNIS.md](DSGVO-VERARBEITUNGSVERZEICHNIS.md)) prüfen: Eintrag „VT-5 Nutzer-Bewertungen" muss vorhanden sein.
 
-**Beweis sichern:** Region-Screenshot + signiertes/heruntergeladenes DPA-PDF.
+**Beweis sichern:** Region-Screenshot + DPA-PDF im Compliance-Ordner.
 
 **Bonus-Check:** RLS-Verifikation in Supabase Studio SQL-Editor:
 ```sql

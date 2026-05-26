@@ -10,7 +10,7 @@ export default function Roadmap() {
           Wo es hingeht
         </p>
         <h2 className="font-body text-3xl md:text-4xl font-bold text-waldgruen-dark tracking-tight mb-4 md:max-w-none max-w-xl">
-          Brief nach Berlin wird mit euch immer besser
+          Brief-nach-Berlin wird mit euch immer besser
         </h2>
         <p className="font-body text-base md:text-lg text-warmgrau/80 leading-relaxed mb-14 max-w-2xl">
           Ich baue gerade und lerne mit jedem Brief. Hier ist, worauf ich mich als nächstes konzentriere:

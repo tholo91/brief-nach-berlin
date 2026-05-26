@@ -4,6 +4,17 @@
 >
 > **Aufwand verbleibend: ~10 Minuten.** Erst danach ist Compliance-Score auf 95+.
 
+## Quick-Checkliste: was noch zu klicken ist
+
+In einer ~10-Minuten-Session am Stück abarbeiten. Details + Begründungen stehen in den jeweiligen Task-Sektionen unten.
+
+- [ ] **Vercel DPA herunterladen** — Dashboard → Avatar → Account Settings → Legal → DPA als PDF → ablegen als `web/docs/compliance/vercel-dpa-2026-05.pdf` *(Task 3)*
+- [ ] **Supabase DPA herunterladen** — direkt von https://supabase.com/downloads/docs/Supabase+DPA+260317.pdf → ablegen als `web/docs/compliance/supabase-dpa-2026-03.pdf` *(Task 4)*
+- [ ] **Supabase Region-Screenshot** — Dashboard → Projekt `brief-nach-berlin` → Settings → General → Region-Sektion abfotografieren → ablegen als `web/docs/compliance/supabase-region-frankfurt.png` *(Task 4)*
+- [ ] **(optional) Brevo Tracking-Screenshot** — Settings → Tracking abfotografieren → ablegen als `web/docs/compliance/brevo-tracking-off-2026-05.png` *(Task 1, bereits abgeschaltet)*
+
+Wenn alle vier durch sind: diese Datei umbenennen in `DSGVO-TODO-DONE-2026-MM-DD.md`.
+
 ---
 
 ## ☑ Task 1: Brevo - Open- und Click-Tracking deaktivieren — ERLEDIGT 2026-05-27

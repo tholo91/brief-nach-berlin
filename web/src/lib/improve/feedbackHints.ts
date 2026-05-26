@@ -8,9 +8,9 @@
 
 export const FEEDBACK_HINT_BY_TAG: Record<string, string> = {
   zu_lang:
-    "Kürze den Brief deutlich, sodass er auf eine handschriftliche DIN-A4-Seite passt (ca. 200 bis 280 Wörter).",
+    "Mach den Brief etwas kürzer und straffer, vor allem an Stellen, die sich wiederholen oder ausschweifen.",
   zu_kurz:
-    "Mach den Brief etwas ausführlicher, mit ein, zwei konkreten Begründungen mehr.",
+    "Mach den Brief etwas ausführlicher, ein bis zwei konkrete Begründungen mehr.",
   falscher_ton:
     "Pass den Ton an: respektvoll, aber bestimmt. Kein Behördendeutsch, keine Phrasen.",
   zu_generisch:

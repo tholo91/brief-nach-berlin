@@ -124,11 +124,20 @@ export default async function BriefVerbessernPage({
         <h1 className="font-body text-3xl md:text-4xl font-bold text-waldgruen-dark tracking-tight mb-6">
           Aus dem Entwurf deinen Brief machen
         </h1>
-        <p className="font-handwriting text-xl md:text-2xl text-warmgrau leading-relaxed mb-12 text-pretty">
+        <p className="font-handwriting text-xl md:text-2xl text-warmgrau leading-relaxed mb-8 text-pretty">
           Der Entwurf aus der Mail ist ein Schnellstart. Mit ein paar Minuten und
           einem guten Prompt wird er zu einem Brief, der sich wirklich nach dir
           anhört.
         </p>
+
+        {hasFeedback ? (
+          <div className="mb-12 rounded-lg border-2 border-waldgruen/40 bg-waldgruen/10 px-5 py-4">
+            <p className="font-body text-base text-waldgruen-dark leading-relaxed">
+              <span className="font-bold">Dein Feedback ist im Prompt drin.</span>{" "}
+              Schau unten gerne nochmal drüber und ergänze, was fehlt.
+            </p>
+          </div>
+        ) : null}
 
         <Prose>
           <h2 className="font-body text-2xl font-bold text-waldgruen-dark pt-4">
@@ -149,15 +158,6 @@ export default async function BriefVerbessernPage({
             ganz ans Ende. Dann abschicken.
           </p>
         </Prose>
-
-        {hasFeedback ? (
-          <div className="mt-6 rounded-lg border border-waldgruen/25 bg-waldgruen/5 px-4 py-3">
-            <p className="font-body text-sm text-waldgruen-dark leading-relaxed">
-              <span className="font-semibold">Dein Feedback ist im Prompt drin.</span>{" "}
-              Schau gerne nochmal drüber und ergänze, was fehlt.
-            </p>
-          </div>
-        ) : null}
 
         {/* Prompt block directly after the first paragraph */}
         <div className="mt-6 mb-12">

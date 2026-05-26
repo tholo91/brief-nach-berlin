@@ -213,7 +213,7 @@ function absenderBlock(input: GenerateLetterInput): string {
   return `\n\n<absender_optional>\n${lines.join("\n")}\n</absender_optional>`;
 }
 
-function buildUserPrompt(
+export function buildUserPrompt(
   input: GenerateLetterInput,
   minWords: number,
   maxWords: number,

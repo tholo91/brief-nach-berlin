@@ -82,15 +82,31 @@ export async function fetchMdbContext(
   cachedCommittees: string[] | undefined,
   timeoutMs: number = DEFAULT_TIMEOUT_MS
 ): Promise<MdbContext> {
+  const politicianId = mandateId;
+  const committees = cachedCommittees ?? [];
   const fallback: MdbContext = {
-    committees: cachedCommittees ?? [],
+    committees,
     recentRelevant: [],
   };
 
-  if (!mandateId || !issueText) return fallback;
+  if (!committees || committees.length === 0) {
+    console.warn("[fetchMdbContext] no_committees_in_cache", { politicianId });
+  }
+
+  if (!mandateId || !issueText) {
+    console.warn("[fetchMdbContext] returning_empty_ctx", {
+      politicianId,
+      reason: !mandateId ? "missing_mandate_id" : "missing_issue_text",
+    });
+    return fallback;
+  }
 
   const ctrl = new AbortController();
   const timeout = setTimeout(() => ctrl.abort(), timeoutMs);
+
+  let totalVotesFetched = 0;
+  let recentRelevantCount = 0;
+  let earlyReturn = false;
 
   try {
     const url = `${API_BASE}/poll-results?mandate=${mandateId}&range_start=0&range_end=${RECENT_VOTES_LIMIT - 1}`;
@@ -98,7 +114,11 @@ export async function fetchMdbContext(
       signal: ctrl.signal,
       next: { revalidate: REVALIDATE_SECONDS },
     });
-    if (!res.ok) return fallback;
+    if (!res.ok) {
+      console.warn("[fetchMdbContext] api_error", { status: res.status, politicianId });
+      earlyReturn = true;
+      return fallback;
+    }
     const json = (await res.json()) as { data?: PollResultRow[] };
 
     const items = (json.data ?? [])
@@ -111,16 +131,36 @@ export async function fetchMdbContext(
       })
       .filter((i) => i.title.length > 0);
 
+    totalVotesFetched = items.length;
+
     const issueTokens = tokenize(issueText);
     const ranked = scoreOverlap(items, issueTokens).slice(0, TOP_RELEVANT);
 
+    if (ranked.length === 0) {
+      console.warn("[fetchMdbContext] no_relevant_votes", { politicianId, totalVotesFetched });
+    }
+
+    recentRelevantCount = ranked.length;
+
     return {
-      committees: cachedCommittees ?? [],
+      committees,
       recentRelevant: ranked.map(({ score: _score, ...rest }) => rest),
     };
-  } catch {
+  } catch (err) {
+    if (err instanceof Error && err.name === "AbortError") {
+      console.warn("[fetchMdbContext] timeout", { politicianId, timeoutMs });
+    } else {
+      console.warn("[fetchMdbContext] fetch_error", {
+        politicianId,
+        message: err instanceof Error ? err.message : "unknown",
+      });
+    }
+    earlyReturn = true;
     return fallback;
   } finally {
     clearTimeout(timeout);
+    if (!earlyReturn && committees.length === 0 && recentRelevantCount === 0) {
+      console.warn("[fetchMdbContext] returning_empty_ctx", { politicianId });
+    }
   }
 }

@@ -110,6 +110,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 0.9,
     },
     {
+      url: `${BASE_URL}/wer-darf-mdb-schreiben`,
+      lastModified,
+      changeFrequency: "monthly",
+      priority: 0.8,
+    },
+    {
       url: `${BASE_URL}/was-noch-kommt`,
       lastModified,
       changeFrequency: "monthly",

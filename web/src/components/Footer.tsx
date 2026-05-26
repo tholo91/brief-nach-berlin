@@ -49,6 +49,12 @@ export default async function Footer() {
               Warum ein Brief mehr ist als ein Brief
             </Link>
             <Link
+              href="/wer-darf-mdb-schreiben"
+              className="font-body text-sm text-warmgrau/70 hover:text-waldgruen-dark transition-colors duration-200"
+            >
+              Wer darf MdBs schreiben?
+            </Link>
+            <Link
               href="/warum"
               className="font-body text-sm text-warmgrau/70 hover:text-waldgruen-dark transition-colors duration-200"
             >

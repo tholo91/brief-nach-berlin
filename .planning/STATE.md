@@ -90,6 +90,7 @@ Recent decisions affecting current work:
 | 260523-n2a | /stimmen dynamic letter count + consolidate Mithelfen and Sign-off (hide email) | 2026-05-23 | d20ca74 | [260523-n2a-stimmen-dynamic-letter-count-consolidate](./quick/260523-n2a-stimmen-dynamic-letter-count-consolidate/) |
 | 260523-pph | /stimmen sign-off copy + /brief-verbessern mobile copy button + bold prompt anchors | 2026-05-23 | ff75d77 | [260523-pph-stimmen-sign-off-copy-brief-verbessern-m](./quick/260523-pph-stimmen-sign-off-copy-brief-verbessern-m/) |
 | 260526-u4r | /stimmen: swipeable reviews on touch + hide reviews below 3 stars | 2026-05-26 | 35a98a3 | [260526-u4r-stimmen-swipe-and-filter](./quick/260526-u4r-stimmen-swipe-and-filter/) |
+| 260527-fast | Hero sub-headlines 5→4 + Art. 17 GG variant (inspired by liebemdb competitor analysis) | 2026-05-27 | b29e24c | (gsd-fast, no PLAN.md) |
 
 ## Session Continuity
 

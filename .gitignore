@@ -10,3 +10,7 @@ prompts/**/assets/videos/*
 
 # Supabase CLI cache
 supabase/.temp/
+
+# Personal mail drafts to reviewers — contain PII, stay local
+.planning/feedback/drafts/*.md
+.planning/feedback/TODOS-*.md

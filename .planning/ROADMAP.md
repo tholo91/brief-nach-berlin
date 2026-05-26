@@ -347,6 +347,169 @@ Plans:
 Plans:
 - [ ] TBD (promote with /gsd-review-backlog when ready)
 
+### Phase 999.24: Level-Routing-UI-Hinweis — Übergangsstütze bis 999.6 (BACKLOG)
+
+**Goal:** Tina (Review c6ae8c89, 5★, PLZ 12163, Berlin-Steglitz-Zehlendorf): `politicalLevel: "Kommune"` aber `representativeLevel: "Bund"` (Ruppert Stüwe, SPD). Der Mistral-Klassifier hat das Anliegen als Kommune-Sache erkannt, das System hat trotzdem den Bundestags-MdB zugewiesen. Bis 999.6 live ist, sollten User wenigstens darauf hingewiesen werden.
+
+**Cluster:** Adressaten-Routing (Cluster 5).
+
+**Priorität:** P3 — Übergangslösung. Voll gelöst durch 999.6 (Landtag + Kommune).
+
+**Fix-Skizze:** Auf der Politiker-Auswahl-Seite: wenn `politicalLevel === "Kommune"` oder `politicalLevel === "Land"` und Phase 999.6 noch nicht aktiv → kleiner Hinweis-Banner: "Dein Anliegen klingt nach Kommune/Landtag. Bund-Briefe sind möglich, aber die Wirkung ist kleiner. Landtag- und Stadtverwaltungs-Briefe kommen demnächst."
+
+**Aufwand:** 0,2 Tag.
+
+**Quellen:** Tina (Review c6ae8c89).
+
+**Requirements:** TBD
+**Plans:** 0 plans
+
+Plans:
+- [ ] TBD (promote with /gsd-review-backlog when ready)
+
+### Phase 999.23: Multi-Recipient — auch an Bundespräsident / Regierungspartei schicken (BACKLOG)
+
+**Goal:** Christina aus Kassel (Review f371f6e0, 5★): "gleiches Schreiben geht es den Bundespräsidenten". Doro Berlin (Review 6a7c022b, 5★ trotzdem, aber nicht abgeschickt): "möchte mein Anliegen nicht an meine Grüne MdB, sondern an CDU und SPD, die in Regierung sind". User wünschen sich explizit Mehrfach-Versand jenseits des Wahlkreis-MdB.
+
+**Cluster:** Adressaten-Wunsch (Cluster 5).
+
+**Priorität:** P2 — Doros Verhalten ist eine stille Abbruchsursache (sent=false trotz 5★).
+
+**Fix-Skizze:** Auf der Success-Page Chip-Reihe "Auch an … schicken": (1) Bundespräsident (statische Adresse), (2) Regierungspartei-MdB im selben Wahlkreis, (3) Fachausschuss-Vorsitz zum Thema. Pro Auswahl wird ein zweiter Brief generiert mit angepasster Anrede + 1-Satz-Begründung ("Ich schreibe Ihnen, weil Ihre Partei in der Regierungsverantwortung steht").
+
+**Aufwand:** 1-2 Tage.
+
+**Quellen:** Christina Kassel (Review f371f6e0), Doro Berlin (Review 6a7c022b — `letter_sent: false`).
+
+**Requirements:** TBD
+**Plans:** 0 plans
+
+Plans:
+- [ ] TBD (promote with /gsd-review-backlog when ready)
+
+### Phase 999.22: Kurz-Option — "0,5 Seiten / ~120 Wörter" (BACKLOG)
+
+**Goal:** Johannes (Review dac265b5): "Für einzelne Anliegen finde ich 1-3 Seiten zu lang. Hier wäre es besser präzise zu sein anstatt viel Text zu generieren." Heute gibt es nur 1 / 1,5 / 2 Seiten.
+
+**Cluster:** Brief-Länge (Cluster 6).
+
+**Priorität:** P2 — Quick Win, addressiert ein konkretes Bedürfnis.
+
+**Fix-Skizze:** Vierte Option "Kurz und präzise" in `LETTER_LENGTHS` (web/src/lib/config.ts) mit min=110 / max=140. Plus Prompt-Hint: "Bei kurzer Länge: keine Vita-Bausteine, keine Pflicht-Anrede-Höflichkeitsfloskel, direkt zum Anliegen."
+
+**Aufwand:** 0,3 Tag.
+
+**Quellen:** Johannes (joimurlaub, Review dac265b5).
+
+**Requirements:** TBD
+**Plans:** 0 plans
+
+Plans:
+- [ ] TBD (promote with /gsd-review-backlog when ready)
+
+### Phase 999.21: "Brief nachschärfen" als Feature — In-App-Iteration statt Doku-Seite (BACKLOG)
+
+**Goal:** Alex Berlin (Review 376dc8e4, 4★): "Review Funktion für eine Feedback Schleife direkt in der App wäre super". Johannes (Review dac265b5): "Vielleicht könnte man in der Email eine Option anbieten Prompt anpassen, die dann Vorschläge macht". Implizit: Dora, l.landmann, Florian — alle wollen iterieren ohne Tool-Wechsel.
+
+**Cluster:** In-App-Iteration (Cluster 4).
+
+**Priorität:** P2 — Größter Convert-Hebel (3★→5★-Konversion).
+
+**Fix-Skizze:** In der Letter-Mail ein zusätzlicher Button "Brief nachschärfen" → öffnet [/brief-verbessern](https://brief-nach-berlin.de/brief-verbessern) mit vorausgefülltem Brief + Token. Tokenisiert, sodass der Brief client-side rein lädt (DSGVO-konform, kein DB-Storage). Die `/brief-verbessern`-Seite kriegt eine zweite Variante mit Live-Re-Generation (statt nur Prompt-Copy für externe Tools) — User gibt 1-2 Sätze Hinweis ("schärfer", "persönlicher", "Erwähne dass ich selbst betroffen bin"), Server triggert 2. Generation-Call.
+
+**Aufwand:** 1-2 Tage.
+
+**Quellen:** Alex Berlin (Review 376dc8e4), Johannes (Review dac265b5), implizit 4 weitere (Dora, l.landmann, Florian, Anna Wartewig).
+
+**Requirements:** TBD
+**Plans:** 0 plans
+
+Plans:
+- [ ] TBD (promote with /gsd-review-backlog when ready)
+
+### Phase 999.20: Wortzahl-Korridor — Off-by-One bei knappem Unterschreiten (BACKLOG)
+
+**Goal:** `wordCountInRange: false` in 8 von 21 LIVE-Reviews (38%) trotz Retry-Logik. Beispiele: Review d-office (4★, 173 Wörter, < Min 200, kein Retry weil unter `min × 0.85 = 170`), Barbara (5★, 251 Wörter > Max 240). User sehen Briefe außerhalb der gewählten Länge, ohne dass das thematisiert wird.
+
+**Cluster:** Länge / Korridor (Cluster 6).
+
+**Priorität:** P1 — Quick Win, Vertrauen.
+
+**Fix-Skizze:** (a) Retry-Trigger-Off-by-One in [web/src/lib/generation/generateLetter.ts](web/src/lib/generation/generateLetter.ts) Z. 318+: bei `wordCount < min` immer retry, nicht erst unter `min × 0.85`. (b) UI-Hinweis bei finaler Out-of-Range: kleine Banner-Notiz auf Success-Page: "Hinweis: Dein Brief ist 173 Wörter (du hattest 1 Seite gewählt, ~200-240). Du kannst ihn ergänzen oder so schicken."
+
+**Aufwand:** 0,3 Tag.
+
+**Quellen:** d-office, Barbara Spelger, Anne aus Uelzen, Florian Ennepetal — alle Reviews mit `wordCountInRange: false`.
+
+**Requirements:** TBD
+**Plans:** 0 plans
+
+Plans:
+- [ ] TBD (promote with /gsd-review-backlog when ready)
+
+### Phase 999.19: Position-Probe — Pre-Check "Bist du FÜR oder GEGEN X?" + Echo auf Success-Page (BACKLOG)
+
+**Goal:** Katja (Review d9c8fb60, 2★, E-Auto-Besitzerin gegen Heizungsgesetz → KI hat pro-Klima-Brief geschrieben). Florian (Review b2ec9816, 3★): "Im Brief wurde eine Änderung gefordert, statt die geplante Änderung zu kritisieren". 2 von 19 Body-Reviews zeigen aktive Position-Umkehrung. Schmerzpunkt rettet 1★/2★-Reviews.
+
+**Cluster:** Position-Inversion (Cluster 3).
+
+**Priorität:** P1 — Direkter Hebel gegen die schmerzhaftesten Negativ-Reviews.
+
+**Fix-Skizze:** Vor der Brief-Generation ein 1-Satz-Mistral-Small-Call (temp=0.1) "Bist du FÜR oder GEGEN X, und warum?". Output als `<position>`-Anker in den Hauptprompt. Auf der Success-Page über dem Brief 1 Zeile: "Wir haben verstanden: Du bist GEGEN X weil Y. Falls das nicht stimmt — Brief nachschärfen." Kostenseite: ~0,1ct pro Brief zusätzlich.
+
+**Aufwand:** 1 Tag.
+
+**Quellen:** Katja (Review d9c8fb60), Florian Ennepetal (Review b2ec9816), Linus Karlsruhe (Review 3bbbeb0a, 1★, `anliegen_verfehlt`).
+
+**Requirements:** TBD
+**Plans:** 0 plans
+
+Plans:
+- [ ] TBD (promote with /gsd-review-backlog when ready)
+
+### Phase 999.18: Argumentations-Verkettungs-Direktive im System-Prompt (BACKLOG)
+
+**Goal:** Anna Wartewig (Review c33edabf, 2★): "hat eher meine Stichpunkte in Sätze verpackt als sie in einen Zusammenhang zu setzen oder gute Argumentationen aufzubauen". Bestätigt durch Florian ("Wiederholungen"), Katja ("nicht logisch aufgebaut"), Andreas ("wiederholt sich"). Das ist nicht "klingt nach KI" — das ist "fehlende Argumentationskette".
+
+**Cluster:** Authentizität / Argumentations-Aufbau (Cluster 1).
+
+**Priorität:** P1 — Schnellster Cluster-1-Win.
+
+**Fix-Skizze:** Zusätzliche System-Prompt-Direktive in [web/src/lib/generation/generateLetter.ts](web/src/lib/generation/generateLetter.ts) Z. 74+: "Verknüpfe die 1-3 stärksten Stichpunkte zu einer Argumentationskette mit Ursache → Folge → Forderung. Niemals eine Aufzählung ('Erstens, zweitens') und keine Floskel-Brücken ('Nicht nur, sondern auch')." Plus pro Absatz ein logischer Marker (Anlass / Begründung / Forderung).
+
+**Aufwand:** 0,5 Tag (Prompt-Iteration + manueller Test mit 5 echten Inputs).
+
+**Quellen:** Anna Wartewig (Review c33edabf), Florian Ennepetal (Review b2ec9816), Katja (Review d9c8fb60), Dora aus Karlsruhe (Review 518afb81).
+
+**Requirements:** TBD
+**Plans:** 0 plans
+
+Plans:
+- [ ] TBD (promote with /gsd-review-backlog when ready)
+
+### Phase 999.17: MdB-Kontext-Anreicherung fixen — silent failure in Production (BACKLOG)
+
+**Goal:** `mdbContextUsed: false` in 21 von 21 LIVE-Reviews. Die Anreicherung über abgeordnetenwatch (Ausschüsse + jüngste Positionen) läuft systemisch nie scharf. Konsequenz: Die KI hat keinen Anker, was sie über die/den Abgeordnete:n sagen darf, und erfindet (Sven Ruttor: "Ausschuss erfunden", Jonathan Berlin: "Aussagen über mich, die nicht zutreffend sind").
+
+**Cluster:** Halluzination / Faktentreue (Cluster 2 aus Feedback-Analyse 2026-05-27).
+
+**Priorität:** P0 — blockiert Phase 999.6 PLAN-06, weil Level-aware Prompts den Bug auf 3 Ebenen (Bund/Land/Kommune) vervielfältigen würden.
+
+**Fix-Skizze:**
+- `fetchMdbContext` in [web/src/lib/enrichment/](web/src/lib/enrichment/) instrumentieren: explizit loggen, warum die Anreicherung scheitert (Timeout? leerer cachedCommittees? Build-Daten fehlen? abgeordnetenwatch-API down?).
+- Daten gezielt beheben (z.B. fetch-politician-data.ts ergänzen, Cache neu aufbauen).
+- Defensiver Prompt-Block: wenn `<mdb_kontext>` leer/abwesend → expliziter Anti-Halluzinations-Satz "Es liegen KEINE verifizierten Informationen über Ausschüsse oder Positionen dieser/dieses Abgeordneten vor. Erwähne KEINE konkreten Ausschüsse, Reden oder Abstimmungen."
+
+**Aufwand:** 0,5 Tag Audit + 0,5 Tag Fix.
+
+**Quellen:** Sven Ruttor (Review 038e6014, 3★), Jonathan Berlin (Review 4b57e8ed, 2★), plus systemisch jeder generierte Brief seit Launch.
+
+**Requirements:** TBD
+**Plans:** 0 plans
+
+Plans:
+- [ ] TBD (promote with /gsd-review-backlog when ready)
+
 ## Progress
 
 **Execution Order:**

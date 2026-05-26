@@ -7,6 +7,7 @@ import { generateLetter } from "@/lib/generation/generateLetter";
 import { fetchMdbContext } from "@/lib/enrichment/fetchMdbContext";
 import { sendLetterEmail } from "@/lib/email/sendLetterEmail";
 import { sendFollowupEmail } from "@/lib/email/sendFollowupEmail";
+import { computeFollowupSlot } from "@/lib/email/computeFollowupSlot";
 import { buildDebugPayload } from "@/lib/email/buildDebugPayload";
 import { signFeedbackToken } from "@/lib/feedback/token";
 import { checkRateLimit, LIMITS } from "@/lib/rateLimit";
@@ -135,15 +136,12 @@ export async function POST(req: NextRequest) {
         }),
       ];
 
-      // Brevos historische Obergrenze für scheduledAt ist 72h
-      // (developers.brevo.com/reference/sendtransacemail). Sweet Spot: Brief
-      // dürfte angekommen + eingeworfen sein, aber noch frisch im Kopf.
+      // Ziel: 9:45 Berlin-Zeit an Tag+3 (Frühstücks-Inbox statt nachts).
+      // Brevos historische Obergrenze für scheduledAt ist 72h — bei
+      // Submission vor 9:45 Berlin fällt der Slot automatisch auf Tag+2@9:45.
       // BREVO_FOLLOWUP_ENABLED erlaubt Notabschaltung ohne Deploy.
       if (process.env.BREVO_FOLLOWUP_ENABLED === "true") {
-        const FOLLOWUP_DELAY_HOURS = 72;
-        const scheduledAt = new Date(
-          Date.now() + FOLLOWUP_DELAY_HOURS * 60 * 60 * 1000,
-        );
+        const scheduledAt = computeFollowupSlot();
         sends.push(
           sendFollowupEmail({
             recipientEmail: data.email,

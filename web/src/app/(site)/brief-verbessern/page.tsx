@@ -133,8 +133,7 @@ export default async function BriefVerbessernPage({
         {hasFeedback ? (
           <div className="mb-12 rounded-lg border-2 border-waldgruen/40 bg-waldgruen/10 px-5 py-4">
             <p className="font-body text-base text-waldgruen-dark leading-relaxed">
-              <span className="font-bold">Dein Feedback ist im Prompt drin.</span>{" "}
-              Schau unten gerne nochmal drüber und ergänze, was fehlt.
+              Das Feedback aus deiner Bewertung ist im neuen Prompt enthalten:
             </p>
           </div>
         ) : null}
@@ -169,63 +168,34 @@ export default async function BriefVerbessernPage({
 
         <Prose>
           <h2 className="font-body text-2xl font-bold text-waldgruen-dark pt-4">
-            Was gehört in deine Anmerkungen?
+            Welche Anmerkungen helfen?
           </h2>
           <p>
-            Nur das, was dich wirklich stört oder was fehlt. Ein paar Beispiele:
-          </p>
-          <ul className="list-disc list-inside space-y-1 text-warmgrau">
-            <li>
-              &ldquo;Der Tonfall ist zu förmlich, ich würde das direkter sagen.&rdquo;
-            </li>
-            <li>
-              &ldquo;Im zweiten Absatz wird eine Aussage getroffen, die nicht stimmt.&rdquo;
-            </li>
-            <li>
-              &ldquo;Ich möchte auch erwähnen, dass ich selbst betroffen bin, weil...&rdquo;
-            </li>
-            <li>
-              &ldquo;Der Brief klingt zu allgemein, ich will ein konkretes Beispiel einbauen.&rdquo;
-            </li>
-          </ul>
-          <p>
-            Du musst nicht alles aufzählen. Was du nicht erwähnst, bleibt so wie
-            es ist.
+            Was dich stört oder fehlt: Tonfall, eine falsche Aussage, ein
+            fehlender persönlicher Bezug, ein konkretes Beispiel. Was du nicht
+            erwähnst, bleibt wie es ist.
           </p>
 
           <h2 className="font-body text-2xl font-bold text-waldgruen-dark pt-4">
             Warum Mistral?
           </h2>
           <p>
-            Mistral ist ein europäischer Anbieter mit Sitz in Paris, kostenlos
-            nutzbar und im direkten Vergleich besonders stark beim Umformulieren
-            von Fließtext auf Deutsch. Wer schon ChatGPT oder Gemini nutzt, kann
-            natürlich auch die nehmen.
+            Europäischer Anbieter, kostenlos, im direkten Vergleich besonders
+            stark beim deutschen Umformulieren. ChatGPT oder Gemini gehen
+            natürlich auch.
           </p>
 
           <h2 className="font-body text-2xl font-bold text-waldgruen-dark pt-4">
             Und dann?
           </h2>
           <p>
-            Wenn du mit dem überarbeiteten Brief zufrieden bist: abschreiben,
-            frankieren, absenden. Handgeschriebene Briefe werden im Bundestag
-            tatsächlich gelesen und registriert. Das ist der Punkt.
-          </p>
-          <p>
-            Was einen guten Brief ausmacht, welche Länge funktioniert und wie du
-            ihn adressierst, steht in unseren{" "}
-            <Link
-              href="/tipps"
-              className="text-waldgruen hover:underline"
-            >
+            Abschreiben, frankieren, absenden. Handgeschriebene Briefe werden
+            im Bundestag wirklich gelesen. Tipps zu Länge, Adresse und Tonfall
+            in den{" "}
+            <Link href="/tipps" className="text-waldgruen hover:underline">
               Tipps für den perfekten Brief
             </Link>
             .
-          </p>
-          <p>
-            Wenn du den Entwurf grundsätzlich nicht mochtest, schreib uns gerne
-            Feedback. In der Mail ist eine Sterne-Bewertung, über die das bei
-            uns direkt ankommt.
           </p>
         </Prose>
 

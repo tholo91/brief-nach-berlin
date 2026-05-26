@@ -530,6 +530,20 @@ Plans:
 Plans:
 - [ ] TBD (promote with /gsd-review-backlog when ready)
 
+### Phase 999.26: Re-Target Flow — Brief auf andere politische Ebene umschreiben (BACKLOG)
+
+**Goal:** User hat Brief generiert (z.B. an Kommune/Landtag/MdB) und will denselben Inhalt für eine andere politische Ebene umformulieren lassen — neuer Adressat, angepasster Hebel und Tonalität, gleicher Kern. Subpage oder Inline-Komponente nimmt bestehenden Brief + Thema + PLZ-Kontext und schreibt via angepasstem System-Prompt für den neuen Empfänger um.
+
+**Validierung zuerst:** Vor dem Bau Klick-Test auf der "Brief fertig"-Seite einbauen — ein Button "Auch an deinen MdB / an deine Kommune schicken?". 1-2 Wochen Daten sammeln. Bei >20% Klickrate lohnt die Implementierung; bei <5% nicht bauen.
+
+**Aufwand (falls validiert):** klein, ~halber Tag. Bestehender State liegt schon vor, neue Server Action `re-target` mit Ebenen-spezifischem System-Prompt (Bundestag/Landtag/Kommune), Inline-Komponente auf der Result-Page.
+
+**Requirements:** TBD
+**Plans:** 0 plans
+
+Plans:
+- [ ] TBD (promote with /gsd-review-backlog when ready)
+
 ## Progress
 
 **Execution Order:**

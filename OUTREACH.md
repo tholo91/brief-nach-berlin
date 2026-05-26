@@ -50,11 +50,22 @@ Erwähnt von Dr. Ulf Buermeyer, LL.M. und Philip Banse in Folge 478.
 | taz Bremen | redaktion@taz-bremen.de | Pieperstr. 7, 28195 Bremen |
 | buten un binnen | [Themenformular](https://www.butenunbinnen.de/kontakt/kontakt-themen-104.html) | Nur via Formular |
 
+### Radio Bremen
+
+Radio Bremen veröffentlicht keine direkten Redaktions-Mails. Offizieller Weg: Kontaktformular auf der jeweiligen Sender-Seite. Text vorbereiten, einfügen, abschicken. Telefon ist Alternative.
+
+| Sender | Kontakt | Anmerkung |
+|---|---|---|
+| Bremen Eins | [Kontaktformular](https://www.bremeneins.de/kontakt/index.html) · Tel. 0421 246-1437 | Regional, breite Hörerschaft, klassische Bremer-Macher-Story |
+| Bremen Zwei | [Kontaktformular](https://www.bremenzwei.de/kontakt/index.html) · Tel. 0421 246-42222 | Kultur/Hintergrund, Demokratie und Zivilgesellschaft als Themen |
+| Bremen Next | [Kontaktformular](https://www.bremennext.de/kontakt/index.html) · next.events@radiobremen.de (nur Events) | Junges Programm, digital-affin, "in 2 Wochen mit Claude Code gebaut" passt |
+
 ### Podcast
 
 | | Kontakt | Anmerkung |
 |---|---|---|
 | Tilo Jung (Jung & Naiv) | tilo@jungundnaiv.de | Du-Form, kein Pressetext-Ton |
+| Übermedien: "Nice & Nötig" (Annika Schneider) | kontakt@uebermedien.de · [Kontaktformular](https://uebermedien.de/impressum/) | Konstruktiver Journalismus-Podcast, Motto "Lösungen statt Miesepeterei". Themenfit hoch. Gesendet 26.05.2026. |
 
 ### TV & Show-Formate
 
@@ -123,6 +134,83 @@ Erwähnt von Dr. Ulf Buermeyer, LL.M. und Philip Banse in Folge 478.
 > Thomas
 > 01577-8811161
 > [www.brief-nach-berlin.de](https://www.brief-nach-berlin.de)
+
+---
+
+### Bremen Eins (Kontaktformular, Sie-Form, regional)
+
+> **Betreff:** Bremer Hobbyprojekt in Lage der Nation erwähnt: Brief nach Berlin
+>
+> Moin zusammen,
+>
+> ich bin Thomas Lorenz aus Bremen und habe in meiner Freizeit [brief-nach-berlin.de](https://www.brief-nach-berlin.de) gebaut. Das Tool formuliert in unter 3 Minuten einen handgeschriebenen Brief an den eigenen Bundestagsabgeordneten. Kostenlos, ohne Datenspeicherung.
+>
+> Letzte Woche wurde das Projekt in der [Lage der Nation](https://lagedernation.org/podcast/ldn478-hantavirus-warum-wir-heute-schlechter-dastehen-als-vor-corona/?t=1:19:23#shownotes) erwähnt. Seitdem über 150 Briefe und 1.600 Aufrufe in drei Tagen, von einem Tisch in Bremen aus.
+>
+> Falls das eine Geschichte für Bremen Eins sein könnte, freue ich mich über eine kurze Rückmeldung.
+>
+> Beste Grüße
+> Thomas Lorenz
+> 01577-8811161
+> [www.thomas-lorenz.eu](https://www.thomas-lorenz.eu)
+
+---
+
+### Bremen Zwei (Kontaktformular, Sie-Form, kulturell-Hintergrund)
+
+> **Betreff:** Bremer Civic-Tech-Projekt nach Lage-der-Nation-Welle
+>
+> Moin zusammen,
+>
+> handgeschriebene Briefe an Bundestagsabgeordnete werden in den Büros tatsächlich gelesen und diskutiert, Mails landen im Filter. Genau dort setzt mein Hobbyprojekt [brief-nach-berlin.de](https://www.brief-nach-berlin.de) an: PLZ rein, Anliegen beschreiben, fertige Vorlage zum Abschreiben raus.
+>
+> Letzte Woche kam eine Erwähnung in der [Lage der Nation](https://lagedernation.org/podcast/ldn478-hantavirus-warum-wir-heute-schlechter-dastehen-als-vor-corona/?t=1:19:23#shownotes), seitdem über 150 Briefe und 1.600 Aufrufe in drei Tagen. Gebaut in zwei Wochen Freizeit, von einem Bremer.
+>
+> Vielleicht ein Thema für Bremen Zwei, zwischen Demokratie-Frust und Selbstwirksamkeit. Ich melde mich gern für ein Gespräch.
+>
+> Beste Grüße
+> Thomas Lorenz
+> 01577-8811161
+> [www.thomas-lorenz.eu](https://www.thomas-lorenz.eu)
+
+---
+
+### Bremen Next (Kontaktformular, Du-Form, locker)
+
+> **Betreff:** Bremer baut Civic-Tech-Tool in 2 Wochen, 150 Briefe nach Lage-Erwähnung
+>
+> Moin zusammen,
+>
+> ich bin Thomas aus Bremen und habe in meiner Freizeit [brief-nach-berlin.de](https://www.brief-nach-berlin.de) gebaut. Das Tool nimmt politischen Frust und macht in unter 3 Minuten einen handgeschriebenen Brief an den richtigen Bundestagsabgeordneten daraus. Gebaut in zwei Wochen mit Claude Code, kostenlos, ohne Datenspeicherung.
+>
+> Letzte Woche kam die Erwähnung in der [Lage der Nation](https://lagedernation.org/podcast/ldn478-hantavirus-warum-wir-heute-schlechter-dastehen-als-vor-corona/?t=1:19:23#shownotes), seitdem über 150 Briefe und 1.600 Aufrufe in drei Tagen.
+>
+> Falls das für Bremen Next was wäre, ob Story oder kurzes Gespräch, ich melde mich gern.
+>
+> Thomas Lorenz
+> 01577-8811161
+> [www.thomas-lorenz.eu](https://www.thomas-lorenz.eu)
+
+---
+
+### Übermedien "Nice & Nötig" (Kontaktformular, Sie-Form, warm)
+
+> **Betreff:** Themenidee für "Nice & Nötig": aus Politikfrust wird handgeschriebener Brief
+>
+> Moin zusammen,
+>
+> ich bin Thomas Lorenz aus Bremen und habe in meiner Freizeit [brief-nach-berlin.de](https://www.brief-nach-berlin.de) gebaut: ein kostenloses Tool, das aus politischem Frust in unter 3 Minuten einen handgeschriebenen Brief an den eigenen Bundestagsabgeordneten macht. Handgeschriebene Briefe werden in den Büros tatsächlich gelesen, Mails landen im Filter.
+>
+> Annikas Idee mit ["Nice & Nötig"](https://uebermedien.de/nice-und-noetig/), Lösungen statt Miesepeterei zu zeigen, hat mich beim Hören direkt an das Projekt erinnert, das ja im Kleinen genau das versucht: weniger ohnmächtig schimpfen, mehr ins Handeln kommen. Ob das eine Folge wert ist, müssen Sie wissen, ich will mich nicht aufdrängen.
+>
+> Erwähnt wurde es vor zwei Wochen in der [Lage der Nation](https://lagedernation.org/podcast/ldn478-hantavirus-warum-wir-heute-schlechter-dastehen-als-vor-corona/?t=1:19:23#shownotes), seitdem rund 300 Briefe und 5.000 Aufrufe, gebaut in zwei Wochen Freizeit mit Claude Code.
+>
+> Falls da was passt: gerne melden.
+>
+> Beste Grüße
+> Thomas Lorenz
+> 01577-8811161
+> [www.thomas-lorenz.eu](https://www.thomas-lorenz.eu)
 
 ---
 

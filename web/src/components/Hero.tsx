@@ -18,12 +18,8 @@ const SUB_HEADLINES: ReadonlyArray<readonly [string, string]> = [
     "Sag es, den Rest macht das Tool.",
   ],
   [
-    "Du musst kein Politik-Profi sein.",
-    "Das Tool findet die zuständige Person und formuliert deinen Brief.",
-  ],
-  [
-    "Egal ob Wut, halber Gedanke oder Sprachnachricht:",
-    "am Ende steht ein Brief, der gelesen wird.",
+    "Artikel 17 Grundgesetz garantiert dir,",
+    "dich an die Politik zu wenden. Hier ist dein Weg.",
   ],
 ];
 

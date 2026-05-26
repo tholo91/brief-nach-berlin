@@ -80,10 +80,28 @@ export function ReviewMarquee({
             overflow-x: auto;
           }
         }
+        /* Touch / coarse-pointer devices: swipe the carousel manually with scroll-snap. */
+        @media (hover: none) {
+          .marquee-track {
+            animation: none;
+          }
+          .marquee-container {
+            overflow-x: auto;
+            scroll-snap-type: x mandatory;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none;
+          }
+          .marquee-container::-webkit-scrollbar {
+            display: none;
+          }
+          .marquee-snap-item {
+            scroll-snap-align: center;
+          }
+        }
       `}</style>
       <div
         ref={containerRef}
-        className={`marquee-container marquee-fade overflow-x-hidden w-full py-6 ${
+        className={`marquee-container marquee-fade w-full py-6 overflow-x-hidden ${
           isPaused ? "is-paused" : ""
         }`}
         data-variant={variant}
@@ -105,7 +123,7 @@ export function ReviewMarquee({
                 aria-label={
                   isThis ? "Bewertung schließen" : "Bewertung vollständig lesen"
                 }
-                className="text-left rounded-3xl focus:outline-none focus-visible:ring-2 focus-visible:ring-waldgruen focus-visible:ring-offset-2 focus-visible:ring-offset-creme cursor-pointer"
+                className="marquee-snap-item text-left rounded-3xl focus:outline-none focus-visible:ring-2 focus-visible:ring-waldgruen focus-visible:ring-offset-2 focus-visible:ring-offset-creme cursor-pointer"
               >
                 <ReviewCard review={review} isExpanded={isThis} />
               </button>

@@ -115,9 +115,12 @@ export default async function StimmenPage() {
     getLetterCount(),
   ]);
 
-  const highlights = pickHighlights(reviews);
+  // Marquee + Pull-Quotes zeigen nur Reviews mit ≥3 Sternen. Schwache Ratings
+  // fließen weiter in `stats` (Durchschnitt + AggregateRating) ein.
+  const reviewsForDisplay = reviews.filter((r) => r.rating >= 3);
+  const highlights = pickHighlights(reviewsForDisplay);
   const [quote1, quote2] = highlights;
-  const hasReviews = reviews.length > 0;
+  const hasReviews = reviewsForDisplay.length > 0;
   const displayCount = letterCount > 0 ? letterCount.toString() : "350";
 
   const aggregateRatingJsonLd =
@@ -245,7 +248,7 @@ export default async function StimmenPage() {
               Wie ihr eure Briefe bewertet
             </p>
           </div>
-          <ReviewMarquee reviews={reviews} variant="full" limit={30} />
+          <ReviewMarquee reviews={reviewsForDisplay} variant="full" limit={30} />
         </div>
       )}
 

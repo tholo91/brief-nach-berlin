@@ -104,15 +104,6 @@ Plans:
 Plans:
 - [ ] TBD (promote with /gsd:review-backlog when ready)
 
-### Phase 999.5: CTA Copy — "Schreib der Politik!!" als Alternative diskutieren (BACKLOG)
-
-**Goal:** Alternative CTA-Formulierungen evaluieren. Thomas's Idee: "Schreib der Politik!!" könnte klarer/direkter sein als aktuelle Variante. Noch zu diskutieren — keine Entscheidung getroffen. Ggf. A/B-Testing oder Nutzerfeedback einholen.
-**Requirements:** TBD
-**Plans:** 0 plans
-
-Plans:
-- [ ] TBD (promote with /gsd:review-backlog when ready)
-
 ### Phase 999.6: Landtag + Kommune politician coverage expansion (BACKLOG)
 
 **Goal:** Expand politician data beyond Bund-level MdBs to Landtag and Kommune representatives. Currently only Bundestag MdBs are cached — ~80% of real citizen concerns (local infrastructure, education, housing, policing, waste, Bauanträge) are routed to the wrong level of government. The letter prompt papers over this by asking the AI to justify contacting a Bund-MdB about a local issue; proper fix = real multi-level coverage.
@@ -134,23 +125,6 @@ Plans:
 - [ ] 999.6-05-PLAN.md — LevelBadge + LevelOverrideChips + EuComingSoonCard + disambiguation grouping + coverage hint (Wave 4)
 - [ ] 999.6-06-PLAN.md — generateLetter level+mode adaptation (Anrede gender-resolved, no GG-Artikel, Stellvertretend-Framing) (Wave 4)
 - [ ] 999.6-07-PLAN.md — Generic-Rathaus-Brief mit synthetischem Stadtverwaltung / Bezirksamt-Recipient + RathausAdresseHint + Stadtstaat re-route (Wave 4)
-
-### Phase 999.7: Partner with abgeordnetenwatch.de for credibility (BACKLOG)
-
-**Goal:** Formalise a partnership / mutual mention with abgeordnetenwatch.de. We already depend on their v2 API for all politician data — a visible partnership would massively boost legitimacy with the target audience (politically engaged German citizens who trust aw.de), open a channel for official logo use / backlinks, and could unlock Landtag/Kommune data access ahead of 999.6.
-
-Actions to explore (cheapest first):
-1. Add an attribution line on the landing page + email footer ("Politikerdaten von abgeordnetenwatch.de — CC0") — unilateral, no negotiation needed, goes live today.
-2. Write a short outreach email to aw.de (info@abgeordnetenwatch.de) introducing Brief nach Berlin, asking if they'd link back / mention it in a newsletter, and whether they'd collaborate on cross-level coverage.
-3. Propose a feature swap: they link to Brief-nach-Berlin from constituent-engagement pages, we link prominently to their MdB-profile and vote history.
-4. Offer to contribute: give them anonymised aggregate data on which topics drive real handwritten letters per Wahlkreis (valuable signal they don't currently have).
-5. Long-term: co-branded campaigns around Bundestagswahlen / Petitionsausschuss-Jahresbericht moments.
-
-**Requirements:** TBD
-**Plans:** 0 plans
-
-Plans:
-- [ ] TBD (promote with /gsd:review-backlog when ready)
 
 ### Phase 999.8: Disambiguation UI — show district / Kreis context (BACKLOG)
 
@@ -205,41 +179,6 @@ Plans:
 ### Phase 999.11: Spenden annehmen via Buy Me a Coffee (BACKLOG)
 
 **Goal:** Nach erfolgreichem Brief eine niedrigschwellige Möglichkeit anbieten, das Tool finanziell zu unterstützen. Primärer Ort: am Ende der Email mit dem fertigen Briefentwurf, optional auch dezent auf der Success-Page. Kanäle prüfen: Buy Me a Coffee, Ko-fi, Stripe-Donate-Link. Niedrige Friction, kein Account, keine PII-Erfassung. Open Questions: (1) Platzierung — vor/nach Footer in der Mail? Auch auf Success-Page oder nur Mail? (2) Tonalität — locker ("Spendier mir einen Kaffee") vs. seriös ("Initiative unterstützen"). (3) Impact-Messung — Conversion-Rate, durchschnittliche Spendenhöhe. (4) DSGVO-Implikationen für Buy-Me-a-Coffee/Ko-fi (Drittanbieter-Tracking).
-
-**Requirements:** TBD
-**Plans:** 0 plans
-
-Plans:
-- [ ] TBD (promote with /gsd:review-backlog when ready)
-
-### Phase 999.12: "Treppe der Selbstwirksamkeit" auf Success Page + Email verlinken (BACKLOG)
-
-**Goal:** Die Seite `/treppe-der-selbstwirksamkeit` ist fertig aber nirgendwo verlinkt — weder auf der Success Page noch in der Email. Nutzer, die gerade einen Brief geschrieben haben, haben maximale Motivation und sollten direkt zu weiteren Wegen der politischen Teilhabe geführt werden.
-
-Konzept (Gemini-Input, 2026-04-27):
-1. **Success Page (`Step3Success.tsx`):** Sektion "Und was kommt danach?" / "Lust auf mehr Wirkung?" mit Hook: "Du hast gerade Stufe 3 von 10 erklommen — damit bist du bereits weiter als 95% der Bevölkerung." Button/Link → `/treppe-der-selbstwirksamkeit`.
-2. **Email-Template (`buildEmailHtml.ts`):** Subtiler Block nach "Nächste Schritte": "Dein Brief ist ein starkes Zeichen. Es gibt noch 9 weitere Wege, wie du in Deutschland wirklich etwas bewegst — von 60-Sekunden-Petitionen bis zur eigenen Bürgerinitiative." + Link "Alle 10 Stufen ansehen".
-
-Warum es funktioniert: Gamification via Level-Logik ("du bist auf Stufe 3"), Neugier auf weitere Stufen, Momentum-Capture im richtigen Moment.
-
-**Requirements:** TBD
-**Plans:** 0 plans
-
-Plans:
-- [ ] TBD (promote with /gsd:review-backlog when ready)
-
-### Phase 999.13: Vercel Web Analytics deaktivieren + Datenschutz anpassen (BACKLOG)
-
-**Goal:** Vercel Web Analytics wurde initial aktiviert, um in der Pre-Validation-Phase Traffic-Insights zu sammeln (cookielos, anonymisiert, DSGVO-konform via berechtigtes Interesse Art. 6 Abs. 1 lit. f). Sobald genug Validierungsdaten vorliegen bzw. eine privacy-freundlichere Alternative gefunden ist, soll Analytics wieder ausgeschaltet werden, um das Datensparsamkeits-Versprechen v1 voll einzuhalten.
-
-**Wichtiger Datenschutz-Disclaimer (jetzt schon in der Datenschutzerklärung verankern):** Analytics wird ausschliesslich genutzt, um Brief nach Berlin in der Anfangsphase zu skalieren (Reichweite verstehen, Crashes/Fehler erkennen, Performance-Probleme finden). Daten werden niemals an Dritte verkauft, niemals zur Profilbildung verwendet, niemals mit Werbenetzwerken geteilt. Sobald die Plattform stabil läuft, wird Analytics deaktiviert.
-
-Tasks:
-1. Datenschutzerklärung JETZT um diesen Disclaimer ergänzen (Phase 1 — sofort, nicht erst bei Deaktivierung)
-2. Vercel Web Analytics im Dashboard deaktivieren (später, bei Reife der Plattform)
-3. Entsprechenden Absatz aus Datenschutzerklärung entfernen
-4. DSGVO-TODO.md aktualisieren
-5. Optional: privacy-freundliche Alternative evaluieren (z.B. Plausible Self-Hosted, Umami, oder komplett ohne Analytics)
 
 **Requirements:** TBD
 **Plans:** 0 plans

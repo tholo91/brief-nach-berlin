@@ -383,6 +383,14 @@ export default function Datenschutz() {
               </a>
               .
             </p>
+            <p className="mt-2">
+              Diese Reichweitenmessung dient ausschließlich dazu,
+              Brief-nach-Berlin in der Anfangsphase zu verbessern (Reichweite
+              verstehen, Fehler erkennen, Performance-Probleme finden). Die
+              Daten werden nie an Dritte verkauft, nie zur Profilbildung
+              verwendet und nie mit Werbenetzwerken geteilt. Sobald die
+              Plattform stabil läuft, wird die Reichweitenmessung deaktiviert.
+            </p>
           </div>
 
           <div>

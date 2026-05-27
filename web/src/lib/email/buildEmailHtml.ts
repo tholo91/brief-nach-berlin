@@ -305,9 +305,6 @@ export function buildEmailHtml(data: SendLetterEmailParams): string {
                     <p style="margin:0;font-family:Georgia,'Times New Roman',serif;font-size:12px;color:#999999;">
                       <a href="${APP_URL}" style="color:#2D5016;text-decoration:none;">Brief nach Berlin</a> · Deine Stimme zählt.
                     </p>
-                    <p style="margin:6px 0 0;font-family:Georgia,'Times New Roman',serif;font-size:12px;color:#999999;">
-                      <a href="${APP_URL}/wer-darf-mdb-schreiben" style="color:#2D5016;text-decoration:underline;">Wer darf MdBs schreiben?</a>
-                    </p>
                   </td>
                 </tr>
 
@@ -318,7 +315,7 @@ export function buildEmailHtml(data: SendLetterEmailParams): string {
                       <strong>Hinweis:</strong> Der Brief ist ein generierter Entwurf. Bitte passe ihn an und prüfe Politikerdaten vor dem Versand bei <a href="${profileUrl}" target="_blank" rel="noopener noreferrer" style="color:#888888;">abgeordnetenwatch.de</a>. Die Verantwortung für den Inhalt liegt bei dir.
                     </p>
                     <p style="margin:0;font-family:Georgia,'Times New Roman',serif;font-size:11px;color:#aaaaaa;line-height:1.5;">
-                      <a href="${APP_URL}/datenschutz" style="color:#888888;">Datenschutz</a>: deine Brief-Daten werden nach Versand nicht gespeichert.${data.debug ? ` · <a href="${buildDebugUrl(data.debug)}" style="color:#888888;text-decoration:none;">Debug</a>` : ""}
+                      <a href="${APP_URL}/datenschutz" style="color:#888888;">Datenschutz</a>: deine Brief-Daten werden nach Versand nicht gespeichert. · <a href="${APP_URL}/wer-darf-mdb-schreiben" style="color:#888888;">Wer darf MdBs schreiben?</a>${data.debug ? ` · <a href="${buildDebugUrl(data.debug)}" style="color:#888888;text-decoration:none;">Debug</a>` : ""}
                     </p>
                   </td>
                 </tr>

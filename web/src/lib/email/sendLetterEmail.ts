@@ -43,6 +43,10 @@ export interface LetterDebugPayload {
   userEmail?: string;
   politicianId?: number;
   plz?: string;
+  // True für Resends: es gab keinen neuen Generierungslauf, daher sind die
+  // generierungs-spezifischen Felder (model/temperature/generationMs/…) Platzhalter.
+  // /debug zeigt das als Hinweis an, damit man die Werte nicht fehlinterpretiert.
+  resent?: boolean;
 }
 
 export interface SendLetterEmailParams {

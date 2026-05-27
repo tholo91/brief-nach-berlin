@@ -5,6 +5,8 @@ import { step1Schema, step1bSchema, step2Schema } from "@/lib/validation/wizardS
 import { moderateText } from "@/lib/moderation/moderateText";
 import { lookupPLZ } from "@/lib/lookup/plzLookup";
 import { sendLetterEmail } from "@/lib/email/sendLetterEmail";
+import { buildResendDebugPayload } from "@/lib/email/buildDebugPayload";
+import { signFeedbackToken } from "@/lib/feedback/token";
 import { DEFAULT_LETTER_LENGTH } from "@/lib/config";
 import { checkRateLimit, getClientIp, LIMITS } from "@/lib/rateLimit";
 
@@ -88,6 +90,18 @@ export async function resendLetterAction(
       return { error: "moderation", message: "Brief kann nicht gesendet werden." };
     }
 
+    // Resend bekommt dieselbe Mail wie der Erstversand: Debug-Link im Footer +
+    // 5-Sterne-Leiste statt des statischen "Profil auf abgeordnetenwatch"-Buttons.
+    // Beim Resend gibt es keinen Generierungslauf, daher eine Teil-Payload mit
+    // resent: true (generierungs-spezifische Felder sind Platzhalter).
+    const debugPayload = buildResendDebugPayload(
+      data,
+      politician,
+      derivedPoliticians.length,
+      cachedLetterText
+    );
+    const feedbackToken = signFeedbackToken(debugPayload);
+
     const emailResult = await sendLetterEmail({
       recipientEmail: data.email,
       politicianName: `${politician.firstName} ${politician.lastName}`,
@@ -99,6 +113,8 @@ export async function resendLetterAction(
       politicianAbgeordnetenwatchUrl: politician.abgeordnetenwatchUrl,
       letterText: cachedLetterText,
       issueText: data.issueText,
+      debug: debugPayload,
+      feedbackToken,
     });
 
     if (!emailResult.success) {

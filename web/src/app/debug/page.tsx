@@ -23,6 +23,12 @@ function format(payload: LetterDebugPayload | { error: string }): string {
   const d = payload;
   const wcLabel = `${d.wordCount} (target ${d.letterLengthMin}–${d.letterLengthMax}) ${d.wordCountInRange ? "OK" : "OUT OF RANGE"}`;
   const lines = [
+    ...(d.resent
+      ? [
+          "⚠ RESEND              kein Generierungslauf — Model/Temperature/Generation sind Platzhalter",
+          "",
+        ]
+      : []),
     `Tonality              ${d.toneLevel ?? "—"} (${d.toneLabel})`,
     `Letter length         ${d.letterLengthKey} (${d.letterLengthMin}–${d.letterLengthMax} Wörter)`,
     `Word count            ${wcLabel}`,

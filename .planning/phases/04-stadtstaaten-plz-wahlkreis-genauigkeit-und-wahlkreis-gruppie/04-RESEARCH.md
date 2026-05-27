@@ -639,17 +639,21 @@ should be downloaded or installed until Thomas confirms.
 
 ---
 
-## Open Questions
+## Open Questions (RESOLVED)
+
+All three open questions are addressed by Phase 4 plan tasks. Resolutions noted inline.
 
 1. **PLZ 10997 post-fix wahlkreis count**
    - What we know: centroid is in WK 82 (Kreuzberg); existing test asserts "contains 82"
    - What's unclear: Whether the area-intersection reduces it to exactly [82] or keeps WK 81 with >10% share
    - Recommendation: Run updated build script, check output, update fixture from `ambiguous` to `single-wahlkreis [82]` if confirmed
+   - **RESOLVED:** 04-02 Task 3 re-checks the regenerated mapping value for 10997 and updates the fixture accordingly (must still contain 82).
 
 2. **ODbL share-alike for public repo**
    - What we know: ODbL 4.4 requires derived databases made publicly available to carry ODbL
    - What's unclear: Whether the `plz-wahlkreis-mapping.json` qualifies as a "substantial" portion of the PLZ database (it omits geometry, retaining only the WK assignment)
    - Recommendation: Add an ODbL notice in the repo README and Impressum page as a conservative measure
+   - **RESOLVED:** 04-01 Task 3 adds the ODbL attribution line to the Datenschutz page as the conservative measure; broader repo-public legal question is outside execution scope.
 
 3. **Imprecise-cluster branch in new code**
    - What we know: The `imprecise.has(k)` branch currently triggers wide-perturbation for PLZs
@@ -658,6 +662,7 @@ should be downloaded or installed until Thomas confirms.
      since OSM stores PLZ boundaries independently of Geonames centroids)
    - Recommendation: Bypass the imprecise-cluster branch entirely in the new polygon-intersection
      path; it was designed for centroid-based lookup and is irrelevant when using area polygons
+   - **RESOLVED:** 04-02 Task 2 bypasses the imprecise-cluster branch in the polygon-intersection path while keeping it intact as the centroid+perturbation fallback for PLZs without a polygon.
 
 ---
 

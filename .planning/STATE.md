@@ -28,7 +28,7 @@ See: .planning/PROJECT.md (updated 2026-04-10)
 Phase: 999.1
 Plan: Not started
 Status: Executing Phase 03
-Last activity: 2026-05-26 - Completed quick task 260526-u4r: /stimmen swipeable reviews on touch + hide reviews below 3 stars
+Last activity: 2026-05-27 - Completed quick task 260527-m36: E-Mail Footer MdB-Link inline + Resend mit Debug & Sterne vereinheitlichen
 
 Progress: [░░░░░░░░░░] 0%
 
@@ -91,6 +91,7 @@ Recent decisions affecting current work:
 | 260523-pph | /stimmen sign-off copy + /brief-verbessern mobile copy button + bold prompt anchors | 2026-05-23 | ff75d77 | [260523-pph-stimmen-sign-off-copy-brief-verbessern-m](./quick/260523-pph-stimmen-sign-off-copy-brief-verbessern-m/) |
 | 260526-u4r | /stimmen: swipeable reviews on touch + hide reviews below 3 stars | 2026-05-26 | 35a98a3 | [260526-u4r-stimmen-swipe-and-filter](./quick/260526-u4r-stimmen-swipe-and-filter/) |
 | 260527-fast | Hero sub-headlines 5→4 + Art. 17 GG variant (inspired by liebemdb competitor analysis) | 2026-05-27 | b29e24c | (gsd-fast, no PLAN.md) |
+| 260527-m36 | E-Mail Footer MdB-Link inline + Resend mit Debug & Sterne vereinheitlichen | 2026-05-27 | 755b077 | [260527-m36-e-mail-footer-mdb-link-inline-resend-mit](./quick/260527-m36-e-mail-footer-mdb-link-inline-resend-mit/) |
 
 ## Session Continuity
 

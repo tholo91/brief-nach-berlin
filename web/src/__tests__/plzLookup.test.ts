@@ -143,4 +143,13 @@ describe("Stadtstaat hygiene — cross-state leakage guard", () => {
     const wks = m["22033"] ?? [];
     expect(wks).not.toContain(220);
   });
+
+  it("PLZ 20249 narrows to WK 21 only after polygon intersection", () => {
+    expect(m["20249"]).toEqual([21]);
+  });
+
+  it("PLZ 20354 keeps both WK 18 and WK 20 (genuine border)", () => {
+    const wks = m["20354"] ?? [];
+    expect(wks).toEqual(expect.arrayContaining([18, 20]));
+  });
 });

@@ -96,6 +96,24 @@
     "category": "ambiguous-multi-wahlkreis"
   },
   {
+    "plz": "20249",
+    "expectedWahlkreisIds": [21],
+    "expectedPoliticianLastNames": [],
+    "category": "single-wahlkreis"
+  },
+  {
+    "plz": "22417",
+    "expectedWahlkreisIds": [21],
+    "expectedPoliticianLastNames": [],
+    "category": "single-wahlkreis"
+  },
+  {
+    "plz": "20354",
+    "expectedMinPoliticianCount": 1,
+    "expectedMinWahlkreisCount": 2,
+    "category": "ambiguous-multi-wahlkreis"
+  },
+  {
     "plz": "29216",
     "expectedWahlkreisIds": [44],
     "expectedPoliticianLastNames": [],

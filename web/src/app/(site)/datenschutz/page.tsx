@@ -163,6 +163,18 @@ export default function Datenschutz() {
               Rechtsgrundlage: Art. 6 Abs. 1 lit. b DSGVO (Durchführung
               vorvertraglicher Maßnahmen auf Ihre Anfrage).
             </p>
+            <p className="mt-2 text-sm">
+              Postleitzahl-Geodaten: &copy;{" "}
+              <a
+                href="https://osm.org/copyright"
+                className="underline"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                OpenStreetMap contributors
+              </a>
+              , ODbL 1.0.
+            </p>
           </div>
 
           <div>

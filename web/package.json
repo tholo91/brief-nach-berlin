@@ -29,6 +29,8 @@
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
+    "@turf/area": "^7.3.5",
+    "@turf/intersect": "^7.3.5",
     "@types/jest": "^29.5.14",
     "@types/node": "^20",
     "@types/react": "^19",

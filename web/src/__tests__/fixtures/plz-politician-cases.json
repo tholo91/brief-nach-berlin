@@ -73,21 +73,21 @@
   },
   {
     "plz": "28195",
-    "expectedMinPoliticianCount": 1,
-    "expectedMinWahlkreisCount": 2,
-    "category": "ambiguous-multi-wahlkreis"
+    "expectedWahlkreisIds": [54],
+    "expectedPoliticianLastNames": [],
+    "category": "single-wahlkreis"
   },
   {
     "plz": "13347",
-    "expectedMinPoliticianCount": 1,
-    "expectedMinWahlkreisCount": 2,
-    "category": "ambiguous-multi-wahlkreis"
+    "expectedWahlkreisIds": [74],
+    "expectedPoliticianLastNames": ["Steinmüller"],
+    "category": "single-wahlkreis"
   },
   {
     "plz": "14199",
-    "expectedMinPoliticianCount": 1,
-    "expectedMinWahlkreisCount": 2,
-    "category": "ambiguous-multi-wahlkreis"
+    "expectedWahlkreisIds": [79],
+    "expectedPoliticianLastNames": [],
+    "category": "single-wahlkreis"
   },
   {
     "plz": "22033",

@@ -122,6 +122,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 0.8,
     },
     {
+      url: `${BASE_URL}/was-bisher-geschah`,
+      lastModified,
+      changeFrequency: "weekly",
+      priority: 0.6,
+    },
+    {
       url: `${BASE_URL}/beispiele`,
       lastModified,
       changeFrequency: "monthly",

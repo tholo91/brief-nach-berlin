@@ -556,3 +556,15 @@ Phases execute in numeric order: 1 → 2 → 3
 | 1. Landing Page & Data Infrastructure | 0/TBD | Not started | - |
 | 2. Core Engine | 0/4 | Planned | - |
 | 3. Email Delivery & Privacy Compliance | 0/3 | Planned | - |
+
+### Phase 4: Stadtstaaten PLZ-Wahlkreis Genauigkeit und Wahlkreis-Gruppierung im Wizard
+
+**Goal:** For Stadtstaat PLZs (Berlin/Hamburg/Bremen) return only the responsible Wahlkreis(e) by computing a true PLZ-area intersection Wahlkreis-polygon area share at build time, replacing the centroid+perturbation+union over-reach, AND group the wizard's politician results by Wahlkreis with Direkt vs ueber-Liste labelling. Fully offline/build-time, no existing PLZ lookup may break, no PLZ may move to a wrong Wahlkreis, no result may go empty, no Bundesland boundary may be crossed.
+**Requirements**: POLI-02, POLI-04, PRIV-02
+**Depends on:** Phase 3
+**Plans:** 3 plans
+
+Plans:
+- [ ] 04-01-PLAN.md - Data foundation: filter + commit PLZ-polygon GeoJSON (Berlin/HH/Bremen), add turf devDeps, ODbL attribution
+- [ ] 04-02-PLAN.md - Build-script rewrite to polygon area-intersection, regenerate mapping, precision tests (20249 to [21], 20354 keeps [18,20])
+- [ ] 04-03-PLAN.md - Wizard grouping: results grouped by Wahlkreis with Direkt/ueber-Liste labels (via UI skill)

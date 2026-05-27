@@ -14,7 +14,7 @@ import {
 } from "@/lib/config";
 
 // Phased loading copy. Rotates while the politician-pick spinner runs. This is
-// the user's final click — they sit here waiting for the letter to be drafted,
+// the user's final click - they sit here waiting for the letter to be drafted,
 // so a single static spinner feels longer than chunked progress. Timings sum
 // to the LETTER_GEN_MIN_DISPLAY_MS budget below.
 const LETTER_GEN_PHASES: ReadonlyArray<{ at: number; label: string }> = [
@@ -27,7 +27,7 @@ const LETTER_GEN_MIN_DISPLAY_MS = 4000;
 // Webmail-Provider → öffentliche Inbox-URL. Used by the mobile-only
 // "Mail-App öffnen" button to deep-link users back to where the letter lands.
 // We only render the button when wizardData.email's domain matches one of
-// these entries — better no button than a broken one for custom domains.
+// these entries - better no button than a broken one for custom domains.
 // Universal Links on iOS/Android usually route these to the installed app.
 const WEBMAIL_PROVIDERS: Record<string, { label: string; url: string }> = {
   "gmail.com": { label: "Gmail öffnen", url: "https://mail.google.com/" },
@@ -95,7 +95,7 @@ export function Step3Success({ result, wizardData, politicians }: Step3SuccessPr
     if (result && "success" in result && result.success) return result.politician.id;
     return null;
   });
-  // letterReady gates the "Keine E-Mail erhalten?" section — true once the
+  // letterReady gates the "Keine E-Mail erhalten?" section - true once the
   // async /api/generate-letter fetch resolves (or immediately if letterText
   // was already available from the synchronous success path).
   const [letterReady, setLetterReady] = useState<boolean>(() => {
@@ -105,10 +105,10 @@ export function Step3Success({ result, wizardData, politicians }: Step3SuccessPr
   const [generationFetchError, setGenerationFetchError] = useState<string | null>(null);
   const [retryCount, setRetryCount] = useState(0);
   const [loadingDots, setLoadingDots] = useState(".");
-  // "So geht es weiter" is collapsed by default — the same content lives in
+  // "So geht es weiter" is collapsed by default - the same content lives in
   // the email, so we save vertical space and let the rating teaser breathe.
   const [stepsOpen, setStepsOpen] = useState(false);
-  // Index into LETTER_GEN_PHASES — advances on a setTimeout chain while
+  // Index into LETTER_GEN_PHASES - advances on a setTimeout chain while
   // isGenerating is true, resets when it ends. Drives the phased button copy
   // during the final letter-generation wait.
   const [genPhase, setGenPhase] = useState(0);
@@ -155,6 +155,33 @@ export function Step3Success({ result, wizardData, politicians }: Step3SuccessPr
     return [...politicians].sort((a, b) => Number(b.isDirect) - Number(a.isDirect));
   }, [politicians]);
 
+  // Group the disambiguation cards by Wahlkreis. sortedPoliticians is already
+  // Direkt-first, so insertion order puts the group holding the pre-selected
+  // Direktmandat at the top. Each card later gets a flat index matching DOM
+  // order, so the existing arrow-key radio navigation keeps working across groups.
+  const wahlkreisGroups = useMemo(() => {
+    const groups: {
+      wahlkreisId: number;
+      wahlkreisName: string;
+      politicians: Politician[];
+    }[] = [];
+    const indexById = new Map<number, number>();
+    for (const p of sortedPoliticians) {
+      let gi = indexById.get(p.wahlkreisId);
+      if (gi === undefined) {
+        gi = groups.length;
+        indexById.set(p.wahlkreisId, gi);
+        groups.push({
+          wahlkreisId: p.wahlkreisId,
+          wahlkreisName: p.wahlkreisName,
+          politicians: [],
+        });
+      }
+      groups[gi].politicians.push(p);
+    }
+    return groups;
+  }, [sortedPoliticians]);
+
   const handleSelectPolitician = useCallback(
     async () => {
       if (selectedPoliticianId === null) return;
@@ -165,7 +192,7 @@ export function Step3Success({ result, wizardData, politicians }: Step3SuccessPr
       setIsGenerating(true);
       setGenerationError(null);
 
-      // Minimum spinner duration — starts in parallel with the pre-check so the
+      // Minimum spinner duration - starts in parallel with the pre-check so the
       // button shows phased progress for the full LETTER_GEN_MIN_DISPLAY_MS
       // window before navigating. This is the user's final click; padding it
       // here is the main perceived-wait reduction tool.
@@ -174,7 +201,7 @@ export function Step3Success({ result, wizardData, politicians }: Step3SuccessPr
       );
 
       try {
-        // NOTE: we deliberately no longer pass the `politicians` array here —
+        // NOTE: we deliberately no longer pass the `politicians` array here -
         // the server re-derives it from PLZ to prevent tampering. Only the
         // numeric ID is accepted as user-supplied input.
         const selectResult = await selectPoliticianAction(
@@ -291,7 +318,7 @@ export function Step3Success({ result, wizardData, politicians }: Step3SuccessPr
         });
         return;
       } catch {
-        // User cancelled or share failed — fall through to copy fallback below
+        // User cancelled or share failed - fall through to copy fallback below
       }
     }
     try {
@@ -381,7 +408,7 @@ export function Step3Success({ result, wizardData, politicians }: Step3SuccessPr
         {/* Rating teaser: visible from the start so users internalize the ask
             before they close the tab. Points at the star-rating link in the
             email (which carries the signed token; the page itself cannot
-            initiate a rating). Hidden only when generation actually failed —
+            initiate a rating). Hidden only when generation actually failed -
             promising a link to a mail that never went out would be a lie. */}
         <div
           className={`mt-6 transition-opacity duration-500 ${generationFetchError ? "opacity-0 pointer-events-none select-none" : "opacity-100"}`}
@@ -412,11 +439,11 @@ export function Step3Success({ result, wizardData, politicians }: Step3SuccessPr
           </p>
         </div>
 
-        {/* "Keine E-Mail erhalten?" + (mobile) "Mail-App öffnen" — both hidden
+        {/* "Keine E-Mail erhalten?" + (mobile) "Mail-App öffnen" - both hidden
             until letter is ready. The webmail deep-link sits left of the
             resend trigger on mobile only (sm:hidden) so users can jump into
             their inbox with one tap; desktop users typically have mail open
-            elsewhere already. Generic label "Mail-App öffnen" — we don't
+            elsewhere already. Generic label "Mail-App öffnen" - we don't
             expose the user's email provider in the UI. */}
         <div className={`transition-opacity duration-500 ${letterReady ? "opacity-100" : "opacity-0 pointer-events-none select-none"}`}>
           <div className="mt-3 flex items-center justify-center gap-4">
@@ -535,7 +562,7 @@ export function Step3Success({ result, wizardData, politicians }: Step3SuccessPr
             </div>
           )}
 
-        {/* Generation error banner — shown if /api/generate-letter fails after auto-retry */}
+        {/* Generation error banner - shown if /api/generate-letter fails after auto-retry */}
         {generationFetchError && (
           <div
             role="alert"
@@ -556,7 +583,7 @@ export function Step3Success({ result, wizardData, politicians }: Step3SuccessPr
           </div>
         )}
 
-        {/* Step-by-step instructions — collapsed accordion: same steps live in
+        {/* Step-by-step instructions - collapsed accordion: same steps live in
             the email, so we keep the success page lean and let curious users
             expand if they want a peek now. */}
         <div className="mt-8">
@@ -694,81 +721,104 @@ export function Step3Success({ result, wizardData, politicians }: Step3SuccessPr
           </div>
         )}
 
-        {/* Politician cards — switch to 2-col grid on long lists (e.g. PLZs that
-            straddle several Wahlkreise) so the disambiguation step doesn't turn
-            into an endless scroll. */}
+        {/* Politician cards - grouped by Wahlkreis. Each group gets a header
+            ("Wahlkreis 21 · Hamburg-Nord") and its cards are labelled
+            Direktmandat vs über die Liste. On long lists (PLZs straddling
+            several Wahlkreise) each group switches to a 2-col grid so the
+            disambiguation step doesn't turn into an endless scroll. All cards
+            stay one logical radiogroup; a flat index keeps arrow-key nav working
+            across groups. */}
         <div
           role="radiogroup"
           aria-label="Abgeordnete auswählen"
-          className={[
-            "mt-6",
-            sortedPoliticians.length > 5
-              ? "grid grid-cols-1 sm:grid-cols-2 gap-3"
-              : "space-y-3",
-          ].join(" ")}
+          className="mt-6 space-y-6"
         >
-          {sortedPoliticians.map((p, index) => (
-            <div
-              key={p.id}
-              role="radio"
-              aria-checked={selectedPoliticianId === p.id}
-              tabIndex={0}
-              onClick={() => handleCardSelect(p.id)}
-              onKeyDown={(e) => handleCardKeyDown(e, index, p.id)}
-              className={[
-                "w-full text-left p-4 rounded-lg border-2 transition-colors cursor-pointer",
-                selectedPoliticianId === p.id
-                  ? "border-waldgruen bg-waldgruen/10"
-                  : "border-waldgruen/20 bg-creme hover:border-waldgruen/40",
-              ].join(" ")}
-            >
-              {p.isDirect && (
-                <span className="inline-block font-body text-[11px] font-semibold uppercase tracking-wide text-waldgruen-dark bg-waldgruen/15 px-2 py-0.5 rounded mb-1.5">
-                  Direktmandat
-                </span>
-              )}
-              <p className="font-body text-base font-semibold text-warmgrau">
-                {p.title ? p.title + " " : ""}
-                {p.firstName} {p.lastName}
-              </p>
-              <p className="font-body text-sm text-warmgrau mt-0.5">
-                {formatPartyShort(p.party)}
-              </p>
-              <p className="font-body text-sm text-warmgrau/70 mt-1">
-                Wahlkreis {p.wahlkreisId}: {p.wahlkreisName}
-              </p>
-              {p.abgeordnetenwatchUrl && (
-                <a
-                  href={p.abgeordnetenwatchUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  onClick={(e) => e.stopPropagation()}
-                  className="inline-flex items-center gap-1 font-body text-xs text-waldgruen hover:text-waldgruen-dark underline underline-offset-2 mt-2"
+          {(() => {
+            let flatIndex = 0;
+            const multiCol = sortedPoliticians.length > 5;
+            return wahlkreisGroups.map((group) => (
+              <div key={group.wahlkreisId}>
+                <p className="font-body text-xs font-semibold uppercase tracking-wide text-warmgrau/55 mb-2 flex items-center gap-2">
+                  <span className="h-px flex-shrink-0 w-3 bg-warmgrau/25" aria-hidden="true" />
+                  Wahlkreis {group.wahlkreisId} · {group.wahlkreisName}
+                </p>
+                <div
+                  className={
+                    multiCol
+                      ? "grid grid-cols-1 sm:grid-cols-2 gap-3"
+                      : "space-y-3"
+                  }
                 >
-                  Profil auf Abgeordnetenwatch.de
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="12"
-                    height="12"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    aria-hidden="true"
-                  >
-                    <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
-                    <polyline points="15 3 21 3 21 9" />
-                    <line x1="10" y1="14" x2="21" y2="3" />
-                  </svg>
-                </a>
-              )}
-            </div>
-          ))}
+                  {group.politicians.map((p) => {
+                    const cardIndex = flatIndex++;
+                    return (
+                      <div
+                        key={p.id}
+                        role="radio"
+                        aria-checked={selectedPoliticianId === p.id}
+                        tabIndex={0}
+                        onClick={() => handleCardSelect(p.id)}
+                        onKeyDown={(e) => handleCardKeyDown(e, cardIndex, p.id)}
+                        className={[
+                          "w-full text-left p-4 rounded-lg border-2 transition-colors cursor-pointer",
+                          selectedPoliticianId === p.id
+                            ? "border-waldgruen bg-waldgruen/10"
+                            : "border-waldgruen/20 bg-creme hover:border-waldgruen/40",
+                        ].join(" ")}
+                      >
+                        {p.isDirect ? (
+                          <span className="inline-block font-body text-[11px] font-semibold uppercase tracking-wide text-waldgruen-dark bg-waldgruen/15 px-2 py-0.5 rounded mb-1.5">
+                            Direktmandat
+                          </span>
+                        ) : (
+                          <span className="inline-block font-body text-[11px] font-medium uppercase tracking-wide text-warmgrau/55 bg-warmgrau/10 px-2 py-0.5 rounded mb-1.5">
+                            über die Liste
+                          </span>
+                        )}
+                        <p className="font-body text-base font-semibold text-warmgrau">
+                          {p.title ? p.title + " " : ""}
+                          {p.firstName} {p.lastName}
+                        </p>
+                        <p className="font-body text-sm text-warmgrau mt-0.5">
+                          {formatPartyShort(p.party)}
+                        </p>
+                        {p.abgeordnetenwatchUrl && (
+                          <a
+                            href={p.abgeordnetenwatchUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            onClick={(e) => e.stopPropagation()}
+                            className="inline-flex items-center gap-1 font-body text-xs text-waldgruen hover:text-waldgruen-dark underline underline-offset-2 mt-2"
+                          >
+                            Profil auf Abgeordnetenwatch.de
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              width="12"
+                              height="12"
+                              viewBox="0 0 24 24"
+                              fill="none"
+                              stroke="currentColor"
+                              strokeWidth="2"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              aria-hidden="true"
+                            >
+                              <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
+                              <polyline points="15 3 21 3 21 9" />
+                              <line x1="10" y1="14" x2="21" y2="3" />
+                            </svg>
+                          </a>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            ));
+          })()}
         </div>
 
-        {/* Submit after selection — full width to match cards */}
+        {/* Submit after selection - full width to match cards */}
         {selectedPoliticianId !== null && (
           <div className="mt-8">
             <button

@@ -157,8 +157,11 @@ export function Step3Success({ result, wizardData, politicians }: Step3SuccessPr
 
   // Group the disambiguation cards by Wahlkreis. sortedPoliticians is already
   // Direkt-first, so insertion order puts the group holding the pre-selected
-  // Direktmandat at the top. Each card later gets a flat index matching DOM
-  // order, so the existing arrow-key radio navigation keeps working across groups.
+  // Direktmandat at the top. Each card carries a precomputed flat index matching
+  // its DOM order (groups render in order), so the existing arrow-key radio
+  // navigation in handleCardKeyDown keeps working across groups. The index is
+  // assigned here in the memo rather than via a render-time counter, so the JSX
+  // below stays a plain map (no IIFE that reads refs during render).
   const wahlkreisGroups = useMemo(() => {
     const groups: {
       wahlkreisId: number;
@@ -179,8 +182,19 @@ export function Step3Success({ result, wizardData, politicians }: Step3SuccessPr
       }
       groups[gi].politicians.push(p);
     }
-    return groups;
+    let flatIndex = 0;
+    return groups.map((group) => ({
+      wahlkreisId: group.wahlkreisId,
+      wahlkreisName: group.wahlkreisName,
+      cards: group.politicians.map((politician) => ({
+        politician,
+        flatIndex: flatIndex++,
+      })),
+    }));
   }, [sortedPoliticians]);
+
+  // >5 total cards => 2-col grid per group, else single column.
+  const cardsMultiCol = sortedPoliticians.length > 5;
 
   const handleSelectPolitician = useCallback(
     async () => {
@@ -733,89 +747,82 @@ export function Step3Success({ result, wizardData, politicians }: Step3SuccessPr
           aria-label="Abgeordnete auswählen"
           className="mt-6 space-y-6"
         >
-          {(() => {
-            let flatIndex = 0;
-            const multiCol = sortedPoliticians.length > 5;
-            return wahlkreisGroups.map((group) => (
-              <div key={group.wahlkreisId}>
-                <p className="font-body text-xs font-semibold uppercase tracking-wide text-warmgrau/55 mb-2 flex items-center gap-2">
-                  <span className="h-px flex-shrink-0 w-3 bg-warmgrau/25" aria-hidden="true" />
-                  Wahlkreis {group.wahlkreisId} · {group.wahlkreisName}
-                </p>
-                <div
-                  className={
-                    multiCol
-                      ? "grid grid-cols-1 sm:grid-cols-2 gap-3"
-                      : "space-y-3"
-                  }
-                >
-                  {group.politicians.map((p) => {
-                    const cardIndex = flatIndex++;
-                    return (
-                      <div
-                        key={p.id}
-                        role="radio"
-                        aria-checked={selectedPoliticianId === p.id}
-                        tabIndex={0}
-                        onClick={() => handleCardSelect(p.id)}
-                        onKeyDown={(e) => handleCardKeyDown(e, cardIndex, p.id)}
-                        className={[
-                          "w-full text-left p-4 rounded-lg border-2 transition-colors cursor-pointer",
-                          selectedPoliticianId === p.id
-                            ? "border-waldgruen bg-waldgruen/10"
-                            : "border-waldgruen/20 bg-creme hover:border-waldgruen/40",
-                        ].join(" ")}
+          {wahlkreisGroups.map((group) => (
+            <div key={group.wahlkreisId}>
+              <p className="font-body text-xs font-semibold uppercase tracking-wide text-warmgrau/55 mb-2 flex items-center gap-2">
+                <span className="h-px flex-shrink-0 w-3 bg-warmgrau/25" aria-hidden="true" />
+                Wahlkreis {group.wahlkreisId} · {group.wahlkreisName}
+              </p>
+              <div
+                className={
+                  cardsMultiCol
+                    ? "grid grid-cols-1 sm:grid-cols-2 gap-3"
+                    : "space-y-3"
+                }
+              >
+                {group.cards.map(({ politician: p, flatIndex }) => (
+                  <div
+                    key={p.id}
+                    role="radio"
+                    aria-checked={selectedPoliticianId === p.id}
+                    tabIndex={0}
+                    onClick={() => handleCardSelect(p.id)}
+                    onKeyDown={(e) => handleCardKeyDown(e, flatIndex, p.id)}
+                    className={[
+                      "w-full text-left p-4 rounded-lg border-2 transition-colors cursor-pointer",
+                      selectedPoliticianId === p.id
+                        ? "border-waldgruen bg-waldgruen/10"
+                        : "border-waldgruen/20 bg-creme hover:border-waldgruen/40",
+                    ].join(" ")}
+                  >
+                    {p.isDirect ? (
+                      <span className="inline-block font-body text-[11px] font-semibold uppercase tracking-wide text-waldgruen-dark bg-waldgruen/15 px-2 py-0.5 rounded mb-1.5">
+                        Direktmandat
+                      </span>
+                    ) : (
+                      <span className="inline-block font-body text-[11px] font-medium uppercase tracking-wide text-warmgrau/55 bg-warmgrau/10 px-2 py-0.5 rounded mb-1.5">
+                        über die Liste
+                      </span>
+                    )}
+                    <p className="font-body text-base font-semibold text-warmgrau">
+                      {p.title ? p.title + " " : ""}
+                      {p.firstName} {p.lastName}
+                    </p>
+                    <p className="font-body text-sm text-warmgrau mt-0.5">
+                      {formatPartyShort(p.party)}
+                    </p>
+                    {p.abgeordnetenwatchUrl && (
+                      <a
+                        href={p.abgeordnetenwatchUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        onClick={(e) => e.stopPropagation()}
+                        className="inline-flex items-center gap-1 font-body text-xs text-waldgruen hover:text-waldgruen-dark underline underline-offset-2 mt-2"
                       >
-                        {p.isDirect ? (
-                          <span className="inline-block font-body text-[11px] font-semibold uppercase tracking-wide text-waldgruen-dark bg-waldgruen/15 px-2 py-0.5 rounded mb-1.5">
-                            Direktmandat
-                          </span>
-                        ) : (
-                          <span className="inline-block font-body text-[11px] font-medium uppercase tracking-wide text-warmgrau/55 bg-warmgrau/10 px-2 py-0.5 rounded mb-1.5">
-                            über die Liste
-                          </span>
-                        )}
-                        <p className="font-body text-base font-semibold text-warmgrau">
-                          {p.title ? p.title + " " : ""}
-                          {p.firstName} {p.lastName}
-                        </p>
-                        <p className="font-body text-sm text-warmgrau mt-0.5">
-                          {formatPartyShort(p.party)}
-                        </p>
-                        {p.abgeordnetenwatchUrl && (
-                          <a
-                            href={p.abgeordnetenwatchUrl}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            onClick={(e) => e.stopPropagation()}
-                            className="inline-flex items-center gap-1 font-body text-xs text-waldgruen hover:text-waldgruen-dark underline underline-offset-2 mt-2"
-                          >
-                            Profil auf Abgeordnetenwatch.de
-                            <svg
-                              xmlns="http://www.w3.org/2000/svg"
-                              width="12"
-                              height="12"
-                              viewBox="0 0 24 24"
-                              fill="none"
-                              stroke="currentColor"
-                              strokeWidth="2"
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              aria-hidden="true"
-                            >
-                              <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
-                              <polyline points="15 3 21 3 21 9" />
-                              <line x1="10" y1="14" x2="21" y2="3" />
-                            </svg>
-                          </a>
-                        )}
-                      </div>
-                    );
-                  })}
-                </div>
+                        Profil auf Abgeordnetenwatch.de
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          width="12"
+                          height="12"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          aria-hidden="true"
+                        >
+                          <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
+                          <polyline points="15 3 21 3 21 9" />
+                          <line x1="10" y1="14" x2="21" y2="3" />
+                        </svg>
+                      </a>
+                    )}
+                  </div>
+                ))}
               </div>
-            ));
-          })()}
+            </div>
+          ))}
         </div>
 
         {/* Submit after selection - full width to match cards */}

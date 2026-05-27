@@ -55,11 +55,10 @@ const monate: Monat[] = [
     note: "Aus der Idee wird ein funktionierendes Werkzeug",
     entries: [
       "Briefversand per E-Mail eingebaut: Nutzer bekommen den fertigen Brief direkt ins Postfach, inklusive Anschrift und Anleitung zum Ausdrucken.",
-      "Whisper-Transkription integriert: Anliegen per Sprache eingeben, nicht nur per Text.",
+      "Spracheingabe integriert: Anliegen einsprechen statt tippen, die Transkription läuft über das europäische Modell Mistral Voxtral.",
       "Firefox-Kompatibilität gefixt: Das Hero-Video auf der Startseite lief in Firefox nicht, jetzt schon.",
       "Mistral-API mit automatischem Retry bei kurzfristigen Serverfehlern abgesichert, damit kein Brief stillschweigend verloren geht.",
       "E-Mail-Footer verfeinert: klarerer Hinweis auf den handschriftlichen Charakter und warum das zählt.",
-      "Em-Dashes aus allen Texten entfernt, weil sie in handschriftlichen Briefen falsch wirken.",
       "Datenschutz-Grundlage gelegt: keine Datenbank, kein Account, keine persistente Speicherung von Briefen.",
     ],
   },

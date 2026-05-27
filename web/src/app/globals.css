@@ -110,6 +110,21 @@ video::-webkit-media-controls-start-playback-button {
   -webkit-appearance: none;
 }
 
+/* ---------- /was-bisher-geschah timeline reveal ---------- */
+@keyframes log-rise {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.animate-log-rise {
+  animation: log-rise 620ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
 /* Respect users who don't want motion. */
 @media (prefers-reduced-motion: reduce) {
   .animate-feedback-in,
@@ -118,7 +133,8 @@ video::-webkit-media-controls-start-playback-button {
   .animate-twinkle,
   .animate-progress,
   .animate-envelope-fly-x,
-  .animate-envelope-fly-y {
+  .animate-envelope-fly-y,
+  .animate-log-rise {
     animation: none !important;
   }
 }

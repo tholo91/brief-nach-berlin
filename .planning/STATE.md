@@ -4,14 +4,14 @@ milestone: v1.0
 milestone_name: milestone
 status: executing
 stopped_at: Phase 02 UI-SPEC approved
-last_updated: "2026-05-12T20:35:00.000Z"
-last_activity: "2026-05-12 - Completed quick task 260512-vco: Stichpunkte-Botschaft auf Landingpage + Wizard klarstellen (User-Feedback)"
+last_updated: "2026-05-27T21:54:24.304Z"
+last_activity: 2026-05-27 -- Phase 04 execution started
 progress:
-  total_phases: 17
+  total_phases: 26
   completed_phases: 2
-  total_plans: 13
-  completed_plans: 7
-  percent: 54
+  total_plans: 18
+  completed_plans: 8
+  percent: 44
 ---
 
 # Project State
@@ -21,14 +21,14 @@ progress:
 See: .planning/PROJECT.md (updated 2026-04-10)
 
 **Core value:** A frustrated citizen can go from "this is broken" to "here's a letter to the person who can fix it" in under 3 minutes — with zero political knowledge required.
-**Current focus:** Phase 03 — email-delivery-privacy-compliance
+**Current focus:** Phase 04 — stadtstaaten-plz-wahlkreis-genauigkeit-und-wahlkreis-gruppie
 
 ## Current Position
 
-Phase: 999.1
-Plan: Not started
-Status: Executing Phase 03
-Last activity: 2026-05-27 - Completed quick task 260527-m36: E-Mail Footer MdB-Link inline + Resend mit Debug & Sterne vereinheitlichen
+Phase: 04 (stadtstaaten-plz-wahlkreis-genauigkeit-und-wahlkreis-gruppie) — EXECUTING
+Plan: 1 of 3
+Status: Executing Phase 04
+Last activity: 2026-05-27 -- Phase 04 execution started
 
 Progress: [░░░░░░░░░░] 0%
 
@@ -63,6 +63,10 @@ Recent decisions affecting current work:
 - Roadmap: PLZ-to-Wahlkreis preprocessing (shapefile → static JSON) placed in Phase 1 as data infrastructure prerequisite
 - Roadmap: Abgeordnetenwatch cache build placed in Phase 1 alongside data prep
 - Roadmap: Content safety (SAFE-01..03) placed in Phase 2 — must exist before any letter can be generated or shown
+
+### Roadmap Evolution
+
+- Phase 4 added: Stadtstaaten PLZ-Wahlkreis Genauigkeit und Wahlkreis-Gruppierung im Wizard (user-reported defect, Matthias 2026-05-27 — Stadtstaat PLZs surface 3-4 neighbouring Wahlkreise; fix = PLZ-polygon ∩ Wahlkreis-polygon intersection + group results by Wahlkreis in wizard)
 
 ### Pending Todos
 
@@ -99,4 +103,4 @@ Last session: 2026-04-13T19:27:19.652Z
 Stopped at: Phase 02 UI-SPEC approved
 Resume file: .planning/phases/02-core-engine/02-UI-SPEC.md
 
-**Planned Phase:** 999.6 (landtag-and-kommune-politician-coverage-expansion) — 5 plans — 2026-05-08T22:57:45.916Z
+**Planned Phase:** 4 (Stadtstaaten PLZ-Wahlkreis Genauigkeit und Wahlkreis-Gruppierung im Wizard) — 3 plans — 2026-05-27T21:50:31.369Z

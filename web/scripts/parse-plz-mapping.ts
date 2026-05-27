@@ -27,12 +27,20 @@
 import * as fs from "fs";
 import * as path from "path";
 import { parse } from "csv-parse/sync";
+import { intersect } from "@turf/intersect";
+import { area as turfArea } from "@turf/area";
+import { featureCollection } from "@turf/helpers";
+import type { Feature, Polygon, MultiPolygon } from "geojson";
 
 const DATA_DIR = path.resolve(__dirname, "../data");
 const BTW_CSV = path.join(DATA_DIR, "raw/btw25_wkr_gemeinden.csv");
 const GEONAMES_TXT = path.join(DATA_DIR, "raw/geonames_de.txt");
 const STADTSTAAT_POLYGONS = path.join(DATA_DIR, "raw/btw25-stadtstaaten-polygons.json");
+const PLZ_POLYGONS = path.join(DATA_DIR, "raw/plz-polygons-stadtstaaten.geojson");
 const OUT_FILE = path.join(DATA_DIR, "plz-wahlkreis-mapping.json");
+
+// Area-share threshold: keep a Wahlkreis if its overlap covers >= 10% of the PLZ area.
+const AREA_SHARE_THRESHOLD = 0.10;
 
 // AGS-5 codes for Berlin, Hamburg, Bremen (single Kreis per Stadtstaat).
 // Bundeswahlleiter CSV groups all Wahlkreise of a Stadtstaat under one of these
@@ -290,6 +298,80 @@ function main() {
   }
 
   // ---------------------------------------------------------------------
+  // 1c. Build turf-compatible feature maps for area-intersection path
+  // ---------------------------------------------------------------------
+  // PLZ polygon features indexed by postcode (from plz-polygons-stadtstaaten.geojson).
+  // The GeoJSON file uses standard [lon, lat] order.
+  const plzFeatureByCode = new Map<string, Feature<Polygon | MultiPolygon>>();
+  if (fs.existsSync(PLZ_POLYGONS)) {
+    const geojson = JSON.parse(fs.readFileSync(PLZ_POLYGONS, "utf-8")) as {
+      features: Array<{ properties: { postcode: string }; geometry: Polygon | MultiPolygon }>;
+    };
+    for (const feat of geojson.features) {
+      const code = feat.properties.postcode;
+      if (code) {
+        plzFeatureByCode.set(code, { type: "Feature", properties: feat.properties, geometry: feat.geometry });
+      }
+    }
+    console.log(`Loaded ${plzFeatureByCode.size} PLZ polygon features for area intersection`);
+  } else {
+    console.warn(`WARN: ${PLZ_POLYGONS} missing — area-intersection path unavailable, will use centroid fallback`);
+  }
+
+  // Wahlkreis polygon features indexed by wknr, with coordinate swap [lat,lon] -> [lon,lat].
+  // stadtstaatPolygons uses non-standard [lat, lon] rings; turf needs [lon, lat].
+  const wkFeatureByNr = new Map<number, Feature<Polygon | MultiPolygon>>();
+  for (const wk of stadtstaatPolygons) {
+    const geoRings = wk.rings.map((ring) =>
+      ring.map(([lat, lon]) => [lon, lat] as [number, number])
+    );
+    let geometry: Polygon | MultiPolygon;
+    if (geoRings.length === 1) {
+      geometry = { type: "Polygon", coordinates: [geoRings[0]] };
+    } else {
+      geometry = { type: "MultiPolygon", coordinates: geoRings.map((r) => [r]) };
+    }
+    wkFeatureByNr.set(wk.wknr, { type: "Feature", properties: { wknr: wk.wknr }, geometry });
+  }
+
+  /**
+   * Resolve a Stadtstaat PLZ to Wahlkreise by computing the area share of each
+   * candidate Wahlkreis polygon that overlaps the PLZ polygon.
+   * Returns null if the PLZ has no polygon (falls back to centroid path).
+   * Always keeps the dominant WK; also keeps any WK with >= AREA_SHARE_THRESHOLD share.
+   */
+  function resolveStadtstaatByArea(
+    plzCode: string,
+    expectedWks: Set<number>
+  ): Set<number> | null {
+    const plzFeat = plzFeatureByCode.get(plzCode);
+    if (!plzFeat) return null; // no polygon (Grossempfaenger) -> caller falls back
+    const plzArea = turfArea(plzFeat);
+    if (!(plzArea > 0)) return null;
+    const shares = new Map<number, number>();
+    for (const wknr of expectedWks) {
+      const wkFeat = wkFeatureByNr.get(wknr);
+      if (!wkFeat) continue;
+      let isect: Feature<Polygon | MultiPolygon> | null = null;
+      try {
+        isect = intersect(featureCollection([plzFeat, wkFeat])) as Feature<Polygon | MultiPolygon> | null;
+      } catch {
+        isect = null; // polyclip can throw on degenerate input -> treat as no overlap
+      }
+      if (!isect) continue;
+      const share = turfArea(isect) / plzArea;
+      if (share > 0) shares.set(wknr, share);
+    }
+    if (shares.size === 0) return null; // no overlap at all -> caller falls back to broad-match
+    const dominant = [...shares.entries()].reduce((a, b) => (b[1] > a[1] ? b : a))[0];
+    const result = new Set<number>();
+    for (const [wknr, share] of shares) {
+      if (share >= AREA_SHARE_THRESHOLD || wknr === dominant) result.add(wknr);
+    }
+    return result;
+  }
+
+  // ---------------------------------------------------------------------
   // 2. Walk Geonames → build PLZ → Wahlkreise
   // ---------------------------------------------------------------------
   const geonamesRaw = fs.readFileSync(GEONAMES_TXT, "utf-8");
@@ -368,39 +450,49 @@ function main() {
     }
     if (stadtstaatAgs && stadtstaatPolygons.length > 0) {
       const expectedWks = STADTSTAAT_WKS[stadtstaatAgs];
-      if (!isNaN(lat) && !isNaN(lon)) {
-        const k = coordKey(lat, lon);
-        if (imprecise.has(k)) {
-          // Imprecise placeholder centroid (shared across ≥2 PLZs in the
-          // same Stadtstaat). Use wider perturbation (~3km) to surface
-          // every Wahlkreis the cluster plausibly spans, then restrict to
-          // the matching Stadtstaat. If even the wide net misses, fall
-          // back to broad-matching the whole Stadtstaat.
-          const wide = locateWithPerturbation(lat, lon, stadtstaatPolygons, WIDE_PERTURBATIONS);
-          const filtered = new Set([...wide].filter((w) => expectedWks.has(w)));
-          wks = filtered.size > 0 ? filtered : new Set(expectedWks);
-          stadtstaatImprecise++;
-        } else {
-          const hits = locateWithPerturbation(lat, lon, stadtstaatPolygons);
-          // Restrict to expected Stadtstaat: a Hamburg PLZ shouldn't pick up
-          // a Berlin Wahlkreis even if the polygons happened to overlap.
-          const filtered = new Set([...hits].filter((w) => expectedWks.has(w)));
-          if (filtered.size > 0) {
-            wks = filtered;
-            stadtstaatPolygonHit++;
-          } else {
-            // Polygon doesn't contain this PLZ's coordinates anywhere in the
-            // expected Stadtstaat — Geonames lat/lon is for a foreign
-            // Großempfänger HQ. Broad-match within the Stadtstaat so the
-            // user gets all candidates, not a wrong-confident foreign one.
-            wks = new Set(expectedWks);
-            stadtstaatPolygonMiss++;
-          }
-        }
+      // Primary path: PLZ-area polygon intersection (precise, O(PLZ x WK)).
+      // Falls back to centroid+perturbation for PLZs absent from the polygon
+      // dataset (Grossempfaenger, foreign coords) so no result is ever empty.
+      const byArea = resolveStadtstaatByArea(plz, expectedWks);
+      if (byArea !== null && byArea.size > 0) {
+        wks = byArea;
+        stadtstaatPolygonHit++;
       } else {
-        // No usable coords at all → broad-match by PLZ-range membership.
-        wks = new Set(expectedWks);
-        stadtstaatPolygonMiss++;
+        // Fallback: centroid + perturbation (preserves Grossempfaenger handling).
+        if (!isNaN(lat) && !isNaN(lon)) {
+          const k = coordKey(lat, lon);
+          if (imprecise.has(k)) {
+            // Imprecise placeholder centroid (shared across >= 2 PLZs in the
+            // same Stadtstaat). Use wider perturbation (~3km) to surface
+            // every Wahlkreis the cluster plausibly spans, then restrict to
+            // the matching Stadtstaat. If even the wide net misses, fall
+            // back to broad-matching the whole Stadtstaat.
+            const wide = locateWithPerturbation(lat, lon, stadtstaatPolygons, WIDE_PERTURBATIONS);
+            const filtered = new Set([...wide].filter((w) => expectedWks.has(w)));
+            wks = filtered.size > 0 ? filtered : new Set(expectedWks);
+            stadtstaatImprecise++;
+          } else {
+            const hits = locateWithPerturbation(lat, lon, stadtstaatPolygons);
+            // Restrict to expected Stadtstaat: a Hamburg PLZ shouldn't pick up
+            // a Berlin Wahlkreis even if the polygons happened to overlap.
+            const filtered = new Set([...hits].filter((w) => expectedWks.has(w)));
+            if (filtered.size > 0) {
+              wks = filtered;
+              stadtstaatPolygonMiss++;
+            } else {
+              // Polygon doesn't contain this PLZ's coordinates anywhere in the
+              // expected Stadtstaat — Geonames lat/lon is for a foreign
+              // Grossempfaenger HQ. Broad-match within the Stadtstaat so the
+              // user gets all candidates, not a wrong-confident foreign one.
+              wks = new Set(expectedWks);
+              stadtstaatPolygonMiss++;
+            }
+          }
+        } else {
+          // No usable coords at all -> broad-match by PLZ-range membership.
+          wks = new Set(expectedWks);
+          stadtstaatPolygonMiss++;
+        }
       }
     }
 
@@ -505,7 +597,7 @@ function main() {
   for (const check of [
     "47167", "80331", "25836",                    // non-Stadtstaat regression
     "10115", "10997", "10243", "12043", "13347",  // Berlin
-    "20095", "21149",                              // Hamburg
+    "20095", "21149", "20249", "22417", "20354",   // Hamburg
     "28195", "28213", "28717", "27568",            // Bremen + Bremerhaven
     "22033", "11512", "22781",                     // Großempfänger (should be dropped)
   ]) {

@@ -67,9 +67,9 @@
   },
   {
     "plz": "10997",
-    "expectedMinPoliticianCount": 1,
-    "expectedMinWahlkreisCount": 1,
-    "category": "ambiguous-multi-wahlkreis"
+    "expectedWahlkreisIds": [82],
+    "expectedPoliticianLastNames": ["Meiser"],
+    "category": "single-wahlkreis"
   },
   {
     "plz": "28195",

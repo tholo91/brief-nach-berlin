@@ -259,8 +259,17 @@ export default async function WasBisherGeschahPage() {
                 <span className="block h-3 w-3 rounded-full bg-waldgruen/30" />
               </div>
               <p className="font-handwriting text-lg text-warmgrau/70 leading-snug">
-                Hier fing alles an. Weiter geht es Monat für Monat.
+                Hier fing alles an, mit einem Telefonat mit meiner Mutter.
               </p>
+              <Link
+                href="/warum"
+                className="group mt-1 inline-flex items-center gap-1 font-typewriter text-sm font-bold text-waldgruen hover:text-waldgruen-dark transition-colors"
+              >
+                Warum es das gibt
+                <span className="transition-transform group-hover:translate-x-1">
+                  &rarr;
+                </span>
+              </Link>
             </div>
           </div>
         </div>
@@ -282,6 +291,12 @@ export default async function WasBisherGeschahPage() {
             Brief schreiben &rarr;
           </Link>
         </div>
+
+        {/* Für Verirrte: die Kurz-Domain */}
+        <p className="mt-12 text-center font-typewriter text-xs text-warmgrau/50 leading-relaxed">
+          Über briefnachberlin.de hergefunden? Beide Adressen führen hierher,
+          offiziell ist brief-nach-berlin.de.
+        </p>
       </div>
     </div>
   );

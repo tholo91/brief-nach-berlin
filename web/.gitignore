@@ -53,3 +53,4 @@ next-env.d.ts
 # Exception: small Stadtstaat polygon file from bundestag.de (~150KB, stable
 # per BTW cycle). Committed so build:plz works on a fresh checkout.
 !/data/raw/btw25-stadtstaaten-polygons.json
+!/data/raw/plz-polygons-stadtstaaten.geojson

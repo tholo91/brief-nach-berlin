@@ -1,5 +1,7 @@
 import { BrevoClient } from "@getbrevo/brevo";
 import { buildEmailHtml } from "./buildEmailHtml";
+import { signFeedbackToken } from "@/lib/feedback/token";
+import type { Politician } from "@/lib/types/politician";
 import { EMAIL_SUBJECT, EMAIL_SENDER_NAME } from "@/lib/config";
 
 const apiKey = process.env.BREVO_API_KEY;
@@ -65,6 +67,40 @@ export interface SendLetterEmailParams {
   // to authenticate clicks to /feedback. Missing in legacy callers (resend);
   // when missing, the star bar is omitted from the rendered email.
   feedbackToken?: string;
+}
+
+// Gemeinsamer Versand-Tail für Erst- UND Resend-Pfad: mappt einen Politician +
+// Brieftext + (bereits gebaute) Debug-Payload auf das SendLetterEmailParams-Objekt
+// und signiert den feedbackToken. Damit lebt die E-Mail-Form an genau EINER Stelle.
+// Die Debug-Payload selbst bleibt pfad-spezifisch (Generierung vs. Resend), den
+// signierten Token gibt die Funktion zurück, weil der Erstversand ihn zusätzlich
+// für die Followup-Mail wiederverwendet.
+export function prepareLetterEmail(args: {
+  recipientEmail: string;
+  politician: Politician;
+  letterText: string;
+  issueText: string;
+  debug: LetterDebugPayload;
+}): { params: SendLetterEmailParams; feedbackToken: string } {
+  const { recipientEmail, politician, letterText, issueText, debug } = args;
+  const feedbackToken = signFeedbackToken(debug);
+  return {
+    feedbackToken,
+    params: {
+      recipientEmail,
+      politicianName: `${politician.firstName} ${politician.lastName}`,
+      politicianFirstName: politician.firstName,
+      politicianLastName: politician.lastName,
+      politicianTitle: politician.title,
+      politicianParty: politician.party,
+      politicianPostalAddress: politician.postalAddress,
+      politicianAbgeordnetenwatchUrl: politician.abgeordnetenwatchUrl,
+      letterText,
+      issueText,
+      debug,
+      feedbackToken,
+    },
+  };
 }
 
 

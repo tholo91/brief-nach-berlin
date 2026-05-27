@@ -4,9 +4,8 @@ import type { WizardData } from "@/lib/types/wizard";
 import { step1Schema, step1bSchema, step2Schema } from "@/lib/validation/wizardSchemas";
 import { moderateText } from "@/lib/moderation/moderateText";
 import { lookupPLZ } from "@/lib/lookup/plzLookup";
-import { sendLetterEmail } from "@/lib/email/sendLetterEmail";
+import { sendLetterEmail, prepareLetterEmail } from "@/lib/email/sendLetterEmail";
 import { buildResendDebugPayload } from "@/lib/email/buildDebugPayload";
-import { signFeedbackToken } from "@/lib/feedback/token";
 import { DEFAULT_LETTER_LENGTH } from "@/lib/config";
 import { checkRateLimit, getClientIp, LIMITS } from "@/lib/rateLimit";
 
@@ -100,22 +99,15 @@ export async function resendLetterAction(
       derivedPoliticians.length,
       cachedLetterText
     );
-    const feedbackToken = signFeedbackToken(debugPayload);
-
-    const emailResult = await sendLetterEmail({
+    const { params } = prepareLetterEmail({
       recipientEmail: data.email,
-      politicianName: `${politician.firstName} ${politician.lastName}`,
-      politicianFirstName: politician.firstName,
-      politicianLastName: politician.lastName,
-      politicianTitle: politician.title,
-      politicianParty: politician.party,
-      politicianPostalAddress: politician.postalAddress,
-      politicianAbgeordnetenwatchUrl: politician.abgeordnetenwatchUrl,
+      politician,
       letterText: cachedLetterText,
       issueText: data.issueText,
       debug: debugPayload,
-      feedbackToken,
     });
+
+    const emailResult = await sendLetterEmail(params);
 
     if (!emailResult.success) {
       console.error("[resendLetter] email send failed");

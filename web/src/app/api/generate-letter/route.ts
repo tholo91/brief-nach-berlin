@@ -5,11 +5,10 @@ import { lookupPLZ } from "@/lib/lookup/plzLookup";
 import { moderateText } from "@/lib/moderation/moderateText";
 import { generateLetter } from "@/lib/generation/generateLetter";
 import { fetchMdbContext } from "@/lib/enrichment/fetchMdbContext";
-import { sendLetterEmail } from "@/lib/email/sendLetterEmail";
+import { sendLetterEmail, prepareLetterEmail } from "@/lib/email/sendLetterEmail";
 import { sendFollowupEmail } from "@/lib/email/sendFollowupEmail";
 import { computeFollowupSlot } from "@/lib/email/computeFollowupSlot";
 import { buildDebugPayload } from "@/lib/email/buildDebugPayload";
-import { signFeedbackToken } from "@/lib/feedback/token";
 import { checkRateLimit, LIMITS } from "@/lib/rateLimit";
 import { DEFAULT_LETTER_LENGTH } from "@/lib/config";
 import { MistralProviderUnavailableError } from "@/lib/mistral";
@@ -116,24 +115,17 @@ export async function POST(req: NextRequest) {
     after(async () => {
       await incrementLetterCount();
       const debugPayload = buildDebugPayload(data, result, derivedPoliticians.length);
-      const feedbackToken = signFeedbackToken(debugPayload);
       const politicianFullName = `${result.selectedPolitician.firstName} ${result.selectedPolitician.lastName}`;
+      const { params, feedbackToken } = prepareLetterEmail({
+        recipientEmail: data.email,
+        politician: result.selectedPolitician,
+        letterText: result.letter,
+        issueText: data.issueText,
+        debug: debugPayload,
+      });
 
       const sends: Array<Promise<{ success: boolean; messageId?: string }>> = [
-        sendLetterEmail({
-          recipientEmail: data.email,
-          politicianName: politicianFullName,
-          politicianFirstName: result.selectedPolitician.firstName,
-          politicianLastName: result.selectedPolitician.lastName,
-          politicianTitle: result.selectedPolitician.title,
-          politicianParty: result.selectedPolitician.party,
-          politicianPostalAddress: result.selectedPolitician.postalAddress,
-          politicianAbgeordnetenwatchUrl: result.selectedPolitician.abgeordnetenwatchUrl,
-          letterText: result.letter,
-          issueText: data.issueText,
-          debug: debugPayload,
-          feedbackToken,
-        }),
+        sendLetterEmail(params),
       ];
 
       // Ziel: 9:45 Berlin-Zeit an Tag+3 (Frühstücks-Inbox statt nachts).

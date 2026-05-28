@@ -275,6 +275,15 @@ export function WizardShell() {
             result={actionResult}
             wizardData={wizardData as WizardData}
             politicians={politicians}
+            onChangePlz={
+              actionResult && "disambiguationNeeded" in actionResult && actionResult.disambiguationNeeded
+                ? () => {
+                    setActionResult(null);
+                    setPoliticians([]);
+                    setStep(2);
+                  }
+                : undefined
+            }
           />
         )}
       </div>

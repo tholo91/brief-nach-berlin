@@ -70,9 +70,10 @@ interface Step3SuccessProps {
   result: WizardActionResult | null;
   wizardData: WizardData;
   politicians: Politician[];
+  onChangePlz?: () => void;
 }
 
-export function Step3Success({ result, wizardData, politicians }: Step3SuccessProps) {
+export function Step3Success({ result, wizardData, politicians, onChangePlz }: Step3SuccessProps) {
   // Pre-select the first Direktmandat-holder so users land on the most
   // politically relevant option without an extra click. If no Direktmandat
   // exists (Wahlrechtsreform 2025: 23 Wahlkreise sind unbesetzt), the user
@@ -718,11 +719,34 @@ export function Step3Success({ result, wizardData, politicians }: Step3SuccessPr
   if ("disambiguationNeeded" in result && result.disambiguationNeeded) {
     return (
       <div>
+        {onChangePlz && (
+          <button
+            type="button"
+            onClick={onChangePlz}
+            className="font-body text-sm text-warmgrau/60 hover:text-warmgrau transition-colors mb-6 cursor-pointer flex items-center gap-1"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="14"
+              height="14"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              aria-hidden="true"
+            >
+              <path d="m15 18-6-6 6-6" />
+            </svg>
+            PLZ ändern
+          </button>
+        )}
         <h1 className="font-typewriter text-[28px] font-semibold leading-[1.2] text-waldgruen-dark">
           Wer vertritt deinen Wahlkreis?
         </h1>
         <p className="font-body text-base text-warmgrau mt-2">
-          Deine PLZ gehört zu mehreren Wahlkreisen. Wir haben die direkt gewählte Person vorausgewählt. Du kannst aber auch jemand anderen wählen.
+          Deine PLZ {wizardData.plz} gehört zu mehreren Wahlkreisen. Das MdB mit Direktmandat ist vorausgewählt. Du kannst aber auch jemand anderen wählen.
         </p>
 
         {/* Error banner */}

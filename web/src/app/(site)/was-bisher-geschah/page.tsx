@@ -46,6 +46,7 @@ const monate: Monat[] = [
       "E-Mail nach dem Briefversand überarbeitet: Footer mit direktem Link zur Abgeordneten-Seite, Sterne-Bewertung direkt in der Mail.",
       "Briefvorschau und Verbesserungs-Vorschläge auf Mobilgeräten benutzerfreundlicher gemacht.",
       "Postleitzahlen in Stadtstaaten wie Berlin, Hamburg und Bremen genauer aufgelöst, damit der Brief beim richtigen Wahlkreis landet.",
+      "Auswahl der Abgeordneten klarer gemacht: Bei mehreren Wahlkreisen werden die Politiker nach Wahlkreis gruppiert und als Direktmandat oder Listenplatz gekennzeichnet, und du kannst die Postleitzahl mit einem Klick korrigieren.",
       "Wechsel von 'wir' auf 'ich' auf der Startseite und allen Unterseiten, weil Brief nach Berlin ein Solo-Projekt ist.",
     ],
   },

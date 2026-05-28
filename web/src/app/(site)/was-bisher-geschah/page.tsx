@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import type { Metadata } from "next";
 import { APP_URL } from "@/lib/config";
@@ -149,6 +150,18 @@ export default async function WasBisherGeschahPage() {
           Ich baue offen. Hier steht, was ich bisher gebaut, verbessert und
           gelernt habe, Monat für Monat.
         </p>
+
+        <figure className="mb-12 -mx-2 sm:mx-0">
+          <Image
+            src="/images/img-was-bisher-geschah.webp"
+            alt="Offenes Tagebuch mit handgeschriebenen Seiten auf einem Holztisch, dahinter das Berliner Panorama mit dem Reichstag im Morgenlicht."
+            width={1376}
+            height={700}
+            sizes="(min-width: 768px) 42rem, 100vw"
+            className="w-full h-auto rounded-2xl shadow-sm"
+            priority
+          />
+        </figure>
 
         {/* Trust-Statistik: belegt, dass hinter den Bewertungen echte Arbeit steckt */}
         <div className="mb-10 flex flex-wrap items-stretch gap-y-4 border-y border-waldgruen/15 py-6">

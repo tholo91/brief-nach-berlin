@@ -888,6 +888,9 @@ export function Step3Success({ result, wizardData, politicians, onChangePlz }: S
                 "Brief erstellen"
               )}
             </button>
+            <p className="text-xs text-warmgrau/60 mt-3 text-center">
+              Du siehst den Entwurf zuerst und kannst ihn anpassen, bevor du ihn abschickst.
+            </p>
           </div>
         )}
       </div>

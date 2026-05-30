@@ -33,7 +33,7 @@ export const metadata: Metadata = {
 const faqs = [
   {
     q: "Welche KI nutzt Brief-nach-Berlin?",
-    a: "Brief-nach-Berlin generiert die Brief-Entwürfe mit Mistral, einem KI-Anbieter mit Sitz in Paris. Konkret läuft die Textgenerierung über das Modell mistral-medium, die Inhaltsprüfung über mistral-moderation. Alle Aufrufe gehen direkt an Mistrals API in der EU.",
+    a: "Brief-nach-Berlin generiert die Brief-Entwürfe mit Mistral, einem KI-Anbieter mit Sitz in Paris. Konkret läuft die Textgenerierung über das Modell mistral-small, die Inhaltsprüfung über mistral-moderation. Alle Aufrufe gehen direkt an Mistrals API in der EU.",
   },
   {
     q: "Warum nicht OpenAI oder ein anderes US-Modell?",
@@ -129,7 +129,7 @@ export default function KiTransparenzPage() {
                 Mistral
               </a>
               , einem KI-Anbieter mit Sitz in Paris. Konkret läuft die
-              Textgenerierung über das Modell <em>mistral-medium</em>, die
+              Textgenerierung über das Modell <em>mistral-small</em>, die
               Inhaltsprüfung über <em>mistral-moderation</em>. Beide Aufrufe
               gehen direkt an Mistrals API in der EU. Kein Umweg über andere
               Anbieter, kein Zwischenspeichern, keine Trainingsdaten aus deinen

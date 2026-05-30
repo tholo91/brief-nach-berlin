@@ -258,7 +258,7 @@ export default function Datenschutz() {
               Empfänger: Mistral AI, 15 rue des Halles, 75001 Paris, Frankreich.
               Eingesetzte Modelle: <em>mistral-small-latest</em> (Briefe),{" "}
               <em>mistral-moderation-latest</em> (Inhaltsprüfung),{" "}
-              <em>voxtral-mini-transcribe-2507</em> (Spracherkennung).
+              <em>voxtral-mini-latest</em> (Spracherkennung).
               Serverstandort: Europäische Union (Frankreich). Es findet kein
               Drittlandtransfer statt.
             </p>

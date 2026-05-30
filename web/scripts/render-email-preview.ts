@@ -11,6 +11,7 @@ import { writeFileSync } from "node:fs";
 import { createHmac } from "node:crypto";
 import { buildEmailHtml } from "../src/lib/email/buildEmailHtml";
 import type { LetterDebugPayload } from "../src/lib/email/sendLetterEmail";
+import { MISTRAL_MODELS } from "../src/lib/mistral";
 
 // Inline the token signing (token.ts uses "server-only" which can't run outside Next.js).
 function signFeedbackToken(payload: object): string {
@@ -54,7 +55,7 @@ const debugPayload: LetterDebugPayload = {
   representativeParty: "SPD",
   mdbContextUsed: true,
   availablePoliticianCount: 2,
-  model: "mistral-medium-latest",
+  model: MISTRAL_MODELS.letter,
   temperature: 0.7,
   generationMs: 4321,
   hasName: true,

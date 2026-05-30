@@ -2,6 +2,17 @@ import { Mistral } from "@mistralai/mistralai";
 
 export const mistral = new Mistral({ apiKey: process.env.MISTRAL_API_KEY });
 
+// Source of truth for Mistral model IDs. Touched here, mirrored in
+// datenschutz/page.tsx + ki-transparenz/page.tsx + .env.example.
+// Reviewed 2026-05-30 after Mistral deprecation email. Next review:
+// before 2026-08-31 (mistral-medium-2508 retirement) or the next email.
+export const MISTRAL_MODELS = {
+  letter: "mistral-medium-latest",
+  moderation: "mistral-moderation-latest",
+  transcription: "voxtral-mini-transcribe-2507",
+  levelRouting: "mistral-small-latest",
+} as const;
+
 const RETRYABLE_HTTP_STATUS = new Set([408, 429, 500, 502, 503, 504]);
 const RETRYABLE_NETWORK_CODES = new Set([
   "ECONNRESET",

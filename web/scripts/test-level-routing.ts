@@ -16,6 +16,7 @@
 import * as fs from "node:fs";
 import * as path from "node:path";
 import { Mistral } from "@mistralai/mistralai";
+import { MISTRAL_MODELS } from "../src/lib/mistral";
 
 // --- Load .env.local manually (tsx doesn't auto-load) -----------------------
 const envPath = path.resolve(__dirname, "../.env.local");
@@ -196,7 +197,7 @@ const REASONING_REGEX = /^[\p{L}\p{N}\s,.\-:;()äöüÄÖÜß]+$/u;
 async function runOne(tc: TestCase): Promise<Result> {
   try {
     const res = await mistral.chat.complete({
-      model: "mistral-small-latest",
+      model: MISTRAL_MODELS.levelRouting,
       temperature: 0.1,
       responseFormat: { type: "json_object" },
       messages: [
@@ -266,7 +267,7 @@ async function runOne(tc: TestCase): Promise<Result> {
 async function main() {
   console.log(`# G1 Pre-Execution Gate (Re-Test 2026-05-21) - Routing Accuracy Test\n`);
   console.log(`Run: ${new Date().toISOString()}`);
-  console.log(`Model: mistral-small-latest, temperature 0.1`);
+  console.log(`Model: ${MISTRAL_MODELS.levelRouting}, temperature 0.1`);
   const unambigCount = cases.filter((c) =>
     c.category === "Bund-unambiguous" ||
     c.category === "Land-unambiguous" ||

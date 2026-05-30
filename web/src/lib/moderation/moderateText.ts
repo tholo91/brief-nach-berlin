@@ -1,4 +1,4 @@
-import { mistral } from "@/lib/mistral";
+import { mistral, MISTRAL_MODELS } from "@/lib/mistral";
 
 export interface ModerationResult {
   flagged: boolean;
@@ -7,7 +7,7 @@ export interface ModerationResult {
 
 export async function moderateText(text: string): Promise<ModerationResult> {
   const response = await mistral.classifiers.moderate({
-    model: "mistral-moderation-latest",
+    model: MISTRAL_MODELS.moderation,
     inputs: [text],
   });
   const result = response.results[0];

@@ -1,9 +1,8 @@
-import { mistral, withMistralRetry } from "@/lib/mistral";
+import { mistral, withMistralRetry, MISTRAL_MODELS } from "@/lib/mistral";
 import type { GenerateLetterInput, GenerateLetterResult, MdbContext } from "@/lib/types/wizard";
 import type { PoliticalLevel } from "@/lib/types/politician";
 import { LETTER_LENGTHS, DEFAULT_LETTER_LENGTH } from "@/lib/config";
 
-const MISTRAL_MODEL = "mistral-medium-latest";
 const MISTRAL_TEMPERATURE = 0.4;
 
 interface ToneRegister {
@@ -317,7 +316,7 @@ export async function generateLetter(
 
   const firstResponse = await withMistralRetry("generateLetter:first", () =>
     mistral.chat.complete({
-      model: MISTRAL_MODEL,
+      model: MISTRAL_MODELS.letter,
       messages: [
         { role: "system", content: systemPrompt },
         { role: "user", content: userPrompt },
@@ -360,7 +359,7 @@ export async function generateLetter(
 
     const retryResponse = await withMistralRetry("generateLetter:length-retry", () =>
       mistral.chat.complete({
-        model: MISTRAL_MODEL,
+        model: MISTRAL_MODELS.letter,
         messages: [
           { role: "system", content: systemPrompt },
           { role: "user", content: userPrompt },
@@ -447,7 +446,7 @@ export async function generateLetter(
     fallbackUsed,
     mdbContextUsed,
     retried,
-    model: MISTRAL_MODEL,
+    model: MISTRAL_MODELS.letter,
     temperature: MISTRAL_TEMPERATURE,
     generationMs: Date.now() - generationStart,
   };

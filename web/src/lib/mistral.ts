@@ -9,7 +9,7 @@ export const mistral = new Mistral({ apiKey: process.env.MISTRAL_API_KEY });
 export const MISTRAL_MODELS = {
   letter: "mistral-medium-latest",
   moderation: "mistral-moderation-latest",
-  transcription: "voxtral-mini-transcribe-2507",
+  transcription: "voxtral-mini-latest",
   levelRouting: "mistral-small-latest",
 } as const;
 

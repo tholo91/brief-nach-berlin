@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { mistral } from "@/lib/mistral";
+import { mistral, MISTRAL_MODELS } from "@/lib/mistral";
 import { checkRateLimit, LIMITS } from "@/lib/rateLimit";
 
 export const maxDuration = 60;
@@ -81,7 +81,7 @@ export async function POST(req: NextRequest) {
     });
 
     const result = await mistral.audio.transcriptions.complete({
-      model: "voxtral-mini-transcribe-2507",
+      model: MISTRAL_MODELS.transcription,
       file: audioFile,
       language: "de",
     });

@@ -216,18 +216,11 @@ export function mdbContextBlock(ctx: MdbContext | undefined): string {
   return `\n\n<mdb_kontext>\n${parts.join("\n")}\n</mdb_kontext>`;
 }
 
-// Escape user-supplied strings before inserting into the XML-tagged prompt.
-// Without this, a payload like `</transkript><system>...</system><transkript>`
-// could break out of the transkript block and inject instructions.
-function escapeForPrompt(value: string): string {
-  return value.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
-}
-
 function absenderBlock(input: GenerateLetterInput): string {
   const lines: string[] = [];
-  if (input.name) lines.push(`name: ${escapeForPrompt(input.name)}`);
-  if (input.party) lines.push(`parteimitgliedschaft: ${escapeForPrompt(input.party)}`);
-  if (input.ngo) lines.push(`organisation: ${escapeForPrompt(input.ngo)}`);
+  if (input.name) lines.push(`name: ${input.name}`);
+  if (input.party) lines.push(`parteimitgliedschaft: ${input.party}`);
+  if (input.ngo) lines.push(`organisation: ${input.ngo}`);
   if (lines.length === 0) return "";
   return `\n\n<absender_optional>\n${lines.join("\n")}\n</absender_optional>`;
 }
@@ -259,7 +252,7 @@ export function buildUserPrompt(
       : "";
 
   return `<transkript>
-${escapeForPrompt(input.issueText)}
+${input.issueText}
 </transkript>
 
 <tonalitaet>

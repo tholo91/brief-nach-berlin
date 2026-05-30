@@ -83,16 +83,6 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Politiker nicht gefunden." }, { status: 400 });
     }
 
-    // Moderate user input before sending it to the LLM. Prevents toxic content
-    // from being passed to Mistral and gives a server-side log of flagged attempts.
-    const inputModeration = await moderateText(data.issueText);
-    if (inputModeration.flagged) {
-      return NextResponse.json(
-        { error: "Dein Anliegen enthält Formulierungen, die wir so nicht weiterverarbeiten können. Bitte formuliere es sachlich um und versuche es erneut." },
-        { status: 422 }
-      );
-    }
-
     // Enrich with MdB context (silent failure: letter still ships if slow/unreachable)
     const mdbContext = await fetchMdbContext(
       selectedPolitician.id,

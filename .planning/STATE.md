@@ -5,7 +5,7 @@ milestone_name: milestone
 status: executing
 stopped_at: Phase 02 UI-SPEC approved
 last_updated: "2026-05-27T21:54:24.304Z"
-last_activity: 2026-05-27 -- Phase 04 execution started
+last_activity: 2026-05-30 -- Completed quick task 260530-kk4: Mistral model migration
 progress:
   total_phases: 26
   completed_phases: 2
@@ -97,6 +97,7 @@ Recent decisions affecting current work:
 | 260527-fast | Hero sub-headlines 5→4 + Art. 17 GG variant (inspired by liebemdb competitor analysis) | 2026-05-27 | b29e24c | (gsd-fast, no PLAN.md) |
 | 260527-wu1 | Subpage /was-bisher-geschah: kuratiertes, monatsgruppiertes Fortschritts-Log aus Git-Historie + Footer-Link + Sitemap | 2026-05-27 | 27a7557 | [260527-wu1-subpage-was-bisher-geschah-kuratiertes-f](./quick/260527-wu1-subpage-was-bisher-geschah-kuratiertes-f/) |
 | 260527-m36 | E-Mail Footer MdB-Link inline + Resend mit Debug & Sterne vereinheitlichen | 2026-05-27 | 755b077 | [260527-m36-e-mail-footer-mdb-link-inline-resend-mit](./quick/260527-m36-e-mail-footer-mdb-link-inline-resend-mit/) |
+| 260530-kk4 | Mistral model migration: centralize IDs + URGENT voxtral swap + switch letter gen to small+reasoning_effort=high | 2026-05-30 | ac5b9d3 | [260530-kk4-mistral-model-migration-centralize-ids-i](./quick/260530-kk4-mistral-model-migration-centralize-ids-i/) |
 
 ## Session Continuity
 

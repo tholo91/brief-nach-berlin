@@ -4,12 +4,14 @@ slug: mistral-model-migration-centralize-ids-i
 completed: 2026-05-30
 status: complete
 commits:
-  - b712e5e fix(letter): escape prompt XML + moderate input before generation
-  - ef7e429 chore(wizard): hint that draft is editable before sending
   - d2a8646 chore(mistral): centralize model IDs in lib/mistral.ts
   - 8aa6f7d fix(transcribe): migrate voxtral-mini-transcribe-2507 → voxtral-mini-latest
   - 1f89f83 feat(letter): switch to mistral-small-latest with reasoning_effort=high
   - ac5b9d3 docs(transparency): align DSGVO + KI-transparenz copy with current model IDs
+side_commits:
+  - b712e5e fix(letter): escape prompt XML + moderate input before generation [REVERTED in 49241ce]
+  - ef7e429 chore(wizard): hint that draft is editable before sending
+  - 49241ce revert(letter): remove input moderation + prompt XML escape (Thomas, post-review)
 ---
 
 # Summary: Mistral Model Migration
@@ -25,8 +27,8 @@ commits:
 
 Two unrelated commits cleared first so the migration tree was clean:
 
-- **b712e5e** — input moderation + prompt-injection XML escape in the letter pipeline (security hardening).
-- **ef7e429** — one-line reassurance under Step3 generate button.
+- **b712e5e** — input moderation + prompt-injection XML escape (security hardening). **Subsequently reverted by Thomas in 49241ce** after threat-model review: input moderation duplicated existing output moderation; XML escape risked artifacts in legitimate German strings ("Müller & Co.", URLs); blast radius is the user themselves (the letter goes back to their own browser, not directly to the politician).
+- **ef7e429** — one-line reassurance under Step3 generate button. Kept.
 
 ## Verification done
 

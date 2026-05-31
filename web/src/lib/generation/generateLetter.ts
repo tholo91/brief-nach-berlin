@@ -317,7 +317,6 @@ export async function generateLetter(
       responseFormat: { type: "json_object" },
       temperature: MISTRAL_TEMPERATURE,
       maxTokens,
-      reasoningEffort: "high",
     })
   );
 
@@ -363,7 +362,6 @@ export async function generateLetter(
         responseFormat: { type: "json_object" },
         temperature: MISTRAL_TEMPERATURE,
         maxTokens,
-        reasoningEffort: "high",
       })
     );
 

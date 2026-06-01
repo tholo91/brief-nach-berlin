@@ -153,6 +153,15 @@ export function Step3Success({ result, wizardData, politicians, onChangePlz }: S
   }, [generationComplete]);
 
   const webmail = resolveWebmail(wizardData.email);
+  // iOS: message:// opens Apple Mail's inbox directly, no domain sniffing
+  // needed. Android has no equivalent universal scheme, so we fall back to
+  // the provider-specific webmail URL.
+  const [isIOS, setIsIOS] = useState(false);
+  useEffect(() => {
+    const ua = navigator.userAgent;
+    setIsIOS(/iPad|iPhone|iPod/.test(ua) || (ua.includes("Mac") && "ontouchend" in document));
+  }, []);
+  const mailAppHref = isIOS ? "message://" : webmail?.url ?? null;
 
   // Smooth-scroll the submit button into view after a card is picked, so users
   // on long lists don't have to hunt for the next step. Honor
@@ -445,6 +454,10 @@ export function Step3Success({ result, wizardData, politicians, onChangePlz }: S
 
   const emailShareHref = SHARE_URL_EMAIL;
 
+  const founderFeedbackUrl = wizardData.email
+    ? `${FOUNDER_FEEDBACK_URL}?email=${encodeURIComponent(wizardData.email)}`
+    : FOUNDER_FEEDBACK_URL;
+
   if (!result) return null;
 
   // Sub-state C: Level data missing (D-07)
@@ -541,11 +554,11 @@ export function Step3Success({ result, wizardData, politicians, onChangePlz }: S
             expose the user's email provider in the UI. */}
         <div className={`transition-opacity duration-500 ${letterReady ? "opacity-100" : "opacity-0 pointer-events-none select-none"}`}>
           <div className="mt-3 flex items-center justify-center gap-4">
-            {webmail && (
+            {mailAppHref && (
               <a
-                href={webmail.url}
-                target="_blank"
-                rel="noopener noreferrer"
+                href={mailAppHref}
+                target={isIOS ? undefined : "_blank"}
+                rel={isIOS ? undefined : "noopener noreferrer"}
                 className="sm:hidden inline-flex items-center gap-1.5 font-body text-sm font-semibold text-waldgruen-dark px-3 py-1.5 rounded-lg border border-waldgruen/30 hover:bg-waldgruen/5 transition-colors"
               >
                 <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
@@ -601,7 +614,7 @@ export function Step3Success({ result, wizardData, politicians, onChangePlz }: S
                         {resendLimitMessage ?? "Wir haben dir den Brief jetzt mehrfach gesendet. Bitte prüfe noch einmal deinen Spam-Ordner und die E-Mail-Adresse."}
                       </p>
                       <a
-                        href={FOUNDER_FEEDBACK_URL}
+                        href={founderFeedbackUrl}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="inline-block font-body text-sm font-semibold text-waldgruen underline underline-offset-2 hover:text-waldgruen-dark"
@@ -827,7 +840,7 @@ export function Step3Success({ result, wizardData, politicians, onChangePlz }: S
 
             {/* Secondary feedback button */}
             <a
-              href={FOUNDER_FEEDBACK_URL}
+              href={founderFeedbackUrl}
               target="_blank"
               rel="noopener noreferrer"
               className="mt-3 inline-flex w-full items-center justify-center gap-2 font-body text-sm font-semibold text-waldgruen bg-creme border-2 border-waldgruen/40 hover:border-waldgruen hover:bg-white px-3 py-2.5 rounded-lg transition-colors"

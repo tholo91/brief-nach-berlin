@@ -875,7 +875,9 @@ export function Step3Success({ result, wizardData, politicians, onChangePlz }: S
           Wer vertritt deinen Wahlkreis?
         </h1>
         <p className="font-body text-base text-warmgrau mt-2">
-          Deine PLZ {wizardData.plz} gehört zu mehreren Wahlkreisen. Das MdB mit Direktmandat ist vorausgewählt. Du kannst aber auch jemand anderen wählen.
+          {wahlkreisGroups.length === 1
+            ? "Dein Wahlkreis wird von folgenden MdBs vertreten. Das MdB mit Direktmandat ist vorausgewählt, du kannst aber auch jemand anderen wählen."
+            : `Deine PLZ ${wizardData.plz} liegt an einer Wahlkreis-Grenze. Wähle das MdB, das deinen Wahlkreis vertritt. Das Direktmandat ist je Wahlkreis vorausgewählt.`}
         </p>
 
         {/* Error banner */}
@@ -890,7 +892,7 @@ export function Step3Success({ result, wizardData, politicians, onChangePlz }: S
 
         {/* Politician cards - grouped by Wahlkreis. Each group gets a header
             ("Wahlkreis 21 · Hamburg-Nord") and its cards are labelled
-            Direktmandat vs über die Liste. On long lists (PLZs straddling
+            Direktmandat vs Landesliste. On long lists (PLZs straddling
             several Wahlkreise) each group switches to a 2-col grid so the
             disambiguation step doesn't turn into an endless scroll. All cards
             stay one logical radiogroup; a flat index keeps arrow-key nav working
@@ -934,7 +936,7 @@ export function Step3Success({ result, wizardData, politicians, onChangePlz }: S
                       </span>
                     ) : (
                       <span className="inline-block font-body text-[11px] font-medium uppercase tracking-wide text-warmgrau/55 bg-warmgrau/10 px-2 py-0.5 rounded mb-1.5">
-                        über die Liste
+                        Landesliste
                       </span>
                     )}
                     <p className="font-body text-base font-semibold text-warmgrau">

@@ -74,6 +74,9 @@ export const LIMITS = {
   // sign up for multiple levels (land + kommune); more than 3 in 10 min is
   // almost always a script.
   ROADMAP_SIGNUP_PER_IP: { max: 3, windowMs: 10 * 60_000 },
+  // Error reports per IP: 5 per 10 minutes. A user clicking "Fehler melden" a
+  // few times during one broken session is legitimate; more is noise.
+  REPORT_ERROR_PER_IP: { max: 5, windowMs: 10 * 60_000 },
 } as const;
 
 export async function getClientIp(): Promise<string> {

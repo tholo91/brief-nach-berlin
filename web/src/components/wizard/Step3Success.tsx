@@ -5,6 +5,8 @@ import type { WizardData, WizardActionResult } from "@/lib/types/wizard";
 import type { Politician } from "@/lib/types/politician";
 import { selectPoliticianAction } from "@/lib/actions/selectPolitician";
 import { resendLetterAction } from "@/lib/actions/resendLetter";
+import { reportErrorAction } from "@/lib/actions/reportError";
+import { installClientLogBuffer, getClientLogs } from "@/lib/clientLogBuffer";
 import { formatPartyShort } from "@/lib/formatParty";
 import {
   APP_URL,
@@ -105,6 +107,17 @@ export function Step3Success({ result, wizardData, politicians, onChangePlz }: S
   });
   const [generationFetchError, setGenerationFetchError] = useState<string | null>(null);
   const [retryCount, setRetryCount] = useState(0);
+  // "Fehler melden"-Frühwarnsystem: Kontext des letzten Generierungsfehlers
+  // (HTTP-Status, Server-Detail, Client-Fehler) wird hier festgehalten und beim
+  // Klick zusammen mit den Console-Logs an Thomas gemailt.
+  const lastErrorRef = useRef<{
+    httpStatus: number | null;
+    serverMessage: string | null;
+    errorId: string | null;
+    detail?: unknown;
+    clientError: string | null;
+  } | null>(null);
+  const [reportState, setReportState] = useState<"idle" | "sending" | "sent" | "failed">("idle");
   const [loadingDots, setLoadingDots] = useState(".");
   // "So geht es weiter" is collapsed by default - the same content lives in
   // the email, so we save vertical space and let the rating teaser breathe.
@@ -122,6 +135,12 @@ export function Step3Success({ result, wizardData, politicians, onChangePlz }: S
     );
     return () => timers.forEach(clearTimeout);
   }, [isGenerating]);
+
+  // Console-Ringpuffer einmalig installieren, damit "Fehler melden" die letzten
+  // Client-Logs an die Report-Mail anhängen kann.
+  useEffect(() => {
+    installClientLogBuffer();
+  }, []);
 
   // After picking a politician the user lands mid-page (the submit button was
   // scrolled into view). When the success state renders, jump back to the top
@@ -261,7 +280,6 @@ export function Step3Success({ result, wizardData, politicians, onChangePlz }: S
   useEffect(() => {
     if (!generationComplete || letterReady || generatedPoliticianId === null) return;
 
-    setGenerationFetchError(null);
     const controller = new AbortController();
     let autoRetryTimer: ReturnType<typeof setTimeout> | null = null;
 
@@ -271,8 +289,34 @@ export function Step3Success({ result, wizardData, politicians, onChangePlz }: S
       body: JSON.stringify({ wizardData, selectedPoliticianId: generatedPoliticianId }),
       signal: controller.signal,
     })
-      .then((res) => {
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      .then(async (res) => {
+        if (!res.ok) {
+          // Body lesen, bevor wir werfen - hier steckt die echte Server-Meldung
+          // + errorId + detail, die wir für die "Fehler melden"-Mail brauchen.
+          let serverMessage: string | null = null;
+          let errorId: string | null = null;
+          let detail: unknown;
+          try {
+            const errBody = (await res.json()) as {
+              error?: string;
+              errorId?: string;
+              detail?: unknown;
+            };
+            serverMessage = errBody?.error ?? null;
+            errorId = errBody?.errorId ?? null;
+            detail = errBody?.detail;
+          } catch {
+            // Body nicht lesbar (z.B. HTML-Errorpage) - Status reicht.
+          }
+          lastErrorRef.current = {
+            httpStatus: res.status,
+            serverMessage,
+            errorId,
+            detail,
+            clientError: null,
+          };
+          throw new Error(`HTTP ${res.status}`);
+        }
         return res.json() as Promise<{ letterText?: string }>;
       })
       .then((data) => {
@@ -285,6 +329,16 @@ export function Step3Success({ result, wizardData, politicians, onChangePlz }: S
       })
       .catch((err: Error) => {
         if (err.name === "AbortError") return;
+        // Client-/Netzwerkfehler (kein HTTP-Status erfasst) festhalten.
+        if (!err.message.startsWith("HTTP ")) {
+          lastErrorRef.current = {
+            httpStatus: null,
+            serverMessage: null,
+            errorId: null,
+            detail: undefined,
+            clientError: err.message,
+          };
+        }
         if (retryCount === 0) {
           autoRetryTimer = setTimeout(() => setRetryCount(1), 3000);
         } else {
@@ -299,6 +353,31 @@ export function Step3Success({ result, wizardData, politicians, onChangePlz }: S
       if (autoRetryTimer) clearTimeout(autoRetryTimer);
     };
   }, [generationComplete, letterReady, retryCount, generatedPoliticianId, wizardData]);
+
+  // Ein-Klick-Fehlerreport: sammelt Server-Detail + Client-Console + Kontext und
+  // mailt alles an Thomas. Die Mail ist selbst-enthaltend (kein Vercel nötig).
+  const handleReportError = useCallback(async () => {
+    setReportState("sending");
+    const e = lastErrorRef.current;
+    const result = await reportErrorAction({
+      httpStatus: e?.httpStatus ?? null,
+      serverMessage: e?.serverMessage ?? null,
+      errorId: e?.errorId ?? null,
+      detail: e?.detail,
+      clientError: e?.clientError ?? null,
+      consoleLogs: getClientLogs(),
+      context: {
+        plz: wizardData.plz ?? null,
+        email: wizardData.email ?? null,
+        issueText: wizardData.issueText ?? null,
+        politicianId: generatedPoliticianId,
+        retryCount,
+      },
+      userAgent: typeof navigator !== "undefined" ? navigator.userAgent : null,
+      pageUrl: typeof window !== "undefined" ? window.location.href : null,
+    }).catch(() => ({ success: false }));
+    setReportState(result.success ? "sent" : "failed");
+  }, [wizardData, generatedPoliticianId, retryCount]);
 
   // Keyboard navigation for politician cards
   const handleCardKeyDown = (
@@ -577,25 +656,75 @@ export function Step3Success({ result, wizardData, politicians, onChangePlz }: S
             </div>
           )}
 
-        {/* Generation error banner - shown if /api/generate-letter fails after auto-retry */}
+        {/* Generation error banner - shown if /api/generate-letter fails after auto-retry.
+            Doubles as Thomas' early-warning system: one click mails the full error
+            context (server detail + client console + input) so he can fix it fast. */}
         {generationFetchError && (
-          <div
-            role="alert"
-            className="mt-6 bg-airmail-rot/10 border-l-4 border-airmail-rot p-4 rounded-r-lg font-body text-sm"
-          >
-            <p className="font-semibold text-airmail-rot mb-1">Brief konnte nicht erstellt werden</p>
-            <p className="text-airmail-rot/80 mb-3">{generationFetchError}</p>
-            <button
-              type="button"
-              onClick={() => {
-                setGenerationFetchError(null);
-                setRetryCount((c) => c + 1);
-              }}
-              className="font-semibold text-airmail-rot underline underline-offset-2 hover:text-airmail-rot/80 transition-colors cursor-pointer"
+          reportState === "sent" ? (
+            <div
+              role="status"
+              className="mt-6 bg-waldgruen/10 border-l-4 border-waldgruen p-4 rounded-r-lg font-body text-sm"
             >
-              Nochmal versuchen
-            </button>
-          </div>
+              <p className="flex items-center gap-2 font-semibold text-waldgruen mb-1">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>
+                Danke für deine Hilfe!
+              </p>
+              <p className="text-waldgruen/80">
+                Ich habe die Fehlermeldung bekommen. Ich beeile mich und melde mich, sobald das behoben ist.
+              </p>
+            </div>
+          ) : (
+            <div
+              role="alert"
+              className="mt-6 bg-airmail-rot/10 border-l-4 border-airmail-rot p-4 rounded-r-lg font-body text-sm"
+            >
+              <p className="font-semibold text-airmail-rot mb-1">Brief konnte nicht erstellt werden</p>
+              <p className="text-airmail-rot/80 mb-3">{generationFetchError}</p>
+              <div className="flex flex-wrap items-center gap-3">
+                <button
+                  type="button"
+                  onClick={handleReportError}
+                  disabled={reportState === "sending"}
+                  className={[
+                    "inline-flex items-center gap-2 font-body text-sm font-semibold text-white bg-airmail-rot px-4 py-2 rounded-lg transition-colors",
+                    reportState === "sending"
+                      ? "opacity-60 cursor-not-allowed"
+                      : "hover:bg-airmail-rot/90 cursor-pointer",
+                  ].join(" ")}
+                >
+                  {reportState === "sending" ? (
+                    <>
+                      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="animate-spin" aria-hidden="true"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>
+                      Wird gemeldet...
+                    </>
+                  ) : (
+                    "Fehler melden"
+                  )}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setGenerationFetchError(null);
+                    setReportState("idle");
+                    setRetryCount((c) => c + 1);
+                  }}
+                  className="font-semibold text-airmail-rot underline underline-offset-2 hover:text-airmail-rot/80 transition-colors cursor-pointer"
+                >
+                  Nochmal versuchen
+                </button>
+              </div>
+              <p className="mt-2 text-xs text-airmail-rot/70">
+                {reportState === "failed" ? (
+                  <>
+                    Melden hat nicht geklappt. Schreib mir kurz an{" "}
+                    <a href="mailto:thomas_lorenz@posteo.de" className="underline">thomas_lorenz@posteo.de</a>.
+                  </>
+                ) : (
+                  "Ein Klick genügt. Schickt mir die Fehlerdaten, damit ich es schnell beheben kann."
+                )}
+              </p>
+            </div>
+          )
         )}
 
         {/* Step-by-step instructions - collapsed accordion: same steps live in

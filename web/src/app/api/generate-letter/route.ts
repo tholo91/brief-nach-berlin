@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse, after } from "next/server";
+import { randomUUID } from "node:crypto";
 import type { WizardData } from "@/lib/types/wizard";
 import { step1Schema, step1bSchema, step2Schema } from "@/lib/validation/wizardSchemas";
 import { lookupPLZ } from "@/lib/lookup/plzLookup";
@@ -25,6 +26,72 @@ function ipFromRequest(req: NextRequest): string {
   const real = req.headers.get("x-real-ip");
   if (real) return real.trim();
   return "unknown";
+}
+
+// Zieht aus einem geworfenen Fehler die für die "Fehler melden"-Mail nützlichen
+// Felder. Wichtig: Vercel-Free-Logs verfallen nach ~1h, daher MUSS dieses Detail
+// (inkl. Mistral-Status/Body) in die Antwort, damit es selbst-enthaltend in
+// Thomas' Postfach landet. Stack wird auf die ersten Zeilen gekürzt.
+interface ErrorDetail {
+  name: string;
+  message: string;
+  stack?: string;
+  status?: number;
+  body?: string;
+}
+
+function extractErrorDetail(error: unknown): ErrorDetail {
+  if (!(error instanceof Error)) {
+    let message: string;
+    try {
+      message = typeof error === "string" ? error : JSON.stringify(error);
+    } catch {
+      message = String(error);
+    }
+    return { name: "NonError", message };
+  }
+
+  const e = error as Error & {
+    statusCode?: number;
+    status?: number;
+    body?: unknown;
+    cause?: unknown;
+  };
+  const status =
+    typeof e.statusCode === "number"
+      ? e.statusCode
+      : typeof e.status === "number"
+        ? e.status
+        : undefined;
+
+  const readBody = (raw: unknown): string | undefined => {
+    if (raw === undefined || raw === null) return undefined;
+    try {
+      return (typeof raw === "string" ? raw : JSON.stringify(raw)).slice(0, 2000);
+    } catch {
+      return String(raw).slice(0, 2000);
+    }
+  };
+
+  let message = e.message;
+  let body = readBody(e.body);
+
+  // MistralProviderUnavailableError wraps the real provider error in `cause`.
+  const cause = e.cause;
+  if (cause) {
+    const causeMsg =
+      cause instanceof Error ? cause.message : typeof cause === "string" ? cause : undefined;
+    if (causeMsg) message += ` | cause: ${causeMsg}`;
+    if (body === undefined) body = readBody((cause as { body?: unknown }).body);
+  }
+
+  return {
+    name: e.name,
+    message,
+    stack: e.stack ? e.stack.split("\n").slice(0, 8).join("\n") : undefined,
+    status,
+    body,
+  };
 }
 
 export async function POST(req: NextRequest) {
@@ -161,18 +228,25 @@ export async function POST(req: NextRequest) {
       politicalLevel: result.politicalLevel,
     });
   } catch (error) {
-    console.error("[generate-letter] error:", error);
+    // errorId: billiger Live-Grep-Anker für Vercel-Logs im Moment des Fehlers.
+    // detail: der eigentliche, selbst-enthaltende Fehlerkontext für die
+    // "Fehler melden"-Mail. Wird im Client NIE gerendert, nur weitergereicht.
+    const errorId = randomUUID().slice(0, 8);
+    const detail = extractErrorDetail(error);
+    console.error(`[generate-letter] error [${errorId}]:`, detail);
     if (error instanceof MistralProviderUnavailableError) {
       return NextResponse.json(
         {
           error:
             "Unser KI-Anbieter ist gerade kurz nicht erreichbar. Bitte versuche es in ein, zwei Minuten erneut.",
+          errorId,
+          detail,
         },
         { status: 503, headers: { "Retry-After": "60" } }
       );
     }
     return NextResponse.json(
-      { error: "Es ist ein Fehler aufgetreten. Bitte versuche es erneut." },
+      { error: "Es ist ein Fehler aufgetreten. Bitte versuche es erneut.", errorId, detail },
       { status: 500 }
     );
   }

@@ -148,7 +148,7 @@ export function buildEmailHtml(data: SendLetterEmailParams): string {
                 <tr>
                   <td colspan="7" class="bnb-pad" style="padding:0 32px 8px;background-color:#ffffff;">
                     <div class="bnb-inner-pad" style="background-color:#FAF8F5;border:1px solid #E0DCD7;border-radius:4px;padding:24px;">
-                      <img src="${APP_URL}/images/email-title-watermark.png" width="110" height="110" alt="" align="right" style="display:inline-block;width:110px;height:110px;margin:0 0 6px 14px;border:0;outline:none;text-decoration:none;-ms-interpolation-mode:bicubic;">
+                      <img src="${APP_URL}/images/email-title-watermark-v2.png" width="110" height="110" alt="" align="right" style="display:inline-block;width:110px;height:110px;margin:0 0 6px 14px;border:0;outline:none;text-decoration:none;-ms-interpolation-mode:bicubic;">
                       <p style="margin:0;font-family:'Courier New',Courier,monospace;font-size:14px;line-height:1.7;color:#4A4A4A;white-space:pre-wrap;">${letterHtml}</p>
                     </div>
                   </td>
@@ -237,18 +237,16 @@ export function buildEmailHtml(data: SendLetterEmailParams): string {
                   </td>
                 </tr>
 
-                <!-- Action buttons: stretched two-column row, equal width.
-                     Both labels are forced to two lines via <br> so the buttons always match
-                     in height — min-height on <a> is unreliable in Outlook / Gmail. -->
+                <!-- Action buttons: stretched two-column row, equal width. -->
                 <tr>
                   <td colspan="7" class="bnb-pad" style="padding:8px 32px 20px;background-color:#ffffff;">
                     <table role="presentation" cellpadding="0" cellspacing="0" width="100%" style="border-collapse:separate;">
                       <tr>
                         <td style="padding-right:6px;width:50%;" valign="top">
-                          <a href="${regenerateUrl}" style="display:block;text-align:center;background-color:#2D5016;color:#ffffff;font-family:Georgia,'Times New Roman',serif;font-size:14px;font-weight:bold;text-decoration:none;padding:12px 16px;border-radius:6px;border:2px solid #2D5016;line-height:1.3;">Neuen Brief<br>schreiben</a>
+                          <a href="${regenerateUrl}" style="display:block;text-align:center;background-color:#2D5016;color:#ffffff;font-family:Georgia,'Times New Roman',serif;font-size:14px;font-weight:bold;text-decoration:none;padding:12px 16px;border-radius:6px;border:2px solid #2D5016;line-height:1.3;">Neuer Brief</a>
                         </td>
                         <td style="padding-left:6px;width:50%;" valign="top">
-                          <a href="${FOUNDER_FEEDBACK_URL}" target="_blank" rel="noopener noreferrer" style="display:block;text-align:center;background-color:#ffffff;color:#2D5016;font-family:Georgia,'Times New Roman',serif;font-size:14px;font-weight:bold;text-decoration:none;padding:12px 16px;border-radius:6px;border:2px solid #2D5016;line-height:1.3;">Feedback<br>zum Tool</a>
+                          <a href="${FOUNDER_FEEDBACK_URL}" target="_blank" rel="noopener noreferrer" style="display:block;text-align:center;background-color:#ffffff;color:#2D5016;font-family:Georgia,'Times New Roman',serif;font-size:14px;font-weight:bold;text-decoration:none;padding:12px 16px;border-radius:6px;border:2px solid #2D5016;line-height:1.3;">Feedback geben</a>
                         </td>
                       </tr>
                     </table>

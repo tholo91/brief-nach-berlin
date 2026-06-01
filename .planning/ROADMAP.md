@@ -546,6 +546,75 @@ Plans:
 Plans:
 - [ ] TBD (promote with /gsd-review-backlog when ready)
 
+### Phase 999.27: Clarifying-Question-Step vor Brief-Generierung (BACKLOG)
+
+**Goal:** Wenn der User-Input zu kurz oder zu breit für eine einseitige Brief-Generierung ist, soll Mistral 1× zurückfragen, bevor generiert wird — statt aus dünnem Input einen vagen oder verdrehten Brief zu halluzinieren. Ziel: weniger 1-2★-Reviews mit Tag `anliegen_verfehlt` bei kurzem Input.
+
+**Cluster:** Brief-Qualität / Input-Vagheit (verwandt mit Cluster 1 aus Feedback-Analyse 2026-05-27).
+
+**Evidenz aus Reviews-Analyse (15 ≤2★-Reviews seit 2026-04-01):**
+- 4 von 8 LIVE-Bad-Reviews hatten Input <30 Wörter:
+  - drparade (17w, Rating 2)
+  - andreas (11w Voice, Rating 1)
+  - ennenbach (~10w Voice, Rating 2, Tag `details_erfunden`)
+  - linus (~22w, Rating 1, Tag `anliegen_verfehlt`)
+- Bei so wenig Input *muss* Mistral raten und rät schlecht
+- Backlog-Campaign (5 Reviews) zeigt zusätzlich dominantes Pattern `zu_generisch`
+
+**Skizze (grob, wird vor Umsetzung konkretisiert):**
+- Nach Eingabe (Text oder Voice) + bevor `generateLetter()` aufgerufen wird: 1× Mistral-Klassifikator-Call
+- Trigger: Input <30 Wörter ODER Klassifikator sagt "zu breit für eine Seite" ODER "Mehrdeutigkeit bei zentraler Forderung"
+- Wenn Trigger feuert: 1 Yes/No-Frage oder 2-3 Optionen anzeigen ("Soll ich auf X fokussieren? Oder Y dazunehmen?")
+- User-Optionen: (a) Vorschlag akzeptieren → generieren, (b) zweiten kurzen Input nachschießen → generieren, (c) "Trotzdem so generieren" → mit Original-Input
+- Max 1 Rückfrage pro Brief (keine Endlosschleife)
+
+**Erwarteter Impact:** Bessere Briefqualität bei kurzem Input → weniger 1-2★-Reviews → mehr verschickte Briefe.
+
+**Risiko:** Zusätzlicher Schritt im Flow kann Conversion senken. → Erst hinter Feature-Flag ausrollen und Funnel messen.
+
+**Nicht adressiert:** Halluzinationen bei *langem* Input (siehe Phase 999.28 "Fakten-Treue-Check"), Level-Mismatch (eigenes Feature, siehe 999.6).
+
+**Requirements:** TBD
+**Plans:** 0 plans
+
+Plans:
+- [ ] TBD (promote with /gsd-review-backlog when ready)
+
+### Phase 999.28: Fakten-Treue-Check — zweiter Mistral-Pass gegen Halluzination (BACKLOG)
+
+**Goal:** Auch bei *ausreichend langem* User-Input verdreht oder erfindet Mistral Aussagen (Geschlecht, politische Position, persönliche Details). Ein zweiter Mistral-Pass nach der Generierung soll alle Behauptungen im Brief gegen den Original-Input prüfen und nicht-belegte Claims markieren oder streichen, bevor der Brief dem User gezeigt wird.
+
+**Cluster:** Halluzination / Faktentreue (Cluster 2 aus Feedback-Analyse 2026-05-27, verwandt mit 999.17).
+
+**Evidenz aus Reviews-Analyse (15 ≤2★-Reviews seit 2026-04-01):**
+- 4 von 8 LIVE-Bad-Reviews trotz ausreichendem Input (>100 Wörter) durch Halluzination ruiniert:
+  - ayse (248w Input, Rating 1): "KI hat teils meine Aussagen genau umgekehrt"
+  - mila (166w Input, Rating 2): "Vater → Mutter samt Anpassung Personalpronomen"
+  - jonathan (Rating 2, Tags `falscher_ton` + `klingt_nicht_nach_mir`): "Aussagen über mich, die nicht zutreffend sind"
+  - ennenbach (Rating 2, Tag `details_erfunden`)
+
+**Skizze (grob, wird vor Umsetzung konkretisiert):**
+- Nach `generateLetter()` + bevor Brief dem User gezeigt wird: 2. Mistral-Call mit Verifikator-Prompt
+- Input: Original-User-Text + generierter Brief
+- Output: Liste von Aussagen im Brief, die NICHT durch den Input gedeckt sind (Geschlecht, Beruf, Position, persönliche Details)
+- Aktion bei Fund:
+  - Variante 1: Unbelegte Claims automatisch streichen/abschwächen ("Ich bin Vater" → entfernt)
+  - Variante 2: Brief mit markierten Stellen anzeigen, User entscheidet
+  - Variante 3: Bei kritischer Halluzination (Geschlecht, Position) → Re-Generierung mit Anti-Halluzinations-Direktive
+- Komplementär zu 999.17 (MdB-Kontext-Fix) — der adressiert Halluzination *über* die/den Abgeordnete:n, dieser hier Halluzination *über* die/den User:in
+
+**Erwarteter Impact:** Eliminiert die destruktivste Fehlerklasse (User würde Brief NICHT verschicken, weil falsche Aussagen über die eigene Person drin stehen) → höheres Vertrauen, mehr verschickte Briefe.
+
+**Risiko:** Verdoppelt Generation-Zeit (~10-25s zusätzlich) und Token-Kosten. Strikter Verifikator kann legitime KI-Formulierungen fälschlich als Halluzination markieren.
+
+**Verwandt:** 999.17 (MdB-Kontext-Anreicherung fixen) löst die andere Hälfte (Halluzination über Politiker:in).
+
+**Requirements:** TBD
+**Plans:** 0 plans
+
+Plans:
+- [ ] TBD (promote with /gsd-review-backlog when ready)
+
 ## Progress
 
 **Execution Order:**

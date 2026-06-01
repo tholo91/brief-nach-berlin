@@ -615,6 +615,35 @@ Plans:
 Plans:
 - [ ] TBD (promote with /gsd-review-backlog when ready)
 
+### Phase 999.29: Opt-in Brief-Freigabe für aggregierte Themen-Übersicht (BACKLOG)
+
+**Goal:** Nach Briefgenerierung optional anbieten, den Brief anonymisiert für eine öffentliche Themen-Übersicht freizugeben ("Was bewegt die Bürger:innen aus welcher Region?"). Aggregierte Auswertung als Reichweiten-/PR-Hebel und Validierungstool — zeigt, welche Themen wo gepusht werden, ohne personenbezogene Daten zu speichern.
+
+**Skizze:**
+- Nach Brief-Generierung: Checkbox "Darf ich deinen Brief anonymisiert nutzen, um auszuwerten welche Themen aus welcher Region an wen gehen?"
+- **Opt-in, nicht Opt-out** (DSGVO: PLZ + Thema + Empfänger kann quasi-identifizierend sein; bisherige Linie ist "minimal data")
+- Speichern NUR bei explizitem Opt-in:
+  - Thema/Cluster (via Mistral klassifiziert, nicht Volltext)
+  - PLZ-Region (z.B. erste 2 Stellen, nicht volle PLZ)
+  - Empfänger-Ebene (Bund/Land/Kommune) bzw. Partei
+  - Datum
+- NICHT speichern: Brief-Volltext, User-Input, Email, volle PLZ, Politiker-Namen
+- Öffentliche Darstellung: Map/Heatmap/Themen-Liste auf eigener Seite oder als Hauptseiten-Modul
+
+**Erwarteter Impact:** "Brief nach Berlin Pulse" als eigener Content-Hebel (Presse, LinkedIn, Politik-Twitter). Macht aus dem Tool eine Datenquelle für Diskurs-Forschung.
+
+**Offene Fragen:**
+- Clustering: Mistral pro Brief in Echtzeit oder Batch-Job?
+- Granularität PLZ-Region: 1, 2 oder 3 Stellen? (Trade-off Aussagekraft vs. Anonymität)
+- Eigene Landing-Page (brief-nach-berlin.de/pulse) oder Integration in Hauptseite?
+- Rechtsgrundlage Einwilligung: Wie genau formulieren, was mit Widerruf?
+
+**Requirements:** TBD
+**Plans:** 0 plans
+
+Plans:
+- [ ] TBD (promote with /gsd-review-backlog when ready)
+
 ## Progress
 
 **Execution Order:**

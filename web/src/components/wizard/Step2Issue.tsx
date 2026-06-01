@@ -86,7 +86,7 @@ function TipsDisclosure({ open, setOpen }: TipsDisclosureProps) {
           <div>
             <p className="font-semibold text-waldgruen-dark mb-0.5">Sag kurz, wer du bist.</p>
             <p>
-              Beruf, Familie, Verein — solche Details geben Gewicht und verhindern, dass
+              Beruf, Familie, Verein: solche Details geben Gewicht und verhindern, dass
               Annahmen über dich getroffen werden, die nicht stimmen.
             </p>
           </div>
@@ -97,8 +97,10 @@ function TipsDisclosure({ open, setOpen }: TipsDisclosureProps) {
               lange Wunschliste.
             </p>
           </div>
-          <div className="italic">
-            <p className="font-semibold text-waldgruen-dark mb-0.5">Sag auch, was du nicht meinst.</p>
+          <div>
+            <p className="font-semibold text-waldgruen-dark mb-0.5">
+              Sag auch, was du <em>nicht meinst</em>.
+            </p>
             <p>
               Wenn etwas missverstanden werden könnte (&bdquo;ich bin für X, aber gegen Y&ldquo;),
               schreib&rsquo;s explizit dazu.
@@ -268,10 +270,20 @@ export function Step2Issue({
         </div>
       </div>
 
-      {/* Tone slider */}
-      <div className="mt-6 md:mt-10">
+      {/* Tone slider — appears softly once the user has typed enough to
+          make a tone choice meaningful. Avoids overwhelming the first
+          impression of step 2. */}
+      <div
+        aria-hidden={tooShort}
+        className={[
+          "overflow-hidden transition-all duration-500 ease-out",
+          tooShort
+            ? "opacity-0 max-h-0 mt-0 pointer-events-none"
+            : "opacity-100 max-h-40 mt-6 md:mt-10",
+        ].join(" ")}
+      >
         <label className="block font-body text-sm text-warmgrau/70 mb-3">
-          Tonalität des Briefes
+          Tonalität des finalen Briefes
         </label>
         <input
           type="range"
@@ -281,7 +293,8 @@ export function Step2Issue({
           value={toneLevel}
           onChange={(e) => setToneLevel(Number(e.target.value))}
           className="w-full accent-waldgruen cursor-pointer disabled:opacity-50"
-          aria-label="Tonlage des Briefes"
+          aria-label="Tonlage des finalen Briefes"
+          tabIndex={tooShort ? -1 : 0}
         />
         <div className="flex justify-between mt-1">
           {TONE_LABELS.map((label, i) => (

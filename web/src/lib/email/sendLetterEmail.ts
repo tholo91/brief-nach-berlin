@@ -118,7 +118,10 @@ export async function sendLetterEmail(
         email: process.env.BREVO_SENDER_EMAIL || "brief@brief-nach-berlin.de",
       },
       to: [{ email: params.recipientEmail }],
-      tags: ["brief"],
+      // Resends tragen "brief-resend" statt "brief", damit sie sich in Brevo
+      // sauber von Erstversänden trennen lassen. Das resent-Flag setzt der
+      // Resend-Pfad in buildResendDebugPayload.
+      tags: [params.debug?.resent ? "brief-resend" : "brief"],
     });
     return { success: true, messageId: result.messageId };
   } catch (error) {

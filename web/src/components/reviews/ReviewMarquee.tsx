@@ -8,12 +8,14 @@ interface ReviewMarqueeProps {
   reviews: PublicReview[];
   variant?: "full" | "compact";
   limit?: number;
+  cardHref?: string;
 }
 
 export function ReviewMarquee({
   reviews,
   variant = "full",
   limit = 30,
+  cardHref,
 }: ReviewMarqueeProps) {
   const items = reviews.slice(0, limit);
   const [expandedKey, setExpandedKey] = useState<string | null>(null);
@@ -117,13 +119,21 @@ export function ReviewMarquee({
                 type="button"
                 onClick={(event) => {
                   event.stopPropagation();
+                  if (cardHref) {
+                    window.open(cardHref, "_blank", "noopener,noreferrer");
+                    return;
+                  }
                   setExpandedKey(isThis ? null : key);
                 }}
-                aria-expanded={isThis}
+                aria-expanded={cardHref ? undefined : isThis}
                 aria-label={
-                  isThis ? "Bewertung schließen" : "Bewertung vollständig lesen"
+                  cardHref
+                    ? "Alle Bewertungen lesen"
+                    : isThis
+                      ? "Bewertung schließen"
+                      : "Bewertung vollständig lesen"
                 }
-                className="marquee-snap-item text-left rounded-3xl focus:outline-none focus-visible:ring-2 focus-visible:ring-waldgruen focus-visible:ring-offset-2 focus-visible:ring-offset-creme cursor-pointer"
+                className="marquee-snap-item flex text-left rounded-3xl focus:outline-none focus-visible:ring-2 focus-visible:ring-waldgruen focus-visible:ring-offset-2 focus-visible:ring-offset-creme cursor-pointer"
               >
                 <ReviewCard review={review} isExpanded={isThis} />
               </button>

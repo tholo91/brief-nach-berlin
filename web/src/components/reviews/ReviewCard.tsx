@@ -39,10 +39,10 @@ export function ReviewCard({ review, isExpanded = false }: ReviewCardProps) {
 
   return (
     <div
-      className={`bg-white/95 rounded-3xl border border-waldgruen/10 p-6 flex-shrink-0 flex flex-col gap-3 transition-all duration-300 ${
+      className={`bg-white/95 rounded-3xl border border-waldgruen/10 p-5 flex-shrink-0 flex flex-col gap-2 transition-all duration-300 ${
         isExpanded
           ? "min-w-[360px] max-w-[440px] shadow-2xl shadow-waldgruen/20 scale-[1.03] z-10"
-          : "w-[340px] min-h-[240px] shadow-sm hover:shadow-md"
+          : "w-[300px] h-full shadow-sm hover:shadow-md"
       }`}
     >
       <StarRow rating={review.rating} />
@@ -53,7 +53,7 @@ export function ReviewCard({ review, isExpanded = false }: ReviewCardProps) {
       >
         {review.body}
       </p>
-      <div className="flex items-center justify-between gap-2 mt-1">
+      <div className="flex items-center justify-between gap-2 mt-0.5">
         <span className="font-typewriter text-xs font-semibold text-waldgruen-dark truncate">
           {name}
         </span>

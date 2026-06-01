@@ -117,6 +117,11 @@ export function Step3Success({ result, wizardData, politicians, onChangePlz }: S
     detail?: unknown;
     clientError: string | null;
   } | null>(null);
+  // Verhindert gleichzeitige Requests an /api/generate-letter. Ohne diesen Guard
+  // kann ein Re-render mit neuer wizardData-Referenz oder ein vorzeitiger Abort
+  // einen zweiten Request starten, während der erste den Server schon erreicht hat
+  // (after()-E-Mail wurde bereits eingereiht → Doppel-Send).
+  const fetchInFlightRef = useRef(false);
   const [reportState, setReportState] = useState<"idle" | "sending" | "sent" | "failed">("idle");
   const [loadingDots, setLoadingDots] = useState(".");
   // "So geht es weiter" is collapsed by default - the same content lives in
@@ -286,8 +291,17 @@ export function Step3Success({ result, wizardData, politicians, onChangePlz }: S
 
   // Fetch the generated letter from the server once pre-checks pass.
   // Retries once automatically on failure, then shows a manual error banner.
+  //
+  // fetchInFlightRef verhindert, dass ein laufender Request durch einen
+  // Re-render (z.B. neue wizardData-Referenz) abgebrochen und sofort neu
+  // gestartet wird — der Server hat after() bereits eingereiht, eine zweite
+  // Anfrage würde eine zweite Mail auslösen. wizardData ist bewusst nicht in
+  // den Deps: es ändert sich nach generationComplete nicht mehr, und als
+  // Closure-Variable ist der Wert zum Zeitpunkt des Fires korrekt.
   useEffect(() => {
     if (!generationComplete || letterReady || generatedPoliticianId === null) return;
+    if (fetchInFlightRef.current) return;
+    fetchInFlightRef.current = true;
 
     const controller = new AbortController();
     let autoRetryTimer: ReturnType<typeof setTimeout> | null = null;
@@ -337,6 +351,9 @@ export function Step3Success({ result, wizardData, politicians, onChangePlz }: S
         }
       })
       .catch((err: Error) => {
+        // Ref freigeben, damit der einmalige Auto-Retry (retryCount 0→1) oder
+        // ein Abort-bedingter Re-run einen neuen Request starten darf.
+        fetchInFlightRef.current = false;
         if (err.name === "AbortError") return;
         // Client-/Netzwerkfehler (kein HTTP-Status erfasst) festhalten.
         if (!err.message.startsWith("HTTP ")) {
@@ -361,7 +378,8 @@ export function Step3Success({ result, wizardData, politicians, onChangePlz }: S
       controller.abort();
       if (autoRetryTimer) clearTimeout(autoRetryTimer);
     };
-  }, [generationComplete, letterReady, retryCount, generatedPoliticianId, wizardData]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [generationComplete, letterReady, retryCount, generatedPoliticianId]);
 
   // Ein-Klick-Fehlerreport: sammelt Server-Detail + Client-Console + Kontext und
   // mailt alles an Thomas. Die Mail ist selbst-enthaltend (kein Vercel nötig).

@@ -84,30 +84,38 @@ export default function Header() {
             ))}
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center">
+            {/* CTA — collapses on mobile when in hero section */}
             <div
-              className={`transition-all duration-300 md:opacity-100 md:scale-100 md:pointer-events-auto ${
+              className={`overflow-hidden transition-all duration-300 md:max-w-[200px] md:opacity-100 md:pointer-events-auto ${
                 showNavCta
-                  ? "opacity-100 scale-100"
-                  : "opacity-0 scale-95 pointer-events-none"
+                  ? "max-w-[200px] opacity-100"
+                  : "max-w-0 opacity-0 pointer-events-none"
               }`}
             >
               <Link
                 href="/app"
-                className="font-body text-sm font-semibold text-creme bg-waldgruen hover:bg-waldgruen-dark px-4 py-2 rounded-lg transition-colors"
+                className="whitespace-nowrap font-body text-sm font-semibold text-creme bg-waldgruen hover:bg-waldgruen-dark px-4 py-2 rounded-lg transition-colors block"
               >
                 Brief schreiben
               </Link>
             </div>
 
-            {/* Burger — mobile only */}
+            {/* Burger — mobile only, collapses once CTA appears */}
+            <div
+              className={`md:hidden overflow-hidden transition-all duration-300 ${
+                showNavCta
+                  ? "max-w-0 opacity-0 pointer-events-none"
+                  : "max-w-[2.5rem] opacity-100"
+              }`}
+            >
             <button
               type="button"
               onClick={() => setMenuOpen((v) => !v)}
               aria-expanded={menuOpen}
               aria-controls="mobile-menu"
               aria-label={menuOpen ? "Menü schließen" : "Menü öffnen"}
-              className="md:hidden relative w-10 h-10 flex items-center justify-center rounded-lg text-waldgruen-dark active:scale-95 transition-transform"
+              className="relative w-10 h-10 flex items-center justify-center rounded-lg text-waldgruen-dark active:scale-95 transition-transform"
             >
               <span className="relative block w-6 h-4">
                 <span
@@ -127,6 +135,7 @@ export default function Header() {
                 />
               </span>
             </button>
+            </div>
           </div>
         </nav>
 

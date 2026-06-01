@@ -1,0 +1,57 @@
+# Cursor Indexer Ignore — brief-nach-berlin (Next.js monorepo)
+# Purpose: stop the retrieval extension-host from indexing build artifacts,
+# dependencies, and accumulated AI worktrees. Reduces RAM and prevents
+# extension-host leaks.
+
+# Dependencies (everywhere in the tree)
+**/node_modules/
+.pnp.*
+.yarn/
+.pnpm-store/
+
+# Next.js build output
+**/.next/
+**/out/
+**/.turbo/
+
+# Generic build / dist
+**/dist/
+**/build/
+.cache/
+.parcel-cache/
+
+# Lockfiles
+**/package-lock.json
+**/pnpm-lock.yaml
+**/yarn.lock
+
+# Test / coverage
+coverage/
+.nyc_output/
+playwright-report/
+test-results/
+
+# Env / secrets
+.env
+.env.*
+!.env.example
+
+# Logs
+*.log
+logs/
+
+# OS / IDE
+.DS_Store
+.vscode/
+.idea/
+
+# Git internals
+.git/
+
+# AI tooling caches — IMPORTANT: .claude/worktrees holds full repo copies
+.claude/worktrees/
+.planning/
+
+# Large data / prompt corpora (still readable, just not indexed)
+prompts/
+data/

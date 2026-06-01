@@ -2,13 +2,15 @@ import sharp from "sharp";
 import { readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 
+// icon1.png is the master (airmail border + Reichstag silhouette, 192x192).
+// All smaller raster icons are derived from it.
 const APP_DIR = join(process.cwd(), "src", "app");
-const SVG_PATH = join(APP_DIR, "icon.svg");
-const svg = readFileSync(SVG_PATH);
+const SOURCE_PATH = join(APP_DIR, "icon1.png");
+const source = readFileSync(SOURCE_PATH);
 
 async function makePng(size: number, out: string) {
-  await sharp(svg, { density: 384 })
-    .resize(size, size)
+  await sharp(source)
+    .resize(size, size, { kernel: "lanczos3" })
     .png()
     .toFile(join(APP_DIR, out));
   console.log(`✓ ${out} (${size}x${size})`);
@@ -18,7 +20,7 @@ async function makeIco() {
   const sizes = [16, 32, 48];
   const pngs = await Promise.all(
     sizes.map((s) =>
-      sharp(svg, { density: 384 }).resize(s, s).png().toBuffer(),
+      sharp(source).resize(s, s, { kernel: "lanczos3" }).png().toBuffer(),
     ),
   );
 
@@ -51,7 +53,7 @@ async function makeIco() {
 
 async function main() {
   await makePng(180, "apple-icon.png");
-  await makePng(512, "icon.png");
+  await makePng(32, "icon.png");
   await makeIco();
 }
 

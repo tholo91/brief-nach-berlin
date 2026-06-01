@@ -33,7 +33,8 @@ const reviewSchema = z.object({
   // submit the form.
   letterSent: z.boolean().nullable().default(null),
   // Quick-Tap-Chips: multi-select, server-side allowlist via z.enum.
-  feedbackTags: z.array(feedbackTagSchema).max(8).optional(),
+  // Max accommodates 7 negative + 3 fact-check + headroom.
+  feedbackTags: z.array(feedbackTagSchema).max(12).optional(),
   token: z.string().min(20).max(4000),
   // Set by the client after the user dismissed the rate-limit warning and
   // confirmed they want to submit anyway. The unique-token DB constraint

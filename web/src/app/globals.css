@@ -8,6 +8,7 @@
   --color-airmail-rot: #C1121F;
   --color-airmail-blau: #1D3557;
   --color-warmgrau: #3D3D3D;
+  --color-bernstein: #D4A017;
 }
 
 @theme inline {
@@ -18,6 +19,7 @@
   --color-airmail-rot: var(--color-airmail-rot);
   --color-airmail-blau: var(--color-airmail-blau);
   --color-warmgrau: var(--color-warmgrau);
+  --color-bernstein: var(--color-bernstein);
   --font-typewriter: var(--font-courier-prime);
   --font-body: var(--font-source-sans);
   --font-handwriting: var(--font-caveat);

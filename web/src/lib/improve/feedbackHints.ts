@@ -23,6 +23,8 @@ export const FEEDBACK_HINT_BY_TAG: Record<string, string> = {
     "Entferne alle Zahlen, Namen und Daten, die der Brief nennt. Ich ergänze selbst nur das, was stimmt.",
   anliegen_verfehlt:
     "Stell mein eigentliches Anliegen in den Mittelpunkt (siehe persönliche Notiz unten).",
+  fakten_erfunden:
+    "Entferne erfundene Sachangaben (z.B. Ausschüsse, Gesetzesnamen, politische Positionen der Abgeordneten). Bleib nur bei dem, was belegt ist.",
   wiederholt_sich: "Streiche Wiederholungen. Jeder Punkt nur einmal.",
 };
 

@@ -1,6 +1,9 @@
 "use client";
 
-// Pill-shaped tap-to-toggle chip. Filled green = selected.
+// Pill-shaped tap-to-toggle chip.
+// - tone="primary" (default): filled waldgrün = selected.
+// - tone="alert": filled bernstein/gold = selected (used for fact-check tags
+//   that surface on both polarities, e.g. "Fakten erfunden").
 // Generalized from SentTab — used for multi-select feedback chips and
 // kept usable as a single-select segmented control via the role prop.
 
@@ -11,6 +14,7 @@ interface ChipToggleProps {
   emoji?: string;
   role?: "radio" | "checkbox";
   fullWidth?: boolean;
+  tone?: "primary" | "alert";
 }
 
 export function ChipToggle({
@@ -20,7 +24,17 @@ export function ChipToggle({
   emoji,
   role = "checkbox",
   fullWidth = false,
+  tone = "primary",
 }: ChipToggleProps) {
+  const selectedClasses =
+    tone === "alert"
+      ? "bg-bernstein text-warmgrau font-semibold shadow-sm"
+      : "bg-waldgruen text-creme font-semibold shadow-sm";
+  const focusRing =
+    tone === "alert"
+      ? "focus-visible:outline-bernstein"
+      : "focus-visible:outline-waldgruen";
+
   return (
     <button
       type="button"
@@ -31,10 +45,11 @@ export function ChipToggle({
         "inline-flex items-center justify-center gap-2 rounded-lg",
         "px-4 py-3 text-sm cursor-pointer min-h-[44px]",
         "transition-all duration-200 ease-out",
-        "focus:outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-waldgruen",
+        "focus:outline-none focus-visible:outline-2 focus-visible:outline-offset-2",
+        focusRing,
         fullWidth ? "flex-1" : "",
         checked
-          ? "bg-waldgruen text-creme font-semibold shadow-sm"
+          ? selectedClasses
           : "bg-creme/60 border border-warmgrau/20 text-warmgrau/70 hover:text-warmgrau hover:border-warmgrau/40",
       ].join(" ")}
     >

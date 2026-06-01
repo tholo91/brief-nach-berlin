@@ -11,6 +11,8 @@ import { FOUNDER_FEEDBACK_URL } from "@/lib/config";
 import {
   NEGATIVE_FEEDBACK_TAGS,
   POSITIVE_FEEDBACK_TAGS,
+  FACT_CHECK_FEEDBACK_TAGS,
+  FACT_CHECK_TAG_SLUGS,
   type FeedbackTagSlug,
 } from "@/lib/feedback/feedbackTags";
 import {
@@ -69,12 +71,16 @@ export function FeedbackForm({
 
   // Reset selected chips when the polarity flips so a user who picked 5 stars
   // (positive chips), then changes to 1 (negative chips), doesn't smuggle stale
-  // positive selections into a negative submission. React's documented
-  // "store info from previous renders" pattern keeps this out of useEffect.
+  // positive selections into a negative submission. Fact-check tags survive
+  // the flip — they're polarity-independent ("a detail was wrong" applies on
+  // 5★ just as on 1★). React's documented "store info from previous renders"
+  // pattern keeps this out of useEffect.
   const [previousPolarity, setPreviousPolarity] = useState(polarity);
   if (previousPolarity !== polarity) {
     setPreviousPolarity(polarity);
-    setFeedbackTags([]);
+    setFeedbackTags((prev) =>
+      prev.filter((slug) => FACT_CHECK_TAG_SLUGS.has(slug))
+    );
   }
 
   // Strip the signed token from the URL after the server-component handed it
@@ -221,21 +227,33 @@ export function FeedbackForm({
         </p>
       </div>
 
-      {/* Quick-Tap-Chips (Pilbert-Style) */}
-      <fieldset key={polarity} className="animate-feedback-in">
+      {/* Quick-Tap-Chips (Pilbert-Style) — polarity chips + fact-check chips
+          live in the same flex container. Fact-check chips use tone="alert"
+          (bernstein/gold) so they read as polarity-independent fact flags
+          rather than another "what worked / what didn't" judgement. */}
+      <fieldset className="animate-feedback-in">
         <legend className="block font-body text-sm font-semibold text-warmgrau mb-3">
           {chipsLabel}{" "}
           <span className="font-normal text-warmgrau/60">
             (optional, mehrfach möglich)
           </span>
         </legend>
-        <div className="flex flex-wrap gap-2">
+        <div key={polarity} className="flex flex-wrap gap-2">
           {chips.map((tag) => (
             <ChipToggle
               key={tag.slug}
               checked={feedbackTags.includes(tag.slug)}
               onToggle={() => toggleTag(tag.slug)}
               label={tag.label}
+            />
+          ))}
+          {FACT_CHECK_FEEDBACK_TAGS.map((tag) => (
+            <ChipToggle
+              key={tag.slug}
+              checked={feedbackTags.includes(tag.slug)}
+              onToggle={() => toggleTag(tag.slug)}
+              label={tag.label}
+              tone="alert"
             />
           ))}
         </div>

@@ -3,8 +3,12 @@
 import { useState, useCallback, useEffect, useRef } from "react";
 import { VoiceRecorder, type VoiceRecorderState } from "@/components/audio/VoiceRecorder";
 
-function TipsDisclosure() {
-  const [open, setOpen] = useState(false);
+interface TipsDisclosureProps {
+  open: boolean;
+  setOpen: (v: boolean) => void;
+}
+
+function TipsDisclosure({ open, setOpen }: TipsDisclosureProps) {
   const [hint, setHint] = useState(true);
 
   // Subtle pulse for ~3s on first mount to draw attention without being noisy.
@@ -14,12 +18,15 @@ function TipsDisclosure() {
   }, []);
 
   const toggle = () => {
-    setOpen((v) => !v);
+    setOpen(!open);
     setHint(false);
   };
 
   return (
-    <div className="mb-4 border-l-4 border-waldgruen bg-waldgruen/5 rounded-r-lg overflow-hidden">
+    <div
+      id="tips-disclosure"
+      className="mb-4 border-l-4 border-waldgruen bg-waldgruen/5 rounded-r-lg overflow-hidden scroll-mt-4"
+    >
       <button
         type="button"
         onClick={toggle}
@@ -71,27 +78,32 @@ function TipsDisclosure() {
           open ? "max-h-[680px] opacity-100" : "max-h-0 opacity-0"
         }`}
       >
-        <div className="px-4 pb-4 pt-1 font-body text-sm text-warmgrau leading-relaxed space-y-3">
-          <p>
-            <span className="font-semibold text-waldgruen-dark">Stichpunkte genügen.</span>{" "}
-            Notier konkret, wo du wohnst, was du siehst, was dich nervt. Daraus baut das Tool
-            die Sätze.
-          </p>
-          <p>
-            <span className="font-semibold text-waldgruen-dark">Eine Bitte reicht.</span>{" "}
-            Was sollen Abgeordnete genau tun? Je klarer, desto wirkungsvoller. Lieber eine
-            präzise Forderung als eine lange Wunschliste.
-          </p>
-          <p>
-            <span className="font-semibold text-waldgruen-dark">Sag, wer du bist.</span>{" "}
-            Beruf, Verein, Gewerkschaft: solche Details geben deinem Brief Gewicht. Auf
-            der nächsten Seite kannst du das ergänzen.
-          </p>
-          <p>
-            <span className="font-semibold text-waldgruen-dark">Trau dich, ehrlich zu sein.</span>{" "}
-            Wut, Sorge, Hoffnung gehören rein. Du musst nicht wie ein Politiker klingen,
-            du sollst wie du klingen.
-          </p>
+        <div className="px-4 pb-4 pt-1 font-body text-sm text-warmgrau leading-relaxed space-y-3.5">
+          <div>
+            <p className="font-semibold text-waldgruen-dark mb-0.5">Stichpunkte genügen.</p>
+            <p>Was siehst du, was nervt dich, was schlägst du vor? Daraus baut das Tool die Sätze.</p>
+          </div>
+          <div>
+            <p className="font-semibold text-waldgruen-dark mb-0.5">Sag kurz, wer du bist.</p>
+            <p>
+              Beruf, Familie, Verein — solche Details geben Gewicht und verhindern, dass
+              Annahmen über dich getroffen werden, die nicht stimmen.
+            </p>
+          </div>
+          <div>
+            <p className="font-semibold text-waldgruen-dark mb-0.5">Eine konkrete Bitte reicht.</p>
+            <p>
+              Was sollen die Abgeordneten <em>tun</em>? Ein präziser Satz schlägt eine
+              lange Wunschliste.
+            </p>
+          </div>
+          <div className="italic">
+            <p className="font-semibold text-waldgruen-dark mb-0.5">Sag auch, was du nicht meinst.</p>
+            <p>
+              Wenn etwas missverstanden werden könnte (&bdquo;ich bin für X, aber gegen Y&ldquo;),
+              schreib&rsquo;s explizit dazu.
+            </p>
+          </div>
           <div className="mt-3 rounded-md bg-creme/70 border border-warmgrau/15 px-3 py-2 font-typewriter text-[13px] text-warmgrau/85 italic">
             Beispiel: &bdquo;Ich wohne in der Bremer Neustadt. Letzten Mittwoch stand ich morgens
             am Hauptbahnhof und habe gesehen, wie...&ldquo;
@@ -136,11 +148,27 @@ export function Step2Issue({
   const usedVoiceRef = useRef(false);
   const [placeholderIndex, setPlaceholderIndex] = useState(0);
   const [toneLevel, setToneLevel] = useState(defaultToneLevel ?? 3);
+  const [tipsOpen, setTipsOpen] = useState(false);
+
+  const openTipsAndScroll = useCallback(() => {
+    setTipsOpen(true);
+    // Wait one frame so the accordion has begun expanding before we scroll.
+    requestAnimationFrame(() => {
+      document
+        .getElementById("tips-disclosure")
+        ?.scrollIntoView({ behavior: "smooth", block: "start" });
+    });
+  }, []);
   const charCount = issueText.trim().length;
   const tooShort = charCount < MIN_CHARS;
   const hasEnoughDetail = charCount >= DETAIL_THRESHOLD;
-  const placeholder = PLACEHOLDER_EXAMPLES[placeholderIndex];
   const voiceTouched = voiceState !== "idle";
+  const placeholder =
+    voiceState === "recording"
+      ? "Sprich jetzt, dein Text erscheint hier..."
+      : voiceState === "processing"
+        ? "Transkribiere deine Aufnahme..."
+        : PLACEHOLDER_EXAMPLES[placeholderIndex];
 
   const handleVoiceStateChange = useCallback((state: VoiceRecorderState) => {
     setVoiceState(state);
@@ -151,11 +179,12 @@ export function Step2Issue({
   // get a sense of the kinds of issues that work without a category picker.
   useEffect(() => {
     if (issueText.length > 0) return;
+    if (voiceState === "recording" || voiceState === "processing") return;
     const interval = setInterval(() => {
       setPlaceholderIndex((i) => (i + 1) % PLACEHOLDER_EXAMPLES.length);
     }, PLACEHOLDER_ROTATE_MS);
     return () => clearInterval(interval);
-  }, [issueText]);
+  }, [issueText, voiceState]);
 
   const handleTextChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setIssueText(e.target.value);
@@ -182,7 +211,7 @@ export function Step2Issue({
       </p>
 
       {/* Tips disclosure — subtle nudge toward effective writing */}
-      <TipsDisclosure />
+      <TipsDisclosure open={tipsOpen} setOpen={setTipsOpen} />
 
       {/* Voice recorder — easy path first, fades out after transcription */}
       <div className={`transition-all duration-700 ease-out ${voiceDone ? "opacity-0 max-h-0 overflow-hidden mb-0" : "opacity-100 max-h-40 mb-4"}`}>
@@ -215,14 +244,21 @@ export function Step2Issue({
         />
         <div className="mt-2 relative" aria-live="polite">
           <div className={`transition-all duration-500 ease-in-out overflow-hidden ${hasEnoughDetail ? "opacity-0 max-h-0" : "opacity-100 max-h-16"}`}>
-            <p className="inline-flex items-center gap-1.5 text-sm font-body text-waldgruen-dark bg-waldgruen/15 px-4 py-1.5 rounded-full">
+            <button
+              type="button"
+              onClick={openTipsAndScroll}
+              className="group inline-flex items-center gap-1.5 text-sm font-body text-waldgruen-dark bg-waldgruen/15 hover:bg-waldgruen/25 px-4 py-1.5 rounded-full transition-colors cursor-pointer text-left"
+            >
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" className="shrink-0">
                 <circle cx="12" cy="12" r="10" />
                 <line x1="12" y1="8" x2="12" y2="8" strokeWidth="3" />
                 <line x1="12" y1="12" x2="12" y2="16" />
               </svg>
-              Je konkreter du wirst, desto näher beschreibt der Brief dein Anliegen.
-            </p>
+              <span>Je konkreter du wirst, desto näher beschreibt der Brief dein Anliegen.</span>
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" className="shrink-0 transition-transform duration-200 group-hover:-translate-y-0.5">
+                <polyline points="18 15 12 9 6 15" />
+              </svg>
+            </button>
           </div>
           <div className={`transition-all duration-500 ease-in-out overflow-hidden ${hasEnoughDetail ? "opacity-100 max-h-8" : "opacity-0 max-h-0"}`}>
             <p id="issueText-counter" className="text-right text-sm text-warmgrau/50">

@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { step1Schema, type Step1Data } from "@/lib/validation/wizardSchemas";
@@ -13,6 +14,7 @@ export function Step1Form({ onNext, defaultValues }: Step1FormProps) {
   const {
     register,
     handleSubmit,
+    watch,
     formState: { errors, isValid, touchedFields },
   } = useForm<Step1Data>({
     resolver: zodResolver(step1Schema),
@@ -22,6 +24,48 @@ export function Step1Form({ onNext, defaultValues }: Step1FormProps) {
       email: defaultValues?.email ?? "",
     },
   });
+
+  const plzValue = watch("plz");
+  const [locality, setLocality] = useState<{ ort: string; ortsteil?: string } | null>(null);
+
+  useEffect(() => {
+    if (!/^\d{5}$/.test(plzValue ?? "")) {
+      setLocality(null);
+      return;
+    }
+
+    const controller = new AbortController();
+    (async () => {
+      try {
+        const res = await fetch(
+          `https://openplzapi.org/de/Localities?postalCode=${plzValue}`,
+          { signal: controller.signal }
+        );
+        if (!res.ok) return;
+        const data: unknown = await res.json();
+        if (!Array.isArray(data) || data.length === 0) return;
+        const first = data[0] as {
+          name?: unknown;
+          district?: unknown;
+        };
+        const ort = typeof first.name === "string" ? first.name : null;
+        if (!ort) return;
+        let ortsteil: string | undefined;
+        const d = first.district;
+        if (typeof d === "string" && d.trim() && d !== ort) {
+          ortsteil = d;
+        } else if (d && typeof d === "object" && "name" in d) {
+          const dn = (d as { name?: unknown }).name;
+          if (typeof dn === "string" && dn.trim() && dn !== ort) ortsteil = dn;
+        }
+        setLocality({ ort, ortsteil });
+      } catch {
+        // silent fail (network error, abort, JSON parse error)
+      }
+    })();
+
+    return () => controller.abort();
+  }, [plzValue]);
 
   const onSubmit = (data: Step1Data) => {
     onNext(data);
@@ -56,13 +100,29 @@ export function Step1Form({ onNext, defaultValues }: Step1FormProps) {
             maxLength={5}
             placeholder="z.B. 10115"
             className={inputClassName(!!errors.plz && !!touchedFields.plz)}
-            aria-describedby={errors.plz && touchedFields.plz ? "plz-error" : "plz-hint"}
+            aria-describedby={
+              errors.plz && touchedFields.plz
+                ? "plz-error"
+                : locality
+                  ? "plz-hint plz-locality"
+                  : "plz-hint"
+            }
             aria-invalid={!!errors.plz && !!touchedFields.plz}
             {...register("plz")}
           />
           <p id="plz-hint" className="text-sm text-warmgrau/60 mt-1">
             Damit finden wir deine zuständigen Abgeordneten
           </p>
+          {locality && (
+            <p
+              id="plz-locality"
+              className="font-body text-sm text-warmgrau/70 mt-1"
+              aria-live="polite"
+            >
+              {locality.ort}
+              {locality.ortsteil ? ` · ${locality.ortsteil}` : ""}
+            </p>
+          )}
           {errors.plz && touchedFields.plz && (
             <p id="plz-error" role="alert" className="text-sm text-airmail-rot mt-1">
               {errors.plz.message}

@@ -138,9 +138,7 @@ export function buildEmailHtml(data: SendLetterEmailParams): string {
                 <!-- Intro: warm founder voice -->
                 <tr>
                   <td colspan="7" class="bnb-pad" style="padding:0 32px 20px;background-color:#ffffff;">
-                    <div style="border-left:3px solid rgba(45,80,22,0.45);padding-left:16px;">
-                      <p style="margin:0;font-family:Georgia,'Times New Roman',serif;font-size:15px;color:#4A4A4A;line-height:1.75;">Lies ihn gründlich durch und pass ihn an, damit es dein Brief wird. Dieser Entwurf dient als Schnellstart, <a href="${APP_URL}/brief-verbessern" target="_blank" rel="noopener noreferrer" style="color:#2D5016;text-decoration:underline;">verbessere ihn gern</a>, damit er sich wirklich nach dir anhört.<br>Bitte bewerte anschließend deinen Brief 🙏 Danke, dass du dich engagierst!</p>
-                    </div>
+                    <p style="margin:0;font-family:Georgia,'Times New Roman',serif;font-size:15px;color:#4A4A4A;line-height:1.75;">Lies ihn gründlich durch und pass ihn an, damit es dein Brief wird. Dieser Entwurf dient als Schnellstart, <a href="${APP_URL}/brief-verbessern" target="_blank" rel="noopener noreferrer" style="color:#2D5016;text-decoration:underline;">verbessere ihn gern</a>, damit er sich wirklich nach dir anhört.<br>Bitte bewerte anschließend deinen Brief 🙏 Danke, dass du dich engagierst!</p>
                   </td>
                 </tr>
 

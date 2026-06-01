@@ -26,7 +26,7 @@ export function Step1Form({ onNext, defaultValues }: Step1FormProps) {
   });
 
   const plzValue = watch("plz");
-  const [locality, setLocality] = useState<{ ort: string; ortsteil?: string } | null>(null);
+  const [locality, setLocality] = useState<{ ort: string } | null>(null);
 
   useEffect(() => {
     if (!/^\d{5}$/.test(plzValue ?? "")) {
@@ -50,15 +50,7 @@ export function Step1Form({ onNext, defaultValues }: Step1FormProps) {
         };
         const ort = typeof first.name === "string" ? first.name : null;
         if (!ort) return;
-        let ortsteil: string | undefined;
-        const d = first.district;
-        if (typeof d === "string" && d.trim() && d !== ort) {
-          ortsteil = d;
-        } else if (d && typeof d === "object" && "name" in d) {
-          const dn = (d as { name?: unknown }).name;
-          if (typeof dn === "string" && dn.trim() && dn !== ort) ortsteil = dn;
-        }
-        setLocality({ ort, ortsteil });
+        setLocality({ ort });
       } catch {
         // silent fail (network error, abort, JSON parse error)
       }
@@ -100,29 +92,19 @@ export function Step1Form({ onNext, defaultValues }: Step1FormProps) {
             maxLength={5}
             placeholder="z.B. 10115"
             className={inputClassName(!!errors.plz && !!touchedFields.plz)}
-            aria-describedby={
-              errors.plz && touchedFields.plz
-                ? "plz-error"
-                : locality
-                  ? "plz-hint plz-locality"
-                  : "plz-hint"
-            }
+            aria-describedby={errors.plz && touchedFields.plz ? "plz-error" : "plz-hint"}
             aria-invalid={!!errors.plz && !!touchedFields.plz}
             {...register("plz")}
           />
-          <p id="plz-hint" className="text-sm text-warmgrau/60 mt-1">
-            Damit finden wir deine zuständigen Abgeordneten
+          <p
+            id="plz-hint"
+            className="text-sm text-warmgrau/60 mt-1 truncate"
+            aria-live="polite"
+          >
+            {locality
+              ? `MdB für ${locality.ort} wird gesucht`
+              : "Damit finden wir deine zuständigen Abgeordneten"}
           </p>
-          {locality && (
-            <p
-              id="plz-locality"
-              className="font-body text-sm text-warmgrau/70 mt-1"
-              aria-live="polite"
-            >
-              {locality.ort}
-              {locality.ortsteil ? ` · ${locality.ortsteil}` : ""}
-            </p>
-          )}
           {errors.plz && touchedFields.plz && (
             <p id="plz-error" role="alert" className="text-sm text-airmail-rot mt-1">
               {errors.plz.message}

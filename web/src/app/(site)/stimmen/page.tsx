@@ -167,62 +167,46 @@ export default async function StimmenPage() {
           &larr; Zurück
         </Link>
 
-        {/* 1. Hero: title + RatingStat, centered */}
-        <div className="mb-16 text-center">
-          <p className="font-typewriter text-sm font-bold tracking-widest uppercase text-waldgruen/60 mb-3">
-            seit Mitte Mai 2026
-          </p>
-          <h1 className="font-body text-3xl md:text-5xl font-bold text-waldgruen-dark tracking-tight mb-6 text-balance">
-            Stimmen aus dem ganzen Land
-          </h1>
-          <p className="font-handwriting text-xl md:text-2xl text-warmgrau leading-relaxed mb-10 text-pretty max-w-xl mx-auto">
-            Ich lese jede Rückmeldung. Das Tool wird damit Woche für Woche
-            besser.
-          </p>
-          <div className="flex flex-col md:flex-row items-center md:items-start justify-center gap-6 md:gap-8 max-w-xl mx-auto">
-            <div className="md:shrink-0">
+        {/* 1. Hero: title centered, then RatingStat left + subtitle right */}
+        <div className="mb-16">
+          <div className="text-center mb-8">
+            <p className="font-typewriter text-sm font-bold tracking-widest uppercase text-waldgruen/60 mb-3">
+              seit Mitte Mai 2026
+            </p>
+            <h1 className="font-body text-3xl md:text-5xl font-bold text-waldgruen-dark tracking-tight text-balance">
+              Stimmen aus dem ganzen Land
+            </h1>
+          </div>
+          <div className="flex flex-col sm:flex-row items-center sm:items-start gap-6 sm:gap-8 max-w-lg mx-auto">
+            <div className="shrink-0">
               <RatingStat stats={stats} showDistribution={false} />
             </div>
-            <div className="md:border-l md:border-waldgruen/15 md:pl-8 md:pt-1 text-center md:text-left max-w-xs">
-              <p className="font-handwriting text-xl md:text-2xl text-waldgruen-dark leading-snug">
-                Mit eurem Feedback mache ich das Tool gerne besser. Und Schritt für Schritt zugänglicher.
+            <div className="border-t sm:border-t-0 sm:border-l border-waldgruen/20 pt-4 sm:pt-0 sm:pl-8">
+              <p className="font-handwriting text-xl md:text-2xl text-warmgrau leading-snug text-balance">
+                Ich lese jede Rückmeldung. Das Tool wird damit Woche für Woche besser.
               </p>
             </div>
           </div>
         </div>
       </div>
 
-      {/* 2. Feedback-CTA + Germany illustration, side by side */}
-      <div className="max-w-5xl mx-auto px-6 mb-20">
-        <div className="grid md:grid-cols-2 gap-8 md:gap-10 items-center">
-          <div className="order-2 md:order-1 p-8 border-2 border-waldgruen/20 bg-white/60 rounded-sm">
-            <h2 className="font-body text-xl font-bold text-waldgruen-dark mb-3">
-              Auch ohne Brief: schreib mir.
-            </h2>
-            <p className="font-body text-base text-warmgrau mb-6">
-              Du musst nichts verschickt haben. Jede Rückmeldung hilft mir, die
-              nächste Version besser zu machen.
+      {/* 2. Editorial intro + Germany illustration, side by side */}
+      <div className="max-w-5xl mx-auto px-6 mb-28">
+        <div className="grid md:grid-cols-2 gap-10 md:gap-14 items-center">
+          <div className="order-2 md:order-1 md:pr-4">
+            <p className="font-body text-base md:text-lg text-warmgrau leading-[1.85] mb-5">
+              Diese Seite sammelt, was Menschen zurückgeschrieben haben, nachdem
+              ihr Brief generiert war. Manche haben ihn abgeschickt, andere nur
+              gelesen. Alle haben sich eine Minute Zeit genommen.
             </p>
-            <div className="flex flex-col sm:flex-row gap-3">
-              <a
-                href={FOUNDER_FEEDBACK_URL}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-block font-body font-bold text-creme bg-waldgruen-dark hover:bg-waldgruen px-6 py-3 rounded-sm transition-colors text-center"
-              >
-                Feedback zum Tool
-              </a>
-              <a
-                href="mailto:thomas-lorenz@posteo.de?subject=Brief%20nach%20Berlin%20Feedback"
-                className="inline-block font-body font-bold text-waldgruen-dark border-2 border-waldgruen/40 hover:border-waldgruen px-6 py-3 rounded-sm transition-colors text-center"
-              >
-                Direkt schreiben
-              </a>
-            </div>
-            <p className="font-body text-xs italic text-warmgrau/60 mt-4">
-              Du hast schon einen Brief generiert und willst die Sterne-Bewertung
-              abgeben? Das geht über den Link in der Mail, die du nach dem
-              Brief bekommen hast.
+            <p className="font-body text-base md:text-lg text-warmgrau leading-[1.85] mb-5">
+              Seit Mitte Mai {displayCount} Briefe zu Themen, die sonst niemand
+              gehört hätte: Schlaglöcher, geschlossene Bibliotheken, fehlende
+              Radwege, Probleme in der Schule.
+            </p>
+            <p className="font-body text-base md:text-lg text-warmgrau leading-[1.85]">
+              Jede Rückmeldung fließt direkt in den nächsten Prompt-Zyklus ein.
+              Weiter unten steht, was sich dank euch konkret geändert hat.
             </p>
           </div>
           <div className="order-1 md:order-2">
@@ -231,10 +215,10 @@ export default async function StimmenPage() {
               alt="Illustration von Deutschland mit aufsteigenden Stimmen aus dem ganzen Land und Briefen, die zum Reichstag in Berlin fliegen"
               width={1280}
               height={956}
-              className="rounded-3xl shadow-xl shadow-waldgruen/20 w-full h-auto"
+              className="w-full h-auto rotate-1"
             />
-            <p className="font-handwriting text-sm text-warmgrau/70 mt-3 text-center md:text-left italic leading-snug">
-              Aus jedem Postleitzahlgebiet ein Brief, jeder mit einem anderen Anliegen.
+            <p className="font-handwriting text-sm text-warmgrau/70 mt-4 text-center md:text-left italic leading-snug">
+              Aus jedem Postleitzahlgebiet ein Brief, alle mit einem persönlichen Anliegen.
             </p>
           </div>
         </div>
@@ -242,7 +226,7 @@ export default async function StimmenPage() {
 
       {/* 3. ReviewMarquee: full viewport breakout with edge fade */}
       {hasReviews && (
-        <div className="mb-20">
+        <div className="mb-16">
           <div className="max-w-2xl mx-auto px-6 mb-4">
             <p className="font-typewriter text-sm font-bold tracking-widest uppercase text-waldgruen/60">
               Wie ihr eure Briefe bewertet
@@ -271,12 +255,9 @@ export default async function StimmenPage() {
         {/* 5. Wo das hier herkommt */}
         <div className="mb-16">
           <Prose>
-            <h2 className="font-body text-2xl md:text-3xl font-bold text-waldgruen-dark pt-4">
-              Wo das hier herkommt
+            <h2 className="font-body text-2xl md:text-3xl font-bold text-waldgruen-dark pt-4 mb-6">
+              Was sich dank euch geändert hat
             </h2>
-            <p className="font-handwriting text-xl md:text-2xl text-waldgruen leading-snug text-balance border-l-2 border-waldgruen/30 pl-5 my-6 not-italic">
-              Seit Mitte Mai, {displayCount} Briefe und eine Liste an Dingen, die ich wegen euch geändert habe.
-            </p>
             <Figure
               src="/images/img-stimmen-tisch.webp"
               alt="Ein Tisch voller geschriebener Briefe und Umschläge in warmem Licht"
@@ -284,7 +265,6 @@ export default async function StimmenPage() {
               height={758}
               side="right"
               rotate="right"
-              caption={`${displayCount} Briefe seit Mitte Mai 2026. Hier liegen einige davon, kurz bevor sie in die Post gingen.`}
             />
             <p>
               Seitdem sind {displayCount} Briefe entstanden, viele davon mit
@@ -309,7 +289,7 @@ export default async function StimmenPage() {
 
         {/* 6. Quote 2 */}
         {quote2 && (
-          <div className="mb-16">
+          <div className="mb-28">
             <Prose>
               <p className="font-typewriter text-sm font-bold tracking-widest uppercase text-waldgruen/60 mb-4">Aus den Reviews / einen Monat später</p>
               <PullQuote
@@ -322,8 +302,39 @@ export default async function StimmenPage() {
           </div>
         )}
 
-        {/* 7. FAQ */}
-        <div className="mb-16">
+        {/* 7. Mithelfen + Sign-off (consolidated) */}
+        <div className="mt-12 mb-16 text-center">
+          <p className="font-handwriting text-2xl md:text-3xl text-waldgruen-dark leading-snug max-w-md mx-auto mb-5">
+            Wenn du bis hier gelesen hast: schreib mir. Auch eine Zeile reicht.
+          </p>
+          <p className="font-body text-base text-warmgrau leading-relaxed max-w-md mx-auto mb-7">
+            Brief nach Berlin ist ein Freizeitprojekt von einer Person. Wer
+            Lust hat mitzuhelfen, sei es Politiker-Daten recherchieren, Texte
+            gegenlesen, Bugs melden oder weitersagen, ist herzlich willkommen.
+          </p>
+          <div className="flex flex-col sm:flex-row justify-center gap-3">
+            <a
+              href="mailto:thomas-lorenz@posteo.de?subject=Mithelfen%20bei%20Brief%20nach%20Berlin"
+              className="inline-block font-body font-bold text-creme bg-waldgruen-dark hover:bg-waldgruen px-6 py-3 rounded-sm transition-colors text-center"
+            >
+              Melde dich gerne bei mir
+            </a>
+            <a
+              href={FOUNDER_FEEDBACK_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-block font-body font-bold text-waldgruen-dark border-2 border-waldgruen/40 hover:border-waldgruen px-6 py-3 rounded-sm transition-colors text-center"
+            >
+              Feedback zum Tool
+            </a>
+          </div>
+          <p className="font-typewriter text-xs uppercase tracking-widest text-waldgruen/60 mt-8">
+            Thomas aus Bremen
+          </p>
+        </div>
+
+        {/* 8. FAQ – ganz unten */}
+        <div className="mb-16 border-t border-waldgruen/15 pt-16">
           <Prose>
             <h2 className="font-body text-2xl md:text-3xl font-bold text-waldgruen-dark pt-4">
               Häufige Fragen
@@ -331,30 +342,6 @@ export default async function StimmenPage() {
             <p className="font-body text-base text-warmgrau/80 mb-6 max-w-md">Was ich am häufigsten gefragt werde, kurz beantwortet.</p>
           </Prose>
           <FAQAccordion items={faqs} />
-        </div>
-
-        {/* 8. Mithelfen + Sign-off (consolidated) */}
-        <div className="mt-12 mb-8 text-center">
-          <p className="font-typewriter text-xs font-bold tracking-widest uppercase text-waldgruen/60 mb-4">
-            Mithelfen
-          </p>
-          <p className="font-handwriting text-2xl md:text-3xl text-waldgruen-dark leading-snug max-w-md mx-auto mb-4">
-            Wenn du bis hier gelesen hast: schreib mir. Auch eine Zeile reicht.
-          </p>
-          <p className="font-body text-base text-warmgrau leading-relaxed max-w-md mx-auto mb-6">
-            Brief nach Berlin ist ein Freizeitprojekt von einer Person. Wer
-            Lust hat mitzuhelfen, sei es Politiker-Daten recherchieren, Texte
-            gegenlesen, Bugs melden oder weitersagen, ist herzlich willkommen.
-          </p>
-          <a
-            href="mailto:thomas-lorenz@posteo.de?subject=Mithelfen%20bei%20Brief%20nach%20Berlin"
-            className="inline-block font-body font-bold text-creme bg-waldgruen-dark hover:bg-waldgruen px-6 py-3 rounded-sm transition-colors"
-          >
-            Melde dich gerne bei mir
-          </a>
-          <p className="font-typewriter text-xs uppercase tracking-widest text-waldgruen/60 mt-6">
-            Thomas aus Bremen
-          </p>
         </div>
       </div>
     </div>

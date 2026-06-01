@@ -140,6 +140,7 @@ export default function Hero() {
         {/* CTA buttons */}
         <div className="flex flex-wrap items-center justify-center gap-3 mb-6">
           <a
+            id="hero-cta"
             href="/app"
             className="inline-block bg-waldgruen text-creme font-body font-semibold text-base md:text-lg px-8 py-4 rounded-xl hover:bg-waldgruen-dark transition-colors cursor-pointer shadow-lg shadow-waldgruen/25 active:scale-[0.98]"
           >

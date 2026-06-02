@@ -147,12 +147,6 @@ export default function Hero() {
             <span className="md:hidden">Brief schreiben</span>
             <span className="hidden md:inline">in 3 Minuten zum fertigen Brief &rarr;</span>
           </a>
-          <a
-            href="/beispiele"
-            className="inline-block border border-waldgruen/30 text-waldgruen-dark font-body font-semibold text-base md:text-lg px-8 py-4 rounded-xl hover:bg-waldgruen/8 transition-colors cursor-pointer active:scale-[0.98]"
-          >
-            Beispiel-Brief ansehen
-          </a>
         </div>
 
         {/* Trust badges */}
@@ -177,6 +171,7 @@ export default function Hero() {
           </span>
           <Link
             href="/was-noch-kommt"
+            prefetch={false}
             className="group inline-flex items-center gap-1.5 text-waldgruen-dark font-body text-sm font-semibold px-3 py-1.5 rounded-full bg-waldgruen/10 hover:bg-waldgruen/20 transition-colors"
             aria-label="Roadmap: bald auch Land und Kommune"
           >

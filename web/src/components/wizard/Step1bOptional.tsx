@@ -12,9 +12,10 @@ interface Step1bOptionalProps {
   onErrorDismiss?: () => void;
   defaultValues?: Partial<Step1bData>;
   issueText?: string;
+  onBackToIssue?: () => void;
 }
 
-const SHORT_INPUT_WORD_THRESHOLD = 80;
+const SHORT_INPUT_WORD_THRESHOLD = 60;
 
 function countWords(text: string): number {
   return text.trim().split(/\s+/).filter(Boolean).length;
@@ -68,6 +69,7 @@ export function Step1bOptional({
   onErrorDismiss,
   defaultValues,
   issueText,
+  onBackToIssue,
 }: Step1bOptionalProps) {
   const issueWordCount = issueText ? countWords(issueText) : 0;
   const isShortInput = issueWordCount > 0 && issueWordCount < SHORT_INPUT_WORD_THRESHOLD;
@@ -168,13 +170,36 @@ export function Step1bOptional({
               );
             })}
           </div>
-          <p className="text-xs text-warmgrau/50 mt-2">
-            Standardmäßig ist eine Seite voreingestellt: prägnant und in 5-10 Minuten versandfertig auf Papier.
-          </p>
+          {!(isShortInput && selectedLength !== "1") && (
+            <p className="text-xs text-warmgrau/50 mt-2">
+              Standardmäßig ist eine Seite voreingestellt: prägnant und in 5-10 Minuten versandfertig auf Papier.
+            </p>
+          )}
           {isShortInput && selectedLength !== "1" && (
-            <div className="mt-3 border-l-2 border-bernstein/60 bg-bernstein/5 rounded-r-md px-3 py-2 text-xs text-warmgrau/80 leading-relaxed">
-              Dein Text ist recht knapp. Für längere Briefe empfehlen wir entweder <span className="font-semibold text-bernstein">1 Seite</span> zu wählen oder im vorherigen Schritt mehr Details zu ergänzen, damit der Brief nicht repetitiv wird.
-            </div>
+            <button
+              type="button"
+              onClick={() => onBackToIssue?.()}
+              className="group mt-3 w-full text-left border-l-2 border-bernstein/60 bg-bernstein/5 hover:bg-bernstein/10 hover:border-bernstein rounded-r-md px-3 py-2 text-xs text-warmgrau/80 leading-relaxed flex items-start gap-2 cursor-pointer transition-colors"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="14"
+                height="14"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                aria-hidden="true"
+                className="mt-0.5 shrink-0 text-bernstein/60 group-hover:text-bernstein group-hover:-translate-x-0.5 transition-all"
+              >
+                <path d="m15 18-6-6 6-6" />
+              </svg>
+              <span>
+                Dein Text ist mit <span className="font-semibold text-bernstein">{issueWordCount} Wörtern</span> recht knapp für {LETTER_LENGTHS[selectedLength].label}. Lieber ein paar Sätze mehr ergänzen, sonst wird der Brief repetitiv.
+              </span>
+            </button>
           )}
         </div>
       </div>

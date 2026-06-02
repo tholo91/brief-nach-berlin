@@ -30,8 +30,9 @@ function buildDebugUrl(d: LetterDebugPayload): string {
 // invites a "besser/schlechter"-Polarität — leaving it as 4/5 made the
 // rating look already-decided. The form on /feedback prefills with
 // whichever star was clicked and lets the user change it.
-export function buildStarBarHtml(token: string): string {
-  const url = (n: number) => `${APP_URL}/feedback?r=${n}&t=${token}`;
+export function buildStarBarHtml(token: string, seq?: number): string {
+  const seqParam = seq != null ? `&s=${seq}` : "";
+  const url = (n: number) => `${APP_URL}/feedback?r=${n}&t=${token}${seqParam}`;
   // Padding bumped to clear the 44pt iOS HIG tap target on mobile mail.
   const star = (n: number, glyph: "filled" | "outline") => `
     <a href="${url(n)}" target="_blank" rel="noopener noreferrer"

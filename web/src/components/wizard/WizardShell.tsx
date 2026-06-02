@@ -269,6 +269,7 @@ export function WizardShell() {
               letterLength: wizardData.letterLength,
             }}
             issueText={wizardData.issueText}
+            onBackToIssue={() => setStep(1)}
           />
         )}
         {step === 3 && (

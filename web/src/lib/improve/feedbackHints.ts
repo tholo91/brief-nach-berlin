@@ -20,7 +20,7 @@ export const FEEDBACK_HINT_BY_TAG: Record<string, string> = {
   mdb_passt_nicht:
     "Lass den direkten Bezug zur konkreten Abgeordneten weg, formulier es so, dass es zum Thema passt, ohne sie persönlich zu adressieren.",
   details_erfunden:
-    "Entferne alle Zahlen, Namen und Daten, die der Brief nennt. Ich ergänze selbst nur das, was stimmt.",
+    "Sei zurückhaltend mit konkreten Zahlen, Namen und Daten. Streiche das, was nicht klar belegt ist. Konkrete Angaben ergänze ich lieber selbst.",
   anliegen_verfehlt:
     "Stell mein eigentliches Anliegen in den Mittelpunkt (siehe persönliche Notiz unten).",
   fakten_erfunden:

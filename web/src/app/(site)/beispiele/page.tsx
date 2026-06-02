@@ -144,9 +144,8 @@ export default function BeispielePage() {
         </div>
       </section>
 
-      {/* Closing CTA, wrapped in airmail stripes */}
+      {/* Closing CTA */}
       <section className="bg-creme">
-        <div className="h-2 w-full" style={{ background: AIRMAIL_STRIPE_BG }} />
         <div className="px-6 py-20 md:py-24">
           <div className="max-w-3xl mx-auto text-center">
             <p className="font-handwriting text-2xl md:text-3xl text-waldgruen-dark leading-snug mb-5">
@@ -170,7 +169,6 @@ export default function BeispielePage() {
             </p>
           </div>
         </div>
-        <div className="h-2 w-full" style={{ background: AIRMAIL_STRIPE_BG }} />
       </section>
     </div>
   );

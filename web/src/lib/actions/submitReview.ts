@@ -40,6 +40,8 @@ const reviewSchema = z.object({
   // confirmed they want to submit anyway. The unique-token DB constraint
   // still prevents true duplicates; this only suppresses the IP throttle.
   bypassRateLimit: z.boolean().optional(),
+  // 1 = rating came from the letter mail, 2 = from the followup mail.
+  mailSeq: z.union([z.literal(1), z.literal(2)]).optional(),
 });
 
 export type SubmitReviewResult =
@@ -134,7 +136,9 @@ export async function submitReviewAction(
       politician_id:
         payload.politicianId != null ? String(payload.politicianId) : null,
       plz: payload.plz ?? null,
-      debug_payload: payload,
+      debug_payload: data.mailSeq != null
+        ? { ...payload, mail_seq: data.mailSeq }
+        : payload,
       debug_token: data.token,
       ip_hash: ipHash,
     };

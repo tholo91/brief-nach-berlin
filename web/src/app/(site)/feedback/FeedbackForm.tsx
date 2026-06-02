@@ -24,6 +24,7 @@ import { ALLOWED_HINT_TAGS, NOTIZ_MAX } from "@/lib/improve/feedbackHints";
 interface FeedbackFormProps {
   initialRating: number;
   token: string;
+  mailSeq?: 1 | 2;
 }
 
 const COMMENT_MAX = 500;
@@ -48,6 +49,7 @@ function getPolarity(rating: number): ChipPolarity {
 export function FeedbackForm({
   initialRating,
   token,
+  mailSeq,
 }: FeedbackFormProps) {
   const router = useRouter();
   const [rating, setRating] = useState<number>(initialRating);
@@ -125,6 +127,7 @@ export function FeedbackForm({
       mode: "initial",
       rating: initialRating,
       token,
+      mailSeq,
     }).catch((err) => {
       console.warn("[FeedbackForm] initial auto-submit failed:", err);
     });
@@ -165,6 +168,7 @@ export function FeedbackForm({
         feedbackTags: feedbackTags.length ? feedbackTags : undefined,
         token,
         bypassRateLimit,
+        mailSeq,
       });
       if ("success" in result) {
         setSubmitted(true);
@@ -260,6 +264,7 @@ export function FeedbackForm({
               checked={feedbackTags.includes(tag.slug)}
               onToggle={() => toggleTag(tag.slug)}
               label={tag.label}
+              tone={polarity === "negative" ? "alert" : "primary"}
             />
           ))}
           {FACT_CHECK_FEEDBACK_TAGS.map((tag) => (

@@ -36,11 +36,11 @@ export function buildFollowupHtml(params: BuildFollowupParams): FollowupRender {
     ``,
     `Wichtig für die Zukunft des Projekts ist das Feedback von Menschen wie dir: Wie hat dir dein Brief gefallen? Sei bitte schonungslos ehrlich bei Kritik, gerne aber auch bei Lob 😉`,
     ``,
-    `1 Stern: ${base}/feedback?r=1&t=${token}`,
-    `2 Sterne: ${base}/feedback?r=2&t=${token}`,
-    `3 Sterne: ${base}/feedback?r=3&t=${token}`,
-    `4 Sterne: ${base}/feedback?r=4&t=${token}`,
-    `5 Sterne: ${base}/feedback?r=5&t=${token}`,
+    `1 Stern: ${base}/feedback?r=1&t=${token}&s=2`,
+    `2 Sterne: ${base}/feedback?r=2&t=${token}&s=2`,
+    `3 Sterne: ${base}/feedback?r=3&t=${token}&s=2`,
+    `4 Sterne: ${base}/feedback?r=4&t=${token}&s=2`,
+    `5 Sterne: ${base}/feedback?r=5&t=${token}&s=2`,
     ``,
     `Falls du schon deinen Brief bewertet hast, kannst du diese Mail ignorieren.`,
     `Tausend Dank dir und beste Grüße aus Bremen`,
@@ -138,7 +138,7 @@ export function buildFollowupHtml(params: BuildFollowupParams): FollowupRender {
           <tr>
             <td style="padding:8px 32px 20px;background-color:#ffffff;text-align:center;">
               <div style="display:inline-block;background-color:#FAF8F5;border:1px solid #E0DCD7;border-radius:6px;padding:18px 24px;">
-                ${buildStarBarHtml(token)}
+                ${buildStarBarHtml(token, 2)}
               </div>
             </td>
           </tr>

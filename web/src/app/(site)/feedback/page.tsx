@@ -20,9 +20,9 @@ function parseRating(r: string | undefined): number {
 export default async function FeedbackPage({
   searchParams,
 }: {
-  searchParams: Promise<{ r?: string; t?: string }>;
+  searchParams: Promise<{ r?: string; t?: string; s?: string }>;
 }) {
-  const { r, t } = await searchParams;
+  const { r, t, s } = await searchParams;
   const payload = t ? verifyFeedbackToken<LetterDebugPayload>(t) : null;
 
   if (!t || !payload) {
@@ -58,7 +58,7 @@ export default async function FeedbackPage({
   return (
     <main className="min-h-screen bg-creme px-4 sm:px-6 py-12 sm:py-16">
       <div className="max-w-xl mx-auto">
-        <FeedbackForm initialRating={initialRating} token={t} />
+        <FeedbackForm initialRating={initialRating} token={t} mailSeq={s === "2" ? 2 : 1} />
       </div>
     </main>
   );

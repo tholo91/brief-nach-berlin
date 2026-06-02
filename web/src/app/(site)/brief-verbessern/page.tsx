@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { APP_URL } from "@/lib/config";
 import { Prose } from "@/components/editorial/Prose";
 import { PromptCopyBlock } from "@/components/PromptCopyBlock";
+import { FAQAccordion } from "@/components/FAQAccordion";
 import {
   buildHintBullets,
   filterAllowedTags,
@@ -105,7 +106,7 @@ export default async function BriefVerbessernPage({
   const prompt = buildImprovePrompt(bullets);
 
   return (
-    <div className="min-h-screen bg-creme px-6 py-20">
+    <div className="min-h-screen bg-creme px-6 py-20 overflow-x-clip">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(articleJsonLd) }}
@@ -131,7 +132,7 @@ export default async function BriefVerbessernPage({
         </p>
 
         {hasFeedback ? (
-          <div className="mb-12 rounded-lg border-2 border-waldgruen/40 bg-waldgruen/10 px-5 py-4">
+          <div className="mb-12 lg:hidden rounded-lg border-2 border-waldgruen/40 bg-waldgruen/10 px-5 py-4">
             <p className="font-body text-base text-waldgruen-dark leading-relaxed">
               Das Feedback aus deiner Bewertung ist im neuen Prompt enthalten:
             </p>
@@ -163,52 +164,70 @@ export default async function BriefVerbessernPage({
           <PromptCopyBlock
             text={prompt}
             boldLines={[ANCHOR_AENDERN, ANCHOR_ENTWURF]}
+            annotations={[
+              {
+                anchorLine: ANCHOR_AENDERN,
+                label: "Pack hier deine\nWünsche rein!",
+                side: "left",
+                tone: "yellow",
+                offsetY: 28,
+              },
+              ...(hasFeedback
+                ? [
+                    {
+                      anchorLine: ANCHOR_AENDERN,
+                      label: "deine Kritikpunkte\nsind schon drin",
+                      side: "left" as const,
+                      tone: "green" as const,
+                      offsetY: -32,
+                      offsetX: 70,
+                      compact: true,
+                      arrow: false,
+                      rotateClass: "rotate-6",
+                    },
+                  ]
+                : []),
+              {
+                anchorLine: ANCHOR_ENTWURF,
+                label: "Hier den Brief\naus der Mail!",
+                side: "right",
+                tone: "yellow",
+                offsetY: 24,
+              },
+            ]}
           />
         </div>
 
-        <Prose>
-          <h2 className="font-body text-2xl font-bold text-waldgruen-dark pt-4">
-            Welche Anmerkungen helfen?
-          </h2>
-          <p>
-            Was dich stört oder fehlt: Tonfall, eine falsche Aussage, ein
-            fehlender persönlicher Bezug, ein konkretes Beispiel. Was du nicht
-            erwähnst, bleibt wie es ist.
-          </p>
-
-          <h2 className="font-body text-2xl font-bold text-waldgruen-dark pt-4">
-            Timing zählt
-          </h2>
-          <p>
-            Wenn dein Thema gerade im Bundestag debattiert wird oder kurz vor
-            einer Abstimmung steht, schreib das in den ersten Satz, z.B.
-            &bdquo;angesichts der Abstimmung am 12. Juni&ldquo;. Ein Brief, der
-            diese Woche aufschlägt, wirkt stärker als einer, der irgendwann
-            gelesen wird.
-          </p>
-
-          <h2 className="font-body text-2xl font-bold text-waldgruen-dark pt-4">
-            Warum Mistral?
-          </h2>
-          <p>
-            Europäischer Anbieter, kostenlos, im direkten Vergleich besonders
-            stark beim deutschen Umformulieren. ChatGPT oder Gemini gehen
-            natürlich auch.
-          </p>
-
-          <h2 className="font-body text-2xl font-bold text-waldgruen-dark pt-4">
-            Und dann?
-          </h2>
-          <p>
-            Abschreiben, frankieren, absenden. Handgeschriebene Briefe werden
-            im Bundestag wirklich gelesen. Tipps zu Länge, Adresse und Tonfall
-            in den{" "}
-            <Link href="/tipps" className="text-waldgruen hover:underline">
-              Tipps für den perfekten Brief
-            </Link>
-            .
-          </p>
-        </Prose>
+        <FAQAccordion
+          items={[
+            {
+              q: "Welche Anmerkungen helfen?",
+              a: "Was dich stört oder fehlt: Tonfall, eine falsche Aussage, ein fehlender persönlicher Bezug, ein konkretes Beispiel. Was du nicht erwähnst, bleibt wie es ist.",
+            },
+            {
+              q: "Timing zählt",
+              a: "Wenn dein Thema gerade im Bundestag debattiert wird oder kurz vor einer Abstimmung steht, schreib das in den ersten Satz, z.B. „angesichts der Abstimmung am 12. Juni“. Ein Brief, der diese Woche aufschlägt, wirkt stärker als einer, der irgendwann gelesen wird.",
+            },
+            {
+              q: "Warum Mistral?",
+              a: "Europäischer Anbieter, kostenlos, im direkten Vergleich besonders stark beim deutschen Umformulieren. ChatGPT oder Gemini gehen natürlich auch.",
+            },
+            {
+              q: "Und dann?",
+              aNode: (
+                <>
+                  Abschreiben, frankieren, absenden. Handgeschriebene Briefe
+                  werden im Bundestag wirklich gelesen. Tipps zu Länge, Adresse
+                  und Tonfall in den{" "}
+                  <Link href="/tipps" className="text-waldgruen hover:underline">
+                    Tipps für den perfekten Brief
+                  </Link>
+                  .
+                </>
+              ),
+            },
+          ]}
+        />
 
         {hasFeedback ? (
           <div className="mt-12 rounded-lg border border-waldgruen/20 bg-creme/60 px-5 py-4">

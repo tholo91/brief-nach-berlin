@@ -11,13 +11,19 @@ import CallToAction from "@/components/CallToAction";
 import Footer from "@/components/Footer";
 import { ReviewMarquee } from "@/components/reviews/ReviewMarquee";
 import { getHeroReviews } from "@/lib/reviews/getHeroReviews";
+import { getLetterCount } from "@/lib/counter";
+
+const LETTER_COUNT_DISPLAY_THRESHOLD = 50;
 
 export const metadata: Metadata = {
   alternates: { canonical: "/" },
 };
 
 export default async function Home() {
-  const heroReviews = await getHeroReviews();
+  const [heroReviews, letterCount] = await Promise.all([
+    getHeroReviews(),
+    getLetterCount(),
+  ]);
 
   return (
     <>
@@ -27,6 +33,13 @@ export default async function Home() {
         {/* Review strip below hero — mobile + desktop, swipeable on touch, auto-scroll on hover-capable */}
         {heroReviews.length > 0 && (
           <section className="relative z-20 -mt-6 md:-mt-24 lg:-mt-32 pb-2">
+            {letterCount >= LETTER_COUNT_DISPLAY_THRESHOLD && (
+              <p className="text-center font-typewriter text-xs sm:text-sm tracking-widest uppercase text-warmgrau/50 mb-2 md:mb-3 px-6">
+                Schon{" "}
+                <span className="font-bold text-waldgruen">{letterCount}</span>{" "}
+                Briefe geschrieben
+              </p>
+            )}
             <ReviewMarquee reviews={heroReviews} variant="compact" limit={6} cardHref="/stimmen" />
           </section>
         )}

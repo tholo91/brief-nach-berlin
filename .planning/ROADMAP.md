@@ -680,6 +680,27 @@ Plans:
 Plans:
 - [ ] TBD (promote with /gsd-review-backlog when ready)
 
+### Phase 999.31: Email #3 "Hat dein:e Politiker:in geantwortet?" + Auto-Unsubscribe bei Rating-Klick (BACKLOG)
+
+**Goal:** Dritte Follow-up-Mail ~14 Tage nach Brief-Versand mit neuer inhaltlicher Frage ("Hat dein:e MdB schon geantwortet?"). Zweck: (1) Send-Rate-KPI sauber tracken — aktuell 24% der Reviews sind "keine Angabe" bei `letter_sent`, (2) qualitative Daten über tatsächliche MdB-Antwort-Quote sammeln (neue KPI).
+
+**Auto-Unsubscribe-Mechanik:** Wer in Mail #2 auf irgendeinen Rating-Stern klickt (egal ob letter_sent=true/false/null), bekommt Mail #3 nicht mehr. Begründung: Frage ist beantwortet, keine weitere Mail nötig — simple Höflichkeit, kein "ich will nicht nerven"-Feature.
+
+**Begründung für 3 Mails überhaupt:** Brief-nach-Berlin ist ein Einmal-Service (Nutzer:innen kommen selten wieder). 3 Mails über 14 Tage sind weit unter Newsletter-Standards. Asymmetrie: +Daten > -Goodwill bei Person, die eh nicht wiederkommt.
+
+**Inhaltlicher Hook für Mail #3:** Nicht "Hast du Feedback?" (generisch, fühlt sich wie Spam an), sondern eine *neue Frage*: "Hat dein:e MdB schon geantwortet? Wenn ja, wie war die Reaktion?" — eigener Anlass, neue Information, ggf. Story für Landing/Social.
+
+**Aktuelle Datenlage (Stand 2026-06-02):**
+- 574 generierte Briefe, 68 Reviews (11,8% Review-Rate)
+- 38 sent=true (55,9%), 14 sent=false (20,6%), 16 null (23,5%)
+- Send-Rate-Schätzung: 56–73% (je nach Behandlung von null)
+
+**Offene Fragen für Plan-Phase:**
+- Mail #3 Timing: 14 Tage nach Mail #2 oder 14 Tage nach Brief-Erstellung?
+- Unsubscribe-Tracking: neue DB-Spalte `mail3_suppressed` auf reviews oder eigene Tabelle?
+- Bei Klick auf "MdB hat geantwortet": eigener Token-Flow oder Aufsatz auf Feedback-Flow?
+- Send-Rate als öffentliche KPI auf Landing zeigen? (Social Proof: "X von 10 schicken den Brief tatsächlich ab")
+
 ## Progress
 
 **Execution Order:**

@@ -37,7 +37,7 @@ export default function Roadmap() {
                 Nicht jedes Anliegen gehört nach Berlin. Ich möchte automatisch erkennen lassen, welches politische Level zuständig ist, damit dein Brief dort landet, wo er wirklich etwas bewirken kann.
               </p>
               <p className="font-body text-sm text-warmgrau/70 leading-relaxed mb-4">
-                <Link href="/kommune-land-bund-eu" className="text-waldgruen hover:text-waldgruen-dark underline decoration-waldgruen/30 underline-offset-2 hover:decoration-waldgruen transition-colors">
+                <Link href="/kommune-land-bund-eu" prefetch={false} className="text-waldgruen hover:text-waldgruen-dark underline decoration-waldgruen/30 underline-offset-2 hover:decoration-waldgruen transition-colors">
                   Wer ist eigentlich wofür zuständig?
                 </Link>
               </p>

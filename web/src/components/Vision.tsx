@@ -49,6 +49,7 @@ export default function Vision() {
               Die Idee brachte mir meine Mutter in Duisburg.{" "}
               <Link
                 href="/warum"
+                prefetch={false}
                 className="text-waldgruen hover:text-waldgruen-dark underline decoration-waldgruen/40 underline-offset-4 hover:decoration-waldgruen transition-colors"
               >
                 Die ganze Geschichte dahinter

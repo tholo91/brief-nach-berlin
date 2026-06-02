@@ -30,6 +30,7 @@ export default function AppFooter() {
         <div className="flex gap-6">
           <Link
             href="/"
+            prefetch={false}
             className="font-body text-sm text-warmgrau/40 hover:text-warmgrau transition-colors duration-200"
           >
             Startseite
@@ -44,12 +45,14 @@ export default function AppFooter() {
           </a>
           <Link
             href="/impressum"
+            prefetch={false}
             className="font-body text-sm text-warmgrau/40 hover:text-warmgrau transition-colors duration-200"
           >
             Impressum
           </Link>
           <Link
             href="/datenschutz"
+            prefetch={false}
             className="font-body text-sm text-warmgrau/40 hover:text-warmgrau transition-colors duration-200"
           >
             Datenschutz

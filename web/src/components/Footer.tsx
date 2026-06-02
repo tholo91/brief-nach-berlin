@@ -32,66 +32,77 @@ export default async function Footer() {
           <div className="flex flex-col sm:flex-row sm:flex-wrap gap-x-6 gap-y-2">
             <Link
               href="/guide"
+              prefetch={false}
               className="font-body text-sm text-warmgrau/70 hover:text-waldgruen-dark transition-colors duration-200"
             >
               Der Guide: Vom Frust zum Brief im Kasten
             </Link>
             <Link
               href="/treppe-der-selbstwirksamkeit"
+              prefetch={false}
               className="font-body text-sm text-warmgrau/70 hover:text-waldgruen-dark transition-colors duration-200"
             >
               Treppe der politischen Selbstwirksamkeit
             </Link>
             <Link
               href="/warum-ein-brief"
+              prefetch={false}
               className="font-body text-sm text-warmgrau/70 hover:text-waldgruen-dark transition-colors duration-200"
             >
               Warum ein Brief mehr ist als ein Brief
             </Link>
             <Link
               href="/wer-darf-mdb-schreiben"
+              prefetch={false}
               className="font-body text-sm text-warmgrau/70 hover:text-waldgruen-dark transition-colors duration-200"
             >
               Wer darf MdBs schreiben?
             </Link>
             <Link
               href="/warum"
+              prefetch={false}
               className="font-body text-sm text-warmgrau/70 hover:text-waldgruen-dark transition-colors duration-200"
             >
               Wer dahintersteht
             </Link>
             <Link
               href="/ki-transparenz"
+              prefetch={false}
               className="font-body text-sm text-warmgrau/70 hover:text-waldgruen-dark transition-colors duration-200"
             >
               KI & Transparenz
             </Link>
             <Link
               href="/andere-tools"
+              prefetch={false}
               className="font-body text-sm text-warmgrau/70 hover:text-waldgruen-dark transition-colors duration-200"
             >
               Andere Tools für Demokratie
             </Link>
             <Link
               href="/weitersagen"
+              prefetch={false}
               className="font-body text-sm text-warmgrau/70 hover:text-waldgruen-dark transition-colors duration-200"
             >
               Brief nach Berlin weitersagen
             </Link>
             <Link
               href="/was-bisher-geschah"
+              prefetch={false}
               className="font-body text-sm text-warmgrau/70 hover:text-waldgruen-dark transition-colors duration-200"
             >
               Was bisher geschah: Fortschritt
             </Link>
             <Link
               href="/was-noch-kommt"
+              prefetch={false}
               className="font-body text-sm text-warmgrau/70 hover:text-waldgruen-dark transition-colors duration-200"
             >
               Was noch kommt: Roadmap
             </Link>
             <Link
               href="/lage-der-nation"
+              prefetch={false}
               className="font-body text-sm text-warmgrau/70 hover:text-waldgruen-dark transition-colors duration-200"
             >
               Erwähnt in der Lage der Nation
@@ -118,12 +129,14 @@ export default async function Footer() {
             </a>
             <Link
               href="/impressum"
+              prefetch={false}
               className="font-body text-sm text-warmgrau/40 hover:text-warmgrau transition-colors duration-200"
             >
               Impressum
             </Link>
             <Link
               href="/datenschutz"
+              prefetch={false}
               className="font-body text-sm text-warmgrau/40 hover:text-warmgrau transition-colors duration-200"
             >
               Datenschutz

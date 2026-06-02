@@ -115,6 +115,7 @@ export default function HowItWorksWithExample() {
           <div id="beispiel" className="md:sticky md:top-24 scroll-mt-20">
             <Link
               href="/beispiele"
+              prefetch={false}
               className="block max-w-md mx-auto group cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-waldgruen focus-visible:ring-offset-4 focus-visible:ring-offset-creme rounded-sm"
               aria-label="Vollständigen Brief und weitere Beispiele lesen"
             >

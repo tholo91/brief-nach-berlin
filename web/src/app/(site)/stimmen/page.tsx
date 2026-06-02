@@ -7,6 +7,7 @@ import { PullQuote } from "@/components/editorial/PullQuote";
 import { Figure } from "@/components/editorial/Figure";
 import { FAQAccordion } from "@/components/FAQAccordion";
 import { RatingStat } from "@/components/reviews/RatingStat";
+import { RatingDistributionBlock } from "@/components/reviews/RatingDistributionBlock";
 import { ReviewMarquee } from "@/components/reviews/ReviewMarquee";
 import { getPublicReviews } from "@/lib/reviews/getPublicReviews";
 import { getReviewStats } from "@/lib/reviews/getReviewStats";
@@ -285,6 +286,7 @@ export default async function StimmenPage() {
               das, was hier vorne als nächstes auftaucht.
             </p>
           </Prose>
+          <RatingDistributionBlock stats={stats} />
         </div>
 
         {/* 6. Quote 2 */}

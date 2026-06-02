@@ -79,6 +79,14 @@ const categories: Category[] = [
         different:
           "Brief-nach-Berlin denkt strikt vom analogen Briefkasten her: handgeschrieben, abgeschickt, ein Adressat, eine konkrete Bitte. Das ist absichtlich aufwändiger und genau deshalb landet so ein Brief mit höherer Wahrscheinlichkeit auf dem Schreibtisch und nicht im Spam-Ordner. Außerdem führen wir dich vom diffusen Frust bis zum fertigen Brief, auch wenn du noch keine klare Forderung hast.",
       },
+      {
+        name: "Nexus Politics",
+        url: "https://nexuspolitics.org",
+        what: "Eine digitale Dialogplattform aus München (TUM-Startup, EXIST-gefördert), auf der Bürger:innen Anliegen einreichen, an Umfragen teilnehmen und nachvollziehen können, wie Politiker:innen darauf reagieren. Für Bürger:innen kostenlos, Mandatsträger:innen zahlen für ihren Zugang.",
+        good: "Wenn du an einem laufenden Dialog interessiert bist, deine Anliegen öffentlich tracken willst und sehen möchtest, ob und wie Politiker:innen antworten. Stark, wenn du Rechenschaft und Sichtbarkeit über die Zeit wichtiger findest als einen einzelnen Brief.",
+        different:
+          "Nexus Politics setzt auf digitalen Dauerdialog innerhalb einer Plattform. Brief-nach-Berlin verlässt die Plattform bewusst nach drei Minuten: kein Account, kein Dashboard, keine wiederkehrende Interaktion. Du nimmst einen handgeschriebenen Brief mit, der außerhalb jedes Posteingangs auf einem echten Schreibtisch landet. Beides hat seinen Platz, das eine ist Beziehungsaufbau, das andere ein einmaliges, analoges Signal.",
+      },
     ],
   },
   {

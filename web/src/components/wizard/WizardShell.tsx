@@ -268,6 +268,7 @@ export function WizardShell() {
               ngo: wizardData.ngo,
               letterLength: wizardData.letterLength,
             }}
+            issueText={wizardData.issueText}
           />
         )}
         {step === 3 && (

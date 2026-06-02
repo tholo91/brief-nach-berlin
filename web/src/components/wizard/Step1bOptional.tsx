@@ -11,6 +11,13 @@ interface Step1bOptionalProps {
   errorMessage?: string | null;
   onErrorDismiss?: () => void;
   defaultValues?: Partial<Step1bData>;
+  issueText?: string;
+}
+
+const SHORT_INPUT_WORD_THRESHOLD = 80;
+
+function countWords(text: string): number {
+  return text.trim().split(/\s+/).filter(Boolean).length;
 }
 
 function PartyExplainer() {
@@ -60,7 +67,10 @@ export function Step1bOptional({
   errorMessage,
   onErrorDismiss,
   defaultValues,
+  issueText,
 }: Step1bOptionalProps) {
+  const issueWordCount = issueText ? countWords(issueText) : 0;
+  const isShortInput = issueWordCount > 0 && issueWordCount < SHORT_INPUT_WORD_THRESHOLD;
   const { register, handleSubmit, watch, setValue } = useForm<Step1bData>({
     defaultValues: {
       name: defaultValues?.name ?? "",
@@ -161,6 +171,11 @@ export function Step1bOptional({
           <p className="text-xs text-warmgrau/50 mt-2">
             Standardmäßig ist eine Seite voreingestellt: prägnant und in 5-10 Minuten versandfertig auf Papier.
           </p>
+          {isShortInput && selectedLength !== "1" && (
+            <div className="mt-3 border-l-2 border-bernstein/60 bg-bernstein/5 rounded-r-md px-3 py-2 text-xs text-warmgrau/80 leading-relaxed">
+              Dein Text ist recht knapp. Für längere Briefe empfehlen wir entweder <span className="font-semibold text-bernstein">1 Seite</span> zu wählen oder im vorherigen Schritt mehr Details zu ergänzen, damit der Brief nicht repetitiv wird.
+            </div>
+          )}
         </div>
       </div>
 

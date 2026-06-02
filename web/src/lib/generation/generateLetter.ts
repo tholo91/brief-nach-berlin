@@ -100,6 +100,9 @@ Der Brief führt eine zusammenhängende Argumentation, keine Aufzählung. Verbin
   3. Forderung: was die/der Abgeordnete konkret tun soll
 Jeder Absatz transportiert einen logischen Schritt, nicht einen abstrakten Wert. Keine Aufzählungs-Marker wie "Erstens", "Zweitens", "Drittens". Keine drei Adjektive in Reihe. Wenn der Bürger nur einen Punkt liefert, bleib bei einem Punkt, keine künstliche Dreiteilung.
 
+KEINE WIEDERHOLUNG (nicht verhandelbar):
+Jeder Absatz bringt eine NEUE Information, einen neuen Gedanken oder eine neue Facette. Restatement derselben Aussage in anderen Worten ist ein Fehler. Beispiel-Fehler: Absatz 1 sagt "der Kiez verliert seinen Charakter", Absatz 2 sagt "das Viertel verliert seine Seele", Absatz 3 sagt "der Stadtteil verliert seine Identität". Das ist dieselbe Aussage dreimal. Lieber kürzer schreiben als denselben Punkt in neuer Verpackung wiederholen. Prüfe vor der Ausgabe: Wenn du einen Absatz streichen könntest, ohne dass eine substanzielle Aussage verloren geht, ist er Wiederholung und muss raus oder mit echter neuer Information ersetzt werden.
+
 ZWEI-ASPEKT-SÄTZE TEILEN (Hard-Verbot für additive Doppel-Konstruktionen):
 Die Wortfolge "nicht nur ... sondern" ist auf Token-Ebene komplett verboten, in jeder Variante, an jeder Stelle im Satz, auch in den Formen "nicht nur ... sondern auch ...", "nicht allein ... sondern auch ...", "nicht bloß ... sondern auch ...". Wenn du zwei Aspekte hast (z. B. persönliche Betroffenheit UND ein größerer Zusammenhang), schreibe sie in zwei aufeinanderfolgenden Sätzen:
 - Satz 1 beschreibt Aspekt A direkt.
@@ -317,6 +320,8 @@ export async function generateLetter(
       responseFormat: { type: "json_object" },
       temperature: MISTRAL_TEMPERATURE,
       maxTokens,
+      frequencyPenalty: 0.3,
+      presencePenalty: 0.4,
     })
   );
 
@@ -337,8 +342,8 @@ export async function generateLetter(
   if (wordCount < acceptableMin || wordCount > acceptableMax) {
     retried = true;
     const directive = wordCount < acceptableMin
-      ? `Der vorherige Brief hatte nur ${wordCount} Wörter. Das Pflichtfenster ist ${minWords}–${maxWords} Wörter. Schreibe den Brief neu: arbeite Kontext und Begründung stärker aus, übernimm mehr Argumente und Empathie aus <transkript>. Erfinde KEINE neuen Fakten, um Wörter zu füllen.`
-      : `Der vorherige Brief hatte ${wordCount} Wörter. Das Pflichtfenster ist ${minWords}–${maxWords} Wörter. Schreibe den Brief neu: kürze, ohne die Stimme oder die Kernargumente des Bürgers zu verlieren.`;
+      ? `Der vorherige Brief hatte nur ${wordCount} Wörter. Das Zielfenster ist ${minWords}–${maxWords} Wörter. Schreibe den Brief neu mit folgendem Aufbau: (1) Anlass aus <transkript>, (2) persönliche Begründung / Betroffenheit, (3) konkrete Forderung, (4) politischer Schlussappell. Jeder Absatz MUSS eine neue, eigenständige Aussage enthalten. WIEDERHOLE NICHTS aus dem vorherigen Brief in anderen Worten. Wenn das <transkript> nicht genug Substanz für ${minWords} Wörter hergibt, akzeptiere lieber eine kürzere Länge als denselben Gedanken zu wiederholen oder Fakten zu erfinden.`
+      : `Der vorherige Brief hatte ${wordCount} Wörter. Das Zielfenster ist ${minWords}–${maxWords} Wörter. Schreibe den Brief neu: kürze, ohne die Stimme oder die Kernargumente des Bürgers zu verlieren.`;
 
     console.warn("[generateLetter] word count out of acceptance corridor, retrying once", {
       wordCount,
@@ -362,6 +367,8 @@ export async function generateLetter(
         responseFormat: { type: "json_object" },
         temperature: MISTRAL_TEMPERATURE,
         maxTokens,
+        frequencyPenalty: 0.3,
+        presencePenalty: 0.4,
       })
     );
 

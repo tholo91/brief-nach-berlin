@@ -644,6 +644,42 @@ Plans:
 Plans:
 - [ ] TBD (promote with /gsd-review-backlog when ready)
 
+### Phase 999.30: Brief-Verbesserungs-Flow über Mail-Link bei niedriger Bewertung (BACKLOG)
+
+**Goal:** Wenn jemand im Feedback-Mail 1-3 Sterne klickt, statt direkter Bewertungs-Abgabe ein alternativer CTA "Brief mit einem Klick automatisch verbessern" — führt auf token-geschützte Seite `/brief-verbessern`, die den ursprünglichen Brief + Rating + ggf. Feedback-Text automatisch übernimmt und via Mistral verbessert.
+
+**Kern-Mechanik (stateless, kein Server-Storage):**
+- Brieftext wird via `lz-string` komprimiert + base64url-encoded in den Mail-Link gepackt (~800-1200 Zeichen für 200-280 Wörter)
+- Gesamt-URL inkl. Token + Rating + Feedback ~1-3 KB (unter allen relevanten Mail-Client- und Browser-Limits, getestet ≥ 8 KB)
+- Seite lädt → parst URL-Parameter → schreibt in `sessionStorage` → `history.replaceState()` ersetzt URL durch saubere `/brief-verbessern` (kein Brieftext in Browser-History, beim Teilen oder Schulterblick)
+- Kein Cookie (kein Consent-Stress), kein localStorage, kein Backend-Persist — passt zur "nichts speichern"-DSGVO-Linie
+
+**UX-Detail Mail-Template:**
+- Bei Rating ≤ 3: Button-Label wechselt von "Bewertung abschicken" auf "Brief mit einem Klick automatisch verbessern"
+- Bei Rating ≥ 4: bisheriger Flow bleibt
+- Alle Star-Buttons müssen den komprimierten Brieftext als URL-Param mitschleppen
+
+**Verbesserungs-Logik:**
+- Mistral-Prompt erhält: Originalbrief + Sternezahl + (optional) Freitext-Feedback
+- Nutzer kann verbesserten Brief erneut bewerten/iterieren oder direkt übernehmen
+- Token-Gating wie bei `/feedback` heute (gleiche Infrastruktur)
+
+**Erwarteter Impact:** Macht negative Bewertungen produktiv statt frustrierend — User bekommt sofort einen besseren Brief, ohne Copy/Paste. Niedrigschwellige Rettung schlechter Generierungen ohne Backend-State.
+
+**Verwandt:** 999.27 (Clarifying-Question), 999.28 (Fakten-Treue-Check) — komplementäre Qualitäts-Hebel, aber dieser hier reaktiv post-hoc statt pre-emptive.
+
+**Offene Fragen für Plan-Phase:**
+- Rate-Limit pro Token (wie viele Verbesserungen pro Brief)?
+- Soll Original-Brief sichtbar bleiben (Diff-Ansicht) oder direkt überschrieben?
+- Mistral-Modell: gleiches wie initiale Generierung oder größeres?
+- Edge-Case Mail-Client-Truncation: Fallback wenn URL-Param fehlt/korrupt?
+
+**Requirements:** TBD
+**Plans:** 0 plans
+
+Plans:
+- [ ] TBD (promote with /gsd-review-backlog when ready)
+
 ## Progress
 
 **Execution Order:**

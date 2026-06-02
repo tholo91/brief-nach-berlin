@@ -68,6 +68,21 @@ export function FeedbackForm({
   const [pending, startTransition] = useTransition();
 
   const polarity = getPolarity(rating);
+  const improveHref = buildImproveHref(feedbackTags, body);
+
+  // Recovery-Offer Latch: zeigt die "Brief verbessern"-Card erst, wenn der
+  // User bei niedriger Bewertung tatsächlich Feedback geäussert hat (Chip
+  // oder Notiz). Einmal gezeigt, bleibt sie sichtbar, auch wenn er später
+  // Chips abwählt oder Text löscht — sonst flackert die Card beim Tippen.
+  // Versteckt sich nur, wenn das Rating wieder über 3 steigt.
+  const hasMappableFeedback =
+    feedbackTags.some((tag) => ALLOWED_HINT_TAGS.has(tag)) ||
+    body.trim() !== "";
+  const [hasShownRecoveryOffer, setHasShownRecoveryOffer] = useState(false);
+  if (!hasShownRecoveryOffer && rating <= 3 && hasMappableFeedback) {
+    setHasShownRecoveryOffer(true);
+  }
+  const showRecoveryOffer = hasShownRecoveryOffer && rating <= 3;
 
   // Reset selected chips when the polarity flips so a user who picked 5 stars
   // (positive chips), then changes to 1 (negative chips), doesn't smuggle stale
@@ -374,6 +389,46 @@ export function FeedbackForm({
           </div>
         </div>
       </div>
+
+      {showRecoveryOffer ? (
+        <div
+          className="rounded-xl border border-waldgruen/25 bg-waldgruen/5 px-4 py-4 animate-feedback-in"
+          role="group"
+          aria-label="Brief verbessern als Alternative"
+        >
+          <p className="font-body text-sm font-semibold text-waldgruen-dark mb-1 leading-snug">
+            Erst den Brief verbessern? Dauert ~1 Minute.
+          </p>
+          <p className="font-body text-sm text-warmgrau leading-relaxed mb-3">
+            Mit deinem Feedback bauen wir dir einen Prompt, der die Schwächen direkt fixt. Du kannst danach neu bewerten.
+          </p>
+          <a
+            href={improveHref}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center justify-center gap-2 w-full bg-creme border border-waldgruen text-waldgruen font-semibold text-sm px-4 py-2.5 rounded-lg hover:bg-waldgruen hover:text-creme transition-colors cursor-pointer min-h-[40px]"
+          >
+            <span>Brief jetzt verbessern</span>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="14"
+              height="14"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              aria-hidden="true"
+            >
+              <path d="M15 3h6v6" />
+              <path d="M10 14 21 3" />
+              <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
+            </svg>
+            <span className="sr-only">(öffnet in neuem Tab)</span>
+          </a>
+        </div>
+      ) : null}
 
       {errorMessage ? (
         <div

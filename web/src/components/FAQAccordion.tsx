@@ -2,7 +2,7 @@ import type { ReactNode } from "react";
 
 type FAQItem = {
   q: string;
-  a: string;
+  a?: string;
   aNode?: ReactNode;
 };
 

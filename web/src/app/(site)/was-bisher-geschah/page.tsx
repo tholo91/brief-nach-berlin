@@ -38,6 +38,20 @@ interface Monat {
 
 const monate: Monat[] = [
   {
+    key: "juni-2026",
+    badge: "Juni 2026",
+    note: "Mehr Abgeordnete, schärfere Briefe, besseres Feedback",
+    entries: [
+      "Die Startseite zeigt jetzt die echte Anzahl verschickter Briefe in Echtzeit, direkt aus der Datenbank gezogen - kein statischer Platzhalter mehr.",
+      "Mehr PLZ werden jetzt korrekt aufgelöst: Die Abgeordneten-Daten wurden erweitert, damit weniger Wahlkreise leer bleiben.",
+      "Wer eine niedrige Bewertung gibt, sieht direkt einen Weg, den Brief zu verbessern - ohne neu anzufangen. Der Verbesserungs-Flow ist jetzt Teil der Bewertungsseite.",
+      "Neues Feedback-Tag 'Fakten erfunden' hilft dabei, Briefe mit erfundenen Aussagen gezielt zu erkennen und das Modell daraufhin zu verbessern.",
+      "PLZ-Eingabe zeigt jetzt sofort den zugehörigen Ort oder Ortsteil, als schnelle Bestätigung, dass die Postleitzahl stimmt.",
+      "Mobile Navigation überarbeitet: Handy-Menü, scroll-sensitiver CTA und Bewertungs-Marquee auf dem Desktop für mehr Glaubwürdigkeit.",
+      "Briefe wiederholen sich weniger: Der Prompt wurde überarbeitet, damit keine Formulierung doppelt auftaucht.",
+    ],
+  },
+  {
     key: "mai-2026",
     badge: "Mai 2026",
     note: "Stimmen, Roadmap und spürbar bessere Briefe",
@@ -121,7 +135,7 @@ export default async function WasBisherGeschahPage() {
     letterCount > 0
       ? { value: `${letterCount}`, label: "Briefe entstanden" }
       : null,
-    { value: "3", label: "Monate offen gebaut" },
+    { value: "4", label: "Monate offen gebaut" },
     { value: `${updateCount}`, label: "Verbesserungen dokumentiert" },
   ].filter(Boolean) as { value: string; label: string }[];
 

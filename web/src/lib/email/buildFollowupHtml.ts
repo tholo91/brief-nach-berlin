@@ -195,11 +195,8 @@ export function buildFollowupHtml(params: BuildFollowupParams): FollowupRender {
               <p style="margin:0;font-family:Georgia,'Times New Roman',serif;font-size:12px;color:#999999;">
                 <a href="${APP_URL}" style="color:#2D5016;text-decoration:none;">Brief nach Berlin</a> · Deine Stimme zählt.
               </p>
-              <p style="margin:6px 0 0;font-family:Georgia,'Times New Roman',serif;font-size:12px;color:#999999;">
-                <a href="${APP_URL}/wer-darf-mdb-schreiben" style="color:#2D5016;text-decoration:underline;">Wer darf MdBs schreiben?</a>
-              </p>
               <p style="margin:6px 0 0;font-family:Georgia,'Times New Roman',serif;font-size:12px;color:#aaaaaa;line-height:1.5;">
-                Einmalige Nachfrage, kein Newsletter. <a href="${APP_URL}/datenschutz" style="color:#888888;">Datenschutz</a> · <a href="mailto:thomas_lorenz@posteo.de?subject=Brief%20nach%20Berlin%3A%20Adresse%20l%C3%B6schen&body=Hallo%20Thomas%2C%0A%0Abitte%20l%C3%B6sche%20meine%20E-Mail-Adresse%20aus%20deinen%20Followup-Listen.%0A%0ADanke!" style="color:#888888;">Adresse löschen</a> · <a href="${APP_URL}/was-noch-kommt" style="color:#888888;">Roadmap</a>
+                Einmalige Nachfrage, kein Newsletter. <a href="${APP_URL}/datenschutz" style="color:#888888;">Datenschutz</a> · <a href="mailto:thomas_lorenz@posteo.de?subject=Brief%20nach%20Berlin%3A%20Adresse%20l%C3%B6schen&body=Hallo%20Thomas%2C%0A%0Abitte%20l%C3%B6sche%20meine%20E-Mail-Adresse%20aus%20deinen%20Followup-Listen.%0A%0ADanke!" style="color:#888888;">Adresse löschen</a> · <a href="${APP_URL}/was-noch-kommt" style="color:#888888;">Roadmap</a> · <a href="${APP_URL}/wer-darf-mdb-schreiben" style="color:#888888;">Wer darf MdBs schreiben?</a>
               </p>
             </td>
           </tr>

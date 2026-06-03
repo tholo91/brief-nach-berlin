@@ -18,23 +18,23 @@
 
 <!-- code-tasks:managed-start -->
 
-- [ ] **Default auf 1 Seite** ([Created: 2026-04-26]) (Priority: ⚪ Normal)
-  Und checke bitte auch, ob die worteranzahl realistisch ist von 1, 1,5 oder 2 Seiten. Recherchiere dazu im Internet
-
 - [ ] **UI: in list view kleines Kalender icon anzeigen** ([Created: 2026-04-11]) (Priority: ⚪ Normal)
   Nur wenn man einen Kalender link hinterlegt hat
 
-- [ ] **Landing page design verbessern** ([Created: 2026-04-11]) (Priority: ⚪ Normal) [Updated: 2026-04-11]
-  Bislang wirkt es eher wie eine powerpoint Präsentation - Texte müssen besser werden und wir sollten auch magic mcp nutzen (teste, ob das klappt). Vielleicht better mit Gemini cli oder antigravity?
-
-- [ ] **Images kreieren** ([Created: 2026-03-27]) (Priority: ⚪ Normal)
-  Für header // ggf. unsplash?
-
-- [ ] **Konkurrenz?** ([Created: 2026-03-27]) (Priority: 🔴 Important)
-  Gibt es bereits einen ähnlichen service?
-
 
 ## Completed
+
+- [x] **Landing page design verbessern** ([Created: 2026-04-11]) (Priority: ⚪ Normal) [Updated: 2026-04-11] [Completed: 2026-06-03]
+  Bislang wirkt es eher wie eine powerpoint Präsentation - Texte müssen besser werden und wir sollten auch magic mcp nutzen (teste, ob das klappt). Vielleicht better mit Gemini cli oder antigravity?
+
+- [x] **Konkurrenz?** ([Created: 2026-03-27]) (Priority: 🔴 Important) [Completed: 2026-06-03]
+  Gibt es bereits einen ähnlichen service?
+
+- [x] **Images kreieren** ([Created: 2026-03-27]) (Priority: ⚪ Normal) [Completed: 2026-06-03]
+  Für header // ggf. unsplash?
+
+- [x] **Default auf 1 Seite** ([Created: 2026-04-26]) (Priority: ⚪ Normal) [Completed: 2026-06-03]
+  Und checke bitte auch, ob die worteranzahl realistisch ist von 1, 1,5 oder 2 Seiten. Recherchiere dazu im Internet
 
 - [x] **Gsd Oder lovable?** ([Created: 2026-03-27]) (Priority: ⚪ Normal) [Completed: 2026-04-08]
   Mit Claude prompt erstellen lassen

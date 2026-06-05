@@ -191,35 +191,35 @@ export async function POST(req: NextRequest) {
         debug: debugPayload,
       });
 
-      const sends: Array<Promise<{ success: boolean; messageId?: string }>> = [
-        sendLetterEmail(params),
-      ];
+      const letterResult = await sendLetterEmail(params);
+      if (!letterResult.success) {
+        console.error("[brief-nach-berlin][after][letter] returned success=false");
+        return;
+      }
 
       // Ziel: 9:45 Berlin-Zeit an Tag+3 (Frühstücks-Inbox statt nachts).
-      // Brevos historische Obergrenze für scheduledAt ist 72h — bei
-      // Submission vor 9:45 Berlin fällt der Slot automatisch auf Tag+2@9:45.
       // BREVO_FOLLOWUP_ENABLED erlaubt Notabschaltung ohne Deploy.
+      // Dedup: max. 1 Followup pro Email in 24h. In-memory, also nicht
+      // cross-instance-sicher, aber gut genug gegen ehrliche Mehrfach-Submissions.
       if (process.env.BREVO_FOLLOWUP_ENABLED === "true") {
-        const scheduledAt = computeFollowupSlot();
-        sends.push(
-          sendFollowupEmail({
+        const followupDedup = checkRateLimit(
+          `followup:${data.email.toLowerCase()}`,
+          1,
+          24 * 60 * 60_000,
+        );
+        if (followupDedup.allowed) {
+          const scheduledAt = computeFollowupSlot();
+          const followupResult = await sendFollowupEmail({
             recipientEmail: data.email,
             politicianName: politicianFullName,
             feedbackToken,
             scheduledAt,
-          }),
-        );
-      }
-
-      const settled = await Promise.allSettled(sends);
-      settled.forEach((r, i) => {
-        const label = i === 0 ? "letter" : "followup";
-        if (r.status === "rejected") {
-          console.error(`[brief-nach-berlin][after][${label}] rejected:`, r.reason);
-        } else if (!r.value.success) {
-          console.error(`[brief-nach-berlin][after][${label}] returned success=false`);
+          });
+          if (!followupResult.success) {
+            console.error("[brief-nach-berlin][after][followup] returned success=false");
+          }
         }
-      });
+      }
     });
 
     return NextResponse.json({

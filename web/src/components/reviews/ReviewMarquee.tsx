@@ -40,6 +40,41 @@ export function ReviewMarquee({
     };
   }, [expandedKey]);
 
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    if (!window.matchMedia("(hover: none)").matches) return;
+    const container = containerRef.current;
+    if (!container) return;
+
+    let currentIndex = 0;
+
+    const advance = () => {
+      const snaps =
+        container.querySelectorAll<HTMLElement>(".marquee-snap-item");
+      if (!snaps.length) return;
+      currentIndex = (currentIndex + 1) % items.length;
+      snaps[currentIndex]?.scrollIntoView({
+        behavior: "smooth",
+        block: "nearest",
+        inline: "center",
+      });
+    };
+
+    let timer = setInterval(advance, 4000);
+
+    const resetTimer = () => {
+      clearInterval(timer);
+      timer = setInterval(advance, 4000);
+    };
+
+    container.addEventListener("touchstart", resetTimer, { passive: true });
+
+    return () => {
+      clearInterval(timer);
+      container.removeEventListener("touchstart", resetTimer);
+    };
+  }, [items.length]);
+
   if (items.length === 0) return null;
 
   const isPaused = expandedKey !== null;

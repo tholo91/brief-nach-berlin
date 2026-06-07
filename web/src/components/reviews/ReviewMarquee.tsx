@@ -43,34 +43,63 @@ export function ReviewMarquee({
   useEffect(() => {
     if (typeof window === "undefined") return;
     if (!window.matchMedia("(hover: none)").matches) return;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
     const container = containerRef.current;
     if (!container) return;
 
     let currentIndex = 0;
+    let timer: ReturnType<typeof setInterval> | null = null;
+    let isVisible = false;
 
     const advance = () => {
       const snaps =
         container.querySelectorAll<HTMLElement>(".marquee-snap-item");
       if (!snaps.length) return;
       currentIndex = (currentIndex + 1) % items.length;
-      snaps[currentIndex]?.scrollIntoView({
-        behavior: "smooth",
-        block: "nearest",
-        inline: "center",
-      });
+      const target = snaps[currentIndex];
+      if (!target) return;
+      // Scroll only the marquee container horizontally — never the page.
+      const containerRect = container.getBoundingClientRect();
+      const targetRect = target.getBoundingClientRect();
+      const left =
+        container.scrollLeft +
+        (targetRect.left - containerRect.left) -
+        (containerRect.width - targetRect.width) / 2;
+      container.scrollTo({ left, behavior: "smooth" });
     };
 
-    let timer = setInterval(advance, 4000);
-
-    const resetTimer = () => {
-      clearInterval(timer);
+    const startTimer = () => {
+      if (timer) return;
       timer = setInterval(advance, 4000);
     };
+
+    const stopTimer = () => {
+      if (!timer) return;
+      clearInterval(timer);
+      timer = null;
+    };
+
+    const resetTimer = () => {
+      stopTimer();
+      if (isVisible) startTimer();
+    };
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const entry = entries[0];
+        isVisible = entry?.isIntersecting ?? false;
+        if (isVisible) startTimer();
+        else stopTimer();
+      },
+      { threshold: 0.1 },
+    );
+    observer.observe(container);
 
     container.addEventListener("touchstart", resetTimer, { passive: true });
 
     return () => {
-      clearInterval(timer);
+      stopTimer();
+      observer.disconnect();
       container.removeEventListener("touchstart", resetTimer);
     };
   }, [items.length]);

@@ -55,7 +55,7 @@ function TipsDisclosure({ open, setOpen }: TipsDisclosureProps) {
             <path d="M10 22h4" />
             <path d="M12 2a7 7 0 0 0-4 12.7c.6.5 1 1.3 1 2.1V18h6v-1.2c0-.8.4-1.6 1-2.1A7 7 0 0 0 12 2Z" />
           </svg>
-          So wird dein Brief am wirksamsten
+          Je konkreter, desto wirksamer
         </span>
         <svg
           width="16"
@@ -129,7 +129,6 @@ const PLACEHOLDER_EXAMPLES: string[] = [
 
 const PLACEHOLDER_ROTATE_MS = 4000;
 const MIN_CHARS = 50;
-const DETAIL_THRESHOLD = 80;
 
 const TONE_LABELS = ["freundlich", "höflich", "sachlich", "bestimmt", "nachdrücklich"] as const;
 
@@ -152,18 +151,8 @@ export function Step2Issue({
   const [toneLevel, setToneLevel] = useState(defaultToneLevel ?? 3);
   const [tipsOpen, setTipsOpen] = useState(false);
 
-  const openTipsAndScroll = useCallback(() => {
-    setTipsOpen(true);
-    // Wait one frame so the accordion has begun expanding before we scroll.
-    requestAnimationFrame(() => {
-      document
-        .getElementById("tips-disclosure")
-        ?.scrollIntoView({ behavior: "smooth", block: "start" });
-    });
-  }, []);
   const charCount = issueText.trim().length;
   const tooShort = charCount < MIN_CHARS;
-  const hasEnoughDetail = charCount >= DETAIL_THRESHOLD;
   const voiceTouched = voiceState !== "idle";
   const placeholder =
     voiceState === "recording"
@@ -244,29 +233,10 @@ export function Step2Issue({
           ].join(" ")}
           aria-describedby="issueText-counter"
         />
-        <div className="mt-2 relative" aria-live="polite">
-          <div className={`transition-all duration-500 ease-in-out overflow-hidden ${hasEnoughDetail ? "opacity-0 max-h-0" : "opacity-100 max-h-16"}`}>
-            <button
-              type="button"
-              onClick={openTipsAndScroll}
-              className="group inline-flex items-center gap-1.5 text-sm font-body text-waldgruen-dark bg-waldgruen/15 hover:bg-waldgruen/25 px-4 py-1.5 rounded-full transition-colors cursor-pointer text-left"
-            >
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" className="shrink-0">
-                <circle cx="12" cy="12" r="10" />
-                <line x1="12" y1="8" x2="12" y2="8" strokeWidth="3" />
-                <line x1="12" y1="12" x2="12" y2="16" />
-              </svg>
-              <span>Je konkreter du wirst, desto näher beschreibt der Brief dein Anliegen.</span>
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" className="shrink-0 transition-transform duration-200 group-hover:-translate-y-0.5">
-                <polyline points="18 15 12 9 6 15" />
-              </svg>
-            </button>
-          </div>
-          <div className={`transition-all duration-500 ease-in-out overflow-hidden ${hasEnoughDetail ? "opacity-100 max-h-8" : "opacity-0 max-h-0"}`}>
-            <p id="issueText-counter" className="text-right text-sm text-warmgrau/50">
-              {charCount} Zeichen
-            </p>
-          </div>
+        <div className={`mt-2 transition-opacity duration-300 ${charCount > 0 ? "opacity-100" : "opacity-0"}`} aria-live="polite">
+          <p id="issueText-counter" className="text-right text-sm text-warmgrau/50">
+            {charCount} Zeichen
+          </p>
         </div>
       </div>
 

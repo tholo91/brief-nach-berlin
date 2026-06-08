@@ -13,13 +13,13 @@ Du arbeitest autonom im Repo `tholo91/brief-nach-berlin` (Next.js/TypeScript, Ap
 - Minimaler Diff, exakt im Scope der einen Aufgabe.
 
 ## Kuratierte Items (Quelle: `.planning/quick/`) — nur diese, in dieser Reihenfolge. Lies je den Task-Ordner für die genaue Anforderung.
-1. **e8o** — `.planning/quick/260523-e8o-switch-wir-auf-ich-ber-landing-und-subpages` — „wir" → „ich" über Landing + Subpages (reine Copy).
-2. **pph** — `.planning/quick/260523-pph-stimmen-sign-off-copy-brief-verbessern-m` — Sign-off-Copy im Brief verbessern.
-3. **v52** — `.planning/quick/260522-v52-stimmen-hero-note-datums-korrektur-mitte` — Datums-Korrektur in der Hero-Note.
+1. **e8o** — Ordner in `.planning/quick/`, dessen Name `260523-e8o` enthält — „wir" → „ich" über Landing + Subpages (reine Copy).
+2. **pph** — Ordner in `.planning/quick/`, dessen Name `260523-pph` enthält — Sign-off-Copy im Brief verbessern.
+3. **v52** — Ordner in `.planning/quick/`, dessen Name `260522-v52` enthält — Datums-Korrektur in der Hero-Note.
 
 ## Ablauf
 1. **Erledigte ermitteln:** `gh pr list --state all` und `git branch -r | grep claude/`. Überspringe Items mit vorhandenem Branch/PR.
-2. Nimm das erste offene Item; lies seinen `.planning/quick/<slug>/`-Ordner für die genaue Anforderung. Alle erledigt → melde „Alle kuratierten Items erledigt." und stoppe.
+2. Nimm das erste offene Item; finde den zugehörigen Ordner in `.planning/quick/` per ID-Präfix (z. B. `260523-e8o`) — Ordnernamen sind auf der Platte evtl. abgeschnitten — und lies dort die `*-PLAN.md` / `*-SUMMARY.md` für die genaue Anforderung. Alle erledigt → melde „Alle kuratierten Items erledigt." und stoppe.
 3. Branch `claude/<slug-kurz>` von `main` erstellen.
 4. Aufgabe umsetzen (nur Text/Copy/UI, minimaler Diff).
 5. **Verifier in `web/`:** `npm ci || npm install`, dann `npm run build` und `npm run lint`. Beide müssen fehlerfrei durchlaufen. (Optional `npm test`; bei Fehlschlag im PR-Body vermerken, nicht blockieren.)

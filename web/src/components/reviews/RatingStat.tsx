@@ -6,18 +6,24 @@ interface RatingStatProps {
 }
 
 function StarBar({ rating, max = 5 }: { rating: number; max?: number }) {
-  const fillPercent = (rating / max) * 100;
   return (
-    <div className="relative inline-flex">
-      <div className="flex gap-0.5 text-warmgrau/20 text-3xl leading-none select-none">
-        {"★".repeat(max)}
-      </div>
-      <div
-        className="absolute inset-0 flex gap-0.5 text-amber-400 text-3xl leading-none overflow-hidden select-none"
-        style={{ width: `${fillPercent}%` }}
-      >
-        {"★".repeat(max)}
-      </div>
+    <div className="flex gap-1">
+      {Array.from({ length: max }, (_, i) => {
+        const fill = Math.min(1, Math.max(0, rating - i));
+        return (
+          <span key={i} className="relative inline-block text-3xl leading-none select-none">
+            <span className="text-warmgrau/20">★</span>
+            {fill > 0 && (
+              <span
+                className="absolute inset-0 overflow-hidden text-amber-400"
+                style={{ width: `${fill * 100}%` }}
+              >
+                ★
+              </span>
+            )}
+          </span>
+        );
+      })}
     </div>
   );
 }

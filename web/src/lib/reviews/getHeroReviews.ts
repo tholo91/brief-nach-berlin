@@ -20,6 +20,7 @@ export async function getHeroReviews(): Promise<PublicReview[]> {
     const { data: featured, error: featuredError } = await supabase
       .from("reviews")
       .select("id, created_at, rating, body, display_name")
+      .eq("consent", true)
       .eq("hero_featured", true)
       .gte("rating", 4)
       .not("body", "is", null)
@@ -39,6 +40,7 @@ export async function getHeroReviews(): Promise<PublicReview[]> {
     const { data: fallback, error: fallbackError } = await supabase
       .from("reviews")
       .select("id, created_at, rating, body, display_name")
+      .eq("consent", true)
       .gte("rating", 4)
       .not("body", "is", null)
       .gte("created_at", MIN_PUBLIC_REVIEW_DATE)

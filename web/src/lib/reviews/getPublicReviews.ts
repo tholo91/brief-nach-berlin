@@ -11,6 +11,7 @@ export async function getPublicReviews(limit = 30): Promise<PublicReview[]> {
     const { data, error } = await supabase
       .from("reviews")
       .select("id, created_at, rating, body, display_name")
+      .eq("consent", true)
       .not("body", "is", null)
       .gte("created_at", MIN_PUBLIC_REVIEW_DATE)
       .order("created_at", { ascending: false })

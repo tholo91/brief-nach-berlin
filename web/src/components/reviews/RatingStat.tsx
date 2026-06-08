@@ -5,6 +5,23 @@ interface RatingStatProps {
   showDistribution?: boolean;
 }
 
+function StarBar({ rating, max = 5 }: { rating: number; max?: number }) {
+  const fillPercent = (rating / max) * 100;
+  return (
+    <div className="relative inline-flex">
+      <div className="flex gap-0.5 text-warmgrau/20 text-3xl leading-none select-none">
+        {"★".repeat(max)}
+      </div>
+      <div
+        className="absolute inset-0 flex gap-0.5 text-amber-400 text-3xl leading-none overflow-hidden select-none"
+        style={{ width: `${fillPercent}%` }}
+      >
+        {"★".repeat(max)}
+      </div>
+    </div>
+  );
+}
+
 export function RatingStat({ stats, showDistribution = false }: RatingStatProps) {
   if (stats.totalCount === 0) {
     return (
@@ -15,15 +32,10 @@ export function RatingStat({ stats, showDistribution = false }: RatingStatProps)
   }
 
   return (
-    <div className="flex flex-col gap-3">
-      <div className="flex items-baseline gap-2">
-        <span className="font-body text-5xl font-bold text-waldgruen-dark tabular-nums">
-          {stats.averageRating.toFixed(1)}
-        </span>
-        <span className="font-body text-2xl text-warmgrau/60">/ 5</span>
-      </div>
+    <div className="flex flex-col gap-2">
+      <StarBar rating={stats.averageRating} />
       <p className="font-typewriter text-sm text-warmgrau/70">
-        aus {stats.totalCount} Stimmen
+        bewertet mit {stats.averageRating.toFixed(1)}/5 aus {stats.totalCount} Stimmen
       </p>
       {showDistribution && (
         <div className="flex flex-col gap-1.5 mt-1">

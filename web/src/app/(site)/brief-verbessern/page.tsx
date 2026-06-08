@@ -69,7 +69,7 @@ const PROMPT_FOOTER = `Hier ist der Entwurf, den du überarbeiten sollst:
 
 const ANCHOR_AENDERN = "Das möchte ich am Brief ändern oder ergänzen:";
 const ANCHOR_ENTWURF = "Hier ist der Entwurf, den du überarbeiten sollst:";
-const DEFAULT_AENDERN_BODY = `[Hier deine Anmerkungen eintragen, z.B. "Absatz 2 klingt nicht nach mir", "Ton ist zu weich", "ich will auch X erwähnen"]`;
+const DEFAULT_AENDERN_BODY = `[Hier deine Anmerkungen eintragen, z.B. "Absatz 2 klingt zu sehr nach KI", "Ton ist zu weich", "ich will auch X erwähnen"]`;
 
 function buildImprovePrompt(bullets: string[]): string {
   const aendernBody = bullets.length > 0 ? bullets.join("\n") : DEFAULT_AENDERN_BODY;

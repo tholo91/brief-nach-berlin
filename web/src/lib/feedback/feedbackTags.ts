@@ -8,7 +8,7 @@ export const NEGATIVE_FEEDBACK_TAGS = [
   { slug: "zu_kurz", label: "Zu kurz" },
   { slug: "falscher_ton", label: "Falscher Ton" },
   { slug: "zu_generisch", label: "Zu generisch" },
-  { slug: "klingt_nicht_nach_mir", label: "Klingt nicht nach mir" },
+  { slug: "klingt_nicht_nach_mir", label: "Klingt zu sehr nach KI" },
   { slug: "mdb_passt_nicht", label: "MdB passt nicht" },
   { slug: "wiederholt_sich", label: "Wiederholt sich" },
 ] as const;

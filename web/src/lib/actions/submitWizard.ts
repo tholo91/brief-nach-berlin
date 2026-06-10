@@ -19,7 +19,6 @@ export async function submitWizardAction(
   log("start", {
     plz: data.plz,
     issueTextLength: data.issueText?.length ?? 0,
-    hasName: Boolean(data.name),
     hasParty: Boolean(data.party),
     hasNgo: Boolean(data.ngo),
     letterLength: data.letterLength,
@@ -40,7 +39,7 @@ export async function submitWizardAction(
       data.letterLength = DEFAULT_LETTER_LENGTH;
     }
 
-    const step2Result = step2Schema.safeParse({ issueText: data.issueText });
+    const step2Result = step2Schema.safeParse({ issueText: data.issueText, toneLevel: data.toneLevel });
     if (!step2Result.success) {
       console.warn("[submitWizard] step2 validation failed", step2Result.error.flatten());
       return {
@@ -49,6 +48,23 @@ export async function submitWizardAction(
       };
     }
     log("validated");
+
+    // PLZ lookup using Phase 1 static data. Runs BEFORE the rate-limit checks
+    // on purpose: lookupPLZ is a free static in-memory lookup, and a
+    // plz_not_found should not burn one of the user's daily letter tokens.
+    // Otherwise a user who mistypes their PLZ (or lives in a list-only
+    // Wahlkreis) could lock themselves out for 24h without ever sending a
+    // letter. The expensive steps (AI/email in selectPoliticianAction) stay
+    // behind the rate limit below.
+    const { wahlkreisIds, politicians } = lookupPLZ(data.plz);
+    log("plz lookup", { wahlkreisCount: wahlkreisIds.length, politicianCount: politicians.length });
+    if (wahlkreisIds.length === 0 || politicians.length === 0) {
+      return {
+        error: "plz_not_found",
+        message:
+          "Für diese Postleitzahl haben wir derzeit keinen direkt gewählten Wahlkreisabgeordneten in unseren Daten. Entweder stimmt die PLZ nicht, oder dein Wahlkreis wird aktuell nur durch Listenabgeordnete vertreten. Du findest deine Abgeordneten unter bundestag.de.",
+      };
+    }
 
     // 1b. Rate limit check (IP + email) BEFORE moderation/AI spend.
     const ip = await getClientIp();
@@ -72,17 +88,6 @@ export async function submitWizardAction(
         error: "rate_limited",
         message: RATE_LIMIT_MESSAGE,
         retryAfterSeconds: emailLimit.retryAfterSeconds,
-      };
-    }
-
-    // PLZ lookup using Phase 1 static data
-    const { wahlkreisIds, politicians } = lookupPLZ(data.plz);
-    log("plz lookup", { wahlkreisCount: wahlkreisIds.length, politicianCount: politicians.length });
-    if (wahlkreisIds.length === 0 || politicians.length === 0) {
-      return {
-        error: "plz_not_found",
-        message:
-          "Für diese Postleitzahl haben wir derzeit keinen direkt gewählten Wahlkreisabgeordneten in unseren Daten. Entweder stimmt die PLZ nicht, oder dein Wahlkreis wird aktuell nur durch Listenabgeordnete vertreten. Du findest deine Abgeordneten unter bundestag.de.",
       };
     }
 

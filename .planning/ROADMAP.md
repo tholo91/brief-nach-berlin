@@ -701,6 +701,22 @@ Plans:
 - Bei Klick auf "MdB hat geantwortet": eigener Token-Flow oder Aufsatz auf Feedback-Flow?
 - Send-Rate als öffentliche KPI auf Landing zeigen? (Social Proof: "X von 10 schicken den Brief tatsächlich ab")
 
+### Phase 999.32: Moderation-Call gegen eigenen Ausfall härten (try/catch in moderateText) (BACKLOG)
+
+**Goal:** `moderateText()` ([web/src/lib/moderation/moderateText.ts](../../web/src/lib/moderation/moderateText.ts)) ruft `mistral.classifiers.moderate()` ohne try/catch auf. Aufgerufen als OUTPUT-Moderation NACH erfolgreicher Briefgenerierung in [generate-letter/route.ts:172](../../web/src/app/api/generate-letter/route.ts). Wenn der Moderations-Endpunkt selbst fehlschlägt (Netzwerk/5xx/Rate-Limit), bubbled der Fehler in den globalen catch (route.ts:229) → User bekommt 500 und verliert den bereits fertig generierten Brief.
+
+**Fix:** try/catch in `moderateText`; bei Fehler entweder `{flagged:false}` zurückgeben + separat loggen, ODER eigenen Error-Typ werfen, den die Route so behandelt, dass der Brief trotzdem ausgeliefert + intern alarmiert wird. Aufwand: ~5 Zeilen.
+
+**Warum niedrig priorisiert:** Extrem schmaler Fehlerfall — der Moderations-Endpunkt muss ausfallen, während die Generierung gerade geklappt hat. Bei aktuell ~10 Usern/Tag praktisch irrelevant, User kann einfach erneut absenden.
+
+**Ab wann bauen:** Wenn Traffic deutlich hochskaliert (mehr Moderation-Calls = höhere absolute Ausfallzahl) ODER eine echte Support-Beschwerde "Fehler nach dem Warten" auftaucht.
+
+**Requirements:** TBD
+**Plans:** 0 plans
+
+Plans:
+- [ ] TBD (promote with /gsd-review-backlog when ready)
+
 ## Progress
 
 **Execution Order:**

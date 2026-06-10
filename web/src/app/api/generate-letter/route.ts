@@ -111,7 +111,7 @@ export async function POST(req: NextRequest) {
     if (!step1bSchema.safeParse(data).success) {
       data.letterLength = DEFAULT_LETTER_LENGTH;
     }
-    const step2Result = step2Schema.safeParse({ issueText: data.issueText });
+    const step2Result = step2Schema.safeParse({ issueText: data.issueText, toneLevel: data.toneLevel });
     if (!step2Result.success) {
       return NextResponse.json({ error: "Bitte beschreibe dein Anliegen." }, { status: 400 });
     }
@@ -161,7 +161,6 @@ export async function POST(req: NextRequest) {
     const result = await generateLetter({
       issueText: data.issueText,
       politicians: [selectedPolitician],
-      name: data.name,
       party: data.party,
       ngo: data.ngo,
       letterLength: data.letterLength,

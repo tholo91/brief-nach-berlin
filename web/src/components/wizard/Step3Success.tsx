@@ -427,6 +427,7 @@ export function Step3Success({ result, wizardData, politicians, onChangePlz }: S
   };
 
   const [copied, setCopied] = useState(false);
+  const [clipboardFallbackUrl, setClipboardFallbackUrl] = useState<string | null>(null);
 
   // Single "Teilen" button: native share when available, fall back to clipboard copy.
   const handleShare = async () => {
@@ -447,7 +448,7 @@ export function Step3Success({ result, wizardData, politicians, onChangePlz }: S
       setCopied(true);
       setTimeout(() => setCopied(false), 2200);
     } catch {
-      // Clipboard blocked, fail silently
+      setClipboardFallbackUrl(APP_URL);
     }
   };
 
@@ -855,6 +856,24 @@ export function Step3Success({ result, wizardData, politicians, onChangePlz }: S
                 )}
               </button>
             </div>
+
+            {/* Clipboard fallback: shown only when clipboard API is blocked */}
+            {clipboardFallbackUrl && (
+              <div className="mt-3 border-l-4 border-warmgrau/30 bg-warmgrau/5 rounded-r-lg px-3 py-2 text-xs font-body text-warmgrau/80 leading-relaxed">
+                Kopieren nicht möglich - bitte Link manuell kopieren:&nbsp;
+                <span
+                  className="font-mono text-waldgruen-dark select-all break-all cursor-text"
+                  onClick={(e) => {
+                    const range = document.createRange();
+                    range.selectNodeContents(e.currentTarget);
+                    window.getSelection()?.removeAllRanges();
+                    window.getSelection()?.addRange(range);
+                  }}
+                >
+                  {clipboardFallbackUrl}
+                </span>
+              </div>
+            )}
 
             {/* Secondary feedback button */}
             <a

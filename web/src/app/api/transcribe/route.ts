@@ -80,11 +80,14 @@ export async function POST(req: NextRequest) {
       type: audioBlob.type || "audio/webm",
     });
 
-    const result = await mistral.audio.transcriptions.complete({
-      model: MISTRAL_MODELS.transcription,
-      file: audioFile,
-      language: "de",
-    });
+    const result = await mistral.audio.transcriptions.complete(
+      {
+        model: MISTRAL_MODELS.transcription,
+        file: audioFile,
+        language: "de",
+      },
+      { timeoutMs: 45_000 }
+    );
 
     const text = result.text;
     if (!text || typeof text !== "string") {

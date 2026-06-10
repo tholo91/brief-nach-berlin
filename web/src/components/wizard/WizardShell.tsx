@@ -70,6 +70,7 @@ export function WizardShell() {
   const [actionResult, setActionResult] = useState<WizardActionResult | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [plzError, setPlzError] = useState<string | null>(null);
 
   // Sync URL params when step/data change
   useEffect(() => {
@@ -90,6 +91,7 @@ export function WizardShell() {
   // Step 2: Contact (PLZ + Email) — just stores state and advances.
   const handleStep2Complete = useCallback((data: Step1Data) => {
     setWizardData((prev) => ({ ...prev, ...data }));
+    setPlzError(null);
     setStep("2b");
   }, []);
 
@@ -108,7 +110,6 @@ export function WizardShell() {
       const fullData: WizardData = {
         plz: wizardData.plz ?? "",
         email: wizardData.email ?? "",
-        name: optionalData.name,
         party: optionalData.party,
         ngo: optionalData.ngo,
         letterLength: optionalData.letterLength ?? wizardData.letterLength,
@@ -134,7 +135,22 @@ export function WizardShell() {
 
         if ("error" in result) {
           console.warn("[wizard] server returned error", result);
-          setErrorMessage(result.message);
+          if (result.error === "plz_not_found") {
+            setPlzError(result.message);
+            setIsSubmitting(false);
+            setStep(2);
+            return;
+          }
+          if (result.error === "rate_limited" && result.retryAfterSeconds != null) {
+            const secs = result.retryAfterSeconds;
+            const timeHint =
+              secs >= 90
+                ? `Bitte warte noch etwa ${Math.ceil(secs / 60)} Minuten.`
+                : `Bitte warte noch etwa ${secs} Sekunden.`;
+            setErrorMessage(`${result.message} ${timeHint}`);
+          } else {
+            setErrorMessage(result.message);
+          }
           setIsSubmitting(false);
           return;
         }
@@ -144,7 +160,6 @@ export function WizardShell() {
         // Persist the optional data into wizardData so Step3Success has the full payload
         setWizardData((prev) => ({
           ...prev,
-          name: optionalData.name,
           party: optionalData.party,
           ngo: optionalData.ngo,
           letterLength: optionalData.letterLength ?? prev.letterLength,
@@ -254,6 +269,8 @@ export function WizardShell() {
           <Step1Form
             onNext={handleStep2Complete}
             defaultValues={{ plz: wizardData.plz, email: wizardData.email }}
+            plzError={plzError}
+            onPlzErrorDismiss={() => setPlzError(null)}
           />
         )}
         {step === "2b" && (
@@ -263,7 +280,6 @@ export function WizardShell() {
             errorMessage={errorMessage}
             onErrorDismiss={handleErrorDismiss}
             defaultValues={{
-              name: wizardData.name,
               party: wizardData.party,
               ngo: wizardData.ngo,
               letterLength: wizardData.letterLength,

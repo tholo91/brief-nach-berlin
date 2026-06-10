@@ -58,7 +58,6 @@ const debugPayload: LetterDebugPayload = {
   model: MISTRAL_MODELS.letter,
   temperature: 0.7,
   generationMs: 4321,
-  hasName: true,
   hasParty: false,
   hasNgo: false,
   usedSpeechToText: false,

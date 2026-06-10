@@ -6,7 +6,6 @@ export type WizardStep = 1 | 2 | "2b" | 3;
 export interface WizardData {
   plz: string;
   email: string;
-  name?: string;
   party?: string;
   ngo?: string;
   issueText: string;
@@ -16,7 +15,6 @@ export interface WizardData {
 }
 
 export interface Step1bData {
-  name?: string;
   party?: string;
   ngo?: string;
   letterLength: LetterLength;

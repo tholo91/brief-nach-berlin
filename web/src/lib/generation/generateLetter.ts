@@ -283,13 +283,21 @@ function parseLetterResponse(content: unknown): ParsedLetter {
   if (!content || typeof content !== "string") {
     throw new Error("Mistral returned empty response");
   }
+  let parsed: ParsedLetter;
   try {
-    return JSON.parse(content) as ParsedLetter;
+    parsed = JSON.parse(content) as ParsedLetter;
   } catch {
     const match = content.match(/\{[\s\S]*\}/);
     if (!match) throw new Error("Failed to parse Mistral response as JSON");
-    return JSON.parse(match[0]) as ParsedLetter;
+    parsed = JSON.parse(match[0]) as ParsedLetter;
   }
+  if (
+    typeof parsed.letter !== "string" ||
+    parsed.letter.trim().length < 10
+  ) {
+    throw new Error("Mistral returned empty or missing letter field");
+  }
+  return parsed;
 }
 
 function countWords(text: string): number {

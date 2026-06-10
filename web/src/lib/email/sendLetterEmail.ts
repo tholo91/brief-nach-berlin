@@ -35,7 +35,6 @@ export interface LetterDebugPayload {
   model: string;
   temperature: number;
   generationMs: number;
-  hasName: boolean;
   hasParty: boolean;
   hasNgo: boolean;
   usedSpeechToText: boolean;

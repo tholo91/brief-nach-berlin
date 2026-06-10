@@ -75,7 +75,6 @@ export function Step1bOptional({
   const isShortInput = issueWordCount > 0 && issueWordCount < SHORT_INPUT_WORD_THRESHOLD;
   const { register, handleSubmit, watch, setValue } = useForm<Step1bData>({
     defaultValues: {
-      name: defaultValues?.name ?? "",
       party: defaultValues?.party ?? "",
       ngo: defaultValues?.ngo ?? "",
       letterLength: defaultValues?.letterLength ?? DEFAULT_LETTER_LENGTH,

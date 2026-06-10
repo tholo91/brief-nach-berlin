@@ -78,7 +78,22 @@ export async function withMistralRetry<T>(
       lastStatus = status;
       if (!retryable) throw err;
       if (attempt === maxAttempts) break;
-      const delay = BASE_DELAY_MS * Math.pow(2, attempt - 1) + Math.floor(Math.random() * MAX_JITTER_MS);
+      let delay: number;
+      if (status === 429) {
+        const retryAfterHeader =
+          err &&
+          typeof err === "object" &&
+          "rawResponse" in err &&
+          (err as { rawResponse?: Response }).rawResponse instanceof Response
+            ? (err as { rawResponse: Response }).rawResponse.headers.get("retry-after")
+            : null;
+        const retryAfterSec = retryAfterHeader ? parseFloat(retryAfterHeader) : NaN;
+        delay = isFinite(retryAfterSec)
+          ? Math.min(retryAfterSec * 1000, 10_000)
+          : 2_000 * attempt + Math.floor(Math.random() * MAX_JITTER_MS);
+      } else {
+        delay = BASE_DELAY_MS * Math.pow(2, attempt - 1) + Math.floor(Math.random() * MAX_JITTER_MS);
+      }
       console.warn(
         `[mistral-retry] ${label} attempt ${attempt}/${maxAttempts} failed (status ${status ?? "n/a"}), retrying in ${delay}ms`
       );

@@ -41,7 +41,7 @@ function format(payload: LetterDebugPayload | { error: string }): string {
     `Available politicians ${d.availablePoliticianCount}`,
     `Fallback used         ${d.fallbackUsed}`,
     `Length retry fired    ${d.retried}`,
-    `Sender hints          name=${d.hasName} party=${d.hasParty} ngo=${d.hasNgo}`,
+    `Sender hints          party=${d.hasParty} ngo=${d.hasNgo}`,
     `Voice input           ${d.usedSpeechToText}`,
     `Model                 ${d.model}`,
     `Temperature           ${d.temperature}`,

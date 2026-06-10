@@ -8,9 +8,11 @@ import { step1Schema, type Step1Data } from "@/lib/validation/wizardSchemas";
 interface Step1FormProps {
   onNext: (data: Step1Data) => void;
   defaultValues?: Partial<Step1Data>;
+  plzError?: string | null;
+  onPlzErrorDismiss?: () => void;
 }
 
-export function Step1Form({ onNext, defaultValues }: Step1FormProps) {
+export function Step1Form({ onNext, defaultValues, plzError, onPlzErrorDismiss }: Step1FormProps) {
   const {
     register,
     handleSubmit,
@@ -91,9 +93,10 @@ export function Step1Form({ onNext, defaultValues }: Step1FormProps) {
             inputMode="numeric"
             maxLength={5}
             placeholder="z.B. 10115"
-            className={inputClassName(!!errors.plz && !!touchedFields.plz)}
-            aria-describedby={errors.plz && touchedFields.plz ? "plz-error" : "plz-hint"}
-            aria-invalid={!!errors.plz && !!touchedFields.plz}
+            className={inputClassName((!!errors.plz && !!touchedFields.plz) || !!plzError)}
+            aria-describedby={errors.plz && touchedFields.plz ? "plz-error" : plzError ? "plz-server-error" : "plz-hint"}
+            aria-invalid={(!!errors.plz && !!touchedFields.plz) || !!plzError}
+            onFocus={() => onPlzErrorDismiss?.()}
             {...register("plz")}
           />
           <p
@@ -108,6 +111,11 @@ export function Step1Form({ onNext, defaultValues }: Step1FormProps) {
           {errors.plz && touchedFields.plz && (
             <p id="plz-error" role="alert" className="text-sm text-airmail-rot mt-1">
               {errors.plz.message}
+            </p>
+          )}
+          {plzError && !errors.plz && (
+            <p id="plz-server-error" role="alert" className="text-sm text-airmail-rot mt-1">
+              {plzError}
             </p>
           )}
         </div>

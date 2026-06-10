@@ -18,7 +18,8 @@ import type { Politician, PoliticiansCache } from "../src/lib/types/politician";
 
 const OUT_FILE = path.resolve(__dirname, "../data/politicians-cache.json");
 const API_BASE = "https://www.abgeordnetenwatch.de/api/v2";
-const REQUEST_DELAY_MS = 150;
+const REQUEST_DELAY_MS = 250;
+const COMMITTEE_DELAY_MS = 600; // delay between committee requests to respect rate limit
 const MAX_RETRIES = 3;
 
 // 21st Bundestag (2025–2029) — parliament_period id. Verify via
@@ -43,7 +44,9 @@ async function fetchWithRetry(url: string, retries = MAX_RETRIES): Promise<unkno
       return await res.json();
     } catch (err) {
       if (attempt === retries) throw err;
-      const delay = attempt * 500;
+      // Back off more aggressively on 429 rate-limit responses
+      const is429 = String(err).includes("429");
+      const delay = is429 ? attempt * 2000 : attempt * 500;
       console.warn(`  Retry ${attempt}/${retries} — waiting ${delay}ms: ${String(err)}`);
       await sleep(delay);
     }
@@ -170,6 +173,7 @@ function toPolitician(mandate: Record<string, unknown>): Politician | null {
  */
 async function fetchCommittees(mandateId: number): Promise<string[]> {
   try {
+    await sleep(COMMITTEE_DELAY_MS);
     const url = `${API_BASE}/committee-memberships?candidacy_mandate=${mandateId}&range_start=0&range_end=99`;
     const data = (await fetchWithRetry(url)) as {
       data?: Array<{ committee?: { label?: string } }>;
@@ -221,7 +225,7 @@ async function main() {
   }
 
   console.log(`\nFetching committee memberships for ${bundestag.length} mandates...`);
-  const committeesByIndex = await mapWithConcurrency(bundestag, 5, async (p, i) => {
+  const committeesByIndex = await mapWithConcurrency(bundestag, 1, async (p, i) => {
     if (i > 0 && i % 50 === 0) console.log(`  …${i}/${bundestag.length}`);
     return fetchCommittees(p.id);
   });

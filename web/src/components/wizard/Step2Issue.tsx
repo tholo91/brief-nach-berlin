@@ -145,7 +145,6 @@ export function Step2Issue({
 }: Step2IssueProps) {
   const [issueText, setIssueText] = useState(defaultValue ?? "");
   const [voiceState, setVoiceState] = useState<VoiceRecorderState>("idle");
-  const [voiceDone, setVoiceDone] = useState(false);
   const usedVoiceRef = useRef(false);
   const [placeholderIndex, setPlaceholderIndex] = useState(0);
   const [toneLevel, setToneLevel] = useState(defaultToneLevel ?? 3);
@@ -153,7 +152,6 @@ export function Step2Issue({
 
   const charCount = issueText.trim().length;
   const tooShort = charCount < MIN_CHARS;
-  const voiceTouched = voiceState !== "idle";
   const placeholder =
     voiceState === "recording"
       ? "Sprich jetzt, dein Text erscheint hier..."
@@ -163,7 +161,6 @@ export function Step2Issue({
 
   const handleVoiceStateChange = useCallback((state: VoiceRecorderState) => {
     setVoiceState(state);
-    if (state === "done") setVoiceDone(true);
   }, []);
 
   // Rotate placeholder every few seconds while textarea is empty, so users
@@ -204,39 +201,27 @@ export function Step2Issue({
       {/* Tips disclosure — subtle nudge toward effective writing */}
       <TipsDisclosure open={tipsOpen} setOpen={setTipsOpen} />
 
-      {/* Voice recorder — easy path first, fades out after transcription */}
-      <div className={`transition-all duration-700 ease-out ${voiceDone ? "opacity-0 max-h-0 overflow-hidden mb-0" : "opacity-100 max-h-40 mb-4"}`}>
-        <VoiceRecorder
-          onTranscription={handleTranscription}
-          onStateChange={handleVoiceStateChange}
-        />
-      </div>
-
-      {/* Divider — hidden as soon as voice recording starts (or after) */}
-      <div className={`flex items-center gap-3 my-4 transition-all duration-700 ease-out ${voiceTouched ? "opacity-0 max-h-0 overflow-hidden !my-0" : "opacity-100 max-h-8"}`}>
-        <div className="flex-1 h-px bg-warmgrau/20" />
-        <span className="font-body text-xs text-warmgrau/50">oder tipp deine Stichpunkte</span>
-        <div className="flex-1 h-px bg-warmgrau/20" />
-      </div>
-
-      {/* Textarea */}
+      {/* Textarea with inline mic — voice is the easy path, typing the fallback */}
       <div>
-        <textarea
-          id="issueText"
-          value={issueText}
-          onChange={handleTextChange}
-          placeholder={placeholder}
-          className={[
-            "bg-creme border border-warmgrau/30 rounded-lg px-4 py-3 text-base font-body text-warmgrau",
-            "focus:outline-none focus:ring-2 focus:ring-waldgruen focus:border-waldgruen w-full",
-            "min-h-[160px] max-h-[320px] resize-y",
-          ].join(" ")}
-          aria-describedby="issueText-counter"
-        />
-        <div className={`mt-2 transition-opacity duration-300 ${charCount > 0 ? "opacity-100" : "opacity-0"}`} aria-live="polite">
-          <p id="issueText-counter" className="text-right text-sm text-warmgrau/50">
-            {charCount} Zeichen
-          </p>
+        <div className="relative">
+          <textarea
+            id="issueText"
+            value={issueText}
+            onChange={handleTextChange}
+            placeholder={placeholder}
+            className={[
+              "bg-creme border border-warmgrau/30 rounded-lg px-4 py-3 pr-14 text-base font-body text-warmgrau",
+              "focus:outline-none focus:ring-2 focus:ring-waldgruen focus:border-waldgruen w-full",
+              "min-h-[160px] max-h-[320px] resize-y",
+            ].join(" ")}
+            aria-describedby="issueText-counter"
+          />
+          <VoiceRecorder
+            hasText={charCount > 0}
+            charCount={charCount}
+            onTranscription={handleTranscription}
+            onStateChange={handleVoiceStateChange}
+          />
         </div>
       </div>
 

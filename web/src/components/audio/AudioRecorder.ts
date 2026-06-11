@@ -127,6 +127,9 @@ export function classifyMediaError(err: unknown): RecorderError {
 export class AudioRecorder {
   private recorder: RecordRTCType | null = null;
   private stream: MediaStream | null = null;
+  private audioContext: AudioContext | null = null;
+  private analyser: AnalyserNode | null = null;
+  private analyserSource: MediaStreamAudioSourceNode | null = null;
   private startTime = 0;
   private autoStopTimer: ReturnType<typeof setTimeout> | null = null;
   private _state: RecorderState = "idle";
@@ -150,6 +153,7 @@ export class AudioRecorder {
   }
 
   getAnalyserNode(): AnalyserNode | null {
+    if (this.analyser) return this.analyser;
     if (!this.stream) return null;
     try {
       const AudioContext =
@@ -160,11 +164,39 @@ export class AudioRecorder {
       const ctx = new AudioContext();
       const source = ctx.createMediaStreamSource(this.stream);
       const analyser = ctx.createAnalyser();
+      analyser.fftSize = 256;
       source.connect(analyser);
+      this.audioContext = ctx;
+      this.analyserSource = source;
+      this.analyser = analyser;
       return analyser;
     } catch {
       return null;
     }
+  }
+
+  /** Tear down the AnalyserNode + its AudioContext so each recording cleans up. */
+  closeAnalyser(): void {
+    try {
+      this.analyserSource?.disconnect();
+    } catch {
+      // Ignore — source may already be disconnected
+    }
+    try {
+      this.analyser?.disconnect();
+    } catch {
+      // Ignore — analyser may already be disconnected
+    }
+    if (this.audioContext) {
+      try {
+        void this.audioContext.close();
+      } catch {
+        // Ignore — context may already be closed
+      }
+    }
+    this.audioContext = null;
+    this.analyser = null;
+    this.analyserSource = null;
   }
 
   private setState(state: RecorderState) {
@@ -260,6 +292,7 @@ export class AudioRecorder {
   }
 
   private releaseStream(): void {
+    this.closeAnalyser();
     if (this.stream) {
       this.stream.getTracks().forEach((track) => track.stop());
       this.stream = null;

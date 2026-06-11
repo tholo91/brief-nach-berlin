@@ -46,9 +46,9 @@ export async function submitRoadmapSignupAction(
   }
   const { email, ebene } = parsed.data;
 
-  const ipHash = hashIdentifier(await getClientIp());
+  const ip = await getClientIp();
   const limit = checkRateLimit(
-    `roadmap_signup:ip:${ipHash}`,
+    `roadmap_signup:ip:${hashIdentifier(ip)}`,
     LIMITS.ROADMAP_SIGNUP_PER_IP.max,
     LIMITS.ROADMAP_SIGNUP_PER_IP.windowMs
   );

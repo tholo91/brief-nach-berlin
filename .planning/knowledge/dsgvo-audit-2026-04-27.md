@@ -18,10 +18,10 @@
 | **M2** LfDI als Aufsichtsbehörde fehlte | ✅ erledigt | LfDI Bremen in Datenschutz §1 und §14 |
 | **M3** Art. 21 Widerspruchsrecht fehlte | ✅ erledigt | Datenschutz §14 |
 | **M4** Art. 9 / besondere Kategorien | ✅ erledigt | Datenschutz §3 + §7 (ausdrückliche Einwilligung Art. 9 (2) lit. a) |
-| **M5** PII (`?text=` bis 1500 Zeichen) im "Neuen Brief"-Link | ⏳ offen | wartet auf Produkt-Entscheidung (Pre-Fill via Token oder leeren Aufruf) |
+| **M5** PII (`?text=` bis 1500 Zeichen) im "Neuen Brief"-Link | ✅ erledigt | Button öffnet Wizard leer; `buildEmailHtml.ts:78` ersetzt durch URL ohne Parameter. Pre-Fill-Code in `WizardShell.tsx` bleibt zwar erhalten (für selbstgeteilte Links durch User), aber unsere eigenen Mails leaken keine PII mehr. |
 | **M6** Brevo Open-/Click-Tracking aktivieren | ✅ erledigt | Im Brevo-Backoffice deaktiviert (verifiziert 2026-06-11); Hinweis in `.env.example` |
 | **M7** IP-/E-Mail-Hashing für Rate-Limit-Keys | ✅ erledigt | `hashIdentifier()` in `rateLimit.ts`, 7 Aufrufstellen + `RATE_LIMIT_SALT` (Commit `5377cfc`) |
-| **M8** Security-Header (CSP/HSTS/X-Frame/…) | ⏳ offen | wartet auf iframe-Embedding-Entscheidung |
+| **M8** Security-Header (CSP/HSTS/X-Frame/…) | ✅ erledigt (außer CSP) | `next.config.ts` setzt HSTS preload, `X-Frame-Options: DENY`, `nosniff`, strict Referrer-Policy, Permissions-Policy (mic=self, rest=()), COOP same-origin. CSP bewusst weggelassen — restriktive CSP ohne Live-Testing bricht leicht etwas; report-only als Folgeschritt möglich. |
 | **M9** heyspeak.io in Datenschutz nicht erwähnt | ✅ erledigt | Neue §14 "Feedback-Weiterleitung (heyspeak.io)" — als selbst betriebene Privatpersonen-App, Vercel `fra1`, Mistral EU, kein Drittlandtransfer; Cross-Refs (§14 Rights → §15 etc.) angepasst |
 | **M10** AI-Act-Hinweis in UI | ✅ erledigt (vor Audit-Phase) | `/ki-transparenz` deckt Art. 50 AI Act vollständig ab |
 | **M11** Verarbeitungsverzeichnis (Art. 30) | ⏳ offen | als internes Markdown geplant (`.planning/knowledge/dpa-status.md`) |

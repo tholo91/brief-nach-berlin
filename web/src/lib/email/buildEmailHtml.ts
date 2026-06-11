@@ -2,7 +2,6 @@ import type { SendLetterEmailParams, LetterDebugPayload } from "./sendLetterEmai
 import {
   APP_URL,
   WIZARD_PATH,
-  WIZARD_TEXT_PARAM_MAX_LENGTH,
   SHARE_TEXT_CAUSE,
   FOUNDER_HOMEPAGE,
   FOUNDER_FEEDBACK_URL,
@@ -70,12 +69,11 @@ export function buildEmailHtml(data: SendLetterEmailParams): string {
     .map((part) => escapeHtml(part.trim()))
     .join("<br>");
 
-  // URL-encode issueText for "Neuen Brief schreiben" link (T-03-03, pitfall 3)
-  const truncatedText =
-    data.issueText.length > WIZARD_TEXT_PARAM_MAX_LENGTH
-      ? data.issueText.slice(0, WIZARD_TEXT_PARAM_MAX_LENGTH) + "..."
-      : data.issueText;
-  const regenerateUrl = `${APP_URL}${WIZARD_PATH}?text=${encodeURIComponent(truncatedText)}`;
+  // "Neuen Brief schreiben" oeffnet den Wizard leer (DSGVO M5).
+  // Frueher wurde issueText als ?text= mitgegeben; das war PII im Klartext-Link
+  // und konnte durch Weiterleiten der Mail an Dritte oder Link-Vorschau-Scanner
+  // gelangen. Der Aufruf laeuft jetzt ohne Pre-Fill.
+  const regenerateUrl = `${APP_URL}${WIZARD_PATH}`;
 
   // Profile link (Abgeordnetenwatch: voting record, public Q&A, transparent source).
   // Prefer the API-provided URL; fall back to a slug-derived URL.

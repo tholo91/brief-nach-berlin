@@ -18,6 +18,8 @@
 
 <!-- code-tasks:managed-start -->
 
+- [ ] **Neuer test** ([Created: 2026-06-11]) (Priority: ⚪ Normal)
+
 - [ ] **UI: in list view kleines Kalender icon anzeigen** ([Created: 2026-04-11]) (Priority: ⚪ Normal)
   Nur wenn man einen Kalender link hinterlegt hat
 

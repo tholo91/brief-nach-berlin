@@ -1,9 +1,32 @@
 # DSGVO-Audit: Brief nach Berlin
 
-**Stand:** 2026-04-27
+**Stand:** 2026-04-27 (Initial-Audit) · Fortschritt-Update 2026-06-11
 **Branch:** `claude/gdpr-compliance-audit-ba4QM`
-**Geprüfter Commit:** `git rev-parse HEAD` (siehe Repo)
 **Scope:** Vollständige Codebase `web/`, Datenschutzerklärung, Impressum, Hosting-Konfiguration, eingebundene Drittdienste
+
+---
+
+## Fortschritt (Stand 2026-06-11)
+
+| Befund | Status | Evidence |
+|--------|--------|----------|
+| **H1** Datenschutz nennt OpenAI, Code nutzt Mistral | ✅ erledigt | Datenschutz §6/§9 komplett überarbeitet; Copy-Paste-Bug LfDI in §14 gefixt (Commit `610d4d1`) |
+| **H2** `issueTextPreview` (120 Zeichen Anliegen) im Vercel-Log | ✅ erledigt | `generateLetter.ts:436` → `issueTextLength` (Commit `610d4d1`) |
+| **H3** `created-letters/*.eml` im Repo | ✅ erledigt | Ordner entfernt, `.gitignore` ergänzt (Commit `610d4d1`) |
+| **H4** Google-Fonts-Tracking-Pixel in E-Mail | ✅ erledigt | `<link>` aus `buildEmailHtml.ts:103` raus, Fallback auf System-Cursive (Commit `610d4d1`) |
+| **M1** Impressum TMG/RStV veraltet | ✅ erledigt | DDG / MStV § 18 (Commit `610d4d1`) |
+| **M2** LfDI als Aufsichtsbehörde fehlte | ✅ erledigt | LfDI Bremen in Datenschutz §1 und §14 |
+| **M3** Art. 21 Widerspruchsrecht fehlte | ✅ erledigt | Datenschutz §14 |
+| **M4** Art. 9 / besondere Kategorien | ✅ erledigt | Datenschutz §3 + §7 (ausdrückliche Einwilligung Art. 9 (2) lit. a) |
+| **M5** PII (`?text=` bis 1500 Zeichen) im "Neuen Brief"-Link | ⏳ offen | wartet auf Produkt-Entscheidung (Pre-Fill via Token oder leeren Aufruf) |
+| **M6** Brevo Open-/Click-Tracking aktivieren | ✅ erledigt | Im Brevo-Backoffice deaktiviert (verifiziert 2026-06-11); Hinweis in `.env.example` |
+| **M7** IP-/E-Mail-Hashing für Rate-Limit-Keys | ✅ erledigt | `hashIdentifier()` in `rateLimit.ts`, 7 Aufrufstellen + `RATE_LIMIT_SALT` (Commit `5377cfc`) |
+| **M8** Security-Header (CSP/HSTS/X-Frame/…) | ⏳ offen | wartet auf iframe-Embedding-Entscheidung |
+| **M9** heyspeak.io in Datenschutz nicht erwähnt | ⏳ offen | wartet auf Eckdaten (Rechtsform, Hosting, Datenschutz-Link) |
+| **M10** AI-Act-Hinweis in UI | ✅ erledigt (vor Audit-Phase) | `/ki-transparenz` deckt Art. 50 AI Act vollständig ab |
+| **M11** Verarbeitungsverzeichnis (Art. 30) | ⏳ offen | als internes Markdown geplant (`.planning/knowledge/dpa-status.md`) |
+
+Die folgenden Abschnitte beschreiben den Initial-Audit-Stand zum Zeitpunkt 2026-04-27 — sie sind historische Dokumentation, kein aktueller Zustand mehr.
 
 ---
 

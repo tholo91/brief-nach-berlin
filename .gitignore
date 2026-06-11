@@ -14,3 +14,7 @@ supabase/.temp/
 # Personal mail drafts to reviewers — contain PII, stay local
 .planning/feedback/drafts/*.md
 .planning/feedback/TODOS-*.md
+
+# Manually saved test emails — may contain real PII headers (DSGVO H3)
+created-letters/
+*.eml

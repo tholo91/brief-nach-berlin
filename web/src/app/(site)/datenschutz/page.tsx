@@ -416,7 +416,9 @@ export default function Datenschutz() {
               (Art. 21) sowie auf Widerruf einer erteilten Einwilligung mit
               Wirkung für die Zukunft (Art. 7 Abs. 3). Sie haben außerdem das
               Recht auf Beschwerde bei einer Aufsichtsbehörde (Art. 77), z. B.
-              bei der oben genannten LDI NRW. Anfragen richten Sie bitte formlos
+              bei der oben genannten Landesbeauftragten für Datenschutz und
+              Informationsfreiheit der Freien Hansestadt Bremen. Anfragen
+              richten Sie bitte formlos
               per E-Mail an{" "}
               <a
                 href={`mailto:${CONTACT.email}`}

@@ -433,7 +433,7 @@ export async function generateLetter(
       returnedId: parsed.selected_politician_id,
       availableIds: input.politicians.map((p) => p.id),
       availableLevels: input.politicians.map((p) => p.level),
-      issueTextPreview: input.issueText.slice(0, 120),
+      issueTextLength: input.issueText.length,
       fallbackPoliticianId: fallback.id,
       fallbackPoliticianName: `${fallback.firstName} ${fallback.lastName}`,
     });

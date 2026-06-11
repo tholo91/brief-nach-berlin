@@ -100,7 +100,6 @@ export function buildEmailHtml(data: SendLetterEmailParams): string {
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500&display=swap" rel="stylesheet">
   <!--[if mso]>
   <style>td { font-family: 'Courier New', Courier, monospace !important; }</style>
   <![endif]-->

@@ -23,7 +23,7 @@ export default function Impressum() {
         <div className="font-body text-warmgrau space-y-6 leading-relaxed">
           <div>
             <h2 className="font-semibold text-waldgruen-dark mb-2">
-              Angaben gemäß § 5 TMG
+              Angaben gemäß § 5 DDG
             </h2>
             <p>
               Thomas Lorenz
@@ -51,7 +51,7 @@ export default function Impressum() {
 
           <div>
             <h2 className="font-semibold text-waldgruen-dark mb-2">
-              Verantwortlich für den Inhalt nach § 55 Abs. 2 RStV
+              Verantwortlich für den Inhalt nach § 18 Abs. 2 MStV
             </h2>
             <p>
               Thomas Lorenz

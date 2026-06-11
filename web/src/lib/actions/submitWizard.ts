@@ -3,7 +3,7 @@
 import type { WizardData, WizardActionResult } from "@/lib/types/wizard";
 import { step1Schema, step1bSchema, step2Schema } from "@/lib/validation/wizardSchemas";
 import { lookupPLZ } from "@/lib/lookup/plzLookup";
-import { checkRateLimit, getClientIp, LIMITS } from "@/lib/rateLimit";
+import { checkRateLimit, getClientIp, hashIdentifier, LIMITS } from "@/lib/rateLimit";
 import { DEFAULT_LETTER_LENGTH } from "@/lib/config";
 
 const RATE_LIMIT_MESSAGE =
@@ -67,10 +67,11 @@ export async function submitWizardAction(
     }
 
     // 1b. Rate limit check (IP + email) BEFORE moderation/AI spend.
-    const ip = await getClientIp();
-    const ipLimit = checkRateLimit(`letter:ip:${ip}`, LIMITS.LETTERS_PER_IP.max, LIMITS.LETTERS_PER_IP.windowMs);
+    // IP and email are salted-hashed before use as bucket keys (DSGVO M7).
+    const ipHash = hashIdentifier(await getClientIp());
+    const ipLimit = checkRateLimit(`letter:ip:${ipHash}`, LIMITS.LETTERS_PER_IP.max, LIMITS.LETTERS_PER_IP.windowMs);
     if (!ipLimit.allowed) {
-      log("rate limited by ip", { ip, retryAfterSeconds: ipLimit.retryAfterSeconds });
+      log("rate limited by ip", { ipHash, retryAfterSeconds: ipLimit.retryAfterSeconds });
       return {
         error: "rate_limited",
         message: RATE_LIMIT_MESSAGE,
@@ -78,7 +79,7 @@ export async function submitWizardAction(
       };
     }
     const emailLimit = checkRateLimit(
-      `letter:email:${data.email.toLowerCase()}`,
+      `letter:email:${hashIdentifier(data.email.toLowerCase())}`,
       LIMITS.LETTERS_PER_EMAIL.max,
       LIMITS.LETTERS_PER_EMAIL.windowMs
     );

@@ -8,7 +8,7 @@ import {
   FEEDBACK_TAG_SLUGS,
   type FeedbackTagSlug,
 } from "@/lib/feedback/feedbackTags";
-import { checkRateLimit, getClientIp, LIMITS } from "@/lib/rateLimit";
+import { checkRateLimit, getClientIp, hashIdentifier, LIMITS } from "@/lib/rateLimit";
 import type { LetterDebugPayload } from "@/lib/email/sendLetterEmail";
 
 // Zod requires a non-empty tuple for z.enum. Cast via [first, ...rest] so the
@@ -92,7 +92,7 @@ export async function submitReviewAction(
   // upsert path, so spam is impossible without a valid signed token.
   if (data.mode === "full" && !data.bypassRateLimit) {
     const limit = checkRateLimit(
-      `review:ip:${ip}`,
+      `review:ip:${hashIdentifier(ip)}`,
       LIMITS.REVIEW_PER_IP.max,
       LIMITS.REVIEW_PER_IP.windowMs
     );

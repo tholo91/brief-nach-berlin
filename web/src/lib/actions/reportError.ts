@@ -1,7 +1,7 @@
 "use server";
 
 import { z } from "zod";
-import { checkRateLimit, getClientIp, LIMITS } from "@/lib/rateLimit";
+import { checkRateLimit, getClientIp, hashIdentifier, LIMITS } from "@/lib/rateLimit";
 import { sendErrorReportEmail } from "@/lib/email/sendErrorReportEmail";
 
 // Server-Action für den "Fehler melden"-Button auf der Success-Page.
@@ -43,9 +43,9 @@ export async function reportErrorAction(
   const parsed = reportSchema.safeParse(input);
   if (!parsed.success) return { success: false };
 
-  const ip = await getClientIp();
+  const ipHash = hashIdentifier(await getClientIp());
   const limit = checkRateLimit(
-    `report:ip:${ip}`,
+    `report:ip:${ipHash}`,
     LIMITS.REPORT_ERROR_PER_IP.max,
     LIMITS.REPORT_ERROR_PER_IP.windowMs
   );

@@ -7,8 +7,25 @@
 // - Good enough to stop trivial/accidental abuse and honest repeated clicks.
 // - Replace with @vercel/kv or Upstash when traffic warrants.
 
+import { createHash } from "node:crypto";
+
 type Bucket = { count: number; resetAt: number };
 const buckets = new Map<string, Bucket>();
+
+// Salt the IP/email hash so the bucket key is not a recoverable identifier.
+// Falls back to a per-process random string if no env var is set, which is
+// fine because buckets are per-instance anyway.
+const RATE_LIMIT_SALT =
+  process.env.RATE_LIMIT_SALT ?? `bnb-${Math.random().toString(36).slice(2)}`;
+
+// Truncated SHA-256 (16 hex chars = 64 bits) is plenty to keep buckets distinct
+// for an in-memory limiter and short enough to keep log lines readable.
+export function hashIdentifier(value: string): string {
+  return createHash("sha256")
+    .update(value + ":" + RATE_LIMIT_SALT)
+    .digest("hex")
+    .slice(0, 16);
+}
 
 // Periodically prune expired buckets so the Map doesn't grow unbounded.
 // Runs at most once per 5 minutes per instance.

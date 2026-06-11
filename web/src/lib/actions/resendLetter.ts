@@ -7,7 +7,7 @@ import { lookupPLZ } from "@/lib/lookup/plzLookup";
 import { sendLetterEmail, prepareLetterEmail } from "@/lib/email/sendLetterEmail";
 import { buildResendDebugPayload } from "@/lib/email/buildDebugPayload";
 import { DEFAULT_LETTER_LENGTH } from "@/lib/config";
-import { checkRateLimit, getClientIp, LIMITS } from "@/lib/rateLimit";
+import { checkRateLimit, getClientIp, hashIdentifier, LIMITS } from "@/lib/rateLimit";
 
 const RESEND_LIMIT_MESSAGE =
   "Wir haben dir den Brief jetzt mehrfach gesendet. Bitte prüfe noch einmal deinen Spam-Ordner und die E-Mail-Adresse. Falls weiterhin nichts ankommt, melde dich gerne direkt bei uns.";
@@ -45,10 +45,11 @@ export async function resendLetterAction(
       return { error: "validation", message: "Ungültige Eingabe." };
     }
 
-    // Rate limit BEFORE moderation spend (matches submitWizard pattern)
-    const ip = await getClientIp();
+    // Rate limit BEFORE moderation spend (matches submitWizard pattern).
+    // IP and email are salted-hashed before use as bucket keys (DSGVO M7).
+    const ipHash = hashIdentifier(await getClientIp());
     const ipLimit = checkRateLimit(
-      `resend:ip:${ip}`,
+      `resend:ip:${ipHash}`,
       LIMITS.RESEND_PER_IP.max,
       LIMITS.RESEND_PER_IP.windowMs
     );
@@ -57,7 +58,7 @@ export async function resendLetterAction(
       return { error: "rate_limited", message: RESEND_LIMIT_MESSAGE, retryAfterSeconds: ipLimit.retryAfterSeconds };
     }
     const emailLimit = checkRateLimit(
-      `resend:email:${data.email.toLowerCase()}`,
+      `resend:email:${hashIdentifier(data.email.toLowerCase())}`,
       LIMITS.RESEND_PER_EMAIL.max,
       LIMITS.RESEND_PER_EMAIL.windowMs
     );

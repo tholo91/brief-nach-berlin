@@ -10,7 +10,7 @@ import { sendLetterEmail, prepareLetterEmail } from "@/lib/email/sendLetterEmail
 import { sendFollowupEmail } from "@/lib/email/sendFollowupEmail";
 import { computeFollowupSlot } from "@/lib/email/computeFollowupSlot";
 import { buildDebugPayload } from "@/lib/email/buildDebugPayload";
-import { checkRateLimit, LIMITS } from "@/lib/rateLimit";
+import { checkRateLimit, hashIdentifier, LIMITS } from "@/lib/rateLimit";
 import { DEFAULT_LETTER_LENGTH } from "@/lib/config";
 import { MistralProviderUnavailableError } from "@/lib/mistral";
 import { incrementLetterCount } from "@/lib/counter";
@@ -116,9 +116,10 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Bitte beschreibe dein Anliegen." }, { status: 400 });
     }
 
-    // Rate limit (shares buckets with selectPoliticianAction)
-    const ip = ipFromRequest(req);
-    const ipLimit = checkRateLimit(`letter:ip:${ip}`, LIMITS.LETTERS_PER_IP.max, LIMITS.LETTERS_PER_IP.windowMs);
+    // Rate limit (shares buckets with selectPoliticianAction).
+    // IP and email are salted-hashed before use as bucket keys (DSGVO M7).
+    const ipHash = hashIdentifier(ipFromRequest(req));
+    const ipLimit = checkRateLimit(`letter:ip:${ipHash}`, LIMITS.LETTERS_PER_IP.max, LIMITS.LETTERS_PER_IP.windowMs);
     if (!ipLimit.allowed) {
       return NextResponse.json(
         { error: RATE_LIMIT_MESSAGE },
@@ -126,7 +127,7 @@ export async function POST(req: NextRequest) {
       );
     }
     const emailLimit = checkRateLimit(
-      `letter:email:${data.email.toLowerCase()}`,
+      `letter:email:${hashIdentifier(data.email.toLowerCase())}`,
       LIMITS.LETTERS_PER_EMAIL.max,
       LIMITS.LETTERS_PER_EMAIL.windowMs
     );
@@ -202,7 +203,7 @@ export async function POST(req: NextRequest) {
       // cross-instance-sicher, aber gut genug gegen ehrliche Mehrfach-Submissions.
       if (process.env.BREVO_FOLLOWUP_ENABLED === "true") {
         const followupDedup = checkRateLimit(
-          `followup:${data.email.toLowerCase()}`,
+          `followup:${hashIdentifier(data.email.toLowerCase())}`,
           1,
           24 * 60 * 60_000,
         );

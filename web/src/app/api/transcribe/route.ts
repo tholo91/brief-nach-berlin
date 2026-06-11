@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { mistral, MISTRAL_MODELS } from "@/lib/mistral";
-import { checkRateLimit, LIMITS } from "@/lib/rateLimit";
+import { checkRateLimit, hashIdentifier, LIMITS } from "@/lib/rateLimit";
 
 export const maxDuration = 60;
 
@@ -39,9 +39,9 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Audiodatei zu groß." }, { status: 413 });
     }
 
-    const ip = ipFromRequest(req);
+    const ipHash = hashIdentifier(ipFromRequest(req));
     const limit = checkRateLimit(
-      `transcribe:ip:${ip}`,
+      `transcribe:ip:${ipHash}`,
       LIMITS.TRANSCRIBE_PER_IP.max,
       LIMITS.TRANSCRIBE_PER_IP.windowMs
     );

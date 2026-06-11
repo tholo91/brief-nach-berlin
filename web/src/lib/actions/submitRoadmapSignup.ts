@@ -14,7 +14,7 @@
 import { createHmac } from "node:crypto";
 import { z } from "zod";
 import { getServiceRoleClient } from "@/lib/supabase/server";
-import { checkRateLimit, getClientIp, LIMITS } from "@/lib/rateLimit";
+import { checkRateLimit, getClientIp, hashIdentifier, LIMITS } from "@/lib/rateLimit";
 
 const EBENE_VALUES = ["land", "kommune", "eu", "alle"] as const;
 export type RoadmapEbene = (typeof EBENE_VALUES)[number];
@@ -46,9 +46,9 @@ export async function submitRoadmapSignupAction(
   }
   const { email, ebene } = parsed.data;
 
-  const ip = await getClientIp();
+  const ipHash = hashIdentifier(await getClientIp());
   const limit = checkRateLimit(
-    `roadmap_signup:ip:${ip}`,
+    `roadmap_signup:ip:${ipHash}`,
     LIMITS.ROADMAP_SIGNUP_PER_IP.max,
     LIMITS.ROADMAP_SIGNUP_PER_IP.windowMs
   );

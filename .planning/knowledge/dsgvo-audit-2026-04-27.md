@@ -22,7 +22,7 @@
 | **M6** Brevo Open-/Click-Tracking aktivieren | ✅ erledigt | Im Brevo-Backoffice deaktiviert (verifiziert 2026-06-11); Hinweis in `.env.example` |
 | **M7** IP-/E-Mail-Hashing für Rate-Limit-Keys | ✅ erledigt | `hashIdentifier()` in `rateLimit.ts`, 7 Aufrufstellen + `RATE_LIMIT_SALT` (Commit `5377cfc`) |
 | **M8** Security-Header (CSP/HSTS/X-Frame/…) | ⏳ offen | wartet auf iframe-Embedding-Entscheidung |
-| **M9** heyspeak.io in Datenschutz nicht erwähnt | ⏳ offen | wartet auf Eckdaten (Rechtsform, Hosting, Datenschutz-Link) |
+| **M9** heyspeak.io in Datenschutz nicht erwähnt | ✅ erledigt | Neue §14 "Feedback-Weiterleitung (heyspeak.io)" — als selbst betriebene Privatpersonen-App, Vercel `fra1`, Mistral EU, kein Drittlandtransfer; Cross-Refs (§14 Rights → §15 etc.) angepasst |
 | **M10** AI-Act-Hinweis in UI | ✅ erledigt (vor Audit-Phase) | `/ki-transparenz` deckt Art. 50 AI Act vollständig ab |
 | **M11** Verarbeitungsverzeichnis (Art. 30) | ⏳ offen | als internes Markdown geplant (`.planning/knowledge/dpa-status.md`) |
 

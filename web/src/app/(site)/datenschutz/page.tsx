@@ -72,7 +72,7 @@ export default function Datenschutz() {
               Verarbeitung Ihrer Anfrage verwendet und danach verworfen. Eine
               dauerhafte Speicherung Ihrer Brief-Daten findet nicht statt.
               Ausnahme: optionale Bewertungen nach dem Versand (siehe
-              Abschnitt 16). Die eingesetzten Dienstleister Mistral AI
+              Abschnitt 17). Die eingesetzten Dienstleister Mistral AI
               (Abschnitt 9) und Brevo (Abschnitt 11) speichern Daten im Rahmen
               ihrer eigenen Datenschutzbestimmungen und
               Auftragsverarbeitungsvertr&auml;ge.
@@ -407,7 +407,69 @@ export default function Datenschutz() {
 
           <div>
             <h2 className="font-semibold text-waldgruen-dark mb-2">
-              14. Ihre Rechte
+              14. Feedback-Weiterleitung (heyspeak.io)
+            </h2>
+            <p>
+              An verschiedenen Stellen (in der Brief-E-Mail, in der Erfolgsseite
+              nach dem Brief-Versand, im Footer und auf einigen
+              Inhaltsseiten) verlinke ich auf{" "}
+              <a
+                href="https://heyspeak.io"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-waldgruen hover:underline"
+              >
+                heyspeak.io
+              </a>{" "}
+              als Feedback-Kanal. heyspeak.io ist ein freies, von mir selbst
+              als Privatperson (Thomas Lorenz) betriebenes Feedback-Tool. Es
+              handelt sich also nicht um einen externen
+              Auftragsverarbeiter im Sinne des Art. 28 DSGVO, sondern um eine
+              weitere Anwendung desselben Verantwortlichen.
+            </p>
+            <p className="mt-2">
+              Zweck: Sie können mir freiwillig Lob, Kritik, Bug-Reports oder
+              Wünsche für Brief-nach-Berlin zukommen lassen. Wenn Sie aus der
+              Brief-E-Mail oder der Erfolgsseite heraus auf den Feedback-Link
+              klicken, hänge ich Ihre zuvor angegebene E-Mail-Adresse als
+              URL-Parameter an die heyspeak-Adresse an
+              (<code className="text-sm">?email=…</code>). Damit kann ich Ihrem
+              Feedback eine Kontaktmöglichkeit zuordnen und Ihnen ggf.
+              persönlich antworten. Sie können die E-Mail im Feedback-Formular
+              auch wieder löschen.
+            </p>
+            <p className="mt-2">
+              Hosting: heyspeak.io läuft, wie Brief-nach-Berlin, bei Vercel in
+              der Region Frankfurt am Main (<em>fra1</em>). Die KI-Komponenten
+              von heyspeak.io werden ebenfalls über Mistral AI (Frankreich)
+              bedient. Es findet kein Drittlandtransfer statt, der nicht
+              bereits in dieser Erklärung (Abschnitte 4 und 9) abgedeckt ist.
+            </p>
+            <p className="mt-2">
+              Rechtsgrundlage: Art. 6 Abs. 1 lit. a DSGVO (Einwilligung
+              durch aktiven Klick auf den Feedback-Link); soweit Ihr
+              Feedback besondere Kategorien personenbezogener Daten enthält,
+              zusätzlich Art. 9 Abs. 2 lit. a DSGVO. Die Nutzung des
+              Feedback-Kanals ist vollständig freiwillig — wenn Sie nicht
+              klicken, werden keine Daten übermittelt.
+            </p>
+            <p className="mt-2 text-sm">
+              Datenschutzhinweise und Impressum von heyspeak.io:{" "}
+              <a
+                href="https://heyspeak.io/datenschutz"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-waldgruen hover:underline"
+              >
+                heyspeak.io/datenschutz
+              </a>
+              .
+            </p>
+          </div>
+
+          <div>
+            <h2 className="font-semibold text-waldgruen-dark mb-2">
+              15. Ihre Rechte
             </h2>
             <p>
               Sie haben gemäß DSGVO das Recht auf Auskunft (Art. 15),
@@ -435,7 +497,7 @@ export default function Datenschutz() {
 
           <div>
             <h2 className="font-semibold text-waldgruen-dark mb-2">
-              15. Streitschlichtung
+              16. Streitschlichtung
             </h2>
             <p>
               Die Europäische Kommission stellt eine Plattform zur
@@ -454,7 +516,7 @@ export default function Datenschutz() {
 
           <div>
             <h2 className="font-semibold text-waldgruen-dark mb-2">
-              16. Bewertungen und Feedback
+              17. Bewertungen und Feedback
             </h2>
             <p className="mb-3">
               Wenn Sie nach dem Brief-Versand auf einen Stern in der E-Mail
@@ -529,7 +591,7 @@ export default function Datenschutz() {
 
           <div>
             <h2 className="font-semibold text-waldgruen-dark mb-2">
-              17. KI-generierte Inhalte und Disclaimer
+              18. KI-generierte Inhalte und Disclaimer
             </h2>
             <p className="mb-3">
               Brief nach Berlin nutzt künstliche Intelligenz, um Ihr Anliegen

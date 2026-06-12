@@ -15,6 +15,12 @@ const FAQ_ITEMS = [
       "Ja, in einem Maß, das viele unterschätzen. In einem Bundestagsbüro landen täglich Dutzende Mails und Online-Petitionen. Ein handgeschriebener Brief mit Wahlkreisbezug ist die Ausnahme und landet oben auf dem Stapel. Genau dafür ist Brief-nach-Berlin gebaut.",
   },
   {
+    question:
+      "Warum schreibe ich an meine:n Wahlkreisabgeordnete:n und nicht an den Fachausschuss?",
+    answer:
+      "Weil deine direkte Vertretung im Bundestag dir gegenüber rechenschaftspflichtig ist. Ein:e fachfremde:r Ausschussabgeordnete:r aus einem anderen Wahlkreis muss auf dich nicht reagieren, deine eigene Vertretung schon. Genau das macht deinen Brief wirksam. Geht es um ein bundesweites Thema, leitet dein:e Abgeordnete:r es an die zuständigen Fachpolitiker:innen weiter.",
+  },
+  {
     question: "Welche politischen Ebenen sind dabei?",
     answer:
       "Aktuell der Bundestag, abhängig von deiner Postleitzahl. Landtag und kommunale Ebene kommen schrittweise dazu. Wenn dein Anliegen vor Ort liegt, sagen wir dir das.",

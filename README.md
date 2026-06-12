@@ -2,83 +2,46 @@
 
 > Deine Meinung. Handschriftlich. An die Richtigen.
 
-Ein politisches SaaS-Produkt, das Menschen ermöglicht, ihre Alltagsfrustration in wirkungsvolle, handschriftliche Briefe an Politiker zu verwandeln – ohne politisches Vorwissen, ohne Zeitaufwand.
+**Brief nach Berlin** verwandelt Alltagsfrust in einen echten Brief an den zuständigen Politiker - in unter 3 Minuten, ohne politisches Vorwissen.
+
+Live unter [brief-nach-berlin.de](https://brief-nach-berlin.de)
 
 ---
 
-## Das Problem
+## Wie es funktioniert
 
-Handschriftliche Briefe werden in Bundestagsbüros tatsächlich gelesen und berücksichtigt – anders als Onlinepetitionen oder Social-Media-Posts. Aber die meisten Menschen wissen nicht, an wen sie schreiben sollen, wie sie es formulieren sollen, oder glauben schlicht, dass es nichts bringt.
+1. Frustration beschreiben - als Text, Sprachnachricht oder Foto
+2. PLZ eingeben
+3. Die KI identifiziert zuständige Politiker (Bund, Land, Kommune, EU)
+4. Ein Brief wird generiert - genau eine Seite, formell, adressiert
+5. Abschreiben und abschicken - per Hand, per Post
 
-Das Ergebnis: politische Ohnmacht, obwohl ein einfacher Kanal existiert.
-
-## Die Lösung
-
-**Brief nach Berlin** macht den Weg von der Alltagsfrustration zum adressierten Politikerbrief so einfach wie möglich:
-
-1. **Eingabe** – Sprachnachricht, Foto oder kurzer Text: "Die Bushaltestelle vor unserer Schule wurde abgebaut."
-2. **PLZ eingeben** – Wohnort in Deutschland
-3. **Zuständige Politiker werden identifiziert** – MdB, EU-Abgeordnete, Landtag, Kommunalpolitik
-4. **KI schreibt den Brief** – genau eine Seite, handschrifttauglich, zielgruppenspezifisch formuliert
-5. **Nutzer wählt Empfänger** – ggf. mehrere Versionen für verschiedene Ebenen
-6. **Abschreiben & Abschicken** – der Nutzer schreibt den Brief per Hand ab und schickt ihn selbst
+Warum handschriftlich? Weil handgeschriebene Bürgerbriefe in Bundestagsbüros tatsächlich gelesen und in Sitzungen erwähnt werden. Onlinepetitionen nicht.
 
 ---
 
-## Kernprinzipien
+## Traction
 
-- **Handschriftlich ist entscheidend** – das ist der Wirkungskanal, kein Nice-to-have
-- **Eine Seite** – klare Beschränkung, damit der Brief wirklich abgeschrieben wird
-- **Zielgruppenspezifisch** – ein Brief an den Bund argumentiert anders als einer an die Gemeinde
-- **Keine Ohnmacht** – das Produkt gibt das Gefühl zurück, gehört werden zu können
+- ~700 Briefe generiert in einem Monat
+- Erwähnt in [Lage der Nation](https://lagedernation.org) - dem meistgehörten politischen Podcast Deutschlands
 
 ---
 
-## Roadmap (grob)
+## Stack
 
-### v1 – Kern-MVP
-- [ ] PLZ-basierte Politiker-Zuordnung (Bund, Land, Kommune, EU)
-- [ ] Eingabe via Text, Speech-to-Text (Sprache), Bild
-- [ ] KI-Briefgenerierung (1 Seite, ebenenspezifisch)
-- [ ] Scheiterns-Kontext: Warum stockt das Anliegen politisch?
-- [ ] Empfänger-Auswahl inkl. Brüssel (EU-Abgeordnete) + Anzeige der Adresse
-- [ ] Spendenaufruf nach Briefgenerierung
-- [ ] Einfache Landing Page
+- **Next.js** + Vercel
+- **Mistral AI** - Briefgenerierung und Sprachtranskription (Voxtral)
+- **Supabase** - Statistiken, kein User-Storage
+- **Brevo** - optionaler E-Mail-Versand
+- PLZ-Wahlkreis-Mapping via statischem CSV der Bundeswahlleiterin
+- Politiker-Daten via Abgeordnetenwatch API
 
-### v2 – Auto-Pen-Integration
-- [ ] Partnerschaft mit Auto-Pen-Dienst (handschriftlich wirkender Druck & Versand)
-- [ ] Optionaler Direktversand ohne Eigenaufwand des Nutzers
-- [ ] Tracking / Bestätigung
-
----
-
-## Datenquellen (Politiker-Daten)
-
-Politikerdaten ändern sich nur nach Wahlen (alle 4 Jahre auf Bundesebene, variabel auf Landesebene).
-
-Mögliche Quellen:
-- [Offenes Parlament / OffenesParlament.de](https://offenesparlament.de)
-- [Bundestag Open Data API](https://www.bundestag.de/services/opendata)
-- [Abgeordnetenwatch API](https://www.abgeordnetenwatch.de/api)
-- EU-Parlament: MEP-Daten über offizielle EU-API
-- Kommunaldaten: ggf. manuell kuratiert oder per Web-Crawling
-
----
-
-## Projektstruktur (geplant)
-
-```
-brief-nach-berlin/
-├── README.md
-├── KONZEPT.md          # Detaillierte Produktvision & offene Fragen
-├── docs/
-│   └── datenquellen.md
-├── src/                # (später)
-└── ...
-```
+Kein Account. Keine persistenten Nutzerdaten. DSGVO-konform by design.
 
 ---
 
 ## Hintergrund
 
-Entstanden aus einem Bundestags-Praktikum und einem Studium der Politikwissenschaft – mit der Beobachtung, dass handschriftliche Bürgerbriefe in Abgeordnetenbüros eine überraschend hohe Wirkung haben.
+Entstanden aus einem Bundestags-Praktikum und einem Studium der Politikwissenschaft. Die Beobachtung: handschriftliche Bürgerbriefe haben in Abgeordnetenbüros eine überraschend hohe Wirkung - aber kaum jemand nutzt diesen Kanal, weil die Hürde zu groß ist.
+
+Ein Solo-Projekt von [Thomas Lorenz](https://thomas-lorenz.eu).

@@ -51,7 +51,7 @@ export const SHARE_URL_TWITTER = `https://twitter.com/intent/tweet?text=${encode
 export const FOUNDER_NAME = "Thomas Lorenz" as const;
 export const FOUNDER_HOMEPAGE = "https://www.thomas-lorenz.eu" as const;
 export const FOUNDER_LINKEDIN = "https://www.linkedin.com/in/tholo91/" as const;
-export const FOUNDER_FEEDBACK_URL = "https://www.heyspeak.io/l/WIOENjqJn6z6WKtkWgDEFg" as const;
+export const FOUNDER_FEEDBACK_URL = "https://www.heyspeak.io/l/WIOENjqJn6z6WKtkWgDEFg?email=on" as const;
 export const BRIEF_FEEDBACK_URL = "https://www.heyspeak.io/l/qi6CAgWkebX3KOY8J3MCrA" as const;
 
 // Build a public abgeordnetenwatch.de profile URL from a politician's name.

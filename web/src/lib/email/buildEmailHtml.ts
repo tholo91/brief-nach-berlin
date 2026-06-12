@@ -58,6 +58,8 @@ function nlToBr(text: string): string {
 }
 
 export function buildEmailHtml(data: SendLetterEmailParams): string {
+  const isFallback = data.politicianFirstName === "" && data.politicianLastName === "MdB";
+
   const fullName = data.politicianTitle
     ? `${escapeHtml(data.politicianTitle)} ${escapeHtml(data.politicianName)}`
     : escapeHtml(data.politicianName);
@@ -83,6 +85,15 @@ export function buildEmailHtml(data: SendLetterEmailParams): string {
       data.politicianFirstName,
       data.politicianLastName
     );
+
+  const addressNameLine = isFallback
+    ? `<strong><a href="${profileUrl}" target="_blank" rel="noopener noreferrer" style="color:#2D5016;text-decoration:underline;">MdB suchen</a></strong><br>`
+    : `<strong><a href="${profileUrl}" target="_blank" rel="noopener noreferrer" style="color:#2D5016;text-decoration:underline;">${fullName}, MdB (${party})</a></strong><br>`;
+
+  const profileButtonText = isFallback ? "MdB suchen" : "Profil auf<br>abgeordnetenwatch";
+  const profileButtonHtml = `<a href="${profileUrl}" target="_blank" rel="noopener noreferrer" style="display:inline-block;background-color:#2D5016;color:#ffffff;font-family:Georgia,'Times New Roman',serif;font-size:14px;font-weight:bold;text-decoration:none;padding:10px 14px;border-radius:4px;line-height:1.5;text-align:center;">${profileButtonText}</a>`;
+  
+  const disclaimerSiteName = isFallback ? "bundestag.de" : "abgeordnetenwatch.de";
 
   // Cause-recruit shares (motivate recipient to write their own letter)
   const causeText = encodeURIComponent(SHARE_TEXT_CAUSE);
@@ -162,13 +173,13 @@ export function buildEmailHtml(data: SendLetterEmailParams): string {
                         <tr>
                           <td class="bnb-stack bnb-stack-left" style="vertical-align:top;padding-right:16px;width:60%;">
                             <p style="margin:0;font-family:'Courier New',Courier,monospace;font-size:14px;line-height:1.8;color:#4A4A4A;">
-                              <strong><a href="${profileUrl}" target="_blank" rel="noopener noreferrer" style="color:#2D5016;text-decoration:underline;">${fullName}, MdB (${party})</a></strong><br>
+                              ${addressNameLine}
                               Deutscher Bundestag<br>
                               ${addressLines}
                             </p>
                           </td>
                           <td class="bnb-stack bnb-stack-right" style="vertical-align:middle;text-align:center;padding-left:16px;border-left:1px solid #E0DCD7;width:40%;">
-                            ${data.feedbackToken ? buildStarBarHtml(data.feedbackToken) : `<a href="${profileUrl}" target="_blank" rel="noopener noreferrer" style="display:inline-block;background-color:#2D5016;color:#ffffff;font-family:Georgia,'Times New Roman',serif;font-size:14px;font-weight:bold;text-decoration:none;padding:10px 14px;border-radius:4px;line-height:1.5;text-align:center;">Profil auf<br>abgeordnetenwatch</a>`}
+                            ${data.feedbackToken ? buildStarBarHtml(data.feedbackToken) : profileButtonHtml}
                           </td>
                         </tr>
                       </table>
@@ -300,7 +311,7 @@ export function buildEmailHtml(data: SendLetterEmailParams): string {
                 <tr>
                   <td colspan="7" class="bnb-pad" style="padding:8px 32px 24px;background-color:#FAF8F5;text-align:center;">
                     <p style="margin:0 0 6px;font-family:Georgia,'Times New Roman',serif;font-size:12px;color:#aaaaaa;line-height:1.5;">
-                      <strong>Hinweis:</strong> Der Brief ist ein generierter Entwurf. Bitte passe ihn an und prüfe Politikerdaten vor dem Versand bei <a href="${profileUrl}" target="_blank" rel="noopener noreferrer" style="color:#888888;">abgeordnetenwatch.de</a>. Die Verantwortung für den Inhalt liegt bei dir.
+                      <strong>Hinweis:</strong> Der Brief ist ein generierter Entwurf. Bitte passe ihn an und prüfe Politikerdaten vor dem Versand bei <a href="${profileUrl}" target="_blank" rel="noopener noreferrer" style="color:#888888;">${disclaimerSiteName}</a>. Die Verantwortung für den Inhalt liegt bei dir.
                     </p>
                     <p style="margin:0;font-family:Georgia,'Times New Roman',serif;font-size:12px;color:#aaaaaa;line-height:1.5;">
                       <a href="${APP_URL}/datenschutz" style="color:#888888;">Datenschutz</a>: deine Daten werden nicht gespeichert. · <a href="${APP_URL}/wer-darf-mdb-schreiben" style="color:#888888;">Wer darf MdBs schreiben?</a>${data.debug ? ` · <a href="${buildDebugUrl(data.debug)}" style="color:#888888;text-decoration:none;">Debug</a>` : ""}

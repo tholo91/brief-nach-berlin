@@ -58,13 +58,7 @@ export async function submitWizardAction(
     // behind the rate limit below.
     const { wahlkreisIds, politicians } = lookupPLZ(data.plz);
     log("plz lookup", { wahlkreisCount: wahlkreisIds.length, politicianCount: politicians.length });
-    if (wahlkreisIds.length === 0 || politicians.length === 0) {
-      return {
-        error: "plz_not_found",
-        message:
-          "Für diese Postleitzahl haben wir derzeit keinen direkt gewählten Wahlkreisabgeordneten in unseren Daten. Entweder stimmt die PLZ nicht, oder dein Wahlkreis wird aktuell nur durch Listenabgeordnete vertreten. Du findest deine Abgeordneten unter bundestag.de.",
-      };
-    }
+    // Fallback is handled within lookupPLZ.ts, returning an anonymous politician if none are found.
 
     // 1b. Rate limit check (IP + email) BEFORE moderation/AI spend.
     // IP and email are salted-hashed before use as bucket keys (DSGVO M7).

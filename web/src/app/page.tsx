@@ -40,7 +40,7 @@ export default async function Home() {
                 Briefe geschrieben
               </p>
             )}
-            <ReviewMarquee reviews={heroReviews} variant="compact" limit={6} cardHref="/stimmen" />
+            <ReviewMarquee reviews={heroReviews} variant="compact" limit={20} cardHref="/stimmen" />
           </section>
         )}
         <HowItWorksWithExample />

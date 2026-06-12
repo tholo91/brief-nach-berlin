@@ -40,6 +40,22 @@ export function ReviewMarquee({
     };
   }, [expandedKey]);
 
+  // Reset CSS animation when tab becomes visible again — browsers pause animations
+  // on hidden tabs and resume from the wrong position, causing a visible snap.
+  useEffect(() => {
+    function handleVisibility() {
+      if (document.hidden) return;
+      const track = containerRef.current?.querySelector<HTMLElement>(".marquee-track");
+      if (!track) return;
+      track.style.animation = "none";
+      // Force reflow so the browser registers the removal before re-applying.
+      void track.offsetWidth;
+      track.style.animation = "";
+    }
+    document.addEventListener("visibilitychange", handleVisibility);
+    return () => document.removeEventListener("visibilitychange", handleVisibility);
+  }, []);
+
   useEffect(() => {
     if (typeof window === "undefined") return;
     if (!window.matchMedia("(hover: none)").matches) return;

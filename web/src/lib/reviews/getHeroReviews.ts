@@ -29,11 +29,13 @@ export async function getHeroReviews(): Promise<PublicReview[]> {
       .limit(12);
 
     if (!featuredError && featured && featured.length > 0) {
-      return shuffle(
-        (featured as PublicReview[]).filter(
-          (r) => r.body && r.body.trim().length > 0
-        )
+      const filtered = (featured as PublicReview[]).filter(
+        (r) => r.body && r.body.trim().length > 0
       );
+      const fourStar = shuffle(filtered.filter((r) => r.rating === 4));
+      const fiveStar = shuffle(filtered.filter((r) => r.rating !== 4));
+      // 4-star reviews always come first so they're never sliced out by limit
+      return [...fourStar, ...fiveStar];
     }
 
     // Fallback: top-rated recent reviews (fetch more so shuffle has variety)

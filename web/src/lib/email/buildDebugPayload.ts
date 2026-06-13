@@ -4,7 +4,7 @@ import type { Politician } from "@/lib/types/politician";
 import { LETTER_LENGTHS, DEFAULT_LETTER_LENGTH } from "@/lib/config";
 
 // Max-Länge des Anliegen-Auszugs im Debug-Link. Hält die base64-URL klein
-// genug, dass Gmail/Outlook sie nicht kürzen (~1100–1200 Zeichen gesamt).
+// genug, dass Gmail/Outlook sie nicht kürzen (~1900 Zeichen worst case).
 const ISSUE_TEXT_PREVIEW_MAX = 300;
 
 export const TONE_LABELS: Record<number, string> = {

@@ -19,11 +19,11 @@
 
 - [ ] **Neuer test** ([Created: 2026-06-11]) (Priority: 🔴 Important) [Updated: 2026-06-13] <!-- ct:6b935f4c-2750-4188-81cf-c50d8edf5555 -->
 
-- [ ] **UI: in list view kleines Kalender icon anzeigen** ([Created: 2026-04-11]) (Priority: ⚪ Normal) <!-- ct:99697a5e-a573-40af-8e5a-eaf51727e420 -->
-  Nur wenn man einen Kalender link hinterlegt hat
-
 
 ## Completed
+
+- [x] **UI: in list view kleines Kalender icon anzeigen** ([Created: 2026-04-11]) (Priority: ⚪ Normal) [Completed: 2026-06-13] <!-- ct:99697a5e-a573-40af-8e5a-eaf51727e420 -->
+  Nur wenn man einen Kalender link hinterlegt hat
 
 - [x] **Landing page design verbessern** ([Created: 2026-04-11]) (Priority: ⚪ Normal) [Updated: 2026-04-11] [Completed: 2026-06-03] <!-- ct:12527de9-c831-4fca-834a-0439d1305c39 -->
   Bislang wirkt es eher wie eine powerpoint Präsentation - Texte müssen besser werden und wir sollten auch magic mcp nutzen (teste, ob das klappt). Vielleicht better mit Gemini cli oder antigravity?

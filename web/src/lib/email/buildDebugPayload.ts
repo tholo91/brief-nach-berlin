@@ -3,6 +3,10 @@ import type { GenerateLetterResult, WizardData } from "@/lib/types/wizard";
 import type { Politician } from "@/lib/types/politician";
 import { LETTER_LENGTHS, DEFAULT_LETTER_LENGTH } from "@/lib/config";
 
+// Max-Länge des Anliegen-Auszugs im Debug-Link. Hält die base64-URL klein
+// genug, dass Gmail/Outlook sie nicht kürzen (~1100–1200 Zeichen gesamt).
+const ISSUE_TEXT_PREVIEW_MAX = 300;
+
 export const TONE_LABELS: Record<number, string> = {
   1: "freundlich-einladend",
   2: "höflich-konstruktiv",
@@ -33,6 +37,7 @@ export function buildDebugPayload(
     issueTextWordCount: data.issueText
       ? data.issueText.trim().split(/\s+/).filter(Boolean).length
       : 0,
+    issueTextPreview: data.issueText?.slice(0, ISSUE_TEXT_PREVIEW_MAX),
     wordCount: result.wordCount,
     wordCountInRange: result.wordCountInRange,
     fallbackUsed: result.fallbackUsed,
@@ -85,6 +90,7 @@ export function buildResendDebugPayload(
     issueTextWordCount: data.issueText
       ? data.issueText.trim().split(/\s+/).filter(Boolean).length
       : 0,
+    issueTextPreview: data.issueText?.slice(0, ISSUE_TEXT_PREVIEW_MAX),
     wordCount,
     wordCountInRange: wordCount >= min && wordCount <= max,
     // Generierungs-spezifisch, beim Resend nicht vorhanden:

@@ -46,6 +46,9 @@ function format(payload: LetterDebugPayload | { error: string }): string {
     `Model                 ${d.model}`,
     `Temperature           ${d.temperature}`,
     `Generation            ${d.generationMs} ms`,
+    ...(d.issueTextPreview
+      ? ["", "Anliegen (Auszug, max 300 Zeichen):", d.issueTextPreview]
+      : []),
   ];
   return lines.join("\n");
 }

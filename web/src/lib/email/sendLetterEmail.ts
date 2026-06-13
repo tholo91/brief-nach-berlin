@@ -21,6 +21,11 @@ export interface LetterDebugPayload {
   letterLengthMax: number;
   issueTextLength: number;
   issueTextWordCount: number;
+  // Gekürzter Auszug des Original-Anliegens (max 300 Zeichen), damit /debug
+  // den Kontext zeigt, ohne die Mail zurückzuverfolgen. Optional, da ältere
+  // serialisierte Payloads das Feld nicht haben. Nur der briefschreibende
+  // Nutzer sieht diesen Link — kein Fremd-PII-Risiko.
+  issueTextPreview?: string;
   wordCount: number;
   wordCountInRange: boolean;
   fallbackUsed: boolean;

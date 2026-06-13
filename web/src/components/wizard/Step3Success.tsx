@@ -531,25 +531,6 @@ export function Step3Success({ result, wizardData, politicians, onChangePlz }: S
           )}
         </p>
 
-        {/* Rating teaser: visible from the start so users internalize the ask
-            before they close the tab. Points at the star-rating link in the
-            email (which carries the signed token; the page itself cannot
-            initiate a rating). Hidden only when generation actually failed -
-            promising a link to a mail that never went out would be a lie. */}
-        <div
-          className={`mt-6 transition-opacity duration-500 ${generationFetchError ? "opacity-0 pointer-events-none select-none" : "opacity-100"}`}
-        >
-          <div className="border-l-4 border-[#D4A017] bg-[#D4A017]/8 rounded-r-lg p-4 space-y-1.5">
-            <p className="font-body text-sm font-semibold text-waldgruen-dark flex items-center gap-2">
-              <span aria-hidden="true" className="text-[#D4A017] text-base leading-none">★</span>
-              Bewerte deinen Brief gleich in der Mail.
-            </p>
-            <p className="font-body text-sm text-warmgrau/75 leading-relaxed">
-              Ein Klick auf die Sterne hilft mir, die nächsten Briefe besser zu machen.
-            </p>
-          </div>
-        </div>
-
         {/* Notice: Brief ist Entwurf, eigene Stimme */}
         <div className="mt-6 border-l-4 border-waldgruen/50 bg-waldgruen/8 rounded-r-lg p-4 space-y-2">
           <p className="font-body text-sm font-semibold text-waldgruen-dark flex items-center gap-2">

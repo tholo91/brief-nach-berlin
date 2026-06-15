@@ -120,6 +120,14 @@ export default async function Footer() {
 
           <div className="flex gap-6">
             <a
+              href="https://github.com/tholo91/brief-nach-berlin"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="font-body text-sm text-warmgrau/40 hover:text-warmgrau transition-colors duration-200"
+            >
+              Open Source
+            </a>
+            <a
               href={FOUNDER_FEEDBACK_URL}
               target="_blank"
               rel="noopener noreferrer"

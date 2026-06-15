@@ -13,7 +13,16 @@ export default function Roadmap() {
           Brief-nach-Berlin wird mit euch immer besser
         </h2>
         <p className="font-body text-base md:text-lg text-warmgrau/80 leading-relaxed mb-14 max-w-2xl">
-          Ich baue gerade und lerne mit jedem Brief. Hier ist, worauf ich mich als nächstes konzentriere:
+          Das Projekt ist{" "}
+          <a
+            href="https://github.com/tholo91/brief-nach-berlin"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-waldgruen hover:text-waldgruen-dark underline underline-offset-2 transition-colors duration-200"
+          >
+            Open Source
+          </a>
+          . Ich baue Brief nach Berlin mit eurem Feedback stetig weiter. Hier ist, worauf ich mich als nächstes konzentriere:
         </p>
 
         <div className="grid md:grid-cols-3 gap-8">

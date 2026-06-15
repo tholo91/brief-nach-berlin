@@ -28,11 +28,11 @@ Warum handschriftlich: Handgeschriebene Briefe werden in Bundestagsbüros tatsä
 
 ---
 
-## Aktuelle Zahlen (Stand: 18.05.2026)
+## Aktuelle Zahlen (Stand: 15.06.2026)
 
-- **150+ Briefe** erstellt seit Launch
-- **1.600+ Page Views** in 3 Tagen
-- **25x mehr Nutzung** am Freitag nach der Lage-der-Nation-Erwähnung
+- **700+ Briefe** erstellt seit Launch (in ~4 Wochen)
+- **Medienberichte:** Weser-Kurier, Lage der Nation (Folge 478), Funke Mediengruppe
+- **Podcast-Gespräche** geführt
 
 **Lage der Nation Erwähnung:**
 [LdN478 – direkt zum Timestamp (1:19:23)](https://lagedernation.org/podcast/ldn478-hantavirus-warum-wir-heute-schlechter-dastehen-als-vor-corona/?t=1:19:23#shownotes)
@@ -41,6 +41,12 @@ Erwähnt von Dr. Ulf Buermeyer, LL.M. und Philip Banse in Folge 478.
 ---
 
 ## Kontaktliste
+
+### Überregional Nord
+
+| Outlet | Kontakt | Anmerkung |
+|---|---|---|
+| NDR | redaktion@ndr.de | Überregional Norddeutschland; Bezug: Bremer Projekt, norddeutsche Nutzer. Gesendet 15.06.2026. |
 
 ### Lokal Bremen
 

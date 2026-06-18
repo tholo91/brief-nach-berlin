@@ -80,8 +80,10 @@ export function Step3Success({ result, wizardData, politicians, onChangePlz }: S
   // politically relevant option without an extra click. If no Direktmandat
   // exists (Wahlrechtsreform 2025: 23 Wahlkreise sind unbesetzt), the user
   // chooses manually.
+  const isNoMdbFound = politicians.length === 1 && politicians[0].id === -1;
+
   const [selectedPoliticianId, setSelectedPoliticianId] = useState<number | null>(
-    () => politicians.find((p) => p.isDirect)?.id ?? null
+    () => politicians.find((p) => p.isDirect)?.id ?? (politicians.length === 1 && politicians[0].id === -1 ? -1 : null)
   );
   const [isGenerating, setIsGenerating] = useState(false);
   const [generationComplete, setGenerationComplete] = useState(false);
@@ -906,9 +908,11 @@ export function Step3Success({ result, wizardData, politicians, onChangePlz }: S
           Wer vertritt deinen Wahlkreis?
         </h1>
         <p className="font-body text-base text-warmgrau mt-2">
-          {wahlkreisGroups.length === 1
-            ? "Dein Wahlkreis wird von folgenden MdBs vertreten. Das MdB mit Direktmandat ist vorausgewählt, du kannst aber auch jemand anderen wählen."
-            : `Deine PLZ ${wizardData.plz} liegt an einer Wahlkreis-Grenze. Wähle das MdB, das deinen Wahlkreis vertritt. Das Direktmandat ist je Wahlkreis vorausgewählt.`}
+          {isNoMdbFound
+            ? `Für die PLZ ${wizardData.plz} haben wir kein MdB gefunden. Du kannst den Brief dennoch formulieren lassen und dein MdB später auswählen oder deine PLZ anpassen.`
+            : wahlkreisGroups.length === 1
+              ? "Dein Wahlkreis wird von folgenden MdBs vertreten. Das MdB mit Direktmandat ist vorausgewählt, du kannst aber auch jemand anderen wählen."
+              : `Deine PLZ ${wizardData.plz} liegt an einer Wahlkreis-Grenze. Wähle das MdB, das deinen Wahlkreis vertritt. Das Direktmandat ist je Wahlkreis vorausgewählt.`}
         </p>
 
         {/* Error banner */}
@@ -936,8 +940,8 @@ export function Step3Success({ result, wizardData, politicians, onChangePlz }: S
           {wahlkreisGroups.map((group) => (
             <div key={group.wahlkreisId}>
               <p className="font-body text-xs font-semibold uppercase tracking-wide text-warmgrau/55 mb-2 flex items-center gap-2">
-                <span className="h-px flex-shrink-0 w-3 bg-warmgrau/25" aria-hidden="true" />
-                Wahlkreis {group.wahlkreisId} · {group.wahlkreisName}
+                {!isNoMdbFound && <span className="h-px flex-shrink-0 w-3 bg-warmgrau/25" aria-hidden="true" />}
+                {isNoMdbFound ? group.wahlkreisName : `Wahlkreis ${group.wahlkreisId} · ${group.wahlkreisName}`}
               </p>
               <div
                 className={
@@ -961,48 +965,56 @@ export function Step3Success({ result, wizardData, politicians, onChangePlz }: S
                         : "border-waldgruen/20 bg-creme hover:border-waldgruen/40",
                     ].join(" ")}
                   >
-                    {p.isDirect ? (
-                      <span className="inline-block font-body text-[11px] font-semibold uppercase tracking-wide text-waldgruen-dark bg-waldgruen/15 px-2 py-0.5 rounded mb-1.5">
-                        Direktmandat
-                      </span>
+                    {p.id === -1 ? (
+                      <p className="font-body text-base font-semibold text-warmgrau">
+                        MdB später auswählen
+                      </p>
                     ) : (
-                      <span className="inline-block font-body text-[11px] font-medium uppercase tracking-wide text-warmgrau/55 bg-warmgrau/10 px-2 py-0.5 rounded mb-1.5">
-                        Landesliste
-                      </span>
-                    )}
-                    <p className="font-body text-base font-semibold text-warmgrau">
-                      {p.title ? p.title + " " : ""}
-                      {p.firstName} {p.lastName}
-                    </p>
-                    <p className="font-body text-sm text-warmgrau mt-0.5">
-                      {formatPartyShort(p.party)}
-                    </p>
-                    {p.abgeordnetenwatchUrl && (
-                      <a
-                        href={p.abgeordnetenwatchUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        onClick={(e) => e.stopPropagation()}
-                        className="inline-flex items-center gap-1 font-body text-xs text-waldgruen hover:text-waldgruen-dark underline underline-offset-2 mt-2"
-                      >
-                        Profil auf Abgeordnetenwatch.de
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          width="12"
-                          height="12"
-                          viewBox="0 0 24 24"
-                          fill="none"
-                          stroke="currentColor"
-                          strokeWidth="2"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          aria-hidden="true"
-                        >
-                          <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
-                          <polyline points="15 3 21 3 21 9" />
-                          <line x1="10" y1="14" x2="21" y2="3" />
-                        </svg>
-                      </a>
+                      <>
+                        {p.isDirect ? (
+                          <span className="inline-block font-body text-[11px] font-semibold uppercase tracking-wide text-waldgruen-dark bg-waldgruen/15 px-2 py-0.5 rounded mb-1.5">
+                            Direktmandat
+                          </span>
+                        ) : (
+                          <span className="inline-block font-body text-[11px] font-medium uppercase tracking-wide text-warmgrau/55 bg-warmgrau/10 px-2 py-0.5 rounded mb-1.5">
+                            Landesliste
+                          </span>
+                        )}
+                        <p className="font-body text-base font-semibold text-warmgrau">
+                          {p.title ? p.title + " " : ""}
+                          {p.firstName} {p.lastName}
+                        </p>
+                        <p className="font-body text-sm text-warmgrau mt-0.5">
+                          {formatPartyShort(p.party)}
+                        </p>
+                        {p.abgeordnetenwatchUrl && (
+                          <a
+                            href={p.abgeordnetenwatchUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            onClick={(e) => e.stopPropagation()}
+                            className="inline-flex items-center gap-1 font-body text-xs text-waldgruen hover:text-waldgruen-dark underline underline-offset-2 mt-2"
+                          >
+                            Profil auf Abgeordnetenwatch.de
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              width="12"
+                              height="12"
+                              viewBox="0 0 24 24"
+                              fill="none"
+                              stroke="currentColor"
+                              strokeWidth="2"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              aria-hidden="true"
+                            >
+                              <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
+                              <polyline points="15 3 21 3 21 9" />
+                              <line x1="10" y1="14" x2="21" y2="3" />
+                            </svg>
+                          </a>
+                        )}
+                      </>
                     )}
                   </div>
                 ))}

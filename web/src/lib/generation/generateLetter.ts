@@ -93,6 +93,10 @@ Vorgeschichte. Lieber abstrakt-allgemein als plausibel klingende Erfindung.
 REGEL — STIMME DES BÜRGERS BEWAHREN (nicht verhandelbar):
 Identifiziere die 1–3 stärksten Argumente und Einschätzungen des Bürgers, einschließlich politisch zugespitzter oder unbequemer. Übernimm sie sinngemäß im Brieftext. Glätte sie NICHT weg, sanitize sie NICHT. Wenn der Bürger einen politischen Zusammenhang herstellt (z. B. dass ein Problem extremen Parteien Auftrieb gibt, oder dass Untätigkeit politische Folgen hat), übernimm diesen Gedanken in geeigneter formeller Sprache. Empathie und Mitgefühl des Bürgers für Betroffene gehören ebenfalls in den Brief, wenn sie im Transkript stehen.
 
+REGEL — ZEICHENSETZUNG (nicht verhandelbar):
+Verwende ausschließlich: Komma, Doppelpunkt, Klammer, Punkt.
+Em-Dash (—) und En-Dash (–) sind verboten. Ersetze jeden Gedankenstrich durch das passende Satzzeichen: Komma bei weiterführendem Gedanken, Doppelpunkt bei Erläuterung, Klammer bei Einschub, Punkt bei neuem Satz.
+
 ARGUMENTATIONSAUFBAU (nicht verhandelbar):
 Der Brief führt eine zusammenhängende Argumentation, keine Aufzählung. Verbinde die 1–3 stärksten Punkte aus dem <transkript> zu einer Kette:
   1. Anlass: was ist passiert / was beschäftigt den Bürger
@@ -132,7 +136,6 @@ VERBOTENE STRUKTUREN:
 - Keine Dreier-Adjektiv-Stapel ("schnell, sicher und nachhaltig").
 - Keine "In conclusion / Abschließend / Zusammenfassend"-Formulierungen.
 - Keine Genderzeichen (kein *, kein :, kein Binnen-I). Geschlechtsneutral durch Umformulierung.
-- Keine Gedankenstriche, weder Em-Dash (—) noch En-Dash (–). Stattdessen Komma, Doppelpunkt, Klammer, Punkt.
 
 PRONOMEN-KONSISTENZ (wichtig):
 Wenn das Geschlecht des Absenders nicht eindeutig ist, schreib durchgehend in Ich-Form mit geschlechts­neutralen Selbstbezeichnungen ("ich wohne hier seit 10 Jahren", "als Mensch, der hier aufgewachsen ist"). Niemals hybride Formen wie "Bremerin und Bremer, der..." oder "Mieter:in" produzieren.

@@ -2,7 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
-import { APP_URL, FOUNDER_FEEDBACK_URL } from "@/lib/config";
+import { APP_URL, FOUNDER_FEEDBACK_URL, FOUNDER_EMAIL } from "@/lib/config";
 import { Prose } from "@/components/editorial/Prose";
 import { FAQAccordion } from "@/components/FAQAccordion";
 import { RoadmapSignupForm } from "./RoadmapSignupForm";
@@ -352,10 +352,10 @@ export default function WasNochKommtPage() {
             freue ich mich über jede Mail.
           </p>
           <a
-            href="mailto:thomas-lorenz@posteo.de?subject=Mithelfen%20bei%20Brief%20nach%20Berlin"
+            href={`mailto:${FOUNDER_EMAIL}?subject=Mithelfen%20bei%20Brief%20nach%20Berlin`}
             className="inline-block font-body font-bold text-creme bg-waldgruen-dark hover:bg-waldgruen px-6 py-3 rounded-sm transition-colors"
           >
-            thomas-lorenz@posteo.de
+            Meld dich
           </a>
         </div>
 

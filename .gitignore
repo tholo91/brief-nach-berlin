@@ -18,3 +18,6 @@ supabase/.temp/
 # Manually saved test emails — may contain real PII headers (DSGVO H3)
 created-letters/
 *.eml
+
+# Local asset folders (Ghibli reference images, etc.)
+Briefmarke Ghibli/

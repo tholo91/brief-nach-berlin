@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
-import { APP_URL, FOUNDER_FEEDBACK_URL } from "@/lib/config";
+import { APP_URL, FOUNDER_FEEDBACK_URL, FOUNDER_EMAIL } from "@/lib/config";
 import { Prose } from "@/components/editorial/Prose";
 import { PullQuote } from "@/components/editorial/PullQuote";
 import { Figure } from "@/components/editorial/Figure";
@@ -316,7 +316,7 @@ export default async function StimmenPage() {
           </p>
           <div className="flex flex-col sm:flex-row justify-center gap-3">
             <a
-              href="mailto:thomas-lorenz@posteo.de?subject=Mithelfen%20bei%20Brief%20nach%20Berlin"
+              href={`mailto:${FOUNDER_EMAIL}?subject=Mithelfen%20bei%20Brief%20nach%20Berlin`}
               className="inline-block font-body font-bold text-creme bg-waldgruen-dark hover:bg-waldgruen px-6 py-3 rounded-sm transition-colors text-center"
             >
               Melde dich gerne bei mir

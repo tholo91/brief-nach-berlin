@@ -49,6 +49,7 @@ export const SHARE_URL_TWITTER = `https://twitter.com/intent/tweet?text=${encode
 
 // Founder credit (footer of email + success page)
 export const FOUNDER_NAME = "Thomas Lorenz" as const;
+export const FOUNDER_EMAIL = "thomas_lorenz@posteo.de" as const;
 export const FOUNDER_HOMEPAGE = "https://www.thomas-lorenz.eu" as const;
 export const FOUNDER_LINKEDIN = "https://www.linkedin.com/in/tholo91/" as const;
 export const FOUNDER_FEEDBACK_URL = "https://www.heyspeak.io/l/WIOENjqJn6z6WKtkWgDEFg?email=on" as const;

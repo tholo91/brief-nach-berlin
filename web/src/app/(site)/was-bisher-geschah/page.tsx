@@ -40,7 +40,7 @@ const monate: Monat[] = [
   {
     key: "juni-2026",
     badge: "Juni 2026",
-    note: "Mehr Abgeordnete, schärfere Briefe, besseres Feedback",
+    note: "Inline-Mic, neue Bundestag-Daten und viele Details verbessert",
     entries: [
       "Die Startseite zeigt jetzt die echte Anzahl verschickter Briefe in Echtzeit, direkt aus der Datenbank gezogen - kein statischer Platzhalter mehr.",
       "Mehr PLZ werden jetzt korrekt aufgelöst: Die Abgeordneten-Daten wurden erweitert, damit weniger Wahlkreise leer bleiben.",
@@ -49,6 +49,13 @@ const monate: Monat[] = [
       "PLZ-Eingabe zeigt jetzt sofort den zugehörigen Ort oder Ortsteil, als schnelle Bestätigung, dass die Postleitzahl stimmt.",
       "Mobile Navigation überarbeitet: Handy-Menü, scroll-sensitiver CTA und Bewertungs-Marquee auf dem Desktop für mehr Glaubwürdigkeit.",
       "Briefe wiederholen sich weniger: Der Prompt wurde überarbeitet, damit keine Formulierung doppelt auftaucht.",
+      "Das Mikrofon sitzt jetzt direkt im Textfeld – kein separater Button mehr. Diktat lässt sich beliebig oft wiederholen, und die Aufnahme stoppt automatisch sauber nach drei Minuten.",
+      "Alle Abgeordneten-Daten wurden auf den 21. Bundestag aktualisiert, inklusive Ausschuss-Mitgliedschaften. Damit landet dein Brief beim richtigen Ansprechpartner der neuen Legislaturperiode.",
+      "Neue Unterseite erklärt, wohin der Brief eigentlich gehört: ins Wahlkreisbüro oder nach Berlin? Die Antwort hängt vom Thema ab – jetzt gibt es eine kurze Erklärung dazu.",
+      "Die Fehlerseite bei unbekannter PLZ führt jetzt direkt zurück zum Feld, damit du die Postleitzahl sofort korrigieren kannst – kein umständlicher Neustart mehr.",
+      "Feedback-Option umbenannt: 'Klingt nicht nach mir' heißt jetzt 'Klingt zu sehr nach KI' – das trifft den eigentlichen Grund präziser.",
+      "Sterne-Anzeige auf der Bewertungsseite war bei halben Sternen (z.B. 4,5) kaputt. Das ist behoben, alle Bewertungen werden jetzt korrekt dargestellt.",
+      "Die Seite nach dem Briefversand ist aufgeräumter – ein überflüssiges Element wurde entfernt, damit Bewertung und nächste Schritte sofort ins Auge fallen.",
     ],
   },
   {
@@ -99,7 +106,7 @@ const articleJsonLd = {
   headline: "Was bisher geschah: Der Fortschritt von Brief nach Berlin",
   description: DESCRIPTION,
   datePublished: PUBLISHED,
-  dateModified: PUBLISHED,
+  dateModified: "2026-06-19",
   author: { "@type": "Organization", name: "Brief nach Berlin" },
   publisher: {
     "@type": "Organization",

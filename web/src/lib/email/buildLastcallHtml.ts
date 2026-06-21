@@ -88,6 +88,8 @@ export function buildLastcallHtml(
        untereinander statt nebeneinander, damit das iOS-44pt-Tap-Target
        sicher erreicht wird. Gmail / Apple Mail respektieren @media im head. */
     @media only screen and (max-width: 480px) {
+      .lc-mailbox { display: none !important; }
+      .lc-title-cell { padding: 0 !important; }
       .lc-cta-cell { display: block !important; width: 100% !important; padding: 0 0 12px 0 !important; }
       .lc-cta-cell a { display: block !important; }
       .lc-share-label { display: none !important; }
@@ -111,11 +113,27 @@ export function buildLastcallHtml(
             <td style="height:4px;font-size:0;line-height:0;background:repeating-linear-gradient(-45deg,#C1121F,#C1121F 8px,#FAF8F5 8px,#FAF8F5 12px,#1D3557 12px,#1D3557 20px,#FAF8F5 20px,#FAF8F5 24px);">&nbsp;</td>
           </tr>
 
-          <!-- Title -->
+          <!-- Title row: centered title with mailbox illustration top-right.
+               Bild ist absolut platziert, schiebt nichts. Auf Mobile (<=480px)
+               wird es ausgeblendet, damit der zentrierte Titel nicht kollidiert. -->
           <tr>
-            <td style="padding:28px 32px 22px;background-color:#ffffff;text-align:center;">
-              <h1 style="margin:0;font-family:Georgia,'Times New Roman',serif;font-size:22px;color:#2D5016;font-weight:bold;letter-spacing:0.5px;">Brief nach Berlin</h1>
-              <p style="margin:8px 0 0;font-family:Georgia,'Times New Roman',serif;font-size:14px;color:#666666;">Eine letzte, neugierige Frage</p>
+            <td style="padding:28px 32px 22px;background-color:#ffffff;position:relative;">
+              <table role="presentation" cellpadding="0" cellspacing="0" width="100%" style="border-collapse:collapse;">
+                <tr>
+                  <td class="lc-title-cell" style="vertical-align:middle;text-align:center;padding:0 130px;">
+                    <h1 style="margin:0;font-family:Georgia,'Times New Roman',serif;font-size:22px;color:#2D5016;font-weight:bold;letter-spacing:0.5px;">Brief nach Berlin</h1>
+                    <p style="margin:8px 0 0;font-family:Georgia,'Times New Roman',serif;font-size:14px;color:#666666;">Eine letzte, neugierige Frage</p>
+                  </td>
+                </tr>
+              </table>
+              <!--[if !mso]><!-->
+              <img class="lc-mailbox" src="${base}/images/email-lastcall-mailbox.png" alt="" width="132" height="132" style="position:absolute;top:6px;right:8px;width:132px;height:132px;border:0;outline:none;display:block;" />
+              <!--<![endif]-->
+              <!--[if mso]>
+              <v:rect xmlns:v="urn:schemas-microsoft-com:vml" fill="true" stroke="false" style="position:absolute;top:6px;right:8px;width:132px;height:132px;mso-position-horizontal:right;mso-position-vertical:top;">
+                <v:fill type="frame" src="${base}/images/email-lastcall-mailbox.png" />
+              </v:rect>
+              <![endif]-->
             </td>
           </tr>
 

@@ -9,7 +9,9 @@ import {
   SHARE_URL_TELEGRAM,
   SHARE_URL_EMAIL,
   SHARE_URL_LINKEDIN,
+  INSTAGRAM_CAPTION,
 } from "@/lib/config";
+import { CopyButton } from "@/components/CopyButton";
 import { CONTACT } from "@/lib/contact";
 
 const TITLE = "Brief nach Berlin weitersagen";
@@ -196,6 +198,29 @@ export default function WeitersagenPage() {
               </span>
             </a>
           </div>
+        </section>
+
+        {/* Instagram */}
+        <section id="insta" className="mb-12 scroll-mt-8">
+          <h2 className="font-body text-2xl md:text-3xl font-bold text-waldgruen-dark mb-2">
+            Instagram
+          </h2>
+          <p className="font-body text-warmgrau leading-relaxed mb-4">
+            Kein Share-Button, aber das Echteste, was du auf Instagram posten
+            kannst: ein Foto von einem handgeschriebenen Brief auf dem Weg zur
+            Post. Kopiere den Text unten, lad dein Foto hoch und füg ihn ein.
+            Und wenn du magst: <span className="font-semibold text-waldgruen-dark">#BriefNachBerlin</span>.
+          </p>
+          <div className="bg-white border border-waldgruen/15 rounded-xl p-5 mb-4">
+            <p className="font-body text-sm text-warmgrau whitespace-pre-line leading-relaxed">
+              {INSTAGRAM_CAPTION}
+            </p>
+          </div>
+          <CopyButton
+            text={INSTAGRAM_CAPTION}
+            label="Caption kopieren"
+            labelCopied="Kopiert - jetzt Instagram öffnen"
+          />
         </section>
 
         {/* QR-Code */}

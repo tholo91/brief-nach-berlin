@@ -47,6 +47,15 @@ export const SHARE_URL_EMAIL = `mailto:?subject=${encodeURIComponent("Schreibst 
 export const SHARE_URL_LINKEDIN = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(APP_URL)}` as const;
 export const SHARE_URL_TWITTER = `https://twitter.com/intent/tweet?text=${encodeURIComponent(SHARE_TEXT_TOOL)}` as const;
 
+// Instagram: no web share URL exists — clipboard copy only
+export const INSTAGRAM_CAPTION = `Ich habe heute meinem Abgeordneten einen handgeschriebenen Brief geschickt. Handgeschriebene Briefe werden im Bundestag tatsächlich gelesen, nicht wie E-Mails einfach archiviert.
+
+Brief nach Berlin hilft dabei: Anliegen beschreiben, Postleitzahl eingeben, fertig. Kostenlos, in unter drei Minuten.
+
+brief-nach-berlin.de
+
+#BriefNachBerlin #Demokratie #Bundestag #Mitmachen #Zivilgesellschaft` as const;
+
 // Founder credit (footer of email + success page)
 export const FOUNDER_NAME = "Thomas Lorenz" as const;
 export const FOUNDER_EMAIL = "thomas_lorenz@posteo.de" as const;

@@ -1,7 +1,6 @@
 import type { SendLetterEmailParams, LetterDebugPayload } from "./sendLetterEmail";
 import {
   APP_URL,
-  WIZARD_PATH,
   SHARE_TEXT_CAUSE,
   FOUNDER_HOMEPAGE,
   FOUNDER_FEEDBACK_URL,
@@ -71,12 +70,6 @@ export function buildEmailHtml(data: SendLetterEmailParams): string {
     .map((part) => escapeHtml(part.trim()))
     .join("<br>");
 
-  // "Neuen Brief schreiben" oeffnet den Wizard leer (DSGVO M5).
-  // Frueher wurde issueText als ?text= mitgegeben; das war PII im Klartext-Link
-  // und konnte durch Weiterleiten der Mail an Dritte oder Link-Vorschau-Scanner
-  // gelangen. Der Aufruf laeuft jetzt ohne Pre-Fill.
-  const regenerateUrl = `${APP_URL}${WIZARD_PATH}`;
-
   // Profile link (Abgeordnetenwatch: voting record, public Q&A, transparent source).
   // Prefer the API-provided URL; fall back to a slug-derived URL.
   const profileUrl =
@@ -99,6 +92,7 @@ export function buildEmailHtml(data: SendLetterEmailParams): string {
   const causeText = encodeURIComponent(SHARE_TEXT_CAUSE);
   const whatsappUrl = `https://wa.me/?text=${causeText}`;
   const telegramUrl = `https://t.me/share/url?url=${encodeURIComponent(APP_URL)}&text=${causeText}`;
+  const instagramUrl = `${APP_URL}/weitersagen#insta`;
   const emailShareUrl = `mailto:?subject=${encodeURIComponent("Schreibst du auch einen Brief nach Berlin?")}&body=${causeText}`;
 
   // Letter text: escape then convert newlines to <br> for email clients
@@ -120,6 +114,13 @@ export function buildEmailHtml(data: SendLetterEmailParams): string {
       .bnb-stack-left { padding: 0 0 14px 0 !important; width: 100% !important; }
       .bnb-stack-right { padding: 14px 0 0 0 !important; border-left: 0 !important; border-top: 1px solid #E0DCD7 !important; width: 100% !important; text-align: center !important; }
       .bnb-bleed { margin-left: -14px !important; margin-right: -14px !important; }
+      /* Share row: on mobile only the square icon-buttons remain (labels hidden). */
+      .bnb-share-label { display: none !important; }
+      .bnb-share-btn { padding: 14px 0 !important; }
+      .bnb-share-icon { width: 24px !important; height: 24px !important; margin: 0 !important; }
+      /* Mobile-only text swaps: kürzere Varianten auf kleinen Screens. */
+      .bnb-desk { display: none !important; }
+      .bnb-mob { display: inline !important; }
     }
   </style>
 </head>
@@ -147,7 +148,7 @@ export function buildEmailHtml(data: SendLetterEmailParams): string {
                 <!-- Intro: warm founder voice -->
                 <tr>
                   <td colspan="7" class="bnb-pad" style="padding:0 32px 20px;background-color:#ffffff;">
-                    <p style="margin:0;font-family:Georgia,'Times New Roman',serif;font-size:15px;color:#4A4A4A;line-height:1.75;">Lies ihn gründlich durch und pass ihn an, damit es dein Brief wird. Dieser Entwurf dient als Schnellstart, <a href="${APP_URL}/brief-verbessern" target="_blank" rel="noopener noreferrer" style="color:#2D5016;text-decoration:underline;">verbessere ihn gern</a>, damit er sich wirklich nach dir anhört.<br>Bitte bewerte anschließend deinen Brief 🙏 Danke, dass du dich engagierst!</p>
+                    <p style="margin:0;font-family:Georgia,'Times New Roman',serif;font-size:15px;color:#4A4A4A;line-height:1.75;">Lies ihn gründlich durch und pass ihn an, damit es dein Brief wird. Dieser Entwurf dient als Schnellstart, <a href="${APP_URL}/brief-verbessern" target="_blank" rel="noopener noreferrer" style="color:#2D5016;text-decoration:underline;">verbessere ihn gern</a>, damit er sich wirklich nach dir anhört.<span class="bnb-desk"><br>Bitte bewerte anschließend deinen Brief 🙏 Danke, dass du dich engagierst!</span><span class="bnb-mob" style="display:none;"><br>Danke, dass du dich engagierst 🙏</span></p>
                   </td>
                 </tr>
 
@@ -189,38 +190,26 @@ export function buildEmailHtml(data: SendLetterEmailParams): string {
 
                 <!-- Naechste Schritte (D-08, section 3) -->
                 <tr>
-                  <td colspan="7" class="bnb-pad" style="padding:0 32px 24px;background-color:#ffffff;">
+                  <td colspan="7" class="bnb-pad" style="padding:0 32px 8px;background-color:#ffffff;">
                     <h2 style="margin:0 0 16px;font-family:Georgia,'Times New Roman',serif;font-size:16px;color:#2D5016;font-weight:bold;">Nächste Schritte</h2>
 
                     <table role="presentation" cellpadding="0" cellspacing="0" width="100%">
                       <tr>
                         <td style="padding:6px 0;font-family:Georgia,'Times New Roman',serif;font-size:14px;color:#4A4A4A;line-height:1.5;">
                           <span style="display:inline-block;width:24px;height:24px;background-color:#2D5016;color:#ffffff;border-radius:50%;text-align:center;line-height:24px;font-size:12px;font-weight:bold;margin-right:10px;vertical-align:middle;">1</span>
-                          Brief von Hand abschreiben (oder ausdrucken)
+                          <span class="bnb-desk">Brief von Hand abschreiben (oder ausdrucken)</span><span class="bnb-mob" style="display:none;">Brief von Hand abschreiben</span>
                         </td>
                       </tr>
                       <tr>
                         <td style="padding:6px 0;font-family:Georgia,'Times New Roman',serif;font-size:14px;color:#4A4A4A;line-height:1.5;">
                           <span style="display:inline-block;width:24px;height:24px;background-color:#2D5016;color:#ffffff;border-radius:50%;text-align:center;line-height:24px;font-size:12px;font-weight:bold;margin-right:10px;vertical-align:middle;">2</span>
-                          Empfangs-Adresse mittig auf den Umschlag
+                          <span class="bnb-desk">Empfangs- und Absenderadresse auf den Umschlag</span><span class="bnb-mob" style="display:none;">Adressen auf den Umschlag</span>
                         </td>
                       </tr>
                       <tr>
                         <td style="padding:6px 0;font-family:Georgia,'Times New Roman',serif;font-size:14px;color:#4A4A4A;line-height:1.5;">
                           <span style="display:inline-block;width:24px;height:24px;background-color:#2D5016;color:#ffffff;border-radius:50%;text-align:center;line-height:24px;font-size:12px;font-weight:bold;margin-right:10px;vertical-align:middle;">3</span>
-                          Eigene Absende-Adresse oben links eintragen
-                        </td>
-                      </tr>
-                      <tr>
-                        <td style="padding:6px 0;font-family:Georgia,'Times New Roman',serif;font-size:14px;color:#4A4A4A;line-height:1.5;">
-                          <span style="display:inline-block;width:24px;height:24px;background-color:#2D5016;color:#ffffff;border-radius:50%;text-align:center;line-height:24px;font-size:12px;font-weight:bold;margin-right:10px;vertical-align:middle;">4</span>
-                          <a href="https://www.deutschepost.de/de/m/mobile-briefmarke.html" target="_blank" rel="noopener noreferrer" style="color:#2D5016;text-decoration:underline;">Briefmarke aufkleben</a> (aktuell 0,95 EUR)
-                        </td>
-                      </tr>
-                      <tr>
-                        <td style="padding:6px 0;font-family:Georgia,'Times New Roman',serif;font-size:14px;color:#4A4A4A;line-height:1.5;">
-                          <span style="display:inline-block;width:24px;height:24px;background-color:#2D5016;color:#ffffff;border-radius:50%;text-align:center;line-height:24px;font-size:12px;font-weight:bold;margin-right:10px;vertical-align:middle;">5</span>
-                          Ab in den Briefkasten!
+                          <span class="bnb-desk"><a href="https://www.deutschepost.de/de/m/mobile-briefmarke.html" target="_blank" rel="noopener noreferrer" style="color:#2D5016;text-decoration:underline;">Briefmarke aufkleben</a> (aktuell 0,95 EUR) und ab in den Briefkasten!</span><span class="bnb-mob" style="display:none;"><a href="https://www.deutschepost.de/de/m/mobile-briefmarke.html" target="_blank" rel="noopener noreferrer" style="color:#2D5016;text-decoration:underline;">Briefmarke drauf</a> + absenden</span>
                         </td>
                       </tr>
                     </table>
@@ -232,7 +221,7 @@ export function buildEmailHtml(data: SendLetterEmailParams): string {
                 <tr>
                   <td colspan="7" class="bnb-pad" style="padding:8px 32px 16px;background-color:#ffffff;text-align:left;">
                     <p style="margin:0 0 14px;font-family:Georgia,'Times New Roman',serif;font-size:14px;color:#4A4A4A;line-height:1.6;">
-                      Handgeschriebene Briefe werden im Bundestag tatsächlich gelesen und besprochen. Sie signalisieren echtes persönliches Engagement und werden nicht wie Massenpost behandelt. &rarr; <a href="${APP_URL}/tipps" style="color:#2D5016;text-decoration:underline;">Tipps für den perfekten Brief</a>
+                      Handgeschriebene Briefe fallen in Bundestagsbüros auf. Inmitten unpersönlicher Drucksachen signalisieren sie echtes Engagement. &rarr; <a href="${APP_URL}/tipps" style="color:#2D5016;text-decoration:underline;">Tipps für den perfekten Brief</a>
                     </p>
                     <p style="margin:0 0 20px;font-family:Georgia,'Times New Roman',serif;font-size:14px;color:#4A4A4A;line-height:1.6;">
                       Toll, dass du dir die Zeit für unsere Demokratie nimmst. Melde dich super gerne bei <a href="${FOUNDER_FEEDBACK_URL}" target="_blank" rel="noopener noreferrer" style="color:#2D5016;text-decoration:underline;">Fragen oder weiteren Anregungen</a>. Beste Grüße aus Bremen ✌️
@@ -241,24 +230,8 @@ export function buildEmailHtml(data: SendLetterEmailParams): string {
                       Thomas
                     </p>
                     <p style="margin:6px 0 0;font-family:Georgia,'Times New Roman',serif;font-size:12px;color:#bcbcbc;line-height:1.5;">
-                      Eine Initiative von <a href="${FOUNDER_HOMEPAGE}" target="_blank" rel="noopener noreferrer" style="color:#bcbcbc;text-decoration:underline;">www.thomas-lorenz.eu</a> · <a href="${APP_URL}/aktiv-werden" target="_blank" rel="noopener noreferrer" style="color:#bcbcbc;text-decoration:underline;">Was du sonst noch tun kannst</a>
+                      Eine Initiative von <a href="${FOUNDER_HOMEPAGE}" target="_blank" rel="noopener noreferrer" style="color:#bcbcbc;text-decoration:underline;">www.thomas-lorenz.eu</a>
                     </p>
-                  </td>
-                </tr>
-
-                <!-- Action buttons: stretched two-column row, equal width. -->
-                <tr>
-                  <td colspan="7" class="bnb-pad" style="padding:8px 32px 20px;background-color:#ffffff;">
-                    <table role="presentation" cellpadding="0" cellspacing="0" width="100%" style="border-collapse:separate;">
-                      <tr>
-                        <td style="padding-right:6px;width:50%;" valign="top">
-                          <a href="${regenerateUrl}" style="display:block;text-align:center;background-color:#2D5016;color:#ffffff;font-family:Georgia,'Times New Roman',serif;font-size:14px;font-weight:bold;text-decoration:none;padding:12px 16px;border-radius:6px;border:2px solid #2D5016;line-height:1.3;">Neuer Brief</a>
-                        </td>
-                        <td style="padding-left:6px;width:50%;" valign="top">
-                          <a href="${FOUNDER_FEEDBACK_URL}" target="_blank" rel="noopener noreferrer" style="display:block;text-align:center;background-color:#ffffff;color:#2D5016;font-family:Georgia,'Times New Roman',serif;font-size:14px;font-weight:bold;text-decoration:none;padding:12px 16px;border-radius:6px;border:2px solid #2D5016;line-height:1.3;">Feedback geben</a>
-                        </td>
-                      </tr>
-                    </table>
                   </td>
                 </tr>
 
@@ -272,17 +245,26 @@ export function buildEmailHtml(data: SendLetterEmailParams): string {
                       </p>
                       <table role="presentation" cellpadding="0" cellspacing="0" width="100%">
                         <tr>
-                          <td style="padding-right:6px;width:34%;" valign="top">
-                            <a href="${whatsappUrl}" style="display:block;text-align:center;background-color:#ffffff;color:#2D5016;font-family:Georgia,'Times New Roman',serif;font-size:14px;font-weight:bold;text-decoration:none;padding:10px 8px;border-radius:6px;border:2px solid #2D5016;">WhatsApp</a>
+                          <td style="padding-right:4px;width:25%;" valign="top">
+                            <a href="${whatsappUrl}" class="bnb-share-btn" style="display:block;text-align:center;background-color:#ffffff;color:#2D5016;font-family:Georgia,'Times New Roman',serif;font-size:14px;font-weight:bold;text-decoration:none;padding:10px 4px;border-radius:6px;border:2px solid #2D5016;line-height:1;white-space:nowrap;"><img src="${APP_URL}/images/icon-whatsapp.png" alt="" width="18" height="18" class="bnb-share-icon" style="width:18px;height:18px;vertical-align:middle;border:0;margin-right:6px;"><span class="bnb-share-label">WhatsApp</span></a>
                           </td>
-                          <td style="padding:0 3px;width:33%;" valign="top">
-                            <a href="${telegramUrl}" style="display:block;text-align:center;background-color:#ffffff;color:#2D5016;font-family:Georgia,'Times New Roman',serif;font-size:14px;font-weight:bold;text-decoration:none;padding:10px 8px;border-radius:6px;border:2px solid #2D5016;">Telegram</a>
+                          <td style="padding:0 2px;width:25%;" valign="top">
+                            <a href="${telegramUrl}" class="bnb-share-btn" style="display:block;text-align:center;background-color:#ffffff;color:#2D5016;font-family:Georgia,'Times New Roman',serif;font-size:14px;font-weight:bold;text-decoration:none;padding:10px 4px;border-radius:6px;border:2px solid #2D5016;line-height:1;white-space:nowrap;"><img src="${APP_URL}/images/icon-telegram.png" alt="" width="18" height="18" class="bnb-share-icon" style="width:18px;height:18px;vertical-align:middle;border:0;margin-right:6px;"><span class="bnb-share-label">Telegram</span></a>
                           </td>
-                          <td style="padding-left:6px;width:33%;" valign="top">
-                            <a href="${emailShareUrl}" style="display:block;text-align:center;background-color:#ffffff;color:#2D5016;font-family:Georgia,'Times New Roman',serif;font-size:14px;font-weight:bold;text-decoration:none;padding:10px 8px;border-radius:6px;border:2px solid #2D5016;">E-Mail</a>
+                          <td style="padding:0 2px;width:25%;" valign="top">
+                            <a href="${instagramUrl}" class="bnb-share-btn" style="display:block;text-align:center;background-color:#ffffff;color:#2D5016;font-family:Georgia,'Times New Roman',serif;font-size:14px;font-weight:bold;text-decoration:none;padding:10px 4px;border-radius:6px;border:2px solid #2D5016;line-height:1;white-space:nowrap;"><img src="${APP_URL}/images/icon-instagram.png" alt="" width="18" height="18" class="bnb-share-icon" style="width:18px;height:18px;vertical-align:middle;border:0;margin-right:6px;"><span class="bnb-share-label">Instagram</span></a>
+                          </td>
+                          <td style="padding-left:4px;width:25%;" valign="top">
+                            <a href="${emailShareUrl}" class="bnb-share-btn" style="display:block;text-align:center;background-color:#ffffff;color:#2D5016;font-family:Georgia,'Times New Roman',serif;font-size:14px;font-weight:bold;text-decoration:none;padding:10px 4px;border-radius:6px;border:2px solid #2D5016;line-height:1;white-space:nowrap;"><img src="${APP_URL}/images/icon-email.png" alt="" width="18" height="18" class="bnb-share-icon" style="width:18px;height:18px;vertical-align:middle;border:0;margin-right:6px;"><span class="bnb-share-label">E-Mail</span></a>
                           </td>
                         </tr>
                       </table>
+                      <!-- Secondary links: weiterführende Seiten, normale Schriftgröße, eine Zeile -->
+                      <p style="margin:16px 0 0;font-family:Georgia,'Times New Roman',serif;font-size:14px;color:#4A4A4A;line-height:1.6;text-align:center;">
+                        <a href="${APP_URL}/aktiv-werden" target="_blank" rel="noopener noreferrer" style="color:#2D5016;text-decoration:underline;">Was du sonst noch tun kannst</a>
+                        &nbsp;·&nbsp;
+                        <a href="${APP_URL}/andere-tools" target="_blank" rel="noopener noreferrer" style="color:#2D5016;text-decoration:underline;">Weitere Tools</a>
+                      </p>
                       <!-- Ghibli silhouette: letters flying to the Reichstag, melts into the cream box.
                            Negative margin pulls the image to the card edges; .bnb-bleed switches the
                            horizontal value to -14px on mobile so it matches the smaller inner padding. -->

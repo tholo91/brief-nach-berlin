@@ -60,9 +60,13 @@ async function main() {
   const sender = process.env.BREVO_SENDER_EMAIL || "brief@brief-nach-berlin.de";
 
   const rawRecipients = readCsvEmails(args.csvPath);
-  const recipients = Array.from(
-    new Set(rawRecipients.map((e) => e.toLowerCase()).filter(isValidEmail)),
-  );
+  // Normalisieren (lowercase + trim via readCsvEmails), Ungültige raus,
+  // dann exakte Duplikate über ein Set entfernen. Zähler für Transparenz.
+  const normalized = rawRecipients.map((e) => e.toLowerCase());
+  const valid = normalized.filter(isValidEmail);
+  const recipients = Array.from(new Set(valid));
+  const invalidRemoved = normalized.length - valid.length;
+  const duplicatesRemoved = valid.length - recipients.length;
 
   // Ausschluss-Set aus der --exclude CSV (bereits angeschriebene Adressen).
   let toSend = recipients;
@@ -91,6 +95,8 @@ async function main() {
   console.log("=== Last-Call Follow-up Versand (followup-3m) ===");
   console.log(`CSV:               ${args.csvPath}`);
   console.log(`Eingelesen:        ${rawRecipients.length}`);
+  console.log(`Ungültig entfernt: ${invalidRemoved}`);
+  console.log(`Duplikate entfernt: ${duplicatesRemoved}`);
   console.log(`Unique + valide:   ${recipients.length}`);
   if (args.excludePath) {
     console.log(`Ausschluss-CSV:    ${args.excludePath}`);

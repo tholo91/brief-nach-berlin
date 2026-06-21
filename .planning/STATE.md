@@ -100,6 +100,7 @@ Recent decisions affecting current work:
 | 260530-kk4 | Mistral model migration: centralize IDs + URGENT voxtral swap + switch letter gen to small+reasoning_effort=high | 2026-05-30 | ac5b9d3 | [260530-kk4-mistral-model-migration-centralize-ids-i](./quick/260530-kk4-mistral-model-migration-centralize-ids-i/) |
 | 260601-jts | PLZ-Ort-Anzeige unter dem PLZ-Inputfeld in Step1Form.tsx | 2026-06-01 | 98f50bb | [260601-jts-plz-ort-anzeige-unter-dem-plz-inputfeld-](./quick/260601-jts-plz-ort-anzeige-unter-dem-plz-inputfeld-/) |
 | 260610-jal | PLZ-Lookup vor Rate-Limit ziehen: plz_not_found verbraucht keinen Email-Token mehr (kein Self-Lockout bei Tippfehler/Listen-Wahlkreis) | 2026-06-10 | (pending) | [260610-jal-rate-limit-after-plz-lookup](./quick/260610-jal-rate-limit-after-plz-lookup/) |
+| 260621-og8 | Dritte/letzte Follow-up-Mail (Last-Call, followup-3m): MdB-Reaktion + Story-Sharing via heyspeak/Mail, Versand-Script + Skill | 2026-06-21 | dba21c4 | [260621-og8-letzte-lastcall-followup-mail](./quick/260621-og8-letzte-lastcall-followup-mail/) |
 
 ## Session Continuity
 

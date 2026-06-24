@@ -107,6 +107,13 @@ export default async function Footer() {
             >
               Erwähnt in der Lage der Nation
             </Link>
+            <Link
+              href="/presse"
+              prefetch={false}
+              className="font-body text-sm text-warmgrau/70 hover:text-waldgruen-dark transition-colors duration-200"
+            >
+              Presse
+            </Link>
           </div>
         </div>
 

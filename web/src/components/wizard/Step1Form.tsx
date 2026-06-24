@@ -46,6 +46,7 @@ export function Step1Form({ onNext, defaultValues, plzError, onPlzErrorDismiss }
         if (!res.ok) return;
         const data: unknown = await res.json();
         if (!Array.isArray(data) || data.length === 0) return;
+        if (data.length > 1) return; // mehrere Orte – keinen irreführenden Einzelnamen anzeigen
         const first = data[0] as {
           name?: unknown;
           district?: unknown;

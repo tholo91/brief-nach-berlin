@@ -61,7 +61,7 @@ describe("fetchMdbContext telemetry", () => {
 
     const calls = warnedWith("[fetchMdbContext] no_committees_in_cache");
     expect(calls.length).toBeGreaterThan(0);
-    expect(calls[0]).toMatchObject({ politicianId: 42 });
+    expect(calls[0]).toMatchObject({ mandateId: 42 });
   });
 
   it("warns no_committees_in_cache when cachedCommittees is empty array", async () => {
@@ -72,16 +72,33 @@ describe("fetchMdbContext telemetry", () => {
     expect(warnedWith("[fetchMdbContext] no_committees_in_cache").length).toBeGreaterThan(0);
   });
 
-  it("warns api_error when API returns non-2xx", async () => {
+  it("warns api_error when API returns non-2xx (non-404)", async () => {
     mockFetchStatus(503);
 
     const ctx = await fetchMdbContext(7, "Verkehrswende", ["Verkehrsausschuss"]);
 
     const calls = warnedWith("[fetchMdbContext] api_error");
     expect(calls.length).toBe(1);
-    expect(calls[0]).toMatchObject({ status: 503, politicianId: 7 });
+    expect(calls[0]).toMatchObject({ status: 503, mandateId: 7 });
     expect(ctx.committees).toEqual(["Verkehrsausschuss"]);
     expect(ctx.recentRelevant).toEqual([]);
+  });
+
+  it("does NOT warn on 404 — logs no_poll_results as info instead (new MdB, no voting history)", async () => {
+    const logSpy = jest.spyOn(console, "log").mockImplementation(() => {});
+    mockFetchStatus(404);
+
+    const ctx = await fetchMdbContext(7, "Verkehrswende", ["Verkehrsausschuss"]);
+
+    expect(warnedWith("[fetchMdbContext] api_error")).toEqual([]);
+    const logged = logSpy.mock.calls
+      .filter((args) => args[0] === "[fetchMdbContext] no_poll_results")
+      .map((args) => (args[1] ?? {}) as Record<string, unknown>);
+    expect(logged.length).toBe(1);
+    expect(logged[0]).toMatchObject({ status: 404, mandateId: 7 });
+    expect(ctx.committees).toEqual(["Verkehrsausschuss"]);
+    expect(ctx.recentRelevant).toEqual([]);
+    logSpy.mockRestore();
   });
 
   it("warns timeout when AbortController fires", async () => {
@@ -91,7 +108,7 @@ describe("fetchMdbContext telemetry", () => {
 
     const calls = warnedWith("[fetchMdbContext] timeout");
     expect(calls.length).toBe(1);
-    expect(calls[0]).toMatchObject({ politicianId: 11, timeoutMs: 20 });
+    expect(calls[0]).toMatchObject({ mandateId: 11, timeoutMs: 20 });
     expect(ctx.recentRelevant).toEqual([]);
   });
 
@@ -109,7 +126,7 @@ describe("fetchMdbContext telemetry", () => {
 
     const calls = warnedWith("[fetchMdbContext] no_relevant_votes");
     expect(calls.length).toBe(1);
-    expect(calls[0]).toMatchObject({ politicianId: 99, totalVotesFetched: 2 });
+    expect(calls[0]).toMatchObject({ mandateId: 99, totalVotesFetched: 2 });
   });
 
   it("warns returning_empty_ctx when committees AND recentRelevant are both empty after fetch", async () => {
@@ -119,7 +136,7 @@ describe("fetchMdbContext telemetry", () => {
 
     const calls = warnedWith("[fetchMdbContext] returning_empty_ctx");
     expect(calls.length).toBeGreaterThan(0);
-    expect(calls[0]).toMatchObject({ politicianId: 123 });
+    expect(calls[0]).toMatchObject({ mandateId: 123 });
   });
 
   it("does NOT warn returning_empty_ctx when committees are present", async () => {

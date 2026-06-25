@@ -82,7 +82,6 @@ export async function fetchMdbContext(
   cachedCommittees: string[] | undefined,
   timeoutMs: number = DEFAULT_TIMEOUT_MS
 ): Promise<MdbContext> {
-  const politicianId = mandateId;
   const committees = cachedCommittees ?? [];
   const fallback: MdbContext = {
     committees,
@@ -90,12 +89,12 @@ export async function fetchMdbContext(
   };
 
   if (!committees || committees.length === 0) {
-    console.warn("[fetchMdbContext] no_committees_in_cache", { politicianId });
+    console.warn("[fetchMdbContext] no_committees_in_cache", { mandateId });
   }
 
   if (!mandateId || !issueText) {
     console.warn("[fetchMdbContext] returning_empty_ctx", {
-      politicianId,
+      mandateId,
       reason: !mandateId ? "missing_mandate_id" : "missing_issue_text",
     });
     return fallback;
@@ -115,7 +114,13 @@ export async function fetchMdbContext(
       next: { revalidate: REVALIDATE_SECONDS },
     });
     if (!res.ok) {
-      console.warn("[fetchMdbContext] api_error", { status: res.status, politicianId });
+      // 404 = this mandate has no recorded poll results yet (normal for newly seated
+      // MdBs without a voting history). Benign and self-healing — log as info, not error.
+      if (res.status === 404) {
+        console.log("[fetchMdbContext] no_poll_results", { status: 404, mandateId });
+      } else {
+        console.warn("[fetchMdbContext] api_error", { status: res.status, mandateId });
+      }
       earlyReturn = true;
       return fallback;
     }
@@ -137,7 +142,7 @@ export async function fetchMdbContext(
     const ranked = scoreOverlap(items, issueTokens).slice(0, TOP_RELEVANT);
 
     if (ranked.length === 0) {
-      console.warn("[fetchMdbContext] no_relevant_votes", { politicianId, totalVotesFetched });
+      console.warn("[fetchMdbContext] no_relevant_votes", { mandateId, totalVotesFetched });
     }
 
     recentRelevantCount = ranked.length;
@@ -148,10 +153,10 @@ export async function fetchMdbContext(
     };
   } catch (err) {
     if (err instanceof Error && err.name === "AbortError") {
-      console.warn("[fetchMdbContext] timeout", { politicianId, timeoutMs });
+      console.warn("[fetchMdbContext] timeout", { mandateId, timeoutMs });
     } else {
       console.warn("[fetchMdbContext] fetch_error", {
-        politicianId,
+        mandateId,
         message: err instanceof Error ? err.message : "unknown",
       });
     }
@@ -160,7 +165,7 @@ export async function fetchMdbContext(
   } finally {
     clearTimeout(timeout);
     if (!earlyReturn && committees.length === 0 && recentRelevantCount === 0) {
-      console.warn("[fetchMdbContext] returning_empty_ctx", { politicianId });
+      console.warn("[fetchMdbContext] returning_empty_ctx", { mandateId });
     }
   }
 }

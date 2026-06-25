@@ -298,6 +298,7 @@ export function WizardShell() {
       <div className="transition-opacity duration-150 ease-in" key={step}>
         {step === 1 && (
           <Step2Issue
+            autoFocus
             onSubmit={handleStep1Complete}
             defaultValue={wizardData.issueText}
             defaultToneLevel={wizardData.toneLevel}

@@ -32,7 +32,7 @@ export default async function Home() {
       <main>
         <Hero />
         {/* Press logos + review strip below hero */}
-        <section className="relative z-20 -mt-6 md:-mt-24 lg:-mt-32 pb-2 bg-creme">
+        <section className="relative z-20 -mt-6 md:-mt-24 lg:-mt-32 pb-2">
           <PressMarquee />
           {heroReviews.length > 0 && (
             <>

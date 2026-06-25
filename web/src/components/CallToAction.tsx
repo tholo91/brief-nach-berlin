@@ -1,4 +1,7 @@
+"use client";
+
 import Image from "next/image";
+import { scrollToAnliegen } from "@/lib/scroll-to-input";
 
 export default function CallToAction() {
   return (
@@ -28,16 +31,16 @@ export default function CallToAction() {
         </h2>
 
         <p className="font-body text-base md:text-lg text-creme/85 leading-relaxed mb-10 max-w-md mx-auto">
-          Beschreib uns in Stichpunkten, was dich bewegt. Wir finden die
-          zuständigen Abgeordneten und formulieren einen Brief, der ankommt.
+          Beschreib in Stichpunkten, was dich bewegt. Brief-nach-Berlin findet
+          die zuständigen Abgeordneten und formuliert einen Brief, der ankommt.
         </p>
 
-        <a
-          href="/app"
+        <button
+          onClick={scrollToAnliegen}
           className="inline-block bg-creme text-waldgruen-dark font-body font-semibold text-base md:text-lg px-10 py-4 rounded-xl hover:bg-creme/90 transition-colors cursor-pointer shadow-lg active:scale-[0.98]"
         >
           Jetzt Brief schreiben &rarr;
-        </a>
+        </button>
 
         <p className="mt-5 font-body text-sm text-creme/70">
           Kostenlos · in 3 Minuten · ohne Anmeldung

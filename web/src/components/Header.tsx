@@ -1,7 +1,9 @@
 "use client";
 
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useState, useEffect } from "react";
+import { scrollToAnliegen } from "@/lib/scroll-to-input";
 
 const navLinks = [
   { label: "Wie es funktioniert", href: "#so-funktionierts" },
@@ -10,8 +12,17 @@ const navLinks = [
 ];
 
 export default function Header() {
+  const pathname = usePathname();
+  const isHome = pathname === "/";
   const [showNavCta, setShowNavCta] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+
+  const handleCtaClick = (e: React.MouseEvent) => {
+    if (isHome) {
+      e.preventDefault();
+      scrollToAnliegen();
+    }
+  };
 
   useEffect(() => {
     const target = document.getElementById("hero-cta");
@@ -94,7 +105,8 @@ export default function Header() {
               }`}
             >
               <Link
-                href="/app"
+                href={isHome ? "/#anliegen" : "/app"}
+                onClick={handleCtaClick}
                 className="whitespace-nowrap font-body text-sm font-semibold text-creme bg-waldgruen hover:bg-waldgruen-dark px-4 py-2 rounded-lg transition-colors block"
               >
                 Brief schreiben
@@ -160,8 +172,8 @@ export default function Header() {
               </a>
             ))}
             <Link
-              href="/app"
-              onClick={closeMenu}
+              href={isHome ? "/#anliegen" : "/app"}
+              onClick={(e) => { closeMenu(); handleCtaClick(e); }}
               className="mt-5 mb-1 inline-block text-center font-body text-base font-semibold text-creme bg-waldgruen hover:bg-waldgruen-dark px-4 py-3 rounded-lg transition-colors active:scale-[0.98] shadow-lg shadow-waldgruen/20"
             >
               Brief schreiben

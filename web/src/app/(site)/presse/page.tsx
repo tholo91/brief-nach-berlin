@@ -110,9 +110,17 @@ const coverage = [
     href: "https://rp-online.de/kruschel/kindernachrichten/webseite-hilft-beim-brief-schreiben_aid-150411177",
   },
   {
+    outlet: "Zeit Online",
+    href: "https://www.zeit.de/news/2026-06/24/brief-nach-berlin-so-einfach-geht-der-kontakt-zur-politik",
+  },
+  {
     outlet: "Lage der Nation (Podcast)",
     href: "/lage-der-nation",
     internal: true,
+  },
+  {
+    outlet: "ARD Sounds",
+    href: "https://www.ardsounds.de/episode/urn:ard:episode:5006a718e92c83f9/",
   },
 ];
 

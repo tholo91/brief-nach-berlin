@@ -7,6 +7,7 @@ import type { Politician } from "@/lib/types/politician";
 import type { Step1Data } from "@/lib/validation/wizardSchemas";
 import type { Step1bData } from "@/lib/validation/wizardSchemas";
 import { submitWizardAction } from "@/lib/actions/submitWizard";
+import { peekHandoff, clearHandoff } from "@/lib/wizard-handoff";
 import { Step1Form } from "./Step1Form";
 import { Step1bOptional } from "./Step1bOptional";
 import { Step2Issue } from "./Step2Issue";
@@ -58,19 +59,33 @@ export function WizardShell() {
     if (textParam) {
       data.issueText = textParam;
     }
+    // Landing -> wizard handoff (sessionStorage): pre-fill step 1 with the
+    // issue the visitor already wrote on the landing (and whether they opened
+    // the tips there). Read-only here; the entry is cleared in an effect below
+    // so a later reload restarts cleanly.
+    const handoff = typeof window !== "undefined" ? peekHandoff() : null;
+    if (handoff) {
+      data.issueText = handoff.issueText;
+      if (handoff.toneLevel != null) data.toneLevel = handoff.toneLevel;
+      if (handoff.tipsOpened) data.tipsOpened = true;
+    }
     return data;
   });
-  const [step, setStep] = useState<WizardStep>(() => {
-    // Always start at step 1 (Anliegen) on cold load. issueText/email are
-    // never persisted to URL (privacy), so deep-linking to a later step would
-    // lose state — better to restart cleanly. ?text= just pre-fills step 1.
-    return 1;
-  });
+  // Always start on step 1 (Anliegen). With a landing handoff the field is
+  // pre-filled so the visitor reviews the same input and picks the tone here,
+  // rather than being dropped straight into the contact step.
+  const [step, setStep] = useState<WizardStep>(1);
   const [politicians, setPoliticians] = useState<Politician[]>([]);
   const [actionResult, setActionResult] = useState<WizardActionResult | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [plzError, setPlzError] = useState<string | null>(null);
+
+  // Consume the landing handoff once: clear it so a manual reload of /app
+  // restarts on step 1 instead of resurrecting the previous issue text.
+  useEffect(() => {
+    clearHandoff();
+  }, []);
 
   // Sync URL params when step/data change
   useEffect(() => {
@@ -81,8 +96,16 @@ export function WizardShell() {
 
   // Step 1: Anliegen — just stores state and advances. No backend call.
   const handleStep1Complete = useCallback(
-    (issueText: string, toneLevel: number, usedSpeechToText: boolean) => {
-      setWizardData((prev) => ({ ...prev, issueText, toneLevel, usedSpeechToText }));
+    (issueText: string, toneLevel: number, usedSpeechToText: boolean, tipsOpened: boolean) => {
+      // OR the step-1 open into any open that already happened on the landing
+      // (seeded from the handoff), so "tips ever opened" survives both places.
+      setWizardData((prev) => ({
+        ...prev,
+        issueText,
+        toneLevel,
+        usedSpeechToText,
+        tipsOpened: prev.tipsOpened || tipsOpened,
+      }));
       setStep(2);
     },
     []
@@ -116,6 +139,7 @@ export function WizardShell() {
         issueText: wizardData.issueText ?? "",
         toneLevel: wizardData.toneLevel,
         usedSpeechToText: wizardData.usedSpeechToText,
+        tipsOpened: wizardData.tipsOpened,
       };
 
       // Step1b is the PLZ-lookup step, not the final letter-generation click —

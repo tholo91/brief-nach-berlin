@@ -28,9 +28,9 @@ Warum handschriftlich: Handgeschriebene Briefe werden in Bundestagsbüros tatsä
 
 ---
 
-## Aktuelle Zahlen (Stand: 15.06.2026)
+## Aktuelle Zahlen (Stand: 21.06.2026)
 
-- **700+ Briefe** erstellt seit Launch (in ~4 Wochen)
+- **800+ Briefe** erstellt seit Launch (in ~5 Wochen)
 - **Medienberichte:** Weser-Kurier, Lage der Nation (Folge 478), Funke Mediengruppe
 - **Podcast-Gespräche** geführt
 
@@ -41,6 +41,13 @@ Erwähnt von Dr. Ulf Buermeyer, LL.M. und Philip Banse in Folge 478.
 ---
 
 ## Kontaktliste
+
+### NRW / Ruhrgebiet
+
+| Outlet | Kontakt | Anmerkung |
+|---|---|---|
+| WDR Duisburg / Lokalzeit Ruhr | lokalzeit-ruhr@wdr.de | Regionalmagazin fürs Ruhrgebiet, Thema Demokratie/Zivilgesellschaft passt. Prüfen ob Mail-Adresse aktuell. |
+| Radio Duisburg | redaktion@radioduisburg.de | Lokales Stadtradio Duisburg, breites Publikum. Prüfen ob Mail-Adresse aktuell. |
 
 ### Überregional Nord
 
@@ -212,6 +219,48 @@ Radio Bremen veröffentlicht keine direkten Redaktions-Mails. Offizieller Weg: K
 > Erwähnt wurde es vor zwei Wochen in der [Lage der Nation](https://lagedernation.org/podcast/ldn478-hantavirus-warum-wir-heute-schlechter-dastehen-als-vor-corona/?t=1:19:23#shownotes), seitdem rund 300 Briefe und 5.000 Aufrufe, gebaut in zwei Wochen Freizeit mit Claude Code.
 >
 > Falls da was passt: gerne melden.
+>
+> Beste Grüße
+> Thomas Lorenz
+> 01577-8811161
+> [www.thomas-lorenz.eu](https://www.thomas-lorenz.eu)
+
+---
+
+### WDR Lokalzeit Ruhr – Duisburg (Sie-Form, regional)
+
+> **Betreff:** Civic-Tech-Projekt aus Bremen: 800 Briefe an Bundestagsabgeordnete in 5 Wochen
+>
+> Moin zusammen,
+>
+> ich bin Thomas Lorenz aus Bremen und habe in meiner Freizeit [brief-nach-berlin.de](https://www.brief-nach-berlin.de) gebaut: ein kostenloses Tool, das Bürgerinnen und Bürger in unter 3 Minuten zu einem handgeschriebenen Brief an ihren Bundestagsabgeordneten begleitet. PLZ eingeben, Anliegen schildern, fertige Vorlage zum Abschreiben raus.
+>
+> Handgeschriebene Briefe werden in Bundestagsbüros tatsächlich gelesen und diskutiert. Mails landen im Filter. Darauf setzt das Projekt.
+>
+> In 5 Wochen wurden über 800 Briefe erstellt, erwähnt unter anderem in der [Lage der Nation](https://lagedernation.org/podcast/ldn478-hantavirus-warum-wir-heute-schlechter-dastehen-als-vor-corona/?t=1:19:23#shownotes). Viele Nutzerinnen und Nutzer kommen aus NRW, das Ruhrgebiet ist stark vertreten.
+>
+> Falls das eine Geschichte für die Lokalzeit Ruhr sein könnte, freue ich mich über eine kurze Rückmeldung.
+>
+> Beste Grüße
+> Thomas Lorenz
+> 01577-8811161
+> [www.thomas-lorenz.eu](https://www.thomas-lorenz.eu)
+
+---
+
+### Radio Duisburg (Sie-Form, locker)
+
+> **Betreff:** Bremer baut Tool für politische Briefe: 800 Nutzer in 5 Wochen
+>
+> Moin zusammen,
+>
+> ich bin Thomas Lorenz aus Bremen und habe nebenbei [brief-nach-berlin.de](https://www.brief-nach-berlin.de) entwickelt: Wer politisch frustriert ist, gibt seine PLZ ein, beschreibt sein Anliegen und bekommt in unter 3 Minuten eine fertige Vorlage für einen handgeschriebenen Brief an den zuständigen Bundestagsabgeordneten. Kostenlos, keine Datenspeicherung.
+>
+> Handschriftliche Post landet tatsächlich auf dem Schreibtisch und wird besprochen. Das Feedback der Nutzer bestätigt das.
+>
+> Seit dem Start vor 5 Wochen wurden über 800 Briefe erstellt, viele aus dem Ruhrgebiet. Erwähnt wurde das Projekt in der [Lage der Nation](https://lagedernation.org/podcast/ldn478-hantavirus-warum-wir-heute-schlechter-dastehen-als-vor-corona/?t=1:19:23#shownotes).
+>
+> Falls das für Radio Duisburg interessant sein könnte: ich stehe gerne für ein kurzes Gespräch zur Verfügung.
 >
 > Beste Grüße
 > Thomas Lorenz

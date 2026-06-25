@@ -3,7 +3,6 @@ import Header from "@/components/Header";
 import Hero from "@/components/Hero";
 import HowItWorksWithExample from "@/components/HowItWorksWithExample";
 import WhyItWorks from "@/components/WhyItWorks";
-import LetterCounter from "@/components/LetterCounter";
 import Vision from "@/components/Vision";
 import Roadmap from "@/components/Roadmap";
 import FAQ from "@/components/FAQ";
@@ -32,7 +31,7 @@ export default async function Home() {
       <main>
         <Hero />
         {/* Press logos + review strip below hero */}
-        <section className="relative z-20 -mt-6 md:-mt-24 lg:-mt-32 pb-2">
+        <section className="relative z-20 -mt-20 md:-mt-24 lg:-mt-32 pb-2">
           <PressMarquee />
           {heroReviews.length > 0 && (
             <div className="mt-4 md:mt-8">
@@ -49,7 +48,6 @@ export default async function Home() {
         </section>
         <HowItWorksWithExample />
         <WhyItWorks />
-        <LetterCounter />
         <Vision />
         <Roadmap />
         <FAQ />

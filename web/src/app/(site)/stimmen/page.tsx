@@ -310,13 +310,24 @@ export default async function StimmenPage() {
             Wenn du bis hier gelesen hast: schreib mir. Auch eine Zeile reicht.
           </p>
           <p className="font-body text-base text-warmgrau leading-relaxed max-w-md mx-auto mb-7">
-            Brief nach Berlin ist ein Freizeitprojekt von einer Person. Wer
-            Lust hat mitzuhelfen, sei es Politiker-Daten recherchieren, Texte
-            gegenlesen, Bugs melden oder weitersagen, ist herzlich willkommen.
+            Brief nach Berlin ist ein Freizeitprojekt von einer Person. Am
+            meisten hilft mir gerade Sichtbarkeit: Wer mich mit Leuten
+            vernetzen kann, die dem Thema mediale Reichweite geben, Presse oder
+            Multiplikator:innen, ist mir die größte Hilfe. Auch wer es vor Ort
+            weitersagt oder einen Blick auf den{" "}
+            <a
+              href="https://github.com/tholo91/brief-nach-berlin"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-waldgruen-dark underline underline-offset-2 hover:text-waldgruen transition-colors"
+            >
+              offenen Code bei GitHub
+            </a>{" "}
+            wirft, ist herzlich willkommen.
           </p>
           <div className="flex flex-col sm:flex-row justify-center gap-3">
             <a
-              href={`mailto:${FOUNDER_EMAIL}?subject=Mithelfen%20bei%20Brief%20nach%20Berlin`}
+              href={`mailto:${FOUNDER_EMAIL}?subject=Mitwirken%20bei%20Brief%20nach%20Berlin`}
               className="inline-block font-body font-bold text-creme bg-waldgruen-dark hover:bg-waldgruen px-6 py-3 rounded-sm transition-colors text-center"
             >
               Melde dich gerne bei mir

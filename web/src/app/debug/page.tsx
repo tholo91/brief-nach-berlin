@@ -43,6 +43,7 @@ function format(payload: LetterDebugPayload | { error: string }): string {
     `Length retry fired    ${d.retried}`,
     `Sender hints          party=${d.hasParty} ngo=${d.hasNgo}`,
     `Voice input           ${d.usedSpeechToText}`,
+    `Tips opened           ${d.tipsOpened ?? false}`,
     `Model                 ${d.model}`,
     `Temperature           ${d.temperature}`,
     `Generation            ${d.generationMs} ms`,

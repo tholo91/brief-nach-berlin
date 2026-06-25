@@ -140,3 +140,21 @@ video::-webkit-media-controls-start-playback-button {
     animation: none !important;
   }
 }
+
+/* Hide the scrollbar on auto-growing fields (e.g. the Anliegen textarea once it
+   hits its max height) while keeping the content scrollable. */
+.scrollbar-hide {
+  scrollbar-width: none; /* Firefox */
+}
+.scrollbar-hide::-webkit-scrollbar {
+  display: none; /* Chrome/Safari */
+}
+
+/* Keep the landing field's placeholder on one line and ellipsize it instead of
+   wrapping to a second line on narrow phones (which made the field look broken).
+   Only affects the placeholder, not typed text. */
+.placeholder-truncate::placeholder {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}

@@ -2,12 +2,12 @@ const FAQ_ITEMS = [
   {
     question: "Ist das wirklich kostenlos?",
     answer:
-      "Ja. Du zahlst nichts, kein Abo, keine Premium-Stufe. Brief-nach-Berlin läuft auf einer kleinen Infrastruktur, die Thomas selbst trägt. Die KI-Kosten pro Brief liegen im Cent-Bereich. Wenn das Projekt mal teurer wird, sagen wir Bescheid.",
+      "Ja. Du zahlst nichts, kein Abo, keine Premium-Stufe. Die Nutzung bleibt kostenlos.",
   },
   {
     question: "Was passiert mit meinen Daten?",
     answer:
-      "Dein Anliegen wird einmalig an die KI geschickt, der Brief kommt zurück, danach speichern wir nichts. Kein Account, kein Tracking, keine Werbung. Was du eingibst, sehen wir nicht.",
+      "Dein Anliegen wird einmalig an die KI geschickt, der Brief kommt zurück. Das Tool speichert nichts. Kein Account, kein Tracking, keine Werbung.",
   },
   {
     question: "Wirken handgeschriebene Briefe wirklich?",
@@ -16,9 +16,9 @@ const FAQ_ITEMS = [
   },
   {
     question:
-      "Warum schreibe ich an meine:n Wahlkreisabgeordnete:n und nicht an den Fachausschuss?",
+      "Warum schreibe ich an meinen Wahlkreisabgeordneten und nicht an den Fachausschuss?",
     answer:
-      "Weil deine direkte Vertretung im Bundestag dir gegenüber rechenschaftspflichtig ist. Ein:e fachfremde:r Ausschussabgeordnete:r aus einem anderen Wahlkreis muss auf dich nicht reagieren, deine eigene Vertretung schon. Genau das macht deinen Brief wirksam. Geht es um ein bundesweites Thema, leitet dein:e Abgeordnete:r es an die zuständigen Fachpolitiker:innen weiter.",
+      "Weil deine direkte Vertretung im Bundestag dir gegenüber rechenschaftspflichtig ist. Ein fachfremder Ausschussabgeordneter aus einem anderen Wahlkreis muss auf dich nicht reagieren, deine eigene Vertretung schon. Genau das macht deinen Brief wirksam. Geht es um ein bundesweites Thema, leitet dein Abgeordneter es an die zuständigen Fachpolitiker weiter.",
   },
   {
     question: "Welche politischen Ebenen sind dabei?",
@@ -61,7 +61,7 @@ export default function FAQ() {
           Häufige Fragen
         </p>
         <h2 className="font-body text-2xl md:text-3xl font-bold text-waldgruen-dark tracking-tight mb-12">
-          Fragen, die wir öfter hören
+          Was viele fragen
         </h2>
 
         <div className="divide-y divide-waldgruen/15 border-y border-waldgruen/15">

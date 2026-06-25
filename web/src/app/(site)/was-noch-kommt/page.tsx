@@ -340,19 +340,30 @@ export default function WasNochKommtPage() {
         {/* Mithelfen */}
         <div className="mt-16 p-6 sm:p-8 border-2 border-waldgruen/20 bg-creme/40 rounded-sm">
           <p className="font-typewriter text-xs font-bold tracking-widest uppercase text-waldgruen/60 mb-3">
-            Mithelfen
+            Mitwirken
           </p>
           <h2 className="font-body text-xl md:text-2xl font-bold text-waldgruen-dark mb-3">
-            Mir liegt was dran. Mithilfe ist willkommen.
+            Mir liegt was dran. Unterstützung ist willkommen.
           </h2>
           <p className="font-body text-base text-warmgrau leading-relaxed mb-4">
-            Brief nach Berlin ist ein Freizeitprojekt von einer Person. Wenn du
-            Lust hast, an einer Stelle mitzuhelfen, sei es Politiker-Daten
-            recherchieren, Texte gegenlesen, Bugs melden oder weitersagen,
-            freue ich mich über jede Mail.
+            Brief nach Berlin ist ein Freizeitprojekt von einer Person. Am
+            meisten hilft mir gerade Sichtbarkeit: Wenn du mich mit Leuten
+            vernetzen kannst, die dem Thema mediale Reichweite geben, also
+            Presse, Multiplikator:innen oder Communities, bringt mich das
+            spürbar weiter. Auch wer das Thema vor Ort weiterträgt oder als
+            Entwickler:in einen Blick auf den{" "}
+            <a
+              href="https://github.com/tholo91/brief-nach-berlin"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-waldgruen hover:text-waldgruen-dark underline underline-offset-2 transition-colors"
+            >
+              offenen Code bei GitHub
+            </a>{" "}
+            wirft, ist herzlich willkommen.
           </p>
           <a
-            href={`mailto:${FOUNDER_EMAIL}?subject=Mithelfen%20bei%20Brief%20nach%20Berlin`}
+            href={`mailto:${FOUNDER_EMAIL}?subject=Mitwirken%20bei%20Brief%20nach%20Berlin`}
             className="inline-block font-body font-bold text-creme bg-waldgruen-dark hover:bg-waldgruen px-6 py-3 rounded-sm transition-colors"
           >
             Meld dich

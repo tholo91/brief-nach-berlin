@@ -16,6 +16,23 @@ interface VoiceRecorderProps {
   hasText?: boolean;
   /** Rendered on the right of the meta row below the textarea. */
   charCount: number;
+  /** Landing single-line: vertically center the in-field control on the
+   *  textarea instead of pinning it to the top-right corner. */
+  centered?: boolean;
+  /** Current textarea height (px) used to center the control vertically. */
+  fieldHeight?: number;
+  /** Horizontal position class of the in-field control (default right-2.5).
+   *  The landing shifts it left to make room for the submit CTA beside it. */
+  controlRightClass?: string;
+  /** Force the subtle (outline) mic even when the field is empty, so a separate
+   *  primary CTA next to it stays the only green accent. */
+  forceSubtle?: boolean;
+  /** Minimum chars needed to submit. When set and not yet reached, the counter
+   *  reads "X von mind. N Zeichen"; once reached it drops to "X Zeichen". */
+  minChars?: number;
+  /** Optional keyboard shortcut hint rendered directly left of the counter
+   *  (desktop only). Pass e.g. "⌘↵" or "Ctrl+↵"; omit/undefined to hide. */
+  keyboardHint?: string;
 }
 
 type UIState = "idle" | "recording" | "processing" | "error";
@@ -59,6 +76,12 @@ export function VoiceRecorder({
   disabled,
   hasText = false,
   charCount,
+  centered = false,
+  fieldHeight = 0,
+  controlRightClass = "right-2.5",
+  forceSubtle = false,
+  minChars,
+  keyboardHint,
 }: VoiceRecorderProps) {
   const [uiState, setUiStateInternal] = useState<UIState>("idle");
   const [elapsedSeconds, setElapsedSeconds] = useState(0);
@@ -235,7 +258,7 @@ export function VoiceRecorder({
   const isRecording = uiState === "recording";
   const isProcessing = uiState === "processing";
   const isError = uiState === "error";
-  const showProminent = uiState === "idle" && !hasText;
+  const showProminent = uiState === "idle" && !hasText && !forceSubtle;
 
   const ariaStatus =
     uiState === "recording"
@@ -248,8 +271,28 @@ export function VoiceRecorder({
 
   return (
     <>
-      {/* In-field control, top-right. Compact so the text never runs under it. */}
-      <div className="absolute right-2.5 top-2.5">
+      {/* In-field control. Single-line landing: vertically centered on the
+          textarea via transform (kept off `top` for cheap compositing). Once
+          the text wraps it pins to the top-right corner. */}
+      <div
+        // centered (landing single line): vertically centered on the textarea.
+        // forceSubtle multi-line (landing): pinned to the textarea's bottom so it
+        // rides down with the newest line. Wizard: top-right corner as before.
+        // Positioned via translateY off the textarea height (not bottom-*) so the
+        // meta row below the field doesn't push the control down.
+        className={
+          centered || forceSubtle
+            ? `absolute ${controlRightClass} top-0 flex h-10 w-10 items-center justify-center`
+            : `absolute ${controlRightClass} top-2.5`
+        }
+        style={
+          centered
+            ? { transform: `translateY(${Math.max(0, (fieldHeight - 40) / 2)}px)` }
+            : forceSubtle
+              ? { transform: `translateY(${Math.max(0, fieldHeight - 40 - 8)}px)` }
+              : undefined
+        }
+      >
         {uiState === "idle" && (
           <button
             type="button"
@@ -259,13 +302,15 @@ export function VoiceRecorder({
             title="Diktieren: deine Worte werden ins Textfeld übernommen. Du kannst den Text danach noch ändern."
             className={[
               "flex items-center justify-center rounded-full transition-colors",
-              showProminent
-                ? "h-10 w-10 bg-waldgruen text-creme shadow-sm hover:bg-waldgruen-dark"
-                : "h-9 w-9 border border-warmgrau/30 bg-creme/80 text-warmgrau backdrop-blur-sm hover:bg-warmgrau/5 hover:text-waldgruen",
+              forceSubtle
+                ? "h-9 w-9 text-warmgrau hover:text-waldgruen"
+                : showProminent
+                  ? "h-9 w-9 bg-waldgruen text-creme shadow-sm hover:bg-waldgruen-dark"
+                  : "h-9 w-9 border border-warmgrau/30 bg-creme/80 text-warmgrau backdrop-blur-sm hover:bg-warmgrau/5 hover:text-waldgruen",
               disabled ? "opacity-60 cursor-not-allowed" : "cursor-pointer",
             ].join(" ")}
           >
-            <MicIcon size={showProminent ? 19 : 18} />
+            <MicIcon size={18} />
           </button>
         )}
 
@@ -274,7 +319,7 @@ export function VoiceRecorder({
             type="button"
             onClick={handleToggle}
             aria-label="Aufnahme beenden und Text übernehmen"
-            className="relative flex h-10 w-10 cursor-pointer items-center justify-center rounded-full bg-waldgruen text-creme shadow-sm"
+            className="relative flex h-9 w-9 cursor-pointer items-center justify-center rounded-full bg-waldgruen text-creme shadow-sm"
           >
             <span
               className="absolute inset-0 rounded-full bg-waldgruen/40 animate-ping"
@@ -282,8 +327,8 @@ export function VoiceRecorder({
             />
             <svg
               xmlns="http://www.w3.org/2000/svg"
-              width="20"
-              height="20"
+              width="18"
+              height="18"
               viewBox="0 0 24 24"
               fill="none"
               stroke="currentColor"
@@ -345,11 +390,6 @@ export function VoiceRecorder({
       {/* Single meta row below the field: left = state, right = char count. */}
       <div className="mt-1 flex min-h-[22px] items-center justify-between gap-3">
         <div className="flex items-center gap-2 text-sm">
-          {showProminent && (
-            <span className="font-body text-warmgrau/55">
-              Tippen oder Mikrofon antippen zum Diktieren
-            </span>
-          )}
           {isRecording && (
             <>
               <div className="flex h-4 items-end gap-[3px]" aria-hidden="true">
@@ -393,13 +433,24 @@ export function VoiceRecorder({
           )}
         </div>
 
-        <p
-          id="issueText-counter"
-          aria-live="polite"
-          className="shrink-0 text-sm text-warmgrau/50"
-        >
-          {charCount > 0 ? `${charCount} Zeichen` : ""}
-        </p>
+        <div className="flex items-center gap-2 shrink-0">
+          {keyboardHint && (
+            <span className="hidden md:inline text-sm text-warmgrau/50" aria-hidden="true">
+              {keyboardHint} weiter
+            </span>
+          )}
+          <p
+            id="issueText-counter"
+            aria-live="polite"
+            className="text-sm text-warmgrau/50"
+          >
+            {charCount > 0
+              ? minChars && charCount < minChars
+                ? `${charCount} von mind. ${minChars} Zeichen`
+                : `${charCount} Zeichen`
+              : ""}
+          </p>
+        </div>
       </div>
 
       <span className="sr-only" role="status" aria-live="polite">

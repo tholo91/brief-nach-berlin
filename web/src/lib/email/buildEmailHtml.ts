@@ -293,7 +293,7 @@ export function buildEmailHtml(data: SendLetterEmailParams): string {
                 <tr>
                   <td colspan="7" class="bnb-pad" style="padding:8px 32px 24px;background-color:#FAF8F5;text-align:center;">
                     <p style="margin:0 0 6px;font-family:Georgia,'Times New Roman',serif;font-size:12px;color:#aaaaaa;line-height:1.5;">
-                      <strong>Hinweis:</strong> Der Brief ist ein generierter Entwurf. Bitte passe ihn an und prüfe Politikerdaten vor dem Versand bei <a href="${profileUrl}" target="_blank" rel="noopener noreferrer" style="color:#888888;">${disclaimerSiteName}</a>. Die Verantwortung für den Inhalt liegt bei dir.
+                      <strong>Hinweis:</strong> Diese Mail ist ein generierter Entwurf. Bitte passe ihn an und prüfe die Daten vor dem Versand bei <a href="${profileUrl}" target="_blank" rel="noopener noreferrer" style="color:#888888;">${disclaimerSiteName}</a>. Die Verantwortung für den Inhalt liegt bei dir.
                     </p>
                     <p style="margin:0;font-family:Georgia,'Times New Roman',serif;font-size:12px;color:#aaaaaa;line-height:1.5;">
                       <a href="${APP_URL}/datenschutz" style="color:#888888;">Datenschutz</a>: deine Daten werden nicht gespeichert. · <a href="${APP_URL}/wer-darf-mdb-schreiben" style="color:#888888;">Wer darf MdBs schreiben?</a>${data.debug ? ` · <a href="${buildDebugUrl(data.debug)}" style="color:#888888;text-decoration:none;">Debug</a>` : ""}

@@ -43,6 +43,9 @@ export interface LetterDebugPayload {
   hasParty: boolean;
   hasNgo: boolean;
   usedSpeechToText: boolean;
+  // Ob der Nutzer die Tipps-Ausklappleiste je geöffnet hat (Landing oder
+  // Wizard). Optional, damit ältere serialisierte Payloads weiter dekodieren.
+  tipsOpened?: boolean;
   // Feedback-Loop additions (optional so older serialized payloads still decode).
   // The /feedback page reads these from the signed token; they are never displayed
   // publicly and never trusted from client-supplied inputs.

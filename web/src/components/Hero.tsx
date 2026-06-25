@@ -22,15 +22,7 @@ export default function Hero() {
   // Whether the visitor opened the tips disclosure on the landing — carried
   // into the wizard via the handoff so it surfaces in the debug payload.
   const [tipsOpened, setTipsOpened] = useState(false);
-  // Brief slide-up of the hero content on submit before navigating, so the
-  // jump to the wizard feels like the field carries over rather than a hard cut.
-  const [isExiting, setIsExiting] = useState(false);
   const writing = charCount >= HERO_EXPAND_CHARS;
-  // At 50 chars the field reveals the tone slider + submit button (MIN_CHARS in
-  // Step2Issue), so the hero grows tall. Add extra bottom padding only then, so
-  // the review strip pulled up below ("Schon X Briefe ...") clears the trust
-  // badges instead of overlapping them. The calm/empty state stays untouched.
-  const expanded = charCount >= 50;
 
   useEffect(() => {
     const video = videoRef.current;
@@ -42,18 +34,10 @@ export default function Hero() {
     (issueText: string) => {
       // Hand the issue off via sessionStorage (not the URL) so it never lands
       // in the address bar, then jump to the wizard's step 1 (pre-filled). The
-      // tone is chosen in the wizard, so we don't carry it from here.
+      // tone is chosen in the wizard, so we don't carry it from here. No exit
+      // animation — navigate immediately.
       saveHandoff({ issueText, tipsOpened });
-      const reduceMotion =
-        typeof window !== "undefined" &&
-        window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-      if (reduceMotion) {
-        router.push(WIZARD_PATH);
-        return;
-      }
-      // Play the slide-up, then navigate once it has had time to read.
-      setIsExiting(true);
-      window.setTimeout(() => router.push(WIZARD_PATH), 220);
+      router.push(WIZARD_PATH);
     },
     [router, tipsOpened]
   );
@@ -95,11 +79,7 @@ export default function Hero() {
 
       {/* Content */}
       <div
-        className={[
-          "relative z-10 text-center max-w-2xl mx-auto px-8 pt-24 pb-24",
-          expanded ? "md:pb-32 lg:pb-40" : "",
-          isExiting ? "animate-hero-exit" : "",
-        ].join(" ")}
+        className="relative z-10 text-center max-w-2xl mx-auto px-8 pt-24 pb-24"
       >
         {/* Envelope icon — flies in once on mount */}
         <div className="inline-block -mb-4 md:-mb-5 animate-envelope-fly-x">

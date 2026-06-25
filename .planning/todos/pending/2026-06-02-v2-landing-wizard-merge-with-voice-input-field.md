@@ -1,6 +1,6 @@
 ---
 created: 2026-06-02T20:55:00.000Z
-updated: 2026-06-19T00:00:00.000Z
+updated: 2026-06-21T00:00:00.000Z
 title: v2 Landing wizard merge with voice input field
 area: ui
 files:
@@ -12,6 +12,46 @@ files:
   - web/src/app/page.tsx
   - web/src/app/app/page.tsx
 ---
+
+## Umgesetzt (2026-06-21, Branch `feat/landing-wizard-merge`)
+
+Implementiert nach Design-Session mit Thomas. Die Interaktion wurde gegenüber
+dem ursprünglichen Plan verfeinert:
+
+- **Eskalations-Modell statt statischer Felder:** 0-19 Zeichen = schlanke
+  1-Zeilen-Leiste + ruhige Value-Prop-Zeile darüber. Ab 20 Zeichen
+  (`LANDING_EXPAND_CHARS`) = Feld wächst (auto-grow), Zeile crossfadet zu
+  „Je konkreter, desto wirksamer" (feste Höhe, nur Opacity -> kein Springen).
+  Ab 50 Zeichen (`MIN_CHARS`) = Tonalitäts-Slider + „Weiter" faden ein.
+- **Tagline statt Rotation:** Die 4 rotierenden Sub-Headlines sind raus; die
+  einzige Rotation above-the-fold sind jetzt die Feld-Platzhalter (eigene
+  **kurze** 1-Zeilen-Variante `LANDING_PLACEHOLDER_EXAMPLES` für die schlanke
+  Leiste; die langen Beispiele bleiben im Wizard).
+- **`suppressUrlWrite`-Prop entfällt:** unnötig. `Step2Issue` schreibt selbst
+  nie in die URL (nur `WizardShell` tut das). Die Landing mountet `Step2Issue`
+  standalone ohne `WizardShell` -> null URL-Verschmutzung by construction.
+- **Handoff:** `lib/wizard-handoff.ts` (`saveHandoff`/`peekHandoff`/
+  `clearHandoff`). `WizardShell` liest beim Init (peek, kein Flash), startet auf
+  Step 2, cl{ear}t den Eintrag in einem Effect (Reload -> sauberer Neustart).
+- **Autofokus** nur Desktop (`(hover: hover) and (pointer: fine)`), `#hero-cta`
+  auf Feld-Wrapper (Observer ok), `#anliegen` als Scroll-Anchor; Header- &
+  CallToAction-CTAs -> `/#anliegen` (CallToAction auf `<Link>` umgestellt).
+
+**Feedback-Runde (2026-06-21) eingearbeitet:**
+- Hinweis „Tippen oder Mikrofon antippen zum Diktieren" entfernt (zu unruhig);
+  betrifft auch den Wizard (dort durch den Intro-Text redundant).
+- Schlanke Leiste: Padding reduziert (`px-4 py-2.5`), Höhen 52/88 px,
+  Platzhalter auf knappe 1-Zeilen-Varianten gekürzt (kein Wrap/Clipping mobil).
+- „Je konkreter, desto wirksamer" auf der Landing ist jetzt **dieselbe**
+  `TipsDisclosure` wie in `/app` (exportiert, self-contained), crossfadet ab
+  20 Zeichen aus der Value-Prop-Zeile; Ausklappen schiebt das Feld runter.
+- Mobile Trust-Badges nebeneinander statt gestapelt; „Kein Account
+  erforderlich" -> „ohne Account" (nur mobil, Desktop unverändert).
+
+Verifiziert im Preview (Desktop + Mobile): Eskalation, Handoff -> `/app?step=2`
+(kein `issueText` in URL), „zurück" -> Step 1 mit Text + Ton erhalten, direkter
+`/app`-Aufruf unverändert, kein Keyboard-Popup mobil. `tsc` + `eslint` sauber.
+Noch offen: Thomas' visuelle Abnahme im echten Browser, dann Commit/Push.
 
 ## Problem
 

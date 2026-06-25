@@ -12,7 +12,7 @@ const steps = [
     number: "01",
     title: "Erzähl, was dich beschäftigt",
     description:
-      "Stichpunkte oder Gedanken per Spracheingabe, wir übernehmen die Formulierung. Egal ob Müll auf dem Spielplatz, bezahlbarer Wohnraum oder Sorgen um die Demokratie.",
+      "Stichpunkte oder Gedanken per Spracheingabe, Brief-nach-Berlin übernimmt die Formulierung. Egal ob Müll auf dem Spielplatz, bezahlbarer Wohnraum oder Sorgen um die Demokratie.",
     icon: (
       <svg width="40" height="40" viewBox="0 0 48 48" fill="none" className="text-waldgruen">
         <path d="M10 10h28v24H22l-7 6v-6h-5V10z" stroke="currentColor" strokeWidth="2" strokeLinejoin="round" fill="none" />
@@ -23,9 +23,9 @@ const steps = [
   },
   {
     number: "02",
-    title: "Wir finden die passende Adresse",
+    title: "Brief-nach-Berlin findet die passende Adresse",
     description:
-      "Anhand deiner PLZ ermitteln wir, wer politisch zuständig ist. Datenschutzkonform, ohne Account, wir speichern nix.",
+      "Anhand deiner PLZ ermittelt Brief-nach-Berlin, wer politisch zuständig ist. Datenschutzkonform, ohne Account, nichts wird gespeichert.",
     icon: (
       <svg width="40" height="40" viewBox="0 0 48 48" fill="none" className="text-waldgruen">
         <circle cx="24" cy="18" r="8" stroke="currentColor" strokeWidth="2" fill="none" />
@@ -38,7 +38,7 @@ const steps = [
     number: "03",
     title: "Dein Brief, fertig zum Abschicken",
     description:
-      "Wir formulieren aus deinem Input einen persönlichen, sachlichen Brief mit den besten Argumenten. Eine Seite, in deinem Postfach.",
+      "Brief-nach-Berlin formuliert aus deinem Input einen persönlichen, sachlichen Brief mit den besten Argumenten. Eine Seite, in deinem Postfach.",
     icon: (
       <svg width="40" height="40" viewBox="0 0 48 48" fill="none" className="text-waldgruen">
         <rect x="8" y="6" width="28" height="36" rx="2" stroke="currentColor" strokeWidth="2" fill="none" />

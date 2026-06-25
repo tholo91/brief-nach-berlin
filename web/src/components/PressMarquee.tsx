@@ -140,7 +140,7 @@ export function PressMarquee() {
 
       <div className="py-1 md:py-2">
         <p className="text-center font-typewriter text-xs sm:text-sm tracking-widest uppercase text-warmgrau/50 mb-2 md:mb-3 px-6">
-          Bekannt aus
+          Bekannt aus <span className="font-bold text-waldgruen">zahlreichen</span> Medien
         </p>
         <div
           ref={containerRef}

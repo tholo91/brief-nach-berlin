@@ -5,7 +5,7 @@ milestone_name: milestone
 status: executing
 stopped_at: Phase 02 UI-SPEC approved
 last_updated: "2026-05-27T21:54:24.304Z"
-last_activity: 2026-06-25 -- Completed quick task 260625-9at: E-Mail-Adresse aus Hardcoding befreien
+last_activity: 2026-06-25 -- Completed quick task 260625-w13: Voice-Flag durch Landing-Wizard-Handoff reichen
 progress:
   total_phases: 26
   completed_phases: 2
@@ -102,6 +102,7 @@ Recent decisions affecting current work:
 | 260610-jal | PLZ-Lookup vor Rate-Limit ziehen: plz_not_found verbraucht keinen Email-Token mehr (kein Self-Lockout bei Tippfehler/Listen-Wahlkreis) | 2026-06-10 | (pending) | [260610-jal-rate-limit-after-plz-lookup](./quick/260610-jal-rate-limit-after-plz-lookup/) |
 | 260621-og8 | Dritte/letzte Follow-up-Mail (Last-Call, followup-3m): MdB-Reaktion + Story-Sharing via heyspeak/Mail, Versand-Script + Skill | 2026-06-21 | dba21c4 | [260621-og8-letzte-lastcall-followup-mail](./quick/260621-og8-letzte-lastcall-followup-mail/) |
 | 260625-9at | E-Mail-Adresse aus Hardcoding befreien — THOMAS_MAIL env var (contact.ts, config.ts, 7 Dateien) | 2026-06-25 | 6fa05fc | [260625-9at-email-hardcoding-env-var](./quick/260625-9at-email-hardcoding-env-var/) |
+| 260625-w13 | Voice-Flag (usedSpeechToText) durch Landing→Wizard-Handoff reichen — Debug-Link meldete Voice immer false | 2026-06-25 | 5e5acbe | [260625-w13-voice-flag-usedspeechtotext-geht-beim-la](./quick/260625-w13-voice-flag-usedspeechtotext-geht-beim-la/) |
 
 ## Session Continuity
 

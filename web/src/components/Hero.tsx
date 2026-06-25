@@ -31,12 +31,14 @@ export default function Hero() {
   }, []);
 
   const handleSubmit = useCallback(
-    (issueText: string) => {
+    (issueText: string, _toneLevel: number, usedSpeechToText: boolean) => {
       // Hand the issue off via sessionStorage (not the URL) so it never lands
       // in the address bar, then jump to the wizard's step 1 (pre-filled). The
-      // tone is chosen in the wizard, so we don't carry it from here. No exit
-      // animation — navigate immediately.
-      saveHandoff({ issueText, tipsOpened });
+      // tone is chosen in the wizard, so we don't carry it from here. Den
+      // Voice-Flag aber sehr wohl: ohne ihn meldet der Debug-Payload spaeter
+      // faelschlich Voice=false, obwohl auf der Landing gesprochen wurde. No
+      // exit animation — navigate immediately.
+      saveHandoff({ issueText, tipsOpened, usedSpeechToText });
       router.push(WIZARD_PATH);
     },
     [router, tipsOpened]

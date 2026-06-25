@@ -68,6 +68,9 @@ export function WizardShell() {
       data.issueText = handoff.issueText;
       if (handoff.toneLevel != null) data.toneLevel = handoff.toneLevel;
       if (handoff.tipsOpened) data.tipsOpened = true;
+      // Voice von der Landing uebernehmen, sonst meldet der Debug-Payload
+      // faelschlich Voice=false. Wird beim Step-1-Abschluss per OR gemergt.
+      if (handoff.usedSpeechToText) data.usedSpeechToText = true;
     }
     return data;
   });
@@ -103,7 +106,10 @@ export function WizardShell() {
         ...prev,
         issueText,
         toneLevel,
-        usedSpeechToText,
+        // OR mit einem evtl. von der Landing uebernommenen Voice-Flag, damit er
+        // ueberlebt, wenn im Wizard nicht erneut aufgenommen wird (gleiche
+        // Logik wie bei tipsOpened darunter).
+        usedSpeechToText: prev.usedSpeechToText || usedSpeechToText,
         tipsOpened: prev.tipsOpened || tipsOpened,
       }));
       setStep(2);

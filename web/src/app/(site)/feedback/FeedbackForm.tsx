@@ -214,12 +214,9 @@ export function FeedbackForm({
         <p className="font-handwriting text-3xl text-waldgruen leading-none mb-1">
           Wie war’s?
         </p>
-        <h1 className="font-typewriter text-2xl font-semibold text-waldgruen-dark leading-tight">
+        <h1 className="font-typewriter text-xl font-semibold text-waldgruen-dark leading-tight">
           Bewerte deinen Brief
         </h1>
-        <p className="font-body text-sm text-warmgrau/70 mt-2">
-          Wie war der Brief, den ich dir geschrieben habe?
-        </p>
 
         <div className="flex items-start gap-3 mt-4 pt-4 border-t border-warmgrau/10">
           <Image
@@ -240,7 +237,7 @@ export function FeedbackForm({
         <InteractiveStars value={rating} onChange={setRating} />
         <p
           key={rating}
-          className="font-handwriting text-2xl text-waldgruen leading-none min-h-[1.5rem] animate-feedback-in text-center px-2"
+          className="font-handwriting text-xl text-waldgruen leading-none min-h-[1.5rem] animate-feedback-in text-center px-2"
         >
           {RATING_HINTS[rating] ?? ""}
         </p>

@@ -21,3 +21,9 @@ created-letters/
 
 # Local asset folders (Ghibli reference images, etc.)
 Briefmarke Ghibli/
+
+# LinkedIn post drafts (local marketing, not for the public repo)
+linkedin/
+
+# Local editor / launch config
+.claude/launch.json

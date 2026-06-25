@@ -2,6 +2,7 @@
 
 import { useState, useCallback, useEffect, useLayoutEffect, useRef } from "react";
 import { VoiceRecorder, type VoiceRecorderState } from "@/components/audio/VoiceRecorder";
+import { readLandingDraft, writeLandingDraft } from "@/lib/landing-draft";
 
 // SSR-safe layout effect: avoids the "useLayoutEffect does nothing on the
 // server" warning while still running before paint on the client (so the
@@ -403,13 +404,35 @@ export function Step2Issue({
     return () => cancelAnimationFrame(raf);
   }, [autoFocus]);
 
+  // Landing only: einen zuvor getippten Entwurf beim Mount wiederherstellen,
+  // damit die Rückkehr zur Startseite (z.B. per Browser-"Zurück" aus dem
+  // Wizard) das Feld nicht leert. Als Layout-Effect, also erst nach der
+  // Hydration und nur clientseitig -> kein SSR/Client-Mismatch durch das Lesen
+  // von sessionStorage während des Renderns.
+  useIsoLayoutEffect(() => {
+    if (!isLanding) return;
+    const saved = readLandingDraft();
+    if (saved) setIssueText(saved);
+    // Nur einmal beim Mount; isLanding ist stabil.
+  }, [isLanding]);
+
   const handleTextChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    setIssueText(e.target.value);
+    const value = e.target.value;
+    setIssueText(value);
+    // Nur bei echter Nutzereingabe persistieren (nie beim Mount), damit der
+    // Restore-Effect oben nicht überschrieben wird.
+    if (isLanding) writeLandingDraft(value);
   };
 
   const handleTranscription = (text: string) => {
     usedVoiceRef.current = true;
-    setIssueText((prev) => (prev ? prev + "\n" + text : text));
+    setIssueText((prev) => {
+      // Funktionale Form unverändert (wird auch im Wizard genutzt); für die
+      // Landing zusätzlich den maßgeblichen neuen Wert persistieren.
+      const next = prev ? prev + "\n" + text : text;
+      if (isLanding) writeLandingDraft(next);
+      return next;
+    });
   };
 
   const handleSubmit = () => {

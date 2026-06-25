@@ -8,6 +8,7 @@ import type { Step1Data } from "@/lib/validation/wizardSchemas";
 import type { Step1bData } from "@/lib/validation/wizardSchemas";
 import { submitWizardAction } from "@/lib/actions/submitWizard";
 import { peekHandoff, clearHandoff } from "@/lib/wizard-handoff";
+import { clearLandingDraft } from "@/lib/landing-draft";
 import { Step1Form } from "./Step1Form";
 import { Step1bOptional } from "./Step1bOptional";
 import { Step2Issue } from "./Step2Issue";
@@ -89,6 +90,13 @@ export function WizardShell() {
   useEffect(() => {
     clearHandoff();
   }, []);
+
+  // Erfolgreicher Versand (Step 3) ist der Abschluss des Anliegens: den auf der
+  // Landing gemerkten Entwurf verwerfen, damit ein zurückkehrender Besucher im
+  // selben Tab ein frisches Feld sieht statt des alten Textes.
+  useEffect(() => {
+    if (step === 3) clearLandingDraft();
+  }, [step]);
 
   // Sync URL params when step/data change
   useEffect(() => {

@@ -162,7 +162,7 @@ export function PressMarquee() {
                 <img
                   src={item.logo}
                   alt={item.outlet}
-                  className="h-6 md:h-9 w-auto max-w-[120px] md:max-w-[160px] object-contain"
+                  className="h-6 sm:h-9 w-auto max-w-[120px] sm:max-w-[160px] object-contain"
                   loading="lazy"
                   draggable={false}
                 />

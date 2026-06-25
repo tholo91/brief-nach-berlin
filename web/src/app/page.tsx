@@ -35,7 +35,7 @@ export default async function Home() {
         <section className="relative z-20 -mt-6 md:-mt-24 lg:-mt-32 pb-2">
           <PressMarquee />
           {heroReviews.length > 0 && (
-            <>
+            <div className="mt-4 md:mt-8">
               {letterCount >= LETTER_COUNT_DISPLAY_THRESHOLD && (
                 <p className="text-center font-typewriter text-xs sm:text-sm tracking-widest uppercase text-warmgrau/50 mb-2 md:mb-3 px-6">
                   Schon{" "}
@@ -44,7 +44,7 @@ export default async function Home() {
                 </p>
               )}
               <ReviewMarquee reviews={heroReviews} variant="compact" limit={20} cardHref="/stimmen" />
-            </>
+            </div>
           )}
         </section>
         <HowItWorksWithExample />

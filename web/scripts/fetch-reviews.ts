@@ -38,8 +38,7 @@ const TEST_EMAILS = new Set<string>(
   [
     "tholorenz@posteo.de",
     "thomas-lorenz@posteo.de",
-    "thomas@visualmakers.de",
-    "thomas.lorenz@visualmakers.de",
+    "thomas_lorenz@posteo.de",
   ].map((e) => e.toLowerCase()),
 );
 

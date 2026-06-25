@@ -14,11 +14,11 @@
 //   pnpm -F web tsx scripts/send-backlog-followup.ts <csv-path> [flags]
 //
 // Flags:
-//   --dry-run        Schickt nur einen einzigen Test an thomas@visualmakers.de
+//   --dry-run        Schickt nur einen einzigen Test an thomas_lorenz@posteo.de
 //   --yes            Skipt den Confirm-Prompt (Vorsicht)
 //   --no-dedupe      Überspringt Abgleich mit Supabase reviews.email
 //   --allow-large    Hebt den 500-Empfänger-Schutz auf
-//   --reply-to=EMAIL Reply-To überschreiben (default: thomas@visualmakers.de)
+//   --reply-to=EMAIL Reply-To überschreiben (default: thomas_lorenz@posteo.de)
 //
 // Voraussetzungen:
 //   1. web/.env.local enthält FEEDBACK_TOKEN_SECRET, BREVO_API_KEY,
@@ -38,7 +38,7 @@ loadEnvLocal();
 
 const MAX_RECIPIENTS = 500;
 const THROTTLE_MS = 300;
-const TEST_RECIPIENT = "thomas@visualmakers.de";
+const TEST_RECIPIENT = "thomas_lorenz@posteo.de";
 
 interface Args {
   csvPath: string;
@@ -165,7 +165,7 @@ function parseArgs(): Args {
   let yes = false;
   let dedupe = true;
   let allowLarge = false;
-  let replyTo = "thomas@visualmakers.de";
+  let replyTo = "thomas_lorenz@posteo.de";
 
   for (const a of argv) {
     if (a === "--dry-run") dryRun = true;

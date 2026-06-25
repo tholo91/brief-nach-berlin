@@ -17,7 +17,7 @@ import {
 
 const STORY_VOICE_URL = "https://www.heyspeak.io/l/_AkL8g0mlosEDTMU6vDxuA";
 const STORY_REPLY_MAILTO =
-  "mailto:thomas@visualmakers.de?subject=" +
+  "mailto:thomas_lorenz@posteo.de?subject=" +
   encodeURIComponent("Meine Brief-nach-Berlin-Geschichte");
 
 export interface BuildLastcallParams {
@@ -53,7 +53,7 @@ export function buildLastcallHtml(
     `Hat sich dein MdB bei dir gemeldet? Und wie ging es dir mit dem Brief überhaupt? Auch ein ehrliches "nie was gehört" oder "doch nicht abgeschickt" hilft mir weiter.`,
     ``,
     `Sprachnachricht schicken: ${STORY_VOICE_URL}`,
-    `Per Mail antworten:       thomas@visualmakers.de`,
+    `Per Mail antworten:       thomas_lorenz@posteo.de`,
     `(Foto vom Brief oder einer Antwort? Häng es gerne an.)`,
     ``,
     `Ich würde mich mega freuen, wenn du dich kurz meldest. Und falls deine Geschichte anderen Mut macht, magst du sie vielleicht weitertragen und andere damit anstecken.`,

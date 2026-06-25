@@ -46,7 +46,7 @@ export async function sendFollowupEmail(
         email: process.env.BREVO_SENDER_EMAIL || "brief@brief-nach-berlin.de",
       },
       to: [{ email: params.recipientEmail }],
-      replyTo: { email: "thomas@visualmakers.de" },
+      replyTo: { email: "thomas_lorenz@posteo.de" },
       tags: ["followup-3d"],
       scheduledAt,
     });

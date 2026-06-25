@@ -33,7 +33,6 @@ function format(payload: LetterDebugPayload | { error: string }): string {
     `Letter length         ${d.letterLengthKey} (${d.letterLengthMin}–${d.letterLengthMax} Wörter)`,
     `Word count            ${wcLabel}`,
     `Issue text length     ${d.issueTextLength} chars`,
-    `Issue text words      ${d.issueTextWordCount ?? "—"} words`,
     `Political level       ${d.politicalLevel}`,
     `MdB                   ${d.representativeName} (${d.representativeLevel}, ${d.representativeWahlkreis})`,
     `MdB Partei            ${d.representativeParty ?? "—"}`,
@@ -48,7 +47,7 @@ function format(payload: LetterDebugPayload | { error: string }): string {
     `Temperature           ${d.temperature}`,
     `Generation            ${d.generationMs} ms`,
     ...(d.issueTextPreview
-      ? ["", "Anliegen (Auszug, max 300 Zeichen):", d.issueTextPreview]
+      ? ["", "Anliegen (Auszug, max 600 Zeichen):", d.issueTextPreview]
       : []),
   ];
   return lines.join("\n");

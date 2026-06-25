@@ -43,7 +43,6 @@ const debugPayload: LetterDebugPayload = {
   letterLengthMin: 200,
   letterLengthMax: 240,
   issueTextLength: 312,
-  issueTextWordCount: 48,
   wordCount: 218,
   wordCountInRange: true,
   fallbackUsed: false,

@@ -4,8 +4,9 @@ import type { Politician } from "@/lib/types/politician";
 import { LETTER_LENGTHS, DEFAULT_LETTER_LENGTH } from "@/lib/config";
 
 // Max-Länge des Anliegen-Auszugs im Debug-Link. Hält die base64-URL klein
-// genug, dass Gmail/Outlook sie nicht kürzen (~1900 Zeichen worst case).
-const ISSUE_TEXT_PREVIEW_MAX = 300;
+// genug, dass Gmail/Outlook sie nicht kürzen. 600 deckt praktisch jeden realen
+// Anliegen-Text voll ab und bleibt im sicheren URL-Rahmen.
+const ISSUE_TEXT_PREVIEW_MAX = 600;
 
 export const TONE_LABELS: Record<number, string> = {
   1: "freundlich-einladend",
@@ -33,10 +34,6 @@ export function buildDebugPayload(
     letterLengthMin: min,
     letterLengthMax: max,
     issueTextLength: data.issueText?.length ?? 0,
-    // mirrors countWords() in generateLetter.ts so input/output words match
-    issueTextWordCount: data.issueText
-      ? data.issueText.trim().split(/\s+/).filter(Boolean).length
-      : 0,
     issueTextPreview: data.issueText?.slice(0, ISSUE_TEXT_PREVIEW_MAX),
     wordCount: result.wordCount,
     wordCountInRange: result.wordCountInRange,
@@ -88,9 +85,6 @@ export function buildResendDebugPayload(
     letterLengthMin: min,
     letterLengthMax: max,
     issueTextLength: data.issueText?.length ?? 0,
-    issueTextWordCount: data.issueText
-      ? data.issueText.trim().split(/\s+/).filter(Boolean).length
-      : 0,
     issueTextPreview: data.issueText?.slice(0, ISSUE_TEXT_PREVIEW_MAX),
     wordCount,
     wordCountInRange: wordCount >= min && wordCount <= max,

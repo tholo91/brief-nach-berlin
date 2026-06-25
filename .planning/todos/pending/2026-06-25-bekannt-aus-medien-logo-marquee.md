@@ -31,9 +31,10 @@ Zwei gegenläufige Marquee-Leisten auf der Landing Page:
 
 **Rechtlicher Rahmen (geklärt):** Redaktionelle Referenz mit Link auf echte Artikel = unbedenklich. Kein "empfohlen von X"-Claim. Nachfragen bei den Medien nur nötig, falls die Logos später in bezahlter Werbung / Print genutzt würden — für die Website-Presseleiste nicht erforderlich.
 
-### OFFENE FRAGEN vor Umsetzung klären
-- **(a) Logo-Quelle:** Brand-Kits / Press-Mappen der Medien selbst beschaffen (SVG/PNG), oder hat Thomas die Logos schon irgendwo gesammelt?
-- **(b) Graustufen vs. Original-Farben:** Bleibt es bei Graustufen/Opacity, oder sollen Original-Farben gezeigt werden?
+### GEKLÄRT (2026-06-25)
+- **(a) Logo-Quelle:** Logos kommen aus den **offiziellen Brand-Kits / Presse-Downloads** der jeweiligen Medien (NICHT von Claude generiert - geschützte Markenassets). Claude-Aufgabe: Outlet-Liste aus `/presse` ziehen + pro Medium Link zur offiziellen Logo-Download-Seite heraussuchen. Thomas lädt runter, Claude normalisiert den Satz (einheitliche Höhe, Padding, Benennung).
+- **(b) Format:** **SVG** bevorzugt (Vektor, scharf, winzig, ideal für Marquee). webp/PNG nur Fallback, falls Outlet kein SVG liefert. → NICHT pauschal als webp hosten.
+- **(c) Graustufen:** Ja. Umsetzung per **CSS-Filter** (`filter: grayscale(1) opacity(.6)`), Original-Datei behalten - erlaubt optional Farbe bei Hover ohne Zweit-Satz.
 
 ### Umsetzungshinweis
 Frontend-Umsetzung über `/frontend-design` oder `/taste` (UI-Skill-Pflicht laut Memory).

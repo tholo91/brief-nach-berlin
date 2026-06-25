@@ -469,7 +469,12 @@ export function Step2Issue({
 
       {/* Textarea with inline mic — voice is the easy path, typing the fallback */}
       <div>
-        <div className="relative">
+        {/* Geteilter view-transition-name: dieselbe Komponente rendert auf der
+            Landing (variant="landing") und im Wizard-Step-1. Der identische Name
+            lässt das Feld beim router.push("/app") nativ morphen statt hart zu
+            schneiden. Pro Snapshot eindeutig, da die Landing vor dem Wizard-Mount
+            unmountet. */}
+        <div className="relative" style={{ viewTransitionName: "anliegen-feld" }}>
           <textarea
             ref={textareaRef}
             id="issueText"

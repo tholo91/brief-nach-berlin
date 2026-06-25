@@ -158,3 +158,19 @@ video::-webkit-media-controls-start-playback-button {
   overflow: hidden;
   text-overflow: ellipsis;
 }
+
+/* Morph des Anliegen-Felds beim Landing -> Wizard-Wechsel (native View
+   Transitions API). Der Default-Morph interpoliert Größe + Position; wir setzen
+   nur eine dezente Dauer. Browser ohne VT-Support ignorieren das und navigieren
+   sofort (heutiges Verhalten). */
+::view-transition-group(anliegen-feld) {
+  animation-duration: 320ms;
+}
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-group(*),
+  ::view-transition-old(*),
+  ::view-transition-new(*) {
+    animation-duration: 0s !important;
+    animation-delay: 0s !important;
+  }
+}

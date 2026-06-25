@@ -78,6 +78,12 @@ const PRESS_ITEMS = [
     outlet: "Stuttgarter Zeitung",
     href: "https://www.stuttgarter-zeitung.de/gallery.schreiben-an-politiker-brief-nach-berlin-so-einfach-geht-der-kontakt-zur-politik.d17934c8-9e2a-4506-af4a-f564e76b129e.html",
   },
+  {
+    key: "rdu",
+    logo: "/press-logos/radio-duisburg.svg",
+    outlet: "Radio Duisburg",
+    href: "https://www.radioduisburg.de/dpa/brief-nach-berlin-so-einfach-geht-der-kontakt-zur-politik-2683443",
+  },
 ];
 
 export function PressMarquee() {
@@ -144,7 +150,7 @@ export function PressMarquee() {
         </p>
         <div
           ref={containerRef}
-          className="press-marquee-container press-marquee-fade w-full overflow-x-hidden"
+          className="press-marquee-container press-marquee-fade w-full py-6 overflow-x-hidden"
           aria-label="Medien, die über Brief nach Berlin berichtet haben"
         >
           <div className="press-marquee-track flex items-center gap-8 md:gap-12 w-max px-4">
@@ -162,7 +168,7 @@ export function PressMarquee() {
                 <img
                   src={item.logo}
                   alt={item.outlet}
-                  className="h-6 sm:h-9 w-auto max-w-[120px] sm:max-w-[160px] object-contain"
+                  className="h-6 sm:h-[54px] w-auto max-w-[120px] sm:max-w-[240px] object-contain"
                   loading="lazy"
                   draggable={false}
                 />

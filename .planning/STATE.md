@@ -28,7 +28,7 @@ See: .planning/PROJECT.md (updated 2026-04-10)
 Phase: 04 (stadtstaaten-plz-wahlkreis-genauigkeit-und-wahlkreis-gruppie) — EXECUTING
 Plan: 1 of 3
 Status: Executing Phase 04
-Last activity: 2026-05-27 -- Phase 04 execution started
+Last activity: 2026-06-26 -- Completed quick task 260626-0cz: View-Transition-Morph Anliegen-Feld
 
 Progress: [░░░░░░░░░░] 0%
 
@@ -106,6 +106,7 @@ Recent decisions affecting current work:
 | 260625-wh4 | Debug-Readout schlanker: Anliegen-Auszug 300→600 Zeichen, Issue-text-words-Zeile raus | 2026-06-25 | b6c1410 | [260625-wh4-debug-readout-schlanker-input-cap-600-is](./quick/260625-wh4-debug-readout-schlanker-input-cap-600-is/) |
 | 260625-skh | Landing-Anliegen übersteht Browser-Zurück: per-Tab sessionStorage-Draft (lib/landing-draft.ts), Restore in Step2Issue, Clear nach Versand in WizardShell | 2026-06-25 | 99ddfac | [260625-skh-landing-anliegen-ueberlebt-browser-zurue](./quick/260625-skh-landing-anliegen-ueberlebt-browser-zurue/) |
 | 260625-wko | Log-Observability fetchMdbContext: 404→no_poll_results info statt api_error warning, Log-Label politicianId→mandateId | 2026-06-25 | cb1d15b | [260625-wko-log-observability-fetchmdbcontext-404-al](./quick/260625-wko-log-observability-fetchmdbcontext-404-al/) |
+| 260626-0cz | View-Transition-Morph fürs Anliegen-Feld Landing→Wizard (nativer VT-Flag + geteilter view-transition-name, graceful degradation) | 2026-06-26 | 96969f6 | [260626-0cz-vt-morph-anliegenfeld](./quick/260626-0cz-vt-morph-anliegenfeld/) |
 
 ## Session Continuity
 

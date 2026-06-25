@@ -10,6 +10,7 @@ import FAQ from "@/components/FAQ";
 import CallToAction from "@/components/CallToAction";
 import Footer from "@/components/Footer";
 import { ReviewMarquee } from "@/components/reviews/ReviewMarquee";
+import { PressMarquee } from "@/components/PressMarquee";
 import { getHeroReviews } from "@/lib/reviews/getHeroReviews";
 import { getLetterCount } from "@/lib/counter";
 
@@ -30,19 +31,22 @@ export default async function Home() {
       <Header />
       <main>
         <Hero />
-        {/* Review strip below hero — mobile + desktop, swipeable on touch, auto-scroll on hover-capable */}
-        {heroReviews.length > 0 && (
-          <section className="relative z-20 -mt-6 md:-mt-24 lg:-mt-32 pb-2">
-            {letterCount >= LETTER_COUNT_DISPLAY_THRESHOLD && (
-              <p className="text-center font-typewriter text-xs sm:text-sm tracking-widest uppercase text-warmgrau/50 mb-2 md:mb-3 px-6">
-                Schon{" "}
-                <span className="font-bold text-waldgruen">{letterCount}</span>{" "}
-                Briefe geschrieben
-              </p>
-            )}
-            <ReviewMarquee reviews={heroReviews} variant="compact" limit={20} cardHref="/stimmen" />
-          </section>
-        )}
+        {/* Press logos + review strip below hero */}
+        <section className="relative z-20 -mt-6 md:-mt-24 lg:-mt-32 pb-2 bg-creme">
+          <PressMarquee />
+          {heroReviews.length > 0 && (
+            <>
+              {letterCount >= LETTER_COUNT_DISPLAY_THRESHOLD && (
+                <p className="text-center font-typewriter text-xs sm:text-sm tracking-widest uppercase text-warmgrau/50 mb-2 md:mb-3 px-6">
+                  Schon{" "}
+                  <span className="font-bold text-waldgruen">{letterCount}</span>{" "}
+                  Briefe geschrieben
+                </p>
+              )}
+              <ReviewMarquee reviews={heroReviews} variant="compact" limit={20} cardHref="/stimmen" />
+            </>
+          )}
+        </section>
         <HowItWorksWithExample />
         <WhyItWorks />
         <LetterCounter />

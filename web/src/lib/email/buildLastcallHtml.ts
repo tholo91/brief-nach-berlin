@@ -1,5 +1,6 @@
 import {
   APP_URL,
+  FOUNDER_EMAIL,
   FOUNDER_HOMEPAGE,
   SHARE_URL_WHATSAPP,
   SHARE_URL_TELEGRAM,
@@ -17,7 +18,7 @@ import {
 
 const STORY_VOICE_URL = "https://www.heyspeak.io/l/_AkL8g0mlosEDTMU6vDxuA";
 const STORY_REPLY_MAILTO =
-  "mailto:thomas_lorenz@posteo.de?subject=" +
+  `mailto:${FOUNDER_EMAIL}?subject=` +
   encodeURIComponent("Meine Brief-nach-Berlin-Geschichte");
 
 export interface BuildLastcallParams {
@@ -53,7 +54,7 @@ export function buildLastcallHtml(
     `Hat sich dein MdB bei dir gemeldet? Und wie ging es dir mit dem Brief überhaupt? Auch ein ehrliches "nie was gehört" oder "doch nicht abgeschickt" hilft mir weiter.`,
     ``,
     `Sprachnachricht schicken: ${STORY_VOICE_URL}`,
-    `Per Mail antworten:       thomas_lorenz@posteo.de`,
+    `Per Mail antworten:       ${FOUNDER_EMAIL}`,
     `(Foto vom Brief oder einer Antwort? Häng es gerne an.)`,
     ``,
     `Ich würde mich mega freuen, wenn du dich kurz meldest. Und falls deine Geschichte anderen Mut macht, magst du sie vielleicht weitertragen und andere damit anstecken.`,
@@ -73,7 +74,7 @@ export function buildLastcallHtml(
     `--`,
     `Das war meine allerletzte Mail an dich. Kein Newsletter, keine weitere Nachricht.`,
     `Es wird kein Brief und kein Inhalt gespeichert. Deine E-Mail-Adresse nutze ich nur für diese einmalige Nachfrage.`,
-    `Datenschutz: ${base}/datenschutz · Adresse löschen: thomas_lorenz@posteo.de`,
+    `Datenschutz: ${base}/datenschutz · Adresse löschen: ${FOUNDER_EMAIL}`,
   ].join("\n");
 
   const html = `<!DOCTYPE html>
@@ -235,7 +236,7 @@ export function buildLastcallHtml(
                 Es wird kein Brief und kein Inhalt gespeichert. Deine E-Mail-Adresse nutze ich nur für diese einmalige Nachfrage.
               </p>
               <p style="margin:0;font-family:Georgia,'Times New Roman',serif;font-size:12px;color:#aaaaaa;line-height:1.5;">
-                <a href="${base}/datenschutz" style="color:#888888;">Datenschutz</a> · <a href="mailto:thomas_lorenz@posteo.de?subject=Brief%20nach%20Berlin%3A%20Adresse%20l%C3%B6schen&body=Hallo%20Thomas%2C%0A%0Abitte%20l%C3%B6sche%20meine%20E-Mail-Adresse%20aus%20deinen%20Followup-Listen.%0A%0ADanke!" style="color:#888888;">Adresse löschen</a>
+                <a href="${base}/datenschutz" style="color:#888888;">Datenschutz</a> · <a href="mailto:${FOUNDER_EMAIL}?subject=Brief%20nach%20Berlin%3A%20Adresse%20l%C3%B6schen&body=Hallo%20Thomas%2C%0A%0Abitte%20l%C3%B6sche%20meine%20E-Mail-Adresse%20aus%20deinen%20Followup-Listen.%0A%0ADanke!" style="color:#888888;">Adresse löschen</a>
               </p>
             </td>
           </tr>

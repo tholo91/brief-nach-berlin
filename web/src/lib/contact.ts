@@ -1,3 +1,3 @@
 export const CONTACT = {
-  email: "thomas_lorenz@posteo.de",
+  email: process.env.THOMAS_MAIL ?? "thomas_lorenz@posteo.de",
 } as const;

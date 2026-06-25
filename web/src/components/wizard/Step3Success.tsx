@@ -12,6 +12,7 @@ import {
   APP_URL,
   SHARE_TEXT_CAUSE,
   SHARE_URL_EMAIL,
+  FOUNDER_EMAIL,
   FOUNDER_FEEDBACK_URL,
 } from "@/lib/config";
 
@@ -732,7 +733,7 @@ export function Step3Success({ result, wizardData, politicians, onChangePlz }: S
                 {reportState === "failed" ? (
                   <>
                     Melden hat nicht geklappt. Schreib mir kurz an{" "}
-                    <a href="mailto:thomas_lorenz@posteo.de" className="underline">thomas_lorenz@posteo.de</a>.
+                    <a href={`mailto:${FOUNDER_EMAIL}`} className="underline">{FOUNDER_EMAIL}</a>.
                   </>
                 ) : (
                   "Ein Klick genügt. Schickt mir die Fehlerdaten, damit ich es schnell beheben kann."

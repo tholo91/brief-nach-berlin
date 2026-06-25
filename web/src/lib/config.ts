@@ -1,4 +1,5 @@
 // Central app configuration — change once, updates everywhere
+import { CONTACT } from "@/lib/contact";
 
 export const APP_NAME = "Brief nach Berlin" as const;
 export const APP_URL = "https://www.brief-nach-berlin.de" as const;
@@ -58,7 +59,7 @@ brief-nach-berlin.de
 
 // Founder credit (footer of email + success page)
 export const FOUNDER_NAME = "Thomas Lorenz" as const;
-export const FOUNDER_EMAIL = "thomas_lorenz@posteo.de" as const;
+export const FOUNDER_EMAIL = CONTACT.email;
 export const FOUNDER_HOMEPAGE = "https://www.thomas-lorenz.eu" as const;
 export const FOUNDER_LINKEDIN = "https://www.linkedin.com/in/tholo91/" as const;
 export const FOUNDER_FEEDBACK_URL = "https://www.heyspeak.io/l/WIOENjqJn6z6WKtkWgDEFg?email=on" as const;

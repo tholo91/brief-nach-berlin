@@ -1,6 +1,6 @@
 import { BrevoClient } from "@getbrevo/brevo";
 import { buildFollowupHtml } from "./buildFollowupHtml";
-import { EMAIL_SENDER_NAME } from "@/lib/config";
+import { EMAIL_SENDER_NAME, FOUNDER_EMAIL } from "@/lib/config";
 
 const apiKey = process.env.BREVO_API_KEY;
 if (!apiKey) {
@@ -46,7 +46,7 @@ export async function sendFollowupEmail(
         email: process.env.BREVO_SENDER_EMAIL || "brief@brief-nach-berlin.de",
       },
       to: [{ email: params.recipientEmail }],
-      replyTo: { email: "thomas_lorenz@posteo.de" },
+      replyTo: { email: FOUNDER_EMAIL },
       tags: ["followup-3d"],
       scheduledAt,
     });

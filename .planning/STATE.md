@@ -5,7 +5,7 @@ milestone_name: milestone
 status: executing
 stopped_at: Phase 02 UI-SPEC approved
 last_updated: "2026-05-27T21:54:24.304Z"
-last_activity: 2026-06-25 -- Completed quick task 260625-wh4: Debug-Readout schlanker (Auszug 600, words-Zeile raus)
+last_activity: 2026-06-25 -- Completed quick task 260625-wko: Log-Observability fetchMdbContext (404→no_poll_results, Label mandateId)
 progress:
   total_phases: 26
   completed_phases: 2
@@ -105,6 +105,7 @@ Recent decisions affecting current work:
 | 260625-w13 | Voice-Flag (usedSpeechToText) durch Landing→Wizard-Handoff reichen — Debug-Link meldete Voice immer false | 2026-06-25 | 5e5acbe | [260625-w13-voice-flag-usedspeechtotext-geht-beim-la](./quick/260625-w13-voice-flag-usedspeechtotext-geht-beim-la/) |
 | 260625-wh4 | Debug-Readout schlanker: Anliegen-Auszug 300→600 Zeichen, Issue-text-words-Zeile raus | 2026-06-25 | b6c1410 | [260625-wh4-debug-readout-schlanker-input-cap-600-is](./quick/260625-wh4-debug-readout-schlanker-input-cap-600-is/) |
 | 260625-skh | Landing-Anliegen übersteht Browser-Zurück: per-Tab sessionStorage-Draft (lib/landing-draft.ts), Restore in Step2Issue, Clear nach Versand in WizardShell | 2026-06-25 | 99ddfac | [260625-skh-landing-anliegen-ueberlebt-browser-zurue](./quick/260625-skh-landing-anliegen-ueberlebt-browser-zurue/) |
+| 260625-wko | Log-Observability fetchMdbContext: 404→no_poll_results info statt api_error warning, Log-Label politicianId→mandateId | 2026-06-25 | cb1d15b | [260625-wko-log-observability-fetchmdbcontext-404-al](./quick/260625-wko-log-observability-fetchmdbcontext-404-al/) |
 
 ## Session Continuity
 

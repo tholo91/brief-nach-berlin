@@ -165,7 +165,7 @@ video::-webkit-media-controls-start-playback-button {
    Dauer und blenden mittig kurz einen leichten Blur ein, der die Pixel-
    Interpolation kaschiert. Browser ohne VT-Support navigieren sofort. */
 ::view-transition-group(anliegen-feld) {
-  animation-duration: 200ms;
+  animation-duration: 270ms;
 }
 ::view-transition-image-pair(anliegen-feld) {
   animation-name: anliegen-morph-blur;

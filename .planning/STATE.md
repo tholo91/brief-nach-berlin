@@ -5,7 +5,7 @@ milestone_name: milestone
 status: executing
 stopped_at: Phase 02 UI-SPEC approved
 last_updated: "2026-05-27T21:54:24.304Z"
-last_activity: 2026-06-01 -- Completed quick task 260601-jts: PLZ-Ort-Anzeige unter dem PLZ-Inputfeld
+last_activity: 2026-06-25 -- Completed quick task 260625-9at: E-Mail-Adresse aus Hardcoding befreien
 progress:
   total_phases: 26
   completed_phases: 2
@@ -101,6 +101,7 @@ Recent decisions affecting current work:
 | 260601-jts | PLZ-Ort-Anzeige unter dem PLZ-Inputfeld in Step1Form.tsx | 2026-06-01 | 98f50bb | [260601-jts-plz-ort-anzeige-unter-dem-plz-inputfeld-](./quick/260601-jts-plz-ort-anzeige-unter-dem-plz-inputfeld-/) |
 | 260610-jal | PLZ-Lookup vor Rate-Limit ziehen: plz_not_found verbraucht keinen Email-Token mehr (kein Self-Lockout bei Tippfehler/Listen-Wahlkreis) | 2026-06-10 | (pending) | [260610-jal-rate-limit-after-plz-lookup](./quick/260610-jal-rate-limit-after-plz-lookup/) |
 | 260621-og8 | Dritte/letzte Follow-up-Mail (Last-Call, followup-3m): MdB-Reaktion + Story-Sharing via heyspeak/Mail, Versand-Script + Skill | 2026-06-21 | dba21c4 | [260621-og8-letzte-lastcall-followup-mail](./quick/260621-og8-letzte-lastcall-followup-mail/) |
+| 260625-9at | E-Mail-Adresse aus Hardcoding befreien — THOMAS_MAIL env var (contact.ts, config.ts, 7 Dateien) | 2026-06-25 | 6fa05fc | [260625-9at-email-hardcoding-env-var](./quick/260625-9at-email-hardcoding-env-var/) |
 
 ## Session Continuity
 

@@ -19,7 +19,10 @@ export default function WhyItWorks() {
   return (
     <section id="warum-briefe" className="py-20 md:py-28 px-6 bg-white">
       <div className="max-w-6xl mx-auto">
-        <h2 className="font-body text-3xl md:text-4xl font-bold text-waldgruen-dark tracking-tight mb-14 md:mb-16 max-w-xl">
+        <p className="font-typewriter text-sm font-bold tracking-widest uppercase text-waldgruen/50 mb-3">
+          Warum ein Brief
+        </p>
+        <h2 className="font-body text-3xl md:text-4xl font-bold text-waldgruen-dark tracking-tight mb-14 md:mb-16 max-w-xl text-center md:text-left">
           Warum ein Brief mehr bewegt
           <br />
           als tausend Klicks

@@ -106,12 +106,12 @@ export function PressMarquee() {
   return (
     <>
       <style>{`
-        @keyframes marquee-reverse {
+        @keyframes press-marquee {
           0%   { transform: translateX(-50%); }
           100% { transform: translateX(0); }
         }
         .press-marquee-track {
-          animation: marquee-reverse 60s linear infinite;
+          animation: press-marquee 80s linear infinite;
         }
         .press-marquee-container:hover .press-marquee-track {
           animation-play-state: paused;
@@ -169,7 +169,6 @@ export function PressMarquee() {
                   src={item.logo}
                   alt={item.outlet}
                   className="h-6 sm:h-[54px] w-auto max-w-[120px] sm:max-w-[240px] object-contain"
-                  loading="lazy"
                   draggable={false}
                 />
               </a>

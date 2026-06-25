@@ -43,7 +43,7 @@ export default function Hero() {
   );
 
   return (
-    <section className="relative min-h-[92vh] flex items-center justify-center overflow-hidden">
+    <section className="relative min-h-[72vh] lg:min-h-[92vh] flex items-start lg:items-center justify-center overflow-hidden">
       {/* Background video */}
       <video
         ref={videoRef}
@@ -79,7 +79,7 @@ export default function Hero() {
 
       {/* Content */}
       <div
-        className="relative z-10 text-center max-w-2xl mx-auto px-8 pt-24 pb-24"
+        className="relative z-10 text-center max-w-2xl mx-auto px-8 pt-10 pb-24 lg:pt-24"
       >
         {/* Envelope icon — flies in once on mount */}
         <div className="inline-block -mb-4 md:-mb-5 animate-envelope-fly-x">
@@ -163,7 +163,7 @@ export default function Hero() {
             <svg width="13" height="13" viewBox="0 0 16 16" fill="none" className="shrink-0">
               <path d="M3 8l4 4 6-6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
-            <span className="sm:hidden">KI aus Europa</span>
+            <span className="sm:hidden">KI aus EU</span>
             <span className="hidden sm:inline">KI aus Europa, kein Datentracking</span>
           </span>
           <Link

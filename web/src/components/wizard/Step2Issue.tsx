@@ -263,10 +263,15 @@ export function Step2Issue({
   // landing bar shows the longer placeholders; phones keep the terse copy.
   // Tracked in state so it updates on resize/rotation.
   const [isWide, setIsWide] = useState(false);
-  const [isMac, setIsMac] = useState(true);
-  useEffect(() => {
-    setIsMac(/Mac|iPhone|iPad|iPod/.test(navigator.platform));
-  }, []);
+  // Lazy initializer instead of an effect: navigator is unavailable during SSR
+  // (defaults to Mac there), read once on the client. isMac only picks the
+  // keyboard-hint glyph (⌘↵ vs Ctrl+↵), which is hidden until text is typed, so
+  // the SSR/client default can't cause a visible hydration mismatch.
+  const [isMac] = useState(() =>
+    typeof navigator !== "undefined"
+      ? /Mac|iPhone|iPad|iPod/.test(navigator.platform)
+      : true
+  );
   // Live placeholder fit (landing only): the field's available text width + font,
   // used to ellipsize the placeholder so it never wraps on narrow phones.
   const [phWidth, setPhWidth] = useState(0);

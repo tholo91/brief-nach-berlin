@@ -147,9 +147,11 @@ export function PressMarquee() {
           className="press-marquee-container press-marquee-fade w-full overflow-x-hidden"
           aria-label="Medien, die über Brief nach Berlin berichtet haben"
         >
-          <div className="press-marquee-track flex items-center gap-8 w-max px-4">
+          <div className="press-marquee-track flex items-center gap-4 md:gap-6 w-max px-4">
             {[...PRESS_ITEMS, ...PRESS_ITEMS].map((item, index) => {
               const key = `${item.key}-${index}`;
+              const cardClass =
+                "flex flex-col items-center justify-center w-[108px] h-[64px] md:w-[148px] md:h-[80px] rounded-lg border border-warmgrau/20 bg-white/60 shrink-0 grayscale opacity-60 hover:grayscale-0 hover:opacity-100 transition-all duration-200 p-1.5 md:p-2";
               if (item.type === "ldn") {
                 return (
                   <a
@@ -158,14 +160,13 @@ export function PressMarquee() {
                     target="_blank"
                     rel="noopener noreferrer"
                     aria-label="Bekannt aus dem beliebten Politik-Podcast Lage der Nation, Folge 478"
-                    className="flex flex-col items-center grayscale opacity-60 hover:grayscale-0 hover:opacity-100 transition-all duration-200 shrink-0"
+                    className={cardClass}
                     tabIndex={index >= PRESS_ITEMS.length ? -1 : 0}
                   >
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
                       viewBox="0 0 458.6457 283.4645"
-                      width={110}
-                      height={68}
+                      className="h-[36px] md:h-[46px] w-auto flex-shrink-0"
                       overflow="visible"
                       aria-hidden="true"
                     >
@@ -184,10 +185,10 @@ export function PressMarquee() {
                       <path d="M292.2217,197.4614a27.3554,27.3554,0,0,1-11.1-12.4,47.2844,47.2844,0,0,1,0-35.95,27.61,27.61,0,0,1,11.1-12.5q7.549-4.5981,19.05-4.6,11.4983,0,19.05,4.6a27.6267,27.6267,0,0,1,11.1,12.5,47.1588,47.1588,0,0,1,0,35.9,27.3262,27.3262,0,0,1-11.1,12.45q-7.5513,4.549-19.05,4.55Q299.7707,202.0117,292.2217,197.4614Zm-1.5-15.7a17.2816,17.2816,0,0,0,7.4,8.8q5.0486,2.951,13.15,2.95,8.1,0,13.15-2.95a17.2958,17.2958,0,0,0,7.4-8.8q2.3481-5.8506,2.35-14.75a39.8984,39.8984,0,0,0-2.35-14.75,17.301,17.301,0,0,0-7.4-8.8q-5.0508-2.9479-13.15-2.95-8.1006,0-13.15,2.95a17.2868,17.2868,0,0,0-7.4,8.8q-2.35,5.85-2.35,14.75T290.7217,181.7617Z" fill="#fff" />
                       <path d="M365.4727,133.8115v66.5h-10.3v-66.5Zm-2,0h9.6l25.6,49.7q1.6992,3.501,3.7,8.05a74.1516,74.1516,0,0,1,2.9,7.45l.4,1.3h-9.8l-25.6-49.5Q364.7718,140.0112,363.4727,133.8115Zm50.2,0v66.5h-10.3v-66.5Z" fill="#fff" />
                     </svg>
-                    <span className="block bg-white rounded-lg px-2 py-0.5 mt-0.5 text-center leading-tight whitespace-nowrap shadow-sm">
-                      <span className="block font-body text-[9px] font-semibold text-warmgrau/80 tracking-wide">Bekannt aus dem beliebten</span>
-                      <span className="block font-body text-[9px] font-semibold text-warmgrau/80 tracking-wide">Politik-Podcast</span>
-                      <span className="block font-body text-[8px] text-warmgrau/40 mt-0.5 tracking-wide">Folge 478 (14.05.26)</span>
+                    <span className="text-center leading-none mt-0.5">
+                      <span className="block font-body text-[6px] md:text-[7px] font-semibold text-warmgrau/80">Bekannt aus dem</span>
+                      <span className="block font-body text-[6px] md:text-[7px] font-semibold text-warmgrau/80">beliebten Podcast</span>
+                      <span className="block font-body text-[5px] md:text-[6px] text-warmgrau/40 mt-px">Folge 478 (14.05.26)</span>
                     </span>
                   </a>
                 );
@@ -200,10 +201,10 @@ export function PressMarquee() {
                   target="_blank"
                   rel="noopener noreferrer"
                   aria-label={`Artikel in ${item.outlet}`}
-                  className="shrink-0 grayscale opacity-60 hover:grayscale-0 hover:opacity-100 transition-all duration-200"
+                  className={cardClass}
                   tabIndex={index >= PRESS_ITEMS.length ? -1 : 0}
                 >
-                  <span className="block font-body font-bold text-sm text-waldgruen-dark px-4 py-2 border border-warmgrau/20 rounded-lg whitespace-nowrap bg-white/60 hover:bg-white hover:border-waldgruen/30 transition-colors">
+                  <span className="font-body font-bold text-[10px] md:text-xs text-waldgruen-dark text-center leading-tight">
                     {item.outlet}
                   </span>
                 </a>

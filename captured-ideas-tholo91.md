@@ -17,10 +17,9 @@
 
 <!-- code-tasks:managed-start -->
 
-- [ ] **Neuer test** ([Created: 2026-06-11]) (Priority: 🔴 Important) [Updated: 2026-06-13] <!-- ct:6b935f4c-2750-4188-81cf-c50d8edf5555 -->
-
-
 ## Completed
+
+- [x] **Neuer test** ([Created: 2026-06-11]) (Priority: 🔴 Important) [Updated: 2026-06-13] [Completed: 2026-06-26] <!-- ct:6b935f4c-2750-4188-81cf-c50d8edf5555 -->
 
 - [x] **UI: in list view kleines Kalender icon anzeigen** ([Created: 2026-04-11]) (Priority: ⚪ Normal) [Completed: 2026-06-13] <!-- ct:99697a5e-a573-40af-8e5a-eaf51727e420 -->
   Nur wenn man einen Kalender link hinterlegt hat

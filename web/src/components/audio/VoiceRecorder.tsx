@@ -303,7 +303,7 @@ export function VoiceRecorder({
             className={[
               "flex items-center justify-center rounded-full transition-colors",
               forceSubtle
-                ? "h-9 w-9 text-warmgrau hover:text-waldgruen"
+                ? "h-8 w-8 text-warmgrau hover:text-waldgruen"
                 : showProminent
                   ? "h-9 w-9 bg-waldgruen text-creme shadow-sm hover:bg-waldgruen-dark"
                   : "h-9 w-9 border border-warmgrau/30 bg-creme/80 text-warmgrau backdrop-blur-sm hover:bg-warmgrau/5 hover:text-waldgruen",
@@ -442,7 +442,7 @@ export function VoiceRecorder({
           <p
             id="issueText-counter"
             aria-live="polite"
-            className="text-sm text-warmgrau/50"
+            className="text-xs md:text-sm text-warmgrau/50"
           >
             {charCount > 0
               ? minChars && charCount < minChars

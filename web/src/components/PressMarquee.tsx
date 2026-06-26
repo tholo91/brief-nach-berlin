@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 
 // LdN has highest priority (most trust signal) — always first.
 // Logos sourced from official brand assets / Wikimedia Commons, stored in
@@ -88,6 +88,55 @@ const PRESS_ITEMS = [
 
 export function PressMarquee() {
   const containerRef = useRef<HTMLDivElement>(null);
+  // Logos are async-loading <img> with width:auto. Until they load, the track
+  // width is smaller, and translateX(-50%) is a percentage of that width — so the
+  // marquee runs slow and snaps once the final width settles. We keep the strip
+  // hidden until every logo has loaded, so the animation only ever runs against
+  // the stable, final width. (ReviewMarquee never hits this: its cards are text,
+  // so their width is final from the first frame.)
+  const [ready, setReady] = useState(false);
+
+  useEffect(() => {
+    const track = containerRef.current?.querySelector<HTMLElement>(".press-marquee-track");
+    const imgs = track ? Array.from(track.querySelectorAll("img")) : [];
+    if (imgs.length === 0) {
+      setReady(true);
+      return;
+    }
+
+    let remaining = imgs.length;
+    let done = false;
+    const finish = () => {
+      if (done) return;
+      done = true;
+      setReady(true);
+    };
+    const onOne = () => {
+      remaining -= 1;
+      if (remaining <= 0) finish();
+    };
+
+    const cleanups: Array<() => void> = [];
+    imgs.forEach((img) => {
+      if (img.complete) {
+        onOne();
+        return;
+      }
+      img.addEventListener("load", onOne);
+      img.addEventListener("error", onOne);
+      cleanups.push(() => {
+        img.removeEventListener("load", onOne);
+        img.removeEventListener("error", onOne);
+      });
+    });
+
+    // Safety net: never keep the trust signal hidden if a logo stalls.
+    const fallback = window.setTimeout(finish, 2000);
+    return () => {
+      window.clearTimeout(fallback);
+      cleanups.forEach((cleanup) => cleanup());
+    };
+  }, []);
 
   // Reset CSS animation when tab becomes visible again (same pattern as ReviewMarquee).
   useEffect(() => {
@@ -145,12 +194,14 @@ export function PressMarquee() {
       `}</style>
 
       <div className="py-1 md:py-2">
-        <p className="text-center font-typewriter text-xs sm:text-sm tracking-widest uppercase text-warmgrau/50 mb-2 md:mb-3 px-6">
+        <p className="text-center font-typewriter text-xs sm:text-sm tracking-widest uppercase text-warmgrau/50 mb-1 px-6">
           Bekannt aus <span className="font-bold text-waldgruen">zahlreichen</span> Medien
         </p>
         <div
           ref={containerRef}
-          className="press-marquee-container press-marquee-fade w-full py-6 overflow-x-hidden"
+          className={`press-marquee-container press-marquee-fade w-full py-6 overflow-x-hidden transition-opacity duration-500 ${
+            ready ? "opacity-100" : "opacity-0"
+          }`}
           aria-label="Medien, die über Brief nach Berlin berichtet haben"
         >
           <div className="press-marquee-track flex items-center gap-8 md:gap-12 w-max px-4">

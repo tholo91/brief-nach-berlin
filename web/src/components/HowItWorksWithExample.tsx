@@ -86,6 +86,10 @@ export default function HowItWorksWithExample() {
           <h2 className="font-body text-2xl md:text-3xl font-bold text-waldgruen-dark tracking-tight">
             So einfach geht&apos;s
           </h2>
+          <p className="mt-3 font-body text-base text-warmgrau/80 max-w-xl mx-auto text-balance">
+            Du musst kein Politik-Profi sein. Das Tool findet die richtigen Worte
+            und Adressen.
+          </p>
         </div>
 
         <div className="grid md:grid-cols-2 gap-12 md:gap-16 items-start">

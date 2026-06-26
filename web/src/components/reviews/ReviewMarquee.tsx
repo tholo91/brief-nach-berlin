@@ -56,70 +56,6 @@ export function ReviewMarquee({
     return () => document.removeEventListener("visibilitychange", handleVisibility);
   }, []);
 
-  useEffect(() => {
-    if (typeof window === "undefined") return;
-    if (!window.matchMedia("(hover: none)").matches) return;
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-    const container = containerRef.current;
-    if (!container) return;
-
-    let currentIndex = 0;
-    let timer: ReturnType<typeof setInterval> | null = null;
-    let isVisible = false;
-
-    const advance = () => {
-      const snaps =
-        container.querySelectorAll<HTMLElement>(".marquee-snap-item");
-      if (!snaps.length) return;
-      currentIndex = (currentIndex + 1) % items.length;
-      const target = snaps[currentIndex];
-      if (!target) return;
-      // Scroll only the marquee container horizontally — never the page.
-      const containerRect = container.getBoundingClientRect();
-      const targetRect = target.getBoundingClientRect();
-      const left =
-        container.scrollLeft +
-        (targetRect.left - containerRect.left) -
-        (containerRect.width - targetRect.width) / 2;
-      container.scrollTo({ left, behavior: "smooth" });
-    };
-
-    const startTimer = () => {
-      if (timer) return;
-      timer = setInterval(advance, 4000);
-    };
-
-    const stopTimer = () => {
-      if (!timer) return;
-      clearInterval(timer);
-      timer = null;
-    };
-
-    const resetTimer = () => {
-      stopTimer();
-      if (isVisible) startTimer();
-    };
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        const entry = entries[0];
-        isVisible = entry?.isIntersecting ?? false;
-        if (isVisible) startTimer();
-        else stopTimer();
-      },
-      { threshold: 0.1 },
-    );
-    observer.observe(container);
-
-    container.addEventListener("touchstart", resetTimer, { passive: true });
-
-    return () => {
-      stopTimer();
-      observer.disconnect();
-      container.removeEventListener("touchstart", resetTimer);
-    };
-  }, [items.length]);
-
   if (items.length === 0) return null;
 
   const isPaused = expandedKey !== null;
@@ -132,7 +68,7 @@ export function ReviewMarquee({
           100% { transform: translateX(-50%); }
         }
         .marquee-track {
-          animation: marquee 60s linear infinite;
+          animation: marquee 80s linear infinite;
         }
         .marquee-container:hover .marquee-track,
         .marquee-container.is-paused .marquee-track {
@@ -160,24 +96,6 @@ export function ReviewMarquee({
           }
           .marquee-container {
             overflow-x: auto;
-          }
-        }
-        /* Touch / coarse-pointer devices: swipe the carousel manually with scroll-snap. */
-        @media (hover: none) {
-          .marquee-track {
-            animation: none;
-          }
-          .marquee-container {
-            overflow-x: auto;
-            scroll-snap-type: x mandatory;
-            -webkit-overflow-scrolling: touch;
-            scrollbar-width: none;
-          }
-          .marquee-container::-webkit-scrollbar {
-            display: none;
-          }
-          .marquee-snap-item {
-            scroll-snap-align: center;
           }
         }
       `}</style>

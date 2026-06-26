@@ -161,51 +161,71 @@ const PLACEHOLDER_EXAMPLES: string[] = [
   "z.B. Ich mache mir Sorgen um den Umgangston in politischen Debatten und den wachsenden Vertrauensverlust in demokratische Institutionen...",
 ];
 
-// Terse, one-line variants for the slim landing bar (the long examples above
-// would wrap and get clipped on mobile). Same topics, condensed.
+// Phone variants for the two-line landing field: medium-length mini-prompts
+// that fill roughly two lines and model "write a bit more". Capped to a
+// two-line budget by ellipsize() so they never spill onto a third line.
 const LANDING_PLACEHOLDER_EXAMPLES: string[] = [
-  "z.B. kaputte Radwege bei uns",
-  "z.B. Sorge um unser Klima",
-  "z.B. explodierende Mieten",
-  "z.B. kein Kinderarzt vor Ort",
-  "z.B. Schule ohne Tablets",
-  "z.B. Waldrodung im Ort",
-  "z.B. der Ton in der Politik",
+  "z.B. Bei uns sind die Radwege kaputt, gefährlich für Schulkinder",
+  "z.B. Die Mieten im Viertel explodieren, Familien ziehen weg",
+  "z.B. Kein freier Kinderarzt mehr, nächste Praxis 45 km weg",
+  "z.B. An der Schule teilen sich 340 Kinder zwölf Tablets",
+  "z.B. Für ein Logistikzentrum soll bei uns Wald gerodet werden",
+  "z.B. Mir macht der raue Ton in der Politik echt Sorgen",
+  "z.B. Ich vermisse echten Klimaschutz vor Ort, nicht nur Reden",
 ];
 
-// iPad/desktop have room for a full one-line prompt, so the landing bar shows
-// these richer examples there; phones keep the terse set above (which would
-// otherwise wrap and clip on a narrow screen). Kept short enough to stay on
-// one line at the hero field's width.
+// iPad/desktop have room for fuller two-line prompts; phones use the slightly
+// shorter set above. Same topics, richer phrasing so the field reads as an
+// invitation to describe the situation, not a one-word search box.
 const LANDING_PLACEHOLDER_EXAMPLES_WIDE: string[] = [
-  "z.B. Radwege bei uns kaputt, gefährlich für Schulkinder",
-  "z.B. Mache mir Sorgen um ein menschenunfreundliches Klima",
-  "z.B. Mieten explodieren, Familien ziehen weg",
-  "z.B. Kein freier Kinderarzt mehr in unserem Landkreis",
-  "z.B. 340 Kinder an der Schule teilen sich zwölf Tablets",
-  "z.B. Bei uns soll Wald für ein Logistikzentrum weichen",
-  "z.B. Mir macht der raue Ton in der Politik Sorgen",
+  "z.B. Die Radwege bei uns sind kaputt und voller Schlaglöcher, für Schulkinder echt gefährlich",
+  "z.B. Die Mieten in meinem Viertel explodieren, junge Familien können sich die Stadt nicht mehr leisten",
+  "z.B. In unserem Landkreis gibt es keinen freien Kinderarzt mehr, die nächste Praxis ist 45 km entfernt",
+  "z.B. An der Grundschule meines Kindes teilen sich 340 Kinder gerade einmal zwölf Tablets",
+  "z.B. Bei uns soll Wald für ein Logistikzentrum weichen, obwohl es Alternativstandorte gäbe",
+  "z.B. Mir macht der raue Ton in politischen Debatten Sorgen, das Vertrauen in die Demokratie schwindet",
+  "z.B. Ich vermisse echten Klimaschutz vor Ort, bei uns bleibt es leider bei Ankündigungen",
 ];
 
 const PLACEHOLDER_ROTATE_MS = 4000;
 const MIN_CHARS = 50;
 
-// Cut text to fit a pixel width, appending an ellipsis. Textarea placeholders
-// ignore CSS `text-overflow: ellipsis` (it computes to `clip`), so on the slim
-// landing field we measure with a canvas and trim in JS to avoid the
-// placeholder wrapping to a second line on narrow phones.
+// Clamp the landing placeholder to at most two lines, appending an ellipsis if
+// it would overflow. Textarea placeholders ignore CSS line-clamp, so we simulate
+// the field's word-wrap with a canvas: count how many lines the text needs at
+// the field's text width and, if it exceeds two, binary-search the longest
+// prefix (plus "…") that still fits within two lines. A pure pixel budget isn't
+// enough — word-wrap slack can push a "1.9 lines wide" string onto a third line.
 let _phMeasureCtx: CanvasRenderingContext2D | null = null;
-function ellipsize(text: string, maxWidth: number, font: string): string {
-  if (typeof document === "undefined" || maxWidth <= 0 || !font) return text;
+function wrappedLineCount(
+  text: string,
+  lineWidth: number,
+  ctx: CanvasRenderingContext2D
+): number {
+  let lines = 1;
+  let cur = "";
+  for (const word of text.split(" ")) {
+    const trial = cur ? cur + " " + word : word;
+    if (ctx.measureText(trial).width <= lineWidth || !cur) cur = trial;
+    else {
+      lines++;
+      cur = word;
+    }
+  }
+  return lines;
+}
+function clampToTwoLines(text: string, lineWidth: number, font: string): string {
+  if (typeof document === "undefined" || lineWidth <= 0 || !font) return text;
   if (!_phMeasureCtx) _phMeasureCtx = document.createElement("canvas").getContext("2d");
   if (!_phMeasureCtx) return text;
   _phMeasureCtx.font = font;
-  if (_phMeasureCtx.measureText(text).width <= maxWidth) return text;
+  if (wrappedLineCount(text, lineWidth, _phMeasureCtx) <= 2) return text;
   let lo = 0;
   let hi = text.length;
   while (lo < hi) {
     const mid = (lo + hi + 1) >> 1;
-    if (_phMeasureCtx.measureText(text.slice(0, mid) + "…").width <= maxWidth) lo = mid;
+    const cand = text.slice(0, mid).trimEnd() + "…";
+    if (wrappedLineCount(cand, lineWidth, _phMeasureCtx) <= 2) lo = mid;
     else hi = mid - 1;
   }
   return text.slice(0, lo).trimEnd() + "…";
@@ -231,9 +251,6 @@ interface Step2IssueProps {
   /** Focus the field on mount, but only on hover/fine-pointer (desktop)
    *  devices so we never force the on-screen keyboard open on touch. */
   autoFocus?: boolean;
-  /** Reports the trimmed character count upward so the hero can react to
-   *  typing (e.g. swap the tagline above the field). */
-  onCharCountChange?: (count: number) => void;
 }
 
 export function Step2Issue({
@@ -242,7 +259,6 @@ export function Step2Issue({
   defaultToneLevel,
   variant = "wizard",
   autoFocus = false,
-  onCharCountChange,
 }: Step2IssueProps) {
   const isLanding = variant === "landing";
   const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -254,11 +270,10 @@ export function Step2Issue({
   const tipsOpenedRef = useRef(false);
   const [placeholderIndex, setPlaceholderIndex] = useState(0);
   const [toneLevel, setToneLevel] = useState(defaultToneLevel ?? 3);
-  // Auto-grow bookkeeping. fieldHeight lets the in-field mic center itself on
-  // the textarea; micCentered flips off the moment the text wraps to a second
-  // line (landing only) so the mic snaps to the top-right corner.
+  // Auto-grow bookkeeping. fieldHeight lets the in-field mic + submit pin
+  // themselves to the bottom-right corner of the (always multi-line) landing
+  // field, riding down as the box grows with each new line.
   const [fieldHeight, setFieldHeight] = useState(52);
-  const [micCentered, setMicCentered] = useState(isLanding);
   const [showHint, setShowHint] = useState(false);
   const hintTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   // From small tablets up (>=640px, so all iPads incl. the 744px mini) the
@@ -292,8 +307,12 @@ export function Step2Issue({
       : voiceState === "processing"
         ? "Transkribiere deine Aufnahme..."
         : placeholderExamples[placeholderIndex % placeholderExamples.length];
+  // Two-line field: let the example wrap to a second line, clamping it (with an
+  // ellipsis) only if it would spill onto a third.
   const displayPlaceholder =
-    isLanding && phWidth > 0 ? ellipsize(placeholder, phWidth, phFont) : placeholder;
+    isLanding && phWidth > 0
+      ? clampToTwoLines(placeholder, phWidth, phFont)
+      : placeholder;
 
   const handleVoiceStateChange = useCallback((state: VoiceRecorderState) => {
     setVoiceState(state);
@@ -335,17 +354,16 @@ export function Step2Issue({
       parseFloat(cs.lineHeight) +
       parseFloat(cs.paddingTop) +
       parseFloat(cs.paddingBottom);
-    // Landing starts exactly one line tall (single line = vertically centered);
-    // the wizard keeps its roomy paragraph box. Empty stays one line so a long
-    // rotating placeholder can't inflate the bar.
-    const min = isLanding ? oneLine : HEIGHT_MIN_WIZARD;
-    const contentHeight = el.value.length > 0 ? el.scrollHeight : oneLine;
+    // Landing starts two lines tall to invite more than a one-liner; the wizard
+    // keeps its roomy paragraph box. Empty stays at the two-line floor so the
+    // rotating placeholder (now up to two lines) can't inflate the bar further.
+    const twoLines = oneLine + parseFloat(cs.lineHeight);
+    const min = isLanding ? twoLines : HEIGHT_MIN_WIZARD;
+    const contentHeight =
+      el.value.length > 0 ? el.scrollHeight : isLanding ? twoLines : oneLine;
     const next = Math.min(HEIGHT_MAX, Math.max(min, contentHeight));
     el.style.height = `${next}px`;
     setFieldHeight(next);
-    // Center the mic while the content fits on one line (landing only); once it
-    // wraps, hand it back to the top-right corner of the now-taller box.
-    setMicCentered(isLanding && contentHeight <= oneLine + 1);
   }, [isLanding]);
 
   useIsoLayoutEffect(() => {
@@ -386,11 +404,6 @@ export function Step2Issue({
     window.addEventListener("resize", measure);
     return () => window.removeEventListener("resize", measure);
   }, [isLanding]);
-
-  // Report typing progress upward (the hero swaps its tagline at 20 chars).
-  useEffect(() => {
-    onCharCountChange?.(charCount);
-  }, [charCount, onCharCountChange]);
 
   // Desktop-only autofocus: gate on a hover/fine-pointer device so phones (and
   // tablets without a keyboard) don't get an unwanted keyboard popup on load.
@@ -483,7 +496,7 @@ export function Step2Issue({
               "w-full font-body text-warmgrau bg-creme resize-none overflow-y-auto scrollbar-hide",
               "focus:outline-none focus:ring-2 focus:ring-waldgruen focus:border-waldgruen",
               isLanding
-                ? "block rounded-xl border border-warmgrau/30 p-3.5 pr-24 text-base md:text-lg shadow-sm leading-snug placeholder-truncate"
+                ? "block rounded-xl border border-warmgrau/30 px-3.5 pt-3.5 pb-12 text-base md:text-lg shadow-sm leading-snug placeholder-truncate"
                 : "rounded-lg border border-warmgrau/30 px-4 py-3 pr-14 text-base",
             ].join(" ")}
             aria-label={isLanding ? "Dein Anliegen" : undefined}
@@ -492,7 +505,6 @@ export function Step2Issue({
           <VoiceRecorder
             hasText={charCount > 0}
             charCount={charCount}
-            centered={micCentered}
             fieldHeight={fieldHeight}
             controlRightClass={isLanding ? "right-14" : "right-2.5"}
             forceSubtle={isLanding}
@@ -524,19 +536,15 @@ export function Step2Issue({
                 onMouseEnter={triggerHint}
                 onClick={tooShort ? triggerHint : handleSubmit}
                 className={[
-                  // Single line: vertically centered. Multi-line: pinned to the
-                  // textarea's bottom so it rides down with the newest line.
-                  // Positioned via translateY off the field height (not bottom-*)
-                  // so the counter row below doesn't push it down.
-                  "absolute right-2.5 top-0 flex h-9 w-9 items-center justify-center rounded-full",
+                  // Pinned to the textarea's bottom-right corner so it rides
+                  // down with the newest line. Positioned via translateY off the
+                  // field height (not bottom-*) so the counter row below doesn't
+                  // push it down.
+                  "absolute right-2.5 top-0 flex h-8 w-8 items-center justify-center rounded-full",
                   "bg-waldgruen text-creme shadow-sm hover:bg-waldgruen-dark transition-colors cursor-pointer",
                 ].join(" ")}
                 style={{
-                  transform: `translateY(${
-                    micCentered
-                      ? Math.max(0, (fieldHeight - 36) / 2)
-                      : Math.max(0, fieldHeight - 36 - 8)
-                  }px)`,
+                  transform: `translateY(${Math.max(0, fieldHeight - 32 - 12)}px)`,
                 }}
               >
                 <svg

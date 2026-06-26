@@ -150,12 +150,11 @@ video::-webkit-media-controls-start-playback-button {
   display: none; /* Chrome/Safari */
 }
 
-/* Keep the landing field's placeholder on one line and ellipsize it instead of
-   wrapping to a second line on narrow phones (which made the field look broken).
-   Only affects the placeholder, not typed text. */
+/* The landing field is two lines tall, so its placeholder may wrap to a second
+   line. It wraps naturally; ellipsize() (JS) caps it to a two-line budget on
+   narrow phones so it never spills onto a third line. overflow:hidden clips any
+   sub-pixel slack. Only affects the placeholder, not typed text. */
 .placeholder-truncate::placeholder {
-  white-space: nowrap;
+  white-space: normal;
   overflow: hidden;
-  text-overflow: ellipsis;
 }
-

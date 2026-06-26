@@ -159,27 +159,3 @@ video::-webkit-media-controls-start-playback-button {
   text-overflow: ellipsis;
 }
 
-/* Morph des Anliegen-Felds beim Landing -> Wizard-Wechsel (native View
-   Transitions API, ausgelöst von Reacts <ViewTransition name="anliegen-feld">).
-   Der Default-Morph interpoliert Größe + Position; wir setzen eine wahrnehmbare
-   Dauer und blenden mittig kurz einen leichten Blur ein, der die Pixel-
-   Interpolation kaschiert. Browser ohne VT-Support navigieren sofort. */
-::view-transition-group(anliegen-feld) {
-  animation-duration: 270ms;
-}
-::view-transition-image-pair(anliegen-feld) {
-  animation-name: anliegen-morph-blur;
-}
-@keyframes anliegen-morph-blur {
-  35% {
-    filter: blur(2px);
-  }
-}
-@media (prefers-reduced-motion: reduce) {
-  ::view-transition-group(*),
-  ::view-transition-old(*),
-  ::view-transition-new(*) {
-    animation-duration: 0s !important;
-    animation-delay: 0s !important;
-  }
-}

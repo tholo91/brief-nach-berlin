@@ -5,25 +5,6 @@ import { useState, useCallback, useEffect, useLayoutEffect, useRef } from "react
 import { VoiceRecorder, type VoiceRecorderState } from "@/components/audio/VoiceRecorder";
 import { readLandingDraft, writeLandingDraft } from "@/lib/landing-draft";
 
-// Reacts <ViewTransition> aktiviert den nativen View-Transition-Morph waehrend
-// einer Navigation (Route-Wechsel sind im App Router Transitions). Das Symbol
-// stammt aus Nexts gebuendeltem React; die Typen liegen in react/experimental,
-// daher der schmale Cast. Plain-CSS `view-transition-name` allein reicht NICHT:
-// ohne diese Komponente ruft React nie startViewTransition auf.
-const ViewTransition = (
-  React as unknown as {
-    ViewTransition?: React.ComponentType<{ name: string; children: React.ReactNode }>;
-  }
-).ViewTransition;
-
-// Umhuellt das Anliegen-Feld fuer den Morph Landing<->Wizard. Fehlt das Symbol
-// (aeltere/abweichende React-Builds), rendert es die Kinder unveraendert —
-// graceful degradation zum heutigen harten Schnitt, kein Crash.
-function FieldMorph({ children }: { children: React.ReactNode }) {
-  if (!ViewTransition) return <>{children}</>;
-  return <ViewTransition name="anliegen-feld">{children}</ViewTransition>;
-}
-
 // SSR-safe layout effect: avoids the "useLayoutEffect does nothing on the
 // server" warning while still running before paint on the client (so the
 // auto-grow height is correct on the first frame, no flicker).
@@ -489,11 +470,6 @@ export function Step2Issue({
 
       {/* Textarea with inline mic — voice is the easy path, typing the fallback */}
       <div>
-        {/* Geteilter Morph Landing<->Wizard: dieselbe Komponente rendert auf
-            beiden Seiten, derselbe ViewTransition-name lässt das Feld beim
-            router.push("/app") nativ morphen statt hart zu schneiden. Pro
-            Snapshot eindeutig, da die Landing vor dem Wizard-Mount unmountet. */}
-        <FieldMorph>
         <div className="relative">
           <textarea
             ref={textareaRef}
@@ -581,7 +557,6 @@ export function Step2Issue({
             </>
           )}
         </div>
-        </FieldMorph>
       </div>
 
       {/* Tone slider — wizard only. Removed from the landing to keep the hero

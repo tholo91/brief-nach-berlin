@@ -17,12 +17,6 @@ const securityHeaders = [
 ];
 
 const nextConfig: NextConfig = {
-  experimental: {
-    // Aktiviert Reacts View-Transition-Integration für den App Router, sodass
-    // client-seitige Navigationen (router.push) als native View Transition
-    // laufen. Verifiziert gegen node_modules/next/dist/server/config-schema.js.
-    viewTransition: true,
-  },
   async headers() {
     return [
       {

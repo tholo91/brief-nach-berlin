@@ -4,8 +4,8 @@ milestone: v1.0
 milestone_name: milestone
 status: executing
 stopped_at: Phase 02 UI-SPEC approved
-last_updated: "2026-05-27T21:54:24.304Z"
-last_activity: 2026-06-25 -- Completed quick task 260625-wko: Log-Observability fetchMdbContext (404→no_poll_results, Label mandateId)
+last_updated: "2026-06-26T20:30:25+02:00"
+last_activity: 2026-06-26 -- Updated 999.6 plan files for landing-first routing prefetch, signed routing token, Recipient union handoff, and current Mistral model source of truth
 progress:
   total_phases: 26
   completed_phases: 2
@@ -28,9 +28,17 @@ See: .planning/PROJECT.md (updated 2026-04-10)
 Phase: 04 (stadtstaaten-plz-wahlkreis-genauigkeit-und-wahlkreis-gruppie) — EXECUTING
 Plan: 1 of 3
 Status: Executing Phase 04
-Last activity: 2026-06-26 -- Completed quick task 260626-0cz: View-Transition-Morph Anliegen-Feld
+Last activity: 2026-06-26 -- Updated 999.6 plan files for landing-first routing prefetch and current implementation status
 
 Progress: [░░░░░░░░░░] 0%
+
+## Current Implementation Notes
+
+- Landing is now the practical first issue step: `Hero.tsx` renders `Step2Issue variant="landing"` and sends the issue to `/app` through `wizard-handoff.ts`.
+- Wizard step 1 is now review/tone confirmation for a prefilled issue when arriving from the Landing. It is not a blank first contact in the common flow.
+- The Landing issue draft survives browser-back through `landing-draft.ts` and is cleared after successful send in `WizardShell`.
+- The Landing-to-Wizard field morph is implemented with the current View Transition path. Future 999.6 routing prefetch must not block that morph or add a visible intermediate step.
+- Phase 999.6 plans were amended on 2026-06-26 so `routeToLevel` prefetch starts at Landing submit and is passed forward only as a signed, issue-hash-bound token.
 
 ## Performance Metrics
 
@@ -107,6 +115,7 @@ Recent decisions affecting current work:
 | 260625-skh | Landing-Anliegen übersteht Browser-Zurück: per-Tab sessionStorage-Draft (lib/landing-draft.ts), Restore in Step2Issue, Clear nach Versand in WizardShell | 2026-06-25 | 99ddfac | [260625-skh-landing-anliegen-ueberlebt-browser-zurue](./quick/260625-skh-landing-anliegen-ueberlebt-browser-zurue/) |
 | 260625-wko | Log-Observability fetchMdbContext: 404→no_poll_results info statt api_error warning, Log-Label politicianId→mandateId | 2026-06-25 | cb1d15b | [260625-wko-log-observability-fetchmdbcontext-404-al](./quick/260625-wko-log-observability-fetchmdbcontext-404-al/) |
 | 260626-0cz | View-Transition-Morph fürs Anliegen-Feld Landing→Wizard (nativer VT-Flag + geteilter view-transition-name, graceful degradation) | 2026-06-26 | 96969f6 | [260626-0cz-vt-morph-anliegenfeld](./quick/260626-0cz-vt-morph-anliegenfeld/) |
+| 260626-h4r | Hero verschlanken + 2-zeiliges Anliegen-Feld, laengere Placeholder, Reassurance in "So einfach geht's" | 2026-06-26 | (pending) | [260626-h4r-hero-vereinfachen-2zeiliger-input](./quick/260626-h4r-hero-vereinfachen-2zeiliger-input/) |
 
 ## Session Continuity
 

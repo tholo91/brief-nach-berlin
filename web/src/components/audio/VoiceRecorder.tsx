@@ -35,6 +35,14 @@ interface VoiceRecorderProps {
   keyboardHint?: string;
   /** Hide visible recording/transcription text; counter/shortcut stay visible. */
   hideVoiceStatus?: boolean;
+  /** Hide the counter/shortcut row when a parent renders its own input meta UI. */
+  hideMetaRow?: boolean;
+  /** Hide only the counter/shortcut part of the meta row. */
+  hideCounter?: boolean;
+  /** Pin the recorder control to the bottom-right of a growing textarea. */
+  pinToBottom?: boolean;
+  /** Increment to stop an active recording from an external control. */
+  stopRequestKey?: number;
 }
 
 type UIState = "idle" | "requesting" | "recording" | "processing" | "error";
@@ -85,6 +93,10 @@ export function VoiceRecorder({
   minChars,
   keyboardHint,
   hideVoiceStatus = false,
+  hideMetaRow = false,
+  hideCounter = false,
+  pinToBottom = false,
+  stopRequestKey = 0,
 }: VoiceRecorderProps) {
   const [uiState, setUiStateInternal] = useState<UIState>("idle");
   const [elapsedSeconds, setElapsedSeconds] = useState(0);
@@ -295,6 +307,11 @@ export function VoiceRecorder({
     }
   };
 
+  useEffect(() => {
+    if (stopRequestKey <= 0 || uiState !== "recording") return;
+    void stopRecordingAndTranscribe();
+  }, [stopRequestKey, uiState, stopRecordingAndTranscribe]);
+
   const isRecording = uiState === "recording";
   const isRequesting = uiState === "requesting";
   const isProcessing = uiState === "processing";
@@ -324,15 +341,15 @@ export function VoiceRecorder({
         // Positioned via translateY off the textarea height (not bottom-*) so the
         // meta row below the field doesn't push the control down.
         className={
-          centered || forceSubtle
+          centered || forceSubtle || pinToBottom
             ? `absolute ${controlRightClass} top-0 flex h-10 w-10 items-center justify-center`
             : `absolute ${controlRightClass} top-2.5`
         }
         style={
           centered
             ? { transform: `translateY(${Math.max(0, (fieldHeight - 40) / 2)}px)` }
-            : forceSubtle
-              ? { transform: `translateY(${Math.max(0, fieldHeight - 40 - 8)}px)` }
+            : forceSubtle || pinToBottom
+              ? { transform: `translateY(${Math.max(0, fieldHeight - 40 - (forceSubtle ? 8 : 12))}px)` }
               : undefined
         }
       >
@@ -362,7 +379,10 @@ export function VoiceRecorder({
             type="button"
             onClick={handleToggle}
             aria-label="Aufnahme beenden und Text übernehmen"
-            className="relative flex h-9 w-9 cursor-pointer items-center justify-center rounded-full bg-waldgruen text-creme shadow-sm"
+            className={[
+              "relative flex cursor-pointer items-center justify-center rounded-full bg-waldgruen text-creme shadow-sm",
+              forceSubtle ? "h-8 w-8" : "h-9 w-9",
+            ].join(" ")}
           >
             <span
               className="absolute inset-0 rounded-full bg-waldgruen/40 animate-ping"
@@ -430,6 +450,7 @@ export function VoiceRecorder({
         )}
       </div>
 
+      {!hideMetaRow && (
       <div className="mt-1 flex min-h-[22px] items-center justify-between gap-3">
         <div className="flex items-center gap-2 text-sm">
           {!hideVoiceStatus && (
@@ -501,6 +522,7 @@ export function VoiceRecorder({
           )}
         </div>
 
+        {!hideCounter && (
         <div className="flex items-center gap-2 shrink-0">
           {keyboardHint && (
             <span className="hidden md:inline text-sm text-warmgrau/50" aria-hidden="true">
@@ -519,7 +541,9 @@ export function VoiceRecorder({
               : ""}
           </p>
         </div>
+        )}
       </div>
+      )}
 
       <span className="sr-only" role="status" aria-live="polite">
         {ariaStatus}

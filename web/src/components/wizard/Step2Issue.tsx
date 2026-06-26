@@ -275,6 +275,7 @@ export function Step2Issue({
   // field, riding down as the box grows with each new line.
   const [fieldHeight, setFieldHeight] = useState(52);
   const [showHint, setShowHint] = useState(false);
+  const [stopVoiceRequestKey, setStopVoiceRequestKey] = useState(0);
   const hintTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   // From small tablets up (>=640px, so all iPads incl. the 744px mini) the
   // landing bar shows the longer placeholders; phones keep the terse copy.
@@ -315,6 +316,7 @@ export function Step2Issue({
     isLanding && phWidth > 0
       ? clampToTwoLines(placeholder, phWidth, phFont)
       : placeholder;
+  const keyboardHint = !tooShort ? (isMac ? "⌘↵" : "Ctrl+↵") : undefined;
 
   const handleVoiceStateChange = useCallback((state: VoiceRecorderState) => {
     setVoiceState(state);
@@ -461,6 +463,20 @@ export function Step2Issue({
     }
   };
 
+  const handleLandingSubmitClick = () => {
+    if (voiceState === "recording") {
+      setStopVoiceRequestKey((key) => key + 1);
+      return;
+    }
+
+    if (tooShort) {
+      triggerHint();
+      return;
+    }
+
+    handleSubmit();
+  };
+
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if ((e.metaKey || e.ctrlKey) && e.key === "Enter") {
       e.preventDefault();
@@ -501,9 +517,10 @@ export function Step2Issue({
             className={[
               "w-full font-body text-warmgrau bg-creme resize-none overflow-y-auto scrollbar-hide",
               "focus:outline-none focus:ring-2 focus:ring-waldgruen focus:border-waldgruen",
+              "placeholder:text-warmgrau/40",
               isLanding
                 ? "block rounded-xl border border-warmgrau/30 px-3.5 pt-3.5 pb-12 text-base md:text-lg shadow-sm leading-snug placeholder-truncate"
-                : "rounded-lg border border-warmgrau/30 px-4 py-3 pr-14 text-base",
+                : "rounded-lg border border-warmgrau/30 px-4 pt-3 pb-12 pr-14 text-base",
             ].join(" ")}
             aria-label={isLanding ? "Dein Anliegen" : undefined}
             aria-describedby="issueText-counter"
@@ -515,11 +532,54 @@ export function Step2Issue({
             controlRightClass={isLanding ? "right-11" : "right-2.5"}
             forceSubtle={isLanding}
             minChars={MIN_CHARS}
-            keyboardHint={!tooShort ? (isMac ? "⌘↵" : "Ctrl+↵") : undefined}
+            keyboardHint={keyboardHint}
             hideVoiceStatus={isLanding}
+            hideMetaRow={isLanding}
+            hideCounter={!isLanding}
+            pinToBottom={!isLanding}
+            stopRequestKey={stopVoiceRequestKey}
             onTranscription={handleTranscription}
             onStateChange={handleVoiceStateChange}
           />
+          <div
+            className={[
+              "absolute top-0 flex h-8 items-center overflow-hidden",
+              "text-left text-xs md:text-sm text-warmgrau/40 pointer-events-none",
+              isLanding
+                ? "left-3.5 right-24 md:right-44"
+                : "left-4 right-20 md:right-32",
+            ].join(" ")}
+            style={{
+              transform: `translateY(${Math.max(0, fieldHeight - 32 - 12)}px)`,
+            }}
+          >
+            <p
+              id="issueText-counter"
+              aria-live="polite"
+              className="truncate"
+            >
+              {charCount > 0
+                ? tooShort
+                  ? `${charCount} von mind. ${MIN_CHARS} Zeichen`
+                  : `${charCount} Zeichen`
+                : ""}
+            </p>
+          </div>
+          {keyboardHint && (
+            <div
+              className={[
+                "absolute top-0 hidden h-8 items-center whitespace-nowrap md:flex",
+                "text-xs md:text-sm text-warmgrau/40 pointer-events-none",
+                isLanding ? "right-24" : "right-16",
+              ].join(" ")}
+              style={{
+                transform: `translateY(${Math.max(0, fieldHeight - 32 - 12)}px)`,
+              }}
+              aria-hidden="true"
+            >
+              {keyboardHint} weiter
+            </div>
+          )}
           {/* Landing: ChatGPT-style round submit CTA next to the mic. Always
               green; under MIN_CHARS a tap/hover shows a "write a bit more" hint
               instead of advancing. Vertically tracks the field like the mic. */}
@@ -539,9 +599,13 @@ export function Step2Issue({
               </div>
               <button
                 type="button"
-                aria-label="Weiter zum Brief"
+                aria-label={
+                  voiceState === "recording"
+                    ? "Aufnahme beenden und Text übernehmen"
+                    : "Weiter zum Brief"
+                }
                 onMouseEnter={triggerHint}
-                onClick={tooShort ? triggerHint : handleSubmit}
+                onClick={handleLandingSubmitClick}
                 className={[
                   // Pinned to the textarea's bottom-right corner so it rides
                   // down with the newest line. Positioned via translateY off the

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback, useEffect, useRef } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import type { WizardStep, WizardData, WizardActionResult } from "@/lib/types/wizard";
 import type { Politician } from "@/lib/types/politician";
@@ -14,6 +14,7 @@ import { Step1bOptional } from "./Step1bOptional";
 import { Step2Issue } from "./Step2Issue";
 import { Step3Success } from "./Step3Success";
 import FadeFooterImage from "../FadeFooterImage";
+import { WIZARD_PROGRESS_EVENT } from "../AppHeader";
 
 const PARAM_KEYS = ["plz", "letterLength"] as const;
 
@@ -84,6 +85,7 @@ export function WizardShell() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [plzError, setPlzError] = useState<string | null>(null);
+  const hasMountedRef = useRef(false);
 
   // Consume the landing handoff once: clear it so a manual reload of /app
   // restarts on step 1 instead of resurrecting the previous issue text.
@@ -236,12 +238,38 @@ export function WizardShell() {
   const showIndicator = step !== 3;
   const showBack = step === 2 || step === "2b";
 
+  useEffect(() => {
+    window.dispatchEvent(
+      new CustomEvent(WIZARD_PROGRESS_EVENT, {
+        detail: { progress: showIndicator ? progress : null },
+      })
+    );
+
+    return () => {
+      window.dispatchEvent(
+        new CustomEvent(WIZARD_PROGRESS_EVENT, {
+          detail: { progress: null },
+        })
+      );
+    };
+  }, [progress, showIndicator]);
+
+  useEffect(() => {
+    if (!hasMountedRef.current) {
+      hasMountedRef.current = true;
+      return;
+    }
+
+    const reduce = window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
+    window.scrollTo({ top: 0, behavior: reduce ? "auto" : "smooth" });
+  }, [step]);
+
   return (
     <>
-      <div className="max-w-xl mx-auto px-4 sm:px-8 py-16 w-full">
+      <div className="max-w-xl mx-auto px-4 pt-8 pb-16 sm:px-8 sm:py-16 w-full">
       {/* Progress indicator */}
       {showIndicator && (
-        <div className="flex items-center justify-center gap-6 mb-12">
+        <div className="hidden sm:flex items-center justify-center gap-6 mb-12">
           {STEP_LABELS.map((label, i) => {
             const dotNum = i + 1;
             const isActive = dotNum === progress;

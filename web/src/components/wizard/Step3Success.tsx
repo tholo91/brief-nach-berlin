@@ -69,6 +69,15 @@ function resolveWebmail(email: string | undefined): { label: string; url: string
   return WEBMAIL_PROVIDERS[domain] ?? null;
 }
 
+function detectIOS(): boolean {
+  if (typeof navigator === "undefined" || typeof document === "undefined") {
+    return false;
+  }
+
+  const ua = navigator.userAgent;
+  return /iPad|iPhone|iPod/.test(ua) || (ua.includes("Mac") && "ontouchend" in document);
+}
+
 interface Step3SuccessProps {
   result: WizardActionResult | null;
   wizardData: WizardData;
@@ -164,11 +173,7 @@ export function Step3Success({ result, wizardData, politicians, onChangePlz }: S
   // iOS: message:// opens Apple Mail's inbox directly, no domain sniffing
   // needed. Android has no equivalent universal scheme, so we fall back to
   // the provider-specific webmail URL.
-  const [isIOS, setIsIOS] = useState(false);
-  useEffect(() => {
-    const ua = navigator.userAgent;
-    setIsIOS(/iPad|iPhone|iPod/.test(ua) || (ua.includes("Mac") && "ontouchend" in document));
-  }, []);
+  const [isIOS] = useState(detectIOS);
   const mailAppHref = isIOS ? "message://" : webmail?.url ?? null;
 
   // Smooth-scroll the submit button into view after a card is picked, so users
@@ -180,6 +185,10 @@ export function Step3Success({ result, wizardData, politicians, onChangePlz }: S
       const reduce =
         typeof window !== "undefined" &&
         window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
+      const isMobile =
+        typeof window !== "undefined" &&
+        window.matchMedia?.("(max-width: 639px)").matches;
+      if (isMobile) return;
       submitButtonRef.current?.scrollIntoView({
         behavior: reduce ? "auto" : "smooth",
         block: "center",
@@ -191,6 +200,11 @@ export function Step3Success({ result, wizardData, politicians, onChangePlz }: S
   const sortedPoliticians = useMemo(() => {
     return [...politicians].sort((a, b) => Number(b.isDirect) - Number(a.isDirect));
   }, [politicians]);
+
+  const selectedPolitician = useMemo(
+    () => politicians.find((p) => p.id === selectedPoliticianId) ?? null,
+    [politicians, selectedPoliticianId]
+  );
 
   // Group the disambiguation cards by Wahlkreis. sortedPoliticians is already
   // Direkt-first, so insertion order puts the group holding the pre-selected
@@ -880,8 +894,22 @@ export function Step3Success({ result, wizardData, politicians, onChangePlz }: S
 
   // Sub-state B: Disambiguation
   if ("disambiguationNeeded" in result && result.disambiguationNeeded) {
+    const selectedPoliticianParty = selectedPolitician
+      ? formatPartyShort(selectedPolitician.party).replace(/^Die Linke$/, "die Linke")
+      : "";
+    const selectedPoliticianLabel =
+      selectedPolitician?.id === -1
+        ? "MdB später auswählen"
+        : selectedPolitician
+          ? `${selectedPolitician.firstName} ${selectedPolitician.lastName}${selectedPoliticianParty ? ` (${selectedPoliticianParty})` : ""}`
+          : null;
+    const selectionTitle =
+      !isNoMdbFound && sortedPoliticians.length > 1
+        ? `${sortedPoliticians.length} Abgeordnete für PLZ ${wizardData.plz}`
+        : "Wer vertritt deinen Wahlkreis?";
+
     return (
-      <div>
+      <div className={selectedPoliticianId !== null ? "pb-32 sm:pb-0" : undefined}>
         {onChangePlz && (
           <button
             type="button"
@@ -906,14 +934,14 @@ export function Step3Success({ result, wizardData, politicians, onChangePlz }: S
           </button>
         )}
         <h1 className="font-typewriter text-[28px] font-semibold leading-[1.2] text-waldgruen-dark">
-          Wer vertritt deinen Wahlkreis?
+          {selectionTitle}
         </h1>
         <p className="font-body text-base text-warmgrau mt-2">
           {isNoMdbFound
             ? `Für die PLZ ${wizardData.plz} haben wir kein MdB gefunden. Du kannst den Brief dennoch formulieren lassen und dein MdB später auswählen oder deine PLZ anpassen.`
             : wahlkreisGroups.length === 1
               ? "Dein Wahlkreis wird von folgenden MdBs vertreten. Das MdB mit Direktmandat ist vorausgewählt, du kannst aber auch jemand anderen wählen."
-              : `Deine PLZ ${wizardData.plz} liegt an einer Wahlkreis-Grenze. Wähle das MdB, das deinen Wahlkreis vertritt. Das Direktmandat ist je Wahlkreis vorausgewählt.`}
+              : "Deine PLZ liegt an einer Wahlkreis-Grenze. Wähle das MdB, das deinen Wahlkreis vertritt. Das Direktmandat ist je Wahlkreis vorausgewählt."}
         </p>
 
         {/* Error banner */}
@@ -1026,7 +1054,7 @@ export function Step3Success({ result, wizardData, politicians, onChangePlz }: S
 
         {/* Submit after selection - full width to match cards */}
         {selectedPoliticianId !== null && (
-          <div className="mt-8">
+          <div className="mt-8 hidden sm:block">
             <button
               ref={submitButtonRef}
               type="button"
@@ -1065,6 +1093,57 @@ export function Step3Success({ result, wizardData, politicians, onChangePlz }: S
             </button>
             <p className="text-xs text-warmgrau/60 mt-3 text-center">
               Du siehst den Entwurf zuerst und kannst ihn anpassen, bevor du ihn abschickst.
+            </p>
+          </div>
+        )}
+
+        {selectedPoliticianId !== null && (
+          <div
+            className="fixed inset-x-0 bottom-0 z-40 sm:hidden border-t border-warmgrau/15 bg-creme/95 px-4 pt-3 backdrop-blur"
+            style={{ paddingBottom: "calc(env(safe-area-inset-bottom) + 0.75rem)" }}
+          >
+            {selectedPoliticianLabel && (
+              <p className="mb-2 truncate text-center font-body text-xs text-warmgrau/65">
+                Ausgewählt: {selectedPoliticianLabel}
+              </p>
+            )}
+            <button
+              type="button"
+              onClick={handleSelectPolitician}
+              disabled={isGenerating}
+              className={[
+                "w-full bg-waldgruen text-creme font-semibold text-base px-8 py-4 rounded-xl",
+                "hover:bg-waldgruen-dark transition-colors min-h-[44px]",
+                isGenerating ? "opacity-60 cursor-not-allowed" : "cursor-pointer",
+              ].join(" ")}
+            >
+              {isGenerating ? (
+                <span className="flex items-center justify-center gap-2">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="16"
+                    height="16"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    className="animate-spin"
+                    aria-hidden="true"
+                  >
+                    <path d="M21 12a9 9 0 1 1-6.219-8.56" />
+                  </svg>
+                  <span key={genPhase} className="animate-feedback-in">
+                    {LETTER_GEN_PHASES[genPhase].label}
+                  </span>
+                </span>
+              ) : (
+                "Brief erstellen"
+              )}
+            </button>
+            <p className="mt-2 text-center font-body text-xs text-warmgrau/60">
+              Du siehst den Entwurf und kannst ihn anpassen.
             </p>
           </div>
         )}

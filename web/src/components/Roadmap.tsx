@@ -70,10 +70,20 @@ export default function Roadmap() {
               Mitgestalten
             </p>
             <h3 className="font-body text-xl md:text-2xl font-bold text-waldgruen-dark leading-snug">
-              Dein Feedback formt den nächsten Brief
+              Feedback geben oder mitbauen
             </h3>
             <p className="font-body text-base text-warmgrau leading-relaxed max-w-xl">
-              Jede Rückmeldung hilft mir, Brief-nach-Berlin zu verbessern. Demokratie lebt vom Mitmachen, und das gilt auch hier: Wenn du Feedback hast, das Tool weiterempfehlen oder mitwirken willst, freue ich mich über jede Nachricht.
+              Jede Rückmeldung hilft mir. Wenn du Feedback hast, Brief nach
+              Berlin weiterempfehlen willst oder mitbauen möchtest: Schreib mir
+              kurz. Der Code ist offen. Auch eine{" "}
+              <Link
+                href="/europe"
+                prefetch={false}
+                className="text-waldgruen hover:text-waldgruen-dark underline underline-offset-2 transition-colors"
+              >
+                lokale Version für ein anderes europäisches Land
+              </Link>{" "}
+              kann darauf aufbauen.
             </p>
             <div className="mt-1">
               <p className="font-body text-base text-warmgrau leading-relaxed mb-1">
@@ -83,22 +93,22 @@ export default function Roadmap() {
                 Thomas
               </p>
             </div>
-            <div className="flex flex-col sm:flex-row gap-3 items-stretch sm:items-center mt-2">
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 mt-2 max-w-xl">
               <a
                 href={`mailto:${CONTACT.email}`}
-                className="inline-flex items-center justify-center gap-2 bg-waldgruen text-creme font-body font-semibold text-base px-7 py-3.5 rounded-xl hover:bg-waldgruen-dark transition-colors cursor-pointer shadow-lg shadow-waldgruen/20 active:scale-[0.98]"
+                className="inline-flex min-h-12 items-center justify-center gap-2 whitespace-nowrap bg-waldgruen text-creme font-body font-semibold text-sm sm:text-base px-5 py-3 rounded-xl hover:bg-waldgruen-dark transition-colors cursor-pointer shadow-lg shadow-waldgruen/20 active:scale-[0.98]"
               >
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" className="shrink-0">
                   <rect x="2" y="4" width="20" height="16" rx="3" stroke="currentColor" strokeWidth="2" fill="none" />
                   <path d="M2 8l10 7 10-7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                 </svg>
-                Schreib mir eine Mail
+                Mail schreiben
               </a>
               <a
                 href={FOUNDER_FEEDBACK_URL}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center justify-center gap-2 bg-white text-waldgruen border-2 border-waldgruen font-body font-semibold text-base px-7 py-[12px] rounded-xl hover:bg-waldgruen/5 transition-colors cursor-pointer active:scale-[0.98]"
+                className="inline-flex min-h-12 items-center justify-center gap-2 whitespace-nowrap bg-white text-waldgruen border-2 border-waldgruen font-body font-semibold text-sm sm:text-base px-5 py-3 rounded-xl hover:bg-waldgruen/5 transition-colors cursor-pointer active:scale-[0.98]"
               >
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" className="shrink-0">
                   <path d="M12 2a4 4 0 00-4 4v6a4 4 0 008 0V6a4 4 0 00-4-4z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />

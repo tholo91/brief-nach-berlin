@@ -315,20 +315,28 @@ export default function WasNochKommtPage() {
             Europa
           </p>
           <h2 className="font-body text-xl md:text-2xl font-bold text-waldgruen-dark mb-3">
-            Brief nach Berlin in andere Länder bringen
+            Brief nach Berlin für andere Länder
           </h2>
           <p className="font-body text-base text-warmgrau leading-relaxed mb-5">
-            Neben Bund, Land, Kommune und EU gibt es eine zweite Frage: Wie
-            lässt sich der offene Ansatz in Österreich, Portugal, den
-            Niederlanden oder anderen Demokratien nutzen? Ich suche Kontakte,
-            Datenquellen und Menschen, die lokale Varianten prüfen wollen.
+            Neben Bund, Land, Kommune und EU gibt es eine zweite Spur: Der Code
+            ist offen. Menschen in Österreich, Portugal, den Niederlanden oder
+            anderswo können das Muster nehmen und vor Ort übersetzen. Ich suche
+            Kontakte, Datenquellen und Leute, die direkt anfangen wollen.
           </p>
-          <Link
-            href="/europe"
-            className="inline-block font-typewriter text-sm font-bold text-waldgruen hover:text-waldgruen-dark hover:underline transition-colors"
-          >
-            Zur Europa-Seite &rarr;
-          </Link>
+          <div className="flex flex-col gap-3 sm:flex-row">
+            <Link
+              href="/europe"
+              className="inline-flex min-h-11 items-center justify-center rounded-sm bg-waldgruen-dark px-5 py-3 text-center font-body text-sm font-bold text-creme transition-colors hover:bg-waldgruen"
+            >
+              Europa-Version starten
+            </Link>
+            <a
+              href={`mailto:${FOUNDER_EMAIL}?subject=Brief%20nach%20Berlin%20in%20Europa`}
+              className="inline-flex min-h-11 items-center justify-center rounded-sm border border-waldgruen/25 px-5 py-3 text-center font-body text-sm font-bold text-waldgruen-dark transition-colors hover:border-waldgruen hover:bg-creme"
+            >
+              Mich anschreiben
+            </a>
+          </div>
         </div>
 
         <Prose>
@@ -371,8 +379,9 @@ export default function WasNochKommtPage() {
             meisten hilft mir gerade Sichtbarkeit: Wenn du mich mit Leuten
             vernetzen kannst, die dem Thema mediale Reichweite geben, also
             Presse, Multiplikator:innen oder Communities, bringt mich das
-            spürbar weiter. Auch wer das Thema vor Ort weiterträgt oder als
-            Entwickler:in einen Blick auf den{" "}
+            spürbar weiter. Genauso wertvoll sind lokale Daten, Kontakte und
+            Menschen, die das Muster in anderen europäischen Ländern selbst
+            bauen wollen. Auch wer als Entwickler:in einen Blick auf den{" "}
             <a
               href="https://github.com/tholo91/brief-nach-berlin"
               target="_blank"
@@ -381,7 +390,7 @@ export default function WasNochKommtPage() {
             >
               offenen Code bei GitHub
             </a>{" "}
-            wirft, ist herzlich willkommen.
+            wirft, hilft dabei, Demokratie benutzbarer zu machen.
           </p>
           <a
             href={`mailto:${FOUNDER_EMAIL}?subject=Mitwirken%20bei%20Brief%20nach%20Berlin`}

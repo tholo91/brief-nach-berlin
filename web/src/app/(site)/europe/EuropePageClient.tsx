@@ -78,10 +78,10 @@ const copy: Record<Language, Copy> = {
     },
     quote:
       "Demokratie wird stärker, wenn Menschen wissen: Ich darf schreiben. Ich weiß wohin. Und meine Stimme ist konkret genug, um anzukommen.",
-    factNumber: "1",
+    factNumber: "27",
     factLabel:
-      "Codebasis kann der Startpunkt für viele lokale Versionen sein, wenn Daten, Sprache und Institutionen vor Ort geprüft werden.",
-    factSource: "Open Source, lokal angepasst",
+      "EU-Länder könnten eigene lokale Versionen nutzen, wenn Daten, Sprache und Institutionen vor Ort geprüft werden.",
+    factSource: "Europäische Union, lokal angepasst",
     countriesTitle: "Mögliche nächste Länder",
     countries: [
       {
@@ -176,10 +176,10 @@ const copy: Record<Language, Copy> = {
     },
     quote:
       "Democracy gets stronger when people know: I am allowed to write. I know where to send it. And my voice is concrete enough to arrive.",
-    factNumber: "1",
+    factNumber: "27",
     factLabel:
-      "Codebase can become the starting point for many local versions when data, language, and institutions are checked locally.",
-    factSource: "Open source, locally adapted",
+      "EU countries could use their own local versions once data, language, and institutions are checked on the ground.",
+    factSource: "European Union, locally adapted",
     countriesTitle: "Possible next countries",
     countries: [
       {

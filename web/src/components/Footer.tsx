@@ -2,6 +2,55 @@ import Link from "next/link";
 import { FOUNDER_FEEDBACK_URL } from "@/lib/config";
 import { getLetterCount } from "@/lib/counter";
 
+const footerSections = [
+  {
+    title: "Nutzen",
+    links: [
+      { label: "Der Guide", href: "/guide" },
+      { label: "Beispiele", href: "/beispiele" },
+      { label: "Tipps", href: "/tipps" },
+      { label: "Warum ein Brief?", href: "/warum-ein-brief" },
+      {
+        label: "Treppe der Selbstwirksamkeit",
+        href: "/treppe-der-selbstwirksamkeit",
+      },
+      { label: "Wer darf MdBs schreiben?", href: "/wer-darf-mdb-schreiben" },
+    ],
+  },
+  {
+    title: "Projekt",
+    links: [
+      { label: "Wer dahintersteht", href: "/warum" },
+      { label: "KI & Transparenz", href: "/ki-transparenz" },
+      { label: "Andere Demokratie-Tools", href: "/andere-tools" },
+      { label: "Was bisher geschah", href: "/was-bisher-geschah" },
+      { label: "Was noch kommt", href: "/was-noch-kommt" },
+      { label: "Lage der Nation", href: "/lage-der-nation" },
+      { label: "Presse", href: "/presse" },
+    ],
+  },
+  {
+    title: "Mitmachen",
+    links: [
+      { label: "Feedback", href: FOUNDER_FEEDBACK_URL, external: true },
+      { label: "Weitersagen", href: "/weitersagen" },
+      {
+        label: "Open Source",
+        href: "https://github.com/tholo91/brief-nach-berlin",
+        external: true,
+      },
+      { label: "Europa", href: "/europe" },
+    ],
+  },
+  {
+    title: "Rechtliches",
+    links: [
+      { label: "Impressum", href: "/impressum" },
+      { label: "Datenschutz", href: "/datenschutz" },
+    ],
+  },
+] as const;
+
 export default async function Footer() {
   const letterCount = await getLetterCount();
   return (
@@ -24,97 +73,54 @@ export default async function Footer() {
         }}
       />
 
-      <div className="max-w-5xl mx-auto px-6 py-8 flex flex-col gap-6">
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-          <span className="font-typewriter text-sm font-bold tracking-widest uppercase text-waldgruen/50">
-            Mehr lesen
-          </span>
-          <div className="flex flex-col sm:flex-row sm:flex-wrap gap-x-6 gap-y-2">
-            <Link
-              href="/guide"
-              prefetch={false}
-              className="font-body text-sm text-warmgrau/70 hover:text-waldgruen-dark transition-colors duration-200"
-            >
-              Der Guide: Vom Frust zum Brief im Kasten
-            </Link>
-            <Link
-              href="/treppe-der-selbstwirksamkeit"
-              prefetch={false}
-              className="font-body text-sm text-warmgrau/70 hover:text-waldgruen-dark transition-colors duration-200"
-            >
-              Treppe der politischen Selbstwirksamkeit
-            </Link>
-            <Link
-              href="/warum-ein-brief"
-              prefetch={false}
-              className="font-body text-sm text-warmgrau/70 hover:text-waldgruen-dark transition-colors duration-200"
-            >
-              Warum ein Brief mehr ist als ein Brief
-            </Link>
-            <Link
-              href="/wer-darf-mdb-schreiben"
-              prefetch={false}
-              className="font-body text-sm text-warmgrau/70 hover:text-waldgruen-dark transition-colors duration-200"
-            >
-              Wer darf MdBs schreiben?
-            </Link>
-            <Link
-              href="/warum"
-              prefetch={false}
-              className="font-body text-sm text-warmgrau/70 hover:text-waldgruen-dark transition-colors duration-200"
-            >
-              Wer dahintersteht
-            </Link>
-            <Link
-              href="/ki-transparenz"
-              prefetch={false}
-              className="font-body text-sm text-warmgrau/70 hover:text-waldgruen-dark transition-colors duration-200"
-            >
-              KI & Transparenz
-            </Link>
-            <Link
-              href="/andere-tools"
-              prefetch={false}
-              className="font-body text-sm text-warmgrau/70 hover:text-waldgruen-dark transition-colors duration-200"
-            >
-              Andere Tools für Demokratie
-            </Link>
-            <Link
-              href="/weitersagen"
-              prefetch={false}
-              className="font-body text-sm text-warmgrau/70 hover:text-waldgruen-dark transition-colors duration-200"
-            >
-              Brief nach Berlin weitersagen
-            </Link>
-            <Link
-              href="/was-bisher-geschah"
-              prefetch={false}
-              className="font-body text-sm text-warmgrau/70 hover:text-waldgruen-dark transition-colors duration-200"
-            >
-              Was bisher geschah: Fortschritt
-            </Link>
-            <Link
-              href="/was-noch-kommt"
-              prefetch={false}
-              className="font-body text-sm text-warmgrau/70 hover:text-waldgruen-dark transition-colors duration-200"
-            >
-              Was noch kommt: Roadmap
-            </Link>
-            <Link
-              href="/lage-der-nation"
-              prefetch={false}
-              className="font-body text-sm text-warmgrau/70 hover:text-waldgruen-dark transition-colors duration-200"
-            >
-              Erwähnt in der Lage der Nation
-            </Link>
-            <Link
-              href="/presse"
-              prefetch={false}
-              className="font-body text-sm text-warmgrau/70 hover:text-waldgruen-dark transition-colors duration-200"
-            >
-              Presse
-            </Link>
+      <div className="max-w-5xl mx-auto px-6 py-10 flex flex-col gap-8">
+        <div className="grid gap-8 md:grid-cols-[1.2fr_3fr]">
+          <div>
+            <p className="font-typewriter text-sm font-bold tracking-widest uppercase text-waldgruen/50 mb-3">
+              Brief nach Berlin
+            </p>
+            <p className="font-body text-sm leading-relaxed text-warmgrau/65 max-w-sm">
+              Ein Freizeitprojekt, das Menschen hilft, politische Anliegen als
+              Brief an die richtige Stelle zu formulieren.
+            </p>
           </div>
+
+          <nav
+            aria-label="Footer"
+            className="grid grid-cols-2 lg:grid-cols-4 gap-x-8 gap-y-8"
+          >
+            {footerSections.map((section) => (
+              <div key={section.title}>
+                <h2 className="font-typewriter text-xs font-bold tracking-widest uppercase text-waldgruen/50 mb-3">
+                  {section.title}
+                </h2>
+                <ul className="space-y-2.5">
+                  {section.links.map((link) => (
+                    <li key={link.label}>
+                      {"external" in link && link.external ? (
+                        <a
+                          href={link.href}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="font-body text-sm text-warmgrau/70 hover:text-waldgruen-dark transition-colors duration-200"
+                        >
+                          {link.label}
+                        </a>
+                      ) : (
+                        <Link
+                          href={link.href}
+                          prefetch={false}
+                          className="font-body text-sm text-warmgrau/70 hover:text-waldgruen-dark transition-colors duration-200"
+                        >
+                          {link.label}
+                        </Link>
+                      )}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))}
+          </nav>
         </div>
 
         <div className="border-t border-warmgrau/10 pt-6 flex flex-col sm:flex-row items-center justify-between gap-4">
@@ -125,38 +131,13 @@ export default async function Footer() {
             )}
           </span>
 
-          <div className="flex gap-6">
-            <a
-              href="https://github.com/tholo91/brief-nach-berlin"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="font-body text-sm text-warmgrau/40 hover:text-warmgrau transition-colors duration-200"
-            >
-              Open Source
-            </a>
-            <a
-              href={FOUNDER_FEEDBACK_URL}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="font-body text-sm text-warmgrau/40 hover:text-warmgrau transition-colors duration-200"
-            >
-              Feedback
-            </a>
-            <Link
-              href="/impressum"
-              prefetch={false}
-              className="font-body text-sm text-warmgrau/40 hover:text-warmgrau transition-colors duration-200"
-            >
-              Impressum
-            </Link>
-            <Link
-              href="/datenschutz"
-              prefetch={false}
-              className="font-body text-sm text-warmgrau/40 hover:text-warmgrau transition-colors duration-200"
-            >
-              Datenschutz
-            </Link>
-          </div>
+          <Link
+            href="/app"
+            prefetch={false}
+            className="font-body text-sm text-warmgrau/40 hover:text-warmgrau transition-colors duration-200"
+          >
+            Brief schreiben
+          </Link>
         </div>
       </div>
     </footer>

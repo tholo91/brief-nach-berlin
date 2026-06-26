@@ -310,6 +310,27 @@ export default function WasNochKommtPage() {
           </Link>
         </div>
 
+        <div className="mb-16 rounded-2xl border border-waldgruen/15 bg-white p-6 sm:p-8 shadow-sm">
+          <p className="font-typewriter text-xs font-bold uppercase tracking-widest text-waldgruen/60 mb-3">
+            Europa
+          </p>
+          <h2 className="font-body text-xl md:text-2xl font-bold text-waldgruen-dark mb-3">
+            Brief nach Berlin in andere Länder bringen
+          </h2>
+          <p className="font-body text-base text-warmgrau leading-relaxed mb-5">
+            Neben Bund, Land, Kommune und EU gibt es eine zweite Frage: Wie
+            lässt sich der offene Ansatz in Österreich, Portugal, den
+            Niederlanden oder anderen Demokratien nutzen? Ich suche Kontakte,
+            Datenquellen und Menschen, die lokale Varianten prüfen wollen.
+          </p>
+          <Link
+            href="/europe"
+            className="inline-block font-typewriter text-sm font-bold text-waldgruen hover:text-waldgruen-dark hover:underline transition-colors"
+          >
+            Zur Europa-Seite &rarr;
+          </Link>
+        </div>
+
         <Prose>
           <h2 className="font-body text-2xl md:text-3xl font-bold text-waldgruen-dark pt-4">
             Wie die Roadmap entsteht

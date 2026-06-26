@@ -6,6 +6,8 @@
 
 Live unter [brief-nach-berlin.de](https://brief-nach-berlin.de)
 
+🇪🇺 Want to bring this open source approach to Austria, Portugal, the Netherlands, or another European democracy? Start here: [brief-nach-berlin.de/europe](https://www.brief-nach-berlin.de/europe)
+
 ---
 
 ## Wie es funktioniert

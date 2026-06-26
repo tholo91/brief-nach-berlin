@@ -739,3 +739,13 @@ Plans:
 - [ ] 04-01-PLAN.md - Data foundation: filter + commit PLZ-polygon GeoJSON (Berlin/HH/Bremen), add turf devDeps, ODbL attribution
 - [ ] 04-02-PLAN.md - Build-script rewrite to polygon area-intersection, regenerate mapping, precision tests (20249 to [21], 20354 keeps [18,20])
 - [ ] 04-03-PLAN.md - Wizard grouping: results grouped by Wahlkreis with Direkt/ueber-Liste labels (via UI skill)
+
+### Phase 5: Creator-Paid Brief Templates & Shareable Prefilled Pages
+
+**Goal:** Creators can publish a moderated brief template behind a shareable no-login link, prefill the wizard's issue field for every visitor, and keep the actual letter generation individual per user by PLZ, recipient, and tone. The template owner can freeze, archive, and version the brief without deleting history.
+**Requirements**: ENGM-03, SAFE-03, PRIV-01, PRIV-04
+**Depends on:** Phase 4
+**Plans:** 0 plans
+
+Plans:
+- [ ] TBD (promote with /gsd:review-backlog when ready)

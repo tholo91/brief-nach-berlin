@@ -532,7 +532,12 @@ export function VoiceRecorder({
           <p
             id="issueText-counter"
             aria-live="polite"
-            className="text-xs md:text-sm text-warmgrau/50"
+            className={[
+              "text-xs md:text-sm text-warmgrau/50",
+              charCount > 0
+                ? "rounded-md border border-warmgrau/20 bg-creme/80 px-2 py-0.5"
+                : "sr-only",
+            ].join(" ")}
           >
             {charCount > 0
               ? minChars && charCount < minChars

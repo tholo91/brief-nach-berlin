@@ -543,20 +543,27 @@ export function Step2Issue({
           />
           <div
             className={[
-              "absolute top-0 flex h-8 items-center overflow-hidden",
+              "absolute flex items-center overflow-hidden",
               "text-left text-xs md:text-sm text-warmgrau/40 pointer-events-none",
               isLanding
-                ? "left-3.5 right-24 md:right-44"
-                : "left-4 right-20 md:right-32",
+                ? "bottom-3.5 left-3.5 right-24 md:right-44"
+                : "top-0 left-4 right-20 h-8 translate-y-[var(--counter-y)] md:right-32",
             ].join(" ")}
-            style={{
-              transform: `translateY(${Math.max(0, fieldHeight - 32 - 12)}px)`,
-            }}
+            style={
+              isLanding
+                ? undefined
+                : ({ "--counter-y": `${Math.max(0, fieldHeight - 32 - 12)}px` } as React.CSSProperties)
+            }
           >
             <p
               id="issueText-counter"
               aria-live="polite"
-              className="truncate"
+              className={[
+                "truncate",
+                charCount > 0
+                  ? "rounded-md border border-warmgrau/20 bg-creme/80 px-2 py-0.5"
+                  : "sr-only",
+              ].join(" ")}
             >
               {charCount > 0
                 ? tooShort

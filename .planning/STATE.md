@@ -75,6 +75,7 @@ Recent decisions affecting current work:
 ### Roadmap Evolution
 
 - Phase 4 added: Stadtstaaten PLZ-Wahlkreis Genauigkeit und Wahlkreis-Gruppierung im Wizard (user-reported defect, Matthias 2026-05-27 — Stadtstaat PLZs surface 3-4 neighbouring Wahlkreise; fix = PLZ-polygon ∩ Wahlkreis-polygon intersection + group results by Wahlkreis in wizard)
+- Phase 5 added: Creator-Paid Brief Templates & Shareable Prefilled Pages (creator-owned no-login template pages with moderated prefill, share links, and frozen/archiveable versions)
 
 ### Pending Todos
 

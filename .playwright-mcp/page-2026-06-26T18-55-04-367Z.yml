@@ -1,0 +1,515 @@
+- generic [active] [ref=e1]:
+  - banner [ref=e3]:
+    - navigation [ref=e4]:
+      - button "Brief nach Berlin" [ref=e5]
+      - generic [ref=e6]:
+        - link "Wie es funktioniert" [ref=e7] [cursor=pointer]:
+          - /url: "#so-funktionierts"
+        - link "Die Idee" [ref=e8] [cursor=pointer]:
+          - /url: "#warum-briefe"
+        - link "Mitmachen" [ref=e9] [cursor=pointer]:
+          - /url: "#mitmachen"
+      - link "Brief schreiben" [ref=e12] [cursor=pointer]:
+        - /url: /#anliegen
+  - main [ref=e13]:
+    - generic [ref=e18]:
+      - heading "Dein persönliches Anliegen. Direkt an die Politik." [level=1] [ref=e21]:
+        - text: Dein persönliches Anliegen.
+        - text: Direkt an die Politik.
+      - generic [ref=e26]:
+        - textbox "Dein Anliegen" [ref=e27]:
+          - /placeholder: z.B. Die Radwege bei uns sind kaputt und voller Schlaglöcher, für Schulkinder echt gefährlich
+        - button "Sprachaufnahme starten" [ref=e29] [cursor=pointer]:
+          - img [ref=e30]
+        - generic [ref=e33]:
+          - generic:
+            - paragraph
+        - status [ref=e34]
+        - generic: Schreib noch etwas mehr
+        - button "Weiter zum Brief" [ref=e35] [cursor=pointer]:
+          - img [ref=e36]
+      - generic [ref=e38]:
+        - generic [ref=e39]:
+          - img [ref=e40]
+          - generic [ref=e42]: Vollständig kostenlos
+        - generic [ref=e43]:
+          - img [ref=e44]
+          - generic [ref=e46]: Kein Account erforderlich
+        - generic [ref=e47]:
+          - img [ref=e48]
+          - generic [ref=e50]: KI aus Europa, kein Datentracking
+    - generic [ref=e51]:
+      - generic [ref=e52]:
+        - paragraph [ref=e53]: Bekannt aus zahlreichen Medien
+        - generic "Medien, die über Brief nach Berlin berichtet haben" [ref=e54]:
+          - generic [ref=e55]:
+            - link "Berichterstattung in Lage der Nation" [ref=e56] [cursor=pointer]:
+              - /url: https://lagedernation.org/podcast/ldn478-hantavirus-warum-wir-heute-schlechter-dastehen-als-vor-corona/?t=1%3A19%3A23
+              - img "Lage der Nation" [ref=e57]
+            - link "Berichterstattung in Zeit Online" [ref=e58] [cursor=pointer]:
+              - /url: https://www.zeit.de/news/2026-06/24/brief-nach-berlin-so-einfach-geht-der-kontakt-zur-politik
+              - img "Zeit Online" [ref=e59]
+            - link "Berichterstattung in Handelsblatt" [ref=e60] [cursor=pointer]:
+              - /url: https://www.handelsblatt.com/politik/deutschland/schreiben-an-politiker-brief-nach-berlin-so-einfach-geht-der-kontakt-zur-politik/100235368.html
+              - img "Handelsblatt" [ref=e61]
+            - link "Berichterstattung in Stern" [ref=e62] [cursor=pointer]:
+              - /url: https://www.stern.de/politik/deutschland/schreiben-an-politiker--brief-nach-berlin---so-einfach-geht-der-kontakt-zur-politik-37592804.html
+              - img "Stern" [ref=e63]
+            - link "Berichterstattung in t-online" [ref=e64] [cursor=pointer]:
+              - /url: https://www.t-online.de/nachrichten/deutschland/id_101310228/brief-nach-berlin-so-einfach-geht-der-kontakt-zur-politik.html
+              - img "t-online" [ref=e65]
+            - link "Berichterstattung in WirtschaftsWoche" [ref=e66] [cursor=pointer]:
+              - /url: https://www.wiwo.de/politik/deutschland/schreiben-an-politiker-brief-nach-berlin-so-einfach-geht-der-kontakt-zur-politik/100235372.html
+              - img "WirtschaftsWoche" [ref=e67]
+            - link "Berichterstattung in Welt" [ref=e68] [cursor=pointer]:
+              - /url: https://www.welt.de/newsticker/dpa_nt/infoline_nt/Politik__Inland_/article6a3b4a3abee7c015a23d8f2f/brief-nach-berlin-so-einfach-geht-der-kontakt-zur-politik.html
+              - img "Welt" [ref=e69]
+            - link "Berichterstattung in Süddeutsche Zeitung" [ref=e70] [cursor=pointer]:
+              - /url: https://www.sueddeutsche.de/politik/schreiben-an-politiker-brief-nach-berlin-so-einfach-geht-der-kontakt-zur-politik-dpa.urn-newsml-dpa-com-20090101-260624-930-272418
+              - img "Süddeutsche Zeitung" [ref=e71]
+            - link "Berichterstattung in ARD Sounds" [ref=e72] [cursor=pointer]:
+              - /url: https://www.ardsounds.de/episode/urn:ard:episode:5006a718e92c83f9/
+              - img "ARD Sounds" [ref=e73]
+            - link "Berichterstattung in Weser-Kurier" [ref=e74] [cursor=pointer]:
+              - /url: https://www.weser-kurier.de/bremen/politik/bremer-erstellt-ki-portal-um-schnell-politiker-kontaktieren-zu-koennen-doc861z47hb3ieyv6y21iy
+              - img "Weser-Kurier" [ref=e75]
+            - link "Berichterstattung in RP Online" [ref=e76] [cursor=pointer]:
+              - /url: https://rp-online.de/kruschel/kindernachrichten/webseite-hilft-beim-brief-schreiben_aid-150411177
+              - img "RP Online" [ref=e77]
+            - link "Berichterstattung in Stuttgarter Zeitung" [ref=e78] [cursor=pointer]:
+              - /url: https://www.stuttgarter-zeitung.de/gallery.schreiben-an-politiker-brief-nach-berlin-so-einfach-geht-der-kontakt-zur-politik.d17934c8-9e2a-4506-af4a-f564e76b129e.html
+              - img "Stuttgarter Zeitung" [ref=e79]
+            - link "Berichterstattung in Radio Duisburg" [ref=e80] [cursor=pointer]:
+              - /url: https://www.radioduisburg.de/dpa/brief-nach-berlin-so-einfach-geht-der-kontakt-zur-politik-2683443
+              - img "Radio Duisburg" [ref=e81]
+            - link [ref=e82] [cursor=pointer]:
+              - /url: https://lagedernation.org/podcast/ldn478-hantavirus-warum-wir-heute-schlechter-dastehen-als-vor-corona/?t=1%3A19%3A23
+            - link [ref=e83] [cursor=pointer]:
+              - /url: https://www.zeit.de/news/2026-06/24/brief-nach-berlin-so-einfach-geht-der-kontakt-zur-politik
+            - link [ref=e84] [cursor=pointer]:
+              - /url: https://www.handelsblatt.com/politik/deutschland/schreiben-an-politiker-brief-nach-berlin-so-einfach-geht-der-kontakt-zur-politik/100235368.html
+            - link [ref=e85] [cursor=pointer]:
+              - /url: https://www.stern.de/politik/deutschland/schreiben-an-politiker--brief-nach-berlin---so-einfach-geht-der-kontakt-zur-politik-37592804.html
+            - link [ref=e86] [cursor=pointer]:
+              - /url: https://www.t-online.de/nachrichten/deutschland/id_101310228/brief-nach-berlin-so-einfach-geht-der-kontakt-zur-politik.html
+            - link [ref=e87] [cursor=pointer]:
+              - /url: https://www.wiwo.de/politik/deutschland/schreiben-an-politiker-brief-nach-berlin-so-einfach-geht-der-kontakt-zur-politik/100235372.html
+            - link [ref=e88] [cursor=pointer]:
+              - /url: https://www.welt.de/newsticker/dpa_nt/infoline_nt/Politik__Inland_/article6a3b4a3abee7c015a23d8f2f/brief-nach-berlin-so-einfach-geht-der-kontakt-zur-politik.html
+            - link [ref=e89] [cursor=pointer]:
+              - /url: https://www.sueddeutsche.de/politik/schreiben-an-politiker-brief-nach-berlin-so-einfach-geht-der-kontakt-zur-politik-dpa.urn-newsml-dpa-com-20090101-260624-930-272418
+            - link [ref=e90] [cursor=pointer]:
+              - /url: https://www.ardsounds.de/episode/urn:ard:episode:5006a718e92c83f9/
+            - link [ref=e91] [cursor=pointer]:
+              - /url: https://www.weser-kurier.de/bremen/politik/bremer-erstellt-ki-portal-um-schnell-politiker-kontaktieren-zu-koennen-doc861z47hb3ieyv6y21iy
+            - link [ref=e92] [cursor=pointer]:
+              - /url: https://rp-online.de/kruschel/kindernachrichten/webseite-hilft-beim-brief-schreiben_aid-150411177
+            - link [ref=e93] [cursor=pointer]:
+              - /url: https://www.stuttgarter-zeitung.de/gallery.schreiben-an-politiker-brief-nach-berlin-so-einfach-geht-der-kontakt-zur-politik.d17934c8-9e2a-4506-af4a-f564e76b129e.html
+            - link [ref=e94] [cursor=pointer]:
+              - /url: https://www.radioduisburg.de/dpa/brief-nach-berlin-so-einfach-geht-der-kontakt-zur-politik-2683443
+      - generic [ref=e95]:
+        - paragraph [ref=e96]: Schon 980 Briefe geschrieben
+        - generic "Stimmen aus dem ganzen Land" [ref=e97]:
+          - generic [ref=e98]:
+            - button "Alle Bewertungen lesen" [ref=e99] [cursor=pointer]:
+              - generic [ref=e100]:
+                - generic "4 von 5 Sternen" [ref=e101]:
+                  - img [ref=e102]
+                  - img [ref=e104]
+                  - img [ref=e106]
+                  - img [ref=e108]
+                  - img [ref=e110]
+                - paragraph [ref=e112]: Super schnell, gut formuliert
+                - generic [ref=e113]:
+                  - generic [ref=e114]: Anne aus Uelzen
+                  - generic [ref=e115]: Mai 2026
+            - button "Alle Bewertungen lesen" [ref=e116] [cursor=pointer]:
+              - generic [ref=e117]:
+                - generic "5 von 5 Sternen" [ref=e118]:
+                  - img [ref=e119]
+                  - img [ref=e121]
+                  - img [ref=e123]
+                  - img [ref=e125]
+                  - img [ref=e127]
+                - paragraph [ref=e129]: Es hat sehr gut hinzugefügt auf was ich hinauswollte und selber aber keine Worte gefunden habe.
+                - generic [ref=e130]:
+                  - generic [ref=e131]: M aus Straubing
+                  - generic [ref=e132]: Mai 2026
+            - button "Alle Bewertungen lesen" [ref=e133] [cursor=pointer]:
+              - generic [ref=e134]:
+                - generic "5 von 5 Sternen" [ref=e135]:
+                  - img [ref=e136]
+                  - img [ref=e138]
+                  - img [ref=e140]
+                  - img [ref=e142]
+                  - img [ref=e144]
+                - paragraph [ref=e146]: Man hat nur eine Stimme und muss sich schonmal Gehör verschaffen. Danke für deine Arbeit! Dies ist ein hervorragendes Werkzeug!
+                - generic [ref=e147]:
+                  - generic [ref=e148]: Anonym
+                  - generic [ref=e149]: Juni 2026
+            - button "Alle Bewertungen lesen" [ref=e150] [cursor=pointer]:
+              - generic [ref=e151]:
+                - generic "5 von 5 Sternen" [ref=e152]:
+                  - img [ref=e153]
+                  - img [ref=e155]
+                  - img [ref=e157]
+                  - img [ref=e159]
+                  - img [ref=e161]
+                - paragraph [ref=e163]: Eine sehr hilfreiche Möglichkeit, selbst aktiver zu werden. Lässt das Gefühl von Selbstwirksamkeit wachsen. Danke!
+                - generic [ref=e164]:
+                  - generic [ref=e165]: Andy Köln
+                  - generic [ref=e166]: Mai 2026
+            - button "Alle Bewertungen lesen" [ref=e167] [cursor=pointer]:
+              - generic [ref=e168]:
+                - generic "5 von 5 Sternen" [ref=e169]:
+                  - img [ref=e170]
+                  - img [ref=e172]
+                  - img [ref=e174]
+                  - img [ref=e176]
+                  - img [ref=e178]
+                - paragraph [ref=e180]: Trifft genau mein Anliegen.
+                - generic [ref=e181]:
+                  - generic [ref=e182]: Karl Pröger
+                  - generic [ref=e183]: Juni 2026
+            - button "Alle Bewertungen lesen" [ref=e184] [cursor=pointer]:
+              - generic [ref=e185]:
+                - generic "5 von 5 Sternen" [ref=e186]:
+                  - img [ref=e187]
+                  - img [ref=e189]
+                  - img [ref=e191]
+                  - img [ref=e193]
+                  - img [ref=e195]
+                - paragraph [ref=e197]: Ich habe doch noch Änderungen vorgenommen, aber die Vorlage war super und hat das Schreiben sehr vereinfacht und den Aufwand wesentlich verringert.
+                - generic [ref=e198]:
+                  - generic [ref=e199]: Bernadette aus Berlin
+                  - generic [ref=e200]: Juni 2026
+            - button "Alle Bewertungen lesen" [ref=e201] [cursor=pointer]:
+              - generic [ref=e202]:
+                - generic "5 von 5 Sternen" [ref=e203]:
+                  - img [ref=e204]
+                  - img [ref=e206]
+                  - img [ref=e208]
+                  - img [ref=e210]
+                  - img [ref=e212]
+                - paragraph [ref=e214]: Besten Dank - hätte das sonst wahrscheinlich nicht gemacht!
+                - generic [ref=e215]:
+                  - generic [ref=e216]: Felix aus Köln
+                  - generic [ref=e217]: Mai 2026
+            - button "Alle Bewertungen lesen" [ref=e218] [cursor=pointer]:
+              - generic [ref=e219]:
+                - generic "5 von 5 Sternen" [ref=e220]:
+                  - img [ref=e221]
+                  - img [ref=e223]
+                  - img [ref=e225]
+                  - img [ref=e227]
+                  - img [ref=e229]
+                - paragraph [ref=e231]: Hat meine Argumente gut aufgenommen und im Tonfall passend.
+                - generic [ref=e232]:
+                  - generic [ref=e233]: AnneH
+                  - generic [ref=e234]: Juni 2026
+            - button "Alle Bewertungen lesen" [ref=e235] [cursor=pointer]:
+              - generic [ref=e236]:
+                - generic "5 von 5 Sternen" [ref=e237]:
+                  - img [ref=e238]
+                  - img [ref=e240]
+                  - img [ref=e242]
+                  - img [ref=e244]
+                  - img [ref=e246]
+                - paragraph [ref=e248]: Alles top. Sonst würde man das sicherlich nicht machen und die Situation weiter so hinnehmen. Es geht wirklich schnell.
+                - generic [ref=e249]:
+                  - generic [ref=e250]: Thorsten aus Delmenhorst
+                  - generic [ref=e251]: Mai 2026
+            - button [ref=e252] [cursor=pointer]:
+              - generic [ref=e253]:
+                - generic [ref=e254]:
+                  - img [ref=e255]
+                  - img [ref=e257]
+                  - img [ref=e259]
+                  - img [ref=e261]
+                  - img [ref=e263]
+                - paragraph [ref=e265]: Super schnell, gut formuliert
+                - generic [ref=e266]:
+                  - generic [ref=e267]: Anne aus Uelzen
+                  - generic [ref=e268]: Mai 2026
+            - button [ref=e269] [cursor=pointer]:
+              - generic [ref=e270]:
+                - generic [ref=e271]:
+                  - img [ref=e272]
+                  - img [ref=e274]
+                  - img [ref=e276]
+                  - img [ref=e278]
+                  - img [ref=e280]
+                - paragraph [ref=e282]: Es hat sehr gut hinzugefügt auf was ich hinauswollte und selber aber keine Worte gefunden habe.
+                - generic [ref=e283]:
+                  - generic [ref=e284]: M aus Straubing
+                  - generic [ref=e285]: Mai 2026
+            - button [ref=e286] [cursor=pointer]:
+              - generic [ref=e287]:
+                - generic [ref=e288]:
+                  - img [ref=e289]
+                  - img [ref=e291]
+                  - img [ref=e293]
+                  - img [ref=e295]
+                  - img [ref=e297]
+                - paragraph [ref=e299]: Man hat nur eine Stimme und muss sich schonmal Gehör verschaffen. Danke für deine Arbeit! Dies ist ein hervorragendes Werkzeug!
+                - generic [ref=e300]:
+                  - generic [ref=e301]: Anonym
+                  - generic [ref=e302]: Juni 2026
+            - button [ref=e303] [cursor=pointer]:
+              - generic [ref=e304]:
+                - generic [ref=e305]:
+                  - img [ref=e306]
+                  - img [ref=e308]
+                  - img [ref=e310]
+                  - img [ref=e312]
+                  - img [ref=e314]
+                - paragraph [ref=e316]: Eine sehr hilfreiche Möglichkeit, selbst aktiver zu werden. Lässt das Gefühl von Selbstwirksamkeit wachsen. Danke!
+                - generic [ref=e317]:
+                  - generic [ref=e318]: Andy Köln
+                  - generic [ref=e319]: Mai 2026
+            - button [ref=e320] [cursor=pointer]:
+              - generic [ref=e321]:
+                - generic [ref=e322]:
+                  - img [ref=e323]
+                  - img [ref=e325]
+                  - img [ref=e327]
+                  - img [ref=e329]
+                  - img [ref=e331]
+                - paragraph [ref=e333]: Trifft genau mein Anliegen.
+                - generic [ref=e334]:
+                  - generic [ref=e335]: Karl Pröger
+                  - generic [ref=e336]: Juni 2026
+            - button [ref=e337] [cursor=pointer]:
+              - generic [ref=e338]:
+                - generic [ref=e339]:
+                  - img [ref=e340]
+                  - img [ref=e342]
+                  - img [ref=e344]
+                  - img [ref=e346]
+                  - img [ref=e348]
+                - paragraph [ref=e350]: Ich habe doch noch Änderungen vorgenommen, aber die Vorlage war super und hat das Schreiben sehr vereinfacht und den Aufwand wesentlich verringert.
+                - generic [ref=e351]:
+                  - generic [ref=e352]: Bernadette aus Berlin
+                  - generic [ref=e353]: Juni 2026
+            - button [ref=e354] [cursor=pointer]:
+              - generic [ref=e355]:
+                - generic [ref=e356]:
+                  - img [ref=e357]
+                  - img [ref=e359]
+                  - img [ref=e361]
+                  - img [ref=e363]
+                  - img [ref=e365]
+                - paragraph [ref=e367]: Besten Dank - hätte das sonst wahrscheinlich nicht gemacht!
+                - generic [ref=e368]:
+                  - generic [ref=e369]: Felix aus Köln
+                  - generic [ref=e370]: Mai 2026
+            - button [ref=e371] [cursor=pointer]:
+              - generic [ref=e372]:
+                - generic [ref=e373]:
+                  - img [ref=e374]
+                  - img [ref=e376]
+                  - img [ref=e378]
+                  - img [ref=e380]
+                  - img [ref=e382]
+                - paragraph [ref=e384]: Hat meine Argumente gut aufgenommen und im Tonfall passend.
+                - generic [ref=e385]:
+                  - generic [ref=e386]: AnneH
+                  - generic [ref=e387]: Juni 2026
+            - button [ref=e388] [cursor=pointer]:
+              - generic [ref=e389]:
+                - generic [ref=e390]:
+                  - img [ref=e391]
+                  - img [ref=e393]
+                  - img [ref=e395]
+                  - img [ref=e397]
+                  - img [ref=e399]
+                - paragraph [ref=e401]: Alles top. Sonst würde man das sicherlich nicht machen und die Situation weiter so hinnehmen. Es geht wirklich schnell.
+                - generic [ref=e402]:
+                  - generic [ref=e403]: Thorsten aus Delmenhorst
+                  - generic [ref=e404]: Mai 2026
+    - generic [ref=e406]:
+      - generic [ref=e407]:
+        - paragraph [ref=e408]: In drei Schritten
+        - heading "So einfach geht's" [level=2] [ref=e409]
+        - paragraph [ref=e410]: Du musst kein Politik-Profi sein. Das Tool findet die richtigen Worte und Adressen.
+      - generic [ref=e411]:
+        - list [ref=e412]:
+          - listitem [ref=e413]:
+            - generic [ref=e414]:
+              - img [ref=e416]
+              - generic [ref=e418]: Schritt 01
+            - heading "Erzähl, was dich beschäftigt" [level=3] [ref=e419]
+            - paragraph [ref=e420]: Stichpunkte oder Gedanken per Spracheingabe, Brief-nach-Berlin übernimmt die Formulierung. Egal ob Müll auf dem Spielplatz, bezahlbarer Wohnraum oder Sorgen um die Demokratie.
+          - listitem [ref=e421]:
+            - generic [ref=e422]:
+              - img [ref=e424]
+              - generic [ref=e428]: Schritt 02
+            - heading "Brief-nach-Berlin findet die passende Adresse" [level=3] [ref=e429]
+            - paragraph [ref=e430]: Anhand deiner PLZ ermittelt Brief-nach-Berlin, wer politisch zuständig ist. Datenschutzkonform, ohne Account, nichts wird gespeichert.
+          - listitem [ref=e431]:
+            - generic [ref=e432]:
+              - img [ref=e434]
+              - generic [ref=e437]: Schritt 03
+            - heading "Dein Brief, fertig zum Abschicken" [level=3] [ref=e438]
+            - paragraph [ref=e439]: Brief-nach-Berlin formuliert aus deinem Input einen persönlichen, sachlichen Brief mit den besten Argumenten. Eine Seite, in deinem Postfach.
+        - link "Vollständigen Brief und weitere Beispiele lesen" [ref=e441] [cursor=pointer]:
+          - /url: /beispiele
+          - article [ref=e443]:
+            - generic [ref=e445]:
+              - generic [ref=e446]:
+                - paragraph [ref=e447]: Aus Duisburg an
+                - paragraph [ref=e448]: Mahmut Özdemir
+                - paragraph [ref=e449]: MdB, Deutscher Bundestag · SPD
+              - generic [ref=e450]:
+                - paragraph [ref=e451]: Sehr geehrter Herr Özdemir,
+                - paragraph [ref=e452]: ich schreibe Ihnen, weil ich nicht mehr nur zusehen kann, wie unsere Energiepolitik in die falsche Richtung läuft. Dass die Wirtschaftsministerin auf fossile Energien setzt, während Teile der Industrie selbst zurück zu Erneuerbaren wollen, macht mich fassungslos.
+                - paragraph [ref=e453]: Wir machen uns immer abhängiger von Staaten, deren Werte wir nicht teilen. Die Lage rund um die Straße von Hormuz hat das schmerzhaft gezeigt.
+                - paragraph [ref=e454]: Die Technologien für die Energiewende existieren. Die Mehrheit in der Bevölkerung will sie. Was fehlt, ist der politische Mut, sie auch durchzusetzen.
+                - paragraph [ref=e455]: "Ich bitte Sie: Bringen Sie das in Ihrer Fraktion auf den Tisch. Damit meine Kinder nicht in einer Welt aufwachsen, in der wir am Tropf von Regierungen hängen, die Menschenrechte mit Füßen treten."
+          - paragraph [ref=e456]:
+            - text: Ganzen Brief lesen
+            - generic [ref=e457]: →
+    - generic [ref=e459]:
+      - paragraph [ref=e460]: Warum ein Brief
+      - heading "Warum ein Brief mehr bewegt als tausend Klicks" [level=2] [ref=e461]:
+        - text: Warum ein Brief mehr bewegt
+        - text: als tausend Klicks
+      - generic [ref=e462]:
+        - img "Ein handgeschriebener Brief wird in einem Berliner Abgeordnetenbüro gelesen, mit Blick auf grüne Altbau-Fassaden." [ref=e465]
+        - generic [ref=e466]:
+          - generic [ref=e467]:
+            - generic [ref=e468]: "9.260"
+            - paragraph [ref=e469]: Petitionen gingen 2024 beim Bundestag ein. Nur 607 wurden im Ausschuss einzeln beraten. Ein Brief an deinen Wahlkreisabgeordneten landet nicht in dieser Schlange.
+            - paragraph [ref=e470]: "Quelle: Petitionsausschuss, Jahresbericht 2024"
+          - generic [ref=e471]:
+            - generic [ref=e472]: ~50
+            - paragraph [ref=e473]: Anfragen kommen täglich in einem Abgeordnetenbüro an. Wer mit Handschrift und Wahlkreisbezug auffällt, landet oben auf dem Stapel.
+            - paragraph [ref=e474]: "Quelle: Deutscher Bundestag"
+    - generic [ref=e476]:
+      - generic [ref=e477]:
+        - paragraph [ref=e478]: Wie alles begann
+        - heading "Die Idee dahinter" [level=2] [ref=e479]
+        - generic [ref=e480]:
+          - paragraph [ref=e481]: "Ich habe selbst in Bundestagsbüros gesehen, was passiert, wenn ein persönlicher, handgeschriebener Brief auf einem Schreibtisch landet: Inmitten all der Drucksachen und Briefe von Verbänden fällt dieser auf und hat eine höhere Chance, besprochen zu werden."
+          - paragraph [ref=e482]: Die meisten Leute wissen nur nicht, an wen sie schreiben sollen. Oder wie sie ihr Anliegen so formulieren, dass es ankommt. Brief-nach-Berlin nimmt dir diese Hürden ab.
+          - paragraph [ref=e483]:
+            - text: Die Idee brachte mir meine Mutter in Duisburg.
+            - link "Die ganze Geschichte dahinter" [ref=e484] [cursor=pointer]:
+              - /url: /warum
+            - text: .
+      - img "Drei Mitarbeitende in einem Bundestagsbüro besprechen gemeinsam einen handgeschriebenen Brief, der aufgeschlagen auf dem Schreibtisch liegt." [ref=e486]
+    - generic [ref=e488]:
+      - paragraph [ref=e489]: Wo es hingeht
+      - heading "Brief-nach-Berlin wird mit euch immer besser" [level=2] [ref=e490]
+      - paragraph [ref=e491]:
+        - text: Das Projekt ist
+        - link "Open Source" [ref=e492] [cursor=pointer]:
+          - /url: https://github.com/tholo91/brief-nach-berlin
+        - text: ". Ich baue Brief nach Berlin mit eurem Feedback stetig weiter. Hier ist, worauf ich mich als nächstes konzentriere:"
+      - generic [ref=e493]:
+        - generic [ref=e494]:
+          - img [ref=e496]
+          - generic [ref=e497]:
+            - paragraph [ref=e498]: Richtiges politisches Level
+            - heading "Kommunal, Landes-, Bundes- oder Europapolitik" [level=3] [ref=e499]
+            - paragraph [ref=e500]: Nicht jedes Anliegen gehört nach Berlin. Ich arbeite dran, dass dein Anliegen automatisch an das zuständige politische Level formuliert wird, damit dein Brief dort landet, wo er am meisten bewirkt.
+            - paragraph [ref=e501]:
+              - link "Wer ist eigentlich wofür zuständig?" [ref=e502] [cursor=pointer]:
+                - /url: /kommune-land-bund-eu
+            - generic [ref=e503]: Coming soon
+        - generic [ref=e504]:
+          - img [ref=e506]
+          - paragraph [ref=e509]: Mitgestalten
+          - heading "Dein Feedback formt den nächsten Brief" [level=3] [ref=e510]
+          - paragraph [ref=e511]: "Jede Rückmeldung hilft mir, Brief-nach-Berlin zu verbessern. Demokratie lebt vom Mitmachen, und das gilt auch hier: Wenn du Feedback hast, das Tool weiterempfehlen oder mitwirken willst, freue ich mich über jede Nachricht."
+          - generic [ref=e512]:
+            - paragraph [ref=e513]: Beste Grüße aus Bremen
+            - paragraph [ref=e514]: Thomas
+          - generic [ref=e515]:
+            - link "Schreib mir eine Mail" [ref=e516] [cursor=pointer]:
+              - /url: mailto:thomas_lorenz@posteo.de
+              - img [ref=e517]
+              - text: Schreib mir eine Mail
+            - link "Feedback geben" [ref=e520] [cursor=pointer]:
+              - /url: https://www.heyspeak.io/l/WIOENjqJn6z6WKtkWgDEFg?email=on
+              - img [ref=e521]
+              - text: Feedback geben
+    - generic [ref=e525]:
+      - paragraph [ref=e526]: Häufige Fragen
+      - heading "Was viele fragen" [level=2] [ref=e527]
+      - generic [ref=e528]:
+        - group [ref=e529]:
+          - generic "Ist das wirklich kostenlos?" [ref=e530] [cursor=pointer]:
+            - generic [ref=e531]: Ist das wirklich kostenlos?
+            - img [ref=e532]
+        - group [ref=e534]:
+          - generic "Was passiert mit meinen Daten?" [ref=e535] [cursor=pointer]:
+            - generic [ref=e536]: Was passiert mit meinen Daten?
+            - img [ref=e537]
+        - group [ref=e539]:
+          - generic "Wirken handgeschriebene Briefe wirklich?" [ref=e540] [cursor=pointer]:
+            - generic [ref=e541]: Wirken handgeschriebene Briefe wirklich?
+            - img [ref=e542]
+        - group [ref=e544]:
+          - generic "Warum schreibe ich an meinen Wahlkreisabgeordneten und nicht an den Fachausschuss?" [ref=e545] [cursor=pointer]:
+            - generic [ref=e546]: Warum schreibe ich an meinen Wahlkreisabgeordneten und nicht an den Fachausschuss?
+            - img [ref=e547]
+        - group [ref=e549]:
+          - generic "Welche politischen Ebenen sind dabei?" [ref=e550] [cursor=pointer]:
+            - generic [ref=e551]: Welche politischen Ebenen sind dabei?
+            - img [ref=e552]
+        - group [ref=e554]:
+          - generic "Wer steckt dahinter?" [ref=e555] [cursor=pointer]:
+            - generic [ref=e556]: Wer steckt dahinter?
+            - img [ref=e557]
+    - generic [ref=e560]:
+      - heading "Bereit für deinen Brief?" [level=2] [ref=e561]
+      - paragraph [ref=e562]: Beschreib in Stichpunkten, was dich bewegt. Brief-nach-Berlin findet die zuständigen Abgeordneten und formuliert einen Brief, der ankommt.
+      - button "Jetzt Brief schreiben →" [ref=e563] [cursor=pointer]
+      - paragraph [ref=e564]: Kostenlos · in 3 Minuten · ohne Anmeldung
+  - contentinfo [ref=e565]:
+    - generic [ref=e567]:
+      - generic [ref=e568]:
+        - generic [ref=e569]: Mehr lesen
+        - generic [ref=e570]:
+          - 'link "Der Guide: Vom Frust zum Brief im Kasten" [ref=e571] [cursor=pointer]':
+            - /url: /guide
+          - link "Treppe der politischen Selbstwirksamkeit" [ref=e572] [cursor=pointer]:
+            - /url: /treppe-der-selbstwirksamkeit
+          - link "Warum ein Brief mehr ist als ein Brief" [ref=e573] [cursor=pointer]:
+            - /url: /warum-ein-brief
+          - link "Wer darf MdBs schreiben?" [ref=e574] [cursor=pointer]:
+            - /url: /wer-darf-mdb-schreiben
+          - link "Wer dahintersteht" [ref=e575] [cursor=pointer]:
+            - /url: /warum
+          - link "KI & Transparenz" [ref=e576] [cursor=pointer]:
+            - /url: /ki-transparenz
+          - link "Andere Tools für Demokratie" [ref=e577] [cursor=pointer]:
+            - /url: /andere-tools
+          - link "Brief nach Berlin weitersagen" [ref=e578] [cursor=pointer]:
+            - /url: /weitersagen
+          - 'link "Was bisher geschah: Fortschritt" [ref=e579] [cursor=pointer]':
+            - /url: /was-bisher-geschah
+          - 'link "Was noch kommt: Roadmap" [ref=e580] [cursor=pointer]':
+            - /url: /was-noch-kommt
+          - link "Erwähnt in der Lage der Nation" [ref=e581] [cursor=pointer]:
+            - /url: /lage-der-nation
+          - link "Presse" [ref=e582] [cursor=pointer]:
+            - /url: /presse
+      - generic [ref=e583]:
+        - generic [ref=e584]:
+          - text: Brief-nach-Berlin © 2026
+          - generic [ref=e585]: · 980 Briefe
+        - generic [ref=e586]:
+          - link "Open Source" [ref=e587] [cursor=pointer]:
+            - /url: https://github.com/tholo91/brief-nach-berlin
+          - link "Feedback" [ref=e588] [cursor=pointer]:
+            - /url: https://www.heyspeak.io/l/WIOENjqJn6z6WKtkWgDEFg?email=on
+          - link "Impressum" [ref=e589] [cursor=pointer]:
+            - /url: /impressum
+          - link "Datenschutz" [ref=e590] [cursor=pointer]:
+            - /url: /datenschutz
+  - button "Open Next.js Dev Tools" [ref=e596] [cursor=pointer]:
+    - img [ref=e597]
+  - alert [ref=e600]

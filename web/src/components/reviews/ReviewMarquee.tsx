@@ -110,11 +110,13 @@ export function ReviewMarquee({
         <div className="marquee-track flex gap-5 w-max px-4">
           {[...items, ...items].map((review, index) => {
             const key = `${review.id}-${index}`;
+            const isDuplicate = index >= items.length;
             const isThis = expandedKey === key;
             return (
               <button
                 key={key}
                 type="button"
+                tabIndex={isDuplicate ? -1 : 0}
                 onClick={(event) => {
                   event.stopPropagation();
                   if (cardHref) {
@@ -123,9 +125,12 @@ export function ReviewMarquee({
                   }
                   setExpandedKey(isThis ? null : key);
                 }}
-                aria-expanded={cardHref ? undefined : isThis}
+                aria-hidden={isDuplicate ? "true" : undefined}
+                aria-expanded={cardHref || isDuplicate ? undefined : isThis}
                 aria-label={
-                  cardHref
+                  isDuplicate
+                    ? undefined
+                    : cardHref
                     ? "Alle Bewertungen lesen"
                     : isThis
                       ? "Bewertung schließen"

@@ -16,6 +16,7 @@
 import { WIZARD_PATH } from "@/lib/config";
 
 const MORPH_MS = 280;
+const SETTLE_MS = 120;
 // Sanfte Beschleunigungskurve (ease-out), damit das Feld "ankommt" statt linear.
 const MORPH_EASE = "cubic-bezier(0.22, 1, 0.36, 1)";
 // Notbremse: Klon spaetestens nach diesem Fenster entfernen, falls der Wizard
@@ -39,6 +40,24 @@ interface Box {
   left: number;
   width: number;
   height: number;
+}
+
+function rectToBox(rect: DOMRect): Box {
+  return {
+    top: rect.top,
+    left: rect.left,
+    width: rect.width,
+    height: rect.height,
+  };
+}
+
+function boxDelta(a: Box, b: Box): number {
+  return Math.max(
+    Math.abs(a.top - b.top),
+    Math.abs(a.left - b.left),
+    Math.abs(a.width - b.width),
+    Math.abs(a.height - b.height)
+  );
 }
 
 function wizardTargetBox(startHeight: number): Box {
@@ -114,6 +133,182 @@ function buildClone(source: HTMLElement, startRect: DOMRect): HTMLDivElement {
   return clone;
 }
 
+function addStageText(
+  stage: HTMLDivElement,
+  text: string,
+  styles: Partial<CSSStyleDeclaration>
+): void {
+  const node = document.createElement("div");
+  node.textContent = text;
+  Object.assign(node.style, styles);
+  stage.appendChild(node);
+}
+
+function buildTransitionStage(target: Box): HTMLDivElement {
+  const isNarrow = target.width < 380;
+  const h1Top = Math.max(isNarrow ? 246 : 150, target.top - 143);
+  const leadTop = isNarrow ? h1Top + 78 : Math.max(194, target.top - 99);
+
+  const stage = document.createElement("div");
+  stage.setAttribute("aria-hidden", "true");
+  Object.assign(stage.style, {
+    position: "fixed",
+    inset: "0",
+    zIndex: "9998",
+    pointerEvents: "none",
+    background: "var(--color-creme)",
+    color: "var(--color-warmgrau)",
+    fontFamily: "var(--font-body), system-ui, sans-serif",
+    opacity: "0",
+    transition: `opacity ${MORPH_MS}ms ease`,
+  } satisfies Partial<CSSStyleDeclaration>);
+
+  const stripe = document.createElement("div");
+  Object.assign(stripe.style, {
+    height: "8px",
+    width: "100%",
+    background: `repeating-linear-gradient(
+      -45deg,
+      var(--color-airmail-rot),
+      var(--color-airmail-rot) 8px,
+      var(--color-creme) 8px,
+      var(--color-creme) 12px,
+      var(--color-airmail-blau) 12px,
+      var(--color-airmail-blau) 20px,
+      var(--color-creme) 20px,
+      var(--color-creme) 24px
+    )`,
+  } satisfies Partial<CSSStyleDeclaration>);
+  stage.appendChild(stripe);
+
+  addStageText(stage, "Brief nach Berlin", {
+    position: "fixed",
+    top: "30px",
+    left: `${Math.max(24, target.left - 232)}px`,
+    fontFamily: "var(--font-typewriter), monospace",
+    fontWeight: "700",
+    fontSize: "18px",
+    color: "var(--color-waldgruen-dark)",
+  });
+
+  const progress = document.createElement("div");
+  Object.assign(progress.style, {
+    position: "fixed",
+    top: `${Math.max(92, target.top - 220)}px`,
+    left: `${target.left}px`,
+    width: `${target.width}px`,
+    display: "flex",
+    justifyContent: "center",
+    gap: "24px",
+  } satisfies Partial<CSSStyleDeclaration>);
+  for (let i = 0; i < 3; i++) {
+    const dot = document.createElement("div");
+    Object.assign(dot.style, {
+      width: "10px",
+      height: "10px",
+      borderRadius: "9999px",
+      background:
+        i === 0 ? "var(--color-waldgruen)" : "color-mix(in srgb, var(--color-warmgrau) 30%, transparent)",
+    } satisfies Partial<CSSStyleDeclaration>);
+    progress.appendChild(dot);
+  }
+  stage.appendChild(progress);
+
+  addStageText(stage, "Was beschäftigt dich gerade?", {
+    position: "fixed",
+    top: `${h1Top}px`,
+    left: `${target.left}px`,
+    width: `${target.width}px`,
+    fontFamily: "var(--font-typewriter), monospace",
+    fontWeight: "600",
+    fontSize: isNarrow ? "24px" : "28px",
+    lineHeight: "1.2",
+    color: "var(--color-waldgruen-dark)",
+  });
+
+  addStageText(
+    stage,
+    isNarrow
+      ? "Sprich drauflos oder nenne Stichpunkte."
+      : "Sprich drauflos und passe deinen Text danach an. Oder nenne ein paar Stichpunkte.",
+    {
+      position: "fixed",
+      top: `${leadTop}px`,
+      left: `${target.left}px`,
+      width: `${target.width}px`,
+      fontSize: "14px",
+      lineHeight: "1.45",
+      color: "color-mix(in srgb, var(--color-warmgrau) 70%, transparent)",
+    }
+  );
+
+  if (!isNarrow) {
+    const tip = document.createElement("div");
+    Object.assign(tip.style, {
+      position: "fixed",
+      top: `${Math.max(250, target.top - 58)}px`,
+      left: `${target.left}px`,
+      width: `${target.width}px`,
+      height: "46px",
+      borderLeft: "4px solid var(--color-waldgruen)",
+      borderRadius: "0 8px 8px 0",
+      background: "color-mix(in srgb, var(--color-waldgruen) 5%, transparent)",
+    } satisfies Partial<CSSStyleDeclaration>);
+    stage.appendChild(tip);
+  }
+
+  return stage;
+}
+
+function removeCloneAfterSettling(
+  clone: HTMLDivElement,
+  stage: HTMLDivElement,
+  targetRect: DOMRect
+): void {
+  const current = rectToBox(clone.getBoundingClientRect());
+  const target = rectToBox(targetRect);
+
+  if (boxDelta(current, target) < 1) {
+    requestAnimationFrame(() => {
+      clone.remove();
+      stage.remove();
+    });
+    return;
+  }
+
+  let removed = false;
+  const remove = () => {
+    if (removed) return;
+    removed = true;
+    clone.remove();
+    stage.remove();
+  };
+
+  try {
+    const settle = clone.animate(
+      [
+        {
+          top: `${current.top}px`,
+          left: `${current.left}px`,
+          width: `${current.width}px`,
+          height: `${current.height}px`,
+        },
+        {
+          top: `${target.top}px`,
+          left: `${target.left}px`,
+          width: `${target.width}px`,
+          height: `${target.height}px`,
+        },
+      ],
+      { duration: SETTLE_MS, easing: MORPH_EASE, fill: "forwards" }
+    );
+    settle.finished.then(remove, remove);
+    window.setTimeout(remove, SETTLE_MS + 80);
+  } catch {
+    remove();
+  }
+}
+
 function prefersReducedMotion(): boolean {
   return (
     typeof window !== "undefined" &&
@@ -146,8 +341,13 @@ export function morphAnliegenFieldToWizard({ onBeforeNavigate, navigate }: Morph
   source.blur();
 
   const target = wizardTargetBox(startRect.height);
+  const stage = buildTransitionStage(target);
   const clone = buildClone(source, startRect);
+  document.body.appendChild(stage);
   document.body.appendChild(clone);
+  requestAnimationFrame(() => {
+    stage.style.opacity = "1";
+  });
 
   // Hero-Inhalt wegblenden (alles ausser dem Klon, der auf <body> liegt).
   const heroSection = source.closest("section");
@@ -178,17 +378,24 @@ export function morphAnliegenFieldToWizard({ onBeforeNavigate, navigate }: Morph
     const tryReveal = () => {
       const wizardField = document.getElementById("issueText");
       const onWizard = window.location.pathname.startsWith(WIZARD_PATH);
+      const wizardRect = wizardField?.getBoundingClientRect();
       const painted =
         !!wizardField &&
         wizardField !== source &&
-        wizardField.getBoundingClientRect().width > 0;
+        !!wizardRect &&
+        wizardRect.width > 0;
 
-      if (onWizard && painted) {
-        requestAnimationFrame(() => clone.remove());
+      if (onWizard && painted && wizardRect) {
+        removeCloneAfterSettling(clone, stage, wizardRect);
         return;
       }
       if (Date.now() - startedAt > REVEAL_TIMEOUT_MS) {
         clone.remove();
+        stage.remove();
+        if (!onWizard && heroSection instanceof HTMLElement) {
+          heroSection.style.opacity = "";
+          heroSection.style.transition = "";
+        }
         return;
       }
       requestAnimationFrame(tryReveal);

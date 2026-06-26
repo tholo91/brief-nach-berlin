@@ -302,7 +302,9 @@ export function Step2Issue({
       : LANDING_PLACEHOLDER_EXAMPLES
     : PLACEHOLDER_EXAMPLES;
   const placeholder =
-    voiceState === "recording"
+    voiceState === "requesting"
+      ? "Bereite das Mikrofon vor..."
+      : voiceState === "recording"
       ? "Sprich jetzt, dein Text erscheint hier..."
       : voiceState === "processing"
         ? "Transkribiere deine Aufnahme..."
@@ -333,7 +335,11 @@ export function Step2Issue({
   // get a sense of the kinds of issues that work without a category picker.
   useEffect(() => {
     if (issueText.length > 0) return;
-    if (voiceState === "recording" || voiceState === "processing") return;
+    if (
+      voiceState === "requesting" ||
+      voiceState === "recording" ||
+      voiceState === "processing"
+    ) return;
     const interval = setInterval(() => {
       setPlaceholderIndex((i) => (i + 1) % placeholderExamples.length);
     }, PLACEHOLDER_ROTATE_MS);
@@ -506,10 +512,11 @@ export function Step2Issue({
             hasText={charCount > 0}
             charCount={charCount}
             fieldHeight={fieldHeight}
-            controlRightClass={isLanding ? "right-14" : "right-2.5"}
+            controlRightClass={isLanding ? "right-11" : "right-2.5"}
             forceSubtle={isLanding}
             minChars={MIN_CHARS}
             keyboardHint={!tooShort ? (isMac ? "⌘↵" : "Ctrl+↵") : undefined}
+            hideVoiceStatus={isLanding}
             onTranscription={handleTranscription}
             onStateChange={handleVoiceStateChange}
           />

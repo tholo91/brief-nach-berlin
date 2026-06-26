@@ -40,3 +40,7 @@
   Mit Claude prompt erstellen lassen
 
 <!-- code-tasks:managed-end -->
+
+## Agent Preference Notes
+
+- 2026-06-26: Offene Captures sollen zu Sessionbeginn weiter gruppiert gelistet werden. Danach nicht automatisch auf Anweisung warten, außer der User spricht den Capture-Check ausdrücklich an.

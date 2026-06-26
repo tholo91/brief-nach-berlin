@@ -123,22 +123,22 @@ export default function Hero() {
         {/* Trust badges — labels shorten on mobile so the three checks fit
             on one row instead of stacking. */}
         <div className="flex flex-nowrap items-center justify-center gap-x-1.5">
-          <span className="inline-flex items-center gap-1.5 text-waldgruen font-body text-xs md:text-sm font-semibold px-2 md:px-2.5 py-1 md:py-1.5 whitespace-nowrap">
-            <svg width="13" height="13" viewBox="0 0 16 16" fill="none" className="shrink-0">
+          <span className="inline-flex items-center gap-1.5 text-waldgruen font-body text-xs md:text-sm font-semibold leading-none px-2 md:px-2.5 py-1 md:py-1.5 whitespace-nowrap">
+            <svg width="13" height="13" viewBox="0 0 16 16" fill="none" className="shrink-0 -translate-y-px">
               <path d="M3 8l4 4 6-6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
             <span className="md:hidden">kostenlos</span>
             <span className="hidden md:inline">Vollständig kostenlos</span>
           </span>
-          <span className="inline-flex items-center gap-1.5 text-waldgruen font-body text-xs md:text-sm font-semibold px-2 md:px-2.5 py-1 md:py-1.5 whitespace-nowrap">
-            <svg width="13" height="13" viewBox="0 0 16 16" fill="none" className="shrink-0">
+          <span className="inline-flex items-center gap-1.5 text-waldgruen font-body text-xs md:text-sm font-semibold leading-none px-2 md:px-2.5 py-1 md:py-1.5 whitespace-nowrap">
+            <svg width="13" height="13" viewBox="0 0 16 16" fill="none" className="shrink-0 -translate-y-px">
               <path d="M3 8l4 4 6-6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
             <span className="md:hidden">ohne Account</span>
             <span className="hidden md:inline">Kein Account erforderlich</span>
           </span>
-          <span className="inline-flex items-center gap-1.5 text-waldgruen font-body text-xs md:text-sm font-semibold px-2 md:px-2.5 py-1 md:py-1.5 whitespace-nowrap">
-            <svg width="13" height="13" viewBox="0 0 16 16" fill="none" className="shrink-0">
+          <span className="inline-flex items-center gap-1.5 text-waldgruen font-body text-xs md:text-sm font-semibold leading-none px-2 md:px-2.5 py-1 md:py-1.5 whitespace-nowrap">
+            <svg width="13" height="13" viewBox="0 0 16 16" fill="none" className="shrink-0 -translate-y-px">
               <path d="M3 8l4 4 6-6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
             <span className="md:hidden">KI aus EU</span>

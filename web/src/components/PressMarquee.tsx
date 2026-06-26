@@ -205,25 +205,29 @@ export function PressMarquee() {
           aria-label="Medien, die über Brief nach Berlin berichtet haben"
         >
           <div className="press-marquee-track flex items-center gap-8 md:gap-12 w-max px-4">
-            {[...PRESS_ITEMS, ...PRESS_ITEMS].map((item, index) => (
-              <a
-                key={`${item.key}-${index}`}
-                href={item.href}
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label={`Berichterstattung in ${item.outlet}`}
-                className="flex items-center shrink-0 grayscale opacity-60 hover:grayscale-0 hover:opacity-100 transition-all duration-200"
-                tabIndex={index >= PRESS_ITEMS.length ? -1 : 0}
-              >
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src={item.logo}
-                  alt={item.outlet}
-                  className="h-6 sm:h-[54px] w-auto max-w-[120px] sm:max-w-[240px] object-contain"
-                  draggable={false}
-                />
-              </a>
-            ))}
+            {[...PRESS_ITEMS, ...PRESS_ITEMS].map((item, index) => {
+              const isDuplicate = index >= PRESS_ITEMS.length;
+              return (
+                <a
+                  key={`${item.key}-${index}`}
+                  href={item.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label={isDuplicate ? undefined : `Berichterstattung in ${item.outlet}`}
+                  aria-hidden={isDuplicate ? "true" : undefined}
+                  className="flex items-center shrink-0 grayscale opacity-60 hover:grayscale-0 hover:opacity-100 transition-all duration-200"
+                  tabIndex={isDuplicate ? -1 : 0}
+                >
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={item.logo}
+                    alt={isDuplicate ? "" : item.outlet}
+                    className="h-6 sm:h-[54px] w-auto max-w-[120px] sm:max-w-[240px] object-contain"
+                    draggable={false}
+                  />
+                </a>
+              );
+            })}
           </div>
         </div>
       </div>

@@ -33,9 +33,11 @@ interface VoiceRecorderProps {
   /** Optional keyboard shortcut hint rendered directly left of the counter
    *  (desktop only). Pass e.g. "⌘↵" or "Ctrl+↵"; omit/undefined to hide. */
   keyboardHint?: string;
+  /** Hide visible recording/transcription text; counter/shortcut stay visible. */
+  hideVoiceStatus?: boolean;
 }
 
-type UIState = "idle" | "recording" | "processing" | "error";
+type UIState = "idle" | "requesting" | "recording" | "processing" | "error";
 
 const BAR_COUNT = 5;
 
@@ -82,21 +84,27 @@ export function VoiceRecorder({
   forceSubtle = false,
   minChars,
   keyboardHint,
+  hideVoiceStatus = false,
 }: VoiceRecorderProps) {
   const [uiState, setUiStateInternal] = useState<UIState>("idle");
   const [elapsedSeconds, setElapsedSeconds] = useState(0);
 
+  const audioRecorderRef = useRef<AudioRecorder | null>(null);
+  const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const errorTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const startTimeRef = useRef<number>(0);
+  const mountedRef = useRef(true);
+  const startingRef = useRef(false);
+  const stoppingRef = useRef(false);
+
   const setUiState = useCallback(
     (state: UIState) => {
+      if (!mountedRef.current) return;
       setUiStateInternal(state);
       onStateChange?.(state);
     },
     [onStateChange]
   );
-
-  const audioRecorderRef = useRef<AudioRecorder | null>(null);
-  const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
-  const startTimeRef = useRef<number>(0);
 
   // Level meter
   const rafRef = useRef<number | null>(null);
@@ -148,7 +156,12 @@ export function VoiceRecorder({
   // Cleanup on unmount
   useEffect(() => {
     return () => {
+      mountedRef.current = false;
       clearTimer();
+      if (errorTimeoutRef.current) {
+        clearTimeout(errorTimeoutRef.current);
+        errorTimeoutRef.current = null;
+      }
       stopMeter();
       audioRecorderRef.current?.destroy();
     };
@@ -157,11 +170,17 @@ export function VoiceRecorder({
   const flashError = useCallback(() => {
     clearTimer();
     stopMeter();
+    if (errorTimeoutRef.current) {
+      clearTimeout(errorTimeoutRef.current);
+      errorTimeoutRef.current = null;
+    }
     setUiState("error");
-    setTimeout(() => {
+    errorTimeoutRef.current = setTimeout(() => {
+      if (!mountedRef.current) return;
       setUiState("idle");
       setElapsedSeconds(0);
       audioRecorderRef.current?.reset();
+      errorTimeoutRef.current = null;
     }, 3000);
   }, [clearTimer, stopMeter, setUiState]);
 
@@ -186,11 +205,14 @@ export function VoiceRecorder({
           throw new Error("No transcription text returned");
         }
 
+        if (!mountedRef.current) return;
+
         onTranscription(data.text);
         // Repeatable: return to idle so the user can dictate again.
         setUiState("idle");
         setElapsedSeconds(0);
       } catch (err) {
+        if (!mountedRef.current) return;
         console.error("Transcription error:", err);
         flashError();
       }
@@ -199,9 +221,13 @@ export function VoiceRecorder({
   );
 
   const startRecording = useCallback(async () => {
+    if (startingRef.current || uiState !== "idle") return;
+    startingRef.current = true;
+    setUiState("requesting");
+
     // Fresh recorder each take so callbacks bind to current props.
     audioRecorderRef.current?.destroy();
-    audioRecorderRef.current = new AudioRecorder({
+    const recorder = new AudioRecorder({
       onStateChange: (state: RecorderState) => {
         if (state === "error") flashError();
       },
@@ -211,10 +237,15 @@ export function VoiceRecorder({
         void transcribe(result);
       },
     });
+    audioRecorderRef.current = recorder;
 
     try {
       setElapsedSeconds(0);
-      await audioRecorderRef.current.start();
+      await recorder.start();
+      if (!mountedRef.current || audioRecorderRef.current !== recorder) {
+        recorder.destroy();
+        return;
+      }
       startTimeRef.current = Date.now();
       setUiState("recording");
       startMeter();
@@ -224,25 +255,34 @@ export function VoiceRecorder({
         setElapsedSeconds(elapsed);
       }, 1000);
     } catch (err) {
+      if (!mountedRef.current || audioRecorderRef.current !== recorder) return;
       const classified = classifyMediaError(err);
       console.error("Recording start error:", classified);
       flashError();
+    } finally {
+      startingRef.current = false;
     }
-  }, [clearTimer, stopMeter, transcribe, setUiState, startMeter, flashError]);
+  }, [clearTimer, stopMeter, transcribe, setUiState, startMeter, flashError, uiState]);
 
   const stopRecordingAndTranscribe = useCallback(async () => {
+    if (stoppingRef.current) return;
     const recorder = audioRecorderRef.current;
     if (!recorder) return;
+    stoppingRef.current = true;
 
     clearTimer();
     stopMeter();
 
     try {
       const result = await recorder.stop();
+      if (!mountedRef.current || audioRecorderRef.current !== recorder) return;
       await transcribe(result);
     } catch (err) {
+      if (!mountedRef.current || audioRecorderRef.current !== recorder) return;
       console.error("Stop/transcribe error:", err);
       flashError();
+    } finally {
+      stoppingRef.current = false;
     }
   }, [clearTimer, stopMeter, transcribe, flashError]);
 
@@ -256,6 +296,7 @@ export function VoiceRecorder({
   };
 
   const isRecording = uiState === "recording";
+  const isRequesting = uiState === "requesting";
   const isProcessing = uiState === "processing";
   const isError = uiState === "error";
   const showProminent = uiState === "idle" && !hasText && !forceSubtle;
@@ -263,11 +304,13 @@ export function VoiceRecorder({
   const ariaStatus =
     uiState === "recording"
       ? "Aufnahme läuft"
-      : uiState === "processing"
-        ? "Transkription läuft"
-        : uiState === "error"
-          ? "Aufnahme fehlgeschlagen"
-          : "";
+      : uiState === "requesting"
+        ? "Mikrofon wird vorbereitet"
+        : uiState === "processing"
+          ? "Transkription läuft"
+          : uiState === "error"
+            ? "Aufnahme fehlgeschlagen"
+            : "";
 
   return (
     <>
@@ -342,7 +385,7 @@ export function VoiceRecorder({
           </button>
         )}
 
-        {isProcessing && (
+        {(isRequesting || isProcessing) && (
           <div className="flex h-9 w-9 items-center justify-center rounded-full border border-warmgrau/30 bg-creme/80 text-warmgrau">
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -387,48 +430,73 @@ export function VoiceRecorder({
         )}
       </div>
 
-      {/* Single meta row below the field: left = state, right = char count. */}
       <div className="mt-1 flex min-h-[22px] items-center justify-between gap-3">
         <div className="flex items-center gap-2 text-sm">
-          {isRecording && (
+          {!hideVoiceStatus && (
             <>
-              <div className="flex h-4 items-end gap-[3px]" aria-hidden="true">
-                {Array.from({ length: BAR_COUNT }).map((_, i) => (
-                  <span
-                    key={i}
-                    ref={(el) => {
-                      barsRef.current[i] = el;
-                    }}
-                    className="w-[3px] rounded-full bg-airmail-rot/70 transition-[height] duration-75 ease-out"
-                    style={{ height: "20%" }}
-                  />
-                ))}
-              </div>
-              <span className="font-typewriter tabular-nums text-airmail-rot">
-                {formatElapsed(elapsedSeconds)}
-              </span>
-            </>
-          )}
-          {isProcessing && (
-            <>
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="14"
-                height="14"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                className="animate-spin text-warmgrau"
-                aria-hidden="true"
-              >
-                <path d="M21 12a9 9 0 1 1-6.219-8.56" />
-              </svg>
-              <span className="font-body text-warmgrau">
-                Transkribiere deine Aufnahme...
-              </span>
+              {isRecording && (
+              <>
+                <div className="flex h-4 items-end gap-[3px]" aria-hidden="true">
+                  {Array.from({ length: BAR_COUNT }).map((_, i) => (
+                    <span
+                      key={i}
+                      ref={(el) => {
+                        barsRef.current[i] = el;
+                      }}
+                      className="w-[3px] rounded-full bg-airmail-rot/70 transition-[height] duration-75 ease-out"
+                      style={{ height: "20%" }}
+                    />
+                  ))}
+                </div>
+                <span className="font-typewriter tabular-nums text-airmail-rot">
+                  {formatElapsed(elapsedSeconds)}
+                </span>
+              </>
+              )}
+              {isRequesting && (
+              <>
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="14"
+                  height="14"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  className="animate-spin text-warmgrau"
+                  aria-hidden="true"
+                >
+                  <path d="M21 12a9 9 0 1 1-6.219-8.56" />
+                </svg>
+                <span className="font-body text-warmgrau">
+                  Mikrofon wird vorbereitet...
+                </span>
+              </>
+              )}
+              {isProcessing && (
+              <>
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="14"
+                  height="14"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  className="animate-spin text-warmgrau"
+                  aria-hidden="true"
+                >
+                  <path d="M21 12a9 9 0 1 1-6.219-8.56" />
+                </svg>
+                <span className="font-body text-warmgrau">
+                  Transkribiere deine Aufnahme...
+                </span>
+              </>
+              )}
             </>
           )}
         </div>

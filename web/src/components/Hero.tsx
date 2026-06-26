@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Step2Issue, TipsDisclosure } from "@/components/wizard/Step2Issue";
 import { saveHandoff } from "@/lib/wizard-handoff";
+import { morphAnliegenFieldToWizard } from "@/lib/field-morph";
 import { WIZARD_PATH } from "@/lib/config";
 
 // The line above the field stays calm until the visitor starts writing; at
@@ -36,10 +37,14 @@ export default function Hero() {
       // in the address bar, then jump to the wizard's step 1 (pre-filled). The
       // tone is chosen in the wizard, so we don't carry it from here. Den
       // Voice-Flag aber sehr wohl: ohne ihn meldet der Debug-Payload spaeter
-      // faelschlich Voice=false, obwohl auf der Landing gesprochen wurde. No
-      // exit animation — navigate immediately.
-      saveHandoff({ issueText, tipsOpened, usedSpeechToText });
-      router.push(WIZARD_PATH);
+      // faelschlich Voice=false, obwohl auf der Landing gesprochen wurde.
+      //
+      // Der Morph-Klon legt sich ueber das Feld und faehrt es auf die Box des
+      // Wizard-Felds; saveHandoff + router.push feuern danach dahinter.
+      morphAnliegenFieldToWizard({
+        onBeforeNavigate: () => saveHandoff({ issueText, tipsOpened, usedSpeechToText }),
+        navigate: () => router.push(WIZARD_PATH),
+      });
     },
     [router, tipsOpened]
   );

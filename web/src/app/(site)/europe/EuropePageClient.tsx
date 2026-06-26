@@ -48,7 +48,7 @@ const copy: Record<Language, Copy> = {
   de: {
     back: "Zurück",
     eyebrow: "Open Source für Europa",
-    title: "Bring Brief nach Berlin in dein Land",
+    title: "Bring Brief-nach-Berlin in ein weiteres Land",
     lead:
       "Brief nach Berlin ist ein offener Ansatz für Bürgerbriefe an die richtige politische Stelle. Wenn du Kontakte, Datenquellen oder lokale Erfahrung aus Österreich, Portugal, den Niederlanden oder einem anderen europäischen Land hast, melde dich. Ich suche Menschen, die das Prinzip sauber übertragen wollen.",
     imageAlt:
@@ -146,7 +146,7 @@ const copy: Record<Language, Copy> = {
   en: {
     back: "Back",
     eyebrow: "Open source for Europe",
-    title: "Bring Brief nach Berlin to your country",
+    title: "Bring Brief-nach-Berlin to your country",
     lead:
       "Brief nach Berlin is an open approach for helping people write civic letters to the right political office. If you have contacts, data sources, or local knowledge from Austria, Portugal, the Netherlands, or another European country, get in touch. I am looking for people who want to adapt the idea properly.",
     imageAlt:

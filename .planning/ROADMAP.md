@@ -745,7 +745,10 @@ Plans:
 **Goal:** Creators can publish a moderated brief template behind a shareable no-login link, prefill the wizard's issue field for every visitor, and keep the actual letter generation individual per user by PLZ, recipient, and tone. The template owner can freeze, archive, and version the brief without deleting history.
 **Requirements**: ENGM-03, SAFE-03, PRIV-01, PRIV-04
 **Depends on:** Phase 4
-**Plans:** 0 plans
+**Plans:** 4 plans
 
 Plans:
-- [ ] TBD (promote with /gsd:review-backlog when ready)
+- [ ] 05-01-PLAN.md - Campaign schema, revision history, creator tokens, and server repository layer
+- [ ] 05-02-PLAN.md - Creator setup flow: moderation, Stripe checkout, payment webhook, email activation
+- [ ] 05-03-PLAN.md - Public campaign landing page with editable prefill and wizard handoff reuse
+- [ ] 05-04-PLAN.md - Creator management: edit, pause/archive, publish-safe overwrites, Datenschutz update

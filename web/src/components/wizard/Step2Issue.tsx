@@ -297,6 +297,7 @@ export function Step2Issue({
 
   const charCount = issueText.trim().length;
   const tooShort = charCount < MIN_CHARS;
+  const showExpandedLandingCta = isLanding && !tooShort;
   const placeholderExamples = isLanding
     ? isWide
       ? LANDING_PLACEHOLDER_EXAMPLES_WIDE
@@ -529,7 +530,13 @@ export function Step2Issue({
             hasText={charCount > 0}
             charCount={charCount}
             fieldHeight={fieldHeight}
-            controlRightClass={isLanding ? "right-11" : "right-2.5"}
+            controlRightClass={
+              isLanding
+                ? showExpandedLandingCta
+                  ? "right-[6.2rem] md:right-[6.2rem]"
+                  : "right-11"
+                : "right-2.5"
+            }
             forceSubtle={isLanding}
             minChars={MIN_CHARS}
             keyboardHint={keyboardHint}
@@ -546,7 +553,9 @@ export function Step2Issue({
               "absolute flex items-center overflow-hidden",
               "text-left text-xs md:text-sm text-warmgrau/40 pointer-events-none",
               isLanding
-                ? "bottom-3.5 left-3.5 right-24 md:right-44"
+                ? showExpandedLandingCta
+                  ? "bottom-3.5 left-3.5 right-[9.5rem] md:right-[10rem]"
+                  : "bottom-3.5 left-3.5 right-24 md:right-44"
                 : "top-0 left-4 right-20 h-8 translate-y-[var(--counter-y)] md:right-32",
             ].join(" ")}
             style={
@@ -575,13 +584,19 @@ export function Step2Issue({
           {keyboardHint && (
             <div
               className={[
-                "absolute top-0 hidden h-8 items-center whitespace-nowrap md:flex",
+                "absolute hidden items-center whitespace-nowrap md:flex",
                 "text-xs md:text-sm text-warmgrau/40 pointer-events-none",
-                isLanding ? "right-24" : "right-16",
+                isLanding
+                  ? showExpandedLandingCta
+                    ? "bottom-3.5 right-[9.5rem]"
+                    : "bottom-3.5 right-24"
+                  : "top-0 right-16 h-8 translate-y-[var(--counter-y)]",
               ].join(" ")}
-              style={{
-                transform: `translateY(${Math.max(0, fieldHeight - 32 - 12)}px)`,
-              }}
+              style={
+                isLanding
+                  ? undefined
+                  : ({ "--counter-y": `${Math.max(0, fieldHeight - 32 - 12)}px` } as React.CSSProperties)
+              }
               aria-hidden="true"
             >
               {keyboardHint} weiter
@@ -618,13 +633,25 @@ export function Step2Issue({
                   // down with the newest line. Positioned via translateY off the
                   // field height (not bottom-*) so the counter row below doesn't
                   // push it down.
-                  "absolute right-2.5 top-0 flex h-8 w-8 items-center justify-center rounded-full",
-                  "bg-waldgruen text-creme shadow-sm hover:bg-waldgruen-dark transition-colors cursor-pointer",
+                  "absolute right-2.5 top-0 flex h-8 items-center justify-center overflow-hidden rounded-full",
+                  "bg-waldgruen text-creme shadow-sm hover:bg-waldgruen-dark transition-[width,padding,background-color] duration-300 ease-out cursor-pointer",
+                  showExpandedLandingCta ? "w-[5.45rem] pl-1.5 pr-1" : "w-8 px-0",
                 ].join(" ")}
                 style={{
                   transform: `translateY(${Math.max(0, fieldHeight - 32 - 12)}px)`,
                 }}
               >
+                <span
+                  aria-hidden="true"
+                  className={[
+                    "overflow-hidden whitespace-nowrap text-sm font-semibold transition-all duration-200",
+                    showExpandedLandingCta
+                      ? "mr-0.5 max-w-16 opacity-100"
+                      : "mr-0 max-w-0 opacity-0",
+                  ].join(" ")}
+                >
+                  Weiter
+                </span>
                 <svg
                   width="16"
                   height="16"
@@ -635,6 +662,7 @@ export function Step2Issue({
                   strokeLinecap="round"
                   strokeLinejoin="round"
                   aria-hidden="true"
+                  className="shrink-0"
                 >
                   <path d="M5 12h14" />
                   <path d="m13 6 6 6-6 6" />

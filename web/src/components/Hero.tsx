@@ -98,18 +98,21 @@ export default function Hero() {
           </div>
         </div>
 
-        <h1 className="font-body text-4xl md:text-5xl font-bold text-waldgruen-dark leading-[1.1] tracking-tight mb-6 text-balance">
+        <h1 className="font-body text-4xl md:text-5xl font-bold text-waldgruen-dark leading-[1.1] tracking-tight mb-4 text-balance">
           <span className="sm:hidden">Dein Anliegen.</span>
           <span className="hidden sm:inline">Dein persönliches Anliegen.</span>
           <br />
           <span className="text-waldgruen">Direkt an die Politik.</span>
         </h1>
 
+        <p className="font-handwriting text-lg md:text-xl text-warmgrau leading-tight text-pretty max-w-3xl mx-auto mb-6">
+          <span className="block sm:inline">in 3 Minuten ist dein Brief</span>
+          <span className="block sm:inline sm:ml-1">an die passenden Abgeordneten fertig.</span>
+        </p>
+
         {/* Anliegen field — the primary action and the visitor's first contact.
-            The H1 above sets the frame, so nothing sits between headline and
-            field. #hero-cta stays on the wrapper so the sticky-header
-            IntersectionObserver keeps working; #anliegen is the scroll target
-            for the header / footer CTAs. */}
+            #hero-cta stays on the wrapper so the sticky-header IntersectionObserver
+            keeps working; #anliegen is the scroll target for the header / footer CTAs. */}
         <div id="anliegen" className="scroll-mt-28 mb-0 text-left">
           <div id="hero-cta">
             <Step2Issue

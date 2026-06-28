@@ -57,12 +57,22 @@ export const campaignSlugSchema = z
   .transform(normalizeCampaignSlug)
   .refine(isValidCampaignSlug, "Ungültiger Kampagnen-Slug.");
 
+export const campaignExternalUrlSchema = z
+  .string()
+  .trim()
+  .url("Bitte gib eine gültige Adresse ein.")
+  .max(500)
+  .refine((value) => {
+    const protocol = new URL(value).protocol;
+    return protocol === "https:" || protocol === "http:";
+  }, "Bitte gib eine http(s)-Adresse ein.");
+
 export const campaignPublicFieldsSchema = z.object({
   title: z.string().trim().min(3).max(120),
   issueText: z.string().trim().min(20).max(4000),
   description: z.string().trim().max(400).optional().nullable(),
   creatorName: z.string().trim().max(120).optional().nullable(),
-  externalUrl: z.string().trim().url().max(500).optional().nullable(),
+  externalUrl: campaignExternalUrlSchema.optional().nullable(),
 });
 
 export const createCampaignSchema = campaignPublicFieldsSchema.extend({

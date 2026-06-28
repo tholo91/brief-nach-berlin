@@ -4,10 +4,9 @@ import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import {
   CampaignRepositoryError,
-  publishCampaignRevision,
-  setCampaignModeration,
-  updateCampaignPublicFields,
+  publishCampaignEdits,
 } from "@/lib/campaigns/repository";
+import { campaignExternalUrlSchema } from "@/lib/campaigns/schema";
 import { getCampaignManagementSession } from "@/lib/campaigns/session";
 import { moderateText } from "@/lib/moderation/moderateText";
 
@@ -22,7 +21,7 @@ const updateCampaignSchema = z.object({
     .trim()
     .optional()
     .transform((value) => (value ? value : undefined))
-    .pipe(z.string().url().max(500).optional()),
+    .pipe(campaignExternalUrlSchema.optional()),
 });
 
 export type UpdateCampaignResult =
@@ -93,15 +92,13 @@ export async function updateCampaignAction(
   }
 
   try {
-    const updated = await updateCampaignPublicFields(input.campaignId, {
+    const updated = await publishCampaignEdits(input.campaignId, {
       title: input.title,
       issueText: input.issueText,
       description: input.description,
       creatorName: input.creatorName,
       externalUrl: input.externalUrl,
-    });
-    await setCampaignModeration(updated.id, "approved", moderation.categories);
-    await publishCampaignRevision(updated.id, "edited");
+    }, moderation.categories);
     revalidatePath(`/kampagne/${updated.slug}`);
     revalidatePath("/kampagne/verwalten");
 

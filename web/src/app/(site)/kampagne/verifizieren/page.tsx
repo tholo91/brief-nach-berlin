@@ -1,5 +1,6 @@
 import Link from "next/link";
 import type { Metadata } from "next";
+import { redirect } from "next/navigation";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { verifyCampaignEmailAction } from "@/lib/actions/verifyCampaignEmail";
@@ -12,11 +13,44 @@ export const metadata: Metadata = {
 export default async function VerifyCampaignEmailPage({
   searchParams,
 }: {
-  searchParams: Promise<{ token?: string }>;
+  searchParams: Promise<{ token?: string; status?: string; slug?: string }>;
 }) {
   const params = await searchParams;
+  if (params.status === "aktiv" && params.slug) {
+    return (
+      <>
+        <Header />
+        <main className="bg-creme">
+          <section className="mx-auto max-w-2xl px-6 py-16 md:py-24">
+            <div className="rounded-md border border-warmgrau/12 bg-white/75 p-6 shadow-sm md:p-8">
+              <p className="font-typewriter text-sm font-bold uppercase tracking-widest text-waldgruen/60">
+                Kampagne bestaetigen
+              </p>
+              <h1 className="mt-3 font-typewriter text-3xl font-bold leading-tight text-waldgruen-dark md:text-4xl">
+                Kampagne ist aktiv
+              </h1>
+              <p className="mt-5 font-body text-base leading-relaxed text-warmgrau/75">
+                Deine E-Mail ist bestaetigt. Die Kampagne ist jetzt aktiv.
+              </p>
+              <Link
+                href={`/kampagne/${params.slug}`}
+                className="mt-6 inline-block rounded-md bg-waldgruen px-5 py-3 font-body text-base font-semibold text-creme transition-colors hover:bg-waldgruen-dark"
+              >
+                Kampagne ansehen
+              </Link>
+            </div>
+          </section>
+        </main>
+        <Footer />
+      </>
+    );
+  }
+
   const result = await verifyCampaignEmailAction(params.token);
   const isActivated = result.status === "activated";
+  if (params.token && isActivated) {
+    redirect(`/kampagne/verifizieren?status=aktiv&slug=${encodeURIComponent(result.slug)}`);
+  }
 
   return (
     <>

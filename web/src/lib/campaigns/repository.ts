@@ -312,6 +312,71 @@ export async function publishCampaignRevision(
   );
 }
 
+export async function publishCampaignEdits(
+  campaignId: string,
+  input: UpdateCampaignPublicFieldsInput,
+  moderationCategories: string[] = [],
+  db?: RepositoryClient
+): Promise<Campaign> {
+  const campaign = await requireCampaign(campaignId, db);
+  assertStatus(campaign, ["draft", "awaiting_email_verification", "active", "paused"], "edit");
+  const parsed = updateCampaignPublicFieldsSchema.parse(input);
+  const next = {
+    title: parsed.title ?? campaign.title,
+    issueText: parsed.issueText ?? campaign.issueText,
+    description:
+      parsed.description !== undefined
+        ? nullableText(parsed.description)
+        : campaign.description,
+    creatorName:
+      parsed.creatorName !== undefined
+        ? nullableText(parsed.creatorName)
+        : campaign.creatorName,
+    externalUrl:
+      parsed.externalUrl !== undefined
+        ? nullableText(parsed.externalUrl)
+        : campaign.externalUrl,
+  };
+
+  const { data: revisionData, error: revisionError } = await client(db)
+    .from("campaign_revisions")
+    .insert({
+      campaign_id: campaign.id,
+      snapshot_reason: "edited",
+      title: next.title,
+      issue_text: next.issueText,
+      description: next.description,
+      creator_name: next.creatorName,
+      external_url: next.externalUrl,
+      moderation_status: "approved",
+      moderation_categories: moderationCategories,
+    })
+    .select("*")
+    .single();
+
+  if (revisionError) {
+    throw new CampaignRepositoryError(
+      `Campaign revision create failed: ${revisionError.message}`
+    );
+  }
+
+  const revision = mapRevision(revisionData as CampaignRevisionRow);
+  return updateCampaignRow(
+    campaignId,
+    {
+      title: next.title,
+      issue_text: next.issueText,
+      description: next.description,
+      creator_name: next.creatorName,
+      external_url: next.externalUrl,
+      moderation_status: "approved",
+      moderation_categories: moderationCategories,
+      last_published_revision_id: revision.id,
+    },
+    db
+  );
+}
+
 export async function markPaid(
   campaignId: string,
   db?: RepositoryClient

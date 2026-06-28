@@ -1,5 +1,6 @@
 import Link from "next/link";
 import type { Metadata } from "next";
+import { redirect } from "next/navigation";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { CampaignManager } from "@/components/campaigns/CampaignManager";
@@ -47,6 +48,7 @@ export default async function ManageCampaignPage({
   const session = params.token
     ? await exchangeCampaignTokenForManagementSession(params.token, "manage")
     : await getCampaignManagementSession();
+  if (params.token && session) redirect("/kampagne/verwalten");
 
   let campaign = null;
   if (session) {

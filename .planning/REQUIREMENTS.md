@@ -54,7 +54,8 @@
 - [x] **PRIV-01**: No persistent storage of user frustration text or generated letters beyond email delivery
 - [ ] **PRIV-02**: PLZ-to-Wahlkreis mapping data is preprocessed and stored as static JSON (no external API call at runtime for this)
 - [ ] **PRIV-03**: Abgeordnetenwatch data is cached locally, refreshed periodically (not called per-request)
-- [ ] **PRIV-04**: Datenschutzerklaerung covers: PLZ processing, email usage, OpenAI API data processing
+- [x] **PRIV-04
+**: Datenschutzerklaerung covers: PLZ processing, email usage, OpenAI API data processing
 
 ## v2 Requirements
 

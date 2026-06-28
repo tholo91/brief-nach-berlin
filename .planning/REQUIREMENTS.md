@@ -41,7 +41,7 @@
 
 - [ ] **SAFE-01**: User input is checked via OpenAI Moderation API before letter generation
 - [ ] **SAFE-02**: Generated letter output is checked via OpenAI Moderation API before delivery
-- [ ] **SAFE-03**: System rejects input that is hateful, threatening, or abusive with a clear user-facing message
+- [x] **SAFE-03**: System rejects input that is hateful, threatening, or abusive with a clear user-facing message
 
 ### Email Delivery
 
@@ -51,7 +51,7 @@
 
 ### Data & Privacy
 
-- [ ] **PRIV-01**: No persistent storage of user frustration text or generated letters beyond email delivery
+- [x] **PRIV-01**: No persistent storage of user frustration text or generated letters beyond email delivery
 - [ ] **PRIV-02**: PLZ-to-Wahlkreis mapping data is preprocessed and stored as static JSON (no external API call at runtime for this)
 - [ ] **PRIV-03**: Abgeordnetenwatch data is cached locally, refreshed periodically (not called per-request)
 - [ ] **PRIV-04**: Datenschutzerklaerung covers: PLZ processing, email usage, OpenAI API data processing

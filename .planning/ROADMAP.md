@@ -749,6 +749,6 @@ Plans:
 
 Plans:
 - [x] 05-01-PLAN.md - Campaign schema, revision history, creator tokens, and server repository layer
-- [ ] 05-02-PLAN.md - Creator setup flow: moderation, email verification, activation mails
+- [x] 05-02-PLAN.md - Creator setup flow: moderation, email verification, activation mails
 - [ ] 05-03-PLAN.md - Public campaign landing page with editable prefill and wizard handoff reuse
 - [ ] 05-04-PLAN.md - Creator management: edit, pause/archive, publish-safe overwrites, Datenschutz update

@@ -3,15 +3,15 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: Completed 05-01-PLAN.md
-last_updated: "2026-06-28T14:20:36.502Z"
-last_activity: 2026-06-28 -- Completed Phase 05 Plan 01
+stopped_at: Completed 05-02-PLAN.md
+last_updated: "2026-06-28T14:34:07.470Z"
+last_activity: 2026-06-28 -- Completed Phase 05 Plan 02
 progress:
   total_phases: 33
   completed_phases: 3
   total_plans: 22
-  completed_plans: 12
-  percent: 55
+  completed_plans: 13
+  percent: 59
 ---
 
 # Project State
@@ -26,11 +26,11 @@ See: .planning/PROJECT.md (updated 2026-04-10)
 ## Current Position
 
 Phase: 05 — EXECUTING
-Plan: 2 of 4
-Status: Plan 05-01 complete; ready for 05-02
-Last activity: 2026-06-28 -- Completed Phase 05 Plan 01
+Plan: 3 of 4
+Status: Plan 05-02 complete; ready for 05-03
+Last activity: 2026-06-28 -- Completed Phase 05 Plan 02
 
-Progress: [██░░░░░░░░] 25%
+Progress: [█████░░░░░] 50%
 
 ## Current Implementation Notes
 
@@ -44,23 +44,24 @@ Progress: [██░░░░░░░░] 25%
 
 **Velocity:**
 
-- Total plans completed: 4
-- Average duration: 9 min
-- Total execution time: 9 min
+- Total plans completed: 5
+- Average duration: 10.5 min
+- Total execution time: 21 min
 
 **By Phase:**
 
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
 | 03 | 3 | - | - |
-| 05 | 1 | 9 min | 9 min |
+| 05 | 2 | 21 min | 10.5 min |
 
 **Recent Trend:**
 
-- Last 5 plans: 05-01
+- Last 5 plans: 05-01, 05-02
 - Trend: Phase 5 started
 
 *Updated after each plan completion*
+| Phase 05 P02 | 12 min | 3 tasks | 7 files |
 
 ## Accumulated Context
 
@@ -75,6 +76,9 @@ Recent decisions affecting current work:
 - Phase 05-01: Campaign access uses random DB-backed token hashes, not stateless feedback HMAC links.
 - Phase 05-01: `markPaid` currently advances draft campaigns to awaiting_email_verification without adding payment columns because Stripe/payment is deferred.
 - Phase 05-01: Management sessions are short-lived HttpOnly cookies signed server-side and scoped to `/kampagne`.
+- 05-02: Stripe/payment stayed out of the creator flow; draft creation advances directly to email verification for validation.
+- 05-02: Verification links are one-time tokens; reused or expired links return status without duplicate management emails.
+- 05-02: Management token creation and email delivery are implemented, while the management UI remains for the later creator-management plan.
 
 ### Roadmap Evolution
 
@@ -124,8 +128,8 @@ Recent decisions affecting current work:
 
 ## Session Continuity
 
-Last session: 2026-06-28T14:19:31Z
-Stopped at: Completed 05-01-PLAN.md
+Last session: 2026-06-28T14:34:02.668Z
+Stopped at: Completed 05-02-PLAN.md
 Resume file: None
 
 **Planned Phase:** 4 (Stadtstaaten PLZ-Wahlkreis Genauigkeit und Wahlkreis-Gruppierung im Wizard) — 3 plans — 2026-05-27T21:50:31.369Z

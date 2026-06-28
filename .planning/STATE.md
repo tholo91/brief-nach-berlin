@@ -4,7 +4,7 @@ milestone: v1.0
 milestone_name: milestone
 status: verifying
 stopped_at: Completed 05-04-PLAN.md
-last_updated: "2026-06-28T14:56:10.957Z"
+last_updated: "2026-06-28T19:04:49.302Z"
 last_activity: 2026-06-28
 progress:
   total_phases: 33
@@ -28,7 +28,7 @@ See: .planning/PROJECT.md (updated 2026-04-10)
 Phase: 05 — EXECUTING
 Plan: 4 of 4
 Status: Phase complete — ready for verification
-Last activity: 2026-06-28
+Last activity: 2026-06-28 - Completed quick task 260628-ta0: Marken-Entity-Schema Organization und WebSite JSON-LD im Next Root-Layout ergänzen
 
 Progress: [███████░░░] 68%
 
@@ -132,6 +132,7 @@ Recent decisions affecting current work:
 | 260625-wko | Log-Observability fetchMdbContext: 404→no_poll_results info statt api_error warning, Log-Label politicianId→mandateId | 2026-06-25 | cb1d15b | [260625-wko-log-observability-fetchmdbcontext-404-al](./quick/260625-wko-log-observability-fetchmdbcontext-404-al/) |
 | 260626-0cz | View-Transition-Morph fürs Anliegen-Feld Landing→Wizard (nativer VT-Flag + geteilter view-transition-name, graceful degradation) | 2026-06-26 | 96969f6 | [260626-0cz-vt-morph-anliegenfeld](./quick/260626-0cz-vt-morph-anliegenfeld/) |
 | 260626-h4r | Hero verschlanken + 2-zeiliges Anliegen-Feld, laengere Placeholder, Reassurance in "So einfach geht's" | 2026-06-26 | (pending) | [260626-h4r-hero-vereinfachen-2zeiliger-input](./quick/260626-h4r-hero-vereinfachen-2zeiliger-input/) |
+| 260628-ta0 | Marken-Entity-Schema Organization und WebSite JSON-LD im Next Root-Layout ergänzen | 2026-06-28 | 09bf448 | [260628-ta0-marken-entity-schema-organization-und-we](./quick/260628-ta0-marken-entity-schema-organization-und-we/) |
 
 ## Session Continuity
 

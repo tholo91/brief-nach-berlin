@@ -3,15 +3,15 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: Completed 05-02-PLAN.md
-last_updated: "2026-06-28T14:34:07.470Z"
-last_activity: 2026-06-28 -- Completed Phase 05 Plan 02
+stopped_at: Completed 05-03-PLAN.md
+last_updated: "2026-06-28T14:44:57.085Z"
+last_activity: 2026-06-28 -- Completed Phase 05 Plan 03
 progress:
   total_phases: 33
   completed_phases: 3
   total_plans: 22
-  completed_plans: 13
-  percent: 59
+  completed_plans: 14
+  percent: 64
 ---
 
 # Project State
@@ -26,11 +26,11 @@ See: .planning/PROJECT.md (updated 2026-04-10)
 ## Current Position
 
 Phase: 05 — EXECUTING
-Plan: 3 of 4
-Status: Plan 05-02 complete; ready for 05-03
-Last activity: 2026-06-28 -- Completed Phase 05 Plan 02
+Plan: 4 of 4
+Status: Ready to execute
+Last activity: 2026-06-28 -- Completed Phase 05 Plan 03
 
-Progress: [█████░░░░░] 50%
+Progress: [██████░░░░] 64%
 
 ## Current Implementation Notes
 
@@ -62,6 +62,7 @@ Progress: [█████░░░░░] 50%
 
 *Updated after each plan completion*
 | Phase 05 P02 | 12 min | 3 tasks | 7 files |
+| Phase 05 P03 | 4 min | 3 tasks | 6 files |
 
 ## Accumulated Context
 
@@ -79,6 +80,9 @@ Recent decisions affecting current work:
 - 05-02: Stripe/payment stayed out of the creator flow; draft creation advances directly to email verification for validation.
 - 05-02: Verification links are one-time tokens; reused or expired links return status without duplicate management emails.
 - 05-02: Management token creation and email delivery are implemented, while the management UI remains for the later creator-management plan.
+- 05-03: Public campaign pages load active campaigns only via `getActiveCampaignBySlug`; invalid, paused, archived, draft, blocked, and missing slugs return `notFound()`.
+- 05-03: Campaign visitor issue text uses the existing sessionStorage wizard handoff, not URL text parameters.
+- 05-03: Campaign drafts are namespaced by slug so campaign pages do not collide with the generic landing draft.
 
 ### Roadmap Evolution
 
@@ -128,8 +132,8 @@ Recent decisions affecting current work:
 
 ## Session Continuity
 
-Last session: 2026-06-28T14:34:02.668Z
-Stopped at: Completed 05-02-PLAN.md
+Last session: 2026-06-28T14:44:57.085Z
+Stopped at: Completed 05-03-PLAN.md
 Resume file: None
 
 **Planned Phase:** 4 (Stadtstaaten PLZ-Wahlkreis Genauigkeit und Wahlkreis-Gruppierung im Wizard) — 3 plans — 2026-05-27T21:50:31.369Z

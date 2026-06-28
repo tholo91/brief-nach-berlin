@@ -740,15 +740,15 @@ Plans:
 - [ ] 04-02-PLAN.md - Build-script rewrite to polygon area-intersection, regenerate mapping, precision tests (20249 to [21], 20354 keeps [18,20])
 - [ ] 04-03-PLAN.md - Wizard grouping: results grouped by Wahlkreis with Direkt/ueber-Liste labels (via UI skill)
 
-### Phase 5: Creator-Paid Brief Templates & Shareable Prefilled Pages
+### Phase 5: Creator Campaign Templates & Shareable Prefilled Pages
 
-**Goal:** Creators can publish a moderated brief template behind a shareable no-login link, prefill the wizard's issue field for every visitor, and keep the actual letter generation individual per user by PLZ, recipient, and tone. The template owner can freeze, archive, and version the brief without deleting history.
+**Goal:** Creators can publish a moderated brief template behind a shareable no-login link, prefill the wizard's issue field for every visitor, and keep the actual letter generation individual per user by PLZ, recipient, and tone. The template owner can edit, pause, archive, and preserve revision history without user accounts. Stripe/payment is deferred until this campaign flow is validated with real partners.
 **Requirements**: ENGM-03, SAFE-03, PRIV-01, PRIV-04
 **Depends on:** Phase 4
 **Plans:** 4 plans
 
 Plans:
-- [ ] 05-01-PLAN.md - Campaign schema, revision history, creator tokens, and server repository layer
-- [ ] 05-02-PLAN.md - Creator setup flow: moderation, Stripe checkout, payment webhook, email activation
+- [x] 05-01-PLAN.md - Campaign schema, revision history, creator tokens, and server repository layer
+- [ ] 05-02-PLAN.md - Creator setup flow: moderation, email verification, activation mails
 - [ ] 05-03-PLAN.md - Public campaign landing page with editable prefill and wizard handoff reuse
 - [ ] 05-04-PLAN.md - Creator management: edit, pause/archive, publish-safe overwrites, Datenschutz update

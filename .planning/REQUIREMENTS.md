@@ -132,6 +132,9 @@
 | MAIL-03 | Phase 3 | Pending |
 | PRIV-01 | Phase 3 | Pending |
 | PRIV-04 | Phase 3 | Pending |
+| ENGM-03 | Phase 5 Plan 05-01 | Complete |
+| PRIV-01 | Phase 5 Plan 05-01 | Complete |
+| SAFE-03 | Phase 5 Plan 05-01 | Complete |
 
 **Coverage:**
 - v1 requirements: 30 total

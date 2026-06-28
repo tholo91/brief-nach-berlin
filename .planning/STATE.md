@@ -3,15 +3,15 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: Phase 02 UI-SPEC approved
-last_updated: "2026-06-26T20:30:25+02:00"
-last_activity: 2026-06-26 -- Updated 999.6 plan files for landing-first routing prefetch, signed routing token, Recipient union handoff, and current Mistral model source of truth
+stopped_at: Completed 05-01-PLAN.md
+last_updated: "2026-06-28T14:20:36.502Z"
+last_activity: 2026-06-28 -- Completed Phase 05 Plan 01
 progress:
-  total_phases: 26
-  completed_phases: 2
-  total_plans: 18
-  completed_plans: 8
-  percent: 44
+  total_phases: 33
+  completed_phases: 3
+  total_plans: 22
+  completed_plans: 12
+  percent: 55
 ---
 
 # Project State
@@ -21,16 +21,16 @@ progress:
 See: .planning/PROJECT.md (updated 2026-04-10)
 
 **Core value:** A frustrated citizen can go from "this is broken" to "here's a letter to the person who can fix it" in under 3 minutes — with zero political knowledge required.
-**Current focus:** Phase 04 — stadtstaaten-plz-wahlkreis-genauigkeit-und-wahlkreis-gruppie
+**Current focus:** Phase 05 — Creator-Paid Brief Templates & Shareable Prefilled Pages
 
 ## Current Position
 
-Phase: 04 (stadtstaaten-plz-wahlkreis-genauigkeit-und-wahlkreis-gruppie) — EXECUTING
-Plan: 1 of 3
-Status: Executing Phase 04
-Last activity: 2026-06-26 -- Updated 999.6 plan files for landing-first routing prefetch and current implementation status
+Phase: 05 — EXECUTING
+Plan: 2 of 4
+Status: Plan 05-01 complete; ready for 05-02
+Last activity: 2026-06-28 -- Completed Phase 05 Plan 01
 
-Progress: [░░░░░░░░░░] 0%
+Progress: [██░░░░░░░░] 25%
 
 ## Current Implementation Notes
 
@@ -44,20 +44,21 @@ Progress: [░░░░░░░░░░] 0%
 
 **Velocity:**
 
-- Total plans completed: 3
-- Average duration: -
-- Total execution time: 0 hours
+- Total plans completed: 4
+- Average duration: 9 min
+- Total execution time: 9 min
 
 **By Phase:**
 
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
 | 03 | 3 | - | - |
+| 05 | 1 | 9 min | 9 min |
 
 **Recent Trend:**
 
-- Last 5 plans: -
-- Trend: -
+- Last 5 plans: 05-01
+- Trend: Phase 5 started
 
 *Updated after each plan completion*
 
@@ -71,6 +72,9 @@ Recent decisions affecting current work:
 - Roadmap: PLZ-to-Wahlkreis preprocessing (shapefile → static JSON) placed in Phase 1 as data infrastructure prerequisite
 - Roadmap: Abgeordnetenwatch cache build placed in Phase 1 alongside data prep
 - Roadmap: Content safety (SAFE-01..03) placed in Phase 2 — must exist before any letter can be generated or shown
+- Phase 05-01: Campaign access uses random DB-backed token hashes, not stateless feedback HMAC links.
+- Phase 05-01: `markPaid` currently advances draft campaigns to awaiting_email_verification without adding payment columns because Stripe/payment is deferred.
+- Phase 05-01: Management sessions are short-lived HttpOnly cookies signed server-side and scoped to `/kampagne`.
 
 ### Roadmap Evolution
 
@@ -120,8 +124,8 @@ Recent decisions affecting current work:
 
 ## Session Continuity
 
-Last session: 2026-04-13T19:27:19.652Z
-Stopped at: Phase 02 UI-SPEC approved
-Resume file: .planning/phases/02-core-engine/02-UI-SPEC.md
+Last session: 2026-06-28T14:19:31Z
+Stopped at: Completed 05-01-PLAN.md
+Resume file: None
 
 **Planned Phase:** 4 (Stadtstaaten PLZ-Wahlkreis Genauigkeit und Wahlkreis-Gruppierung im Wizard) — 3 plans — 2026-05-27T21:50:31.369Z

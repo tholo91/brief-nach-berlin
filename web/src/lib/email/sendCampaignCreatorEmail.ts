@@ -37,8 +37,8 @@ export async function sendCampaignCreatorEmail(
     const result = await brevo.transactionalEmails.sendTransacEmail({
       subject:
         params.kind === "verify_email"
-          ? `${APP_NAME}: Kampagne bestaetigen`
-          : `${APP_NAME}: Deine Kampagne ist aktiv`,
+          ? `${APP_NAME}: Kampagne bestätigen`
+          : `${APP_NAME}: Kampagne verwalten`,
       htmlContent: buildCampaignCreatorEmailHtml({
         kind: params.kind,
         campaignTitle: params.campaignTitle,

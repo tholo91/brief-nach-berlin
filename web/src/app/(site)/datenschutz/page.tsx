@@ -66,13 +66,16 @@ export default function Datenschutz() {
               Brief nach Berlin verarbeitet personenbezogene Daten ausschließlich
               zur Erbringung des Dienstes: die Erstellung eines personalisierten
               Briefs an Ihren zuständigen Abgeordneten. Ich lege keine
-              Nutzerkonten an und setze keine Cookies ein. Alle eingegebenen
+              Nutzerkonten an. Alle eingegebenen
               Daten (Postleitzahl, E-Mail-Adresse, Anliegen, optionale Angaben,
               optionale Spracheingabe) werden ausschließlich während der
               Verarbeitung Ihrer Anfrage verwendet und danach verworfen. Eine
               dauerhafte Speicherung Ihrer Brief-Daten findet nicht statt.
-              Ausnahme: optionale Bewertungen nach dem Versand (siehe
-              Abschnitt 17). Die eingesetzten Dienstleister Mistral AI
+              Ausnahmen: optionale Bewertungen nach dem Versand (siehe
+              Abschnitt 17) und creator-seitig angelegte Kampagnen (siehe
+              Abschnitt 19). Für Kampagnen-Verwaltungslinks wird ein technisch
+              notwendiges, kurzlebiges HttpOnly-Cookie gesetzt. Die eingesetzten
+              Dienstleister Mistral AI
               (Abschnitt 9) und Brevo (Abschnitt 11) speichern Daten im Rahmen
               ihrer eigenen Datenschutzbestimmungen und
               Auftragsverarbeitungsvertr&auml;ge.
@@ -637,7 +640,59 @@ export default function Datenschutz() {
             </p>
           </div>
 
-          <p className="text-sm text-warmgrau/50">Stand: April 2026</p>
+          <div>
+            <h2 className="font-semibold text-waldgruen-dark mb-2">
+              19. Kampagnen von Creatorinnen und Creatorn
+            </h2>
+            <p className="mb-3">
+              Wenn Sie eine Kampagne starten, speichere ich die von Ihnen
+              eingegebenen öffentlichen Kampagnendaten bei Supabase: Titel,
+              Kurzadresse, vorbefülltes Anliegen, optionale Beschreibung,
+              optionaler Name oder Organisationsname, optionaler externer Link,
+              Status der Kampagne und Zeitstempel. Diese Daten sind für die
+              öffentliche Kampagnenseite bestimmt, sobald die E-Mail-Adresse
+              bestätigt und der Text freigeschaltet wurde.
+            </p>
+            <p className="mb-3">
+              Ihre Creator-E-Mail-Adresse wird gespeichert, um die Kampagne zu
+              bestätigen, den Verwaltungslink zuzustellen und Sie bei notwendigen
+              Rückfragen zu dieser Kampagne erreichen zu können. Es entstehen
+              dadurch keine Nutzerkonten, kein Newsletter und keine
+              Marketingliste.
+            </p>
+            <p className="mb-3">
+              Öffentliche Kampagnentexte werden vor Veröffentlichung und bei
+              späteren Änderungen automatisch moderiert. Dafür werden Anliegen
+              und optionale Beschreibung an Mistral AI übermittelt (siehe
+              Abschnitt 9). Eine abgelehnte Änderung ersetzt den bisher
+              veröffentlichten Text nicht. Erfolgreiche Änderungen werden als
+              Revision gespeichert, damit nachvollziehbar bleibt, welche
+              Kampagnentexte veröffentlicht wurden.
+            </p>
+            <p className="mb-3">
+              Verwaltungslinks funktionieren ohne Account. Dafür speichere ich
+              nur Hashes der E-Mail- und Verwaltungs-Tokens in Supabase; der
+              rohe Link wird einmalig per E-Mail verschickt. Nach dem Öffnen
+              wird ein kurzlebiges HttpOnly-Cookie für den Pfad{" "}
+              <code className="text-sm">/kampagne</code> gesetzt, damit Sie die
+              Kampagne bearbeiten, pausieren oder archivieren können.
+            </p>
+            <p className="mb-3">
+              Pausierte oder archivierte Kampagnen verschwinden von der
+              öffentlichen Route, ohne die Historie sofort zu löschen. Besucher
+              einer Kampagnenseite schreiben weiterhin eigene Briefe im normalen
+              Brief-Flow; deren angepasste Anliegen und generierte Briefe werden
+              durch den Kampagnenmodus nicht dauerhaft gespeichert.
+            </p>
+            <p>
+              Rechtsgrundlage: Art. 6 Abs. 1 lit. b DSGVO für Erstellung,
+              Bestätigung und Verwaltung der Kampagne; Art. 6 Abs. 1 lit. f
+              DSGVO für Moderation, Missbrauchsschutz, Revisionen und sichere
+              Verwaltungslinks.
+            </p>
+          </div>
+
+          <p className="text-sm text-warmgrau/50">Stand: Juni 2026</p>
         </div>
       </div>
     </div>

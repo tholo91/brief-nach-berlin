@@ -32,6 +32,9 @@ export function buildCampaignCreatorEmailHtml(
   const buttonText = isVerification
     ? "E-Mail bestaetigen"
     : "Kampagne verwalten";
+  const statusText = isVerification
+    ? "Status: wartet auf E-Mail-Bestaetigung, noch nicht oeffentlich"
+    : "Status: aktiv und oeffentlich teilbar";
 
   return `<!DOCTYPE html>
 <html lang="de">
@@ -60,6 +63,7 @@ export function buildCampaignCreatorEmailHtml(
               <div style="margin:0 0 22px;padding:16px 18px;background-color:#FAF8F5;border:1px solid #E0DCD7;border-radius:4px;">
                 <p style="margin:0 0 6px;font-family:'Courier New',Courier,monospace;font-size:12px;font-weight:bold;text-transform:uppercase;color:#2D6A4F;">Kampagne</p>
                 <p style="margin:0;font-size:18px;line-height:1.45;color:#1B4332;"><strong>${title}</strong></p>
+                <p style="margin:10px 0 0;font-size:14px;line-height:1.5;color:#666666;">${statusText}</p>
                 <p style="margin:10px 0 0;font-size:14px;line-height:1.5;"><a href="${params.campaignUrl}" target="_blank" rel="noopener noreferrer" style="color:#2D6A4F;text-decoration:underline;">${params.campaignUrl}</a></p>
               </div>
               <p style="margin:0 0 22px;text-align:center;">
@@ -68,7 +72,7 @@ export function buildCampaignCreatorEmailHtml(
               ${
                 isVerification
                   ? `<p style="margin:0 0 18px;font-size:14px;line-height:1.6;color:#666666;">Wenn du diese Kampagne nicht angelegt hast, kannst du diese E-Mail ignorieren. Ohne Bestaetigung wird die Seite nicht oeffentlich.</p>`
-                  : `<p style="margin:0 0 18px;font-size:14px;line-height:1.6;color:#666666;">Der Verwaltungslink funktioniert ohne Account. Bewahre diese E-Mail auf. Darueber kannst du spaeter Inhalte bearbeiten oder die Kampagne pausieren, sobald die Verwaltungsseite freigeschaltet ist.</p>`
+                  : `<p style="margin:0 0 18px;font-size:14px;line-height:1.6;color:#666666;">Der Verwaltungslink funktioniert ohne Account. Bewahre diese E-Mail auf. Darueber kannst du spaeter Inhalte bearbeiten oder die Kampagne pausieren.</p>`
               }
             </td>
           </tr>

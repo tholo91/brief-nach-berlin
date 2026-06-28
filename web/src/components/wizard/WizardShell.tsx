@@ -54,6 +54,7 @@ function stepToProgress(step: WizardStep): number {
 export function WizardShell() {
   const searchParams = useSearchParams();
   const router = useRouter();
+  const campaignDraftSlugRef = useRef<string | undefined>(undefined);
 
   const [wizardData, setWizardData] = useState<Partial<WizardData>>(() => {
     const data = readParamsToData(searchParams);
@@ -70,6 +71,9 @@ export function WizardShell() {
       data.issueText = handoff.issueText;
       if (handoff.toneLevel != null) data.toneLevel = handoff.toneLevel;
       if (handoff.tipsOpened) data.tipsOpened = true;
+      if (handoff.source === "campaign" && handoff.campaignSlug) {
+        campaignDraftSlugRef.current = handoff.campaignSlug;
+      }
       // Voice von der Landing uebernehmen, sonst meldet der Debug-Payload
       // faelschlich Voice=false. Wird beim Step-1-Abschluss per OR gemergt.
       if (handoff.usedSpeechToText) data.usedSpeechToText = true;
@@ -97,7 +101,7 @@ export function WizardShell() {
   // Landing gemerkten Entwurf verwerfen, damit ein zurückkehrender Besucher im
   // selben Tab ein frisches Feld sieht statt des alten Textes.
   useEffect(() => {
-    if (step === 3) clearLandingDraft();
+    if (step === 3) clearLandingDraft(campaignDraftSlugRef.current);
   }, [step]);
 
   // Sync URL params when step/data change

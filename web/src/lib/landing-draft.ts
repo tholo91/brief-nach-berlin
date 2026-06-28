@@ -11,25 +11,29 @@
 
 const LANDING_DRAFT_KEY = "landing-issue-draft";
 
-export function readLandingDraft(): string {
+function draftKey(campaignSlug?: string): string {
+  return campaignSlug ? `${LANDING_DRAFT_KEY}:campaign:${campaignSlug}` : LANDING_DRAFT_KEY;
+}
+
+export function readLandingDraft(campaignSlug?: string): string {
   try {
-    return sessionStorage.getItem(LANDING_DRAFT_KEY) ?? "";
+    return sessionStorage.getItem(draftKey(campaignSlug)) ?? "";
   } catch {
     return "";
   }
 }
 
-export function writeLandingDraft(text: string): void {
+export function writeLandingDraft(text: string, campaignSlug?: string): void {
   try {
-    sessionStorage.setItem(LANDING_DRAFT_KEY, text);
+    sessionStorage.setItem(draftKey(campaignSlug), text);
   } catch {
     // sessionStorage nicht verfügbar -> Entwurf still verwerfen.
   }
 }
 
-export function clearLandingDraft(): void {
+export function clearLandingDraft(campaignSlug?: string): void {
   try {
-    sessionStorage.removeItem(LANDING_DRAFT_KEY);
+    sessionStorage.removeItem(draftKey(campaignSlug));
   } catch {
     // ignorieren
   }

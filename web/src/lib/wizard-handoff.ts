@@ -15,6 +15,8 @@ export interface WizardHandoff {
   issueText: string;
   toneLevel?: number;
   tipsOpened?: boolean;
+  source?: "landing" | "campaign";
+  campaignSlug?: string;
   // Ob auf der Landing eine Sprachnachricht genutzt wurde. Muss mitwandern,
   // sonst startet der Wizard mit einem frischen "false" und der Debug-Payload
   // meldet faelschlich Voice=false, obwohl auf der Landing gesprochen wurde.
@@ -43,12 +45,14 @@ export function peekHandoff(): WizardHandoff | null {
       parsed !== null &&
       typeof (parsed as WizardHandoff).issueText === "string"
     ) {
-      const { issueText, toneLevel, tipsOpened, usedSpeechToText } =
+      const { issueText, toneLevel, tipsOpened, source, campaignSlug, usedSpeechToText } =
         parsed as WizardHandoff;
       return {
         issueText,
         toneLevel: typeof toneLevel === "number" ? toneLevel : undefined,
         tipsOpened: typeof tipsOpened === "boolean" ? tipsOpened : undefined,
+        source: source === "campaign" ? "campaign" : "landing",
+        campaignSlug: typeof campaignSlug === "string" ? campaignSlug : undefined,
         usedSpeechToText:
           typeof usedSpeechToText === "boolean" ? usedSpeechToText : undefined,
       };

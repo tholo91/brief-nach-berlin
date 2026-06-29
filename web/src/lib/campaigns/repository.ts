@@ -23,6 +23,7 @@ type CampaignRow = {
   description: string | null;
   creator_name: string | null;
   external_url: string | null;
+  logo_path: string | null;
   status: CampaignStatus;
   moderation_status: CampaignModerationStatus;
   moderation_categories: string[] | null;
@@ -31,6 +32,7 @@ type CampaignRow = {
   paused_at: string | null;
   archived_at: string | null;
   last_published_revision_id: string | null;
+  letter_count: number | null;
   created_at: string;
   updated_at: string;
 };
@@ -55,6 +57,7 @@ type CampaignUpdate = Partial<{
   description: string | null;
   creator_name: string | null;
   external_url: string | null;
+  logo_path: string | null;
   status: CampaignStatus;
   moderation_status: CampaignModerationStatus;
   moderation_categories: string[];
@@ -89,6 +92,7 @@ function mapCampaign(row: CampaignRow): Campaign {
     description: row.description,
     creatorName: row.creator_name,
     externalUrl: row.external_url,
+    logoPath: row.logo_path,
     status: row.status,
     moderationStatus: row.moderation_status,
     moderationCategories: row.moderation_categories ?? [],
@@ -97,6 +101,7 @@ function mapCampaign(row: CampaignRow): Campaign {
     pausedAt: row.paused_at,
     archivedAt: row.archived_at,
     lastPublishedRevisionId: row.last_published_revision_id,
+    letterCount: row.letter_count ?? 0,
     createdAt: row.created_at,
     updatedAt: row.updated_at,
   };
@@ -176,6 +181,7 @@ export async function createCampaign(
       description: nullableText(parsed.description),
       creator_name: nullableText(parsed.creatorName),
       external_url: nullableText(parsed.externalUrl),
+      logo_path: nullableText(parsed.logoPath),
       status: "draft",
       moderation_status: parsed.moderationStatus,
       moderation_categories: parsed.moderationCategories,
@@ -206,6 +212,20 @@ export async function getCampaignById(
     throw new CampaignRepositoryError(`Campaign lookup failed: ${error.message}`);
   }
   return data ? mapCampaign(data as CampaignRow) : null;
+}
+
+export async function deleteCampaign(
+  campaignId: string,
+  db?: RepositoryClient
+): Promise<void> {
+  const { error } = await client(db)
+    .from("campaigns")
+    .delete()
+    .eq("id", campaignId);
+
+  if (error) {
+    throw new CampaignRepositoryError(`Campaign delete failed: ${error.message}`);
+  }
 }
 
 export async function getCampaignBySlug(
@@ -247,6 +267,7 @@ export async function updateCampaignPublicFields(
   if (parsed.description !== undefined) patch.description = nullableText(parsed.description);
   if (parsed.creatorName !== undefined) patch.creator_name = nullableText(parsed.creatorName);
   if (parsed.externalUrl !== undefined) patch.external_url = nullableText(parsed.externalUrl);
+  if (parsed.logoPath !== undefined) patch.logo_path = nullableText(parsed.logoPath);
 
   return updateCampaignRow(campaignId, patch, db);
 }
@@ -273,6 +294,14 @@ export async function createCampaignRevision(
   db?: RepositoryClient
 ): Promise<CampaignRevision> {
   const campaign = await requireCampaign(campaignId, db);
+  return createCampaignRevisionFromCampaign(campaign, reason, db);
+}
+
+async function createCampaignRevisionFromCampaign(
+  campaign: Campaign,
+  reason: CampaignRevisionReason,
+  db?: RepositoryClient
+): Promise<CampaignRevision> {
   const { data, error } = await client(db)
     .from("campaign_revisions")
     .insert({
@@ -336,6 +365,10 @@ export async function publishCampaignEdits(
       parsed.externalUrl !== undefined
         ? nullableText(parsed.externalUrl)
         : campaign.externalUrl,
+    logoPath:
+      parsed.logoPath !== undefined
+        ? nullableText(parsed.logoPath)
+        : campaign.logoPath,
   };
 
   const { data: revisionData, error: revisionError } = await client(db)
@@ -369,6 +402,7 @@ export async function publishCampaignEdits(
       description: next.description,
       creator_name: next.creatorName,
       external_url: next.externalUrl,
+      logo_path: next.logoPath,
       moderation_status: "approved",
       moderation_categories: moderationCategories,
       last_published_revision_id: revision.id,
@@ -408,14 +442,21 @@ export async function activateCampaign(
   db?: RepositoryClient
 ): Promise<Campaign> {
   const campaign = await requireCampaign(campaignId, db);
+  return activateVerifiedCampaign(campaign, db);
+}
+
+export async function activateVerifiedCampaign(
+  campaign: Campaign,
+  db?: RepositoryClient
+): Promise<Campaign> {
   assertStatus(campaign, ["awaiting_email_verification", "paused"], "activate");
   assertPubliclyPublishable(campaign, "activate");
   if (!campaign.emailVerifiedAt) {
     throw new CampaignRepositoryError("activate requires verified creator email");
   }
-  const revision = await createCampaignRevision(campaignId, "activated", db);
+  const revision = await createCampaignRevisionFromCampaign(campaign, "activated", db);
   return updateCampaignRow(
-    campaignId,
+    campaign.id,
     {
       status: "active",
       activated_at: new Date().toISOString(),

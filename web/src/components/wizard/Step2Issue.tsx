@@ -251,6 +251,7 @@ interface Step2IssueProps {
   /** Focus the field on mount, but only on hover/fine-pointer (desktop)
    *  devices so we never force the on-screen keyboard open on touch. */
   autoFocus?: boolean;
+  isCampaign?: boolean;
 }
 
 export function Step2Issue({
@@ -259,10 +260,12 @@ export function Step2Issue({
   defaultToneLevel,
   variant = "wizard",
   autoFocus = false,
+  isCampaign = false,
 }: Step2IssueProps) {
   const isLanding = variant === "landing";
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const [issueText, setIssueText] = useState(defaultValue ?? "");
+  const lastDefaultValueRef = useRef(defaultValue);
   const [voiceState, setVoiceState] = useState<VoiceRecorderState>("idle");
   const usedVoiceRef = useRef(false);
   // Tracks whether the user opened the tips disclosure (wizard variant only;
@@ -318,6 +321,12 @@ export function Step2Issue({
       ? clampToTwoLines(placeholder, phWidth, phFont)
       : placeholder;
   const keyboardHint = !tooShort ? (isMac ? "⌘↵" : "Ctrl+↵") : undefined;
+
+  useEffect(() => {
+    if (defaultValue === lastDefaultValueRef.current) return;
+    lastDefaultValueRef.current = defaultValue;
+    setIssueText(defaultValue ?? "");
+  }, [defaultValue]);
 
   const handleVoiceStateChange = useCallback((state: VoiceRecorderState) => {
     setVoiceState(state);
@@ -493,10 +502,14 @@ export function Step2Issue({
       {!isLanding && (
         <>
           <h1 className="font-typewriter text-[28px] font-semibold leading-[1.2] text-waldgruen-dark mb-2">
-            Was beschäftigt dich gerade?
+            {isCampaign
+              ? "Möchtest du den Brief persönlicher machen?"
+              : "Was beschäftigt dich gerade?"}
           </h1>
           <p className="font-body text-sm text-warmgrau/70 mb-4">
-            Sprich drauflos und passe deinen Text danach an. Oder nenne ein paar Stichpunkte, du musst keine ganzen Sätze schreiben. Daraus wird dein Briefentwurf formuliert.
+            {isCampaign
+              ? "Die Kampagne hat bereits einen Entwurf vorbereitet. Du kannst ihn direkt übernehmen oder kurz ergänzen, warum dir das Thema persönlich wichtig ist. Stichpunkte reichen."
+              : "Sprich drauflos und passe deinen Text danach an. Oder nenne ein paar Stichpunkte, du musst keine ganzen Sätze schreiben. Daraus wird dein Briefentwurf formuliert."}
           </p>
 
           {/* Tips disclosure — subtle nudge toward effective writing */}

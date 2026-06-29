@@ -7,6 +7,7 @@ import type { Politician } from "@/lib/types/politician";
 import type { Step1Data } from "@/lib/validation/wizardSchemas";
 import type { Step1bData } from "@/lib/validation/wizardSchemas";
 import { submitWizardAction } from "@/lib/actions/submitWizard";
+import { campaignLogoPublicUrl } from "@/lib/campaigns/logo";
 import { peekHandoff, clearHandoff } from "@/lib/wizard-handoff";
 import { clearLandingDraft } from "@/lib/landing-draft";
 import { Step1Form } from "./Step1Form";
@@ -54,29 +55,12 @@ function stepToProgress(step: WizardStep): number {
 export function WizardShell() {
   const searchParams = useSearchParams();
   const router = useRouter();
-  const campaignDraftSlugRef = useRef<string | undefined>(undefined);
 
   const [wizardData, setWizardData] = useState<Partial<WizardData>>(() => {
     const data = readParamsToData(searchParams);
     const textParam = searchParams.get("text");
     if (textParam) {
       data.issueText = textParam;
-    }
-    // Landing -> wizard handoff (sessionStorage): pre-fill step 1 with the
-    // issue the visitor already wrote on the landing (and whether they opened
-    // the tips there). Read-only here; the entry is cleared in an effect below
-    // so a later reload restarts cleanly.
-    const handoff = typeof window !== "undefined" ? peekHandoff() : null;
-    if (handoff) {
-      data.issueText = handoff.issueText;
-      if (handoff.toneLevel != null) data.toneLevel = handoff.toneLevel;
-      if (handoff.tipsOpened) data.tipsOpened = true;
-      if (handoff.source === "campaign" && handoff.campaignSlug) {
-        campaignDraftSlugRef.current = handoff.campaignSlug;
-      }
-      // Voice von der Landing uebernehmen, sonst meldet der Debug-Payload
-      // faelschlich Voice=false. Wird beim Step-1-Abschluss per OR gemergt.
-      if (handoff.usedSpeechToText) data.usedSpeechToText = true;
     }
     return data;
   });
@@ -91,9 +75,33 @@ export function WizardShell() {
   const [plzError, setPlzError] = useState<string | null>(null);
   const hasMountedRef = useRef(false);
 
-  // Consume the landing handoff once: clear it so a manual reload of /app
-  // restarts on step 1 instead of resurrecting the previous issue text.
+  // Landing -> wizard handoff (sessionStorage): pre-fill step 1 with the
+  // issue the visitor already wrote on the landing. Read after mount so the
+  // server and initial client render stay identical.
   useEffect(() => {
+    const handoff = peekHandoff();
+    if (handoff) {
+      window.setTimeout(() => {
+        setWizardData((current) => ({
+          ...current,
+          issueText: handoff.issueText,
+          ...(handoff.toneLevel != null ? { toneLevel: handoff.toneLevel } : {}),
+          ...(handoff.tipsOpened ? { tipsOpened: true } : {}),
+          ...(handoff.usedSpeechToText ? { usedSpeechToText: true } : {}),
+          ...(handoff.source === "campaign" && handoff.campaignSlug
+            ? {
+                campaign: {
+                  slug: handoff.campaignSlug,
+                  title: handoff.campaignTitle ?? "Kampagne",
+                  creatorName: handoff.campaignCreatorName,
+                  externalUrl: handoff.campaignExternalUrl,
+                  logoPath: handoff.campaignLogoPath,
+                },
+              }
+            : {}),
+        }));
+      }, 0);
+    }
     clearHandoff();
   }, []);
 
@@ -101,8 +109,8 @@ export function WizardShell() {
   // Landing gemerkten Entwurf verwerfen, damit ein zurückkehrender Besucher im
   // selben Tab ein frisches Feld sieht statt des alten Textes.
   useEffect(() => {
-    if (step === 3) clearLandingDraft(campaignDraftSlugRef.current);
-  }, [step]);
+    if (step === 3) clearLandingDraft(wizardData.campaign?.slug);
+  }, [step, wizardData.campaign?.slug]);
 
   // Sync URL params when step/data change
   useEffect(() => {
@@ -241,6 +249,15 @@ export function WizardShell() {
   const progress = stepToProgress(step);
   const showIndicator = step !== 3;
   const showBack = step === 2 || step === "2b";
+  const campaignContext = wizardData.campaign;
+  const campaignLogoUrl = campaignLogoPublicUrl(campaignContext?.logoPath);
+  const campaignInitial = (
+    campaignContext?.creatorName ||
+    campaignContext?.title ||
+    "K"
+  )
+    .charAt(0)
+    .toUpperCase();
 
   useEffect(() => {
     window.dispatchEvent(
@@ -326,6 +343,72 @@ export function WizardShell() {
         </button>
       )}
 
+      {campaignContext && step !== 3 && (
+        <div className="mb-6 flex items-center gap-3 rounded-lg border border-waldgruen/15 bg-waldgruen/5 px-4 py-3 font-body text-sm leading-relaxed text-warmgrau/75">
+          {campaignLogoUrl ? (
+            <div
+              role="img"
+              aria-label={`Logo von ${campaignContext.creatorName ?? campaignContext.title}`}
+              className="h-11 w-11 shrink-0 rounded-full border border-waldgruen/15 bg-white shadow-sm"
+              style={{
+                backgroundImage: `url(${campaignLogoUrl})`,
+                backgroundPosition: "center",
+                backgroundRepeat: "no-repeat",
+                backgroundSize: "cover",
+              }}
+            />
+          ) : (
+            <div
+              aria-hidden="true"
+              className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-waldgruen/15 bg-white font-typewriter text-base font-bold text-waldgruen-dark shadow-sm"
+            >
+              {campaignInitial}
+            </div>
+          )}
+          <div className="min-w-0">
+            <p className="font-typewriter text-[11px] font-bold uppercase tracking-widest text-waldgruen/60">
+              Kampagne
+            </p>
+            <p className="mt-0.5 truncate font-body text-sm font-semibold text-waldgruen-dark">
+              {campaignContext.title}
+            </p>
+            <p className="mt-0.5 font-body text-sm text-warmgrau/75">
+              {campaignContext.creatorName && (
+                <>
+                  von{" "}
+                  {campaignContext.externalUrl ? (
+                    <a
+                      href={campaignContext.externalUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="font-semibold text-waldgruen underline decoration-waldgruen/30 underline-offset-4"
+                    >
+                      {campaignContext.creatorName}
+                    </a>
+                  ) : (
+                    <span className="font-semibold text-waldgruen-dark">
+                      {campaignContext.creatorName}
+                    </span>
+                  )}
+                  {" "}
+                  <span aria-hidden="true" className="text-warmgrau/35">
+                    ·
+                  </span>{" "}
+                </>
+              )}
+              <a
+                href={`/kampagne/${campaignContext.slug}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="font-semibold text-waldgruen underline decoration-waldgruen/30 underline-offset-4"
+              >
+                Zur Kampagne
+              </a>
+            </p>
+          </div>
+        </div>
+      )}
+
       {/* Step content */}
       <div className="transition-opacity duration-150 ease-in" key={step}>
         {step === 1 && (
@@ -334,6 +417,7 @@ export function WizardShell() {
             onSubmit={handleStep1Complete}
             defaultValue={wizardData.issueText}
             defaultToneLevel={wizardData.toneLevel}
+            isCampaign={Boolean(campaignContext)}
           />
         )}
         {step === 2 && (

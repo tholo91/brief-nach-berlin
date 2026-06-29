@@ -106,6 +106,7 @@ export async function resendLetterAction(
       letterText: cachedLetterText,
       issueText: data.issueText,
       debug: debugPayload,
+      campaign: data.campaign,
     });
 
     const emailResult = await sendLetterEmail(params);

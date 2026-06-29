@@ -1,14 +1,10 @@
 import Link from "next/link";
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
-import Header from "@/components/Header";
-import Footer from "@/components/Footer";
+import { CampaignBackground } from "@/components/campaigns/CampaignBackground";
 import { CampaignManager } from "@/components/campaigns/CampaignManager";
 import { getCampaignById } from "@/lib/campaigns/repository";
-import {
-  exchangeCampaignTokenForManagementSession,
-  getCampaignManagementSession,
-} from "@/lib/campaigns/session";
+import { getCampaignManagementSession } from "@/lib/campaigns/session";
 
 export const metadata: Metadata = {
   title: "Kampagne verwalten | Brief nach Berlin",
@@ -18,7 +14,7 @@ export const metadata: Metadata = {
 function AccessNotice({ message }: { message: string }) {
   return (
     <section className="mx-auto max-w-2xl px-6 py-16 md:py-24">
-      <div className="rounded-md border border-warmgrau/12 bg-white/75 p-6 shadow-sm md:p-8">
+      <div className="rounded-2xl border border-warmgrau/12 bg-white/75 p-6 shadow-sm md:p-8">
         <p className="font-typewriter text-sm font-bold uppercase tracking-widest text-waldgruen/60">
           Kampagne verwalten
         </p>
@@ -45,10 +41,13 @@ export default async function ManageCampaignPage({
   searchParams: Promise<{ token?: string }>;
 }) {
   const params = await searchParams;
-  const session = params.token
-    ? await exchangeCampaignTokenForManagementSession(params.token, "manage")
-    : await getCampaignManagementSession();
-  if (params.token && session) redirect("/kampagne/verwalten");
+  if (params.token) {
+    redirect(
+      `/kampagne/verwalten/zugang?token=${encodeURIComponent(params.token)}`
+    );
+  }
+
+  const session = await getCampaignManagementSession();
 
   let campaign = null;
   if (session) {
@@ -56,18 +55,14 @@ export default async function ManageCampaignPage({
   }
 
   return (
-    <>
-      <Header />
-      <main className="bg-creme">
-        {campaign ? (
-          <section className="mx-auto max-w-4xl px-6 py-14 md:py-20">
-            <CampaignManager campaign={campaign} />
-          </section>
-        ) : (
-          <AccessNotice message="Bitte öffne den aktuellen Verwaltungslink aus deiner Kampagnen-E-Mail. Es gibt keine Nutzerkonten und keinen Login-Bereich." />
-        )}
-      </main>
-      <Footer />
-    </>
+    <CampaignBackground>
+      {campaign ? (
+        <section className="relative mx-auto max-w-4xl px-6 py-14 md:py-20">
+          <CampaignManager campaign={campaign} />
+        </section>
+      ) : (
+        <AccessNotice message="Bitte öffne den aktuellen Verwaltungslink aus deiner Kampagnen-E-Mail. Es gibt keine Nutzerkonten und keinen Login-Bereich." />
+      )}
+    </CampaignBackground>
   );
 }

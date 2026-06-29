@@ -6,6 +6,18 @@ export async function incrementLetterCount(): Promise<void> {
   if (error) console.error("[counter] increment failed:", error.message);
 }
 
+export async function incrementLetterCounters(campaignSlug?: string): Promise<number | undefined> {
+  const { data, error } = await supabase.rpc("increment_letter_counters", {
+    campaign_slug: campaignSlug ?? null,
+  });
+  if (error) {
+    console.error("[counter] increment failed:", error.message);
+    await incrementLetterCount();
+    return undefined;
+  }
+  return typeof data === "number" ? data : undefined;
+}
+
 export async function getLetterCount(): Promise<number> {
   noStore();
   const { data, error } = await supabase

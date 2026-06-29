@@ -156,7 +156,8 @@ function buildTransitionStage(target: Box): HTMLDivElement {
     inset: "0",
     zIndex: "9998",
     pointerEvents: "none",
-    background: "var(--color-creme)",
+    background:
+      "linear-gradient(rgba(250, 248, 245, 0.9), rgba(250, 248, 245, 0.9)), url('/hero-bg.webp') center / cover",
     color: "var(--color-warmgrau)",
     fontFamily: "var(--font-body), system-ui, sans-serif",
     opacity: "0",
@@ -350,10 +351,10 @@ export function morphAnliegenFieldToWizard({ onBeforeNavigate, navigate }: Morph
   });
 
   // Hero-Inhalt wegblenden (alles ausser dem Klon, der auf <body> liegt).
-  const heroSection = source.closest("section");
-  if (heroSection instanceof HTMLElement) {
-    heroSection.style.transition = `opacity ${MORPH_MS}ms ease`;
-    heroSection.style.opacity = "0";
+  const heroContent = source.closest("#anliegen")?.parentElement;
+  if (heroContent instanceof HTMLElement) {
+    heroContent.style.transition = `opacity ${MORPH_MS}ms ease`;
+    heroContent.style.opacity = "0";
   }
 
   // Erst morphen, DANN navigieren (NICHT parallel). top/left/width/height sind
@@ -392,9 +393,9 @@ export function morphAnliegenFieldToWizard({ onBeforeNavigate, navigate }: Morph
       if (Date.now() - startedAt > REVEAL_TIMEOUT_MS) {
         clone.remove();
         stage.remove();
-        if (!onWizard && heroSection instanceof HTMLElement) {
-          heroSection.style.opacity = "";
-          heroSection.style.transition = "";
+        if (!onWizard && heroContent instanceof HTMLElement) {
+          heroContent.style.opacity = "";
+          heroContent.style.transition = "";
         }
         return;
       }

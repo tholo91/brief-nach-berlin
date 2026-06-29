@@ -3,6 +3,7 @@ import { buildEmailHtml } from "./buildEmailHtml";
 import { signFeedbackToken } from "@/lib/feedback/token";
 import type { Politician } from "@/lib/types/politician";
 import { EMAIL_SUBJECT, EMAIL_SENDER_NAME } from "@/lib/config";
+import type { WizardData } from "@/lib/types/wizard";
 
 const apiKey = process.env.BREVO_API_KEY;
 if (!apiKey) {
@@ -73,6 +74,8 @@ export interface SendLetterEmailParams {
   // to authenticate clicks to /feedback. Missing in legacy callers (resend);
   // when missing, the star bar is omitted from the rendered email.
   feedbackToken?: string;
+  campaign?: WizardData["campaign"];
+  letterNumber?: number;
 }
 
 // Gemeinsamer Versand-Tail für Erst- UND Resend-Pfad: mappt einen Politician +
@@ -87,8 +90,10 @@ export function prepareLetterEmail(args: {
   letterText: string;
   issueText: string;
   debug: LetterDebugPayload;
+  campaign?: WizardData["campaign"];
+  letterNumber?: number;
 }): { params: SendLetterEmailParams; feedbackToken: string } {
-  const { recipientEmail, politician, letterText, issueText, debug } = args;
+  const { recipientEmail, politician, letterText, issueText, debug, campaign, letterNumber } = args;
   const feedbackToken = signFeedbackToken(debug);
   return {
     feedbackToken,
@@ -105,6 +110,8 @@ export function prepareLetterEmail(args: {
       issueText,
       debug,
       feedbackToken,
+      campaign,
+      letterNumber,
     },
   };
 }

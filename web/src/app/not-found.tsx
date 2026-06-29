@@ -1,5 +1,4 @@
 import Link from "next/link";
-import Header from "@/components/Header";
 
 export const metadata = {
   title: "Seite nicht gefunden | Brief nach Berlin",
@@ -8,8 +7,6 @@ export const metadata = {
 export default function NotFound() {
   return (
     <div className="min-h-screen flex flex-col bg-creme">
-      <Header />
-
       <main className="flex-1 flex items-center justify-center px-6 py-20">
         <div className="max-w-lg w-full text-center">
 

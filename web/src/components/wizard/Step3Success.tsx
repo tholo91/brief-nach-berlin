@@ -9,12 +9,10 @@ import { reportErrorAction } from "@/lib/actions/reportError";
 import { installClientLogBuffer, getClientLogs } from "@/lib/clientLogBuffer";
 import { formatPartyShort } from "@/lib/formatParty";
 import {
-  APP_URL,
-  SHARE_TEXT_CAUSE,
-  SHARE_URL_EMAIL,
   FOUNDER_EMAIL,
   FOUNDER_FEEDBACK_URL,
 } from "@/lib/config";
+import { buildShareTarget } from "@/lib/share";
 
 // Phased loading copy. Rotates while the politician-pick spinner runs. This is
 // the user's final click - they sit here waiting for the letter to be drafted,
@@ -445,15 +443,19 @@ export function Step3Success({ result, wizardData, politicians, onChangePlz }: S
 
   const [copied, setCopied] = useState(false);
   const [clipboardFallbackUrl, setClipboardFallbackUrl] = useState<string | null>(null);
+  const share = useMemo(
+    () => buildShareTarget(wizardData.campaign),
+    [wizardData.campaign]
+  );
 
   // Single "Teilen" button: native share when available, fall back to clipboard copy.
   const handleShare = async () => {
     if (typeof navigator !== "undefined" && "share" in navigator) {
       try {
         await navigator.share({
-          title: "Brief nach Berlin",
-          text: SHARE_TEXT_CAUSE,
-          url: APP_URL,
+          title: wizardData.campaign?.title ?? "Brief nach Berlin",
+          text: share.text,
+          url: share.url,
         });
         return;
       } catch {
@@ -461,11 +463,11 @@ export function Step3Success({ result, wizardData, politicians, onChangePlz }: S
       }
     }
     try {
-      await navigator.clipboard.writeText(SHARE_TEXT_CAUSE);
+      await navigator.clipboard.writeText(share.text);
       setCopied(true);
       setTimeout(() => setCopied(false), 2200);
     } catch {
-      setClipboardFallbackUrl(APP_URL);
+      setClipboardFallbackUrl(share.url);
     }
   };
 
@@ -487,8 +489,6 @@ export function Step3Success({ result, wizardData, politicians, onChangePlz }: S
       setResendState("error");
     }
   }, [resendState, letterText, generatedPoliticianId, wizardData, resendEmail]);
-
-  const emailShareHref = SHARE_URL_EMAIL;
 
   const founderFeedbackUrl = wizardData.email
     ? `${FOUNDER_FEEDBACK_URL}?email=${encodeURIComponent(wizardData.email)}`
@@ -809,19 +809,38 @@ export function Step3Success({ result, wizardData, politicians, onChangePlz }: S
         <div className="mt-10 pt-8 border-t border-warmgrau/15">
           <div className="rounded-xl bg-waldgruen/8 border border-waldgruen/20 p-5">
             <h2 className="font-typewriter text-lg font-semibold text-waldgruen-dark">
-              Gemeinsam noch lauter
+              {wizardData.campaign?.slug ? "Diese Kampagne weitertragen" : "Gemeinsam noch lauter"}
             </h2>
             <p className="font-body text-sm text-warmgrau leading-relaxed mt-2">
-              Dein Brief wirkt. Und er wirkt noch stärker, wenn weitere Stimmen aus deinem Wahlkreis dazukommen. Briefe aus derselben Gegend zum gleichen Thema bekommen im Bundestag besonderes Gewicht.
+              {wizardData.campaign?.slug
+                ? "Dein Brief ist ein Anfang. Teile die Kampagne, damit weitere Menschen aus ihrem Wahlkreis mit eigenen Worten schreiben."
+                : "Dein Brief wirkt. Und er wirkt noch stärker, wenn weitere Stimmen aus deinem Wahlkreis dazukommen. Briefe aus derselben Gegend zum gleichen Thema bekommen im Bundestag besonderes Gewicht."}
             </p>
-            <p className="font-body text-sm text-warmgrau leading-relaxed mt-3">
-              Motiviere gern andere, mitzumachen! Über Politik meckern fühlt sich noch besser an, wenn man einen Brief schreibt 😉
-            </p>
+            {!wizardData.campaign?.slug && (
+              <p className="font-body text-sm text-warmgrau leading-relaxed mt-3">
+                Motiviere gern andere, mitzumachen! Über Politik meckern fühlt sich noch besser an, wenn man einen Brief schreibt 😉
+              </p>
+            )}
 
-            {/* Two primary share buttons, equal width */}
             <div className="grid grid-cols-2 gap-3 mt-5">
               <a
-                href={emailShareHref}
+                href={share.whatsappUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center justify-center gap-2 rounded-lg bg-waldgruen px-3 py-3 font-body text-sm font-semibold text-creme transition-colors hover:bg-waldgruen-dark"
+              >
+                WhatsApp
+              </a>
+              <a
+                href={share.telegramUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center justify-center gap-2 rounded-lg bg-waldgruen px-3 py-3 font-body text-sm font-semibold text-creme transition-colors hover:bg-waldgruen-dark"
+              >
+                Telegram
+              </a>
+              <a
+                href={share.emailUrl}
                 className="inline-flex items-center justify-center gap-2 font-body text-sm font-semibold text-creme bg-waldgruen hover:bg-waldgruen-dark px-3 py-3 rounded-lg transition-colors"
               >
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">

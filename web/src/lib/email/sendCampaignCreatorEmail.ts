@@ -42,6 +42,7 @@ export async function sendCampaignCreatorEmail(
       htmlContent: buildCampaignCreatorEmailHtml({
         kind: params.kind,
         campaignTitle: params.campaignTitle,
+        slug: params.slug,
         campaignUrl: campaignUrl(params.slug),
         actionUrl: actionUrl(params.kind, params.token),
       }),

@@ -22,6 +22,7 @@ type CampaignTokenRow = {
 type RepositoryClient = SupabaseClient;
 
 const DEFAULT_TOKEN_TTL_SECONDS = 60 * 60 * 24 * 7;
+const MANAGE_TOKEN_TTL_SECONDS = 60 * 60 * 24 * 365 * 100;
 
 export class CampaignTokenError extends Error {
   constructor(message: string) {
@@ -57,7 +58,7 @@ export function hashCampaignToken(token: string): string {
 export async function createCampaignToken(
   campaignId: string,
   kind: CampaignTokenKind,
-  ttlSeconds = DEFAULT_TOKEN_TTL_SECONDS,
+  ttlSeconds = kind === "manage" ? MANAGE_TOKEN_TTL_SECONDS : DEFAULT_TOKEN_TTL_SECONDS,
   db?: RepositoryClient
 ): Promise<{ token: string; record: CampaignTokenRecord }> {
   const parsedKind = campaignTokenKindSchema.parse(kind);
@@ -88,6 +89,31 @@ export async function consumeCampaignToken(
   expectedKind?: CampaignTokenKind,
   db?: RepositoryClient
 ): Promise<CampaignTokenRecord | null> {
+  const found = await getUsableCampaignToken(token, expectedKind, db);
+  if (!found) return null;
+
+  const { data: consumed, error: consumeError } = await client(db)
+    .from("campaign_tokens")
+    .update({ used_at: new Date().toISOString() })
+    .eq("id", found.id)
+    .is("used_at", null)
+    .select("*")
+    .maybeSingle();
+
+  if (consumeError) {
+    throw new CampaignTokenError(
+      `Campaign token consume failed: ${consumeError.message}`
+    );
+  }
+
+  return consumed ? mapToken(consumed as CampaignTokenRow) : null;
+}
+
+export async function getUsableCampaignToken(
+  token: string,
+  expectedKind?: CampaignTokenKind,
+  db?: RepositoryClient
+): Promise<CampaignTokenRecord | null> {
   const tokenHash = hashCampaignToken(token);
   const query = client(db)
     .from("campaign_tokens")
@@ -103,23 +129,7 @@ export async function consumeCampaignToken(
   if (findError) {
     throw new CampaignTokenError(`Campaign token lookup failed: ${findError.message}`);
   }
-  if (!found) return null;
-
-  const { data: consumed, error: consumeError } = await client(db)
-    .from("campaign_tokens")
-    .update({ used_at: new Date().toISOString() })
-    .eq("id", (found as CampaignTokenRow).id)
-    .is("used_at", null)
-    .select("*")
-    .maybeSingle();
-
-  if (consumeError) {
-    throw new CampaignTokenError(
-      `Campaign token consume failed: ${consumeError.message}`
-    );
-  }
-
-  return consumed ? mapToken(consumed as CampaignTokenRow) : null;
+  return found ? mapToken(found as CampaignTokenRow) : null;
 }
 
 export async function revokeCampaignToken(

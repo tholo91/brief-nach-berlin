@@ -13,7 +13,7 @@ import { buildDebugPayload } from "@/lib/email/buildDebugPayload";
 import { checkRateLimit, hashIdentifier, LIMITS } from "@/lib/rateLimit";
 import { DEFAULT_LETTER_LENGTH } from "@/lib/config";
 import { MistralProviderUnavailableError } from "@/lib/mistral";
-import { incrementLetterCount } from "@/lib/counter";
+import { incrementLetterCounters } from "@/lib/counter";
 
 export const maxDuration = 60;
 
@@ -180,7 +180,7 @@ export async function POST(req: NextRequest) {
 
     // Send email + increment counter fire-and-forget
     after(async () => {
-      await incrementLetterCount();
+      const letterNumber = await incrementLetterCounters(data.campaign?.slug);
       const debugPayload = buildDebugPayload(data, result, derivedPoliticians.length);
       const politicianFullName = `${result.selectedPolitician.firstName} ${result.selectedPolitician.lastName}`;
       const { params, feedbackToken } = prepareLetterEmail({
@@ -189,6 +189,8 @@ export async function POST(req: NextRequest) {
         letterText: result.letter,
         issueText: data.issueText,
         debug: debugPayload,
+        campaign: data.campaign,
+        letterNumber,
       });
 
       const letterResult = await sendLetterEmail(params);

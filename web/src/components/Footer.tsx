@@ -45,6 +45,7 @@ const footerSections = [
   {
     title: "Rechtliches",
     links: [
+      { label: "Kampagnen", href: "/kampagne/starten" },
       { label: "Impressum", href: "/impressum" },
       { label: "Datenschutz", href: "/datenschutz" },
     ],

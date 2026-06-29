@@ -13,6 +13,13 @@ export interface WizardData {
   toneLevel?: number;
   usedSpeechToText?: boolean;
   tipsOpened?: boolean;
+  campaign?: {
+    slug: string;
+    title: string;
+    creatorName?: string;
+    externalUrl?: string;
+    logoPath?: string;
+  };
 }
 
 export interface Step1bData {

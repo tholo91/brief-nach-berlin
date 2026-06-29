@@ -1,12 +1,12 @@
 import type { SendLetterEmailParams, LetterDebugPayload } from "./sendLetterEmail";
 import {
   APP_URL,
-  SHARE_TEXT_CAUSE,
   FOUNDER_HOMEPAGE,
   FOUNDER_FEEDBACK_URL,
   abgeordnetenwatchProfileUrl,
 } from "@/lib/config";
 import { formatPartyShort } from "@/lib/formatParty";
+import { buildShareTarget } from "@/lib/share";
 
 function buildDebugUrl(d: LetterDebugPayload): string {
   // base64url-encode JSON payload so it survives URLs without padding/+/ issues
@@ -56,8 +56,26 @@ function nlToBr(text: string): string {
   return escapeHtml(text).replace(/\n/g, "<br>");
 }
 
+function buildCampaignAttributionHtml(
+  campaign: SendLetterEmailParams["campaign"]
+): string {
+  if (!campaign?.slug) return "";
+
+  const campaignUrl = `${APP_URL}/kampagne/${encodeURIComponent(campaign.slug)}`;
+  const creator = campaign.creatorName?.trim();
+  return `
+    <div class="bnb-inner-pad" style="margin:0 0 16px;background-color:#FAF8F5;border:1px solid #E0DCD7;border-radius:4px;padding:14px 18px;">
+      <p style="margin:0;font-family:Georgia,'Times New Roman',serif;font-size:13px;color:#4A4A4A;line-height:1.6;">
+        ${creator ? `Diese Kampagne wurde von <strong>${escapeHtml(creator)}</strong> gestartet.` : "Dieser Brief gehört zu einer öffentlichen Kampagne."}
+        <a href="${campaignUrl}" target="_blank" rel="noopener noreferrer" style="color:#2D5016;text-decoration:underline;">Zur Kampagne</a>
+      </p>
+    </div>`;
+}
+
 export function buildEmailHtml(data: SendLetterEmailParams): string {
   const isFallback = data.politicianFirstName === "" && data.politicianLastName === "MdB";
+  const letterNumberText =
+    typeof data.letterNumber === "number" ? ` · Brief # ${data.letterNumber}` : "";
 
   const fullName = data.politicianTitle
     ? `${escapeHtml(data.politicianTitle)} ${escapeHtml(data.politicianName)}`
@@ -88,12 +106,8 @@ export function buildEmailHtml(data: SendLetterEmailParams): string {
   
   const disclaimerSiteName = isFallback ? "bundestag.de" : "abgeordnetenwatch.de";
 
-  // Cause-recruit shares (motivate recipient to write their own letter)
-  const causeText = encodeURIComponent(SHARE_TEXT_CAUSE);
-  const whatsappUrl = `https://wa.me/?text=${causeText}`;
-  const telegramUrl = `https://t.me/share/url?url=${encodeURIComponent(APP_URL)}&text=${causeText}`;
+  const share = buildShareTarget(data.campaign);
   const instagramUrl = `${APP_URL}/weitersagen#insta`;
-  const emailShareUrl = `mailto:?subject=${encodeURIComponent("Schreibst du auch einen Brief nach Berlin?")}&body=${causeText}`;
 
   // Letter text: escape then convert newlines to <br> for email clients
   const letterHtml = nlToBr(data.letterText);
@@ -223,6 +237,7 @@ export function buildEmailHtml(data: SendLetterEmailParams): string {
                     <p style="margin:0 0 14px;font-family:Georgia,'Times New Roman',serif;font-size:14px;color:#4A4A4A;line-height:1.6;">
                       Handgeschriebene Briefe fallen in Bundestagsbüros auf. Inmitten unpersönlicher Drucksachen signalisieren sie echtes Engagement. &rarr; <a href="${APP_URL}/tipps" style="color:#2D5016;text-decoration:underline;">Tipps für den perfekten Brief</a>
                     </p>
+                    ${buildCampaignAttributionHtml(data.campaign)}
                     <p style="margin:0 0 20px;font-family:Georgia,'Times New Roman',serif;font-size:14px;color:#4A4A4A;line-height:1.6;">
                       Toll, dass du dir die Zeit für unsere Demokratie nimmst. Melde dich super gerne bei <a href="${FOUNDER_FEEDBACK_URL}" target="_blank" rel="noopener noreferrer" style="color:#2D5016;text-decoration:underline;">Fragen oder weiteren Anregungen</a>. Beste Grüße aus Bremen ✌️
                     </p>
@@ -239,23 +254,23 @@ export function buildEmailHtml(data: SendLetterEmailParams): string {
                 <tr>
                   <td colspan="7" class="bnb-pad" style="padding:8px 32px 24px;background-color:#ffffff;">
                     <div class="bnb-inner-pad" style="background-color:#FAF8F5;border:1px solid #E0DCD7;border-radius:6px;padding:20px 22px;">
-                      <h2 style="margin:0 0 8px;font-family:Georgia,'Times New Roman',serif;font-size:16px;color:#2D5016;font-weight:bold;">Gemeinsam noch lauter</h2>
+                      <h2 style="margin:0 0 8px;font-family:Georgia,'Times New Roman',serif;font-size:16px;color:#2D5016;font-weight:bold;">${data.campaign?.slug ? "Diese Kampagne weitertragen" : "Gemeinsam noch lauter"}</h2>
                       <p style="margin:0 0 14px;font-family:Georgia,'Times New Roman',serif;font-size:14px;color:#4A4A4A;line-height:1.6;">
-                        Dein Brief wirkt. Und er wirkt noch stärker, wenn weitere Stimmen aus deinem Wahlkreis dazukommen. Teile Brief-nach-Berlin per…
+                        ${data.campaign?.slug ? "Dein Brief ist ein Anfang. Teile die Kampagne, damit weitere Menschen aus ihrem Wahlkreis mit eigenen Worten schreiben." : "Dein Brief wirkt. Und er wirkt noch stärker, wenn weitere Stimmen aus deinem Wahlkreis dazukommen. Teile Brief-nach-Berlin per…"}
                       </p>
                       <table role="presentation" cellpadding="0" cellspacing="0" width="100%">
                         <tr>
                           <td style="padding-right:4px;width:25%;" valign="top">
-                            <a href="${whatsappUrl}" class="bnb-share-btn" style="display:block;text-align:center;background-color:#ffffff;color:#2D5016;font-family:Georgia,'Times New Roman',serif;font-size:14px;font-weight:bold;text-decoration:none;padding:10px 4px;border-radius:6px;border:2px solid #2D5016;line-height:1;white-space:nowrap;"><img src="${APP_URL}/images/icon-whatsapp.png" alt="" width="18" height="18" class="bnb-share-icon" style="width:18px;height:18px;vertical-align:middle;border:0;margin-right:6px;"><span class="bnb-share-label">WhatsApp</span></a>
+                            <a href="${share.whatsappUrl}" class="bnb-share-btn" style="display:block;text-align:center;background-color:#ffffff;color:#2D5016;font-family:Georgia,'Times New Roman',serif;font-size:14px;font-weight:bold;text-decoration:none;padding:10px 4px;border-radius:6px;border:2px solid #2D5016;line-height:1;white-space:nowrap;"><img src="${APP_URL}/images/icon-whatsapp.png" alt="" width="18" height="18" class="bnb-share-icon" style="width:18px;height:18px;vertical-align:middle;border:0;margin-right:6px;"><span class="bnb-share-label">WhatsApp</span></a>
                           </td>
                           <td style="padding:0 2px;width:25%;" valign="top">
-                            <a href="${telegramUrl}" class="bnb-share-btn" style="display:block;text-align:center;background-color:#ffffff;color:#2D5016;font-family:Georgia,'Times New Roman',serif;font-size:14px;font-weight:bold;text-decoration:none;padding:10px 4px;border-radius:6px;border:2px solid #2D5016;line-height:1;white-space:nowrap;"><img src="${APP_URL}/images/icon-telegram.png" alt="" width="18" height="18" class="bnb-share-icon" style="width:18px;height:18px;vertical-align:middle;border:0;margin-right:6px;"><span class="bnb-share-label">Telegram</span></a>
+                            <a href="${share.telegramUrl}" class="bnb-share-btn" style="display:block;text-align:center;background-color:#ffffff;color:#2D5016;font-family:Georgia,'Times New Roman',serif;font-size:14px;font-weight:bold;text-decoration:none;padding:10px 4px;border-radius:6px;border:2px solid #2D5016;line-height:1;white-space:nowrap;"><img src="${APP_URL}/images/icon-telegram.png" alt="" width="18" height="18" class="bnb-share-icon" style="width:18px;height:18px;vertical-align:middle;border:0;margin-right:6px;"><span class="bnb-share-label">Telegram</span></a>
                           </td>
                           <td style="padding:0 2px;width:25%;" valign="top">
                             <a href="${instagramUrl}" class="bnb-share-btn" style="display:block;text-align:center;background-color:#ffffff;color:#2D5016;font-family:Georgia,'Times New Roman',serif;font-size:14px;font-weight:bold;text-decoration:none;padding:10px 4px;border-radius:6px;border:2px solid #2D5016;line-height:1;white-space:nowrap;"><img src="${APP_URL}/images/icon-instagram.png" alt="" width="18" height="18" class="bnb-share-icon" style="width:18px;height:18px;vertical-align:middle;border:0;margin-right:6px;"><span class="bnb-share-label">Instagram</span></a>
                           </td>
                           <td style="padding-left:4px;width:25%;" valign="top">
-                            <a href="${emailShareUrl}" class="bnb-share-btn" style="display:block;text-align:center;background-color:#ffffff;color:#2D5016;font-family:Georgia,'Times New Roman',serif;font-size:14px;font-weight:bold;text-decoration:none;padding:10px 4px;border-radius:6px;border:2px solid #2D5016;line-height:1;white-space:nowrap;"><img src="${APP_URL}/images/icon-email.png" alt="" width="18" height="18" class="bnb-share-icon" style="width:18px;height:18px;vertical-align:middle;border:0;margin-right:6px;"><span class="bnb-share-label">E-Mail</span></a>
+                            <a href="${share.emailUrl}" class="bnb-share-btn" style="display:block;text-align:center;background-color:#ffffff;color:#2D5016;font-family:Georgia,'Times New Roman',serif;font-size:14px;font-weight:bold;text-decoration:none;padding:10px 4px;border-radius:6px;border:2px solid #2D5016;line-height:1;white-space:nowrap;"><img src="${APP_URL}/images/icon-email.png" alt="" width="18" height="18" class="bnb-share-icon" style="width:18px;height:18px;vertical-align:middle;border:0;margin-right:6px;"><span class="bnb-share-label">E-Mail</span></a>
                           </td>
                         </tr>
                       </table>
@@ -284,7 +299,7 @@ export function buildEmailHtml(data: SendLetterEmailParams): string {
                 <tr>
                   <td colspan="7" class="bnb-pad" style="padding:24px 32px 16px;background-color:#FAF8F5;text-align:center;">
                     <p style="margin:0;font-family:Georgia,'Times New Roman',serif;font-size:12px;color:#999999;">
-                      <a href="${APP_URL}" style="color:#2D5016;text-decoration:none;">Brief nach Berlin</a> · Deine Stimme zählt.
+                      <a href="${APP_URL}" style="color:#2D5016;text-decoration:none;">Brief nach Berlin</a>${letterNumberText} · Deine Stimme zählt.
                     </p>
                   </td>
                 </tr>

@@ -1,15 +1,16 @@
 "use server";
 
 import {
-  activateCampaign,
+  activateVerifiedCampaign,
   CampaignRepositoryError,
   getCampaignById,
   markEmailVerified,
   setCampaignModeration,
 } from "@/lib/campaigns/repository";
 import {
-  consumeCampaignToken,
   createCampaignToken,
+  getUsableCampaignToken,
+  revokeCampaignToken,
   revokeCampaignTokensForCampaign,
 } from "@/lib/campaigns/tokens";
 import { moderateText } from "@/lib/moderation/moderateText";
@@ -35,17 +36,17 @@ export async function verifyCampaignEmailAction(
   if (!token) {
     return {
       status: "invalid",
-      message: "Dieser Bestaetigungslink ist unvollstaendig.",
+      message: "Dieser Bestätigungslink ist unvollständig.",
     };
   }
 
   try {
-    const tokenRecord = await consumeCampaignToken(token, "verify_email");
+    const tokenRecord = await getUsableCampaignToken(token, "verify_email");
     if (!tokenRecord) {
       return {
         status: "already_used",
         message:
-          "Dieser Bestaetigungslink wurde bereits genutzt oder ist abgelaufen. Wenn deine Kampagne schon aktiv ist, findest du den Verwaltungslink in der spaeteren E-Mail.",
+          "Dieser Bestätigungslink wurde bereits genutzt oder ist abgelaufen. Wenn deine Kampagne schon aktiv ist, findest du den Verwaltungslink in der späteren E-Mail.",
       };
     }
 
@@ -80,14 +81,19 @@ export async function verifyCampaignEmailAction(
         status: "blocked",
         title: campaign.title,
         message:
-          "Die E-Mail ist bestaetigt, aber der aktuelle Kampagnentext wurde nicht freigeschaltet. Bitte ueberarbeite den Text, bevor er oeffentlich wird.",
+          "Die E-Mail ist bestätigt, aber der aktuelle Kampagnentext wurde nicht freigeschaltet. Bitte überarbeite den Text, bevor er öffentlich wird.",
       };
     }
 
-    await setCampaignModeration(campaign.id, "approved", moderation.categories);
-    const activated = await activateCampaign(verified.id);
+    const approved = await setCampaignModeration(
+      verified.id,
+      "approved",
+      moderation.categories
+    );
+    const activated = await activateVerifiedCampaign(approved);
     await revokeCampaignTokensForCampaign(activated.id, "manage");
     const { token: manageToken } = await createCampaignToken(activated.id, "manage");
+    await revokeCampaignToken(tokenRecord.id);
     const sent = await sendCampaignCreatorEmail({
       kind: "management",
       recipientEmail: activated.creatorEmail,
@@ -111,7 +117,7 @@ export async function verifyCampaignEmailAction(
       title: activated.title,
       slug: activated.slug,
       message:
-        "Deine E-Mail ist bestaetigt. Die Kampagne ist jetzt aktiv und die Verwaltungs-E-Mail ist unterwegs.",
+        "Deine E-Mail ist bestätigt. Die Kampagne ist jetzt aktiv und die Verwaltungs-E-Mail ist unterwegs.",
     };
   } catch (error) {
     if (error instanceof CampaignRepositoryError) {
@@ -122,7 +128,7 @@ export async function verifyCampaignEmailAction(
     return {
       status: "error",
       message:
-        "Die Bestaetigung konnte gerade nicht abgeschlossen werden. Bitte versuch es spaeter noch einmal.",
+        "Die Bestätigung konnte gerade nicht abgeschlossen werden. Bitte versuch es später noch einmal.",
     };
   }
 }

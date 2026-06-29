@@ -61,6 +61,13 @@ Eine Bürgerin aus Ihrem Wahlkreis`;
     letterText: dummyLetter,
     issueText: "Radwege im Viertel sind seit Monaten kaputt",
     feedbackToken: "dummy-token-for-preview",
+    campaign: {
+      slug: "sichere-radwege",
+      title: "Mehr sichere Radwege",
+      creatorName: "Initiative Radentscheid",
+      externalUrl: "https://example.com",
+    },
+    letterNumber: 662,
   });
 
   const localHtml = html.split(APP_URL).join(origin);

@@ -26,6 +26,7 @@ export type CampaignTokenKind = (typeof CAMPAIGN_TOKEN_KINDS)[number];
 export type CampaignRevisionReason = (typeof REVISION_REASONS)[number];
 
 const slugPattern = /^[a-z0-9][a-z0-9-]{1,78}[a-z0-9]$/;
+const reservedCampaignSlugs = new Set(["starten", "verifizieren", "verwalten"]);
 
 export function normalizeCampaignSlug(input: string): string {
   return input
@@ -46,6 +47,10 @@ export function isValidCampaignSlug(slug: string): boolean {
   return slugPattern.test(slug);
 }
 
+export function isReservedCampaignSlug(slug: string): boolean {
+  return reservedCampaignSlugs.has(slug);
+}
+
 export const campaignStatusSchema = z.enum(CAMPAIGN_STATUSES);
 export const campaignModerationStatusSchema = z.enum(MODERATION_STATUSES);
 export const campaignTokenKindSchema = z.enum(CAMPAIGN_TOKEN_KINDS);
@@ -55,7 +60,8 @@ export const campaignSlugSchema = z
   .string()
   .trim()
   .transform(normalizeCampaignSlug)
-  .refine(isValidCampaignSlug, "Ungültiger Kampagnen-Slug.");
+  .refine(isValidCampaignSlug, "Ungültiger Kampagnen-Slug.")
+  .refine((slug) => !isReservedCampaignSlug(slug), "Reservierter Kampagnen-Slug.");
 
 export const campaignExternalUrlSchema = z
   .string()
@@ -73,6 +79,7 @@ export const campaignPublicFieldsSchema = z.object({
   description: z.string().trim().max(400).optional().nullable(),
   creatorName: z.string().trim().max(120).optional().nullable(),
   externalUrl: campaignExternalUrlSchema.optional().nullable(),
+  logoPath: z.string().trim().max(500).optional().nullable(),
 });
 
 export const createCampaignSchema = campaignPublicFieldsSchema.extend({
@@ -101,6 +108,7 @@ export type Campaign = {
   description: string | null;
   creatorName: string | null;
   externalUrl: string | null;
+  logoPath: string | null;
   status: CampaignStatus;
   moderationStatus: CampaignModerationStatus;
   moderationCategories: string[];
@@ -109,6 +117,7 @@ export type Campaign = {
   pausedAt: string | null;
   archivedAt: string | null;
   lastPublishedRevisionId: string | null;
+  letterCount: number;
   createdAt: string;
   updatedAt: string;
 };

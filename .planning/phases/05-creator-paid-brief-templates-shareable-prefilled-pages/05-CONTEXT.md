@@ -1,4 +1,4 @@
-# Phase 5: Creator-Paid Brief Templates & Shareable Prefilled Pages - Context
+# Phase 5: Creator Campaign Templates & Shareable Prefilled Pages - Context
 
 **Gathered:** 2026-06-26
 **Status:** Ready for planning
@@ -6,7 +6,7 @@
 <domain>
 ## Phase Boundary
 
-Creators can launch a paid no-login campaign flow that produces a public campaign page under a shareable slug. Visitors landing on that campaign page see a campaign-specific variant of the Brief nach Berlin landing experience, with a prefilled issue they can adapt before continuing into the normal letter flow. The creator can later edit campaign content and archive/pause the campaign through emailed access links, but this phase does not add user accounts.
+Creators can launch a no-login campaign flow that produces a public campaign page under a shareable slug. Visitors landing on that campaign page see a campaign-specific variant of the Brief nach Berlin landing experience, with a prefilled issue they can adapt before continuing into the normal letter flow. The creator can later edit campaign content and archive/pause the campaign through emailed access links, but this phase does not add user accounts.
 
 </domain>
 
@@ -32,9 +32,9 @@ Creators can launch a paid no-login campaign flow that produces a public campaig
 - **D-12:** The main focus of the page is still letter creation, not campaign browsing. The prefilled issue is visible immediately and the primary CTA is a separate, prominent button below the field.
 - **D-13:** The campaign issue text is **prefilled and editable** for visitors. This preserves the core product promise that each user can still individualize the brief.
 
-### Publishing, payments & activation
-- **D-14:** Billing model for MVP is **one-time payment**. After payment, the campaign stays live until the creator pauses or archives it.
-- **D-15:** Campaigns do **not** go live immediately after payment. They go live only after the creator confirms the email address. This protects the no-login edit/access model from typoed emails.
+### Publishing & activation
+- **D-14:** Payment is explicitly deferred for the first validation slice. The MVP goal is to prove that Supabase-backed campaign creation, public campaign pages, and creator email access work and are accepted before adding Stripe.
+- **D-15:** Campaigns do **not** go live immediately after form submission. They go live only after the creator confirms the email address. This protects the no-login edit/access model from typoed emails.
 - **D-16:** After creation, the creator receives an email with share guidance, the campaign URL, and clear instructions for editing or pausing later.
 
 ### Editing, lifecycle & URL behavior
@@ -51,9 +51,8 @@ Creators can launch a paid no-login campaign flow that produces a public campaig
 - Exact copy for the creator education/example block
 - Exact short-description length limit
 - Exact email verification mechanism and token flow
-- Exact Stripe linkage for payment state and creator re-entry
 - Exact public campaign page layout, as long as it stays landing-like and letter-first
-- Exact pause/archive semantics and whether Stripe links are surfaced inside the creator email or management view
+- Exact pause/archive semantics and whether they are surfaced directly in the creator email or management view
 
 </decisions>
 
@@ -106,7 +105,7 @@ Creators can launch a paid no-login campaign flow that produces a public campaig
 
 ### Integration Points
 - New campaign landing pages should hand off into the existing wizard rather than fork the letter-generation flow.
-- Campaign creation/editing will need to connect payment state, email verification, slug uniqueness, and creator-management tokens in one place.
+- Campaign creation/editing will need to connect email verification, slug uniqueness, and creator-management tokens in one place.
 - Public campaign content likely needs server-backed storage distinct from the stateless current flow, but must still respect the project's privacy posture for end-user letters.
 
 </code_context>

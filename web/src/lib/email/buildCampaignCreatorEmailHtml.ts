@@ -29,10 +29,15 @@ export function buildCampaignCreatorEmailHtml(
 ): string {
   const title = escapeHtml(params.campaignTitle);
   const isVerification = params.kind === "verify_email";
-  const share = buildShareTarget({
-    slug: params.slug,
-    title: params.campaignTitle,
-  });
+  const share = isVerification
+    ? null
+    : buildShareTarget(
+        {
+          slug: params.slug,
+          title: params.campaignTitle,
+        },
+        "creator"
+      );
   const headline = isVerification
     ? "Bitte bestätige deine Kampagne"
     : "Deine Kampagne ist aktiv";
@@ -48,14 +53,36 @@ export function buildCampaignCreatorEmailHtml(
   const managementHelp = isVerification
     ? `<div style="margin:4px 0 22px;padding:16px 18px;background-color:#ffffff;border:1px solid #E0DCD7;border-radius:4px;">
         <p style="margin:0 0 8px;font-family:'Courier New',Courier,monospace;font-size:12px;font-weight:bold;text-transform:uppercase;color:#2D6A4F;">Verwaltung</p>
-        <p style="margin:0;font-size:14px;line-height:1.6;color:#666666;">Nach der Bestätigung bekommst du eine zweite E-Mail mit deinem Verwaltungslink. Bewahre sie auf: Darüber kannst du Inhalte ändern, die Kampagne pausieren oder archivieren.</p>
+        <p style="margin:0;font-size:14px;line-height:1.6;color:#666666;">Nach der Bestätigung bekommst du eine zweite E-Mail mit deinem Verwaltungslink. Darüber kannst du Inhalte ändern, pausieren oder archivieren.</p>
       </div>`
     : `<div style="margin:4px 0 22px;padding:16px 18px;background-color:#ffffff;border:1px solid #E0DCD7;border-radius:4px;">
-        <p style="margin:0 0 8px;font-family:'Courier New',Courier,monospace;font-size:12px;font-weight:bold;text-transform:uppercase;color:#2D6A4F;">Verwalten, ändern, teilen</p>
-        <p style="margin:0 0 8px;font-size:14px;line-height:1.6;color:#666666;"><strong>Verwalten:</strong> Öffne den grünen Button oben. Der Link funktioniert ohne Account, also bewahre diese E-Mail auf.</p>
-        <p style="margin:0 0 8px;font-size:14px;line-height:1.6;color:#666666;"><strong>Ändern:</strong> Im Verwaltungsbereich kannst du öffentliche Inhalte bearbeiten und die Kampagne pausieren oder archivieren.</p>
-        <p style="margin:0;font-size:14px;line-height:1.6;color:#666666;"><strong>Teilen:</strong> Nutze den Kampagnenlink <a href="${params.campaignUrl}" target="_blank" rel="noopener noreferrer" style="color:#2D6A4F;text-decoration:underline;">${params.campaignUrl}</a> oder die Buttons unten.</p>
+        <p style="margin:0 0 8px;font-family:'Courier New',Courier,monospace;font-size:12px;font-weight:bold;text-transform:uppercase;color:#2D6A4F;">Verwaltungszugang</p>
+        <p style="margin:0 0 8px;font-size:14px;line-height:1.6;color:#666666;">Der grüne Button ist dein Zugriff ohne Account. Wenn deine Sitzung abläuft, öffne diese E-Mail erneut.</p>
+        <p style="margin:0;font-size:14px;line-height:1.6;color:#666666;">Im Verwaltungsbereich kannst du öffentliche Inhalte bearbeiten, die Kampagne pausieren oder archivieren.</p>
       </div>`;
+  const campaignLink = isVerification
+    ? ""
+    : `<p style="margin:10px 0 0;font-size:14px;line-height:1.5;"><a href="${params.campaignUrl}" target="_blank" rel="noopener noreferrer" style="color:#2D6A4F;text-decoration:underline;">Kampagnenseite öffnen</a></p>`;
+  const shareBlock =
+    !isVerification && share
+      ? `<div style="margin:4px 0 22px;padding:16px 18px;background-color:#FAF8F5;border:1px solid #E0DCD7;border-radius:4px;">
+                <p style="margin:0 0 8px;font-family:'Courier New',Courier,monospace;font-size:12px;font-weight:bold;text-transform:uppercase;color:#2D6A4F;">Kampagne teilen</p>
+                <p style="margin:0 0 12px;font-size:14px;line-height:1.6;color:#666666;">Lade andere ein, aus ihrem Wahlkreis einen eigenen Brief zu schreiben.</p>
+                <table role="presentation" cellpadding="0" cellspacing="0" width="100%">
+                  <tr>
+                    <td style="padding-right:4px;width:33%;" valign="top">
+                      <a href="${share.whatsappUrl}" target="_blank" rel="noopener noreferrer" style="display:block;text-align:center;background-color:#ffffff;color:#2D6A4F;font-size:13px;font-weight:bold;text-decoration:none;padding:10px 4px;border-radius:4px;border:1px solid #2D6A4F;">WhatsApp</a>
+                    </td>
+                    <td style="padding:0 2px;width:33%;" valign="top">
+                      <a href="${share.telegramUrl}" target="_blank" rel="noopener noreferrer" style="display:block;text-align:center;background-color:#ffffff;color:#2D6A4F;font-size:13px;font-weight:bold;text-decoration:none;padding:10px 4px;border-radius:4px;border:1px solid #2D6A4F;">Telegram</a>
+                    </td>
+                    <td style="padding-left:4px;width:33%;" valign="top">
+                      <a href="${share.emailUrl}" style="display:block;text-align:center;background-color:#ffffff;color:#2D6A4F;font-size:13px;font-weight:bold;text-decoration:none;padding:10px 4px;border-radius:4px;border:1px solid #2D6A4F;">E-Mail</a>
+                    </td>
+                  </tr>
+                </table>
+              </div>`
+      : "";
 
   return `<!DOCTYPE html>
 <html lang="de">
@@ -85,7 +112,7 @@ export function buildCampaignCreatorEmailHtml(
                 <p style="margin:0 0 6px;font-family:'Courier New',Courier,monospace;font-size:12px;font-weight:bold;text-transform:uppercase;color:#2D6A4F;">Kampagne</p>
                 <p style="margin:0;font-size:18px;line-height:1.45;color:#1B4332;"><strong>${title}</strong></p>
                 <p style="margin:10px 0 0;font-size:14px;line-height:1.5;color:#666666;">${statusText}</p>
-                <p style="margin:10px 0 0;font-size:14px;line-height:1.5;"><a href="${params.campaignUrl}" target="_blank" rel="noopener noreferrer" style="color:#2D6A4F;text-decoration:underline;">${params.campaignUrl}</a></p>
+                ${campaignLink}
               </div>
               <p style="margin:0 0 22px;text-align:center;">
                 <a href="${params.actionUrl}" target="_blank" rel="noopener noreferrer" style="display:inline-block;background-color:#2D6A4F;color:#ffffff;font-size:16px;font-weight:bold;text-decoration:none;padding:13px 18px;border-radius:4px;">${buttonText}</a>
@@ -93,26 +120,10 @@ export function buildCampaignCreatorEmailHtml(
               ${
                 isVerification
                   ? `<p style="margin:0 0 18px;font-size:14px;line-height:1.6;color:#666666;">Wenn du diese Kampagne nicht angelegt hast, kannst du diese E-Mail ignorieren. Ohne Bestätigung wird die Seite nicht öffentlich.</p>`
-                  : `<p style="margin:0 0 18px;font-size:14px;line-height:1.6;color:#666666;">Der Verwaltungslink funktioniert ohne Account. Bewahre diese E-Mail auf. Darüber kannst du später Inhalte bearbeiten oder die Kampagne pausieren.</p>`
+                  : `<p style="margin:0 0 18px;font-size:14px;line-height:1.6;color:#666666;">Bewahre diese E-Mail auf. Der Verwaltungslink bleibt dein Zugang zur Kampagne.</p>`
               }
               ${managementHelp}
-              <div style="margin:4px 0 22px;padding:16px 18px;background-color:#FAF8F5;border:1px solid #E0DCD7;border-radius:4px;">
-                <p style="margin:0 0 8px;font-family:'Courier New',Courier,monospace;font-size:12px;font-weight:bold;text-transform:uppercase;color:#2D6A4F;">${isVerification ? "Nach der Bestätigung teilen" : "Kampagne teilen"}</p>
-                <p style="margin:0 0 12px;font-size:14px;line-height:1.6;color:#666666;">${isVerification ? "Der Link funktioniert öffentlich, sobald du bestätigt hast." : "Lade andere ein, aus ihrem Wahlkreis einen eigenen Brief zu schreiben."}</p>
-                <table role="presentation" cellpadding="0" cellspacing="0" width="100%">
-                  <tr>
-                    <td style="padding-right:4px;width:33%;" valign="top">
-                      <a href="${share.whatsappUrl}" target="_blank" rel="noopener noreferrer" style="display:block;text-align:center;background-color:#ffffff;color:#2D6A4F;font-size:13px;font-weight:bold;text-decoration:none;padding:10px 4px;border-radius:4px;border:1px solid #2D6A4F;">WhatsApp</a>
-                    </td>
-                    <td style="padding:0 2px;width:33%;" valign="top">
-                      <a href="${share.telegramUrl}" target="_blank" rel="noopener noreferrer" style="display:block;text-align:center;background-color:#ffffff;color:#2D6A4F;font-size:13px;font-weight:bold;text-decoration:none;padding:10px 4px;border-radius:4px;border:1px solid #2D6A4F;">Telegram</a>
-                    </td>
-                    <td style="padding-left:4px;width:33%;" valign="top">
-                      <a href="${share.emailUrl}" style="display:block;text-align:center;background-color:#ffffff;color:#2D6A4F;font-size:13px;font-weight:bold;text-decoration:none;padding:10px 4px;border-radius:4px;border:1px solid #2D6A4F;">E-Mail</a>
-                    </td>
-                  </tr>
-                </table>
-              </div>
+              ${shareBlock}
               <p style="margin:0 0 24px;text-align:center;">
                 <a href="${CAMPAIGN_CREATOR_FEEDBACK_URL}" target="_blank" rel="noopener noreferrer" style="display:inline-block;background-color:#ffffff;color:#2D6A4F;font-size:15px;font-weight:bold;text-decoration:none;padding:12px 18px;border-radius:4px;border:1px solid #2D6A4F;">Feedback geben</a>
               </p>
@@ -120,7 +131,7 @@ export function buildCampaignCreatorEmailHtml(
           </tr>
           <tr>
             <td style="padding:10px 28px 28px;">
-              <p style="margin:0;font-size:13px;line-height:1.6;color:#999999;">Brief nach Berlin speichert in Kampagnen nur die creator-seitig eingegebenen öffentlichen Texte und deine E-Mail für diesen Zugriff. Besucherbriefe werden dadurch nicht gespeichert.</p>
+              <p style="margin:0;font-size:13px;line-height:1.6;color:#999999;">Brief nach Berlin speichert in Kampagnen nur die von dir eingegebenen öffentlichen Texte und deine E-Mail für diesen Zugriff. Besucherbriefe werden dadurch nicht gespeichert.</p>
               <p style="margin:14px 0 0;font-size:13px;line-height:1.6;color:#999999;"><a href="${APP_URL}" target="_blank" rel="noopener noreferrer" style="color:#999999;text-decoration:underline;">brief-nach-berlin.de</a></p>
             </td>
           </tr>

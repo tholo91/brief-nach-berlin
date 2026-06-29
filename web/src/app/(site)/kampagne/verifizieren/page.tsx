@@ -5,6 +5,7 @@ import { verifyCampaignEmailAction } from "@/lib/actions/verifyCampaignEmail";
 import { CampaignShareActions } from "@/components/campaigns/CampaignShareActions";
 import { CampaignUrlCopyField } from "@/components/campaigns/CampaignUrlCopyField";
 import { CAMPAIGN_CREATOR_FEEDBACK_URL } from "@/lib/config";
+import { getCampaignBySlug } from "@/lib/campaigns/repository";
 import { campaignSlugSchema } from "@/lib/campaigns/schema";
 import { buildShareTarget } from "@/lib/share";
 
@@ -33,8 +34,14 @@ export default async function VerifyCampaignEmailPage({
   const params = await searchParams;
   if (params.status === "aktiv" && params.slug) {
     const parsedSlug = campaignSlugSchema.safeParse(params.slug);
+    const campaign = parsedSlug.success
+      ? await getCampaignBySlug(parsedSlug.data)
+      : null;
     const share = parsedSlug.success
-      ? buildShareTarget({ slug: parsedSlug.data })
+      ? buildShareTarget(
+          { slug: parsedSlug.data, title: campaign?.title },
+          "creator"
+        )
       : null;
 
     return (

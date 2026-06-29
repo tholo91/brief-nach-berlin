@@ -1,4 +1,4 @@
-# Phase 5: Creator-Paid Brief Templates & Shareable Prefilled Pages - Research
+# Phase 5: Creator Campaign Templates & Shareable Prefilled Pages - Research
 
 **Date:** 2026-06-26
 **Scope:** What needs to be true so Phase 5 can be planned and executed without breaking the existing landing-first, privacy-first letter flow.
@@ -10,8 +10,8 @@ Phase 5 should be built as a small server-backed campaign subsystem around the e
 1. Store campaign metadata in Supabase.
 2. Keep visitor letter generation on the existing `/app` wizard path.
 3. Reuse Brevo for creator emails.
-4. Use Stripe Checkout for the one-time payment.
-5. Use revocable DB-backed creator tokens for verification and management, not permanent stateless links.
+4. Use revocable DB-backed creator tokens for verification and management, not permanent stateless links.
+5. Defer Stripe/payment until the campaign flow has proven that creators will actually use and share it.
 
 ## Existing patterns worth reusing
 
@@ -62,7 +62,6 @@ Why:
 Use an explicit status machine on `campaigns`:
 
 - `draft`
-- `awaiting_payment`
 - `awaiting_email_verification`
 - `active`
 - `paused`
@@ -91,20 +90,18 @@ Recommended approach:
 - Email the raw token once.
 - On open, exchange it for a short-lived HttpOnly management session cookie and mark the original token as used.
 
-### 4. Payment and activation sequence
+### 4. Validation-first activation sequence
 
 The cleanest sequence that matches the phase context is:
 
 1. Creator submits campaign form with email.
 2. Server validates + moderates public text.
 3. Draft campaign row is created and slug is reserved.
-4. Stripe Checkout session is created for that campaign.
-5. Stripe webhook marks the campaign as paid.
-6. Paid creator receives a verification email.
-7. Verification click activates the campaign only if the current public text still passes moderation.
-8. Creator receives a separate management link email after activation.
+4. Creator receives a verification email.
+5. Verification click activates the campaign only if the current public text still passes moderation.
+6. Creator receives a separate management link email after activation.
 
-This keeps typoed emails from creating unreachable live campaigns and avoids public go-live before payment is confirmed.
+This keeps typoed emails from creating unreachable live campaigns while avoiding Stripe complexity before the feature is validated.
 
 ### 5. Public campaign page
 
@@ -125,7 +122,6 @@ Allowed persistence:
 
 - Creator-authored campaign metadata
 - Creator email
-- Payment linkage
 - Token hashes
 - Revision snapshots of campaign text
 
@@ -141,7 +137,6 @@ Not allowed:
 - `web/supabase/migrations/*campaign*.sql`
 - `web/src/lib/campaigns/*`
 - `web/src/lib/actions/*campaign*.ts`
-- `web/src/app/api/stripe/webhook/route.ts` or existing Stripe webhook endpoint
 
 ### New public routes
 
@@ -158,16 +153,16 @@ Not allowed:
 
 ## Open choices left to planning
 
-- Exact Stripe product/price wiring and whether the price ID is config-only or stored in DB
 - Exact campaign description limit inside the preferred 300-400 character band
 - Whether creator management lives behind a cookie-backed page session or a one-time route that rotates links on every open
 - Whether creator edit saves auto-publish after moderation or require an explicit "Änderungen veröffentlichen" click
+- Whether Stripe is added later as a separate monetization phase after creator demand is visible
 
 ## Planning recommendation
 
 Split Phase 5 into four plans:
 
 1. Campaign schema, token security, server repository layer.
-2. Creator creation flow, moderation gate, Stripe checkout, activation mails.
+2. Creator creation flow, moderation gate, email verification, activation mails.
 3. Public campaign landing page and wizard handoff reuse.
 4. Creator management, pause/archive, revision snapshots, Datenschutz update.

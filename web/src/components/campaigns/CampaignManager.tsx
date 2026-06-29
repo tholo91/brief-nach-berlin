@@ -98,6 +98,9 @@ export function CampaignManager({ campaign }: { campaign: Campaign }) {
   const canArchive = campaign.status !== "archived";
   const currentLogoUrl = campaignLogoPublicUrl(campaign.logoPath);
   const shownLogoUrl = logoPreviewUrl ?? currentLogoUrl;
+  const logoFileButtonClass = shownLogoUrl
+    ? "file:bg-warmgrau/18 file:text-waldgruen-dark hover:file:bg-warmgrau/25"
+    : "file:bg-waldgruen file:text-creme hover:file:bg-waldgruen-dark";
   const publicUrl = campaignPublicUrl(campaign.slug);
   const formattedLetterCount = numberFormatter.format(campaign.letterCount);
   const letterCountLabel = campaign.letterCount === 1 ? "Brief erstellt" : "Briefe erstellt";
@@ -280,7 +283,7 @@ export function CampaignManager({ campaign }: { campaign: Campaign }) {
 
         <div className="grid gap-2">
           <label className="font-typewriter text-sm font-bold text-waldgruen-dark" htmlFor="logo">
-            Kampagnenbild
+            Logo oder Bild
           </label>
           <div className="grid gap-3 rounded-md border border-warmgrau/15 bg-white/45 p-4 sm:grid-cols-[72px_1fr] sm:items-center">
             <div className="flex h-[72px] w-[72px] items-center justify-center overflow-hidden rounded-md border border-warmgrau/18 bg-white">
@@ -313,10 +316,10 @@ export function CampaignManager({ campaign }: { campaign: Campaign }) {
                 onChange={updateLogo}
                 aria-invalid={Boolean(logoError || logoServerError)}
                 aria-describedby={logoError || logoServerError ? "logo-error" : "logo-help"}
-                className="font-body text-sm text-warmgrau file:mr-3 file:rounded-md file:border-0 file:bg-waldgruen file:px-3 file:py-2 file:font-body file:text-sm file:font-semibold file:text-creme hover:file:bg-waldgruen-dark disabled:opacity-60"
+                className={`font-body text-sm text-warmgrau file:mr-3 file:rounded-md file:border-0 file:px-3 file:py-2 file:font-body file:text-sm file:font-semibold disabled:opacity-60 ${logoFileButtonClass}`}
               />
               <p id="logo-help" className="font-body text-sm text-warmgrau/60">
-                PNG, JPG oder WebP. Große Bilder werden vor dem Hochladen verkleinert.
+                PNG, JPG oder WebP. Quadratische Logos oder Bilder wirken am besten.
               </p>
               {(logoError || logoServerError) && (
                 <p id="logo-error" className="font-body text-sm text-airmail-rot">

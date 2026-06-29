@@ -288,7 +288,7 @@ export function CreatorCampaignForm() {
 
       <details className="group rounded-md border border-warmgrau/15 bg-white/40 px-4 py-3">
         <summary className="flex cursor-pointer list-none items-center justify-between font-typewriter text-sm font-bold text-waldgruen-dark">
-          Absender, Logo und Kontext hinzufügen (optional)
+          Absender, Logo/Bild und Kontext hinzufügen (optional)
           <svg
             width="16"
             height="16"
@@ -320,7 +320,7 @@ export function CreatorCampaignForm() {
 
           <div className="grid gap-2">
             <label className="font-typewriter text-sm font-bold text-waldgruen-dark" htmlFor="logo">
-              Logo
+              Logo oder Bild
             </label>
             <div className="grid gap-3 rounded-md border border-warmgrau/15 bg-white/45 p-4 sm:grid-cols-[72px_1fr] sm:items-center">
               <div className="flex h-[72px] w-[72px] items-center justify-center overflow-hidden rounded-md border border-warmgrau/18 bg-white">
@@ -339,7 +339,7 @@ export function CreatorCampaignForm() {
                   />
                 ) : (
                   <span className="font-typewriter text-xs font-bold uppercase tracking-widest text-warmgrau/35">
-                    Logo
+                    Bild
                   </span>
                 )}
               </div>
@@ -355,7 +355,7 @@ export function CreatorCampaignForm() {
                   className="font-body text-sm text-warmgrau file:mr-3 file:rounded-md file:border-0 file:bg-waldgruen file:px-3 file:py-2 file:font-body file:text-sm file:font-semibold file:text-creme hover:file:bg-waldgruen-dark"
                 />
                 <p id="logo-help" className="font-body text-sm text-warmgrau/60">
-                  Quadratisch wirkt am besten. Wir verkleinern das Bild vor dem Hochladen.
+                  Ein quadratisches Logo oder Bild wirkt am besten. Wir verkleinern es vor dem Hochladen.
                 </p>
                 {(logoError || logoServerError) && (
                   <p id="logo-error" className="font-body text-sm text-airmail-rot">
@@ -445,7 +445,7 @@ export function CreatorCampaignForm() {
           Verantwortung
         </p>
         <p className="mt-2 font-body text-sm leading-relaxed text-warmgrau/75">
-          Die Kampagne erscheint mit deinem Anliegen öffentlich. Brief nach Berlin stellt nur das Werkzeug bereit. Für Titel, Beschreibung, Logo, externe Links und den vorbereiteten Kampagnentext bist du als Privatperson oder Organisation verantwortlich.
+          Die Kampagne erscheint mit deinem Anliegen öffentlich. Brief nach Berlin stellt nur das Werkzeug bereit. Für Titel, Beschreibung, Logo/Bild, externe Links und den vorbereiteten Kampagnentext bist du als Privatperson oder Organisation verantwortlich.
         </p>
         <label className="mt-3 flex items-start gap-3 font-body text-sm leading-relaxed text-warmgrau/80">
           <input

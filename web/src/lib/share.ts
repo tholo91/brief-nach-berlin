@@ -6,6 +6,8 @@ type CampaignShareInput = {
   creatorName?: string | null;
 };
 
+type CampaignShareContext = "participant" | "creator";
+
 export type ShareTarget = {
   url: string;
   text: string;
@@ -19,7 +21,10 @@ export function campaignPublicUrl(slug: string): string {
   return `${APP_URL}/kampagne/${encodeURIComponent(slug)}`;
 }
 
-export function buildShareTarget(campaign?: CampaignShareInput | null): ShareTarget {
+export function buildShareTarget(
+  campaign?: CampaignShareInput | null,
+  context: CampaignShareContext = "participant"
+): ShareTarget {
   const slug = campaign?.slug?.trim();
   const title = campaign?.title?.trim();
   const url = slug ? campaignPublicUrl(slug) : APP_URL;
@@ -27,7 +32,9 @@ export function buildShareTarget(campaign?: CampaignShareInput | null): ShareTar
     ? `Machst du bei "${title}" mit?`
     : "Schreibst du auch einen Brief nach Berlin?";
   const text =
-    slug && title
+    slug && title && context === "creator"
+      ? `Ich habe die Briefkampagne "${title}" gestartet. Schreibst du auch einen eigenen Brief aus deinem Wahlkreis? ${url}`
+      : slug && title
       ? `Ich habe gerade bei der Kampagne "${title}" einen Brief an die Politik vorbereitet. Machst du auch mit? ${url}`
       : SHARE_TEXT_CAUSE;
 

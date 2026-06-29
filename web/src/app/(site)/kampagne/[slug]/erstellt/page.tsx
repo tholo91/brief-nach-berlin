@@ -1,12 +1,9 @@
 import Link from "next/link";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { CampaignShareActions } from "@/components/campaigns/CampaignShareActions";
-import { CampaignUrlCopyField } from "@/components/campaigns/CampaignUrlCopyField";
 import { CAMPAIGN_CREATOR_FEEDBACK_URL } from "@/lib/config";
 import { getCampaignBySlug } from "@/lib/campaigns/repository";
 import { campaignSlugSchema } from "@/lib/campaigns/schema";
-import { buildShareTarget } from "@/lib/share";
 
 type CampaignCreatedPageProps = {
   params: Promise<{ slug: string }>;
@@ -34,8 +31,6 @@ export default async function CampaignCreatedPage({
 
   const campaign = await getCampaignBySlug(parsedSlug.data);
   if (!campaign) notFound();
-
-  const share = buildShareTarget(campaign);
 
   return (
     <section className="relative overflow-hidden bg-creme">
@@ -72,15 +67,13 @@ export default async function CampaignCreatedPage({
             </ol>
           </div>
 
-          <div className="mt-6">
-            <CampaignUrlCopyField url={share.url} />
-          </div>
-
-          <div className="mt-6">
-            <p className="mb-3 font-body text-sm leading-relaxed text-warmgrau/70">
-              Diese Buttons sind für später: Der Link funktioniert öffentlich, sobald du deine E-Mail bestätigt hast.
+          <div className="mt-6 rounded-md border border-warmgrau/15 bg-white/65 px-4 py-4">
+            <p className="font-typewriter text-xs font-bold uppercase tracking-widest text-waldgruen/60">
+              Teilen kommt gleich
             </p>
-            <CampaignShareActions share={share} />
+            <p className="mt-2 font-body text-sm leading-relaxed text-warmgrau/70">
+              Nach deiner Bestätigung bekommst du die aktive Kampagnenseite und den Verwaltungslink per E-Mail.
+            </p>
           </div>
 
           <a

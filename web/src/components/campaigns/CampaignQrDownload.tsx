@@ -174,13 +174,17 @@ export function CampaignQrDownload({ url, slug, logoUrl }: CampaignQrDownloadPro
       />
       <div className="grid gap-3">
         <div>
-          <p className="font-typewriter text-xs font-bold uppercase tracking-widest text-waldgruen/60">
-            QR-Code
-          </p>
-          <p className="mt-1 font-body text-sm leading-relaxed text-warmgrau/70">
-            {message}
+          <h2 className="font-typewriter text-xl font-bold text-waldgruen-dark">
+            QR Code
+          </h2>
+          <p className="mt-2 font-body text-sm leading-relaxed text-warmgrau/70">
+            Zum Ausdrucken, Teilen oder Aushängen, damit Menschen direkt zur
+            öffentlichen Kampagnenseite gelangen.
           </p>
         </div>
+        <p className="sr-only" aria-live="polite">
+          {message}
+        </p>
         <button
           type="button"
           onClick={downloadQr}

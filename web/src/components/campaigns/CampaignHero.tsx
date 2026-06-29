@@ -139,13 +139,13 @@ export function CampaignHero({ campaign }: { campaign: PublicCampaign }) {
             {logoUrl ? (
               <div
                 role="img"
-                aria-label={`Bild von ${sourceName}`}
+                aria-label={`Logo oder Bild von ${sourceName}`}
                 className="h-14 w-14 shrink-0 rounded-full border border-warmgrau/15 bg-white shadow-sm"
                 style={{
                   backgroundImage: `url(${logoUrl})`,
                   backgroundPosition: "center",
                   backgroundRepeat: "no-repeat",
-                  backgroundSize: "cover",
+                  backgroundSize: "contain",
                 }}
               />
             ) : (

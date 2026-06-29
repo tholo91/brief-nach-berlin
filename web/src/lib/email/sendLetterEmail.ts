@@ -121,6 +121,11 @@ export async function sendLetterEmail(
   params: SendLetterEmailParams
 ): Promise<{ success: boolean; messageId?: string }> {
   try {
+    const tags = [
+      params.debug?.resent ? "brief-resend" : "brief",
+      ...(params.campaign?.slug ? [`brief-${params.campaign.slug}`] : []),
+    ];
+
     const result = await brevo.transactionalEmails.sendTransacEmail({
       subject: EMAIL_SUBJECT,
       htmlContent: buildEmailHtml(params),
@@ -134,7 +139,7 @@ export async function sendLetterEmail(
       // Resends tragen "brief-resend" statt "brief", damit sie sich in Brevo
       // sauber von Erstversänden trennen lassen. Das resent-Flag setzt der
       // Resend-Pfad in buildResendDebugPayload.
-      tags: [params.debug?.resent ? "brief-resend" : "brief"],
+      tags,
     });
     return { success: true, messageId: result.messageId };
   } catch (error) {

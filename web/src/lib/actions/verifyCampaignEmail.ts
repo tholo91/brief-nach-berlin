@@ -100,6 +100,7 @@ export async function verifyCampaignEmailAction(
       campaignTitle: activated.title,
       slug: activated.slug,
       token: manageToken,
+      creatorName: activated.creatorName,
     });
 
     if (!sent.success) {

@@ -14,6 +14,7 @@ export type ShareTarget = {
   subject: string;
   whatsappUrl: string;
   telegramUrl: string;
+  linkedinUrl: string;
   emailUrl: string;
 };
 
@@ -44,6 +45,7 @@ export function buildShareTarget(
     subject,
     whatsappUrl: `https://wa.me/?text=${encodeURIComponent(text)}`,
     telegramUrl: `https://t.me/share/url?url=${encodeURIComponent(url)}&text=${encodeURIComponent(text)}`,
+    linkedinUrl: `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(url)}`,
     emailUrl: `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(text)}`,
   };
 }

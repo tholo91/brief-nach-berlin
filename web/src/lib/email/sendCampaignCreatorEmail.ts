@@ -17,6 +17,7 @@ export interface SendCampaignCreatorEmailParams {
   campaignTitle: string;
   slug: string;
   token: string;
+  creatorName?: string | null;
 }
 
 function campaignUrl(slug: string): string {
@@ -45,6 +46,7 @@ export async function sendCampaignCreatorEmail(
         slug: params.slug,
         campaignUrl: campaignUrl(params.slug),
         actionUrl: actionUrl(params.kind, params.token),
+        creatorName: params.creatorName,
       }),
       sender: {
         name: EMAIL_SENDER_NAME,

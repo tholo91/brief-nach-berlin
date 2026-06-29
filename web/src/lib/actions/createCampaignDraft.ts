@@ -42,7 +42,7 @@ const createCampaignDraftSchema = z.object({
   issueText: z
     .string()
     .trim()
-    .min(20, "Bitte beschreibe das Anliegen etwas konkreter.")
+    .min(100, "Bitte beschreibe das Anliegen mit mindestens 100 Zeichen.")
     .max(4000, "Das Anliegen ist zu lang."),
   creatorName: z.string().trim().max(120).optional(),
   description: z
@@ -214,6 +214,7 @@ export async function createCampaignDraftAction(
       campaignTitle: awaitingCampaign.title,
       slug: awaitingCampaign.slug,
       token,
+      creatorName: awaitingCampaign.creatorName,
     });
 
     if (!sent.success) {

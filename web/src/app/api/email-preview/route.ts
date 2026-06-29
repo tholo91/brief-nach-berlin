@@ -1,12 +1,15 @@
 import { NextResponse } from "next/server";
+import { buildCampaignCreatorEmailHtml } from "@/lib/email/buildCampaignCreatorEmailHtml";
 import { buildEmailHtml } from "@/lib/email/buildEmailHtml";
 import { buildFollowupHtml } from "@/lib/email/buildFollowupHtml";
 import { APP_URL } from "@/lib/config";
 
 // Dev-only preview of the transactional emails with dummy data.
-// - /api/email-preview               → Letter mail (Original-Briefversand)
-// - /api/email-preview?type=followup → Backlog Follow-up Mail
-// - ?format=text                     → Plain-Text-Variante anzeigen
+// - /api/email-preview                         → Letter mail
+// - /api/email-preview?type=followup           → Backlog Follow-up Mail
+// - /api/email-preview?type=campaign-creator   → Kampagnen-Bestätigungs-Mail
+// - /api/email-preview?type=campaign-management → Kampagnen-Verwaltungs-Mail
+// - ?format=text                               → Plain-Text-Variante anzeigen
 // Returns 404 in production so this never leaks externally.
 export async function GET(request: Request) {
   if (process.env.NODE_ENV === "production") {
@@ -35,6 +38,40 @@ export async function GET(request: Request) {
           : "text/html; charset=utf-8",
         "X-Email-Subject": subject,
       },
+    });
+  }
+
+  if (type === "campaign-creator") {
+    const html = buildCampaignCreatorEmailHtml({
+      kind: "verify_email",
+      campaignTitle: "Mehr Pommes in Bremen",
+      slug: "pommes",
+      campaignUrl: `${origin}/kampagne/pommes`,
+      actionUrl: `${origin}/kampagne/verifizieren?token=dummy-preview-token`,
+      creatorName: "Gesellschaft für XYZ",
+    });
+    const localHtml = html.split(APP_URL).join(origin);
+
+    return new NextResponse(localHtml, {
+      status: 200,
+      headers: { "Content-Type": "text/html; charset=utf-8" },
+    });
+  }
+
+  if (type === "campaign-management") {
+    const html = buildCampaignCreatorEmailHtml({
+      kind: "management",
+      campaignTitle: "Mehr Pommes in Bremen",
+      slug: "pommes",
+      campaignUrl: `${origin}/kampagne/pommes`,
+      actionUrl: `${origin}/kampagne/verwalten?token=dummy-management-token`,
+      creatorName: "Gesellschaft für XYZ",
+    });
+    const localHtml = html.split(APP_URL).join(origin);
+
+    return new NextResponse(localHtml, {
+      status: 200,
+      headers: { "Content-Type": "text/html; charset=utf-8" },
     });
   }
 

@@ -17,6 +17,9 @@ const LETTER_COUNT_DISPLAY_THRESHOLD = 50;
 
 export const metadata: Metadata = {
   alternates: { canonical: "/" },
+  title: "Brief nach Berlin | Dein Anliegen an die Politik",
+  description:
+    "Beschreibe dein Anliegen. Brief nach Berlin findet die passenden Abgeordneten und formuliert in wenigen Minuten deinen persönlichen Brief.",
 };
 
 export default async function Home() {

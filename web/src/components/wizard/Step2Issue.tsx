@@ -620,18 +620,15 @@ export function Step2Issue({
               instead of advancing. Vertically tracks the field like the mic. */}
           {isLanding && (
             <>
-              <div
-                aria-hidden="true"
-                className={[
-                  "absolute left-1/2 -translate-x-1/2 -top-9 whitespace-nowrap z-10",
-                  "bg-waldgruen-dark text-creme font-body text-xs px-3 py-1.5 rounded-lg",
-                  "transition-opacity duration-200 pointer-events-none",
-                  showHint && tooShort ? "opacity-100" : "opacity-0",
-                ].join(" ")}
-              >
-                Schreib noch etwas mehr
-                <span className="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-waldgruen-dark" />
-              </div>
+              {showHint && tooShort && (
+                <div
+                  aria-hidden="true"
+                  className="absolute left-1/2 -translate-x-1/2 -top-9 whitespace-nowrap z-10 bg-waldgruen-dark text-creme font-body text-xs px-3 py-1.5 rounded-lg transition-opacity duration-200 pointer-events-none"
+                >
+                  Schreib noch etwas mehr
+                  <span className="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-waldgruen-dark" />
+                </div>
+              )}
               <button
                 type="button"
                 aria-label={

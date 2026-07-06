@@ -179,6 +179,7 @@ export async function submitReviewAction(
         body: data.body.trim() || null,
         consent: data.consent,
         letter_sent: data.letterSent,
+        full_feedback_submitted: true,
         // Empty array → null so the row doesn't show "{}" in the DB for "no chips".
         feedback_tags: tagsForInsert.length ? tagsForInsert : null,
         display_name: data.displayName.trim() || null,

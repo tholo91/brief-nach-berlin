@@ -40,6 +40,31 @@ const RATING_HINTS: Record<number, string> = {
   5: "Tippi toppi!",
 };
 
+function trackReviewImprovementClick({
+  token,
+  rating,
+  mailSeq,
+}: {
+  token: string;
+  rating: number;
+  mailSeq?: 1 | 2;
+}) {
+  const payload = JSON.stringify({ token, rating, mailSeq });
+  if (navigator.sendBeacon) {
+    const queued = navigator.sendBeacon(
+      "/api/review-improvement-click",
+      new Blob([payload], { type: "application/json" })
+    );
+    if (queued) return;
+  }
+  void fetch("/api/review-improvement-click", {
+    method: "POST",
+    body: payload,
+    headers: { "Content-Type": "application/json" },
+    keepalive: true,
+  }).catch(() => undefined);
+}
+
 type ChipPolarity = "negative" | "positive";
 
 function getPolarity(rating: number): ChipPolarity {
@@ -131,7 +156,7 @@ export function FeedbackForm({
     }).catch((err) => {
       console.warn("[FeedbackForm] initial auto-submit failed:", err);
     });
-  }, [initialRating, token]);
+  }, [initialRating, mailSeq, token]);
 
   function toggleTag(slug: FeedbackTagSlug) {
     const isRemoving = feedbackTags.includes(slug);
@@ -188,6 +213,8 @@ export function FeedbackForm({
         rating={rating}
         feedbackTags={feedbackTags}
         body={body}
+        token={token}
+        mailSeq={mailSeq}
       />
     );
   }
@@ -408,6 +435,9 @@ export function FeedbackForm({
             href={improveHref}
             target="_blank"
             rel="noopener noreferrer"
+            onClick={() =>
+              trackReviewImprovementClick({ token, rating, mailSeq })
+            }
             className="inline-flex items-center justify-center gap-2 w-full bg-creme border border-waldgruen text-waldgruen font-semibold text-sm px-4 py-2.5 rounded-lg hover:bg-waldgruen hover:text-creme transition-colors cursor-pointer min-h-[40px]"
           >
             <span>Brief jetzt verbessern</span>
@@ -543,11 +573,15 @@ function ThankYouCard({
   rating,
   feedbackTags,
   body,
+  token,
+  mailSeq,
 }: {
   onSkip: () => void;
   rating: number;
   feedbackTags: FeedbackTagSlug[];
   body: string;
+  token: string;
+  mailSeq?: 1 | 2;
 }) {
   // Pausable auto-redirect. Hovering or focusing either button stops the
   // countdown so users have time to read and decide; the bar visibly pauses
@@ -626,6 +660,9 @@ function ThankYouCard({
             </p>
             <Link
               href={improveHref}
+              onClick={() =>
+                trackReviewImprovementClick({ token, rating, mailSeq })
+              }
               className="inline-flex items-center justify-center bg-waldgruen text-creme font-semibold px-4 py-2.5 rounded-lg hover:bg-waldgruen-dark transition-colors cursor-pointer text-sm w-full"
             >
               Brief jetzt verbessern →

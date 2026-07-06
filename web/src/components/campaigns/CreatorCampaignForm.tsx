@@ -99,6 +99,7 @@ async function resizeLogoFile(file: File): Promise<File> {
 export function CreatorCampaignForm() {
   const router = useRouter();
   const formRef = useRef<HTMLFormElement | null>(null);
+  const logoInputRef = useRef<HTMLInputElement | null>(null);
   const [result, setResult] = useState(initialResult);
   const [isPending, startTransition] = useTransition();
   const [draft, setDraft] = useState<CampaignDraft>(emptyDraft);
@@ -323,7 +324,12 @@ export function CreatorCampaignForm() {
               Logo oder Bild
             </label>
             <div className="grid gap-3 rounded-md border border-warmgrau/15 bg-white/45 p-4 sm:grid-cols-[72px_1fr] sm:items-center">
-              <div className="flex h-[72px] w-[72px] items-center justify-center overflow-hidden rounded-md border border-warmgrau/18 bg-white">
+              <button
+                type="button"
+                onClick={() => logoInputRef.current?.click()}
+                aria-label="Logo oder Bild auswählen"
+                className="flex h-[72px] w-[72px] items-center justify-center overflow-hidden rounded-md border border-warmgrau/18 bg-white transition-colors hover:border-waldgruen focus:border-waldgruen focus:outline-none"
+              >
                 {logoPreviewUrl ? (
                   <div
                     aria-hidden="true"
@@ -342,9 +348,10 @@ export function CreatorCampaignForm() {
                     Bild
                   </span>
                 )}
-              </div>
+              </button>
               <div className="grid gap-2">
                 <input
+                  ref={logoInputRef}
                   id="logo"
                   name="logo"
                   type="file"

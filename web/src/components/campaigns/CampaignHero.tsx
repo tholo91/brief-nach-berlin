@@ -36,7 +36,7 @@ const FAQ_ITEMS = [
 const TRUST_ITEMS = [
   "Kostenlos",
   "Kein Account",
-  "Text vorausgefüllt",
+  "Anliegen vorausgefüllt",
 ];
 
 function CheckIcon() {
@@ -109,9 +109,9 @@ export function CampaignHero({ campaign }: { campaign: PublicCampaign }) {
             {campaign.title}
           </h1>
           <p className="mt-5 max-w-xl font-body text-lg leading-relaxed text-warmgrau/75">
-            Starte mit einer Vorlage zum Thema, ergänze deine Prioritäten und
-            Details. Die Argumente sind vorbereitet, dein passendes MdB wird im
-            nächsten Schritt gefunden.
+            Brief nach Berlin macht aus diesem vorbereiteten Anliegen einen
+            persönlichen Brief an dein Mitglied des Bundestags. Du ergänzt, was
+            dir wichtig ist, prüfst den Text und kannst den Brief abschicken.
           </p>
           <div className="mt-5 flex flex-wrap gap-x-4 gap-y-2 font-body text-sm font-semibold text-waldgruen">
             {TRUST_ITEMS.map((item) => (

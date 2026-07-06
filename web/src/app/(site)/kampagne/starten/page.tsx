@@ -17,9 +17,9 @@ const trustBadges = [
 ];
 
 const campaignSteps = [
-  "Du gibst Thema, Ziel und Kontext ein. Kein fertiger Brief nötig.",
-  "Wir prüfen den öffentlichen Text und schalten ihn nach deiner E-Mail-Bestätigung frei.",
-  "Andere starten damit ihren eigenen Brief und passen ihn persönlich an.",
+  "Du gibst Anliegen, Kurzadresse und sichtbaren Absender ein. Kein fertiger Brief nötig.",
+  "Du ergänzt auf Wunsch Bild, Link und kurze Beschreibung, damit die Kampagne vertrauenswürdiger wirkt.",
+  "Jede Person, die an deiner Kampagne teilnimmt, verfasst damit ihren eigenen, personalisierten Brief.",
 ];
 
 export default function StartCampaignPage() {
@@ -63,12 +63,6 @@ export default function StartCampaignPage() {
           <div>
             <p className="font-typewriter text-xs font-bold uppercase tracking-widest text-waldgruen/60">
               So funktioniert es
-            </p>
-            <h2 className="mt-2 font-typewriter text-2xl font-bold leading-tight text-waldgruen-dark">
-              Du lieferst das Anliegen, nicht den fertigen Brief.
-            </h2>
-            <p className="mt-3 font-body text-base leading-relaxed text-warmgrau/75">
-              Die Kampagnenseite ist nur der Startpunkt. Jede Person schreibt daraus später ihren eigenen Brief mit persönlichen Angaben und eigener Perspektive.
             </p>
           </div>
 

@@ -44,7 +44,11 @@ const createCampaignDraftSchema = z.object({
     .trim()
     .min(100, "Bitte beschreibe das Anliegen mit mindestens 100 Zeichen.")
     .max(4000, "Das Anliegen ist zu lang."),
-  creatorName: z.string().trim().max(120).optional(),
+  creatorName: z
+    .string()
+    .trim()
+    .min(2, "Bitte gib einen sichtbaren Absender ein.")
+    .max(120, "Der Absender ist zu lang."),
   description: z
     .string()
     .trim()
@@ -54,7 +58,10 @@ const createCampaignDraftSchema = z.object({
     .string()
     .trim()
     .optional()
-    .transform((value) => (value ? value : undefined))
+    .transform((value) => {
+      if (!value) return undefined;
+      return /^https?:\/\//i.test(value) ? value : `https://${value}`;
+    })
     .pipe(campaignExternalUrlSchema.optional()),
   slug: z
     .string()
@@ -159,7 +166,7 @@ export async function createCampaignDraftAction(
     creatorEmail: value(formData, "creatorEmail"),
     title: value(formData, "title"),
     issueText: value(formData, "issueText"),
-    creatorName: value(formData, "creatorName") || undefined,
+    creatorName: value(formData, "creatorName"),
     description: value(formData, "description") || undefined,
     externalUrl: value(formData, "externalUrl") || undefined,
     slug: value(formData, "slug"),

@@ -18,7 +18,12 @@ const initialResult: CreateCampaignDraftResult | null = null;
 const draftStorageKey = "bnb_creator_campaign_draft";
 const maxClientLogoBytes = 4 * 1024 * 1024;
 const maxLogoDisplaySize = 512;
+const issueTextMinChars = 100;
+const issueTextBetterChars = 200;
+const issueTextMaxChars = 4000;
 const acceptedLogoTypes = new Set(["image/png", "image/jpeg", "image/webp"]);
+const firstStepErrorFields = new Set(["title", "issueText", "slug", "creatorName"]);
+const slugPattern = /^[a-z0-9][a-z0-9-]{1,78}[a-z0-9]$/;
 const draftFields = [
   "title",
   "issueText",
@@ -30,6 +35,7 @@ const draftFields = [
 ] as const;
 type DraftField = (typeof draftFields)[number];
 type CampaignDraft = Record<DraftField, string>;
+type FormStep = 1 | 2;
 const emptyDraft: CampaignDraft = {
   title: "",
   issueText: "",
@@ -39,6 +45,13 @@ const emptyDraft: CampaignDraft = {
   description: "",
   creatorEmail: "",
 };
+const campaignWritingTips = [
+  "Problem: Was soll sich ändern?",
+  "Forderung: Was soll politisch passieren?",
+  "Kontext: Wo passiert es, wen betrifft es, warum jetzt?",
+  "Argumente: Was ist für einzelne Abgeordnete oder ihre Fraktion relevant?",
+  "Anschluss: Bitte darum, das Thema in Fraktion, Ausschuss oder zuständigen Gesprächen mitzunehmen.",
+];
 
 function fieldError(
   result: CreateCampaignDraftResult | null,
@@ -60,6 +73,15 @@ function slugPreview(value: string): string {
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/^-+|-+$/g, "")
     .replace(/-{2,}/g, "-");
+}
+
+function isFirstStepComplete(draft: CampaignDraft, normalizedSlug: string): boolean {
+  return (
+    draft.title.trim().length >= 3 &&
+    draft.creatorName.trim().length >= 2 &&
+    draft.issueText.trim().length >= issueTextMinChars &&
+    slugPattern.test(normalizedSlug)
+  );
 }
 
 async function resizeLogoFile(file: File): Promise<File> {
@@ -103,18 +125,23 @@ export function CreatorCampaignForm() {
   const [result, setResult] = useState(initialResult);
   const [isPending, startTransition] = useTransition();
   const [draft, setDraft] = useState<CampaignDraft>(emptyDraft);
+  const [step, setStep] = useState<FormStep>(1);
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [logoPreviewUrl, setLogoPreviewUrl] = useState<string | null>(null);
+  const [logoFileName, setLogoFileName] = useState<string | null>(null);
   const [logoError, setLogoError] = useState<string | null>(null);
   const normalizedSlug = useMemo(() => slugPreview(draft.slug), [draft.slug]);
   const titleError = fieldError(result, "title");
   const issueTextError = fieldError(result, "issueText");
   const slugError = fieldError(result, "slug");
+  const creatorNameError = fieldError(result, "creatorName");
   const creatorEmailError = fieldError(result, "creatorEmail");
   const externalUrlError = fieldError(result, "externalUrl");
   const descriptionError = fieldError(result, "description");
   const responsibilityError = fieldError(result, "responsibilityAccepted");
   const logoServerError = fieldError(result, "logo");
+  const issueTextCharCount = draft.issueText.trim().length;
+  const firstStepComplete = isFirstStepComplete(draft, normalizedSlug);
 
   useEffect(() => {
     const rawDraft = window.localStorage.getItem(draftStorageKey);
@@ -155,6 +182,7 @@ export function CreatorCampaignForm() {
     const file = event.target.files?.[0];
     if (logoPreviewUrl) URL.revokeObjectURL(logoPreviewUrl);
     setLogoPreviewUrl(null);
+    setLogoFileName(null);
     setLogoError(null);
 
     if (!file) return;
@@ -168,12 +196,37 @@ export function CreatorCampaignForm() {
       event.target.value = "";
       return;
     }
+    setLogoFileName(file.name);
     setLogoPreviewUrl(URL.createObjectURL(file));
   }
 
-  async function submitConfirmedCampaign() {
+  function continueToSecondStep() {
+    const form = formRef.current;
+    if (!form || logoError) return;
+
+    setResult(null);
+    if (!form.reportValidity()) return;
+    setStep(2);
+    window.requestAnimationFrame(() => {
+      const top = form.getBoundingClientRect().top + window.scrollY - 96;
+      window.scrollTo({ top: Math.max(0, top), behavior: "smooth" });
+    });
+  }
+
+  function switchStep(nextStep: FormStep) {
+    if (nextStep === step) return;
+    if (nextStep === 1) {
+      setStep(1);
+      return;
+    }
+    if (firstStepComplete) continueToSecondStep();
+  }
+
+  async function submitCampaign() {
     const form = formRef.current;
     if (!form || isPending || logoError) return;
+
+    if (!form.reportValidity()) return;
 
     const formData = new FormData(form);
     formData.set("creationConfirmed", "yes");
@@ -187,6 +240,12 @@ export function CreatorCampaignForm() {
     startTransition(async () => {
       const nextResult = await createCampaignDraftAction(formData);
       setResult(nextResult);
+      if (
+        nextResult.ok === false &&
+        Object.keys(nextResult.fieldErrors ?? {}).some((field) => firstStepErrorFields.has(field))
+      ) {
+        setStep(1);
+      }
       if (nextResult.ok) {
         window.localStorage.removeItem(draftStorageKey);
         router.push(`/kampagne/${nextResult.slug}/erstellt`);
@@ -200,12 +259,53 @@ export function CreatorCampaignForm() {
       className="grid gap-5"
       onSubmit={(event) => {
         event.preventDefault();
+        if (step === 1) return;
         if (logoError) return;
         if (!event.currentTarget.reportValidity()) return;
         setResult(null);
         setConfirmOpen(true);
       }}
     >
+      <div className="grid gap-2 rounded-md border border-warmgrau/12 bg-creme/55 p-3 sm:grid-cols-2">
+        {[
+          { number: 1, title: "Grundlage", text: "Anliegen und Absender" },
+          { number: 2, title: "Freigabe", text: "Bild, Kontext und E-Mail" },
+        ].map((item) => {
+          const isActive = step === item.number;
+          const isDisabled = item.number === 2 && step === 1 && !firstStepComplete;
+          return (
+            <button
+              key={item.number}
+              type="button"
+              onClick={() => switchStep(item.number as FormStep)}
+              disabled={isDisabled}
+              className={`rounded-md px-3 py-2 text-left transition-colors ${
+                isActive ? "bg-white text-waldgruen-dark shadow-sm" : "text-warmgrau/60 hover:bg-white/60"
+              } ${
+                isDisabled ? "cursor-not-allowed opacity-55 hover:bg-transparent" : "cursor-pointer"
+              }`}
+            >
+              <p className="font-typewriter text-xs font-bold uppercase tracking-widest">
+                Schritt {item.number}
+              </p>
+              <p className="mt-1 font-body text-sm font-semibold">{item.title}</p>
+              <p className="font-body text-xs">{item.text}</p>
+            </button>
+          );
+        })}
+      </div>
+
+      {step === 2 && (
+        <>
+          <input type="hidden" name="title" value={draft.title} />
+          <input type="hidden" name="issueText" value={draft.issueText} />
+          <input type="hidden" name="slug" value={draft.slug} />
+          <input type="hidden" name="creatorName" value={draft.creatorName} />
+        </>
+      )}
+
+      {step === 1 && (
+        <>
       <div className="grid gap-2">
         <label className="font-typewriter text-sm font-bold text-waldgruen-dark" htmlFor="title">
           Kampagnentitel
@@ -230,26 +330,94 @@ export function CreatorCampaignForm() {
       </div>
 
       <div className="grid gap-2">
+        <label className="font-typewriter text-sm font-bold text-waldgruen-dark" htmlFor="creatorName">
+          Absender
+        </label>
+        <input
+          id="creatorName"
+          name="creatorName"
+          required
+          minLength={2}
+          maxLength={120}
+          value={draft.creatorName}
+          onChange={(event) => updateDraft("creatorName", event.target.value)}
+          aria-invalid={Boolean(creatorNameError)}
+          aria-describedby={creatorNameError ? "creatorName-error creatorName-help" : "creatorName-help"}
+          className="rounded-md border border-warmgrau/20 bg-white px-4 py-3 font-body text-base outline-none focus:border-waldgruen"
+          placeholder="Initiative sichere Schulwege Bremen"
+        />
+        <p id="creatorName-help" className="font-body text-sm text-warmgrau/60">
+          Dieser Name steht öffentlich auf der Kampagnenseite. Nutze die Person oder Organisation, die sichtbar Verantwortung übernimmt.
+        </p>
+        {creatorNameError && (
+          <p id="creatorName-error" className="font-body text-sm text-airmail-rot">
+            {creatorNameError}
+          </p>
+        )}
+      </div>
+
+      <div className="grid gap-2">
         <label className="font-typewriter text-sm font-bold text-waldgruen-dark" htmlFor="issueText">
           Anliegen
         </label>
-        <p id="issueText-help" className="font-body text-sm text-warmgrau/60">
-          Du musst keinen Brief schreiben. Beschreibe nur das Anliegen und deine Forderungen so detailliert wie möglich. Das Tool formuliert daraus später individuelle Briefentwürfe, personalisiert für jede Person in ihrem Wahlkreis.
-        </p>
+        <details className="group overflow-hidden rounded-r-lg border-l-4 border-waldgruen bg-waldgruen/5">
+          <summary className="flex cursor-pointer list-none items-center justify-between gap-3 px-4 py-3 font-body text-sm font-semibold text-waldgruen-dark transition-colors hover:bg-waldgruen/[0.12] [&::-webkit-details-marker]:hidden">
+            Gib der Kampagne ein klares Briefing
+            <svg
+              width="16"
+              height="16"
+              viewBox="0 0 16 16"
+              fill="none"
+              className="shrink-0 text-warmgrau/50 transition-transform group-open:rotate-180"
+              aria-hidden="true"
+            >
+              <path d="M4 6l4 4 4-4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+          </summary>
+          <ul className="grid gap-2 px-4 pb-4 pt-1 font-body text-sm leading-relaxed text-warmgrau/75">
+            {campaignWritingTips.map((tip) => (
+              <li key={tip} className="grid grid-cols-[10px_1fr] gap-2">
+                <span aria-hidden="true" className="mt-2 h-1.5 w-1.5 rounded-full bg-waldgruen/55" />
+                <span>{tip}</span>
+              </li>
+            ))}
+          </ul>
+        </details>
         <textarea
           id="issueText"
           name="issueText"
           required
-          minLength={20}
-          maxLength={4000}
+          minLength={issueTextMinChars}
+          maxLength={issueTextMaxChars}
           rows={7}
           value={draft.issueText}
           onChange={(event) => updateDraft("issueText", event.target.value)}
           aria-invalid={Boolean(issueTextError)}
-          aria-describedby={issueTextError ? "issueText-error" : "issueText-help"}
+          aria-describedby={issueTextError ? "issueText-error issueText-meta" : "issueText-meta"}
           className="rounded-md border border-warmgrau/20 bg-white px-4 py-3 font-body text-base leading-relaxed outline-none focus:border-waldgruen"
-          placeholder="Zum Beispiel: Was ist das Problem? Wo passiert es? Was soll sich politisch ändern? Stichpunkte oder ein normaler kurzer Absatz reichen."
+          placeholder={[
+            "Vor mehreren Grundschulen entstehen morgens gefährliche Situationen.",
+            "Viele Eltern fahren deshalb wieder mit dem Auto, obwohl sie lieber laufen oder Rad fahren würden.",
+            "Die Politik sollte sichere Querungen, Tempo 30 und bessere Kontrollen priorisieren...",
+          ].join(" ")}
         />
+        <div
+          id="issueText-meta"
+          className="flex flex-wrap items-center justify-between gap-x-3 gap-y-1 font-body text-xs text-warmgrau/55"
+        >
+          <span>
+            Mind. {issueTextMinChars} Zeichen, besser ab {issueTextBetterChars} Zeichen.
+          </span>
+          <span
+            className={
+              issueTextCharCount > 0 && issueTextCharCount < issueTextMinChars
+                ? "font-semibold text-airmail-rot"
+                : "font-semibold text-warmgrau/60"
+            }
+          >
+            {issueTextCharCount}/{issueTextMaxChars.toLocaleString("de-DE")} Zeichen
+          </span>
+        </div>
         {issueTextError && (
           <p id="issueText-error" className="font-body text-sm text-airmail-rot">
             {issueTextError}
@@ -287,37 +455,60 @@ export function CreatorCampaignForm() {
         )}
       </div>
 
-      <details className="group rounded-md border border-warmgrau/15 bg-white/40 px-4 py-3">
-        <summary className="flex cursor-pointer list-none items-center justify-between font-typewriter text-sm font-bold text-waldgruen-dark">
-          Absender, Logo/Bild und Kontext hinzufügen (optional)
-          <svg
-            width="16"
-            height="16"
-            viewBox="0 0 16 16"
-            fill="none"
-            className="shrink-0 text-warmgrau/50 transition-transform group-open:rotate-180"
-          >
-            <path d="M4 6l4 4 4-4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-          </svg>
-        </summary>
-        <div className="mt-4 grid gap-4">
-          <div className="grid gap-2">
-            <label className="font-typewriter text-sm font-bold text-waldgruen-dark" htmlFor="creatorName">
-              Name oder Organisation
-            </label>
-            <input
-              id="creatorName"
-              name="creatorName"
-              maxLength={120}
-              value={draft.creatorName}
-              onChange={(event) => updateDraft("creatorName", event.target.value)}
-              className="rounded-md border border-warmgrau/20 bg-white px-4 py-3 font-body text-base outline-none focus:border-waldgruen"
-              placeholder="Initiative Musterstadt"
-            />
-            <p className="font-body text-sm text-warmgrau/60">
-              Wird auf der Kampagnenseite angezeigt, wenn du es ausfüllst.
-            </p>
-          </div>
+        </>
+      )}
+
+      {step === 2 && (
+        <>
+          <div className="grid gap-4 rounded-md bg-waldgruen/5 px-4 py-4">
+            <div>
+              <p className="font-typewriter text-xs font-bold uppercase tracking-widest text-waldgruen/65">
+                Empfohlen
+              </p>
+              <h2 className="mt-1 font-typewriter text-xl font-bold leading-tight text-waldgruen-dark">
+                Mach die Kampagne vertrauenswürdiger.
+              </h2>
+              <p className="mt-2 font-body text-sm leading-relaxed text-warmgrau/70">
+                Für NGOs, Initiativen und Verantwortliche helfen Bild, Link und Kurzbeschreibung. Du kannst diese Angaben aber auch später ergänzen.
+              </p>
+            </div>
+
+            <div className="grid gap-3 rounded-md border border-warmgrau/12 bg-white/65 p-4 sm:grid-cols-[1fr_auto] sm:items-start">
+              <div>
+                <p className="font-body text-xs font-semibold uppercase tracking-wide text-warmgrau/50">
+                  Öffentlich sichtbar
+                </p>
+                <p className="mt-1 font-body text-sm font-semibold text-waldgruen-dark">
+                  {draft.title || "Deine Kampagne"} von {draft.creatorName || "deinem Absender"}
+                </p>
+                <p className="mt-1 break-all font-body text-xs text-warmgrau/60">
+                  brief-nach-berlin.de/kampagne/{normalizedSlug || "..."}
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setStep(1)}
+                className="inline-flex items-center gap-1.5 justify-self-start rounded-md border border-waldgruen/20 px-2.5 py-1.5 font-body text-sm font-semibold text-waldgruen transition-colors hover:border-waldgruen hover:bg-waldgruen/5 sm:justify-self-end"
+              >
+                <svg
+                  width="15"
+                  height="15"
+                  viewBox="0 0 16 16"
+                  fill="none"
+                  aria-hidden="true"
+                  className="shrink-0"
+                >
+                  <path
+                    d="M9.8 3.1l3.1 3.1M2.8 13.2l2.7-.5 7.1-7.1a2.2 2.2 0 0 0-3.1-3.1L2.4 9.6 1.9 12.3c-.1.6.3 1 .9.9z"
+                    stroke="currentColor"
+                    strokeWidth="1.7"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                </svg>
+                ändern
+              </button>
+            </div>
 
           <div className="grid gap-2">
             <label className="font-typewriter text-sm font-bold text-waldgruen-dark" htmlFor="logo">
@@ -359,8 +550,20 @@ export function CreatorCampaignForm() {
                   onChange={updateLogo}
                   aria-invalid={Boolean(logoError || logoServerError)}
                   aria-describedby={logoError || logoServerError ? "logo-error" : "logo-help"}
-                  className="font-body text-sm text-warmgrau file:mr-3 file:rounded-md file:border-0 file:bg-waldgruen file:px-3 file:py-2 file:font-body file:text-sm file:font-semibold file:text-creme hover:file:bg-waldgruen-dark"
+                  className="sr-only"
                 />
+                <div className="flex flex-wrap items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={() => logoInputRef.current?.click()}
+                    className="rounded-md bg-waldgruen px-3 py-2 font-body text-sm font-semibold text-creme transition-colors hover:bg-waldgruen-dark"
+                  >
+                    Bild auswählen
+                  </button>
+                  <span className="font-body text-sm text-warmgrau/60">
+                    {logoFileName ? `Ausgewählt: ${logoFileName}` : "Noch kein Bild ausgewählt"}
+                  </span>
+                </div>
                 <p id="logo-help" className="font-body text-sm text-warmgrau/60">
                   Ein quadratisches Logo oder Bild wirkt am besten. Wir verkleinern es vor dem Hochladen.
                 </p>
@@ -375,19 +578,20 @@ export function CreatorCampaignForm() {
 
           <div className="grid gap-2">
             <label className="font-typewriter text-sm font-bold text-waldgruen-dark" htmlFor="externalUrl">
-              Externer Link
+              Link zu deiner Website
             </label>
             <input
               id="externalUrl"
               name="externalUrl"
-              type="url"
+              type="text"
+              inputMode="url"
               maxLength={500}
               value={draft.externalUrl}
               onChange={(event) => updateDraft("externalUrl", event.target.value)}
               aria-invalid={Boolean(externalUrlError)}
               aria-describedby={externalUrlError ? "externalUrl-error" : undefined}
               className="rounded-md border border-warmgrau/20 bg-white px-4 py-3 font-body text-base outline-none focus:border-waldgruen"
-              placeholder="https://..."
+              placeholder="www.ngo.de/schulwege-petition"
             />
             {externalUrlError && (
               <p id="externalUrl-error" className="font-body text-sm text-airmail-rot">
@@ -410,7 +614,7 @@ export function CreatorCampaignForm() {
               aria-invalid={Boolean(descriptionError)}
               aria-describedby={descriptionError ? "description-error" : undefined}
               className="rounded-md border border-warmgrau/20 bg-white px-4 py-3 font-body text-base leading-relaxed outline-none focus:border-waldgruen"
-              placeholder="Ein Satz Kontext, damit andere verstehen, warum diese Kampagne existiert."
+              placeholder="Wir sind eine lokale Initiative für sichere Wege zur Schule und setzen uns für kinderfreundliche Mobilität ein. Diese Kampagne soll zeigen, wie viele Menschen jetzt sichere Querungen und Tempo 30 erwarten."
             />
             {descriptionError && (
               <p id="description-error" className="font-body text-sm text-airmail-rot">
@@ -419,7 +623,6 @@ export function CreatorCampaignForm() {
             )}
           </div>
         </div>
-      </details>
 
       <div className="grid gap-2 border-t border-warmgrau/12 pt-5">
         <label className="font-typewriter text-sm font-bold text-waldgruen-dark" htmlFor="creatorEmail">
@@ -473,10 +676,8 @@ export function CreatorCampaignForm() {
           </p>
         )}
       </div>
-
-      <div className="rounded-md border border-waldgruen/15 bg-creme/70 px-4 py-3 font-body text-sm leading-relaxed text-warmgrau/75">
-        Nach der Zusammenfassung schicken wir dir eine E-Mail. Erst wenn du den Link darin bestätigst, wird die Kampagne öffentlich und du bekommst den Verwaltungslink.
-      </div>
+        </>
+      )}
 
       {result && (
         <div
@@ -505,7 +706,7 @@ export function CreatorCampaignForm() {
               id="campaign-confirm-title"
               className="mt-2 font-typewriter text-2xl font-bold leading-tight text-waldgruen-dark"
             >
-              Diese Daten sind später nicht einfach änderbar.
+              Stimmen E-Mail und öffentliche Kampagnendaten?
             </h2>
             <dl className="mt-5 grid gap-3 rounded-md border border-warmgrau/15 bg-white/70 p-4">
               <div>
@@ -532,9 +733,17 @@ export function CreatorCampaignForm() {
                   {draft.title || "..."}
                 </dd>
               </div>
+              <div>
+                <dt className="font-body text-xs font-semibold uppercase tracking-wide text-warmgrau/50">
+                  Absender
+                </dt>
+                <dd className="mt-1 font-body text-sm font-semibold text-waldgruen-dark">
+                  {draft.creatorName || "..."}
+                </dd>
+              </div>
             </dl>
             <p className="mt-4 font-body text-sm leading-relaxed text-warmgrau/75">
-              Bitte bestätige nur, wenn die E-Mail-Adresse dir gehört und du die Verantwortung für die Kampagneninhalte als Privatperson oder Organisation übernehmen kannst.
+              Nach dem Klick schicken wir dir eine E-Mail. Erst wenn du den Link darin bestätigst, wird die Kampagne öffentlich und du bekommst den Verwaltungslink.
             </p>
             <div className="mt-5 grid gap-3 sm:grid-cols-2">
               <button
@@ -547,7 +756,7 @@ export function CreatorCampaignForm() {
               </button>
               <button
                 type="button"
-                onClick={submitConfirmedCampaign}
+                onClick={submitCampaign}
                 disabled={isPending}
                 className="rounded-md bg-waldgruen px-5 py-3 font-body text-base font-semibold text-creme transition-colors hover:bg-waldgruen-dark disabled:cursor-wait disabled:opacity-70"
               >
@@ -558,13 +767,50 @@ export function CreatorCampaignForm() {
         </div>
       )}
 
-      <button
-        type="submit"
-        disabled={isPending}
-        className="rounded-md bg-waldgruen px-5 py-3 font-body text-base font-semibold text-creme transition-colors hover:bg-waldgruen-dark disabled:cursor-wait disabled:opacity-70"
-      >
-        {isPending ? "Wird geprüft..." : "Kampagne anlegen"}
-      </button>
+      {step === 1 ? (
+        <button
+          type="button"
+          onClick={continueToSecondStep}
+          disabled={isPending}
+          className="inline-flex items-center justify-center gap-2 rounded-md bg-waldgruen px-5 py-3 font-body text-base font-semibold text-creme transition-colors hover:bg-waldgruen-dark disabled:cursor-wait disabled:opacity-70"
+        >
+          Weiter zu Bild, Kontext und Freigabe
+          <svg
+            width="18"
+            height="18"
+            viewBox="0 0 16 16"
+            fill="none"
+            aria-hidden="true"
+            className="shrink-0"
+          >
+            <path
+              d="M3 8h9M8.5 4.5 12 8l-3.5 3.5"
+              stroke="currentColor"
+              strokeWidth="1.8"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+          </svg>
+        </button>
+      ) : (
+        <div className="grid gap-3 sm:grid-cols-[auto_1fr]">
+          <button
+            type="button"
+            onClick={() => setStep(1)}
+            disabled={isPending}
+            className="rounded-md border border-waldgruen/25 px-5 py-3 font-body text-base font-semibold text-waldgruen-dark transition-colors hover:border-waldgruen disabled:cursor-wait disabled:opacity-70"
+          >
+            Zurück
+          </button>
+          <button
+            type="submit"
+            disabled={isPending}
+            className="rounded-md bg-waldgruen px-5 py-3 font-body text-base font-semibold text-creme transition-colors hover:bg-waldgruen-dark disabled:cursor-wait disabled:opacity-70"
+          >
+            {isPending ? "Wird geprüft..." : "Kampagne anlegen"}
+          </button>
+        </div>
+      )}
     </form>
   );
 }

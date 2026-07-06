@@ -648,7 +648,7 @@ export default function Datenschutz() {
               Wenn Sie eine Kampagne starten, speichere ich die von Ihnen
               eingegebenen öffentlichen Kampagnendaten bei Supabase: Titel,
               Kurzadresse, vorbefülltes Anliegen, optionale Beschreibung,
-              optionaler Name oder Organisationsname, optionaler externer Link,
+              Name oder Organisationsname, optionaler externer Link,
               Status der Kampagne und Zeitstempel. Diese Daten sind für die
               öffentliche Kampagnenseite bestimmt, sobald die E-Mail-Adresse
               bestätigt und der Text freigeschaltet wurde.

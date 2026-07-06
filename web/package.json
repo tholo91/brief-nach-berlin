@@ -11,7 +11,8 @@
     "test:watch": "jest --watch",
     "build:data": "tsx scripts/parse-plz-mapping.ts && tsx scripts/fetch-politician-data.ts",
     "build:plz": "tsx scripts/parse-plz-mapping.ts",
-    "fetch:politicians": "tsx scripts/fetch-politician-data.ts"
+    "fetch:politicians": "tsx scripts/fetch-politician-data.ts",
+    "fetch:constituency-offices": "tsx scripts/fetch-constituency-offices.ts"
   },
   "dependencies": {
     "@getbrevo/brevo": "^5.0.4",

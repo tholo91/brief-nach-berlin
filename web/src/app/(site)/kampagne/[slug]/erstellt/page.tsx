@@ -52,17 +52,19 @@ export default async function CampaignCreatedPage({
               So geht es weiter
             </p>
             <ol className="mt-3 grid gap-3 font-body text-sm leading-relaxed text-warmgrau/75">
-              <li>
-                <strong className="text-waldgruen-dark">1. E-Mail bestätigen.</strong>{" "}
-                Ohne Bestätigung bleibt die Kampagne unsichtbar.
+              <li className="grid gap-1">
+                <strong className="text-waldgruen-dark">1. E-Mail bestätigen.</strong>
+                <p className="pl-5">Ohne Bestätigung bleibt die Kampagne unsichtbar.</p>
               </li>
-              <li>
-                <strong className="text-waldgruen-dark">2. Verwaltungslink aufbewahren.</strong>{" "}
-                Damit kannst du Inhalte später bearbeiten, pausieren oder archivieren.
+              <li className="grid gap-1">
+                <strong className="text-waldgruen-dark">2. Verwaltungslink aufbewahren.</strong>
+                <p className="pl-5">
+                  Damit kannst du Inhalte später bearbeiten, pausieren oder archivieren.
+                </p>
               </li>
-              <li>
-                <strong className="text-waldgruen-dark">3. Kampagne teilen.</strong>{" "}
-                Teile den Link, sobald die Kampagne aktiv ist.
+              <li className="grid gap-1">
+                <strong className="text-waldgruen-dark">3. Kampagne teilen.</strong>
+                <p className="pl-5">Teile den Link, sobald die Kampagne aktiv ist.</p>
               </li>
             </ol>
           </div>

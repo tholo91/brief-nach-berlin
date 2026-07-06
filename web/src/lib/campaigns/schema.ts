@@ -43,6 +43,12 @@ export function normalizeCampaignSlug(input: string): string {
     .replace(/-{2,}/g, "-");
 }
 
+export function normalizeCampaignExternalUrl(input: string): string {
+  const trimmed = input.trim();
+  if (!trimmed) return trimmed;
+  return /^www\./i.test(trimmed) ? `https://${trimmed}` : trimmed;
+}
+
 export function isValidCampaignSlug(slug: string): boolean {
   return slugPattern.test(slug);
 }
@@ -66,12 +72,17 @@ export const campaignSlugSchema = z
 export const campaignExternalUrlSchema = z
   .string()
   .trim()
-  .url("Bitte gib eine gültige Adresse ein.")
-  .max(500)
-  .refine((value) => {
-    const protocol = new URL(value).protocol;
-    return protocol === "https:" || protocol === "http:";
-  }, "Bitte gib eine http(s)-Adresse ein.");
+  .transform(normalizeCampaignExternalUrl)
+  .pipe(
+    z
+      .string()
+      .url("Bitte gib eine gültige Adresse ein.")
+      .max(500)
+      .refine((value) => {
+        const protocol = new URL(value).protocol;
+        return protocol === "https:" || protocol === "http:";
+      }, "Bitte gib eine http(s)-Adresse ein.")
+  );
 
 export const campaignPublicFieldsSchema = z.object({
   title: z.string().trim().min(3).max(120),

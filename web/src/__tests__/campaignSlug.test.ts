@@ -1,6 +1,8 @@
 import {
+  campaignExternalUrlSchema,
   campaignSlugSchema,
   isReservedCampaignSlug,
+  normalizeCampaignExternalUrl,
   normalizeCampaignSlug,
 } from "@/lib/campaigns/schema";
 
@@ -17,5 +19,14 @@ describe("campaign slugs", () => {
 
   it("accepts ordinary campaign slugs", () => {
     expect(campaignSlugSchema.safeParse("sichere-schulwege").success).toBe(true);
+  });
+
+  it("normalizes external URLs that start with www", () => {
+    expect(normalizeCampaignExternalUrl(" www.thomas-lorenz.eu ")).toBe(
+      "https://www.thomas-lorenz.eu"
+    );
+    expect(campaignExternalUrlSchema.parse("www.thomas-lorenz.eu")).toBe(
+      "https://www.thomas-lorenz.eu"
+    );
   });
 });

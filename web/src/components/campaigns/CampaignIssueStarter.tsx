@@ -98,8 +98,9 @@ export function CampaignIssueStarter({
           Dein Brief ist vorbereitet
         </h3>
         <p className="mt-2 max-w-md font-body text-sm leading-relaxed text-warmgrau/65">
-          Ergänze, was dir an dem Thema wichtig ist. Die Vorlage bringt die
-          Argumente mit, der nächste Schritt formuliert daraus deinen Brief.
+          Das Anliegen ist schon eingefüllt. Ergänze deine Sicht, deine
+          Prioritäten oder ein Beispiel aus deinem Alltag. Danach formuliert
+          Brief nach Berlin daraus deinen Brief.
         </p>
       </div>
       <label

@@ -1,12 +1,14 @@
 import { unstable_noStore as noStore } from "next/cache";
-import { supabase } from "@/lib/supabase";
+import { getServiceRoleClient } from "@/lib/supabase/server";
 
 export async function incrementLetterCount(): Promise<void> {
+  const supabase = getServiceRoleClient();
   const { error } = await supabase.rpc("increment_counter", { key_name: "letter_count" });
   if (error) console.error("[counter] increment failed:", error.message);
 }
 
 export async function incrementLetterCounters(campaignSlug?: string): Promise<number | undefined> {
+  const supabase = getServiceRoleClient();
   const { data, error } = await supabase.rpc("increment_letter_counters", {
     campaign_slug: campaignSlug ?? null,
   });
@@ -20,6 +22,7 @@ export async function incrementLetterCounters(campaignSlug?: string): Promise<nu
 
 export async function getLetterCount(): Promise<number> {
   noStore();
+  const supabase = getServiceRoleClient();
   const { data, error } = await supabase
     .from("counters")
     .select("value")

@@ -99,14 +99,12 @@ export default function Hero() {
         </div>
 
         <h1 className="font-body text-4xl md:text-5xl font-bold text-waldgruen-dark leading-[1.1] tracking-tight mb-4 text-balance">
-          <span className="sm:hidden">Dein Anliegen.</span>
-          <span className="hidden sm:inline">Dein persönliches Anliegen.</span>
-          <br />
-          <span className="text-waldgruen">Direkt an die Politik.</span>
+          Dein Anliegen.{" "}
+          <span className="block text-waldgruen">Direkt an die Politik.</span>
         </h1>
 
         <p className="font-handwriting text-lg md:text-xl text-warmgrau leading-tight text-pretty max-w-3xl mx-auto mb-6">
-          <span className="block sm:inline">in 3 Minuten ist dein Brief</span>
+          <span className="block sm:inline">In 3 Minuten ist dein Brief </span>
           <span className="block sm:inline sm:ml-1">an die passenden Abgeordneten fertig.</span>
         </p>
 

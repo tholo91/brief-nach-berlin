@@ -24,6 +24,21 @@ export async function generateMetadata({
       campaign.description ??
       "Eine öffentliche Kampagne mit editierbarem Anliegen für deinen Brief an die Politik.",
     alternates: { canonical: `/kampagne/${campaign.slug}` },
+    openGraph: {
+      title: campaign.title,
+      description:
+        campaign.description ??
+        "Eine öffentliche Briefkampagne mit vorbereitetem Anliegen.",
+      type: "website",
+      url: `/kampagne/${campaign.slug}`,
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: campaign.title,
+      description:
+        campaign.description ??
+        "Eine öffentliche Briefkampagne mit vorbereitetem Anliegen.",
+    },
   };
 }
 

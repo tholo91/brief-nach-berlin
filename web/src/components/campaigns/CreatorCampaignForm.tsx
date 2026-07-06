@@ -18,6 +18,7 @@ const initialResult: CreateCampaignDraftResult | null = null;
 const draftStorageKey = "bnb_creator_campaign_draft";
 const maxClientLogoBytes = 4 * 1024 * 1024;
 const maxLogoDisplaySize = 512;
+const minIssueTextChars = 100;
 const acceptedLogoTypes = new Set(["image/png", "image/jpeg", "image/webp"]);
 const draftFields = [
   "title",
@@ -62,6 +63,10 @@ function slugPreview(value: string): string {
     .replace(/-{2,}/g, "-");
 }
 
+function isValidEmail(value: string): boolean {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value.trim());
+}
+
 async function resizeLogoFile(file: File): Promise<File> {
   if (!acceptedLogoTypes.has(file.type) || file.size <= 380_000) return file;
 
@@ -99,10 +104,12 @@ async function resizeLogoFile(file: File): Promise<File> {
 export function CreatorCampaignForm() {
   const router = useRouter();
   const formRef = useRef<HTMLFormElement | null>(null);
+  const logoInputRef = useRef<HTMLInputElement | null>(null);
   const [result, setResult] = useState(initialResult);
   const [isPending, startTransition] = useTransition();
   const [draft, setDraft] = useState<CampaignDraft>(emptyDraft);
   const [confirmOpen, setConfirmOpen] = useState(false);
+  const [confirmSubmitting, setConfirmSubmitting] = useState(false);
   const [logoPreviewUrl, setLogoPreviewUrl] = useState<string | null>(null);
   const [logoError, setLogoError] = useState<string | null>(null);
   const normalizedSlug = useMemo(() => slugPreview(draft.slug), [draft.slug]);
@@ -114,6 +121,9 @@ export function CreatorCampaignForm() {
   const descriptionError = fieldError(result, "description");
   const responsibilityError = fieldError(result, "responsibilityAccepted");
   const logoServerError = fieldError(result, "logo");
+  const showResponsibility = isValidEmail(draft.creatorEmail);
+  const issueTextCharCount = draft.issueText.trim().length;
+  const issueTextTooShort = issueTextCharCount < minIssueTextChars;
 
   useEffect(() => {
     const rawDraft = window.localStorage.getItem(draftStorageKey);
@@ -172,7 +182,7 @@ export function CreatorCampaignForm() {
 
   async function submitConfirmedCampaign() {
     const form = formRef.current;
-    if (!form || isPending || logoError) return;
+    if (!form || isPending || confirmSubmitting || logoError) return;
 
     const formData = new FormData(form);
     formData.set("creationConfirmed", "yes");
@@ -182,14 +192,18 @@ export function CreatorCampaignForm() {
     }
 
     setResult(null);
-    setConfirmOpen(false);
+    setConfirmSubmitting(true);
     startTransition(async () => {
       const nextResult = await createCampaignDraftAction(formData);
-      setResult(nextResult);
       if (nextResult.ok) {
         window.localStorage.removeItem(draftStorageKey);
         router.push(`/kampagne/${nextResult.slug}/erstellt`);
+        return;
       }
+
+      setConfirmSubmitting(false);
+      setConfirmOpen(false);
+      setResult(nextResult);
     });
   }
 
@@ -202,6 +216,7 @@ export function CreatorCampaignForm() {
         if (logoError) return;
         if (!event.currentTarget.reportValidity()) return;
         setResult(null);
+        setConfirmSubmitting(false);
         setConfirmOpen(true);
       }}
     >
@@ -239,16 +254,29 @@ export function CreatorCampaignForm() {
           id="issueText"
           name="issueText"
           required
-          minLength={20}
+          minLength={minIssueTextChars}
           maxLength={4000}
           rows={7}
           value={draft.issueText}
           onChange={(event) => updateDraft("issueText", event.target.value)}
           aria-invalid={Boolean(issueTextError)}
-          aria-describedby={issueTextError ? "issueText-error" : "issueText-help"}
+          aria-describedby={
+            issueTextError
+              ? "issueText-help issueText-counter issueText-error"
+              : "issueText-help issueText-counter"
+          }
           className="rounded-md border border-warmgrau/20 bg-white px-4 py-3 font-body text-base leading-relaxed outline-none focus:border-waldgruen"
           placeholder="Zum Beispiel: Was ist das Problem? Wo passiert es? Was soll sich politisch ändern? Stichpunkte oder ein normaler kurzer Absatz reichen."
         />
+        <p
+          id="issueText-counter"
+          className="text-right font-body text-sm text-warmgrau/60"
+          aria-live="polite"
+        >
+          {issueTextTooShort
+            ? `${issueTextCharCount} von mind. ${minIssueTextChars} Zeichen`
+            : `${issueTextCharCount} Zeichen`}
+        </p>
         {issueTextError && (
           <p id="issueText-error" className="font-body text-sm text-airmail-rot">
             {issueTextError}
@@ -287,8 +315,10 @@ export function CreatorCampaignForm() {
       </div>
 
       <details className="group rounded-md border border-warmgrau/15 bg-white/40 px-4 py-3">
-        <summary className="flex cursor-pointer list-none items-center justify-between font-typewriter text-sm font-bold text-waldgruen-dark">
-          Absender, Logo/Bild und Kontext hinzufügen (optional)
+        <summary className="flex cursor-pointer list-none items-center justify-between font-typewriter text-sm font-bold text-waldgruen-dark group-open:justify-end group-open:py-1">
+          <span className="group-open:hidden">
+            Absender, Logo/Bild und Kontext hinzufügen (optional)
+          </span>
           <svg
             width="16"
             height="16"
@@ -323,7 +353,12 @@ export function CreatorCampaignForm() {
               Logo oder Bild
             </label>
             <div className="grid gap-3 rounded-md border border-warmgrau/15 bg-white/45 p-4 sm:grid-cols-[72px_1fr] sm:items-center">
-              <div className="flex h-[72px] w-[72px] items-center justify-center overflow-hidden rounded-md border border-warmgrau/18 bg-white">
+              <button
+                type="button"
+                onClick={() => logoInputRef.current?.click()}
+                aria-label="Logo oder Bild auswählen"
+                className="flex h-[72px] w-[72px] items-center justify-center overflow-hidden rounded-md border border-warmgrau/18 bg-white transition-colors hover:border-waldgruen focus:border-waldgruen focus:outline-none"
+              >
                 {logoPreviewUrl ? (
                   <div
                     aria-hidden="true"
@@ -342,9 +377,10 @@ export function CreatorCampaignForm() {
                     Bild
                   </span>
                 )}
-              </div>
+              </button>
               <div className="grid gap-2">
                 <input
+                  ref={logoInputRef}
                   id="logo"
                   name="logo"
                   type="file"
@@ -373,14 +409,18 @@ export function CreatorCampaignForm() {
             <input
               id="externalUrl"
               name="externalUrl"
-              type="url"
+              type="text"
+              inputMode="url"
               maxLength={500}
               value={draft.externalUrl}
               onChange={(event) => updateDraft("externalUrl", event.target.value)}
+              autoCapitalize="none"
+              autoCorrect="off"
+              spellCheck={false}
               aria-invalid={Boolean(externalUrlError)}
               aria-describedby={externalUrlError ? "externalUrl-error" : undefined}
               className="rounded-md border border-warmgrau/20 bg-white px-4 py-3 font-body text-base outline-none focus:border-waldgruen"
-              placeholder="https://..."
+              placeholder="www.deine-website.de"
             />
             {externalUrlError && (
               <p id="externalUrl-error" className="font-body text-sm text-airmail-rot">
@@ -440,44 +480,38 @@ export function CreatorCampaignForm() {
         )}
       </div>
 
-      <div className="rounded-md border border-airmail-rot/20 bg-airmail-rot/5 px-4 py-4">
-        <p className="font-typewriter text-sm font-bold uppercase tracking-widest text-airmail-rot/80">
-          Verantwortung
-        </p>
-        <p className="mt-2 font-body text-sm leading-relaxed text-warmgrau/75">
-          Die Kampagne erscheint mit deinem Anliegen öffentlich. Brief nach Berlin stellt nur das Werkzeug bereit. Für Titel, Beschreibung, Logo/Bild, externe Links und den vorbereiteten Kampagnentext bist du als Privatperson oder Organisation verantwortlich.
-        </p>
-        <label className="mt-3 flex items-start gap-3 font-body text-sm leading-relaxed text-warmgrau/80">
-          <input
-            name="responsibilityAccepted"
-            type="checkbox"
-            required
-            aria-invalid={Boolean(responsibilityError)}
-            aria-describedby={responsibilityError ? "responsibility-error" : undefined}
-            className="mt-1 h-4 w-4 rounded border-warmgrau/30 text-waldgruen accent-waldgruen"
-          />
-          <span>
-            Ich bestätige, dass ich diese Kampagne starten darf und für die bereitgestellten Inhalte verantwortlich bin.
-          </span>
-        </label>
-        {responsibilityError && (
-          <p id="responsibility-error" className="mt-2 font-body text-sm text-airmail-rot">
-            {responsibilityError}
+      {showResponsibility && (
+        <div className="rounded-md border border-airmail-rot/20 bg-airmail-rot/5 px-4 py-4">
+          <p className="font-typewriter text-sm font-bold uppercase tracking-widest text-airmail-rot/80">
+            Deine Verantwortung
           </p>
-        )}
-      </div>
+          <p className="mt-2 font-body text-sm leading-relaxed text-warmgrau/75">
+            Die Kampagne erscheint mit deinem Anliegen öffentlich. Brief nach Berlin stellt nur das Werkzeug bereit. Für Titel, Beschreibung, Logo/Bild, externe Links und den vorbereiteten Kampagnentext bist du als Privatperson oder Organisation verantwortlich.
+          </p>
+          <label className="mt-3 flex items-start gap-3 font-body text-sm leading-relaxed text-warmgrau/80">
+            <input
+              name="responsibilityAccepted"
+              type="checkbox"
+              required
+              aria-invalid={Boolean(responsibilityError)}
+              aria-describedby={responsibilityError ? "responsibility-error" : undefined}
+              className="mt-1 h-4 w-4 rounded border-warmgrau/30 text-waldgruen accent-waldgruen"
+            />
+            <span>
+              Ich bestätige, dass ich diese Kampagne starten darf und für die bereitgestellten Inhalte verantwortlich bin.
+            </span>
+          </label>
+          {responsibilityError && (
+            <p id="responsibility-error" className="mt-2 font-body text-sm text-airmail-rot">
+              {responsibilityError}
+            </p>
+          )}
+        </div>
+      )}
 
-      <div className="rounded-md border border-waldgruen/15 bg-creme/70 px-4 py-3 font-body text-sm leading-relaxed text-warmgrau/75">
-        Nach der Zusammenfassung schicken wir dir eine E-Mail. Erst wenn du den Link darin bestätigst, wird die Kampagne öffentlich und du bekommst den Verwaltungslink.
-      </div>
-
-      {result && (
+      {result && !result.ok && (
         <div
-          className={`rounded-md border px-4 py-3 font-body text-sm ${
-            result.ok
-              ? "border-waldgruen/20 bg-waldgruen/8 text-waldgruen-dark"
-              : "border-airmail-rot/25 bg-airmail-rot/5 text-airmail-rot"
-          }`}
+          className="rounded-md border border-airmail-rot/25 bg-airmail-rot/5 px-4 py-3 font-body text-sm text-airmail-rot"
         >
           {result.message}
         </div>
@@ -533,7 +567,7 @@ export function CreatorCampaignForm() {
               <button
                 type="button"
                 onClick={() => setConfirmOpen(false)}
-                disabled={isPending}
+                disabled={confirmSubmitting}
                 className="rounded-md border border-waldgruen/25 px-5 py-3 font-body text-base font-semibold text-waldgruen-dark transition-colors hover:border-waldgruen disabled:cursor-wait disabled:opacity-70"
               >
                 Ändern
@@ -541,10 +575,31 @@ export function CreatorCampaignForm() {
               <button
                 type="button"
                 onClick={submitConfirmedCampaign}
-                disabled={isPending}
+                disabled={confirmSubmitting}
                 className="rounded-md bg-waldgruen px-5 py-3 font-body text-base font-semibold text-creme transition-colors hover:bg-waldgruen-dark disabled:cursor-wait disabled:opacity-70"
               >
-                {isPending ? "Wird geprüft..." : "Ja, Kampagne anlegen"}
+                {confirmSubmitting ? (
+                  <span className="flex items-center justify-center gap-2">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="18"
+                      height="18"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      className="animate-spin"
+                      aria-hidden="true"
+                    >
+                      <path d="M21 12a9 9 0 1 1-6.219-8.56" />
+                    </svg>
+                    Wird geprüft...
+                  </span>
+                ) : (
+                  "Ja, Kampagne anlegen"
+                )}
               </button>
             </div>
           </div>
@@ -553,11 +608,17 @@ export function CreatorCampaignForm() {
 
       <button
         type="submit"
-        disabled={isPending}
+        disabled={isPending || confirmSubmitting}
         className="rounded-md bg-waldgruen px-5 py-3 font-body text-base font-semibold text-creme transition-colors hover:bg-waldgruen-dark disabled:cursor-wait disabled:opacity-70"
       >
-        {isPending ? "Wird geprüft..." : "Kampagne anlegen"}
+        Kampagne anlegen
       </button>
+
+      {showResponsibility && (
+        <p className="font-body text-sm leading-relaxed text-warmgrau/70">
+          Nach der Zusammenfassung schicken wir dir eine E-Mail. Erst wenn du den Link darin bestätigst, wird die Kampagne öffentlich und du bekommst den Verwaltungslink.
+        </p>
+      )}
     </form>
   );
 }

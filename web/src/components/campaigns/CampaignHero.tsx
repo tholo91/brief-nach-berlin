@@ -36,7 +36,7 @@ const FAQ_ITEMS = [
 const TRUST_ITEMS = [
   "Kostenlos",
   "Kein Account",
-  "Text vorausgefüllt",
+  "Anliegen vorausgefüllt",
 ];
 
 function CheckIcon() {
@@ -109,9 +109,9 @@ export function CampaignHero({ campaign }: { campaign: PublicCampaign }) {
             {campaign.title}
           </h1>
           <p className="mt-5 max-w-xl font-body text-lg leading-relaxed text-warmgrau/75">
-            Starte mit einer Vorlage zum Thema, ergänze deine Prioritäten und
-            Details. Die Argumente sind vorbereitet, dein passendes MdB wird im
-            nächsten Schritt gefunden.
+            Brief nach Berlin macht aus diesem vorbereiteten Anliegen einen
+            persönlichen Brief an dein Mitglied des Bundestags. Du
+            ergänzt, was dir wichtig ist, prüfst den Text und kannst den Brief abschicken.
           </p>
           <div className="mt-5 flex flex-wrap gap-x-4 gap-y-2 font-body text-sm font-semibold text-waldgruen">
             {TRUST_ITEMS.map((item) => (
@@ -123,7 +123,10 @@ export function CampaignHero({ campaign }: { campaign: PublicCampaign }) {
           </div>
         </div>
 
-        <div className="flex flex-col justify-center lg:col-start-2 lg:row-span-2 lg:row-start-1">
+        <div
+          id="brief"
+          className="scroll-mt-28 flex flex-col justify-center lg:col-start-2 lg:row-span-2 lg:row-start-1"
+        >
           <CampaignIssueStarter
             slug={campaign.slug}
             title={campaign.title}
@@ -134,7 +137,10 @@ export function CampaignHero({ campaign }: { campaign: PublicCampaign }) {
           />
         </div>
 
-        <div className="rounded-md border border-waldgruen/15 bg-white/70 p-4 shadow-sm backdrop-blur-sm lg:col-start-1 lg:row-start-2">
+        <div
+          id="kampagne"
+          className="scroll-mt-28 rounded-md border border-waldgruen/15 bg-white/70 p-4 shadow-sm backdrop-blur-sm lg:col-start-1 lg:row-start-2"
+        >
           <div className="flex items-center gap-4">
             {logoUrl ? (
               <div
@@ -191,7 +197,10 @@ export function CampaignHero({ campaign }: { campaign: PublicCampaign }) {
           </div>
         </div>
       </div>
-      <section className="relative z-10 mx-auto w-full max-w-3xl px-5 pb-16 sm:px-6 lg:pb-20">
+      <section
+        id="fragen"
+        className="relative z-10 mx-auto w-full max-w-3xl scroll-mt-28 px-5 pb-16 sm:px-6 lg:pb-20"
+      >
         <p className="font-typewriter text-xs font-bold uppercase tracking-widest text-waldgruen/60 sm:text-sm">
           Warum Briefkampagne?
         </p>

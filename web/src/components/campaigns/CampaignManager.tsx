@@ -272,10 +272,14 @@ export function CampaignManager({ campaign }: { campaign: Campaign }) {
             <input
               id="externalUrl"
               name="externalUrl"
-              type="url"
+              type="text"
+              inputMode="url"
               maxLength={500}
               defaultValue={campaign.externalUrl ?? ""}
               disabled={!canEdit || isBusy}
+              autoCapitalize="none"
+              autoCorrect="off"
+              spellCheck={false}
               className="rounded-md border border-warmgrau/20 bg-white px-4 py-3 font-body text-base outline-none focus:border-waldgruen disabled:opacity-60"
             />
           </div>

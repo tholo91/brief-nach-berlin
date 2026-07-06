@@ -23,7 +23,7 @@ Ohne diese Festlegung wuerde der Besucher-Wizard weiter automatisch aus Anliegen
 UX-Plan:
 
 1. Kampagnen-Erstellung: In `CreatorCampaignForm` ein Pflichtfeld "Wohin soll die Kampagne gehen?" einfuehren. Zwei Optionen: "Bundesregierung / Bundestag" und "Landesregierung meines Bundeslands". Keine Kommune-Option.
-2. Landes-Kampagnen: Bei Auswahl Land muss die Kampagne entweder ein Bundesland speichern oder der Wizard muss es eindeutig aus der Besucher-PLZ ableiten. Empfehlung: Bundesland erst im Besucher-Wizard aus der PLZ ableiten, damit eine Landeskampagne in jedem passenden Bundesland funktionieren kann, falls der Kampagnentext allgemein ist. Falls die Kampagne nur fuer ein bestimmtes Land gedacht ist, braucht die Erstellung zusaetzlich ein Bundesland-Feld.
+2. Landes-Kampagnen: Bei Auswahl Land soll das konkrete Bundesland voraussichtlich von der PLZ des Schreibers abhaengen. TBD vor Umsetzung: Thomas nochmal fragen, ob Landeskampagnen wirklich PLZ-abhaengig bleiben oder doch an ein festes Bundesland gebunden werden sollen.
 3. Datenmodell: Kampagne speichert `targetLevel: "Bund" | "Land"` und optional `targetState`. Existing Campaign-Records, Repository-Mapping, Validierung und Management-UI muessen das Feld mitfuehren.
 4. Handoff: `wizard-handoff` reicht den Kampagnen-Kontext an `/app` weiter: Slug, Titel und neu `targetLevel` plus optional `targetState`.
 5. Wizard: Bei `source === "campaign"` darf die automatische politische Level-Erkennung die Kampagnen-Ebene nicht ueberschreiben. Sie kann weiter fuer Prompt-Kontext genutzt werden, aber die Empfaenger-Aufloesung muss an `targetLevel` gebunden sein.
@@ -32,4 +32,4 @@ UX-Plan:
 
 Offene Produktfrage vor Umsetzung:
 
-Soll eine Landes-Kampagne an ein festes Bundesland gebunden sein, oder darf dieselbe Kampagne fuer jedes Bundesland laufen und erst die Besucher-PLZ entscheidet das konkrete Land?
+Soll eine Landes-Kampagne wie aktuell bevorzugt von der PLZ des Schreibers abhaengen, oder braucht es fuer manche Kampagnen doch ein fest gesetztes Bundesland?

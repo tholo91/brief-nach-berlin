@@ -5,9 +5,10 @@ import { EuropePageContent } from "./EuropePageClient";
 
 const URL_PATH = "/europe";
 const PUBLISHED = "2026-06-26";
-const TITLE = "Bring Brief nach Berlin to Europe | Brief nach Berlin";
+const MODIFIED = "2026-07-03";
+const TITLE = "Bring Brief nach Berlin to your country | Brief nach Berlin";
 const DESCRIPTION =
-  "Use the open source approach behind Brief nach Berlin for Austria, Portugal, the Netherlands and other European democracies.";
+  "Use the open source approach behind Brief nach Berlin for another country: choose an AI provider, map local representatives, adapt language and test it locally.";
 
 export const metadata: Metadata = {
   title: TITLE,
@@ -30,15 +31,15 @@ export const metadata: Metadata = {
 const faqs = [
   {
     q: "Can I adapt Brief nach Berlin for my country?",
-    a: "Yes. The code is open. The important part is to independently check your country's data, responsibilities, forms of address, and privacy questions instead of copying the German logic.",
+    a: "Yes. The code is open. You can fork it, use Mistral AI or another suitable LLM provider, map local representatives and adapt the copy, design, forms of address, languages and privacy details to your country.",
   },
   {
-    q: "What kind of help is most useful right now?",
-    a: "The most useful help is contact with people who know local institutions, plus pointers to reliable data sources for mandates, constituencies, office addresses, and responsibilities.",
+    q: "What has to be adapted locally?",
+    a: "The most important work is mapping postal codes or constituencies to the right representatives and offices. Some countries need a different lookup model, so local validation matters.",
   },
   {
-    q: "Is Austria already planned?",
-    a: "Austria is being discussed, but it is not live yet. Contacts, data sources, and experience with the National Council, states, or municipalities are especially useful.",
+    q: "Can Thomas build versions for all of Europe?",
+    a: "No. Thomas can share lessons, technical context and feedback, but local teams have to handle country-specific institutions, language and culture.",
   },
   {
     q: "Why not build one central European version?",
@@ -62,7 +63,7 @@ const articleJsonLd = {
   headline: TITLE,
   description: DESCRIPTION,
   datePublished: PUBLISHED,
-  dateModified: PUBLISHED,
+  dateModified: MODIFIED,
   author: { "@type": "Organization", name: "Brief nach Berlin" },
   publisher: {
     "@type": "Organization",

@@ -137,6 +137,8 @@ export function Step3Success({ result, wizardData, politicians, onChangePlz }: S
   // "So geht es weiter" is collapsed by default - the same content lives in
   // the email, so we save vertical space and let the rating teaser breathe.
   const [stepsOpen, setStepsOpen] = useState(false);
+  const [issueTextExpanded, setIssueTextExpanded] = useState(false);
+  const [issueTextCopied, setIssueTextCopied] = useState(false);
   // Index into LETTER_GEN_PHASES - advances on a setTimeout chain while
   // isGenerating is true, resets when it ends. Drives the phased button copy
   // during the final letter-generation wait.
@@ -493,6 +495,20 @@ export function Step3Success({ result, wizardData, politicians, onChangePlz }: S
   const founderFeedbackUrl = wizardData.email
     ? `${FOUNDER_FEEDBACK_URL}?email=${encodeURIComponent(wizardData.email)}`
     : FOUNDER_FEEDBACK_URL;
+  const originalIssueText = wizardData.issueText?.trim() ?? "";
+  const showIssueTextToggle =
+    originalIssueText.length > 220 || originalIssueText.split("\n").length > 3;
+
+  const handleCopyIssueText = useCallback(async () => {
+    if (!originalIssueText) return;
+    try {
+      await navigator.clipboard.writeText(originalIssueText);
+      setIssueTextCopied(true);
+      setTimeout(() => setIssueTextCopied(false), 2200);
+    } catch {
+      setIssueTextCopied(false);
+    }
+  }, [originalIssueText]);
 
   if (!result) return null;
 
@@ -562,6 +578,56 @@ export function Step3Success({ result, wizardData, politicians, onChangePlz }: S
             Der Entwurf kommt von uns, die Unterschrift ist deine.
           </p>
         </div>
+
+        {originalIssueText && (
+          <div className="mt-5 rounded-xl border border-warmgrau/15 bg-creme/70 px-4 py-4">
+            <div className="flex items-start justify-between gap-3">
+              <div>
+                <p className="font-body text-sm font-semibold text-warmgrau">
+                  Dein ursprünglicher Input
+                </p>
+                <p className="mt-1 font-body text-xs text-warmgrau/60">
+                  {originalIssueText.length} Zeichen
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={handleCopyIssueText}
+                className="inline-flex items-center gap-1 rounded-lg border border-warmgrau/15 px-2.5 py-1.5 font-body text-xs font-semibold text-waldgruen transition-colors hover:bg-waldgruen/5 cursor-pointer"
+              >
+                {issueTextCopied ? "Kopiert" : "Kopieren"}
+              </button>
+            </div>
+            <div
+              className="mt-3 overflow-hidden rounded-lg bg-white/80 px-3 py-3 font-body text-sm text-warmgrau leading-relaxed whitespace-pre-wrap"
+              style={
+                issueTextExpanded || !showIssueTextToggle
+                  ? undefined
+                  : {
+                      display: "-webkit-box",
+                      WebkitBoxOrient: "vertical",
+                      WebkitLineClamp: 3,
+                    }
+              }
+            >
+              {originalIssueText}
+            </div>
+            <div className="mt-3 flex items-center justify-between gap-3">
+              <p className="font-body text-xs text-warmgrau/60 leading-relaxed">
+                Kopier ihn, wenn du später noch einmal einen Brief daraus machen möchtest.
+              </p>
+              {showIssueTextToggle && (
+                <button
+                  type="button"
+                  onClick={() => setIssueTextExpanded((open) => !open)}
+                  className="flex-shrink-0 font-body text-xs font-semibold text-waldgruen underline underline-offset-2 hover:text-waldgruen-dark transition-colors cursor-pointer"
+                >
+                  {issueTextExpanded ? "Weniger anzeigen" : "Alles anzeigen"}
+                </button>
+              )}
+            </div>
+          </div>
+        )}
 
         {/* "Keine E-Mail erhalten?" + (mobile) "Mail-App öffnen" - both hidden
             until letter is ready. The webmail deep-link sits left of the

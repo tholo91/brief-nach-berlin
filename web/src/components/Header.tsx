@@ -79,7 +79,7 @@ export default function Header() {
             }}
             className="font-typewriter text-base md:text-lg font-bold text-waldgruen-dark tracking-tight"
           >
-            Brief nach Berlin
+            Brief-nach-Berlin
           </button>
 
           {/* Section links — desktop only */}

@@ -68,7 +68,7 @@ export default function AppHeader() {
             href="/"
             className="font-typewriter text-base md:text-lg font-bold text-waldgruen-dark tracking-tight hover:text-waldgruen transition-colors"
           >
-            Brief nach Berlin
+            Brief-nach-Berlin
           </Link>
 
           {wizardProgress !== null && (

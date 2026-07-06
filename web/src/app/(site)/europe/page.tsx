@@ -6,9 +6,9 @@ import { EuropePageContent } from "./EuropePageClient";
 const URL_PATH = "/europe";
 const PUBLISHED = "2026-06-26";
 const MODIFIED = "2026-07-06";
-const TITLE = "Bring Brief nach Berlin to your country | Brief nach Berlin";
+const TITLE = "Brief-nach-Berlin für dein Land nutzen | Brief-nach-Berlin";
 const DESCRIPTION =
-  "Fork Brief nach Berlin, copy the AI starter prompt, and use the English adaptation guide to plan a local civic-letter tool.";
+  "Forke Brief-nach-Berlin, kopiere den AI-Starter-Prompt und plane eine lokale Version für Österreich, die Schweiz oder ein anderes Land.";
 
 export const metadata: Metadata = {
   title: TITLE,
@@ -18,7 +18,7 @@ export const metadata: Metadata = {
     title: TITLE,
     description: DESCRIPTION,
     type: "article",
-    locale: "en_GB",
+    locale: "de_DE",
     url: `${APP_URL}${URL_PATH}`,
   },
   twitter: {
@@ -35,10 +35,10 @@ const articleJsonLd = {
   description: DESCRIPTION,
   datePublished: PUBLISHED,
   dateModified: MODIFIED,
-  author: { "@type": "Organization", name: "Brief nach Berlin" },
+  author: { "@type": "Organization", name: "Brief-nach-Berlin" },
   publisher: {
     "@type": "Organization",
-    name: "Brief nach Berlin",
+    name: "Brief-nach-Berlin",
     url: APP_URL,
   },
   mainEntityOfPage: `${APP_URL}${URL_PATH}`,

@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { FOUNDER_LINKEDIN } from "@/lib/config";
 
 type Language = "de" | "en";
 
@@ -23,6 +24,7 @@ type Copy = {
   guideCta: string;
   repoCta: string;
   gsdCta: string;
+  linkedinCta: string;
   contactTitle: string;
   contactBody: string;
   contactCta: string;
@@ -64,9 +66,9 @@ const copy: Record<Language, Copy> = {
   de: {
     back: "Zurück",
     eyebrow: "Open Source für lokale Demokratien",
-    title: "Fork Brief nach Berlin for your country",
+    title: "Brief-nach-Berlin für dein Land nutzen",
     lead:
-      "Der Code ist offen. Wenn du eine lokale Version bauen willst, starte nicht mit Übersetzen. Lass zuerst ein LLM im Fork einen Plan schreiben: Daten, Zuständigkeiten, Sprache, Design, Mail, Domain und politische Brief-Logik.",
+      "Der Code ist offen. Wenn du eine lokale Version für Österreich, die Schweiz oder ein anderes Land bauen willst, starte nicht mit Übersetzen. Lass zuerst ein LLM im Fork einen Plan schreiben: Daten, Zuständigkeiten, Sprache, Design, Mail, Domain und politische Brief-Logik. Wenn du jemanden kennst, der in Österreich oder der Schweiz helfen könnte, schick ihm diese Seite oder stell den Kontakt zu Thomas her.",
     aiReady:
       "Für AI-Forks vorbereitet: englische Agent-Anleitung, Datei-Map und ein erster Planungs-Prompt.",
     imageAlt:
@@ -74,39 +76,40 @@ const copy: Record<Language, Copy> = {
     stepsTitle: "Der kurze Weg",
     steps: [
       {
-        title: "Fork the repo",
+        title: "Repository forken",
         body:
           "Nimm den offenen Code als Ausgangspunkt. Du brauchst keine Erlaubnis.",
       },
       {
-        title: "Copy the prompt",
+        title: "Prompt kopieren",
         body:
           "Lass dein LLM zuerst `ADAPT_TO_YOUR_COUNTRY.md` lesen und einen lokalen Plan schreiben.",
       },
       {
-        title: "Localize with people",
+        title: "Mit Menschen vor Ort prüfen",
         body:
           "Prüfe Abgeordnete, Sprache, Design und politische Anreize mit Menschen vor Ort.",
       },
     ],
-    promptTitle: "Start with this prompt",
+    promptTitle: "Mit diesem Prompt starten",
     promptBody:
       "Kopiere diesen Prompt in Codex, Claude, Cursor oder dein GSD-Setup. Er startet mit Planung, nicht mit Code.",
-    promptKicker: "Prepared for AI-assisted forks",
-    copyLabel: "Copy",
-    copiedLabel: "Copied",
-    guideCta: "Read the adaptation guide",
-    repoCta: "Open GitHub repo",
-    gsdCta: "GSD framework",
-    contactTitle: "Building a real local version?",
+    promptKicker: "Vorbereitet für AI-Forks",
+    copyLabel: "Kopieren",
+    copiedLabel: "Kopiert",
+    guideCta: "Adaptions-Guide lesen",
+    repoCta: "GitHub-Repo öffnen",
+    gsdCta: "GSD-Framework",
+    linkedinCta: "Thomas auf LinkedIn",
+    contactTitle: "Baust du eine echte lokale Version?",
     contactBody:
-      "Schreib mir kurz mit Land, politischer Ebene, Datenquelle und ob du bauen oder lokal testen kannst. Ich kann Kontext geben, aber nicht jedes Land selbst lokalisieren.",
-    contactCta: "Email Thomas",
+      "Schreib Thomas kurz mit Land, politischer Ebene, Datenquelle und ob du bauen oder lokal testen kannst. Für Österreich und die Schweiz reicht auch ein guter Kontakt: jemand aus Verwaltung, Parlament, Journalismus, Civic Tech oder politischer Bildung.",
+    contactCta: "Thomas mailen",
   },
   en: {
     back: "Back",
     eyebrow: "Open source for local democracies",
-    title: "Fork Brief nach Berlin for your country",
+    title: "Fork Brief-nach-Berlin for your country",
     lead:
       "The code is open. If you want to build a local version, do not start by translating the German site. First let an LLM inside your fork create a plan for data, responsibilities, language, design, email, domain, and political letter logic.",
     aiReady:
@@ -140,9 +143,10 @@ const copy: Record<Language, Copy> = {
     guideCta: "Read the adaptation guide",
     repoCta: "Open GitHub repo",
     gsdCta: "GSD framework",
+    linkedinCta: "Thomas on LinkedIn",
     contactTitle: "Building a real local version?",
     contactBody:
-      "Send a short email with country, political level, data source, and whether you can build or test locally. I can share context, but I cannot localize every country myself.",
+      "Send Thomas a short email with country, political level, data source, and whether you can build or test locally. For Austria and Switzerland, a strong local contact is useful too: administration, parliament, journalism, civic tech, or civic education.",
     contactCta: "Email Thomas",
   },
 };
@@ -184,6 +188,82 @@ function CopyIcon({ copied }: { copied: boolean }) {
           />
         </>
       )}
+    </svg>
+  );
+}
+
+function MailIcon({ className = "" }: { className?: string }) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+      className={className}
+    >
+      <rect width="20" height="16" x="2" y="4" rx="2" />
+      <path d="m22 7-10 6L2 7" />
+    </svg>
+  );
+}
+
+function LinkedInIcon({ className = "" }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" className={className}>
+      <path d="M20.45 20.45h-3.56v-5.57c0-1.33-.03-3.04-1.85-3.04-1.85 0-2.14 1.45-2.14 2.94v5.67H9.35V9h3.41v1.56h.05c.48-.9 1.64-1.85 3.37-1.85 3.6 0 4.27 2.37 4.27 5.46v6.28zM5.34 7.43a2.06 2.06 0 1 1 0-4.13 2.06 2.06 0 0 1 0 4.13zM7.12 20.45H3.56V9h3.56v11.45zM22.22 0H1.77C.8 0 0 .77 0 1.73v20.54C0 23.22.8 24 1.77 24h20.45c.98 0 1.78-.78 1.78-1.73V1.73C24 .77 23.2 0 22.22 0z" />
+    </svg>
+  );
+}
+
+function GitHubIcon({ className = "" }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" className={className}>
+      <path d="M12 .5C5.73.5.5 5.73.5 12c0 5.08 3.29 9.39 7.86 10.91.58.11.79-.25.79-.56 0-.28-.01-1.02-.02-2-3.2.7-3.88-1.54-3.88-1.54-.52-1.33-1.28-1.69-1.28-1.69-1.05-.72.08-.7.08-.7 1.16.08 1.77 1.19 1.77 1.19 1.03 1.77 2.7 1.26 3.36.96.1-.75.4-1.26.73-1.55-2.55-.29-5.24-1.28-5.24-5.69 0-1.26.45-2.29 1.19-3.1-.12-.29-.52-1.46.11-3.05 0 0 .97-.31 3.18 1.18a11.1 11.1 0 0 1 2.9-.39c.98 0 1.97.13 2.9.39 2.2-1.49 3.17-1.18 3.17-1.18.63 1.59.23 2.76.11 3.05.74.81 1.19 1.84 1.19 3.1 0 4.42-2.69 5.4-5.25 5.68.41.36.78 1.07.78 2.15 0 1.55-.01 2.8-.01 3.18 0 .31.21.68.8.56A11.51 11.51 0 0 0 23.5 12C23.5 5.73 18.27.5 12 .5z" />
+    </svg>
+  );
+}
+
+function DocumentIcon({ className = "" }: { className?: string }) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+      className={className}
+    >
+      <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+      <path d="M14 2v6h6" />
+      <path d="M8 13h8" />
+      <path d="M8 17h5" />
+    </svg>
+  );
+}
+
+function BlocksIcon({ className = "" }: { className?: string }) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+      className={className}
+    >
+      <rect width="7" height="7" x="3" y="3" rx="1" />
+      <rect width="7" height="7" x="14" y="3" rx="1" />
+      <rect width="7" height="7" x="14" y="14" rx="1" />
+      <path d="M6.5 10v4" />
+      <path d="M10 17.5h4" />
+      <path d="M17.5 10v4" />
     </svg>
   );
 }
@@ -244,8 +324,8 @@ export function EuropePageContent({
   const t = copy[language];
   const subject =
     language === "de"
-      ? "Brief nach Berlin in meinem Land nutzen"
-      : "Using Brief nach Berlin in my country";
+      ? "Brief-nach-Berlin in meinem Land nutzen"
+      : "Using Brief-nach-Berlin in my country";
   const mailHref = `mailto:${contactEmail}?subject=${encodeURIComponent(
     subject
   )}`;
@@ -265,7 +345,7 @@ export function EuropePageContent({
           </Link>
           <div
             className="flex rounded-full border border-waldgruen/20 bg-white/70 p-1"
-            aria-label="Language"
+            aria-label={language === "de" ? "Sprache" : "Language"}
           >
             {(["de", "en"] as const).map((item) => (
               <Link
@@ -284,8 +364,8 @@ export function EuropePageContent({
           </div>
         </div>
 
-        <section className="grid gap-8 md:grid-cols-[1.1fr_0.9fr] md:items-start">
-          <div>
+        <section>
+          <header>
             <p className="mb-3 font-typewriter text-sm font-bold uppercase text-waldgruen/60">
               {t.eyebrow}
             </p>
@@ -295,14 +375,14 @@ export function EuropePageContent({
             <p className="font-body text-lg leading-relaxed text-warmgrau/85 md:text-xl">
               {t.lead}
             </p>
-          </div>
-          <figure className="-mx-2 md:mx-0">
+          </header>
+          <figure className="mt-8 -mx-2 md:mx-0">
             <Image
               src="/images/europe-correspondence.webp"
               alt={t.imageAlt}
               width={1376}
               height={768}
-              sizes="(min-width: 768px) 18rem, 100vw"
+              sizes="(min-width: 768px) 48rem, 100vw"
               className="h-auto w-full rounded-lg shadow-sm"
               priority
             />
@@ -351,24 +431,27 @@ export function EuropePageContent({
             href={adaptationGuideHref}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-block rounded-sm bg-waldgruen-dark px-5 py-3 text-center font-body font-bold text-creme transition-colors hover:bg-waldgruen"
+            className="inline-flex items-center justify-center gap-2 rounded-sm bg-waldgruen-dark px-5 py-3 text-center font-body font-bold text-creme transition-colors hover:bg-waldgruen"
           >
+            <DocumentIcon className="h-4 w-4" />
             {t.guideCta}
           </a>
           <a
             href={repoHref}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-block rounded-sm border border-waldgruen/25 bg-white px-5 py-3 text-center font-body font-bold text-waldgruen-dark transition-colors hover:border-waldgruen hover:bg-creme"
+            className="inline-flex items-center justify-center gap-2 rounded-sm border border-waldgruen/25 bg-white px-5 py-3 text-center font-body font-bold text-waldgruen-dark transition-colors hover:border-waldgruen hover:bg-creme"
           >
+            <GitHubIcon className="h-4 w-4" />
             {t.repoCta}
           </a>
           <a
             href={gsdHref}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-block rounded-sm border border-waldgruen/25 px-5 py-3 text-center font-body font-bold text-waldgruen-dark transition-colors hover:border-waldgruen hover:bg-white"
+            className="inline-flex items-center justify-center gap-2 rounded-sm border border-waldgruen/25 px-5 py-3 text-center font-body font-bold text-waldgruen-dark transition-colors hover:border-waldgruen hover:bg-white"
           >
+            <BlocksIcon className="h-4 w-4" />
             {t.gsdCta}
           </a>
         </section>
@@ -380,12 +463,24 @@ export function EuropePageContent({
           <p className="mb-5 font-body text-base leading-relaxed text-warmgrau">
             {t.contactBody}
           </p>
-          <a
-            href={mailHref}
-            className="inline-block rounded-sm bg-waldgruen-dark px-5 py-3 text-center font-body font-bold text-creme transition-colors hover:bg-waldgruen"
-          >
-            {t.contactCta}
-          </a>
+          <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap">
+            <a
+              href={mailHref}
+              className="inline-flex items-center justify-center gap-2 rounded-sm bg-waldgruen-dark px-5 py-3 text-center font-body font-bold text-creme transition-colors hover:bg-waldgruen"
+            >
+              <MailIcon className="h-4 w-4" />
+              {t.contactCta}
+            </a>
+            <a
+              href={FOUNDER_LINKEDIN}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center justify-center gap-2 rounded-sm border border-waldgruen/25 px-5 py-3 text-center font-body font-bold text-waldgruen-dark transition-colors hover:border-waldgruen hover:bg-creme"
+            >
+              <LinkedInIcon className="h-4 w-4" />
+              {t.linkedinCta}
+            </a>
+          </div>
         </section>
       </main>
     </div>

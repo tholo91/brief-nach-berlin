@@ -15,6 +15,9 @@ type Copy = {
   imageAlt: string;
   answerKicker: string;
   answer: string;
+  guideTitle: string;
+  guideIntro: string;
+  guideSteps: Array<{ title: string; body: string }>;
   sections: {
     whyTitle: string;
     why1: string;
@@ -37,6 +40,7 @@ type Copy = {
   contactTitle: string;
   contactBody: string;
   contactCta: string;
+  guideCta: string;
   githubCta: string;
   linksTitle: string;
   links: Array<{ href: string; label: string }>;
@@ -47,66 +51,97 @@ type Copy = {
 const copy: Record<Language, Copy> = {
   de: {
     back: "Zurück",
-    eyebrow: "Open Source für Europa",
-    title: "Bring Brief-nach-Berlin in ein weiteres Land",
+    eyebrow: "Open Source für Europa und darüber hinaus",
+    title: "Bring Brief nach Berlin in dein Land",
     lead:
-      "Brief nach Berlin ist ein offener Ansatz für Bürgerbriefe an die richtige politische Stelle. Wenn du Kontakte, Datenquellen oder lokale Erfahrung aus Österreich, Portugal, den Niederlanden oder einem anderen europäischen Land hast, melde dich. Ich suche Menschen, die das Prinzip sauber übertragen wollen.",
+      "Der Code ist offen. Wenn du eine lokale Version bauen willst: Repository forken, KI-Anbieter wählen, Zuständigkeiten mappen, Sprache und Design anpassen. Mistral ist empfohlen, aber nicht Pflicht. Ich helfe gern mit Erfahrung, kann aber nicht jedes Land kulturell, rechtlich und politisch selbst übersetzen.",
     imageAlt:
       "Handgeschriebene Briefe fliegen über Europa, vorbei an Städten, Flüssen, Bahnlinien und Bergen.",
-    answerKicker: "Wie kann ich Brief nach Berlin in ein anderes Land bringen?",
+    answerKicker: "Kurz gesagt",
     answer:
-      "Am besten mit 3 Dingen: belastbaren Daten zu Zuständigkeiten, jemandem mit lokalem Demokratieverständnis und einem kleinen Kreis von Testerinnen und Testern. Der Code ist offen. Was jedes Land braucht, ist die Übersetzung in seine Institutionen, seine Sprache und seine politischen Gewohnheiten.",
+      "Es braucht keinen zentralen Europa-Rollout. Es braucht lokale Menschen, die Institutionen, Ton und Daten vor Ort sauber prüfen. Genau dafür ist der offene Code da.",
+    guideTitle: "Kleine Anleitung für eine lokale Version",
+    guideIntro:
+      "So würde ich anfangen, ohne daraus ein riesiges Projekt zu machen:",
+    guideSteps: [
+      {
+        title: "Code forken",
+        body:
+          "Repo klonen, App lokal starten und die deutsche Logik als Muster lesen.",
+      },
+      {
+        title: "KI-Anbieter wählen",
+        body:
+          "Mistral AI ist der empfohlene Standard. Du kannst auch einen anderen passenden LLM-Anbieter nutzen, musst dann aber den Adapter sauber austauschen.",
+      },
+      {
+        title: "Zuständigkeiten mappen",
+        body:
+          "Postleitzahlen, Wahlkreise oder Gemeinden den richtigen Abgeordneten und Büros zuordnen. AI-Coding hilft, ersetzt aber keine lokale Prüfung.",
+      },
+      {
+        title: "Sprache und Design anpassen",
+        body:
+          "Name, Ton, Output-Sprache, Anreden, Beispiele und Trust-Signale so ändern, dass es im jeweiligen Land natürlich wirkt. Bei mehreren Amtssprachen bewusst entscheiden.",
+      },
+      {
+        title: "Mit echten Menschen testen",
+        body:
+          "10 bis 20 Menschen mit echten Anliegen durchschicken. Erst danach weiter polieren.",
+      },
+    ],
     sections: {
       whyTitle: "Warum diese Seite existiert",
       why1:
-        "Brief nach Berlin begann als deutsches Werkzeug: Postleitzahl eingeben, Anliegen beschreiben, zuständige Bundestagsabgeordnete finden, Brief formulieren. Der eigentliche Gedanke ist größer. Demokratie wird greifbarer, wenn Menschen wissen, wen sie ansprechen können, und wenn der erste Schritt nicht an Formularen, Zuständigkeiten oder Unsicherheit scheitert.",
+        "Brief nach Berlin begann als deutsches Werkzeug: Postleitzahl eingeben, Anliegen beschreiben, zuständige Bundestagsabgeordnete finden, Brief formulieren. Der Gedanke dahinter ist größer: Menschen sollen wissen, wen sie konkret ansprechen können.",
       why2:
-        "Europa ist für mich kein abstraktes Projekt. Es ist die Erfahrung, dass Nachbarländer voneinander lernen können, ohne gleich alles gleichzumachen. Ein Tool für Deutschland muss in Österreich, Portugal oder den Niederlanden nicht kopiert werden. Es muss übersetzt werden.",
-      openTitle: "Was ist daran Open Source?",
+        "Das Muster ist übertragbar, aber nicht 1:1. Ein Tool für Österreich, Portugal, die Niederlande oder ein anderes Land muss in die eigenen Institutionen übersetzt werden.",
+      openTitle: "Was du nutzen kannst",
       open1:
-        "Der Code von Brief nach Berlin liegt offen bei GitHub. Du kannst sehen, wie Postleitzahlen, Zuständigkeiten, Brieflogik, Datenschutz und KI-Transparenz zusammenspielen. Die Idee ist nicht, eine zentrale Plattform für ganz Europa zu kontrollieren. Die Idee ist, dass lokale Teams das Muster übernehmen und besser an ihr Land anpassen als ich es von Deutschland aus könnte.",
+        "Der Code liegt offen bei GitHub. Du kannst sehen, wie Postleitzahlen, Zuständigkeiten, Brieflogik, Datenschutz und KI-Transparenz zusammenspielen.",
       open2:
-        "Wenn du eine Version für dein Land bauen willst, brauchst du keine Erlaubnis. Eine Nachricht hilft trotzdem, weil ich Erfahrungen, Fallstricke und technische Entscheidungen teilen kann.",
-      neededTitle: "Was braucht ein Land konkret?",
+        "Wenn du eine Version für dein Land bauen willst, brauchst du keine Erlaubnis. Eine kurze Nachricht hilft trotzdem, weil ich Erfahrungen, Fallstricke und technische Entscheidungen teilen kann.",
+      neededTitle: "Was lokal angepasst werden muss",
       needed1:
-        "Zuerst braucht es eine saubere Datenquelle: Wahlkreise, Mandate, Büroadressen, Anreden und Zuständigkeiten. Danach braucht es Texte, die kulturell passen. Ein österreichischer Brief an den Nationalrat klingt anders als ein deutscher Brief an den Bundestag. Eine niederländische Version muss andere Institutionen erklären als eine portugiesische.",
+        "Zuerst braucht es verlässliche Daten: Welche Postleitzahl, Gemeinde oder welcher Wahlkreis führt zu welchen Abgeordneten, Büros und Zuständigkeiten? In manchen Ländern reicht die Postleitzahl nicht.",
       needed2:
-        "Wichtig ist auch Datenschutz. Brief nach Berlin speichert keine Nutzerkonten und baut bewusst keine politische Profildatenbank auf. Wer das Konzept übernimmt, sollte diese Linie halten: so wenig Daten wie möglich, so transparent wie möglich.",
-      nextTitle: "Welche Länder sind schon im Gespräch?",
+        "Dann kommt die kulturelle Übersetzung: Anrede, Ton, politische Ebenen, Datenschutz, Beispiele, Startseite. Ein guter Prompt kann helfen, aber echte lokale Menschen müssen es prüfen.",
+      nextTitle: "Was ich leisten kann",
       next1:
-        "Österreich ist im Gespräch. Portugal, die Niederlande und weitere Länder sind Beispiele für Orte, an denen der Ansatz spannend sein könnte. Ich bin offen für Kontakte, Datenhinweise, Übersetzungshilfe, lokale Einschätzungen und Entwicklerinnen oder Entwickler, die eine eigene Variante bauen wollen.",
+        "Ich kann erklären, wie Brief nach Berlin aufgebaut ist, welche Entscheidungen gut funktioniert haben und wo ich vorsichtig wäre. Ich kann aber nicht ganz Europa lokal anpassen. Dafür braucht es Menschen vor Ort.",
     },
     quote:
-      "Demokratie wird stärker, wenn Menschen wissen: Ich darf schreiben. Ich weiß wohin. Und meine Stimme ist konkret genug, um anzukommen.",
-    factNumber: "27",
+      "Demokratie wird stärker, wenn Menschen wissen: Ich darf schreiben. Ich weiß wohin. Meine Stimme kann konkret ankommen.",
+    factNumber: "1",
     factLabel:
-      "EU-Länder könnten eigene lokale Versionen nutzen, wenn Daten, Sprache und Institutionen vor Ort geprüft werden.",
-    factSource: "Europäische Union, lokal angepasst",
-    countriesTitle: "Mögliche nächste Länder",
+      "Eine verantwortliche Person vor Ort ist wichtiger als eine zentrale Plattform für alle.",
+    factSource: "Open-Source-Ansatz, lokal angepasst",
+    countriesTitle: "Wo es anfangen könnte",
     countries: [
       {
         name: "Österreich",
         status: "Im Gespräch",
         body:
-          "Nationalrat, Bundesrat, Länder und Gemeinden haben eigene Wege. Genau deshalb braucht es lokale Prüfung, bevor aus einer Idee ein Werkzeug wird.",
+          "Nationalrat, Bundesrat, Länder und Gemeinden haben eigene Wege. Gute Kontakte und Datenquellen wären hier besonders hilfreich.",
       },
       {
         name: "Portugal",
-        status: "Beispiel",
+        status: "Mitbauende gesucht",
         body:
-          "Spannend für Kontakte, Datenquellen und Menschen, die wissen, wie Bürgerinnen und Bürger dort politische Stellen erreichen.",
+          "Interessant, wenn jemand die politischen Ebenen, Adressen und passende Ansprache vor Ort prüfen kann.",
       },
       {
         name: "Niederlande",
-        status: "Beispiel",
+        status: "Mitbauende gesucht",
         body:
-          "Ein gutes Land, um zu prüfen, wie parlamentarische Zuständigkeit, direkte Ansprache und klare Sprache zusammenpassen.",
+          "Ein gutes Beispiel für die Frage, wie parlamentarische Zuständigkeit, direkte Ansprache und klare Sprache zusammenpassen.",
       },
     ],
     contactTitle: "Hast du Kontakte oder willst du mitbauen?",
     contactBody:
-      "Schreib mir, wenn du Datenquellen kennst, in einem Land politisch vernetzt bist, übersetzen willst oder den Code für eine eigene Version nutzen möchtest. Eine kurze Mail reicht.",
+      "Schreib mir, wenn du konkret eine lokale Version bauen willst oder belastbare Datenquellen kennst. Am hilfreichsten: Land, politisches Level, Datenquelle und ob du selbst bauen oder testen kannst.",
     contactCta: "Mail schreiben",
+    guideCta: "Fork-Anleitung lesen",
     githubCta: "Code auf GitHub ansehen",
     linksTitle: "Mehr Kontext",
     links: [
@@ -119,12 +154,12 @@ const copy: Record<Language, Copy> = {
       {
         q: "Kann ich Brief nach Berlin für mein Land übernehmen?",
         a:
-          "Ja. Der Code ist offen. Wichtig ist, dass du die Daten, Zuständigkeiten, Anreden und Datenschutzfragen deines Landes eigenständig prüfst, statt die deutsche Logik einfach zu kopieren.",
+          "Ja. Der Code ist offen. Du kannst ihn forken, Mistral AI oder einen anderen passenden LLM-Anbieter nutzen, lokale Abgeordnete mappen und Copy, Design, Output-Sprache, Anreden und Datenschutzdetails anpassen.",
       },
       {
         q: "Welche Hilfe ist gerade am wertvollsten?",
         a:
-          "Am wertvollsten sind Kontakte zu Menschen, die lokale Institutionen gut kennen, sowie Hinweise auf belastbare Datenquellen für Mandate, Wahlkreise, Büroadressen und Zuständigkeiten.",
+          "Am wertvollsten sind Menschen vor Ort: verlässliche Datenquellen, Verständnis für die Institutionen und Tests mit echten Nutzerinnen und Nutzern.",
       },
       {
         q: "Ist Österreich schon geplant?",
@@ -137,6 +172,11 @@ const copy: Record<Language, Copy> = {
           "Politische Systeme unterscheiden sich stark. Eine zentrale Version würde schnell ungenau. Besser sind lokale Varianten, die den offenen Ansatz nutzen und ihn für die jeweiligen Institutionen sauber übersetzen.",
       },
       {
+        q: "Kann Thomas bei meiner Version helfen?",
+        a:
+          "Ja, in vernünftigem Rahmen. Ich kann technischen Kontext und Feedback geben, aber nicht die länderspezifische Anpassung für ganz Europa übernehmen.",
+      },
+      {
         q: "Muss eine neue Version den Namen Brief nach Berlin tragen?",
         a:
           "Nein. Der Name passt zu Deutschland. Für andere Länder kann ein eigener Name sinnvoller sein, solange der Grundgedanke bleibt: Menschen helfen, konkrete demokratische Briefe an die richtige Stelle zu schreiben.",
@@ -145,66 +185,97 @@ const copy: Record<Language, Copy> = {
   },
   en: {
     back: "Back",
-    eyebrow: "Open source for Europe",
+    eyebrow: "Open source for Europe and beyond",
     title: "Bring Brief-nach-Berlin to your country",
     lead:
-      "Brief nach Berlin is an open approach for helping people write civic letters to the right political office. If you have contacts, data sources, or local knowledge from Austria, Portugal, the Netherlands, or another European country, get in touch. I am looking for people who want to adapt the idea properly.",
+      "The code is open. If you want to build a local version: fork it, choose an AI provider, map local responsibilities, adapt language and design. Mistral is recommended, but not required. I am happy to share lessons, but I cannot culturally, legally, and politically localize every country myself.",
     imageAlt:
       "Handwritten letters fly across Europe, passing cities, rivers, railway lines, and mountains.",
-    answerKicker: "How can I bring Brief nach Berlin to another country?",
+    answerKicker: "Short version",
     answer:
-      "Start with 3 things: reliable data about political responsibility, someone who understands the local democratic system, and a small group of testers. The code is open. What each country needs is a translation into its own institutions, language, and civic habits.",
+      "This does not need one central European rollout. It needs local people who can verify institutions, tone, and data on the ground. That is what the open code is for.",
+    guideTitle: "Small guide for a local version",
+    guideIntro:
+      "This is how I would start without turning it into a huge project:",
+    guideSteps: [
+      {
+        title: "Fork the code",
+        body:
+          "Clone the repository, run the app locally, and use the German logic as a working pattern.",
+      },
+      {
+        title: "Choose an AI provider",
+        body:
+          "Mistral AI is the recommended default. You can use another suitable LLM provider, but then you need to replace the adapter cleanly.",
+      },
+      {
+        title: "Map responsibilities",
+        body:
+          "Connect postal codes, constituencies, or municipalities to the right representatives and offices. AI coding helps, but local validation is required.",
+      },
+      {
+        title: "Adapt language and design",
+        body:
+          "Change the name, tone, output language, forms of address, examples, and trust signals until it feels natural in the country. For multiple official languages, decide deliberately.",
+      },
+      {
+        title: "Test with real people",
+        body:
+          "Send 10 to 20 people with real issues through it. Polish only after that.",
+      },
+    ],
     sections: {
       whyTitle: "Why this page exists",
       why1:
-        "Brief nach Berlin started as a German tool: enter a postal code, describe an issue, find the right member of parliament, and draft a letter. The underlying idea is larger. Democracy becomes easier to use when people know whom to contact and when the first step is not blocked by forms, uncertainty, or institutional complexity.",
+        "Brief nach Berlin started as a German tool: enter a postal code, describe an issue, find the right member of parliament, and draft a letter. The larger idea is simple: people should know whom they can contact.",
       why2:
-        "Europe is not an abstract project to me. It is the experience that neighboring countries can learn from each other without becoming the same. A tool built for Germany should not be copied into Austria, Portugal, or the Netherlands. It should be translated.",
-      openTitle: "What is open source about it?",
+        "The pattern can travel, but not one-to-one. A version for Austria, Portugal, the Netherlands, or any other country has to be translated into its own institutions.",
+      openTitle: "What you can reuse",
       open1:
-        "The Brief nach Berlin code is public on GitHub. You can inspect how postal codes, responsibility checks, letter drafting, privacy, and AI transparency work together. The point is not to control one central platform for Europe. The point is to let local teams reuse the pattern and adapt it better than I could from Germany.",
+        "The code is public on GitHub. You can inspect how postal codes, responsibility checks, letter drafting, privacy, and AI transparency work together.",
       open2:
-        "If you want to build a version for your country, you do not need permission. A message still helps, because I can share lessons, tradeoffs, and technical decisions.",
-      neededTitle: "What does a country need?",
+        "If you want to build a version for your country, you do not need permission. A short message still helps, because I can share lessons, pitfalls, and technical decisions.",
+      neededTitle: "What has to change locally",
       needed1:
-        "First, it needs a reliable data source: constituencies, mandates, office addresses, forms of address, and responsibilities. Then it needs writing that fits the local culture. An Austrian letter to the National Council sounds different from a German letter to the Bundestag. A Dutch version has to explain different institutions than a Portuguese one.",
+        "First, you need reliable data: which postal code, municipality, or constituency points to which representatives, offices, and responsibilities? In some countries, a postal code will not be enough.",
       needed2:
-        "Privacy matters too. Brief nach Berlin does not store user accounts and deliberately avoids building a political profile database. Any adaptation should keep that line: as little data as possible, as much transparency as possible.",
-      nextTitle: "Which countries are being discussed?",
+        "Then comes cultural translation: forms of address, tone, political levels, privacy, examples, homepage. A good prompt helps, but real local people have to review it.",
+      nextTitle: "How I can help",
       next1:
-        "Austria is being discussed. Portugal, the Netherlands, and other countries are examples where the approach could be useful. I am open to contacts, data pointers, translation help, local judgement, and developers who want to build their own version.",
+        "I can explain how Brief nach Berlin is built, what worked, and where I would be careful. I cannot localize all of Europe myself. That needs people on the ground.",
     },
     quote:
-      "Democracy gets stronger when people know: I am allowed to write. I know where to send it. And my voice is concrete enough to arrive.",
-    factNumber: "27",
+      "Democracy gets stronger when people know: I am allowed to write. I know where to send it. My voice can arrive somewhere concrete.",
+    factNumber: "1",
     factLabel:
-      "EU countries could use their own local versions once data, language, and institutions are checked on the ground.",
-    factSource: "European Union, locally adapted",
-    countriesTitle: "Possible next countries",
+      "Local owner per country matters more than one central platform for everyone.",
+    factSource: "Open source approach, locally adapted",
+    countriesTitle: "Where it could start",
     countries: [
       {
         name: "Austria",
         status: "Being discussed",
         body:
-          "National Council, Federal Council, states, and municipalities each have their own paths. That is why local review has to come before a public tool.",
+          "National Council, Federal Council, states, and municipalities each have their own paths. Good contacts and data sources would help most here.",
       },
       {
         name: "Portugal",
-        status: "Example",
+        status: "Local owners wanted",
         body:
-          "Useful for contacts, data sources, and people who understand how citizens can reach political offices there.",
+          "Interesting if someone can check political levels, office addresses, and the right way to address representatives locally.",
       },
       {
         name: "The Netherlands",
-        status: "Example",
+        status: "Local owners wanted",
         body:
-          "A strong candidate for testing how parliamentary responsibility, direct contact, and plain language fit together.",
+          "A useful example for testing how parliamentary responsibility, direct contact, and plain language fit together.",
       },
     ],
     contactTitle: "Do you have contacts or want to build?",
     contactBody:
-      "Write to me if you know data sources, understand a local political system, want to translate, or want to use the code for your own version. A short email is enough.",
+      "Write to me if you want to build a local version or know reliable data sources. Most helpful: country, political level, data source, and whether you can build or test it yourself.",
     contactCta: "Write an email",
+    guideCta: "Read the fork guide",
     githubCta: "View the code on GitHub",
     linksTitle: "More context",
     links: [
@@ -217,12 +288,12 @@ const copy: Record<Language, Copy> = {
       {
         q: "Can I adapt Brief nach Berlin for my country?",
         a:
-          "Yes. The code is open. The important part is to independently check your country's data, responsibilities, forms of address, and privacy questions instead of copying the German logic.",
+          "Yes. The code is open. You can fork it, use Mistral AI or another suitable LLM provider, map local representatives, and adapt copy, design, output language, forms of address, and privacy details.",
       },
       {
         q: "What kind of help is most useful right now?",
         a:
-          "The most useful help is contact with people who know local institutions, plus pointers to reliable data sources for mandates, constituencies, office addresses, and responsibilities.",
+          "The most useful help is local ownership: people who know reliable data sources, understand the institutions, and can test whether the tool feels natural in that country.",
       },
       {
         q: "Is Austria already planned?",
@@ -233,6 +304,11 @@ const copy: Record<Language, Copy> = {
         q: "Why not build one central European version?",
         a:
           "Political systems differ too much. One central version would become inaccurate quickly. Local versions are better: they can use the open approach and translate it carefully for their institutions.",
+      },
+      {
+        q: "Can Thomas help with my version?",
+        a:
+          "Yes, within reason. I can share technical context and feedback, but I cannot run country-specific localization for all of Europe myself.",
       },
       {
         q: "Does a new version have to use the name Brief nach Berlin?",
@@ -258,6 +334,8 @@ export function EuropePageContent({
   const mailHref = `mailto:${contactEmail}?subject=${encodeURIComponent(
     subject
   )}`;
+  const adaptationGuideHref =
+    "https://github.com/tholo91/brief-nach-berlin/blob/main/ADAPT_TO_YOUR_COUNTRY.md";
 
   return (
     <div className="min-h-screen bg-creme px-6 py-20">
@@ -307,7 +385,7 @@ export function EuropePageContent({
             width={1376}
             height={768}
             sizes="(min-width: 768px) 48rem, 100vw"
-            className="h-auto w-full rounded-2xl shadow-sm"
+            className="h-auto w-full rounded-lg shadow-sm"
             priority
           />
         </figure>
@@ -320,6 +398,37 @@ export function EuropePageContent({
             {t.answer}
           </p>
         </div>
+
+        <section className="mb-14 border-y border-waldgruen/15 py-8">
+          <div className="mb-6">
+            <h2 className="mb-2 font-body text-2xl font-bold text-waldgruen-dark">
+              {t.guideTitle}
+            </h2>
+            <p className="font-body text-base leading-relaxed text-warmgrau">
+              {t.guideIntro}
+            </p>
+          </div>
+          <div className="grid gap-3">
+            {t.guideSteps.map((step, index) => (
+              <article
+                key={step.title}
+                className="grid gap-3 rounded-lg border border-waldgruen/10 bg-white p-4 shadow-sm sm:grid-cols-[3rem_1fr] sm:items-start"
+              >
+                <span className="font-typewriter text-sm font-bold text-waldgruen/60">
+                  {String(index + 1).padStart(2, "0")}
+                </span>
+                <div>
+                  <h3 className="mb-1 font-body text-lg font-bold text-waldgruen-dark">
+                    {step.title}
+                  </h3>
+                  <p className="font-body text-sm leading-relaxed text-warmgrau">
+                    {step.body}
+                  </p>
+                </div>
+              </article>
+            ))}
+          </div>
+        </section>
 
         <Prose>
           <h2>{t.sections.whyTitle}</h2>
@@ -354,7 +463,7 @@ export function EuropePageContent({
             {t.countries.map((country) => (
               <article
                 key={country.name}
-                className="rounded-2xl border border-waldgruen/15 bg-white p-5 shadow-sm"
+                className="rounded-lg border border-waldgruen/15 bg-white p-5 shadow-sm"
               >
                 <div className="mb-3 flex flex-col gap-2">
                   <h3 className="font-body text-xl font-bold text-waldgruen-dark">
@@ -379,12 +488,20 @@ export function EuropePageContent({
           <p className="mb-6 font-body text-base leading-relaxed text-warmgrau">
             {t.contactBody}
           </p>
-          <div className="flex flex-col gap-3 sm:flex-row">
+          <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap">
             <a
               href={mailHref}
               className="inline-block rounded-sm bg-waldgruen-dark px-6 py-3 text-center font-body font-bold text-creme transition-colors hover:bg-waldgruen"
             >
               {t.contactCta}
+            </a>
+            <a
+              href={adaptationGuideHref}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-block rounded-sm border border-waldgruen/25 bg-white px-6 py-3 text-center font-body font-bold text-waldgruen-dark transition-colors hover:border-waldgruen hover:bg-creme"
+            >
+              {t.guideCta}
             </a>
             <a
               href="https://github.com/tholo91/brief-nach-berlin"

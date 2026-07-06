@@ -28,10 +28,10 @@ export default function StartCampaignPage() {
       <div className="relative mx-auto max-w-2xl px-6 py-14 md:py-20">
         <div className="text-center">
           <Image
-            src="/images/img-umschlag-icon.webp"
+            src="/images/campaign-creator-icon.webp"
             alt=""
-            width={256}
-            height={256}
+            width={128}
+            height={128}
             priority
             className="mx-auto h-20 w-20 md:h-24 md:w-24"
           />

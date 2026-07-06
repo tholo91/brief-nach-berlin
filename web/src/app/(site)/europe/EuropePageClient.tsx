@@ -1,9 +1,8 @@
+"use client";
+
+import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { FAQAccordion } from "@/components/FAQAccordion";
-import { FactCallout } from "@/components/editorial/FactCallout";
-import { Prose } from "@/components/editorial/Prose";
-import { PullQuote } from "@/components/editorial/PullQuote";
 
 type Language = "de" | "en";
 
@@ -12,312 +11,228 @@ type Copy = {
   eyebrow: string;
   title: string;
   lead: string;
+  aiReady: string;
   imageAlt: string;
-  answerKicker: string;
-  answer: string;
-  guideTitle: string;
-  guideIntro: string;
-  guideSteps: Array<{ title: string; body: string }>;
-  sections: {
-    whyTitle: string;
-    why1: string;
-    why2: string;
-    openTitle: string;
-    open1: string;
-    open2: string;
-    neededTitle: string;
-    needed1: string;
-    needed2: string;
-    nextTitle: string;
-    next1: string;
-  };
-  quote: string;
-  factNumber: string;
-  factLabel: string;
-  factSource: string;
-  countriesTitle: string;
-  countries: Array<{ name: string; status: string; body: string }>;
+  stepsTitle: string;
+  steps: Array<{ title: string; body: string }>;
+  promptTitle: string;
+  promptBody: string;
+  promptKicker: string;
+  copyLabel: string;
+  copiedLabel: string;
+  guideCta: string;
+  repoCta: string;
+  gsdCta: string;
   contactTitle: string;
   contactBody: string;
   contactCta: string;
-  guideCta: string;
-  githubCta: string;
-  linksTitle: string;
-  links: Array<{ href: string; label: string }>;
-  faqTitle: string;
-  faqs: Array<{ q: string; a: string }>;
 };
+
+const STARTER_PROMPT = `You are working in a fork of https://github.com/tholo91/brief-nach-berlin.
+
+First read:
+- README.md
+- ADAPT_TO_YOUR_COUNTRY.md
+- web/src/lib/generation/generateLetter.ts
+- web/src/lib/lookup/plzLookup.ts
+- web/src/lib/config.ts
+- web/src/lib/contact.ts
+
+Goal:
+Create LOCAL_ADAPTATION_PLAN.md for adapting this project to [COUNTRY/REGION].
+
+Use the GSD framework if available:
+https://github.com/gsd-build/get-shit-done
+
+If GSD is not available, create the same structure manually.
+
+The plan must include:
+- MUST / SHOULD / OPTIONAL tasks
+- local data requirements
+- representative lookup strategy
+- AI provider setup
+- output language and official-language decisions
+- email setup
+- domain setup
+- design localization
+- political letter prompt changes
+- local validation test cases
+
+Do not start coding yet.`;
 
 const copy: Record<Language, Copy> = {
   de: {
     back: "Zurück",
-    eyebrow: "Open Source für Europa und darüber hinaus",
-    title: "Bring Brief nach Berlin in dein Land",
+    eyebrow: "Open Source für lokale Demokratien",
+    title: "Fork Brief nach Berlin for your country",
     lead:
-      "Der Code ist offen. Wenn du eine lokale Version bauen willst: Repository forken, KI-Anbieter wählen, Zuständigkeiten mappen, Sprache und Design anpassen. Mistral ist empfohlen, aber nicht Pflicht. Ich helfe gern mit Erfahrung, kann aber nicht jedes Land kulturell, rechtlich und politisch selbst übersetzen.",
+      "Der Code ist offen. Wenn du eine lokale Version bauen willst, starte nicht mit Übersetzen. Lass zuerst ein LLM im Fork einen Plan schreiben: Daten, Zuständigkeiten, Sprache, Design, Mail, Domain und politische Brief-Logik.",
+    aiReady:
+      "Für AI-Forks vorbereitet: englische Agent-Anleitung, Datei-Map und ein erster Planungs-Prompt.",
     imageAlt:
       "Handgeschriebene Briefe fliegen über Europa, vorbei an Städten, Flüssen, Bahnlinien und Bergen.",
-    answerKicker: "Kurz gesagt",
-    answer:
-      "Es braucht keinen zentralen Europa-Rollout. Es braucht lokale Menschen, die Institutionen, Ton und Daten vor Ort sauber prüfen. Genau dafür ist der offene Code da.",
-    guideTitle: "Kleine Anleitung für eine lokale Version",
-    guideIntro:
-      "So würde ich anfangen, ohne daraus ein riesiges Projekt zu machen:",
-    guideSteps: [
+    stepsTitle: "Der kurze Weg",
+    steps: [
       {
-        title: "Code forken",
+        title: "Fork the repo",
         body:
-          "Repo klonen, App lokal starten und die deutsche Logik als Muster lesen.",
+          "Nimm den offenen Code als Ausgangspunkt. Du brauchst keine Erlaubnis.",
       },
       {
-        title: "KI-Anbieter wählen",
+        title: "Copy the prompt",
         body:
-          "Mistral AI ist der empfohlene Standard. Du kannst auch einen anderen passenden LLM-Anbieter nutzen, musst dann aber den Adapter sauber austauschen.",
+          "Lass dein LLM zuerst `ADAPT_TO_YOUR_COUNTRY.md` lesen und einen lokalen Plan schreiben.",
       },
       {
-        title: "Zuständigkeiten mappen",
+        title: "Localize with people",
         body:
-          "Postleitzahlen, Wahlkreise oder Gemeinden den richtigen Abgeordneten und Büros zuordnen. AI-Coding hilft, ersetzt aber keine lokale Prüfung.",
-      },
-      {
-        title: "Sprache und Design anpassen",
-        body:
-          "Name, Ton, Output-Sprache, Anreden, Beispiele und Trust-Signale so ändern, dass es im jeweiligen Land natürlich wirkt. Bei mehreren Amtssprachen bewusst entscheiden.",
-      },
-      {
-        title: "Mit echten Menschen testen",
-        body:
-          "10 bis 20 Menschen mit echten Anliegen durchschicken. Erst danach weiter polieren.",
+          "Prüfe Abgeordnete, Sprache, Design und politische Anreize mit Menschen vor Ort.",
       },
     ],
-    sections: {
-      whyTitle: "Warum diese Seite existiert",
-      why1:
-        "Brief nach Berlin begann als deutsches Werkzeug: Postleitzahl eingeben, Anliegen beschreiben, zuständige Bundestagsabgeordnete finden, Brief formulieren. Der Gedanke dahinter ist größer: Menschen sollen wissen, wen sie konkret ansprechen können.",
-      why2:
-        "Das Muster ist übertragbar, aber nicht 1:1. Ein Tool für Österreich, Portugal, die Niederlande oder ein anderes Land muss in die eigenen Institutionen übersetzt werden.",
-      openTitle: "Was du nutzen kannst",
-      open1:
-        "Der Code liegt offen bei GitHub. Du kannst sehen, wie Postleitzahlen, Zuständigkeiten, Brieflogik, Datenschutz und KI-Transparenz zusammenspielen.",
-      open2:
-        "Wenn du eine Version für dein Land bauen willst, brauchst du keine Erlaubnis. Eine kurze Nachricht hilft trotzdem, weil ich Erfahrungen, Fallstricke und technische Entscheidungen teilen kann.",
-      neededTitle: "Was lokal angepasst werden muss",
-      needed1:
-        "Zuerst braucht es verlässliche Daten: Welche Postleitzahl, Gemeinde oder welcher Wahlkreis führt zu welchen Abgeordneten, Büros und Zuständigkeiten? In manchen Ländern reicht die Postleitzahl nicht.",
-      needed2:
-        "Dann kommt die kulturelle Übersetzung: Anrede, Ton, politische Ebenen, Datenschutz, Beispiele, Startseite. Ein guter Prompt kann helfen, aber echte lokale Menschen müssen es prüfen.",
-      nextTitle: "Was ich leisten kann",
-      next1:
-        "Ich kann erklären, wie Brief nach Berlin aufgebaut ist, welche Entscheidungen gut funktioniert haben und wo ich vorsichtig wäre. Ich kann aber nicht ganz Europa lokal anpassen. Dafür braucht es Menschen vor Ort.",
-    },
-    quote:
-      "Demokratie wird stärker, wenn Menschen wissen: Ich darf schreiben. Ich weiß wohin. Meine Stimme kann konkret ankommen.",
-    factNumber: "1",
-    factLabel:
-      "Eine verantwortliche Person vor Ort ist wichtiger als eine zentrale Plattform für alle.",
-    factSource: "Open-Source-Ansatz, lokal angepasst",
-    countriesTitle: "Wo es anfangen könnte",
-    countries: [
-      {
-        name: "Österreich",
-        status: "Im Gespräch",
-        body:
-          "Nationalrat, Bundesrat, Länder und Gemeinden haben eigene Wege. Gute Kontakte und Datenquellen wären hier besonders hilfreich.",
-      },
-      {
-        name: "Portugal",
-        status: "Mitbauende gesucht",
-        body:
-          "Interessant, wenn jemand die politischen Ebenen, Adressen und passende Ansprache vor Ort prüfen kann.",
-      },
-      {
-        name: "Niederlande",
-        status: "Mitbauende gesucht",
-        body:
-          "Ein gutes Beispiel für die Frage, wie parlamentarische Zuständigkeit, direkte Ansprache und klare Sprache zusammenpassen.",
-      },
-    ],
-    contactTitle: "Hast du Kontakte oder willst du mitbauen?",
+    promptTitle: "Start with this prompt",
+    promptBody:
+      "Kopiere diesen Prompt in Codex, Claude, Cursor oder dein GSD-Setup. Er startet mit Planung, nicht mit Code.",
+    promptKicker: "Prepared for AI-assisted forks",
+    copyLabel: "Copy",
+    copiedLabel: "Copied",
+    guideCta: "Read the adaptation guide",
+    repoCta: "Open GitHub repo",
+    gsdCta: "GSD framework",
+    contactTitle: "Building a real local version?",
     contactBody:
-      "Schreib mir, wenn du konkret eine lokale Version bauen willst oder belastbare Datenquellen kennst. Am hilfreichsten: Land, politisches Level, Datenquelle und ob du selbst bauen oder testen kannst.",
-    contactCta: "Mail schreiben",
-    guideCta: "Fork-Anleitung lesen",
-    githubCta: "Code auf GitHub ansehen",
-    linksTitle: "Mehr Kontext",
-    links: [
-      { href: "/was-noch-kommt", label: "Was noch kommt: die Roadmap" },
-      { href: "/ki-transparenz", label: "Wie KI transparent eingesetzt wird" },
-      { href: "/warum", label: "Wer hinter Brief nach Berlin steht" },
-    ],
-    faqTitle: "Häufige Fragen",
-    faqs: [
-      {
-        q: "Kann ich Brief nach Berlin für mein Land übernehmen?",
-        a:
-          "Ja. Der Code ist offen. Du kannst ihn forken, Mistral AI oder einen anderen passenden LLM-Anbieter nutzen, lokale Abgeordnete mappen und Copy, Design, Output-Sprache, Anreden und Datenschutzdetails anpassen.",
-      },
-      {
-        q: "Welche Hilfe ist gerade am wertvollsten?",
-        a:
-          "Am wertvollsten sind Menschen vor Ort: verlässliche Datenquellen, Verständnis für die Institutionen und Tests mit echten Nutzerinnen und Nutzern.",
-      },
-      {
-        q: "Ist Österreich schon geplant?",
-        a:
-          "Österreich ist im Gespräch, aber noch nicht live. Wenn du dort Kontakte, Datenquellen oder Erfahrung mit Nationalrat, Ländern oder Gemeinden hast, ist das besonders hilfreich.",
-      },
-      {
-        q: "Warum keine zentrale Europa-Version?",
-        a:
-          "Politische Systeme unterscheiden sich stark. Eine zentrale Version würde schnell ungenau. Besser sind lokale Varianten, die den offenen Ansatz nutzen und ihn für die jeweiligen Institutionen sauber übersetzen.",
-      },
-      {
-        q: "Kann Thomas bei meiner Version helfen?",
-        a:
-          "Ja, in vernünftigem Rahmen. Ich kann technischen Kontext und Feedback geben, aber nicht die länderspezifische Anpassung für ganz Europa übernehmen.",
-      },
-      {
-        q: "Muss eine neue Version den Namen Brief nach Berlin tragen?",
-        a:
-          "Nein. Der Name passt zu Deutschland. Für andere Länder kann ein eigener Name sinnvoller sein, solange der Grundgedanke bleibt: Menschen helfen, konkrete demokratische Briefe an die richtige Stelle zu schreiben.",
-      },
-    ],
+      "Schreib mir kurz mit Land, politischer Ebene, Datenquelle und ob du bauen oder lokal testen kannst. Ich kann Kontext geben, aber nicht jedes Land selbst lokalisieren.",
+    contactCta: "Email Thomas",
   },
   en: {
     back: "Back",
-    eyebrow: "Open source for Europe and beyond",
-    title: "Bring Brief-nach-Berlin to your country",
+    eyebrow: "Open source for local democracies",
+    title: "Fork Brief nach Berlin for your country",
     lead:
-      "The code is open. If you want to build a local version: fork it, choose an AI provider, map local responsibilities, adapt language and design. Mistral is recommended, but not required. I am happy to share lessons, but I cannot culturally, legally, and politically localize every country myself.",
+      "The code is open. If you want to build a local version, do not start by translating the German site. First let an LLM inside your fork create a plan for data, responsibilities, language, design, email, domain, and political letter logic.",
+    aiReady:
+      "Prepared for AI-assisted forks: English agent guide, file map, and a first planning prompt.",
     imageAlt:
       "Handwritten letters fly across Europe, passing cities, rivers, railway lines, and mountains.",
-    answerKicker: "Short version",
-    answer:
-      "This does not need one central European rollout. It needs local people who can verify institutions, tone, and data on the ground. That is what the open code is for.",
-    guideTitle: "Small guide for a local version",
-    guideIntro:
-      "This is how I would start without turning it into a huge project:",
-    guideSteps: [
+    stepsTitle: "The short path",
+    steps: [
       {
-        title: "Fork the code",
+        title: "Fork the repo",
         body:
-          "Clone the repository, run the app locally, and use the German logic as a working pattern.",
+          "Use the open code as a starting point. You do not need permission.",
       },
       {
-        title: "Choose an AI provider",
+        title: "Copy the prompt",
         body:
-          "Mistral AI is the recommended default. You can use another suitable LLM provider, but then you need to replace the adapter cleanly.",
+          "Ask your LLM to read `ADAPT_TO_YOUR_COUNTRY.md` and write a local plan first.",
       },
       {
-        title: "Map responsibilities",
+        title: "Localize with people",
         body:
-          "Connect postal codes, constituencies, or municipalities to the right representatives and offices. AI coding helps, but local validation is required.",
-      },
-      {
-        title: "Adapt language and design",
-        body:
-          "Change the name, tone, output language, forms of address, examples, and trust signals until it feels natural in the country. For multiple official languages, decide deliberately.",
-      },
-      {
-        title: "Test with real people",
-        body:
-          "Send 10 to 20 people with real issues through it. Polish only after that.",
+          "Validate representatives, language, design, and political incentives with people on the ground.",
       },
     ],
-    sections: {
-      whyTitle: "Why this page exists",
-      why1:
-        "Brief nach Berlin started as a German tool: enter a postal code, describe an issue, find the right member of parliament, and draft a letter. The larger idea is simple: people should know whom they can contact.",
-      why2:
-        "The pattern can travel, but not one-to-one. A version for Austria, Portugal, the Netherlands, or any other country has to be translated into its own institutions.",
-      openTitle: "What you can reuse",
-      open1:
-        "The code is public on GitHub. You can inspect how postal codes, responsibility checks, letter drafting, privacy, and AI transparency work together.",
-      open2:
-        "If you want to build a version for your country, you do not need permission. A short message still helps, because I can share lessons, pitfalls, and technical decisions.",
-      neededTitle: "What has to change locally",
-      needed1:
-        "First, you need reliable data: which postal code, municipality, or constituency points to which representatives, offices, and responsibilities? In some countries, a postal code will not be enough.",
-      needed2:
-        "Then comes cultural translation: forms of address, tone, political levels, privacy, examples, homepage. A good prompt helps, but real local people have to review it.",
-      nextTitle: "How I can help",
-      next1:
-        "I can explain how Brief nach Berlin is built, what worked, and where I would be careful. I cannot localize all of Europe myself. That needs people on the ground.",
-    },
-    quote:
-      "Democracy gets stronger when people know: I am allowed to write. I know where to send it. My voice can arrive somewhere concrete.",
-    factNumber: "1",
-    factLabel:
-      "Local owner per country matters more than one central platform for everyone.",
-    factSource: "Open source approach, locally adapted",
-    countriesTitle: "Where it could start",
-    countries: [
-      {
-        name: "Austria",
-        status: "Being discussed",
-        body:
-          "National Council, Federal Council, states, and municipalities each have their own paths. Good contacts and data sources would help most here.",
-      },
-      {
-        name: "Portugal",
-        status: "Local owners wanted",
-        body:
-          "Interesting if someone can check political levels, office addresses, and the right way to address representatives locally.",
-      },
-      {
-        name: "The Netherlands",
-        status: "Local owners wanted",
-        body:
-          "A useful example for testing how parliamentary responsibility, direct contact, and plain language fit together.",
-      },
-    ],
-    contactTitle: "Do you have contacts or want to build?",
+    promptTitle: "Start with this prompt",
+    promptBody:
+      "Paste this into Codex, Claude, Cursor, or your GSD setup. It starts with planning, not code.",
+    promptKicker: "Prepared for AI-assisted forks",
+    copyLabel: "Copy",
+    copiedLabel: "Copied",
+    guideCta: "Read the adaptation guide",
+    repoCta: "Open GitHub repo",
+    gsdCta: "GSD framework",
+    contactTitle: "Building a real local version?",
     contactBody:
-      "Write to me if you want to build a local version or know reliable data sources. Most helpful: country, political level, data source, and whether you can build or test it yourself.",
-    contactCta: "Write an email",
-    guideCta: "Read the fork guide",
-    githubCta: "View the code on GitHub",
-    linksTitle: "More context",
-    links: [
-      { href: "/was-noch-kommt", label: "What comes next: the roadmap" },
-      { href: "/ki-transparenz", label: "How AI is used transparently" },
-      { href: "/warum", label: "Who is behind Brief nach Berlin" },
-    ],
-    faqTitle: "Frequently asked questions",
-    faqs: [
-      {
-        q: "Can I adapt Brief nach Berlin for my country?",
-        a:
-          "Yes. The code is open. You can fork it, use Mistral AI or another suitable LLM provider, map local representatives, and adapt copy, design, output language, forms of address, and privacy details.",
-      },
-      {
-        q: "What kind of help is most useful right now?",
-        a:
-          "The most useful help is local ownership: people who know reliable data sources, understand the institutions, and can test whether the tool feels natural in that country.",
-      },
-      {
-        q: "Is Austria already planned?",
-        a:
-          "Austria is being discussed, but it is not live yet. If you have contacts, data sources, or experience with the National Council, states, or municipalities, that is especially useful.",
-      },
-      {
-        q: "Why not build one central European version?",
-        a:
-          "Political systems differ too much. One central version would become inaccurate quickly. Local versions are better: they can use the open approach and translate it carefully for their institutions.",
-      },
-      {
-        q: "Can Thomas help with my version?",
-        a:
-          "Yes, within reason. I can share technical context and feedback, but I cannot run country-specific localization for all of Europe myself.",
-      },
-      {
-        q: "Does a new version have to use the name Brief nach Berlin?",
-        a:
-          "No. The name fits Germany. Another country may need its own name, as long as the principle remains: help people write concrete democratic letters to the right office.",
-      },
-    ],
+      "Send a short email with country, political level, data source, and whether you can build or test locally. I can share context, but I cannot localize every country myself.",
+    contactCta: "Email Thomas",
   },
 };
+
+function CopyIcon({ copied }: { copied: boolean }) {
+  return (
+    <svg
+      width="18"
+      height="18"
+      viewBox="0 0 24 24"
+      fill="none"
+      aria-hidden="true"
+      className="shrink-0"
+    >
+      {copied ? (
+        <path
+          d="M5 12.5l4.2 4.2L19 7"
+          stroke="currentColor"
+          strokeWidth="2.4"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+      ) : (
+        <>
+          <rect
+            x="8"
+            y="8"
+            width="10"
+            height="10"
+            rx="1.5"
+            stroke="currentColor"
+            strokeWidth="2"
+          />
+          <path
+            d="M6 15H5.5A1.5 1.5 0 014 13.5v-8A1.5 1.5 0 015.5 4h8A1.5 1.5 0 0115 5.5V6"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+          />
+        </>
+      )}
+    </svg>
+  );
+}
+
+function PromptPreview({
+  t,
+}: {
+  t: Pick<Copy, "promptKicker" | "copyLabel" | "copiedLabel">;
+}) {
+  const [copied, setCopied] = useState(false);
+
+  async function copyPrompt() {
+    await navigator.clipboard.writeText(STARTER_PROMPT);
+    setCopied(true);
+    window.setTimeout(() => setCopied(false), 1400);
+  }
+
+  return (
+    <div className="overflow-hidden rounded-lg border border-waldgruen/20 bg-white shadow-sm">
+      <div className="flex items-center justify-between gap-3 border-b border-waldgruen/10 px-4 py-3">
+        <p className="font-typewriter text-xs font-bold uppercase text-waldgruen/65">
+          {t.promptKicker}
+        </p>
+        <button
+          type="button"
+          onClick={copyPrompt}
+          className={`inline-flex items-center gap-2 rounded-sm px-3 py-2 font-body text-sm font-bold transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-waldgruen/40 focus:ring-offset-2 active:scale-95 ${
+            copied
+              ? "scale-105 bg-waldgruen text-creme"
+              : "bg-waldgruen-dark text-creme hover:bg-waldgruen"
+          }`}
+          aria-live="polite"
+        >
+          <CopyIcon copied={copied} />
+          {copied ? t.copiedLabel : t.copyLabel}
+        </button>
+      </div>
+      <div className="relative">
+        <pre className="max-h-24 overflow-hidden whitespace-pre-wrap break-words p-4 pr-10 font-typewriter text-xs leading-relaxed text-warmgrau sm:text-sm">
+          {STARTER_PROMPT}
+        </pre>
+        <div className="pointer-events-none absolute inset-x-0 bottom-0 h-14 bg-gradient-to-t from-white to-white/0" />
+        <span className="pointer-events-none absolute bottom-3 right-4 font-typewriter text-lg font-bold text-waldgruen/60">
+          ...
+        </span>
+      </div>
+    </div>
+  );
+}
 
 export function EuropePageContent({
   contactEmail,
@@ -329,17 +244,18 @@ export function EuropePageContent({
   const t = copy[language];
   const subject =
     language === "de"
-      ? "Brief nach Berlin nach Europa bringen"
-      : "Bringing Brief nach Berlin to Europe";
+      ? "Brief nach Berlin in meinem Land nutzen"
+      : "Using Brief nach Berlin in my country";
   const mailHref = `mailto:${contactEmail}?subject=${encodeURIComponent(
     subject
   )}`;
-  const adaptationGuideHref =
-    "https://github.com/tholo91/brief-nach-berlin/blob/main/ADAPT_TO_YOUR_COUNTRY.md";
+  const repoHref = "https://github.com/tholo91/brief-nach-berlin";
+  const adaptationGuideHref = `${repoHref}/blob/main/ADAPT_TO_YOUR_COUNTRY.md`;
+  const gsdHref = "https://github.com/gsd-build/get-shit-done";
 
   return (
-    <div className="min-h-screen bg-creme px-6 py-20">
-      <div className="mx-auto max-w-3xl">
+    <div className="min-h-screen bg-creme px-6 py-16 md:py-20">
+      <main className="mx-auto max-w-3xl">
         <div className="mb-8 flex items-center justify-between gap-4">
           <Link
             href="/"
@@ -355,7 +271,7 @@ export function EuropePageContent({
               <Link
                 key={item}
                 href={`/europe?lang=${item}`}
-                className={`rounded-full px-3 py-1.5 font-typewriter text-xs font-bold uppercase tracking-widest transition-colors ${
+                className={`rounded-full px-3 py-1.5 font-typewriter text-xs font-bold uppercase transition-colors ${
                   language === item
                     ? "bg-waldgruen text-creme"
                     : "text-waldgruen hover:bg-waldgruen/10"
@@ -368,177 +284,110 @@ export function EuropePageContent({
           </div>
         </div>
 
-        <p className="mb-3 font-typewriter text-sm font-bold uppercase tracking-widest text-waldgruen/60">
-          {t.eyebrow}
-        </p>
-        <h1 className="mb-6 font-body text-3xl font-bold tracking-tight text-waldgruen-dark text-balance md:text-5xl">
-          {t.title}
-        </h1>
-        <p className="mb-10 font-body text-lg leading-relaxed text-warmgrau/85 md:text-xl">
-          {t.lead}
-        </p>
-
-        <figure className="mb-12 -mx-2 sm:mx-0">
-          <Image
-            src="/images/europe-correspondence.webp"
-            alt={t.imageAlt}
-            width={1376}
-            height={768}
-            sizes="(min-width: 768px) 48rem, 100vw"
-            className="h-auto w-full rounded-lg shadow-sm"
-            priority
-          />
-        </figure>
-
-        <div className="mb-14 border-l-4 border-waldgruen py-2 pl-6">
-          <p className="mb-3 font-typewriter text-xs uppercase tracking-widest text-waldgruen/60">
-            {t.answerKicker}
-          </p>
-          <p className="font-body text-base leading-relaxed text-waldgruen-dark md:text-lg">
-            {t.answer}
-          </p>
-        </div>
-
-        <section className="mb-14 border-y border-waldgruen/15 py-8">
-          <div className="mb-6">
-            <h2 className="mb-2 font-body text-2xl font-bold text-waldgruen-dark">
-              {t.guideTitle}
-            </h2>
-            <p className="font-body text-base leading-relaxed text-warmgrau">
-              {t.guideIntro}
+        <section className="grid gap-8 md:grid-cols-[1.1fr_0.9fr] md:items-start">
+          <div>
+            <p className="mb-3 font-typewriter text-sm font-bold uppercase text-waldgruen/60">
+              {t.eyebrow}
+            </p>
+            <h1 className="mb-5 font-body text-3xl font-bold tracking-tight text-waldgruen-dark text-balance md:text-5xl">
+              {t.title}
+            </h1>
+            <p className="font-body text-lg leading-relaxed text-warmgrau/85 md:text-xl">
+              {t.lead}
             </p>
           </div>
-          <div className="grid gap-3">
-            {t.guideSteps.map((step, index) => (
-              <article
-                key={step.title}
-                className="grid gap-3 rounded-lg border border-waldgruen/10 bg-white p-4 shadow-sm sm:grid-cols-[3rem_1fr] sm:items-start"
-              >
-                <span className="font-typewriter text-sm font-bold text-waldgruen/60">
-                  {String(index + 1).padStart(2, "0")}
-                </span>
-                <div>
-                  <h3 className="mb-1 font-body text-lg font-bold text-waldgruen-dark">
-                    {step.title}
-                  </h3>
-                  <p className="font-body text-sm leading-relaxed text-warmgrau">
-                    {step.body}
-                  </p>
-                </div>
-              </article>
-            ))}
-          </div>
+          <figure className="-mx-2 md:mx-0">
+            <Image
+              src="/images/europe-correspondence.webp"
+              alt={t.imageAlt}
+              width={1376}
+              height={768}
+              sizes="(min-width: 768px) 18rem, 100vw"
+              className="h-auto w-full rounded-lg shadow-sm"
+              priority
+            />
+          </figure>
         </section>
 
-        <Prose>
-          <h2>{t.sections.whyTitle}</h2>
-          <p>{t.sections.why1}</p>
-          <p>{t.sections.why2}</p>
+        <p className="mt-8 border-l-4 border-waldgruen py-2 pl-5 font-body text-base leading-relaxed text-waldgruen-dark">
+          {t.aiReady}
+        </p>
 
-          <PullQuote>{t.quote}</PullQuote>
-
-          <h2>{t.sections.openTitle}</h2>
-          <p>{t.sections.open1}</p>
-          <p>{t.sections.open2}</p>
-
-          <FactCallout
-            number={t.factNumber}
-            label={t.factLabel}
-            source={t.factSource}
-          />
-
-          <h2>{t.sections.neededTitle}</h2>
-          <p>{t.sections.needed1}</p>
-          <p>{t.sections.needed2}</p>
-
-          <h2>{t.sections.nextTitle}</h2>
-          <p>{t.sections.next1}</p>
-        </Prose>
-
-        <section className="mt-14">
-          <h2 className="mb-6 font-body text-2xl font-bold text-waldgruen-dark md:text-3xl">
-            {t.countriesTitle}
+        <section className="mt-10 border-y border-waldgruen/15 py-7">
+          <h2 className="mb-5 font-body text-2xl font-bold text-waldgruen-dark">
+            {t.stepsTitle}
           </h2>
           <div className="grid gap-4 md:grid-cols-3">
-            {t.countries.map((country) => (
-              <article
-                key={country.name}
-                className="rounded-lg border border-waldgruen/15 bg-white p-5 shadow-sm"
-              >
-                <div className="mb-3 flex flex-col gap-2">
-                  <h3 className="font-body text-xl font-bold text-waldgruen-dark">
-                    {country.name}
-                  </h3>
-                  <span className="w-fit rounded-full bg-waldgruen/10 px-3 py-1 font-typewriter text-xs font-bold uppercase tracking-widest text-waldgruen-dark">
-                    {country.status}
-                  </span>
-                </div>
+            {t.steps.map((step, index) => (
+              <article key={step.title}>
+                <p className="mb-2 font-typewriter text-sm font-bold text-waldgruen/55">
+                  {String(index + 1).padStart(2, "0")}
+                </p>
+                <h3 className="mb-2 font-body text-lg font-bold text-waldgruen-dark">
+                  {step.title}
+                </h3>
                 <p className="font-body text-sm leading-relaxed text-warmgrau">
-                  {country.body}
+                  {step.body}
                 </p>
               </article>
             ))}
           </div>
         </section>
 
-        <section className="mt-16 rounded-sm border-2 border-waldgruen/20 bg-creme/40 p-6 sm:p-8">
-          <h2 className="mb-3 font-body text-2xl font-bold text-waldgruen-dark">
+        <section className="mt-10">
+          <div className="mb-4">
+            <h2 className="mb-2 font-body text-2xl font-bold text-waldgruen-dark">
+              {t.promptTitle}
+            </h2>
+            <p className="font-body text-base leading-relaxed text-warmgrau">
+              {t.promptBody}
+            </p>
+          </div>
+          <PromptPreview t={t} />
+        </section>
+
+        <section className="mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
+          <a
+            href={adaptationGuideHref}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-block rounded-sm bg-waldgruen-dark px-5 py-3 text-center font-body font-bold text-creme transition-colors hover:bg-waldgruen"
+          >
+            {t.guideCta}
+          </a>
+          <a
+            href={repoHref}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-block rounded-sm border border-waldgruen/25 bg-white px-5 py-3 text-center font-body font-bold text-waldgruen-dark transition-colors hover:border-waldgruen hover:bg-creme"
+          >
+            {t.repoCta}
+          </a>
+          <a
+            href={gsdHref}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-block rounded-sm border border-waldgruen/25 px-5 py-3 text-center font-body font-bold text-waldgruen-dark transition-colors hover:border-waldgruen hover:bg-white"
+          >
+            {t.gsdCta}
+          </a>
+        </section>
+
+        <section className="mt-14 rounded-sm border border-waldgruen/20 bg-white/70 p-6">
+          <h2 className="mb-3 font-body text-xl font-bold text-waldgruen-dark">
             {t.contactTitle}
           </h2>
-          <p className="mb-6 font-body text-base leading-relaxed text-warmgrau">
+          <p className="mb-5 font-body text-base leading-relaxed text-warmgrau">
             {t.contactBody}
           </p>
-          <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap">
-            <a
-              href={mailHref}
-              className="inline-block rounded-sm bg-waldgruen-dark px-6 py-3 text-center font-body font-bold text-creme transition-colors hover:bg-waldgruen"
-            >
-              {t.contactCta}
-            </a>
-            <a
-              href={adaptationGuideHref}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-block rounded-sm border border-waldgruen/25 bg-white px-6 py-3 text-center font-body font-bold text-waldgruen-dark transition-colors hover:border-waldgruen hover:bg-creme"
-            >
-              {t.guideCta}
-            </a>
-            <a
-              href="https://github.com/tholo91/brief-nach-berlin"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-block rounded-sm border border-waldgruen/25 px-6 py-3 text-center font-body font-bold text-waldgruen-dark transition-colors hover:border-waldgruen hover:bg-white"
-            >
-              {t.githubCta}
-            </a>
-          </div>
+          <a
+            href={mailHref}
+            className="inline-block rounded-sm bg-waldgruen-dark px-5 py-3 text-center font-body font-bold text-creme transition-colors hover:bg-waldgruen"
+          >
+            {t.contactCta}
+          </a>
         </section>
-
-        <section className="mt-16 border-t border-warmgrau/10 pt-8">
-          <p className="mb-4 font-typewriter text-xs font-bold uppercase tracking-widest text-waldgruen/50">
-            {t.linksTitle}
-          </p>
-          <ul className="flex flex-col gap-3">
-            {t.links.map((link) => (
-              <li key={link.href}>
-                <Link
-                  href={link.href}
-                  className="font-body text-waldgruen underline underline-offset-2 transition-colors hover:text-waldgruen-dark"
-                >
-                  {link.label}
-                </Link>
-              </li>
-            ))}
-          </ul>
-        </section>
-
-        <section className="mt-16">
-          <h2 className="mb-6 font-body text-xl font-bold text-waldgruen-dark">
-            {t.faqTitle}
-          </h2>
-          <FAQAccordion items={t.faqs} />
-        </section>
-      </div>
+      </main>
     </div>
   );
 }

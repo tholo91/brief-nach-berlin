@@ -1,372 +1,353 @@
-# Brief nach Berlin in ein anderes Land bringen
+# Adapt Brief nach Berlin to another country
 
-Diese Anleitung ist für Menschen, die das Projekt forken und lokal an ihr Land
-anpassen wollen. Ziel ist kein perfekter Europa-Rollout. Ziel ist eine kleine,
-funktionierende lokale Version, die echte Menschen testen können.
+This guide is written for an LLM, coding agent, or AI-assisted builder working
+inside a fork of `https://github.com/tholo91/brief-nach-berlin`.
 
-## 1. Der kleinste sinnvolle Fork
+The goal is not to translate a German website. The goal is to create a small,
+credible local version that helps people contact the right political office in
+their own country.
 
-Übernimm nicht sofort die ganze deutsche Website.
+## 1. First instruction for the agent
 
-Für eine erste lokale Version reicht:
+Before changing code, create a plan.
 
-1. Startseite mit Eingabefeld
-2. Wizard: Ort/Postleitzahl, E-Mail, Anliegen, Abgeordneten-Auswahl
-3. Briefgenerierung mit Mistral oder einem anderen LLM-Anbieter
-4. E-Mail mit Brief, Adresse und nächsten Schritten
-5. Datenschutz, Impressum und eine kurze Erklärung, warum Briefe in deinem Land wirken
+Recommended first prompt:
 
-Alles andere ist optional: Presse, Bewertungen, Kampagnen, Roadmap, lange SEO-Seiten,
-deutsche Hintergrundtexte, Follow-up-Mails.
+```text
+You are working in a fork of https://github.com/tholo91/brief-nach-berlin.
 
-## 2. Was du lokal wirklich prüfen musst
+First read:
+- README.md
+- ADAPT_TO_YOUR_COUNTRY.md
+- web/src/lib/generation/generateLetter.ts
+- web/src/lib/lookup/plzLookup.ts
+- web/src/lib/config.ts
+- web/src/lib/contact.ts
 
-Die gefährlichste Stelle ist nicht die KI. Die gefährlichste Stelle ist eine
-falsche Zuordnung von Person, Ort und politischer Zuständigkeit.
+Goal:
+Create LOCAL_ADAPTATION_PLAN.md for adapting this project to [COUNTRY/REGION].
 
-Muss geprüft werden:
+Use the GSD framework if available:
+https://github.com/gsd-build/get-shit-done
 
-- Welche politische Ebene soll die erste Version abdecken?
-- Reicht eine Postleitzahl, oder brauchst du Wahlkreis, Gemeinde, Region oder Adresse?
-- Welche verlässliche Datenquelle liefert Mandate, Parteien, Büroadressen und Wahlkreise?
-- Welche Lizenz haben diese Daten?
-- Gibt es direkt gewählte Abgeordnete, Listenmandate oder mehrere zuständige Personen?
-- Welche Anrede ist politisch und kulturell normal?
-- In welcher Sprache soll der Brief entstehen?
-- Hat das Land mehrere Amtssprachen oder relevante Sprachregionen?
-- Wohin soll ein Brief praktisch geschickt werden: Wahlkreisbüro, Parlamentsadresse, Partei-/Fraktionsbüro?
-- Was muss Datenschutzrecht lokal erklären?
+If GSD is not available, create the same structure manually.
 
-Wenn du nur einen Punkt gründlich machst: Stelle sicher, dass der Brief niemals
-an die falsche Person geschickt wird.
+The plan must include:
+- MUST / SHOULD / OPTIONAL tasks
+- local data requirements
+- representative lookup strategy
+- AI provider setup
+- output language and official-language decisions
+- email setup
+- domain setup
+- design localization
+- political letter prompt changes
+- local validation test cases
 
-## 3. KI-Anbieter und Sprache
+Do not start coding yet.
+```
 
-Brief nach Berlin nutzt Mistral AI, weil Mistral europäisch ist, gut Deutsch kann
-und für dieses Projekt datenschutzpraktisch gut passt. Für deinen Fork ist Mistral
-eine Empfehlung, keine Pflicht.
+If you use GSD, treat this as the first planning phase. If you do not use GSD,
+ask your coding agent to produce the same structured plan manually.
 
-Du kannst einen anderen LLM-Anbieter nutzen, wenn er für dein Land, deine Sprache,
-deine Datenschutzlage und dein Budget besser passt. Dann musst du aber die
-Adapter-Stelle sauber austauschen, statt nur den API-Key zu ändern.
+## 2. The smallest useful fork
 
-Prüfe konkret:
+Do not copy the full German site first.
 
-- `web/src/lib/mistral.ts`: Anbieter, Modellnamen, Retry-Verhalten.
-- `web/src/lib/generation/generateLetter.ts`: Output-Sprache, Briefkultur,
-  Anreden, politische Ebenen, Parteien, Datumsformat.
-- `web/src/app/api/transcribe/route.ts`: Sprache für Audio-Transkription
-  (`language: "de"` ist aktuell deutsch).
-- `web/src/app/layout.tsx`: HTML-Sprache und strukturierte Daten
-  (`lang="de"`, `inLanguage: "de-DE"`).
-- `web/src/lib/validation/wizardSchemas.ts`: Eingabeformat und Fehlermeldungen.
+For a first local MVP, keep only:
 
-Mehrsprachige Länder brauchen eine bewusste Entscheidung. Für viele Länder reicht
-eine Hauptlandessprache zum Start. Für Länder wie die Schweiz, Belgien, Kanada
-oder andere mehrsprachige Systeme solltest du festlegen:
+1. Homepage with the input entry point
+2. Wizard: location, email, issue, representative selection
+3. Letter generation with Mistral or another LLM provider
+4. Email delivery with the letter, address, and next steps
+5. Privacy, legal notice, and a short local explanation of why letters work
 
-- Welche Sprache ist die Standard-Sprache?
-- Erkennt die App die Sprachregion automatisch, z. B. über Postleitzahl, Kanton,
-  Gemeinde oder Nutzerauswahl?
-- Darf die Nutzerin die Briefsprache selbst wählen?
-- Müssen Anrede, Institutionen und Rechtsbegriffe je Sprache anders formuliert werden?
-- Gibt es Vertreterinnen oder Behörden, die in mehreren Sprachen angeschrieben werden können?
+Everything else is optional at the start: campaigns, reviews, press pages,
+roadmap pages, long SEO pages, German political background pages, follow-up
+emails.
 
-Für den MVP ist die pragmatische Regel: eine Sprache sauber bauen, bevor du vier
-halb übersetzte Sprachen anbietest.
+## 3. What must be checked locally
 
-## 4. Dateien, die du wahrscheinlich anfassen musst
+The riskiest part is not the AI. The riskiest part is sending someone to the
+wrong representative, office, or political level.
 
-### Muss
+The local owner must answer:
 
-| Bereich | Dateien | Warum |
+- Which political level does the MVP cover first?
+- Is a postal code enough, or do you need constituency, municipality, region, or
+  full address?
+- Which reliable data source provides representatives, parties, offices, and
+  constituencies?
+- What license does that data have?
+- Are representatives directly elected, list-based, or both?
+- Can multiple representatives be responsible for one place?
+- Which office should receive the letter: local office, parliamentary office,
+  party group, ministry, municipality?
+- Which form of address is normal and respectful?
+- Which output language should the letter use?
+- Does the country have multiple official languages or relevant language
+  regions?
+- What must the privacy and legal text say locally?
+
+If only one thing is done carefully: make sure the tool never shows the wrong
+recipient as if it were certain.
+
+## 4. Files the agent will probably touch
+
+### Must inspect
+
+| Area | Files | Why |
 | --- | --- | --- |
-| App-Name, Domain, Sharing, Kontakt | `web/src/lib/config.ts`, `web/src/lib/contact.ts` | Name, URL, Gründerkontakt, Share-Texte, Feedback-Links |
-| KI-Anbieter | `web/src/lib/mistral.ts`, `web/.env.example` | Mistral ist empfohlen, aber austauschbar; hier sitzt der Anbieter-Adapter |
-| Briefprompt | `web/src/lib/generation/generateLetter.ts` | Output-Sprache, Kultur, Anreden, politische Ebenen, Parteien, Ausgabeformat |
-| Ort-zu-Vertretung-Lookup | `web/src/lib/lookup/plzLookup.ts` | Verbindet Nutzereingabe mit den passenden Abgeordneten |
-| Datenstruktur | `web/src/lib/types/politician.ts`, `web/src/lib/types/wizard.ts` | Felder für Vertreter, Wahlkreis, Adresse, Level |
-| Validierung | `web/src/lib/validation/wizardSchemas.ts` | Deutsche 5-stellige PLZ ist hart codiert |
-| Datendateien | `web/data/plz-wahlkreis-mapping.json`, `web/data/politicians-cache.json` | Lokales Mapping und Vertreter-Cache |
-| Datenskripte | `web/scripts/fetch-politician-data.ts`, optional `web/scripts/parse-plz-mapping.ts` | Erzeugt die lokalen JSON-Dateien |
-| Startseite/Wizard-Copy | `web/src/components/Hero.tsx`, `web/src/components/wizard/Step1Form.tsx`, `web/src/components/wizard/Step3Success.tsx` | Nutzer sehen dort die deutschen Annahmen zuerst |
-| E-Mail | `web/src/lib/email/sendLetterEmail.ts`, `web/src/lib/email/buildEmailHtml.ts` | Absender, Adresse, Porto-/Abschickhinweise, Sprache |
-| Rechtliches | `web/src/app/(site)/datenschutz/page.tsx`, `web/src/app/(site)/impressum/page.tsx` | Muss lokal neu geschrieben werden |
+| App name, domain, contact | `web/src/lib/config.ts`, `web/src/lib/contact.ts` | Name, URL, founder contact, share text |
+| AI provider | `web/src/lib/mistral.ts`, `web/.env.example` | Mistral is recommended, but replaceable |
+| Letter prompt | `web/src/lib/generation/generateLetter.ts` | Output language, tone, address, political incentives |
+| Location lookup | `web/src/lib/lookup/plzLookup.ts` | Connects user input to representatives |
+| Data model | `web/src/lib/types/politician.ts`, `web/src/lib/types/wizard.ts` | Fields for representative, constituency, office, level |
+| Validation | `web/src/lib/validation/wizardSchemas.ts` | German five-digit postal codes are hard-coded |
+| Data files | `web/data/plz-wahlkreis-mapping.json`, `web/data/politicians-cache.json` | Local mapping and representative cache |
+| Data scripts | `web/scripts/fetch-politician-data.ts`, `web/scripts/parse-plz-mapping.ts` | Generate local JSON data |
+| Homepage and wizard copy | `web/src/components/Hero.tsx`, `web/src/components/wizard/*` | First user-facing German assumptions |
+| Email | `web/src/lib/email/sendLetterEmail.ts`, `web/src/lib/email/buildEmailHtml.ts` | Sender, address, postage or sending instructions |
+| Legal pages | `web/src/app/(site)/datenschutz/page.tsx`, `web/src/app/(site)/impressum/page.tsx` | Must be rewritten locally |
 
-### Sollte
+### Usually inspect
 
-| Bereich | Dateien | Warum |
+| Area | Files | Why |
 | --- | --- | --- |
-| Layout/Metadaten | `web/src/app/layout.tsx`, `web/src/app/page.tsx`, `web/src/app/sitemap.ts` | Name, SEO, Sprache, strukturierte Daten |
-| Footer/Header | `web/src/components/Header.tsx`, `web/src/components/Footer.tsx`, `web/src/components/AppHeader.tsx`, `web/src/components/AppFooter.tsx` | Navigation und Projektlinks |
-| Politischer Kontext | `web/src/lib/enrichment/fetchMdbContext.ts` | Nutzt aktuell Abgeordnetenwatch und deutsche Stopwords |
-| Spracheingabe | `web/src/app/api/transcribe/route.ts` | Transkription ist aktuell auf `language: "de"` gesetzt |
-| Lokalitätsanzeige | `web/src/components/wizard/Step1Form.tsx` | Nutzt `openplzapi.org/de` für deutsche Orte |
-| Moderation | `web/src/lib/moderation/moderateText.ts` | Kann bleiben, sollte aber lokal getestet werden |
-| Tests | `web/src/__tests__/*`, `web/scripts/test-*.ts` | Deutsche Fixtures ersetzen |
+| Layout and metadata | `web/src/app/layout.tsx`, `web/src/app/page.tsx`, `web/src/app/sitemap.ts` | SEO, language, structured data |
+| Header and footer | `web/src/components/Header.tsx`, `web/src/components/Footer.tsx`, `web/src/components/AppHeader.tsx`, `web/src/components/AppFooter.tsx` | Navigation and project links |
+| Political context | `web/src/lib/enrichment/fetchMdbContext.ts` | Currently uses German sources and stopwords |
+| Speech input | `web/src/app/api/transcribe/route.ts` | Transcription currently assumes German |
+| Location display | `web/src/components/wizard/Step1Form.tsx` | Uses German OpenPLZ lookup |
+| Tests | `web/src/__tests__/*`, `web/scripts/test-*.ts` | Replace German fixtures |
 
-### Optional
+### Optional for a quick MVP
 
-Diese Teile kannst du für einen schnellen Fork ausblenden, später anpassen oder löschen:
+- Campaigns: `web/src/components/campaigns/*`, `web/src/app/(site)/kampagne*`
+- Reviews and feedback pages
+- Roadmap and follow-up emails
+- Press/story pages
+- German SEO pages such as `guide`, `tipps`, `warum-ein-brief`,
+  `wahlkreisbuero-oder-berlin`, `kommune-land-bund-eu`
 
-- Kampagnen: `web/src/components/campaigns/*`, `web/src/app/(site)/kampagne*`,
-  `web/src/lib/campaigns/*`
-- Bewertungen und Stimmen: `web/src/components/reviews/*`, `web/src/app/(site)/stimmen`,
-  `web/src/app/(site)/feedback`
-- Roadmap und Follow-ups: `web/src/app/(site)/was-noch-kommt`,
-  `web/src/lib/email/buildFollowupHtml.ts`, `web/src/lib/email/sendFollowupEmail.ts`
-- Presse-/Story-Seiten: `web/src/app/(site)/presse`,
-  `web/src/app/(site)/lage-der-nation`, `web/src/app/(site)/was-bisher-geschah`
-- Deutsche SEO-Seiten: `guide`, `tipps`, `warum-ein-brief`,
-  `wahlkreisbuero-oder-berlin`, `kommune-land-bund-eu` usw.
+## 5. AI provider and language
 
-## 5. Environment-Variablen
+Brief nach Berlin uses Mistral AI because it is a European provider, works well
+for German, and is practical for this civic use case. Mistral is recommended, not
+required.
 
-Minimum für lokale Entwicklung mit Mistral:
+If another LLM provider is better for the country, language, privacy situation,
+or budget, replace the adapter cleanly. Do not only rename the API key.
 
-```env
-MISTRAL_API_KEY=
-THOMAS_MAIL=
-RATE_LIMIT_SALT=
-```
+Check:
 
-Wenn du nicht Mistral nutzt, ersetze `MISTRAL_API_KEY` durch den Key deines
-Anbieters und passe `web/src/lib/mistral.ts` plus alle Importe entsprechend an.
+- `web/src/lib/mistral.ts`: provider, model names, retry behavior
+- `web/src/lib/generation/generateLetter.ts`: output language, local letter
+  culture, political levels, parties, date format
+- `web/src/app/api/transcribe/route.ts`: speech transcription language
+- `web/src/app/layout.tsx`: HTML language and structured data
+- `web/src/lib/validation/wizardSchemas.ts`: user input format and errors
 
-Für echten Mailversand:
+Multilingual countries need an explicit decision. For many MVPs, one main
+language is enough. For countries like Switzerland, Belgium, Canada, or other
+multilingual systems, decide:
 
-```env
-BREVO_API_KEY=
-BREVO_SENDER_EMAIL=
-FEEDBACK_TOKEN_SECRET=
-```
+- What is the default language?
+- Can the app infer language region from postal code, canton, municipality, or
+  user selection?
+- Can the user choose the letter language?
+- Do forms of address, institutions, and legal terms differ by language?
+- Can representatives receive letters in more than one language?
 
-Für Bewertungen, Kampagnen, Roadmap und persistente Zähler:
+Pragmatic MVP rule: ship one language properly before offering four weakly
+translated languages.
 
-```env
-NEXT_PUBLIC_SUPABASE_URL=
-SUPABASE_SERVICE_ROLE_KEY=
-REVIEW_IP_SALT=
-CAMPAIGN_SESSION_SECRET=
-BREVO_FOLLOWUP_ENABLED=
-```
+## 6. Mistral, Brevo, and domain setup
 
-Für einen schnellen MVP kannst du Supabase, Kampagnen, Reviews und Follow-ups
-erstmal ignorieren. Mistral plus ein Mailanbieter reichen.
+### Mistral
 
-## 6. Mistral, Brevo und Domain einrichten
+Setup checklist:
 
-### Mistral AI
+1. Create a Mistral AI Studio account.
+2. Activate API access and create an API key.
+3. Set `MISTRAL_API_KEY=` in `web/.env.local`.
+4. Set the same key in the hosting environment.
+5. Check the model in `web/src/lib/mistral.ts`.
+6. Check the prompt in `web/src/lib/generation/generateLetter.ts`.
+7. Set a small budget or usage limit before real users arrive.
 
-Mistral ist für diesen Fork die naheliegende Empfehlung: europäischer Anbieter,
-gute Mehrsprachigkeit, einfache API, überschaubare Kosten. Du kannst trotzdem
-einen anderen Anbieter nutzen.
+Cost assumption: for a normal letter, expect roughly 1 to 2 cents per letter
+generation. This is only an MVP estimate. Real cost depends on model, prompt
+length, answer length, and current Mistral pricing. Always check current pricing
+and set a limit before launch.
 
-So setzt du Mistral auf:
-
-1. Account bei Mistral AI Studio erstellen.
-2. API-Zugang aktivieren und einen API-Key erzeugen.
-3. Lokal `MISTRAL_API_KEY=` in `web/.env.local` setzen.
-4. Beim Hosting denselben Key als Environment Variable setzen.
-5. In `web/src/lib/mistral.ts` prüfen, welches Modell genutzt wird.
-6. In `web/src/lib/generation/generateLetter.ts` Sprache, Ton und Prompt prüfen.
-7. In Mistral ein kleines Budget oder Usage-Limit setzen, bevor echte Nutzer kommen.
-
-Kostenannahme: Rechne für einen normalen Brief grob mit 1 bis 2 Cent pro
-Briefgenerierung. Das ist nur eine MVP-Schätzung. Die echten Kosten hängen von
-Modell, Promptlänge, Antwortlänge und aktueller Mistral-Preisliste ab. Vor einem
-öffentlichen Launch immer die aktuellen Preise prüfen und ein Limit setzen.
-
-Wenn Spracheingabe aktiv bleibt, rechne Transkription getrennt. Audio kann je
-nach Anbieter und Länge teurer werden als die reine Briefgenerierung.
+If speech input stays enabled, estimate transcription separately. Audio can cost
+more than text generation depending on provider and length.
 
 ### Brevo
 
-Für E-Mail ist Brevo eine gute Europa-first-Wahl. Der Free-Plan reicht für einen
-kleinen MVP meistens aus, weil Brevo nach Freischaltung aktuell bis zu 300
-E-Mails pro Tag erlaubt. Prüfe das vor Launch trotzdem nochmal, weil Pläne und
-Limits sich ändern können.
+Brevo is a good Europe-first choice for transactional email. The free plan is
+often enough for a small MVP because Brevo currently allows up to 300 emails per
+day after account approval. Check current limits before launch.
 
-So setzt du Brevo auf:
+Setup checklist:
 
-1. Brevo-Account erstellen.
-2. Absenderadresse oder Absenderdomain verifizieren.
-3. API-Key für Transactional Email erzeugen.
-4. `BREVO_API_KEY=` und `BREVO_SENDER_EMAIL=` setzen.
-5. DNS-Einträge für SPF, DKIM und DMARC beim Domain-Anbieter eintragen.
-6. Einen echten Testbrief an dich selbst schicken.
-7. Prüfen, ob der Brief im Posteingang landet und nicht im Spam.
+1. Create a Brevo account.
+2. Verify sender address or sender domain.
+3. Create a Transactional Email API key.
+4. Set `BREVO_API_KEY=` and `BREVO_SENDER_EMAIL=`.
+5. Add SPF, DKIM, and DMARC DNS records at the domain provider.
+6. Send a real test letter to yourself.
+7. Check inbox and spam placement.
 
-Für den MVP reicht ein einfacher transaktionaler Versand: Nutzer bekommt den
-Brief, die Adresse und die nächsten Schritte. Newsletter, Automationen und CRM
-sind optional.
+For the MVP, keep email simple: send the letter, address, and next steps.
+Newsletter, automation, and CRM features are optional.
 
-### Domain und Hosting
+### Domain and hosting
 
-Für den schnellsten Fork ist Vercel naheliegend, weil die App eine Next.js-App
-ist. Andere Hoster gehen auch.
+Vercel is the simplest default because this is a Next.js app. Other hosts are
+fine.
 
-So bringst du eine eigene Domain dran:
+Setup checklist:
 
-1. Repository bei Vercel importieren.
-2. Build-Einstellungen für den `web`-Ordner prüfen.
-3. Alle Environment Variables im Vercel-Projekt setzen.
-4. In Vercel unter Domains die eigene Domain hinzufügen.
-5. Die von Vercel genannten DNS-Einträge beim Domain-Anbieter setzen.
-6. Üblich ist: Apex-Domain per `A`-Record, `www` per `CNAME`. Nimm aber immer
-   die Werte, die Vercel für dein Projekt anzeigt.
-7. Warten, bis DNS und SSL aktiv sind.
-8. `APP_URL` in `web/src/lib/config.ts` auf die neue Domain ändern.
-9. Kontakt- und Absenderdaten in `web/src/lib/contact.ts` und Brevo anpassen.
+1. Import the forked repository into Vercel.
+2. Check build settings for the `web` folder.
+3. Set all environment variables in the Vercel project.
+4. Add the custom domain in Vercel.
+5. Add the DNS records shown by Vercel at the domain provider.
+6. Usually: apex domain via `A` record, `www` via `CNAME`. Use the exact values
+   Vercel shows for the project.
+7. Wait until DNS and SSL are active.
+8. Change `APP_URL` in `web/src/lib/config.ts`.
+9. Update contact and sender data in `web/src/lib/contact.ts` and Brevo.
 
-Wenn du eine Mailadresse auf der eigenen Domain willst, brauchst du zusätzlich
-einen Mailanbieter mit MX-Einträgen. Das ist getrennt vom Website-DNS.
+If you want email addresses on the same domain, configure a mail provider with
+MX records. That is separate from website DNS.
 
-### Links zu den aktuellen Anbieter-Dokumenten
+Useful provider docs:
 
-- Mistral API und Keys: https://docs.mistral.ai/
-- Mistral Modelle und Modellnamen: https://docs.mistral.ai/models/overview
-- Brevo Preise und Free-Plan: https://www.brevo.com/pricing/
-- Vercel Domains und DNS: https://vercel.com/docs/domains
+- Mistral API and keys: https://docs.mistral.ai/
+- Mistral models: https://docs.mistral.ai/models/overview
+- Brevo pricing and free plan: https://www.brevo.com/pricing/
+- Vercel domains and DNS: https://vercel.com/docs/domains
 
-## 7. Empfohlene Reihenfolge
+## 7. Local design and political incentives
 
-1. Projekt forken und lokal starten.
-2. Neue Marke, Domain und Kontakt in `web/src/lib/config.ts` eintragen.
-3. Eine politische Ebene wählen, nicht alle gleichzeitig.
-4. Standardsprache und mögliche Amtssprachen festlegen.
-5. KI-Anbieter wählen: Mistral empfohlen, aber nicht zwingend.
-6. Verlässliche Datenquelle finden und Lizenz prüfen.
-7. `politicians-cache.json` manuell mit 5 bis 20 Testpersonen füllen.
-8. `plz-wahlkreis-mapping.json` für eine kleine Pilotregion bauen.
-9. `lookupPLZ.ts` so umbauen, dass er für dein Land korrekt auflöst.
-10. `wizardSchemas.ts` und `Step1Form.tsx` an dein Eingabeformat anpassen.
-11. `generateLetter.ts` kulturell neu schreiben: Sprache, Anrede, Parteien, Briefstil.
-12. E-Mail-Template lokal anpassen: Adresse, Porto, nächste Schritte.
-13. 10 bis 20 echte Menschen testen lassen.
-14. Erst danach Design, SEO-Seiten und Zusatzfunktionen ausbauen.
+Do not copy the German look. Copy the principle.
 
-## 8. Copy-Paste-Prompt für Codex, Claude oder GSD
+The current design is inspired by a German children's-book and letter-writing
+feeling: warm, civic, postal, slightly nostalgic. That may work in Germany. It
+may feel strange, childish, or politically misplaced elsewhere.
 
-Wenn du GSD nutzt, ist das ein guter erster Auftrag für eine Phase. Wenn du kein
-GSD nutzt, funktioniert derselbe Prompt auch als normaler Codex-/Claude-Auftrag.
+The local agent should answer:
+
+- Which visual references create trust locally?
+- Does a postal, civic, public-service, newspaper, schoolbook, or institutional
+  style fit the country?
+- Which colors or symbols feel partisan, state-run, activist, childish, or
+  unserious?
+- Should the product feel official, friendly, activist, neutral, local, or
+  editorial?
+- Which examples make the tool feel local without becoming party-political?
+
+The letter prompt also needs local political logic. A good letter is not just
+polite. It should match the incentives of the person receiving it.
+
+Research:
+
+- Are representatives elected by constituency, list, party, region, or mixed
+  systems?
+- Do they care most about local voters, committee work, media pressure, party
+  leadership, district offices, or casework?
+- Is direct citizen contact normal or unusual?
+- Which tone is effective: formal, direct, diplomatic, emotional, factual,
+  solution-oriented?
+- What would make a letter counterproductive in that political culture?
+
+Optional research prompt:
 
 ```text
-Du arbeitest in einem Fork von https://github.com/tholo91/brief-nach-berlin.
+Analyze [COUNTRY/REGION] and explain which incentives make representatives
+respond to citizen letters.
 
-Ziel: Baue eine lokale MVP-Version für [LAND/REGION].
-Nicht Ziel: Alle deutschen Unterseiten übersetzen oder das Produkt perfektionieren.
+Cover:
+- electoral system and constituency logic
+- committee or office responsibilities
+- local political communication culture
+- normal forms of address and formality
+- issues that representatives realistically answer
+- tones that would reduce credibility
 
-Kontext:
-- Erste politische Ebene: [z.B. nationales Parlament / Region / Kommune]
-- Nutzereingabe zur Zuordnung: [Postleitzahl / Wahlkreis / Gemeinde / Adresse]
-- Datenquelle für Vertreter: [URL oder Datei]
-- Datenquelle für Gebietsmapping: [URL oder Datei]
-- KI-Anbieter: [Mistral empfohlen / anderer Anbieter]
-- Standardsprache für Output: [z.B. Deutsch / Französisch / Niederländisch]
-- Weitere Amtssprachen oder Sprachregionen: [keine / Liste]
-- Sprache und Anrede: [kurze Beschreibung]
-- Mailanbieter: [Brevo / anderer / erstmal nur lokaler Preview]
-- Domain und Hosting: [Vercel + eigene Domain / anderes Setup]
-
-Arbeitsweise:
-1. Lies zuerst README.md, ADAPT_TO_YOUR_COUNTRY.md und die relevanten Dateien unter web/src/lib.
-2. Erstelle eine konkrete To-do-Liste in LOCAL_ADAPTATION_TODO.md.
-3. Sortiere Aufgaben in MUST, SHOULD und OPTIONAL.
-4. Fange mit dem kleinsten funktionierenden Flow an:
-   - Eingabe validieren
-   - richtige Vertreter finden
-   - Brief mit Mistral generieren
-   - Brief und Adresse anzeigen oder mailen
-5. Ignoriere zunächst Kampagnen, Bewertungen, Presse-Seiten, Roadmap und deutsche SEO-Unterseiten.
-6. Ändere keine Dateien, die für den MVP nicht nötig sind.
-7. Nach jeder größeren Änderung: npm run lint und npm run build ausführen.
-
-Besonders prüfen:
-- Es darf nie eine falsche Vertreteradresse angezeigt werden.
-- Wenn die Zuordnung unsicher ist, muss die UI das zeigen und eine Auswahl anbieten.
-- Der Briefprompt muss zur politischen Kultur des Landes passen.
-- Die Output-Sprache muss explizit gesetzt sein.
-- Falls das Land mehrere Amtssprachen hat, muss entschieden werden, ob der MVP
-  nur eine Standardsprache nutzt oder eine Sprachauswahl braucht.
-- Mistral ist empfohlen, aber nicht zwingend. Wenn ein anderer Anbieter genutzt
-  wird, muss der Adapter sauber ersetzt werden.
-- Für Mistral und Brevo müssen Setup-Schritte, Kostenannahmen und Limits geprüft
-  sein, bevor echte Nutzerinnen und Nutzer kommen.
-- Die eigene Domain muss in App-Konfiguration, Hosting und Mailversand
-  konsistent gesetzt sein.
-- Datenschutz- und Impressumstexte dürfen nicht aus Deutschland kopiert bleiben.
-- Die Seite soll lokal glaubwürdig wirken, nicht wie eine übersetzte deutsche Kampagne.
-
-Liefer am Ende:
-- Liste der geänderten Dateien
-- Was funktioniert
-- Was bewusst noch nicht übernommen wurde
-- Welche 10 Testfälle ein Mensch vor Ort prüfen muss
+Turn the findings into concrete rules for web/src/lib/generation/generateLetter.ts.
 ```
 
-## 9. Testfälle, bevor du live gehst
+## 8. Recommended implementation order
 
-Lege mindestens diese manuellen Testfälle an:
+1. Fork the project and run it locally.
+2. Create `LOCAL_ADAPTATION_PLAN.md`.
+3. Choose one political level for the MVP.
+4. Define default language and any official-language rules.
+5. Choose AI provider: Mistral recommended, not required.
+6. Choose mail provider: Brevo recommended, not required.
+7. Find reliable representative data and check the license.
+8. Manually create 5 to 20 test representatives.
+9. Build a small mapping for one pilot region.
+10. Adapt lookup, validation, and UI copy.
+11. Rewrite the letter prompt for local political incentives.
+12. Adapt design, name, imagery, and trust signals.
+13. Configure domain, email, and environment variables.
+14. Test with 10 to 20 real local people.
+15. Only then expand SEO pages, campaigns, and extra features.
 
-- 3 normale Orte, die eindeutig zu einer Vertretung führen
-- 2 Grenzfälle, in denen mehrere Vertreter möglich sind
-- 2 ungültige Eingaben
-- 1 Person ohne eindeutige Adresse
-- 1 Thema, das eigentlich auf eine andere politische Ebene gehört
-- 1 sehr kurzer Anliegen-Text
-- 1 emotionaler oder wütender Anliegen-Text
-- 1 Test in jeder unterstützten Output-Sprache
-- 1 Audio-Eingabe, falls Spracheingabe aktiv bleibt
+## 9. Validation tests before launch
 
-Jeder Testfall sollte beantworten:
+Create at least:
 
-- Wird die richtige Person angezeigt?
-- Wird die Unsicherheit ehrlich gezeigt?
-- Klingt der Brief lokal natürlich?
-- Ist die Sprache korrekt gewählt?
-- Ist die Adresse praktisch nutzbar?
-- Versteht eine reale Person, was sie nach dem Brief tun muss?
+- 3 normal locations with one clear representative
+- 2 edge cases with multiple possible representatives
+- 2 invalid inputs
+- 1 representative without a clear address
+- 1 issue that belongs to another political level
+- 1 very short issue text
+- 1 emotional or angry issue text
+- 1 test in each supported output language
+- 1 audio input if speech stays enabled
+- 1 delivered email test to a real inbox
+- 1 domain and SSL test on production
 
-## 10. Design-Hinweise
+Each test should answer:
 
-Du musst das deutsche Brief-/Airmail-Design nicht behalten.
+- Is the right representative shown?
+- Is uncertainty shown honestly?
+- Does the letter sound natural locally?
+- Is the output language correct?
+- Is the address practically usable?
+- Does the user know what to do next?
 
-Behalte nur das Prinzip:
+## 10. What not to do
 
-- erste Ansicht ist das Tool, keine Marketingseite
-- wenig Ablenkung
-- klare politische Zuständigkeit
-- sichtbarer Datenschutz
-- ein konkreter nächster Schritt nach der Briefgenerierung
+- Do not translate every German page before testing the core flow.
+- Do not pretend a postal-code lookup is certain if the local system is more
+  complex.
+- Do not keep German legal text.
+- Do not keep the German design if it feels foreign locally.
+- Do not generate generic petition language.
+- Do not start coding before the local data and political logic are understood.
 
-Passe an:
+## 11. When to contact Thomas
 
-- Farben und Bildwelt
-- Name und Logo
-- Beispiele
-- Vertrauenssignale
-- Schreibstil
-- Bilder von Parlament, Post, Stadt oder lokalen Institutionen
+Send a short message if you:
 
-Wenn die lokale Kultur digitale Briefe, E-Mail oder Petitionen ernster nimmt als
-handgeschriebene Post, ändere das Produkt entsprechend. Nicht das deutsche
-Ritual kopieren, sondern die lokale Wirkung suchen.
+- want to build a real local version
+- found reliable data sources
+- are unsure how to structure the mapping
+- want context on technical decisions
+- have first test results from local users
 
-## 10. Wann du Thomas schreiben solltest
+Most useful email:
 
-Schreib kurz an Thomas, wenn du:
-
-- eine echte lokale Version bauen willst
-- gute Datenquellen gefunden hast
-- unsicher bist, wie das Mapping strukturiert werden sollte
-- wissen willst, warum bestimmte technische Entscheidungen so getroffen wurden
-- erste Testergebnisse hast
-
-Am hilfreichsten ist eine kurze Mail mit:
-
-- Land oder Region
-- politische Ebene
-- Datenquelle für Vertreter
-- Datenquelle für Gebietsmapping
-- ob du selbst entwickelst oder lokale Tests organisierst
+- country or region
+- first political level
+- representative data source
+- territory or postal-code mapping source
+- whether you can build, validate data, or organize tests

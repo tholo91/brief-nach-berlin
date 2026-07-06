@@ -12,13 +12,12 @@ type Copy = {
   eyebrow: string;
   title: string;
   lead: string;
-  aiReady: string;
   imageAlt: string;
-  stepsTitle: string;
+  impactSince: string;
+  impactLabel: string;
   steps: Array<{ title: string; body: string }>;
   promptTitle: string;
   promptBody: string;
-  promptKicker: string;
   copyLabel: string;
   copiedLabel: string;
   guideCta: string;
@@ -68,12 +67,11 @@ const copy: Record<Language, Copy> = {
     eyebrow: "Open Source für lokale Demokratien",
     title: "Brief-nach-Berlin für dein Land nutzen",
     lead:
-      "Der Code ist offen. Wenn du eine lokale Version für Österreich, die Schweiz oder ein anderes Land bauen willst, starte nicht mit Übersetzen. Lass zuerst ein LLM im Fork einen Plan schreiben: Daten, Zuständigkeiten, Sprache, Design, Mail, Domain und politische Brief-Logik. Wenn du jemanden kennst, der in Österreich oder der Schweiz helfen könnte, schick ihm diese Seite oder stell den Kontakt zu Thomas her.",
-    aiReady:
-      "Für AI-Forks vorbereitet: englische Agent-Anleitung, Datei-Map und ein erster Planungs-Prompt.",
+      "Der Code ist offen. Wenn du eine lokale Version für Österreich, die Schweiz oder ein anderes Land bauen willst, starte nicht mit Übersetzen. Lass zuerst einen Plan schreiben: Daten, Zuständigkeiten, Sprache, Mail, Domain und politische Brief-Logik. Wenn du jemanden in Österreich oder der Schweiz kennst, der helfen könnte, schick mir gern den Kontakt oder leite diese Seite weiter.",
     imageAlt:
       "Handgeschriebene Briefe fliegen über Europa, vorbei an Städten, Flüssen, Bahnlinien und Bergen.",
-    stepsTitle: "Der kurze Weg",
+    impactSince: "Seit Mitte Mai 2026",
+    impactLabel: "Briefe erstellt",
     steps: [
       {
         title: "Repository forken",
@@ -94,7 +92,6 @@ const copy: Record<Language, Copy> = {
     promptTitle: "Mit diesem Prompt starten",
     promptBody:
       "Kopiere diesen Prompt in Codex, Claude, Cursor oder dein GSD-Setup. Er startet mit Planung, nicht mit Code.",
-    promptKicker: "Vorbereitet für AI-Forks",
     copyLabel: "Kopieren",
     copiedLabel: "Kopiert",
     guideCta: "Adaptions-Guide lesen",
@@ -103,7 +100,7 @@ const copy: Record<Language, Copy> = {
     linkedinCta: "Thomas auf LinkedIn",
     contactTitle: "Baust du eine echte lokale Version?",
     contactBody:
-      "Schreib Thomas kurz mit Land, politischer Ebene, Datenquelle und ob du bauen oder lokal testen kannst. Für Österreich und die Schweiz reicht auch ein guter Kontakt: jemand aus Verwaltung, Parlament, Journalismus, Civic Tech oder politischer Bildung.",
+      "Schreib mir kurz, für welches Land du baust und welche Datenquelle du nutzen würdest. Für Österreich und die Schweiz hilft auch ein guter Kontakt vor Ort. Ich freue mich über direkte Vorstellungen.",
     contactCta: "Thomas mailen",
   },
   en: {
@@ -111,12 +108,11 @@ const copy: Record<Language, Copy> = {
     eyebrow: "Open source for local democracies",
     title: "Fork Brief-nach-Berlin for your country",
     lead:
-      "The code is open. If you want to build a local version, do not start by translating the German site. First let an LLM inside your fork create a plan for data, responsibilities, language, design, email, domain, and political letter logic.",
-    aiReady:
-      "Prepared for AI-assisted forks: English agent guide, file map, and a first planning prompt.",
+      "Brief-nach-Berlin is a German civic tech tool. People enter a postal code and a concern, then get a draft letter to the right political representative. The code is open. If you want to build this for another country, start with data, institutions, language and local testing, not with a straight translation.",
     imageAlt:
       "Handwritten letters fly across Europe, passing cities, rivers, railway lines, and mountains.",
-    stepsTitle: "The short path",
+    impactSince: "Since mid-May 2026",
+    impactLabel: "letters created",
     steps: [
       {
         title: "Fork the repo",
@@ -137,7 +133,6 @@ const copy: Record<Language, Copy> = {
     promptTitle: "Start with this prompt",
     promptBody:
       "Paste this into Codex, Claude, Cursor, or your GSD setup. It starts with planning, not code.",
-    promptKicker: "Prepared for AI-assisted forks",
     copyLabel: "Copy",
     copiedLabel: "Copied",
     guideCta: "Read the adaptation guide",
@@ -146,7 +141,7 @@ const copy: Record<Language, Copy> = {
     linkedinCta: "Thomas on LinkedIn",
     contactTitle: "Building a real local version?",
     contactBody:
-      "Send Thomas a short email with country, political level, data source, and whether you can build or test locally. For Austria and Switzerland, a strong local contact is useful too: administration, parliament, journalism, civic tech, or civic education.",
+      "Send me the country, the main language, and the data source you would start from. If you know someone local who should see this, introduce us.",
     contactCta: "Email Thomas",
   },
 };
@@ -271,7 +266,7 @@ function BlocksIcon({ className = "" }: { className?: string }) {
 function PromptPreview({
   t,
 }: {
-  t: Pick<Copy, "promptKicker" | "copyLabel" | "copiedLabel">;
+  t: Pick<Copy, "copyLabel" | "copiedLabel">;
 }) {
   const [copied, setCopied] = useState(false);
 
@@ -283,10 +278,7 @@ function PromptPreview({
 
   return (
     <div className="overflow-hidden rounded-lg border border-waldgruen/20 bg-white shadow-sm">
-      <div className="flex items-center justify-between gap-3 border-b border-waldgruen/10 px-4 py-3">
-        <p className="font-typewriter text-xs font-bold uppercase text-waldgruen/65">
-          {t.promptKicker}
-        </p>
+      <div className="flex justify-end border-b border-waldgruen/10 px-4 py-3">
         <button
           type="button"
           onClick={copyPrompt}
@@ -317,11 +309,16 @@ function PromptPreview({
 export function EuropePageContent({
   contactEmail,
   language,
+  letterCount,
 }: {
   contactEmail: string;
   language: Language;
+  letterCount: number;
 }) {
   const t = copy[language];
+  const formattedLetterCount = new Intl.NumberFormat(
+    language === "de" ? "de-DE" : "en"
+  ).format(letterCount);
   const subject =
     language === "de"
       ? "Brief-nach-Berlin in meinem Land nutzen"
@@ -389,14 +386,19 @@ export function EuropePageContent({
           </figure>
         </section>
 
-        <p className="mt-8 border-l-4 border-waldgruen py-2 pl-5 font-body text-base leading-relaxed text-waldgruen-dark">
-          {t.aiReady}
-        </p>
+        <section className="mt-8 grid gap-3 rounded-sm border border-waldgruen/20 bg-white/70 p-5 sm:grid-cols-[auto_1fr] sm:items-center">
+          <p className="font-typewriter text-4xl font-bold leading-none text-waldgruen-dark">
+            {formattedLetterCount}
+          </p>
+          <div>
+            <p className="font-typewriter text-xs font-bold uppercase text-waldgruen/55">
+              {t.impactSince}
+            </p>
+            <p className="font-body text-base text-warmgrau">{t.impactLabel}</p>
+          </div>
+        </section>
 
         <section className="mt-10 border-y border-waldgruen/15 py-7">
-          <h2 className="mb-5 font-body text-2xl font-bold text-waldgruen-dark">
-            {t.stepsTitle}
-          </h2>
           <div className="grid gap-4 md:grid-cols-3">
             {t.steps.map((step, index) => (
               <article key={step.title}>

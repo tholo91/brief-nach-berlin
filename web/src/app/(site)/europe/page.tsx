@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { headers } from "next/headers";
 import { APP_URL, FOUNDER_EMAIL } from "@/lib/config";
+import { getLetterCount } from "@/lib/counter";
 import { EuropePageContent } from "./EuropePageClient";
 
 const URL_PATH = "/europe";
@@ -8,7 +9,7 @@ const PUBLISHED = "2026-06-26";
 const MODIFIED = "2026-07-06";
 const TITLE = "Brief-nach-Berlin für dein Land nutzen | Brief-nach-Berlin";
 const DESCRIPTION =
-  "Forke Brief-nach-Berlin, kopiere den AI-Starter-Prompt und plane eine lokale Version für Österreich, die Schweiz oder ein anderes Land.";
+  "Forke Brief-nach-Berlin und plane eine lokale Version für Österreich, die Schweiz oder ein anderes Land.";
 
 export const metadata: Metadata = {
   title: TITLE,
@@ -68,6 +69,7 @@ export default async function EuropePage({
     params,
     requestHeaders.get("accept-language") ?? ""
   );
+  const letterCount = await getLetterCount();
 
   return (
     <>
@@ -75,7 +77,11 @@ export default async function EuropePage({
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(articleJsonLd) }}
       />
-      <EuropePageContent contactEmail={FOUNDER_EMAIL} language={language} />
+      <EuropePageContent
+        contactEmail={FOUNDER_EMAIL}
+        language={language}
+        letterCount={letterCount}
+      />
     </>
   );
 }

@@ -7,15 +7,14 @@ export function CampaignBackground({ children }: { children: ReactNode }) {
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(98,138,90,0.14),transparent_42%)]" />
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute inset-x-0 bottom-0 overflow-hidden"
+        className="pointer-events-none absolute inset-x-0 bottom-0 h-[min(62vw,640px)] min-h-[320px] overflow-hidden"
       >
         <Image
           src="/images/img-campaign-crowd-ghibli.png"
           alt=""
-          width={1368}
-          height={768}
+          fill
           sizes="100vw"
-          className="h-auto w-full object-cover object-center"
+          className="object-cover object-bottom"
           style={{
             opacity: 0.18,
             maskImage:

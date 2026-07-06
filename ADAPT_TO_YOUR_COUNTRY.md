@@ -154,7 +154,82 @@ BREVO_FOLLOWUP_ENABLED=
 Für einen schnellen MVP kannst du Supabase, Kampagnen, Reviews und Follow-ups
 erstmal ignorieren. Mistral plus ein Mailanbieter reichen.
 
-## 6. Empfohlene Reihenfolge
+## 6. Mistral, Brevo und Domain einrichten
+
+### Mistral AI
+
+Mistral ist für diesen Fork die naheliegende Empfehlung: europäischer Anbieter,
+gute Mehrsprachigkeit, einfache API, überschaubare Kosten. Du kannst trotzdem
+einen anderen Anbieter nutzen.
+
+So setzt du Mistral auf:
+
+1. Account bei Mistral AI Studio erstellen.
+2. API-Zugang aktivieren und einen API-Key erzeugen.
+3. Lokal `MISTRAL_API_KEY=` in `web/.env.local` setzen.
+4. Beim Hosting denselben Key als Environment Variable setzen.
+5. In `web/src/lib/mistral.ts` prüfen, welches Modell genutzt wird.
+6. In `web/src/lib/generation/generateLetter.ts` Sprache, Ton und Prompt prüfen.
+7. In Mistral ein kleines Budget oder Usage-Limit setzen, bevor echte Nutzer kommen.
+
+Kostenannahme: Rechne für einen normalen Brief grob mit 1 bis 2 Cent pro
+Briefgenerierung. Das ist nur eine MVP-Schätzung. Die echten Kosten hängen von
+Modell, Promptlänge, Antwortlänge und aktueller Mistral-Preisliste ab. Vor einem
+öffentlichen Launch immer die aktuellen Preise prüfen und ein Limit setzen.
+
+Wenn Spracheingabe aktiv bleibt, rechne Transkription getrennt. Audio kann je
+nach Anbieter und Länge teurer werden als die reine Briefgenerierung.
+
+### Brevo
+
+Für E-Mail ist Brevo eine gute Europa-first-Wahl. Der Free-Plan reicht für einen
+kleinen MVP meistens aus, weil Brevo nach Freischaltung aktuell bis zu 300
+E-Mails pro Tag erlaubt. Prüfe das vor Launch trotzdem nochmal, weil Pläne und
+Limits sich ändern können.
+
+So setzt du Brevo auf:
+
+1. Brevo-Account erstellen.
+2. Absenderadresse oder Absenderdomain verifizieren.
+3. API-Key für Transactional Email erzeugen.
+4. `BREVO_API_KEY=` und `BREVO_SENDER_EMAIL=` setzen.
+5. DNS-Einträge für SPF, DKIM und DMARC beim Domain-Anbieter eintragen.
+6. Einen echten Testbrief an dich selbst schicken.
+7. Prüfen, ob der Brief im Posteingang landet und nicht im Spam.
+
+Für den MVP reicht ein einfacher transaktionaler Versand: Nutzer bekommt den
+Brief, die Adresse und die nächsten Schritte. Newsletter, Automationen und CRM
+sind optional.
+
+### Domain und Hosting
+
+Für den schnellsten Fork ist Vercel naheliegend, weil die App eine Next.js-App
+ist. Andere Hoster gehen auch.
+
+So bringst du eine eigene Domain dran:
+
+1. Repository bei Vercel importieren.
+2. Build-Einstellungen für den `web`-Ordner prüfen.
+3. Alle Environment Variables im Vercel-Projekt setzen.
+4. In Vercel unter Domains die eigene Domain hinzufügen.
+5. Die von Vercel genannten DNS-Einträge beim Domain-Anbieter setzen.
+6. Üblich ist: Apex-Domain per `A`-Record, `www` per `CNAME`. Nimm aber immer
+   die Werte, die Vercel für dein Projekt anzeigt.
+7. Warten, bis DNS und SSL aktiv sind.
+8. `APP_URL` in `web/src/lib/config.ts` auf die neue Domain ändern.
+9. Kontakt- und Absenderdaten in `web/src/lib/contact.ts` und Brevo anpassen.
+
+Wenn du eine Mailadresse auf der eigenen Domain willst, brauchst du zusätzlich
+einen Mailanbieter mit MX-Einträgen. Das ist getrennt vom Website-DNS.
+
+### Links zu den aktuellen Anbieter-Dokumenten
+
+- Mistral API und Keys: https://docs.mistral.ai/
+- Mistral Modelle und Modellnamen: https://docs.mistral.ai/models/overview
+- Brevo Preise und Free-Plan: https://www.brevo.com/pricing/
+- Vercel Domains und DNS: https://vercel.com/docs/domains
+
+## 7. Empfohlene Reihenfolge
 
 1. Projekt forken und lokal starten.
 2. Neue Marke, Domain und Kontakt in `web/src/lib/config.ts` eintragen.
@@ -171,7 +246,7 @@ erstmal ignorieren. Mistral plus ein Mailanbieter reichen.
 13. 10 bis 20 echte Menschen testen lassen.
 14. Erst danach Design, SEO-Seiten und Zusatzfunktionen ausbauen.
 
-## 7. Copy-Paste-Prompt für Codex, Claude oder GSD
+## 8. Copy-Paste-Prompt für Codex, Claude oder GSD
 
 Wenn du GSD nutzt, ist das ein guter erster Auftrag für eine Phase. Wenn du kein
 GSD nutzt, funktioniert derselbe Prompt auch als normaler Codex-/Claude-Auftrag.
@@ -192,6 +267,7 @@ Kontext:
 - Weitere Amtssprachen oder Sprachregionen: [keine / Liste]
 - Sprache und Anrede: [kurze Beschreibung]
 - Mailanbieter: [Brevo / anderer / erstmal nur lokaler Preview]
+- Domain und Hosting: [Vercel + eigene Domain / anderes Setup]
 
 Arbeitsweise:
 1. Lies zuerst README.md, ADAPT_TO_YOUR_COUNTRY.md und die relevanten Dateien unter web/src/lib.
@@ -215,6 +291,10 @@ Besonders prüfen:
   nur eine Standardsprache nutzt oder eine Sprachauswahl braucht.
 - Mistral ist empfohlen, aber nicht zwingend. Wenn ein anderer Anbieter genutzt
   wird, muss der Adapter sauber ersetzt werden.
+- Für Mistral und Brevo müssen Setup-Schritte, Kostenannahmen und Limits geprüft
+  sein, bevor echte Nutzerinnen und Nutzer kommen.
+- Die eigene Domain muss in App-Konfiguration, Hosting und Mailversand
+  konsistent gesetzt sein.
 - Datenschutz- und Impressumstexte dürfen nicht aus Deutschland kopiert bleiben.
 - Die Seite soll lokal glaubwürdig wirken, nicht wie eine übersetzte deutsche Kampagne.
 
@@ -225,7 +305,7 @@ Liefer am Ende:
 - Welche 10 Testfälle ein Mensch vor Ort prüfen muss
 ```
 
-## 8. Testfälle, bevor du live gehst
+## 9. Testfälle, bevor du live gehst
 
 Lege mindestens diese manuellen Testfälle an:
 
@@ -248,7 +328,7 @@ Jeder Testfall sollte beantworten:
 - Ist die Adresse praktisch nutzbar?
 - Versteht eine reale Person, was sie nach dem Brief tun muss?
 
-## 9. Design-Hinweise
+## 10. Design-Hinweise
 
 Du musst das deutsche Brief-/Airmail-Design nicht behalten.
 

@@ -4,8 +4,8 @@ milestone: v1.0
 milestone_name: milestone
 status: verifying
 stopped_at: Completed 05-04-PLAN.md
-last_updated: "2026-06-28T19:04:49.302Z"
-last_activity: 2026-06-28
+last_updated: "2026-07-07T14:15:30.000Z"
+last_activity: 2026-07-07
 progress:
   total_phases: 33
   completed_phases: 4
@@ -28,7 +28,7 @@ See: .planning/PROJECT.md (updated 2026-04-10)
 Phase: 05 — EXECUTING
 Plan: 4 of 4
 Status: Phase complete — ready for verification
-Last activity: 2026-06-28 - Completed quick task 260628-ta0: Marken-Entity-Schema Organization und WebSite JSON-LD im Next Root-Layout ergänzen
+Last activity: 2026-07-07 - Completed quick task 260707-vrt: No-Storage-Flow zum Anpassen bestehender Briefentwürfe
 
 Progress: [███████░░░] 68%
 
@@ -133,6 +133,7 @@ Recent decisions affecting current work:
 | 260626-0cz | View-Transition-Morph fürs Anliegen-Feld Landing→Wizard (nativer VT-Flag + geteilter view-transition-name, graceful degradation) | 2026-06-26 | 96969f6 | [260626-0cz-vt-morph-anliegenfeld](./quick/260626-0cz-vt-morph-anliegenfeld/) |
 | 260626-h4r | Hero verschlanken + 2-zeiliges Anliegen-Feld, laengere Placeholder, Reassurance in "So einfach geht's" | 2026-06-26 | (pending) | [260626-h4r-hero-vereinfachen-2zeiliger-input](./quick/260626-h4r-hero-vereinfachen-2zeiliger-input/) |
 | 260628-ta0 | Marken-Entity-Schema Organization und WebSite JSON-LD im Next Root-Layout ergänzen | 2026-06-28 | 09bf448 | [260628-ta0-marken-entity-schema-organization-und-we](./quick/260628-ta0-marken-entity-schema-organization-und-we/) |
+| 260707-vrt | No-Storage-Flow zum Anpassen bestehender Briefentwürfe | 2026-07-07 | 2e6cc60 | [260707-vrt-briefvariante-no-storage-flow](./quick/260707-vrt-briefvariante-no-storage-flow/) |
 
 ## Session Continuity
 

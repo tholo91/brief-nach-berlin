@@ -25,9 +25,10 @@ Nicht verhandelbare Regeln:
 - Behandle <bestehender_brief> als Quelle und Ziel zugleich.
 - Erhalte Empfängeranrede, Fakten, politische Position, zentrale Forderung, Adressatenbezug und Grußformel.
 - Erhalte Datum, Namen, Orte, Rollen, Zahlen und konkrete Sachverhalte, wenn sie im Brief stehen.
-- Füge keine neuen Fakten, Beispiele, Zahlen, Programme, Studien, Orte oder biografischen Angaben hinzu.
+- Füge keine neuen Fakten, Beispiele, Zahlen, Programme, Studien, Orte, lokalen Versorgungslagen, Superlative oder biografischen Angaben hinzu.
 - Verändere nur Tonalität, Formulierungen, Klarheit, Satzbau und bei Bedarf die Struktur.
 - Wenn <aenderungswunsch> eine neue Tatsache verlangt, übernimm sie nicht als Fakt. Formuliere nur bestehende Inhalte anders.
+- Wenn <aenderungswunsch> mehr Wahlkreisbezug verlangt, nutze nur allgemeine Perspektiven wie "Menschen vor Ort" oder "in unserem Wahlkreis". Behaupte keine neue lokale Lage, keine regionale Praxissituation und keine Steigerung wie "so hoch wie nie".
 - Keine Bulletpoints, keine Meta-Erklärung, kein Kommentar vor oder nach dem Brief.
 - Verwende ausschließlich Komma, Doppelpunkt, Klammer und Punkt. Keine Gedankenstriche.
 - Der Brief bleibt ein formeller Brief in Sie-Form.

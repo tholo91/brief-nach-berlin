@@ -1,4 +1,4 @@
-import { APP_URL, FOUNDER_HOMEPAGE } from "@/lib/config";
+import { APP_URL, FOUNDER_FEEDBACK_URL, FOUNDER_HOMEPAGE } from "@/lib/config";
 
 function escapeHtml(text: string): string {
   return text
@@ -13,8 +13,16 @@ function nlToBr(text: string): string {
   return escapeHtml(text).replace(/\n/g, "<br>");
 }
 
-export function buildVariantEmailHtml(letterText: string): string {
+function feedbackUrl(email?: string): string {
+  if (!email) return FOUNDER_FEEDBACK_URL;
+  const url = new URL(FOUNDER_FEEDBACK_URL);
+  url.searchParams.set("email", email);
+  return url.toString();
+}
+
+export function buildVariantEmailHtml(letterText: string, recipientEmail?: string): string {
   const letterHtml = nlToBr(letterText);
+  const variantFeedbackUrl = feedbackUrl(recipientEmail);
 
   return `<!DOCTYPE html>
 <html lang="de">
@@ -57,6 +65,15 @@ export function buildVariantEmailHtml(letterText: string): string {
           <tr>
             <td class="bnb-pad" style="padding:0 32px 28px;background-color:#ffffff;">
               <p style="margin:0;font-family:Georgia,'Times New Roman',serif;font-size:14px;color:#4A4A4A;line-height:1.6;">Die Anschrift findest du in deiner ursprünglichen Brief-Mail. Bitte lies die Variante vor dem Abschreiben noch einmal gründlich durch.</p>
+            </td>
+          </tr>
+          <tr>
+            <td class="bnb-pad" style="padding:0 32px 28px;background-color:#ffffff;">
+              <div class="bnb-inner-pad" style="background-color:#FAF8F5;border:1px solid #E0DCD7;border-radius:6px;padding:18px 20px;text-align:center;">
+                <p style="margin:0 0 12px;font-family:Georgia,'Times New Roman',serif;font-size:15px;color:#2D5016;font-weight:bold;line-height:1.5;">War die neue Variante besser?</p>
+                <p style="margin:0 0 16px;font-family:Georgia,'Times New Roman',serif;font-size:14px;color:#4A4A4A;line-height:1.6;">Sag mir kurz, was noch fehlt. Das hilft, den Anpassungsflow besser zu machen.</p>
+                <a href="${variantFeedbackUrl}" target="_blank" rel="noopener noreferrer" style="display:inline-block;background-color:#2D5016;color:#FAF8F5;font-family:Georgia,'Times New Roman',serif;font-size:14px;font-weight:bold;text-decoration:none;padding:12px 18px;border-radius:6px;">Feedback geben</a>
+              </div>
             </td>
           </tr>
           <tr>

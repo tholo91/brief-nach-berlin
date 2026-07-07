@@ -2,11 +2,13 @@ import { NextResponse } from "next/server";
 import { buildCampaignCreatorEmailHtml } from "@/lib/email/buildCampaignCreatorEmailHtml";
 import { buildEmailHtml } from "@/lib/email/buildEmailHtml";
 import { buildFollowupHtml } from "@/lib/email/buildFollowupHtml";
+import { buildVariantEmailHtml } from "@/lib/email/buildVariantEmailHtml";
 import { APP_URL } from "@/lib/config";
 
 // Dev-only preview of the transactional emails with dummy data.
 // - /api/email-preview                         → Letter mail
 // - /api/email-preview?type=followup           → Backlog Follow-up Mail
+// - /api/email-preview?type=variant            → Angepasster Brief
 // - /api/email-preview?type=campaign-creator   → Kampagnen-Bestätigungs-Mail
 // - /api/email-preview?type=campaign-management → Kampagnen-Verwaltungs-Mail
 // - ?format=text                               → Plain-Text-Variante anzeigen
@@ -38,6 +40,26 @@ export async function GET(request: Request) {
           : "text/html; charset=utf-8",
         "X-Email-Subject": subject,
       },
+    });
+  }
+
+  if (type === "variant") {
+    const html = buildVariantEmailHtml(
+      `Sehr geehrte Frau Dr. Müller,
+
+ich wende mich heute an Sie, weil mich die aktuelle Situation auf den Radwegen in unserem Viertel sehr beschäftigt. Die versprochene Sanierung steht seit Monaten aus, und mit jedem Regen werden die Schlaglöcher tiefer.
+
+Ich bin täglich mit dem Rad zur Arbeit unterwegs und sehe, wie schwierig ein sicheres Vorankommen für Familien, Kinder und ältere Menschen geworden ist. Deshalb bitte ich Sie, sich im Bundestag dafür einzusetzen, dass Mittel für kommunale Radinfrastruktur verlässlich bereitstehen.
+
+Mit freundlichen Grüßen
+Eine Bürgerin aus Ihrem Wahlkreis`,
+      "preview@example.com"
+    );
+    const localHtml = html.split(APP_URL).join(origin);
+
+    return new NextResponse(localHtml, {
+      status: 200,
+      headers: { "Content-Type": "text/html; charset=utf-8" },
     });
   }
 

@@ -16,7 +16,7 @@ export async function sendVariantEmail(params: {
   try {
     const result = await brevo.transactionalEmails.sendTransacEmail({
       subject: "Dein angepasster Brief nach Berlin ist fertig",
-      htmlContent: buildVariantEmailHtml(params.letterText),
+      htmlContent: buildVariantEmailHtml(params.letterText, params.recipientEmail),
       sender: {
         name: EMAIL_SENDER_NAME,
         email: process.env.BREVO_SENDER_EMAIL || "brief@brief-nach-berlin.de",

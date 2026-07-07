@@ -15,6 +15,8 @@ describe("letter variant prompt", () => {
     expect(VARIANT_SYSTEM_PROMPT).toContain("keine neuen Fakten");
     expect(VARIANT_SYSTEM_PROMPT).toContain("Empfängeranrede");
     expect(VARIANT_SYSTEM_PROMPT).toContain("Grußformel");
+    expect(VARIANT_SYSTEM_PROMPT).toContain("keine neue lokale Lage");
+    expect(VARIANT_SYSTEM_PROMPT).toContain("so hoch wie nie");
   });
 
   it("embeds the existing letter and optional change request in separate blocks", () => {

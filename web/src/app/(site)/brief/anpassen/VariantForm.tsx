@@ -2,8 +2,10 @@
 
 import { useEffect, useMemo, useState, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
+import { setPendingLetterVariantSubmission } from "@/lib/client/letterVariantSubmission";
 
 const MIN_LETTER_LENGTH = 500;
+const SUCCESS_HANDOFF_DELAY_MS = 1500;
 const TONE_LABELS = ["freundlich", "höflich", "sachlich", "bestimmt", "nachdrücklich"] as const;
 
 type SubmitState = "idle" | "sending";
@@ -65,29 +67,17 @@ export function VariantForm() {
 
     if (!canSubmit) return;
 
+    const submission = {
+      email: email.trim(),
+      originalLetter: trimmedLetter,
+      toneLevel,
+      changeRequest: changeRequest.trim() || undefined,
+    };
+
     setSubmitState("sending");
-    try {
-      const response = await fetch("/api/generate-letter-variant", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          email: email.trim(),
-          originalLetter: trimmedLetter,
-          toneLevel,
-          changeRequest: changeRequest.trim() || undefined,
-        }),
-      });
-      const payload = await response.json().catch(() => ({})) as { error?: string };
-      if (!response.ok) {
-        setServerError(payload.error ?? "Der Brief konnte nicht angepasst werden.");
-        setSubmitState("idle");
-        return;
-      }
-      router.push("/brief/anpassen/erfolg");
-    } catch {
-      setServerError("Der Brief konnte nicht angepasst werden. Bitte versuche es erneut.");
-      setSubmitState("idle");
-    }
+    setPendingLetterVariantSubmission(submission);
+    await new Promise((resolve) => setTimeout(resolve, SUCCESS_HANDOFF_DELAY_MS));
+    router.push("/brief/anpassen/erfolg");
   }
 
   const inputClassName = (hasError: boolean) =>
@@ -120,6 +110,7 @@ export function VariantForm() {
           value={email}
           onChange={(event) => setEmail(event.target.value)}
           placeholder="deine@email.de"
+          disabled={submitState === "sending"}
           className={inputClassName(Boolean(emailError))}
           aria-invalid={Boolean(emailError)}
           aria-describedby={emailError ? "variant-email-error" : "variant-email-hint"}
@@ -144,6 +135,7 @@ export function VariantForm() {
           onChange={(event) => setOriginalLetter(event.target.value)}
           rows={12}
           placeholder="Füge hier den ganzen Briefentwurf aus deiner E-Mail ein."
+          disabled={submitState === "sending"}
           className={[
             inputClassName(Boolean(letterError)),
             "min-h-[300px] resize-y leading-relaxed",
@@ -174,7 +166,8 @@ export function VariantForm() {
           step={1}
           value={toneLevel}
           onChange={(event) => setToneLevel(Number(event.target.value))}
-          className="w-full accent-waldgruen cursor-pointer"
+          disabled={submitState === "sending"}
+          className="w-full accent-waldgruen cursor-pointer disabled:cursor-not-allowed"
           aria-label="Tonlage der neuen Briefvariante"
         />
         <div className="flex justify-between mt-1">
@@ -202,6 +195,7 @@ export function VariantForm() {
           onChange={(event) => setChangeRequest(event.target.value)}
           rows={3}
           placeholder="Optional, z.B. kürzer, sachlicher, persönlicher, weniger scharf, mehr Druck"
+          disabled={submitState === "sending"}
           className={[
             inputClassName(false),
             "resize-y leading-relaxed",
@@ -214,7 +208,7 @@ export function VariantForm() {
         disabled={!canSubmit}
         className={[
           "bg-waldgruen text-creme font-semibold text-base px-8 py-4 rounded-xl",
-          "transition-colors min-h-[44px] w-full shadow-md",
+          "transition-colors min-h-[44px] w-full shadow-md active:translate-y-px",
           canSubmit
             ? "hover:bg-waldgruen-dark cursor-pointer"
             : "opacity-60 cursor-not-allowed",

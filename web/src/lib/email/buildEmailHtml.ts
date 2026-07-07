@@ -179,12 +179,10 @@ export function buildEmailHtml(data: SendLetterEmailParams): string {
                   </td>
                 </tr>
 
-                <!-- Brief anpassen CTA: plain text, no stored letter body, email only in URL hash. -->
+                <!-- Brief anpassen CTA: inline, no stored letter body, email only in URL hash. -->
                 <tr>
-                  <td colspan="7" class="bnb-pad" style="padding:8px 32px 8px;background-color:#ffffff;">
-                    <p style="margin:0 0 4px;font-family:Georgia,'Times New Roman',serif;font-size:15px;color:#2D5016;font-weight:bold;line-height:1.5;">Nicht ganz dein Ton?</p>
-                    <p style="margin:0 0 8px;font-family:Georgia,'Times New Roman',serif;font-size:14px;color:#4A4A4A;line-height:1.6;">Du kannst den Entwurf schnell anpassen.</p>
-                    <a href="${variantUrl}" target="_blank" rel="noopener noreferrer" style="font-family:Georgia,'Times New Roman',serif;font-size:14px;color:#2D5016;font-weight:bold;text-decoration:underline;">Brief anpassen</a>
+                  <td colspan="7" class="bnb-pad" style="padding:8px 32px 8px;background-color:#ffffff;text-align:center;">
+                    <p style="margin:0;font-family:Georgia,'Times New Roman',serif;font-size:15px;color:#4A4A4A;line-height:1.75;text-align:center;">Nicht ganz dein Ton? Hier deinen &rarr; <a href="${variantUrl}" target="_blank" rel="noopener noreferrer" style="color:#2D5016;text-decoration:underline;">Briefentwurf schnell anpassen</a></p>
                   </td>
                 </tr>
 
@@ -247,7 +245,6 @@ export function buildEmailHtml(data: SendLetterEmailParams): string {
                     <p style="margin:0 0 14px;font-family:Georgia,'Times New Roman',serif;font-size:14px;color:#4A4A4A;line-height:1.6;">
                       Handgeschriebene Briefe fallen in Bundestagsbüros auf. Inmitten unpersönlicher Drucksachen signalisieren sie echtes Engagement. &rarr; <a href="${APP_URL}/tipps" style="color:#2D5016;text-decoration:underline;">Tipps für den perfekten Brief</a>
                     </p>
-                    ${buildCampaignAttributionHtml(data.campaign)}
                     <p style="margin:0 0 20px;font-family:Georgia,'Times New Roman',serif;font-size:14px;color:#4A4A4A;line-height:1.6;">
                       Toll, dass du dir die Zeit für unsere Demokratie nimmst. Melde dich super gerne bei <a href="${FOUNDER_FEEDBACK_URL}" target="_blank" rel="noopener noreferrer" style="color:#2D5016;text-decoration:underline;">Fragen oder weiteren Anregungen</a>. Beste Grüße aus Bremen ✌️
                     </p>
@@ -259,6 +256,13 @@ export function buildEmailHtml(data: SendLetterEmailParams): string {
                     </p>
                   </td>
                 </tr>
+
+                ${data.campaign?.slug ? `
+                <tr>
+                  <td colspan="7" class="bnb-pad" style="padding:0 32px 8px;background-color:#ffffff;">
+                    ${buildCampaignAttributionHtml(data.campaign)}
+                  </td>
+                </tr>` : ""}
 
                 <!-- Cause-recruit block: motivate sender to invite Wahlkreis-people to write their own letters -->
                 <tr>

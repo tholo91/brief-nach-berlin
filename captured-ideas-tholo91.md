@@ -17,16 +17,17 @@
 
 <!-- code-tasks:managed-start -->
 
-- [ ] **Per URL Parameter Partei im array forcieren** ([Created: 2026-07-01]) (Priority: ⚪ Normal) <!-- ct:0e959a29-0711-4da2-8697-efd27f3d829a -->
+- [ ] **Per URL Parameter Partei im array forcieren** ([Created: 2026-07-01]) (Priority: ⚪ Normal) [Updated: 2026-07-07] <!-- ct:0e959a29-0711-4da2-8697-efd27f3d829a -->
   Man kann per link, den man teilt die Auswahl der Partei, sollte diese auftreten, favorisieren. Sprich, bei Brief-nach-berlin.de?fav=CDU,afd würde, sofern jemand in seiner plz eine Liste hat in der eine der beiden Parteien im Parameter dabei ist, diese nach oben ziehen und voraus wählen, wenn es bspw. Kein direktmandat gibt
-
-
-## Completed
+  Das wäre vor allem bei Kampagnen sinnvoll, wenn diese progressive character haben und konservative Parteien erreichen wollen
 
 - [x] **Neuer test** ([Created: 2026-06-11]) (Priority: 🔴 Important) [Updated: 2026-06-13] [Completed: 2026-06-26] <!-- ct:6b935f4c-2750-4188-81cf-c50d8edf5555 -->
 
 - [x] **UI: in list view kleines Kalender icon anzeigen** ([Created: 2026-04-11]) (Priority: ⚪ Normal) [Completed: 2026-06-13] <!-- ct:99697a5e-a573-40af-8e5a-eaf51727e420 -->
   Nur wenn man einen Kalender link hinterlegt hat
+
+- [x] **Kläre value proposition / 3 steps** ([Created: 2026-04-11]) (Priority: 🔴 Important) [Completed: 2026-06-13] <!-- ct:57e42f02-e54c-45ce-bed4-1e1ffc4b965e -->
+  [Archived] Du/schilderst dein Anliegen, unsere Datenschutz konform KI (Mistral? EU?) schreibt den vor mit besten Argumenten + du bekommst den per Mail
 
 - [x] **Landing page design verbessern** ([Created: 2026-04-11]) (Priority: ⚪ Normal) [Updated: 2026-04-11] [Completed: 2026-06-03] <!-- ct:12527de9-c831-4fca-834a-0439d1305c39 -->
   Bislang wirkt es eher wie eine powerpoint Präsentation - Texte müssen besser werden und wir sollten auch magic mcp nutzen (teste, ob das klappt). Vielleicht better mit Gemini cli oder antigravity?

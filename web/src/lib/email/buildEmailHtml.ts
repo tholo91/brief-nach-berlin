@@ -163,7 +163,7 @@ export function buildEmailHtml(data: SendLetterEmailParams): string {
                 <!-- Intro: warm founder voice -->
                 <tr>
                   <td colspan="7" class="bnb-pad" style="padding:0 32px 20px;background-color:#ffffff;">
-                    <p style="margin:0;font-family:Georgia,'Times New Roman',serif;font-size:15px;color:#4A4A4A;line-height:1.75;">Lies ihn gründlich durch und pass ihn an, damit es dein Brief wird. Dieser Entwurf dient als Schnellstart, <a href="${APP_URL}/brief-verbessern" target="_blank" rel="noopener noreferrer" style="color:#2D5016;text-decoration:underline;">verbessere ihn gern</a>, damit er sich wirklich nach dir anhört.<span class="bnb-desk"><br>Bitte bewerte anschließend deinen Brief 🙏 Danke, dass du dich engagierst!</span><span class="bnb-mob" style="display:none;"><br>Danke, dass du dich engagierst 🙏</span></p>
+                    <p style="margin:0;font-family:Georgia,'Times New Roman',serif;font-size:14px;color:#4A4A4A;line-height:1.6;">Lies ihn gründlich durch und pass ihn an, damit es dein Brief wird. Dieser Entwurf dient als Schnellstart, <a href="${APP_URL}/brief-verbessern" target="_blank" rel="noopener noreferrer" style="color:#2D5016;text-decoration:underline;">verbessere ihn gern</a>, damit er sich wirklich nach dir anhört.<span class="bnb-desk"><br>Bitte bewerte anschließend deinen Brief 🙏 Danke, dass du dich engagierst!</span><span class="bnb-mob" style="display:none;"><br>Danke, dass du dich engagierst 🙏</span></p>
                   </td>
                 </tr>
 
@@ -182,7 +182,7 @@ export function buildEmailHtml(data: SendLetterEmailParams): string {
                 <!-- Brief anpassen CTA: inline, no stored letter body, email only in URL hash. -->
                 <tr>
                   <td colspan="7" class="bnb-pad" style="padding:8px 32px 8px;background-color:#ffffff;text-align:center;">
-                    <p style="margin:0;font-family:Georgia,'Times New Roman',serif;font-size:15px;color:#4A4A4A;line-height:1.75;text-align:center;">Nicht ganz dein Ton? Hier deinen &rarr; <a href="${variantUrl}" target="_blank" rel="noopener noreferrer" style="color:#2D5016;text-decoration:underline;">Briefentwurf schnell anpassen</a></p>
+                    <p style="margin:0;font-family:Georgia,'Times New Roman',serif;font-size:14px;color:#4A4A4A;line-height:1.6;text-align:center;">Nicht ganz dein Ton? Hier deinen &rarr; <a href="${variantUrl}" target="_blank" rel="noopener noreferrer" style="color:#2D5016;text-decoration:underline;">Briefentwurf schnell anpassen</a></p>
                   </td>
                 </tr>
 

@@ -27,7 +27,7 @@ export default function AppFooter() {
           Brief-nach-Berlin &copy; {new Date().getFullYear()}
         </span>
 
-        <div className="flex gap-6">
+        <div className="flex flex-wrap justify-center gap-x-5 gap-y-2">
           <Link
             href="/"
             prefetch={false}
@@ -43,6 +43,20 @@ export default function AppFooter() {
           >
             Feedback
           </a>
+          <Link
+            href="/ngo-briefkampagne"
+            prefetch={false}
+            className="font-body text-sm text-warmgrau/40 hover:text-warmgrau transition-colors duration-200"
+          >
+            NGO-Briefkampagne
+          </Link>
+          <Link
+            href="/kampagne/starten"
+            prefetch={false}
+            className="font-body text-sm text-warmgrau/40 hover:text-warmgrau transition-colors duration-200"
+          >
+            Kampagne starten
+          </Link>
           <Link
             href="/impressum"
             prefetch={false}

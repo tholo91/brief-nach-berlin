@@ -6,7 +6,9 @@ import FadeFooterImage from "./FadeFooterImage";
 export default function ConditionalFadeFooterImage() {
   const pathname = usePathname();
 
-  if (pathname.startsWith("/kampagne")) return null;
+  if (pathname.startsWith("/kampagne") || pathname === "/ngo-briefkampagne") {
+    return null;
+  }
 
   return <FadeFooterImage variant="content" />;
 }

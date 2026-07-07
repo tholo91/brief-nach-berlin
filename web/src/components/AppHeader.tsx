@@ -2,10 +2,16 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 
 export const WIZARD_PROGRESS_EVENT = "wizard-progress-change";
 
 const WIZARD_PROGRESS_STEPS = [1, 2, 3] as const;
+const NGO_NAV_LINKS = [
+  { label: "Übersicht", href: "/ngo-briefkampagne#uebersicht" },
+  { label: "Laufende Kampagnen", href: "/ngo-briefkampagne#laufende-kampagnen" },
+  { label: "FAQ", href: "/ngo-briefkampagne#faq" },
+];
 
 function progressFromStepParam(step: string | null): number | null {
   if (step === null || step === "1") return 1;
@@ -15,7 +21,9 @@ function progressFromStepParam(step: string | null): number | null {
 }
 
 export default function AppHeader() {
+  const pathname = usePathname();
   const [wizardProgress, setWizardProgress] = useState<number | null>(null);
+  const showCampaignCta = pathname === "/ngo-briefkampagne";
 
   useEffect(() => {
     const readProgressFromUrl = () => {
@@ -71,6 +79,20 @@ export default function AppHeader() {
             Brief-nach-Berlin
           </Link>
 
+          {showCampaignCta && (
+            <div className="hidden items-center gap-5 md:flex">
+              {NGO_NAV_LINKS.map((link) => (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  className="font-body text-sm text-warmgrau/60 transition-colors duration-200 hover:text-waldgruen-dark"
+                >
+                  {link.label}
+                </Link>
+              ))}
+            </div>
+          )}
+
           {wizardProgress !== null && (
             <div
               className="sm:hidden flex items-center gap-3"
@@ -92,6 +114,15 @@ export default function AppHeader() {
                 />
               ))}
             </div>
+          )}
+          {wizardProgress === null && showCampaignCta && (
+            <Link
+              href="/kampagne/starten"
+              className="inline-flex items-center justify-center rounded-lg bg-waldgruen px-3 py-2 font-body text-sm font-semibold text-creme transition-colors hover:bg-waldgruen-dark active:scale-[0.98] sm:px-4"
+            >
+              <span className="sm:hidden">Starten</span>
+              <span className="hidden sm:inline">Kampagne starten</span>
+            </Link>
           )}
         </nav>
       </header>

@@ -252,6 +252,28 @@ export async function getActiveCampaignBySlug(
   return campaign?.status === "active" ? campaign : null;
 }
 
+export async function getRecentActiveCampaigns(
+  limit = 5,
+  db?: RepositoryClient
+): Promise<Campaign[]> {
+  const cappedLimit = Math.min(Math.max(limit, 1), 5);
+  const { data, error } = await client(db)
+    .from("campaigns")
+    .select("*")
+    .eq("status", "active")
+    .eq("moderation_status", "approved")
+    .order("activated_at", { ascending: false, nullsFirst: false })
+    .order("created_at", { ascending: false })
+    .limit(cappedLimit);
+
+  if (error) {
+    throw new CampaignRepositoryError(
+      `Campaign list lookup failed: ${error.message}`
+    );
+  }
+  return (data as CampaignRow[]).map(mapCampaign);
+}
+
 export async function updateCampaignPublicFields(
   campaignId: string,
   input: UpdateCampaignPublicFieldsInput,

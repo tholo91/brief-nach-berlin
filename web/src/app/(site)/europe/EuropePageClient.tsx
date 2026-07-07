@@ -15,6 +15,7 @@ type Copy = {
   imageAlt: string;
   impactSince: string;
   impactLabel: string;
+  pinnedImageAlt: string;
   steps: Array<{ title: string; body: string }>;
   promptTitle: string;
   promptBody: string;
@@ -72,6 +73,8 @@ const copy: Record<Language, Copy> = {
       "Handgeschriebene Briefe fliegen über Europa, vorbei an Städten, Flüssen, Bahnlinien und Bergen.",
     impactSince: "Seit Mitte Mai 2026",
     impactLabel: "Briefe erstellt",
+    pinnedImageAlt:
+      "Plakatillustration: Ein europäischer Postbote hält einen Brief nach vorn, darunter steht Europe needs your letters.",
     steps: [
       {
         title: "Repository forken",
@@ -113,6 +116,8 @@ const copy: Record<Language, Copy> = {
       "Handwritten letters fly across Europe, passing cities, rivers, railway lines, and mountains.",
     impactSince: "Since mid-May 2026",
     impactLabel: "letters created",
+    pinnedImageAlt:
+      "Poster illustration: a European postman holds out a letter, with the words Europe needs your letters below.",
     steps: [
       {
         title: "Fork the repo",
@@ -260,6 +265,31 @@ function BlocksIcon({ className = "" }: { className?: string }) {
       <path d="M10 17.5h4" />
       <path d="M17.5 10v4" />
     </svg>
+  );
+}
+
+function PinnedEuropePoster({ alt }: { alt: string }) {
+  return (
+    <figure className="relative mt-10 w-[min(17rem,82vw)] rotate-[-3deg] md:absolute md:left-[calc(100%+1.5rem)] md:top-0 md:mt-0 md:w-44 lg:left-[calc(100%+2.5rem)] lg:w-60 xl:w-72">
+      <div className="relative rounded-[2px] bg-[#f8edc8] p-1 shadow-[0_20px_38px_-24px_rgba(27,67,50,0.72)]">
+        <Image
+          src="/images/europe-pinned-note.webp"
+          alt={alt}
+          width={760}
+          height={760}
+          sizes="(min-width: 1024px) 18rem, (min-width: 768px) 18rem, 82vw"
+          className="h-auto w-full rounded-[1px] border border-waldgruen/15"
+        />
+        <Image
+          src="/images/ghibli-pin.png"
+          alt=""
+          width={64}
+          height={74}
+          aria-hidden="true"
+          className="pointer-events-none absolute left-1/2 top-0 h-12 w-auto -translate-x-1/2 -translate-y-1/2 rotate-[10deg] drop-shadow-[0_4px_4px_rgba(27,67,50,0.22)]"
+        />
+      </div>
+    </figure>
   );
 }
 
@@ -457,6 +487,10 @@ export function EuropePageContent({
             {t.gsdCta}
           </a>
         </section>
+
+        <div className="relative">
+          <PinnedEuropePoster alt={t.pinnedImageAlt} />
+        </div>
 
         <section className="mt-14 rounded-sm border border-waldgruen/20 bg-white/70 p-6">
           <h2 className="mb-3 font-body text-xl font-bold text-waldgruen-dark">

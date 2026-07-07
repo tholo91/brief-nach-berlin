@@ -34,6 +34,8 @@ const footerSections = [
     links: [
       { label: "Feedback", href: FOUNDER_FEEDBACK_URL, external: true },
       { label: "Weitersagen", href: "/weitersagen" },
+      { label: "Briefkampagnen für NGOs", href: "/ngo-briefkampagne" },
+      { label: "Kampagne starten", href: "/kampagne/starten" },
       {
         label: "Open Source",
         href: "https://github.com/tholo91/brief-nach-berlin",
@@ -45,7 +47,6 @@ const footerSections = [
   {
     title: "Rechtliches",
     links: [
-      { label: "Kampagnen", href: "/kampagne/starten" },
       { label: "Impressum", href: "/impressum" },
       { label: "Datenschutz", href: "/datenschutz" },
     ],

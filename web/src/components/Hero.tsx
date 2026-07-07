@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useRef } from "react";
 import { Step2Issue } from "@/components/wizard/Step2Issue";
@@ -98,10 +99,13 @@ export default function Hero() {
           </div>
         </div>
 
-        <h1 className="font-body text-4xl md:text-5xl font-bold text-waldgruen-dark leading-[1.1] tracking-tight mb-4 text-balance">
-          Dein Anliegen.{" "}
-          <span className="block text-waldgruen">Direkt an die Politik.</span>
-        </h1>
+        <div className="relative mb-4">
+          <h1 className="font-body text-4xl md:text-5xl font-bold text-waldgruen-dark leading-[1.1] tracking-tight text-balance">
+            Dein Anliegen.{" "}
+            <span className="block text-waldgruen">Direkt an die Politik.</span>
+          </h1>
+          <NgoCampaignBadge className="hidden sm:inline-flex absolute left-1/2 -top-5 z-20 ml-[9.75rem] rotate-[7deg]" />
+        </div>
 
         <p className="font-handwriting text-lg md:text-xl text-warmgrau leading-tight text-pretty max-w-3xl mx-auto mb-6">
           <span className="block sm:inline">In 3 Minuten ist dein Brief </span>
@@ -150,6 +154,41 @@ export default function Hero() {
 
       </div>
 
+      <NgoCampaignBadge className="inline-flex sm:hidden absolute top-2 right-3 z-20 rotate-[6deg]" />
+
     </section>
+  );
+}
+
+function NgoCampaignBadge({ className }: { className?: string }) {
+  return (
+    <Link
+      href="/ngo-briefkampagne"
+      prefetch={false}
+      className={`${className ?? ""} group min-h-[5.25rem] w-[8.55rem] cursor-pointer overflow-visible rounded-[2px] border border-bernstein/25 bg-[#fff0a6] px-3.5 pb-2.5 pt-3.5 text-center font-body text-waldgruen-dark shadow-[0_14px_26px_-20px_rgba(27,67,50,0.72)] transition-shadow duration-200 ease-[cubic-bezier(0.16,1,0.3,1)] hover:shadow-[0_18px_30px_-20px_rgba(27,67,50,0.8)] active:bg-[#ffe98b] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-waldgruen focus-visible:ring-offset-2 focus-visible:ring-offset-creme md:w-[9rem]`}
+      aria-label="Briefkampagne für NGO oder Verein starten"
+    >
+      <Image
+        src="/images/ghibli-pin.png"
+        alt=""
+        width={64}
+        height={74}
+        aria-hidden="true"
+        className="pointer-events-none absolute right-0 -top-5 h-[2.125rem] w-auto rotate-[14deg] drop-shadow-[0_4px_4px_rgba(27,67,50,0.22)] md:-right-3 md:-top-6 md:h-[2.55rem]"
+      />
+      <span aria-hidden="true" className="pointer-events-none absolute inset-x-2 top-7 h-px bg-bernstein/25" />
+      <span aria-hidden="true" className="pointer-events-none absolute inset-x-2 top-[3.35rem] h-px bg-bernstein/20" />
+      <span className="relative block">
+        <span className="block font-typewriter text-[0.54rem] font-bold uppercase tracking-[0.14em] text-airmail-blau/80">
+          NGO oder Verein?
+        </span>
+        <span className="mt-1 block font-handwriting text-[1.05rem] font-bold leading-[0.9] text-waldgruen-dark md:text-[1.12rem]">
+          <span className="decoration-airmail-rot/70 decoration-2 underline underline-offset-4">
+            Briefkampagne
+          </span>
+          <span className="mt-1 block">starten</span>
+        </span>
+      </span>
+    </Link>
   );
 }

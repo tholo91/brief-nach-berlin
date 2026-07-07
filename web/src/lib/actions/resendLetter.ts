@@ -10,7 +10,7 @@ import { DEFAULT_LETTER_LENGTH } from "@/lib/config";
 import { checkRateLimit, getClientIp, hashIdentifier, LIMITS } from "@/lib/rateLimit";
 
 const RESEND_LIMIT_MESSAGE =
-  "Wir haben dir den Brief jetzt mehrfach gesendet. Bitte prüfe noch einmal deinen Spam-Ordner und die E-Mail-Adresse. Falls weiterhin nichts ankommt, melde dich gerne direkt bei uns.";
+  "Der Brief wurde jetzt mehrfach gesendet. Bitte prüfe noch einmal deinen Spam-Ordner und die E-Mail-Adresse. Falls weiterhin nichts ankommt, melde dich gerne direkt.";
 
 // SECURITY NOTE (2026-04-27):
 // Previous signature accepted a full Politician object from the client, which

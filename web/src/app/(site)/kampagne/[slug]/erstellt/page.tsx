@@ -17,7 +17,7 @@ export async function generateMetadata({
   if (!parsedSlug.success) return {};
 
   return {
-    title: "Kampagne angelegt | Brief nach Berlin",
+    title: "Kampagne angelegt | Brief-nach-Berlin",
     alternates: { canonical: `/kampagne/${parsedSlug.data}/erstellt` },
   };
 }
@@ -44,7 +44,7 @@ export default async function CampaignCreatedPage({
             Bitte bestätige jetzt deine E-Mail.
           </h1>
           <p className="mt-5 font-body text-base leading-relaxed text-warmgrau/75">
-            Wir haben dir den Freischaltlink geschickt. Erst nach dem Klick in dieser E-Mail wird die Kampagne öffentlich und kann von anderen genutzt werden.
+            Der Freischaltlink ist per E-Mail unterwegs. Erst nach dem Klick in dieser E-Mail wird die Kampagne öffentlich und kann von anderen genutzt werden.
           </p>
 
           <div className="mt-6 rounded-md border border-waldgruen/15 bg-creme/70 px-4 py-4">

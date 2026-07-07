@@ -11,7 +11,7 @@ const URL_PATH = "/ki-transparenz";
 const PUBLISHED = "2026-05-20";
 
 export const metadata: Metadata = {
-  title: `${TITLE} | Brief nach Berlin`,
+  title: `${TITLE} | Brief-nach-Berlin`,
   description: DESCRIPTION,
   alternates: {
     canonical: `${APP_URL}${URL_PATH}`,
@@ -53,7 +53,7 @@ const faqs = [
   },
   {
     q: "Wurde Brief-nach-Berlin mit KI gebaut?",
-    a: "Ja, die Entwicklung erfolgte mit Claude Code von Anthropic. Aber Claude läuft nicht im Betrieb mit: Wenn du das Tool benutzt, verarbeitet ausschließlich Mistral in Europa deine Eingaben.",
+    a: "Ja, die Entwicklung erfolgte mit Claude Code von Anthropic. Aber Claude läuft nicht im Betrieb mit: Wenn du Brief-nach-Berlin benutzt, verarbeitet ausschließlich Mistral in Europa deine Eingaben.",
   },
 ];
 
@@ -74,10 +74,10 @@ const articleJsonLd = {
   description: DESCRIPTION,
   datePublished: PUBLISHED,
   dateModified: PUBLISHED,
-  author: { "@type": "Organization", name: "Brief nach Berlin" },
+  author: { "@type": "Organization", name: "Brief-nach-Berlin" },
   publisher: {
     "@type": "Organization",
-    name: "Brief nach Berlin",
+    name: "Brief-nach-Berlin",
     url: APP_URL,
   },
   mainEntityOfPage: `${APP_URL}${URL_PATH}`,
@@ -170,7 +170,7 @@ export default function KiTransparenzPage() {
             <p>
               An Mistral geht das, was du in das Eingabefeld schreibst, plus
               den Namen deines Abgeordneten und die Wahlkreis-Information.
-              Mehr nicht. Kein Name von dir, keine Adresse, keine IP. Das Tool
+              Mehr nicht. Kein Name von dir, keine Adresse, keine IP. Brief-nach-Berlin
               braucht das nicht, also wird es auch nicht erhoben.
             </p>
             <p>
@@ -196,7 +196,7 @@ export default function KiTransparenzPage() {
             <p>
               Die Web-Anwendung läuft auf europäischen Servern, ausgeliefert
               über ein Frankfurter Rechenzentrum. Auch die wenigen Daten, die
-              das Tool überhaupt braucht (zum Beispiel der Zähler, wie viele
+              die Anwendung überhaupt braucht (zum Beispiel der Zähler, wie viele
               Briefe geschrieben wurden), liegen bei einem europäischen
               Anbieter mit EU-Datenverarbeitung. Keine Daten verlassen den
               europäischen Rechtsraum.
@@ -251,7 +251,7 @@ export default function KiTransparenzPage() {
             </p>
             <p>
               Wichtig dabei: Claude Code kommt nur beim Bauen zum Einsatz, nicht
-              im Betrieb. Wenn du das Tool benutzt, läuft kein Claude irgendwo
+              im Betrieb. Wenn du Brief-nach-Berlin benutzt, läuft kein Claude irgendwo
               im Hintergrund mit. Die Architektur und der Code wurden mit Claude
               entwickelt, die laufende Verarbeitung deiner Eingaben erfolgt
               ausschließlich über Mistral in Europa. Datenschutzrechtlich passt

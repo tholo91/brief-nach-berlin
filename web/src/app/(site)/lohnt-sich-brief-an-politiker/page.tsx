@@ -10,7 +10,7 @@ import { Figure } from "@/components/editorial/Figure";
 const URL_PATH = "/lohnt-sich-brief-an-politiker";
 const PUBLISHED = "2026-05-19";
 const TITLE =
-  "Lohnt es sich, einem Politiker zu schreiben? Was wirklich passiert | Brief nach Berlin";
+  "Lohnt es sich, einem Politiker zu schreiben? Was wirklich passiert | Brief-nach-Berlin";
 const DESCRIPTION =
   "Bringt ein Brief an einen Abgeordneten überhaupt etwas? Was im Wahlkreisbüro mit deinem Brief passiert, warum handgeschrieben mehr Gewicht hat als E-Mail oder Petition, und wann es sich besonders lohnt.";
 
@@ -76,10 +76,10 @@ const articleJsonLd = {
   description: DESCRIPTION,
   datePublished: PUBLISHED,
   dateModified: PUBLISHED,
-  author: { "@type": "Organization", name: "Brief nach Berlin" },
+  author: { "@type": "Organization", name: "Brief-nach-Berlin" },
   publisher: {
     "@type": "Organization",
-    name: "Brief nach Berlin",
+    name: "Brief-nach-Berlin",
     url: APP_URL,
   },
   mainEntityOfPage: `${APP_URL}${URL_PATH}`,

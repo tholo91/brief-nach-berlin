@@ -1,3 +1,5 @@
+import { formatNumber } from "@/lib/formatNumber";
+
 const COUNTER_DISPLAY_THRESHOLD = 20;
 
 export default function LetterCounter() {
@@ -15,7 +17,7 @@ export default function LetterCounter() {
           Impact
         </p>
         <div className="font-typewriter text-6xl md:text-7xl font-bold text-waldgruen leading-none mb-3">
-          {count}
+          {formatNumber(count)}
         </div>
         <p className="font-body text-base text-warmgrau/70">
           Briefe generiert &amp; versendet

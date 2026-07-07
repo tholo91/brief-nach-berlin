@@ -158,10 +158,10 @@ export function buildEmailHtml(data: SendLetterEmailParams): string {
                   <td colspan="7" style="height:4px;font-size:0;line-height:0;background:repeating-linear-gradient(-45deg,#C1121F,#C1121F 8px,#FAF8F5 8px,#FAF8F5 12px,#1D3557 12px,#1D3557 20px,#FAF8F5 20px,#FAF8F5 24px);">&nbsp;</td>
                 </tr>
 
-                <!-- Title: "Brief nach Berlin". Watermark wandert in den Brief-Kasten als Briefmarke. -->
+                <!-- Title: "Brief-nach-Berlin". Watermark wandert in den Brief-Kasten als Briefmarke. -->
                 <tr>
                   <td colspan="7" class="bnb-pad" bgcolor="#ffffff" style="padding:28px 32px 28px;text-align:center;background-color:#ffffff;">
-                    <h1 style="margin:0;font-family:Georgia,'Times New Roman',serif;font-size:22px;color:#2D5016;font-weight:bold;letter-spacing:0.5px;">Brief nach Berlin</h1>
+                    <h1 style="margin:0;font-family:Georgia,'Times New Roman',serif;font-size:22px;color:#2D5016;font-weight:bold;letter-spacing:0.5px;">Brief-nach-Berlin</h1>
                     <p style="margin:8px 0 0;font-family:Georgia,'Times New Roman',serif;font-size:14px;color:#666666;">Dein Briefentwurf ist fertig zum Absenden.</p>
                   </td>
                 </tr>
@@ -319,7 +319,7 @@ export function buildEmailHtml(data: SendLetterEmailParams): string {
                 <tr>
                   <td colspan="7" class="bnb-pad" style="padding:24px 32px 16px;background-color:#FAF8F5;text-align:center;">
                     <p style="margin:0;font-family:Georgia,'Times New Roman',serif;font-size:12px;color:#999999;">
-                      <a href="${APP_URL}" style="color:#2D5016;text-decoration:none;">Brief nach Berlin</a>${letterNumberText} · Deine Stimme zählt.
+                      <a href="${APP_URL}" style="color:#2D5016;text-decoration:none;">Brief-nach-Berlin</a>${letterNumberText} · Deine Stimme zählt.
                     </p>
                   </td>
                 </tr>

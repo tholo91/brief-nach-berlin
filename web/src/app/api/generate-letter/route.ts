@@ -142,7 +142,7 @@ export async function POST(req: NextRequest) {
     const { politicians: derivedPoliticians } = lookupPLZ(data.plz);
     if (derivedPoliticians.length === 0) {
       return NextResponse.json(
-        { error: "Für diese Postleitzahl haben wir keine Abgeordneten in unseren Daten." },
+        { error: "Für diese Postleitzahl sind derzeit keine Abgeordneten hinterlegt." },
         { status: 404 }
       );
     }
@@ -240,7 +240,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json(
         {
           error:
-            "Unser KI-Anbieter ist gerade kurz nicht erreichbar. Bitte versuche es in ein, zwei Minuten erneut.",
+            "Der KI-Anbieter ist gerade kurz nicht erreichbar. Bitte versuche es in ein, zwei Minuten erneut.",
           errorId,
           detail,
         },

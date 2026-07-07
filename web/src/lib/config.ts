@@ -1,7 +1,7 @@
 // Central app configuration — change once, updates everywhere
 import { CONTACT } from "@/lib/contact";
 
-export const APP_NAME = "Brief nach Berlin" as const;
+export const APP_NAME = "Brief-nach-Berlin" as const;
 export const APP_URL = "https://www.brief-nach-berlin.de" as const;
 export const APP_TAGLINE = "Deine Stimme zählt." as const;
 
@@ -33,8 +33,8 @@ export const DEFAULT_LETTER_LENGTH: LetterLength = "1";
 // Two distinct intents:
 //   1. SHARE_TEXT_CAUSE  — invites RECIPIENT to write their own letter (movement)
 //   2. SHARE_TEXT_TOOL   — promotes the product itself (e.g. for LinkedIn / X)
-export const SHARE_TEXT_CAUSE = `Ich habe heute meinem Abgeordneten im Bundestag geschrieben, weil mich ein lokales Thema beschäftigt. Briefe aus dem eigenen Wahlkreis bekommen besonderes Gewicht: wenn mehrere Stimmen aus derselben Gegend zum gleichen Thema schreiben, wird das Anliegen nachweislich stärker gehört. Magst du auch einen Brief schreiben, mit deinen eigenen Worten? Brief nach Berlin macht es einfach und kostenlos: ${APP_URL}` as const;
-export const SHARE_TEXT_TOOL = `Ich habe gerade Brief nach Berlin ausprobiert: ein kostenloses Tool, das aus ein paar Sätzen Frust einen formellen Brief an deinen MdB im Bundestag macht. Idee dahinter: handgeschriebene Briefe werden im Bundestag tatsächlich gelesen und besprochen. Probier's aus: ${APP_URL}` as const;
+export const SHARE_TEXT_CAUSE = `Ich habe heute meinem Abgeordneten im Bundestag geschrieben, weil mich ein lokales Thema beschäftigt. Briefe aus dem eigenen Wahlkreis bekommen besonderes Gewicht: wenn mehrere Stimmen aus derselben Gegend zum gleichen Thema schreiben, wird das Anliegen nachweislich stärker gehört. Magst du auch einen Brief schreiben, mit deinen eigenen Worten? Brief-nach-Berlin macht es einfach und kostenlos: ${APP_URL}` as const;
+export const SHARE_TEXT_TOOL = `Ich habe gerade Brief-nach-Berlin ausprobiert: kostenlos, in drei Minuten, aus ein paar Sätzen Frust wird ein formeller Brief an deinen MdB im Bundestag. Idee dahinter: handgeschriebene Briefe werden im Bundestag tatsächlich gelesen und besprochen. Probier's aus: ${APP_URL}` as const;
 
 // Backwards-compat alias (some callers may still import SHARE_TEXT)
 export const SHARE_TEXT = SHARE_TEXT_CAUSE;
@@ -42,7 +42,7 @@ export const SHARE_TEXT = SHARE_TEXT_CAUSE;
 // Cause-recruit URLs
 export const SHARE_URL_WHATSAPP = `https://wa.me/?text=${encodeURIComponent(SHARE_TEXT_CAUSE)}` as const;
 export const SHARE_URL_TELEGRAM = `https://t.me/share/url?url=${encodeURIComponent(APP_URL)}&text=${encodeURIComponent(SHARE_TEXT_CAUSE)}` as const;
-export const SHARE_URL_EMAIL = `mailto:?subject=${encodeURIComponent("Schreibst du auch einen Brief nach Berlin?")}&body=${encodeURIComponent(SHARE_TEXT_CAUSE)}` as const;
+export const SHARE_URL_EMAIL = `mailto:?subject=${encodeURIComponent("Schreibst du auch einen Brief-nach-Berlin?")}&body=${encodeURIComponent(SHARE_TEXT_CAUSE)}` as const;
 
 // Tool-promo URLs (LinkedIn share dialog only takes a URL, not text)
 export const SHARE_URL_LINKEDIN = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(APP_URL)}` as const;
@@ -51,7 +51,7 @@ export const SHARE_URL_TWITTER = `https://twitter.com/intent/tweet?text=${encode
 // Instagram: no web share URL exists — clipboard copy only
 export const INSTAGRAM_CAPTION = `Ich habe heute meinem Abgeordneten einen handgeschriebenen Brief geschickt. Handgeschriebene Briefe werden im Bundestag tatsächlich gelesen, nicht wie E-Mails einfach archiviert.
 
-Brief nach Berlin hilft dabei: Anliegen beschreiben, Postleitzahl eingeben, fertig. Kostenlos, in unter drei Minuten.
+Brief-nach-Berlin hilft dabei: Anliegen beschreiben, Postleitzahl eingeben, fertig. Kostenlos, in unter drei Minuten.
 
 brief-nach-berlin.de
 

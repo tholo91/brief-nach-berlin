@@ -6,12 +6,12 @@ import LetterPaper from "@/components/LetterPaper";
 
 const TITLE = "Beispiel-Briefe an Politiker:innen";
 const DESCRIPTION =
-  "Echte Briefe, die mit Brief nach Berlin entstanden sind: zur Energiepolitik, zur Lage am Bremer Hauptbahnhof und zur Verdrängung in Berlin-Kreuzkölln. Anonymisiert.";
+  "Echte Briefe, die mit Brief-nach-Berlin entstanden sind: zur Energiepolitik, zur Lage am Bremer Hauptbahnhof und zur Verdrängung in Berlin-Kreuzkölln. Anonymisiert.";
 const URL_PATH = "/beispiele";
 const PUBLISHED = "2026-05-20";
 
 export const metadata: Metadata = {
-  title: `${TITLE} | Brief nach Berlin`,
+  title: `${TITLE} | Brief-nach-Berlin`,
   description: DESCRIPTION,
   alternates: {
     canonical: `${APP_URL}${URL_PATH}`,
@@ -37,10 +37,10 @@ const articleJsonLd = {
   description: DESCRIPTION,
   datePublished: PUBLISHED,
   dateModified: PUBLISHED,
-  author: { "@type": "Organization", name: "Brief nach Berlin" },
+  author: { "@type": "Organization", name: "Brief-nach-Berlin" },
   publisher: {
     "@type": "Organization",
-    name: "Brief nach Berlin",
+    name: "Brief-nach-Berlin",
     url: APP_URL,
   },
   mainEntityOfPage: `${APP_URL}${URL_PATH}`,
@@ -85,7 +85,7 @@ export default function BeispielePage() {
             Drei Briefe, die wirklich rausgegangen sind.
           </h1>
           <p className="font-body text-base md:text-lg text-warmgrau leading-relaxed mb-8 max-w-2xl text-pretty">
-            Diese drei Briefe wurden mit Brief nach Berlin formuliert, von Hand
+            Diese drei Briefe wurden mit Brief-nach-Berlin formuliert, von Hand
             abgeschrieben und in den Briefkasten geworfen. Namen anonymisiert,
             der Rest steht so im Original.
           </p>
@@ -164,7 +164,7 @@ export default function BeispielePage() {
               Jetzt loslegen &rarr;
             </Link>
             <p className="mt-6 font-typewriter text-xs md:text-sm text-warmgrau/70 tracking-wide max-w-md mx-auto">
-              Brief nach Berlin findet die richtige Adresse. Du musst nur sagen,
+              Brief-nach-Berlin findet die richtige Adresse. Du musst nur sagen,
               was du denkst.
             </p>
           </div>

@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { FOUNDER_FEEDBACK_URL } from "@/lib/config";
 import { getLetterCount } from "@/lib/counter";
+import { formatNumber } from "@/lib/formatNumber";
 
 const footerSections = [
   {
@@ -55,6 +56,8 @@ const footerSections = [
 
 export default async function Footer() {
   const letterCount = await getLetterCount();
+  const formattedLetterCount = formatNumber(letterCount);
+
   return (
     <footer className="bg-creme">
       {/* Airmail stripe */}
@@ -79,7 +82,7 @@ export default async function Footer() {
         <div className="grid gap-8 md:grid-cols-[1.2fr_3fr]">
           <div>
             <p className="font-typewriter text-sm font-bold tracking-widest uppercase text-waldgruen/50 mb-3">
-              Brief nach Berlin
+              Brief-nach-Berlin
             </p>
             <p className="font-body text-sm leading-relaxed text-warmgrau/65 max-w-sm">
               Ein Freizeitprojekt, das Menschen hilft, politische Anliegen als
@@ -129,7 +132,7 @@ export default async function Footer() {
           <span className="font-typewriter text-sm text-warmgrau/40">
             Brief-nach-Berlin &copy; {new Date().getFullYear()}
             {letterCount > 0 && (
-              <span className="ml-1"> · {letterCount} Briefe</span>
+              <span className="ml-1"> · {formattedLetterCount} Briefe</span>
             )}
           </span>
 

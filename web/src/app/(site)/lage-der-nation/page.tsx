@@ -11,7 +11,7 @@ const URL_PATH = "/lage-der-nation";
 const PUBLISHED = "2026-04-18";
 
 export const metadata: Metadata = {
-  title: `${TITLE} | Brief nach Berlin`,
+  title: `${TITLE} | Brief-nach-Berlin`,
   description: DESCRIPTION,
   alternates: {
     canonical: `${APP_URL}${URL_PATH}`,
@@ -37,10 +37,10 @@ const articleJsonLd = {
   description: DESCRIPTION,
   datePublished: PUBLISHED,
   dateModified: PUBLISHED,
-  author: { "@type": "Organization", name: "Brief nach Berlin" },
+  author: { "@type": "Organization", name: "Brief-nach-Berlin" },
   publisher: {
     "@type": "Organization",
-    name: "Brief nach Berlin",
+    name: "Brief-nach-Berlin",
     url: APP_URL,
   },
   mainEntityOfPage: `${APP_URL}${URL_PATH}`,
@@ -150,8 +150,8 @@ export default function LageDerNationPage() {
 
         <div className="mt-16 p-8 bg-waldgruen/5 border border-waldgruen/15 rounded-xl hover:bg-waldgruen/10 transition-colors">
           <p className="font-body text-warmgrau leading-relaxed mb-6">
-            Drei Minuten, kein Account, kein Tracking. Wir schicken dir den
-            fertigen Brief per Mail, du schreibst ihn ab und steckst ihn in den
+            Drei Minuten, kein Account, kein Tracking. Der fertige Brief kommt
+            per Mail zu dir, du schreibst ihn ab und steckst ihn in den
             Briefkasten.
           </p>
           <Link

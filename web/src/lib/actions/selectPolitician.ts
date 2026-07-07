@@ -43,7 +43,7 @@ export async function selectPoliticianAction(
       return {
         error: "plz_not_found",
         message:
-          "Für diese Postleitzahl haben wir derzeit keinen direkt gewählten Wahlkreisabgeordneten in unseren Daten. Bitte prüfe deine Eingabe.",
+          "Für diese Postleitzahl ist derzeit kein direkt gewählter Wahlkreisabgeordneter hinterlegt. Bitte prüfe deine Eingabe.",
       };
     }
     const selectedPolitician = derivedPoliticians.find(

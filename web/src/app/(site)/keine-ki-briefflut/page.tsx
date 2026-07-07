@@ -11,7 +11,7 @@ const URL_PATH = "/keine-ki-briefflut";
 const PUBLISHED = "2026-05-21";
 
 export const metadata: Metadata = {
-  title: `${TITLE} | Brief nach Berlin`,
+  title: `${TITLE} | Brief-nach-Berlin`,
   description: DESCRIPTION,
   alternates: {
     canonical: `${APP_URL}${URL_PATH}`,
@@ -74,10 +74,10 @@ const articleJsonLd = {
   description: DESCRIPTION,
   datePublished: PUBLISHED,
   dateModified: PUBLISHED,
-  author: { "@type": "Organization", name: "Brief nach Berlin" },
+  author: { "@type": "Organization", name: "Brief-nach-Berlin" },
   publisher: {
     "@type": "Organization",
-    name: "Brief nach Berlin",
+    name: "Brief-nach-Berlin",
     url: APP_URL,
   },
   mainEntityOfPage: `${APP_URL}${URL_PATH}`,
@@ -107,7 +107,7 @@ export default function UeberfordertPage() {
           Häufige Bedenken
         </p>
         <h1 className="font-body text-3xl md:text-4xl font-bold text-waldgruen-dark tracking-tight mb-6">
-          Überfordert brief-nach-berlin die Abgeordneten?
+          Überfordert Brief-nach-Berlin die Abgeordneten?
         </h1>
         <p className="font-handwriting text-xl md:text-2xl text-warmgrau leading-relaxed mb-12 text-pretty">
           Eine berechtigte Frage, die in Diskussionen immer wieder kommt: Wenn
@@ -162,7 +162,7 @@ export default function UeberfordertPage() {
             Anliegen ernst. Genau diese Mühe ist das Signal, das durchkommt.
           </p>
           <p>
-            Zweitens: Wir rufen ausdrücklich dazu auf, den Entwurf vor dem
+            Zweitens: Brief-nach-Berlin ruft ausdrücklich dazu auf, den Entwurf vor dem
             Abschreiben zu personalisieren. Eigene Beispiele, eigene Wörter,
             der eigene Tonfall. Der KI-Entwurf ist Startpunkt, nicht
             Endprodukt. KI-glatte Briefe, die in dieser Form das Paul-Löbe-Haus
@@ -225,7 +225,7 @@ export default function UeberfordertPage() {
           </h2>
           <p>
             Das Ziel ist nicht möglichst viel Masse, sondern eine niedrigere
-            Hürde gegen das Ohnmachtsgefühl. Wer das Tool nutzt, soll
+            Hürde gegen das Ohnmachtsgefühl. Wer Brief-nach-Berlin nutzt, soll
             demokratisch ein Stück handlungsfähiger werden, einmal etwas
             geschrieben haben, einen Brief in den Kasten geworfen haben. Das
             ist der Hebel.
@@ -268,7 +268,7 @@ export default function UeberfordertPage() {
             >
               KI &amp; Transparenz
             </Link>
-            . Warum es das Tool überhaupt gibt:{" "}
+            . Warum es Brief-nach-Berlin überhaupt gibt:{" "}
             <Link
               href="/warum-ein-brief"
               className="text-waldgruen hover:underline"

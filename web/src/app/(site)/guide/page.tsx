@@ -12,7 +12,7 @@ const URL_PATH = "/guide";
 const PUBLISHED = "2026-05-20";
 
 export const metadata: Metadata = {
-  title: `${TITLE} | Brief nach Berlin`,
+  title: `${TITLE} | Brief-nach-Berlin`,
   description: DESCRIPTION,
   alternates: {
     canonical: `${APP_URL}${URL_PATH}`,
@@ -93,10 +93,10 @@ const articleJsonLd = {
   description: DESCRIPTION,
   datePublished: PUBLISHED,
   dateModified: PUBLISHED,
-  author: { "@type": "Organization", name: "Brief nach Berlin" },
+  author: { "@type": "Organization", name: "Brief-nach-Berlin" },
   publisher: {
     "@type": "Organization",
-    name: "Brief nach Berlin",
+    name: "Brief-nach-Berlin",
     url: APP_URL,
   },
   mainEntityOfPage: `${APP_URL}${URL_PATH}`,
@@ -156,8 +156,8 @@ const steps: Step[] = [
           </li>
         </ul>
         <p className="mt-3">
-          Wenn du deine Postleitzahl bei Brief-nach-Berlin eingibst, findet das Tool
-          den richtigen Wahlkreisabgeordneten im Bundestag automatisch. Für
+          Wenn du deine Postleitzahl bei Brief-nach-Berlin eingibst, wird der
+          richtige Wahlkreisabgeordnete im Bundestag automatisch ermittelt. Für
           kommunale Themen lies{" "}
           <Link
             href="/kommunalpolitik-brief"
@@ -560,10 +560,10 @@ export default function GuidePage() {
             Bereit?
           </h2>
           <p className="font-body text-warmgrau leading-relaxed mb-6">
-            Du musst dir nicht den ganzen Guide merken. Sag einfach, was
-            dich stört. Das Tool findet die richtige Adresse und schlägt dir einen
-            Brief vor, den du noch anpassen und dann mit der Hand abschreiben
-            kannst.
+            Du musst dir nicht den ganzen Guide merken. Sag einfach, was dich
+            stört. Brief-nach-Berlin findet die richtige Adresse und schlägt
+            dir einen Brief vor, den du noch anpassen und dann mit der Hand
+            abschreiben kannst.
           </p>
           <Link
             href="/app"

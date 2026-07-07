@@ -114,7 +114,7 @@ export function TipsDisclosure({
         <div className="px-4 pb-4 pt-1 font-body text-sm text-warmgrau leading-relaxed space-y-3.5">
           <div>
             <p className="font-semibold text-waldgruen-dark mb-0.5">Stichpunkte genügen.</p>
-            <p>Was siehst du, was nervt dich, was schlägst du vor? Daraus baut das Tool die Sätze.</p>
+            <p>Was siehst du, was nervt dich, was schlägst du vor? Daraus entstehen die Sätze.</p>
           </div>
           <div>
             <p className="font-semibold text-waldgruen-dark mb-0.5">Sag kurz, wer du bist.</p>

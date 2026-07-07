@@ -453,7 +453,7 @@ export function Step3Success({ result, wizardData, politicians, onChangePlz }: S
     if (typeof navigator !== "undefined" && "share" in navigator) {
       try {
         await navigator.share({
-          title: wizardData.campaign?.title ?? "Brief nach Berlin",
+          title: wizardData.campaign?.title ?? "Brief-nach-Berlin",
           text: share.text,
           url: share.url,
         });
@@ -559,7 +559,7 @@ export function Step3Success({ result, wizardData, politicians, onChangePlz }: S
           <p className="font-body text-sm text-warmgrau/75 leading-relaxed">
             Lies dir die Mail durch und pass den Brief an, damit er sich nach dir anfühlt und dein Anliegen perfekt platziert. Ton, Formulierungen, einzelne Argumente:
             <br />
-            Der Entwurf kommt von uns, die Unterschrift ist deine.
+            Der Entwurf ist ein Anfang, die Unterschrift ist deine.
           </p>
         </div>
 
@@ -628,7 +628,7 @@ export function Step3Success({ result, wizardData, politicians, onChangePlz }: S
                     <div className="space-y-1.5">
                       <p className="font-body text-sm font-semibold text-waldgruen-dark">Maximal dreimal gesendet</p>
                       <p className="font-body text-sm text-warmgrau leading-relaxed">
-                        {resendLimitMessage ?? "Wir haben dir den Brief jetzt mehrfach gesendet. Bitte prüfe noch einmal deinen Spam-Ordner und die E-Mail-Adresse."}
+                        {resendLimitMessage ?? "Der Brief wurde jetzt mehrfach gesendet. Bitte prüfe noch einmal deinen Spam-Ordner und die E-Mail-Adresse."}
                       </p>
                       <a
                         href={founderFeedbackUrl}
@@ -957,7 +957,7 @@ export function Step3Success({ result, wizardData, politicians, onChangePlz }: S
         </h1>
         <p className="font-body text-base text-warmgrau mt-2">
           {isNoMdbFound
-            ? `Für die PLZ ${wizardData.plz} haben wir kein MdB gefunden. Du kannst den Brief dennoch formulieren lassen und dein MdB später auswählen oder deine PLZ anpassen.`
+            ? `Für die PLZ ${wizardData.plz} wurde kein MdB gefunden. Du kannst den Brief dennoch formulieren lassen und dein MdB später auswählen oder deine PLZ anpassen.`
             : wahlkreisGroups.length === 1
               ? "Dein Wahlkreis wird von folgenden MdBs vertreten. Das MdB mit Direktmandat ist vorausgewählt, du kannst aber auch jemand anderen wählen."
               : "Deine PLZ liegt an einer Wahlkreis-Grenze. Wähle das MdB, das deinen Wahlkreis vertritt. Das Direktmandat ist je Wahlkreis vorausgewählt."}

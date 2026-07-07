@@ -4,7 +4,7 @@ import { CampaignBackground } from "@/components/campaigns/CampaignBackground";
 import { CreatorCampaignForm } from "@/components/campaigns/CreatorCampaignForm";
 
 export const metadata: Metadata = {
-  title: "Kampagne starten | Brief nach Berlin",
+  title: "Kampagne starten | Brief-nach-Berlin",
   description:
     "Starte eine moderierte Briefkampagne mit vorbefülltem Anliegen, ohne Account und ohne Zahlung.",
   alternates: { canonical: "/kampagne/starten" },
@@ -42,7 +42,7 @@ export default function StartCampaignPage() {
             Ein Anliegen. <span className="text-waldgruen">Viele Briefe.</span>
           </h1>
           <p className="mx-auto mt-4 max-w-lg font-handwriting text-lg leading-snug text-warmgrau text-pretty md:text-xl">
-            Du bringst das Anliegen ein. Brief nach Berlin macht daraus einen Einstieg, den andere persönlich anpassen und verschicken.
+            Du bringst das Anliegen ein. Brief-nach-Berlin macht daraus einen Einstieg, den andere persönlich anpassen und verschicken.
           </p>
           <div className="mt-5 flex flex-wrap items-center justify-center gap-x-3 gap-y-1.5">
             {trustBadges.map((label) => (

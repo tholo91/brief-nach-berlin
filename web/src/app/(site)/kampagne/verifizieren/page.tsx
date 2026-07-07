@@ -11,7 +11,7 @@ import { campaignSlugSchema } from "@/lib/campaigns/schema";
 import { buildShareTarget } from "@/lib/share";
 
 export const metadata: Metadata = {
-  title: "Kampagne bestätigen | Brief nach Berlin",
+  title: "Kampagne bestätigen | Brief-nach-Berlin",
   alternates: { canonical: "/kampagne/verifizieren" },
 };
 

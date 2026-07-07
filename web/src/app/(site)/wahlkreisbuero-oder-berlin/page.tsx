@@ -14,7 +14,7 @@ const URL_PATH = "/wahlkreisbuero-oder-berlin";
 const PUBLISHED = "2026-06-15";
 
 export const metadata: Metadata = {
-  title: `${TITLE} | Brief nach Berlin`,
+  title: `${TITLE} | Brief-nach-Berlin`,
   description: DESCRIPTION,
   alternates: {
     canonical: `${APP_URL}${URL_PATH}`,
@@ -35,7 +35,7 @@ export const metadata: Metadata = {
 
 const faqs = [
   {
-    q: "Welche Adresse bekomme ich bei Brief nach Berlin?",
+    q: "Welche Adresse bekomme ich bei Brief-nach-Berlin?",
     a: "Wenn die Adresse des Wahlkreisbüros bekannt ist, schlagen wir sie vor. Andernfalls verwenden wir die Berliner Adresse: Platz der Republik 1, 11011 Berlin. Diese Adresse funktioniert für jeden Bundestagsabgeordneten.",
   },
   {
@@ -69,10 +69,10 @@ const articleJsonLd = {
   description: DESCRIPTION,
   datePublished: PUBLISHED,
   dateModified: PUBLISHED,
-  author: { "@type": "Organization", name: "Brief nach Berlin" },
+  author: { "@type": "Organization", name: "Brief-nach-Berlin" },
   publisher: {
     "@type": "Organization",
-    name: "Brief nach Berlin",
+    name: "Brief-nach-Berlin",
     url: APP_URL,
   },
   mainEntityOfPage: `${APP_URL}${URL_PATH}`,
@@ -256,7 +256,7 @@ export default function WahlkreisbueroPg() {
             Bereit?
           </p>
           <p className="font-body text-warmgrau leading-relaxed mb-6 text-lg">
-            Brief nach Berlin sucht die richtige Adresse für dich, Berliner Büro
+            Brief-nach-Berlin sucht die richtige Adresse für dich, Berliner Büro
             oder Wahlkreisbüro, je nachdem, was verfügbar ist. Du musst nichts
             selbst recherchieren.
           </p>

@@ -12,7 +12,7 @@ const URL_PATH = "/andere-tools";
 const PUBLISHED = "2026-05-20";
 
 export const metadata: Metadata = {
-  title: `${TITLE} | Brief nach Berlin`,
+  title: `${TITLE} | Brief-nach-Berlin`,
   description: DESCRIPTION,
   alternates: {
     canonical: `${APP_URL}${URL_PATH}`,
@@ -38,10 +38,10 @@ const articleJsonLd = {
   description: DESCRIPTION,
   datePublished: PUBLISHED,
   dateModified: PUBLISHED,
-  author: { "@type": "Organization", name: "Brief nach Berlin" },
+  author: { "@type": "Organization", name: "Brief-nach-Berlin" },
   publisher: {
     "@type": "Organization",
-    name: "Brief nach Berlin",
+    name: "Brief-nach-Berlin",
     url: APP_URL,
   },
   mainEntityOfPage: `${APP_URL}${URL_PATH}`,
@@ -74,10 +74,10 @@ const categories: Category[] = [
       {
         name: "LiebeMdB.org",
         url: "https://liebemdb.org",
-        what: "Hilft dir, eine E-Mail oder einen Brief an deine Bundestagsabgeordneten zu formulieren, ähnlich wie wir.",
+        what: "Hilft dir, eine E-Mail oder einen Brief an deine Bundestagsabgeordneten zu formulieren, ähnlich wie Brief-nach-Berlin.",
         good: "Wenn du schon weißt, was du sagen willst, und das Tool direkt zur Formulierung nutzt. Ein guter Begleiter, wenn du regelmäßig an Abgeordnete schreibst.",
         different:
-          "Brief-nach-Berlin denkt strikt vom analogen Briefkasten her: handgeschrieben, abgeschickt, ein Adressat, eine konkrete Bitte. Das ist absichtlich aufwändiger und genau deshalb landet so ein Brief mit höherer Wahrscheinlichkeit auf dem Schreibtisch und nicht im Spam-Ordner. Außerdem führen wir dich vom diffusen Frust bis zum fertigen Brief, auch wenn du noch keine klare Forderung hast.",
+          "Brief-nach-Berlin denkt strikt vom analogen Briefkasten her: handgeschrieben, abgeschickt, ein Adressat, eine konkrete Bitte. Das ist absichtlich aufwändiger und genau deshalb landet so ein Brief mit höherer Wahrscheinlichkeit auf dem Schreibtisch und nicht im Spam-Ordner. Außerdem führt dich das Projekt vom diffusen Frust bis zum fertigen Brief, auch wenn du noch keine klare Forderung hast.",
       },
       {
         name: "Nexus Politics",
@@ -101,7 +101,7 @@ const categories: Category[] = [
         what: "Eine Plattform, auf der du eigene Petitionen starten oder bestehende mitzeichnen kannst. Getragen von Campact, mit großer Reichweite.",
         good: "Wenn du ein Anliegen hast, das viele Menschen teilen, und du gemeinsam Druck aufbauen willst. Petitionen sind stark, wenn es um Sichtbarkeit, Medien und politische Aufmerksamkeit geht.",
         different:
-          "Eine Petition ist ein kollektives Signal. Ein Brief-nach-Berlin-Brief ist ein persönliches Signal an genau eine Person, deinen Wahlkreisabgeordneten. Beides hat seinen Platz: Petitionen wirken auf das politische Klima, Briefe wirken auf konkrete Postfächer in Abgeordnetenbüros. Wir empfehlen ausdrücklich, beides zu nutzen.",
+          "Eine Petition ist ein kollektives Signal. Ein Brief-nach-Berlin-Brief ist ein persönliches Signal an genau eine Person, deinen Wahlkreisabgeordneten. Beides hat seinen Platz: Petitionen wirken auf das politische Klima, Briefe wirken auf konkrete Postfächer in Abgeordnetenbüros. Beides nacheinander zu nutzen, kann sinnvoll sein.",
       },
       {
         name: "innn.it",
@@ -312,7 +312,7 @@ export default function AndereToolsPage() {
                     </div>
                     <div>
                       <p className="font-typewriter text-xs font-bold tracking-widest uppercase text-waldgruen/60 mb-1">
-                        Was Brief nach Berlin anders macht
+                        Was Brief-nach-Berlin anders macht
                       </p>
                       <p className="font-body text-warmgrau leading-[1.85] text-base md:text-lg">
                         {tool.different}
@@ -476,7 +476,7 @@ export default function AndereToolsPage() {
             Probier es aus
           </h2>
           <p className="font-body text-warmgrau leading-relaxed mb-6">
-            Sag uns, was dich stört, und deine Postleitzahl. Drei Minuten
+            Beschreib, was dich stört, und gib deine Postleitzahl ein. Drei Minuten
             später hast du einen Brief, den du in Ruhe abschreiben kannst.
           </p>
           <Link

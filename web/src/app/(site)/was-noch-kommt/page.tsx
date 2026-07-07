@@ -10,9 +10,9 @@ import { RoadmapSignupForm } from "./RoadmapSignupForm";
 const URL_PATH = "/was-noch-kommt";
 const PUBLISHED = "2026-05-22";
 const TITLE =
-  "Roadmap: Welche politischen Ebenen kommen als nächstes | Brief nach Berlin";
+  "Roadmap: Welche politischen Ebenen kommen als nächstes | Brief-nach-Berlin";
 const DESCRIPTION =
-  "Was kommt nach dem Bundestag? Landtag im Juni 2026, danach Kommune und EU. Der Fahrplan von Brief nach Berlin, und wie du die Reihenfolge mitbestimmst.";
+  "Was kommt nach dem Bundestag? Land und Kommune voraussichtlich Juli/August 2026, EU später. Der Fahrplan von Brief-nach-Berlin, inklusive Kampagnenmodus.";
 
 export const metadata: Metadata = {
   title: TITLE,
@@ -32,7 +32,7 @@ export const metadata: Metadata = {
   },
 };
 
-type LevelStatus = "live" | "in-arbeit" | "im-juni-2026" | "geplant";
+type LevelStatus = "live" | "in-arbeit" | "juli-august-2026" | "geplant";
 
 interface Level {
   key: "bund" | "land" | "kommune" | "eu";
@@ -64,16 +64,16 @@ const levels: Level[] = [
   {
     key: "land",
     name: "Land",
-    badge: "Im Juni 2026",
-    status: "im-juni-2026",
-    body: "Schule, Polizei, Hochschulen, Wohnungspolitik: das gehört in den Landtag, nicht nach Berlin. Ich starte mit den vier bevölkerungsreichsten Bundesländern (NRW, Bayern, Baden-Württemberg, Niedersachsen) und ergänze die anderen 12 nach und nach. Wenn dein Land noch nicht dabei ist, bekommst du erstmal weiterhin deine Bundestagsabgeordneten als pragmatischen Zwischenschritt.",
+    badge: "Juli/August 2026",
+    status: "juli-august-2026",
+    body: "Schule, Polizei, Hochschulen, Wohnungspolitik: das gehört in den Landtag, nicht nach Berlin. Ich starte weiter mit den vier bevölkerungsreichsten Bundesländern (NRW, Bayern, Baden-Württemberg, Niedersachsen) und ergänze die anderen 12 nach und nach. Der Juni-Termin ist gerutscht, weil ich wegen aktueller politischer Entwicklungen zuerst den Kampagnenmodus gebaut habe.",
   },
   {
     key: "kommune",
     name: "Kommune",
     badge: "In Arbeit",
     status: "in-arbeit",
-    body: "Spielplatz, Kita, Radweg, Bauantrag: hier hilft kein Brief nach Berlin, hier hilft das Rathaus. Ich arbeite an einem Verweis-Modus, der dich direkt zur richtigen Gemeindeverwaltung leitet, mit der offiziellen Adresse deiner Stadt oder Gemeinde. Eigene Bürgermeister-Daten kommen später.",
+    body: "Spielplatz, Kita, Radweg, Bauantrag: hier hilft kein Brief-nach-Berlin, hier hilft das Rathaus. Ich arbeite an einem Verweis-Modus, der dich direkt zur richtigen Gemeindeverwaltung leitet, mit der offiziellen Adresse deiner Stadt oder Gemeinde. Auch dieser Schritt ist durch den vorgezogenen Kampagnenmodus eher Juli/August 2026 als Juni.",
   },
   {
     key: "eu",
@@ -96,7 +96,7 @@ function badgeClasses(status: LevelStatus): string {
   switch (status) {
     case "live":
       return "bg-waldgruen text-creme";
-    case "im-juni-2026":
+    case "juli-august-2026":
       return "bg-airmail-rot text-creme";
     case "in-arbeit":
       return "bg-waldgruen/15 text-waldgruen-dark";
@@ -108,11 +108,11 @@ function badgeClasses(status: LevelStatus): string {
 const faqs = [
   {
     q: "Welche politischen Ebenen werden aktuell unterstützt?",
-    a: "Aktuell schreibst du mit Brief nach Berlin an Bundestagsabgeordnete. Die Landtag-Ebene startet im Juni 2026 mit vier Bundesländern. Kommune folgt als Verweis-Modus zur Gemeindeverwaltung, EU steht weiter hinten auf der Roadmap ohne festes Datum.",
+    a: "Aktuell schreibst du mit Brief-nach-Berlin direkt an Bundestagsabgeordnete. Zusätzlich ist der Kampagnenmodus live. Land und Kommune sind nicht gestrichen, sondern wegen des vorgezogenen Kampagnenmodus auf voraussichtlich Juli/August 2026 gerutscht. Die EU steht weiter hinten auf der Roadmap ohne festes Datum.",
   },
   {
     q: "Wann kommt die Landtag-Ebene?",
-    a: "Voraussichtlich im Juni 2026, beginnend mit Nordrhein-Westfalen, Bayern, Baden-Württemberg und Niedersachsen. Damit sind rund die Hälfte aller Einwohnerinnen und Einwohner abgedeckt. Die übrigen 12 Bundesländer ergänze ich in den Monaten danach.",
+    a: "Voraussichtlich im Juli/August 2026, beginnend mit Nordrhein-Westfalen, Bayern, Baden-Württemberg und Niedersachsen. Damit sind rund die Hälfte aller Einwohnerinnen und Einwohner abgedeckt. Die übrigen 12 Bundesländer ergänze ich in den Monaten danach.",
   },
   {
     q: "Warum nicht alle Ebenen auf einmal?",
@@ -156,11 +156,11 @@ const articleJsonLd = {
   headline: "Roadmap: Welche politischen Ebenen kommen als nächstes",
   description: DESCRIPTION,
   datePublished: PUBLISHED,
-  dateModified: PUBLISHED,
-  author: { "@type": "Organization", name: "Brief nach Berlin" },
+  dateModified: "2026-07-07",
+  author: { "@type": "Organization", name: "Brief-nach-Berlin" },
   publisher: {
     "@type": "Organization",
-    name: "Brief nach Berlin",
+    name: "Brief-nach-Berlin",
     url: APP_URL,
   },
   mainEntityOfPage: `${APP_URL}${URL_PATH}`,
@@ -216,10 +216,23 @@ export default function WasNochKommtPage() {
             Welche Ebenen kann ich anschreiben?
           </p>
           <p className="font-body text-base md:text-lg text-waldgruen-dark leading-relaxed">
-            Heute schreibst du an deine Bundestagsabgeordneten. Im Juni 2026
-            kommt die Landtag-Ebene dazu, beginnend mit vier Bundesländern.
-            Danach folgt die Kommune als Verweis-Modus zur Gemeindeverwaltung.
-            Die EU-Ebene ist geplant, hat aber noch kein Datum.
+            Heute schreibst du an deine Bundestagsabgeordneten und kannst
+            öffentliche Kampagnen starten. Land und Kommune folgen
+            voraussichtlich im Juli/August 2026. Die EU-Ebene ist geplant, hat
+            aber noch kein Datum.
+          </p>
+        </div>
+
+        <div className="mb-14 rounded-2xl border border-airmail-rot/20 bg-white/70 p-6 sm:p-8 shadow-sm">
+          <p className="font-typewriter text-xs font-bold uppercase tracking-widest text-airmail-rot/70 mb-3">
+            Warum der Termin gerutscht ist
+          </p>
+          <p className="font-body text-base text-warmgrau leading-relaxed">
+            Land und Kommune sind nicht gestrichen. Ich habe im Juni den
+            Kampagnenmodus vorgezogen, weil aktuelle politische Ereignisse
+            schnelle, gemeinsame Briefe gebraucht haben, ohne daraus
+            Copy-Paste-Massenpost zu machen. Deshalb ist jetzt Juli/August
+            2026 der realistischere Korridor für die nächsten Ebenen.
           </p>
         </div>
 
@@ -298,14 +311,14 @@ export default function WasNochKommtPage() {
             </p>
           </Link>
           <Link
-            href="/weitersagen"
+            href="/kampagne/starten"
             className="block bg-white border border-waldgruen/15 hover:border-waldgruen rounded-2xl p-5 transition-colors"
           >
             <p className="font-body text-base font-bold text-waldgruen-dark mb-1">
-              Weitersagen
+              Kampagne starten
             </p>
             <p className="font-body text-sm text-warmgrau leading-snug">
-              Je mehr Stimmen, desto schneller die nächste Ebene.
+              Wenn ein aktuelles Thema jetzt viele persönliche Briefe braucht.
             </p>
           </Link>
         </div>
@@ -315,7 +328,7 @@ export default function WasNochKommtPage() {
             Europa
           </p>
           <h2 className="font-body text-xl md:text-2xl font-bold text-waldgruen-dark mb-3">
-            Brief nach Berlin für andere Länder
+            Brief-nach-Berlin für andere Länder
           </h2>
           <p className="font-body text-base text-warmgrau leading-relaxed mb-5">
             Neben Bund, Land, Kommune und EU gibt es eine zweite Spur: Der Code
@@ -344,13 +357,20 @@ export default function WasNochKommtPage() {
             Wie die Roadmap entsteht
           </h2>
           <p>
-            Die Reihenfolge richtet sich nach zwei Größen. Erstens: wie oft
-            eine Ebene im Nutzer-Feedback genannt wird. Wer Bildungspolitik
-            adressieren will, braucht den Landtag. Wer einen Bauantrag oder
-            Radweg betrifft, braucht die Kommune. Diese Nennungen zähle ich.
+            Die Reihenfolge richtet sich inzwischen nach drei Größen. Erstens:
+            wie oft eine Ebene im Nutzer-Feedback genannt wird. Wer
+            Bildungspolitik adressieren will, braucht den Landtag. Wer einen
+            Bauantrag oder Radweg betrifft, braucht die Kommune. Diese
+            Nennungen zähle ich.
           </p>
           <p>
-            Zweitens: die technische Komplexität der Datenquellen. Der
+            Zweitens: politische Dringlichkeit. Wenn aktuelle Ereignisse viele
+            Menschen gleichzeitig betreffen, kann ein Kampagnenmodus mehr
+            bewirken als die nächste Datenebene. Genau deshalb ist er zuerst
+            live gegangen.
+          </p>
+          <p>
+            Drittens: die technische Komplexität der Datenquellen. Der
             Bundestag liefert seine Mandate über eine einzige, gut gepflegte
             Schnittstelle (abgeordnetenwatch.de). Auf Landesebene sind die
             Strukturen heterogener, jedes Bundesland hat eigene
@@ -375,7 +395,7 @@ export default function WasNochKommtPage() {
             Mir liegt was dran. Unterstützung ist willkommen.
           </h2>
           <p className="font-body text-base text-warmgrau leading-relaxed mb-4">
-            Brief nach Berlin ist ein Freizeitprojekt von einer Person. Am
+            Brief-nach-Berlin ist ein Freizeitprojekt von einer Person. Am
             meisten hilft mir gerade Sichtbarkeit: Wenn du mich mit Leuten
             vernetzen kannst, die dem Thema mediale Reichweite geben, also
             Presse, Multiplikator:innen oder Communities, bringt mich das

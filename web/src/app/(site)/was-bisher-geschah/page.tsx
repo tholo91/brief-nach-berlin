@@ -3,19 +3,20 @@ import Link from "next/link";
 import type { Metadata } from "next";
 import { APP_URL } from "@/lib/config";
 import { getLetterCount } from "@/lib/counter";
+import { formatNumber } from "@/lib/formatNumber";
 
 const URL_PATH = "/was-bisher-geschah";
 const PUBLISHED = "2026-05-28";
-const TITLE = "Was bisher geschah: Der Fortschritt von Brief nach Berlin";
+const TITLE = "Was bisher geschah: Der Fortschritt von Brief-nach-Berlin";
 const DESCRIPTION =
-  "Ein offenes Fortschritts-Log, das zeigt, was ich seit dem Start an Brief nach Berlin gebaut, verbessert und gelernt habe.";
+  "Ein offenes Fortschritts-Log, das zeigt, was ich seit dem Start an Brief-nach-Berlin gebaut, verbessert und gelernt habe.";
 
 export const metadata: Metadata = {
   title: TITLE,
   description: DESCRIPTION,
   alternates: { canonical: `${APP_URL}${URL_PATH}` },
   openGraph: {
-    title: "Was bisher geschah: Der Fortschritt von Brief nach Berlin",
+    title: "Was bisher geschah: Der Fortschritt von Brief-nach-Berlin",
     description: DESCRIPTION,
     type: "article",
     locale: "de_DE",
@@ -23,7 +24,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Was bisher geschah: Der Fortschritt von Brief nach Berlin",
+    title: "Was bisher geschah: Der Fortschritt von Brief-nach-Berlin",
     description: DESCRIPTION,
   },
 };
@@ -37,6 +38,18 @@ interface Monat {
 }
 
 const monate: Monat[] = [
+  {
+    key: "juli-2026",
+    badge: "Juli 2026",
+    note: "Kampagnenmodus live, Roadmap ehrlich nachgezogen",
+    entries: [
+      "Kampagnenmodus gebaut: Creator können ein Anliegen mit Titel, Kurzlink, sichtbarem Absender, Beschreibung, optionalem Bild und externem Link anlegen.",
+      "Kampagnen werden erst nach E-Mail-Bestätigung öffentlich und automatisch moderiert, damit keine problematischen Texte ungeprüft live gehen.",
+      "Öffentliche Kampagnenseiten führen Menschen durch den normalen Briefprozess: PLZ, zuständige Bundestagsabgeordnete, persönlicher Entwurf statt Copy-Paste-Massenbrief.",
+      "Für Kampagnen gibt es Verwaltungslinks zum Bearbeiten, Pausieren oder Archivieren sowie Teilen per Link und QR-Code.",
+      "Land und Kommune haben sich dadurch nach hinten verschoben. Statt Juni ist für die nächsten Ausbauschritte jetzt realistisch Juli/August 2026, weil aktuelle politische Entwicklungen zuerst einen Kampagnenmodus gebraucht haben.",
+    ],
+  },
   {
     key: "juni-2026",
     badge: "Juni 2026",
@@ -69,7 +82,7 @@ const monate: Monat[] = [
       "Briefvorschau und Verbesserungs-Vorschläge auf Mobilgeräten benutzerfreundlicher gemacht.",
       "Postleitzahlen in Stadtstaaten wie Berlin, Hamburg und Bremen genauer aufgelöst, damit der Brief beim richtigen Wahlkreis landet.",
       "Auswahl der Abgeordneten klarer gemacht: Bei mehreren Wahlkreisen werden die Politiker nach Wahlkreis gruppiert und als Direktmandat oder Landesliste gekennzeichnet, und du kannst die Postleitzahl mit einem Klick korrigieren.",
-      "Wechsel von 'wir' auf 'ich' auf der Startseite und allen Unterseiten, weil Brief nach Berlin ein Solo-Projekt ist.",
+      "Wechsel von 'wir' auf 'ich' auf der Startseite und allen Unterseiten, weil Brief-nach-Berlin ein Solo-Projekt ist.",
     ],
   },
   {
@@ -90,7 +103,7 @@ const monate: Monat[] = [
     badge: "März 2026",
     note: "Der erste Brief verlässt den Briefkasten",
     entries: [
-      "Brief nach Berlin gestartet: Aus einer Postleitzahl und ein paar Sätzen Frust wird ein fertig adressierter Briefentwurf an den zuständigen Bundestagsabgeordneten.",
+      "Brief-nach-Berlin gestartet: Aus einer Postleitzahl und ein paar Sätzen Frust wird ein fertig adressierter Briefentwurf an den zuständigen Bundestagsabgeordneten.",
       "PLZ-zu-Wahlkreis-Mapping aus den Bundeswahlleiter-Daten aufgebaut und als statische JSON-Lookup-Tabelle integriert.",
       "Abgeordnetenwatch-API angebunden: Name, Fraktion und Berliner Büro-Adresse werden direkt aus den offiziellen Mandatsdaten gezogen.",
       "Brief-Prompt entwickelt: Ich-Form, ca. 200 bis 280 Wörter, fließende Prosa, kein PR-Sprech.",
@@ -103,14 +116,14 @@ const monate: Monat[] = [
 const articleJsonLd = {
   "@context": "https://schema.org",
   "@type": "Article",
-  headline: "Was bisher geschah: Der Fortschritt von Brief nach Berlin",
+  headline: "Was bisher geschah: Der Fortschritt von Brief-nach-Berlin",
   description: DESCRIPTION,
   datePublished: PUBLISHED,
-  dateModified: "2026-06-19",
-  author: { "@type": "Organization", name: "Brief nach Berlin" },
+  dateModified: "2026-07-07",
+  author: { "@type": "Organization", name: "Brief-nach-Berlin" },
   publisher: {
     "@type": "Organization",
-    name: "Brief nach Berlin",
+    name: "Brief-nach-Berlin",
     url: APP_URL,
   },
   mainEntityOfPage: `${APP_URL}${URL_PATH}`,
@@ -140,10 +153,10 @@ export default async function WasBisherGeschahPage() {
 
   const stats = [
     letterCount > 0
-      ? { value: `${letterCount}`, label: "Briefe entstanden" }
+      ? { value: formatNumber(letterCount), label: "Briefe entstanden" }
       : null,
-    { value: "4", label: "Monate offen gebaut" },
-    { value: `${updateCount}`, label: "Verbesserungen dokumentiert" },
+    { value: formatNumber(monate.length), label: "Monate offen gebaut" },
+    { value: formatNumber(updateCount), label: "Verbesserungen dokumentiert" },
   ].filter(Boolean) as { value: string; label: string }[];
 
   return (
@@ -211,7 +224,8 @@ export default async function WasBisherGeschahPage() {
         >
           <span className="font-body text-sm text-waldgruen-dark leading-snug">
             <span className="font-bold">Was als Nächstes kommt</span> steht in
-            der Roadmap: die nächsten politischen Ebenen.
+            der Roadmap: die nächsten politischen Ebenen und warum sich
+            Land/Kommune verschoben haben.
           </span>
           <span className="font-typewriter text-sm font-bold text-waldgruen whitespace-nowrap transition-transform group-hover:translate-x-1">
             Fahrplan &rarr;

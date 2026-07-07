@@ -63,7 +63,7 @@ export default function Datenschutz() {
               2. Allgemeines zur Datenverarbeitung
             </h2>
             <p>
-              Brief nach Berlin verarbeitet personenbezogene Daten ausschließlich
+              Brief-nach-Berlin verarbeitet personenbezogene Daten ausschließlich
               zur Erbringung des Dienstes: die Erstellung eines personalisierten
               Briefs an Ihren zuständigen Abgeordneten. Ich lege keine
               Nutzerkonten an. Alle eingegebenen
@@ -597,7 +597,7 @@ export default function Datenschutz() {
               18. KI-generierte Inhalte und Disclaimer
             </h2>
             <p className="mb-3">
-              Brief nach Berlin nutzt künstliche Intelligenz, um Ihr Anliegen
+              Brief-nach-Berlin nutzt künstliche Intelligenz, um Ihr Anliegen
               schnell und einfach in einen formalen Brief umzuwandeln. KI-Systeme
               können jedoch Fehler machen, und das sollten Sie wissen, bevor Sie
               einen Brief versenden.
@@ -633,9 +633,9 @@ export default function Datenschutz() {
               passen Sie ihn an, wo nötig.
             </p>
             <p>
-              Brief nach Berlin ist ein Werkzeug zur Beschleunigung, kein Ersatz
-              für Ihre eigene Urteilsfähigkeit. Sie schreiben den Brief, das Tool
-              hilft Ihnen nur, ihn schneller zu formulieren. Die Verantwortung
+              Brief-nach-Berlin ist ein Werkzeug zur Beschleunigung, kein Ersatz
+              für Ihre eigene Urteilsfähigkeit. Sie schreiben den Brief,
+              Brief-nach-Berlin hilft Ihnen nur, ihn schneller zu formulieren. Die Verantwortung
               für den versendeten Inhalt liegt bei Ihnen.
             </p>
           </div>

@@ -10,7 +10,7 @@ import { Figure } from "@/components/editorial/Figure";
 const URL_PATH = "/was-tun-gegen-politische-ohnmacht";
 const PUBLISHED = "2026-05-19";
 const TITLE =
-  "Was tun gegen politische Ohnmacht? Sechs konkrete Schritte | Brief nach Berlin";
+  "Was tun gegen politische Ohnmacht? Sechs konkrete Schritte | Brief-nach-Berlin";
 const DESCRIPTION =
   "Politisch ohnmächtig fühlen, aber nicht wissen wohin damit? Hier sind sechs konkrete Hebel, die heute funktionieren, vom Brief an deinen Abgeordneten bis zum Bürgerrat. Mit Empfehlung, womit du anfängst.";
 
@@ -76,10 +76,10 @@ const articleJsonLd = {
   description: DESCRIPTION,
   datePublished: PUBLISHED,
   dateModified: PUBLISHED,
-  author: { "@type": "Organization", name: "Brief nach Berlin" },
+  author: { "@type": "Organization", name: "Brief-nach-Berlin" },
   publisher: {
     "@type": "Organization",
-    name: "Brief nach Berlin",
+    name: "Brief-nach-Berlin",
     url: APP_URL,
   },
   mainEntityOfPage: `${APP_URL}${URL_PATH}`,
@@ -184,7 +184,7 @@ export default function OhnmachtPage() {
               <br />
               Zehn bis dreißig Minuten. Du brauchst eine konkrete Situation aus
               deinem Alltag und einen Wunsch. Den Rest, also die richtige
-              Adresse und den formellen Ton, übernimmt das Tool. Handschriftlich
+              Adresse und den formellen Ton, übernimmt Brief-nach-Berlin. Handschriftlich
               wirkt am stärksten, weil Abgeordnete kaum noch handgeschriebene
               Briefe bekommen.
             </li>

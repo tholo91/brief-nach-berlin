@@ -15,7 +15,7 @@ const URL_PATH = "/warum-ein-brief";
 const PUBLISHED = "2026-05-20";
 
 export const metadata: Metadata = {
-  title: `${TITLE} | Brief nach Berlin`,
+  title: `${TITLE} | Brief-nach-Berlin`,
   description: DESCRIPTION,
   alternates: {
     canonical: `${APP_URL}${URL_PATH}`,
@@ -74,10 +74,10 @@ const articleJsonLd = {
   description: DESCRIPTION,
   datePublished: PUBLISHED,
   dateModified: PUBLISHED,
-  author: { "@type": "Organization", name: "Brief nach Berlin" },
+  author: { "@type": "Organization", name: "Brief-nach-Berlin" },
   publisher: {
     "@type": "Organization",
-    name: "Brief nach Berlin",
+    name: "Brief-nach-Berlin",
     url: APP_URL,
   },
   mainEntityOfPage: `${APP_URL}${URL_PATH}`,
@@ -327,8 +327,8 @@ export default function WarumPage() {
             Worauf wartest du?
           </p>
           <p className="font-body text-warmgrau leading-relaxed mb-6 text-lg">
-            Drei Minuten, kein Account, kein Tracking. Wir schicken dir den
-            fertigen Brief per Mail, du schreibst ihn ab und steckst ihn in den
+            Drei Minuten, kein Account, kein Tracking. Der fertige Brief kommt
+            per Mail zu dir, du schreibst ihn ab und steckst ihn in den
             Briefkasten.
           </p>
           <Link

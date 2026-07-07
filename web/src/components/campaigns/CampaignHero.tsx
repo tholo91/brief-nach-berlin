@@ -109,7 +109,7 @@ export function CampaignHero({ campaign }: { campaign: PublicCampaign }) {
             {campaign.title}
           </h1>
           <p className="mt-5 max-w-xl font-body text-lg leading-relaxed text-warmgrau/75">
-            Brief nach Berlin macht aus diesem vorbereiteten Anliegen einen
+            Brief-nach-Berlin macht aus diesem vorbereiteten Anliegen einen
             persönlichen Brief an dein Mitglied des Bundestags. Du ergänzt, was
             dir wichtig ist, prüfst den Text und kannst den Brief abschicken.
           </p>

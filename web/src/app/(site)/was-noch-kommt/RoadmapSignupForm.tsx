@@ -63,7 +63,7 @@ export function RoadmapSignupForm({ ebene }: RoadmapSignupFormProps) {
         <p className="font-body text-base text-warmgrau leading-relaxed">
           {alreadySignedUp
             ? "Du stehst schon auf der Liste. Du bekommst eine Mail, sobald es so weit ist."
-            : "Du bekommst eine Mail, sobald die Ebene live geht, voraussichtlich im Juni 2026. Eine einzige Mail, danach werden deine Daten gelöscht. Kein Newsletter, keine Weitergabe."}
+            : "Du bekommst eine Mail, sobald die Ebene live geht, voraussichtlich im Juli/August 2026. Eine einzige Mail, danach werden deine Daten gelöscht. Kein Newsletter, keine Weitergabe."}
         </p>
       </div>
     );

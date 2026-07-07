@@ -7,14 +7,18 @@ import { useEffect, useState } from "react";
 // nicht ab. Entspricht thomas_lorenz@posteo.de.
 const USER = "thomas_lorenz";
 const DOMAIN = "posteo.de";
-const SUBJECT = "Presseanfrage: Brief nach Berlin";
+const SUBJECT = "Presseanfrage: Brief-nach-Berlin";
 
 export function PressContactButton() {
   const [href, setHref] = useState<string | undefined>(undefined);
 
   useEffect(() => {
     const address = `${USER}@${DOMAIN}`;
-    setHref(`mailto:${address}?subject=${encodeURIComponent(SUBJECT)}`);
+    const id = window.setTimeout(() => {
+      setHref(`mailto:${address}?subject=${encodeURIComponent(SUBJECT)}`);
+    }, 0);
+
+    return () => window.clearTimeout(id);
   }, []);
 
   return (

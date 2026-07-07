@@ -12,7 +12,7 @@ const URL_PATH = "/abgeordneten-schreiben";
 const PUBLISHED = "2026-05-20";
 
 export const metadata: Metadata = {
-  title: `${TITLE} | Brief nach Berlin`,
+  title: `${TITLE} | Brief-nach-Berlin`,
   description: DESCRIPTION,
   alternates: {
     canonical: `${APP_URL}${URL_PATH}`,
@@ -74,11 +74,11 @@ const articleJsonLd = {
   headline: TITLE,
   description: DESCRIPTION,
   datePublished: PUBLISHED,
-  dateModified: PUBLISHED,
-  author: { "@type": "Organization", name: "Brief nach Berlin" },
+  dateModified: "2026-07-07",
+  author: { "@type": "Organization", name: "Brief-nach-Berlin" },
   publisher: {
     "@type": "Organization",
-    name: "Brief nach Berlin",
+    name: "Brief-nach-Berlin",
     url: APP_URL,
   },
   mainEntityOfPage: `${APP_URL}${URL_PATH}`,
@@ -219,8 +219,9 @@ export default function AbgeordnetenSchreibenPage() {
             .
           </p>
           <p>
-            Brief nach Berlin findet über deine Postleitzahl automatisch die
-            zuständigen Abgeordneten für Bundestag und Landtag.
+            Brief-nach-Berlin findet über deine Postleitzahl automatisch die
+            zuständigen Bundestagsabgeordneten. Landtag und Kommune folgen als
+            nächste Ausbaustufen.
           </p>
 
           <h2 className="font-body text-2xl font-bold text-waldgruen-dark pt-4">
@@ -252,9 +253,9 @@ export default function AbgeordnetenSchreibenPage() {
 
         <div className="mt-16 p-8 bg-waldgruen/5 border border-waldgruen/15 rounded-xl hover:bg-waldgruen/10 transition-colors">
           <p className="font-body text-warmgrau leading-relaxed mb-6">
-            Drei Minuten, kein Account, kein Tracking. Wir finden den richtigen
-            Abgeordneten für deine Postleitzahl und schlagen dir einen Brief vor,
-            den du selbst abschreibst und verschickst.
+            Drei Minuten, kein Account, kein Tracking. Brief-nach-Berlin findet
+            den richtigen Abgeordneten für deine Postleitzahl und schlägt dir
+            einen Brief vor, den du selbst abschreibst und verschickst.
           </p>
           <Link
             href="/app"

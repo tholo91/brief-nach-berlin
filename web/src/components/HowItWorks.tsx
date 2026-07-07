@@ -14,9 +14,9 @@ const steps = [
   },
   {
     number: "02",
-    title: "Wir finden die passende Adresse",
+    title: "Brief-nach-Berlin findet die passende Adresse",
     description:
-      "Anhand deiner PLZ ermitteln wir, wer politisch zuständig ist: Bundestag, Landtag oder Rathaus. Und das alles datenschutzkonform.",
+      "Anhand deiner PLZ wird dein Bundestagswahlkreis ermittelt. Wenn dein Thema eher zu Land oder Kommune gehört, macht der Entwurf das transparent, bis diese Ebenen live sind.",
     icon: (
       <svg width="48" height="48" viewBox="0 0 48 48" fill="none" className="text-waldgruen">
         <circle cx="24" cy="18" r="8" stroke="currentColor" strokeWidth="2" fill="none" />
@@ -29,7 +29,7 @@ const steps = [
     number: "03",
     title: "Dein Brief, fertig zum Abschicken",
     description:
-      "Wir formulieren einen persönlichen, sachlichen Brief mit den besten Argumenten. Eine Seite, per E-Mail in deinem Postfach.",
+      "Brief-nach-Berlin formuliert einen persönlichen, sachlichen Brief mit den besten Argumenten. Eine Seite, per E-Mail in deinem Postfach.",
     icon: (
       <svg width="48" height="48" viewBox="0 0 48 48" fill="none" className="text-waldgruen">
         <rect x="8" y="6" width="28" height="36" rx="2" stroke="currentColor" strokeWidth="2" fill="none" />

@@ -182,7 +182,7 @@ function buildTransitionStage(target: Box): HTMLDivElement {
   } satisfies Partial<CSSStyleDeclaration>);
   stage.appendChild(stripe);
 
-  addStageText(stage, "Brief nach Berlin", {
+  addStageText(stage, "Brief-nach-Berlin", {
     position: "fixed",
     top: "30px",
     left: `${Math.max(24, target.left - 232)}px`,

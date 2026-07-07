@@ -7,7 +7,7 @@ const FAQ_ITEMS = [
   {
     question: "Was passiert mit meinen Daten?",
     answer:
-      "Dein Anliegen wird einmalig an die KI geschickt, der Brief kommt zurück. Das Tool speichert nichts. Kein Account, kein Tracking, keine Werbung.",
+      "Dein Anliegen wird einmalig an die KI geschickt, der Brief kommt zurück. Brief-nach-Berlin speichert nichts. Kein Account, kein Tracking, keine Werbung.",
   },
   {
     question: "Wirken handgeschriebene Briefe wirklich?",
@@ -23,7 +23,7 @@ const FAQ_ITEMS = [
   {
     question: "Welche politischen Ebenen sind dabei?",
     answer:
-      "Aktuell der Bundestag, abhängig von deiner Postleitzahl. Landtag und kommunale Ebene kommen schrittweise dazu. Wenn dein Anliegen vor Ort liegt, sagen wir dir das.",
+      "Aktuell direkt der Bundestag, abhängig von deiner Postleitzahl. Außerdem kannst du öffentliche Kampagnen starten. Landtag und kommunale Ebene folgen voraussichtlich im Juli/August 2026.",
   },
   {
     question: "Wer steckt dahinter?",

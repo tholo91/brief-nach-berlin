@@ -17,7 +17,7 @@ const URL_PATH = "/brief-verbessern";
 const PUBLISHED = "2026-05-23";
 
 export const metadata: Metadata = {
-  title: `${TITLE} | Brief nach Berlin`,
+  title: `${TITLE} | Brief-nach-Berlin`,
   description: DESCRIPTION,
   alternates: {
     canonical: `${APP_URL}${URL_PATH}`,
@@ -43,10 +43,10 @@ const articleJsonLd = {
   description: DESCRIPTION,
   datePublished: PUBLISHED,
   dateModified: PUBLISHED,
-  author: { "@type": "Organization", name: "Brief nach Berlin" },
+  author: { "@type": "Organization", name: "Brief-nach-Berlin" },
   publisher: {
     "@type": "Organization",
-    name: "Brief nach Berlin",
+    name: "Brief-nach-Berlin",
     url: APP_URL,
   },
   mainEntityOfPage: `${APP_URL}${URL_PATH}`,
@@ -237,7 +237,7 @@ export default async function BriefVerbessernPage({
               </span>{" "}
               Wenn der überarbeitete Brief jetzt besser passt, klick gern in
               deiner ursprünglichen E-Mail noch einmal auf einen Stern. So sehen
-              wir, ob unser Verbesserungs-Prompt funktioniert hat.
+              ich, ob der Verbesserungs-Prompt funktioniert hat.
             </p>
           </div>
         ) : null}

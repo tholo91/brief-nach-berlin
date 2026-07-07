@@ -12,14 +12,15 @@ import { ReviewMarquee } from "@/components/reviews/ReviewMarquee";
 import { PressMarquee } from "@/components/PressMarquee";
 import { getHeroReviews } from "@/lib/reviews/getHeroReviews";
 import { getLetterCount } from "@/lib/counter";
+import { formatNumber } from "@/lib/formatNumber";
 
 const LETTER_COUNT_DISPLAY_THRESHOLD = 50;
 
 export const metadata: Metadata = {
   alternates: { canonical: "/" },
-  title: "Brief nach Berlin | Dein Anliegen an die Politik",
+  title: "Brief-nach-Berlin | Dein Anliegen an die Politik",
   description:
-    "Beschreibe dein Anliegen. Brief nach Berlin findet die passenden Abgeordneten und formuliert in wenigen Minuten deinen persönlichen Brief.",
+    "Beschreibe dein Anliegen. Brief-nach-Berlin findet die passenden Abgeordneten und formuliert in wenigen Minuten deinen persönlichen Brief.",
 };
 
 export default async function Home() {
@@ -27,6 +28,7 @@ export default async function Home() {
     getHeroReviews(),
     getLetterCount(),
   ]);
+  const formattedLetterCount = formatNumber(letterCount);
 
   return (
     <>
@@ -41,7 +43,7 @@ export default async function Home() {
               {letterCount >= LETTER_COUNT_DISPLAY_THRESHOLD && (
                 <p className="text-center font-typewriter text-xs sm:text-sm tracking-widest uppercase text-warmgrau/50 mb-1 px-6">
                   Schon{" "}
-                  <span className="font-bold text-waldgruen">{letterCount}</span>{" "}
+                  <span className="font-bold text-waldgruen">{formattedLetterCount}</span>{" "}
                   Briefe geschrieben
                 </p>
               )}

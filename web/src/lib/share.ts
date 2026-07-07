@@ -31,7 +31,7 @@ export function buildShareTarget(
   const url = slug ? campaignPublicUrl(slug) : APP_URL;
   const subject = title
     ? `Machst du bei "${title}" mit?`
-    : "Schreibst du auch einen Brief nach Berlin?";
+    : "Schreibst du auch einen Brief-nach-Berlin?";
   const text =
     slug && title && context === "creator"
       ? `Ich habe die Briefkampagne "${title}" gestartet. Schreibst du auch einen eigenen Brief aus deinem Wahlkreis? ${url}`

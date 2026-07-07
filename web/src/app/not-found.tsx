@@ -1,7 +1,7 @@
 import Link from "next/link";
 
 export const metadata = {
-  title: "Seite nicht gefunden | Brief nach Berlin",
+  title: "Seite nicht gefunden | Brief-nach-Berlin",
 };
 
 export default function NotFound() {

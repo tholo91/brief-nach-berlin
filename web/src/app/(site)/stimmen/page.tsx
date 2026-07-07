@@ -13,9 +13,10 @@ import { getPublicReviews } from "@/lib/reviews/getPublicReviews";
 import { getReviewStats } from "@/lib/reviews/getReviewStats";
 import type { PublicReview } from "@/lib/reviews/types";
 import { getLetterCount } from "@/lib/counter";
+import { formatNumber } from "@/lib/formatNumber";
 
 const URL_PATH = "/stimmen";
-const TITLE = "Stimmen & Bewertungen | Brief nach Berlin";
+const TITLE = "Stimmen & Bewertungen | Brief-nach-Berlin";
 const DESCRIPTION =
   "Echte Rückmeldungen von Menschen, die einen Brief generiert haben. Schnitt, durchlaufende Karten, ausgewählte Quotes. Seit Mai 2026.";
 
@@ -25,7 +26,7 @@ export const metadata: Metadata = {
   robots: { index: false, follow: false },
   alternates: { canonical: `${APP_URL}${URL_PATH}` },
   openGraph: {
-    title: "Stimmen aus dem ganzen Land | Brief nach Berlin",
+    title: "Stimmen aus dem ganzen Land | Brief-nach-Berlin",
     description: DESCRIPTION,
     type: "article",
     locale: "de_DE",
@@ -33,7 +34,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Stimmen aus dem ganzen Land | Brief nach Berlin",
+    title: "Stimmen aus dem ganzen Land | Brief-nach-Berlin",
     description: DESCRIPTION,
   },
 };
@@ -58,7 +59,7 @@ const faqs = [
   },
   {
     q: "Was wurde dank Feedback konkret verbessert?",
-    a: "Drei Dinge: Der Prompt formuliert jetzt keine unnötigen Komplexitäts-Einleitungen mehr, nach mehrfacher Rückmeldung, dass das aufgesetzt klingt. Die Landtag- und Kommune-Coverage (Phase 999.6) wurde nach Nutzer-Nachfragen vorgezogen. Und der Ton der Followup-Mail wurde kürzer und direkter, weil die erste Version zu formal war.",
+    a: "Drei Dinge: Der Prompt formuliert jetzt keine unnötigen Komplexitäts-Einleitungen mehr, nach mehrfacher Rückmeldung, dass das aufgesetzt klingt. Der Kampagnenmodus wurde wegen aktueller politischer Ereignisse vorgezogen; Landtag und Kommune bleiben als nächste Ausbaustufen dran. Und der Ton der Followup-Mail wurde kürzer und direkter, weil die erste Version zu formal war.",
   },
   {
     q: "Wie kann ich Feedback geben?",
@@ -76,11 +77,11 @@ const articleJsonLd = {
   headline: "Stimmen aus dem ganzen Land",
   description: DESCRIPTION,
   datePublished: "2026-05-22",
-  dateModified: "2026-05-22",
-  author: { "@type": "Organization", name: "Brief nach Berlin" },
+  dateModified: "2026-07-07",
+  author: { "@type": "Organization", name: "Brief-nach-Berlin" },
   publisher: {
     "@type": "Organization",
-    name: "Brief nach Berlin",
+    name: "Brief-nach-Berlin",
     url: APP_URL,
   },
   mainEntityOfPage: `${APP_URL}${URL_PATH}`,
@@ -122,7 +123,7 @@ export default async function StimmenPage() {
   const highlights = pickHighlights(reviewsForDisplay);
   const [quote1, quote2] = highlights;
   const hasReviews = reviewsForDisplay.length > 0;
-  const displayCount = letterCount > 0 ? letterCount.toString() : "350";
+  const displayCount = letterCount > 0 ? formatNumber(letterCount) : "350";
 
   const aggregateRatingJsonLd =
     stats.totalCount >= 5
@@ -131,7 +132,7 @@ export default async function StimmenPage() {
           "@type": "AggregateRating",
           itemReviewed: {
             "@type": "WebSite",
-            name: "Brief nach Berlin",
+            name: "Brief-nach-Berlin",
             url: APP_URL,
           },
           ratingValue: stats.averageRating,
@@ -184,7 +185,7 @@ export default async function StimmenPage() {
             </div>
             <div className="border-t sm:border-t-0 sm:border-l border-waldgruen/20 pt-4 sm:pt-0 sm:pl-8">
               <p className="font-handwriting text-xl md:text-2xl text-warmgrau leading-snug text-balance">
-                Ich lese jede Rückmeldung. Das Tool wird damit Woche für Woche besser.
+                Ich lese jede Rückmeldung. Brief-nach-Berlin wird damit Woche für Woche besser.
               </p>
             </div>
           </div>
@@ -244,7 +245,7 @@ export default async function StimmenPage() {
             <Prose>
               <p className="font-typewriter text-sm font-bold tracking-widest uppercase text-waldgruen/60 mb-4">Aus den Reviews / Mai 2026</p>
               <PullQuote
-                attribution={quote1.display_name || "Anonym, Brief nach Berlin"}
+                attribution={quote1.display_name || "Anonym, Brief-nach-Berlin"}
                 decorative
               >
                 {quote1.body}
@@ -295,7 +296,7 @@ export default async function StimmenPage() {
             <Prose>
               <p className="font-typewriter text-sm font-bold tracking-widest uppercase text-waldgruen/60 mb-4">Aus den Reviews / einen Monat später</p>
               <PullQuote
-                attribution={quote2.display_name || "Anonym, Brief nach Berlin"}
+                attribution={quote2.display_name || "Anonym, Brief-nach-Berlin"}
                 decorative
               >
                 {quote2.body}
@@ -310,7 +311,7 @@ export default async function StimmenPage() {
             Wenn du bis hier gelesen hast: schreib mir. Auch eine Zeile reicht.
           </p>
           <p className="font-body text-base text-warmgrau leading-relaxed max-w-md mx-auto mb-7">
-            Brief nach Berlin ist ein Freizeitprojekt von einer Person. Am
+            Brief-nach-Berlin ist ein Freizeitprojekt von einer Person. Am
             meisten hilft mir gerade Sichtbarkeit: Wer mich mit Leuten
             vernetzen kann, die dem Thema mediale Reichweite geben, Presse oder
             Multiplikator:innen, ist mir die größte Hilfe. Auch wer es vor Ort

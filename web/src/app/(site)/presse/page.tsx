@@ -3,6 +3,7 @@ import Image from "next/image";
 import type { Metadata } from "next";
 import { APP_URL, FOUNDER_NAME, FOUNDER_HOMEPAGE, FOUNDER_LINKEDIN } from "@/lib/config";
 import { getLetterCount } from "@/lib/counter";
+import { formatNumber } from "@/lib/formatNumber";
 import { Prose } from "@/components/editorial/Prose";
 import { FAQAccordion } from "@/components/FAQAccordion";
 import { PullQuote } from "@/components/editorial/PullQuote";
@@ -49,16 +50,16 @@ function GlobeIcon({ className = "" }: { className?: string }) {
   );
 }
 const PUBLISHED = "2026-06-24";
-const TITLE = "Presse | Brief nach Berlin";
+const TITLE = "Presse | Brief-nach-Berlin";
 const DESCRIPTION =
-  "Pressekontakt, Hintergrund und aktuelle Berichterstattung zu Brief nach Berlin: dem kostenlosen Tool, das aus ein paar Sätzen einen Brief an die richtige Abgeordnete oder den richtigen Abgeordneten macht.";
+  "Pressekontakt, Hintergrund und aktuelle Berichterstattung zu Brief-nach-Berlin: dem kostenlosen Tool, das aus ein paar Sätzen einen Brief an die richtige Abgeordnete oder den richtigen Abgeordneten macht.";
 
 export const metadata: Metadata = {
   title: TITLE,
   description: DESCRIPTION,
   alternates: { canonical: `${APP_URL}${URL_PATH}` },
   openGraph: {
-    title: "Presse: Brief nach Berlin",
+    title: "Presse: Brief-nach-Berlin",
     description: DESCRIPTION,
     type: "article",
     locale: "de_DE",
@@ -66,7 +67,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Presse: Brief nach Berlin",
+    title: "Presse: Brief-nach-Berlin",
     description: DESCRIPTION,
   },
 };
@@ -126,8 +127,8 @@ const coverage = [
 
 const faqs = [
   {
-    q: "Was ist Brief nach Berlin?",
-    a: "Brief nach Berlin ist ein kostenloses Web-Tool, mit dem Bürgerinnen und Bürger aus ein paar Sätzen Frust einen formellen, persönlichen Brief an die für ihr Anliegen zuständige Abgeordnete oder den zuständigen Abgeordneten machen. Anliegen beschreiben, Postleitzahl eingeben, Briefentwurf erhalten. Der Brief wird dann von Hand abgeschrieben und selbst verschickt. Die Idee dahinter: Handgeschriebene Briefe werden im Bundestag tatsächlich gelesen und besprochen, anders als E-Mails oder Petitionen.",
+    q: "Was ist Brief-nach-Berlin?",
+    a: "Brief-nach-Berlin hilft Bürgerinnen und Bürgern, aus ein paar Sätzen Frust einen formellen, persönlichen Brief an die für ihr Anliegen zuständige Abgeordnete oder den zuständigen Abgeordneten zu machen. Anliegen beschreiben, Postleitzahl eingeben, Briefentwurf erhalten. Der Brief wird dann von Hand abgeschrieben und selbst verschickt. Die Idee dahinter: Handgeschriebene Briefe werden im Bundestag tatsächlich gelesen und besprochen, anders als E-Mails oder Petitionen.",
   },
   {
     q: "Was kostet die Nutzung, und braucht man ein Konto?",
@@ -139,7 +140,7 @@ const faqs = [
   },
   {
     q: "Wie steht es um den Datenschutz?",
-    a: "Das Tool ist DSGVO-konform und sammelt so wenig Daten wie möglich. Es gibt keine Nutzerkonten und keine dauerhafte Speicherung der Anliegen oder der erzeugten Briefe. Details stehen in der Datenschutzerklärung auf brief-nach-berlin.de.",
+    a: "Brief-nach-Berlin ist DSGVO-konform und sammelt so wenig Daten wie möglich. Es gibt keine Nutzerkonten und keine dauerhafte Speicherung der Anliegen oder der erzeugten Briefe. Details stehen in der Datenschutzerklärung auf brief-nach-berlin.de.",
   },
   {
     q: "Gibt es Bildmaterial und Interviewmöglichkeiten?",
@@ -160,14 +161,14 @@ const faqJsonLd = {
 const articleJsonLd = {
   "@context": "https://schema.org",
   "@type": "Article",
-  headline: "Presse: Brief nach Berlin",
+  headline: "Presse: Brief-nach-Berlin",
   description: DESCRIPTION,
   datePublished: PUBLISHED,
   dateModified: PUBLISHED,
-  author: { "@type": "Organization", name: "Brief nach Berlin" },
+  author: { "@type": "Organization", name: "Brief-nach-Berlin" },
   publisher: {
     "@type": "Organization",
-    name: "Brief nach Berlin",
+    name: "Brief-nach-Berlin",
     url: APP_URL,
   },
   mainEntityOfPage: `${APP_URL}${URL_PATH}`,
@@ -176,6 +177,7 @@ const articleJsonLd = {
 
 export default async function PressePage() {
   const letterCount = await getLetterCount();
+  const formattedLetterCount = formatNumber(letterCount);
 
   return (
     <div className="min-h-screen bg-creme px-6 py-20">
@@ -203,9 +205,9 @@ export default async function PressePage() {
           Presse
         </h1>
         <p className="font-body text-lg md:text-xl text-warmgrau leading-relaxed mb-12 text-pretty">
-          Brief nach Berlin ist ein kostenloses Tool, das aus ein paar Sätzen
-          einen formellen Brief an die zuständige Abgeordnete oder den
-          zuständigen Abgeordneten macht. Hier finden Sie den Pressekontakt,
+          Brief-nach-Berlin macht aus ein paar Sätzen einen formellen Brief an
+          die zuständige Abgeordnete oder den zuständigen Abgeordneten. Hier
+          finden Sie den Pressekontakt,
           Hintergrund zum Projekt und die aktuelle Berichterstattung. Für
           Rückfragen, Interviews oder Bildmaterial schreiben Sie mir gern.
         </p>
@@ -216,7 +218,7 @@ export default async function PressePage() {
             Pressekontakt
           </p>
           <p className="font-body text-lg text-waldgruen-dark mb-2">
-            {FOUNDER_NAME}, Gründer von Brief nach Berlin
+            {FOUNDER_NAME}, Gründer von Brief-nach-Berlin
           </p>
           <p className="font-body text-base text-warmgrau mb-6">
             Ich antworte Medienanfragen in der Regel am selben oder am nächsten
@@ -238,7 +240,7 @@ export default async function PressePage() {
             Aktuelle Berichterstattung
           </h2>
           <p>
-            Brief nach Berlin wurde in überregionalen und lokalen Medien
+            Brief-nach-Berlin wurde in überregionalen und lokalen Medien
             aufgegriffen, unter anderem über eine Meldung der Deutschen
             Presse-Agentur (dpa) vom 24. Juni 2026. Eine Auswahl:
           </p>
@@ -285,7 +287,7 @@ export default async function PressePage() {
             Über Brief-nach-Berlin
           </h2>
           <p>
-            Brief nach Berlin verwandelt eine konkrete Frustration in einen
+            Brief-nach-Berlin verwandelt eine konkrete Frustration in einen
             persönlichen Brief an die richtige politische Adresse. Nutzerinnen
             und Nutzer beschreiben ihr Anliegen in eigenen Worten, per Text oder
             Sprache, geben ihre Postleitzahl ein und erhalten einen
@@ -303,7 +305,7 @@ export default async function PressePage() {
           <div className="my-12 flex flex-wrap items-stretch gap-y-4 border-y border-waldgruen/15 py-7">
             <div className="flex-1 min-w-[8rem] px-4 sm:px-6">
               <p className="font-body text-4xl md:text-5xl font-bold text-waldgruen leading-none tabular-nums">
-                {letterCount}
+                {formattedLetterCount}
               </p>
               <p className="font-body text-sm text-warmgrau/80 mt-2 leading-snug">
                 Briefe seit Mitte Mai 2026
@@ -353,8 +355,8 @@ export default async function PressePage() {
           </PullQuote>
           <p>
             Ich bin {FOUNDER_NAME}, unabhängiger Produktentwickler aus Bremen.
-            Brief nach Berlin baue ich allein, in meiner Freizeit. Das Tool ist
-            kostenlos und bleibt kostenlos. Es ist Open Source, steht keiner
+            Brief-nach-Berlin baue ich allein, in meiner Freizeit. Das Projekt
+            ist kostenlos und bleibt kostenlos. Es ist Open Source, steht keiner
             Partei und keiner Organisation nahe. Mehr zur Person, zum Quellcode
             und zu weiteren Projekten:
           </p>
@@ -399,7 +401,7 @@ export default async function PressePage() {
 
         <div className="mt-16 p-8 border-2 border-waldgruen/20 bg-creme/50 rounded-sm">
           <p className="font-typewriter text-sm font-bold tracking-widest uppercase text-waldgruen/60 mb-3">
-            Das Tool selbst ausprobieren
+            Brief-nach-Berlin selbst ausprobieren
           </p>
           <p className="font-body text-lg text-waldgruen-dark mb-6">
             Beschreiben Sie ein Anliegen in ein paar Sätzen, geben Sie eine
@@ -440,7 +442,7 @@ export default async function PressePage() {
                 href="/ki-transparenz"
                 className="font-body text-waldgruen-dark underline decoration-waldgruen/30 underline-offset-4 hover:decoration-waldgruen"
               >
-                Wie Brief nach Berlin KI einsetzt
+                Wie Brief-nach-Berlin KI einsetzt
               </Link>
             </li>
           </ul>

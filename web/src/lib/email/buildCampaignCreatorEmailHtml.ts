@@ -156,7 +156,7 @@ export function buildCampaignCreatorEmailHtml(
           </tr>
           <tr>
             <td class="bnb-pad" style="padding:22px 28px 12px;background-color:#FAF8F5;text-align:center;">
-              <p style="margin:0;font-size:12px;line-height:1.5;color:#999999;"><a href="${APP_URL}" target="_blank" rel="noopener noreferrer" style="color:#2D6A4F;text-decoration:none;">Brief nach Berlin</a> · Kampagnenzugang</p>
+              <p style="margin:0;font-size:12px;line-height:1.5;color:#999999;"><a href="${APP_URL}" target="_blank" rel="noopener noreferrer" style="color:#2D6A4F;text-decoration:none;">Brief-nach-Berlin</a> · Kampagnenzugang</p>
             </td>
           </tr>
           <tr>

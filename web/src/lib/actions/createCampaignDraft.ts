@@ -238,7 +238,7 @@ export async function createCampaignDraftAction(
       ok: true,
       slug: awaitingCampaign.slug,
       message:
-        "Fast fertig: Wir haben dir eine E-Mail geschickt. Bitte bestätige den Link darin, dann wird die Kampagne öffentlich.",
+        "Fast fertig: Du hast eine E-Mail bekommen. Bitte bestätige den Link darin, dann wird die Kampagne öffentlich.",
     };
   } catch (error) {
     if (campaignId) {

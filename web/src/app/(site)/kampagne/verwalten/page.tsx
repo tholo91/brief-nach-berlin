@@ -7,7 +7,7 @@ import { getCampaignById } from "@/lib/campaigns/repository";
 import { getCampaignManagementSession } from "@/lib/campaigns/session";
 
 export const metadata: Metadata = {
-  title: "Kampagne verwalten | Brief nach Berlin",
+  title: "Kampagne verwalten | Brief-nach-Berlin",
   alternates: { canonical: "/kampagne/verwalten" },
 };
 

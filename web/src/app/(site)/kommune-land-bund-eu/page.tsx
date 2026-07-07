@@ -12,7 +12,7 @@ const URL_PATH = "/kommune-land-bund-eu";
 const PUBLISHED = "2026-05-20";
 
 export const metadata: Metadata = {
-  title: `${TITLE} | Brief nach Berlin`,
+  title: `${TITLE} | Brief-nach-Berlin`,
   description: DESCRIPTION,
   alternates: {
     canonical: `${APP_URL}${URL_PATH}`,
@@ -49,8 +49,8 @@ const faqs = [
     a: "Datenschutz (DSGVO), Klimaziele und Emissionshandel, Verbraucherschutz und Produktstandards, Agrarpolitik, Lieferkettengesetze, der EU-Asyl- und Migrationsrahmen sowie EU-Förderprogramme. Direkter Ansprechpartner ist dein Europaabgeordneter (MdEP).",
   },
   {
-    q: "Unterstützt Brief nach Berlin alle Ebenen?",
-    a: "Aktuell Bundestag und Landtag. Kommunale Mandate und EU-Abgeordnete folgen in der nächsten Version, sodass du für jede Ebene direkt die richtige Adresse bekommst.",
+    q: "Unterstützt Brief-nach-Berlin alle Ebenen?",
+    a: "Direkt unterstützt wird aktuell der Bundestag. Land und Kommune sind die nächsten Ausbauschritte und haben sich wegen des vorgezogenen Kampagnenmodus auf voraussichtlich Juli/August 2026 verschoben. Bis dahin erklärt diese Seite, welche Ebene für dein Anliegen zuständig ist.",
   },
 ];
 
@@ -70,11 +70,11 @@ const articleJsonLd = {
   headline: TITLE,
   description: DESCRIPTION,
   datePublished: PUBLISHED,
-  dateModified: PUBLISHED,
-  author: { "@type": "Organization", name: "Brief nach Berlin" },
+  dateModified: "2026-07-07",
+  author: { "@type": "Organization", name: "Brief-nach-Berlin" },
   publisher: {
     "@type": "Organization",
-    name: "Brief nach Berlin",
+    name: "Brief-nach-Berlin",
     url: APP_URL,
   },
   mainEntityOfPage: `${APP_URL}${URL_PATH}`,
@@ -184,7 +184,7 @@ export default function KommuneLandBundEuPage() {
           </ul>
           <p>
             Bildung ist das klassische Beispiel: ärgert dich die Lage an
-            Schulen, hilft kein Brief nach Berlin. Der Schulminister sitzt im
+            Schulen, hilft kein Brief-nach-Berlin. Der Schulminister sitzt im
             Land.
           </p>
 
@@ -216,9 +216,9 @@ export default function KommuneLandBundEuPage() {
             <li>Migration, Staatsbürgerschaft, Asyl</li>
           </ul>
           <p>
-            Hier setzt Brief nach Berlin heute an: Wir finden über deine
-            Postleitzahl deinen Bundestagsabgeordneten und helfen dir, ihn
-            oder sie anzuschreiben.
+            Hier setzt Brief-nach-Berlin heute an: Über deine Postleitzahl
+            findet das Projekt deinen Bundestagsabgeordneten und hilft dir,
+            ihn oder sie anzuschreiben.
           </p>
 
           <h2 className="font-body text-2xl font-bold text-waldgruen-dark pt-4">
@@ -296,10 +296,10 @@ export default function KommuneLandBundEuPage() {
               Kommt bald
             </span>
             <span>
-              Brief nach Berlin unterstützt aktuell Bundestag und Landtag.
-              Kommunale Mandate und EU-Abgeordnete folgen in der nächsten
-              Version, damit du für jede Ebene direkt die richtige Adresse
-              bekommst.
+              Brief-nach-Berlin unterstützt aktuell direkt den Bundestag.
+              Land und Kommune sind als nächste Ebenen geplant, voraussichtlich
+              im Juli/August 2026. Der Kampagnenmodus ist schon live und wurde
+              wegen aktueller politischer Ereignisse vorgezogen.
             </span>
           </div>
         </Prose>

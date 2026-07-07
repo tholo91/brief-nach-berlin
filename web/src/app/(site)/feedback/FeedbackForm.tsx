@@ -248,7 +248,7 @@ export function FeedbackForm({
         <div className="flex items-start gap-3 mt-4 pt-4 border-t border-warmgrau/10">
           <Image
             src="/images/thomas-portrait.webp"
-            alt="Thomas, Gründer von Brief nach Berlin"
+            alt="Thomas, Gründer von Brief-nach-Berlin"
             width={44}
             height={44}
             className="rounded-full object-cover flex-shrink-0 ring-2 ring-waldgruen/20 mt-0.5"
@@ -429,7 +429,7 @@ export function FeedbackForm({
             Erst den Brief verbessern? Dauert ~1 Minute.
           </p>
           <p className="font-body text-sm text-warmgrau leading-relaxed mb-3">
-            Mit deinem Feedback bauen wir dir einen Prompt, der die Schwächen direkt fixt. Du kannst danach neu bewerten.
+            Aus deinem Feedback entsteht ein Prompt, der die Schwächen direkt fixt. Du kannst danach neu bewerten.
           </p>
           <a
             href={improveHref}
@@ -651,8 +651,8 @@ function ThankYouCard({
           >
             <p className="font-body text-sm font-semibold text-waldgruen-dark leading-snug mb-1">
               {hasMappableFeedback
-                ? "Dein Feedback ist da, und wir haben es schon in einen Verbesserungs-Prompt eingebaut."
-                : "Du kannst deinen Brief mit unserem Prompt verbessern."}
+                ? "Dein Feedback ist da und steckt schon im Verbesserungs-Prompt."
+                : "Du kannst deinen Brief mit dem Verbesserungs-Prompt verbessern."}
             </p>
             <p className="font-body text-sm text-warmgrau leading-relaxed mb-3">
               Damit machst du in 2 Minuten aus dem Entwurf den Brief, den du

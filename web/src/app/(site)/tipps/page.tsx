@@ -12,7 +12,7 @@ const URL_PATH = "/tipps";
 const PUBLISHED = "2026-05-20";
 
 export const metadata: Metadata = {
-  title: `${TITLE} | Brief nach Berlin`,
+  title: `${TITLE} | Brief-nach-Berlin`,
   description: DESCRIPTION,
   alternates: {
     canonical: `${APP_URL}${URL_PATH}`,
@@ -75,10 +75,10 @@ const articleJsonLd = {
   description: DESCRIPTION,
   datePublished: PUBLISHED,
   dateModified: PUBLISHED,
-  author: { "@type": "Organization", name: "Brief nach Berlin" },
+  author: { "@type": "Organization", name: "Brief-nach-Berlin" },
   publisher: {
     "@type": "Organization",
-    name: "Brief nach Berlin",
+    name: "Brief-nach-Berlin",
     url: APP_URL,
   },
   mainEntityOfPage: `${APP_URL}${URL_PATH}`,
@@ -299,12 +299,12 @@ export default function TippsPage() {
 
         <div className="mt-16 p-6 md:p-8 bg-waldgruen/5 border border-waldgruen/15 rounded-xl hover:bg-waldgruen/10 transition-colors">
           <h2 className="font-body text-xl md:text-2xl font-bold text-waldgruen-dark mb-3">
-            Unser Entwurf ist ein Anfang
+            Der Entwurf ist ein Anfang
           </h2>
           <p className="font-body text-warmgrau leading-relaxed mb-6">
-            Wir formulieren den Brief vor und senken damit die Hürde. Aber lies
-            ihn durch und pass an, was sich nicht nach dir anfühlt. Dein Thema,
-            deine Formulierungen, deine Unterschrift.
+            Brief-nach-Berlin formuliert den Brief vor und senkt damit die
+            Hürde. Aber lies ihn durch und pass an, was sich nicht nach dir
+            anfühlt. Dein Thema, deine Formulierungen, deine Unterschrift.
           </p>
           <Link
             href="/app"

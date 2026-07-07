@@ -19,7 +19,7 @@ export async function generateMetadata({
   if (!campaign) return {};
 
   return {
-    title: `${campaign.title} | Brief nach Berlin`,
+    title: `${campaign.title} | Brief-nach-Berlin`,
     description:
       campaign.description ??
       "Eine öffentliche Kampagne mit editierbarem Anliegen für deinen Brief an die Politik.",

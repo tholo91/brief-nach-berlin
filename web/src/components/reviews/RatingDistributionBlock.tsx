@@ -1,4 +1,5 @@
 import type { ReviewStats } from "@/lib/reviews/types";
+import { formatNumber } from "@/lib/formatNumber";
 
 interface RatingDistributionBlockProps {
   stats: ReviewStats;
@@ -18,7 +19,7 @@ export function RatingDistributionBlock({
         Alle Sterne, ungeschönt
       </h2>
       <p className="font-typewriter text-xs text-warmgrau/60">
-        aus {stats.totalCount} Bewertungen seit Mai 2026
+        aus {formatNumber(stats.totalCount)} Bewertungen seit Mai 2026
       </p>
 
       <div className="grid grid-cols-[auto_1fr_auto] gap-x-4 gap-y-3 md:gap-y-3.5 mt-8">
@@ -43,7 +44,7 @@ export function RatingDistributionBlock({
                 />
               </div>
               <span className="font-typewriter text-sm text-waldgruen-dark tabular-nums text-right min-w-[2.5rem]">
-                {count}
+                {formatNumber(count)}
               </span>
             </div>
           );

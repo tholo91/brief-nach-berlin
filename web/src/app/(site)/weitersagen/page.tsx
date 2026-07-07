@@ -14,14 +14,14 @@ import {
 import { CopyButton } from "@/components/CopyButton";
 import { CONTACT } from "@/lib/contact";
 
-const TITLE = "Brief nach Berlin weitersagen";
+const TITLE = "Brief-nach-Berlin weitersagen";
 const DESCRIPTION =
-  "Briefe wirken stärker, wenn mehrere Stimmen aus derselben Gegend zum gleichen Thema schreiben. Hier findest du fertige Texte für WhatsApp, einen druckbaren QR-Code und alles, was du brauchst, um Brief nach Berlin im Bekanntenkreis oder in der Nachbarschaft zu teilen.";
+  "Briefe wirken stärker, wenn mehrere Stimmen aus derselben Gegend zum gleichen Thema schreiben. Hier findest du fertige Texte für WhatsApp, einen druckbaren QR-Code und alles, was du brauchst, um Brief-nach-Berlin im Bekanntenkreis oder in der Nachbarschaft zu teilen.";
 const URL_PATH = "/weitersagen";
 const PUBLISHED = "2026-05-20";
 
 export const metadata: Metadata = {
-  title: `${TITLE} | Brief nach Berlin`,
+  title: `${TITLE} | Brief-nach-Berlin`,
   description: DESCRIPTION,
   alternates: {
     canonical: `${APP_URL}${URL_PATH}`,
@@ -59,7 +59,7 @@ const faqs = [
   },
   {
     q: "Sammelt ihr Daten, wenn ich den Link weiterleite?",
-    a: "Nein. Die Links sind reine Weiterleitungen über deinen Messenger. Brief nach Berlin bekommt keine Information darüber, an wen du was geschickt hast. Auch die Plattform selbst speichert keine Briefe und keine Adressen.",
+    a: "Nein. Die Links sind reine Weiterleitungen über deinen Messenger. Brief-nach-Berlin bekommt keine Information darüber, an wen du was geschickt hast. Auch die Plattform selbst speichert keine Briefe und keine Adressen.",
   },
 ];
 
@@ -80,10 +80,10 @@ const articleJsonLd = {
   description: DESCRIPTION,
   datePublished: PUBLISHED,
   dateModified: PUBLISHED,
-  author: { "@type": "Organization", name: "Brief nach Berlin" },
+  author: { "@type": "Organization", name: "Brief-nach-Berlin" },
   publisher: {
     "@type": "Organization",
-    name: "Brief nach Berlin",
+    name: "Brief-nach-Berlin",
     url: APP_URL,
   },
   mainEntityOfPage: `${APP_URL}${URL_PATH}`,
@@ -113,7 +113,7 @@ export default function WeitersagenPage() {
           Mund zu Mund Propaganda
         </p>
         <h1 className="font-body text-3xl md:text-4xl font-bold text-waldgruen-dark tracking-tight mb-6">
-          Brief nach Berlin weitersagen
+          Brief-nach-Berlin weitersagen
         </h1>
 
         <p className="font-handwriting text-xl md:text-2xl text-warmgrau leading-relaxed mb-2 text-pretty">
@@ -125,7 +125,7 @@ export default function WeitersagenPage() {
           <p>
             Briefe aus dem gleichen Wahlkreis zum gleichen Thema bekommen im
             Büro einer oder eines Abgeordneten besonderes Gewicht. Wenn du
-            Brief nach Berlin gut findest, ist eine kurze Nachricht an drei
+            Brief-nach-Berlin gut findest, ist eine kurze Nachricht an drei
             Bekannte oft der wirksamste nächste Schritt, den du machen kannst.
           </p>
           <p>

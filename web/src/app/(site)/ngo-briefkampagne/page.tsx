@@ -10,9 +10,9 @@ import type { Campaign } from "@/lib/campaigns/schema";
 const URL_PATH = "/ngo-briefkampagne";
 const PUBLISHED = "2026-07-06";
 const TITLE =
-  "NGO-Briefkampagne: aus eurem Anliegen viele persönliche Briefe machen | Brief nach Berlin";
+  "NGO-Briefkampagne: aus eurem Anliegen viele persönliche Briefe machen | Brief-nach-Berlin";
 const DESCRIPTION =
-  "Eine NGO-Briefkampagne macht aus eurem Anliegen viele persönliche Briefe aus echten Wahlkreisen. So nutzt du Brief nach Berlin ohne Massenmailing und ohne Account.";
+  "Eine NGO-Briefkampagne macht aus eurem Anliegen viele persönliche Briefe aus echten Wahlkreisen. So nutzt du Brief-nach-Berlin ohne Massenmailing und ohne Account.";
 
 export const metadata: Metadata = {
   title: TITLE,
@@ -53,7 +53,7 @@ const faqs = [
     a: "Es ist anders. Eine Petition zeigt Breite. Eine Briefkampagne bringt das Anliegen direkt in Wahlkreis- und Abgeordnetenbüros. Beides kann zusammenpassen.",
   },
   {
-    q: "Was ist anders als beim normalen Brief nach Berlin?",
+    q: "Was ist anders als beim normalen Brief-nach-Berlin?",
     a: "Beim normalen Brief startet eine einzelne Person mit ihrem eigenen Anliegen. Bei einer Briefkampagne gebt ihr als Verein den gemeinsamen Startpunkt vor. Unterstützer:innen kommen schneller in den persönlichen Briefprozess, passen den Entwurf an ihren Wahlkreis und ihre Gründe an und erzeugen dadurch viele echte, persönliche Schreiben statt nur einen Klick.",
   },
   {
@@ -62,7 +62,7 @@ const faqs = [
   },
   {
     q: "Wird daraus eine KI-Briefflut?",
-    a: "Nein. Brief nach Berlin verschickt nichts automatisch. Menschen lesen, ändern und verwenden den Text selbst. Genau diese Reibung schützt vor künstlicher Beteiligung.",
+    a: "Nein. Brief-nach-Berlin verschickt nichts automatisch. Menschen lesen, ändern und verwenden den Text selbst. Genau diese Reibung schützt vor künstlicher Beteiligung.",
   },
 ];
 
@@ -83,10 +83,10 @@ const articleJsonLd = {
   description: DESCRIPTION,
   datePublished: PUBLISHED,
   dateModified: PUBLISHED,
-  author: { "@type": "Organization", name: "Brief nach Berlin" },
+  author: { "@type": "Organization", name: "Brief-nach-Berlin" },
   publisher: {
     "@type": "Organization",
-    name: "Brief nach Berlin",
+    name: "Brief-nach-Berlin",
     url: APP_URL,
   },
   url: `${APP_URL}${URL_PATH}`,
@@ -105,7 +105,7 @@ const shortPoints = [
   },
   {
     title: "Klare Grenze",
-    text: "Brief nach Berlin verschickt nichts automatisch. Keine Fake-Beteiligung, keine hundert Varianten aus der Maschine. Wer mitmacht, muss den Text selbst prüfen und weiterverwenden.",
+    text: "Brief-nach-Berlin verschickt nichts automatisch. Keine Fake-Beteiligung, keine hundert Varianten aus der Maschine. Wer mitmacht, muss den Text selbst prüfen und weiterverwenden.",
   },
 ];
 
@@ -352,7 +352,7 @@ export default async function NgoBriefkampagnePage() {
                   href="/weitersagen"
                   className="font-body text-sm text-waldgruen underline underline-offset-2 transition-colors hover:text-waldgruen-dark"
                 >
-                  Brief nach Berlin weitertragen
+                  Brief-nach-Berlin weitertragen
                 </Link>
               </li>
             </ul>

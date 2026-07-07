@@ -12,7 +12,7 @@ const URL_PATH = "/kommunalpolitik-brief";
 const PUBLISHED = "2026-05-20";
 
 export const metadata: Metadata = {
-  title: `${TITLE} | Brief nach Berlin`,
+  title: `${TITLE} | Brief-nach-Berlin`,
   description: DESCRIPTION,
   alternates: {
     canonical: `${APP_URL}${URL_PATH}`,
@@ -49,8 +49,8 @@ const faqs = [
     a: "Bei Themen, die im gesamten Bundesland gelten: Schulen, Polizei, innere Sicherheit, Landesbehörden, Rundfunk und Wohnungspolitik auf Landesebene. Adresse ist dann der Landtag, nicht der Stadtrat.",
   },
   {
-    q: "Unterstützt Brief nach Berlin auch Briefe an den Stadtrat?",
-    a: "Aktuell unterstützt Brief nach Berlin Bundestag und Landtag. Kommunale Mandate folgen in einer der nächsten Versionen. Bis dahin hilft die Anleitung auf dieser Seite, den richtigen Stadtrat selbst zu finden.",
+    q: "Unterstützt Brief-nach-Berlin auch Briefe an den Stadtrat?",
+    a: "Aktuell unterstützt Brief-nach-Berlin direkt den Bundestag. Kommunale Mandate sind weiterhin geplant, haben sich aber wegen des vorgezogenen Kampagnenmodus auf voraussichtlich Juli/August 2026 verschoben. Bis dahin hilft die Anleitung auf dieser Seite, den richtigen Stadtrat selbst zu finden.",
   },
 ];
 
@@ -70,11 +70,11 @@ const articleJsonLd = {
   headline: TITLE,
   description: DESCRIPTION,
   datePublished: PUBLISHED,
-  dateModified: PUBLISHED,
-  author: { "@type": "Organization", name: "Brief nach Berlin" },
+  dateModified: "2026-07-07",
+  author: { "@type": "Organization", name: "Brief-nach-Berlin" },
   publisher: {
     "@type": "Organization",
-    name: "Brief nach Berlin",
+    name: "Brief-nach-Berlin",
     url: APP_URL,
   },
   mainEntityOfPage: `${APP_URL}${URL_PATH}`,
@@ -221,19 +221,20 @@ export default function KommunalpolitikBriefPage() {
           </p>
 
           <h2 className="font-body text-2xl font-bold text-waldgruen-dark pt-4">
-            Was kommt als nächstes bei Brief nach Berlin?
+            Was kommt als nächstes bei Brief-nach-Berlin?
           </h2>
           <p>
-            Im Moment unterstützt Brief nach Berlin die Suche nach Bundestags-
-            und Landtagsabgeordneten. Kommunale Mandate sind komplexer: Jede
-            Gemeinde hat ihre eigene Struktur, eigene Gremien, eigene
-            Zuständigkeiten.
+            Im Moment unterstützt Brief-nach-Berlin direkt die Suche nach
+            Bundestagsabgeordneten. Der Kampagnenmodus ist schon live, weil
+            aktuelle politische Ereignisse schnelle, gemeinsame Briefe
+            gebraucht haben. Land und Kommune sind dadurch nach hinten
+            gerutscht, realistisch auf Juli/August 2026.
           </p>
           <p>
-            Wir arbeiten daran, dass die App künftig automatisch erkennt, welche
-            politische Ebene für dein Anliegen zuständig ist, und dich direkt
-            zur richtigen Adresse führt. Bis dahin hilft die Anleitung oben,
-            deinen Stadtrat selbst zu finden.
+            Ich arbeite daran, dass Brief-nach-Berlin künftig automatisch
+            erkennt, welche politische Ebene für dein Anliegen zuständig ist,
+            und dich direkt zur richtigen Adresse führt. Bis dahin hilft die
+            Anleitung oben, deinen Stadtrat selbst zu finden.
           </p>
           <p>
             Wenn dein Thema den Bundestag betrifft, kannst du jetzt direkt
@@ -248,8 +249,8 @@ export default function KommunalpolitikBriefPage() {
 
         <div className="mt-16 p-8 bg-waldgruen/5 border border-waldgruen/15 rounded-xl hover:bg-waldgruen/10 transition-colors">
           <p className="font-body text-warmgrau leading-relaxed mb-6">
-            Bundesebene? Drei Minuten, kein Account, kein Tracking. Wir finden
-            deinen MdB und schlagen dir einen Brief vor, den du selbst
+            Bundesebene? Drei Minuten, kein Account, kein Tracking.
+            Brief-nach-Berlin findet deinen MdB und schlägt dir einen Brief vor, den du selbst
             abschreibst und verschickst.
           </p>
           <Link

@@ -65,10 +65,10 @@ export function VariantSuccessClient() {
         ? "Der eingefügte Brief ist nicht mehr verfügbar."
         : status === "error"
           ? "Die Anpassung hat noch nicht geklappt."
-          : "Wir formulieren deine neue Variante.";
+          : "Deine neue Variante wird formuliert.";
   const lead =
     status === "sent"
-      ? "Prüfe dein Postfach. Wir haben dir nur den neuen Text geschickt, die Anschrift und die Hinweise bleiben in deiner ersten Brief-Mail."
+      ? "Prüfe dein Postfach. Du bekommst nur den neuen Text, die Anschrift und die Hinweise bleiben in deiner ersten Brief-Mail."
       : status === "missing"
         ? "Aus Datenschutzgründen speichern wir deinen eingefügten Brieftext nicht. Bitte gehe zurück und füge den Brief noch einmal ein."
         : status === "error"
@@ -186,7 +186,7 @@ export function VariantSuccessClient() {
               Gut zu wissen
             </h2>
             <p className="mt-3 font-body text-sm leading-relaxed text-warmgrau/75">
-              Wir schicken dir hier nur einen neuen Text. Bewertungen, Adresse und die ausführlichen Versandtipps bleiben bewusst in der ursprünglichen Mail.
+              Du bekommst hier nur einen neuen Text. Bewertungen, Adresse und die ausführlichen Versandtipps bleiben bewusst in der ursprünglichen Mail.
             </p>
             {email && (
               <p className="mt-3 font-body text-xs leading-relaxed text-warmgrau/55">

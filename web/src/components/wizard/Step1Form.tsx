@@ -79,7 +79,7 @@ export function Step1Form({ onNext, defaultValues, plzError, onPlzErrorDismiss }
         Wer ist für dein Anliegen zuständig?
       </h1>
       <p className="font-body text-sm text-warmgrau/70 mb-8">
-        Deine Postleitzahl verrät uns, welche Abgeordneten dein Brief lesen werden. Den fertigen Brief schicken wir dir per E-Mail.
+        Deine Postleitzahl zeigt, welche Abgeordneten dein Brief erreichen soll. Den fertigen Brief bekommst du per E-Mail.
       </p>
 
       <div className="space-y-4">
@@ -107,7 +107,7 @@ export function Step1Form({ onNext, defaultValues, plzError, onPlzErrorDismiss }
           >
             {locality
               ? `MdB für ${locality.ort} wird gesucht`
-              : "Damit finden wir deine zuständigen Abgeordneten"}
+              : "Damit werden deine zuständigen Abgeordneten gefunden"}
           </p>
           {errors.plz && touchedFields.plz && (
             <p id="plz-error" role="alert" className="text-sm text-airmail-rot mt-1">
@@ -136,7 +136,7 @@ export function Step1Form({ onNext, defaultValues, plzError, onPlzErrorDismiss }
             {...register("email")}
           />
           <p id="email-hint" className="text-sm text-warmgrau/60 mt-1">
-            Wir schicken dir deinen Brief per Mail zu. Deine Adresse wird nur für den Versand genutzt und danach gelöscht.
+            Dein Brief kommt per Mail zu dir. Deine Adresse wird nur für den Versand genutzt und danach gelöscht.
           </p>
           {errors.email && touchedFields.email && (
             <p id="email-error" role="alert" className="text-sm text-airmail-rot mt-1">

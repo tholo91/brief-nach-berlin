@@ -13,7 +13,7 @@ const URL_PATH = "/treppe-der-selbstwirksamkeit";
 const PUBLISHED = "2026-05-20";
 
 export const metadata: Metadata = {
-  title: `${TITLE} | Brief nach Berlin`,
+  title: `${TITLE} | Brief-nach-Berlin`,
   description: DESCRIPTION,
   alternates: {
     canonical: `${APP_URL}${URL_PATH}`,
@@ -72,10 +72,10 @@ const articleJsonLd = {
   description: DESCRIPTION,
   datePublished: PUBLISHED,
   dateModified: PUBLISHED,
-  author: { "@type": "Organization", name: "Brief nach Berlin" },
+  author: { "@type": "Organization", name: "Brief-nach-Berlin" },
   publisher: {
     "@type": "Organization",
-    name: "Brief nach Berlin",
+    name: "Brief-nach-Berlin",
     url: APP_URL,
   },
   mainEntityOfPage: `${APP_URL}${URL_PATH}`,
@@ -361,7 +361,8 @@ export default function TreppePage() {
             Wenn du heute eine Stufe nehmen willst, ist Stufe 3 die mit dem
             besten Verhältnis aus Aufwand und Wirkung. Schreib einen Brief.
             Direkt an die Person in Berlin, die für dein Anliegen zuständig ist.
-            Wir helfen dir, die richtige zu finden und ihn zu formulieren.
+            Brief-nach-Berlin hilft dir, die richtige Person zu finden und den
+            Brief zu formulieren.
           </p>
           <Link
             href="/app"

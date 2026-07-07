@@ -11,7 +11,7 @@ const URL_PATH = "/aktiv-werden";
 const PUBLISHED = "2026-05-20";
 
 export const metadata: Metadata = {
-  title: `${TITLE} | Brief nach Berlin`,
+  title: `${TITLE} | Brief-nach-Berlin`,
   description: DESCRIPTION,
   alternates: {
     canonical: `${APP_URL}${URL_PATH}`,
@@ -66,10 +66,10 @@ const articleJsonLd = {
   description: DESCRIPTION,
   datePublished: PUBLISHED,
   dateModified: PUBLISHED,
-  author: { "@type": "Organization", name: "Brief nach Berlin" },
+  author: { "@type": "Organization", name: "Brief-nach-Berlin" },
   publisher: {
     "@type": "Organization",
-    name: "Brief nach Berlin",
+    name: "Brief-nach-Berlin",
     url: APP_URL,
   },
   mainEntityOfPage: `${APP_URL}${URL_PATH}`,
@@ -132,8 +132,8 @@ const cards: ActionCard[] = [
     title: "Die Treppe der politischen Selbstwirksamkeit",
     body: (
       <p>
-        Zehn Stufen, sortiert nach Aufwand: von „Wählen gehen" über
-        „Leserbrief schreiben" bis „eigene Bürgerinitiative gründen". Such dir
+        Zehn Stufen, sortiert nach Aufwand: von &bdquo;Wählen gehen&ldquo; über
+        &bdquo;Leserbrief schreiben&ldquo; bis &bdquo;eigene Bürgerinitiative gründen&ldquo;. Such dir
         die nächste Stufe, die du dir zutraust, und nimm sie. Wer auf Stufe 3
         steht (Brief schreiben), ist schon weiter als 95 % der Bevölkerung.
       </p>
@@ -253,8 +253,9 @@ export default function AktivWerdenPage() {
             Noch keinen Brief geschrieben?
           </h2>
           <p className="font-body text-warmgrau leading-relaxed mb-6">
-            Der erste Brief ist der wichtigste. Wir helfen dir, die richtige
-            Person in Berlin zu finden und in unter drei Minuten loszuschreiben.
+            Der erste Brief ist der wichtigste. Brief-nach-Berlin hilft dir,
+            die richtige Person in Berlin zu finden und in unter drei Minuten
+            loszuschreiben.
           </p>
           <Link
             href="/app"

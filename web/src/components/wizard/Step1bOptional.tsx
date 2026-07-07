@@ -46,7 +46,7 @@ function PartyExplainer() {
           <path d="M12 16v-4" />
           <path d="M12 8h.01" />
         </svg>
-        Warum fragen wir das?
+        Warum wird das gefragt?
       </button>
       {open && (
         <div className="mt-2 border-l-4 border-waldgruen/50 bg-waldgruen/5 rounded-r-lg p-3 leading-relaxed text-warmgrau">
@@ -97,7 +97,7 @@ export function Step1bOptional({
         Zusätzliche Infos über dich
       </h1>
       <p className="font-body text-sm text-warmgrau/70 mb-8">
-        Optional: Wenn du uns ein bisschen über dich erzählst, kann dein Brief gezielter formuliert werden. Du kannst diesen Schritt auch überspringen.
+        Optional: Wenn du ein bisschen über dich erzählst, kann dein Brief gezielter formuliert werden. Du kannst diesen Schritt auch überspringen.
       </p>
 
       {/* Error banner */}

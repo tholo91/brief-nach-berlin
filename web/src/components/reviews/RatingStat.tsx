@@ -1,4 +1,5 @@
 import type { ReviewStats } from "@/lib/reviews/types";
+import { formatDecimal, formatNumber } from "@/lib/formatNumber";
 
 interface RatingStatProps {
   stats: ReviewStats;
@@ -41,7 +42,7 @@ export function RatingStat({ stats, showDistribution = false }: RatingStatProps)
     <div className="flex flex-col gap-2">
       <StarBar rating={stats.averageRating} />
       <p className="font-typewriter text-sm text-warmgrau/70">
-        bewertet mit {stats.averageRating.toFixed(1)}/5 aus {stats.totalCount} Stimmen
+        bewertet mit {formatDecimal(stats.averageRating)}/5 aus {formatNumber(stats.totalCount)} Stimmen
       </p>
       {showDistribution && (
         <div className="flex flex-col gap-1.5 mt-1">
@@ -63,7 +64,7 @@ export function RatingStat({ stats, showDistribution = false }: RatingStatProps)
                   />
                 </div>
                 <span className="font-typewriter text-xs text-warmgrau/60 w-5 text-right shrink-0">
-                  {count}
+                  {formatNumber(count)}
                 </span>
               </div>
             );

@@ -4,7 +4,7 @@ import type { LetterDebugPayload } from "@/lib/email/sendLetterEmail";
 import { FeedbackForm } from "./FeedbackForm";
 
 export const metadata = {
-  title: "Bewertung | Brief nach Berlin",
+  title: "Bewertung | Brief-nach-Berlin",
   robots: { index: false, follow: false },
   // No referrer leakage: any link the user clicks from this page must not
   // carry the signed feedback token in the Referer header to the destination.

@@ -26,7 +26,7 @@ const brandJsonLd = {
     {
       "@type": "Organization",
       "@id": `${APP_URL}/#organization`,
-      name: "Brief nach Berlin",
+      name: "Brief-nach-Berlin",
       url: APP_URL,
       logo: {
         "@type": "ImageObject",
@@ -36,7 +36,7 @@ const brandJsonLd = {
       },
       image: `${APP_URL}/opengraph-image.jpg`,
       description:
-        "Brief nach Berlin ist ein kostenloses Tool, das Bürgerinnen und Bürgern hilft, in wenigen Minuten einen persönlichen Brief an ihre Bundestagsabgeordneten zu formulieren.",
+        "Brief-nach-Berlin hilft Bürgerinnen und Bürgern, in wenigen Minuten einen persönlichen Brief an ihre Bundestagsabgeordneten zu formulieren.",
       sameAs: ["https://github.com/tholo91/brief-nach-berlin"],
       founder: { "@id": `${APP_URL}/#founder` },
     },
@@ -50,7 +50,7 @@ const brandJsonLd = {
     {
       "@type": "WebSite",
       "@id": `${APP_URL}/#website`,
-      name: "Brief nach Berlin",
+      name: "Brief-nach-Berlin",
       url: APP_URL,
       publisher: { "@id": `${APP_URL}/#organization` },
       inLanguage: "de-DE",
@@ -62,11 +62,11 @@ export const metadata: Metadata = {
   metadataBase: new URL(APP_URL),
   title: "Brief-nach-Berlin | Dein Anliegen an die Politik, in drei Minuten",
   description:
-    "Was stört dich? Das Tool findet die zuständigen Abgeordneten und formuliert deinen Brief, der wirklich ankommt. ✉️",
+    "Was stört dich? Brief-nach-Berlin findet die zuständigen Abgeordneten und formuliert deinen Brief, der wirklich ankommt. ✉️",
   openGraph: {
     title: "Brief-nach-Berlin | Dein Anliegen an die Politik, in drei Minuten",
     description:
-      "Was stört dich? Das Tool findet die zuständigen Abgeordneten und formuliert deinen Brief, der wirklich ankommt. ✉️",
+      "Was stört dich? Brief-nach-Berlin findet die zuständigen Abgeordneten und formuliert deinen Brief, der wirklich ankommt. ✉️",
     type: "website",
     locale: "de_DE",
     url: APP_URL,
@@ -75,7 +75,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Brief-nach-Berlin | Dein Anliegen an die Politik, in drei Minuten",
     description:
-      "Was stört dich? Das Tool findet die zuständigen Abgeordneten und formuliert deinen Brief, der wirklich ankommt. ✉️",
+      "Was stört dich? Brief-nach-Berlin findet die zuständigen Abgeordneten und formuliert deinen Brief, der wirklich ankommt. ✉️",
   },
 };
 

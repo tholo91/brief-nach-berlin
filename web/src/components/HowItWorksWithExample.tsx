@@ -87,8 +87,8 @@ export default function HowItWorksWithExample() {
             So einfach geht&apos;s
           </h2>
           <p className="mt-3 font-body text-base text-warmgrau/80 max-w-xl mx-auto text-balance">
-            Du musst kein Politik-Profi sein. Das Tool findet die richtigen Worte
-            und Adressen und formuliert deinen Brief.
+            Du musst kein Politik-Profi sein. Brief-nach-Berlin findet die
+            richtigen Worte und Adressen und formuliert deinen Brief.
           </p>
         </div>
 

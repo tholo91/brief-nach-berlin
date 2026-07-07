@@ -3,7 +3,7 @@ import { APP_URL } from "@/lib/config";
 import { VariantForm } from "./VariantForm";
 
 export const metadata: Metadata = {
-  title: "Brief anpassen | Brief nach Berlin",
+  title: "Brief anpassen | Brief-nach-Berlin",
   description:
     "Formuliere einen bestehenden Briefentwurf neu, ohne einen neuen Brief zu erzeugen.",
   alternates: {
@@ -27,8 +27,8 @@ export default function BriefAnpassenPage() {
         </h1>
         <p className="font-body text-sm text-warmgrau/70 leading-relaxed mb-8">
           Der Brief wird aus Datenschutzgründen nicht gespeichert. Kopiere deshalb
-          den Entwurf aus deiner E-Mail hier hinein, wähle eine Tonalität und wir
-          schicken dir eine umformulierte Variante.
+          den Entwurf aus deiner E-Mail hier hinein, wähle eine Tonalität und du
+          bekommst eine umformulierte Variante.
         </p>
 
         <VariantForm />

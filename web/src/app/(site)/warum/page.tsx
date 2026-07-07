@@ -13,7 +13,7 @@ const URL_PATH = "/warum";
 const PUBLISHED = "2026-05-20";
 
 export const metadata: Metadata = {
-  title: `${TITLE} | Brief nach Berlin`,
+  title: `${TITLE} | Brief-nach-Berlin`,
   description: DESCRIPTION,
   alternates: {
     canonical: `${APP_URL}${URL_PATH}`,
@@ -81,7 +81,7 @@ const articleJsonLd = {
   },
   publisher: {
     "@type": "Organization",
-    name: "Brief nach Berlin",
+    name: "Brief-nach-Berlin",
     url: APP_URL,
   },
   mainEntityOfPage: `${APP_URL}${URL_PATH}`,
@@ -266,12 +266,13 @@ export default function WarumPage() {
               Aus fünf Hürden wird eine
             </h2>
           <p>
-            Du sagst uns, was dich stört, und deine Postleitzahl. Den Rest
-            übernehmen wir. Wir finden die richtige Ansprechperson, wir
-            schlagen einen Brief vor, der zu deinem Anliegen passt, und du
-            schreibst ihn in Ruhe ab. Du bleibst die Autorin, die
-            Unterzeichnerin, der Mensch dahinter. Wir sind nur die Brücke
-            zwischen dem Anliegen und dem Schreibtisch der richtigen Person.
+            Du beschreibst, was dich stört, und gibst deine Postleitzahl ein.
+            Brief-nach-Berlin findet die richtige Ansprechperson und schlägt
+            einen Brief vor, der zu deinem Anliegen passt. Danach schreibst du
+            ihn in Ruhe ab. Du bleibst die Autorin, die
+            Unterzeichnerin, der Mensch dahinter. Das Projekt ist nur die
+            Brücke zwischen dem Anliegen und dem Schreibtisch der richtigen
+            Person.
           </p>
           <p>
             Meine Mutter war übrigens die erste Nutzerin. Sie hat ihren Brief
@@ -319,7 +320,7 @@ export default function WarumPage() {
               empfohlen wurde, haben sich die Nutzerzahlen versechsfacht.
             </p>
             <p className="font-body text-sm text-warmgrau">
-              Wenn das Tool für dich funktioniert hat, erzähl es weiter. Genau
+              Wenn Brief-nach-Berlin für dich funktioniert hat, erzähl es weiter. Genau
               so verbreitet sich das hier.
             </p>
           </div>
@@ -351,7 +352,7 @@ export default function WarumPage() {
             verändert etwas.
           </p>
           <p>
-            Solange dieses Tool Leuten dabei hilft, trage ich die Kosten
+            Solange Brief-nach-Berlin Leuten dabei hilft, trage ich die Kosten
             gerne selbst. Sollte es eines Tages zu groß werden, frage ich um
             Unterstützung. Bis dahin läuft es einfach weiter.
           </p>
@@ -379,7 +380,7 @@ export default function WarumPage() {
             Probier es aus
           </h2>
           <p className="font-body text-warmgrau leading-relaxed mb-6">
-            Sag uns, was dich stört, und deine Postleitzahl. Drei Minuten
+            Beschreib, was dich stört, und gib deine Postleitzahl ein. Drei Minuten
             später hast du einen Brief, den du in Ruhe abschreiben kannst.
           </p>
           <Link

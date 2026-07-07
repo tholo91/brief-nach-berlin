@@ -202,7 +202,7 @@ export function PressMarquee() {
           className={`press-marquee-container press-marquee-fade w-full py-6 overflow-x-hidden transition-opacity duration-500 ${
             ready ? "opacity-100" : "opacity-0"
           }`}
-          aria-label="Medien, die über Brief nach Berlin berichtet haben"
+          aria-label="Medien, die über Brief-nach-Berlin berichtet haben"
         >
           <div className="press-marquee-track flex items-center gap-8 md:gap-12 w-max px-4">
             {[...PRESS_ITEMS, ...PRESS_ITEMS].map((item, index) => {

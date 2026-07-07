@@ -22,7 +22,7 @@ export default function Roadmap() {
           >
             Open Source
           </a>
-          . Ich baue Brief nach Berlin mit eurem Feedback stetig weiter. Hier ist, worauf ich mich als nächstes konzentriere:
+          . Ich baue Brief-nach-Berlin mit eurem Feedback stetig weiter. Hier ist, worauf ich mich gerade konzentriere:
         </p>
 
         <div className="grid md:grid-cols-3 gap-8">
@@ -43,7 +43,7 @@ export default function Roadmap() {
                 Kommunal, Landes-, Bundes- oder Europapolitik
               </h3>
               <p className="font-body text-base text-warmgrau/80 leading-relaxed mb-3">
-                Nicht jedes Anliegen gehört nach Berlin. Ich arbeite dran, dass dein Anliegen automatisch an das zuständige politische Level formuliert wird, damit dein Brief dort landet, wo er am meisten bewirkt.
+                Nicht jedes Anliegen gehört nach Berlin. Land und Kommune waren als nächste Ausbaustufe geplant; ich habe aber den Kampagnenmodus vorgezogen, weil aktuelle politische Entwicklungen schnell gemeinsame, persönliche Briefe gebraucht haben. Realistisch ist jetzt Juli/August 2026.
               </p>
               <p className="font-body text-sm text-warmgrau/70 leading-relaxed mb-4">
                 <Link href="/kommune-land-bund-eu" prefetch={false} className="text-waldgruen hover:text-waldgruen-dark underline decoration-waldgruen/30 underline-offset-2 hover:decoration-waldgruen transition-colors">
@@ -51,7 +51,7 @@ export default function Roadmap() {
                 </Link>
               </p>
               <span className="inline-block font-typewriter text-[10px] font-bold tracking-wider uppercase text-waldgruen bg-waldgruen/10 px-2 py-0.5 rounded-full">
-                Coming soon
+                Juli/August 2026
               </span>
             </div>
           </div>
@@ -73,9 +73,17 @@ export default function Roadmap() {
               Feedback geben oder mitbauen
             </h3>
             <p className="font-body text-base text-warmgrau leading-relaxed max-w-xl">
-              Jede Rückmeldung hilft mir. Wenn du Feedback hast, Brief nach
-              Berlin weiterempfehlen willst oder mitbauen möchtest: Schreib mir
-              kurz. Der Code ist offen. Auch eine{" "}
+              Jede Rückmeldung hilft mir. Wenn du Feedback hast,
+              Brief-nach-Berlin weiterempfehlen willst, eine{" "}
+              <Link
+                href="/kampagne/starten"
+                prefetch={false}
+                className="text-waldgruen hover:text-waldgruen-dark underline underline-offset-2 transition-colors"
+              >
+                Kampagne starten
+              </Link>{" "}
+              möchtest oder mitbauen möchtest: Schreib mir kurz. Der Code ist
+              offen. Auch eine{" "}
               <Link
                 href="/europe"
                 prefetch={false}

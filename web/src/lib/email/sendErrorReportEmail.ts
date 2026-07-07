@@ -62,7 +62,7 @@ function buildHtml(input: ErrorReportInput): string {
 
   return `<!DOCTYPE html>
 <html lang="de"><body style="font-family:-apple-system,Segoe UI,Roboto,sans-serif;color:#1a1a1a;line-height:1.5;max-width:680px;">
-  <h2 style="margin:0 0 4px;">Fehler-Report: Brief nach Berlin</h2>
+  <h2 style="margin:0 0 4px;">Fehler-Report: Brief-nach-Berlin</h2>
   <p style="margin:0 0 16px;color:#666;">Ein User hat auf der Success-Page "Fehler melden" geklickt.</p>
 
   <table style="border-collapse:collapse;font-size:14px;margin-bottom:20px;">
@@ -101,7 +101,7 @@ export async function sendErrorReportEmail(
       subject: `[BnB Fehler] HTTP ${input.httpStatus ?? "client"} / ${input.errorId ?? "?"}`,
       htmlContent: buildHtml(input),
       sender: {
-        name: "Brief nach Berlin Fehlermelder",
+        name: "Brief-nach-Berlin Fehlermelder",
         email: process.env.BREVO_SENDER_EMAIL || "brief@brief-nach-berlin.de",
       },
       to: [{ email: CONTACT.email }],

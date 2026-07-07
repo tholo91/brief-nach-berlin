@@ -61,7 +61,7 @@ export function buildVariantEmailHtml(
           </tr>
           <tr>
             <td class="bnb-pad" style="padding:28px 32px 18px;text-align:center;background-color:#ffffff;">
-              <h1 style="margin:0;font-family:Georgia,'Times New Roman',serif;font-size:22px;color:#2D5016;font-weight:bold;letter-spacing:0.5px;">Brief nach Berlin</h1>
+              <h1 style="margin:0;font-family:Georgia,'Times New Roman',serif;font-size:22px;color:#2D5016;font-weight:bold;letter-spacing:0.5px;">Brief-nach-Berlin</h1>
               <p style="margin:8px 0 0;font-family:Georgia,'Times New Roman',serif;font-size:14px;color:#666666;">Dein angepasster Briefentwurf ist fertig.</p>
             </td>
           </tr>
@@ -97,7 +97,7 @@ export function buildVariantEmailHtml(
           <tr>
             <td class="bnb-pad" style="padding:24px 32px;background-color:#FAF8F5;text-align:center;">
               <p style="margin:0;font-family:Georgia,'Times New Roman',serif;font-size:12px;color:#999999;">
-                <a href="${APP_URL}" style="color:#2D5016;text-decoration:none;">Brief nach Berlin</a> · Eine Initiative von <a href="${FOUNDER_HOMEPAGE}" target="_blank" rel="noopener noreferrer" style="color:#999999;text-decoration:underline;">Thomas Lorenz</a>${debug ? ` · <a href="${buildDebugUrl(debug)}" style="color:#888888;text-decoration:none;">Debug</a>` : ""}
+                <a href="${APP_URL}" style="color:#2D5016;text-decoration:none;">Brief-nach-Berlin</a> · Eine Initiative von <a href="${FOUNDER_HOMEPAGE}" target="_blank" rel="noopener noreferrer" style="color:#999999;text-decoration:underline;">Thomas Lorenz</a>${debug ? ` · <a href="${buildDebugUrl(debug)}" style="color:#888888;text-decoration:none;">Debug</a>` : ""}
               </p>
             </td>
           </tr>

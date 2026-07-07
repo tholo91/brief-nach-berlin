@@ -2,6 +2,7 @@ import { BrevoClient } from "@getbrevo/brevo";
 import { buildEmailHtml } from "./buildEmailHtml";
 import { signFeedbackToken } from "@/lib/feedback/token";
 import type { Politician } from "@/lib/types/politician";
+import type { Recipient } from "@/lib/lookup/rathausRecipient";
 import { EMAIL_SUBJECT, EMAIL_SENDER_NAME } from "@/lib/config";
 import type { WizardData } from "@/lib/types/wizard";
 
@@ -56,6 +57,12 @@ export interface LetterDebugPayload {
   // generierungs-spezifischen Felder (model/temperature/generationMs/…) Platzhalter.
   // /debug zeigt das als Hinweis an, damit man die Werte nicht fehlinterpretiert.
   resent?: boolean;
+  // Routing-Telemetrie (999.6, D17). Lebt NUR in der Base64-Debug-URL, nie als
+  // sichtbarer Text in der Mail (LOCK-4c). Optional, damit alte Payloads decodieren.
+  routedPrimaryLevel?: "Bund" | "Land" | "Kommune" | null;
+  routedPrimaryConfidence?: "high" | "medium" | "low" | null;
+  wasOverridden?: boolean;
+  selectedLevel?: "Bund" | "Land" | "Kommune";
 }
 
 export interface SendLetterEmailParams {
@@ -64,9 +71,17 @@ export interface SendLetterEmailParams {
   politicianFirstName: string;
   politicianLastName: string;
   politicianTitle: string | null;
-  politicianParty: string;
+  // null für Verwaltungs-Empfänger (rathaus) — dort gibt es keine Partei
+  politicianParty: string | null;
   politicianPostalAddress: string;
   politicianAbgeordnetenwatchUrl: string | null;
+  // 999.6: steuert Adressblock + Profil-Link-Logik in buildEmailHtml.
+  // "mdb" hält das heutige Layout exakt; "mdl" nutzt die Landtag-Anschrift aus
+  // postalAddress (keine "Deutscher Bundestag"-Zeile); "rathaus" hat weder
+  // Partei noch Profil-Link, dafür eine Google-Adresshilfe-Zeile.
+  recipientKind: "mdb" | "mdl" | "rathaus";
+  // Nur rathaus: für die Google-Adresssuche ("Rathaus Adresse {PLZ} {Ort}")
+  rathausSearch?: { plz: string; ort: string };
   letterText: string;
   issueText: string;
   debug?: LetterDebugPayload;
@@ -86,15 +101,41 @@ export interface SendLetterEmailParams {
 // für die Followup-Mail wiederverwendet.
 export function prepareLetterEmail(args: {
   recipientEmail: string;
-  politician: Politician;
+  recipient: Recipient;
   letterText: string;
   issueText: string;
   debug: LetterDebugPayload;
   campaign?: WizardData["campaign"];
   letterNumber?: number;
 }): { params: SendLetterEmailParams; feedbackToken: string } {
-  const { recipientEmail, politician, letterText, issueText, debug, campaign, letterNumber } = args;
+  const { recipientEmail, recipient, letterText, issueText, debug, campaign, letterNumber } = args;
   const feedbackToken = signFeedbackToken(debug);
+
+  if (recipient.kind === "rathaus") {
+    return {
+      feedbackToken,
+      params: {
+        recipientEmail,
+        politicianName: recipient.label,
+        politicianFirstName: "",
+        politicianLastName: recipient.label,
+        politicianTitle: null,
+        politicianParty: null,
+        politicianPostalAddress: recipient.postalAddress,
+        politicianAbgeordnetenwatchUrl: null,
+        recipientKind: "rathaus",
+        rathausSearch: { plz: recipient.plz, ort: recipient.gemeindeName },
+        letterText,
+        issueText,
+        debug,
+        feedbackToken,
+        campaign,
+        letterNumber,
+      },
+    };
+  }
+
+  const politician: Politician = recipient;
   return {
     feedbackToken,
     params: {
@@ -106,6 +147,7 @@ export function prepareLetterEmail(args: {
       politicianParty: politician.party,
       politicianPostalAddress: politician.postalAddress,
       politicianAbgeordnetenwatchUrl: politician.abgeordnetenwatchUrl,
+      recipientKind: recipient.kind,
       letterText,
       issueText,
       debug,

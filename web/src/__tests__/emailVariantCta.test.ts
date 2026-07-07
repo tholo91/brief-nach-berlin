@@ -13,6 +13,7 @@ function makeParams(
     politicianParty: "SPD",
     politicianPostalAddress: "Platz der Republik 1, 11011 Berlin",
     politicianAbgeordnetenwatchUrl: null,
+    recipientKind: "mdb" as const,
     letterText,
     issueText: "Sichere Radwege",
   };

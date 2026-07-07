@@ -1,7 +1,8 @@
 import type { Politician, PoliticalLevel } from "./politician";
+import type { RathausRecipient, Recipient } from "@/lib/lookup/rathausRecipient";
 import type { LetterLength } from "@/lib/config";
 
-export type WizardStep = 1 | 2 | "2b" | 3;
+export type WizardStep = 1 | 2 | "2b" | "level" | 3;
 
 export interface WizardData {
   plz: string;
@@ -33,6 +34,32 @@ export interface MdbContext {
   recentRelevant: { date: string; title: string; snippet: string }[];
 }
 
+export type LetterConfidence = "high" | "medium" | "low";
+
+/**
+ * Ebenen-Routing-Kontext für den Ebene-Auswahl-Step (999.6).
+ * `recommended` ist null, wenn das Routing fehlgeschlagen ist — die UI zeigt
+ * dann keinen sichtbaren Fehler, sondern den "bitte wähle selbst"-Hinweis.
+ */
+export interface LevelRoutingContext {
+  recommended: { level: PoliticalLevel; confidence: LetterConfidence } | null;
+  reasoning: string | null;
+  byLevel: {
+    Bund: Politician[];
+    Land: Politician[];
+    Kommune: RathausRecipient[];
+  };
+  coverage: {
+    landSupported: boolean;
+    kommuneSupported: boolean;
+    stadtstaatEinheitsgemeinde: boolean;
+  };
+  bundeslandName: string | null;
+  ortsname: string | null;
+  /** Ehrlicher Hinweis, wenn die empfohlene Ebene für die PLZ nicht abgedeckt ist */
+  coverageHint: string | null;
+}
+
 export interface GenerateLetterInput {
   issueText: string;
   politicians: Politician[];
@@ -42,11 +69,23 @@ export interface GenerateLetterInput {
   letterLength?: LetterLength;
   toneLevel?: number;
   mdbContext?: MdbContext;
+  /** Ebene des Empfängers; default "Bund" (heutiges Verhalten) */
+  level?: PoliticalLevel;
+  /** Kommune: synthetischer Verwaltungs-Empfänger statt politicians[] */
+  rathaus?: RathausRecipient;
+  /**
+   * Gesetzt, wenn der User bewusst eine andere Ebene als die empfohlene
+   * gewählt hat — der Brief macht den Kompetenz-Mismatch transparent.
+   */
+  mismatchRecommendedLevel?: PoliticalLevel;
 }
 
 export interface GenerateLetterResult {
   letter: string;
-  selectedPolitician: Politician;
+  /** Der aufgelöste Empfänger (mdb/mdl/rathaus) */
+  selectedRecipient: Recipient;
+  /** Für mdb/mdl der Politician; für rathaus null */
+  selectedPolitician: Politician | null;
   politicalLevel: PoliticalLevel;
   wordCount: number;
   wordCountInRange: boolean;
@@ -60,8 +99,13 @@ export interface GenerateLetterResult {
 
 export type WizardActionResult =
   | { success: true; politician: Politician; politicalLevel: PoliticalLevel; letterText: string }
-  | { preCheckOk: true; politician: Politician }
-  | { disambiguationNeeded: true; politicians: Politician[] }
+  | { preCheckOk: true; recipient: Recipient }
+  | {
+      disambiguationNeeded: true;
+      politicians: Politician[];
+      /** Nur gesetzt, wenn LANDTAG_ROUTING_ENABLED aktiv ist */
+      levelRouting?: LevelRoutingContext;
+    }
   | { error: "moderation_rejected"; message: string }
   | { error: "output_moderation_rejected"; message: string }
   | { error: "generation_failed"; message: string }

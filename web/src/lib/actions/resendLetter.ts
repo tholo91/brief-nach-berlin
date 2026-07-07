@@ -1,9 +1,10 @@
 "use server";
 
 import type { WizardData } from "@/lib/types/wizard";
+import type { RecipientSelection } from "@/lib/lookup/rathausRecipient";
 import { step1Schema, step1bSchema, step2Schema } from "@/lib/validation/wizardSchemas";
 import { moderateText } from "@/lib/moderation/moderateText";
-import { lookupPLZ } from "@/lib/lookup/plzLookup";
+import { resolveRecipientSelection } from "@/lib/lookup/resolveRecipient";
 import { sendLetterEmail, prepareLetterEmail } from "@/lib/email/sendLetterEmail";
 import { buildResendDebugPayload } from "@/lib/email/buildDebugPayload";
 import { DEFAULT_LETTER_LENGTH } from "@/lib/config";
@@ -24,11 +25,13 @@ const RESEND_LIMIT_MESSAGE =
 // text is re-moderated before sending as a defense-in-depth measure.
 export async function resendLetterAction(
   data: WizardData,
-  selectedPoliticianId: number,
+  selection: RecipientSelection | number,
   cachedLetterText: string
 ): Promise<{ success: true } | { error: string; message: string; retryAfterSeconds?: number }> {
   try {
-    console.log("[resendLetter] start", { email: "***", politicianId: selectedPoliticianId });
+    const normalizedSelection: RecipientSelection =
+      typeof selection === "number" ? { kind: "mdb", selectedPoliticianId: selection } : selection;
+    console.log("[resendLetter] start", { email: "***", kind: normalizedSelection.kind });
 
     const s1 = step1Schema.safeParse(data);
     if (!s1.success) return { error: "validation", message: "Ungültige Eingabe." };
@@ -67,22 +70,19 @@ export async function resendLetterAction(
       return { error: "rate_limited", message: RESEND_LIMIT_MESSAGE, retryAfterSeconds: emailLimit.retryAfterSeconds };
     }
 
-    // Re-derive politician server-side — never trust a client-supplied politician
-    // object. The selectedPoliticianId MUST be in the PLZ-derived list, otherwise
-    // the request is tampered or stale.
-    const { politicians: derivedPoliticians } = lookupPLZ(data.plz);
-    if (derivedPoliticians.length === 0) {
-      return { error: "validation", message: "Ungültige Eingabe." };
-    }
-    const politician = derivedPoliticians.find((p) => p.id === selectedPoliticianId);
-    if (!politician) {
-      console.warn("[resendLetter] id not in derived list", {
+    // Re-derive recipient server-side — never trust client-supplied recipient
+    // data. mdb/mdl: ID muss in der PLZ-abgeleiteten Ebenen-Liste stehen;
+    // rathaus wird komplett aus der PLZ gebaut (LOCK-5).
+    const resolved = resolveRecipientSelection(data.plz, normalizedSelection);
+    if (!resolved.ok) {
+      console.warn("[resendLetter] selection not resolvable", {
         plz: data.plz,
-        selectedPoliticianId,
-        derivedIds: derivedPoliticians.map((p) => p.id),
+        kind: normalizedSelection.kind,
+        reason: resolved.reason,
       });
       return { error: "validation", message: "Ungültige Eingabe." };
     }
+    const recipient = resolved.recipient;
 
     // Moderate the cached letter text before re-sending (defense-in-depth)
     const outMod = await moderateText(cachedLetterText);
@@ -96,13 +96,13 @@ export async function resendLetterAction(
     // resent: true (generierungs-spezifische Felder sind Platzhalter).
     const debugPayload = buildResendDebugPayload(
       data,
-      politician,
-      derivedPoliticians.length,
+      recipient,
+      resolved.availableCount,
       cachedLetterText
     );
     const { params } = prepareLetterEmail({
       recipientEmail: data.email,
-      politician,
+      recipient,
       letterText: cachedLetterText,
       issueText: data.issueText,
       debug: debugPayload,

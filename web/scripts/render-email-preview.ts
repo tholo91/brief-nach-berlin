@@ -77,6 +77,7 @@ const html = buildEmailHtml({
   politicianPostalAddress: "Platz der Republik 1, 11011 Berlin",
   politicianAbgeordnetenwatchUrl:
     "https://www.abgeordnetenwatch.de/profile/sarah-mustermann",
+  recipientKind: "mdb" as const,
   letterText: dummyLetter,
   issueText:
     "Die Radwege in Bremen sind in einem schlechten Zustand. Mehr Investitionen aus dem Klima-Sondervermögen für Radinfrastruktur in Kommunen.",

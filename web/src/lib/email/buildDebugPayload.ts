@@ -1,7 +1,16 @@
 import type { LetterDebugPayload } from "./sendLetterEmail";
 import type { GenerateLetterResult, WizardData } from "@/lib/types/wizard";
-import type { Politician } from "@/lib/types/politician";
+import type { Politician, PoliticalLevel } from "@/lib/types/politician";
+import type { Recipient } from "@/lib/lookup/rathausRecipient";
 import { LETTER_LENGTHS, DEFAULT_LETTER_LENGTH } from "@/lib/config";
+
+/** Routing-Telemetrie für die Debug-URL (D17, LOCK-4c: nie sichtbarer Mail-Text). */
+export interface LetterRoutingInfo {
+  routedPrimaryLevel: PoliticalLevel | null;
+  routedPrimaryConfidence: "high" | "medium" | "low" | null;
+  wasOverridden: boolean;
+  selectedLevel: PoliticalLevel;
+}
 
 // Max-Länge des Anliegen-Auszugs im Debug-Link. Hält die base64-URL klein
 // genug, dass Gmail/Outlook sie nicht kürzen. 600 deckt praktisch jeden realen
@@ -19,13 +28,19 @@ export const TONE_LABELS: Record<number, string> = {
 export function buildDebugPayload(
   data: WizardData,
   result: GenerateLetterResult,
-  availablePoliticianCount: number
+  availablePoliticianCount: number,
+  routing?: LetterRoutingInfo
 ): LetterDebugPayload {
   const lengthKey = data.letterLength ?? DEFAULT_LETTER_LENGTH;
   const { min, max } = LETTER_LENGTHS[lengthKey];
   const tone = data.toneLevel ?? 3;
+  const recipient = result.selectedRecipient;
   const p = result.selectedPolitician;
-  const fullName = [p.title, p.firstName, p.lastName].filter(Boolean).join(" ");
+  const fullName = p
+    ? [p.title, p.firstName, p.lastName].filter(Boolean).join(" ")
+    : recipient.kind === "rathaus"
+      ? recipient.label
+      : "—";
 
   return {
     toneLevel: data.toneLevel,
@@ -41,9 +56,10 @@ export function buildDebugPayload(
     retried: result.retried,
     politicalLevel: result.politicalLevel,
     representativeName: fullName,
-    representativeWahlkreis: p.wahlkreisName ?? "—",
-    representativeLevel: p.level ?? "—",
-    representativeParty: p.party ?? null,
+    representativeWahlkreis:
+      recipient.kind === "rathaus" ? `${recipient.plz} ${recipient.gemeindeName}` : p?.wahlkreisName ?? "—",
+    representativeLevel: recipient.level ?? "—",
+    representativeParty: p?.party ?? null,
     mdbContextUsed: result.mdbContextUsed ?? false,
     availablePoliticianCount,
     model: result.model,
@@ -54,8 +70,16 @@ export function buildDebugPayload(
     usedSpeechToText: data.usedSpeechToText ?? false,
     tipsOpened: data.tipsOpened ?? false,
     userEmail: data.email,
-    politicianId: p.id,
+    politicianId: p?.id,
     plz: data.plz,
+    ...(routing
+      ? {
+          routedPrimaryLevel: routing.routedPrimaryLevel,
+          routedPrimaryConfidence: routing.routedPrimaryConfidence,
+          wasOverridden: routing.wasOverridden,
+          selectedLevel: routing.selectedLevel,
+        }
+      : {}),
   };
 }
 
@@ -66,16 +90,19 @@ export function buildDebugPayload(
 // wordCount wird aus dem gecachten Brieftext neu gezählt (gleiche Logik wie oben).
 export function buildResendDebugPayload(
   data: WizardData,
-  politician: Politician,
+  recipient: Recipient,
   availablePoliticianCount: number,
   cachedLetterText: string
 ): LetterDebugPayload {
   const lengthKey = data.letterLength ?? DEFAULT_LETTER_LENGTH;
   const { min, max } = LETTER_LENGTHS[lengthKey];
   const tone = data.toneLevel ?? 3;
-  const fullName = [politician.title, politician.firstName, politician.lastName]
-    .filter(Boolean)
-    .join(" ");
+  const politician: Politician | null = recipient.kind === "rathaus" ? null : recipient;
+  const fullName = politician
+    ? [politician.title, politician.firstName, politician.lastName].filter(Boolean).join(" ")
+    : recipient.kind === "rathaus"
+      ? recipient.label
+      : "—";
   const wordCount = cachedLetterText.trim().split(/\s+/).filter(Boolean).length;
 
   return {
@@ -91,11 +118,14 @@ export function buildResendDebugPayload(
     // Generierungs-spezifisch, beim Resend nicht vorhanden:
     fallbackUsed: false,
     retried: false,
-    politicalLevel: politician.level,
+    politicalLevel: recipient.level,
     representativeName: fullName,
-    representativeWahlkreis: politician.wahlkreisName ?? "—",
-    representativeLevel: politician.level ?? "—",
-    representativeParty: politician.party ?? null,
+    representativeWahlkreis:
+      recipient.kind === "rathaus"
+        ? `${recipient.plz} ${recipient.gemeindeName}`
+        : politician?.wahlkreisName ?? "—",
+    representativeLevel: recipient.level ?? "—",
+    representativeParty: politician?.party ?? null,
     mdbContextUsed: false,
     availablePoliticianCount,
     model: "n/a (resend)",
@@ -106,7 +136,7 @@ export function buildResendDebugPayload(
     usedSpeechToText: data.usedSpeechToText ?? false,
     tipsOpened: data.tipsOpened ?? false,
     userEmail: data.email,
-    politicianId: politician.id,
+    politicianId: politician?.id,
     plz: data.plz,
     resent: true,
   };

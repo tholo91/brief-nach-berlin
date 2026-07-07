@@ -117,6 +117,7 @@ Eine Bürgerin aus Ihrem Wahlkreis`;
     politicianParty: "SPD",
     politicianPostalAddress: "Platz der Republik 1, 11011 Berlin",
     politicianAbgeordnetenwatchUrl: "https://www.abgeordnetenwatch.de/profile/anna-mueller",
+    recipientKind: "mdb" as const,
     letterText: dummyLetter,
     issueText: "Radwege im Viertel sind seit Monaten kaputt",
     feedbackToken: "dummy-token-for-preview",

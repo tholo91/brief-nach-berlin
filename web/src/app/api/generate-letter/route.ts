@@ -1,19 +1,30 @@
 import { NextRequest, NextResponse, after } from "next/server";
 import { randomUUID } from "node:crypto";
+import { z } from "zod";
 import type { WizardData } from "@/lib/types/wizard";
+import type { RecipientSelection } from "@/lib/lookup/rathausRecipient";
 import { step1Schema, step1bSchema, step2Schema } from "@/lib/validation/wizardSchemas";
-import { lookupPLZ } from "@/lib/lookup/plzLookup";
+import { resolveRecipientSelection } from "@/lib/lookup/resolveRecipient";
+import { verifyRoutingToken } from "@/lib/lookup/routingToken";
 import { moderateText } from "@/lib/moderation/moderateText";
 import { generateLetter } from "@/lib/generation/generateLetter";
 import { fetchMdbContext } from "@/lib/enrichment/fetchMdbContext";
 import { sendLetterEmail, prepareLetterEmail } from "@/lib/email/sendLetterEmail";
 import { sendFollowupEmail } from "@/lib/email/sendFollowupEmail";
 import { computeFollowupSlot } from "@/lib/email/computeFollowupSlot";
-import { buildDebugPayload } from "@/lib/email/buildDebugPayload";
+import { buildDebugPayload, type LetterRoutingInfo } from "@/lib/email/buildDebugPayload";
 import { checkRateLimit, hashIdentifier, LIMITS } from "@/lib/rateLimit";
 import { DEFAULT_LETTER_LENGTH } from "@/lib/config";
 import { MistralProviderUnavailableError } from "@/lib/mistral";
 import { incrementLetterCounters } from "@/lib/counter";
+
+// Client-Auswahl: diskriminierte Union (999.6). rathaus trägt bewusst KEINE
+// ID — der Empfänger wird serverseitig aus der PLZ abgeleitet (LOCK-5).
+const selectionSchema = z.discriminatedUnion("kind", [
+  z.object({ kind: z.literal("mdb"), selectedPoliticianId: z.number().int() }),
+  z.object({ kind: z.literal("mdl"), selectedPoliticianId: z.number().int() }),
+  z.object({ kind: z.literal("rathaus") }),
+]);
 
 export const maxDuration = 60;
 
@@ -96,10 +107,25 @@ function extractErrorDetail(error: unknown): ErrorDetail {
 
 export async function POST(req: NextRequest) {
   try {
-    const body = await req.json() as { wizardData?: WizardData; selectedPoliticianId?: unknown };
-    const { wizardData: data, selectedPoliticianId } = body;
+    const body = await req.json() as {
+      wizardData?: WizardData;
+      selection?: unknown;
+      selectedPoliticianId?: unknown;
+      routingToken?: unknown;
+    };
+    const { wizardData: data } = body;
 
-    if (!data || typeof selectedPoliticianId !== "number") {
+    // Auswahl normalisieren: neues selection-Objekt bevorzugt, nackte Zahl
+    // bleibt als Legacy-Pfad (Bund/mdb) akzeptiert.
+    let selection: RecipientSelection | null = null;
+    if (body.selection !== undefined) {
+      const parsedSelection = selectionSchema.safeParse(body.selection);
+      if (parsedSelection.success) selection = parsedSelection.data;
+    } else if (typeof body.selectedPoliticianId === "number") {
+      selection = { kind: "mdb", selectedPoliticianId: body.selectedPoliticianId };
+    }
+
+    if (!data || !selection) {
       return NextResponse.json({ error: "Ungültige Anfrage." }, { status: 400 });
     }
 
@@ -138,35 +164,62 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Re-derive politicians server-side — never trust the client-supplied ID alone
-    const { politicians: derivedPoliticians } = lookupPLZ(data.plz);
-    if (derivedPoliticians.length === 0) {
-      return NextResponse.json(
-        { error: "Für diese Postleitzahl sind derzeit keine Abgeordneten hinterlegt." },
-        { status: 404 }
-      );
+    // Re-derive recipient server-side — never trust client-supplied data.
+    // mdb/mdl: ID muss in der PLZ-abgeleiteten Ebenen-Liste stehen.
+    // rathaus: wird komplett aus der PLZ gebaut (LOCK-5).
+    const resolved = resolveRecipientSelection(data.plz, selection);
+    if (!resolved.ok) {
+      return NextResponse.json({ error: "Empfänger nicht gefunden." }, { status: 400 });
     }
-    const selectedPolitician = derivedPoliticians.find((p) => p.id === selectedPoliticianId);
-    if (!selectedPolitician) {
-      return NextResponse.json({ error: "Politiker nicht gefunden." }, { status: 400 });
-    }
+    const recipient = resolved.recipient;
 
-    // Enrich with MdB context (silent failure: letter still ships if slow/unreachable)
-    const mdbContext = await fetchMdbContext(
-      selectedPolitician.id,
-      data.issueText,
-      selectedPolitician.committees
-    );
+    // Routing-Kontext: NUR über den signierten Prefetch-Token (LOCK-10).
+    // Daraus leiten sich Kompetenz-Mismatch-Framing und Debug-Telemetrie ab —
+    // beides serverseitig, ohne dem Client zu vertrauen.
+    let routingInfo: LetterRoutingInfo | null = null;
+    if (typeof body.routingToken === "string") {
+      const routing = verifyRoutingToken(body.routingToken, data.issueText);
+      if (routing) {
+        routingInfo = {
+          routedPrimaryLevel: routing.primary.level,
+          routedPrimaryConfidence: routing.primary.confidence,
+          wasOverridden: routing.primary.level !== recipient.level,
+          selectedLevel: recipient.level,
+        };
+      }
+    }
+    const mismatchRecommendedLevel =
+      routingInfo?.wasOverridden && routingInfo.routedPrimaryLevel
+        ? routingInfo.routedPrimaryLevel
+        : undefined;
+
+    // Enrich with MdB context (silent failure: letter still ships if slow/unreachable).
+    // Nur für den Bund-Pfad — MdL/Rathaus haben keine gecachten Ausschussdaten;
+    // der leere <mdb_kontext>-Block verhindert Halluzinationen.
+    const mdbContext =
+      recipient.kind === "mdb"
+        ? await fetchMdbContext(recipient.id, data.issueText, recipient.committees)
+        : undefined;
+
+    console.log("[generate-letter] recipient resolved", {
+      kind: recipient.kind,
+      level: recipient.level,
+      politicianId: recipient.kind === "rathaus" ? null : recipient.id,
+      mismatch: Boolean(mismatchRecommendedLevel),
+    });
 
     // Generate letter
     const result = await generateLetter({
       issueText: data.issueText,
-      politicians: [selectedPolitician],
+      politicians: recipient.kind === "rathaus" ? [] : [recipient],
       party: data.party,
       ngo: data.ngo,
       letterLength: data.letterLength,
       toneLevel: data.toneLevel,
       mdbContext,
+      level: recipient.level,
+      rathaus: recipient.kind === "rathaus" ? recipient : undefined,
+      mismatchRecommendedLevel,
     });
 
     // Moderate output
@@ -181,11 +234,19 @@ export async function POST(req: NextRequest) {
     // Send email + increment counter fire-and-forget
     after(async () => {
       const letterNumber = await incrementLetterCounters(data.campaign?.slug);
-      const debugPayload = buildDebugPayload(data, result, derivedPoliticians.length);
-      const politicianFullName = `${result.selectedPolitician.firstName} ${result.selectedPolitician.lastName}`;
+      const debugPayload = buildDebugPayload(
+        data,
+        result,
+        resolved.availableCount,
+        routingInfo ?? undefined
+      );
+      const politicianFullName =
+        result.selectedRecipient.kind === "rathaus"
+          ? result.selectedRecipient.label
+          : `${result.selectedRecipient.firstName} ${result.selectedRecipient.lastName}`;
       const { params, feedbackToken } = prepareLetterEmail({
         recipientEmail: data.email,
-        politician: result.selectedPolitician,
+        recipient: result.selectedRecipient,
         letterText: result.letter,
         issueText: data.issueText,
         debug: debugPayload,
@@ -227,6 +288,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({
       letterText: result.letter,
       politician: result.selectedPolitician,
+      recipient: result.selectedRecipient,
       politicalLevel: result.politicalLevel,
     });
   } catch (error) {

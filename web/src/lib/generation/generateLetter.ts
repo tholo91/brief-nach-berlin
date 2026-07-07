@@ -1,6 +1,8 @@
 import { mistral, withMistralRetry, MISTRAL_MODELS } from "@/lib/mistral";
 import type { GenerateLetterInput, GenerateLetterResult, MdbContext } from "@/lib/types/wizard";
 import type { PoliticalLevel } from "@/lib/types/politician";
+import type { Recipient } from "@/lib/lookup/rathausRecipient";
+import { extractJsonObject } from "@/lib/mistral-json";
 import { LETTER_LENGTHS, DEFAULT_LETTER_LENGTH } from "@/lib/config";
 
 const MISTRAL_TEMPERATURE = 0.4;
@@ -199,6 +201,96 @@ Antworte ausschließlich im JSON-Format:
   "letter": "<vollständiger Brieftext>"
 }`;
 
+// ---------------------------------------------------------------------------
+// Level-aware Prompt-Branches (999.6, LOCK-1):
+// Der Bund-Branch gibt SYSTEM_PROMPT_TEMPLATE byte-identisch zurück (nur
+// __TODAY__ ersetzt) — die Qualität der >600 verschickten Bund-Briefe bleibt
+// unangetastet. NUR Land und Kommune bekommen eigene Blöcke, und auch die nur,
+// wenn LETTER_PROMPT_LEVEL_AWARE=true ist (Wave-4-Kill-Switch, LOCK-6).
+// ---------------------------------------------------------------------------
+
+// Exakte Template-Segmente, die in den Land-/Kommune-Branches ersetzt werden.
+// Müssen 1:1 im SYSTEM_PROMPT_TEMPLATE vorkommen (Tests sichern das ab).
+const BUND_ZUSTAENDIGKEIT_BLOCK = `ZUSTÄNDIGKEITSHINWEIS:
+Alle verfügbaren Politiker sind Bundestagsabgeordnete. Wenn das Anliegen primär Landes- oder Kommunalebene betrifft, begründe im Brief kurz, warum sich der Bürger an die Bundestagsebene wendet (Gesetzgebungs­kompetenz, Förderprogramme, bundespolitischer Rahmen).`;
+
+const BUND_ANREDE_LINE = `- Anrede: "Sehr geehrte/r [Titel] [Name]," (Titel nur wenn vorhanden).`;
+
+const LAND_ZUSTAENDIGKEIT_BLOCK = `ZUSTÄNDIGKEITSHINWEIS:
+Alle verfügbaren Politiker sind Landtagsabgeordnete. Der Brief argumentiert in Landes-Logik, nicht in Bundes-Logik.
+
+STRATEGIE FÜR DIE LAND-EBENE (nicht verhandelbar):
+- Der Landtag gestaltet über Landesgesetze, den Landeshaushalt und Landtagsausschüsse. Nutze diese Landesinstrumente in der Forderung (z. B. Landesschulgesetz, Landespolizeigesetz, Krankenhausplan des Landes), aber erfinde keine Programmnamen.
+- Landtagswahlkreise sind klein: der konkrete regionale Bezug aus dem <transkript> (Ort, Stadtteil) ist der stärkste Hebel.
+- Fordere KEINE Bundesgesetzgebung, das wäre die falsche Ebene.
+- Zitiere KEINE Grundgesetz-Artikel mit Nummern (kein "Art. 70 GG", kein "Art. 28 GG"). Allgemeine Begriffe wie "Kulturhoheit der Länder" sind erlaubt.`;
+
+const KOMMUNE_ZUSTAENDIGKEIT_BLOCK = `ZUSTÄNDIGKEITSHINWEIS:
+Der Empfänger ist eine Kommunalverwaltung (Stadtverwaltung oder Bezirksamt), keine einzelne Politikerin und kein einzelner Politiker.
+
+STRATEGIE FÜR DIE KOMMUNALE EBENE (nicht verhandelbar):
+- Der Brief geht an eine Verwaltung ohne Wahlkampf-Logik: weniger ideologisch, weniger "big picture", dafür konkret, sachlich, alltagsnah und lösungsorientiert.
+- Benenne, wo es passt, die zuständige Verwaltungseinheit (z. B. Bauamt, Ordnungsamt, Grünflächenamt, Tiefbauamt), aber erfinde keine Ämter, die nicht naheliegend sind.
+- Verweise, wo es passt, auf die kommunale Selbstverwaltung und Pflichtaufgaben der Gemeinde (z. B. Straßenunterhaltung, Bauleitplanung), ohne Paragraphen oder Artikel zu zitieren.
+- Konkrete Orts- und Straßenangaben aus dem <transkript> sind der stärkste Hebel.
+- Zitiere KEINE Grundgesetz-Artikel mit Nummern.`;
+
+const KOMMUNE_ANREDE_LINE = `- Anrede: exakt wie im <empfaenger>-Block vorgegeben ("Sehr geehrte Damen und Herren der Stadtverwaltung," oder "Sehr geehrte Damen und Herren des Bezirksamts,"). Kein Name, keine Einzelperson.`;
+
+// Das Partei-Framing des Templates ergibt für eine Verwaltung keinen Sinn.
+// Ersetzt wird nur die Einleitungszeile; die Partei-Liste darunter bleibt
+// stehen, wird aber durch die Anweisung neutralisiert.
+const BUND_PARTEI_HEADER = `PARTEI-BEWUSSTES FRAMING (Werte, nicht Strategie):
+Passe die Werte-Sprache an die Partei der Empfängerin/des Empfängers an, damit das Anliegen anschluss­fähig wird. Du benennst keine Parteien außer der adressierten und kommentierst keine Parteidynamiken.`;
+
+const KOMMUNE_PARTEI_HEADER = `PARTEI-NEUTRALITÄT (Verwaltung):
+Der Empfänger ist eine Verwaltung und hat keine Partei. Verwende KEINE parteibezogene Werte-Sprache und benenne keine Parteien. Die folgende Liste gilt für diesen Brief NICHT:`;
+
+/** Kompetenz-Mismatch: der User schreibt bewusst an eine andere als die empfohlene Ebene. */
+const LEVEL_LABELS: Record<PoliticalLevel, string> = {
+  Bund: "Bundesebene (Bundestag)",
+  Land: "Landesebene (Landtag)",
+  Kommune: "kommunale Ebene (Stadtverwaltung/Rathaus)",
+};
+
+function mismatchBlock(selected: PoliticalLevel, recommended: PoliticalLevel): string {
+  return `
+
+KOMPETENZ-HINWEIS (wichtig):
+Der Bürger hat sich bewusst entschieden, an die ${LEVEL_LABELS[selected]} zu schreiben, obwohl sein Anliegen primär in die Zuständigkeit der ${LEVEL_LABELS[recommended]} fällt. Verschweige diese Spannung nicht: Mache früh im Brief in einem Satz transparent, dass die unmittelbare Zuständigkeit woanders liegt, und begründe, warum der Bürger trotzdem an diese Adresse schreibt (politisches Gewicht, öffentliche Aufmerksamkeit, Verantwortung als gewählte Stimme). Beispiel-Formulierung: "Ich weiß, dass Sie für diesen konkreten Punkt nicht unmittelbar zuständig sind. Trotzdem schreibe ich Ihnen, weil ..." Verspreche dem Empfänger keine Handlungsmacht, die er nicht hat.`;
+}
+
+/**
+ * Baut den System-Prompt abhängig von Ebene und Flag.
+ * - Flag aus ODER level=Bund: heutiges Template byte-identisch (LOCK-1).
+ * - Land/Kommune: gezielte Block-Ersetzungen + Strategie-Block.
+ * Exportiert für die Snapshot-Tests.
+ */
+export function buildSystemPrompt(input: GenerateLetterInput): string {
+  const base = SYSTEM_PROMPT_TEMPLATE.replace("__TODAY__", todayInGerman());
+  const levelAware = process.env.LETTER_PROMPT_LEVEL_AWARE === "true";
+  const level: PoliticalLevel = levelAware ? input.level ?? "Bund" : "Bund";
+
+  let prompt = base;
+  if (level === "Land") {
+    prompt = prompt.replace(BUND_ZUSTAENDIGKEIT_BLOCK, LAND_ZUSTAENDIGKEIT_BLOCK);
+  } else if (level === "Kommune") {
+    prompt = prompt
+      .replace(BUND_ZUSTAENDIGKEIT_BLOCK, KOMMUNE_ZUSTAENDIGKEIT_BLOCK)
+      .replace(BUND_ANREDE_LINE, KOMMUNE_ANREDE_LINE)
+      .replace(BUND_PARTEI_HEADER, KOMMUNE_PARTEI_HEADER);
+  }
+
+  if (
+    levelAware &&
+    input.mismatchRecommendedLevel &&
+    input.mismatchRecommendedLevel !== level
+  ) {
+    prompt += mismatchBlock(level, input.mismatchRecommendedLevel);
+  }
+  return prompt;
+}
+
 // When ctx is empty (build-time data missing, runtime fetch failed, or no
 // relevant votes), the model still needs an anchor. Without one it invents
 // committees and speeches (see Sven Ruttor / Jonathan Berlin review fixtures).
@@ -237,17 +329,30 @@ export function buildUserPrompt(
   maxWords: number,
   toneLevel: number
 ): string {
-  const politiciansJson = JSON.stringify(
-    input.politicians.map((p) => ({
-      id: p.id,
-      name: `${p.title ? p.title + " " : ""}${p.firstName} ${p.lastName}`,
-      party: p.party,
-      wahlkreis: p.wahlkreisName,
-      level: p.level,
-    })),
-    null,
-    2
-  );
+  // Kommune: der synthetische Verwaltungs-Empfänger ersetzt die Politiker-Liste.
+  // Die Pseudo-ID 0 existiert nur im Prompt-Kontrakt (Antwortformat verlangt
+  // selected_politician_id); sie wird nie gegen Abgeordnetenwatch-Daten geprüft.
+  const empfaenger = input.rathaus
+    ? [
+        {
+          id: 0,
+          name: input.rathaus.label,
+          anrede:
+            input.rathaus.recipientKind === "bezirksamt"
+              ? "Sehr geehrte Damen und Herren des Bezirksamts,"
+              : "Sehr geehrte Damen und Herren der Stadtverwaltung,",
+          ort: `${input.rathaus.plz} ${input.rathaus.gemeindeName}`,
+          level: input.rathaus.level,
+        },
+      ]
+    : input.politicians.map((p) => ({
+        id: p.id,
+        name: `${p.title ? p.title + " " : ""}${p.firstName} ${p.lastName}`,
+        party: p.party,
+        wahlkreis: p.wahlkreisName,
+        level: p.level,
+      }));
+  const politiciansJson = JSON.stringify(empfaenger, null, 2);
 
   // For short inputs, remind the model to stay abstract. Hallucinated vita
   // (Review 2, Jonathan) showed up most often when the citizen left little
@@ -286,13 +391,10 @@ function parseLetterResponse(content: unknown): ParsedLetter {
   if (!content || typeof content !== "string") {
     throw new Error("Mistral returned empty response");
   }
-  let parsed: ParsedLetter;
-  try {
-    parsed = JSON.parse(content) as ParsedLetter;
-  } catch {
-    const match = content.match(/\{[\s\S]*\}/);
-    if (!match) throw new Error("Failed to parse Mistral response as JSON");
-    parsed = JSON.parse(match[0]) as ParsedLetter;
+  // Gemeinsamer Parser mit dem Level-Router (Fences, Prosa-Präfix, Brace-Extraktion)
+  const parsed = extractJsonObject(content) as ParsedLetter | null;
+  if (parsed === null) {
+    throw new Error("Failed to parse Mistral response as JSON");
   }
   if (
     typeof parsed.letter !== "string" ||
@@ -316,7 +418,7 @@ export async function generateLetter(
   const toneLevel = input.toneLevel ?? 3;
   const maxTokens = Math.ceil(maxWords * 2.2) + 250;
 
-  const systemPrompt = SYSTEM_PROMPT_TEMPLATE.replace("__TODAY__", todayInGerman());
+  const systemPrompt = buildSystemPrompt(input);
   const userPrompt = buildUserPrompt(input, minWords, maxWords, toneLevel);
 
   const generationStart = Date.now();
@@ -421,26 +523,38 @@ export async function generateLetter(
     console.log("[generateLetter] voice_check:", parsed.voice_check.slice(0, 200));
   }
 
-  // Validate selected politician against input list (T-02-13: no arbitrary ID injection)
-  const selectedPolitician = input.politicians.find(
-    (p) => p.id === parsed.selected_politician_id
-  );
-
+  // Empfänger auflösen: Kommune hat einen vorbestimmten Verwaltungs-Empfänger
+  // (keine Auswahl durch das Modell); mdb/mdl laufen über die bisherige
+  // ID-Validierung (T-02-13: no arbitrary ID injection).
+  let selectedRecipient: Recipient;
+  let chosenPolitician: (typeof input.politicians)[number] | null = null;
   let fallbackUsed = false;
-  let chosenPolitician = selectedPolitician;
-  if (!chosenPolitician) {
-    const fallback = input.politicians[0];
-    if (!fallback) throw new Error("No politicians available");
-    fallbackUsed = true;
-    console.error("[generateLetter] FALLBACK politicians[0] used, Mistral returned unknown ID", {
-      returnedId: parsed.selected_politician_id,
-      availableIds: input.politicians.map((p) => p.id),
-      availableLevels: input.politicians.map((p) => p.level),
-      issueTextLength: input.issueText.length,
-      fallbackPoliticianId: fallback.id,
-      fallbackPoliticianName: `${fallback.firstName} ${fallback.lastName}`,
-    });
-    chosenPolitician = fallback;
+
+  if (input.rathaus) {
+    selectedRecipient = input.rathaus;
+  } else {
+    const selectedPolitician = input.politicians.find(
+      (p) => p.id === parsed.selected_politician_id
+    );
+    chosenPolitician = selectedPolitician ?? null;
+    if (!chosenPolitician) {
+      const fallback = input.politicians[0];
+      if (!fallback) throw new Error("No politicians available");
+      fallbackUsed = true;
+      console.error("[generateLetter] FALLBACK politicians[0] used, Mistral returned unknown ID", {
+        returnedId: parsed.selected_politician_id,
+        availableIds: input.politicians.map((p) => p.id),
+        availableLevels: input.politicians.map((p) => p.level),
+        issueTextLength: input.issueText.length,
+        fallbackPoliticianId: fallback.id,
+        fallbackPoliticianName: `${fallback.firstName} ${fallback.lastName}`,
+      });
+      chosenPolitician = fallback;
+    }
+    selectedRecipient = {
+      ...chosenPolitician,
+      kind: chosenPolitician.level === "Land" ? "mdl" : "mdb",
+    };
   }
 
   const mdbContextUsed = Boolean(
@@ -450,6 +564,7 @@ export async function generateLetter(
 
   return {
     letter: parsed.letter,
+    selectedRecipient,
     selectedPolitician: chosenPolitician,
     politicalLevel: (parsed.political_level as PoliticalLevel) || "Bund",
     wordCount,

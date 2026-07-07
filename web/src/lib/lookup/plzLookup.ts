@@ -1,32 +1,44 @@
-import type { Politician, PoliticiansCache } from "../types/politician";
+import type { Politician, PoliticiansCache, PoliticalLevel } from "../types/politician";
 import plzMappingJson from "../../../data/plz-wahlkreis-mapping.json";
 import politiciansJson from "../../../data/politicians-cache.json";
+import plzBundeslandJson from "../../../data/plz-bundesland-mapping.json";
+import plzLandtagWahlkreisJson from "../../../data/plz-landtagswahlkreis-mapping.json";
+import {
+  buildRathausRecipient,
+  RathausRecipientNotApplicable,
+  type RathausRecipient,
+} from "./rathausRecipient";
 
 const plzMapping = plzMappingJson as Record<string, number[]>;
 const politiciansCache = politiciansJson as PoliticiansCache;
 
+interface PlzEnrichment {
+  bundeslandKey: string;
+  bundeslandName: string;
+  ortsname: string;
+  kreisname: string | null;
+  gemeindeName: string;
+  bezirke?: string[];
+}
+const plzBundesland = plzBundeslandJson as Record<string, PlzEnrichment>;
+const plzLandtagWahlkreis = plzLandtagWahlkreisJson as Record<string, number[]>;
+
 export function lookupPLZ(plz: string): { wahlkreisIds: number[]; politicians: Politician[] } {
   const wahlkreisIds = plzMapping[plz] ?? [];
 
-  if (wahlkreisIds.length === 0) {
-    // If PLZ has no wahlkreise, we skip filtering the politicians and leave politicians array empty, 
-    // which will trigger the fallback below.
-  }
-
-  const allPoliticians = [
-    ...politiciansCache.bundestag,
-    ...politiciansCache.landtag,
-    ...politiciansCache.kommune,
-  ];
-
-  const politicians = allPoliticians.filter((p) =>
+  // Nur Bundestag: plz-wahlkreis-mapping enthält BTW-Wahlkreisnummern.
+  // Landtag-Einträge (seit 999.6 im Cache) haben eigene, pro Land gezählte
+  // Wahlkreisnummern, die mit BTW-Nummern kollidieren würden — sie werden
+  // ausschließlich über lookupPLZWithLevel + plz-landtagswahlkreis-mapping
+  // aufgelöst.
+  const politicians = politiciansCache.bundestag.filter((p) =>
     wahlkreisIds.includes(p.wahlkreisId)
   );
 
   if (politicians.length === 0) {
     const fallbackWahlkreis = wahlkreisIds.length > 0 ? `Wahlkreis ${wahlkreisIds[0]}` : "Unbekannter Wahlkreis";
     const fallbackWahlkreisId = wahlkreisIds.length > 0 ? wahlkreisIds[0] : 0;
-    
+
     politicians.push({
       id: -1,
       politicianId: -1,
@@ -44,4 +56,107 @@ export function lookupPLZ(plz: string): { wahlkreisIds: number[]; politicians: P
   }
 
   return { wahlkreisIds, politicians };
+}
+
+export interface PlzLookupResult {
+  bundeslandKey: string | null;
+  bundeslandName: string | null;
+  gemeindeName: string | null;
+  ortsname: string | null;
+  byLevel: {
+    Bund: Politician[];
+    Land: Politician[];
+    Kommune: RathausRecipient[];
+  };
+  coverage: {
+    /** true, wenn für diese PLZ Landtagsabgeordnete zugeordnet werden konnten */
+    landSupported: boolean;
+    /** true, wenn ein Rathaus-/Bezirksamt-Empfänger baubar ist */
+    kommuneSupported: boolean;
+    /** true für HH/HB: Stadt ist zugleich Land, Kommune-Ebene existiert nicht */
+    stadtstaatEinheitsgemeinde: boolean;
+  };
+}
+
+/**
+ * Ebenen-bewusster PLZ-Lookup (999.6). Bund nutzt den bestehenden Pfad,
+ * Land die neuen Landtag-Daten, Kommune einen synthetischen
+ * Stadtverwaltungs-/Bezirksamt-Empfänger (serverseitig aus der PLZ abgeleitet,
+ * LOCK-5).
+ */
+export function lookupPLZWithLevel(plz: string): PlzLookupResult {
+  const { politicians: bund } = lookupPLZ(plz);
+  const enrichment = plzBundesland[plz];
+  const bundeslandKey = enrichment?.bundeslandKey ?? null;
+
+  // Land: MdL des Bundeslands, deren Landtagswahlkreis zur PLZ passt
+  let land: Politician[] = [];
+  if (bundeslandKey) {
+    const landtagWahlkreise = plzLandtagWahlkreis[plz] ?? [];
+    if (landtagWahlkreise.length > 0) {
+      land = politiciansCache.landtag.filter(
+        (p) => p.bundeslandKey === bundeslandKey && landtagWahlkreise.includes(p.wahlkreisId)
+      );
+    }
+  }
+
+  // Kommune: generischer Verwaltungs-Empfänger (kein HH/HB — Einheitsgemeinde)
+  let kommune: RathausRecipient[] = [];
+  let stadtstaatEinheitsgemeinde = false;
+  if (enrichment && bundeslandKey) {
+    try {
+      kommune = [
+        buildRathausRecipient({
+          gemeindeName: enrichment.gemeindeName,
+          plz,
+          bundeslandKey,
+          bezirk: enrichment.bezirke?.[0] ?? null,
+        }),
+      ];
+    } catch (err) {
+      if (err instanceof RathausRecipientNotApplicable) {
+        stadtstaatEinheitsgemeinde = true;
+      } else {
+        throw err;
+      }
+    }
+  }
+
+  return {
+    bundeslandKey,
+    bundeslandName: enrichment?.bundeslandName ?? null,
+    gemeindeName: enrichment?.gemeindeName ?? null,
+    ortsname: enrichment?.ortsname ?? null,
+    byLevel: { Bund: bund, Land: land, Kommune: kommune },
+    coverage: {
+      landSupported: land.length > 0,
+      kommuneSupported: kommune.length > 0,
+      stadtstaatEinheitsgemeinde,
+    },
+  };
+}
+
+/**
+ * Ehrlicher Hinweis, wenn die empfohlene Ebene für diese PLZ (noch) nicht
+ * abgedeckt ist. Copy für den Land-Fall ist gelockt (CONTEXT G4, 2026-05-21):
+ * kein Gedankenstrich, kein "weitergeben"-Versprechen (Art. 38 GG, freies Mandat).
+ */
+export function buildCoverageHint(
+  result: PlzLookupResult,
+  routedLevel: PoliticalLevel
+): string | null {
+  if (routedLevel === "Land" && !result.coverage.landSupported) {
+    const region = result.bundeslandName ?? "Dein Bundesland";
+    if (result.coverage.stadtstaatEinheitsgemeinde || result.bundeslandName) {
+      return `${region} kommt bald dazu. Solange schreibst du an deine Bundestagsabgeordneten: Sie haben das Mandat, Themen aus allen Bundesländern in Berlin einzubringen.`;
+    }
+    return `Dieses Bundesland kommt bald dazu. Solange schreibst du an deine Bundestagsabgeordneten: Sie haben das Mandat, Themen aus allen Bundesländern in Berlin einzubringen.`;
+  }
+  if (routedLevel === "Kommune" && !result.coverage.kommuneSupported) {
+    if (result.coverage.stadtstaatEinheitsgemeinde && result.bundeslandName) {
+      return `In ${result.bundeslandName} ist die Stadt zugleich ein Bundesland. Dein Anliegen gehört deshalb auf die Land-Ebene, dort sitzen die zuständigen Abgeordneten.`;
+    }
+    return `Für diese Postleitzahl konnten wir keine Stadtverwaltung zuordnen. Du kannst stattdessen an Land oder Bund schreiben.`;
+  }
+  return null;
 }

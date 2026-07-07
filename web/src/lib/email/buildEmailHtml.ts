@@ -80,14 +80,18 @@ function buildCampaignAttributionHtml(
 }
 
 export function buildEmailHtml(data: SendLetterEmailParams): string {
-  const isFallback = data.politicianFirstName === "" && data.politicianLastName === "MdB";
+  const isRathaus = data.recipientKind === "rathaus";
+  const isMdl = data.recipientKind === "mdl";
+  const isFallback =
+    !isRathaus && data.politicianFirstName === "" && data.politicianLastName === "MdB";
   const letterNumberText =
     typeof data.letterNumber === "number" ? ` · Brief # ${data.letterNumber}` : "";
 
   const fullName = data.politicianTitle
     ? `${escapeHtml(data.politicianTitle)} ${escapeHtml(data.politicianName)}`
     : escapeHtml(data.politicianName);
-  const party = escapeHtml(formatPartyShort(data.politicianParty));
+  const party = data.politicianParty ? escapeHtml(formatPartyShort(data.politicianParty)) : "";
+  const mandateLabel = isMdl ? "MdL" : "MdB";
 
   // Format postal address: split on comma, one part per line
   const addressLines = data.politicianPostalAddress
@@ -97,23 +101,43 @@ export function buildEmailHtml(data: SendLetterEmailParams): string {
 
   // Profile link (Abgeordnetenwatch: voting record, public Q&A, transparent source).
   // Prefer the API-provided URL; fall back to a slug-derived URL.
-  const profileUrl =
-    data.politicianAbgeordnetenwatchUrl ??
-    abgeordnetenwatchProfileUrl(
-      data.politicianFirstName,
-      data.politicianLastName
-    );
+  // Rathaus-Empfänger haben kein Abgeordnetenwatch-Profil — kein Link.
+  const profileUrl = isRathaus
+    ? null
+    : data.politicianAbgeordnetenwatchUrl ??
+      abgeordnetenwatchProfileUrl(data.politicianFirstName, data.politicianLastName);
 
   const fallbackUrl = `${APP_URL}/kein-mdb-im-wahlkreis`;
 
-  const addressNameLine = isFallback
-    ? `<strong><a href="${fallbackUrl}" target="_blank" rel="noopener noreferrer" style="color:#2D5016;text-decoration:underline;">Kein MdB zugeordnet</a></strong><br>`
-    : `<strong><a href="${profileUrl}" target="_blank" rel="noopener noreferrer" style="color:#2D5016;text-decoration:underline;">${fullName}, MdB (${party})</a></strong><br>`;
+  const addressNameLine = isRathaus
+    ? `<strong>${fullName}</strong><br>`
+    : isFallback
+      ? `<strong><a href="${fallbackUrl}" target="_blank" rel="noopener noreferrer" style="color:#2D5016;text-decoration:underline;">Kein MdB zugeordnet</a></strong><br>`
+      : `<strong><a href="${profileUrl}" target="_blank" rel="noopener noreferrer" style="color:#2D5016;text-decoration:underline;">${fullName}, ${mandateLabel}${party ? ` (${party})` : ""}</a></strong><br>`;
+
+  // Institutionszeile: für MdB heutiges Layout (postalAddress trägt nur die
+  // Straße, die Institution steht hier). MdL/Rathaus tragen die Institution
+  // bereits in der postalAddress — keine Extra-Zeile.
+  const institutionLine = data.recipientKind === "mdb" ? "Deutscher Bundestag<br>" : "";
+
+  // Rathaus: generische Anschrift ist zustellbar, aber die exakte
+  // Straßenadresse ergänzt der User selbst — eine Google-Such-Zeile hilft (LOCK-3).
+  const rathausSearchUrl = data.rathausSearch
+    ? `https://www.google.com/search?q=${encodeURIComponent(
+        `Rathaus Adresse ${data.rathausSearch.plz} ${data.rathausSearch.ort}`
+      )}`
+    : null;
+  const rathausSearchLine =
+    isRathaus && rathausSearchUrl
+      ? `<p style="margin:10px 0 0;font-family:Georgia,'Times New Roman',serif;font-size:12px;color:#666666;line-height:1.5;">Genaue Anschrift (Straße + Hausnummer): <a href="${rathausSearchUrl}" target="_blank" rel="noopener noreferrer" style="color:#2D5016;text-decoration:underline;">Rathaus-Adresse finden</a></p>`
+      : "";
 
   const profileButtonText = isFallback ? "Empfänger finden" : "Profil auf<br>abgeordnetenwatch";
   const profileButtonUrl = isFallback ? fallbackUrl : profileUrl;
-  const profileButtonHtml = `<a href="${profileButtonUrl}" target="_blank" rel="noopener noreferrer" style="display:inline-block;background-color:#2D5016;color:#ffffff;font-family:Georgia,'Times New Roman',serif;font-size:14px;font-weight:bold;text-decoration:none;padding:10px 14px;border-radius:4px;line-height:1.5;text-align:center;">${profileButtonText}</a>`;
-  
+  const profileButtonHtml = profileButtonUrl
+    ? `<a href="${profileButtonUrl}" target="_blank" rel="noopener noreferrer" style="display:inline-block;background-color:#2D5016;color:#ffffff;font-family:Georgia,'Times New Roman',serif;font-size:14px;font-weight:bold;text-decoration:none;padding:10px 14px;border-radius:4px;line-height:1.5;text-align:center;">${profileButtonText}</a>`
+    : "";
+
   const disclaimerSiteName = isFallback ? "bundestag.de" : "abgeordnetenwatch.de";
 
   const share = buildShareTarget(data.campaign);
@@ -207,9 +231,8 @@ export function buildEmailHtml(data: SendLetterEmailParams): string {
                           <td class="bnb-stack bnb-stack-left" style="vertical-align:top;padding-right:16px;width:60%;">
                             <p style="margin:0;font-family:'Courier New',Courier,monospace;font-size:14px;line-height:1.8;color:#4A4A4A;">
                               ${addressNameLine}
-                              Deutscher Bundestag<br>
-                              ${addressLines}
-                            </p>
+                              ${institutionLine}${addressLines}
+                            </p>${rathausSearchLine}
                           </td>
                           <td class="bnb-stack bnb-stack-right" style="vertical-align:middle;text-align:center;padding-left:16px;border-left:1px solid #E0DCD7;width:40%;">
                             ${data.feedbackToken ? buildStarBarHtml(data.feedbackToken) : profileButtonHtml}
@@ -332,7 +355,7 @@ export function buildEmailHtml(data: SendLetterEmailParams): string {
                 <tr>
                   <td colspan="7" class="bnb-pad" style="padding:8px 32px 24px;background-color:#FAF8F5;text-align:center;">
                     <p style="margin:0 0 6px;font-family:Georgia,'Times New Roman',serif;font-size:12px;color:#aaaaaa;line-height:1.5;">
-                      <strong>Hinweis:</strong> Diese Mail ist ein generierter Entwurf. Bitte passe ihn an und prüfe die Daten vor dem Versand bei <a href="${profileUrl}" target="_blank" rel="noopener noreferrer" style="color:#888888;">${disclaimerSiteName}</a>. Die Verantwortung für den Inhalt liegt bei dir.
+                      <strong>Hinweis:</strong> Diese Mail ist ein generierter Entwurf. Bitte passe ihn an und prüfe die Daten vor dem Versand${profileUrl ? ` bei <a href="${profileUrl}" target="_blank" rel="noopener noreferrer" style="color:#888888;">${disclaimerSiteName}</a>` : ""}. Die Verantwortung für den Inhalt liegt bei dir.
                     </p>
                     <p style="margin:0;font-family:Georgia,'Times New Roman',serif;font-size:12px;color:#aaaaaa;line-height:1.5;">
                       <a href="${APP_URL}/datenschutz" style="color:#888888;">Datenschutz</a>: deine Daten werden nicht gespeichert. · <a href="${APP_URL}/wer-darf-mdb-schreiben" style="color:#888888;">Wer darf MdBs schreiben?</a>${data.debug ? ` · <a href="${buildDebugUrl(data.debug)}" style="color:#888888;text-decoration:none;">Debug</a>` : ""}

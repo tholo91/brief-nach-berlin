@@ -17,6 +17,10 @@
 
 <!-- code-tasks:managed-start -->
 
+- [ ] **Per URL Parameter Partei im array forcieren** ([Created: 2026-07-01]) (Priority: ⚪ Normal) <!-- ct:0e959a29-0711-4da2-8697-efd27f3d829a -->
+  Man kann per link, den man teilt die Auswahl der Partei, sollte diese auftreten, favorisieren. Sprich, bei Brief-nach-berlin.de?fav=CDU,afd würde, sofern jemand in seiner plz eine Liste hat in der eine der beiden Parteien im Parameter dabei ist, diese nach oben ziehen und voraus wählen, wenn es bspw. Kein direktmandat gibt
+
+
 ## Completed
 
 - [x] **Neuer test** ([Created: 2026-06-11]) (Priority: 🔴 Important) [Updated: 2026-06-13] [Completed: 2026-06-26] <!-- ct:6b935f4c-2750-4188-81cf-c50d8edf5555 -->

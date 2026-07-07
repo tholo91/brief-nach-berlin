@@ -1,0 +1,18 @@
+{
+  "BW": { "institution": "Landtag von Baden-Württemberg", "address": "Konrad-Adenauer-Straße 3, 70173 Stuttgart" },
+  "BY": { "institution": "Bayerischer Landtag", "address": "Max-Planck-Straße 1, 81675 München" },
+  "BE": { "institution": "Abgeordnetenhaus von Berlin", "address": "Niederkirchnerstraße 5, 10117 Berlin" },
+  "BB": { "institution": "Landtag Brandenburg", "address": "Alter Markt 1, 14467 Potsdam" },
+  "HB": { "institution": "Bremische Bürgerschaft", "address": "Am Markt 20, 28195 Bremen" },
+  "HH": { "institution": "Hamburgische Bürgerschaft", "address": "Rathausmarkt 1, 20095 Hamburg" },
+  "HE": { "institution": "Hessischer Landtag", "address": "Schlossplatz 1-3, 65183 Wiesbaden" },
+  "MV": { "institution": "Landtag Mecklenburg-Vorpommern", "address": "Lennéstraße 1, 19053 Schwerin" },
+  "NI": { "institution": "Niedersächsischer Landtag", "address": "Hannah-Arendt-Platz 1, 30159 Hannover" },
+  "NW": { "institution": "Landtag Nordrhein-Westfalen", "address": "Platz des Landtags 1, 40221 Düsseldorf" },
+  "RP": { "institution": "Landtag Rheinland-Pfalz", "address": "Platz der Mainzer Republik 1, 55116 Mainz" },
+  "SL": { "institution": "Landtag des Saarlandes", "address": "Franz-Josef-Röder-Straße 7, 66119 Saarbrücken" },
+  "SN": { "institution": "Sächsischer Landtag", "address": "Bernhard-von-Lindenau-Platz 1, 01067 Dresden" },
+  "ST": { "institution": "Landtag von Sachsen-Anhalt", "address": "Domplatz 6-9, 39104 Magdeburg" },
+  "SH": { "institution": "Schleswig-Holsteinischer Landtag", "address": "Düsternbrooker Weg 70, 24105 Kiel" },
+  "TH": { "institution": "Thüringer Landtag", "address": "Jürgen-Fuchs-Straße 1, 99096 Erfurt" }
+}

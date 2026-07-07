@@ -14,6 +14,7 @@ export interface Politician {
   isDirect: boolean;     // Held the Direktmandat (Erststimmensieg) for this Wahlkreis
   abgeordnetenwatchUrl: string | null;  // Public profile URL on abgeordnetenwatch.de
   committees?: string[]; // Committee labels for current legislature, fetched at build time
+  bundeslandKey?: string; // ISO 3166-2:DE letter code ("NW", "BY", ...); set for Landtag entries
 }
 
 export interface PoliticiansCache {

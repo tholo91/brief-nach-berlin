@@ -1,0 +1,45 @@
+{
+  "_kommentar": "Zuständigkeits-Taxonomie für das Level-Routing (Bund/Land/Kommune). Quelle: 999.6-RESEARCH §3.6, validiert im G1-Gate (22/22 PASS, scripts/test-level-routing.ts). Der Datei-Key 'kommune' entspricht dem Enum-Wert 'Kommune'.",
+  "bund": {
+    "exclusive": [
+      "Außenpolitik",
+      "Bundeswehr",
+      "Sozialversicherung (GKV/Rente/Pflege)",
+      "Bahn (DB)",
+      "Straßenverkehrsrecht",
+      "Telekommunikation",
+      "Asylrecht",
+      "Staatsangehörigkeit",
+      "Mietrecht (BGB), Mietpreisbremse, Mietendeckel-Verbot (BVerfG 2021)"
+    ],
+    "concurrent_dominant": [
+      "Arbeitsrecht",
+      "Umweltrahmen",
+      "Wirtschaftsrecht"
+    ]
+  },
+  "land": {
+    "exclusive": [
+      "Schulen und Bildung",
+      "Polizei",
+      "Strafvollzug",
+      "Rundfunk",
+      "Krankenhausplanung",
+      "Sozialer Wohnungsbau (Landesförderung)",
+      "Ladenöffnungszeiten",
+      "Versammlungsrecht"
+    ]
+  },
+  "kommune": {
+    "exclusive": [
+      "Lokale Straßen",
+      "Kitas (Träger)",
+      "Bebauungsplan",
+      "Abfallentsorgung",
+      "ÖPNV lokal",
+      "Grünanlagen",
+      "Schwimmbäder",
+      "Bibliotheken"
+    ]
+  }
+}

@@ -108,6 +108,7 @@ export function buildEmailHtml(data: SendLetterEmailParams): string {
 
   const share = buildShareTarget(data.campaign);
   const instagramUrl = `${APP_URL}/weitersagen#insta`;
+  const variantUrl = `${APP_URL}/brief/anpassen#email=${encodeURIComponent(data.recipientEmail)}`;
 
   // Letter text: escape then convert newlines to <br> for email clients
   const letterHtml = nlToBr(data.letterText);
@@ -175,6 +176,15 @@ export function buildEmailHtml(data: SendLetterEmailParams): string {
                       <img src="${APP_URL}/images/email-title-watermark-v2.png" width="110" height="110" alt="" align="right" style="display:inline-block;width:110px;height:110px;margin:0 0 6px 14px;border:0;outline:none;text-decoration:none;-ms-interpolation-mode:bicubic;">
                       <p style="margin:0;font-family:'Courier New',Courier,monospace;font-size:14px;line-height:1.7;color:#4A4A4A;white-space:pre-wrap;">${letterHtml}</p>
                     </div>
+                  </td>
+                </tr>
+
+                <!-- Brief anpassen CTA: plain text, no stored letter body, email only in URL hash. -->
+                <tr>
+                  <td colspan="7" class="bnb-pad" style="padding:8px 32px 8px;background-color:#ffffff;">
+                    <p style="margin:0 0 4px;font-family:Georgia,'Times New Roman',serif;font-size:15px;color:#2D5016;font-weight:bold;line-height:1.5;">Nicht ganz dein Ton?</p>
+                    <p style="margin:0 0 8px;font-family:Georgia,'Times New Roman',serif;font-size:14px;color:#4A4A4A;line-height:1.6;">Du kannst den Entwurf schnell anpassen.</p>
+                    <a href="${variantUrl}" target="_blank" rel="noopener noreferrer" style="font-family:Georgia,'Times New Roman',serif;font-size:14px;color:#2D5016;font-weight:bold;text-decoration:underline;">Brief anpassen</a>
                   </td>
                 </tr>
 

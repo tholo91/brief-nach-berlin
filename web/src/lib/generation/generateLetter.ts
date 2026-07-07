@@ -53,7 +53,7 @@ const TONE_REGISTERS: Record<number, ToneRegister> = {
   },
 };
 
-function tonalityBlock(level: number): string {
+export function tonalityBlock(level: number): string {
   const reg = TONE_REGISTERS[level] ?? TONE_REGISTERS[3];
   return `register: ${reg.register} (Stufe ${level} von 5)
 beschreibung: ${reg.beschreibung}

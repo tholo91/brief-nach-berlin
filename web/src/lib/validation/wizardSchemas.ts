@@ -24,6 +24,22 @@ export const step2Schema = z.object({
   toneLevel: toneLevelSchema,
 });
 
+export const letterVariantSchema = z.object({
+  email: z.string()
+    .trim()
+    .email({ message: "Bitte gib eine gültige E-Mail-Adresse ein." }),
+  originalLetter: z.string()
+    .trim()
+    .min(500, { message: "Bitte füge den ganzen Briefentwurf aus der E-Mail ein." })
+    .max(10000, { message: "Der Brieftext ist zu lang. Bitte kürze ihn auf den eigentlichen Brief." }),
+  toneLevel: toneLevelSchema,
+  changeRequest: z.string()
+    .trim()
+    .max(1000, { message: "Bitte fasse deinen Änderungswunsch etwas kürzer." })
+    .optional(),
+});
+
 export type Step1Data = z.infer<typeof step1Schema>;
 export type Step1bData = z.infer<typeof step1bSchema>;
 export type Step2Data = z.infer<typeof step2Schema>;
+export type LetterVariantData = z.infer<typeof letterVariantSchema>;

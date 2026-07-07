@@ -84,6 +84,10 @@ export const LIMITS = {
   // Resend per email: 2 retries per hour. Anyone targeting one address
   // hits this even faster.
   RESEND_PER_EMAIL: { max: 2, windowMs: 60 * 60_000 },
+  // Letter variants: separate from the normal letter flow so adjustments do
+  // not consume first-letter buckets, but still protect the paid LLM/email path.
+  LETTER_VARIANTS_PER_IP: { max: 15, windowMs: 60 * 60_000 },
+  LETTER_VARIANTS_PER_EMAIL: { max: 5, windowMs: 24 * 60 * 60_000 },
   // Reviews per IP: 1 per 10 minutes. Real users rate a given letter once;
   // anything more is noise or abuse.
   REVIEW_PER_IP: { max: 1, windowMs: 10 * 60_000 },

@@ -4,6 +4,7 @@ import { letterVariantSchema } from "@/lib/validation/wizardSchemas";
 import { generateLetterVariant } from "@/lib/generation/generateLetterVariant";
 import { moderateText } from "@/lib/moderation/moderateText";
 import { sendVariantEmail } from "@/lib/email/sendVariantEmail";
+import { buildVariantDebugPayload } from "@/lib/email/variantDebugPayload";
 import { checkRateLimit, hashIdentifier, LIMITS } from "@/lib/rateLimit";
 import { MistralProviderUnavailableError } from "@/lib/mistral";
 
@@ -63,6 +64,7 @@ export async function POST(req: NextRequest) {
     const result = await generateLetterVariant({
       originalLetter: data.originalLetter,
       toneLevel: data.toneLevel,
+      originalToneLevel: data.originalToneLevel,
       changeRequest: data.changeRequest,
     });
 
@@ -74,9 +76,11 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    const debugPayload = buildVariantDebugPayload(data, result);
     const emailResult = await sendVariantEmail({
       recipientEmail: data.email,
       letterText: result.letter,
+      debug: debugPayload,
     });
 
     if (!emailResult.success) {

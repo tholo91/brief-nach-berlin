@@ -19,6 +19,12 @@ function buildDebugUrl(d: LetterDebugPayload): string {
   return `${APP_URL}/debug?d=${b64}`;
 }
 
+function buildVariantUrl(recipientEmail: string, debug?: LetterDebugPayload): string {
+  const params = new URLSearchParams({ email: recipientEmail });
+  if (debug?.toneLevel != null) params.set("originalToneLevel", String(debug.toneLevel));
+  return `${APP_URL}/brief/anpassen#${params.toString()}`;
+}
+
 // Email-client-safe star rating bar. Used inside the Postadresse box
 // (replacing the static abgeordnetenwatch profile button). Each star is
 // its own anchor pointing at /feedback with the chosen rating; no JS,
@@ -108,7 +114,7 @@ export function buildEmailHtml(data: SendLetterEmailParams): string {
 
   const share = buildShareTarget(data.campaign);
   const instagramUrl = `${APP_URL}/weitersagen#insta`;
-  const variantUrl = `${APP_URL}/brief/anpassen#email=${encodeURIComponent(data.recipientEmail)}`;
+  const variantUrl = buildVariantUrl(data.recipientEmail, data.debug);
 
   // Letter text: escape then convert newlines to <br> for email clients
   const letterHtml = nlToBr(data.letterText);

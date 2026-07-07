@@ -14,11 +14,19 @@ function isValidEmail(value: string): boolean {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value.trim());
 }
 
-function emailFromHash(): string {
-  if (typeof window === "undefined") return "";
+function parseToneLevel(value: string | null): number | undefined {
+  const parsed = Number(value);
+  return Number.isInteger(parsed) && parsed >= 1 && parsed <= 5 ? parsed : undefined;
+}
+
+function variantDataFromHash(): { email: string; originalToneLevel?: number } {
+  if (typeof window === "undefined") return { email: "" };
   const hash = window.location.hash.replace(/^#/, "");
   const params = new URLSearchParams(hash);
-  return params.get("email")?.trim() ?? "";
+  return {
+    email: params.get("email")?.trim() ?? "",
+    originalToneLevel: parseToneLevel(params.get("originalToneLevel")),
+  };
 }
 
 export function VariantForm() {
@@ -26,18 +34,23 @@ export function VariantForm() {
   const [email, setEmail] = useState("");
   const [originalLetter, setOriginalLetter] = useState("");
   const [toneLevel, setToneLevel] = useState(3);
+  const [originalToneLevel, setOriginalToneLevel] = useState<number | undefined>();
   const [changeRequest, setChangeRequest] = useState("");
   const [submitState, setSubmitState] = useState<SubmitState>("idle");
   const [touchedSubmit, setTouchedSubmit] = useState(false);
   const [serverError, setServerError] = useState<string | null>(null);
 
   useEffect(() => {
-    const readHashEmail = () => setEmail(emailFromHash());
-    const timer = window.setTimeout(readHashEmail, 0);
-    window.addEventListener("hashchange", readHashEmail);
+    const readHashData = () => {
+      const data = variantDataFromHash();
+      setEmail(data.email);
+      setOriginalToneLevel(data.originalToneLevel);
+    };
+    const timer = window.setTimeout(readHashData, 0);
+    window.addEventListener("hashchange", readHashData);
     return () => {
       window.clearTimeout(timer);
-      window.removeEventListener("hashchange", readHashEmail);
+      window.removeEventListener("hashchange", readHashData);
     };
   }, []);
 
@@ -71,6 +84,7 @@ export function VariantForm() {
       email: email.trim(),
       originalLetter: trimmedLetter,
       toneLevel,
+      originalToneLevel,
       changeRequest: changeRequest.trim() || undefined,
     };
 

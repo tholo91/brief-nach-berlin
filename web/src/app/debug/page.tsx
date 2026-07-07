@@ -1,4 +1,5 @@
 import type { LetterDebugPayload } from "@/lib/email/sendLetterEmail";
+import type { LetterVariantDebugPayload } from "@/lib/email/variantDebugPayload";
 import { FOUNDER_FEEDBACK_URL } from "@/lib/config";
 
 export const metadata = {
@@ -6,20 +7,52 @@ export const metadata = {
   robots: { index: false, follow: false },
 };
 
-function decode(d: string | undefined): LetterDebugPayload | { error: string } {
+type DebugPayload = LetterDebugPayload | LetterVariantDebugPayload;
+
+function decode(d: string | undefined): DebugPayload | { error: string } {
   if (!d) return { error: "Missing ?d= param" };
   try {
     const b64 = d.replace(/-/g, "+").replace(/_/g, "/");
     const padded = b64 + "=".repeat((4 - (b64.length % 4)) % 4);
     const json = Buffer.from(padded, "base64").toString("utf8");
-    return JSON.parse(json) as LetterDebugPayload;
+    return JSON.parse(json) as DebugPayload;
   } catch (e) {
     return { error: `Decode failed: ${(e as Error).message}` };
   }
 }
 
-function format(payload: LetterDebugPayload | { error: string }): string {
+function isVariantDebugPayload(payload: DebugPayload): payload is LetterVariantDebugPayload {
+  return "source" in payload && payload.source === "brief_variant";
+}
+
+function formatVariant(d: LetterVariantDebugPayload): string {
+  const lines = [
+    "BRIEF VARIANT",
+    "",
+    `Original tonality    ${d.originalToneLevel ?? "—"} (${d.originalToneLabel})`,
+    `Requested tonality   ${d.requestedToneLevel} (${d.requestedToneLabel})`,
+    `Original letter      ${d.originalLetterWordCount} words, ${d.originalLetterLength} chars`,
+    `Variant word count   ${d.wordCount}`,
+    `Change request       ${d.changeRequestLength} chars`,
+    `Model                ${d.model}`,
+    `Temperature          ${d.temperature}`,
+    `Generation           ${d.generationMs} ms`,
+    ...(d.preservationCheck
+      ? ["", "Preservation check:", d.preservationCheck]
+      : []),
+    ...(d.changeRequestPreview
+      ? ["", "Änderungswunsch:", d.changeRequestPreview]
+      : ["", "Änderungswunsch:", "—"]),
+    "",
+    "Eingefügter Brief (Auszug, max 1200 Zeichen):",
+    d.originalLetterPreview,
+  ];
+  return lines.join("\n");
+}
+
+function format(payload: DebugPayload | { error: string }): string {
   if ("error" in payload) return payload.error;
+  if (isVariantDebugPayload(payload)) return formatVariant(payload);
   const d = payload;
   const wcLabel = `${d.wordCount} (target ${d.letterLengthMin}–${d.letterLengthMax}) ${d.wordCountInRange ? "OK" : "OUT OF RANGE"}`;
   const lines = [

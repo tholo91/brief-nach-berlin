@@ -33,6 +33,7 @@ export const letterVariantSchema = z.object({
     .min(500, { message: "Bitte füge den ganzen Briefentwurf aus der E-Mail ein." })
     .max(10000, { message: "Der Brieftext ist zu lang. Bitte kürze ihn auf den eigentlichen Brief." }),
   toneLevel: toneLevelSchema,
+  originalToneLevel: toneLevelSchema,
   changeRequest: z.string()
     .trim()
     .max(1000, { message: "Bitte fasse deinen Änderungswunsch etwas kürzer." })

@@ -1,4 +1,5 @@
 import { APP_URL, FOUNDER_FEEDBACK_URL, FOUNDER_HOMEPAGE } from "@/lib/config";
+import type { LetterVariantDebugPayload } from "./variantDebugPayload";
 
 function escapeHtml(text: string): string {
   return text
@@ -20,7 +21,21 @@ function feedbackUrl(email?: string): string {
   return url.toString();
 }
 
-export function buildVariantEmailHtml(letterText: string, recipientEmail?: string): string {
+function buildDebugUrl(d: LetterVariantDebugPayload): string {
+  const json = JSON.stringify(d);
+  const b64 = Buffer.from(json, "utf8")
+    .toString("base64")
+    .replace(/\+/g, "-")
+    .replace(/\//g, "_")
+    .replace(/=+$/, "");
+  return `${APP_URL}/debug?d=${b64}`;
+}
+
+export function buildVariantEmailHtml(
+  letterText: string,
+  recipientEmail?: string,
+  debug?: LetterVariantDebugPayload
+): string {
   const letterHtml = nlToBr(letterText);
   const variantFeedbackUrl = feedbackUrl(recipientEmail);
 
@@ -82,7 +97,7 @@ export function buildVariantEmailHtml(letterText: string, recipientEmail?: strin
           <tr>
             <td class="bnb-pad" style="padding:24px 32px;background-color:#FAF8F5;text-align:center;">
               <p style="margin:0;font-family:Georgia,'Times New Roman',serif;font-size:12px;color:#999999;">
-                <a href="${APP_URL}" style="color:#2D5016;text-decoration:none;">Brief nach Berlin</a> · Eine Initiative von <a href="${FOUNDER_HOMEPAGE}" target="_blank" rel="noopener noreferrer" style="color:#999999;text-decoration:underline;">Thomas Lorenz</a>
+                <a href="${APP_URL}" style="color:#2D5016;text-decoration:none;">Brief nach Berlin</a> · Eine Initiative von <a href="${FOUNDER_HOMEPAGE}" target="_blank" rel="noopener noreferrer" style="color:#999999;text-decoration:underline;">Thomas Lorenz</a>${debug ? ` · <a href="${buildDebugUrl(debug)}" style="color:#888888;text-decoration:none;">Debug</a>` : ""}
               </p>
             </td>
           </tr>

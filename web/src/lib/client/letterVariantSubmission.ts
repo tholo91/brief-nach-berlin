@@ -4,6 +4,7 @@ export interface PendingLetterVariantSubmission {
   email: string;
   originalLetter: string;
   toneLevel: number;
+  originalToneLevel?: number;
   changeRequest?: string;
 }
 

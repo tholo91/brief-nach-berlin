@@ -16,6 +16,35 @@ function makeParams(): SendLetterEmailParams {
   };
 }
 
+function makeDebug(): NonNullable<SendLetterEmailParams["debug"]> {
+  return {
+    toneLevel: 4,
+    toneLabel: "scharf-pointiert",
+    letterLengthKey: "1",
+    letterLengthMin: 200,
+    letterLengthMax: 280,
+    issueTextLength: 16,
+    wordCount: 100,
+    wordCountInRange: false,
+    fallbackUsed: false,
+    retried: false,
+    politicalLevel: "bund",
+    representativeName: "Erika Mustermann",
+    representativeWahlkreis: "Berlin",
+    representativeLevel: "bund",
+    representativeParty: "SPD",
+    mdbContextUsed: false,
+    availablePoliticianCount: 1,
+    model: "mistral-large-latest",
+    temperature: 0.4,
+    generationMs: 1000,
+    hasParty: false,
+    hasNgo: false,
+    usedSpeechToText: false,
+    tipsOpened: false,
+  };
+}
+
 describe("letter email variant CTA", () => {
   it("links to the no-storage variant flow with email only in the hash", () => {
     const html = buildEmailHtml(makeParams());
@@ -24,6 +53,16 @@ describe("letter email variant CTA", () => {
     expect(html).toContain("Briefentwurf schnell anpassen");
     expect(html).toContain(
       "https://www.brief-nach-berlin.de/brief/anpassen#email=test%2Bvariant%40example.com"
+    );
+    expect(html).not.toContain("briefText=");
+    expect(html).not.toContain("letterText=");
+  });
+
+  it("carries original tone metadata in the hash when debug data is available", () => {
+    const html = buildEmailHtml({ ...makeParams(), debug: makeDebug() });
+
+    expect(html).toContain(
+      "https://www.brief-nach-berlin.de/brief/anpassen#email=test%2Bvariant%40example.com&originalToneLevel=4"
     );
     expect(html).not.toContain("briefText=");
     expect(html).not.toContain("letterText=");

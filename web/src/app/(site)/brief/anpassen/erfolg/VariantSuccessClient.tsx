@@ -76,8 +76,8 @@ export function VariantSuccessClient() {
           : `Das dauert meist nur ein paar Sekunden. Du kannst gleich in dein E-Mail-Postfach schauen${loadingDots}`;
 
   return (
-    <div className="min-h-[100dvh] bg-creme px-6 py-16 overflow-x-clip">
-      <main className="mx-auto grid w-full max-w-3xl gap-10 md:grid-cols-[1.05fr_0.95fr] md:items-start">
+    <section className="bg-creme px-6 py-12 md:py-16 overflow-x-clip">
+      <div className="mx-auto grid w-full max-w-3xl gap-10 md:grid-cols-[1.05fr_0.95fr] md:items-start">
         <section>
           <div className="mb-4 flex items-center gap-3">
             <svg width="44" height="44" viewBox="0 0 48 48" fill="none" className="shrink-0 text-waldgruen" aria-hidden="true">
@@ -195,7 +195,7 @@ export function VariantSuccessClient() {
             )}
           </section>
         </aside>
-      </main>
-    </div>
+      </div>
+    </section>
   );
 }

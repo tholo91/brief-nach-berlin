@@ -27,7 +27,7 @@ export default async function FeedbackPage({
 
   if (!t || !payload) {
     return (
-      <main className="min-h-screen bg-creme px-6 py-20 flex items-start sm:items-center justify-center">
+      <section className="bg-creme px-6 py-12 sm:py-16 md:py-20 flex justify-center">
         <div className="max-w-md w-full">
           <div className="bg-white border border-waldgruen/15 rounded-2xl px-6 py-10 sm:px-10 sm:py-12 text-center shadow-sm">
             <p className="font-handwriting text-4xl text-waldgruen-dark leading-none mb-4">
@@ -49,17 +49,17 @@ export default async function FeedbackPage({
             </Link>
           </div>
         </div>
-      </main>
+      </section>
     );
   }
 
   const initialRating = parseRating(r);
 
   return (
-    <main className="min-h-screen bg-creme px-4 sm:px-6 py-12 sm:py-16">
+    <section className="bg-creme px-4 sm:px-6 py-10 sm:py-12 md:py-16">
       <div className="max-w-xl mx-auto">
         <FeedbackForm initialRating={initialRating} token={t} mailSeq={s === "2" ? 2 : 1} />
       </div>
-    </main>
+    </section>
   );
 }

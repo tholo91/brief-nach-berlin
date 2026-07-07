@@ -16,6 +16,7 @@ export interface GenerateLetterVariantResult {
   model: string;
   temperature: number;
   generationMs: number;
+  lengthRetried: boolean;
   preservationCheck?: string;
 }
 
@@ -50,10 +51,16 @@ Antworte ausschließlich im JSON-Format:
 export function buildVariantUserPrompt(input: GenerateLetterVariantInput): string {
   const toneLevel = input.toneLevel ?? 3;
   const changeRequest = input.changeRequest?.trim();
+  const originalWordCount = countWords(input.originalLetter);
+  const minWords = minimumVariantWords(originalWordCount);
 
   return `<tonalitaet>
 ${tonalityBlock(toneLevel)}
 </tonalitaet>
+
+<laengenvorgabe>
+Der bestehende Brief hat ${originalWordCount} Wörter. Die Variante muss ein vollständiger Brief bleiben und mindestens ${minWords} Wörter haben. Schreibe keinen Teaser, keine Zusammenfassung und keinen Auszug.
+</laengenvorgabe>
 
 <aenderungswunsch>
 ${changeRequest ? changeRequest : "Kein konkreter Änderungswunsch. Nur Tonalität und Formulierungen passend zur gewählten Tonstufe überarbeiten."}
@@ -69,6 +76,11 @@ interface ParsedVariant {
   letter: string;
 }
 
+function extractSalutation(text: string): string | undefined {
+  const firstLine = text.trim().split(/\r?\n/).map((line) => line.trim()).find(Boolean);
+  return firstLine && /^Sehr geehrte|^Sehr geehrter|^Guten Tag/i.test(firstLine) ? firstLine : undefined;
+}
+
 function extractClosing(text: string): string | undefined {
   const lines = text.trim().split(/\r?\n/).map((line) => line.trim()).filter(Boolean);
   for (let i = lines.length - 1; i >= 0; i -= 1) {
@@ -79,6 +91,15 @@ function extractClosing(text: string): string | undefined {
   return undefined;
 }
 
+function preserveOriginalSalutation(originalLetter: string, variantLetter: string): string {
+  const salutation = extractSalutation(originalLetter);
+  if (!salutation) return variantLetter;
+  if (variantLetter.toLowerCase().includes(salutation.toLowerCase())) {
+    return variantLetter;
+  }
+  return `${salutation}\n\n${variantLetter.trim()}`;
+}
+
 function preserveOriginalClosing(originalLetter: string, variantLetter: string): string {
   const closing = extractClosing(originalLetter);
   if (!closing) return variantLetter;
@@ -87,6 +108,10 @@ function preserveOriginalClosing(originalLetter: string, variantLetter: string):
     return variantLetter;
   }
   return `${variantLetter.trim()}\n\n${closing}`;
+}
+
+function preserveLetterFrame(originalLetter: string, variantLetter: string): string {
+  return preserveOriginalClosing(originalLetter, preserveOriginalSalutation(originalLetter, variantLetter));
 }
 
 function parseVariantResponse(content: unknown): ParsedVariant {
@@ -111,41 +136,85 @@ function countWords(text: string): number {
   return text.trim().split(/\s+/).filter(Boolean).length;
 }
 
-export async function generateLetterVariant(
-  input: GenerateLetterVariantInput
-): Promise<GenerateLetterVariantResult> {
-  const originalWordCount = countWords(input.originalLetter);
-  const maxTokens = Math.min(4500, Math.max(900, Math.ceil(originalWordCount * 2.6) + 400));
-  const generationStart = Date.now();
+function minimumVariantWords(originalWordCount: number): number {
+  return Math.min(originalWordCount, Math.max(140, Math.floor(originalWordCount * 0.72)));
+}
 
-  const response = await withMistralRetry("generateLetterVariant:first", () =>
+function assertCompleteVariant(letter: string, minWords: number): number {
+  const wordCount = countWords(letter);
+  if (wordCount < minWords) {
+    throw new Error(`Mistral returned too short variant letter (${wordCount} words, expected at least ${minWords})`);
+  }
+  return wordCount;
+}
+
+function lengthRetryPrompt(wordCount: number, minWords: number): string {
+  return `Der vorige Entwurf war mit ${wordCount} Wörtern zu kurz. Schreibe jetzt den vollständigen Brief neu. Mindestlänge: ${minWords} Wörter. Erhalte Anrede, Argumente, Forderung und Grußformel. Kein Teaser, keine Zusammenfassung, kein Auszug.`;
+}
+
+async function requestVariantCompletion(
+  input: GenerateLetterVariantInput,
+  maxTokens: number,
+  label: string,
+  retryInstruction?: string
+) {
+  return withMistralRetry(label, () =>
     mistral.chat.complete({
       model: MISTRAL_MODELS.letter,
       messages: [
         { role: "system", content: VARIANT_SYSTEM_PROMPT },
         { role: "user", content: buildVariantUserPrompt(input) },
+        ...(retryInstruction ? [{ role: "user" as const, content: retryInstruction }] : []),
       ],
       responseFormat: { type: "json_object" },
-      temperature: VARIANT_TEMPERATURE,
+      temperature: retryInstruction ? 0.25 : VARIANT_TEMPERATURE,
       maxTokens,
       frequencyPenalty: 0.25,
       presencePenalty: 0.15,
     })
   );
+}
 
-  const parsed = parseVariantResponse(response.choices?.[0]?.message?.content);
+export async function generateLetterVariant(
+  input: GenerateLetterVariantInput
+): Promise<GenerateLetterVariantResult> {
+  const originalWordCount = countWords(input.originalLetter);
+  const minWords = minimumVariantWords(originalWordCount);
+  const maxTokens = Math.min(4500, Math.max(900, Math.ceil(originalWordCount * 2.6) + 400));
+  const generationStart = Date.now();
+
+  let response = await requestVariantCompletion(input, maxTokens, "generateLetterVariant:first");
+  let lengthRetried = false;
+  let parsed = parseVariantResponse(response.choices?.[0]?.message?.content);
+  let letter = preserveLetterFrame(input.originalLetter, parsed.letter);
+  let wordCount = countWords(letter);
+
+  if (wordCount < minWords) {
+    lengthRetried = true;
+    response = await requestVariantCompletion(
+      input,
+      maxTokens,
+      "generateLetterVariant:length-retry",
+      lengthRetryPrompt(wordCount, minWords)
+    );
+    parsed = parseVariantResponse(response.choices?.[0]?.message?.content);
+    letter = preserveLetterFrame(input.originalLetter, parsed.letter);
+    wordCount = countWords(letter);
+  }
+
+  wordCount = assertCompleteVariant(letter, minWords);
+
   if (parsed.preservation_check) {
     console.log("[generateLetterVariant] preservation_check:", parsed.preservation_check.slice(0, 200));
   }
 
-  const letter = preserveOriginalClosing(input.originalLetter, parsed.letter);
-
   return {
     letter,
-    wordCount: countWords(letter),
+    wordCount,
     model: MISTRAL_MODELS.letter,
     temperature: VARIANT_TEMPERATURE,
     generationMs: Date.now() - generationStart,
+    lengthRetried,
     preservationCheck: parsed.preservation_check?.trim(),
   };
 }

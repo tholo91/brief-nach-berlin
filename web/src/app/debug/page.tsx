@@ -37,6 +37,7 @@ function formatVariant(d: LetterVariantDebugPayload): string {
     `Model                ${d.model}`,
     `Temperature          ${d.temperature}`,
     `Generation           ${d.generationMs} ms`,
+    `Length retry         ${d.lengthRetried}`,
     ...(d.preservationCheck
       ? ["", "Preservation check:", d.preservationCheck]
       : []),

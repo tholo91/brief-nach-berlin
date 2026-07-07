@@ -33,6 +33,7 @@ describe("variant email feedback CTA", () => {
         model: "mistral-large-latest",
         temperature: 0.35,
         generationMs: 1200,
+        lengthRetried: false,
         preservationCheck: "Fakten, Forderung, Anrede und Grußformel erhalten.",
       }
     );

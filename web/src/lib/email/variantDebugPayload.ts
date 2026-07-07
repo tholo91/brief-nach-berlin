@@ -18,6 +18,7 @@ export interface LetterVariantDebugPayload {
   model: string;
   temperature: number;
   generationMs: number;
+  lengthRetried: boolean;
   preservationCheck?: string;
 }
 
@@ -52,6 +53,7 @@ export function buildVariantDebugPayload(
     model: result.model,
     temperature: result.temperature,
     generationMs: result.generationMs,
+    lengthRetried: result.lengthRetried,
     preservationCheck: result.preservationCheck,
   };
 }

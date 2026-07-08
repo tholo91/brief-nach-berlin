@@ -349,6 +349,14 @@ export default async function NgoBriefkampagnePage() {
               </li>
               <li>
                 <Link
+                  href="/brief-oder-petition"
+                  className="font-body text-sm text-waldgruen underline underline-offset-2 transition-colors hover:text-waldgruen-dark"
+                >
+                  Brief oder Petition: Was passt zu eurem Anliegen?
+                </Link>
+              </li>
+              <li>
+                <Link
                   href="/weitersagen"
                   className="font-body text-sm text-waldgruen underline underline-offset-2 transition-colors hover:text-waldgruen-dark"
                 >

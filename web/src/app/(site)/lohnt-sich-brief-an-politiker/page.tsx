@@ -288,6 +288,14 @@ export default function LohntSichPage() {
           <ul className="space-y-3">
             <li>
               <Link
+                href="/brief-oder-petition"
+                className="font-body text-waldgruen-dark underline decoration-waldgruen/30 underline-offset-4 hover:decoration-waldgruen"
+              >
+                Brief oder Petition: Was kommt bei Abgeordneten besser an?
+              </Link>
+            </li>
+            <li>
+              <Link
                 href="/was-tun-gegen-politische-ohnmacht"
                 className="font-body text-waldgruen-dark underline decoration-waldgruen/30 underline-offset-4 hover:decoration-waldgruen"
               >

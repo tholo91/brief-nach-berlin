@@ -8,10 +8,10 @@ const stats = [
     source: "Petitionsausschuss, Jahresbericht 2024",
   },
   {
-    number: "~50",
+    number: "70 %",
     label:
-      "Anfragen kommen täglich in einem Abgeordnetenbüro an. Wer mit Handschrift und Wahlkreisbezug auffällt, landet oben auf dem Stapel.",
-    source: "Deutscher Bundestag",
+      "der befragten US-Abgeordnetenbüros sagen: Weniger als 50 persönliche Zuschriften können reichen, damit ein Thema auf die Agenda kommt.",
+    source: "Congressional Management Foundation",
   },
 ];
 

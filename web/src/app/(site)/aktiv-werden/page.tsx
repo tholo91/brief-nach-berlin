@@ -245,6 +245,15 @@ export default function AktivWerdenPage() {
                 Lohnt es sich, einem Politiker zu schreiben?
               </Link>
             </p>
+            <p>
+              Wenn du zwischen Petition, Mail und Brief abwägst:{" "}
+              <Link
+                href="/brief-oder-petition"
+                className="text-waldgruen hover:underline"
+              >
+                Was kommt bei Abgeordneten besser an?
+              </Link>
+            </p>
           </div>
         </section>
 

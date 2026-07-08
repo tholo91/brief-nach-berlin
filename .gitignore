@@ -27,3 +27,13 @@ linkedin/
 
 # Local editor / launch config
 .claude/launch.json
+
+# Local review and handoff artifacts
+.playwright-mcp/
+BARRIEREFREIHEIT-AUDIT.md
+press/
+prompts/ngo-briefkampagne/
+web/claude-fable-chat.md
+web/data/constituency-offices.csv
+web/data/constituency-offices.json
+web/scripts/fetch-constituency-offices.ts

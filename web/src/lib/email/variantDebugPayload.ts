@@ -14,7 +14,11 @@ export interface LetterVariantDebugPayload {
   originalLetterPreview: string;
   changeRequestLength: number;
   changeRequestPreview?: string;
+  letterLengthKey: string;
+  letterLengthMin: number;
+  letterLengthMax: number;
   wordCount: number;
+  wordCountInRange: boolean;
   model: string;
   temperature: number;
   generationMs: number;
@@ -49,7 +53,11 @@ export function buildVariantDebugPayload(
     originalLetterPreview: input.originalLetter.slice(0, PREVIEW_MAX),
     changeRequestLength: changeRequest?.length ?? 0,
     changeRequestPreview: changeRequest?.slice(0, PREVIEW_MAX),
+    letterLengthKey: result.letterLength,
+    letterLengthMin: result.targetMinWords,
+    letterLengthMax: result.targetMaxWords,
     wordCount: result.wordCount,
+    wordCountInRange: result.wordCountInRange,
     model: result.model,
     temperature: result.temperature,
     generationMs: result.generationMs,

@@ -3,10 +3,23 @@
 import { useEffect, useMemo, useState, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import { setPendingLetterVariantSubmission } from "@/lib/client/letterVariantSubmission";
+import {
+  DEFAULT_LETTER_LENGTH,
+  LETTER_LENGTHS,
+  letterLengthFromWordCount,
+  type LetterLength,
+} from "@/lib/config";
 
 const MIN_LETTER_LENGTH = 500;
 const SUCCESS_HANDOFF_DELAY_MS = 1500;
 const TONE_LABELS = ["freundlich", "höflich", "sachlich", "bestimmt", "nachdrücklich"] as const;
+const CHANGE_PRESETS = [
+  { label: "Klingt nach mir", text: "Der Brief soll mehr nach mir klingen und weniger wie eine Vorlage." },
+  { label: "Anliegen im Zentrum", text: "Mein eigentliches Anliegen soll im Mittelpunkt stehen." },
+  { label: "Eigene Worte behalten", text: "Gute eigene Formulierungen aus dem Original sollen erhalten bleiben." },
+  { label: "Nur sichere Fakten", text: "Bitte nur sichere Fakten verwenden und keine neuen Details ergänzen." },
+  { label: "Klarer roter Faden", text: "Der Brief soll einen klaren roten Faden haben: Anlass, Begründung, Bitte." },
+] as const;
 
 type SubmitState = "idle" | "sending";
 
@@ -17,6 +30,10 @@ function isValidEmail(value: string): boolean {
 function parseToneLevel(value: string | null): number | undefined {
   const parsed = Number(value);
   return Number.isInteger(parsed) && parsed >= 1 && parsed <= 5 ? parsed : undefined;
+}
+
+function countWords(text: string): number {
+  return text.trim().split(/\s+/).filter(Boolean).length;
 }
 
 function variantDataFromHash(): { email: string; originalToneLevel?: number } {
@@ -35,6 +52,8 @@ export function VariantForm() {
   const [originalLetter, setOriginalLetter] = useState("");
   const [toneLevel, setToneLevel] = useState(3);
   const [originalToneLevel, setOriginalToneLevel] = useState<number | undefined>();
+  const [letterLength, setLetterLength] = useState<LetterLength>(DEFAULT_LETTER_LENGTH);
+  const [letterLengthTouched, setLetterLengthTouched] = useState(false);
   const [changeRequest, setChangeRequest] = useState("");
   const [submitState, setSubmitState] = useState<SubmitState>("idle");
   const [touchedSubmit, setTouchedSubmit] = useState(false);
@@ -55,6 +74,13 @@ export function VariantForm() {
   }, []);
 
   const trimmedLetter = originalLetter.trim();
+  const originalWordCount = useMemo(() => countWords(trimmedLetter), [trimmedLetter]);
+
+  useEffect(() => {
+    if (letterLengthTouched) return;
+    setLetterLength(letterLengthFromWordCount(originalWordCount));
+  }, [letterLengthTouched, originalWordCount]);
+
   const emailError = touchedSubmit && !isValidEmail(email)
     ? "Bitte gib eine gültige E-Mail-Adresse ein."
     : null;
@@ -65,8 +91,8 @@ export function VariantForm() {
     () =>
       trimmedLetter.length < MIN_LETTER_LENGTH
         ? `${trimmedLetter.length} von mind. ${MIN_LETTER_LENGTH} Zeichen`
-        : `${trimmedLetter.length} Zeichen`,
-    [trimmedLetter.length]
+        : `${originalWordCount} Wörter, ${trimmedLetter.length} Zeichen`,
+    [originalWordCount, trimmedLetter.length]
   );
   const canSubmit =
     isValidEmail(email) &&
@@ -85,6 +111,7 @@ export function VariantForm() {
       originalLetter: trimmedLetter,
       toneLevel,
       originalToneLevel,
+      letterLength,
       changeRequest: changeRequest.trim() || undefined,
     };
 
@@ -92,6 +119,21 @@ export function VariantForm() {
     setPendingLetterVariantSubmission(submission);
     await new Promise((resolve) => setTimeout(resolve, SUCCESS_HANDOFF_DELAY_MS));
     router.push("/brief/anpassen/erfolg");
+  }
+
+  function toggleChangePreset(text: string) {
+    setChangeRequest((current) => {
+      const bullet = `- ${text}`;
+      const lines = current
+        .split(/\r?\n/)
+        .map((line) => line.trim())
+        .filter(Boolean);
+
+      if (lines.includes(bullet)) {
+        return lines.filter((line) => line !== bullet).join("\n");
+      }
+      return [...lines, bullet].join("\n");
+    });
   }
 
   const inputClassName = (hasError: boolean) =>
@@ -123,6 +165,7 @@ export function VariantForm() {
           inputMode="email"
           value={email}
           onChange={(event) => setEmail(event.target.value)}
+          onInput={(event) => setEmail(event.currentTarget.value)}
           placeholder="deine@email.de"
           disabled={submitState === "sending"}
           className={inputClassName(Boolean(emailError))}
@@ -147,6 +190,7 @@ export function VariantForm() {
           id="variant-letter"
           value={originalLetter}
           onChange={(event) => setOriginalLetter(event.target.value)}
+          onInput={(event) => setOriginalLetter(event.currentTarget.value)}
           rows={12}
           placeholder="Füge hier den ganzen Briefentwurf aus deiner E-Mail ein."
           disabled={submitState === "sending"}
@@ -200,15 +244,71 @@ export function VariantForm() {
       </div>
 
       <div>
+        <label className="block font-body text-sm font-semibold text-warmgrau mb-3">
+          Gewünschte Länge
+        </label>
+        <div className="flex gap-2">
+          {(["1", "1.5", "2"] as LetterLength[]).map((len) => {
+            const isActive = letterLength === len;
+            return (
+              <button
+                key={len}
+                type="button"
+                onClick={() => {
+                  setLetterLength(len);
+                  setLetterLengthTouched(true);
+                }}
+                disabled={submitState === "sending"}
+                className={[
+                  "flex-1 rounded-lg border py-2.5 font-body text-sm transition-all disabled:cursor-not-allowed",
+                  isActive
+                    ? "border-waldgruen bg-waldgruen text-creme shadow-sm"
+                    : "border-warmgrau/30 bg-creme text-waldgruen-dark hover:border-waldgruen/50",
+                ].join(" ")}
+              >
+                {LETTER_LENGTHS[len].label}
+              </button>
+            );
+          })}
+        </div>
+        <p className="mt-2 text-xs text-warmgrau/50">
+          Voreinstellung nach eingefügtem Brief: {LETTER_LENGTHS[letterLength].label}.
+        </p>
+      </div>
+
+      <div>
         <label htmlFor="variant-change" className="block font-body text-sm font-semibold text-warmgrau mb-1">
           Was soll anders werden?
         </label>
+        <div className="mb-3 flex flex-wrap gap-2">
+          {CHANGE_PRESETS.map((preset) => {
+            const isActive = changeRequest.includes(preset.text);
+            return (
+              <button
+                key={preset.label}
+                type="button"
+                onClick={() => toggleChangePreset(preset.text)}
+                disabled={submitState === "sending"}
+                className={[
+                  "inline-flex min-h-[40px] items-center justify-center rounded-lg px-3 py-2 font-body text-sm transition-all disabled:cursor-not-allowed",
+                  isActive
+                    ? "bg-waldgruen text-creme font-semibold shadow-sm"
+                    : "border border-warmgrau/20 bg-creme/60 text-warmgrau/70 hover:border-warmgrau/40 hover:text-warmgrau",
+                ].join(" ")}
+                aria-pressed={isActive}
+              >
+                {preset.label}
+              </button>
+            );
+          })}
+        </div>
         <textarea
           id="variant-change"
           value={changeRequest}
           onChange={(event) => setChangeRequest(event.target.value)}
-          rows={3}
-          placeholder="Optional, z.B. kürzer, sachlicher, persönlicher, weniger scharf, mehr Druck"
+          onInput={(event) => setChangeRequest(event.currentTarget.value)}
+          rows={5}
+          placeholder={"Optional, z.B. als Stichpunkte:\n- Mein persönlicher Satz aus Absatz 2 soll bleiben\n- Die Bitte am Ende soll konkreter werden"}
           disabled={submitState === "sending"}
           className={[
             inputClassName(false),

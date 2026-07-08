@@ -29,6 +29,18 @@ export const LETTER_LENGTHS = {
 export type LetterLength = keyof typeof LETTER_LENGTHS;
 export const DEFAULT_LETTER_LENGTH: LetterLength = "1";
 
+const LETTER_LENGTH_ORDER: LetterLength[] = ["1", "1.5", "2"];
+
+export function letterLengthFromWordCount(wordCount: number): LetterLength {
+  return LETTER_LENGTH_ORDER.reduce((closest, current) => {
+    const closestTarget = (LETTER_LENGTHS[closest].min + LETTER_LENGTHS[closest].max) / 2;
+    const currentTarget = (LETTER_LENGTHS[current].min + LETTER_LENGTHS[current].max) / 2;
+    return Math.abs(wordCount - currentTarget) < Math.abs(wordCount - closestTarget)
+      ? current
+      : closest;
+  }, DEFAULT_LETTER_LENGTH);
+}
+
 // Sharing — used in email template and success page
 // Two distinct intents:
 //   1. SHARE_TEXT_CAUSE  — invites RECIPIENT to write their own letter (movement)

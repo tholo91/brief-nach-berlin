@@ -5,6 +5,7 @@ export interface PendingLetterVariantSubmission {
   originalLetter: string;
   toneLevel: number;
   originalToneLevel?: number;
+  letterLength?: "1" | "1.5" | "2";
   changeRequest?: string;
 }
 

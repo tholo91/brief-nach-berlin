@@ -1,5 +1,6 @@
 import { mistral, withMistralRetry, MISTRAL_MODELS } from "@/lib/mistral";
 import { tonalityBlock } from "@/lib/generation/generateLetter";
+import { LETTER_LENGTHS, letterLengthFromWordCount, type LetterLength } from "@/lib/config";
 
 const VARIANT_TEMPERATURE = 0.35;
 
@@ -7,6 +8,7 @@ export interface GenerateLetterVariantInput {
   originalLetter: string;
   toneLevel?: number;
   originalToneLevel?: number;
+  letterLength?: LetterLength;
   changeRequest?: string;
 }
 
@@ -17,6 +19,10 @@ export interface GenerateLetterVariantResult {
   temperature: number;
   generationMs: number;
   lengthRetried: boolean;
+  letterLength: LetterLength;
+  targetMinWords: number;
+  targetMaxWords: number;
+  wordCountInRange: boolean;
   preservationCheck?: string;
 }
 
@@ -27,7 +33,7 @@ Der Nutzer gibt keinen neuen Rohtext ein, sondern einen bestehenden Briefentwurf
 Nicht verhandelbare Regeln:
 - Behandle <bestehender_brief> als Quelle und Ziel zugleich.
 - Erhalte Empfängeranrede, Fakten, politische Position, zentrale Forderung, Adressatenbezug und Grußformel.
-- Wenn der bestehende Brief mit "Mit freundlichen Grüßen," oder einer anderen Grußformel endet, muss die Variante mit derselben Grußformel und derselben Namenszeile enden.
+- Wenn der bestehende Brief mit "Mit freundlichen Grüßen" oder einer anderen Grußformel endet, muss die Variante mit derselben Grußformel und derselben Namenszeile enden.
 - Erhalte Datum, Namen, Orte, Rollen, Zahlen und konkrete Sachverhalte, wenn sie im Brief stehen.
 - Füge keine neuen Fakten, Beispiele, Zahlen, Programme, Studien, Orte, lokalen Versorgungslagen, Superlative oder biografischen Angaben hinzu.
 - Verändere nur Tonalität, Formulierungen, Klarheit, Satzbau und bei Bedarf die Struktur.
@@ -52,14 +58,15 @@ export function buildVariantUserPrompt(input: GenerateLetterVariantInput): strin
   const toneLevel = input.toneLevel ?? 3;
   const changeRequest = input.changeRequest?.trim();
   const originalWordCount = countWords(input.originalLetter);
-  const minWords = minimumVariantWords(originalWordCount);
+  const lengthKey = input.letterLength ?? letterLengthFromWordCount(originalWordCount);
+  const { min: minWords, max: maxWords, label } = LETTER_LENGTHS[lengthKey];
 
   return `<tonalitaet>
 ${tonalityBlock(toneLevel)}
 </tonalitaet>
 
 <laengenvorgabe>
-Der bestehende Brief hat ${originalWordCount} Wörter. Die Variante muss ein vollständiger Brief bleiben und mindestens ${minWords} Wörter haben. Schreibe keinen Teaser, keine Zusammenfassung und keinen Auszug.
+Der bestehende Brief hat ${originalWordCount} Wörter. Die gewünschte Länge ist ${label}, also ${minWords} bis ${maxWords} Wörter. Die Variante muss ein vollständiger Brief bleiben und in diesem Wortfenster liegen. Wenn der Änderungswunsch kürzer oder länger verlangt, gilt trotzdem dieses Wortfenster. Schreibe keinen Teaser, keine Zusammenfassung und keinen Auszug.
 </laengenvorgabe>
 
 <aenderungswunsch>
@@ -136,20 +143,19 @@ function countWords(text: string): number {
   return text.trim().split(/\s+/).filter(Boolean).length;
 }
 
-function minimumVariantWords(originalWordCount: number): number {
-  return Math.min(originalWordCount, Math.max(140, Math.floor(originalWordCount * 0.72)));
-}
-
-function assertCompleteVariant(letter: string, minWords: number): number {
+function assertCompleteVariant(letter: string): number {
   const wordCount = countWords(letter);
-  if (wordCount < minWords) {
-    throw new Error(`Mistral returned too short variant letter (${wordCount} words, expected at least ${minWords})`);
+  if (wordCount < 140) {
+    throw new Error(`Mistral returned incomplete variant letter (${wordCount} words)`);
   }
   return wordCount;
 }
 
-function lengthRetryPrompt(wordCount: number, minWords: number): string {
-  return `Der vorige Entwurf war mit ${wordCount} Wörtern zu kurz. Schreibe jetzt den vollständigen Brief neu. Mindestlänge: ${minWords} Wörter. Erhalte Anrede, Argumente, Forderung und Grußformel. Kein Teaser, keine Zusammenfassung, kein Auszug.`;
+function lengthRetryPrompt(wordCount: number, minWords: number, maxWords: number): string {
+  const direction = wordCount < minWords
+    ? `mit ${wordCount} Wörtern zu kurz`
+    : `mit ${wordCount} Wörtern zu lang`;
+  return `Der vorige Entwurf war ${direction}. Schreibe jetzt den vollständigen Brief neu. Zielfenster: ${minWords} bis ${maxWords} Wörter. Erhalte Anrede, Argumente, Forderung und Grußformel. Kein Teaser, keine Zusammenfassung, kein Auszug.`;
 }
 
 async function requestVariantCompletion(
@@ -179,8 +185,9 @@ export async function generateLetterVariant(
   input: GenerateLetterVariantInput
 ): Promise<GenerateLetterVariantResult> {
   const originalWordCount = countWords(input.originalLetter);
-  const minWords = minimumVariantWords(originalWordCount);
-  const maxTokens = Math.min(4500, Math.max(900, Math.ceil(originalWordCount * 2.6) + 400));
+  const lengthKey = input.letterLength ?? letterLengthFromWordCount(originalWordCount);
+  const { min: minWords, max: maxWords } = LETTER_LENGTHS[lengthKey];
+  const maxTokens = Math.min(4500, Math.max(900, Math.ceil(maxWords * 2.6) + 400));
   const generationStart = Date.now();
 
   let response = await requestVariantCompletion(input, maxTokens, "generateLetterVariant:first");
@@ -189,20 +196,30 @@ export async function generateLetterVariant(
   let letter = preserveLetterFrame(input.originalLetter, parsed.letter);
   let wordCount = countWords(letter);
 
-  if (wordCount < minWords) {
+  if (wordCount < minWords || wordCount > maxWords) {
     lengthRetried = true;
     response = await requestVariantCompletion(
       input,
       maxTokens,
       "generateLetterVariant:length-retry",
-      lengthRetryPrompt(wordCount, minWords)
+      lengthRetryPrompt(wordCount, minWords, maxWords)
     );
     parsed = parseVariantResponse(response.choices?.[0]?.message?.content);
     letter = preserveLetterFrame(input.originalLetter, parsed.letter);
     wordCount = countWords(letter);
   }
 
-  wordCount = assertCompleteVariant(letter, minWords);
+  wordCount = assertCompleteVariant(letter);
+  const wordCountInRange = wordCount >= minWords && wordCount <= maxWords;
+
+  if (!wordCountInRange) {
+    console.warn("[generateLetterVariant] final word count still out of range", {
+      wordCount,
+      minWords,
+      maxWords,
+      lengthKey,
+    });
+  }
 
   if (parsed.preservation_check) {
     console.log("[generateLetterVariant] preservation_check:", parsed.preservation_check.slice(0, 200));
@@ -215,6 +232,10 @@ export async function generateLetterVariant(
     temperature: VARIANT_TEMPERATURE,
     generationMs: Date.now() - generationStart,
     lengthRetried,
+    letterLength: lengthKey,
+    targetMinWords: minWords,
+    targetMaxWords: maxWords,
+    wordCountInRange,
     preservationCheck: parsed.preservation_check?.trim(),
   };
 }

@@ -65,6 +65,7 @@ export async function POST(req: NextRequest) {
       originalLetter: data.originalLetter,
       toneLevel: data.toneLevel,
       originalToneLevel: data.originalToneLevel,
+      letterLength: data.letterLength,
       changeRequest: data.changeRequest,
     });
 

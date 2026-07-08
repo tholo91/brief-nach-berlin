@@ -22,6 +22,8 @@ describe("letter variant prompt", () => {
     expect(VARIANT_SYSTEM_PROMPT).toContain("Empfängeranrede");
     expect(VARIANT_SYSTEM_PROMPT).toContain("Grußformel");
     expect(VARIANT_SYSTEM_PROMPT).toContain("derselben Grußformel und derselben Namenszeile");
+    expect(VARIANT_SYSTEM_PROMPT).toContain('"Mit freundlichen Grüßen"');
+    expect(VARIANT_SYSTEM_PROMPT).not.toContain('"Mit freundlichen Grüßen,"');
     expect(VARIANT_SYSTEM_PROMPT).toContain("keine neue lokale Lage");
     expect(VARIANT_SYSTEM_PROMPT).toContain("so hoch wie nie");
     expect(VARIANT_SYSTEM_PROMPT).toContain("Tonalität als Obergrenze");
@@ -39,11 +41,23 @@ describe("letter variant prompt", () => {
     expect(prompt).toContain("<bestehender_brief>");
     expect(prompt).toContain("<laengenvorgabe>");
     expect(prompt).toContain("vollständiger Brief");
+    expect(prompt).toContain("1 Seite");
+    expect(prompt).toContain("200 bis 240 Wörter");
     expect(prompt).toContain("keinen Teaser");
     expect(prompt).toContain("Sehr geehrte Frau Mustermann");
     expect(prompt).toContain("<aenderungswunsch>");
     expect(prompt).toContain("Bitte sachlicher und kürzer.");
     expect(prompt).toContain("register: scharf-pointiert");
+  });
+
+  it("uses the requested length in the Mistral prompt", () => {
+    const prompt = buildVariantUserPrompt({
+      originalLetter: "Sehr geehrte Frau Mustermann,\n\n" + Array.from({ length: 220 }, (_, i) => `Wort${i}`).join(" "),
+      letterLength: "2",
+    });
+
+    expect(prompt).toContain("2 Seiten");
+    expect(prompt).toContain("420 bis 460 Wörter");
   });
 
   it("keeps the original closing when the model drops it", async () => {
@@ -54,7 +68,8 @@ describe("letter variant prompt", () => {
             content: JSON.stringify({
               preservation_check: "Fakten und Forderung blieben erhalten.",
               letter:
-                "Sehr geehrte Frau Mustermann,\n\nich bitte Sie eindringlich, sich für sichere Radwege einzusetzen. Viele Menschen sind täglich darauf angewiesen, dass politische Entscheidungen den Schutz im Straßenverkehr ernster nehmen. Bitte unterstützen Sie konkrete Verbesserungen für mehr Sicherheit.",
+                "Sehr geehrte Frau Mustermann,\n\n" +
+                Array.from({ length: 205 }, (_, i) => `Sicherheit${i}`).join(" "),
             }),
           },
         },
@@ -63,7 +78,9 @@ describe("letter variant prompt", () => {
 
     const result = await generateLetterVariant({
       originalLetter:
-        "Sehr geehrte Frau Mustermann,\n\nbitte setzen Sie sich für sichere Radwege ein.\n\nMit freundlichen Grüßen,\nMax",
+        "Sehr geehrte Frau Mustermann,\n\n" +
+        Array.from({ length: 205 }, (_, i) => `Radweg${i}`).join(" ") +
+        "\n\nMit freundlichen Grüßen,\nMax",
       toneLevel: 4,
     });
 
@@ -72,7 +89,7 @@ describe("letter variant prompt", () => {
 
   it("retries when the first variant is too short", async () => {
     const originalBody = Array.from({ length: 180 }, (_, i) => `Wort${i}`).join(" ");
-    const fullVariantBody = Array.from({ length: 150 }, (_, i) => `Variante${i}`).join(" ");
+    const fullVariantBody = Array.from({ length: 220 }, (_, i) => `Variante${i}`).join(" ");
     const originalLetter = [
       "Sehr geehrte Frau Mustermann,",
       "",
@@ -123,6 +140,7 @@ describe("letter variant prompt", () => {
 
     expect(mistral.chat.complete).toHaveBeenCalledTimes(2);
     expect(result.lengthRetried).toBe(true);
-    expect(result.wordCount).toBeGreaterThanOrEqual(140);
+    expect(result.wordCount).toBeGreaterThanOrEqual(200);
+    expect(result.wordCount).toBeLessThanOrEqual(240);
   });
 });

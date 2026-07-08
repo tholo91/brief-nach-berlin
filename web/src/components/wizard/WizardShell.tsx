@@ -2,17 +2,25 @@
 
 import { useState, useCallback, useEffect, useRef } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
-import type { WizardStep, WizardData, WizardActionResult } from "@/lib/types/wizard";
-import type { Politician } from "@/lib/types/politician";
+import type {
+  WizardStep,
+  WizardData,
+  WizardActionResult,
+  LevelRoutingContext,
+} from "@/lib/types/wizard";
+import type { Politician, PoliticalLevel } from "@/lib/types/politician";
+import type { Recipient } from "@/lib/lookup/rathausRecipient";
 import type { Step1Data } from "@/lib/validation/wizardSchemas";
 import type { Step1bData } from "@/lib/validation/wizardSchemas";
 import { submitWizardAction } from "@/lib/actions/submitWizard";
+import { prefetchRoutingAction } from "@/lib/actions/prefetchRouting";
 import { campaignLogoPublicUrl } from "@/lib/campaigns/logo";
 import { peekHandoff, clearHandoff } from "@/lib/wizard-handoff";
 import { clearLandingDraft } from "@/lib/landing-draft";
 import { Step1Form } from "./Step1Form";
 import { Step1bOptional } from "./Step1bOptional";
 import { Step2Issue } from "./Step2Issue";
+import { StepLevelSelect } from "./StepLevelSelect";
 import { Step3Success } from "./Step3Success";
 import FadeFooterImage from "../FadeFooterImage";
 import { WIZARD_PROGRESS_EVENT } from "../AppHeader";
@@ -49,7 +57,26 @@ function stepToProgress(step: WizardStep): number {
   if (step === 1) return 1; // Anliegen
   if (step === 2) return 2; // Kontaktdaten
   if (step === "2b") return 3; // Zusätzliche Infos
-  return 3; // step 3 (success) — hide indicator
+  return 3; // "level" + step 3 — indicator is hidden there
+}
+
+/**
+ * Empfänger-Liste für die gewählte Ebene. Ohne Routing-Kontext (Flag aus)
+ * bleibt der heutige Bund-Pfad: die flache Politikerliste, als mdb getaggt.
+ */
+function recipientsForLevel(
+  politicians: Politician[],
+  levelRouting: LevelRoutingContext | null,
+  level: PoliticalLevel | null
+): Recipient[] {
+  if (!levelRouting || !level) {
+    return politicians.map((p) => ({ ...p, kind: p.level === "Land" ? "mdl" : "mdb" }));
+  }
+  if (level === "Kommune") return levelRouting.byLevel.Kommune;
+  if (level === "Land") {
+    return levelRouting.byLevel.Land.map((p) => ({ ...p, kind: "mdl" as const }));
+  }
+  return levelRouting.byLevel.Bund.map((p) => ({ ...p, kind: "mdb" as const }));
 }
 
 export function WizardShell() {
@@ -74,6 +101,17 @@ export function WizardShell() {
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [plzError, setPlzError] = useState<string | null>(null);
   const hasMountedRef = useRef(false);
+  // 999.6 Ebenen-Routing: Kontext aus submitWizardAction, gewählte Ebene und
+  // der signierte Prefetch-Token (LOCK-10). Der Prefetch startet bei Step-1-
+  // Weiter (erste Mistral-Berührung des Anliegens) und läuft, während der
+  // User PLZ/E-Mail ausfüllt.
+  const [levelRouting, setLevelRouting] = useState<LevelRoutingContext | null>(null);
+  const [selectedLevel, setSelectedLevel] = useState<PoliticalLevel | null>(null);
+  const [routingToken, setRoutingToken] = useState<string | null>(null);
+  const routingPrefetchRef = useRef<{
+    issueText: string;
+    promise: Promise<{ token: string } | null>;
+  } | null>(null);
 
   // Landing -> wizard handoff (sessionStorage): pre-fill step 1 with the
   // issue the visitor already wrote on the landing. Read after mount so the
@@ -119,7 +157,11 @@ export function WizardShell() {
     }
   }, [step, wizardData, router]);
 
-  // Step 1: Anliegen — just stores state and advances. No backend call.
+  // Step 1: Anliegen — stores state and advances. Erst hier (nach dem
+  // bewussten "Weiter" im Review-/Tonalitäts-Schritt) geht das Anliegen zum
+  // ersten Mal an Mistral: der Ebenen-Prefetch startet fire-and-forget und
+  // überlappt mit der Eingabe von PLZ/E-Mail. Ändert der User den Text,
+  // ersetzt der neue Prefetch den alten (Hash-Bindung im Token).
   const handleStep1Complete = useCallback(
     (issueText: string, toneLevel: number, usedSpeechToText: boolean, tipsOpened: boolean) => {
       // OR the step-1 open into any open that already happened on the landing
@@ -134,6 +176,12 @@ export function WizardShell() {
         usedSpeechToText: prev.usedSpeechToText || usedSpeechToText,
         tipsOpened: prev.tipsOpened || tipsOpened,
       }));
+      if (routingPrefetchRef.current?.issueText !== issueText) {
+        routingPrefetchRef.current = {
+          issueText,
+          promise: prefetchRoutingAction(issueText).catch(() => null),
+        };
+      }
       setStep(2);
     },
     []
@@ -183,7 +231,16 @@ export function WizardShell() {
           issueTextLength: fullData.issueText.length,
           plz: fullData.plz,
         });
-        const result = await submitWizardAction(fullData);
+        // Prefetch-Token einsammeln, wenn er zum finalen Anliegen-Text passt.
+        // Die Server-Action bricht spätestens nach 3.5s selbst ab, das await
+        // hier blockiert also nie länger als der Foreground-Fallback würde.
+        let prefetchedToken: string | null = null;
+        const prefetch = routingPrefetchRef.current;
+        if (prefetch && prefetch.issueText === fullData.issueText) {
+          prefetchedToken = (await prefetch.promise)?.token ?? null;
+        }
+        setRoutingToken(prefetchedToken);
+        const result = await submitWizardAction(fullData, prefetchedToken);
 
         if ("error" in result) {
           console.warn("[wizard] server returned error", result);
@@ -220,7 +277,17 @@ export function WizardShell() {
         if ("disambiguationNeeded" in result && result.disambiguationNeeded) {
           setPoliticians(result.politicians);
           setActionResult(result);
-          setStep(3);
+          if (result.levelRouting) {
+            // Ebenen-Routing aktiv: erst der eigene Ebene-Auswahl-Step,
+            // danach die konkrete Empfängerwahl.
+            setLevelRouting(result.levelRouting);
+            setSelectedLevel(null);
+            setStep("level");
+          } else {
+            setLevelRouting(null);
+            setSelectedLevel(null);
+            setStep(3);
+          }
         } else if ("success" in result && result.success) {
           setActionResult(result);
           setStep(3);
@@ -247,7 +314,7 @@ export function WizardShell() {
   }, []);
 
   const progress = stepToProgress(step);
-  const showIndicator = step !== 3;
+  const showIndicator = step !== 3 && step !== "level";
   const showBack = step === 2 || step === "2b";
   const campaignContext = wizardData.campaign;
   const campaignLogoUrl = campaignLogoPublicUrl(campaignContext?.logoPath);
@@ -443,18 +510,43 @@ export function WizardShell() {
             onBackToIssue={() => setStep(1)}
           />
         )}
+        {step === "level" && levelRouting && (
+          <StepLevelSelect
+            routing={levelRouting}
+            plz={wizardData.plz ?? ""}
+            initialLevel={selectedLevel}
+            onContinue={(level) => {
+              setSelectedLevel(level);
+              setStep(3);
+            }}
+            onBack={() => setStep("2b")}
+          />
+        )}
         {step === 3 && (
           <Step3Success
+            key={selectedLevel ?? "flat"}
             result={actionResult}
             wizardData={wizardData as WizardData}
-            politicians={politicians}
+            recipients={recipientsForLevel(politicians, levelRouting, selectedLevel)}
+            selectedLevel={selectedLevel ?? undefined}
+            routingToken={routingToken}
             onChangePlz={
               actionResult && "disambiguationNeeded" in actionResult && actionResult.disambiguationNeeded
                 ? () => {
                     setActionResult(null);
                     setPoliticians([]);
+                    setLevelRouting(null);
+                    setSelectedLevel(null);
                     setStep(2);
                   }
+                : undefined
+            }
+            onChangeLevel={
+              levelRouting &&
+              actionResult &&
+              "disambiguationNeeded" in actionResult &&
+              actionResult.disambiguationNeeded
+                ? () => setStep("level")
                 : undefined
             }
           />

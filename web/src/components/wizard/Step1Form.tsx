@@ -106,7 +106,7 @@ export function Step1Form({ onNext, defaultValues, plzError, onPlzErrorDismiss }
             aria-live="polite"
           >
             {locality
-              ? `MdB für ${locality.ort} wird gesucht`
+              ? `Abgeordnete für ${locality.ort} werden gesucht`
               : "Damit werden deine zuständigen Abgeordneten gefunden"}
           </p>
           {errors.plz && touchedFields.plz && (

@@ -2,7 +2,14 @@
 
 import { useState, useCallback, useMemo, useRef, useEffect } from "react";
 import type { WizardData, WizardActionResult } from "@/lib/types/wizard";
-import type { Politician } from "@/lib/types/politician";
+import type { PoliticalLevel } from "@/lib/types/politician";
+import type {
+  Recipient,
+  RecipientSelection,
+  MdbRecipient,
+  MdlRecipient,
+  RathausRecipient,
+} from "@/lib/lookup/rathausRecipient";
 import { selectPoliticianAction } from "@/lib/actions/selectPolitician";
 import { resendLetterAction } from "@/lib/actions/resendLetter";
 import { reportErrorAction } from "@/lib/actions/reportError";
@@ -13,6 +20,7 @@ import {
   FOUNDER_FEEDBACK_URL,
 } from "@/lib/config";
 import { buildShareTarget } from "@/lib/share";
+import { RathausAdresseButton } from "./RathausAdresseButton";
 
 // Phased loading copy. Rotates while the politician-pick spinner runs. This is
 // the user's final click - they sit here waiting for the letter to be drafted,
@@ -79,11 +87,37 @@ function detectIOS(): boolean {
 interface Step3SuccessProps {
   result: WizardActionResult | null;
   wizardData: WizardData;
-  politicians: Politician[];
+  /** Empfänger der gewählten Ebene: MdB/MdL-Karten oder ein Rathaus-Empfänger */
+  recipients: Recipient[];
+  /** Gewählte Ebene (nur gesetzt, wenn der Ebene-Auswahl-Step aktiv war) */
+  selectedLevel?: PoliticalLevel;
+  /** Signierter Routing-Token — wird an /api/generate-letter durchgereicht */
+  routingToken?: string | null;
   onChangePlz?: () => void;
+  /** Zurück zum Ebene-Auswahl-Step (Override bleibt jederzeit leicht) */
+  onChangeLevel?: () => void;
 }
 
-export function Step3Success({ result, wizardData, politicians, onChangePlz }: Step3SuccessProps) {
+export function Step3Success({
+  result,
+  wizardData,
+  recipients,
+  selectedLevel,
+  routingToken,
+  onChangePlz,
+  onChangeLevel,
+}: Step3SuccessProps) {
+  // Abgeordneten-Karten (mdb/mdl) und der synthetische Rathaus-Empfänger
+  // teilen sich den Step; Kommune zeigt genau eine Verwaltungs-Karte.
+  const politicians = useMemo(
+    () => recipients.filter((r): r is MdbRecipient | MdlRecipient => r.kind !== "rathaus"),
+    [recipients]
+  );
+  const rathaus = useMemo(
+    () => recipients.find((r): r is RathausRecipient => r.kind === "rathaus") ?? null,
+    [recipients]
+  );
+
   // Pre-select the first Direktmandat-holder so users land on the most
   // politically relevant option without an extra click. If no Direktmandat
   // exists (Wahlrechtsreform 2025: 23 Wahlkreise sind unbesetzt), the user
@@ -93,6 +127,8 @@ export function Step3Success({ result, wizardData, politicians, onChangePlz }: S
   const [selectedPoliticianId, setSelectedPoliticianId] = useState<number | null>(
     () => politicians.find((p) => p.isDirect)?.id ?? (politicians.length === 1 && politicians[0].id === -1 ? -1 : null)
   );
+  // Kommune: die einzige Rathaus-Karte ist vorausgewählt (ein Klick weniger)
+  const [rathausSelected, setRathausSelected] = useState<boolean>(() => Boolean(rathaus));
   const [isGenerating, setIsGenerating] = useState(false);
   const [generationComplete, setGenerationComplete] = useState(false);
   const [generationError, setGenerationError] = useState<string | null>(null);
@@ -104,8 +140,18 @@ export function Step3Success({ result, wizardData, politicians, onChangePlz }: S
     if (result && "success" in result && result.success) return result.letterText;
     return "";
   });
-  const [generatedPoliticianId, setGeneratedPoliticianId] = useState<number | null>(() => {
-    if (result && "success" in result && result.success) return result.politician.id;
+  // Die bestätigte Auswahl + der serverseitig aufgelöste Empfänger nach dem
+  // Pre-Check. Treibt den /api/generate-letter-Fetch und den Resend-Pfad.
+  const [generatedSelection, setGeneratedSelection] = useState<RecipientSelection | null>(() => {
+    if (result && "success" in result && result.success) {
+      return { kind: "mdb", selectedPoliticianId: result.politician.id };
+    }
+    return null;
+  });
+  const [generatedRecipient, setGeneratedRecipient] = useState<Recipient | null>(() => {
+    if (result && "success" in result && result.success) {
+      return { ...result.politician, kind: "mdb" };
+    }
     return null;
   });
   // letterReady gates the "Keine E-Mail erhalten?" section - true once the
@@ -179,6 +225,7 @@ export function Step3Success({ result, wizardData, politicians, onChangePlz }: S
   // prefers-reduced-motion (vestibular-disorder safety, WCAG 2.3.3).
   const handleCardSelect = useCallback((politicianId: number) => {
     setSelectedPoliticianId(politicianId);
+    setRathausSelected(false);
     requestAnimationFrame(() => {
       const reduce =
         typeof window !== "undefined" &&
@@ -204,6 +251,20 @@ export function Step3Success({ result, wizardData, politicians, onChangePlz }: S
     [politicians, selectedPoliticianId]
   );
 
+  // Diskriminierte Auswahl für die Server-Seite: rathaus trägt bewusst keine
+  // ID (LOCK-5), Abgeordnete gehen mit kind + Abgeordnetenwatch-ID raus.
+  const currentSelection = useMemo<RecipientSelection | null>(() => {
+    if (rathaus && rathausSelected) return { kind: "rathaus" };
+    if (selectedPolitician) {
+      return { kind: selectedPolitician.kind, selectedPoliticianId: selectedPolitician.id };
+    }
+    if (selectedPoliticianId !== null) {
+      // Fallback-Karte (id -1, "MdB später auswählen") ist kein echtes Politician-Objekt
+      return { kind: "mdb", selectedPoliticianId };
+    }
+    return null;
+  }, [rathaus, rathausSelected, selectedPolitician, selectedPoliticianId]);
+
   // Group the disambiguation cards by Wahlkreis. sortedPoliticians is already
   // Direkt-first, so insertion order puts the group holding the pre-selected
   // Direktmandat at the top. Each card carries a precomputed flat index matching
@@ -215,7 +276,7 @@ export function Step3Success({ result, wizardData, politicians, onChangePlz }: S
     const groups: {
       wahlkreisId: number;
       wahlkreisName: string;
-      politicians: Politician[];
+      politicians: (MdbRecipient | MdlRecipient)[];
     }[] = [];
     const indexById = new Map<number, number>();
     for (const p of sortedPoliticians) {
@@ -247,7 +308,7 @@ export function Step3Success({ result, wizardData, politicians, onChangePlz }: S
 
   const handleSelectPolitician = useCallback(
     async () => {
-      if (selectedPoliticianId === null) return;
+      if (currentSelection === null) return;
 
       // Reset phase so a second attempt starts at "Wahlkreis prüfen..." again,
       // not at whatever phase the last attempt ended on.
@@ -264,12 +325,12 @@ export function Step3Success({ result, wizardData, politicians, onChangePlz }: S
       );
 
       try {
-        // NOTE: we deliberately no longer pass the `politicians` array here -
-        // the server re-derives it from PLZ to prevent tampering. Only the
-        // numeric ID is accepted as user-supplied input.
+        // NOTE: we deliberately never pass recipient objects here - the server
+        // re-derives everything from PLZ to prevent tampering. Only the
+        // discriminated selection (kind + optional numeric ID) is user input.
         const selectResult = await selectPoliticianAction(
           wizardData,
-          selectedPoliticianId
+          currentSelection
         );
 
         if ("error" in selectResult) {
@@ -281,7 +342,8 @@ export function Step3Success({ result, wizardData, politicians, onChangePlz }: S
         if ("preCheckOk" in selectResult && selectResult.preCheckOk) {
           await minDisplayTimer;
           setGenerationComplete(true);
-          setGeneratedPoliticianId(selectResult.politician.id);
+          setGeneratedSelection(currentSelection);
+          setGeneratedRecipient(selectResult.recipient);
           // letterText arrives async via /api/generate-letter (see useEffect below)
         }
       } catch {
@@ -292,7 +354,7 @@ export function Step3Success({ result, wizardData, politicians, onChangePlz }: S
         setIsGenerating(false);
       }
     },
-    [selectedPoliticianId, wizardData]
+    [currentSelection, wizardData]
   );
 
   // Animate ". .. ..." while letter is still being generated.
@@ -314,7 +376,7 @@ export function Step3Success({ result, wizardData, politicians, onChangePlz }: S
   // den Deps: es ändert sich nach generationComplete nicht mehr, und als
   // Closure-Variable ist der Wert zum Zeitpunkt des Fires korrekt.
   useEffect(() => {
-    if (!generationComplete || letterReady || generatedPoliticianId === null) return;
+    if (!generationComplete || letterReady || generatedSelection === null) return;
     if (fetchInFlightRef.current) return;
     fetchInFlightRef.current = true;
 
@@ -324,7 +386,11 @@ export function Step3Success({ result, wizardData, politicians, onChangePlz }: S
     fetch("/api/generate-letter", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ wizardData, selectedPoliticianId: generatedPoliticianId }),
+      body: JSON.stringify({
+        wizardData,
+        selection: generatedSelection,
+        ...(routingToken ? { routingToken } : {}),
+      }),
       signal: controller.signal,
     })
       .then(async (res) => {
@@ -394,7 +460,7 @@ export function Step3Success({ result, wizardData, politicians, onChangePlz }: S
       if (autoRetryTimer) clearTimeout(autoRetryTimer);
     };
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [generationComplete, letterReady, retryCount, generatedPoliticianId]);
+  }, [generationComplete, letterReady, retryCount, generatedSelection]);
 
   // Ein-Klick-Fehlerreport: sammelt Server-Detail + Client-Console + Kontext und
   // mailt alles an Thomas. Die Mail ist selbst-enthaltend (kein Vercel nötig).
@@ -412,14 +478,17 @@ export function Step3Success({ result, wizardData, politicians, onChangePlz }: S
         plz: wizardData.plz ?? null,
         email: wizardData.email ?? null,
         issueText: wizardData.issueText ?? null,
-        politicianId: generatedPoliticianId,
+        politicianId:
+          generatedSelection && generatedSelection.kind !== "rathaus"
+            ? generatedSelection.selectedPoliticianId
+            : null,
         retryCount,
       },
       userAgent: typeof navigator !== "undefined" ? navigator.userAgent : null,
       pageUrl: typeof window !== "undefined" ? window.location.href : null,
     }).catch(() => ({ success: false }));
     setReportState(result.success ? "sent" : "failed");
-  }, [wizardData, generatedPoliticianId, retryCount]);
+  }, [wizardData, generatedSelection, retryCount]);
 
   // Keyboard navigation for politician cards
   const handleCardKeyDown = (
@@ -473,10 +542,10 @@ export function Step3Success({ result, wizardData, politicians, onChangePlz }: S
 
   const handleResend = useCallback(async () => {
     if (resendState === "sending" || resendState === "sent" || resendState === "limited") return;
-    if (!letterText || generatedPoliticianId === null) return;
+    if (!letterText || generatedSelection === null) return;
     setResendState("sending");
     try {
-      const res = await resendLetterAction({ ...wizardData, email: resendEmail }, generatedPoliticianId, letterText);
+      const res = await resendLetterAction({ ...wizardData, email: resendEmail }, generatedSelection, letterText);
       if ("success" in res) {
         setResendState("sent");
       } else if (res.error === "rate_limited") {
@@ -488,7 +557,7 @@ export function Step3Success({ result, wizardData, politicians, onChangePlz }: S
     } catch {
       setResendState("error");
     }
-  }, [resendState, letterText, generatedPoliticianId, wizardData, resendEmail]);
+  }, [resendState, letterText, generatedSelection, wizardData, resendEmail]);
 
   const founderFeedbackUrl = wizardData.email
     ? `${FOUNDER_FEEDBACK_URL}?email=${encodeURIComponent(wizardData.email)}`
@@ -562,6 +631,16 @@ export function Step3Success({ result, wizardData, politicians, onChangePlz }: S
             Der Entwurf ist ein Anfang, die Unterschrift ist deine.
           </p>
         </div>
+
+        {/* Kommune-Brief: Google-Adresshilfe für die exakte Rathaus-Anschrift (LOCK-3) */}
+        {generatedRecipient?.kind === "rathaus" && (
+          <RathausAdresseButton
+            ortsname={generatedRecipient.gemeindeName}
+            plz={generatedRecipient.plz}
+            recipientKind={generatedRecipient.recipientKind}
+            className="mt-4"
+          />
+        )}
 
         {/* "Keine E-Mail erhalten?" + (mobile) "Mail-App öffnen" - both hidden
             until letter is ready. The webmail deep-link sits left of the
@@ -917,50 +996,95 @@ export function Step3Success({ result, wizardData, politicians, onChangePlz }: S
       ? formatPartyShort(selectedPolitician.party).replace(/^Die Linke$/, "die Linke")
       : "";
     const selectedPoliticianLabel =
-      selectedPolitician?.id === -1
-        ? "MdB später auswählen"
-        : selectedPolitician
-          ? `${selectedPolitician.firstName} ${selectedPolitician.lastName}${selectedPoliticianParty ? ` (${selectedPoliticianParty})` : ""}`
-          : null;
-    const selectionTitle =
-      !isNoMdbFound && sortedPoliticians.length > 1
-        ? `${sortedPoliticians.length} Abgeordnete für PLZ ${wizardData.plz}`
-        : "Wer vertritt deinen Wahlkreis?";
+      rathaus && rathausSelected
+        ? rathaus.label
+        : selectedPolitician?.id === -1
+          ? "MdB später auswählen"
+          : selectedPolitician
+            ? `${selectedPolitician.firstName} ${selectedPolitician.lastName}${selectedPoliticianParty ? ` (${selectedPoliticianParty})` : ""}`
+            : null;
+    const isKommune = selectedLevel === "Kommune" && rathaus !== null;
+    const isLand = selectedLevel === "Land";
+    const selectionTitle = isKommune
+      ? "Dein Brief geht an die Verwaltung"
+      : isLand
+        ? !isNoMdbFound && sortedPoliticians.length > 1
+          ? `${sortedPoliticians.length} Landtagsabgeordnete für PLZ ${wizardData.plz}`
+          : "Wer vertritt dich im Landtag?"
+        : !isNoMdbFound && sortedPoliticians.length > 1
+          ? `${sortedPoliticians.length} Abgeordnete für PLZ ${wizardData.plz}`
+          : "Wer vertritt deinen Wahlkreis?";
+    const introCopy = isKommune
+      ? "Kommunale Anliegen gehen direkt an die zuständige Verwaltung. Die genaue Anschrift ergänzt du später mit einem Klick."
+      : isLand
+        ? wahlkreisGroups.length === 1
+          ? "Diese Landtagsabgeordneten sind für deine PLZ zuständig. Ein Direktmandat ist vorausgewählt, du kannst aber auch jemand anderen wählen."
+          : "Für deine PLZ kommen mehrere Landtagswahlkreise infrage. Wähle, wer deinen Brief bekommen soll."
+        : isNoMdbFound
+          ? `Für die PLZ ${wizardData.plz} wurde kein MdB gefunden. Du kannst den Brief dennoch formulieren lassen und dein MdB später auswählen oder deine PLZ anpassen.`
+          : wahlkreisGroups.length === 1
+            ? "Dein Wahlkreis wird von folgenden MdBs vertreten. Das MdB mit Direktmandat ist vorausgewählt, du kannst aber auch jemand anderen wählen."
+            : "Deine PLZ liegt an einer Wahlkreis-Grenze. Wähle das MdB, das deinen Wahlkreis vertritt. Das Direktmandat ist je Wahlkreis vorausgewählt.";
 
     return (
-      <div className={selectedPoliticianId !== null ? "pb-32 sm:pb-0" : undefined}>
-        {onChangePlz && (
-          <button
-            type="button"
-            onClick={onChangePlz}
-            className="font-body text-sm text-warmgrau/60 hover:text-warmgrau transition-colors mb-6 cursor-pointer flex items-center gap-1"
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="14"
-              height="14"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              aria-hidden="true"
-            >
-              <path d="m15 18-6-6 6-6" />
-            </svg>
-            PLZ ändern
-          </button>
+      <div className={currentSelection !== null ? "pb-32 sm:pb-0" : undefined}>
+        {(onChangePlz || onChangeLevel) && (
+          <div className="mb-6 flex items-center gap-4">
+            {onChangeLevel && (
+              <button
+                type="button"
+                onClick={onChangeLevel}
+                className="font-body text-sm text-warmgrau/60 hover:text-warmgrau transition-colors cursor-pointer flex items-center gap-1"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="14"
+                  height="14"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  aria-hidden="true"
+                >
+                  <path d="m15 18-6-6 6-6" />
+                </svg>
+                Ebene ändern
+              </button>
+            )}
+            {onChangePlz && (
+              <button
+                type="button"
+                onClick={onChangePlz}
+                className="font-body text-sm text-warmgrau/60 hover:text-warmgrau transition-colors cursor-pointer flex items-center gap-1"
+              >
+                {!onChangeLevel && (
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="14"
+                    height="14"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    aria-hidden="true"
+                  >
+                    <path d="m15 18-6-6 6-6" />
+                  </svg>
+                )}
+                PLZ ändern
+              </button>
+            )}
+          </div>
         )}
         <h1 className="font-typewriter text-[28px] font-semibold leading-[1.2] text-waldgruen-dark">
           {selectionTitle}
         </h1>
         <p className="font-body text-base text-warmgrau mt-2">
-          {isNoMdbFound
-            ? `Für die PLZ ${wizardData.plz} wurde kein MdB gefunden. Du kannst den Brief dennoch formulieren lassen und dein MdB später auswählen oder deine PLZ anpassen.`
-            : wahlkreisGroups.length === 1
-              ? "Dein Wahlkreis wird von folgenden MdBs vertreten. Das MdB mit Direktmandat ist vorausgewählt, du kannst aber auch jemand anderen wählen."
-              : "Deine PLZ liegt an einer Wahlkreis-Grenze. Wähle das MdB, das deinen Wahlkreis vertritt. Das Direktmandat ist je Wahlkreis vorausgewählt."}
+          {introCopy}
         </p>
 
         {/* Error banner */}
@@ -980,6 +1104,43 @@ export function Step3Success({ result, wizardData, politicians, onChangePlz }: S
             disambiguation step doesn't turn into an endless scroll. All cards
             stay one logical radiogroup; a flat index keeps arrow-key nav working
             across groups. */}
+        {/* Kommune: eine einzige Verwaltungs-Karte statt Abgeordneten-Gruppen */}
+        {isKommune && rathaus && (
+          <div role="radiogroup" aria-label="Empfänger auswählen" className="mt-6">
+            <div
+              role="radio"
+              aria-checked={rathausSelected}
+              tabIndex={0}
+              onClick={() => setRathausSelected(true)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" || e.key === " ") {
+                  e.preventDefault();
+                  setRathausSelected(true);
+                }
+              }}
+              className={[
+                "w-full text-left p-4 rounded-lg border-2 transition-colors cursor-pointer",
+                rathausSelected
+                  ? "border-waldgruen bg-waldgruen/10"
+                  : "border-waldgruen/20 bg-creme hover:border-waldgruen/40",
+              ].join(" ")}
+            >
+              <span className="inline-block font-body text-[11px] font-semibold uppercase tracking-wide text-waldgruen-dark bg-waldgruen/15 px-2 py-0.5 rounded mb-1.5">
+                {rathaus.recipientKind === "bezirksamt" ? "Bezirksamt" : "Stadtverwaltung"}
+              </span>
+              <p className="font-body text-base font-semibold text-warmgrau">{rathaus.label}</p>
+              <p className="font-body text-sm text-warmgrau mt-0.5">
+                {rathaus.plz} {rathaus.recipientKind === "bezirksamt" ? "Berlin" : rathaus.gemeindeName}
+              </p>
+              <p className="font-body text-xs text-warmgrau/70 mt-2 leading-relaxed">
+                Der Brief wird generisch an die Verwaltung adressiert. Die genaue
+                Straße + Hausnummer ergänzt du selbst, wir geben dir dafür eine Suchhilfe.
+              </p>
+            </div>
+          </div>
+        )}
+
+        {!isKommune && (
         <div
           role="radiogroup"
           aria-label="Abgeordnete auswählen"
@@ -989,7 +1150,7 @@ export function Step3Success({ result, wizardData, politicians, onChangePlz }: S
             <div key={group.wahlkreisId}>
               <p className="font-body text-xs font-semibold uppercase tracking-wide text-warmgrau/55 mb-2 flex items-center gap-2">
                 {!isNoMdbFound && <span className="h-px flex-shrink-0 w-3 bg-warmgrau/25" aria-hidden="true" />}
-                {isNoMdbFound ? group.wahlkreisName : `Wahlkreis ${group.wahlkreisId} · ${group.wahlkreisName}`}
+                {isNoMdbFound ? group.wahlkreisName : `${isLand ? "Landtagswahlkreis" : "Wahlkreis"} ${group.wahlkreisId} · ${group.wahlkreisName}`}
               </p>
               <div
                 className={
@@ -1070,9 +1231,10 @@ export function Step3Success({ result, wizardData, politicians, onChangePlz }: S
             </div>
           ))}
         </div>
+        )}
 
         {/* Submit after selection - full width to match cards */}
-        {selectedPoliticianId !== null && (
+        {currentSelection !== null && (
           <div className="mt-8 hidden sm:block">
             <button
               ref={submitButtonRef}
@@ -1116,7 +1278,7 @@ export function Step3Success({ result, wizardData, politicians, onChangePlz }: S
           </div>
         )}
 
-        {selectedPoliticianId !== null && (
+        {currentSelection !== null && (
           <div
             className="fixed inset-x-0 bottom-0 z-40 sm:hidden border-t border-warmgrau/15 bg-creme/95 px-4 pt-3 backdrop-blur"
             style={{ paddingBottom: "calc(env(safe-area-inset-bottom) + 0.75rem)" }}

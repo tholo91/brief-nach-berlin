@@ -1,7 +1,9 @@
 import { buildEmailHtml } from "@/lib/email/buildEmailHtml";
 import type { SendLetterEmailParams } from "@/lib/email/sendLetterEmail";
 
-function makeParams(): SendLetterEmailParams {
+function makeParams(
+  letterText = "Sehr geehrte Frau Mustermann,\n\nbitte setzen Sie sich für sichere Radwege ein.\n\nMit freundlichen Grüßen,\nMax"
+): SendLetterEmailParams {
   return {
     recipientEmail: "test+variant@example.com",
     politicianName: "Erika Mustermann",
@@ -11,7 +13,7 @@ function makeParams(): SendLetterEmailParams {
     politicianParty: "SPD",
     politicianPostalAddress: "Platz der Republik 1, 11011 Berlin",
     politicianAbgeordnetenwatchUrl: null,
-    letterText: "Sehr geehrte Frau Mustermann,\n\nbitte setzen Sie sich für sichere Radwege ein.\n\nMit freundlichen Grüßen,\nMax",
+    letterText,
     issueText: "Sichere Radwege",
   };
 }
@@ -56,6 +58,8 @@ describe("letter email variant CTA", () => {
     );
     expect(html).not.toContain("briefText=");
     expect(html).not.toContain("letterText=");
+    expect(html).toContain("Mit freundlichen Grüßen<br>Max");
+    expect(html).not.toContain("Mit freundlichen Grüßen,<br>Max");
   });
 
   it("carries original tone metadata in the hash when debug data is available", () => {
@@ -66,5 +70,16 @@ describe("letter email variant CTA", () => {
     );
     expect(html).not.toContain("briefText=");
     expect(html).not.toContain("letterText=");
+  });
+
+  it("normalizes alternative closing formulas before rendering the letter email", () => {
+    const html = buildEmailHtml(
+      makeParams(
+        "Sehr geehrte Frau Mustermann,\n\nbitte setzen Sie sich für sichere Radwege ein.\n\nMit herzlichen Grüßen,\nMax"
+      )
+    );
+
+    expect(html).toContain("Mit herzlichen Grüßen<br>Max");
+    expect(html).not.toContain("Mit herzlichen Grüßen,<br>Max");
   });
 });

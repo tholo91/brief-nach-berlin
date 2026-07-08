@@ -7,6 +7,7 @@ import {
 } from "@/lib/config";
 import { formatPartyShort } from "@/lib/formatParty";
 import { buildShareTarget } from "@/lib/share";
+import { normalizeLetterClosing } from "./normalizeLetterClosing";
 
 function buildDebugUrl(d: LetterDebugPayload): string {
   // base64url-encode JSON payload so it survives URLs without padding/+/ issues
@@ -117,7 +118,7 @@ export function buildEmailHtml(data: SendLetterEmailParams): string {
   const variantUrl = buildVariantUrl(data.recipientEmail, data.debug);
 
   // Letter text: escape then convert newlines to <br> for email clients
-  const letterHtml = nlToBr(data.letterText);
+  const letterHtml = nlToBr(normalizeLetterClosing(data.letterText));
 
   return `<!DOCTYPE html>
 <html lang="de">

@@ -76,10 +76,9 @@ export function VariantForm() {
   const trimmedLetter = originalLetter.trim();
   const originalWordCount = useMemo(() => countWords(trimmedLetter), [trimmedLetter]);
 
-  useEffect(() => {
-    if (letterLengthTouched) return;
-    setLetterLength(letterLengthFromWordCount(originalWordCount));
-  }, [letterLengthTouched, originalWordCount]);
+  const effectiveLetterLength = letterLengthTouched
+    ? letterLength
+    : letterLengthFromWordCount(originalWordCount);
 
   const emailError = touchedSubmit && !isValidEmail(email)
     ? "Bitte gib eine gültige E-Mail-Adresse ein."
@@ -111,7 +110,7 @@ export function VariantForm() {
       originalLetter: trimmedLetter,
       toneLevel,
       originalToneLevel,
-      letterLength,
+      letterLength: effectiveLetterLength,
       changeRequest: changeRequest.trim() || undefined,
     };
 
@@ -249,7 +248,7 @@ export function VariantForm() {
         </label>
         <div className="flex gap-2">
           {(["1", "1.5", "2"] as LetterLength[]).map((len) => {
-            const isActive = letterLength === len;
+            const isActive = effectiveLetterLength === len;
             return (
               <button
                 key={len}
@@ -272,7 +271,7 @@ export function VariantForm() {
           })}
         </div>
         <p className="mt-2 text-xs text-warmgrau/50">
-          Voreinstellung nach eingefügtem Brief: {LETTER_LENGTHS[letterLength].label}.
+          Voreinstellung nach eingefügtem Brief: {LETTER_LENGTHS[effectiveLetterLength].label}.
         </p>
       </div>
 

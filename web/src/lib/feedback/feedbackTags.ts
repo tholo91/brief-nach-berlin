@@ -27,6 +27,7 @@ export const POSITIVE_FEEDBACK_TAGS = [
 export const FACT_CHECK_FEEDBACK_TAGS = [
   { slug: "details_erfunden", label: "Details über mich erfunden" },
   { slug: "anliegen_verfehlt", label: "Anliegen falsch verstanden" },
+  { slug: "gegenteil_argumentiert", label: "Gegenteil argumentiert" },
   { slug: "fakten_erfunden", label: "Fakten erfunden" },
 ] as const;
 

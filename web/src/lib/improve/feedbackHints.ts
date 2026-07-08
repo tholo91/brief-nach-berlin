@@ -23,6 +23,8 @@ export const FEEDBACK_HINT_BY_TAG: Record<string, string> = {
     "Sei zurückhaltend mit konkreten Zahlen, Namen und Daten. Streiche das, was nicht klar belegt ist. Konkrete Angaben ergänze ich lieber selbst.",
   anliegen_verfehlt:
     "Stell mein eigentliches Anliegen in den Mittelpunkt (siehe persönliche Notiz unten).",
+  gegenteil_argumentiert:
+    "Der Brief hat meine Position ins Gegenteil gedreht. Prüfe zuerst, ob ich für oder gegen die genannte Änderung bin, und formuliere die Forderung entsprechend neu.",
   fakten_erfunden:
     "Entferne erfundene Sachangaben (z.B. Ausschüsse, Gesetzesnamen, politische Positionen der Abgeordneten). Bleib nur bei dem, was belegt ist.",
   wiederholt_sich: "Streiche Wiederholungen. Jeder Punkt nur einmal.",

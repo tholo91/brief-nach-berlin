@@ -404,6 +404,7 @@ const NEGATIVE_TAGS = new Set([
   "mdb_passt_nicht",
   "details_erfunden",
   "anliegen_verfehlt",
+  "gegenteil_argumentiert",
   "wiederholt_sich",
 ]);
 

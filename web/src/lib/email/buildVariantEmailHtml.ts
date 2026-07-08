@@ -1,5 +1,6 @@
 import { APP_URL, FOUNDER_FEEDBACK_URL, FOUNDER_HOMEPAGE } from "@/lib/config";
 import type { LetterVariantDebugPayload } from "./variantDebugPayload";
+import { normalizeLetterClosing } from "./normalizeLetterClosing";
 
 function escapeHtml(text: string): string {
   return text
@@ -36,7 +37,7 @@ export function buildVariantEmailHtml(
   recipientEmail?: string,
   debug?: LetterVariantDebugPayload
 ): string {
-  const letterHtml = nlToBr(letterText);
+  const letterHtml = nlToBr(normalizeLetterClosing(letterText));
   const variantFeedbackUrl = feedbackUrl(recipientEmail);
 
   return `<!DOCTYPE html>

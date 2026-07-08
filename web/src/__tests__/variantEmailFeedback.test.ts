@@ -12,6 +12,8 @@ describe("variant email feedback CTA", () => {
     expect(html).toContain("Feedback geben");
     expect(html).toContain("email=miriam%40example.com");
     expect(html).not.toContain(`${FOUNDER_FEEDBACK_URL}?email=`);
+    expect(html).toContain("Mit freundlichen Grüßen<br>Max");
+    expect(html).not.toContain("Mit freundlichen Grüßen,<br>Max");
   });
 
   it("adds a debug link when variant debug data is present", () => {
@@ -40,5 +42,15 @@ describe("variant email feedback CTA", () => {
 
     expect(html).toContain("/debug?d=");
     expect(html).toContain(">Debug</a>");
+  });
+
+  it("normalizes alternative closing formulas before rendering the variant email", () => {
+    const html = buildVariantEmailHtml(
+      "Sehr geehrte Frau Mustermann,\n\nbitte setzen Sie sich ein.\n\nMit solidarischen Grüßen,\nMax",
+      "miriam@example.com"
+    );
+
+    expect(html).toContain("Mit solidarischen Grüßen<br>Max");
+    expect(html).not.toContain("Mit solidarischen Grüßen,<br>Max");
   });
 });

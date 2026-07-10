@@ -13,6 +13,7 @@ import {
   createCampaignDraftAction,
   type CreateCampaignDraftResult,
 } from "@/lib/actions/createCampaignDraft";
+import { BUNDESLAND_NAMES } from "@/lib/campaigns/schema";
 
 const initialResult: CreateCampaignDraftResult | null = null;
 const draftStorageKey = "bnb_creator_campaign_draft";
@@ -32,6 +33,8 @@ const draftFields = [
   "externalUrl",
   "description",
   "creatorEmail",
+  "targetLevel",
+  "targetState",
 ] as const;
 type DraftField = (typeof draftFields)[number];
 type CampaignDraft = Record<DraftField, string>;
@@ -44,7 +47,21 @@ const emptyDraft: CampaignDraft = {
   externalUrl: "",
   description: "",
   creatorEmail: "",
+  targetLevel: "Bund",
+  targetState: "",
 };
+const targetLevelOptions = [
+  {
+    value: "Bund",
+    title: "Bundestag",
+    text: "Briefe gehen an Bundestagsabgeordnete aus dem Wahlkreis der schreibenden Person.",
+  },
+  {
+    value: "Land",
+    title: "Landtag",
+    text: "Briefe gehen an Landtagsabgeordnete, also an die Landespolitik.",
+  },
+] as const;
 const campaignWritingTips = [
   "Problem: Was soll sich ändern?",
   "Forderung: Was soll politisch passieren?",
@@ -158,6 +175,10 @@ export function CreatorCampaignForm() {
           ])
         ),
       };
+      if (nextDraft.targetLevel !== "Land") {
+        nextDraft.targetLevel = "Bund";
+        nextDraft.targetState = "";
+      }
       window.setTimeout(() => setDraft(nextDraft), 0);
     } catch {
       window.localStorage.removeItem(draftStorageKey);
@@ -173,6 +194,9 @@ export function CreatorCampaignForm() {
   function updateDraft(field: DraftField, value: string) {
     setDraft((currentDraft) => {
       const nextDraft = { ...currentDraft, [field]: value };
+      if (field === "targetLevel" && value !== "Land") {
+        nextDraft.targetState = "";
+      }
       window.localStorage.setItem(draftStorageKey, JSON.stringify(nextDraft));
       return nextDraft;
     });
@@ -301,6 +325,8 @@ export function CreatorCampaignForm() {
           <input type="hidden" name="issueText" value={draft.issueText} />
           <input type="hidden" name="slug" value={draft.slug} />
           <input type="hidden" name="creatorName" value={draft.creatorName} />
+          <input type="hidden" name="targetLevel" value={draft.targetLevel} />
+          <input type="hidden" name="targetState" value={draft.targetState} />
         </>
       )}
 
@@ -424,6 +450,72 @@ export function CreatorCampaignForm() {
           </p>
         )}
       </div>
+
+      <fieldset className="grid gap-2">
+        <legend className="font-typewriter text-sm font-bold text-waldgruen-dark">
+          Wohin soll die Kampagne gehen?
+        </legend>
+        <div className="grid gap-2 sm:grid-cols-2">
+          {targetLevelOptions.map((option) => {
+            const isSelected = draft.targetLevel === option.value;
+            return (
+              <label
+                key={option.value}
+                className={`flex cursor-pointer items-start gap-3 rounded-md border px-4 py-3 transition-colors ${
+                  isSelected
+                    ? "border-waldgruen bg-waldgruen/5"
+                    : "border-warmgrau/20 bg-white hover:border-waldgruen/40"
+                }`}
+              >
+                <input
+                  type="radio"
+                  name="targetLevel"
+                  value={option.value}
+                  checked={isSelected}
+                  onChange={() => updateDraft("targetLevel", option.value)}
+                  className="mt-1 h-4 w-4 shrink-0 border-warmgrau/30 text-waldgruen accent-waldgruen"
+                />
+                <span className="grid gap-0.5">
+                  <span className="font-body text-base font-semibold text-waldgruen-dark">
+                    {option.title}
+                  </span>
+                  <span className="font-body text-sm leading-relaxed text-warmgrau/65">
+                    {option.text}
+                  </span>
+                </span>
+              </label>
+            );
+          })}
+        </div>
+        {draft.targetLevel === "Land" && (
+          <div className="grid gap-2">
+            <label
+              className="font-typewriter text-sm font-bold text-waldgruen-dark"
+              htmlFor="targetState"
+            >
+              Bundesland
+            </label>
+            <select
+              id="targetState"
+              name="targetState"
+              value={draft.targetState}
+              onChange={(event) => updateDraft("targetState", event.target.value)}
+              aria-describedby="targetState-help"
+              className="rounded-md border border-warmgrau/20 bg-white px-4 py-3 font-body text-base outline-none focus:border-waldgruen"
+            >
+              <option value="">Alle Bundesländer</option>
+              {Object.entries(BUNDESLAND_NAMES).map(([key, name]) => (
+                <option key={key} value={key}>
+                  {name}
+                </option>
+              ))}
+            </select>
+            <p id="targetState-help" className="font-body text-sm text-warmgrau/60">
+              Wähle ein festes Bundesland, oder lass &quot;Alle Bundesländer&quot; stehen, dann entscheidet die PLZ der schreibenden Person.
+            </p>
+          </div>
+        )}
+      </fieldset>
 
       <div className="grid gap-2">
         <label className="font-typewriter text-sm font-bold text-waldgruen-dark" htmlFor="slug">

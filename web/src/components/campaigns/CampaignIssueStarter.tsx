@@ -35,6 +35,8 @@ type CampaignIssueStarterProps = {
   creatorName?: string | null;
   externalUrl?: string | null;
   logoPath?: string | null;
+  targetLevel?: "Bund" | "Land";
+  targetState?: string | null;
 };
 
 export function CampaignIssueStarter({
@@ -44,6 +46,8 @@ export function CampaignIssueStarter({
   creatorName,
   externalUrl,
   logoPath,
+  targetLevel,
+  targetState,
 }: CampaignIssueStarterProps) {
   const router = useRouter();
   const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -87,9 +91,11 @@ export function CampaignIssueStarter({
       campaignCreatorName: creatorName?.trim() || undefined,
       campaignExternalUrl: externalUrl?.trim() || undefined,
       campaignLogoPath: logoPath?.trim() || undefined,
+      ...(targetLevel ? { campaignTargetLevel: targetLevel } : {}),
+      ...(targetState ? { campaignTargetState: targetState } : {}),
     });
     router.push(WIZARD_PATH);
-  }, [creatorName, externalUrl, logoPath, router, slug, title, tooShort, trimmed]);
+  }, [creatorName, externalUrl, logoPath, router, slug, targetLevel, targetState, title, tooShort, trimmed]);
 
   return (
     <div className="rounded-md border border-waldgruen/20 bg-white/90 p-4 shadow-[0_18px_48px_-28px_rgba(27,67,50,0.55)] backdrop-blur-sm sm:p-5">

@@ -21,6 +21,8 @@ export interface WizardHandoff {
   campaignCreatorName?: string;
   campaignExternalUrl?: string;
   campaignLogoPath?: string;
+  campaignTargetLevel?: "Bund" | "Land";
+  campaignTargetState?: string;
   // Ob auf der Landing eine Sprachnachricht genutzt wurde. Muss mitwandern,
   // sonst startet der Wizard mit einem frischen "false" und der Debug-Payload
   // meldet faelschlich Voice=false, obwohl auf der Landing gesprochen wurde.
@@ -59,6 +61,8 @@ export function peekHandoff(): WizardHandoff | null {
         campaignCreatorName,
         campaignExternalUrl,
         campaignLogoPath,
+        campaignTargetLevel,
+        campaignTargetState,
         usedSpeechToText,
       } = parsed as WizardHandoff;
       return {
@@ -74,6 +78,12 @@ export function peekHandoff(): WizardHandoff | null {
           typeof campaignExternalUrl === "string" ? campaignExternalUrl : undefined,
         campaignLogoPath:
           typeof campaignLogoPath === "string" ? campaignLogoPath : undefined,
+        campaignTargetLevel:
+          campaignTargetLevel === "Bund" || campaignTargetLevel === "Land"
+            ? campaignTargetLevel
+            : undefined,
+        campaignTargetState:
+          typeof campaignTargetState === "string" ? campaignTargetState : undefined,
         usedSpeechToText:
           typeof usedSpeechToText === "boolean" ? usedSpeechToText : undefined,
       };

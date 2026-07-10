@@ -20,6 +20,8 @@ export interface WizardData {
     creatorName?: string;
     externalUrl?: string;
     logoPath?: string;
+    targetLevel?: "Bund" | "Land";
+    targetState?: string | null;
   };
 }
 

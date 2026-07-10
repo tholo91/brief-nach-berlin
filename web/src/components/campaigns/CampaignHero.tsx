@@ -1,4 +1,4 @@
-import type { Campaign } from "@/lib/campaigns/schema";
+import { BUNDESLAND_NAMES, type Campaign } from "@/lib/campaigns/schema";
 import { campaignLogoPublicUrl } from "@/lib/campaigns/logo";
 import { CampaignBackground } from "./CampaignBackground";
 import { CampaignIssueStarter } from "./CampaignIssueStarter";
@@ -13,6 +13,8 @@ type PublicCampaign = Pick<
   | "externalUrl"
   | "logoPath"
   | "letterCount"
+  | "targetLevel"
+  | "targetState"
 >;
 
 const FAQ_ITEMS = [
@@ -97,6 +99,15 @@ export function CampaignHero({ campaign }: { campaign: PublicCampaign }) {
   const sourceName = attribution || "Kampagnenersteller:in";
   const sourceInitial = sourceName.charAt(0).toUpperCase();
   const sourceHostname = formatHostname(campaign.externalUrl);
+  const isLandCampaign = campaign.targetLevel === "Land";
+  const targetStateName = campaign.targetState
+    ? BUNDESLAND_NAMES[campaign.targetState] ?? null
+    : null;
+  const heroRecipient = !isLandCampaign
+    ? "dein Mitglied des Bundestags"
+    : targetStateName
+      ? `deine Abgeordneten im Landtag von ${targetStateName}`
+      : "deine Abgeordneten im zuständigen Landtag";
 
   return (
     <CampaignBackground>
@@ -108,10 +119,17 @@ export function CampaignHero({ campaign }: { campaign: PublicCampaign }) {
           <h1 className="mt-3 max-w-xl text-balance font-body text-4xl font-bold leading-tight tracking-tight text-waldgruen-dark sm:text-5xl">
             {campaign.title}
           </h1>
+          {isLandCampaign && (
+            <span className="mt-3 inline-flex w-fit items-center rounded-full border border-waldgruen/20 bg-waldgruen/10 px-3 py-1 font-body text-xs font-semibold text-waldgruen-dark">
+              {targetStateName
+                ? `Landtagskampagne · ${targetStateName}`
+                : "Landtagskampagne"}
+            </span>
+          )}
           <p className="mt-5 max-w-xl font-body text-lg leading-relaxed text-warmgrau/75">
             Brief-nach-Berlin macht aus diesem vorbereiteten Anliegen einen
-            persönlichen Brief an dein Mitglied des Bundestags. Du ergänzt, was
-            dir wichtig ist, prüfst den Text und kannst den Brief abschicken.
+            persönlichen Brief an {heroRecipient}. Du ergänzt, was dir wichtig
+            ist, prüfst den Text und kannst den Brief abschicken.
           </p>
           <div className="mt-5 flex flex-wrap gap-x-4 gap-y-2 font-body text-sm font-semibold text-waldgruen">
             {TRUST_ITEMS.map((item) => (
@@ -131,6 +149,8 @@ export function CampaignHero({ campaign }: { campaign: PublicCampaign }) {
             creatorName={campaign.creatorName}
             externalUrl={campaign.externalUrl}
             logoPath={campaign.logoPath}
+            targetLevel={campaign.targetLevel}
+            targetState={campaign.targetState}
           />
         </div>
 

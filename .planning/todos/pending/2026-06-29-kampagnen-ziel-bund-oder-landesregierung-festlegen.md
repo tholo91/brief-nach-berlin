@@ -30,6 +30,20 @@ UX-Plan:
 6. Kampagnenseite: Nur anzeigen, wenn es dem Besucher hilft. Leichte Copy im Hero reicht: "Schreib einen Brief an die Bundesregierung" oder "Schreib einen Brief an die Landesregierung in [Bundesland]". Nicht als schweres Badge oder technische Erklaerung ausspielen.
 7. Brief-Prompt: Der Generator bekommt den Kampagnen-Zielkontext, damit der Brief den richtigen Hebel anspricht und nicht bei Landeskampagnen Bundeskompetenzen konstruiert.
 
-Offene Produktfrage vor Umsetzung:
+## Ergaenzung 2026-07-10 (User-Input)
 
-Soll eine Landes-Kampagne an ein festes Bundesland gebunden sein, oder darf dieselbe Kampagne fuer jedes Bundesland laufen und erst die Besucher-PLZ entscheidet das konkrete Land?
+Der Besucher-Wizard verhaelt sich fuer Kampagnen-Briefe anders als fuer freie Briefe:
+
+1. `StepLevelSelect` (neuer Ebene-Auswahl-Step aus 999.6) wird bei `source === "campaign"` komplett uebersprungen. Der Besucher waehlt keine Ebene, sie ist durch `targetLevel` der Kampagne vorgegeben.
+2. Die Empfaenger-Aufloesung (levelRouter/resolveRecipient) laeuft direkt mit der Kampagnen-Ebene: Bund -> MdB aus Besucher-PLZ, Land -> MdL aus Besucher-PLZ.
+3. Der Mistral-Prompt (`generateLetter` / `LETTER_PROMPT_LEVEL_AWARE`) bekommt die Kampagnen-Ebene fest gesetzt, damit Argumentation und Anrede den richtigen Hebel treffen. Die automatische Level-Erkennung darf weiterhin als Prompt-Kontext dienen, aber nie den Empfaenger umlenken.
+4. Kampagnen-Erstellung (`CreatorCampaignForm` unter /kampagne/starten): Pflichtfeld Ziel-Ebene mit zwei Optionen (Bundestag vs. Landtag). Zielgruppe sind NGOs und e.V.s, die den politischen Hebel bereits kennen.
+
+Umsetzung auf Branch `codex/999-6-level-routing-v2` (Worktree `brief-nach-berlin-999.6`), da abhaengig von levelRouter, StepLevelSelect und Recipient-Union aus 999.6.
+
+## Entscheidungen 2026-07-10 (mit Thomas geklaert)
+
+1. Land-Kampagnen bekommen ein optionales Bundesland-Feld: Creator waehlt entweder ein festes Bundesland oder "alle Bundeslaender" (dann entscheidet die Besucher-PLZ). Datenmodell: `targetLevel: "Bund" | "Land"`, `targetState: string | null` (null = alle).
+2. PLZ-Mismatch bei fester Bindung: freundlich abfangen. Hinweis "Diese Kampagne richtet sich an den Landtag von X" plus Angebot, stattdessen einen freien Brief zum Thema zu schreiben (normale Ebenen-Erkennung, ohne Kampagnen-Kontext). Kein harter Stopp, kein Brief an den falschen Landtag.
+3. Bestehende Kampagnen ohne Feld gelten als `targetLevel: "Bund"`.
+4. Kampagnenseite: dezente Pill "Landtagskampagne · {Bundesland}" (bzw. ohne Bundesland nur "Landtagskampagne") nur bei Land-Kampagnen. Bund-Kampagnen ohne Pill, weil Bund das Default-Mental-Model ist.

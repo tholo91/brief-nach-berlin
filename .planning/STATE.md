@@ -28,7 +28,7 @@ See: .planning/PROJECT.md (updated 2026-04-10)
 Phase: 05 — EXECUTING
 Plan: 4 of 4
 Status: Phase complete — ready for verification
-Last activity: 2026-07-07 - Completed quick task 260707-uhp: Improve brief variant tone adjustment debug payload and prompt
+Last activity: 2026-07-10 - Completed quick task 260710-dgq: Kampagnen-Ziel-Ebene Bund/Landtag inkl. Wizard-Bindung und Mismatch-Fallback
 
 Progress: [███████░░░] 68%
 
@@ -135,6 +135,7 @@ Recent decisions affecting current work:
 | 260628-ta0 | Marken-Entity-Schema Organization und WebSite JSON-LD im Next Root-Layout ergänzen | 2026-06-28 | 09bf448 | [260628-ta0-marken-entity-schema-organization-und-we](./quick/260628-ta0-marken-entity-schema-organization-und-we/) |
 | 260707-vrt | No-Storage-Flow zum Anpassen bestehender Briefentwürfe | 2026-07-07 | 2e6cc60 | [260707-vrt-briefvariante-no-storage-flow](./quick/260707-vrt-briefvariante-no-storage-flow/) |
 | 260707-uhp | Improve brief variant tone adjustment debug payload and prompt | 2026-07-07 | 985c86c | [260707-uhp-improve-brief-variant-tone-adjustment-de](./quick/260707-uhp-improve-brief-variant-tone-adjustment-de/) |
+| 260710-dgq | Kampagnen-Ziel-Ebene Bund/Landtag: targetLevel+targetState, Creator-Formular, Wizard-Skip des Ebene-Steps, PLZ-Mismatch-Fallback, Landtagskampagne-Pill | 2026-07-10 | 6416a1a | [260710-dgq-kampagnen-ziel-ebene-bund-landtag-target](./quick/260710-dgq-kampagnen-ziel-ebene-bund-landtag-target/) |
 
 ## Session Continuity
 

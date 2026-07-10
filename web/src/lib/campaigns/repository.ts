@@ -10,6 +10,7 @@ import {
   type CampaignRevision,
   type CampaignRevisionReason,
   type CampaignStatus,
+  type CampaignTargetLevel,
   type CreateCampaignInput,
   type UpdateCampaignPublicFieldsInput,
 } from "./schema";
@@ -27,6 +28,8 @@ type CampaignRow = {
   status: CampaignStatus;
   moderation_status: CampaignModerationStatus;
   moderation_categories: string[] | null;
+  target_level: CampaignTargetLevel | null;
+  target_state: string | null;
   email_verified_at: string | null;
   activated_at: string | null;
   paused_at: string | null;
@@ -96,6 +99,8 @@ function mapCampaign(row: CampaignRow): Campaign {
     status: row.status,
     moderationStatus: row.moderation_status,
     moderationCategories: row.moderation_categories ?? [],
+    targetLevel: row.target_level ?? "Bund",
+    targetState: row.target_state ?? null,
     emailVerifiedAt: row.email_verified_at,
     activatedAt: row.activated_at,
     pausedAt: row.paused_at,
@@ -185,6 +190,8 @@ export async function createCampaign(
       status: "draft",
       moderation_status: parsed.moderationStatus,
       moderation_categories: parsed.moderationCategories,
+      target_level: parsed.targetLevel,
+      target_state: parsed.targetLevel === "Land" ? parsed.targetState : null,
     })
     .select("*")
     .single();

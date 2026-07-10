@@ -10,7 +10,9 @@ import {
 } from "@/lib/campaigns/repository";
 import { createCampaignToken } from "@/lib/campaigns/tokens";
 import {
+  BUNDESLAND_KEYS,
   campaignExternalUrlSchema,
+  campaignTargetLevelSchema,
   isReservedCampaignSlug,
   isValidCampaignSlug,
   normalizeCampaignSlug,
@@ -77,6 +79,8 @@ const createCampaignDraftSchema = z.object({
       (value) => !isReservedCampaignSlug(value),
       "Diese Kurzadresse ist reserviert. Bitte wähle eine andere."
     ),
+  targetLevel: campaignTargetLevelSchema.default("Bund"),
+  targetState: z.string().trim().optional(),
   responsibilityAccepted: z
     .string()
     .optional()
@@ -85,7 +89,13 @@ const createCampaignDraftSchema = z.object({
     .string()
     .optional()
     .refine((value) => value === "yes", "Bitte bestätige die Kampagnendaten vor dem Anlegen."),
-});
+}).transform((data) => ({
+  ...data,
+  targetState:
+    data.targetLevel === "Land" && data.targetState && BUNDESLAND_KEYS.includes(data.targetState)
+      ? data.targetState
+      : null,
+}));
 
 export type CreateCampaignDraftResult =
   | { ok: true; slug: string; message: string }
@@ -170,6 +180,8 @@ export async function createCampaignDraftAction(
     description: value(formData, "description") || undefined,
     externalUrl: value(formData, "externalUrl") || undefined,
     slug: value(formData, "slug"),
+    targetLevel: value(formData, "targetLevel") || "Bund",
+    targetState: value(formData, "targetState") || undefined,
     responsibilityAccepted: value(formData, "responsibilityAccepted"),
     creationConfirmed: value(formData, "creationConfirmed"),
   });

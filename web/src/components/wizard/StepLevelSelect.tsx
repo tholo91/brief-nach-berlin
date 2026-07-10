@@ -124,6 +124,14 @@ export function StepLevelSelect({
     if (initialLevel && availability[initialLevel]) return initialLevel;
     if (!recommended || recommended.confidence === "low") return null;
     if (availability[recommended.level]) return recommended.level;
+    // Stadtstaat: Kommune existiert nicht, die Bürgerschaft (Land) übernimmt
+    if (
+      recommended.level === "Kommune" &&
+      routing.coverage.stadtstaatEinheitsgemeinde &&
+      availability.Land
+    ) {
+      return "Land";
+    }
     return "Bund";
   });
 

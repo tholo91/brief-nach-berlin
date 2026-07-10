@@ -154,7 +154,7 @@ export default function Hero() {
 
       </div>
 
-      <NgoCampaignBadge className="inline-flex sm:hidden absolute top-2 right-3 z-20 rotate-[6deg]" />
+      <NgoCampaignBadge className="inline-flex sm:hidden absolute top-6 right-3 z-20 rotate-[6deg]" />
 
     </section>
   );

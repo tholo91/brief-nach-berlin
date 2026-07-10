@@ -32,3 +32,13 @@ Audit-Befund vom 2026-07-10 (Read-only-Agent, Worktree brief-nach-berlin-999.6, 
 5. Test analog generateLetterLevelPrompt-Suite: Kommune-Variante darf kein "Wahlkreis" ins Framing ziehen.
 
 Umsetzung auf Branch codex/999-6-level-routing-v2 (Worktree brief-nach-berlin-999.6), da level-Konzepte dort leben.
+
+## Optionale UX-Verbesserungen (2026-07-10, aus Flow-Review, gern als eigene Tasks splitten)
+
+Prioritaet 1: Variante direkt auf der Erfolgsseite anzeigen. Die API generiert den Brief ohnehin und koennte `letter` im JSON zurueckgeben (kein Storage, nur Response-Body, DSGVO-unkritisch). Erfolgsseite rendert den Text mit Copy-Button, Mail bleibt als dauerhafte Kopie. Loest auch das "Noch eine Variante"-Problem: Aktuell fuehrt der Button zurueck zum leeren Formular, der neue Text liegt aber nur im Postfach. Mit Inline-Anzeige kann "Noch eine Variante" den neuen Text direkt vorbefuellen (Iterations-Loop ohne Inbox-Roundtrip). Dateien: web/src/app/api/generate-letter-variant/route.ts:94, VariantSuccessClient.tsx, letterVariantSubmission.ts.
+
+Prioritaet 2: Einfuege-Friktion senken: Button "Aus Zwischenablage einfuegen" am Textfeld (navigator.clipboard.readText mit Fallback, mobil der fummeligste Schritt). Datei: VariantForm.tsx.
+
+Prioritaet 3: `originalToneLevel` ist tote Daten: wird durch die ganze Pipeline gereicht (Hash-Param, Schema, GenerateLetterVariantInput), aber weder als Slider-Default genutzt (Slider startet fix bei 3) noch im Prompt. Fix: Slider auf originalToneLevel defaulten (Default-Aktion = gleicher Ton, bessere Formulierung) und Mistral das Delta nennen ("Original war Stufe 4, gewuenscht 2, spuerbar abmildern"). Dateien: VariantForm.tsx:53, generateLetterVariant.ts:57.
+
+Was bewusst NICHT anfassen: Rate-Limiting (IP+Email vorhanden), Output-Moderation, Retry-UI auf der Erfolgsseite, Anrede/Grussformel-Preservation. Funktioniert.

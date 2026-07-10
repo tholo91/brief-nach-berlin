@@ -4,6 +4,7 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 import { getServiceRoleClient } from "@/lib/supabase/server";
 import {
   createCampaignSchema,
+  resolveCampaignTarget,
   updateCampaignPublicFieldsSchema,
   type Campaign,
   type CampaignModerationStatus,
@@ -99,8 +100,7 @@ function mapCampaign(row: CampaignRow): Campaign {
     status: row.status,
     moderationStatus: row.moderation_status,
     moderationCategories: row.moderation_categories ?? [],
-    targetLevel: row.target_level ?? "Bund",
-    targetState: row.target_state ?? null,
+    ...resolveCampaignTarget(row),
     emailVerifiedAt: row.email_verified_at,
     activatedAt: row.activated_at,
     pausedAt: row.paused_at,

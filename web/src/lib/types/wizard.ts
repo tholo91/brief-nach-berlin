@@ -112,6 +112,7 @@ export type WizardActionResult =
   | { error: "output_moderation_rejected"; message: string }
   | { error: "generation_failed"; message: string }
   | { error: "plz_not_found"; message: string }
+  | { error: "campaign_state_mismatch"; targetStateName: string; message: string }
   | { error: "level_data_missing"; level: PoliticalLevel; fallbackUrl: string; message: string }
   | { error: "rate_limited"; message: string; retryAfterSeconds?: number }
   | { error: "server_error"; message: string };

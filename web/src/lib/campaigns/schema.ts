@@ -47,6 +47,18 @@ export const BUNDESLAND_NAMES: Record<string, string> = {
 
 export const BUNDESLAND_KEYS = Object.keys(BUNDESLAND_NAMES) as string[];
 
+// Default-Handling für Altdaten: Kampagnen ohne target_level gelten als Bund.
+// Wird von mapCampaign im Repository genutzt und ist hier pur testbar.
+export function resolveCampaignTarget(row: {
+  target_level?: CampaignTargetLevel | null;
+  target_state?: string | null;
+}): { targetLevel: CampaignTargetLevel; targetState: string | null } {
+  return {
+    targetLevel: row.target_level ?? "Bund",
+    targetState: row.target_state ?? null,
+  };
+}
+
 export type CampaignStatus = (typeof CAMPAIGN_STATUSES)[number];
 export type CampaignModerationStatus = (typeof MODERATION_STATUSES)[number];
 export type CampaignTokenKind = (typeof CAMPAIGN_TOKEN_KINDS)[number];

@@ -100,6 +100,9 @@ export function WizardShell() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [plzError, setPlzError] = useState<string | null>(null);
+  // Kampagne mit fester Bundesland-Bindung, aber Besucher-PLZ liegt woanders:
+  // freundliches Panel statt hartem Fehler, mit Angebot für einen freien Brief.
+  const [campaignMismatch, setCampaignMismatch] = useState<{ message: string } | null>(null);
   const hasMountedRef = useRef(false);
   // 999.6 Ebenen-Routing: Kontext aus submitWizardAction, gewählte Ebene und
   // der signierte Prefetch-Token (LOCK-10). Der Prefetch startet bei Step-1-
@@ -134,6 +137,8 @@ export function WizardShell() {
                   creatorName: handoff.campaignCreatorName,
                   externalUrl: handoff.campaignExternalUrl,
                   logoPath: handoff.campaignLogoPath,
+                  targetLevel: handoff.campaignTargetLevel ?? "Bund",
+                  targetState: handoff.campaignTargetState ?? null,
                 },
               }
             : {}),
@@ -195,6 +200,7 @@ export function WizardShell() {
   }, []);
 
   const handleBack = useCallback(() => {
+    setCampaignMismatch(null);
     if (step === 2) setStep(1);
     else if (step === "2b") setStep(2);
   }, [step]);
@@ -216,6 +222,7 @@ export function WizardShell() {
         toneLevel: wizardData.toneLevel,
         usedSpeechToText: wizardData.usedSpeechToText,
         tipsOpened: wizardData.tipsOpened,
+        campaign: wizardData.campaign,
       };
 
       // Step1b is the PLZ-lookup step, not the final letter-generation click —
@@ -250,6 +257,11 @@ export function WizardShell() {
             setStep(2);
             return;
           }
+          if (result.error === "campaign_state_mismatch") {
+            setCampaignMismatch({ message: result.message });
+            setIsSubmitting(false);
+            return;
+          }
           if (result.error === "rate_limited" && result.retryAfterSeconds != null) {
             const secs = result.retryAfterSeconds;
             const timeHint =
@@ -277,7 +289,15 @@ export function WizardShell() {
         if ("disambiguationNeeded" in result && result.disambiguationNeeded) {
           setPoliticians(result.politicians);
           setActionResult(result);
-          if (result.levelRouting) {
+          if (wizardData.campaign) {
+            // Kampagne: die Ebene hat der Creator festgelegt. Den Ebene-Step
+            // überspringen und den Empfänger fest an targetLevel binden.
+            // levelRouting bleibt gesetzt, damit recipientsForLevel für Land
+            // byLevel.Land nutzt; die Auto-Empfehlung lenkt nie um.
+            setLevelRouting(result.levelRouting ?? null);
+            setSelectedLevel(wizardData.campaign.targetLevel ?? "Bund");
+            setStep(3);
+          } else if (result.levelRouting) {
             // Ebenen-Routing aktiv: erst der eigene Ebene-Auswahl-Step,
             // danach die konkrete Empfängerwahl.
             setLevelRouting(result.levelRouting);
@@ -495,7 +515,31 @@ export function WizardShell() {
             onPlzErrorDismiss={() => setPlzError(null)}
           />
         )}
-        {step === "2b" && (
+        {step === "2b" && campaignMismatch && (
+          <div className="rounded-lg border border-waldgruen/20 bg-waldgruen/5 px-5 py-5">
+            <p className="font-typewriter text-xs font-bold uppercase tracking-widest text-waldgruen/60">
+              Hinweis zur Kampagne
+            </p>
+            <p className="mt-2 font-body text-base leading-relaxed text-waldgruen-dark">
+              {campaignMismatch.message}
+            </p>
+            <p className="mt-2 font-body text-sm leading-relaxed text-warmgrau/70">
+              Du kannst stattdessen einen freien Brief zu deinem Thema schreiben. Wir finden dann über deine Postleitzahl die passende politische Ebene.
+            </p>
+            <button
+              type="button"
+              onClick={() => {
+                setWizardData((prev) => ({ ...prev, campaign: undefined }));
+                setCampaignMismatch(null);
+                setStep("2b");
+              }}
+              className="mt-4 rounded-md bg-waldgruen px-5 py-3 font-body text-base font-semibold text-creme transition-colors hover:bg-waldgruen-dark"
+            >
+              Stattdessen einen freien Brief schreiben
+            </button>
+          </div>
+        )}
+        {step === "2b" && !campaignMismatch && (
           <Step1bOptional
             onNext={handleStep2bComplete}
             isSubmitting={isSubmitting}
@@ -542,6 +586,7 @@ export function WizardShell() {
                 : undefined
             }
             onChangeLevel={
+              !wizardData.campaign &&
               levelRouting &&
               actionResult &&
               "disambiguationNeeded" in actionResult &&

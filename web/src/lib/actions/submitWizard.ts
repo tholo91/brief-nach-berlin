@@ -10,6 +10,7 @@ import { lookupPLZ, lookupPLZWithLevel, buildCoverageHint } from "@/lib/lookup/p
 import { routeToLevel, type RoutingResult } from "@/lib/lookup/levelRouter";
 import { verifyRoutingToken } from "@/lib/lookup/routingToken";
 import { checkRateLimit, getClientIp, hashIdentifier, LIMITS } from "@/lib/rateLimit";
+import { BUNDESLAND_NAMES } from "@/lib/campaigns/schema";
 import { DEFAULT_LETTER_LENGTH } from "@/lib/config";
 
 const RATE_LIMIT_MESSAGE =
@@ -104,6 +105,26 @@ export async function submitWizardAction(
     const { wahlkreisIds, politicians } = lookupPLZ(data.plz);
     log("plz lookup", { wahlkreisCount: wahlkreisIds.length, politicianCount: politicians.length });
     // Fallback is handled within lookupPLZ.ts, returning an anonymous politician if none are found.
+
+    // Kampagne mit fester Bundesland-Bindung: liegt die Besucher-PLZ in einem
+    // anderen Bundesland, freundlich abfangen. Läuft wie plz_not_found VOR dem
+    // Rate-Limit, damit kein Brief-Token verbrannt wird.
+    if (data.campaign?.targetLevel === "Land" && data.campaign.targetState) {
+      const derivedBundeslandKey = lookupPLZWithLevel(data.plz).bundeslandKey;
+      if (derivedBundeslandKey !== data.campaign.targetState) {
+        const targetStateName =
+          BUNDESLAND_NAMES[data.campaign.targetState] ?? data.campaign.targetState;
+        log("campaign state mismatch", {
+          targetState: data.campaign.targetState,
+          derivedBundeslandKey,
+        });
+        return {
+          error: "campaign_state_mismatch",
+          targetStateName,
+          message: `Diese Kampagne richtet sich an den Landtag von ${targetStateName}. Deine Postleitzahl liegt in einem anderen Bundesland.`,
+        };
+      }
+    }
 
     // 1b. Rate limit check (IP + email) BEFORE moderation/AI spend.
     // IP and email are salted-hashed before use as bucket keys (DSGVO M7).

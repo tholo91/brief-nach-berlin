@@ -104,12 +104,15 @@ export function buildEmailHtml(data: SendLetterEmailParams): string {
       data.politicianLastName
     );
 
+  const fallbackUrl = `${APP_URL}/kein-mdb-im-wahlkreis`;
+
   const addressNameLine = isFallback
-    ? `<strong><a href="${profileUrl}" target="_blank" rel="noopener noreferrer" style="color:#2D5016;text-decoration:underline;">MdB suchen</a></strong><br>`
+    ? `<strong><a href="${fallbackUrl}" target="_blank" rel="noopener noreferrer" style="color:#2D5016;text-decoration:underline;">Kein MdB zugeordnet</a></strong><br>`
     : `<strong><a href="${profileUrl}" target="_blank" rel="noopener noreferrer" style="color:#2D5016;text-decoration:underline;">${fullName}, MdB (${party})</a></strong><br>`;
 
-  const profileButtonText = isFallback ? "MdB suchen" : "Profil auf<br>abgeordnetenwatch";
-  const profileButtonHtml = `<a href="${profileUrl}" target="_blank" rel="noopener noreferrer" style="display:inline-block;background-color:#2D5016;color:#ffffff;font-family:Georgia,'Times New Roman',serif;font-size:14px;font-weight:bold;text-decoration:none;padding:10px 14px;border-radius:4px;line-height:1.5;text-align:center;">${profileButtonText}</a>`;
+  const profileButtonText = isFallback ? "Empfänger finden" : "Profil auf<br>abgeordnetenwatch";
+  const profileButtonUrl = isFallback ? fallbackUrl : profileUrl;
+  const profileButtonHtml = `<a href="${profileButtonUrl}" target="_blank" rel="noopener noreferrer" style="display:inline-block;background-color:#2D5016;color:#ffffff;font-family:Georgia,'Times New Roman',serif;font-size:14px;font-weight:bold;text-decoration:none;padding:10px 14px;border-radius:4px;line-height:1.5;text-align:center;">${profileButtonText}</a>`;
   
   const disclaimerSiteName = isFallback ? "bundestag.de" : "abgeordnetenwatch.de";
 

@@ -32,6 +32,7 @@ describe("buildEmailHtml — Empfänger-Arten", () => {
     expect(html).toContain("Deutscher Bundestag<br>");
     expect(html).toContain(", MdB (SPD)");
     expect(html).toContain("abgeordnetenwatch.de/profile/anna-mueller");
+    expect(html).toContain("/images/email-title-watermark-v2.png");
     expect(html).not.toContain("google.com/search");
   });
 
@@ -43,6 +44,7 @@ describe("buildEmailHtml — Empfänger-Arten", () => {
         politicianFirstName: "Karl",
         politicianLastName: "Schmidt",
         politicianParty: "CDU",
+        bundeslandKey: "NW",
         politicianPostalAddress:
           "Landtag Nordrhein-Westfalen, Platz des Landtags 1, 40221 Düsseldorf",
       })
@@ -50,9 +52,39 @@ describe("buildEmailHtml — Empfänger-Arten", () => {
     expect(html).not.toContain("Deutscher Bundestag<br>");
     expect(html).toContain("Landtag Nordrhein-Westfalen<br>");
     expect(html).toContain(", MdL (CDU)");
+    expect(html).toContain("/images/email-variants/email-landtag-nordrhein-westfalen.webp");
+    expect(html).not.toContain("/images/email-title-watermark-v2.png");
   });
 
-  it("rathaus: keine Partei, kein MdB/MdL, kein AW-Link, Google-Adresszeile", () => {
+  it("mdl: mappt alle 16 Bundesländer auf eine eigene Briefmarke", () => {
+    const stamps = {
+      BW: "baden-wuerttemberg",
+      BY: "bayern",
+      BE: "berlin",
+      BB: "brandenburg",
+      HB: "bremen",
+      HH: "hamburg",
+      HE: "hessen",
+      MV: "mecklenburg-vorpommern",
+      NI: "niedersachsen",
+      NW: "nordrhein-westfalen",
+      RP: "rheinland-pfalz",
+      SL: "saarland",
+      SN: "sachsen",
+      ST: "sachsen-anhalt",
+      SH: "schleswig-holstein",
+      TH: "thueringen",
+    } as const;
+
+    for (const [bundeslandKey, slug] of Object.entries(stamps)) {
+      const html = buildEmailHtml(
+        baseParams({ recipientKind: "mdl", bundeslandKey })
+      );
+      expect(html).toContain(`/images/email-variants/email-landtag-${slug}.webp`);
+    }
+  });
+
+  it("rathaus: keine Partei, kein MdB/MdL, kein AW-Link, nur Link zur genauen Anschrift", () => {
     const html = buildEmailHtml(
       baseParams({
         recipientKind: "rathaus",
@@ -71,11 +103,13 @@ describe("buildEmailHtml — Empfänger-Arten", () => {
     expect(html).not.toContain(", MdB (");
     expect(html).not.toContain(", MdL (");
     expect(html).not.toContain("abgeordnetenwatch.de/profile");
-    expect(html).toContain("Stadtverwaltung Köln<br>");
-    expect(html).toContain("50667 Köln");
+    expect(html).toContain("<strong>Stadtverwaltung Köln</strong><br>");
+    expect(html).not.toContain("50667 Köln</p>");
     expect(html).toContain("google.com/search");
+    expect(html).toContain("Die genaue Anschrift findest du hier:");
     expect(html).toContain("Rathaus-Adresse finden");
     expect(html).toContain(encodeURIComponent("Rathaus Adresse 50667 Köln"));
+    expect(html).toContain("/images/email-variants/email-kommune-rathaus.webp");
   });
 
   it("LOCK-4c: kein sichtbarer Routing-Footer in der Mail", () => {

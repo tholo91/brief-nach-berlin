@@ -79,6 +79,45 @@ function buildCampaignAttributionHtml(
     </div>`;
 }
 
+const LANDTAG_WATERMARKS: Record<string, string> = {
+  BW: "/images/email-variants/email-landtag-baden-wuerttemberg.webp",
+  BY: "/images/email-variants/email-landtag-bayern.webp",
+  BE: "/images/email-variants/email-landtag-berlin.webp",
+  BB: "/images/email-variants/email-landtag-brandenburg.webp",
+  HB: "/images/email-variants/email-landtag-bremen.webp",
+  HH: "/images/email-variants/email-landtag-hamburg.webp",
+  HE: "/images/email-variants/email-landtag-hessen.webp",
+  MV: "/images/email-variants/email-landtag-mecklenburg-vorpommern.webp",
+  NI: "/images/email-variants/email-landtag-niedersachsen.webp",
+  NW: "/images/email-variants/email-landtag-nordrhein-westfalen.webp",
+  RP: "/images/email-variants/email-landtag-rheinland-pfalz.webp",
+  SL: "/images/email-variants/email-landtag-saarland.webp",
+  SN: "/images/email-variants/email-landtag-sachsen.webp",
+  ST: "/images/email-variants/email-landtag-sachsen-anhalt.webp",
+  SH: "/images/email-variants/email-landtag-schleswig-holstein.webp",
+  TH: "/images/email-variants/email-landtag-thueringen.webp",
+};
+
+function getEmailWatermarkPath(data: SendLetterEmailParams): string {
+  if (data.recipientKind === "rathaus") {
+    return "/images/email-variants/email-kommune-rathaus.webp";
+  }
+  if (data.recipientKind === "mdl") {
+    return LANDTAG_WATERMARKS[data.bundeslandKey ?? ""] ?? "/images/email-title-watermark-v2.png";
+  }
+  return "/images/email-title-watermark-v2.png";
+}
+
+function getEmailWatermarkStyle(data: SendLetterEmailParams): string {
+  if (data.recipientKind === "mdl") {
+    return "display:inline-block;width:110px;height:110px;margin:2px -2px 8px 14px;border:0;outline:none;text-decoration:none;-ms-interpolation-mode:bicubic;transform:rotate(6deg);transform-origin:center center;";
+  }
+  if (data.recipientKind === "rathaus") {
+    return "display:inline-block;width:110px;height:110px;margin:1px 0 8px 14px;border:0;outline:none;text-decoration:none;-ms-interpolation-mode:bicubic;transform:rotate(-5deg);transform-origin:center center;";
+  }
+  return "display:inline-block;width:110px;height:110px;margin:0 0 6px 14px;border:0;outline:none;text-decoration:none;-ms-interpolation-mode:bicubic;";
+}
+
 export function buildEmailHtml(data: SendLetterEmailParams): string {
   const isRathaus = data.recipientKind === "rathaus";
   const isMdl = data.recipientKind === "mdl";
@@ -98,6 +137,7 @@ export function buildEmailHtml(data: SendLetterEmailParams): string {
     .split(",")
     .map((part) => escapeHtml(part.trim()))
     .join("<br>");
+  const visibleAddressLines = isRathaus ? "" : addressLines;
 
   // Profile link (Abgeordnetenwatch: voting record, public Q&A, transparent source).
   // Prefer the API-provided URL; fall back to a slug-derived URL.
@@ -129,7 +169,7 @@ export function buildEmailHtml(data: SendLetterEmailParams): string {
     : null;
   const rathausSearchLine =
     isRathaus && rathausSearchUrl
-      ? `<p style="margin:10px 0 0;font-family:Georgia,'Times New Roman',serif;font-size:12px;color:#666666;line-height:1.5;">Genaue Anschrift (Straße + Hausnummer): <a href="${rathausSearchUrl}" target="_blank" rel="noopener noreferrer" style="color:#2D5016;text-decoration:underline;">Rathaus-Adresse finden</a></p>`
+      ? `<p style="margin:10px 0 0;font-family:Georgia,'Times New Roman',serif;font-size:12px;color:#666666;line-height:1.5;">Die genaue Anschrift findest du hier: <a href="${rathausSearchUrl}" target="_blank" rel="noopener noreferrer" style="color:#2D5016;text-decoration:underline;">Rathaus-Adresse finden</a></p>`
       : "";
 
   const profileButtonText = isFallback ? "Empfänger finden" : "Profil auf<br>abgeordnetenwatch";
@@ -207,7 +247,7 @@ export function buildEmailHtml(data: SendLetterEmailParams): string {
                 <tr>
                   <td colspan="7" class="bnb-pad" style="padding:0 32px 8px;background-color:#ffffff;">
                     <div class="bnb-inner-pad" style="background-color:#FAF8F5;border:1px solid #E0DCD7;border-radius:4px;padding:24px;">
-                      <img src="${APP_URL}/images/email-title-watermark-v2.png" width="110" height="110" alt="" align="right" style="display:inline-block;width:110px;height:110px;margin:0 0 6px 14px;border:0;outline:none;text-decoration:none;-ms-interpolation-mode:bicubic;">
+                      <img src="${APP_URL}${getEmailWatermarkPath(data)}" width="110" height="110" alt="" align="right" style="${getEmailWatermarkStyle(data)}">
                       <p style="margin:0;font-family:'Courier New',Courier,monospace;font-size:14px;line-height:1.7;color:#4A4A4A;white-space:pre-wrap;">${letterHtml}</p>
                     </div>
                   </td>
@@ -231,7 +271,7 @@ export function buildEmailHtml(data: SendLetterEmailParams): string {
                           <td class="bnb-stack bnb-stack-left" style="vertical-align:top;padding-right:16px;width:60%;">
                             <p style="margin:0;font-family:'Courier New',Courier,monospace;font-size:14px;line-height:1.8;color:#4A4A4A;">
                               ${addressNameLine}
-                              ${institutionLine}${addressLines}
+                              ${institutionLine}${visibleAddressLines}
                             </p>${rathausSearchLine}
                           </td>
                           <td class="bnb-stack bnb-stack-right" style="vertical-align:middle;text-align:center;padding-left:16px;border-left:1px solid #E0DCD7;width:40%;">

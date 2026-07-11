@@ -80,6 +80,8 @@ export interface SendLetterEmailParams {
   // postalAddress (keine "Deutscher Bundestag"-Zeile); "rathaus" hat weder
   // Partei noch Profil-Link, dafür eine Google-Adresshilfe-Zeile.
   recipientKind: "mdb" | "mdl" | "rathaus";
+  // Nur für mdl: ISO 3166-2:DE-Länderkürzel zur Auswahl der Landeswappen-Marke.
+  bundeslandKey?: string;
   // Nur rathaus: für die Google-Adresssuche ("Rathaus Adresse {PLZ} {Ort}")
   rathausSearch?: { plz: string; ort: string };
   letterText: string;
@@ -148,6 +150,7 @@ export function prepareLetterEmail(args: {
       politicianPostalAddress: politician.postalAddress,
       politicianAbgeordnetenwatchUrl: politician.abgeordnetenwatchUrl,
       recipientKind: recipient.kind,
+      bundeslandKey: politician.bundeslandKey,
       letterText,
       issueText,
       debug,

@@ -49,3 +49,12 @@
 ## Agent Preference Notes
 
 - 2026-06-26: Offene Captures sollen zu Sessionbeginn weiter gruppiert gelistet werden. Danach nicht automatisch auf Anweisung warten, außer der User spricht den Capture-Check ausdrücklich an.
+
+## Spateres Produkt-To-do
+
+- **Varianten-Flow aus Review und E-Mail schlank zusammenfuhren** (Priority: ⚪ Normal)
+  - Die bestehende E-Mail und ihr CTA bleiben unverandert, da dieser Einstieg genutzt wird.
+  - Im Review fuhrt „Brief uberarbeiten“ in denselben Varianten-Flow, aber mit Einstiegskontext `review`.
+  - Je nach Einstieg bleibt die Seite minimal angepasst: Review-Einstieg bringt den uberarbeiteten Brief zur Review-Entscheidung zuruck; E-Mail-Einstieg behalt die heutige Tipps-/Anpassen-Seite bei.
+  - Gemeinsame Messung: Quelle (`email` oder `review`) und gewahlte Anderungsart erfassen, ohne Brieftext oder personliche Anliegen zu speichern.
+  - Vor Umsetzung in Supabase prufen, welche Events die heute stark genutzte E-Mail-Funktion bereits liefert.

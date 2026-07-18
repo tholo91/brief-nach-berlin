@@ -123,6 +123,10 @@ const coverage = [
     outlet: "ARD Sounds",
     href: "https://www.ardsounds.de/episode/urn:ard:episode:5006a718e92c83f9/",
   },
+  {
+    outlet: "detektor.fm",
+    href: "https://detektor.fm/unsere-newsletter/dazwischen/dazwischen-warum-80-prozent-ans-weggehen-denken",
+  },
 ];
 
 const faqs = [
@@ -242,7 +246,8 @@ export default async function PressePage() {
           <p>
             Brief-nach-Berlin wurde in überregionalen und lokalen Medien
             aufgegriffen, unter anderem über eine Meldung der Deutschen
-            Presse-Agentur (dpa) vom 24. Juni 2026. Eine Auswahl:
+            Presse-Agentur (dpa) vom 24. Juni 2026 sowie in Podcasts und
+            Newslettern. Eine Auswahl:
           </p>
           <div className="flex flex-wrap items-center gap-x-3 gap-y-2 font-body">
             {coverage.map((item, i) => (

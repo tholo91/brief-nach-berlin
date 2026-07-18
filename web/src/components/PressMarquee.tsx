@@ -61,6 +61,12 @@ const PRESS_ITEMS = [
     href: "https://www.ardsounds.de/episode/urn:ard:episode:5006a718e92c83f9/",
   },
   {
+    key: "detektor",
+    logo: "/press-logos/detektor-fm.svg",
+    outlet: "detektor.fm",
+    href: "https://detektor.fm/unsere-newsletter/dazwischen/dazwischen-warum-80-prozent-ans-weggehen-denken",
+  },
+  {
     key: "wk",
     logo: "/press-logos/weser-kurier.svg",
     outlet: "Weser-Kurier",

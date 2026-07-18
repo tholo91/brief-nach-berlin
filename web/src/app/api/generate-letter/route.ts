@@ -5,6 +5,7 @@ import type { WizardData } from "@/lib/types/wizard";
 import type { RecipientSelection } from "@/lib/lookup/rathausRecipient";
 import { step1Schema, step1bSchema, step2Schema } from "@/lib/validation/wizardSchemas";
 import { resolveRecipientSelection } from "@/lib/lookup/resolveRecipient";
+import { lookupPLZWithLevel } from "@/lib/lookup/plzLookup";
 import { verifyRoutingToken } from "@/lib/lookup/routingToken";
 import { moderateText } from "@/lib/moderation/moderateText";
 import { generateLetter } from "@/lib/generation/generateLetter";
@@ -22,8 +23,8 @@ import { incrementLetterCounters } from "@/lib/counter";
 // ID — der Empfänger wird serverseitig aus der PLZ abgeleitet (LOCK-5).
 const selectionSchema = z.discriminatedUnion("kind", [
   z.object({ kind: z.literal("mdb"), selectedPoliticianId: z.number().int() }),
-  z.object({ kind: z.literal("mdl"), selectedPoliticianId: z.number().int() }),
-  z.object({ kind: z.literal("rathaus") }),
+  z.object({ kind: z.literal("mdl"), selectedPoliticianId: z.number().int() }).strict(),
+  z.object({ kind: z.literal("rathaus") }).strict(),
 ]);
 
 export const maxDuration = 60;
@@ -128,6 +129,13 @@ export async function POST(req: NextRequest) {
     if (!data || !selection) {
       return NextResponse.json({ error: "Ungültige Anfrage." }, { status: 400 });
     }
+    if (
+      selection.kind !== "mdb" &&
+      (process.env.LANDTAG_ROUTING_ENABLED !== "true" ||
+        process.env.LETTER_PROMPT_LEVEL_AWARE !== "true")
+    ) {
+      return NextResponse.json({ error: "Empfänger nicht verfügbar." }, { status: 400 });
+    }
 
     // Re-validate (defense in depth — client could call this endpoint directly)
     const step1Result = step1Schema.safeParse(data);
@@ -180,10 +188,15 @@ export async function POST(req: NextRequest) {
     if (typeof body.routingToken === "string") {
       const routing = verifyRoutingToken(body.routingToken, data.issueText);
       if (routing) {
+        const routedLevelAvailable =
+          lookupPLZWithLevel(data.plz).byLevel[routing.primary.level].length > 0;
         routingInfo = {
           routedPrimaryLevel: routing.primary.level,
           routedPrimaryConfidence: routing.primary.confidence,
-          wasOverridden: routing.primary.level !== recipient.level,
+          wasOverridden:
+            routing.primary.confidence !== "low" &&
+            routedLevelAvailable &&
+            routing.primary.level !== recipient.level,
           selectedLevel: recipient.level,
         };
       }

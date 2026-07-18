@@ -117,6 +117,14 @@ export function Step3Success({
     () => recipients.find((r): r is RathausRecipient => r.kind === "rathaus") ?? null,
     [recipients]
   );
+  const landWahlkreisCount = useMemo(
+    () => new Set(politicians.map((p) => p.wahlkreisId)).size,
+    [politicians]
+  );
+  const isAmbiguousLand = selectedLevel === "Land" && landWahlkreisCount > 1;
+  const isAmbiguousKommune =
+    selectedLevel === "Kommune" &&
+    rathaus?.ambiguous === true;
 
   // Pre-select the first Direktmandat-holder so users land on the most
   // politically relevant option without an extra click. If no Direktmandat
@@ -125,7 +133,9 @@ export function Step3Success({
   const isNoMdbFound = politicians.length === 1 && politicians[0].id === -1;
 
   const [selectedPoliticianId, setSelectedPoliticianId] = useState<number | null>(
-    () => politicians.find((p) => p.isDirect)?.id ?? (politicians.length === 1 && politicians[0].id === -1 ? -1 : null)
+    () => isAmbiguousLand
+      ? null
+      : politicians.find((p) => p.isDirect)?.id ?? (politicians.length === 1 && politicians[0].id === -1 ? -1 : null)
   );
   // Kommune: die einzige Rathaus-Karte ist vorausgewählt (ein Klick weniger)
   const [rathausSelected, setRathausSelected] = useState<boolean>(() => Boolean(rathaus));
@@ -562,6 +572,28 @@ export function Step3Success({
   const founderFeedbackUrl = wizardData.email
     ? `${FOUNDER_FEEDBACK_URL}?email=${encodeURIComponent(wizardData.email)}`
     : FOUNDER_FEEDBACK_URL;
+  const effectiveLevel: PoliticalLevel =
+    selectedLevel ??
+    generatedRecipient?.level ??
+    (result && "success" in result && result.success ? result.politicalLevel : "Bund");
+  const handwrittenImpactCopy = effectiveLevel === "Bund"
+    ? "Handgeschriebene Briefe werden im Bundestag tatsächlich gelesen und besprochen."
+    : effectiveLevel === "Land"
+      ? "Ein persönlicher, handgeschriebener Brief fällt auch im Landtag auf."
+      : "Ein persönlicher, handgeschriebener Brief macht dein Anliegen für die Verwaltung greifbar.";
+  const addressInstruction = effectiveLevel === "Kommune"
+    ? "Nutze die Suchhilfe, prüfe die vollständige Anschrift und schreib sie auf den Umschlag."
+    : "Die Adresse findest du im Brief.";
+  const shareImpactCopy = effectiveLevel === "Bund"
+    ? "Dein Brief wirkt. Und er wirkt noch stärker, wenn weitere Stimmen aus deinem Wahlkreis dazukommen. Briefe aus derselben Gegend zum gleichen Thema bekommen im Bundestag besonderes Gewicht."
+    : effectiveLevel === "Land"
+      ? "Dein Brief wirkt. Und er wirkt noch stärker, wenn weitere Menschen aus deinem Bundesland dem Landtag mit eigenen Worten schreiben."
+      : "Dein Brief wirkt. Und er wirkt noch stärker, wenn weitere Menschen aus deiner Stadt oder Gemeinde ihr Anliegen bei der Verwaltung sichtbar machen.";
+  const campaignShareImpactCopy = effectiveLevel === "Bund"
+    ? "Dein Brief ist ein Anfang. Teile die Kampagne, damit weitere Menschen aus ihrem Wahlkreis mit eigenen Worten schreiben."
+    : effectiveLevel === "Land"
+      ? "Dein Brief ist ein Anfang. Teile die Kampagne, damit weitere Menschen aus ihrem Bundesland mit eigenen Worten schreiben."
+      : "Dein Brief ist ein Anfang. Teile die Kampagne, damit weitere Menschen vor Ort mit eigenen Worten schreiben.";
 
   if (!result) return null;
 
@@ -864,13 +896,13 @@ export function Step3Success({
                 <li className="flex gap-3">
                   <span className="flex-shrink-0 w-6 h-6 rounded-full bg-waldgruen/15 text-waldgruen font-body text-xs font-bold flex items-center justify-center mt-0.5">1</span>
                   <p className="font-body text-sm text-warmgrau leading-relaxed">
-                    <strong>Brief abschreiben.</strong> Schreib den Brief von Hand ab und pass ihn an deinen Schreibstil an. Handgeschriebene Briefe werden im Bundestag tatsächlich gelesen und besprochen.
+                    <strong>Brief abschreiben.</strong> Schreib den Brief von Hand ab und pass ihn an deinen Schreibstil an. {handwrittenImpactCopy}
                   </p>
                 </li>
                 <li className="flex gap-3">
                   <span className="flex-shrink-0 w-6 h-6 rounded-full bg-waldgruen/15 text-waldgruen font-body text-xs font-bold flex items-center justify-center mt-0.5">2</span>
                   <p className="font-body text-sm text-warmgrau leading-relaxed">
-                    <strong>Adresse aufschreiben, Briefmarke drauf, ab zur Post.</strong> Die Adresse findest du im Brief.
+                    <strong>Adresse aufschreiben, Briefmarke drauf, ab zur Post.</strong> {addressInstruction}
                   </p>
                 </li>
                 <li className="flex gap-3">
@@ -892,8 +924,8 @@ export function Step3Success({
             </h2>
             <p className="font-body text-sm text-warmgrau leading-relaxed mt-2">
               {wizardData.campaign?.slug
-                ? "Dein Brief ist ein Anfang. Teile die Kampagne, damit weitere Menschen aus ihrem Wahlkreis mit eigenen Worten schreiben."
-                : "Dein Brief wirkt. Und er wirkt noch stärker, wenn weitere Stimmen aus deinem Wahlkreis dazukommen. Briefe aus derselben Gegend zum gleichen Thema bekommen im Bundestag besonderes Gewicht."}
+                ? campaignShareImpactCopy
+                : shareImpactCopy}
             </p>
             {!wizardData.campaign?.slug && (
               <p className="font-body text-sm text-warmgrau leading-relaxed mt-3">
@@ -1009,7 +1041,7 @@ export function Step3Success({
       ? "Dein Brief geht an die Verwaltung"
       : isLand
         ? !isNoMdbFound && sortedPoliticians.length > 1
-          ? `${sortedPoliticians.length} Landtagsabgeordnete für PLZ ${wizardData.plz}`
+          ? `${sortedPoliticians.length} mögliche Landtagsabgeordnete für PLZ ${wizardData.plz}`
           : "Wer vertritt dich im Landtag?"
         : !isNoMdbFound && sortedPoliticians.length > 1
           ? `${sortedPoliticians.length} Abgeordnete für PLZ ${wizardData.plz}`
@@ -1018,8 +1050,8 @@ export function Step3Success({
       ? "Kommunale Anliegen gehen direkt an die zuständige Verwaltung. Die genaue Anschrift ergänzt du später mit einem Klick."
       : isLand
         ? wahlkreisGroups.length === 1
-          ? "Diese Landtagsabgeordneten sind für deine PLZ zuständig. Ein Direktmandat ist vorausgewählt, du kannst aber auch jemand anderen wählen."
-          : "Für deine PLZ kommen mehrere Landtagswahlkreise infrage. Wähle, wer deinen Brief bekommen soll."
+          ? "Diese Landtagsabgeordneten kommen für deine PLZ infrage. Ein Direktmandat ist vorausgewählt, du kannst aber auch jemand anderen wählen."
+          : "Für deine PLZ kommen mehrere Landtagswahlkreise infrage. Deshalb ist niemand vorausgewählt: Prüfe den Wahlkreis und wähle selbst."
         : isNoMdbFound
           ? `Für die PLZ ${wizardData.plz} wurde kein MdB gefunden. Du kannst den Brief dennoch formulieren lassen und dein MdB später auswählen oder deine PLZ anpassen.`
           : wahlkreisGroups.length === 1
@@ -1087,6 +1119,17 @@ export function Step3Success({
           {introCopy}
         </p>
 
+        {(isAmbiguousLand || isAmbiguousKommune) && (
+          <div role="note" className="mt-4 rounded-xl border border-waldgruen/25 bg-waldgruen/8 p-4 font-body text-sm text-warmgrau leading-relaxed">
+            <p className="font-semibold text-waldgruen-dark">Beta-Hinweis</p>
+            <p className="mt-1">
+              {isAmbiguousLand
+                ? "Eine PLZ kann mehrere Landtagswahlkreise abdecken. Prüfe über das verlinkte Profil, welcher Wahlkreis zu deiner Wohnadresse gehört, bevor du auswählst."
+                : "Diese PLZ kann zu mehreren Berliner Bezirken gehören. Wir wählen deshalb kein Bezirksamt für dich aus. Suche und prüfe das zuständige Bezirksamt anhand deiner vollständigen Adresse."}
+            </p>
+          </div>
+        )}
+
         {/* Error banner */}
         {generationError && (
           <div
@@ -1133,8 +1176,8 @@ export function Step3Success({
                 {rathaus.plz} {rathaus.recipientKind === "bezirksamt" ? "Berlin" : rathaus.gemeindeName}
               </p>
               <p className="font-body text-xs text-warmgrau/70 mt-2 leading-relaxed">
-                Der Brief wird generisch an die Verwaltung adressiert. Die genaue
-                Straße + Hausnummer ergänzt du selbst, wir geben dir dafür eine Suchhilfe.
+                Der Brief enthält eine generische Orientierung. Prüfe das zuständige
+                Amt und ergänze die vollständige Anschrift mit unserer Suchhilfe.
               </p>
             </div>
           </div>
@@ -1150,7 +1193,7 @@ export function Step3Success({
             <div key={group.wahlkreisId}>
               <p className="font-body text-xs font-semibold uppercase tracking-wide text-warmgrau/55 mb-2 flex items-center gap-2">
                 {!isNoMdbFound && <span className="h-px flex-shrink-0 w-3 bg-warmgrau/25" aria-hidden="true" />}
-                {isNoMdbFound ? group.wahlkreisName : `${isLand ? "Landtagswahlkreis" : "Wahlkreis"} ${group.wahlkreisId} · ${group.wahlkreisName}`}
+                {isNoMdbFound ? group.wahlkreisName : `${isLand && isAmbiguousLand ? "Möglicher Landtagswahlkreis" : isLand ? "Landtagswahlkreis" : "Wahlkreis"} ${group.wahlkreisId} · ${group.wahlkreisName}`}
               </p>
               <div
                 className={

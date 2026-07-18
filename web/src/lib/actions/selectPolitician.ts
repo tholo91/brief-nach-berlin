@@ -1,10 +1,17 @@
 "use server";
 
+import { z } from "zod";
 import type { WizardData, WizardActionResult } from "@/lib/types/wizard";
 import type { RecipientSelection } from "@/lib/lookup/rathausRecipient";
 import { step1Schema, step1bSchema, step2Schema } from "@/lib/validation/wizardSchemas";
 import { resolveRecipientSelection } from "@/lib/lookup/resolveRecipient";
 import { DEFAULT_LETTER_LENGTH } from "@/lib/config";
+
+const recipientSelectionSchema = z.discriminatedUnion("kind", [
+  z.object({ kind: z.literal("mdb"), selectedPoliticianId: z.number().int() }),
+  z.object({ kind: z.literal("mdl"), selectedPoliticianId: z.number().int() }).strict(),
+  z.object({ kind: z.literal("rathaus") }).strict(),
+]);
 
 // SECURITY NOTE (2026-04-17, erweitert 2026-07-07 für 999.6):
 // Der Client liefert nie Politician-Objekte, sondern nur eine diskriminierte
@@ -35,14 +42,19 @@ export async function selectPoliticianAction(
       return { error: "server_error", message: "Bitte beschreibe dein Anliegen." };
     }
 
-    const normalizedSelection: RecipientSelection =
+    const rawSelection: unknown =
       typeof selection === "number" ? { kind: "mdb", selectedPoliticianId: selection } : selection;
-
-    if (
-      normalizedSelection.kind !== "rathaus" &&
-      typeof normalizedSelection.selectedPoliticianId !== "number"
-    ) {
+    const parsedSelection = recipientSelectionSchema.safeParse(rawSelection);
+    if (!parsedSelection.success) {
       return { error: "server_error", message: "Ungültige Eingabe." };
+    }
+    const normalizedSelection: RecipientSelection = parsedSelection.data;
+    if (
+      normalizedSelection.kind !== "mdb" &&
+      (process.env.LANDTAG_ROUTING_ENABLED !== "true" ||
+        process.env.LETTER_PROMPT_LEVEL_AWARE !== "true")
+    ) {
+      return { error: "server_error", message: "Empfänger nicht verfügbar." };
     }
 
     const resolved = resolveRecipientSelection(data.plz, normalizedSelection);

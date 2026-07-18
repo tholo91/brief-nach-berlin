@@ -19,6 +19,8 @@ export interface RathausRecipient {
   kind: "rathaus";
   level: "Kommune";
   recipientKind: "stadtverwaltung" | "bezirksamt";
+  /** Mehrere zuständige Berliner Bezirke sind möglich; keine automatische Auswahl. */
+  ambiguous?: boolean;
   /** Gemeinde-/Stadtname bzw. Berliner Bezirk, z.B. "Köln" oder "Friedrichshain-Kreuzberg" */
   gemeindeName: string;
   plz: string;

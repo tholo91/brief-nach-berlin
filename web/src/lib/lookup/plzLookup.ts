@@ -75,6 +75,14 @@ export interface PlzLookupResult {
     kommuneSupported: boolean;
     /** true für HH/HB: Stadt ist zugleich Land, Kommune-Ebene existiert nicht */
     stadtstaatEinheitsgemeinde: boolean;
+    /** PLZ deckt mehrere mögliche Landtagswahlkreise ab; User muss selbst wählen */
+    landAmbiguous: boolean;
+    /** Alle aus der PLZ abgeleiteten möglichen Landtagswahlkreise */
+    landWahlkreisIds: number[];
+    /** Berlin-PLZ deckt mehrere Bezirke ab; kein Bezirk wird automatisch gewählt */
+    kommuneAmbiguous: boolean;
+    /** Alle aus der PLZ abgeleiteten möglichen Berliner Bezirke */
+    kommuneBezirke: string[];
   };
 }
 
@@ -91,8 +99,8 @@ export function lookupPLZWithLevel(plz: string): PlzLookupResult {
 
   // Land: MdL des Bundeslands, deren Landtagswahlkreis zur PLZ passt
   let land: Politician[] = [];
+  const landtagWahlkreise = plzLandtagWahlkreis[plz] ?? [];
   if (bundeslandKey) {
-    const landtagWahlkreise = plzLandtagWahlkreis[plz] ?? [];
     if (landtagWahlkreise.length > 0) {
       land = politiciansCache.landtag.filter(
         (p) => p.bundeslandKey === bundeslandKey && landtagWahlkreise.includes(p.wahlkreisId)
@@ -103,16 +111,31 @@ export function lookupPLZWithLevel(plz: string): PlzLookupResult {
   // Kommune: generischer Verwaltungs-Empfänger (kein HH/HB — Einheitsgemeinde)
   let kommune: RathausRecipient[] = [];
   let stadtstaatEinheitsgemeinde = false;
+  const kommuneBezirke = enrichment?.bezirke ?? [];
+  const kommuneAmbiguous = bundeslandKey === "BE" && kommuneBezirke.length > 1;
   if (enrichment && bundeslandKey) {
     try {
-      kommune = [
-        buildRathausRecipient({
-          gemeindeName: enrichment.gemeindeName,
+      if (kommuneAmbiguous) {
+        kommune = [{
+          kind: "rathaus",
+          level: "Kommune",
+          recipientKind: "bezirksamt",
+          ambiguous: true,
+          gemeindeName: "Berlin",
           plz,
-          bundeslandKey,
-          bezirk: enrichment.bezirke?.[0] ?? null,
-        }),
-      ];
+          label: "Zuständiges Bezirksamt in Berlin",
+          postalAddress: `Zuständiges Bezirksamt in Berlin, ${plz} Berlin`,
+        }];
+      } else {
+        kommune = [
+          buildRathausRecipient({
+            gemeindeName: enrichment.gemeindeName,
+            plz,
+            bundeslandKey,
+            bezirk: kommuneBezirke[0] ?? null,
+          }),
+        ];
+      }
     } catch (err) {
       if (err instanceof RathausRecipientNotApplicable) {
         stadtstaatEinheitsgemeinde = true;
@@ -132,6 +155,10 @@ export function lookupPLZWithLevel(plz: string): PlzLookupResult {
       landSupported: land.length > 0,
       kommuneSupported: kommune.length > 0,
       stadtstaatEinheitsgemeinde,
+      landAmbiguous: landtagWahlkreise.length > 1,
+      landWahlkreisIds: landtagWahlkreise,
+      kommuneAmbiguous,
+      kommuneBezirke,
     },
   };
 }

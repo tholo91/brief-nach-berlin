@@ -55,6 +55,10 @@ export interface LevelRoutingContext {
     landSupported: boolean;
     kommuneSupported: boolean;
     stadtstaatEinheitsgemeinde: boolean;
+    landAmbiguous: boolean;
+    landWahlkreisIds: number[];
+    kommuneAmbiguous: boolean;
+    kommuneBezirke: string[];
   };
   bundeslandName: string | null;
   ortsname: string | null;

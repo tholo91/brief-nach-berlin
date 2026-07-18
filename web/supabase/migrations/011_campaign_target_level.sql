@@ -14,4 +14,20 @@ alter table public.campaigns
   drop constraint if exists campaigns_target_level_valid;
 
 alter table public.campaigns
-  add constraint campaigns_target_level_valid check (target_level in ('Bund', 'Land'));
+  drop constraint if exists campaigns_target_state_valid;
+
+alter table public.campaigns
+  drop constraint if exists campaigns_target_scope_valid;
+
+alter table public.campaigns
+  add constraint campaigns_target_level_valid
+    check (target_level in ('Bund', 'Land')),
+  add constraint campaigns_target_state_valid
+    check (
+      target_state is null or target_state in (
+        'BB', 'BE', 'BW', 'BY', 'HB', 'HE', 'HH', 'MV',
+        'NI', 'NW', 'RP', 'SH', 'SL', 'SN', 'ST', 'TH'
+      )
+    ),
+  add constraint campaigns_target_scope_valid
+    check (target_level = 'Land' or target_state is null);

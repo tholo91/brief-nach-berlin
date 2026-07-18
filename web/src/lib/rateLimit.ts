@@ -69,6 +69,10 @@ export function checkRateLimit(
 
 // Common limits used across the app.
 export const LIMITS = {
+  // Paid Mistral classification starts before the final letter submission.
+  // Keep this independent from the letter bucket so aborted wizard sessions
+  // cannot create unbounded model spend.
+  ROUTING_PREFETCH_PER_IP: { max: 10, windowMs: 60 * 60_000 },
   // Per email: 3 letters per 24 hours. Humans don't legitimately write more
   // than a handful; scripts hammering the same address hit this fast.
   LETTERS_PER_EMAIL: { max: 3, windowMs: 24 * 60 * 60_000 },

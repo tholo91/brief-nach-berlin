@@ -1,7 +1,12 @@
 "use server";
 
 import { routeToLevel } from "@/lib/lookup/levelRouter";
-import { signRoutingToken, hashRoutingIssue } from "@/lib/lookup/routingToken";
+import {
+  signRoutingToken,
+  hashRoutingIssue,
+  normalizeRoutingIssue,
+} from "@/lib/lookup/routingToken";
+import { checkRateLimit, getClientIp, hashIdentifier, LIMITS } from "@/lib/rateLimit";
 
 const ROUTING_TIMEOUT_MS = 3500;
 
@@ -18,21 +23,39 @@ const ROUTING_TIMEOUT_MS = 3500;
 export async function prefetchRoutingAction(
   issueText: string
 ): Promise<{ token: string } | null> {
-  if (process.env.LANDTAG_ROUTING_ENABLED !== "true") return null;
+  if (
+    process.env.LANDTAG_ROUTING_ENABLED !== "true" ||
+    process.env.LETTER_PROMPT_LEVEL_AWARE !== "true"
+  ) return null;
   if (!issueText || issueText.trim().length < 10) return null;
+
+  const ipHash = hashIdentifier(await getClientIp());
+  const ipLimit = checkRateLimit(
+    `routing-prefetch:ip:${ipHash}`,
+    LIMITS.ROUTING_PREFETCH_PER_IP.max,
+    LIMITS.ROUTING_PREFETCH_PER_IP.windowMs
+  );
+  if (!ipLimit.allowed) {
+    console.warn("[prefetchRouting] rate limited", {
+      retryAfterSeconds: ipLimit.retryAfterSeconds,
+    });
+    return null;
+  }
+
+  const normalizedIssueText = normalizeRoutingIssue(issueText);
 
   const t0 = Date.now();
   const ctrl = new AbortController();
   const timeoutId = setTimeout(() => ctrl.abort(), ROUTING_TIMEOUT_MS);
   try {
-    const routing = await routeToLevel(issueText, ctrl.signal);
+    const routing = await routeToLevel(normalizedIssueText, ctrl.signal);
     console.log("[prefetchRouting] ok", {
       elapsed: Date.now() - t0,
       level: routing.primary.level,
       confidence: routing.primary.confidence,
     });
     const token = signRoutingToken({
-      issueHash: hashRoutingIssue(issueText),
+      issueHash: hashRoutingIssue(normalizedIssueText),
       routing,
     });
     return { token };

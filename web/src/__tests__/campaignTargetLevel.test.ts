@@ -87,6 +87,18 @@ describe("resolveCampaignTarget (mapCampaign default for legacy rows)", () => {
       targetState: "HB",
     });
   });
+
+  it("rejects malformed target data read from the database", () => {
+    expect(() =>
+      resolveCampaignTarget({ target_level: "Land", target_state: "XX" })
+    ).toThrow();
+    expect(() =>
+      resolveCampaignTarget({ target_level: "Bund", target_state: "HB" })
+    ).toThrow();
+    expect(() =>
+      resolveCampaignTarget({ target_level: "Kommune", target_state: null })
+    ).toThrow();
+  });
 });
 
 describe("BUNDESLAND_NAMES", () => {

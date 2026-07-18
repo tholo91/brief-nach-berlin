@@ -1,7 +1,6 @@
-// Google-Adresshilfe für den Kommune-Brief (LOCK-3): die generische
-// Postanschrift ("Stadtverwaltung Köln, 50667 Köln") ist zustellbar, aber die
-// exakte Straßenadresse ergänzt der User selbst im handschriftlichen Brief.
-// Ein Klick öffnet die Google-Suche in neuem Tab.
+// Google-Adresshilfe für den Kommune-Brief (LOCK-3). Die generische Anschrift
+// ohne Straße ist nur Orientierung; der User prüft und ergänzt die vollständige
+// Postanschrift selbst. Ein Klick öffnet die Google-Suche in neuem Tab.
 
 interface RathausAdresseButtonProps {
   ortsname: string;
@@ -16,9 +15,11 @@ export function RathausAdresseButton({
   recipientKind,
   className,
 }: RathausAdresseButtonProps) {
-  const kindLabel = recipientKind === "bezirksamt" ? "Bezirksamts" : "Rathauses";
+  const isBezirksamt = recipientKind === "bezirksamt";
+  const kindLabel = isBezirksamt ? "Bezirksamts" : "Rathauses";
+  const searchLabel = isBezirksamt ? "Bezirksamt-Adresse finden" : "Rathaus-Adresse finden";
   const searchUrl = `https://www.google.com/search?q=${encodeURIComponent(
-    `Rathaus Adresse ${plz} ${ortsname}`
+    `${isBezirksamt ? "Bezirksamt" : "Rathaus"} Adresse ${plz} ${ortsname}`
   )}`;
   return (
     <div
@@ -30,9 +31,9 @@ export function RathausAdresseButton({
       ].join(" ")}
     >
       <span className="text-warmgrau leading-relaxed">
-        Die Anschrift im Brief erreicht die Verwaltung auch ohne Straße zuverlässig.
-        Noch besser: ergänze die genaue Adresse deines {kindLabel} (Straße + Hausnummer)
-        selbst auf dem Umschlag.
+        Die Anschrift im Brief ist nur eine Orientierung und ohne Straße möglicherweise
+        nicht vollständig. Prüfe die genaue Adresse deines {kindLabel} und übernimm
+        Straße und Hausnummer auf den Umschlag.
       </span>
       <a
         href={searchUrl}
@@ -55,7 +56,7 @@ export function RathausAdresseButton({
           <circle cx="11" cy="11" r="8" />
           <path d="m21 21-4.3-4.3" />
         </svg>
-        Rathaus-Adresse finden
+        {searchLabel}
       </a>
     </div>
   );

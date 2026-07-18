@@ -16,6 +16,8 @@ describe("lookupPLZWithLevel", () => {
     expect(r.byLevel.Kommune).toHaveLength(1);
     expect(r.byLevel.Kommune[0].label).toBe("Stadtverwaltung Köln");
     expect(r.byLevel.Bund.length).toBeGreaterThan(0);
+    expect(r.coverage.landAmbiguous).toBe(true);
+    expect(r.coverage.landWahlkreisIds.length).toBeGreaterThan(1);
   });
 
   it("Hamburg (20095): Einheitsgemeinde, keine Kommune, aber Bürgerschaft (Land)", () => {
@@ -28,13 +30,23 @@ describe("lookupPLZWithLevel", () => {
     expect(r.byLevel.Land.length).toBeGreaterThan(0);
   });
 
-  it("Berlin (10245): Bezirksamt Friedrichshain-Kreuzberg + Abgeordnetenhaus", () => {
+  it("Berlin (10245): mehrere Bezirke werden ehrlich als mehrdeutig behandelt", () => {
     const r = lookupPLZWithLevel("10245");
     expect(r.bundeslandKey).toBe("BE");
     expect(r.byLevel.Kommune).toHaveLength(1);
     expect(r.byLevel.Kommune[0].recipientKind).toBe("bezirksamt");
-    expect(r.byLevel.Kommune[0].label).toContain("Bezirksamt");
+    expect(r.byLevel.Kommune[0].label).toBe("Zuständiges Bezirksamt in Berlin");
+    expect(r.byLevel.Kommune[0].label).not.toContain("Friedrichshain-Kreuzberg");
+    expect(r.coverage.kommuneAmbiguous).toBe(true);
+    expect(r.coverage.kommuneBezirke).toEqual(["Friedrichshain-Kreuzberg", "Pankow"]);
     expect(r.coverage.landSupported).toBe(true);
+  });
+
+  it("Berlin mit genau einem Bezirk behält die konkrete Bezirksamts-Zuordnung", () => {
+    const r = lookupPLZWithLevel("10115");
+    expect(r.coverage.kommuneAmbiguous).toBe(false);
+    expect(r.coverage.kommuneBezirke).toEqual(["Mitte"]);
+    expect(r.byLevel.Kommune[0].label).toBe("Bezirksamt Mitte");
   });
 
   it("unbekannte PLZ (00000): keine Anreicherung, Ebenen leer bis auf Bund-Fallback", () => {

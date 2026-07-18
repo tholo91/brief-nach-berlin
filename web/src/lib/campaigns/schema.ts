@@ -26,7 +26,28 @@ export type CampaignTargetLevel = (typeof CAMPAIGN_TARGET_LEVELS)[number];
 
 // Single Source für Bundesland-Dropdown und Hero-Copy.
 // Keys entsprechen bundeslandKey aus lookupPLZWithLevel.
-export const BUNDESLAND_NAMES: Record<string, string> = {
+export const BUNDESLAND_KEYS = [
+  "BW",
+  "BY",
+  "BE",
+  "BB",
+  "HB",
+  "HH",
+  "HE",
+  "MV",
+  "NI",
+  "NW",
+  "RP",
+  "SL",
+  "SN",
+  "ST",
+  "SH",
+  "TH",
+] as const;
+
+export type BundeslandKey = (typeof BUNDESLAND_KEYS)[number];
+
+export const BUNDESLAND_NAMES: Record<BundeslandKey, string> = {
   BW: "Baden-Württemberg",
   BY: "Bayern",
   BE: "Berlin",
@@ -45,18 +66,16 @@ export const BUNDESLAND_NAMES: Record<string, string> = {
   TH: "Thüringen",
 };
 
-export const BUNDESLAND_KEYS = Object.keys(BUNDESLAND_NAMES) as string[];
-
 // Default-Handling für Altdaten: Kampagnen ohne target_level gelten als Bund.
 // Wird von mapCampaign im Repository genutzt und ist hier pur testbar.
 export function resolveCampaignTarget(row: {
-  target_level?: CampaignTargetLevel | null;
+  target_level?: string | null;
   target_state?: string | null;
-}): { targetLevel: CampaignTargetLevel; targetState: string | null } {
-  return {
+}): { targetLevel: CampaignTargetLevel; targetState: BundeslandKey | null } {
+  return campaignTargetSchema.parse({
     targetLevel: row.target_level ?? "Bund",
     targetState: row.target_state ?? null,
-  };
+  });
 }
 
 export type CampaignStatus = (typeof CAMPAIGN_STATUSES)[number];
@@ -92,6 +111,21 @@ export function isReservedCampaignSlug(slug: string): boolean {
 
 export const campaignStatusSchema = z.enum(CAMPAIGN_STATUSES);
 export const campaignTargetLevelSchema = z.enum(CAMPAIGN_TARGET_LEVELS);
+export const campaignTargetStateSchema = z.enum(BUNDESLAND_KEYS);
+export const campaignTargetSchema = z
+  .object({
+    targetLevel: campaignTargetLevelSchema,
+    targetState: campaignTargetStateSchema.nullable(),
+  })
+  .superRefine((value, ctx) => {
+    if (value.targetLevel === "Bund" && value.targetState !== null) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["targetState"],
+        message: "Ein Bundesland ist nur bei Landtagskampagnen erlaubt.",
+      });
+    }
+  });
 export const campaignModerationStatusSchema = z.enum(MODERATION_STATUSES);
 export const campaignTokenKindSchema = z.enum(CAMPAIGN_TOKEN_KINDS);
 export const campaignRevisionReasonSchema = z.enum(REVISION_REASONS);
@@ -129,10 +163,7 @@ export const createCampaignSchema = campaignPublicFieldsSchema
     moderationStatus: campaignModerationStatusSchema.default("pending"),
     moderationCategories: z.array(z.string().trim().min(1).max(80)).max(20).default([]),
     targetLevel: campaignTargetLevelSchema.default("Bund"),
-    targetState: z
-      .enum(Object.keys(BUNDESLAND_NAMES) as [string, ...string[]])
-      .nullable()
-      .default(null),
+    targetState: campaignTargetStateSchema.nullable().default(null),
   })
   .superRefine((value, ctx) => {
     if (value.targetLevel === "Bund" && value.targetState !== null) {
@@ -168,7 +199,7 @@ export type Campaign = {
   moderationStatus: CampaignModerationStatus;
   moderationCategories: string[];
   targetLevel: CampaignTargetLevel;
-  targetState: string | null;
+  targetState: BundeslandKey | null;
   emailVerifiedAt: string | null;
   activatedAt: string | null;
   pausedAt: string | null;

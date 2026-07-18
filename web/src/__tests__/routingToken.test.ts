@@ -19,6 +19,7 @@ import {
   signRoutingToken,
   verifyRoutingToken,
   hashRoutingIssue,
+  normalizeRoutingIssue,
 } from "@/lib/lookup/routingToken";
 import type { RoutingResult } from "@/lib/lookup/levelRouter";
 
@@ -41,6 +42,11 @@ describe("routingToken", () => {
   it("toleriert Whitespace-Unterschiede im Anliegen (Normalisierung)", () => {
     const token = signRoutingToken({ issueHash: hashRoutingIssue(issueText), routing });
     expect(verifyRoutingToken(token, `  ${issueText.replace(" ", "   ")}  `)).not.toBeNull();
+  });
+
+  it("verwendet für Routing und Hash dieselbe normalisierte Eingabe", () => {
+    expect(normalizeRoutingIssue(`  ${issueText.replace(" ", "   ")}  `)).toBe(issueText);
+    expect(hashRoutingIssue(normalizeRoutingIssue(issueText))).toBe(hashRoutingIssue(issueText));
   });
 
   it("lehnt einen Token für einen anderen Anliegen-Text ab", () => {
@@ -78,5 +84,21 @@ describe("routingToken", () => {
     } finally {
       Date.now = realNow;
     }
+  });
+
+  it("lehnt Tokens mit einem iat weit in der Zukunft ab", () => {
+    const realNow = Date.now;
+    try {
+      Date.now = () => realNow() + 60 * 1000;
+      const token = signRoutingToken({ issueHash: hashRoutingIssue(issueText), routing });
+      Date.now = realNow;
+      expect(verifyRoutingToken(token, issueText)).toBeNull();
+    } finally {
+      Date.now = realNow;
+    }
+  });
+
+  it("lehnt übergroße Tokens vor der Signaturprüfung ab", () => {
+    expect(verifyRoutingToken(`${"a".repeat(4096)}.b`, issueText)).toBeNull();
   });
 });

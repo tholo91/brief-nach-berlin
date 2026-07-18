@@ -14,7 +14,8 @@ jest.mock("@/lib/mistral", () => ({
   MISTRAL_MODELS: { letter: "mistral-large-latest", levelRouting: "mistral-small-latest" },
 }));
 
-import { buildSystemPrompt, buildUserPrompt } from "@/lib/generation/generateLetter";
+import { mistral } from "@/lib/mistral";
+import { buildSystemPrompt, buildUserPrompt, generateLetter } from "@/lib/generation/generateLetter";
 import type { GenerateLetterInput } from "@/lib/types/wizard";
 import type { Politician } from "@/lib/types/politician";
 import type { RathausRecipient } from "@/lib/lookup/rathausRecipient";
@@ -112,6 +113,8 @@ describe("buildSystemPrompt — Flag an", () => {
     expect(prompt).toContain("Landesgesetze");
     expect(prompt).toContain("Zitiere KEINE Grundgesetz-Artikel mit Nummern");
     expect(prompt).not.toContain("Alle verfügbaren Politiker sind Bundestagsabgeordnete.");
+    expect(prompt).toContain("ABGEORDNETEN-KONTEXT NUTZEN");
+    expect(prompt).not.toContain("MdB-KONTEXT NUTZEN");
     // Anrede bleibt für Land unverändert (kein Gender-Resolve in v1)
     expect(prompt).toContain('Anrede: "Sehr geehrte/r [Titel] [Name],"');
   });
@@ -123,6 +126,8 @@ describe("buildSystemPrompt — Flag an", () => {
     expect(prompt).toContain("PARTEI-NEUTRALITÄT (Verwaltung)");
     expect(prompt).not.toContain('Anrede: "Sehr geehrte/r [Titel] [Name],"');
     expect(prompt).not.toContain("PARTEI-BEWUSSTES FRAMING");
+    expect(prompt).not.toContain("- SPD:");
+    expect(prompt).not.toContain("MdB-KONTEXT NUTZEN");
   });
 
   it("keine GG-Artikelnummern in keinem Branch (außer als Verbots-Beispiel)", () => {
@@ -152,6 +157,17 @@ describe("buildSystemPrompt — Flag an", () => {
 
     const noRouting = buildSystemPrompt(input({ level: "Land", politicians: [mdl] }));
     expect(noRouting).not.toContain("KOMPETENZ-HINWEIS");
+
+    const kommuneMismatch = buildSystemPrompt(
+      input({
+        level: "Kommune",
+        rathaus,
+        politicians: [],
+        mismatchRecommendedLevel: "Land",
+      })
+    );
+    expect(kommuneMismatch).toContain("öffentliche Verantwortung der Verwaltung");
+    expect(kommuneMismatch).not.toContain("Verantwortung als gewählte Stimme");
   });
 
   it("keine Em-Dashes in den neuen Blöcken", () => {
@@ -197,4 +213,57 @@ describe("buildUserPrompt — Kommune-Empfänger", () => {
     );
     expect(prompt).toContain("Sehr geehrte Damen und Herren des Bezirksamts,");
   });
+
+  it.each([
+    [3, "von der zuständigen Stelle bearbeitet wird"],
+    [4, "das Anliegen in der zuständigen Verwaltung konkret angehen"],
+    [5, "zeitnah konkret anzugehen"],
+  ])("Kommune entfernt Bund-/Fraktionsanker aus Tonstufe %s", (tone, expected) => {
+    process.env.LETTER_PROMPT_LEVEL_AWARE = "true";
+    const prompt = buildUserPrompt(
+      input({ level: "Kommune", rathaus, politicians: [] }),
+      200,
+      280,
+      tone
+    );
+    expect(prompt).toContain(expected);
+    expect(prompt).not.toContain("Fraktion");
+    expect(prompt).not.toContain("Sitzungsperiode");
+    expect(prompt).not.toContain("<mdb_kontext>");
+  });
+});
+
+describe("generateLetter — serverseitig aufgelöste Ebene", () => {
+  const letter = Array.from({ length: 260 }, (_, index) => `Wort${index}`).join(" ");
+
+  beforeEach(() => {
+    (mistral.chat.complete as jest.Mock).mockReset();
+  });
+
+  it.each([
+    ["Land", { level: "Land" as const, politicians: [mdl] }, 2],
+    ["Kommune", { level: "Kommune" as const, politicians: [], rathaus }, 0],
+  ])(
+    "liefert %s vom aufgelösten Empfänger statt der Modell-Antwort",
+    async (expectedLevel, overrides, selectedId) => {
+      (mistral.chat.complete as jest.Mock).mockResolvedValue({
+        choices: [
+          {
+            message: {
+              content: JSON.stringify({
+                political_level: "Bund",
+                selected_politician_id: selectedId,
+                letter,
+              }),
+            },
+          },
+        ],
+      });
+
+      const result = await generateLetter(input(overrides));
+
+      expect(result.politicalLevel).toBe(expectedLevel);
+      expect(result.politicalLevel).toBe(result.selectedRecipient.level);
+    }
+  );
 });

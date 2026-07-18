@@ -8,15 +8,29 @@ import type {
 import { step1Schema, step1bSchema, step2Schema } from "@/lib/validation/wizardSchemas";
 import { lookupPLZ, lookupPLZWithLevel, buildCoverageHint } from "@/lib/lookup/plzLookup";
 import { routeToLevel, type RoutingResult } from "@/lib/lookup/levelRouter";
-import { verifyRoutingToken } from "@/lib/lookup/routingToken";
+import {
+  hashRoutingIssue,
+  normalizeRoutingIssue,
+  signRoutingToken,
+  verifyRoutingToken,
+} from "@/lib/lookup/routingToken";
 import { checkRateLimit, getClientIp, hashIdentifier, LIMITS } from "@/lib/rateLimit";
-import { BUNDESLAND_NAMES } from "@/lib/campaigns/schema";
+import { getActiveCampaignBySlug } from "@/lib/campaigns/repository";
+import {
+  BUNDESLAND_NAMES,
+  type CampaignTargetLevel,
+} from "@/lib/campaigns/schema";
 import { DEFAULT_LETTER_LENGTH } from "@/lib/config";
 
 const RATE_LIMIT_MESSAGE =
   "Du hast in kurzer Zeit viele Briefe erstellt. Bitte versuche es später erneut.";
 
 const ROUTING_TIMEOUT_MS = 3500;
+
+type SubmitWizardResult = WizardActionResult & {
+  routingToken?: string;
+  campaignTargetLevel?: CampaignTargetLevel;
+};
 
 /**
  * Foreground-Fallback (CONTEXT G3): wird nur gebraucht, wenn kein gültiger
@@ -57,7 +71,7 @@ async function routeToLevelWithTimeout(text: string): Promise<RoutingResult | nu
 export async function submitWizardAction(
   data: WizardData,
   prefetchedRoutingToken?: string | null
-): Promise<WizardActionResult> {
+): Promise<SubmitWizardResult> {
   const log = (stage: string, extra?: Record<string, unknown>) => {
     console.log(`[submitWizard] ${stage}`, extra ?? "");
   };
@@ -95,6 +109,26 @@ export async function submitWizardAction(
     }
     log("validated");
 
+    // Campaign metadata in sessionStorage is presentation-only. Whenever a
+    // slug is present, the active, moderated campaign and its target binding
+    // are resolved again with the service-role client.
+    let campaignTarget:
+      | { targetLevel: CampaignTargetLevel; targetState: keyof typeof BUNDESLAND_NAMES | null }
+      | null = null;
+    if (data.campaign?.slug) {
+      const campaign = await getActiveCampaignBySlug(data.campaign.slug);
+      if (!campaign) {
+        return {
+          error: "server_error",
+          message: "Diese Kampagne ist aktuell nicht aktiv. Du kannst stattdessen einen freien Brief schreiben.",
+        };
+      }
+      campaignTarget = {
+        targetLevel: campaign.targetLevel,
+        targetState: campaign.targetState,
+      };
+    }
+
     // PLZ lookup using Phase 1 static data. Runs BEFORE the rate-limit checks
     // on purpose: lookupPLZ is a free static in-memory lookup, and a
     // plz_not_found should not burn one of the user's daily letter tokens.
@@ -109,13 +143,12 @@ export async function submitWizardAction(
     // Kampagne mit fester Bundesland-Bindung: liegt die Besucher-PLZ in einem
     // anderen Bundesland, freundlich abfangen. Läuft wie plz_not_found VOR dem
     // Rate-Limit, damit kein Brief-Token verbrannt wird.
-    if (data.campaign?.targetLevel === "Land" && data.campaign.targetState) {
+    if (campaignTarget?.targetLevel === "Land" && campaignTarget.targetState) {
       const derivedBundeslandKey = lookupPLZWithLevel(data.plz).bundeslandKey;
-      if (derivedBundeslandKey !== data.campaign.targetState) {
-        const targetStateName =
-          BUNDESLAND_NAMES[data.campaign.targetState] ?? data.campaign.targetState;
+      if (derivedBundeslandKey !== campaignTarget.targetState) {
+        const targetStateName = BUNDESLAND_NAMES[campaignTarget.targetState];
         log("campaign state mismatch", {
-          targetState: data.campaign.targetState,
+          targetState: campaignTarget.targetState,
           derivedBundeslandKey,
         });
         return {
@@ -124,6 +157,19 @@ export async function submitWizardAction(
           message: `Diese Kampagne richtet sich an den Landtag von ${targetStateName}. Deine Postleitzahl liegt in einem anderen Bundesland.`,
         };
       }
+    }
+
+    const landtagRoutingEnabled =
+      process.env.LANDTAG_ROUTING_ENABLED === "true" &&
+      process.env.LETTER_PROMPT_LEVEL_AWARE === "true";
+    if (campaignTarget?.targetLevel === "Land" && !landtagRoutingEnabled) {
+      return {
+        error: "level_data_missing",
+        level: "Land",
+        fallbackUrl: "/",
+        message:
+          "Die Landtagsfunktion dieser Kampagne ist gerade nicht verfügbar. Du kannst stattdessen einen freien Brief schreiben.",
+      };
     }
 
     // 1b. Rate limit check (IP + email) BEFORE moderation/AI spend.
@@ -155,8 +201,8 @@ export async function submitWizardAction(
     // 999.6: Ebenen-Routing (Bund/Land/Kommune), gated hinter
     // LANDTAG_ROUTING_ENABLED. Wenn das Flag aus ist, verhält sich die Action
     // exakt wie bisher (flacher Bund-Pfad).
-    const landtagRoutingEnabled = process.env.LANDTAG_ROUTING_ENABLED === "true";
     let levelRouting: LevelRoutingContext | undefined;
+    let resolvedRoutingToken: string | undefined;
 
     if (landtagRoutingEnabled) {
       // Prefetch-Token verifizieren (Signatur, TTL, Issue-Hash) — sonst
@@ -164,14 +210,34 @@ export async function submitWizardAction(
       let routing: RoutingResult | null = null;
       if (prefetchedRoutingToken) {
         routing = verifyRoutingToken(prefetchedRoutingToken, data.issueText);
+        if (routing) resolvedRoutingToken = prefetchedRoutingToken;
         log(routing ? "routing source: prefetch-token" : "routing source: prefetch-token-invalid");
       }
       if (!routing) {
         if (!prefetchedRoutingToken) log("routing source: foreground-fallback");
-        routing = await routeToLevelWithTimeout(data.issueText);
+        const normalizedIssueText = normalizeRoutingIssue(data.issueText);
+        routing = await routeToLevelWithTimeout(normalizedIssueText);
+        if (routing) {
+          resolvedRoutingToken = signRoutingToken({
+            issueHash: hashRoutingIssue(normalizedIssueText),
+            routing,
+          });
+        }
       }
 
       const levelResult = lookupPLZWithLevel(data.plz);
+      if (
+        campaignTarget?.targetLevel === "Land" &&
+        (!levelResult.coverage.landSupported || levelResult.byLevel.Land.length === 0)
+      ) {
+        return {
+          error: "level_data_missing",
+          level: "Land",
+          fallbackUrl: "/",
+          message:
+            "Für deine Postleitzahl können wir in dieser Landtagskampagne noch keine verlässliche Empfängerauswahl anbieten. Du kannst stattdessen einen freien Brief schreiben.",
+        };
+      }
       const recommended = routing
         ? { level: routing.primary.level, confidence: routing.primary.confidence }
         : null;
@@ -203,7 +269,13 @@ export async function submitWizardAction(
     // so users on a confident-1-Wahlkreis flow can confirm with one click.
     // Letter generation + email send happen in selectPoliticianAction once
     // the user picks (or confirms the pre-selected) candidate.
-    return { disambiguationNeeded: true, politicians, ...(levelRouting ? { levelRouting } : {}) };
+    return {
+      disambiguationNeeded: true,
+      politicians,
+      ...(levelRouting ? { levelRouting } : {}),
+      ...(resolvedRoutingToken ? { routingToken: resolvedRoutingToken } : {}),
+      ...(campaignTarget ? { campaignTargetLevel: campaignTarget.targetLevel } : {}),
+    };
   } catch (error) {
     const err = error as Error & { status?: number; code?: string; cause?: unknown };
     console.error("[submitWizard] FAILED", {

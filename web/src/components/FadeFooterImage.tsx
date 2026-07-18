@@ -1,6 +1,6 @@
 import Image from "next/image";
 
-type Variant = "wizard" | "success" | "content";
+type Variant = "wizard" | "success" | "content" | "level";
 
 // fadeStart: where the mask reaches full opacity (higher = less fade, more image visible).
 // fullHeight: render at natural aspect ratio (no crop) instead of clamped band — used when
@@ -9,15 +9,44 @@ const VARIANTS: Record<Variant, {
   src: string;
   alt: string;
   fadeStart: string;
+  width: number;
+  height: number;
   fullHeight?: boolean;
 }> = {
   // Café-Szene, Berliner Altbaustraße, Reichstag in der Ferne — beim Schreiben.
-  wizard: { src: "/images/img-fade-wizard.webp", alt: "", fadeStart: "35%" },
+  wizard: {
+    src: "/images/img-fade-wizard.webp",
+    alt: "",
+    fadeStart: "35%",
+    width: 1584,
+    height: 672,
+  },
   // Brief-Taube über Berliner Dächern. Subjekt sitzt oben rechts — komplette
   // Höhe rendern, sonst schneidet object-bottom die Taube weg.
-  success: { src: "/images/img-fade-success.webp", alt: "", fadeStart: "85%", fullHeight: true },
+  success: {
+    src: "/images/img-fade-success.webp",
+    alt: "",
+    fadeStart: "85%",
+    width: 1584,
+    height: 672,
+    fullHeight: true,
+  },
   // Diverses Kiez-Leben, ruhige Allee, Reichstag-Andeutung — Standard für Content-Seiten.
-  content: { src: "/images/img-fade-content.webp", alt: "", fadeStart: "35%" },
+  content: {
+    src: "/images/img-fade-content.webp",
+    alt: "",
+    fadeStart: "35%",
+    width: 1584,
+    height: 672,
+  },
+  // Rathaus, Landtag und Bundestag in einer gemeinsamen Landschaft — Ebene wählen.
+  level: {
+    src: "/images/img-fade-level.webp",
+    alt: "",
+    fadeStart: "35%",
+    width: 900,
+    height: 473,
+  },
 };
 
 interface FadeFooterImageProps {
@@ -29,7 +58,7 @@ interface FadeFooterImageProps {
 // transparent ausgeblendet, damit der Lesebereich darüber ruhig bleibt.
 // Decorative — aria-hidden, leerer alt.
 export default function FadeFooterImage({ variant }: FadeFooterImageProps) {
-  const { src, alt, fadeStart, fullHeight } = VARIANTS[variant];
+  const { src, alt, fadeStart, width, height, fullHeight } = VARIANTS[variant];
   const mask = `linear-gradient(to top, rgba(0,0,0,1) ${fadeStart}, rgba(0,0,0,0) 100%)`;
 
   return (
@@ -45,8 +74,8 @@ export default function FadeFooterImage({ variant }: FadeFooterImageProps) {
       <Image
         src={src}
         alt={alt}
-        width={1584}
-        height={672}
+        width={width}
+        height={height}
         sizes="100vw"
         loading="lazy"
         className={

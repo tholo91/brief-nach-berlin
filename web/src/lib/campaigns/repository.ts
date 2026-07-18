@@ -11,7 +11,6 @@ import {
   type CampaignRevision,
   type CampaignRevisionReason,
   type CampaignStatus,
-  type CampaignTargetLevel,
   type CreateCampaignInput,
   type UpdateCampaignPublicFieldsInput,
 } from "./schema";
@@ -29,7 +28,7 @@ type CampaignRow = {
   status: CampaignStatus;
   moderation_status: CampaignModerationStatus;
   moderation_categories: string[] | null;
-  target_level: CampaignTargetLevel | null;
+  target_level: string | null;
   target_state: string | null;
   email_verified_at: string | null;
   activated_at: string | null;
@@ -255,8 +254,18 @@ export async function getActiveCampaignBySlug(
   slug: string,
   db?: RepositoryClient
 ): Promise<Campaign | null> {
-  const campaign = await getCampaignBySlug(slug, db);
-  return campaign?.status === "active" ? campaign : null;
+  const { data, error } = await client(db)
+    .from("campaigns")
+    .select("*")
+    .eq("slug", slug)
+    .eq("status", "active")
+    .eq("moderation_status", "approved")
+    .maybeSingle();
+
+  if (error) {
+    throw new CampaignRepositoryError(`Active campaign lookup failed: ${error.message}`);
+  }
+  return data ? mapCampaign(data as CampaignRow) : null;
 }
 
 export async function getRecentActiveCampaigns(

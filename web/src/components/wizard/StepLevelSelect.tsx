@@ -155,18 +155,29 @@ export function StepLevelSelect({
   const recommendationGap =
     recommended && !availability[recommended.level] ? routing.coverageHint : null;
 
-  const handleKeyDown = (e: React.KeyboardEvent, index: number, level: PoliticalLevel) => {
+  const focusLevel = selected ?? LEVEL_CARDS.find((card) => availability[card.level])?.level;
+
+  const handleKeyDown = (e: React.KeyboardEvent, level: PoliticalLevel) => {
     if (e.key === "Enter" || e.key === " ") {
       e.preventDefault();
       if (availability[level]) setSelected(level);
-    } else if (e.key === "ArrowDown" || e.key === "ArrowUp") {
+    } else if (["ArrowDown", "ArrowUp", "Home", "End"].includes(e.key)) {
       e.preventDefault();
-      const cards = document.querySelectorAll<HTMLElement>('[data-level-card="true"]');
-      const nextIndex =
-        e.key === "ArrowDown"
-          ? (index + 1) % cards.length
-          : (index - 1 + cards.length) % cards.length;
-      cards[nextIndex]?.focus();
+      const availableLevels = LEVEL_CARDS
+        .map((card) => card.level)
+        .filter((candidate) => availability[candidate]);
+      const currentIndex = Math.max(0, availableLevels.indexOf(level));
+      const nextLevel = e.key === "Home"
+        ? availableLevels[0]
+        : e.key === "End"
+          ? availableLevels.at(-1)
+          : availableLevels[
+              (currentIndex + (e.key === "ArrowDown" ? 1 : -1) + availableLevels.length) %
+                availableLevels.length
+            ];
+      if (!nextLevel) return;
+      setSelected(nextLevel);
+      document.querySelector<HTMLElement>(`[data-level-card="${nextLevel}"]`)?.focus();
     }
   };
 
@@ -202,6 +213,17 @@ export function StepLevelSelect({
         entscheidest, wer den Brief bekommt.
       </p>
 
+      <div className="mt-4 rounded-lg border border-waldgruen/20 bg-waldgruen/5 px-4 py-3 font-body text-sm leading-relaxed text-warmgrau">
+        <p className="font-semibold text-waldgruen-dark">
+          Landtag und Kommune sind neu als Beta dabei.
+        </p>
+        <p className="mt-1 text-warmgrau/75">
+          Sie funktionieren schon für viele Postleitzahlen. Wenn etwas ungenau
+          wirkt, hilft dein Feedback, die Zuordnung und Briefqualität zu
+          verbessern.
+        </p>
+      </div>
+
       {lowConfidence && (
         <p className="font-body text-sm text-warmgrau mt-4" role="status">
           Wir sind uns nicht ganz sicher, welche Ebene passt. Bitte wähle selbst.
@@ -218,10 +240,11 @@ export function StepLevelSelect({
       )}
 
       <div role="radiogroup" aria-label="Politische Ebene wählen" className="mt-6 space-y-3">
-        {LEVEL_CARDS.map((card, index) => {
+        {LEVEL_CARDS.map((card) => {
           const isAvailable = availability[card.level];
           const isSelected = selected === card.level;
           const isRecommended = recommended?.level === card.level;
+          const isBeta = card.level !== "Bund";
           const hint = unavailableHint(card.level);
           return (
             <div
@@ -229,10 +252,10 @@ export function StepLevelSelect({
               role="radio"
               aria-checked={isSelected}
               aria-disabled={!isAvailable}
-              data-level-card="true"
-              tabIndex={0}
+              data-level-card={card.level}
+              tabIndex={isAvailable && focusLevel === card.level ? 0 : -1}
               onClick={() => isAvailable && setSelected(card.level)}
-              onKeyDown={(e) => handleKeyDown(e, index, card.level)}
+              onKeyDown={(e) => handleKeyDown(e, card.level)}
               className={[
                 "w-full text-left p-4 rounded-lg border-2 transition-colors",
                 isAvailable ? "cursor-pointer" : "cursor-not-allowed opacity-70",
@@ -263,6 +286,11 @@ export function StepLevelSelect({
                     {isRecommended && isAvailable && (
                       <span className="inline-block font-body text-[11px] font-semibold uppercase tracking-wide text-waldgruen-dark bg-waldgruen/15 px-2 py-0.5 rounded">
                         Unsere Empfehlung
+                      </span>
+                    )}
+                    {isBeta && (
+                      <span className="inline-block font-body text-[11px] font-semibold uppercase tracking-wide text-bernstein bg-bernstein/10 px-2 py-0.5 rounded">
+                        Beta
                       </span>
                     )}
                   </div>

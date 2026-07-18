@@ -1,9 +1,9 @@
 import { BrevoClient } from "@getbrevo/brevo";
-import { buildEmailHtml } from "./buildEmailHtml";
+import { buildEmailHtml, buildLetterEmailSubject } from "./buildEmailHtml";
 import { signFeedbackToken } from "@/lib/feedback/token";
 import type { Politician } from "@/lib/types/politician";
 import type { Recipient } from "@/lib/lookup/rathausRecipient";
-import { EMAIL_SUBJECT, EMAIL_SENDER_NAME } from "@/lib/config";
+import { EMAIL_SENDER_NAME } from "@/lib/config";
 import type { WizardData } from "@/lib/types/wizard";
 
 const apiKey = process.env.BREVO_API_KEY;
@@ -82,8 +82,8 @@ export interface SendLetterEmailParams {
   recipientKind: "mdb" | "mdl" | "rathaus";
   // Nur für mdl: ISO 3166-2:DE-Länderkürzel zur Auswahl der Landeswappen-Marke.
   bundeslandKey?: string;
-  // Nur rathaus: für die Google-Adresssuche ("Rathaus Adresse {PLZ} {Ort}")
-  rathausSearch?: { plz: string; ort: string };
+  // Nur Verwaltung: für die passende Rathaus-/Bezirksamt-Adresssuche.
+  rathausSearch?: { plz: string; ort: string; kind: "rathaus" | "bezirksamt" };
   letterText: string;
   issueText: string;
   debug?: LetterDebugPayload;
@@ -126,7 +126,11 @@ export function prepareLetterEmail(args: {
         politicianPostalAddress: recipient.postalAddress,
         politicianAbgeordnetenwatchUrl: null,
         recipientKind: "rathaus",
-        rathausSearch: { plz: recipient.plz, ort: recipient.gemeindeName },
+        rathausSearch: {
+          plz: recipient.plz,
+          ort: recipient.gemeindeName,
+          kind: recipient.recipientKind === "bezirksamt" ? "bezirksamt" : "rathaus",
+        },
         letterText,
         issueText,
         debug,
@@ -172,7 +176,7 @@ export async function sendLetterEmail(
     ];
 
     const result = await brevo.transactionalEmails.sendTransacEmail({
-      subject: EMAIL_SUBJECT,
+      subject: buildLetterEmailSubject(params),
       htmlContent: buildEmailHtml(params),
       // params.feedbackToken is read by buildEmailHtml to render the star bar
       // in place of the static "Profil auf abgeordnetenwatch" button.

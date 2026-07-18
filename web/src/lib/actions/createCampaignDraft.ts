@@ -10,9 +10,9 @@ import {
 } from "@/lib/campaigns/repository";
 import { createCampaignToken } from "@/lib/campaigns/tokens";
 import {
-  BUNDESLAND_KEYS,
   campaignExternalUrlSchema,
   campaignTargetLevelSchema,
+  campaignTargetStateSchema,
   isReservedCampaignSlug,
   isValidCampaignSlug,
   normalizeCampaignSlug,
@@ -80,7 +80,7 @@ const createCampaignDraftSchema = z.object({
       "Diese Kurzadresse ist reserviert. Bitte wähle eine andere."
     ),
   targetLevel: campaignTargetLevelSchema.default("Bund"),
-  targetState: z.string().trim().optional(),
+  targetState: campaignTargetStateSchema.optional(),
   responsibilityAccepted: z
     .string()
     .optional()
@@ -89,13 +89,20 @@ const createCampaignDraftSchema = z.object({
     .string()
     .optional()
     .refine((value) => value === "yes", "Bitte bestätige die Kampagnendaten vor dem Anlegen."),
-}).transform((data) => ({
-  ...data,
-  targetState:
-    data.targetLevel === "Land" && data.targetState && BUNDESLAND_KEYS.includes(data.targetState)
-      ? data.targetState
-      : null,
-}));
+})
+  .superRefine((data, ctx) => {
+    if (data.targetLevel === "Bund" && data.targetState !== undefined) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["targetState"],
+        message: "Ein Bundesland ist nur bei Landtagskampagnen erlaubt.",
+      });
+    }
+  })
+  .transform((data) => ({
+    ...data,
+    targetState: data.targetLevel === "Land" ? data.targetState ?? null : null,
+  }));
 
 export type CreateCampaignDraftResult =
   | { ok: true; slug: string; message: string }

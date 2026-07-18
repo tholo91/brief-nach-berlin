@@ -1,5 +1,6 @@
 "use server";
 
+import { z } from "zod";
 import type { WizardData } from "@/lib/types/wizard";
 import type { RecipientSelection } from "@/lib/lookup/rathausRecipient";
 import { step1Schema, step1bSchema, step2Schema } from "@/lib/validation/wizardSchemas";
@@ -12,6 +13,12 @@ import { checkRateLimit, getClientIp, hashIdentifier, LIMITS } from "@/lib/rateL
 
 const RESEND_LIMIT_MESSAGE =
   "Der Brief wurde jetzt mehrfach gesendet. Bitte prüfe noch einmal deinen Spam-Ordner und die E-Mail-Adresse. Falls weiterhin nichts ankommt, melde dich gerne direkt.";
+
+const recipientSelectionSchema = z.discriminatedUnion("kind", [
+  z.object({ kind: z.literal("mdb"), selectedPoliticianId: z.number().int() }),
+  z.object({ kind: z.literal("mdl"), selectedPoliticianId: z.number().int() }).strict(),
+  z.object({ kind: z.literal("rathaus") }).strict(),
+]);
 
 // SECURITY NOTE (2026-04-27):
 // Previous signature accepted a full Politician object from the client, which
@@ -29,8 +36,20 @@ export async function resendLetterAction(
   cachedLetterText: string
 ): Promise<{ success: true } | { error: string; message: string; retryAfterSeconds?: number }> {
   try {
-    const normalizedSelection: RecipientSelection =
+    const rawSelection: unknown =
       typeof selection === "number" ? { kind: "mdb", selectedPoliticianId: selection } : selection;
+    const parsedSelection = recipientSelectionSchema.safeParse(rawSelection);
+    if (!parsedSelection.success) {
+      return { error: "validation", message: "Ungültige Eingabe." };
+    }
+    const normalizedSelection: RecipientSelection = parsedSelection.data;
+    if (
+      normalizedSelection.kind !== "mdb" &&
+      (process.env.LANDTAG_ROUTING_ENABLED !== "true" ||
+        process.env.LETTER_PROMPT_LEVEL_AWARE !== "true")
+    ) {
+      return { error: "validation", message: "Empfänger nicht verfügbar." };
+    }
     console.log("[resendLetter] start", { email: "***", kind: normalizedSelection.kind });
 
     const s1 = step1Schema.safeParse(data);

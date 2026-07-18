@@ -9,6 +9,8 @@ import { RoutingResultSchema, type RoutingResult } from "./levelRouter";
 // Token älter als 15 Minuten, routet der Server serverseitig neu.
 
 const TOKEN_MAX_AGE_SECONDS = 15 * 60;
+const TOKEN_MAX_LENGTH = 4096;
+const TOKEN_MAX_FUTURE_SKEW_SECONDS = 30;
 const SCHEMA_VERSION = 1;
 
 function secret(): string {
@@ -21,10 +23,15 @@ function b64url(buf: Buffer): string {
   return buf.toString("base64").replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
 }
 
-/** Normalisiert + hasht das Anliegen (gleiche Normalisierung wie routeToLevel-Input). */
+/** Kanonischer Input für Routing-Aufruf und Token-Bindung. */
+export function normalizeRoutingIssue(issueText: string): string {
+  return issueText.trim().replace(/\s+/g, " ").slice(0, 1500);
+}
+
 export function hashRoutingIssue(issueText: string): string {
-  const normalized = issueText.trim().replace(/\s+/g, " ").slice(0, 1500);
-  return createHash("sha256").update(normalized, "utf8").digest("hex");
+  return createHash("sha256")
+    .update(normalizeRoutingIssue(issueText), "utf8")
+    .digest("hex");
 }
 
 export function signRoutingToken(args: {
@@ -47,6 +54,7 @@ export function signRoutingToken(args: {
  * Issue-Hash passen — sonst null (Aufrufer routet dann serverseitig neu).
  */
 export function verifyRoutingToken(token: string, issueText: string): RoutingResult | null {
+  if (token.length > TOKEN_MAX_LENGTH) return null;
   const dot = token.indexOf(".");
   if (dot < 1 || dot === token.length - 1) return null;
   const body = token.slice(0, dot);
@@ -71,8 +79,10 @@ export function verifyRoutingToken(token: string, issueText: string): RoutingRes
       iat?: number;
     };
     if (parsed.v !== SCHEMA_VERSION) return null;
-    if (typeof parsed.iat !== "number") return null;
-    if (Math.floor(Date.now() / 1000) - parsed.iat > TOKEN_MAX_AGE_SECONDS) return null;
+    if (typeof parsed.iat !== "number" || !Number.isInteger(parsed.iat)) return null;
+    const now = Math.floor(Date.now() / 1000);
+    if (parsed.iat > now + TOKEN_MAX_FUTURE_SKEW_SECONDS) return null;
+    if (now - parsed.iat > TOKEN_MAX_AGE_SECONDS) return null;
     if (parsed.issueHash !== hashRoutingIssue(issueText)) return null;
     const routing = RoutingResultSchema.safeParse(parsed.routing);
     return routing.success ? routing.data : null;

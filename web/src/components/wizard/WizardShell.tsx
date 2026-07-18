@@ -246,7 +246,6 @@ export function WizardShell() {
         if (prefetch && prefetch.issueText === fullData.issueText) {
           prefetchedToken = (await prefetch.promise)?.token ?? null;
         }
-        setRoutingToken(prefetchedToken);
         const result = await submitWizardAction(fullData, prefetchedToken);
 
         if ("error" in result) {
@@ -258,6 +257,11 @@ export function WizardShell() {
             return;
           }
           if (result.error === "campaign_state_mismatch") {
+            setCampaignMismatch({ message: result.message });
+            setIsSubmitting(false);
+            return;
+          }
+          if (result.error === "level_data_missing" && wizardData.campaign?.slug) {
             setCampaignMismatch({ message: result.message });
             setIsSubmitting(false);
             return;
@@ -277,6 +281,7 @@ export function WizardShell() {
         }
 
         await minDisplayTimer;
+        setRoutingToken(result.routingToken ?? prefetchedToken);
 
         // Persist the optional data into wizardData so Step3Success has the full payload
         setWizardData((prev) => ({
@@ -291,11 +296,18 @@ export function WizardShell() {
           setActionResult(result);
           if (wizardData.campaign) {
             // Kampagne: die Ebene hat der Creator festgelegt. Den Ebene-Step
-            // überspringen und den Empfänger fest an targetLevel binden.
+            // überspringen und den Empfänger an das serverseitig neu geladene
+            // Kampagnenziel binden. Session-Werte sind nur Darstellungskontext.
             // levelRouting bleibt gesetzt, damit recipientsForLevel für Land
             // byLevel.Land nutzt; die Auto-Empfehlung lenkt nie um.
+            if (!result.campaignTargetLevel) {
+              setErrorMessage(
+                "Die Kampagne konnte nicht sicher geladen werden. Bitte versuche es erneut."
+              );
+              return;
+            }
             setLevelRouting(result.levelRouting ?? null);
-            setSelectedLevel(wizardData.campaign.targetLevel ?? "Bund");
+            setSelectedLevel(result.campaignTargetLevel);
             setStep(3);
           } else if (result.levelRouting) {
             // Ebenen-Routing aktiv: erst der eigene Ebene-Auswahl-Step,
@@ -598,7 +610,9 @@ export function WizardShell() {
         )}
       </div>
       </div>
-      <FadeFooterImage variant={step === 3 ? "success" : "wizard"} />
+      <FadeFooterImage
+        variant={step === "level" ? "level" : step === 3 ? "success" : "wizard"}
+      />
     </>
   );
 }

@@ -1,0 +1,109 @@
+jest.mock("@/lib/lookup/resolveRecipient", () => ({
+  resolveRecipientSelection: jest.fn(),
+}));
+jest.mock("@/lib/moderation/moderateText", () => ({ moderateText: jest.fn() }));
+jest.mock("@/lib/email/sendLetterEmail", () => ({
+  sendLetterEmail: jest.fn(),
+  prepareLetterEmail: jest.fn(),
+}));
+jest.mock("@/lib/email/buildDebugPayload", () => ({ buildResendDebugPayload: jest.fn() }));
+jest.mock("@/lib/rateLimit", () => ({
+  checkRateLimit: jest.fn(),
+  getClientIp: jest.fn(),
+  hashIdentifier: jest.fn(),
+  LIMITS: {
+    RESEND_PER_IP: { max: 3, windowMs: 3_600_000 },
+    RESEND_PER_EMAIL: { max: 2, windowMs: 3_600_000 },
+  },
+}));
+
+import { selectPoliticianAction } from "@/lib/actions/selectPolitician";
+import { resendLetterAction } from "@/lib/actions/resendLetter";
+import { resolveRecipientSelection } from "@/lib/lookup/resolveRecipient";
+import { checkRateLimit } from "@/lib/rateLimit";
+import type { WizardData } from "@/lib/types/wizard";
+import type { RecipientSelection } from "@/lib/lookup/rathausRecipient";
+
+const mockedResolveRecipientSelection = jest.mocked(resolveRecipientSelection);
+const mockedCheckRateLimit = jest.mocked(checkRateLimit);
+
+const data: WizardData = {
+  plz: "50667",
+  email: "test@example.org",
+  issueText: "Lehrermangel an unserer Schule",
+  letterLength: "1",
+};
+
+const mdbRecipient = {
+  kind: "mdb" as const,
+  level: "Bund" as const,
+  id: 1,
+  firstName: "Max",
+  lastName: "Muster",
+  party: "Test",
+  state: "Nordrhein-Westfalen",
+  constituency: "Köln",
+  postalAddress: "Platz der Republik 1, 11011 Berlin",
+  profileUrl: "https://example.org",
+  committees: [],
+  roles: [],
+};
+
+describe("RecipientSelection server hardening", () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+    process.env.LANDTAG_ROUTING_ENABLED = "false";
+    process.env.LETTER_PROMPT_LEVEL_AWARE = "true";
+    mockedCheckRateLimit.mockReturnValue({ allowed: true });
+    mockedResolveRecipientSelection.mockReturnValue({
+      ok: true,
+      recipient: mdbRecipient,
+      availableCount: 1,
+    });
+  });
+
+  it("weist eine strukturell ungültige Auswahl in selectPoliticianAction ab", async () => {
+    const malformed = { kind: "mdb", selectedPoliticianId: "1" } as unknown as RecipientSelection;
+
+    await expect(selectPoliticianAction({ ...data }, malformed)).resolves.toMatchObject({
+      error: "server_error",
+      message: "Ungültige Eingabe.",
+    });
+    expect(mockedResolveRecipientSelection).not.toHaveBeenCalled();
+  });
+
+  it("sperrt MdL am selectPoliticianAction-Boundary, wenn das Flag aus ist", async () => {
+    await expect(
+      selectPoliticianAction({ ...data }, { kind: "mdl", selectedPoliticianId: 12 })
+    ).resolves.toMatchObject({ error: "server_error", message: "Empfänger nicht verfügbar." });
+    expect(mockedResolveRecipientSelection).not.toHaveBeenCalled();
+  });
+
+  it("behält die numerische Legacy-Bund-Auswahl bei deaktiviertem Flag bei", async () => {
+    await expect(selectPoliticianAction({ ...data }, 1)).resolves.toMatchObject({
+      preCheckOk: true,
+      recipient: mdbRecipient,
+    });
+    expect(mockedResolveRecipientSelection).toHaveBeenCalledWith("50667", {
+      kind: "mdb",
+      selectedPoliticianId: 1,
+    });
+  });
+
+  it("weist eine strukturell ungültige Auswahl in resendLetterAction vor Limits ab", async () => {
+    const malformed = { kind: "rathaus", selectedPoliticianId: 1 } as unknown as RecipientSelection;
+
+    await expect(resendLetterAction({ ...data }, malformed, "Ein gültiger Brieftext")).resolves.toMatchObject({
+      error: "validation",
+      message: "Ungültige Eingabe.",
+    });
+    expect(mockedCheckRateLimit).not.toHaveBeenCalled();
+  });
+
+  it("sperrt Rathaus am Resend-Boundary, wenn das Flag aus ist", async () => {
+    await expect(
+      resendLetterAction({ ...data }, { kind: "rathaus" }, "Ein gültiger Brieftext")
+    ).resolves.toMatchObject({ error: "validation", message: "Empfänger nicht verfügbar." });
+    expect(mockedCheckRateLimit).not.toHaveBeenCalled();
+  });
+});

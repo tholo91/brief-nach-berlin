@@ -216,6 +216,12 @@ Alle verfügbaren Politiker sind Bundestagsabgeordnete. Wenn das Anliegen primä
 
 const BUND_ANREDE_LINE = `- Anrede: "Sehr geehrte/r [Titel] [Name]," (Titel nur wenn vorhanden).`;
 
+const BUND_MDB_CONTEXT_BLOCK = `MdB-KONTEXT NUTZEN (nur wenn <mdb_kontext> mitgeliefert):
+Wenn ein Ausschuss zum Thema passt, das knapp und natürlich erwähnen ("Gerade als Mitglied des Ausschusses für ... haben Sie hier Einfluss"). Wenn eine jüngste Position zum Thema passt, knapp aufgreifen, ohne sie wörtlich zu zitieren. NIEMALS Ausschüsse, Reden oder Positionen erfinden, die nicht in <mdb_kontext> stehen.`;
+
+const LAND_ABGEORDNETEN_CONTEXT_BLOCK = `ABGEORDNETEN-KONTEXT NUTZEN (nur wenn <mdb_kontext> mitgeliefert):
+Wenn ein Ausschuss zum Thema passt, das knapp und natürlich erwähnen ("Gerade als Mitglied des Ausschusses für ... haben Sie hier Einfluss"). Wenn eine jüngste Position zum Thema passt, knapp aufgreifen, ohne sie wörtlich zu zitieren. NIEMALS Ausschüsse, Reden oder Positionen erfinden, die nicht in <mdb_kontext> stehen.`;
+
 const LAND_ZUSTAENDIGKEIT_BLOCK = `ZUSTÄNDIGKEITSHINWEIS:
 Alle verfügbaren Politiker sind Landtagsabgeordnete. Der Brief argumentiert in Landes-Logik, nicht in Bundes-Logik.
 
@@ -237,14 +243,19 @@ STRATEGIE FÜR DIE KOMMUNALE EBENE (nicht verhandelbar):
 
 const KOMMUNE_ANREDE_LINE = `- Anrede: exakt wie im <empfaenger>-Block vorgegeben ("Sehr geehrte Damen und Herren der Stadtverwaltung," oder "Sehr geehrte Damen und Herren des Bezirksamts,"). Kein Name, keine Einzelperson.`;
 
-// Das Partei-Framing des Templates ergibt für eine Verwaltung keinen Sinn.
-// Ersetzt wird nur die Einleitungszeile; die Partei-Liste darunter bleibt
-// stehen, wird aber durch die Anweisung neutralisiert.
 const BUND_PARTEI_HEADER = `PARTEI-BEWUSSTES FRAMING (Werte, nicht Strategie):
 Passe die Werte-Sprache an die Partei der Empfängerin/des Empfängers an, damit das Anliegen anschluss­fähig wird. Du benennst keine Parteien außer der adressierten und kommentierst keine Parteidynamiken.`;
 
 const KOMMUNE_PARTEI_HEADER = `PARTEI-NEUTRALITÄT (Verwaltung):
-Der Empfänger ist eine Verwaltung und hat keine Partei. Verwende KEINE parteibezogene Werte-Sprache und benenne keine Parteien. Die folgende Liste gilt für diesen Brief NICHT:`;
+Der Empfänger ist eine Verwaltung und hat keine Partei. Verwende KEINE parteibezogene Werte-Sprache und benenne keine Parteien.`;
+
+const BUND_PARTEI_LIST = `- SPD: Arbeitnehmerrechte, sozialer Zusammenhalt, faire Chancen.
+- Grüne: Generationengerechtigkeit, Nachhaltigkeit, Lebensqualität, ökologische Verantwortung.
+- CDU/CSU: Verlässlichkeit, wirtschaftliche Vernunft, Sicherheit, Bewahrung des Bewährten.
+- FDP: Eigenverantwortung, Bürokratieabbau, Innovation, schlanker Staat.
+- Linke: öffentliches Gut, soziale Ungleichheit, gemeinwohlorientiert.
+- AfD: streng sachlich, lokale Alltagsprobleme, keine ideologische Sprache in beide Richtungen, würdige Distanz wahren.
+- BSW / sonstige: rein sachlich, Fokus auf das konkrete Anliegen.`;
 
 /** Kompetenz-Mismatch: der User schreibt bewusst an eine andere als die empfohlene Ebene. */
 const LEVEL_LABELS: Record<PoliticalLevel, string> = {
@@ -254,10 +265,14 @@ const LEVEL_LABELS: Record<PoliticalLevel, string> = {
 };
 
 function mismatchBlock(selected: PoliticalLevel, recommended: PoliticalLevel): string {
+  const reason =
+    selected === "Kommune"
+      ? "öffentliche Verantwortung der Verwaltung"
+      : "politisches Gewicht, öffentliche Aufmerksamkeit, Verantwortung als gewählte Stimme";
   return `
 
 KOMPETENZ-HINWEIS (wichtig):
-Der Bürger hat sich bewusst entschieden, an die ${LEVEL_LABELS[selected]} zu schreiben, obwohl sein Anliegen primär in die Zuständigkeit der ${LEVEL_LABELS[recommended]} fällt. Verschweige diese Spannung nicht: Mache früh im Brief in einem Satz transparent, dass die unmittelbare Zuständigkeit woanders liegt, und begründe, warum der Bürger trotzdem an diese Adresse schreibt (politisches Gewicht, öffentliche Aufmerksamkeit, Verantwortung als gewählte Stimme). Beispiel-Formulierung: "Ich weiß, dass Sie für diesen konkreten Punkt nicht unmittelbar zuständig sind. Trotzdem schreibe ich Ihnen, weil ..." Verspreche dem Empfänger keine Handlungsmacht, die er nicht hat.`;
+Der Bürger hat sich bewusst entschieden, an die ${LEVEL_LABELS[selected]} zu schreiben, obwohl sein Anliegen primär in die Zuständigkeit der ${LEVEL_LABELS[recommended]} fällt. Verschweige diese Spannung nicht: Mache früh im Brief in einem Satz transparent, dass die unmittelbare Zuständigkeit woanders liegt, und begründe, warum der Bürger trotzdem an diese Adresse schreibt (${reason}). Beispiel-Formulierung: "Ich weiß, dass Sie für diesen konkreten Punkt nicht unmittelbar zuständig sind. Trotzdem schreibe ich Ihnen, weil ..." Verspreche dem Empfänger keine Handlungsmacht, die er nicht hat.`;
 }
 
 /**
@@ -273,12 +288,16 @@ export function buildSystemPrompt(input: GenerateLetterInput): string {
 
   let prompt = base;
   if (level === "Land") {
-    prompt = prompt.replace(BUND_ZUSTAENDIGKEIT_BLOCK, LAND_ZUSTAENDIGKEIT_BLOCK);
+    prompt = prompt
+      .replace(BUND_ZUSTAENDIGKEIT_BLOCK, LAND_ZUSTAENDIGKEIT_BLOCK)
+      .replace(BUND_MDB_CONTEXT_BLOCK, LAND_ABGEORDNETEN_CONTEXT_BLOCK);
   } else if (level === "Kommune") {
     prompt = prompt
       .replace(BUND_ZUSTAENDIGKEIT_BLOCK, KOMMUNE_ZUSTAENDIGKEIT_BLOCK)
       .replace(BUND_ANREDE_LINE, KOMMUNE_ANREDE_LINE)
-      .replace(BUND_PARTEI_HEADER, KOMMUNE_PARTEI_HEADER);
+      .replace(BUND_PARTEI_HEADER, KOMMUNE_PARTEI_HEADER)
+      .replace(`\n${BUND_PARTEI_LIST}`, "")
+      .replace(`${BUND_MDB_CONTEXT_BLOCK}\n\n`, "");
   }
 
   if (
@@ -362,12 +381,26 @@ export function buildUserPrompt(
       ? `\n\n<hinweis>\nDer Bürger hat sich knapp gehalten. Bleibe entsprechend abstrakt: keine Erlebnis-Szenen, keine Vita, keine konkreten Ortsangaben außer Stadt/Stadtteil, wenn vorhanden.\n</hinweis>`
       : "";
 
+  const toneBlock = tonalityBlock(toneLevel);
+  const levelAwareKommune =
+    process.env.LETTER_PROMPT_LEVEL_AWARE === "true" && input.level === "Kommune";
+  const recipientToneBlock = levelAwareKommune
+    ? toneBlock
+        .replace("politisch behandelt wird", "von der zuständigen Stelle bearbeitet wird")
+        .replace(
+          "das Thema in Ihrer Fraktion auf den Tisch bringen",
+          "das Anliegen in der zuständigen Verwaltung konkret angehen"
+        )
+        .replace("noch in dieser Sitzungsperiode konkret anzugehen", "zeitnah konkret anzugehen")
+    : toneBlock;
+  const contextBlock = input.rathaus ? "" : mdbContextBlock(input.mdbContext);
+
   return `<transkript>
 ${input.issueText}
 </transkript>
 
 <tonalitaet>
-${tonalityBlock(toneLevel)}
+${recipientToneBlock}
 </tonalitaet>
 
 <ziel>
@@ -377,7 +410,7 @@ absaetze: 3 bis 4
 
 <empfaenger>
 ${politiciansJson}
-</empfaenger>${mdbContextBlock(input.mdbContext)}${absenderBlock(input)}${shortInputHinweis}`;
+</empfaenger>${contextBlock}${absenderBlock(input)}${shortInputHinweis}`;
 }
 
 interface ParsedLetter {
@@ -558,7 +591,8 @@ export async function generateLetter(
   }
 
   const mdbContextUsed = Boolean(
-    input.mdbContext &&
+    !input.rathaus &&
+      input.mdbContext &&
       (input.mdbContext.committees.length > 0 || input.mdbContext.recentRelevant.length > 0)
   );
 
@@ -566,7 +600,7 @@ export async function generateLetter(
     letter: parsed.letter,
     selectedRecipient,
     selectedPolitician: chosenPolitician,
-    politicalLevel: (parsed.political_level as PoliticalLevel) || "Bund",
+    politicalLevel: selectedRecipient.level,
     wordCount,
     wordCountInRange,
     fallbackUsed,

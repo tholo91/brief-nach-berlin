@@ -6,7 +6,10 @@
  * - LOCK-4c: kein sichtbarer Routing-Footer, Routing nur in der Debug-URL
  */
 
-import { buildEmailHtml } from "@/lib/email/buildEmailHtml";
+import {
+  buildEmailHtml,
+  buildLetterEmailSubject,
+} from "@/lib/email/buildEmailHtml";
 import type { SendLetterEmailParams } from "@/lib/email/sendLetterEmail";
 
 function baseParams(overrides: Partial<SendLetterEmailParams>): SendLetterEmailParams {
@@ -28,17 +31,21 @@ function baseParams(overrides: Partial<SendLetterEmailParams>): SendLetterEmailP
 
 describe("buildEmailHtml — Empfänger-Arten", () => {
   it("mdb: heutiges Layout bleibt (Deutscher Bundestag + MdB + AW-Link)", () => {
-    const html = buildEmailHtml(baseParams({}));
+    const params = baseParams({});
+    const html = buildEmailHtml(params);
+    expect(buildLetterEmailSubject(params)).toBe("Dein Brief nach Berlin ist fertig");
+    expect(html).toContain("Brief-nach-Berlin</h1>");
+    expect(html).toContain("Dein Briefentwurf ist fertig zum Absenden.");
     expect(html).toContain("Deutscher Bundestag<br>");
     expect(html).toContain(", MdB (SPD)");
     expect(html).toContain("abgeordnetenwatch.de/profile/anna-mueller");
     expect(html).toContain("/images/email-title-watermark-v2.png");
+    expect(html).toContain("/images/email-bundestag-banner.png");
     expect(html).not.toContain("google.com/search");
   });
 
   it("mdl: Landtag-Anschrift ohne Bundestag-Zeile, MdL-Label", () => {
-    const html = buildEmailHtml(
-      baseParams({
+    const params = baseParams({
         recipientKind: "mdl",
         politicianName: "Karl Schmidt",
         politicianFirstName: "Karl",
@@ -47,13 +54,63 @@ describe("buildEmailHtml — Empfänger-Arten", () => {
         bundeslandKey: "NW",
         politicianPostalAddress:
           "Landtag Nordrhein-Westfalen, Platz des Landtags 1, 40221 Düsseldorf",
-      })
-    );
+      });
+    const html = buildEmailHtml(params);
+    expect(buildLetterEmailSubject(params)).toBe("Dein Brief nach Düsseldorf ist fertig");
+    expect(html).toContain("Brief-nach-Berlin</h1>");
+    expect(html).toContain("Dein Brief nach Düsseldorf ist fertig zum Absenden.");
     expect(html).not.toContain("Deutscher Bundestag<br>");
     expect(html).toContain("Landtag Nordrhein-Westfalen<br>");
     expect(html).toContain(", MdL (CDU)");
     expect(html).toContain("/images/email-variants/email-landtag-nordrhein-westfalen.webp");
     expect(html).not.toContain("/images/email-title-watermark-v2.png");
+    expect(html).not.toContain("/images/email-bundestag-banner.png");
+    expect(html).not.toContain("Bundestagsbüros");
+    expect(html).not.toContain("im Bundestag");
+    expect(html).toContain("Handgeschriebene Briefe fallen in Abgeordnetenbüros auf.");
+  });
+
+  it("mdl: verwendet für Hessen die Landeshauptstadt Wiesbaden", () => {
+    const params = baseParams({
+      recipientKind: "mdl",
+      bundeslandKey: "HE",
+      politicianPostalAddress:
+        "Hessischer Landtag, Schlossplatz 1-3, 65183 Wiesbaden",
+    });
+    expect(buildLetterEmailSubject(params)).toBe("Dein Brief nach Wiesbaden ist fertig");
+    expect(buildEmailHtml(params)).toContain(
+      "Dein Brief nach Wiesbaden ist fertig zum Absenden."
+    );
+  });
+
+  it("mdl: leitet den Betreff für alle 16 Landeshauptstädte aus der Anschrift ab", () => {
+    const destinations = {
+      BW: ["Landtag von Baden-Württemberg, Konrad-Adenauer-Straße 3, 70173 Stuttgart", "Stuttgart"],
+      BY: ["Bayerischer Landtag, Max-Planck-Straße 1, 81675 München", "München"],
+      BE: ["Abgeordnetenhaus von Berlin, Margot-Friedländer-Platz, 10117 Berlin", "Berlin"],
+      BB: ["Landtag Brandenburg, Alter Markt 1, 14467 Potsdam", "Potsdam"],
+      HB: ["Bremische Bürgerschaft, Am Markt 20, 28195 Bremen", "Bremen"],
+      HH: ["Hamburgische Bürgerschaft, Rathausmarkt 1, 20095 Hamburg", "Hamburg"],
+      HE: ["Hessischer Landtag, Schlossplatz 1-3, 65183 Wiesbaden", "Wiesbaden"],
+      MV: ["Landtag Mecklenburg-Vorpommern, Lennéstraße 1, 19053 Schwerin", "Schwerin"],
+      NI: ["Niedersächsischer Landtag, Hannah-Arendt-Platz 1, 30159 Hannover", "Hannover"],
+      NW: ["Landtag Nordrhein-Westfalen, Platz des Landtags 1, 40221 Düsseldorf", "Düsseldorf"],
+      RP: ["Landtag Rheinland-Pfalz, Platz der Mainzer Republik 1, 55116 Mainz", "Mainz"],
+      SL: ["Landtag des Saarlandes, Franz-Josef-Röder-Straße 7, 66119 Saarbrücken", "Saarbrücken"],
+      SN: ["Sächsischer Landtag, Bernhard-von-Lindenau-Platz 1, 01067 Dresden", "Dresden"],
+      ST: ["Landtag von Sachsen-Anhalt, Domplatz 6-9, 39104 Magdeburg", "Magdeburg"],
+      SH: ["Schleswig-Holsteinischer Landtag, Düsternbrooker Weg 70, 24105 Kiel", "Kiel"],
+      TH: ["Thüringer Landtag, Jürgen-Fuchs-Straße 1, 99096 Erfurt", "Erfurt"],
+    } as const;
+
+    for (const [bundeslandKey, [politicianPostalAddress, city]] of Object.entries(destinations)) {
+      const params = baseParams({
+        recipientKind: "mdl",
+        bundeslandKey,
+        politicianPostalAddress,
+      });
+      expect(buildLetterEmailSubject(params)).toBe(`Dein Brief nach ${city} ist fertig`);
+    }
   });
 
   it("mdl: mappt alle 16 Bundesländer auf eine eigene Briefmarke", () => {
@@ -85,8 +142,7 @@ describe("buildEmailHtml — Empfänger-Arten", () => {
   });
 
   it("rathaus: keine Partei, kein MdB/MdL, kein AW-Link, nur Link zur genauen Anschrift", () => {
-    const html = buildEmailHtml(
-      baseParams({
+    const params = baseParams({
         recipientKind: "rathaus",
         politicianName: "Stadtverwaltung Köln",
         politicianFirstName: "",
@@ -94,9 +150,12 @@ describe("buildEmailHtml — Empfänger-Arten", () => {
         politicianParty: null,
         politicianPostalAddress: "Stadtverwaltung Köln, 50667 Köln",
         politicianAbgeordnetenwatchUrl: null,
-        rathausSearch: { plz: "50667", ort: "Köln" },
-      })
-    );
+        rathausSearch: { plz: "50667", ort: "Köln", kind: "rathaus" },
+      });
+    const html = buildEmailHtml(params);
+    expect(buildLetterEmailSubject(params)).toBe("Dein Brief ans Rathaus in Köln ist fertig");
+    expect(html).toContain("Brief-nach-Berlin</h1>");
+    expect(html).toContain("Dein Brief ans Rathaus in Köln ist fertig zum Absenden.");
     expect(html).not.toContain("Deutscher Bundestag<br>");
     // ", MdB (" / ", MdL (" sind die Mandats-Labels der Adresszeile; das
     // statische Template erwähnt "MdB" an anderer Stelle (Footer-Link) legitim.
@@ -110,6 +169,28 @@ describe("buildEmailHtml — Empfänger-Arten", () => {
     expect(html).toContain("Rathaus-Adresse finden");
     expect(html).toContain(encodeURIComponent("Rathaus Adresse 50667 Köln"));
     expect(html).toContain("/images/email-variants/email-kommune-rathaus.webp");
+    expect(html).toContain("/images/email-variants/email-rathaus-banner.webp");
+    expect(html).not.toContain("/images/email-bundestag-banner.png");
+    expect(html).not.toContain("Bundestagsbüros");
+    expect(html).not.toContain("im Bundestag");
+    expect(html).not.toContain("aus deinem Wahlkreis");
+  });
+
+  it("bezirksamt: sucht und beschriftet die genaue Bezirksamt-Anschrift", () => {
+    const html = buildEmailHtml(baseParams({
+      recipientKind: "rathaus",
+      politicianName: "Zuständiges Bezirksamt in Berlin",
+      politicianFirstName: "",
+      politicianLastName: "Zuständiges Bezirksamt in Berlin",
+      politicianParty: null,
+      politicianPostalAddress: "Zuständiges Bezirksamt in Berlin, 10245 Berlin",
+      politicianAbgeordnetenwatchUrl: null,
+      rathausSearch: { plz: "10245", ort: "Berlin", kind: "bezirksamt" },
+    }));
+
+    expect(html).toContain("Bezirksamt-Adresse finden");
+    expect(html).toContain(encodeURIComponent("Bezirksamt Adresse 10245 Berlin"));
+    expect(html).not.toContain("Rathaus-Adresse finden");
   });
 
   it("LOCK-4c: kein sichtbarer Routing-Footer in der Mail", () => {

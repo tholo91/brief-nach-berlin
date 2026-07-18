@@ -10,6 +10,19 @@ function shuffle<T>(arr: T[]): T[] {
   return a;
 }
 
+function pickBalancedReviews(reviews: PublicReview[]): PublicReview[] {
+  const fourStar = shuffle(reviews.filter((r) => r.rating === 4));
+  const fiveStar = shuffle(reviews.filter((r) => r.rating === 5));
+  const perRating = Math.min(6, fourStar.length, fiveStar.length);
+
+  if (perRating === 0) return shuffle(reviews).slice(0, 12);
+
+  return shuffle([
+    ...fourStar.slice(0, perRating),
+    ...fiveStar.slice(0, perRating),
+  ]);
+}
+
 /**
  * Fetches hand-curated hero reviews (hero_featured = true, rating >= 4).
  * Falls back to the latest 5-star reviews if none are curated yet.
@@ -26,16 +39,13 @@ export async function getHeroReviews(): Promise<PublicReview[]> {
       .not("body", "is", null)
       .gte("created_at", MIN_PUBLIC_REVIEW_DATE)
       .order("created_at", { ascending: false })
-      .limit(12);
+      .limit(30);
 
     if (!featuredError && featured && featured.length > 0) {
       const filtered = (featured as PublicReview[]).filter(
         (r) => r.body && r.body.trim().length > 0
       );
-      const fourStar = shuffle(filtered.filter((r) => r.rating === 4));
-      const fiveStar = shuffle(filtered.filter((r) => r.rating !== 4));
-      // 4-star reviews always come first so they're never sliced out by limit
-      return [...fourStar, ...fiveStar];
+      return pickBalancedReviews(filtered);
     }
 
     // Fallback: top-rated recent reviews (fetch more so shuffle has variety)
@@ -47,14 +57,14 @@ export async function getHeroReviews(): Promise<PublicReview[]> {
       .not("body", "is", null)
       .gte("created_at", MIN_PUBLIC_REVIEW_DATE)
       .order("created_at", { ascending: false })
-      .limit(12);
+      .limit(30);
 
     if (fallbackError) {
       console.error("[getHeroReviews] fallback error:", fallbackError.message);
       return [];
     }
 
-    return shuffle(
+    return pickBalancedReviews(
       ((fallback as PublicReview[]) ?? []).filter(
         (r) => r.body && r.body.trim().length > 0
       )

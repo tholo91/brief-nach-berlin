@@ -569,7 +569,6 @@ export function WizardShell() {
         {step === "level" && levelRouting && (
           <StepLevelSelect
             routing={levelRouting}
-            plz={wizardData.plz ?? ""}
             initialLevel={selectedLevel}
             onContinue={(level) => {
               setSelectedLevel(level);

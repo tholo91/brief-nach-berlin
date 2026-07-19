@@ -74,7 +74,7 @@ function buildSystemPrompt(): string {
     "- primary = die EINE konkret handlungsfähige Ebene. Der User soll sich nicht entscheiden müssen.",
     "- secondary nur dann setzen, wenn eine zweite Ebene ebenfalls klar plausibel ist (z.B. lokales Anliegen mit bundesweitem Muster: primary=Land, secondary=Bund als 'stellvertretende Stimme'). Sonst secondary weglassen.",
     "- confidence='low' nur wenn das Anliegen WEDER klar einer Ebene zuordenbar ist NOCH eine plausible Sekundärebene hat (z.B. private Beschwerde 'Mein Nachbar nervt', kein politisches Anliegen, oder Mehrfachthema 'Lehrer UND Schlaglöcher UND Rente'). Bei 'low' setze secondary NICHT.",
-    "- reasoning: ein kurzer deutscher Satz mit normaler deutscher Groß-/Kleinschreibung (Substantive groß, max 15 Wörter, max 200 Zeichen). Wird dem User direkt angezeigt. Beginne natürlich, z.B. 'Bildungspolitik ist Ländersache.' oder 'Asylrecht ist ausschließliche Bundeskompetenz.' KEINE URLs, KEINE Klammern mit Sonderzeichen, KEIN Markup.",
+    "- reasoning: ein kurzer, konkreter deutscher Satz, der erklärt, warum die gewählte Ebene handeln kann (Substantive groß, max 15 Wörter, max 200 Zeichen). Nenne die Zuständigkeit statt die Einordnung nur zu wiederholen. Wird dem User direkt angezeigt. Beginne natürlich, z.B. 'Bildungspolitik ist Ländersache.' oder 'Asylrecht ist ausschließliche Bundeskompetenz.' KEINE URLs, KEINE Klammern mit Sonderzeichen, KEIN Markup.",
   ].join("\n");
 }
 

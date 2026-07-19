@@ -64,6 +64,12 @@ describe("routeToLevel", () => {
     };
     expect(request.model).toBe("mistral-small-latest");
     expect(request.temperature).toBe(0.1);
+    expect(request.messages[0].content).toContain(
+      "warum die gewählte Ebene handeln kann"
+    );
+    expect(request.messages[0].content).toContain(
+      "Nenne die Zuständigkeit statt die Einordnung nur zu wiederholen"
+    );
     expect(request.messages[1].content).toBe("<anliegen>Asylpolitik</anliegen>");
   });
 

@@ -4,24 +4,18 @@ import { useMemo, useState } from "react";
 import type { PoliticalLevel } from "@/lib/types/politician";
 import type { LevelRoutingContext } from "@/lib/types/wizard";
 
-// Eigener Wizard-Step "Ebene wählen" (999.6): drei Cards (Bund oben, Land
-// Mitte, Kommune unten). Die von Mistral empfohlene Ebene ist vorausgewählt
-// und trägt Begründung + Confidence. Der User kann jederzeit überschreiben —
-// die Empfehlung ist ein Nudge, keine Entscheidung.
-
 interface StepLevelSelectProps {
   routing: LevelRoutingContext;
-  plz: string;
   /** Vorherige Wahl, wenn der User über "Ebene ändern" zurückkommt */
   initialLevel?: PoliticalLevel | null;
   onContinue: (level: PoliticalLevel) => void;
   onBack: () => void;
 }
 
-const CONFIDENCE_LABELS: Record<"high" | "medium" | "low", string> = {
-  high: "hoch",
-  medium: "mittel",
-  low: "niedrig",
+const RECOMMENDATION_COPY: Record<PoliticalLevel, string> = {
+  Bund: "Wahrscheinlich ist dein Anliegen am besten beim Bund aufgehoben.",
+  Land: "Wahrscheinlich ist dein Anliegen am besten auf Landesebene aufgehoben.",
+  Kommune: "Wahrscheinlich ist dein Anliegen am besten bei der Kommune aufgehoben.",
 };
 
 // Inline-SVGs (lucide-Pfade) statt neuer Dependency — Konvention im Projekt.
@@ -73,7 +67,6 @@ function LevelIcon({ level, className }: { level: PoliticalLevel; className?: st
 interface LevelCardConfig {
   level: PoliticalLevel;
   title: string;
-  institution: string;
   examples: string;
 }
 
@@ -81,32 +74,27 @@ const LEVEL_CARDS: LevelCardConfig[] = [
   {
     level: "Bund",
     title: "Bund",
-    institution: "Bundestag",
     examples: "Bundesgesetze, Rente, Asyl, Mieten, Verteidigung",
   },
   {
     level: "Land",
     title: "Land",
-    institution: "Landtag",
     examples: "Schule, Polizei, Krankenhäuser, Landespolitik",
   },
   {
     level: "Kommune",
     title: "Kommune",
-    institution: "Rathaus",
     examples: "Straße, Kita, Müll, Spielplatz, lokale Verwaltung",
   },
 ];
 
 export function StepLevelSelect({
   routing,
-  plz,
   initialLevel,
   onContinue,
   onBack,
 }: StepLevelSelectProps) {
   const recommended = routing.recommended;
-  const lowConfidence = !recommended || recommended.confidence === "low";
 
   const availability: Record<PoliticalLevel, boolean> = useMemo(
     () => ({
@@ -117,14 +105,9 @@ export function StepLevelSelect({
     [routing.coverage]
   );
 
-  // Vorauswahl: vorherige Wahl (bei "Ebene ändern"), sonst die empfohlene
-  // Ebene, wenn verfügbar — sonst Bund. Bei niedriger Confidence keine
-  // Vorauswahl (der User soll bewusst wählen).
-  const [selected, setSelected] = useState<PoliticalLevel | null>(() => {
-    if (initialLevel && availability[initialLevel]) return initialLevel;
+  const preselectedRecommendationLevel = useMemo<PoliticalLevel | null>(() => {
     if (!recommended || recommended.confidence === "low") return null;
     if (availability[recommended.level]) return recommended.level;
-    // Stadtstaat: Kommune existiert nicht, die Bürgerschaft (Land) übernimmt
     if (
       recommended.level === "Kommune" &&
       routing.coverage.stadtstaatEinheitsgemeinde &&
@@ -132,7 +115,27 @@ export function StepLevelSelect({
     ) {
       return "Land";
     }
-    return "Bund";
+    return null;
+  }, [availability, recommended, routing.coverage.stadtstaatEinheitsgemeinde]);
+
+  const recommendationWasBundledUnderLand =
+    recommended?.level === "Kommune" &&
+    preselectedRecommendationLevel === "Land" &&
+    routing.coverage.stadtstaatEinheitsgemeinde;
+
+  const [selected, setSelected] = useState<PoliticalLevel | null>(() => {
+    if (initialLevel && availability[initialLevel]) return initialLevel;
+    if (!recommended || recommended.confidence === "low") return null;
+    if (availability[recommended.level]) return recommended.level;
+    // Stadtstaat: Kommune existiert nicht, die Land-Ebene übernimmt.
+    if (
+      recommended.level === "Kommune" &&
+      routing.coverage.stadtstaatEinheitsgemeinde &&
+      availability.Land
+    ) {
+      return "Land";
+    }
+    return null;
   });
 
   // Ehrliche Erklärungen für nicht verfügbare Ebenen
@@ -140,20 +143,16 @@ export function StepLevelSelect({
     if (availability[level]) return null;
     if (level === "Land") {
       const region = routing.bundeslandName ?? "deinem Bundesland";
-      return `Für deine PLZ in ${region} können wir noch keine Landtagsabgeordneten zuordnen. Das kommt bald dazu, solange bleibt der Bund wählbar.`;
+      return `Für deine PLZ in ${region} ist die Landesebene noch nicht verfügbar. Du kannst weiterhin den Bund wählen.`;
     }
     if (level === "Kommune") {
       if (routing.coverage.stadtstaatEinheitsgemeinde && routing.bundeslandName) {
-        return `In ${routing.bundeslandName} ist die Stadt zugleich ein Bundesland. Kommunale Anliegen gehören hier zur Land-Ebene.`;
+        return `${routing.bundeslandName} ist Stadt und Bundesland zugleich. Kommunale Anliegen laufen deshalb über die Landesebene.`;
       }
-      return "Für diese PLZ konnten wir keine Stadtverwaltung zuordnen.";
+      return "Für diese PLZ fehlt noch die Zuordnung zur Kommune.";
     }
     return null;
   };
-
-  // Empfehlung zeigt auf eine nicht verfügbare Ebene → ehrlicher Hinweis oben
-  const recommendationGap =
-    recommended && !availability[recommended.level] ? routing.coverageHint : null;
 
   const focusLevel = selected ?? LEVEL_CARDS.find((card) => availability[card.level])?.level;
 
@@ -206,64 +205,61 @@ export function StepLevelSelect({
       </button>
 
       <h1 className="font-typewriter text-[28px] font-semibold leading-[1.2] text-waldgruen-dark">
-        An welche Ebene soll dein Brief gehen?
+        Welche Ebene passt zu deinem Anliegen?
       </h1>
-      <p className="font-body text-base text-warmgrau mt-2">
-        Politik hat drei Ebenen. Wir haben dein Anliegen eingeordnet, aber du
-        entscheidest, wer den Brief bekommt.
-      </p>
-
-      <div className="mt-4 rounded-lg border border-waldgruen/20 bg-waldgruen/5 px-4 py-3 font-body text-sm leading-relaxed text-warmgrau">
-        <p className="font-semibold text-waldgruen-dark">
-          Landtag und Kommune sind neu als Beta dabei.
-        </p>
-        <p className="mt-1 text-warmgrau/75">
-          Sie funktionieren schon für viele Postleitzahlen. Wenn etwas ungenau
-          wirkt, hilft dein Feedback, die Zuordnung und Briefqualität zu
-          verbessern.
-        </p>
-      </div>
-
-      {lowConfidence && (
-        <p className="font-body text-sm text-warmgrau mt-4" role="status">
-          Wir sind uns nicht ganz sicher, welche Ebene passt. Bitte wähle selbst.
-        </p>
-      )}
-
-      {recommendationGap && (
-        <div
-          role="status"
-          className="bg-creme border-l-4 border-airmail-rot/60 text-warmgrau p-4 rounded-r-lg text-sm font-body mt-4"
-        >
-          {recommendationGap}
+      {preselectedRecommendationLevel ? (
+        <div className="mt-4 font-body text-sm leading-relaxed text-warmgrau">
+          <p className="font-semibold text-waldgruen-dark">
+            {RECOMMENDATION_COPY[preselectedRecommendationLevel]}
+          </p>
+          <p className="mt-1">
+            {routing.reasoning && !recommendationWasBundledUnderLand && (
+              <>
+                {routing.reasoning}
+                {routing.reasoning.endsWith(".") ? "" : "."}{" "}
+              </>
+            )}
+            <span className="text-warmgrau/75">Du kannst dich trotzdem anders entscheiden.</span>
+          </p>
         </div>
+      ) : (
+        <p className="mt-4 font-body text-sm leading-relaxed text-warmgrau">
+          Die passende Ebene ist nicht eindeutig. Wähle selbst, wohin dein Brief gehen soll.
+        </p>
       )}
 
       <div role="radiogroup" aria-label="Politische Ebene wählen" className="mt-6 space-y-3">
         {LEVEL_CARDS.map((card) => {
           const isAvailable = availability[card.level];
           const isSelected = selected === card.level;
-          const isRecommended = recommended?.level === card.level;
+          const isPreselected = preselectedRecommendationLevel === card.level;
           const isBeta = card.level !== "Bund";
           const hint = unavailableHint(card.level);
+          const hintId = hint ? `level-${card.level.toLowerCase()}-hint` : undefined;
+          const isBundledUnderLand =
+            card.level === "Kommune" &&
+            !isAvailable &&
+            routing.coverage.stadtstaatEinheitsgemeinde &&
+            Boolean(routing.bundeslandName);
           return (
             <div
               key={card.level}
               role="radio"
               aria-checked={isSelected}
               aria-disabled={!isAvailable}
+              aria-describedby={hintId}
               data-level-card={card.level}
               tabIndex={isAvailable && focusLevel === card.level ? 0 : -1}
               onClick={() => isAvailable && setSelected(card.level)}
               onKeyDown={(e) => handleKeyDown(e, card.level)}
               className={[
                 "w-full text-left p-4 rounded-lg border-2 transition-colors",
-                isAvailable ? "cursor-pointer" : "cursor-not-allowed opacity-70",
+                isAvailable ? "cursor-pointer active:scale-[0.99]" : "cursor-not-allowed",
                 isSelected
                   ? "border-waldgruen bg-waldgruen/10"
                   : isAvailable
                     ? "border-waldgruen/20 bg-creme hover:border-waldgruen/40"
-                    : "border-warmgrau/20 bg-creme/60",
+                    : "border-warmgrau/25 bg-warmgrau/[0.04]",
               ].join(" ")}
             >
               <div className="flex items-start gap-3">
@@ -272,20 +268,28 @@ export function StepLevelSelect({
                     "flex h-11 w-11 shrink-0 items-center justify-center rounded-full border",
                     isSelected
                       ? "border-waldgruen/40 bg-waldgruen text-creme"
-                      : "border-waldgruen/20 bg-white text-waldgruen-dark",
+                      : isAvailable
+                        ? "border-waldgruen/20 bg-white text-waldgruen-dark"
+                        : "border-warmgrau/20 bg-warmgrau/10 text-warmgrau/45",
                   ].join(" ")}
                 >
                   <LevelIcon level={card.level} />
                 </div>
                 <div className="min-w-0 flex-1">
                   <div className="flex flex-wrap items-center gap-2">
-                    <p className="font-body text-base font-semibold text-warmgrau">
+                    <p
+                      className={`font-body text-base font-semibold ${isAvailable ? "text-warmgrau" : "text-warmgrau/60"}`}
+                    >
                       {card.title}
-                      <span className="font-normal text-warmgrau/70"> · {card.institution}</span>
                     </p>
-                    {isRecommended && isAvailable && (
+                    {isPreselected && (
                       <span className="inline-block font-body text-[11px] font-semibold uppercase tracking-wide text-waldgruen-dark bg-waldgruen/15 px-2 py-0.5 rounded">
-                        Unsere Empfehlung
+                        Vorausgewählt
+                      </span>
+                    )}
+                    {isBundledUnderLand && (
+                      <span className="inline-block font-body text-[11px] font-semibold uppercase tracking-wide text-warmgrau/70 bg-warmgrau/10 px-2 py-0.5 rounded">
+                        In {routing.bundeslandName} unter Land
                       </span>
                     )}
                     {isBeta && (
@@ -294,24 +298,17 @@ export function StepLevelSelect({
                       </span>
                     )}
                   </div>
-                  <p className="font-body text-sm text-warmgrau/75 mt-0.5">{card.examples}</p>
-
-                  {isRecommended && isAvailable && recommended && (
-                    <div className="mt-2.5 border-t border-waldgruen/15 pt-2.5">
-                      {routing.reasoning && (
-                        <p className="font-body text-sm text-waldgruen-dark leading-relaxed">
-                          {routing.reasoning}
-                          {routing.reasoning.endsWith(".") ? "" : "."}
-                        </p>
-                      )}
-                      <p className="font-body text-xs text-warmgrau/60 mt-1">
-                        Sicherheit der Einschätzung: {CONFIDENCE_LABELS[recommended.confidence]}
-                      </p>
-                    </div>
-                  )}
+                  <p
+                    className={`font-body text-sm mt-0.5 ${isAvailable ? "text-warmgrau/75" : "text-warmgrau/50"}`}
+                  >
+                    {card.examples}
+                  </p>
 
                   {hint && (
-                    <p className="font-body text-xs text-warmgrau/70 mt-2 leading-relaxed">
+                    <p
+                      id={hintId}
+                      className="font-body text-xs text-warmgrau/70 mt-2 leading-relaxed"
+                    >
                       {hint}
                     </p>
                   )}
@@ -335,9 +332,6 @@ export function StepLevelSelect({
         >
           Weiter
         </button>
-        <p className="text-xs text-warmgrau/60 mt-3 text-center">
-          Im nächsten Schritt wählst du, wer genau deinen Brief bekommt (PLZ {plz}).
-        </p>
       </div>
     </div>
   );

@@ -15,7 +15,12 @@ jest.mock("@/lib/mistral", () => ({
 }));
 
 import { mistral } from "@/lib/mistral";
-import { buildSystemPrompt, buildUserPrompt, generateLetter } from "@/lib/generation/generateLetter";
+import {
+  buildSystemPrompt,
+  buildUserPrompt,
+  generateLetter,
+  tonalityBlock,
+} from "@/lib/generation/generateLetter";
 import type { GenerateLetterInput } from "@/lib/types/wizard";
 import type { Politician } from "@/lib/types/politician";
 import type { RathausRecipient } from "@/lib/lookup/rathausRecipient";
@@ -49,11 +54,12 @@ const mdl: Politician = {
 const rathaus: RathausRecipient = {
   kind: "rathaus",
   level: "Kommune",
-  recipientKind: "stadtverwaltung",
+  recipientKind: "buergermeisteramt",
   gemeindeName: "Köln",
   plz: "50667",
-  label: "Stadtverwaltung Köln",
-  postalAddress: "Stadtverwaltung Köln, 50667 Köln",
+  label: "Bürgermeisteramt Köln",
+  postalAddress: "Bürgermeisteramt Köln",
+  address: { source: "fallback" },
 };
 
 function input(overrides: Partial<GenerateLetterInput> = {}): GenerateLetterInput {
@@ -70,7 +76,7 @@ afterEach(() => {
   else process.env.LETTER_PROMPT_LEVEL_AWARE = originalFlag;
 });
 
-describe("buildSystemPrompt — Flag aus (heutiges Verhalten)", () => {
+describe("buildSystemPrompt: Flag aus (gemeinsamer Grundprompt)", () => {
   it("liefert für alle Ebenen denselben Bund-Prompt", () => {
     process.env.LETTER_PROMPT_LEVEL_AWARE = "false";
     const bund = buildSystemPrompt(input({ level: "Bund" }));
@@ -85,6 +91,31 @@ describe("buildSystemPrompt — Flag aus (heutiges Verhalten)", () => {
     process.env.LETTER_PROMPT_LEVEL_AWARE = "false";
     const prompt = buildSystemPrompt(input({ level: "Bund", mismatchRecommendedLevel: "Land" }));
     expect(prompt).not.toContain("KOMPETENZ-HINWEIS");
+  });
+});
+
+describe("tonalityBlock", () => {
+  it("enthält keine Beispiel-Opener oder Beispiel-Schlüsse mehr", () => {
+    for (const tone of [1, 2, 3, 4, 5]) {
+      const block = tonalityBlock(tone);
+      expect(block).not.toContain("beispiel_opener");
+      expect(block).not.toContain("beispiel_schluss");
+      expect(block).not.toContain("Sitzungsperiode");
+      expect(block).not.toContain("Geduldsfaden");
+    }
+  });
+
+  it("hält Stufe 5 deutlich schärfer als Stufe 2, ohne Wut zu erfinden", () => {
+    const polite = tonalityBlock(2);
+    const sharp = tonalityBlock(5);
+
+    expect(polite).toContain("höflich-konstruktiv");
+    expect(polite).toContain("zugewandt");
+    expect(sharp).toContain("konfrontativ-aber-respektvoll");
+    expect(sharp).toContain("Kantig, fordernd, ungeglättet");
+    expect(sharp).toContain("Forderung unmissverständlich");
+    expect(sharp).toContain("Bewahre ausdrücklich geäußerte Wut");
+    expect(sharp).toContain("Erfinde keine Enttäuschung oder Vorgeschichte");
   });
 });
 
@@ -119,11 +150,18 @@ describe("buildSystemPrompt — Flag an", () => {
     expect(prompt).toContain('Anrede: "Sehr geehrte/r [Titel] [Name],"');
   });
 
-  it("Kommune: generische Verwaltungs-Anrede + Strategie + Partei-Neutralität", () => {
+  it("Kommune: politischer Empfänger + neutrale Anrede + Partei-Neutralität", () => {
     const prompt = buildSystemPrompt(input({ level: "Kommune", rathaus, politicians: [] }));
     expect(prompt).toContain("STRATEGIE FÜR DIE KOMMUNALE EBENE");
-    expect(prompt).toContain("Sehr geehrte Damen und Herren der Stadtverwaltung,");
-    expect(prompt).toContain("PARTEI-NEUTRALITÄT (Verwaltung)");
+    expect(prompt).toContain("Der Empfänger ist das Bürgermeisteramt der Gemeinde");
+    expect(prompt).toContain('Anrede: exakt "Sehr geehrte Damen und Herren,"');
+    expect(prompt).toContain("PARTEI-NEUTRALITÄT (Kommune)");
+    expect(prompt).toContain("kommunaler Haushalt, örtliche Planung, Infrastruktur");
+    expect(prompt).toContain("Nenne kein Fachamt, keinen Ausschuss und kein Programm");
+    expect(prompt).not.toContain("Bauamt");
+    expect(prompt).not.toContain("Verkehrsausschuss");
+    expect(prompt).not.toContain("was die/der Abgeordnete konkret tun soll");
+    expect(prompt).not.toContain("an seinen Abgeordneten schreibt");
     expect(prompt).not.toContain('Anrede: "Sehr geehrte/r [Titel] [Name],"');
     expect(prompt).not.toContain("PARTEI-BEWUSSTES FRAMING");
     expect(prompt).not.toContain("- SPD:");
@@ -148,7 +186,7 @@ describe("buildSystemPrompt — Flag an", () => {
       input({ level: "Land", politicians: [mdl], mismatchRecommendedLevel: "Kommune" })
     );
     expect(withMismatch).toContain("KOMPETENZ-HINWEIS");
-    expect(withMismatch).toContain("nicht unmittelbar zuständig");
+    expect(withMismatch).toContain("unmittelbare Zuständigkeit woanders liegt");
 
     const samLevel = buildSystemPrompt(
       input({ level: "Land", politicians: [mdl], mismatchRecommendedLevel: "Land" })
@@ -168,6 +206,22 @@ describe("buildSystemPrompt — Flag an", () => {
     );
     expect(kommuneMismatch).toContain("öffentliche Verantwortung der Verwaltung");
     expect(kommuneMismatch).not.toContain("Verantwortung als gewählte Stimme");
+    expect(kommuneMismatch).not.toContain("Beispiel-Formulierung");
+    expect(kommuneMismatch).not.toContain("Trotzdem schreibe ich Ihnen, weil");
+  });
+
+  it("verbietet erfundene Vorgeschichten, Drohungen und Konsequenzen", () => {
+    const prompt = buildSystemPrompt(input({ level: "Bund" }));
+    expect(prompt).toContain("Zeiträume, Dauerangaben");
+    expect(prompt).toContain("früheren Kontaktversuche");
+    expect(prompt).toContain("keine Drohungen oder Eskalationsschritte");
+    expect(prompt).toContain("Medien oder Öffentlichkeit, rechtliche Schritte");
+    expect(prompt).toContain("Vertrauensverlust und andere Konsequenzen");
+    expect(prompt).toContain("Unterstelle keine Untätigkeit, Pflichtverletzung");
+    expect(prompt).toContain("Ausdrücklich geäußerte Wut, Frustration");
+    expect(prompt).toContain("erfinde sie nicht als Tonverstärker");
+    expect(prompt).toContain("Erfinde keinen Ausschuss, kein Programm und keine Zuständigkeit");
+    expect(prompt).not.toContain("Sonderprogramm");
   });
 
   it("keine Em-Dashes in den neuen Blöcken", () => {
@@ -183,17 +237,36 @@ describe("buildSystemPrompt — Flag an", () => {
 });
 
 describe("buildUserPrompt — Kommune-Empfänger", () => {
-  it("ersetzt die Politikerliste durch den Verwaltungs-Empfänger mit Anrede", () => {
+  it("ersetzt die Politikerliste durch das Bürgermeisteramt mit neutraler Anrede", () => {
     const prompt = buildUserPrompt(
       input({ level: "Kommune", rathaus, politicians: [] }),
       200,
       280,
       3
     );
-    expect(prompt).toContain("Stadtverwaltung Köln");
-    expect(prompt).toContain("Sehr geehrte Damen und Herren der Stadtverwaltung,");
+    expect(prompt).toContain("Bürgermeisteramt Köln");
+    expect(prompt).toContain("Sehr geehrte Damen und Herren,");
+    expect(prompt).not.toContain("Stadtverwaltung Köln");
     expect(prompt).toContain('"id": 0');
     expect(prompt).not.toContain("Anna Müller");
+  });
+
+  it("gibt bei einem Adress-Fallback keinen unbestätigten Gemeindenamen an Mistral", () => {
+    const fallbackRathaus: RathausRecipient = {
+      ...rathaus,
+      gemeindeName: "Commerzbank AG",
+      label: "Zuständiges Bürgermeisteramt",
+    };
+    const prompt = buildUserPrompt(
+      input({ level: "Kommune", rathaus: fallbackRathaus, politicians: [] }),
+      200,
+      280,
+      3
+    );
+
+    expect(prompt).toContain("Zuständiges Bürgermeisteramt");
+    expect(prompt).toContain("nicht eindeutig zugeordnet");
+    expect(prompt).not.toContain("Commerzbank AG");
   });
 
   it("Bezirksamt bekommt die Bezirksamts-Anrede", () => {
@@ -211,14 +284,12 @@ describe("buildUserPrompt — Kommune-Empfänger", () => {
       280,
       3
     );
-    expect(prompt).toContain("Sehr geehrte Damen und Herren des Bezirksamts,");
+    expect(prompt).toContain("Bezirksamt Friedrichshain-Kreuzberg");
+    expect(prompt).toContain("Sehr geehrte Damen und Herren,");
+    expect(prompt).not.toContain("Sehr geehrte Damen und Herren des Bezirksamts,");
   });
 
-  it.each([
-    [3, "von der zuständigen Stelle bearbeitet wird"],
-    [4, "das Anliegen in der zuständigen Verwaltung konkret angehen"],
-    [5, "zeitnah konkret anzugehen"],
-  ])("Kommune entfernt Bund-/Fraktionsanker aus Tonstufe %s", (tone, expected) => {
+  it.each([3, 4, 5])("Kommune erhält Tonstufe %s ohne Bund- oder Fraktionsanker", (tone) => {
     process.env.LETTER_PROMPT_LEVEL_AWARE = "true";
     const prompt = buildUserPrompt(
       input({ level: "Kommune", rathaus, politicians: [] }),
@@ -226,7 +297,7 @@ describe("buildUserPrompt — Kommune-Empfänger", () => {
       280,
       tone
     );
-    expect(prompt).toContain(expected);
+    expect(prompt).toContain(`Stufe ${tone} von 5`);
     expect(prompt).not.toContain("Fraktion");
     expect(prompt).not.toContain("Sitzungsperiode");
     expect(prompt).not.toContain("<mdb_kontext>");

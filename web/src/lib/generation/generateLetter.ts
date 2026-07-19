@@ -11,47 +11,35 @@ interface ToneRegister {
   register: string;
   beschreibung: string;
   verboten: string;
-  opener: string;
-  schluss: string;
 }
 
-// Tone ladder: register name + concrete descriptor + verboten floor + opener/closer few-shot anchors.
+// Tone ladder: register name + concrete descriptor + verboten floor.
 // Named registers help the model land the slider; verboten lines tell it what NOT to soften toward.
 const TONE_REGISTERS: Record<number, ToneRegister> = {
   1: {
     register: "freundlich-einladend",
     beschreibung: "Warm, bittend, ohne unterwürfig zu wirken. Du klingst wie jemand, der höflich anklopft.",
     verboten: "Unterwürfigkeit, Entschuldigungen für das Schreiben selbst",
-    opener: "Ich wende mich heute an Sie, weil mir ein Thema in unserem Stadtteil keine Ruhe lässt.",
-    schluss: "Ich würde mich sehr freuen, wenn Sie diesen Punkt in Ihre Arbeit aufnehmen.",
   },
   2: {
     register: "höflich-konstruktiv",
     beschreibung: "Konstruktiv, zugewandt, klar. Du erklärst dein Anliegen offen, ohne dramatisch zu werden.",
     verboten: "Floskeln, dramatische Sprache, Schmeicheleien",
-    opener: "Ich schreibe Ihnen, weil mich eine konkrete Situation in unserer Nachbarschaft umtreibt.",
-    schluss: "Ich bitte Sie, sich für eine Lösung dieses Problems einzusetzen.",
   },
   3: {
     register: "sachlich-engagiert",
     beschreibung: "Engagierte Bürgerin, engagierter Bürger auf Augenhöhe. Weder fordernd noch devot.",
     verboten: "Devotion, übertriebene Höflichkeit, Abstandstexte",
-    opener: "Es gibt etwas, das mich seit Wochen beschäftigt und das ich Ihnen schildern möchte.",
-    schluss: "Setzen Sie sich bitte dafür ein, dass dieses Anliegen politisch behandelt wird.",
   },
   4: {
     register: "scharf-pointiert",
     beschreibung: "Direkte Sprache, ehrlich, mit klarer Forderung. Persönliche Betroffenheit darf hervortreten. Du redest nicht um den heißen Brei.",
-    verboten: "Glätten, Diplomatie-Floskeln, Weichspül-Formulierungen, Sanitisieren der Anliegen",
-    opener: "Ich schreibe Ihnen, weil ich nicht länger zusehen will, ohne etwas zu sagen.",
-    schluss: "Ich erwarte, dass Sie hier handeln und das Thema in Ihrer Fraktion auf den Tisch bringen.",
+    verboten: "Glätten, Diplomatie-Floskeln, Weichspül-Formulierungen, Abschwächen ausdrücklicher Kritik",
   },
   5: {
     register: "konfrontativ-aber-respektvoll",
-    beschreibung: 'Kantig, fordernd, ungeglättet. Du machst unmissverständlich klar, dass dir der Geduldsfaden ausgeht. Sätze wie "Ich verstehe nicht, warum...", "Ich bin frustriert, weil..." oder "Es reicht, dass..." sind ausdrücklich erwünscht. Politisch zugespitzte Beobachtungen des Bürgers werden NICHT gemildert, sondern in geeignete formelle Sprache übersetzt.',
-    verboten: "Beleidigungen, Unterstellungen, Pauschalurteile, Du-Form. ABER NICHT verboten: politische Schärfe, Ungeduld, klare Kritik an Untätigkeit",
-    opener: "Ich schreibe Ihnen, weil ich es leid bin, dass an diesem Punkt nichts passiert.",
-    schluss: "Ich fordere Sie auf, dieses Thema noch in dieser Sitzungsperiode konkret anzugehen.",
+    beschreibung: "Kantig, fordernd, ungeglättet. Formuliere die Kritik klar und die Forderung unmissverständlich. Bewahre ausdrücklich geäußerte Wut, Frustration und Ungeduld. Erfinde keine Enttäuschung oder Vorgeschichte, nur um den Ton zu verschärfen.",
+    verboten: "Beleidigungen, Unterstellungen, Pauschalurteile, Du-Form. Politische Schärfe, Ungeduld und klare Kritik aus dem Transkript bleiben erlaubt",
   },
 };
 
@@ -59,9 +47,7 @@ export function tonalityBlock(level: number): string {
   const reg = TONE_REGISTERS[level] ?? TONE_REGISTERS[3];
   return `register: ${reg.register} (Stufe ${level} von 5)
 beschreibung: ${reg.beschreibung}
-verboten: ${reg.verboten}
-beispiel_opener: "${reg.opener}"
-beispiel_schluss_vor_grußformel: "${reg.schluss}"`;
+verboten: ${reg.verboten}`;
 }
 
 function todayInGerman(): string {
@@ -76,14 +62,14 @@ const SYSTEM_PROMPT_TEMPLATE = `Du hilfst Bürgerinnen und Bürgern in Deutschla
 
 EINGABEFORMAT (im User-Prompt mit XML-Tags markiert):
 - <transkript>: Wortlaut des Bürgers. Das ist die einzige Quelle für Fakten, Beobachtungen, Argumente und Einschätzungen.
-- <tonalitaet>: gewählte Tonstufe inkl. Register, Beschreibung, Verboten-Liste, Beispiel-Opener und Beispiel-Schluss.
+- <tonalitaet>: gewählte Tonstufe mit Register, Beschreibung und Verboten-Liste.
 - <ziel>: Zielwortzahl und Absatzanzahl.
-- <empfaenger>: Liste der verfügbaren Politiker (JSON). Du wählst genau eine ID.
+- <empfaenger>: Liste der verfügbaren Empfänger (JSON). Du wählst genau eine ID.
 - <mdb_kontext> (optional): Ausschüsse und jüngste Positionen der Empfängerin/des Empfängers.
 - <absender_optional> (optional): Name, Parteimitgliedschaft, Organisation des Absenders.
 
 REGEL — KEINE ERFINDUNGEN (nicht verhandelbar):
-Verwende ausschließlich Informationen aus <transkript>. Erfinde keine Daten, Uhrzeiten, Orte, Wegstrecken, Beobachtungen, Personen, Szenen, Zahlen, Studien oder Programmnamen. Wenn der Bürger keinen konkreten Anlass nennt, beschreibe das Problem allgemein und persönlich, aber erfinde keinen Anlass. Lieber abstrakter formulieren als Fakten erfinden. Kein "Gestern Abend...", kein "Letzte Woche...", keine Uhrzeit, kein Wegestreckendetail, das nicht im Transkript steht.
+Verwende ausschließlich Informationen aus <transkript>. Erfinde keine Daten, Uhrzeiten, Zeiträume, Dauerangaben, Orte, Wegstrecken, Beobachtungen, Personen, Szenen, Zahlen, Studien oder Programmnamen. Erfinde auch keine früheren Kontaktversuche, Beschwerden, Fristen oder ausbleibenden Antworten. Erfinde keine Drohungen oder Eskalationsschritte. Dazu gehören Hinweise auf Medien oder Öffentlichkeit, rechtliche Schritte, Wahlen, Vertrauensverlust und andere Konsequenzen. Verwende solche Aussagen nur, wenn der Bürger sie ausdrücklich im Transkript nennt. Unterstelle keine Untätigkeit, Pflichtverletzung oder gebrochenen Versprechen, wenn das nicht im Transkript steht. Wenn der Bürger keinen konkreten Anlass nennt, beschreibe das Problem allgemein und persönlich, aber erfinde keinen Anlass. Lieber abstrakter formulieren als Fakten erfinden.
 
 ÜBER DEN ABSENDER (positive Vorgabe):
 Beschreibe den Absender ausschließlich mit Informationen, die wörtlich in
@@ -93,7 +79,7 @@ Berufsangabe, ohne Familiensituation, ohne Wohnhistorie, ohne politische
 Vorgeschichte. Lieber abstrakt-allgemein als plausibel klingende Erfindung.
 
 REGEL — STIMME DES BÜRGERS BEWAHREN (nicht verhandelbar):
-Identifiziere die 1–3 stärksten Argumente und Einschätzungen des Bürgers, einschließlich politisch zugespitzter oder unbequemer. Übernimm sie sinngemäß im Brieftext. Glätte sie NICHT weg, sanitize sie NICHT. Wenn der Bürger einen politischen Zusammenhang herstellt (z. B. dass ein Problem extremen Parteien Auftrieb gibt, oder dass Untätigkeit politische Folgen hat), übernimm diesen Gedanken in geeigneter formeller Sprache. Empathie und Mitgefühl des Bürgers für Betroffene gehören ebenfalls in den Brief, wenn sie im Transkript stehen.
+Identifiziere die ein bis drei stärksten Argumente und Einschätzungen des Bürgers, einschließlich politisch zugespitzter oder unbequemer. Übernimm sie sinngemäß im Brieftext und schwäche sie nicht ab. Ausdrücklich geäußerte Wut, Frustration, Ungeduld und Forderungen gehören zur Stimme des Bürgers. Bewahre sie in geeigneter formeller Sprache, aber erfinde sie nicht als Tonverstärker. Wenn der Bürger einen politischen Zusammenhang herstellt (z. B. dass ein Problem extremen Parteien Auftrieb gibt, oder dass Untätigkeit politische Folgen hat), übernimm diesen Gedanken in geeigneter formeller Sprache. Empathie und Mitgefühl des Bürgers für Betroffene gehören ebenfalls in den Brief, wenn sie im Transkript stehen.
 
 REGEL — ZEICHENSETZUNG (nicht verhandelbar):
 Verwende ausschließlich: Komma, Doppelpunkt, Klammer, Punkt.
@@ -103,7 +89,7 @@ ARGUMENTATIONSAUFBAU (nicht verhandelbar):
 Der Brief führt eine zusammenhängende Argumentation, keine Aufzählung. Verbinde die 1–3 stärksten Punkte aus dem <transkript> zu einer Kette:
   1. Anlass: was ist passiert / was beschäftigt den Bürger
   2. Begründung: warum das relevant ist (für die Person, die Region, die Demokratie)
-  3. Forderung: was die/der Abgeordnete konkret tun soll
+  3. Forderung: was der politische Empfänger konkret tun soll
 Jeder Absatz transportiert einen logischen Schritt, nicht einen abstrakten Wert. Keine Aufzählungs-Marker wie "Erstens", "Zweitens", "Drittens". Keine drei Adjektive in Reihe. Wenn der Bürger nur einen Punkt liefert, bleib bei einem Punkt, keine künstliche Dreiteilung.
 
 KEINE WIEDERHOLUNG (nicht verhandelbar):
@@ -173,7 +159,7 @@ Schreibe einen formellen Brief in gepflegtem Deutsch (Sie-Form). Länge und Absa
 
 PFLICHT-ELEMENTE:
 1. KONKRETER ANLASS in Absatz 1: ein Detail aus <transkript> (Ort, Erlebnis, Beobachtung). Wenn das Transkript keinen konkreten Anlass nennt, beschreibe das Problem persönlich-allgemein. Nichts erfinden.
-2. EINE BITTE: genau ein konkretes Verb plus ein konkretes Objekt. Keine Aufzählung, keine Wunschliste. Nicht "ich bitte um Maßnahmen", sondern z. B. "ich bitte Sie, sich im Verkehrsausschuss für die Aufnahme dieser Strecke ins Sonderprogramm einzusetzen".
+2. EINE BITTE: genau ein konkretes Verb plus ein konkretes politisches Handlungsobjekt. Keine Aufzählung und keine Wunschliste. Erfinde keinen Ausschuss, kein Programm und keine Zuständigkeit. Leite die Bitte aus <transkript> ab. Nutze Angaben aus <mdb_kontext> nur, wenn sie dort verifiziert stehen.
 3. SCHLUSS-SATZ vor Grußformel: eine politische Handlungs­erwartung an die Empfängerin/den Empfänger. KEINE Bitte um Antwort, KEIN Gesprächs- oder Treffen-Wunsch, KEIN "ich freue mich auf Ihre Rückmeldung". Das Ziel ist politische Wirkung, nicht Korrespondenz.
 
 BRIEFFORMAT:
@@ -191,7 +177,7 @@ REGELN:
 - Sachlich und respektvoll, nie unterwürfig, nie aggressiv beleidigend. Tonschärfe gemäß <tonalitaet> ist explizit erlaubt.
 - Mische Satzlängen. Kurze Sätze landen härter, ein längerer kann Nuancen tragen.
 
-VOR DER AUSGABE: Lies deinen Brief einmal in Gedanken laut. Klingt das wie ein Mensch, der zum ersten Mal an seinen Abgeordneten schreibt, oder wie ein Pressetext? Wenn Pressetext, schreibe um.
+VOR DER AUSGABE: Lies deinen Brief einmal in Gedanken laut. Klingt das wie ein Mensch, der zum ersten Mal einen politischen Brief schreibt, oder wie ein Pressetext? Wenn Pressetext, schreibe um.
 
 Antworte ausschließlich im JSON-Format:
 {
@@ -203,10 +189,9 @@ Antworte ausschließlich im JSON-Format:
 
 // ---------------------------------------------------------------------------
 // Level-aware Prompt-Branches (999.6, LOCK-1):
-// Der Bund-Branch gibt SYSTEM_PROMPT_TEMPLATE byte-identisch zurück (nur
-// __TODAY__ ersetzt) — die Qualität der >600 verschickten Bund-Briefe bleibt
-// unangetastet. NUR Land und Kommune bekommen eigene Blöcke, und auch die nur,
-// wenn LETTER_PROMPT_LEVEL_AWARE=true ist (Wave-4-Kill-Switch, LOCK-6).
+// Gemeinsame Prompt-Regeln gelten für alle Ebenen. Nur Land und Kommune bekommen
+// zusätzliche ebenenspezifische Ersetzungen, und auch die nur, wenn
+// LETTER_PROMPT_LEVEL_AWARE=true ist (Wave-4-Kill-Switch, LOCK-6).
 // ---------------------------------------------------------------------------
 
 // Exakte Template-Segmente, die in den Land-/Kommune-Branches ersetzt werden.
@@ -215,6 +200,8 @@ const BUND_ZUSTAENDIGKEIT_BLOCK = `ZUSTÄNDIGKEITSHINWEIS:
 Alle verfügbaren Politiker sind Bundestagsabgeordnete. Wenn das Anliegen primär Landes- oder Kommunalebene betrifft, begründe im Brief kurz, warum sich der Bürger an die Bundestagsebene wendet (Gesetzgebungs­kompetenz, Förderprogramme, bundespolitischer Rahmen).`;
 
 const BUND_ANREDE_LINE = `- Anrede: "Sehr geehrte/r [Titel] [Name]," (Titel nur wenn vorhanden).`;
+
+const BUND_BITTE_LINE = `2. EINE BITTE: genau ein konkretes Verb plus ein konkretes politisches Handlungsobjekt. Keine Aufzählung und keine Wunschliste. Erfinde keinen Ausschuss, kein Programm und keine Zuständigkeit. Leite die Bitte aus <transkript> ab. Nutze Angaben aus <mdb_kontext> nur, wenn sie dort verifiziert stehen.`;
 
 const BUND_MDB_CONTEXT_BLOCK = `MdB-KONTEXT NUTZEN (nur wenn <mdb_kontext> mitgeliefert):
 Wenn ein Ausschuss zum Thema passt, das knapp und natürlich erwähnen ("Gerade als Mitglied des Ausschusses für ... haben Sie hier Einfluss"). Wenn eine jüngste Position zum Thema passt, knapp aufgreifen, ohne sie wörtlich zu zitieren. NIEMALS Ausschüsse, Reden oder Positionen erfinden, die nicht in <mdb_kontext> stehen.`;
@@ -232,22 +219,23 @@ STRATEGIE FÜR DIE LAND-EBENE (nicht verhandelbar):
 - Zitiere KEINE Grundgesetz-Artikel mit Nummern (kein "Art. 70 GG", kein "Art. 28 GG"). Allgemeine Begriffe wie "Kulturhoheit der Länder" sind erlaubt.`;
 
 const KOMMUNE_ZUSTAENDIGKEIT_BLOCK = `ZUSTÄNDIGKEITSHINWEIS:
-Der Empfänger ist eine Kommunalverwaltung (Stadtverwaltung oder Bezirksamt), keine einzelne Politikerin und kein einzelner Politiker.
+Der Empfänger ist das Bürgermeisteramt der Gemeinde oder in Berlin das Bezirksamt. Der Brief richtet sich an die politische Leitung der Kommune, nicht an ein Fachamt.
 
 STRATEGIE FÜR DIE KOMMUNALE EBENE (nicht verhandelbar):
-- Der Brief geht an eine Verwaltung ohne Wahlkampf-Logik: weniger ideologisch, weniger "big picture", dafür konkret, sachlich, alltagsnah und lösungsorientiert.
-- Benenne, wo es passt, die zuständige Verwaltungseinheit (z. B. Bauamt, Ordnungsamt, Grünflächenamt, Tiefbauamt), aber erfinde keine Ämter, die nicht naheliegend sind.
-- Verweise, wo es passt, auf die kommunale Selbstverwaltung und Pflichtaufgaben der Gemeinde (z. B. Straßenunterhaltung, Bauleitplanung), ohne Paragraphen oder Artikel zu zitieren.
+- Richte die Forderung an den politischen Handlungsmöglichkeiten der Kommune aus: kommunaler Haushalt, örtliche Planung, Infrastruktur und politische Prioritäten.
+- Nenne kein Fachamt, keinen Ausschuss und keine Dienststelle, wenn sie nicht wörtlich in <transkript> stehen.
 - Konkrete Orts- und Straßenangaben aus dem <transkript> sind der stärkste Hebel.
 - Zitiere KEINE Grundgesetz-Artikel mit Nummern.`;
 
-const KOMMUNE_ANREDE_LINE = `- Anrede: exakt wie im <empfaenger>-Block vorgegeben ("Sehr geehrte Damen und Herren der Stadtverwaltung," oder "Sehr geehrte Damen und Herren des Bezirksamts,"). Kein Name, keine Einzelperson.`;
+const KOMMUNE_ANREDE_LINE = `- Anrede: exakt "Sehr geehrte Damen und Herren,". Kein Name und kein Zusatz zum Amt.`;
+
+const KOMMUNE_BITTE_LINE = `2. EINE BITTE: genau ein konkretes Verb plus ein konkretes Objekt. Keine Aufzählung und keine Wunschliste. Richte die Bitte an das Bürgermeisteramt oder Bezirksamt. Nenne kein Fachamt, keinen Ausschuss und kein Programm, das nicht im <transkript> steht.`;
 
 const BUND_PARTEI_HEADER = `PARTEI-BEWUSSTES FRAMING (Werte, nicht Strategie):
 Passe die Werte-Sprache an die Partei der Empfängerin/des Empfängers an, damit das Anliegen anschluss­fähig wird. Du benennst keine Parteien außer der adressierten und kommentierst keine Parteidynamiken.`;
 
-const KOMMUNE_PARTEI_HEADER = `PARTEI-NEUTRALITÄT (Verwaltung):
-Der Empfänger ist eine Verwaltung und hat keine Partei. Verwende KEINE parteibezogene Werte-Sprache und benenne keine Parteien.`;
+const KOMMUNE_PARTEI_HEADER = `PARTEI-NEUTRALITÄT (Kommune):
+Für das Bürgermeisteramt oder Bezirksamt liegen keine verifizierten Parteiinformationen vor. Verwende KEINE parteibezogene Werte-Sprache und benenne keine Parteien.`;
 
 const BUND_PARTEI_LIST = `- SPD: Arbeitnehmerrechte, sozialer Zusammenhalt, faire Chancen.
 - Grüne: Generationengerechtigkeit, Nachhaltigkeit, Lebensqualität, ökologische Verantwortung.
@@ -261,7 +249,7 @@ const BUND_PARTEI_LIST = `- SPD: Arbeitnehmerrechte, sozialer Zusammenhalt, fair
 const LEVEL_LABELS: Record<PoliticalLevel, string> = {
   Bund: "Bundesebene (Bundestag)",
   Land: "Landesebene (Landtag)",
-  Kommune: "kommunale Ebene (Stadtverwaltung/Rathaus)",
+  Kommune: "kommunale Ebene (Bürgermeisteramt/Bezirksamt)",
 };
 
 function mismatchBlock(selected: PoliticalLevel, recommended: PoliticalLevel): string {
@@ -272,12 +260,12 @@ function mismatchBlock(selected: PoliticalLevel, recommended: PoliticalLevel): s
   return `
 
 KOMPETENZ-HINWEIS (wichtig):
-Der Bürger hat sich bewusst entschieden, an die ${LEVEL_LABELS[selected]} zu schreiben, obwohl sein Anliegen primär in die Zuständigkeit der ${LEVEL_LABELS[recommended]} fällt. Verschweige diese Spannung nicht: Mache früh im Brief in einem Satz transparent, dass die unmittelbare Zuständigkeit woanders liegt, und begründe, warum der Bürger trotzdem an diese Adresse schreibt (${reason}). Beispiel-Formulierung: "Ich weiß, dass Sie für diesen konkreten Punkt nicht unmittelbar zuständig sind. Trotzdem schreibe ich Ihnen, weil ..." Verspreche dem Empfänger keine Handlungsmacht, die er nicht hat.`;
+Der Bürger hat sich bewusst entschieden, an die ${LEVEL_LABELS[selected]} zu schreiben, obwohl sein Anliegen primär in die Zuständigkeit der ${LEVEL_LABELS[recommended]} fällt. Verschweige diese Spannung nicht: Mache früh im Brief in einem Satz transparent, dass die unmittelbare Zuständigkeit woanders liegt, und begründe, warum der Bürger trotzdem an diese Adresse schreibt (${reason}). Verspreche dem Empfänger keine Handlungsmacht, die er nicht hat.`;
 }
 
 /**
  * Baut den System-Prompt abhängig von Ebene und Flag.
- * - Flag aus ODER level=Bund: heutiges Template byte-identisch (LOCK-1).
+ * - Flag aus ODER level=Bund: gemeinsames Grundtemplate ohne Ebenen-Ersetzungen.
  * - Land/Kommune: gezielte Block-Ersetzungen + Strategie-Block.
  * Exportiert für die Snapshot-Tests.
  */
@@ -295,6 +283,7 @@ export function buildSystemPrompt(input: GenerateLetterInput): string {
     prompt = prompt
       .replace(BUND_ZUSTAENDIGKEIT_BLOCK, KOMMUNE_ZUSTAENDIGKEIT_BLOCK)
       .replace(BUND_ANREDE_LINE, KOMMUNE_ANREDE_LINE)
+      .replace(BUND_BITTE_LINE, KOMMUNE_BITTE_LINE)
       .replace(BUND_PARTEI_HEADER, KOMMUNE_PARTEI_HEADER)
       .replace(`\n${BUND_PARTEI_LIST}`, "")
       .replace(`${BUND_MDB_CONTEXT_BLOCK}\n\n`, "");
@@ -356,11 +345,12 @@ export function buildUserPrompt(
         {
           id: 0,
           name: input.rathaus.label,
-          anrede:
+          anrede: "Sehr geehrte Damen und Herren,",
+          ort:
+            input.rathaus.address.source === "destatis" ||
             input.rathaus.recipientKind === "bezirksamt"
-              ? "Sehr geehrte Damen und Herren des Bezirksamts,"
-              : "Sehr geehrte Damen und Herren der Stadtverwaltung,",
-          ort: `${input.rathaus.plz} ${input.rathaus.gemeindeName}`,
+              ? `${input.rathaus.plz} ${input.rathaus.gemeindeName}`
+              : "nicht eindeutig zugeordnet",
           level: input.rathaus.level,
         },
       ]
@@ -382,17 +372,6 @@ export function buildUserPrompt(
       : "";
 
   const toneBlock = tonalityBlock(toneLevel);
-  const levelAwareKommune =
-    process.env.LETTER_PROMPT_LEVEL_AWARE === "true" && input.level === "Kommune";
-  const recipientToneBlock = levelAwareKommune
-    ? toneBlock
-        .replace("politisch behandelt wird", "von der zuständigen Stelle bearbeitet wird")
-        .replace(
-          "das Thema in Ihrer Fraktion auf den Tisch bringen",
-          "das Anliegen in der zuständigen Verwaltung konkret angehen"
-        )
-        .replace("noch in dieser Sitzungsperiode konkret anzugehen", "zeitnah konkret anzugehen")
-    : toneBlock;
   const contextBlock = input.rathaus ? "" : mdbContextBlock(input.mdbContext);
 
   return `<transkript>
@@ -400,7 +379,7 @@ ${input.issueText}
 </transkript>
 
 <tonalitaet>
-${recipientToneBlock}
+${toneBlock}
 </tonalitaet>
 
 <ziel>

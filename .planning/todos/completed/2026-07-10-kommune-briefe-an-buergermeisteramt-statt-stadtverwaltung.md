@@ -1,5 +1,6 @@
 ---
 created: 2026-07-10T15:58:53.579Z
+completed: 2026-07-19T00:00:00.000Z
 title: Kommune-Briefe ans Buergermeisteramt statt Stadtverwaltung adressieren
 area: api
 files:
@@ -26,3 +27,7 @@ ACHTUNG Koordination: Ein paralleler Chat arbeitet bereits am Feedback zur Empfa
 5. Spaeter (nur wenn Kommune-Traffic es rechtfertigt): Top 50-100 Staedte mit echten Buergermeister-Namen anreichern, Rest behaelt Amts-Adressierung.
 
 Umsetzung auf Branch codex/999-6-level-routing-v2 (Worktree brief-nach-berlin-999.6), idealerweise im parallelen Routing-Feedback-Chat.
+
+## Ergebnis vom 19.07.2026
+
+Kommunale Briefe gehen institutionell an das Bürgermeisteramt, in Berlin weiterhin an das Bezirksamt. Eine neutral formulierte Anrede vermeidet die Pflege persönlicher Namen. Amtliche Anschriften stammen aus dem Destatis-Verzeichnis mit Quellenstand; ein konservatives PLZ-Mapping ordnet nur eindeutige Treffer zu. Für den Rest zeigt Wizard und E-Mail eine Suchhilfe ohne vorbefüllte Wohn-PLZ. Die ursprüngliche Idee einer bloß generischen Zustellanschrift wurde damit ersetzt.

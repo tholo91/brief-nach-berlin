@@ -228,12 +228,21 @@ export function buildEmailHtml(data: SendLetterEmailParams): string {
   const party = data.politicianParty ? escapeHtml(formatPartyShort(data.politicianParty)) : "";
   const mandateLabel = isMdl ? "MdL" : "MdB";
 
-  // Format postal address: split on comma, one part per line
+  // Format postal address: split on comma, one part per line. Kommunale
+  // Anschriften kommen strukturiert aus dem amtlichen Snapshot.
   const addressLines = data.politicianPostalAddress
     .split(",")
     .map((part) => escapeHtml(part.trim()))
     .join("<br>");
-  const visibleAddressLines = isRathaus ? "" : addressLines;
+  const officialRathausAddress =
+    isRathaus && data.rathausSearch?.address.source === "destatis"
+      ? data.rathausSearch.address
+      : null;
+  const visibleAddressLines = officialRathausAddress
+    ? `${escapeHtml(officialRathausAddress.streetAddress)}<br>${escapeHtml(officialRathausAddress.postalCode)} ${escapeHtml(officialRathausAddress.city)}`
+    : isRathaus
+      ? ""
+      : addressLines;
 
   // Profile link (Abgeordnetenwatch: voting record, public Q&A, transparent source).
   // Prefer the API-provided URL; fall back to a slug-derived URL.
@@ -256,18 +265,18 @@ export function buildEmailHtml(data: SendLetterEmailParams): string {
   // bereits in der postalAddress — keine Extra-Zeile.
   const institutionLine = data.recipientKind === "mdb" ? "Deutscher Bundestag<br>" : "";
 
-  // Rathaus: generische Anschrift ist zustellbar, aber die exakte
-  // Straßenadresse ergänzt der User selbst — eine Google-Such-Zeile hilft (LOCK-3).
+  // Google dient bei einem amtlichen Treffer nur zur Kontrolle. Ohne
+  // eindeutige Destatis-Zuordnung ist die Suche der ehrliche Fallback.
   const rathausSearchUrl = data.rathausSearch
     ? `https://www.google.com/search?q=${encodeURIComponent(
-        `${data.rathausSearch.kind === "bezirksamt" ? "Bezirksamt" : "Rathaus"} Adresse ${data.rathausSearch.plz} ${data.rathausSearch.ort}`
+        `${data.rathausSearch.kind === "bezirksamt" ? "Bezirksamt" : "Bürgermeisteramt"}${data.rathausSearch.ort.trim() ? ` ${data.rathausSearch.ort.trim()}` : ""} Postanschrift`
       )}`
     : null;
-  const administrationAddressLabel =
-    data.rathausSearch?.kind === "bezirksamt" ? "Bezirksamt-Adresse finden" : "Rathaus-Adresse finden";
   const rathausSearchLine =
     isRathaus && rathausSearchUrl
-      ? `<p style="margin:10px 0 0;font-family:Georgia,'Times New Roman',serif;font-size:12px;color:#666666;line-height:1.5;">Die genaue Anschrift findest du hier: <a href="${rathausSearchUrl}" target="_blank" rel="noopener noreferrer" style="color:#2D5016;text-decoration:underline;">${administrationAddressLabel}</a></p>`
+      ? officialRathausAddress
+        ? `<p style="margin:10px 0 0;font-family:Georgia,'Times New Roman',serif;font-size:12px;color:#666666;line-height:1.5;">Quelle: <a href="${escapeHtml(officialRathausAddress.sourceUrl)}" target="_blank" rel="noopener noreferrer" style="color:#2D5016;text-decoration:underline;">Destatis</a>, Stand ${escapeHtml(officialRathausAddress.sourceStand)}. Du kannst die Adresse bei Google noch einmal <a href="${rathausSearchUrl}" target="_blank" rel="noopener noreferrer" style="color:#2D5016;text-decoration:underline;">hier</a> prüfen.</p>`
+        : `<p style="margin:10px 0 0;font-family:Georgia,'Times New Roman',serif;font-size:12px;color:#666666;line-height:1.5;">Für diese Postleitzahl ließ sich keine eindeutige amtliche Anschrift zuordnen. Ergänze in der Suche deinen Wohnort. Die genaue Anschrift findest du <a href="${rathausSearchUrl}" target="_blank" rel="noopener noreferrer" style="color:#2D5016;text-decoration:underline;">hier</a>.</p>`
       : "";
 
   const profileButtonText = isFallback ? "Empfänger finden" : "Profil auf<br>abgeordnetenwatch";

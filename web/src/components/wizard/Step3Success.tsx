@@ -667,9 +667,7 @@ export function Step3Success({
         {/* Kommune-Brief: Google-Adresshilfe für die exakte Rathaus-Anschrift (LOCK-3) */}
         {generatedRecipient?.kind === "rathaus" && (
           <RathausAdresseButton
-            ortsname={generatedRecipient.gemeindeName}
-            plz={generatedRecipient.plz}
-            recipientKind={generatedRecipient.recipientKind}
+            recipient={generatedRecipient}
             className="mt-4"
           />
         )}
@@ -1047,7 +1045,7 @@ export function Step3Success({
           ? `${sortedPoliticians.length} Abgeordnete für PLZ ${wizardData.plz}`
           : "Wer vertritt deinen Wahlkreis?";
     const introCopy = isKommune
-      ? "Kommunale Anliegen gehen direkt an die zuständige Verwaltung. Die genaue Anschrift ergänzt du später mit einem Klick."
+      ? "Der kommunale Empfänger ist bereits vorausgewählt."
       : isLand
         ? wahlkreisGroups.length === 1
           ? "Diese Landtagsabgeordneten kommen für deine PLZ infrage. Ein Direktmandat ist vorausgewählt, du kannst aber auch jemand anderen wählen."
@@ -1169,16 +1167,36 @@ export function Step3Success({
               ].join(" ")}
             >
               <span className="inline-block font-body text-[11px] font-semibold uppercase tracking-wide text-waldgruen-dark bg-waldgruen/15 px-2 py-0.5 rounded mb-1.5">
-                {rathaus.recipientKind === "bezirksamt" ? "Bezirksamt" : "Stadtverwaltung"}
+                {rathaus.recipientKind === "bezirksamt" ? "Bezirksamt" : "Bürgermeisteramt"}
               </span>
               <p className="font-body text-base font-semibold text-warmgrau">{rathaus.label}</p>
-              <p className="font-body text-sm text-warmgrau mt-0.5">
-                {rathaus.plz} {rathaus.recipientKind === "bezirksamt" ? "Berlin" : rathaus.gemeindeName}
-              </p>
-              <p className="font-body text-xs text-warmgrau/70 mt-2 leading-relaxed">
-                Der Brief enthält eine generische Orientierung. Prüfe das zuständige
-                Amt und ergänze die vollständige Anschrift mit unserer Suchhilfe.
-              </p>
+              {rathaus.address.source === "destatis" ? (
+                <>
+                  <p className="font-body text-sm text-warmgrau mt-1 leading-relaxed">
+                    {rathaus.address.streetAddress}
+                    <br />
+                    {rathaus.address.postalCode} {rathaus.address.city}
+                  </p>
+                  <p className="font-body text-xs text-warmgrau/70 mt-2 leading-relaxed">
+                    Amtliche Anschrift von{" "}
+                    <a
+                      href={rathaus.address.sourceUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      title={rathaus.address.sourceTitle}
+                      className="font-semibold text-waldgruen-dark underline underline-offset-2"
+                    >
+                      Destatis
+                    </a>
+                    , Stand {rathaus.address.sourceStand}
+                  </p>
+                </>
+              ) : (
+                <p className="font-body text-xs text-warmgrau/70 mt-2 leading-relaxed">
+                  Die genaue Postanschrift prüfst du vor dem Abschicken über die
+                  Suchhilfe.
+                </p>
+              )}
             </div>
           </div>
         )}

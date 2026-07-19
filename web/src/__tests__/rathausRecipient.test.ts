@@ -1,54 +1,79 @@
-/**
- * Tests für den synthetischen Rathaus-Empfänger (LOCK-5):
- * kein politicianId, Stadtstaat-Verhalten, Adress-Konvention.
- */
-
 import {
   buildRathausRecipient,
   RathausRecipientNotApplicable,
 } from "@/lib/lookup/rathausRecipient";
 
+const officialAddress = {
+  ags: "05315000",
+  streetAddress: "Rathaus",
+  postalCode: "50667",
+  city: "Köln",
+  sourceTitle: "Destatis: Anschriften der Gemeinde- und Stadtverwaltungen in Deutschland",
+  sourceUrl: "https://www.destatis.de/anschriften",
+  sourceStand: "31.01.2026",
+};
+
 describe("buildRathausRecipient", () => {
-  it("baut eine Stadtverwaltung ohne id/politicianId", () => {
-    const r = buildRathausRecipient({
+  it("baut ein Bürgermeisteramt ohne id/politicianId", () => {
+    const recipient = buildRathausRecipient({
       gemeindeName: "Köln",
       plz: "50667",
       bundeslandKey: "NW",
     });
-    expect(r).toEqual({
+
+    expect(recipient).toEqual({
       kind: "rathaus",
       level: "Kommune",
-      recipientKind: "stadtverwaltung",
+      recipientKind: "buergermeisteramt",
       gemeindeName: "Köln",
       plz: "50667",
-      label: "Stadtverwaltung Köln",
-      postalAddress: "Stadtverwaltung Köln, 50667 Köln",
+      label: "Zuständiges Bürgermeisteramt",
+      postalAddress: "Zuständiges Bürgermeisteramt",
+      address: { source: "fallback" },
     });
-    expect("id" in r).toBe(false);
-    expect("politicianId" in r).toBe(false);
+    expect("id" in recipient).toBe(false);
+    expect("politicianId" in recipient).toBe(false);
   });
 
-  it("nutzt für Berlin das Bezirksamt mit Bezirksnamen", () => {
-    const r = buildRathausRecipient({
+  it("übernimmt eine vollständige amtliche Anschrift", () => {
+    const recipient = buildRathausRecipient({
+      gemeindeName: "Köln",
+      plz: "50667",
+      bundeslandKey: "NW",
+      officialAddress,
+    });
+
+    expect(recipient.address).toEqual({ source: "destatis", ...officialAddress });
+    expect(recipient.postalAddress).toBe(
+      "Bürgermeisteramt Köln, Rathaus, 50667 Köln"
+    );
+  });
+
+  it("nutzt für Berlin das Bezirksamt und nie die Destatis-Senatsanschrift", () => {
+    const recipient = buildRathausRecipient({
       gemeindeName: "Berlin",
       plz: "10245",
       bundeslandKey: "BE",
       bezirk: "Friedrichshain-Kreuzberg",
+      officialAddress,
     });
-    expect(r.recipientKind).toBe("bezirksamt");
-    expect(r.label).toBe("Bezirksamt Friedrichshain-Kreuzberg");
-    expect(r.postalAddress).toBe("Bezirksamt Friedrichshain-Kreuzberg, 10245 Berlin");
+
+    expect(recipient.recipientKind).toBe("bezirksamt");
+    expect(recipient.label).toBe("Bezirksamt Friedrichshain-Kreuzberg");
+    expect(recipient.postalAddress).toBe("Bezirksamt Friedrichshain-Kreuzberg");
+    expect(recipient.address).toEqual({ source: "fallback" });
   });
 
-  it("fällt in Berlin ohne Bezirksdaten auf die Stadtverwaltung zurück", () => {
-    const r = buildRathausRecipient({
+  it("bleibt in Berlin ohne Bezirksdaten beim allgemeinen Bezirksamt", () => {
+    const recipient = buildRathausRecipient({
       gemeindeName: "Berlin",
       plz: "10999",
       bundeslandKey: "BE",
       bezirk: null,
     });
-    expect(r.recipientKind).toBe("stadtverwaltung");
-    expect(r.label).toBe("Stadtverwaltung Berlin");
+
+    expect(recipient.recipientKind).toBe("bezirksamt");
+    expect(recipient.label).toBe("Zuständiges Bezirksamt in Berlin");
   });
 
   it("wirft für Hamburg und Bremen (Einheitsgemeinde)", () => {
@@ -58,15 +83,5 @@ describe("buildRathausRecipient", () => {
     expect(() =>
       buildRathausRecipient({ gemeindeName: "Bremen", plz: "28195", bundeslandKey: "HB" })
     ).toThrow(RathausRecipientNotApplicable);
-  });
-
-  it("nutzt Kommas als Adresszeilen-Trenner (buildEmailHtml-Konvention)", () => {
-    const r = buildRathausRecipient({
-      gemeindeName: "Bergisch Gladbach",
-      plz: "51429",
-      bundeslandKey: "NW",
-    });
-    const lines = r.postalAddress.split(",").map((s) => s.trim());
-    expect(lines).toEqual(["Stadtverwaltung Bergisch Gladbach", "51429 Bergisch Gladbach"]);
   });
 });

@@ -13,6 +13,7 @@
     "build:plz": "tsx scripts/parse-plz-mapping.ts",
     "fetch:politicians": "tsx scripts/fetch-politician-data.ts",
     "build:plz-bundesland": "tsx scripts/build-plz-bundesland.ts",
+    "build:rathaus-addresses": "tsx scripts/import-destatis-addresses.ts",
     "fetch:landtag": "tsx scripts/fetch-landtag-data.ts"
   },
   "dependencies": {
@@ -48,6 +49,7 @@
     "ts-jest": "^29.4.9",
     "ts-node": "^10.9.2",
     "tsx": "^4.21.0",
-    "typescript": "^5"
+    "typescript": "^5",
+    "read-excel-file": "^9.3.2"
   }
 }

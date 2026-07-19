@@ -3,6 +3,8 @@ import plzMappingJson from "../../../data/plz-wahlkreis-mapping.json";
 import politiciansJson from "../../../data/politicians-cache.json";
 import plzBundeslandJson from "../../../data/plz-bundesland-mapping.json";
 import plzLandtagWahlkreisJson from "../../../data/plz-landtagswahlkreis-mapping.json";
+import destatisGemeindeanschriftenJson from "../../../data/destatis-gemeindeanschriften.json";
+import plzRathausAgsJson from "../../../data/plz-rathaus-ags.json";
 import {
   buildRathausRecipient,
   RathausRecipientNotApplicable,
@@ -22,6 +24,26 @@ interface PlzEnrichment {
 }
 const plzBundesland = plzBundeslandJson as Record<string, PlzEnrichment>;
 const plzLandtagWahlkreis = plzLandtagWahlkreisJson as Record<string, number[]>;
+
+interface OfficialMunicipalAddress {
+  ags: string;
+  bundeslandKey: string;
+  gemeindeName: string;
+  verwaltungssitz: string;
+  streetAddress: string;
+  postalCode: string;
+  city: string;
+}
+
+const destatisGemeindeanschriften = destatisGemeindeanschriftenJson as {
+  _meta: {
+    source: { title: string; url: string; stand: string };
+  };
+  addresses: Record<string, OfficialMunicipalAddress>;
+};
+const plzRathausAgs = plzRathausAgsJson as {
+  byPlz: Record<string, string | null>;
+};
 
 export function lookupPLZ(plz: string): { wahlkreisIds: number[]; politicians: Politician[] } {
   const wahlkreisIds = plzMapping[plz] ?? [];
@@ -116,23 +138,41 @@ export function lookupPLZWithLevel(plz: string): PlzLookupResult {
   if (enrichment && bundeslandKey) {
     try {
       if (kommuneAmbiguous) {
-        kommune = [{
-          kind: "rathaus",
-          level: "Kommune",
-          recipientKind: "bezirksamt",
-          ambiguous: true,
-          gemeindeName: "Berlin",
-          plz,
-          label: "Zuständiges Bezirksamt in Berlin",
-          postalAddress: `Zuständiges Bezirksamt in Berlin, ${plz} Berlin`,
-        }];
+        kommune = [
+          {
+            ...buildRathausRecipient({
+              gemeindeName: "Berlin",
+              plz,
+              bundeslandKey,
+              bezirk: null,
+            }),
+            ambiguous: true,
+          },
+        ];
       } else {
+        const ags = plzRathausAgs.byPlz[plz];
+        const officialAddress = ags
+          ? destatisGemeindeanschriften.addresses[ags]
+          : null;
+        const verifiedOfficialAddress =
+          officialAddress?.bundeslandKey === bundeslandKey
+            ? {
+                ags: officialAddress.ags,
+                streetAddress: officialAddress.streetAddress,
+                postalCode: officialAddress.postalCode,
+                city: officialAddress.city,
+                sourceTitle: destatisGemeindeanschriften._meta.source.title,
+                sourceUrl: destatisGemeindeanschriften._meta.source.url,
+                sourceStand: destatisGemeindeanschriften._meta.source.stand,
+              }
+            : null;
         kommune = [
           buildRathausRecipient({
             gemeindeName: enrichment.gemeindeName,
             plz,
             bundeslandKey,
             bezirk: kommuneBezirke[0] ?? null,
+            officialAddress: verifiedOfficialAddress,
           }),
         ];
       }

@@ -2,7 +2,7 @@
  * E-Mail-Rendering pro Empfänger-Art (999.6):
  * - mdb: heutiges Layout (Deutscher Bundestag-Zeile, MdB-Label, AW-Link)
  * - mdl: Landtag-Anschrift aus postalAddress, MdL-Label, keine Bundestag-Zeile
- * - rathaus: keine Partei, kein AW-Link, Google-Adresszeile
+ * - rathaus: keine Partei, kein AW-Link, amtliche Anschrift oder Google-Fallback
  * - LOCK-4c: kein sichtbarer Routing-Footer, Routing nur in der Debug-URL
  */
 
@@ -141,16 +141,29 @@ describe("buildEmailHtml — Empfänger-Arten", () => {
     }
   });
 
-  it("rathaus: keine Partei, kein MdB/MdL, kein AW-Link, nur Link zur genauen Anschrift", () => {
+  it("rathaus: zeigt die vollständige amtliche Anschrift und Google nur zur Kontrolle", () => {
     const params = baseParams({
         recipientKind: "rathaus",
-        politicianName: "Stadtverwaltung Köln",
+        politicianName: "Bürgermeisteramt Köln",
         politicianFirstName: "",
-        politicianLastName: "Stadtverwaltung Köln",
+        politicianLastName: "Bürgermeisteramt Köln",
         politicianParty: null,
-        politicianPostalAddress: "Stadtverwaltung Köln, 50667 Köln",
+        politicianPostalAddress: "Bürgermeisteramt Köln, Rathaus, 50667 Köln",
         politicianAbgeordnetenwatchUrl: null,
-        rathausSearch: { plz: "50667", ort: "Köln", kind: "rathaus" },
+        rathausSearch: {
+          ort: "Köln",
+          kind: "buergermeisteramt",
+          address: {
+            source: "destatis",
+            ags: "05315000",
+            streetAddress: "Rathaus",
+            postalCode: "50667",
+            city: "Köln",
+            sourceTitle: "Destatis-Anschriftenverzeichnis",
+            sourceUrl: "https://www.destatis.de/anschriften",
+            sourceStand: "31.01.2026",
+          },
+        },
       });
     const html = buildEmailHtml(params);
     expect(buildLetterEmailSubject(params)).toBe("Dein Brief ans Rathaus in Köln ist fertig");
@@ -162,12 +175,14 @@ describe("buildEmailHtml — Empfänger-Arten", () => {
     expect(html).not.toContain(", MdB (");
     expect(html).not.toContain(", MdL (");
     expect(html).not.toContain("abgeordnetenwatch.de/profile");
-    expect(html).toContain("<strong>Stadtverwaltung Köln</strong><br>");
-    expect(html).not.toContain("50667 Köln</p>");
+    expect(html).toContain("<strong>Bürgermeisteramt Köln</strong><br>");
+    expect(html).toContain("Rathaus<br>50667 Köln");
     expect(html).toContain("google.com/search");
-    expect(html).toContain("Die genaue Anschrift findest du hier:");
-    expect(html).toContain("Rathaus-Adresse finden");
-    expect(html).toContain(encodeURIComponent("Rathaus Adresse 50667 Köln"));
+    expect(html).toContain("Destatis</a>, Stand 31.01.2026");
+    expect(html).toContain("https://www.destatis.de/anschriften");
+    expect(html).toContain(encodeURIComponent("Bürgermeisteramt Köln Postanschrift"));
+    expect(html).not.toContain(encodeURIComponent("Bürgermeisteramt 50667 Köln"));
+    expect(html).toMatch(/<a href="[^"]+"[^>]*>hier<\/a> prüfen/);
     expect(html).toContain("/images/email-variants/email-kommune-rathaus.webp");
     expect(html).toContain("/images/email-variants/email-rathaus-banner.webp");
     expect(html).not.toContain("/images/email-bundestag-banner.png");
@@ -176,21 +191,47 @@ describe("buildEmailHtml — Empfänger-Arten", () => {
     expect(html).not.toContain("aus deinem Wahlkreis");
   });
 
-  it("bezirksamt: sucht und beschriftet die genaue Bezirksamt-Anschrift", () => {
+  it("rathaus: kennzeichnet eine fehlende Zuordnung als Such-Fallback", () => {
+    const html = buildEmailHtml(baseParams({
+      recipientKind: "rathaus",
+      politicianName: "Zuständiges Bürgermeisteramt",
+      politicianFirstName: "",
+      politicianLastName: "Zuständiges Bürgermeisteramt",
+      politicianParty: null,
+      politicianPostalAddress: "Zuständiges Bürgermeisteramt",
+      politicianAbgeordnetenwatchUrl: null,
+      rathausSearch: {
+        ort: "",
+        kind: "buergermeisteramt",
+        address: { source: "fallback" },
+      },
+    }));
+
+    expect(html).toContain("keine eindeutige amtliche Anschrift");
+    expect(html).toContain("Die genaue Anschrift findest du");
+    expect(html).toContain(encodeURIComponent("Bürgermeisteramt Postanschrift"));
+    expect(html).not.toContain("60261");
+  });
+
+  it("bezirksamt: sucht ohne Wohn-PLZ nach der genauen Anschrift", () => {
     const html = buildEmailHtml(baseParams({
       recipientKind: "rathaus",
       politicianName: "Zuständiges Bezirksamt in Berlin",
       politicianFirstName: "",
       politicianLastName: "Zuständiges Bezirksamt in Berlin",
       politicianParty: null,
-      politicianPostalAddress: "Zuständiges Bezirksamt in Berlin, 10245 Berlin",
+      politicianPostalAddress: "Zuständiges Bezirksamt in Berlin",
       politicianAbgeordnetenwatchUrl: null,
-      rathausSearch: { plz: "10245", ort: "Berlin", kind: "bezirksamt" },
+      rathausSearch: {
+        ort: "Berlin",
+        kind: "bezirksamt",
+        address: { source: "fallback" },
+      },
     }));
 
-    expect(html).toContain("Bezirksamt-Adresse finden");
-    expect(html).toContain(encodeURIComponent("Bezirksamt Adresse 10245 Berlin"));
-    expect(html).not.toContain("Rathaus-Adresse finden");
+    expect(html).toContain(encodeURIComponent("Bezirksamt Berlin Postanschrift"));
+    expect(html).not.toContain("10245");
+    expect(html).not.toContain(encodeURIComponent("Bürgermeisteramt Berlin"));
   });
 
   it("LOCK-4c: kein sichtbarer Routing-Footer in der Mail", () => {

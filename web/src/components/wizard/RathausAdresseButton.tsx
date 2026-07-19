@@ -1,26 +1,26 @@
-// Google-Adresshilfe für den Kommune-Brief (LOCK-3). Die generische Anschrift
-// ohne Straße ist nur Orientierung; der User prüft und ergänzt die vollständige
-// Postanschrift selbst. Ein Klick öffnet die Google-Suche in neuem Tab.
+import type { RathausRecipient } from "@/lib/lookup/rathausRecipient";
 
 interface RathausAdresseButtonProps {
-  ortsname: string;
-  plz: string;
-  recipientKind: "stadtverwaltung" | "bezirksamt";
+  recipient: RathausRecipient;
   className?: string;
 }
 
 export function RathausAdresseButton({
-  ortsname,
-  plz,
-  recipientKind,
+  recipient,
   className,
 }: RathausAdresseButtonProps) {
-  const isBezirksamt = recipientKind === "bezirksamt";
-  const kindLabel = isBezirksamt ? "Bezirksamts" : "Rathauses";
-  const searchLabel = isBezirksamt ? "Bezirksamt-Adresse finden" : "Rathaus-Adresse finden";
-  const searchUrl = `https://www.google.com/search?q=${encodeURIComponent(
-    `${isBezirksamt ? "Bezirksamt" : "Rathaus"} Adresse ${plz} ${ortsname}`
-  )}`;
+  const isBezirksamt = recipient.recipientKind === "bezirksamt";
+  const searchTarget = isBezirksamt
+    ? recipient.gemeindeName === "Berlin"
+      ? "Bezirksamt Berlin Postanschrift"
+      : `Bezirksamt ${recipient.gemeindeName} Postanschrift`
+    : recipient.address.source === "destatis"
+      ? `Bürgermeisteramt ${recipient.gemeindeName} Postanschrift`
+      : "Bürgermeisteramt Postanschrift";
+  const searchUrl = `https://www.google.com/search?q=${encodeURIComponent(searchTarget)}`;
+  const officialAddress =
+    recipient.address.source === "destatis" ? recipient.address : null;
+
   return (
     <div
       role="note"
@@ -30,34 +30,55 @@ export function RathausAdresseButton({
         className ?? "",
       ].join(" ")}
     >
-      <span className="text-warmgrau leading-relaxed">
-        Die Anschrift im Brief ist nur eine Orientierung und ohne Straße möglicherweise
-        nicht vollständig. Prüfe die genaue Adresse deines {kindLabel} und übernimm
-        Straße und Hausnummer auf den Umschlag.
-      </span>
-      <a
-        href={searchUrl}
-        target="_blank"
-        rel="noopener noreferrer"
-        className="inline-flex items-center justify-center gap-1.5 self-start rounded-lg bg-waldgruen px-4 py-2 font-semibold text-creme hover:bg-waldgruen-dark transition-colors"
-      >
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          width="15"
-          height="15"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          aria-hidden="true"
-        >
-          <circle cx="11" cy="11" r="8" />
-          <path d="m21 21-4.3-4.3" />
-        </svg>
-        {searchLabel}
-      </a>
+      {officialAddress ? (
+        <>
+          <p className="font-semibold text-waldgruen-dark">Amtliche Postanschrift</p>
+          <address className="not-italic text-warmgrau leading-relaxed">
+            {recipient.label}
+            <br />
+            {officialAddress.streetAddress}
+            <br />
+            {officialAddress.postalCode} {officialAddress.city}
+          </address>
+          <p className="text-xs text-warmgrau/70 leading-relaxed">
+            Quelle:{" "}
+            <a
+              href={officialAddress.sourceUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              title={officialAddress.sourceTitle}
+              className="font-semibold text-waldgruen-dark underline underline-offset-2"
+            >
+              Destatis
+            </a>
+            , Stand {officialAddress.sourceStand}. Du kannst die Adresse bei Google noch einmal{" "}
+            <a
+              href={searchUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="font-semibold text-waldgruen-dark underline underline-offset-2"
+            >
+              hier
+            </a>{" "}
+            prüfen.
+          </p>
+        </>
+      ) : (
+        <p className="text-warmgrau leading-relaxed">
+          Für diese Postleitzahl lässt sich keine eindeutige amtliche Anschrift
+          zuordnen. Ergänze in der Suche deinen Wohnort und prüfe die Adresse,
+          bevor du den Brief abschickst. Die genaue Anschrift findest du {" "}
+          <a
+            href={searchUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="font-semibold text-waldgruen-dark underline underline-offset-2"
+          >
+            hier
+          </a>
+          .
+        </p>
+      )}
     </div>
   );
 }

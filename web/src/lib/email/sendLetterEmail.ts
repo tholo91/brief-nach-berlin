@@ -2,7 +2,7 @@ import { BrevoClient } from "@getbrevo/brevo";
 import { buildEmailHtml, buildLetterEmailSubject } from "./buildEmailHtml";
 import { signFeedbackToken } from "@/lib/feedback/token";
 import type { Politician } from "@/lib/types/politician";
-import type { Recipient } from "@/lib/lookup/rathausRecipient";
+import type { RathausRecipient, Recipient } from "@/lib/lookup/rathausRecipient";
 import { EMAIL_SENDER_NAME } from "@/lib/config";
 import type { WizardData } from "@/lib/types/wizard";
 
@@ -78,12 +78,16 @@ export interface SendLetterEmailParams {
   // 999.6: steuert Adressblock + Profil-Link-Logik in buildEmailHtml.
   // "mdb" hält das heutige Layout exakt; "mdl" nutzt die Landtag-Anschrift aus
   // postalAddress (keine "Deutscher Bundestag"-Zeile); "rathaus" hat weder
-  // Partei noch Profil-Link, dafür eine Google-Adresshilfe-Zeile.
+  // Partei noch Profil-Link und nutzt amtliche Adressdetails oder den Fallback.
   recipientKind: "mdb" | "mdl" | "rathaus";
   // Nur für mdl: ISO 3166-2:DE-Länderkürzel zur Auswahl der Landeswappen-Marke.
   bundeslandKey?: string;
-  // Nur Verwaltung: für die passende Rathaus-/Bezirksamt-Adresssuche.
-  rathausSearch?: { plz: string; ort: string; kind: "rathaus" | "bezirksamt" };
+  // Nur Kommune: amtliche Anschrift plus Google-Kontrolle oder ehrlicher Fallback.
+  rathausSearch?: {
+    ort: string;
+    kind: "buergermeisteramt" | "bezirksamt";
+    address: RathausRecipient["address"];
+  };
   letterText: string;
   issueText: string;
   debug?: LetterDebugPayload;
@@ -127,9 +131,12 @@ export function prepareLetterEmail(args: {
         politicianAbgeordnetenwatchUrl: null,
         recipientKind: "rathaus",
         rathausSearch: {
-          plz: recipient.plz,
-          ort: recipient.gemeindeName,
-          kind: recipient.recipientKind === "bezirksamt" ? "bezirksamt" : "rathaus",
+          ort:
+            recipient.recipientKind === "bezirksamt" || recipient.address.source === "destatis"
+              ? recipient.gemeindeName
+              : "",
+          kind: recipient.recipientKind,
+          address: recipient.address,
         },
         letterText,
         issueText,

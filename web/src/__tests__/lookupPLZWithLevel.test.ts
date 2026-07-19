@@ -7,14 +7,15 @@
 import { lookupPLZWithLevel, buildCoverageHint, lookupPLZ } from "@/lib/lookup/plzLookup";
 
 describe("lookupPLZWithLevel", () => {
-  it("NRW-PLZ (50667 Köln): Land abgedeckt, Kommune = Stadtverwaltung Köln", () => {
+  it("NRW-PLZ (50667 Köln): Land abgedeckt, Kommune = Bürgermeisteramt Köln", () => {
     const r = lookupPLZWithLevel("50667");
     expect(r.bundeslandKey).toBe("NW");
     expect(r.coverage.landSupported).toBe(true);
     expect(r.byLevel.Land.length).toBeGreaterThan(0);
     expect(r.byLevel.Land.every((p) => p.level === "Land" && p.bundeslandKey === "NW")).toBe(true);
     expect(r.byLevel.Kommune).toHaveLength(1);
-    expect(r.byLevel.Kommune[0].label).toBe("Stadtverwaltung Köln");
+    expect(r.byLevel.Kommune[0].label).toBe("Bürgermeisteramt Köln");
+    expect(r.byLevel.Kommune[0].address.source).toBe("destatis");
     expect(r.byLevel.Bund.length).toBeGreaterThan(0);
     expect(r.coverage.landAmbiguous).toBe(true);
     expect(r.coverage.landWahlkreisIds.length).toBeGreaterThan(1);
@@ -37,6 +38,7 @@ describe("lookupPLZWithLevel", () => {
     expect(r.byLevel.Kommune[0].recipientKind).toBe("bezirksamt");
     expect(r.byLevel.Kommune[0].label).toBe("Zuständiges Bezirksamt in Berlin");
     expect(r.byLevel.Kommune[0].label).not.toContain("Friedrichshain-Kreuzberg");
+    expect(r.byLevel.Kommune[0].address).toEqual({ source: "fallback" });
     expect(r.coverage.kommuneAmbiguous).toBe(true);
     expect(r.coverage.kommuneBezirke).toEqual(["Friedrichshain-Kreuzberg", "Pankow"]);
     expect(r.coverage.landSupported).toBe(true);
@@ -47,6 +49,34 @@ describe("lookupPLZWithLevel", () => {
     expect(r.coverage.kommuneAmbiguous).toBe(false);
     expect(r.coverage.kommuneBezirke).toEqual(["Mitte"]);
     expect(r.byLevel.Kommune[0].label).toBe("Bezirksamt Mitte");
+    expect(r.byLevel.Kommune[0].address).toEqual({ source: "fallback" });
+  });
+
+  it.each([
+    ["47051", "Bürgermeisteramt Duisburg", "Burgplatz 19", "47051", "Duisburg"],
+    ["32105", "Bürgermeisteramt Bad Salzuflen", "Rudolph-Brandes-Allee 19", "32105", "Bad Salzuflen"],
+    ["65183", "Bürgermeisteramt Wiesbaden", "Schlossplatz 6", "65183", "Wiesbaden"],
+    ["60311", "Bürgermeisteramt Frankfurt am Main", "Römerberg 23", "60311", "Frankfurt am Main"],
+  ])(
+    "%s nutzt die vollständige Destatis-Anschrift",
+    (plz, label, streetAddress, postalCode, city) => {
+      const recipient = lookupPLZWithLevel(plz).byLevel.Kommune[0];
+      expect(recipient.label).toBe(label);
+      expect(recipient.address).toMatchObject({
+        source: "destatis",
+        streetAddress,
+        postalCode,
+        city,
+        sourceStand: "31.01.2026",
+      });
+    }
+  );
+
+  it("Frankfurter Großempfänger-PLZ wird nicht riskant über den Kreis zugeordnet", () => {
+    const recipient = lookupPLZWithLevel("60261").byLevel.Kommune[0];
+    expect(recipient.label).toBe("Zuständiges Bürgermeisteramt");
+    expect(recipient.address).toEqual({ source: "fallback" });
+    expect(recipient.postalAddress).toBe("Zuständiges Bürgermeisteramt");
   });
 
   it("unbekannte PLZ (00000): keine Anreicherung, Ebenen leer bis auf Bund-Fallback", () => {

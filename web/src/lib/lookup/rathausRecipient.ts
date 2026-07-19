@@ -18,20 +18,28 @@ export interface MdlRecipient extends Politician {
 export interface RathausRecipient {
   kind: "rathaus";
   level: "Kommune";
-  recipientKind: "stadtverwaltung" | "bezirksamt";
+  recipientKind: "buergermeisteramt" | "bezirksamt";
   /** Mehrere zuständige Berliner Bezirke sind möglich; keine automatische Auswahl. */
   ambiguous?: boolean;
   /** Gemeinde-/Stadtname bzw. Berliner Bezirk, z.B. "Köln" oder "Friedrichshain-Kreuzberg" */
   gemeindeName: string;
   plz: string;
-  /** Empfänger-Label, z.B. "Stadtverwaltung Köln" oder "Bezirksamt Friedrichshain-Kreuzberg" */
+  /** Empfänger-Label, z.B. "Bürgermeisteramt Köln" oder "Bezirksamt Friedrichshain-Kreuzberg" */
   label: string;
-  /**
-   * Generische, postalisch zustellbare Anschrift OHNE Straße:
-   * "Stadtverwaltung Köln, 50667 Köln". Wird bewusst nicht als exakte
-   * Straßenadresse verkauft — die Google-Adresshilfe ergänzt Straße+Nr.
-   */
+  /** Vollständige Anschrift bei amtlichem Treffer, sonst nur das Empfänger-Label. */
   postalAddress: string;
+  address:
+    | {
+        source: "destatis";
+        ags: string;
+        streetAddress: string;
+        postalCode: string;
+        city: string;
+        sourceTitle: string;
+        sourceUrl: string;
+        sourceStand: string;
+      }
+    | { source: "fallback" };
   // Kein id-, kein politicianId-Feld (LOCK-5).
 }
 
@@ -59,26 +67,49 @@ export function buildRathausRecipient(args: {
   bundeslandKey: string;
   /** Nur Berlin: Bezirk der PLZ (erster Treffer aus der BTW-Ableitung) */
   bezirk?: string | null;
+  officialAddress?: {
+    ags: string;
+    streetAddress: string;
+    postalCode: string;
+    city: string;
+    sourceTitle: string;
+    sourceUrl: string;
+    sourceStand: string;
+  } | null;
 }): RathausRecipient {
   if (args.bundeslandKey === "HH" || args.bundeslandKey === "HB") {
     throw new RathausRecipientNotApplicable(args.bundeslandKey);
   }
 
-  const isBezirk = args.bundeslandKey === "BE" && Boolean(args.bezirk);
-  const name = isBezirk ? (args.bezirk as string) : args.gemeindeName;
-  const label = `${isBezirk ? "Bezirksamt" : "Stadtverwaltung"} ${name}`;
-  // Komma-Separator spiegelt die postalAddress-Konvention der Politician-Daten
-  // (buildEmailHtml splittet Adresszeilen an Kommas).
-  const city = args.bundeslandKey === "BE" ? "Berlin" : args.gemeindeName;
-  const postalAddress = `${label}, ${args.plz} ${city}`;
+  const isBerlin = args.bundeslandKey === "BE";
+  const hasBezirk = isBerlin && Boolean(args.bezirk);
+  const name = hasBezirk ? (args.bezirk as string) : args.gemeindeName;
+  const label = isBerlin
+    ? hasBezirk
+      ? `Bezirksamt ${name}`
+      : "Zuständiges Bezirksamt in Berlin"
+    : args.officialAddress
+      ? `Bürgermeisteramt ${name}`
+      : "Zuständiges Bürgermeisteramt";
+  const officialAddress = isBerlin ? null : args.officialAddress;
+  const address = officialAddress
+    ? {
+        source: "destatis" as const,
+        ...officialAddress,
+      }
+    : { source: "fallback" as const };
+  const postalAddress = officialAddress
+    ? `${label}, ${officialAddress.streetAddress}, ${officialAddress.postalCode} ${officialAddress.city}`
+    : label;
 
   return {
     kind: "rathaus",
     level: "Kommune",
-    recipientKind: isBezirk ? "bezirksamt" : "stadtverwaltung",
+    recipientKind: isBerlin ? "bezirksamt" : "buergermeisteramt",
     gemeindeName: name,
     plz: args.plz,
     label,
     postalAddress,
+    address,
   };
 }

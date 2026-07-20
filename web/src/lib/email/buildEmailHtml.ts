@@ -125,10 +125,45 @@ function getLandtagDestination(postalAddress: string): string | null {
   return match?.[1]?.trim() || null;
 }
 
+function getGovernmentDestination(postalAddress: string): string | null {
+  const postalCity = postalAddress.split(",").at(-1)?.trim();
+  const match = postalCity?.match(/^\d{5}\s+(.+)$/);
+  return match?.[1]?.trim() || null;
+}
+
+function formatGermanDate(value: string): string {
+  const match = value.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+  return match ? `${match[3]}.${match[2]}.${match[1]}` : value;
+}
+
+function formatGovernmentDisplayName(value: string): string {
+  return value
+    .replace(/Staatskanzlei des Landes Nordrhein-Westfalen/g, "Staatskanzlei NRW")
+    .replace(/Staatskanzlei Nordrhein-Westfalen/g, "Staatskanzlei NRW")
+    .replace(/Landesregierung Nordrhein-Westfalen/g, "Landesregierung NRW")
+    .replace(/Nordrhein-Westfalen/g, "NRW");
+}
+
+function getGovernmentAddressLines(data: SendLetterEmailParams): string {
+  const parts = data.politicianPostalAddress.split(",").map((part) => part.trim());
+  const first = parts[0] ?? "";
+  const second = parts[1] ?? "";
+  const label = data.politicianName.trim();
+  const officeName = data.governmentSource?.officeName.trim();
+  const addressParts =
+    first === label && second === officeName
+      ? parts.slice(2)
+      : officeName && first === officeName
+        ? parts.slice(1)
+        : parts.slice(1);
+
+  return addressParts.map((part) => escapeHtml(part)).join("<br>");
+}
+
 export function buildLetterEmailSubject(data: SendLetterEmailParams): string {
   if (data.recipientKind === "landesregierung") {
-    const article = data.governmentSource?.institutionKind === "senat" ? "den" : "die";
-    return `Dein Brief an ${article} ${data.politicianName} ist fertig`;
+    const destination = getGovernmentDestination(data.politicianPostalAddress);
+    return destination ? `Dein Brief nach ${destination} ist fertig` : EMAIL_SUBJECT;
   }
   if (data.recipientKind === "mdl") {
     const destination = getLandtagDestination(data.politicianPostalAddress);
@@ -145,8 +180,10 @@ export function buildLetterEmailSubject(data: SendLetterEmailParams): string {
 
 function getEmailIntro(data: SendLetterEmailParams): string {
   if (data.recipientKind === "landesregierung") {
-    const article = data.governmentSource?.institutionKind === "senat" ? "den" : "die";
-    return `Dein Brief an ${article} ${data.politicianName} ist fertig zum Absenden.`;
+    const destination = getGovernmentDestination(data.politicianPostalAddress);
+    return destination
+      ? `Dein Brief nach ${destination} ist fertig zum Absenden.`
+      : "Dein Brief an die Landesregierung ist fertig zum Absenden.";
   }
   if (data.recipientKind === "mdl") {
     const destination = getLandtagDestination(data.politicianPostalAddress);
@@ -271,6 +308,8 @@ export function buildEmailHtml(data: SendLetterEmailParams): string {
       : null;
   const visibleAddressLines = officialRathausAddress
     ? `${escapeHtml(officialRathausAddress.streetAddress)}<br>${escapeHtml(officialRathausAddress.postalCode)} ${escapeHtml(officialRathausAddress.city)}`
+    : isLandesregierung && data.governmentSource
+      ? getGovernmentAddressLines(data)
     : isRathaus
       ? ""
       : addressLines;
@@ -285,8 +324,12 @@ export function buildEmailHtml(data: SendLetterEmailParams): string {
 
   const fallbackUrl = `${APP_URL}/kein-mdb-im-wahlkreis`;
 
-  const addressNameLine = isRathaus || isLandesregierung
+  const addressNameLine = isRathaus
     ? `<strong>${fullName}</strong><br>`
+    : isLandesregierung && data.governmentSource
+      ? `<strong>${escapeHtml(formatGovernmentDisplayName(data.governmentSource.officeName))}</strong><br>`
+    : isLandesregierung
+      ? `<strong>${escapeHtml(formatGovernmentDisplayName(data.politicianName))}</strong><br>`
     : isFallback
       ? `<strong><a href="${fallbackUrl}" target="_blank" rel="noopener noreferrer" style="color:#2D5016;text-decoration:underline;">Kein MdB zugeordnet</a></strong><br>`
       : `<strong><a href="${profileUrl}" target="_blank" rel="noopener noreferrer" style="color:#2D5016;text-decoration:underline;">${fullName}, ${mandateLabel}${party ? ` (${party})` : ""}</a></strong><br>`;
@@ -311,7 +354,7 @@ export function buildEmailHtml(data: SendLetterEmailParams): string {
       : "";
   const governmentSourceLine =
     isLandesregierung && data.governmentSource
-      ? `<p style="margin:10px 0 0;font-family:Georgia,'Times New Roman',serif;font-size:12px;color:#666666;line-height:1.5;">Quelle: <a href="${escapeHtml(data.governmentSource.url)}" target="_blank" rel="noopener noreferrer" style="color:#2D5016;text-decoration:underline;">${escapeHtml(data.governmentSource.title)}</a>, geprüft am ${escapeHtml(data.governmentSource.stand)}.</p>`
+      ? `<p style="margin:10px 0 0;font-family:Georgia,'Times New Roman',serif;font-size:12px;color:#666666;line-height:1.5;">Quelle: <a href="${escapeHtml(data.governmentSource.url)}" target="_blank" rel="noopener noreferrer" style="color:#2D5016;text-decoration:underline;">${escapeHtml(formatGovernmentDisplayName(data.governmentSource.title))}</a>, geprüft am ${escapeHtml(formatGermanDate(data.governmentSource.stand))}.</p>`
       : "";
 
   const profileButtonText = isFallback ? "Empfänger finden" : "Profil auf<br>abgeordnetenwatch";

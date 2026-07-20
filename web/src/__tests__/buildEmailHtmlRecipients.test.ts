@@ -162,15 +162,17 @@ describe("buildEmailHtml — Empfänger-Arten", () => {
     });
     const html = buildEmailHtml(params);
     expect(buildLetterEmailSubject(params)).toBe(
-      "Dein Brief an die Landesregierung Nordrhein-Westfalen ist fertig"
+      "Dein Brief nach Düsseldorf ist fertig"
     );
     expect(html).toContain(
-      "Dein Brief an die Landesregierung Nordrhein-Westfalen ist fertig zum Absenden."
+      "Dein Brief nach Düsseldorf ist fertig zum Absenden."
     );
-    expect(html).toContain("<strong>Landesregierung Nordrhein-Westfalen</strong><br>");
-    expect(html).toContain("Staatskanzlei des Landes Nordrhein-Westfalen<br>Horionplatz 1<br>40190 Düsseldorf");
-    expect(html).toContain("Staatskanzlei Nordrhein-Westfalen: Organisationsplan");
-    expect(html).toContain("geprüft am 2026-07-20");
+    expect(html).toContain("<strong>Staatskanzlei NRW</strong><br>");
+    expect(html).toContain("Horionplatz 1<br>40190 Düsseldorf");
+    expect(html).not.toContain("<strong>Landesregierung Nordrhein-Westfalen</strong><br>");
+    expect(html).not.toContain("Staatskanzlei des Landes Nordrhein-Westfalen<br>Horionplatz 1");
+    expect(html).toContain("Staatskanzlei NRW: Organisationsplan");
+    expect(html).toContain("geprüft am 20.07.2026");
     expect(html).not.toContain(", MdL (");
     expect(html).not.toContain(", MdB (");
     expect(html).not.toContain("abgeordnetenwatch.de/profile");
@@ -196,9 +198,9 @@ describe("buildEmailHtml — Empfänger-Arten", () => {
         stand: "2026-07-20",
       },
     });
-    expect(buildLetterEmailSubject(params)).toBe("Dein Brief an den Senat von Berlin ist fertig");
+    expect(buildLetterEmailSubject(params)).toBe("Dein Brief nach Berlin ist fertig");
     expect(buildEmailHtml(params)).toContain(
-      "Dein Brief an den Senat von Berlin ist fertig zum Absenden."
+      "Dein Brief nach Berlin ist fertig zum Absenden."
     );
   });
 

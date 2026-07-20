@@ -15,6 +15,18 @@ Die PLZ-Zuordnung ist keine belastbare Empfaenger-Empfehlung. Fuer 28203 zeigt d
 
 Eine Namenssuche oder ein Parteifilter verkleinert die Liste, uebertraegt die eigentliche Auswahl aber wieder an die Nutzer:innen. Das widerspricht dem Produktziel: Nutzer:innen sollen ihr Anliegen schildern koennen, waehrend das Produkt einen nachvollziehbaren Empfaenger und eine brauchbare Formulierung vorbereitet.
 
+## Regionale Einordnung
+
+Bremen ist ein besonders deutlicher Sonderfall, aber nicht das einzige Problem:
+
+- Fuer die PLZ 28203 liefert der aktuelle Datenbestand 72 Mitglieder der Bremischen Buergerschaft. Die PLZ wird korrekt dem Wahlkreis Bremen zugeordnet. Dieser Wahlkreis umfasst aber praktisch die gesamte Stadt; viele Mandate kommen ueber Landeslisten. Die 72 Personen sind deshalb keine 72 individuell zustaendigen Ansprechpartner:innen.
+- Bremerhaven ist separat erfasst und kommt auf 15 Personen. Die hohe Zahl in Bremen ist damit kein Fehler der PLZ-Zuordnung, sondern eine Folge der Wahlkreis- und Mandatsstruktur.
+- Hamburg ist ebenfalls ein Stadtstaat. Dort verteilen sich die Mandate auf mehrere Wahlkreise, deshalb sind die Gruppen kleiner, aber die persoenliche Zustaendigkeit bleibt genauso wenig offensichtlich.
+- Berlin hat Wahlkreis- und Listenmandate sowie Bezirksstrukturen. Eine PLZ kann mehrere Bezirke beruehren. Auch dort ist ein einzelnes MdA nicht automatisch der fachlich passende Empfaenger.
+- In allen Laendern gibt es zusaetzlich Listenmandate. Ein Anliegen kann daher fachlich besser bei einem Ausschuss, einer Fraktion, dem Landtag als Institution oder der Landesregierung aufgehoben sein als bei einer zufaellig ausgewaehlten Person aus dem Wahlkreis.
+
+Die Schlussfolgerung ist deshalb nicht nur ein Bremer Sonderweg: Eine PLZ kann den politischen Raum eingrenzen, aber sie sagt noch nicht, welche Person einen frei formulierten Brief am sinnvollsten bearbeiten kann.
+
 ## Festgehaltene Entscheidung vom 19.07.2026
 
 Die Land-Empfaengerlogik bleibt im aktuellen Paket unveraendert. Es werden vorerst keine Ausschussdaten importiert, keine Person automatisch empfohlen und kein Bremer Sonder-Fallback eingebaut. Die Entscheidung wird getroffen, bevor weitere Arbeit in den heutigen MdL-Flow fliesst.
@@ -28,20 +40,23 @@ Die Land-Empfaengerlogik bleibt im aktuellen Paket unveraendert. Es werden vorer
 
 ## Entscheidungshilfe
 
-Drei Modelle gegeneinander pruefen:
+Zuerst sollte geklaert werden, ob ein Personenempfaenger ueberhaupt der Standard sein muss. Fuer die meisten Nutzer:innen ist weder das eigene MdB noch ein MdL bekannt. Die Auswahl einer einzelnen Person verlagert die Recherche zurueck auf die Nutzer:innen und erzeugt eine Scheingenauigkeit.
 
-1. Landesregierung oder zustaendiges Ministerium: einfache institutionelle Adressierung und passend fuer exekutive Anliegen. Vorher klaeren, wie legislative Anliegen und Ressortwechsel behandelt werden.
-2. Landtag als Institution oder Petitionsausschuss: ein stabiler Empfaenger pro Bundesland. Vorher pruefen, ob ein normaler Brief dort sinnvoll bearbeitet wird oder ein formelles Petitionsverfahren erwartet wird.
-3. Einzelnes MdL: persoenlicher demokratischer Adressat. Dieses Modell braucht eine bundesweit belastbare fachliche Zuordnung und einen ehrlichen Fallback fuer fehlende oder widerspruechliche Ausschussdaten.
+Vier Modelle gegeneinander pruefen:
+
+1. Zustaendiges Ministerium oder Landesregierung: passend fuer Anliegen, bei denen die Landesverwaltung handeln, foerdern, regeln oder umsteuern kann. Die Anschrift bleibt institutionell stabiler als eine einzelne Person.
+2. Landtag als Institution oder zustaendiger Petitionsausschuss: passend fuer landesweite politische Anliegen, Gesetzgebung und formelle Petitionen. Vorher klaeren, ob ein normaler Brief dort sinnvoll bearbeitet wird oder in ein Petitionsverfahren ueberfuehrt werden muss.
+3. Fachlich zustaendiger Ausschuss: passend, wenn das Thema klar einem parlamentarischen Fachgebiet zugeordnet werden kann. Das waere naeher am Anliegen als eine reine PLZ-Zuordnung, setzt aber gepflegte Ausschussdaten und eine klare Routinglogik voraus.
+4. Einzelnes MdL: persoenlicher demokratischer Adressat. Dieses Modell braucht eine bundesweit belastbare fachliche Zuordnung und einen ehrlichen Fallback fuer fehlende oder widerspruechliche Ausschussdaten. Es sollte eher eine optionale Vertiefung bleiben als der Standard.
 
 Die Entscheidung soll nicht danach fallen, welcher Datensatz am leichtesten einzubauen ist. Entscheidend ist, wo ein normaler, frei formulierter Buergerbrief am ehesten gelesen und sinnvoll bearbeitet wird.
 
 ## Akzeptanzkriterien fuer die spaetere Umsetzung
 
-1. Genau ein vorausgewaehlter Land-Empfaenger statt einer langen Pflichtauswahl.
+1. Genau ein vorausgewaehlter institutioneller Land-Empfaenger statt einer langen Pflichtauswahl.
 2. Eine kurze Begruendung im Wizard: warum dieser Empfaenger fachlich passt und woher die Daten stammen.
 3. Mistral darf hoechstens einen kontrollierten Themenschluessel liefern. Name, Funktion, Anschrift, Quelle und Datenstand kommen aus gepflegten Daten.
-4. "Empfaenger aendern" bleibt optional. Partei-, Personen- oder Ressortlisten werden nur dort gezeigt.
+4. "Empfaenger aendern" bleibt optional. Partei- und Personenlisten werden nicht zum Pflichtschritt. Eine fachliche Ressort- oder Ausschussauswahl erscheint nur, wenn die Datenlage das verlaesslich traegt.
 5. Ein bundesweit einheitlicher Fallback. Keine eigenen Sonderlogiken fuer einzelne Landtage, solange sie nicht verfassungsrechtlich zwingend sind.
 6. Stichproben fuer alle 16 Bundeslaender sowie eigene Tests fuer Bremen, Hamburg und Berlin.
 

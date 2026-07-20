@@ -59,10 +59,20 @@ describe("lookupPLZ — data-driven fixture suite", () => {
         );
       } else if (fixture.category === "silent-fallback-no-politicians") {
         expect(wahlkreisIds.length).toBeGreaterThan(0);
-        expect(politicians).toHaveLength(0);
+        expect(politicians).toHaveLength(1);
+        expect(politicians[0]).toMatchObject({
+          id: -1,
+          lastName: "MdB",
+          wahlkreisId: fixture.expectedWahlkreisIds[0],
+        });
       } else if (fixture.category === "plz-not-found") {
         expect(wahlkreisIds).toHaveLength(0);
-        expect(politicians).toHaveLength(0);
+        expect(politicians).toHaveLength(1);
+        expect(politicians[0]).toMatchObject({
+          id: -1,
+          lastName: "MdB",
+          wahlkreisId: 0,
+        });
       }
     });
   });

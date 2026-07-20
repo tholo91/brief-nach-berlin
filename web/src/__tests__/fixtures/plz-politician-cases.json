@@ -2,7 +2,7 @@
   {
     "plz": "10115",
     "expectedWahlkreisIds": [74],
-    "expectedPoliticianLastNames": ["Steinmüller"],
+    "expectedPoliticianLastNames": ["Merendino", "Klose"],
     "category": "single-wahlkreis"
   },
   {
@@ -20,19 +20,19 @@
   {
     "plz": "10026",
     "expectedWahlkreisIds": [74],
-    "expectedPoliticianLastNames": ["Steinmüller"],
+    "expectedPoliticianLastNames": ["Merendino", "Klose"],
     "category": "single-wahlkreis"
   },
   {
     "plz": "10082",
     "expectedWahlkreisIds": [74],
-    "expectedPoliticianLastNames": ["Steinmüller"],
+    "expectedPoliticianLastNames": ["Merendino", "Klose"],
     "category": "single-wahlkreis"
   },
   {
     "plz": "10083",
     "expectedWahlkreisIds": [74],
-    "expectedPoliticianLastNames": ["Steinmüller"],
+    "expectedPoliticianLastNames": ["Merendino", "Klose"],
     "category": "single-wahlkreis"
   },
   {
@@ -80,7 +80,7 @@
   {
     "plz": "13347",
     "expectedWahlkreisIds": [74],
-    "expectedPoliticianLastNames": ["Steinmüller"],
+    "expectedPoliticianLastNames": ["Merendino", "Klose"],
     "category": "single-wahlkreis"
   },
   {

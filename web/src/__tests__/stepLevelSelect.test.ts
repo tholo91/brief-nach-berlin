@@ -45,7 +45,7 @@ describe("StepLevelSelect", () => {
     );
     expect(html).toContain("Über den Zustand deiner Straße entscheidet die Stadt.");
     expect(html).toContain("Du kannst dich trotzdem anders entscheiden.");
-    expect(html).toContain("Vorausgewählt");
+    expect(html).not.toContain("Vorausgewählt");
     expect(html).not.toContain("Unsere Empfehlung");
     expect(html).not.toContain("Sicherheit der Einschätzung");
     expect(html).not.toContain("Landtag und Kommune sind neu als Beta dabei");

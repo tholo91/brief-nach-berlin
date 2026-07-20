@@ -34,6 +34,7 @@ import { lookupPLZ, lookupPLZWithLevel } from "@/lib/lookup/plzLookup";
 import { routeToLevel } from "@/lib/lookup/levelRouter";
 import { signRoutingToken } from "@/lib/lookup/routingToken";
 import { submitWizardAction } from "@/lib/actions/submitWizard";
+import { getLandesregierungRecipient } from "@/lib/lookup/landesregierungRecipient";
 
 const politician = {
   id: 1,
@@ -86,6 +87,7 @@ function campaign(targetLevel: "Bund" | "Land", targetState: Campaign["targetSta
 
 const levelLookup = {
   byLevel: { Bund: [politician], Land: [], Kommune: [] },
+  optionalByLevel: { Land: [] },
   coverage: {
     landSupported: false,
     kommuneSupported: true,
@@ -98,6 +100,13 @@ const levelLookup = {
   bundeslandKey: "NW",
   bundeslandName: "Nordrhein-Westfalen",
   ortsname: "Köln",
+};
+
+const governmentRecipient = getLandesregierungRecipient("NW")!;
+const coveredLandLookup = {
+  ...levelLookup,
+  byLevel: { ...levelLookup.byLevel, Land: [governmentRecipient] },
+  coverage: { ...levelLookup.coverage, landSupported: true },
 };
 
 describe("campaign rollout safety", () => {
@@ -158,6 +167,47 @@ describe("campaign rollout safety", () => {
       error: "level_data_missing",
       level: "Land",
       fallbackUrl: "/",
+    });
+  });
+
+  it("nennt bei fester Berlin-Kampagne im Zielstaatsschutz den Senat", async () => {
+    process.env.LANDTAG_ROUTING_ENABLED = "true";
+    jest.mocked(getActiveCampaignBySlug).mockResolvedValue(campaign("Land", "BE"));
+
+    const result = await submitWizardAction({
+      ...baseData,
+      campaign: { slug: "sichere-schulwege", title: "Sichere Schulwege" },
+    });
+
+    expect(result).toMatchObject({
+      error: "campaign_state_mismatch",
+      targetStateName: "Berlin",
+      message: expect.stringContaining("an den Senat von Berlin"),
+    });
+  });
+
+  it("starts a Land campaign with the institutional default even without an MdL match", async () => {
+    process.env.LANDTAG_ROUTING_ENABLED = "true";
+    jest.mocked(getActiveCampaignBySlug).mockResolvedValue(campaign("Land", "NW"));
+    jest.mocked(lookupPLZWithLevel).mockReturnValue(coveredLandLookup);
+
+    const result = await submitWizardAction({
+      ...baseData,
+      campaign: {
+        slug: "sichere-schulwege",
+        title: "Sichere Schulwege",
+        targetLevel: "Bund",
+        targetState: "HE",
+      },
+    });
+
+    expect(result).toMatchObject({
+      disambiguationNeeded: true,
+      campaignTargetLevel: "Land",
+      levelRouting: {
+        byLevel: { Land: [governmentRecipient] },
+        optionalByLevel: { Land: [] },
+      },
     });
   });
 

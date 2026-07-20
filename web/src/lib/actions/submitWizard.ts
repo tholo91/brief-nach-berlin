@@ -21,6 +21,7 @@ import {
   type CampaignTargetLevel,
 } from "@/lib/campaigns/schema";
 import { DEFAULT_LETTER_LENGTH } from "@/lib/config";
+import { getLandesregierungRecipient } from "@/lib/lookup/landesregierungRecipient";
 
 const RATE_LIMIT_MESSAGE =
   "Du hast in kurzer Zeit viele Briefe erstellt. Bitte versuche es später erneut.";
@@ -147,6 +148,9 @@ export async function submitWizardAction(
       const derivedBundeslandKey = lookupPLZWithLevel(data.plz).bundeslandKey;
       if (derivedBundeslandKey !== campaignTarget.targetState) {
         const targetStateName = BUNDESLAND_NAMES[campaignTarget.targetState];
+        const targetRecipient = getLandesregierungRecipient(campaignTarget.targetState);
+        const targetLabel = targetRecipient?.label ?? `Landesregierung ${targetStateName}`;
+        const targetArticle = targetRecipient?.institutionKind === "senat" ? "den" : "die";
         log("campaign state mismatch", {
           targetState: campaignTarget.targetState,
           derivedBundeslandKey,
@@ -154,7 +158,7 @@ export async function submitWizardAction(
         return {
           error: "campaign_state_mismatch",
           targetStateName,
-          message: `Diese Kampagne richtet sich an den Landtag von ${targetStateName}. Deine Postleitzahl liegt in einem anderen Bundesland.`,
+          message: `Diese Kampagne richtet sich an ${targetArticle} ${targetLabel}. Deine Postleitzahl liegt in einem anderen Bundesland.`,
         };
       }
     }
@@ -168,7 +172,7 @@ export async function submitWizardAction(
         level: "Land",
         fallbackUrl: "/",
         message:
-          "Die Landtagsfunktion dieser Kampagne ist gerade nicht verfügbar. Du kannst stattdessen einen freien Brief schreiben.",
+          "Die Landesfunktion dieser Kampagne ist gerade nicht verfügbar. Du kannst stattdessen einen freien Brief schreiben.",
       };
     }
 
@@ -235,7 +239,7 @@ export async function submitWizardAction(
           level: "Land",
           fallbackUrl: "/",
           message:
-            "Für deine Postleitzahl können wir in dieser Landtagskampagne noch keine verlässliche Empfängerauswahl anbieten. Du kannst stattdessen einen freien Brief schreiben.",
+            "Für deine Postleitzahl können wir in dieser Landeskampagne noch keinen verifizierten institutionellen Empfänger anbieten. Du kannst stattdessen einen freien Brief schreiben.",
         };
       }
       const recommended = routing
@@ -245,6 +249,7 @@ export async function submitWizardAction(
         recommended,
         reasoning: routing?.reasoning || null,
         byLevel: levelResult.byLevel,
+        optionalByLevel: levelResult.optionalByLevel,
         coverage: levelResult.coverage,
         bundeslandName: levelResult.bundeslandName,
         ortsname: levelResult.ortsname,

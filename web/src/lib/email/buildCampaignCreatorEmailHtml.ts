@@ -46,7 +46,7 @@ export function buildCampaignCreatorEmailHtml(
     : "Deine Kampagne ist aktiv";
   const intro = isVerification
     ? "Ein letzter Klick: Danach prüfe ich den Kampagnentext automatisch und schalte die Seite frei, wenn alles passt."
-    : "Deine Kampagnenseite ist jetzt öffentlich. Teile den Link mit Menschen, die aus ihrem Wahlkreis einen eigenen Brief schreiben sollen.";
+    : "Deine Kampagnenseite ist jetzt öffentlich. Teile den Link mit Menschen, die einen eigenen Brief mit ihren Worten schreiben sollen.";
   const buttonText = isVerification
     ? "E-Mail bestätigen"
     : "Kampagne verwalten";
@@ -71,7 +71,7 @@ export function buildCampaignCreatorEmailHtml(
     !isVerification && share
       ? `<div style="margin:0 0 22px;padding:16px 18px;background-color:#FAF8F5;border:1px solid #E0DCD7;border-radius:4px;">
                 <p style="margin:0 0 8px;font-family:'Courier New',Courier,monospace;font-size:12px;font-weight:bold;text-transform:uppercase;color:#2D6A4F;">Kampagne teilen</p>
-                <p style="margin:0 0 12px;font-size:14px;line-height:1.6;color:#666666;">Lade andere ein, aus ihrem Wahlkreis einen eigenen Brief zu schreiben.</p>
+                <p style="margin:0 0 12px;font-size:14px;line-height:1.6;color:#666666;">Lade andere ein, einen eigenen Brief mit ihren Worten zu schreiben.</p>
                 <table role="presentation" cellpadding="0" cellspacing="0" width="100%">
                   <tr>
                     <td style="padding-right:4px;width:25%;" valign="top">

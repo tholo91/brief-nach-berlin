@@ -56,6 +56,13 @@ function format(payload: DebugPayload | { error: string }): string {
   if ("error" in payload) return payload.error;
   if (isVariantDebugPayload(payload)) return formatVariant(payload);
   const d = payload;
+  const recipientLabel =
+    d.representativeKind === "landesregierung" || d.representativeKind === "rathaus"
+      ? "Institution"
+      : d.representativeKind === "mdl"
+        ? "MdL"
+        : "MdB";
+  const recipientRegion = d.recipientRegion ?? d.representativeWahlkreis;
   const wcLabel = `${d.wordCount} (target ${d.letterLengthMin}–${d.letterLengthMax}) ${d.wordCountInRange ? "OK" : "OUT OF RANGE"}`;
   const lines = [
     ...(d.resent
@@ -69,8 +76,10 @@ function format(payload: DebugPayload | { error: string }): string {
     `Word count            ${wcLabel}`,
     `Issue text length     ${d.issueTextLength} chars`,
     `Political level       ${d.politicalLevel}`,
-    `MdB                   ${d.representativeName} (${d.representativeLevel}, ${d.representativeWahlkreis})`,
-    `MdB Partei            ${d.representativeParty ?? "—"}`,
+    `${recipientLabel.padEnd(21)} ${d.representativeName} (${d.representativeLevel}, ${recipientRegion})`,
+    ...(d.representativeKind === "landesregierung" || d.representativeKind === "rathaus"
+      ? []
+      : [`${`${recipientLabel} Partei`.padEnd(21)} ${d.representativeParty ?? "—"}`]),
     `MdB-Kontext genutzt   ${d.mdbContextUsed}`,
     `Available politicians ${d.availablePoliticianCount}`,
     `Fallback used         ${d.fallbackUsed}`,

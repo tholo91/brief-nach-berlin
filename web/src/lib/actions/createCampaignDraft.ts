@@ -95,7 +95,7 @@ const createCampaignDraftSchema = z.object({
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
         path: ["targetState"],
-        message: "Ein Bundesland ist nur bei Landtagskampagnen erlaubt.",
+        message: "Ein Bundesland ist nur bei Landeskampagnen erlaubt.",
       });
     }
   })

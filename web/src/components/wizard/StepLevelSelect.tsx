@@ -232,7 +232,6 @@ export function StepLevelSelect({
         {LEVEL_CARDS.map((card) => {
           const isAvailable = availability[card.level];
           const isSelected = selected === card.level;
-          const isPreselected = preselectedRecommendationLevel === card.level;
           const isBeta = card.level !== "Bund";
           const hint = unavailableHint(card.level);
           const hintId = hint ? `level-${card.level.toLowerCase()}-hint` : undefined;
@@ -276,27 +275,24 @@ export function StepLevelSelect({
                   <LevelIcon level={card.level} />
                 </div>
                 <div className="min-w-0 flex-1">
-                  <div className="flex flex-wrap items-center gap-2">
+                  <div className="flex flex-wrap items-start gap-2">
                     <p
-                      className={`font-body text-base font-semibold ${isAvailable ? "text-warmgrau" : "text-warmgrau/60"}`}
+                      className={`min-w-0 flex-1 font-body text-base font-semibold ${isAvailable ? "text-warmgrau" : "text-warmgrau/60"}`}
                     >
                       {card.title}
                     </p>
-                    {isPreselected && (
-                      <span className="inline-block font-body text-[11px] font-semibold uppercase tracking-wide text-waldgruen-dark bg-waldgruen/15 px-2 py-0.5 rounded">
-                        Vorausgewählt
-                      </span>
-                    )}
-                    {isBundledUnderLand && (
-                      <span className="inline-block font-body text-[11px] font-semibold uppercase tracking-wide text-warmgrau/70 bg-warmgrau/10 px-2 py-0.5 rounded">
-                        In {routing.bundeslandName} unter Land
-                      </span>
-                    )}
-                    {isBeta && (
-                      <span className="inline-block font-body text-[11px] font-semibold uppercase tracking-wide text-bernstein bg-bernstein/10 px-2 py-0.5 rounded">
-                        Beta
-                      </span>
-                    )}
+                    <div className="ml-auto flex max-w-full flex-wrap justify-end gap-2">
+                      {isBundledUnderLand && (
+                        <span className="inline-block font-body text-[11px] font-semibold uppercase tracking-wide text-warmgrau/70 bg-warmgrau/10 px-2 py-0.5 rounded">
+                          In {routing.bundeslandName} unter Land
+                        </span>
+                      )}
+                      {isBeta && (
+                        <span className="inline-block font-body text-[11px] font-semibold uppercase tracking-wide text-bernstein bg-bernstein/10 px-2 py-0.5 rounded">
+                          Beta
+                        </span>
+                      )}
+                    </div>
                   </div>
                   <p
                     className={`font-body text-sm mt-0.5 ${isAvailable ? "text-warmgrau/75" : "text-warmgrau/50"}`}

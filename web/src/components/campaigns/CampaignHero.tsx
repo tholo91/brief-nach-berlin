@@ -2,6 +2,7 @@ import { BUNDESLAND_NAMES, type Campaign } from "@/lib/campaigns/schema";
 import { campaignLogoPublicUrl } from "@/lib/campaigns/logo";
 import { CampaignBackground } from "./CampaignBackground";
 import { CampaignIssueStarter } from "./CampaignIssueStarter";
+import { getLandesregierungRecipient } from "@/lib/lookup/landesregierungRecipient";
 
 type PublicCampaign = Pick<
   Campaign,
@@ -17,16 +18,11 @@ type PublicCampaign = Pick<
   | "targetState"
 >;
 
-const FAQ_ITEMS = [
-  {
-    question: "Warum eine Briefkampagne?",
-    answer:
-      "Ein Brief landet bei einem konkreten Abgeordneten, nicht nur in einer Liste. Mit Adresse und Wahlkreisbezug ist klar: Diese Person erwartet eine Antwort.",
-  },
+const COMMON_FAQ_ITEMS = [
   {
     question: "Was ist anders als bei einer Online-Petition?",
     answer:
-      "Online-Petitionen sammeln viele Stimmen an einem Ort. Ein persönlicher Brief macht aus einem Klick ein Anliegen, das im Büro einzeln bearbeitet werden muss.",
+      "Online-Petitionen sammeln viele Stimmen an einem Ort. Ein persönlicher Brief bringt das eigene Anliegen als einzelnes Schreiben an eine politische Adresse.",
   },
   {
     question: "Muss ich den Kampagnentext übernehmen?",
@@ -103,11 +99,23 @@ export function CampaignHero({ campaign }: { campaign: PublicCampaign }) {
   const targetStateName = campaign.targetState
     ? BUNDESLAND_NAMES[campaign.targetState] ?? null
     : null;
+  const governmentRecipient = campaign.targetState
+    ? getLandesregierungRecipient(campaign.targetState)
+    : null;
   const heroRecipient = !isLandCampaign
     ? "dein Mitglied des Bundestags"
-    : targetStateName
-      ? `deine Abgeordneten im Landtag von ${targetStateName}`
-      : "deine Abgeordneten im zuständigen Landtag";
+    : governmentRecipient
+      ? `${governmentRecipient.institutionKind === "senat" ? "den" : "die"} ${governmentRecipient.label}`
+      : "die Landesregierung deines Bundeslands";
+  const faqItems = [
+    {
+      question: "Warum eine Briefkampagne?",
+      answer: isLandCampaign
+        ? "Ein persönlicher Brief bekommt eine klare amtliche Empfängeradresse bei der Landesregierung oder dem Senat. Jede Person formuliert und versendet ihren eigenen Brief."
+        : "Ein persönlicher Brief geht mit Adresse und Wahlkreisbezug an ein konkretes Mitglied des Bundestags. Jede Person formuliert und versendet ihren eigenen Brief.",
+    },
+    ...COMMON_FAQ_ITEMS,
+  ];
 
   return (
     <CampaignBackground>
@@ -122,8 +130,8 @@ export function CampaignHero({ campaign }: { campaign: PublicCampaign }) {
           {isLandCampaign && (
             <span className="mt-3 inline-flex w-fit items-center rounded-full border border-waldgruen/20 bg-waldgruen/10 px-3 py-1 font-body text-xs font-semibold text-waldgruen-dark">
               {targetStateName
-                ? `Landtagskampagne · ${targetStateName}`
-                : "Landtagskampagne"}
+                ? `Landeskampagne · ${targetStateName}`
+                : "Landeskampagne"}
             </span>
           )}
           <p className="mt-5 max-w-xl font-body text-lg leading-relaxed text-warmgrau/75">
@@ -219,7 +227,7 @@ export function CampaignHero({ campaign }: { campaign: PublicCampaign }) {
           Weniger Klick, mehr Gewicht
         </h2>
         <div className="mt-7 divide-y divide-waldgruen/15 border-y border-waldgruen/15">
-          {FAQ_ITEMS.map((item) => (
+          {faqItems.map((item) => (
             <details
               key={item.question}
               className="group -mx-3 rounded-lg px-3 transition-colors duration-150 [&[open]]:bg-waldgruen/[0.03] [&[open]_svg]:rotate-180"

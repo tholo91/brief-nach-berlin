@@ -64,11 +64,11 @@ export default function FadeFooterImage({ variant }: FadeFooterImageProps) {
   return (
     <div
       aria-hidden="true"
-      className="pointer-events-none select-none w-full overflow-hidden mt-auto"
+      className="pointer-events-none select-none w-full max-w-[1584px] mx-auto overflow-hidden mt-auto"
       style={
         fullHeight
-          ? { maxHeight: "min(48vh, 520px)" }
-          : { height: "clamp(180px, 22vw, 300px)" }
+          ? { maxHeight: "min(48vh, 520px)", maxWidth: `${width}px` }
+          : { height: "clamp(180px, 22vw, 300px)", maxWidth: `${width}px` }
       }
     >
       <Image

@@ -10,6 +10,7 @@ import type {
   MdlRecipient,
   RathausRecipient,
 } from "@/lib/lookup/rathausRecipient";
+import type { LandesregierungRecipient } from "@/lib/lookup/landesregierungRecipient";
 import { selectPoliticianAction } from "@/lib/actions/selectPolitician";
 import { resendLetterAction } from "@/lib/actions/resendLetter";
 import { reportErrorAction } from "@/lib/actions/reportError";
@@ -27,8 +28,8 @@ import { RathausAdresseButton } from "./RathausAdresseButton";
 // so a single static spinner feels longer than chunked progress. Timings sum
 // to the LETTER_GEN_MIN_DISPLAY_MS budget below.
 const LETTER_GEN_PHASES: ReadonlyArray<{ at: number; label: string }> = [
-  { at: 0, label: "Wahlkreis prüfen..." },
-  { at: 1300, label: "Abgeordnete prüfen..." },
+  { at: 0, label: "Empfänger prüfen..." },
+  { at: 1300, label: "Angaben vorbereiten..." },
   { at: 2600, label: "Brief wird formuliert..." },
 ];
 const LETTER_GEN_MIN_DISPLAY_MS = 4000;
@@ -89,6 +90,8 @@ interface Step3SuccessProps {
   wizardData: WizardData;
   /** Empfänger der gewählten Ebene: MdB/MdL-Karten oder ein Rathaus-Empfänger */
   recipients: Recipient[];
+  /** Optionale MdLs; erst nach bewusstem Wechsel in den Personenpfad sichtbar. */
+  optionalLandRecipients?: MdlRecipient[];
   /** Gewählte Ebene (nur gesetzt, wenn der Ebene-Auswahl-Step aktiv war) */
   selectedLevel?: PoliticalLevel;
   /** Signierter Routing-Token — wird an /api/generate-letter durchgereicht */
@@ -102,6 +105,7 @@ export function Step3Success({
   result,
   wizardData,
   recipients,
+  optionalLandRecipients = [],
   selectedLevel,
   routingToken,
   onChangePlz,
@@ -109,19 +113,30 @@ export function Step3Success({
 }: Step3SuccessProps) {
   // Abgeordneten-Karten (mdb/mdl) und der synthetische Rathaus-Empfänger
   // teilen sich den Step; Kommune zeigt genau eine Verwaltungs-Karte.
-  const politicians = useMemo(
-    () => recipients.filter((r): r is MdbRecipient | MdlRecipient => r.kind !== "rathaus"),
-    [recipients]
-  );
+  const [showLandPersonPicker, setShowLandPersonPicker] = useState(false);
+  const politicians = useMemo(() => {
+    const standard = recipients.filter(
+      (r): r is MdbRecipient | MdlRecipient => r.kind === "mdb" || r.kind === "mdl"
+    );
+    return showLandPersonPicker ? [...standard, ...optionalLandRecipients] : standard;
+  }, [recipients, optionalLandRecipients, showLandPersonPicker]);
   const rathaus = useMemo(
     () => recipients.find((r): r is RathausRecipient => r.kind === "rathaus") ?? null,
+    [recipients]
+  );
+  const landesregierung = useMemo(
+    () =>
+      recipients.find(
+        (r): r is LandesregierungRecipient => r.kind === "landesregierung"
+      ) ?? null,
     [recipients]
   );
   const landWahlkreisCount = useMemo(
     () => new Set(politicians.map((p) => p.wahlkreisId)).size,
     [politicians]
   );
-  const isAmbiguousLand = selectedLevel === "Land" && landWahlkreisCount > 1;
+  const isAmbiguousLand =
+    selectedLevel === "Land" && showLandPersonPicker && landWahlkreisCount > 1;
   const isAmbiguousKommune =
     selectedLevel === "Kommune" &&
     rathaus?.ambiguous === true;
@@ -139,6 +154,9 @@ export function Step3Success({
   );
   // Kommune: die einzige Rathaus-Karte ist vorausgewählt (ein Klick weniger)
   const [rathausSelected, setRathausSelected] = useState<boolean>(() => Boolean(rathaus));
+  const [landesregierungSelected, setLandesregierungSelected] = useState<boolean>(
+    () => Boolean(landesregierung)
+  );
   const [isGenerating, setIsGenerating] = useState(false);
   const [generationComplete, setGenerationComplete] = useState(false);
   const [generationError, setGenerationError] = useState<string | null>(null);
@@ -236,6 +254,7 @@ export function Step3Success({
   const handleCardSelect = useCallback((politicianId: number) => {
     setSelectedPoliticianId(politicianId);
     setRathausSelected(false);
+    setLandesregierungSelected(false);
     requestAnimationFrame(() => {
       const reduce =
         typeof window !== "undefined" &&
@@ -264,6 +283,7 @@ export function Step3Success({
   // Diskriminierte Auswahl für die Server-Seite: rathaus trägt bewusst keine
   // ID (LOCK-5), Abgeordnete gehen mit kind + Abgeordnetenwatch-ID raus.
   const currentSelection = useMemo<RecipientSelection | null>(() => {
+    if (landesregierung && landesregierungSelected) return { kind: "landesregierung" };
     if (rathaus && rathausSelected) return { kind: "rathaus" };
     if (selectedPolitician) {
       return { kind: selectedPolitician.kind, selectedPoliticianId: selectedPolitician.id };
@@ -273,7 +293,7 @@ export function Step3Success({
       return { kind: "mdb", selectedPoliticianId };
     }
     return null;
-  }, [rathaus, rathausSelected, selectedPolitician, selectedPoliticianId]);
+  }, [landesregierung, landesregierungSelected, rathaus, rathausSelected, selectedPolitician, selectedPoliticianId]);
 
   // Group the disambiguation cards by Wahlkreis. sortedPoliticians is already
   // Direkt-first, so insertion order puts the group holding the pre-selected
@@ -489,7 +509,8 @@ export function Step3Success({
         email: wizardData.email ?? null,
         issueText: wizardData.issueText ?? null,
         politicianId:
-          generatedSelection && generatedSelection.kind !== "rathaus"
+          generatedSelection &&
+          (generatedSelection.kind === "mdb" || generatedSelection.kind === "mdl")
             ? generatedSelection.selectedPoliticianId
             : null,
         retryCount,
@@ -523,8 +544,14 @@ export function Step3Success({
   const [copied, setCopied] = useState(false);
   const [clipboardFallbackUrl, setClipboardFallbackUrl] = useState<string | null>(null);
   const share = useMemo(
-    () => buildShareTarget(wizardData.campaign),
-    [wizardData.campaign]
+    () =>
+      buildShareTarget(
+        wizardData.campaign,
+        "participant",
+        selectedLevel ?? "Bund",
+        landesregierung?.institutionKind ?? "landesregierung"
+      ),
+    [wizardData.campaign, selectedLevel, landesregierung]
   );
 
   // Single "Teilen" button: native share when available, fall back to clipboard copy.
@@ -576,10 +603,14 @@ export function Step3Success({
     selectedLevel ??
     generatedRecipient?.level ??
     (result && "success" in result && result.success ? result.politicalLevel : "Bund");
+  const effectiveLandInstitution =
+    generatedRecipient?.kind === "landesregierung" ? generatedRecipient : landesregierung;
+  const effectiveLandArticle = effectiveLandInstitution?.institutionKind === "senat" ? "dem" : "der";
+  const effectiveLandLabel = effectiveLandInstitution?.label ?? "Landesregierung";
   const handwrittenImpactCopy = effectiveLevel === "Bund"
     ? "Handgeschriebene Briefe werden im Bundestag tatsächlich gelesen und besprochen."
     : effectiveLevel === "Land"
-      ? "Ein persönlicher, handgeschriebener Brief fällt auch im Landtag auf."
+      ? "Ein persönlicher, handgeschriebener Brief macht dein Anliegen auf Landesebene konkret."
       : "Ein persönlicher, handgeschriebener Brief macht dein Anliegen für die Verwaltung greifbar.";
   const addressInstruction = effectiveLevel === "Kommune"
     ? "Nutze die Suchhilfe, prüfe die vollständige Anschrift und schreib sie auf den Umschlag."
@@ -587,7 +618,7 @@ export function Step3Success({
   const shareImpactCopy = effectiveLevel === "Bund"
     ? "Dein Brief wirkt. Und er wirkt noch stärker, wenn weitere Stimmen aus deinem Wahlkreis dazukommen. Briefe aus derselben Gegend zum gleichen Thema bekommen im Bundestag besonderes Gewicht."
     : effectiveLevel === "Land"
-      ? "Dein Brief wirkt. Und er wirkt noch stärker, wenn weitere Menschen aus deinem Bundesland dem Landtag mit eigenen Worten schreiben."
+      ? `Dein Brief wirkt. Und er wirkt noch stärker, wenn weitere Menschen aus deinem Bundesland ${effectiveLandArticle} ${effectiveLandLabel} mit eigenen Worten schreiben.`
       : "Dein Brief wirkt. Und er wirkt noch stärker, wenn weitere Menschen aus deiner Stadt oder Gemeinde ihr Anliegen bei der Verwaltung sichtbar machen.";
   const campaignShareImpactCopy = effectiveLevel === "Bund"
     ? "Dein Brief ist ein Anfang. Teile die Kampagne, damit weitere Menschen aus ihrem Wahlkreis mit eigenen Worten schreiben."
@@ -1026,7 +1057,9 @@ export function Step3Success({
       ? formatPartyShort(selectedPolitician.party).replace(/^Die Linke$/, "die Linke")
       : "";
     const selectedPoliticianLabel =
-      rathaus && rathausSelected
+      landesregierung && landesregierungSelected
+        ? landesregierung.label
+        : rathaus && rathausSelected
         ? rathaus.label
         : selectedPolitician?.id === -1
           ? "MdB später auswählen"
@@ -1038,18 +1071,20 @@ export function Step3Success({
     const selectionTitle = isKommune
       ? "Dein Brief geht an die Verwaltung"
       : isLand
-        ? !isNoMdbFound && sortedPoliticians.length > 1
-          ? `${sortedPoliticians.length} mögliche Landtagsabgeordnete für PLZ ${wizardData.plz}`
-          : "Wer vertritt dich im Landtag?"
+        ? showLandPersonPicker
+          ? "Lieber einer Person schreiben"
+          : landesregierung
+            ? `Dein Brief geht an ${landesregierung.institutionKind === "senat" ? "den" : "die"} ${landesregierung.label}`
+            : "Dein Brief geht an die Landesregierung"
         : !isNoMdbFound && sortedPoliticians.length > 1
           ? `${sortedPoliticians.length} Abgeordnete für PLZ ${wizardData.plz}`
           : "Wer vertritt deinen Wahlkreis?";
     const introCopy = isKommune
       ? "Der kommunale Empfänger ist bereits vorausgewählt."
       : isLand
-        ? wahlkreisGroups.length === 1
-          ? "Diese Landtagsabgeordneten kommen für deine PLZ infrage. Ein Direktmandat ist vorausgewählt, du kannst aber auch jemand anderen wählen."
-          : "Für deine PLZ kommen mehrere Landtagswahlkreise infrage. Deshalb ist niemand vorausgewählt: Prüfe den Wahlkreis und wähle selbst."
+        ? showLandPersonPicker
+          ? "Wähle selbst eine Person aus deiner PLZ-Zuordnung. Wir treffen keine automatische Personen- oder Parteiauswahl."
+          : "Der institutionelle Empfänger ist bereits vorausgewählt."
         : isNoMdbFound
           ? `Für die PLZ ${wizardData.plz} wurde kein MdB gefunden. Du kannst den Brief dennoch formulieren lassen und dein MdB später auswählen oder deine PLZ anpassen.`
           : wahlkreisGroups.length === 1
@@ -1201,7 +1236,79 @@ export function Step3Success({
           </div>
         )}
 
-        {!isKommune && (
+        {isLand && landesregierung && !showLandPersonPicker && (
+          <div role="radiogroup" aria-label="Empfänger auswählen" className="mt-6">
+            <div
+              role="radio"
+              aria-checked={landesregierungSelected}
+              tabIndex={0}
+              onClick={() => {
+                setLandesregierungSelected(true);
+                setSelectedPoliticianId(null);
+              }}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" || e.key === " ") {
+                  e.preventDefault();
+                  setLandesregierungSelected(true);
+                  setSelectedPoliticianId(null);
+                }
+              }}
+              className={[
+                "w-full text-left p-4 rounded-lg border-2 transition-colors cursor-pointer",
+                landesregierungSelected
+                  ? "border-waldgruen bg-waldgruen/10"
+                  : "border-waldgruen/20 bg-creme hover:border-waldgruen/40",
+              ].join(" ")}
+            >
+              <span className="inline-block font-body text-[11px] font-semibold uppercase tracking-wide text-waldgruen-dark bg-waldgruen/15 px-2 py-0.5 rounded mb-1.5">
+                {landesregierung.institutionKind === "senat" ? "Senat" : "Landesregierung"}
+              </span>
+              <p className="font-body text-base font-semibold text-warmgrau">
+                {landesregierung.label}
+              </p>
+              <p className="font-body text-sm text-warmgrau mt-1 leading-relaxed">
+                {landesregierung.officeName}
+                <br />
+                {landesregierung.address.addressLines.map((line) => (
+                  <span key={line} className="block">{line}</span>
+                ))}
+              </p>
+              <p className="font-body text-sm text-warmgrau/80 mt-3 leading-relaxed">
+                {landesregierung.institutionKind === "senat"
+                  ? `Dein Brief geht an den ${landesregierung.label}. Er ist für landesweite politische Entscheidungen zuständig.`
+                  : `Dein Brief geht an die Landesregierung von ${landesregierung.bundeslandName}. Sie ist für landesweite politische Entscheidungen zuständig.`}
+              </p>
+              <p className="font-body text-xs text-warmgrau/70 mt-2 leading-relaxed">
+                Amtliche Anschrift: {" "}
+                <a
+                  href={landesregierung.address.sourceUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  title={landesregierung.address.sourceTitle}
+                  className="font-semibold text-waldgruen-dark underline underline-offset-2"
+                >
+                  Quelle
+                </a>
+                , geprüft am {landesregierung.address.sourceStand}
+              </p>
+            </div>
+            {optionalLandRecipients.length > 0 && (
+              <button
+                type="button"
+                onClick={() => {
+                  setShowLandPersonPicker(true);
+                  setLandesregierungSelected(false);
+                  setSelectedPoliticianId(null);
+                }}
+                className="mt-4 font-body text-sm font-semibold text-waldgruen underline underline-offset-4 hover:text-waldgruen-dark"
+              >
+                Lieber einer Person schreiben
+              </button>
+            )}
+          </div>
+        )}
+
+        {!isKommune && (!isLand || showLandPersonPicker) && (
         <div
           role="radiogroup"
           aria-label="Abgeordnete auswählen"
@@ -1292,6 +1399,20 @@ export function Step3Success({
             </div>
           ))}
         </div>
+        )}
+
+        {isLand && showLandPersonPicker && (
+          <button
+            type="button"
+            onClick={() => {
+              setShowLandPersonPicker(false);
+              setSelectedPoliticianId(null);
+              setLandesregierungSelected(true);
+            }}
+            className="mt-5 font-body text-sm font-semibold text-waldgruen underline underline-offset-4 hover:text-waldgruen-dark"
+          >
+            Zurück zur Landesregierung
+          </button>
         )}
 
         {/* Submit after selection - full width to match cards */}

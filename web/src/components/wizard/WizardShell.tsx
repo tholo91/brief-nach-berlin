@@ -73,9 +73,7 @@ function recipientsForLevel(
     return politicians.map((p) => ({ ...p, kind: p.level === "Land" ? "mdl" : "mdb" }));
   }
   if (level === "Kommune") return levelRouting.byLevel.Kommune;
-  if (level === "Land") {
-    return levelRouting.byLevel.Land.map((p) => ({ ...p, kind: "mdl" as const }));
-  }
+  if (level === "Land") return levelRouting.byLevel.Land;
   return levelRouting.byLevel.Bund.map((p) => ({ ...p, kind: "mdb" as const }));
 }
 
@@ -583,6 +581,14 @@ export function WizardShell() {
             result={actionResult}
             wizardData={wizardData as WizardData}
             recipients={recipientsForLevel(politicians, levelRouting, selectedLevel)}
+            optionalLandRecipients={
+              selectedLevel === "Land"
+                ? (levelRouting?.optionalByLevel.Land ?? []).map((p) => ({
+                    ...p,
+                    kind: "mdl" as const,
+                  }))
+                : []
+            }
             selectedLevel={selectedLevel ?? undefined}
             routingToken={routingToken}
             onChangePlz={

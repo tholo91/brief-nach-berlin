@@ -58,16 +58,14 @@ const targetLevelOptions = [
   },
   {
     value: "Land",
-    title: "Landtag",
-    text: "Briefe gehen an Landtagsabgeordnete, also an die Landespolitik.",
+    title: "Landesregierung",
+    text: "Briefe gehen institutionell an die Landesregierung oder in Stadtstaaten an den Senat.",
   },
 ] as const;
-const campaignWritingTips = [
+const commonCampaignWritingTips = [
   "Problem: Was soll sich ändern?",
   "Forderung: Was soll politisch passieren?",
   "Kontext: Wo passiert es, wen betrifft es, warum jetzt?",
-  "Argumente: Was ist für einzelne Abgeordnete oder ihre Fraktion relevant?",
-  "Anschluss: Bitte darum, das Thema in Fraktion, Ausschuss oder zuständigen Gesprächen mitzunehmen.",
 ];
 
 function fieldError(
@@ -401,7 +399,18 @@ export function CreatorCampaignForm() {
             </svg>
           </summary>
           <ul className="grid gap-2 px-4 pb-4 pt-1 font-body text-sm leading-relaxed text-warmgrau/75">
-            {campaignWritingTips.map((tip) => (
+            {[
+              ...commonCampaignWritingTips,
+              ...(draft.targetLevel === "Land"
+                ? [
+                    "Argumente: Warum braucht das Thema eine landesweite politische Entscheidung?",
+                    "Anschluss: Formuliere eine konkrete Bitte an die Landesregierung, ohne ein Ressort oder Ministerium zu raten.",
+                  ]
+                : [
+                    "Argumente: Was ist für einzelne Abgeordnete oder ihre Fraktion relevant?",
+                    "Anschluss: Bitte um eine konkrete politische Handlung, ohne Zuständigkeiten zu erfinden.",
+                  ]),
+            ].map((tip) => (
               <li key={tip} className="grid grid-cols-[10px_1fr] gap-2">
                 <span aria-hidden="true" className="mt-2 h-1.5 w-1.5 rounded-full bg-waldgruen/55" />
                 <span>{tip}</span>

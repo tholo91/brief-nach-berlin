@@ -122,7 +122,7 @@ export const campaignTargetSchema = z
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
         path: ["targetState"],
-        message: "Ein Bundesland ist nur bei Landtagskampagnen erlaubt.",
+        message: "Ein Bundesland ist nur bei Landeskampagnen erlaubt.",
       });
     }
   });
@@ -170,7 +170,7 @@ export const createCampaignSchema = campaignPublicFieldsSchema
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
         path: ["targetState"],
-        message: "Ein Bundesland ist nur bei Landtagskampagnen erlaubt.",
+        message: "Ein Bundesland ist nur bei Landeskampagnen erlaubt.",
       });
     }
   });

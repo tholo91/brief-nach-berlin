@@ -24,6 +24,7 @@ import {
 import type { GenerateLetterInput } from "@/lib/types/wizard";
 import type { Politician } from "@/lib/types/politician";
 import type { RathausRecipient } from "@/lib/lookup/rathausRecipient";
+import { getLandesregierungRecipient } from "@/lib/lookup/landesregierungRecipient";
 
 const mdb: Politician = {
   id: 1,
@@ -61,6 +62,7 @@ const rathaus: RathausRecipient = {
   postalAddress: "Bürgermeisteramt Köln",
   address: { source: "fallback" },
 };
+const landesregierung = getLandesregierungRecipient("NW")!;
 
 function input(overrides: Partial<GenerateLetterInput> = {}): GenerateLetterInput {
   return {
@@ -148,6 +150,23 @@ describe("buildSystemPrompt — Flag an", () => {
     expect(prompt).not.toContain("MdB-KONTEXT NUTZEN");
     // Anrede bleibt für Land unverändert (kein Gender-Resolve in v1)
     expect(prompt).toContain('Anrede: "Sehr geehrte/r [Titel] [Name],"');
+  });
+
+  it("Landesregierung: institutioneller Landes-Prompt ohne Personen-, Partei- oder Ausschusskontext", () => {
+    const prompt = buildSystemPrompt(input({
+      level: "Land",
+      landesregierung,
+      politicians: [],
+    }));
+    expect(prompt).toContain("Der Empfänger ist die Landesregierung oder in einem Stadtstaat der Senat.");
+    expect(prompt).toContain('Anrede: exakt "Sehr geehrte Damen und Herren,"');
+    expect(prompt).toContain("Landespolitik, Landesverwaltung, Landeshaushalt und Landesgesetzgebung");
+    expect(prompt).toContain("Erfinde KEIN Ministerium, Ressort, Programm, Gesetz, Ausschuss");
+    expect(prompt).toContain("PARTEI-NEUTRALITÄT (Landesregierung/Senat)");
+    expect(prompt).not.toContain("Alle verfügbaren Politiker sind Landtagsabgeordnete");
+    expect(prompt).not.toContain("ABGEORDNETEN-KONTEXT NUTZEN");
+    expect(prompt).not.toContain("MdB-KONTEXT NUTZEN");
+    expect(prompt).not.toContain("- SPD:");
   });
 
   it("Kommune: politischer Empfänger + neutrale Anrede + Partei-Neutralität", () => {
@@ -304,6 +323,24 @@ describe("buildUserPrompt — Kommune-Empfänger", () => {
   });
 });
 
+describe("buildUserPrompt — Landesregierung", () => {
+  it("sendet nur die verifizierte Institution mit neutraler Anrede an Mistral", () => {
+    const prompt = buildUserPrompt(
+      input({ level: "Land", landesregierung, politicians: [] }),
+      200,
+      280,
+      3
+    );
+    expect(prompt).toContain("Landesregierung Nordrhein-Westfalen");
+    expect(prompt).toContain("Nordrhein-Westfalen");
+    expect(prompt).toContain('"id": 0');
+    expect(prompt).toContain("Sehr geehrte Damen und Herren,");
+    expect(prompt).not.toContain("Karl Schmidt");
+    expect(prompt).not.toContain('"party"');
+    expect(prompt).not.toContain("<mdb_kontext>");
+  });
+});
+
 describe("generateLetter — serverseitig aufgelöste Ebene", () => {
   const letter = Array.from({ length: 260 }, (_, index) => `Wort${index}`).join(" ");
 
@@ -337,4 +374,26 @@ describe("generateLetter — serverseitig aufgelöste Ebene", () => {
       expect(result.politicalLevel).toBe(result.selectedRecipient.level);
     }
   );
+
+  it("liefert die Landesregierung unabhängig von der Modell-ID", async () => {
+    (mistral.chat.complete as jest.Mock).mockResolvedValue({
+      choices: [{
+        message: {
+          content: JSON.stringify({
+            political_level: "Bund",
+            selected_politician_id: 999,
+            letter,
+          }),
+        },
+      }],
+    });
+
+    const result = await generateLetter(
+      input({ level: "Land", landesregierung, politicians: [] })
+    );
+    expect(result.selectedRecipient).toBe(landesregierung);
+    expect(result.selectedPolitician).toBeNull();
+    expect(result.politicalLevel).toBe("Land");
+    expect(result.fallbackUsed).toBe(false);
+  });
 });

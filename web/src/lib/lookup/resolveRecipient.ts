@@ -11,8 +11,8 @@ export type ResolveRecipientResult =
  * /api/generate-letter:
  * - mdb/mdl: die numerische Abgeordnetenwatch-ID muss in der PLZ-abgeleiteten
  *   Liste der jeweiligen Ebene stehen (WR-02-Muster).
- * - rathaus: es wird KEINE Client-ID akzeptiert; der Empfänger wird komplett
- *   aus der PLZ neu gebaut.
+ * - rathaus/landesregierung: es wird KEINE Client-ID akzeptiert; der Empfänger
+ *   wird komplett aus der PLZ neu gebaut.
  */
 export function resolveRecipientSelection(
   plz: string,
@@ -32,13 +32,22 @@ export function resolveRecipientSelection(
 
   if (selection.kind === "mdl") {
     const result = lookupPLZWithLevel(plz);
-    const match = result.byLevel.Land.find((p) => p.id === selection.selectedPoliticianId);
+    const match = result.optionalByLevel.Land.find(
+      (p) => p.id === selection.selectedPoliticianId
+    );
     if (!match) return { ok: false, reason: "not_found" };
     return {
       ok: true,
       recipient: { ...match, kind: "mdl" },
-      availableCount: result.byLevel.Land.length,
+      availableCount: result.optionalByLevel.Land.length,
     };
+  }
+
+  if (selection.kind === "landesregierung") {
+    const result = lookupPLZWithLevel(plz);
+    const landesregierung = result.byLevel.Land[0];
+    if (!landesregierung) return { ok: false, reason: "not_found" };
+    return { ok: true, recipient: landesregierung, availableCount: 1 };
   }
 
   // rathaus: vollständig PLZ-abgeleitet, Client-Daten fließen nicht ein

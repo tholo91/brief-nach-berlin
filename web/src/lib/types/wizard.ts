@@ -1,5 +1,6 @@
 import type { Politician, PoliticalLevel } from "./politician";
 import type { RathausRecipient, Recipient } from "@/lib/lookup/rathausRecipient";
+import type { LandesregierungRecipient } from "@/lib/lookup/landesregierungRecipient";
 import type { LetterLength } from "@/lib/config";
 
 export type WizardStep = 1 | 2 | "2b" | "level" | 3;
@@ -48,8 +49,11 @@ export interface LevelRoutingContext {
   reasoning: string | null;
   byLevel: {
     Bund: Politician[];
-    Land: Politician[];
+    Land: LandesregierungRecipient[];
     Kommune: RathausRecipient[];
+  };
+  optionalByLevel: {
+    Land: Politician[];
   };
   coverage: {
     landSupported: boolean;
@@ -79,6 +83,8 @@ export interface GenerateLetterInput {
   level?: PoliticalLevel;
   /** Kommune: synthetischer Verwaltungs-Empfänger statt politicians[] */
   rathaus?: RathausRecipient;
+  /** Land: institutioneller Regierungs-/Senats-Empfänger statt politicians[] */
+  landesregierung?: LandesregierungRecipient;
   /**
    * Gesetzt, wenn der User bewusst eine andere Ebene als die empfohlene
    * gewählt hat — der Brief macht den Kompetenz-Mismatch transparent.
@@ -88,9 +94,9 @@ export interface GenerateLetterInput {
 
 export interface GenerateLetterResult {
   letter: string;
-  /** Der aufgelöste Empfänger (mdb/mdl/rathaus) */
+  /** Der aufgelöste Empfänger */
   selectedRecipient: Recipient;
-  /** Für mdb/mdl der Politician; für rathaus null */
+  /** Für mdb/mdl der Politician; für institutionelle Empfänger null */
   selectedPolitician: Politician | null;
   politicalLevel: PoliticalLevel;
   wordCount: number;

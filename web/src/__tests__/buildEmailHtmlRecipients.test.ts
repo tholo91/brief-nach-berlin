@@ -141,6 +141,67 @@ describe("buildEmailHtml — Empfänger-Arten", () => {
     }
   });
 
+  it("landesregierung: institutioneller Adressblock und Copy ohne MdL-, Partei- oder Profilkontext", () => {
+    const params = baseParams({
+      recipientKind: "landesregierung",
+      politicianName: "Landesregierung Nordrhein-Westfalen",
+      politicianFirstName: "",
+      politicianLastName: "Landesregierung Nordrhein-Westfalen",
+      politicianParty: null,
+      politicianPostalAddress:
+        "Staatskanzlei des Landes Nordrhein-Westfalen, Horionplatz 1, 40190 Düsseldorf",
+      politicianAbgeordnetenwatchUrl: null,
+      bundeslandKey: "NW",
+      governmentSource: {
+        institutionKind: "landesregierung",
+        officeName: "Staatskanzlei des Landes Nordrhein-Westfalen",
+        title: "Staatskanzlei Nordrhein-Westfalen: Organisationsplan",
+        url: "https://www.land.nrw/media/34665/download",
+        stand: "2026-07-20",
+      },
+    });
+    const html = buildEmailHtml(params);
+    expect(buildLetterEmailSubject(params)).toBe(
+      "Dein Brief an die Landesregierung Nordrhein-Westfalen ist fertig"
+    );
+    expect(html).toContain(
+      "Dein Brief an die Landesregierung Nordrhein-Westfalen ist fertig zum Absenden."
+    );
+    expect(html).toContain("<strong>Landesregierung Nordrhein-Westfalen</strong><br>");
+    expect(html).toContain("Staatskanzlei des Landes Nordrhein-Westfalen<br>Horionplatz 1<br>40190 Düsseldorf");
+    expect(html).toContain("Staatskanzlei Nordrhein-Westfalen: Organisationsplan");
+    expect(html).toContain("geprüft am 2026-07-20");
+    expect(html).not.toContain(", MdL (");
+    expect(html).not.toContain(", MdB (");
+    expect(html).not.toContain("abgeordnetenwatch.de/profile");
+    expect(html).not.toContain("Landtagsbüro");
+    expect(html).not.toContain("im Landtag");
+  });
+
+  it("landesregierung: Stadtstaat nennt im Betreff den Senat", () => {
+    const params = baseParams({
+      recipientKind: "landesregierung",
+      politicianName: "Senat von Berlin",
+      politicianFirstName: "",
+      politicianLastName: "Senat von Berlin",
+      politicianParty: null,
+      politicianPostalAddress: "Senatskanzlei Berlin, Rotes Rathaus, Jüdenstraße 1, 10178 Berlin",
+      politicianAbgeordnetenwatchUrl: null,
+      bundeslandKey: "BE",
+      governmentSource: {
+        institutionKind: "senat",
+        officeName: "Senatskanzlei Berlin",
+        title: "Berlin.de: Bürgerberatung der Senatskanzlei",
+        url: "https://www.berlin.de/rbmskzl/service/buergerberatung/",
+        stand: "2026-07-20",
+      },
+    });
+    expect(buildLetterEmailSubject(params)).toBe("Dein Brief an den Senat von Berlin ist fertig");
+    expect(buildEmailHtml(params)).toContain(
+      "Dein Brief an den Senat von Berlin ist fertig zum Absenden."
+    );
+  });
+
   it("rathaus: zeigt die vollständige amtliche Anschrift und Google nur zur Kontrolle", () => {
     const params = baseParams({
         recipientKind: "rathaus",

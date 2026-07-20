@@ -10,6 +10,10 @@ import {
   RathausRecipientNotApplicable,
   type RathausRecipient,
 } from "./rathausRecipient";
+import {
+  getLandesregierungRecipient,
+  type LandesregierungRecipient,
+} from "./landesregierungRecipient";
 
 const plzMapping = plzMappingJson as Record<string, number[]>;
 const politiciansCache = politiciansJson as PoliticiansCache;
@@ -87,11 +91,14 @@ export interface PlzLookupResult {
   ortsname: string | null;
   byLevel: {
     Bund: Politician[];
-    Land: Politician[];
+    Land: LandesregierungRecipient[];
     Kommune: RathausRecipient[];
   };
+  optionalByLevel: {
+    Land: Politician[];
+  };
   coverage: {
-    /** true, wenn für diese PLZ Landtagsabgeordnete zugeordnet werden konnten */
+    /** true, wenn für das verifizierte Bundesland ein Regierungsdatensatz existiert */
     landSupported: boolean;
     /** true, wenn ein Rathaus-/Bezirksamt-Empfänger baubar ist */
     kommuneSupported: boolean;
@@ -110,7 +117,7 @@ export interface PlzLookupResult {
 
 /**
  * Ebenen-bewusster PLZ-Lookup (999.6). Bund nutzt den bestehenden Pfad,
- * Land die neuen Landtag-Daten, Kommune einen synthetischen
+ * Land den institutionellen Regierungsdatensatz, Kommune einen synthetischen
  * Stadtverwaltungs-/Bezirksamt-Empfänger (serverseitig aus der PLZ abgeleitet,
  * LOCK-5).
  */
@@ -119,12 +126,17 @@ export function lookupPLZWithLevel(plz: string): PlzLookupResult {
   const enrichment = plzBundesland[plz];
   const bundeslandKey = enrichment?.bundeslandKey ?? null;
 
-  // Land: MdL des Bundeslands, deren Landtagswahlkreis zur PLZ passt
-  let land: Politician[] = [];
+  // Land-Default: genau eine Institution aus PLZ -> Bundesland -> statischem Datensatz.
+  const landesregierung = bundeslandKey
+    ? getLandesregierungRecipient(bundeslandKey)
+    : null;
+
+  // Optionaler Personenpfad: MdLs bleiben getrennt vom institutionellen Default.
+  let landPoliticians: Politician[] = [];
   const landtagWahlkreise = plzLandtagWahlkreis[plz] ?? [];
   if (bundeslandKey) {
     if (landtagWahlkreise.length > 0) {
-      land = politiciansCache.landtag.filter(
+      landPoliticians = politiciansCache.landtag.filter(
         (p) => p.bundeslandKey === bundeslandKey && landtagWahlkreise.includes(p.wahlkreisId)
       );
     }
@@ -190,9 +202,14 @@ export function lookupPLZWithLevel(plz: string): PlzLookupResult {
     bundeslandName: enrichment?.bundeslandName ?? null,
     gemeindeName: enrichment?.gemeindeName ?? null,
     ortsname: enrichment?.ortsname ?? null,
-    byLevel: { Bund: bund, Land: land, Kommune: kommune },
+    byLevel: {
+      Bund: bund,
+      Land: landesregierung ? [landesregierung] : [],
+      Kommune: kommune,
+    },
+    optionalByLevel: { Land: landPoliticians },
     coverage: {
-      landSupported: land.length > 0,
+      landSupported: Boolean(landesregierung),
       kommuneSupported: kommune.length > 0,
       stadtstaatEinheitsgemeinde,
       landAmbiguous: landtagWahlkreise.length > 1,
@@ -221,7 +238,11 @@ export function buildCoverageHint(
   }
   if (routedLevel === "Kommune" && !result.coverage.kommuneSupported) {
     if (result.coverage.stadtstaatEinheitsgemeinde && result.bundeslandName) {
-      return `In ${result.bundeslandName} ist die Stadt zugleich ein Bundesland. Dein Anliegen gehört deshalb auf die Land-Ebene, dort sitzen die zuständigen Abgeordneten.`;
+      const institution = result.byLevel.Land[0];
+      const institutionTarget = institution
+        ? `an ${institution.institutionKind === "senat" ? "den" : "die"} ${institution.label}`
+        : "an den institutionellen Empfänger des Landes";
+      return `In ${result.bundeslandName} ist die Stadt zugleich ein Bundesland. Dein Anliegen gehört deshalb auf die Land-Ebene und geht dort ${institutionTarget}.`;
     }
     return `Für diese Postleitzahl konnten wir keine Stadtverwaltung zuordnen. Du kannst stattdessen an Land oder Bund schreiben.`;
   }

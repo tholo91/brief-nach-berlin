@@ -10,6 +10,7 @@ import { DEFAULT_LETTER_LENGTH } from "@/lib/config";
 const recipientSelectionSchema = z.discriminatedUnion("kind", [
   z.object({ kind: z.literal("mdb"), selectedPoliticianId: z.number().int() }),
   z.object({ kind: z.literal("mdl"), selectedPoliticianId: z.number().int() }).strict(),
+  z.object({ kind: z.literal("landesregierung") }).strict(),
   z.object({ kind: z.literal("rathaus") }).strict(),
 ]);
 
@@ -18,8 +19,9 @@ const recipientSelectionSchema = z.discriminatedUnion("kind", [
 // Auswahl (kind + optional numerische ID). Der Server leitet den Empfänger
 // komplett aus der PLZ ab:
 // - mdb/mdl: die ID muss in der PLZ-abgeleiteten Liste der Ebene stehen.
-// - rathaus: es gibt keine ID; der Verwaltungs-Empfänger wird zu 100% aus
-//   der PLZ gebaut (LOCK-5). Client-Daten können die Adresse nicht beeinflussen.
+// - rathaus/landesregierung: es gibt keine ID; der institutionelle Empfänger
+//   wird zu 100% aus der PLZ gebaut (LOCK-5). Client-Daten können die Adresse
+//   nicht beeinflussen.
 // Legacy-Aufrufe mit nackter Zahl werden als Bund-Auswahl (mdb) behandelt.
 export async function selectPoliticianAction(
   data: WizardData,

@@ -1,11 +1,12 @@
 import type { Politician } from "../types/politician";
+import type { LandesregierungRecipient } from "./landesregierungRecipient";
 
 // Discriminated Union für Brief-Empfänger (LOCK-5):
 // - mdb/mdl sind echte Politician-Objekte mit Abgeordnetenwatch-IDs, die
 //   serverseitig gegen die PLZ-abgeleitete Liste geprüft werden.
-// - rathaus ist ein synthetischer Verwaltungs-Empfänger OHNE id/politicianId.
-//   Er wird IMMER serverseitig aus der PLZ neu abgeleitet, nie aus
-//   Client-Daten übernommen.
+// - rathaus und landesregierung sind synthetische institutionelle Empfänger
+//   OHNE id/politicianId. Sie werden IMMER serverseitig aus der PLZ neu
+//   abgeleitet, nie aus Client-Daten übernommen.
 
 export interface MdbRecipient extends Politician {
   kind: "mdb";
@@ -43,12 +44,17 @@ export interface RathausRecipient {
   // Kein id-, kein politicianId-Feld (LOCK-5).
 }
 
-export type Recipient = MdbRecipient | MdlRecipient | RathausRecipient;
+export type Recipient =
+  | MdbRecipient
+  | MdlRecipient
+  | RathausRecipient
+  | LandesregierungRecipient;
 
-/** Client → Server Auswahl-Objekt. Für rathaus wird KEINE ID übertragen. */
+/** Client → Server Auswahl-Objekt. Institutionelle Empfänger übertragen KEINE ID. */
 export type RecipientSelection =
   | { kind: "mdb"; selectedPoliticianId: number }
   | { kind: "mdl"; selectedPoliticianId: number }
+  | { kind: "landesregierung" }
   | { kind: "rathaus" };
 
 /** HH/HB: Einheitsgemeinde (Art. 28 Abs. 1 S. 2 GG) — Kommune-Ebene existiert nicht, Land übernimmt. */

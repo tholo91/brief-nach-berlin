@@ -19,11 +19,12 @@ import { DEFAULT_LETTER_LENGTH } from "@/lib/config";
 import { MistralProviderUnavailableError } from "@/lib/mistral";
 import { incrementLetterCounters } from "@/lib/counter";
 
-// Client-Auswahl: diskriminierte Union (999.6). rathaus trägt bewusst KEINE
-// ID — der Empfänger wird serverseitig aus der PLZ abgeleitet (LOCK-5).
+// Client-Auswahl: diskriminierte Union (999.6). Institutionelle Empfänger
+// tragen bewusst KEINE ID; der Server leitet sie aus der PLZ ab (LOCK-5).
 const selectionSchema = z.discriminatedUnion("kind", [
   z.object({ kind: z.literal("mdb"), selectedPoliticianId: z.number().int() }),
   z.object({ kind: z.literal("mdl"), selectedPoliticianId: z.number().int() }).strict(),
+  z.object({ kind: z.literal("landesregierung") }).strict(),
   z.object({ kind: z.literal("rathaus") }).strict(),
 ]);
 
@@ -174,7 +175,7 @@ export async function POST(req: NextRequest) {
 
     // Re-derive recipient server-side — never trust client-supplied data.
     // mdb/mdl: ID muss in der PLZ-abgeleiteten Ebenen-Liste stehen.
-    // rathaus: wird komplett aus der PLZ gebaut (LOCK-5).
+    // Institutionelle Empfänger werden komplett aus der PLZ gebaut (LOCK-5).
     const resolved = resolveRecipientSelection(data.plz, selection);
     if (!resolved.ok) {
       return NextResponse.json({ error: "Empfänger nicht gefunden." }, { status: 400 });
@@ -217,14 +218,16 @@ export async function POST(req: NextRequest) {
     console.log("[generate-letter] recipient resolved", {
       kind: recipient.kind,
       level: recipient.level,
-      politicianId: recipient.kind === "rathaus" ? null : recipient.id,
+      politicianId:
+        recipient.kind === "mdb" || recipient.kind === "mdl" ? recipient.id : null,
       mismatch: Boolean(mismatchRecommendedLevel),
     });
 
     // Generate letter
     const result = await generateLetter({
       issueText: data.issueText,
-      politicians: recipient.kind === "rathaus" ? [] : [recipient],
+      politicians:
+        recipient.kind === "mdb" || recipient.kind === "mdl" ? [recipient] : [],
       party: data.party,
       ngo: data.ngo,
       letterLength: data.letterLength,
@@ -232,6 +235,8 @@ export async function POST(req: NextRequest) {
       mdbContext,
       level: recipient.level,
       rathaus: recipient.kind === "rathaus" ? recipient : undefined,
+      landesregierung:
+        recipient.kind === "landesregierung" ? recipient : undefined,
       mismatchRecommendedLevel,
     });
 
@@ -254,7 +259,8 @@ export async function POST(req: NextRequest) {
         routingInfo ?? undefined
       );
       const politicianFullName =
-        result.selectedRecipient.kind === "rathaus"
+        result.selectedRecipient.kind === "rathaus" ||
+        result.selectedRecipient.kind === "landesregierung"
           ? result.selectedRecipient.label
           : `${result.selectedRecipient.firstName} ${result.selectedRecipient.lastName}`;
       const { params, feedbackToken } = prepareLetterEmail({
@@ -277,7 +283,7 @@ export async function POST(req: NextRequest) {
       // BREVO_FOLLOWUP_ENABLED erlaubt Notabschaltung ohne Deploy.
       // Dedup: max. 1 Followup pro Email in 24h. In-memory, also nicht
       // cross-instance-sicher, aber gut genug gegen ehrliche Mehrfach-Submissions.
-      if (process.env.BREVO_FOLLOWUP_ENABLED === "true") {
+      if (recipient.kind === "mdb" && process.env.BREVO_FOLLOWUP_ENABLED === "true") {
         const followupDedup = checkRateLimit(
           `followup:${hashIdentifier(data.email.toLowerCase())}`,
           1,

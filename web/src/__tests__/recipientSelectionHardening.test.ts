@@ -21,11 +21,18 @@ import { selectPoliticianAction } from "@/lib/actions/selectPolitician";
 import { resendLetterAction } from "@/lib/actions/resendLetter";
 import { resolveRecipientSelection } from "@/lib/lookup/resolveRecipient";
 import { checkRateLimit } from "@/lib/rateLimit";
+import { moderateText } from "@/lib/moderation/moderateText";
+import { prepareLetterEmail, sendLetterEmail } from "@/lib/email/sendLetterEmail";
+import { buildResendDebugPayload } from "@/lib/email/buildDebugPayload";
 import type { WizardData } from "@/lib/types/wizard";
 import type { RecipientSelection } from "@/lib/lookup/rathausRecipient";
 
 const mockedResolveRecipientSelection = jest.mocked(resolveRecipientSelection);
 const mockedCheckRateLimit = jest.mocked(checkRateLimit);
+const mockedModerateText = jest.mocked(moderateText);
+const mockedPrepareLetterEmail = jest.mocked(prepareLetterEmail);
+const mockedSendLetterEmail = jest.mocked(sendLetterEmail);
+const mockedBuildResendDebugPayload = jest.mocked(buildResendDebugPayload);
 
 const data: WizardData = {
   plz: "50667",
@@ -79,6 +86,54 @@ describe("RecipientSelection server hardening", () => {
     expect(mockedResolveRecipientSelection).not.toHaveBeenCalled();
   });
 
+  it("sperrt Landesregierung am selectPoliticianAction-Boundary, wenn das Flag aus ist", async () => {
+    await expect(
+      selectPoliticianAction({ ...data }, { kind: "landesregierung" })
+    ).resolves.toMatchObject({ error: "server_error", message: "Empfänger nicht verfügbar." });
+    expect(mockedResolveRecipientSelection).not.toHaveBeenCalled();
+  });
+
+  it("akzeptiert Landesregierung ohne Client-ID nur bei beiden aktiven Flags", async () => {
+    process.env.LANDTAG_ROUTING_ENABLED = "true";
+    mockedResolveRecipientSelection.mockReturnValue({
+      ok: true,
+      recipient: {
+        kind: "landesregierung",
+        level: "Land",
+        institutionKind: "landesregierung",
+        bundeslandKey: "NW",
+        bundeslandName: "Nordrhein-Westfalen",
+        label: "Landesregierung Nordrhein-Westfalen",
+        officeName: "Staatskanzlei des Landes Nordrhein-Westfalen",
+        postalAddress: "Amtliche Adresse",
+        address: {
+          addressLines: ["Amtliche Adresse"],
+          sourceTitle: "Amtliche Quelle",
+          sourceUrl: "https://www.land.nrw/",
+          sourceStand: "2026-07-20",
+        },
+      },
+      availableCount: 1,
+    });
+
+    await expect(
+      selectPoliticianAction({ ...data }, { kind: "landesregierung" })
+    ).resolves.toMatchObject({ preCheckOk: true });
+    expect(mockedResolveRecipientSelection).toHaveBeenCalledWith("50667", {
+      kind: "landesregierung",
+    });
+  });
+
+  it("sperrt Landesregierung, wenn nur der Ebenen-Prompt deaktiviert ist", async () => {
+    process.env.LANDTAG_ROUTING_ENABLED = "true";
+    process.env.LETTER_PROMPT_LEVEL_AWARE = "false";
+
+    await expect(
+      selectPoliticianAction({ ...data }, { kind: "landesregierung" })
+    ).resolves.toMatchObject({ error: "server_error", message: "Empfänger nicht verfügbar." });
+    expect(mockedResolveRecipientSelection).not.toHaveBeenCalled();
+  });
+
   it("behält die numerische Legacy-Bund-Auswahl bei deaktiviertem Flag bei", async () => {
     await expect(selectPoliticianAction({ ...data }, 1)).resolves.toMatchObject({
       preCheckOk: true,
@@ -105,5 +160,43 @@ describe("RecipientSelection server hardening", () => {
       resendLetterAction({ ...data }, { kind: "rathaus" }, "Ein gültiger Brieftext")
     ).resolves.toMatchObject({ error: "validation", message: "Empfänger nicht verfügbar." });
     expect(mockedCheckRateLimit).not.toHaveBeenCalled();
+  });
+
+  it("Resend leitet die Landesregierung erneut aus der PLZ ab", async () => {
+    process.env.LANDTAG_ROUTING_ENABLED = "true";
+    const recipient = {
+      kind: "landesregierung" as const,
+      level: "Land" as const,
+      institutionKind: "landesregierung" as const,
+      bundeslandKey: "NW",
+      bundeslandName: "Nordrhein-Westfalen",
+      label: "Landesregierung Nordrhein-Westfalen",
+      officeName: "Staatskanzlei des Landes Nordrhein-Westfalen",
+      postalAddress: "Amtliche Adresse",
+      address: {
+        addressLines: ["Amtliche Adresse"],
+        sourceTitle: "Amtliche Quelle",
+        sourceUrl: "https://www.land.nrw/",
+        sourceStand: "2026-07-20",
+      },
+    };
+    mockedResolveRecipientSelection.mockReturnValue({ ok: true, recipient, availableCount: 1 });
+    mockedModerateText.mockResolvedValue({ flagged: false, categories: [] });
+    mockedBuildResendDebugPayload.mockReturnValue({} as never);
+    mockedPrepareLetterEmail.mockReturnValue({
+      feedbackToken: "token",
+      params: {} as never,
+    });
+    mockedSendLetterEmail.mockResolvedValue({ success: true, messageId: "id" });
+
+    await expect(
+      resendLetterAction({ ...data }, { kind: "landesregierung" }, "Ein gültiger Brieftext")
+    ).resolves.toEqual({ success: true });
+    expect(mockedResolveRecipientSelection).toHaveBeenCalledWith("50667", {
+      kind: "landesregierung",
+    });
+    expect(mockedPrepareLetterEmail).toHaveBeenCalledWith(
+      expect.objectContaining({ recipient })
+    );
   });
 });

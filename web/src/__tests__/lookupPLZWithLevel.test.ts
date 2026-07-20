@@ -5,14 +5,25 @@
  */
 
 import { lookupPLZWithLevel, buildCoverageHint, lookupPLZ } from "@/lib/lookup/plzLookup";
+import plzBundesland from "../../data/plz-bundesland-mapping.json";
+
+const STATE_KEYS = [
+  "BB", "BE", "BW", "BY", "HB", "HE", "HH", "MV",
+  "NI", "NW", "RP", "SH", "SL", "SN", "ST", "TH",
+] as const;
 
 describe("lookupPLZWithLevel", () => {
   it("NRW-PLZ (50667 Köln): Land abgedeckt, Kommune = Bürgermeisteramt Köln", () => {
     const r = lookupPLZWithLevel("50667");
     expect(r.bundeslandKey).toBe("NW");
     expect(r.coverage.landSupported).toBe(true);
-    expect(r.byLevel.Land.length).toBeGreaterThan(0);
-    expect(r.byLevel.Land.every((p) => p.level === "Land" && p.bundeslandKey === "NW")).toBe(true);
+    expect(r.byLevel.Land).toHaveLength(1);
+    expect(r.byLevel.Land[0]).toMatchObject({
+      kind: "landesregierung",
+      level: "Land",
+      bundeslandKey: "NW",
+    });
+    expect(r.optionalByLevel.Land.length).toBeGreaterThan(0);
     expect(r.byLevel.Kommune).toHaveLength(1);
     expect(r.byLevel.Kommune[0].label).toBe("Bürgermeisteramt Köln");
     expect(r.byLevel.Kommune[0].address.source).toBe("destatis");
@@ -21,14 +32,36 @@ describe("lookupPLZWithLevel", () => {
     expect(r.coverage.landWahlkreisIds.length).toBeGreaterThan(1);
   });
 
-  it("Hamburg (20095): Einheitsgemeinde, keine Kommune, aber Bürgerschaft (Land)", () => {
+  it.each(STATE_KEYS)("%s erhält aus einer realen PLZ genau einen Regierungs-Default", (key) => {
+    const plz = Object.entries(plzBundesland).find(([, entry]) => entry.bundeslandKey === key)?.[0];
+    expect(plz).toBeTruthy();
+    const result = lookupPLZWithLevel(plz!);
+    expect(result.byLevel.Land).toHaveLength(1);
+    expect(result.byLevel.Land[0]).toMatchObject({
+      kind: "landesregierung",
+      bundeslandKey: key,
+    });
+  });
+
+  it("Bremen 28203 zeigt genau den Senat als Default und hält 72 MdLs optional", () => {
+    const result = lookupPLZWithLevel("28203");
+    expect(result.byLevel.Land).toHaveLength(1);
+    expect(result.byLevel.Land[0]).toMatchObject({
+      institutionKind: "senat",
+      bundeslandKey: "HB",
+    });
+    expect(result.optionalByLevel.Land).toHaveLength(72);
+  });
+
+  it("Hamburg (20095): Einheitsgemeinde, keine Kommune, aber Senat (Land)", () => {
     const r = lookupPLZWithLevel("20095");
     expect(r.bundeslandKey).toBe("HH");
     expect(r.byLevel.Kommune).toHaveLength(0);
     expect(r.coverage.kommuneSupported).toBe(false);
     expect(r.coverage.stadtstaatEinheitsgemeinde).toBe(true);
     expect(r.coverage.landSupported).toBe(true);
-    expect(r.byLevel.Land.length).toBeGreaterThan(0);
+    expect(r.byLevel.Land).toHaveLength(1);
+    expect(r.byLevel.Land[0].institutionKind).toBe("senat");
   });
 
   it("Berlin (10245): mehrere Bezirke werden ehrlich als mehrdeutig behandelt", () => {
@@ -42,6 +75,8 @@ describe("lookupPLZWithLevel", () => {
     expect(r.coverage.kommuneAmbiguous).toBe(true);
     expect(r.coverage.kommuneBezirke).toEqual(["Friedrichshain-Kreuzberg", "Pankow"]);
     expect(r.coverage.landSupported).toBe(true);
+    expect(r.byLevel.Land).toHaveLength(1);
+    expect(r.byLevel.Land[0].institutionKind).toBe("senat");
   });
 
   it("Berlin mit genau einem Bezirk behält die konkrete Bezirksamts-Zuordnung", () => {
@@ -115,6 +150,8 @@ describe("buildCoverageHint", () => {
     const hint = buildCoverageHint(r, "Kommune");
     expect(hint).toContain("Hamburg");
     expect(hint).toContain("Land");
+    expect(hint).toContain("Senat der Freien und Hansestadt Hamburg");
+    expect(hint).not.toContain("Abgeordnet");
   });
 
   it("abgedeckte Ebene: kein Hinweis", () => {

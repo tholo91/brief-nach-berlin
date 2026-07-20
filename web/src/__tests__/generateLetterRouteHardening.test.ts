@@ -37,13 +37,16 @@ describe("generate-letter RecipientSelection hardening", () => {
     process.env.LETTER_PROMPT_LEVEL_AWARE = "true";
   });
 
-  it("sperrt Land/Kommune auch bei aktivem Routing, solange der Ebenen-Prompt aus ist", async () => {
+  it.each([
+    { kind: "landesregierung" },
+    { kind: "rathaus" },
+  ])("sperrt $kind auch bei aktivem Routing, solange der Ebenen-Prompt aus ist", async (selection) => {
     process.env.LANDTAG_ROUTING_ENABLED = "true";
     process.env.LETTER_PROMPT_LEVEL_AWARE = "false";
 
     const response = await POST(requestWith({
       wizardData: {},
-      selection: { kind: "rathaus" },
+      selection,
     }));
 
     expect(response.status).toBe(400);
@@ -52,6 +55,7 @@ describe("generate-letter RecipientSelection hardening", () => {
 
   it.each([
     { kind: "mdl", selectedPoliticianId: 12 },
+    { kind: "landesregierung" },
     { kind: "rathaus" },
   ])("sperrt $kind am finalen API-Boundary, wenn das Flag aus ist", async (selection) => {
     const response = await POST(requestWith({ wizardData: {}, selection }));
@@ -62,6 +66,9 @@ describe("generate-letter RecipientSelection hardening", () => {
 
   it.each([
     { kind: "mdl", selectedPoliticianId: "12" },
+    { kind: "landesregierung", selectedPoliticianId: 1 },
+    { kind: "landesregierung", address: "Manipulierte Adresse" },
+    { kind: "landesregierung", bundeslandKey: "BY" },
     { kind: "rathaus", selectedPoliticianId: 1 },
     { kind: "anderes" },
   ])("weist eine ungültige Auswahl am finalen API-Boundary ab", async (selection) => {

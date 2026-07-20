@@ -34,8 +34,10 @@ export interface LetterDebugPayload {
   politicalLevel: string;
   representativeName: string;
   representativeWahlkreis: string;
+  recipientRegion?: string;
   representativeLevel: string;
   representativeParty: string | null;
+  representativeKind?: "mdb" | "mdl" | "landesregierung" | "rathaus";
   mdbContextUsed: boolean;
   availablePoliticianCount: number;
   model: string;
@@ -79,9 +81,16 @@ export interface SendLetterEmailParams {
   // "mdb" hält das heutige Layout exakt; "mdl" nutzt die Landtag-Anschrift aus
   // postalAddress (keine "Deutscher Bundestag"-Zeile); "rathaus" hat weder
   // Partei noch Profil-Link und nutzt amtliche Adressdetails oder den Fallback.
-  recipientKind: "mdb" | "mdl" | "rathaus";
+  recipientKind: "mdb" | "mdl" | "landesregierung" | "rathaus";
   // Nur für mdl: ISO 3166-2:DE-Länderkürzel zur Auswahl der Landeswappen-Marke.
   bundeslandKey?: string;
+  governmentSource?: {
+    institutionKind: "landesregierung" | "senat";
+    officeName: string;
+    title: string;
+    url: string;
+    stand: string;
+  };
   // Nur Kommune: amtliche Anschrift plus Google-Kontrolle oder ehrlicher Fallback.
   rathausSearch?: {
     ort: string;
@@ -137,6 +146,40 @@ export function prepareLetterEmail(args: {
               : "",
           kind: recipient.recipientKind,
           address: recipient.address,
+        },
+        letterText,
+        issueText,
+        debug,
+        feedbackToken,
+        campaign,
+        letterNumber,
+      },
+    };
+  }
+
+  if (recipient.kind === "landesregierung") {
+    return {
+      feedbackToken,
+      params: {
+        recipientEmail,
+        politicianName: recipient.label,
+        politicianFirstName: "",
+        politicianLastName: recipient.label,
+        politicianTitle: null,
+        politicianParty: null,
+        politicianPostalAddress: [
+          recipient.officeName,
+          ...recipient.address.addressLines,
+        ].join(", "),
+        politicianAbgeordnetenwatchUrl: null,
+        recipientKind: "landesregierung",
+        bundeslandKey: recipient.bundeslandKey,
+        governmentSource: {
+          institutionKind: recipient.institutionKind,
+          officeName: recipient.officeName,
+          title: recipient.address.sourceTitle,
+          url: recipient.address.sourceUrl,
+          stand: recipient.address.sourceStand,
         },
         letterText,
         issueText,

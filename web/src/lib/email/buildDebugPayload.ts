@@ -38,7 +38,7 @@ export function buildDebugPayload(
   const p = result.selectedPolitician;
   const fullName = p
     ? [p.title, p.firstName, p.lastName].filter(Boolean).join(" ")
-    : recipient.kind === "rathaus"
+    : recipient.kind === "rathaus" || recipient.kind === "landesregierung"
       ? recipient.label
       : "—";
 
@@ -57,9 +57,20 @@ export function buildDebugPayload(
     politicalLevel: result.politicalLevel,
     representativeName: fullName,
     representativeWahlkreis:
-      recipient.kind === "rathaus" ? `${recipient.plz} ${recipient.gemeindeName}` : p?.wahlkreisName ?? "—",
+      recipient.kind === "rathaus"
+        ? `${recipient.plz} ${recipient.gemeindeName}`
+        : recipient.kind === "landesregierung"
+          ? recipient.bundeslandName
+          : p?.wahlkreisName ?? "—",
+    recipientRegion:
+      recipient.kind === "rathaus"
+        ? `${recipient.plz} ${recipient.gemeindeName}`
+        : recipient.kind === "landesregierung"
+          ? recipient.bundeslandName
+          : p?.wahlkreisName ?? "—",
     representativeLevel: recipient.level ?? "—",
     representativeParty: p?.party ?? null,
+    representativeKind: recipient.kind,
     mdbContextUsed: result.mdbContextUsed ?? false,
     availablePoliticianCount,
     model: result.model,
@@ -97,10 +108,11 @@ export function buildResendDebugPayload(
   const lengthKey = data.letterLength ?? DEFAULT_LETTER_LENGTH;
   const { min, max } = LETTER_LENGTHS[lengthKey];
   const tone = data.toneLevel ?? 3;
-  const politician: Politician | null = recipient.kind === "rathaus" ? null : recipient;
+  const politician: Politician | null =
+    recipient.kind === "mdb" || recipient.kind === "mdl" ? recipient : null;
   const fullName = politician
     ? [politician.title, politician.firstName, politician.lastName].filter(Boolean).join(" ")
-    : recipient.kind === "rathaus"
+    : recipient.kind === "rathaus" || recipient.kind === "landesregierung"
       ? recipient.label
       : "—";
   const wordCount = cachedLetterText.trim().split(/\s+/).filter(Boolean).length;
@@ -123,9 +135,18 @@ export function buildResendDebugPayload(
     representativeWahlkreis:
       recipient.kind === "rathaus"
         ? `${recipient.plz} ${recipient.gemeindeName}`
+        : recipient.kind === "landesregierung"
+          ? recipient.bundeslandName
         : politician?.wahlkreisName ?? "—",
+    recipientRegion:
+      recipient.kind === "rathaus"
+        ? `${recipient.plz} ${recipient.gemeindeName}`
+        : recipient.kind === "landesregierung"
+          ? recipient.bundeslandName
+          : politician?.wahlkreisName ?? "—",
     representativeLevel: recipient.level ?? "—",
     representativeParty: politician?.party ?? null,
+    representativeKind: recipient.kind,
     mdbContextUsed: false,
     availablePoliticianCount,
     model: "n/a (resend)",

@@ -17,6 +17,7 @@ const RESEND_LIMIT_MESSAGE =
 const recipientSelectionSchema = z.discriminatedUnion("kind", [
   z.object({ kind: z.literal("mdb"), selectedPoliticianId: z.number().int() }),
   z.object({ kind: z.literal("mdl"), selectedPoliticianId: z.number().int() }).strict(),
+  z.object({ kind: z.literal("landesregierung") }).strict(),
   z.object({ kind: z.literal("rathaus") }).strict(),
 ]);
 
@@ -91,7 +92,7 @@ export async function resendLetterAction(
 
     // Re-derive recipient server-side — never trust client-supplied recipient
     // data. mdb/mdl: ID muss in der PLZ-abgeleiteten Ebenen-Liste stehen;
-    // rathaus wird komplett aus der PLZ gebaut (LOCK-5).
+    // rathaus/landesregierung werden komplett aus der PLZ gebaut (LOCK-5).
     const resolved = resolveRecipientSelection(data.plz, normalizedSelection);
     if (!resolved.ok) {
       console.warn("[resendLetter] selection not resolvable", {

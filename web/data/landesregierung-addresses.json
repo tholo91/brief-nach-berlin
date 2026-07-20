@@ -1,0 +1,217 @@
+{
+  "_meta": {
+    "schemaVersion": 1,
+    "verifiedAt": "2026-07-20",
+    "description": "Amtlich verifizierte institutionelle Postempfänger der 16 Landesregierungen. Keine Personen-, Ressort- oder Ausschusszuordnung."
+  },
+  "recipients": {
+    "BW": {
+      "stateKey": "BW",
+      "stateName": "Baden-Württemberg",
+      "label": "Landesregierung Baden-Württemberg",
+      "officeName": "Staatsministerium Baden-Württemberg",
+      "institutionKind": "landesregierung",
+      "addressLines": ["Richard-Wagner-Straße 15", "70184 Stuttgart"],
+      "source": {
+        "title": "Staatsministerium Baden-Württemberg: Kontakt",
+        "url": "https://stm.baden-wuerttemberg.de/de/service/kontakt",
+        "verifiedAt": "2026-07-20"
+      }
+    },
+    "BY": {
+      "stateKey": "BY",
+      "stateName": "Bayern",
+      "label": "Bayerische Staatsregierung",
+      "officeName": "Bayerische Staatskanzlei",
+      "institutionKind": "landesregierung",
+      "addressLines": ["Postfach 220011", "80535 München"],
+      "source": {
+        "title": "Bayerisches Landesportal: Impressum",
+        "url": "https://www.bayern.de/impressum/",
+        "verifiedAt": "2026-07-20"
+      }
+    },
+    "BE": {
+      "stateKey": "BE",
+      "stateName": "Berlin",
+      "label": "Senat von Berlin",
+      "officeName": "Senatskanzlei Berlin",
+      "institutionKind": "senat",
+      "addressLines": ["Rotes Rathaus", "Jüdenstraße 1", "10178 Berlin"],
+      "source": {
+        "title": "Berlin.de: Bürgerberatung der Senatskanzlei",
+        "url": "https://www.berlin.de/rbmskzl/service/buergerberatung/",
+        "verifiedAt": "2026-07-20"
+      }
+    },
+    "BB": {
+      "stateKey": "BB",
+      "stateName": "Brandenburg",
+      "label": "Landesregierung Brandenburg",
+      "officeName": "Staatskanzlei des Landes Brandenburg",
+      "institutionKind": "landesregierung",
+      "addressLines": ["Heinrich-Mann-Allee 107", "14473 Potsdam"],
+      "source": {
+        "title": "Landesregierung Brandenburg: Die Staatskanzlei",
+        "url": "https://brandenburg.de/de/staatskanzlei/bb1.c.482252.de",
+        "verifiedAt": "2026-07-20"
+      }
+    },
+    "HB": {
+      "stateKey": "HB",
+      "stateName": "Bremen",
+      "label": "Senat der Freien Hansestadt Bremen",
+      "officeName": "Senatskanzlei Bremen",
+      "institutionKind": "senat",
+      "addressLines": ["Am Markt 21", "28195 Bremen"],
+      "source": {
+        "title": "Senatskanzlei Bremen: Impressum",
+        "url": "https://www.rathaus.bremen.de/impressum-744",
+        "verifiedAt": "2026-07-20"
+      }
+    },
+    "HH": {
+      "stateKey": "HH",
+      "stateName": "Hamburg",
+      "label": "Senat der Freien und Hansestadt Hamburg",
+      "officeName": "Senatskanzlei Hamburg",
+      "institutionKind": "senat",
+      "addressLines": ["Rathausmarkt 1", "20095 Hamburg"],
+      "source": {
+        "title": "Hamburg Service: Senatskanzlei",
+        "url": "https://www.hamburg.de/service/info/11283026/",
+        "verifiedAt": "2026-07-20"
+      }
+    },
+    "HE": {
+      "stateKey": "HE",
+      "stateName": "Hessen",
+      "label": "Hessische Landesregierung",
+      "officeName": "Hessische Staatskanzlei",
+      "institutionKind": "landesregierung",
+      "addressLines": ["Postfach 3147", "65021 Wiesbaden"],
+      "source": {
+        "title": "Hessische Staatskanzlei: Erreichbarkeit",
+        "url": "https://staatskanzlei.hessen.de/erreichbarkeit-der-hessischen-staatskanzlei",
+        "verifiedAt": "2026-07-20"
+      }
+    },
+    "MV": {
+      "stateKey": "MV",
+      "stateName": "Mecklenburg-Vorpommern",
+      "label": "Landesregierung Mecklenburg-Vorpommern",
+      "officeName": "Staatskanzlei Mecklenburg-Vorpommern",
+      "institutionKind": "landesregierung",
+      "addressLines": ["19048 Schwerin"],
+      "source": {
+        "title": "Regierungsportal Mecklenburg-Vorpommern: Kontakt Staatskanzlei",
+        "url": "https://www.regierung-mv.de/Landesregierung/stk/Staatskanzlei/Kontakt/",
+        "verifiedAt": "2026-07-20"
+      }
+    },
+    "NI": {
+      "stateKey": "NI",
+      "stateName": "Niedersachsen",
+      "label": "Niedersächsische Landesregierung",
+      "officeName": "Niedersächsische Staatskanzlei",
+      "institutionKind": "landesregierung",
+      "addressLines": ["Planckstraße 2", "30169 Hannover"],
+      "source": {
+        "title": "Niedersächsische Staatskanzlei: Adressen und Wegbeschreibungen",
+        "url": "https://www.stk.niedersachsen.de/startseite/service/adressen_wegbeschreibung/adressen-wegbeschreibungen-2430.html",
+        "verifiedAt": "2026-07-20"
+      }
+    },
+    "NW": {
+      "stateKey": "NW",
+      "stateName": "Nordrhein-Westfalen",
+      "label": "Landesregierung Nordrhein-Westfalen",
+      "officeName": "Staatskanzlei des Landes Nordrhein-Westfalen",
+      "institutionKind": "landesregierung",
+      "addressLines": ["Horionplatz 1", "40190 Düsseldorf"],
+      "source": {
+        "title": "Staatskanzlei Nordrhein-Westfalen: Organisationsplan",
+        "url": "https://www.land.nrw/media/34665/download",
+        "verifiedAt": "2026-07-20"
+      }
+    },
+    "RP": {
+      "stateKey": "RP",
+      "stateName": "Rheinland-Pfalz",
+      "label": "Landesregierung Rheinland-Pfalz",
+      "officeName": "Staatskanzlei Rheinland-Pfalz",
+      "institutionKind": "landesregierung",
+      "addressLines": ["Peter-Altmeier-Allee 1", "55116 Mainz"],
+      "source": {
+        "title": "Rheinland-Pfalz: Bürgerbüro der Landesregierung",
+        "url": "https://www.rlp.de/service/buergerbuero/",
+        "verifiedAt": "2026-07-20"
+      }
+    },
+    "SL": {
+      "stateKey": "SL",
+      "stateName": "Saarland",
+      "label": "Saarländische Landesregierung",
+      "officeName": "Staatskanzlei des Saarlandes",
+      "institutionKind": "landesregierung",
+      "addressLines": ["Am Ludwigsplatz 14", "66117 Saarbrücken"],
+      "source": {
+        "title": "Saarland.de: Impressum der Staatskanzlei",
+        "url": "https://www.saarland.de/DE/services/impressum",
+        "verifiedAt": "2026-07-20"
+      }
+    },
+    "SN": {
+      "stateKey": "SN",
+      "stateName": "Sachsen",
+      "label": "Sächsische Staatsregierung",
+      "officeName": "Sächsische Staatskanzlei",
+      "institutionKind": "landesregierung",
+      "addressLines": ["Archivstraße 1", "01097 Dresden"],
+      "source": {
+        "title": "Sächsische Staatskanzlei: Kontakt und Anfahrt",
+        "url": "https://www.sk.sachsen.de/kontakt-und-anfahrt-3608.html",
+        "verifiedAt": "2026-07-20"
+      }
+    },
+    "ST": {
+      "stateKey": "ST",
+      "stateName": "Sachsen-Anhalt",
+      "label": "Landesregierung Sachsen-Anhalt",
+      "officeName": "Staatskanzlei des Landes Sachsen-Anhalt",
+      "institutionKind": "landesregierung",
+      "addressLines": ["Hegelstraße 40–42", "39104 Magdeburg"],
+      "source": {
+        "title": "Staatskanzlei Sachsen-Anhalt: Impressum",
+        "url": "https://stk.sachsen-anhalt.de/staatskanzlei-und-ministerium-fuer-kultur/impressum",
+        "verifiedAt": "2026-07-20"
+      }
+    },
+    "SH": {
+      "stateKey": "SH",
+      "stateName": "Schleswig-Holstein",
+      "label": "Landesregierung Schleswig-Holstein",
+      "officeName": "Staatskanzlei Schleswig-Holstein",
+      "institutionKind": "landesregierung",
+      "addressLines": ["Düsternbrooker Weg 104", "24105 Kiel"],
+      "source": {
+        "title": "Schleswig-Holstein: So erreichen Sie die Staatskanzlei",
+        "url": "https://www.schleswig-holstein.de/DE/landesregierung/ministerien-behoerden/I/Service/Anfahrt",
+        "verifiedAt": "2026-07-20"
+      }
+    },
+    "TH": {
+      "stateKey": "TH",
+      "stateName": "Thüringen",
+      "label": "Thüringer Landesregierung",
+      "officeName": "Thüringer Staatskanzlei",
+      "institutionKind": "landesregierung",
+      "addressLines": ["Regierungsstraße 73", "99084 Erfurt"],
+      "source": {
+        "title": "Freistaat Thüringen: Impressum",
+        "url": "https://karriere.thueringen.de/impressum",
+        "verifiedAt": "2026-07-20"
+      }
+    }
+  }
+}

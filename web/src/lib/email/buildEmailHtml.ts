@@ -103,14 +103,14 @@ function getEmailWatermarkPath(data: SendLetterEmailParams): string {
   if (data.recipientKind === "rathaus") {
     return "/images/email-variants/email-kommune-rathaus.webp";
   }
-  if (data.recipientKind === "mdl") {
+  if (data.recipientKind === "mdl" || data.recipientKind === "landesregierung") {
     return LANDTAG_WATERMARKS[data.bundeslandKey ?? ""] ?? "/images/email-title-watermark-v2.png";
   }
   return "/images/email-title-watermark-v2.png";
 }
 
 function getEmailWatermarkStyle(data: SendLetterEmailParams): string {
-  if (data.recipientKind === "mdl") {
+  if (data.recipientKind === "mdl" || data.recipientKind === "landesregierung") {
     return "display:inline-block;width:110px;height:110px;margin:2px -2px 8px 14px;border:0;outline:none;text-decoration:none;-ms-interpolation-mode:bicubic;transform:rotate(6deg);transform-origin:center center;";
   }
   if (data.recipientKind === "rathaus") {
@@ -126,6 +126,10 @@ function getLandtagDestination(postalAddress: string): string | null {
 }
 
 export function buildLetterEmailSubject(data: SendLetterEmailParams): string {
+  if (data.recipientKind === "landesregierung") {
+    const article = data.governmentSource?.institutionKind === "senat" ? "den" : "die";
+    return `Dein Brief an ${article} ${data.politicianName} ist fertig`;
+  }
   if (data.recipientKind === "mdl") {
     const destination = getLandtagDestination(data.politicianPostalAddress);
     return destination ? `Dein Brief nach ${destination} ist fertig` : EMAIL_SUBJECT;
@@ -140,6 +144,10 @@ export function buildLetterEmailSubject(data: SendLetterEmailParams): string {
 }
 
 function getEmailIntro(data: SendLetterEmailParams): string {
+  if (data.recipientKind === "landesregierung") {
+    const article = data.governmentSource?.institutionKind === "senat" ? "den" : "die";
+    return `Dein Brief an ${article} ${data.politicianName} ist fertig zum Absenden.`;
+  }
   if (data.recipientKind === "mdl") {
     const destination = getLandtagDestination(data.politicianPostalAddress);
     return destination
@@ -156,6 +164,9 @@ function getEmailIntro(data: SendLetterEmailParams): string {
 }
 
 function getPersonalImpactCopy(data: SendLetterEmailParams): string {
+  if (data.recipientKind === "landesregierung") {
+    return "Ein persönlicher Brief macht dein Anliegen auf Landesebene konkret und nachvollziehbar.";
+  }
   if (data.recipientKind === "mdl") {
     return "Handgeschriebene Briefe fallen in Abgeordnetenbüros auf. Inmitten unpersönlicher Drucksachen signalisieren sie echtes Engagement.";
   }
@@ -167,6 +178,9 @@ function getPersonalImpactCopy(data: SendLetterEmailParams): string {
 
 function getRecruitCopy(data: SendLetterEmailParams): string {
   if (data.campaign?.slug) {
+    if (data.recipientKind === "landesregierung") {
+      return "Dein Brief ist ein Anfang. Teile die Kampagne, damit weitere Menschen aus ihrem Bundesland mit eigenen Worten schreiben.";
+    }
     if (data.recipientKind === "rathaus") {
       return "Dein Brief ist ein Anfang. Teile die Kampagne, damit weitere Menschen vor Ort mit eigenen Worten schreiben.";
     }
@@ -178,6 +192,9 @@ function getRecruitCopy(data: SendLetterEmailParams): string {
   if (data.recipientKind === "rathaus") {
     return "Dein Brief wirkt. Und er wirkt noch stärker, wenn weitere Stimmen vor Ort dazukommen. Teile Brief-nach-Berlin per…";
   }
+  if (data.recipientKind === "landesregierung") {
+    return "Dein Brief wirkt. Und er wirkt noch stärker, wenn weitere Stimmen aus deinem Bundesland dazukommen. Teile Brief-nach-Berlin per…";
+  }
   if (data.recipientKind === "mdl") {
     return "Dein Brief wirkt. Und er wirkt noch stärker, wenn weitere Stimmen aus deiner Region dazukommen. Teile Brief-nach-Berlin per…";
   }
@@ -185,11 +202,24 @@ function getRecruitCopy(data: SendLetterEmailParams): string {
 }
 
 function buildEmailShareTarget(data: SendLetterEmailParams) {
-  const share = buildShareTarget(data.campaign);
+  const level =
+    data.recipientKind === "rathaus"
+      ? "Kommune"
+      : data.recipientKind === "mdl" || data.recipientKind === "landesregierung"
+        ? "Land"
+        : "Bund";
+  const share = buildShareTarget(
+    data.campaign,
+    "participant",
+    level,
+    data.governmentSource?.institutionKind ?? "landesregierung"
+  );
   if (data.campaign?.slug || data.recipientKind === "mdb") return share;
 
   const text =
-    data.recipientKind === "mdl"
+    data.recipientKind === "landesregierung"
+      ? `Ich habe gerade mit Brief-nach-Berlin einen persönlichen Brief an ${data.governmentSource?.institutionKind === "senat" ? "den Senat meines Bundeslands" : "meine Landesregierung"} vorbereitet. Magst du auch einen Brief schreiben, mit deinen eigenen Worten? ${APP_URL}`
+      : data.recipientKind === "mdl"
       ? `Ich habe gerade mit Brief-nach-Berlin einen persönlichen Brief an meinen Landtag vorbereitet. Magst du auch einen Brief schreiben, mit deinen eigenen Worten? ${APP_URL}`
       : `Ich habe gerade mit Brief-nach-Berlin einen persönlichen Brief an meine Kommune vorbereitet. Magst du auch einen Brief schreiben, mit deinen eigenen Worten? ${APP_URL}`;
 
@@ -203,7 +233,7 @@ function buildEmailShareTarget(data: SendLetterEmailParams) {
 }
 
 function getFooterBannerHtml(data: SendLetterEmailParams): string {
-  if (data.recipientKind === "mdl") return "";
+  if (data.recipientKind === "mdl" || data.recipientKind === "landesregierung") return "";
   const path =
     data.recipientKind === "rathaus"
       ? "/images/email-variants/email-rathaus-banner.webp"
@@ -217,8 +247,9 @@ function getFooterBannerHtml(data: SendLetterEmailParams): string {
 export function buildEmailHtml(data: SendLetterEmailParams): string {
   const isRathaus = data.recipientKind === "rathaus";
   const isMdl = data.recipientKind === "mdl";
+  const isLandesregierung = data.recipientKind === "landesregierung";
   const isFallback =
-    !isRathaus && data.politicianFirstName === "" && data.politicianLastName === "MdB";
+    !isRathaus && !isLandesregierung && data.politicianFirstName === "" && data.politicianLastName === "MdB";
   const letterNumberText =
     typeof data.letterNumber === "number" ? ` · Brief # ${data.letterNumber}` : "";
 
@@ -247,14 +278,14 @@ export function buildEmailHtml(data: SendLetterEmailParams): string {
   // Profile link (Abgeordnetenwatch: voting record, public Q&A, transparent source).
   // Prefer the API-provided URL; fall back to a slug-derived URL.
   // Rathaus-Empfänger haben kein Abgeordnetenwatch-Profil — kein Link.
-  const profileUrl = isRathaus
+  const profileUrl = isRathaus || isLandesregierung
     ? null
     : data.politicianAbgeordnetenwatchUrl ??
       abgeordnetenwatchProfileUrl(data.politicianFirstName, data.politicianLastName);
 
   const fallbackUrl = `${APP_URL}/kein-mdb-im-wahlkreis`;
 
-  const addressNameLine = isRathaus
+  const addressNameLine = isRathaus || isLandesregierung
     ? `<strong>${fullName}</strong><br>`
     : isFallback
       ? `<strong><a href="${fallbackUrl}" target="_blank" rel="noopener noreferrer" style="color:#2D5016;text-decoration:underline;">Kein MdB zugeordnet</a></strong><br>`
@@ -277,6 +308,10 @@ export function buildEmailHtml(data: SendLetterEmailParams): string {
       ? officialRathausAddress
         ? `<p style="margin:10px 0 0;font-family:Georgia,'Times New Roman',serif;font-size:12px;color:#666666;line-height:1.5;">Quelle: <a href="${escapeHtml(officialRathausAddress.sourceUrl)}" target="_blank" rel="noopener noreferrer" style="color:#2D5016;text-decoration:underline;">Destatis</a>, Stand ${escapeHtml(officialRathausAddress.sourceStand)}. Du kannst die Adresse bei Google noch einmal <a href="${rathausSearchUrl}" target="_blank" rel="noopener noreferrer" style="color:#2D5016;text-decoration:underline;">hier</a> prüfen.</p>`
         : `<p style="margin:10px 0 0;font-family:Georgia,'Times New Roman',serif;font-size:12px;color:#666666;line-height:1.5;">Für diese Postleitzahl ließ sich keine eindeutige amtliche Anschrift zuordnen. Ergänze in der Suche deinen Wohnort. Die genaue Anschrift findest du <a href="${rathausSearchUrl}" target="_blank" rel="noopener noreferrer" style="color:#2D5016;text-decoration:underline;">hier</a>.</p>`
+      : "";
+  const governmentSourceLine =
+    isLandesregierung && data.governmentSource
+      ? `<p style="margin:10px 0 0;font-family:Georgia,'Times New Roman',serif;font-size:12px;color:#666666;line-height:1.5;">Quelle: <a href="${escapeHtml(data.governmentSource.url)}" target="_blank" rel="noopener noreferrer" style="color:#2D5016;text-decoration:underline;">${escapeHtml(data.governmentSource.title)}</a>, geprüft am ${escapeHtml(data.governmentSource.stand)}.</p>`
       : "";
 
   const profileButtonText = isFallback ? "Empfänger finden" : "Profil auf<br>abgeordnetenwatch";
@@ -386,7 +421,7 @@ export function buildEmailHtml(data: SendLetterEmailParams): string {
                             <p style="margin:0;font-family:'Courier New',Courier,monospace;font-size:14px;line-height:1.8;color:#4A4A4A;">
                               ${addressNameLine}
                               ${institutionLine}${visibleAddressLines}
-                            </p>${rathausSearchLine}
+                            </p>${rathausSearchLine}${governmentSourceLine}
                           </td>
                           <td class="bnb-stack bnb-stack-right" style="vertical-align:middle;text-align:center;padding-left:16px;border-left:1px solid #E0DCD7;width:40%;">
                             ${data.feedbackToken ? buildStarBarHtml(data.feedbackToken) : profileButtonHtml}

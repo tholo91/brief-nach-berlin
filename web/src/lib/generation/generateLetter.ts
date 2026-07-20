@@ -218,6 +218,16 @@ STRATEGIE FÜR DIE LAND-EBENE (nicht verhandelbar):
 - Fordere KEINE Bundesgesetzgebung, das wäre die falsche Ebene.
 - Zitiere KEINE Grundgesetz-Artikel mit Nummern (kein "Art. 70 GG", kein "Art. 28 GG"). Allgemeine Begriffe wie "Kulturhoheit der Länder" sind erlaubt.`;
 
+const LANDESREGIERUNG_ZUSTAENDIGKEIT_BLOCK = `ZUSTÄNDIGKEITSHINWEIS:
+Der Empfänger ist die Landesregierung oder in einem Stadtstaat der Senat. Der Brief richtet sich institutionell an die Landesebene, nicht an eine bestimmte Person, Partei, ein Ministerium oder einen Ausschuss.
+
+STRATEGIE FÜR DIE LANDES-EBENE (nicht verhandelbar):
+- Argumentiere mit den allgemeinen Handlungsmöglichkeiten des Landes: Landespolitik, Landesverwaltung, Landeshaushalt und Landesgesetzgebung.
+- Erfinde KEIN Ministerium, Ressort, Programm, Gesetz, Ausschuss und keine persönliche Zuständigkeit.
+- Versprich KEINE Weiterleitung, Bearbeitung, Antwort oder persönliche Kenntnisnahme.
+- Fordere KEINE Bundesgesetzgebung, das wäre die falsche Ebene.
+- Zitiere KEINE Grundgesetz-Artikel mit Nummern. Allgemeine Begriffe wie "Kulturhoheit der Länder" sind erlaubt.`;
+
 const KOMMUNE_ZUSTAENDIGKEIT_BLOCK = `ZUSTÄNDIGKEITSHINWEIS:
 Der Empfänger ist das Bürgermeisteramt der Gemeinde oder in Berlin das Bezirksamt. Der Brief richtet sich an die politische Leitung der Kommune, nicht an ein Fachamt.
 
@@ -229,13 +239,20 @@ STRATEGIE FÜR DIE KOMMUNALE EBENE (nicht verhandelbar):
 
 const KOMMUNE_ANREDE_LINE = `- Anrede: exakt "Sehr geehrte Damen und Herren,". Kein Name und kein Zusatz zum Amt.`;
 
+const LANDESREGIERUNG_ANREDE_LINE = `- Anrede: exakt "Sehr geehrte Damen und Herren,". Kein Name und kein Zusatz zur Institution.`;
+
 const KOMMUNE_BITTE_LINE = `2. EINE BITTE: genau ein konkretes Verb plus ein konkretes Objekt. Keine Aufzählung und keine Wunschliste. Richte die Bitte an das Bürgermeisteramt oder Bezirksamt. Nenne kein Fachamt, keinen Ausschuss und kein Programm, das nicht im <transkript> steht.`;
+
+const LANDESREGIERUNG_BITTE_LINE = `2. EINE BITTE: genau ein konkretes Verb plus ein konkretes politisches Handlungsobjekt. Keine Aufzählung und keine Wunschliste. Richte die Bitte institutionell an die Landesregierung oder den Senat. Nenne kein Ministerium, Ressort, Programm, Gesetz oder keinen Ausschuss, wenn es nicht im <transkript> steht.`;
 
 const BUND_PARTEI_HEADER = `PARTEI-BEWUSSTES FRAMING (Werte, nicht Strategie):
 Passe die Werte-Sprache an die Partei der Empfängerin/des Empfängers an, damit das Anliegen anschluss­fähig wird. Du benennst keine Parteien außer der adressierten und kommentierst keine Parteidynamiken.`;
 
 const KOMMUNE_PARTEI_HEADER = `PARTEI-NEUTRALITÄT (Kommune):
 Für das Bürgermeisteramt oder Bezirksamt liegen keine verifizierten Parteiinformationen vor. Verwende KEINE parteibezogene Werte-Sprache und benenne keine Parteien.`;
+
+const LANDESREGIERUNG_PARTEI_HEADER = `PARTEI-NEUTRALITÄT (Landesregierung/Senat):
+Der institutionelle Empfänger hat in diesem Brief keinen verifizierten Personen- oder Parteikontext. Verwende KEINE parteibezogene Werte-Sprache und benenne keine Parteien.`;
 
 const BUND_PARTEI_LIST = `- SPD: Arbeitnehmerrechte, sozialer Zusammenhalt, faire Chancen.
 - Grüne: Generationengerechtigkeit, Nachhaltigkeit, Lebensqualität, ökologische Verantwortung.
@@ -248,7 +265,7 @@ const BUND_PARTEI_LIST = `- SPD: Arbeitnehmerrechte, sozialer Zusammenhalt, fair
 /** Kompetenz-Mismatch: der User schreibt bewusst an eine andere als die empfohlene Ebene. */
 const LEVEL_LABELS: Record<PoliticalLevel, string> = {
   Bund: "Bundesebene (Bundestag)",
-  Land: "Landesebene (Landtag)",
+  Land: "Landesebene",
   Kommune: "kommunale Ebene (Bürgermeisteramt/Bezirksamt)",
 };
 
@@ -276,9 +293,17 @@ export function buildSystemPrompt(input: GenerateLetterInput): string {
 
   let prompt = base;
   if (level === "Land") {
-    prompt = prompt
-      .replace(BUND_ZUSTAENDIGKEIT_BLOCK, LAND_ZUSTAENDIGKEIT_BLOCK)
-      .replace(BUND_MDB_CONTEXT_BLOCK, LAND_ABGEORDNETEN_CONTEXT_BLOCK);
+    prompt = input.landesregierung
+      ? prompt
+          .replace(BUND_ZUSTAENDIGKEIT_BLOCK, LANDESREGIERUNG_ZUSTAENDIGKEIT_BLOCK)
+          .replace(BUND_ANREDE_LINE, LANDESREGIERUNG_ANREDE_LINE)
+          .replace(BUND_BITTE_LINE, LANDESREGIERUNG_BITTE_LINE)
+          .replace(BUND_PARTEI_HEADER, LANDESREGIERUNG_PARTEI_HEADER)
+          .replace(`\n${BUND_PARTEI_LIST}`, "")
+          .replace(`${BUND_MDB_CONTEXT_BLOCK}\n\n`, "")
+      : prompt
+          .replace(BUND_ZUSTAENDIGKEIT_BLOCK, LAND_ZUSTAENDIGKEIT_BLOCK)
+          .replace(BUND_MDB_CONTEXT_BLOCK, LAND_ABGEORDNETEN_CONTEXT_BLOCK);
   } else if (level === "Kommune") {
     prompt = prompt
       .replace(BUND_ZUSTAENDIGKEIT_BLOCK, KOMMUNE_ZUSTAENDIGKEIT_BLOCK)
@@ -340,18 +365,21 @@ export function buildUserPrompt(
   // Kommune: der synthetische Verwaltungs-Empfänger ersetzt die Politiker-Liste.
   // Die Pseudo-ID 0 existiert nur im Prompt-Kontrakt (Antwortformat verlangt
   // selected_politician_id); sie wird nie gegen Abgeordnetenwatch-Daten geprüft.
-  const empfaenger = input.rathaus
+  const institutionalRecipient = input.landesregierung ?? input.rathaus;
+  const empfaenger = institutionalRecipient
     ? [
         {
           id: 0,
-          name: input.rathaus.label,
+          name: institutionalRecipient.label,
           anrede: "Sehr geehrte Damen und Herren,",
-          ort:
-            input.rathaus.address.source === "destatis" ||
-            input.rathaus.recipientKind === "bezirksamt"
+          ort: input.landesregierung
+            ? input.landesregierung.bundeslandName
+            : input.rathaus &&
+                (input.rathaus.address.source === "destatis" ||
+                  input.rathaus.recipientKind === "bezirksamt")
               ? `${input.rathaus.plz} ${input.rathaus.gemeindeName}`
               : "nicht eindeutig zugeordnet",
-          level: input.rathaus.level,
+          level: institutionalRecipient.level,
         },
       ]
     : input.politicians.map((p) => ({
@@ -372,7 +400,7 @@ export function buildUserPrompt(
       : "";
 
   const toneBlock = tonalityBlock(toneLevel);
-  const contextBlock = input.rathaus ? "" : mdbContextBlock(input.mdbContext);
+  const contextBlock = institutionalRecipient ? "" : mdbContextBlock(input.mdbContext);
 
   return `<transkript>
 ${input.issueText}
@@ -542,7 +570,9 @@ export async function generateLetter(
   let chosenPolitician: (typeof input.politicians)[number] | null = null;
   let fallbackUsed = false;
 
-  if (input.rathaus) {
+  if (input.landesregierung) {
+    selectedRecipient = input.landesregierung;
+  } else if (input.rathaus) {
     selectedRecipient = input.rathaus;
   } else {
     const selectedPolitician = input.politicians.find(
@@ -571,6 +601,7 @@ export async function generateLetter(
 
   const mdbContextUsed = Boolean(
     !input.rathaus &&
+      !input.landesregierung &&
       input.mdbContext &&
       (input.mdbContext.committees.length > 0 || input.mdbContext.recentRelevant.length > 0)
   );

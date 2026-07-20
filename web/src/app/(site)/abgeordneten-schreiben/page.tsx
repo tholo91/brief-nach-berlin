@@ -74,7 +74,7 @@ const articleJsonLd = {
   headline: TITLE,
   description: DESCRIPTION,
   datePublished: PUBLISHED,
-  dateModified: "2026-07-07",
+  dateModified: "2026-07-20",
   author: { "@type": "Organization", name: "Brief-nach-Berlin" },
   publisher: {
     "@type": "Organization",
@@ -220,8 +220,8 @@ export default function AbgeordnetenSchreibenPage() {
           </p>
           <p>
             Brief-nach-Berlin findet über deine Postleitzahl automatisch die
-            zuständigen Bundestagsabgeordneten. Landtag und Kommune folgen als
-            nächste Ausbaustufen.
+            zuständige Adresse. Bund ist stabil, Landtag und Kommune laufen als
+            Beta und werden langsam mit echten Anliegen getestet.
           </p>
 
           <h2 className="font-body text-2xl font-bold text-waldgruen-dark pt-4">
@@ -253,9 +253,9 @@ export default function AbgeordnetenSchreibenPage() {
 
         <div className="mt-16 p-8 bg-waldgruen/5 border border-waldgruen/15 rounded-xl hover:bg-waldgruen/10 transition-colors">
           <p className="font-body text-warmgrau leading-relaxed mb-6">
-            Drei Minuten, kein Account, kein Tracking. Brief-nach-Berlin findet
-            den richtigen Abgeordneten für deine Postleitzahl und schlägt dir
-            einen Brief vor, den du selbst abschreibst und verschickst.
+            Drei Minuten, kein Account, kein Tracking. Brief-nach-Berlin prüft
+            die passende Ebene für deine Postleitzahl und schlägt dir einen
+            Brief vor, den du selbst abschreibst und verschickst.
           </p>
           <Link
             href="/app"

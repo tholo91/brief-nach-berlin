@@ -41,13 +41,13 @@ const monate: Monat[] = [
   {
     key: "juli-2026",
     badge: "Juli 2026",
-    note: "Kampagnenmodus live, Roadmap ehrlich nachgezogen",
+    note: "Kampagnenmodus live, Land und Kommune als Beta",
     entries: [
       "Kampagnenmodus gebaut: Creator können ein Anliegen mit Titel, Kurzlink, sichtbarem Absender, Beschreibung, optionalem Bild und externem Link anlegen.",
       "Kampagnen werden erst nach E-Mail-Bestätigung öffentlich und automatisch moderiert, damit keine problematischen Texte ungeprüft live gehen.",
       "Öffentliche Kampagnenseiten führen Menschen durch den normalen Briefprozess: PLZ, zuständige Bundestagsabgeordnete, persönlicher Entwurf statt Copy-Paste-Massenbrief.",
       "Für Kampagnen gibt es Verwaltungslinks zum Bearbeiten, Pausieren oder Archivieren sowie Teilen per Link und QR-Code.",
-      "Land und Kommune haben sich dadurch nach hinten verschoben. Statt Juni ist für die nächsten Ausbauschritte jetzt realistisch Juli/August 2026, weil aktuelle politische Entwicklungen zuerst einen Kampagnenmodus gebraucht haben.",
+      "Land und Kommune sind als Beta dazugekommen: Die App kann Anliegen jetzt auf Bund, Land oder Kommune routen und führt, wo die Daten sauber genug sind, zur passenden Adresse.",
     ],
   },
   {
@@ -119,7 +119,7 @@ const articleJsonLd = {
   headline: "Was bisher geschah: Der Fortschritt von Brief-nach-Berlin",
   description: DESCRIPTION,
   datePublished: PUBLISHED,
-  dateModified: "2026-07-07",
+  dateModified: "2026-07-20",
   author: { "@type": "Organization", name: "Brief-nach-Berlin" },
   publisher: {
     "@type": "Organization",

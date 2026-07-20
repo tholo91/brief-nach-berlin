@@ -221,7 +221,7 @@ export function lookupPLZWithLevel(plz: string): PlzLookupResult {
 }
 
 /**
- * Ehrlicher Hinweis, wenn die empfohlene Ebene für diese PLZ (noch) nicht
+ * Ehrlicher Hinweis, wenn die empfohlene Ebene für diese PLZ nicht
  * abgedeckt ist. Copy für den Land-Fall ist gelockt (CONTEXT G4, 2026-05-21):
  * kein Gedankenstrich, kein "weitergeben"-Versprechen (Art. 38 GG, freies Mandat).
  */
@@ -232,9 +232,9 @@ export function buildCoverageHint(
   if (routedLevel === "Land" && !result.coverage.landSupported) {
     const region = result.bundeslandName ?? "Dein Bundesland";
     if (result.coverage.stadtstaatEinheitsgemeinde || result.bundeslandName) {
-      return `${region} kommt bald dazu. Solange schreibst du an deine Bundestagsabgeordneten: Sie haben das Mandat, Themen aus allen Bundesländern in Berlin einzubringen.`;
+      return `${region} ist in der Beta noch nicht sauber abgedeckt. Solange schreibst du an deine Bundestagsabgeordneten: Sie haben das Mandat, Themen aus allen Bundesländern in Berlin einzubringen.`;
     }
-    return `Dieses Bundesland kommt bald dazu. Solange schreibst du an deine Bundestagsabgeordneten: Sie haben das Mandat, Themen aus allen Bundesländern in Berlin einzubringen.`;
+    return `Dieses Bundesland ist in der Beta noch nicht sauber abgedeckt. Solange schreibst du an deine Bundestagsabgeordneten: Sie haben das Mandat, Themen aus allen Bundesländern in Berlin einzubringen.`;
   }
   if (routedLevel === "Kommune" && !result.coverage.kommuneSupported) {
     if (result.coverage.stadtstaatEinheitsgemeinde && result.bundeslandName) {

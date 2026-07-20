@@ -50,7 +50,7 @@ const faqs = [
   },
   {
     q: "Unterstützt Brief-nach-Berlin alle Ebenen?",
-    a: "Direkt unterstützt wird aktuell der Bundestag. Land und Kommune sind die nächsten Ausbauschritte und haben sich wegen des vorgezogenen Kampagnenmodus auf voraussichtlich Juli/August 2026 verschoben. Bis dahin erklärt diese Seite, welche Ebene für dein Anliegen zuständig ist.",
+    a: "Brief-nach-Berlin unterstützt aktuell Bund, Land und Kommune. Bund ist der stabile Kern. Land und Kommune laufen als Beta und werden langsam mit echten Anliegen getestet. Die EU steht weiter auf der Roadmap.",
   },
 ];
 
@@ -70,7 +70,7 @@ const articleJsonLd = {
   headline: TITLE,
   description: DESCRIPTION,
   datePublished: PUBLISHED,
-  dateModified: "2026-07-07",
+  dateModified: "2026-07-20",
   author: { "@type": "Organization", name: "Brief-nach-Berlin" },
   publisher: {
     "@type": "Organization",
@@ -216,9 +216,10 @@ export default function KommuneLandBundEuPage() {
             <li>Migration, Staatsbürgerschaft, Asyl</li>
           </ul>
           <p>
-            Hier setzt Brief-nach-Berlin heute an: Über deine Postleitzahl
+            Hier hat Brief-nach-Berlin angefangen: Über deine Postleitzahl
             findet das Projekt deinen Bundestagsabgeordneten und hilft dir,
-            ihn oder sie anzuschreiben.
+            ihn oder sie anzuschreiben. Inzwischen werden auch Land und Kommune
+            als Beta angesteuert.
           </p>
 
           <h2 className="font-body text-2xl font-bold text-waldgruen-dark pt-4">
@@ -293,21 +294,22 @@ export default function KommuneLandBundEuPage() {
 
           <div className="p-4 bg-waldgruen/5 border border-waldgruen/15 rounded-xl my-6">
             <span className="font-typewriter text-xs uppercase tracking-widest text-waldgruen/60 block mb-1">
-              Kommt bald
+              Jetzt in der Beta
             </span>
             <span>
-              Brief-nach-Berlin unterstützt aktuell direkt den Bundestag.
-              Land und Kommune sind als nächste Ebenen geplant, voraussichtlich
-              im Juli/August 2026. Der Kampagnenmodus ist schon live und wurde
-              wegen aktueller politischer Ereignisse vorgezogen.
+              Brief-nach-Berlin unterstützt aktuell Bund, Land und Kommune.
+              Bund ist stabil. Land und Kommune werden langsam getestet, weil
+              Zuständigkeiten und Adressen dort schneller uneindeutig werden.
+              Wenn etwas falsch einsortiert wirkt, ist Feedback gerade besonders
+              wertvoll.
             </span>
           </div>
         </Prose>
 
         <div className="mt-16 p-8 bg-waldgruen/5 border border-waldgruen/15 rounded-xl hover:bg-waldgruen/10 transition-colors">
           <p className="font-body text-warmgrau leading-relaxed mb-6">
-            Dein Anliegen gehört in den Bundestag? Dann kannst du jetzt
-            starten. Drei Minuten, kein Account, kein Tracking.
+            Dein Anliegen gehört an Bund, Land oder Kommune? Dann kannst du
+            jetzt starten. Drei Minuten, kein Account, kein Tracking.
           </p>
           <Link
             href="/app"

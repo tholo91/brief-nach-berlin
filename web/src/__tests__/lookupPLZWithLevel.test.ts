@@ -133,13 +133,13 @@ describe("lookupPLZWithLevel", () => {
 });
 
 describe("buildCoverageHint", () => {
-  it("Land empfohlen, aber nicht abgedeckt: ehrlicher Bund-Übergang ohne Gedankenstrich", () => {
+  it("Land empfohlen, aber nicht abgedeckt: ehrlicher Beta-Fallback ohne Gedankenstrich", () => {
     const r = lookupPLZWithLevel("50667");
     const hint = buildCoverageHint(
       { ...r, coverage: { ...r.coverage, landSupported: false } },
       "Land"
     );
-    expect(hint).toContain("kommt bald dazu");
+    expect(hint).toContain("in der Beta noch nicht sauber abgedeckt");
     expect(hint).toContain("Bundestagsabgeordneten");
     expect(hint).not.toContain("—");
     expect(hint).not.toContain("weitergeben");

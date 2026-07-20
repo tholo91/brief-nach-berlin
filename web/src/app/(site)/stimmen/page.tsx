@@ -59,7 +59,7 @@ const faqs = [
   },
   {
     q: "Was wurde dank Feedback konkret verbessert?",
-    a: "Drei Dinge: Der Prompt formuliert jetzt keine unnötigen Komplexitäts-Einleitungen mehr, nach mehrfacher Rückmeldung, dass das aufgesetzt klingt. Der Kampagnenmodus wurde wegen aktueller politischer Ereignisse vorgezogen; Landtag und Kommune bleiben als nächste Ausbaustufen dran. Und der Ton der Followup-Mail wurde kürzer und direkter, weil die erste Version zu formal war.",
+    a: "Drei Dinge: Der Prompt formuliert jetzt keine unnötigen Komplexitäts-Einleitungen mehr, nach mehrfacher Rückmeldung, dass das aufgesetzt klingt. Der Kampagnenmodus wurde wegen aktueller politischer Ereignisse vorgezogen. Land und Kommune laufen jetzt als Beta, weil viele Anliegen eben nicht in den Bundestag gehören. Und der Ton der Followup-Mail wurde kürzer und direkter, weil die erste Version zu formal war.",
   },
   {
     q: "Wie kann ich Feedback geben?",
@@ -77,7 +77,7 @@ const articleJsonLd = {
   headline: "Stimmen aus dem ganzen Land",
   description: DESCRIPTION,
   datePublished: "2026-05-22",
-  dateModified: "2026-07-07",
+  dateModified: "2026-07-20",
   author: { "@type": "Organization", name: "Brief-nach-Berlin" },
   publisher: {
     "@type": "Organization",

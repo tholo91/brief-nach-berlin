@@ -22,7 +22,8 @@ export default function Roadmap() {
           >
             Open Source
           </a>
-          . Ich baue Brief-nach-Berlin mit eurem Feedback stetig weiter. Hier ist, worauf ich mich gerade konzentriere:
+          . Ich baue Brief-nach-Berlin mit eurem Feedback stetig weiter. Hier
+          ist, was gerade neu ist und wo ich Feedback brauche:
         </p>
 
         <div className="grid md:grid-cols-3 gap-8">
@@ -40,10 +41,13 @@ export default function Roadmap() {
                 Richtiges politisches Level
               </p>
               <h3 className="font-body text-lg font-bold text-waldgruen-dark leading-snug mb-3">
-                Kommunal, Landes-, Bundes- oder Europapolitik
+                Bund, Land oder Kommune
               </h3>
               <p className="font-body text-base text-warmgrau/80 leading-relaxed mb-3">
-                Nicht jedes Anliegen gehört nach Berlin. Land und Kommune waren als nächste Ausbaustufe geplant; ich habe aber den Kampagnenmodus vorgezogen, weil aktuelle politische Entwicklungen schnell gemeinsame, persönliche Briefe gebraucht haben. Realistisch ist jetzt Juli/August 2026.
+                Nicht jedes Anliegen gehört nach Berlin. Brief-nach-Berlin
+                steuert jetzt Bund, Land und Kommune an. Bund ist stabil, Land
+                und Kommune laufen als Beta. Ich teste das langsam, weil
+                Zuständigkeit und Adresse auf diesen Ebenen genau sitzen müssen.
               </p>
               <p className="font-body text-sm text-warmgrau/70 leading-relaxed mb-4">
                 <Link href="/kommune-land-bund-eu" prefetch={false} className="text-waldgruen hover:text-waldgruen-dark underline decoration-waldgruen/30 underline-offset-2 hover:decoration-waldgruen transition-colors">
@@ -51,7 +55,7 @@ export default function Roadmap() {
                 </Link>
               </p>
               <span className="inline-block font-typewriter text-[10px] font-bold tracking-wider uppercase text-waldgruen bg-waldgruen/10 px-2 py-0.5 rounded-full">
-                Juli/August 2026
+                Beta live
               </span>
             </div>
           </div>

@@ -50,7 +50,7 @@ const faqs = [
   },
   {
     q: "Unterstützt Brief-nach-Berlin auch Briefe an den Stadtrat?",
-    a: "Aktuell unterstützt Brief-nach-Berlin direkt den Bundestag. Kommunale Mandate sind weiterhin geplant, haben sich aber wegen des vorgezogenen Kampagnenmodus auf voraussichtlich Juli/August 2026 verschoben. Bis dahin hilft die Anleitung auf dieser Seite, den richtigen Stadtrat selbst zu finden.",
+    a: "Ja, als Beta. Brief-nach-Berlin kann kommunale Anliegen inzwischen zur Stadt oder Gemeinde führen, wo eine saubere Zuordnung möglich ist. Weil kommunale Daten schnell uneindeutig werden, bleibt diese Ebene bewusst im Test.",
   },
 ];
 
@@ -70,7 +70,7 @@ const articleJsonLd = {
   headline: TITLE,
   description: DESCRIPTION,
   datePublished: PUBLISHED,
-  dateModified: "2026-07-07",
+  dateModified: "2026-07-20",
   author: { "@type": "Organization", name: "Brief-nach-Berlin" },
   publisher: {
     "@type": "Organization",
@@ -173,11 +173,12 @@ export default function KommunalpolitikBriefPage() {
           </p>
 
           <h2 className="font-body text-2xl font-bold text-waldgruen-dark pt-4">
-            Wie finde ich meinen Stadtrat?
+            Wie finde ich die richtige kommunale Adresse?
           </h2>
           <p>
-            Das geht einfacher, als die meisten denken. Drei Wege funktionieren
-            zuverlässig:
+            Brief-nach-Berlin versucht inzwischen, kommunale Anliegen direkt zur
+            richtigen Stadt oder Gemeinde zu führen. Wenn die Zuordnung nicht
+            sauber genug ist, helfen diese Wege weiter:
           </p>
           <div className="space-y-4">
             <div className="p-4 bg-waldgruen/5 border border-waldgruen/15 rounded-xl">
@@ -224,21 +225,21 @@ export default function KommunalpolitikBriefPage() {
             Was kommt als nächstes bei Brief-nach-Berlin?
           </h2>
           <p>
-            Im Moment unterstützt Brief-nach-Berlin direkt die Suche nach
-            Bundestagsabgeordneten. Der Kampagnenmodus ist schon live, weil
-            aktuelle politische Ereignisse schnelle, gemeinsame Briefe
-            gebraucht haben. Land und Kommune sind dadurch nach hinten
-            gerutscht, realistisch auf Juli/August 2026.
+            Brief-nach-Berlin unterstützt jetzt Bund, Land und Kommune. Bund ist
+            der stabile Kern. Kommune läuft als Beta, weil ein Rathaus nicht so
+            einfach zu finden ist wie ein Bundestagsbüro: Stadtstaaten,
+            Bezirke, Gemeinden und amtliche Anschriften müssen sauber
+            auseinandergehalten werden.
           </p>
           <p>
-            Ich arbeite daran, dass Brief-nach-Berlin künftig automatisch
-            erkennt, welche politische Ebene für dein Anliegen zuständig ist,
-            und dich direkt zur richtigen Adresse führt. Bis dahin hilft die
-            Anleitung oben, deinen Stadtrat selbst zu finden.
+            Genau deshalb teste ich diese Ebene langsam. Wenn die App dein
+            Anliegen falsch einsortiert oder eine kommunale Adresse fehlt, ist
+            das gerade kein peinlicher Fehler, sondern der wichtigste Input für
+            die nächste Runde.
           </p>
           <p>
-            Wenn dein Thema den Bundestag betrifft, kannst du jetzt direkt
-            starten.
+            Wenn dein Thema vor Ort liegt, kannst du jetzt direkt starten und
+            den Vorschlag prüfen.
           </p>
 
           <h2 className="font-body text-2xl font-bold text-waldgruen-dark pt-4">
@@ -249,9 +250,9 @@ export default function KommunalpolitikBriefPage() {
 
         <div className="mt-16 p-8 bg-waldgruen/5 border border-waldgruen/15 rounded-xl hover:bg-waldgruen/10 transition-colors">
           <p className="font-body text-warmgrau leading-relaxed mb-6">
-            Bundesebene? Drei Minuten, kein Account, kein Tracking.
-            Brief-nach-Berlin findet deinen MdB und schlägt dir einen Brief vor, den du selbst
-            abschreibst und verschickst.
+            Kommunales Anliegen? Drei Minuten, kein Account, kein Tracking.
+            Brief-nach-Berlin schlägt dir einen Brief vor, den du selbst
+            prüfst, abschreibst und verschickst.
           </p>
           <Link
             href="/app"

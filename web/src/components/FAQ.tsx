@@ -23,7 +23,7 @@ const FAQ_ITEMS = [
   {
     question: "Welche politischen Ebenen sind dabei?",
     answer:
-      "Aktuell direkt der Bundestag, abhängig von deiner Postleitzahl. Außerdem kannst du öffentliche Kampagnen starten. Landtag und kommunale Ebene folgen voraussichtlich im Juli/August 2026.",
+      "Bund, Land und Kommune. Der Bundestag ist der stabile Kern, Landtag und kommunale Ebene laufen als Beta. Außerdem kannst du öffentliche Kampagnen starten.",
   },
   {
     question: "Wer steckt dahinter?",

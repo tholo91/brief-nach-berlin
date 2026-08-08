@@ -34,7 +34,7 @@ export const metadata: Metadata = {
 const faqs = [
   {
     q: "Was hat Brief nach Berlin mit der Geschichte von Thomas' Mutter zu tun?",
-    a: "Thomas' Mutter war die erste Nutzerin von Brief nach Berlin. Mit der Seite schrieb sie zwei handschriftliche Briefe. Das Büro des Duisburger Bundestagsabgeordneten Mahmut Özdemir meldete sich zurück, kam zu ihr nach Hause und nahm sich des Anliegens an. Das Problem wurde später gelöst.",
+    a: "Thomas' Mutter war die erste Nutzerin von Brief nach Berlin. Mit der Seite schrieb sie zwei handschriftliche Briefe zu konkreten Missständen in ihrem Stadtteil Duisburg-Homberg. Das Büro des Bundestagsabgeordneten Mahmut Özdemir meldete sich zurück, die Bezirksvertreterin Steffie Ogaza machte mit ihr eine Ortsbegehung. Die Probleme wurden anschließend angegangen.",
   },
   {
     q: "Kann ein einzelner Brief an Abgeordnete wirklich etwas bewirken?",
@@ -118,19 +118,26 @@ export default function BriefSchreibenWirktPage() {
 
         <Prose>
           <h2 className="font-body text-2xl md:text-3xl font-bold text-waldgruen-dark pt-4">
-            Die erste Nutzerin
+            Meine Mutter als erste Userin des Tools
           </h2>
           <p className="first-letter:float-left first-letter:font-body first-letter:text-7xl md:first-letter:text-8xl first-letter:font-bold first-letter:text-waldgruen-dark first-letter:leading-[0.85] first-letter:mr-2 first-letter:mt-1">
             Meine Mutter wohnt in Duisburg-Homberg, mit Blick auf den Rhein. Als
             Brief nach Berlin zum ersten Mal funktionierte, war sie die erste,
-            die es ausprobierte. Sie beschrieb ihr Anliegen, schrieb die beiden
-            Entwürfe mit der Hand ab und schickte sie los.
+            die es ausprobierte. Ihr Anliegen war ganz praktisch: Es ging um die
+            Sauberkeit im Stadtteil. Der Weg, auf dem sie mit ihrem Hund Gassi
+            geht, war schon ewig zugewuchert. Am Haus, in dem ihre Wohnung
+            liegt, häufte sich immer wieder Dreck an. Und der angrenzende
+            Parkplatz diente offenbar als Drogentauschort.
           </p>
           <p>
-            Einer der Briefe ging an Mahmut Özdemir, den SPD-Bundestagsabgeordneten
-            für Duisburg. Sein Bundestagsbüro meldete sich zurück. Eine
-            Mitarbeiterin kam bei meinen Eltern vorbei, hörte zu und nahm das
-            Anliegen mit. Inzwischen ist das Problem gelöst.
+            Sie schrieb die beiden Entwürfe mit der Hand ab und schickte sie
+            los. Einer ging an Mahmut Özdemir, den SPD-Bundestagsabgeordneten
+            für Duisburg. Sein Bundestagsbüro rief an und kündigte an, ihre
+            Anliegen mit Nachdruck an die zuständigen Behörden vor Ort
+            weiterzugeben. Kurz darauf stand die Bezirksvertreterin Steffie
+            Ogaza bei ihr vor der Tür und machte eine Ortsbegehung. Beide
+            Probleme sind seither in Bewegung. Sogar die Polizei hat sich
+            gemeldet und Hilfe angeboten.
           </p>
 
           <figure className="not-prose my-10 md:my-14 overflow-hidden rounded-sm border border-waldgruen/15 bg-white shadow-xl shadow-waldgruen/10">
@@ -149,7 +156,7 @@ export default function BriefSchreibenWirktPage() {
 
           <FactCallout
             number="2"
-            label="handschriftliche Briefe schrieb meine Mutter mit Brief nach Berlin. Einer davon führte zu einem Rückruf und einem Besuch aus dem Bundestagsbüro."
+            label="handschriftliche Briefe schrieb meine Mutter mit Brief nach Berlin. Sie führten zu einem Rückruf, einer Ortsbegehung mit der Bezirksvertreterin Steffie Ogaza und sogar zur Hilfe der Polizei."
             source="Erfahrung aus meiner Familie"
           />
 
@@ -158,9 +165,9 @@ export default function BriefSchreibenWirktPage() {
           </h2>
           <p>
             Das Beste daran war nicht nur der Rückruf. Meine Mutter fühlte sich
-            danach ernst genommen. Sie hatte sich nicht klein gemacht und auch
-            nicht darauf gewartet, dass sich jemand anderes kümmert. Sie hatte
-            geschrieben, eine Antwort bekommen und erlebt, dass auf der anderen
+            danach ernst genommen. Sie hatte sich nicht klein gemacht und nicht
+            darauf gewartet, dass sich jemand anderes kümmert. Sie hat
+            geschrieben, eine Antwort bekommen und gemerkt, dass auf der anderen
             Seite Menschen sitzen.
           </p>
 
@@ -181,8 +188,8 @@ export default function BriefSchreibenWirktPage() {
           <p>
             Die App war für meine Mutter der fehlende erste Schritt. Sie musste
             nicht mehr überlegen, wer zuständig ist oder wie ein Brief anfangen
-            soll. Sie konnte sich auf ihr Anliegen konzentrieren. Danach wurde
-            aus dem Entwurf ihr Brief, weil sie ihn selbst abgeschrieben hat.
+            soll. Sie konnte sich auf ihr Anliegen konzentrieren. Am Ende war es
+            ihr Brief, weil sie ihn selbst abgeschrieben hat.
           </p>
 
           <h2 className="font-body text-2xl md:text-3xl font-bold text-waldgruen-dark pt-4">

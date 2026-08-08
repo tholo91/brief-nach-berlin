@@ -35,6 +35,13 @@ export default function AppFooter() {
           >
             Startseite
           </Link>
+          <Link
+            href="/brief-schreiben-wirkt"
+            prefetch={false}
+            className="font-body text-sm text-warmgrau/40 hover:text-warmgrau transition-colors duration-200"
+          >
+            Briefe wirken wirklich
+          </Link>
           <a
             href={FOUNDER_FEEDBACK_URL}
             target="_blank"

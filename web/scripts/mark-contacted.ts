@@ -99,9 +99,26 @@ async function main() {
   // 1) Find matching rows (preview).
   const selectCols = "id, created_at, rating, email, display_name, body, contacted_at";
   const query = client.from("reviews").select(selectCols).order("created_at", { ascending: false });
-  const { data, error } = looksLikeEmail(args.target)
-    ? await query.eq("email", args.target)
-    : await query.ilike("id", `${args.target}%`);
+
+  // Non-email targets can be a full UUID or a >=8-char prefix. PostgREST has no
+  // ilike operator for uuid columns, so resolve prefixes client-side (same
+  // pattern as the cluster-push script), then match by exact id.
+  let targetIds: string[] | null = null;
+  if (looksLikeEmail(args.target)) {
+    const { data } = await query.eq("email", args.target);
+    if (data) targetIds = (data as Array<{ id: string }>).map((r) => r.id);
+  } else if (/^[0-9a-fA-F-]{8,}$/.test(args.target)) {
+    const { data } = await client.from("reviews").select("id");
+    targetIds = (data ?? [])
+      .map((r) => r.id as string)
+      .filter((id) => id.toLowerCase().startsWith(args.target.toLowerCase()));
+  }
+
+  if (targetIds === null || targetIds.length === 0) {
+    console.error(`No review matches "${args.target}".`);
+    process.exit(1);
+  }
+  const { data, error } = await query.in("id", targetIds);
   if (error) throw error;
   const rows = (data ?? []) as Array<{
     id: string;

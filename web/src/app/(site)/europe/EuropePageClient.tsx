@@ -281,7 +281,7 @@ function PinnedEuropePoster({ alt }: { alt: string }) {
           className="h-auto w-full rounded-[1px] border border-waldgruen/15"
         />
         <Image
-          src="/images/ghibli-pin.png"
+          src="/images/ghibli-pin.webp"
           alt=""
           width={64}
           height={74}

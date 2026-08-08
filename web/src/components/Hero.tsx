@@ -169,7 +169,7 @@ function NgoCampaignBadge({ className }: { className?: string }) {
       aria-label="Briefkampagne für NGO oder Verein starten"
     >
       <Image
-        src="/images/ghibli-pin.png"
+        src="/images/ghibli-pin.webp"
         alt=""
         width={64}
         height={74}

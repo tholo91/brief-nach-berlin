@@ -10,7 +10,7 @@ export function CampaignBackground({ children }: { children: ReactNode }) {
         className="pointer-events-none absolute inset-x-0 bottom-0 h-[min(62vw,640px)] min-h-[320px] overflow-hidden"
       >
         <Image
-          src="/images/img-campaign-crowd-ghibli.png"
+          src="/images/img-campaign-crowd-ghibli.webp"
           alt=""
           fill
           sizes="100vw"

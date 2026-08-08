@@ -96,7 +96,7 @@ export default function KeinMdbImWahlkreisPage() {
         </p>
 
         <Figure
-          src="/images/kein-mdb-im-wahlkreis.png"
+          src="/images/kein-mdb-im-wahlkreis.webp"
           width={1536}
           height={1024}
           alt="Illustration eines Briefs mit dem Hinweis kein Name, einem Wegweiser und dem Bundestag im Hintergrund"

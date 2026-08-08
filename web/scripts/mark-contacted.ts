@@ -24,7 +24,7 @@ import { readFileSync, existsSync } from "node:fs";
 import { resolve } from "node:path";
 import { createInterface } from "node:readline/promises";
 import { stdin as input, stdout as output } from "node:process";
-import { createClient } from "@supabase/supabase-js";
+import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 
 loadEnvLocal();
 
@@ -82,6 +82,27 @@ function looksLikeEmail(s: string): boolean {
   return s.includes("@");
 }
 
+const PAGE_SIZE = 1000;
+
+// Fetch every review id in bounded pages. PostgREST caps a single request at
+// 1000 rows, so a plain select() would silently miss ids past that.
+async function fetchAllReviewIds(client: SupabaseClient): Promise<string[]> {
+  const ids: string[] = [];
+  let from = 0;
+  for (;;) {
+    const { data, error } = await client
+      .from("reviews")
+      .select("id")
+      .order("id", { ascending: true })
+      .range(from, from + PAGE_SIZE - 1);
+    if (error) throw error;
+    ids.push(...(data ?? []).map((r) => (r as { id: string }).id));
+    if (!data || data.length < PAGE_SIZE) break;
+    from += PAGE_SIZE;
+  }
+  return ids;
+}
+
 async function main() {
   const args = parseArgs(process.argv.slice(2));
 
@@ -101,20 +122,19 @@ async function main() {
   const query = client.from("reviews").select(selectCols).order("created_at", { ascending: false });
 
   // Non-email targets can be a full UUID or a >=8-char prefix. PostgREST has no
-  // ilike operator for uuid columns, so resolve prefixes client-side (same
-  // pattern as the cluster-push script), then match by exact id.
-  let targetIds: string[] | null = null;
+  // ilike operator for uuid columns, so resolve prefixes client-side (paging
+  // past the 1000-row request cap), then match by exact id.
+  let targetIds: string[] = [];
   if (looksLikeEmail(args.target)) {
     const { data } = await query.eq("email", args.target);
     if (data) targetIds = (data as Array<{ id: string }>).map((r) => r.id);
   } else if (/^[0-9a-fA-F-]{8,}$/.test(args.target)) {
-    const { data } = await client.from("reviews").select("id");
-    targetIds = (data ?? [])
-      .map((r) => r.id as string)
-      .filter((id) => id.toLowerCase().startsWith(args.target.toLowerCase()));
+    targetIds = (await fetchAllReviewIds(client)).filter((id) =>
+      id.toLowerCase().startsWith(args.target.toLowerCase()),
+    );
   }
 
-  if (targetIds === null || targetIds.length === 0) {
+  if (targetIds.length === 0) {
     console.error(`No review matches "${args.target}".`);
     process.exit(1);
   }

@@ -3,7 +3,12 @@
 import { z } from "zod";
 import type { WizardData } from "@/lib/types/wizard";
 import type { RecipientSelection } from "@/lib/lookup/rathausRecipient";
-import { step1Schema, step1bSchema, step2Schema } from "@/lib/validation/wizardSchemas";
+import {
+  firstZodIssueMessage,
+  step1Schema,
+  step1bSchema,
+  step2Schema,
+} from "@/lib/validation/wizardSchemas";
 import { moderateText } from "@/lib/moderation/moderateText";
 import { resolveRecipientSelection } from "@/lib/lookup/resolveRecipient";
 import { sendLetterEmail, prepareLetterEmail } from "@/lib/email/sendLetterEmail";
@@ -62,7 +67,12 @@ export async function resendLetterAction(
     }
 
     const s2 = step2Schema.safeParse({ issueText: data.issueText });
-    if (!s2.success) return { error: "validation", message: "Anliegen fehlt." };
+    if (!s2.success) {
+      return {
+        error: "validation",
+        message: firstZodIssueMessage(s2.error, "Anliegen fehlt."),
+      };
+    }
 
     if (!cachedLetterText || typeof cachedLetterText !== "string" || !cachedLetterText.trim()) {
       return { error: "validation", message: "Ungültige Eingabe." };

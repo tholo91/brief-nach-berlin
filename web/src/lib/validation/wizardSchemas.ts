@@ -1,5 +1,12 @@
 import { z } from "zod";
 
+export const ISSUE_TEXT_MIN = 10;
+export const ISSUE_TEXT_MAX = 5000;
+
+export function firstZodIssueMessage(error: z.ZodError, fallback = "Ungültige Eingabe."): string {
+  return error.issues[0]?.message ?? fallback;
+}
+
 export const toneLevelSchema = z.number().int().min(1).max(5).optional();
 
 export const step1Schema = z.object({
@@ -19,8 +26,8 @@ export const step1bSchema = z.object({
 export const step2Schema = z.object({
   issueText: z.string()
     .trim()
-    .min(10, { message: "Bitte beschreibe dein Anliegen (mindestens 10 Zeichen)." })
-    .max(5000, { message: "Dein Anliegen ist zu lang. Bitte kürze es." }),
+    .min(ISSUE_TEXT_MIN, { message: "Bitte beschreibe dein Anliegen (mindestens 10 Zeichen)." })
+    .max(ISSUE_TEXT_MAX, { message: "Dein Anliegen ist zu lang. Bitte kürze es." }),
   toneLevel: toneLevelSchema,
 });
 

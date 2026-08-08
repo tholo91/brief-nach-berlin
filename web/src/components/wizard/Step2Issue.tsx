@@ -4,6 +4,7 @@ import * as React from "react";
 import { useState, useCallback, useEffect, useLayoutEffect, useRef } from "react";
 import { VoiceRecorder, type VoiceRecorderState } from "@/components/audio/VoiceRecorder";
 import { readLandingDraft, writeLandingDraft } from "@/lib/landing-draft";
+import { ISSUE_TEXT_MAX } from "@/lib/validation/wizardSchemas";
 
 // SSR-safe layout effect: avoids the "useLayoutEffect does nothing on the
 // server" warning while still running before paint on the client (so the
@@ -189,6 +190,7 @@ const LANDING_PLACEHOLDER_EXAMPLES_WIDE: string[] = [
 
 const PLACEHOLDER_ROTATE_MS = 4000;
 const MIN_CHARS = 50;
+const ISSUE_TEXT_MAX_HINT = 4500;
 
 // Clamp the landing placeholder to at most two lines, appending an ellipsis if
 // it would overflow. Textarea placeholders ignore CSS line-clamp, so we simulate
@@ -278,6 +280,7 @@ export function Step2Issue({
   // field, riding down as the box grows with each new line.
   const [fieldHeight, setFieldHeight] = useState(52);
   const [showHint, setShowHint] = useState(false);
+  const [hintKind, setHintKind] = useState<"short" | "long" | null>(null);
   const [stopVoiceRequestKey, setStopVoiceRequestKey] = useState(0);
   const hintTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   // From small tablets up (>=640px, so all iPads incl. the 744px mini) the
@@ -300,7 +303,10 @@ export function Step2Issue({
 
   const charCount = issueText.trim().length;
   const tooShort = charCount < MIN_CHARS;
-  const showExpandedLandingCta = isLanding && !tooShort;
+  const tooLong = charCount > ISSUE_TEXT_MAX;
+  const showMaxCounter = charCount > ISSUE_TEXT_MAX_HINT;
+  const canProceed = !tooShort && !tooLong;
+  const showExpandedLandingCta = isLanding && canProceed;
   const placeholderExamples = isLanding
     ? isWide
       ? LANDING_PLACEHOLDER_EXAMPLES_WIDE
@@ -320,7 +326,9 @@ export function Step2Issue({
     isLanding && phWidth > 0
       ? clampToTwoLines(placeholder, phWidth, phFont)
       : placeholder;
-  const keyboardHint = !tooShort ? (isMac ? "⌘↵" : "Ctrl+↵") : undefined;
+  const keyboardHint = canProceed ? (isMac ? "⌘↵" : "Ctrl+↵") : undefined;
+  const maxCharsLabel = ISSUE_TEXT_MAX.toLocaleString("de-DE");
+  const charCountLabel = charCount.toLocaleString("de-DE");
 
   useEffect(() => {
     if (defaultValue === lastDefaultValueRef.current) return;
@@ -332,12 +340,15 @@ export function Step2Issue({
     setVoiceState(state);
   }, []);
 
-  const triggerHint = useCallback(() => {
-    if (!tooShort) return;
+  const triggerHint = useCallback((kind: "short" | "long") => {
     if (hintTimeoutRef.current) clearTimeout(hintTimeoutRef.current);
+    setHintKind(kind);
     setShowHint(true);
-    hintTimeoutRef.current = setTimeout(() => setShowHint(false), 2000);
-  }, [tooShort]);
+    hintTimeoutRef.current = setTimeout(() => {
+      setShowHint(false);
+      setHintKind(null);
+    }, 2500);
+  }, []);
 
   useEffect(() => {
     return () => { if (hintTimeoutRef.current) clearTimeout(hintTimeoutRef.current); };
@@ -468,7 +479,7 @@ export function Step2Issue({
   };
 
   const handleSubmit = () => {
-    if (!tooShort) {
+    if (canProceed) {
       onSubmit(issueText, toneLevel, usedVoiceRef.current, tipsOpenedRef.current);
     }
   };
@@ -480,7 +491,12 @@ export function Step2Issue({
     }
 
     if (tooShort) {
-      triggerHint();
+      triggerHint("short");
+      return;
+    }
+
+    if (tooLong) {
+      triggerHint("long");
       return;
     }
 
@@ -583,14 +599,18 @@ export function Step2Issue({
               className={[
                 "truncate",
                 charCount > 0
-                  ? "rounded-md border border-warmgrau/20 bg-creme/80 px-2 py-0.5"
+                  ? tooLong
+                    ? "rounded-md border border-airmail-rot/40 bg-airmail-rot/10 px-2 py-0.5 text-airmail-rot"
+                    : "rounded-md border border-warmgrau/20 bg-creme/80 px-2 py-0.5"
                   : "sr-only",
               ].join(" ")}
             >
               {charCount > 0
                 ? tooShort
-                  ? `${charCount} von mind. ${MIN_CHARS} Zeichen`
-                  : `${charCount} Zeichen`
+                  ? `${charCountLabel} von mind. ${MIN_CHARS} Zeichen`
+                  : showMaxCounter
+                    ? `${charCountLabel} / ${maxCharsLabel} Zeichen`
+                    : `${charCountLabel} Zeichen`
                 : ""}
             </p>
           </div>
@@ -620,13 +640,22 @@ export function Step2Issue({
               instead of advancing. Vertically tracks the field like the mic. */}
           {isLanding && (
             <>
-              {showHint && tooShort && (
+              {showHint && hintKind === "short" && (
                 <div
                   aria-hidden="true"
                   className="absolute left-1/2 -translate-x-1/2 -top-9 whitespace-nowrap z-10 bg-waldgruen-dark text-creme font-body text-xs px-3 py-1.5 rounded-lg transition-opacity duration-200 pointer-events-none"
                 >
                   Schreib noch etwas mehr
                   <span className="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-waldgruen-dark" />
+                </div>
+              )}
+              {showHint && hintKind === "long" && (
+                <div
+                  aria-hidden="true"
+                  className="absolute left-1/2 -translate-x-1/2 -top-9 whitespace-nowrap z-10 bg-airmail-rot text-creme font-body text-xs px-3 py-1.5 rounded-lg transition-opacity duration-200 pointer-events-none"
+                >
+                  Bitte kürze dein Anliegen
+                  <span className="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-airmail-rot" />
                 </div>
               )}
               <button
@@ -636,7 +665,10 @@ export function Step2Issue({
                     ? "Aufnahme beenden und Text übernehmen"
                     : "Weiter zum Brief"
                 }
-                onMouseEnter={triggerHint}
+                onMouseEnter={() => {
+                  if (tooShort) triggerHint("short");
+                  else if (tooLong) triggerHint("long");
+                }}
                 onClick={handleLandingSubmitClick}
                 className={[
                   // Pinned to the textarea's bottom-right corner so it rides
@@ -688,12 +720,12 @@ export function Step2Issue({
           softly once enough is typed to make a tone choice meaningful. */}
       {!isLanding && (
       <div
-        aria-hidden={tooShort}
+        aria-hidden={!canProceed}
         className={[
           "overflow-hidden transition-all duration-500 ease-out",
-          tooShort
-            ? "opacity-0 max-h-0 mt-0 pointer-events-none"
-            : "opacity-100 max-h-40 mt-4 md:mt-6",
+          canProceed
+            ? "opacity-100 max-h-40 mt-4 md:mt-6"
+            : "opacity-0 max-h-0 mt-0 pointer-events-none",
         ].join(" ")}
       >
         <label className="block font-body text-sm font-semibold text-waldgruen-dark mb-3">
@@ -708,7 +740,7 @@ export function Step2Issue({
           onChange={(e) => setToneLevel(Number(e.target.value))}
           className="w-full accent-waldgruen cursor-pointer disabled:opacity-50"
           aria-label="Tonlage des finalen Briefes"
-          tabIndex={tooShort ? -1 : 0}
+          tabIndex={canProceed ? 0 : -1}
         />
         <div className="flex justify-between mt-1">
           {TONE_LABELS.map((label, i) => (
@@ -734,11 +766,11 @@ export function Step2Issue({
           <button
             type="button"
             onClick={handleSubmit}
-            disabled={tooShort}
+            disabled={!canProceed}
             className={[
               "bg-waldgruen text-creme font-semibold text-base py-4 rounded-xl px-8",
               "hover:bg-waldgruen-dark transition-colors min-h-[44px] w-full",
-              tooShort ? "opacity-60 cursor-not-allowed" : "cursor-pointer",
+              canProceed ? "cursor-pointer" : "opacity-60 cursor-not-allowed",
             ].join(" ")}
           >
             Weiter

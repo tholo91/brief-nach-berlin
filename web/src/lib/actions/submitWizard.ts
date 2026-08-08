@@ -5,7 +5,12 @@ import type {
   WizardActionResult,
   LevelRoutingContext,
 } from "@/lib/types/wizard";
-import { step1Schema, step1bSchema, step2Schema } from "@/lib/validation/wizardSchemas";
+import {
+  firstZodIssueMessage,
+  step1Schema,
+  step1bSchema,
+  step2Schema,
+} from "@/lib/validation/wizardSchemas";
 import { lookupPLZ, lookupPLZWithLevel, buildCoverageHint } from "@/lib/lookup/plzLookup";
 import { routeToLevel, type RoutingResult } from "@/lib/lookup/levelRouter";
 import {
@@ -105,7 +110,10 @@ export async function submitWizardAction(
       console.warn("[submitWizard] step2 validation failed", step2Result.error.flatten());
       return {
         error: "server_error",
-        message: "Bitte beschreibe dein Anliegen.",
+        message: firstZodIssueMessage(
+          step2Result.error,
+          "Bitte beschreibe dein Anliegen.",
+        ),
       };
     }
     log("validated");

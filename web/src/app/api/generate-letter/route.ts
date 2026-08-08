@@ -3,7 +3,12 @@ import { randomUUID } from "node:crypto";
 import { z } from "zod";
 import type { WizardData } from "@/lib/types/wizard";
 import type { RecipientSelection } from "@/lib/lookup/rathausRecipient";
-import { step1Schema, step1bSchema, step2Schema } from "@/lib/validation/wizardSchemas";
+import {
+  firstZodIssueMessage,
+  step1Schema,
+  step1bSchema,
+  step2Schema,
+} from "@/lib/validation/wizardSchemas";
 import { resolveRecipientSelection } from "@/lib/lookup/resolveRecipient";
 import { lookupPLZWithLevel } from "@/lib/lookup/plzLookup";
 import { verifyRoutingToken } from "@/lib/lookup/routingToken";
@@ -148,7 +153,10 @@ export async function POST(req: NextRequest) {
     }
     const step2Result = step2Schema.safeParse({ issueText: data.issueText, toneLevel: data.toneLevel });
     if (!step2Result.success) {
-      return NextResponse.json({ error: "Bitte beschreibe dein Anliegen." }, { status: 400 });
+      return NextResponse.json(
+        { error: firstZodIssueMessage(step2Result.error, "Bitte beschreibe dein Anliegen.") },
+        { status: 400 },
+      );
     }
 
     // Rate limit (shares buckets with selectPoliticianAction).

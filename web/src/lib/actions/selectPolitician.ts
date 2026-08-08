@@ -3,7 +3,12 @@
 import { z } from "zod";
 import type { WizardData, WizardActionResult } from "@/lib/types/wizard";
 import type { RecipientSelection } from "@/lib/lookup/rathausRecipient";
-import { step1Schema, step1bSchema, step2Schema } from "@/lib/validation/wizardSchemas";
+import {
+  firstZodIssueMessage,
+  step1Schema,
+  step1bSchema,
+  step2Schema,
+} from "@/lib/validation/wizardSchemas";
 import { resolveRecipientSelection } from "@/lib/lookup/resolveRecipient";
 import { DEFAULT_LETTER_LENGTH } from "@/lib/config";
 
@@ -41,7 +46,13 @@ export async function selectPoliticianAction(
 
     const step2Result = step2Schema.safeParse({ issueText: data.issueText });
     if (!step2Result.success) {
-      return { error: "server_error", message: "Bitte beschreibe dein Anliegen." };
+      return {
+        error: "server_error",
+        message: firstZodIssueMessage(
+          step2Result.error,
+          "Bitte beschreibe dein Anliegen.",
+        ),
+      };
     }
 
     const rawSelection: unknown =

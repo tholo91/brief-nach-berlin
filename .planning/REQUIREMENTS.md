@@ -1,5 +1,14 @@
 # Requirements: Brief nach Berlin
 
+## Documentation reconciliation (2026-07-20)
+
+The statuses below are reconciled against current `main` (`2f2169b`), the current `web/` code, and committed verification/history. `Complete` means the implementation exists in this repository; it does not by itself prove production deployment, enabled feature flags, or remote Supabase migration state.
+
+- The original v1 pipeline (landing, input, lookup, generation, moderation, email, and privacy surfaces) is implemented.
+- Voice transcription and moderation use Mistral/Voxtral in the current code, not OpenAI Whisper/Moderation as the original draft wording says.
+- POLI-10 and POLI-11 are implemented through the shipped 999.6 level-routing flow. Coverage is deliberately partial where the data artifacts say so, and the institutional Land default is the normal path.
+- ENGM-03 is implemented through the Phase 5 campaign flow. Payment/Stripe remains out of scope until separately validated.
+
 **Defined:** 2026-04-10
 **Core Value:** A frustrated citizen can go from "this is broken" to "here's a letter to the person who can fix it" in under 3 minutes — with zero political knowledge required.
 
@@ -17,7 +26,7 @@
 ### Input & Issue Capture
 
 - [ ] **INPT-01**: User can describe their frustration/issue via free text input
-- [ ] **INPT-02**: User can describe their frustration via voice input (OpenAI Whisper API)
+- [x] **INPT-02**: User can describe their frustration via voice input (Mistral Voxtral transcription API)
 - [ ] **INPT-03**: User enters their German PLZ (validated format: 5 digits, valid range)
 - [ ] **INPT-04**: User enters their email address to receive the generated letter
 
@@ -39,8 +48,8 @@
 
 ### Content Safety
 
-- [ ] **SAFE-01**: User input is checked via OpenAI Moderation API before letter generation
-- [ ] **SAFE-02**: Generated letter output is checked via OpenAI Moderation API before delivery
+- [x] **SAFE-01**: User input is checked via Mistral moderation before letter generation
+- [x] **SAFE-02**: Generated letter output is checked via Mistral moderation before delivery
 - [x] **SAFE-03**: System rejects input that is hateful, threatening, or abusive with a clear user-facing message
 
 ### Email Delivery
@@ -54,8 +63,7 @@
 - [x] **PRIV-01**: No persistent storage of user frustration text or generated letters beyond email delivery
 - [ ] **PRIV-02**: PLZ-to-Wahlkreis mapping data is preprocessed and stored as static JSON (no external API call at runtime for this)
 - [ ] **PRIV-03**: Abgeordnetenwatch data is cached locally, refreshed periodically (not called per-request)
-- [x] **PRIV-04
-**: Datenschutzerklaerung covers: PLZ processing, email usage, OpenAI API data processing
+- [x] **PRIV-04**: Datenschutzerklaerung covers: PLZ processing, email usage, and the current Mistral API data processing
 
 ## v2 Requirements
 
@@ -65,8 +73,8 @@
 
 ### Multi-Level Coverage
 
-- **POLI-10**: Landtag (MdL) lookup per Bundesland (pending Abgeordnetenwatch coverage audit)
-- **POLI-11**: Kommune/Buergermeister lookup (fragmented data, requires curation)
+- [x] **POLI-10**: Land-level recipient coverage per Bundesland through the implemented 999.6 routing/data flow; MdL selection is available as an explicit secondary path where covered
+- [x] **POLI-11**: Kommune recipient lookup through PLZ-to-municipality data and official Destatis municipality addresses; this is an institutional Rathaus/Bezirksamt flow, not a universal Bürgermeister directory
 - **POLI-12**: EU Parliament (MdEP) lookup via EU Parliament API
 
 ### Enhanced Delivery
@@ -79,7 +87,7 @@
 
 - **ENGM-01**: Letter counter on landing page backed by real data
 - **ENGM-02**: Anonymous response tracking (did the politician respond?)
-- **ENGM-03**: NGO campaign mode (pre-filled issues for advocacy campaigns)
+- [x] **ENGM-03**: NGO campaign mode (pre-filled issues for advocacy campaigns)
 
 ### Sustainability
 
@@ -103,37 +111,37 @@
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| LAND-01 | Phase 1 | Pending |
-| LAND-02 | Phase 1 | Pending |
-| LAND-03 | Phase 1 | Pending |
-| LAND-04 | Phase 1 | Pending |
-| LAND-05 | Phase 1 | Pending |
-| LAND-06 | Phase 1 | Pending |
-| PRIV-02 | Phase 1 | Pending |
-| PRIV-03 | Phase 1 | Pending |
-| INPT-01 | Phase 2 | Pending |
-| INPT-02 | Phase 2 | Pending |
-| INPT-03 | Phase 2 | Pending |
-| INPT-04 | Phase 2 | Pending |
-| POLI-01 | Phase 2 | Pending |
-| POLI-02 | Phase 2 | Pending |
-| POLI-03 | Phase 2 | Pending |
-| POLI-04 | Phase 2 | Pending |
-| POLI-05 | Phase 2 | Pending |
-| SAFE-01 | Phase 2 | Pending |
-| SAFE-02 | Phase 2 | Pending |
-| SAFE-03 | Phase 2 | Pending |
-| LETR-01 | Phase 2 | Pending |
-| LETR-02 | Phase 2 | Pending |
-| LETR-03 | Phase 2 | Pending |
-| LETR-04 | Phase 2 | Pending |
-| LETR-05 | Phase 2 | Pending |
-| MAIL-01 | Phase 3 | Pending |
-| MAIL-02 | Phase 3 | Pending |
-| MAIL-03 | Phase 3 | Pending |
-| PRIV-01 | Phase 3 | Pending |
-| PRIV-04 | Phase 3 | Pending |
-| ENGM-03 | Phase 5 Plan 05-01 | Complete |
+| LAND-01 | Phase 1 | Implemented |
+| LAND-02 | Phase 1 | Implemented |
+| LAND-03 | Phase 1 | Implemented, backed by the current counter path |
+| LAND-04 | Phase 1 | Implemented |
+| LAND-05 | Phase 1 | Implemented |
+| LAND-06 | Phase 1 | Implemented |
+| PRIV-02 | Phase 1 | Implemented |
+| PRIV-03 | Phase 1 | Implemented as committed local cache/build data; refresh remains maintenance |
+| INPT-01 | Phase 2 | Implemented |
+| INPT-02 | Phase 2 | Implemented with Mistral Voxtral |
+| INPT-03 | Phase 2 | Implemented |
+| INPT-04 | Phase 2 | Implemented |
+| POLI-01 | Phase 2 | Implemented |
+| POLI-02 | Phase 2 | Implemented |
+| POLI-03 | Phase 2 | Implemented |
+| POLI-04 | Phase 2/4 | Implemented |
+| POLI-05 | Phase 2/999.6 | Implemented behind the current level-routing flow |
+| SAFE-01 | Phase 2 | Implemented with Mistral moderation |
+| SAFE-02 | Phase 2 | Implemented with Mistral moderation |
+| SAFE-03 | Phase 2 | Implemented |
+| LETR-01 | Phase 2 | Implemented |
+| LETR-02 | Phase 2 | Implemented |
+| LETR-03 | Phase 2 | Implemented; current UI supports an intentional tone ladder |
+| LETR-04 | Phase 2 | Implemented |
+| LETR-05 | Phase 2/999.6 | Implemented for Bund/Land/Kommune recipient types |
+| MAIL-01 | Phase 3 | Implemented |
+| MAIL-02 | Phase 3 | Implemented |
+| MAIL-03 | Phase 3 | Implemented |
+| PRIV-01 | Phase 3/5 | Implemented |
+| PRIV-04 | Phase 3/5 | Implemented; current privacy page documents Mistral and campaign handling |
+| ENGM-03 | Phase 5 | Complete |
 | PRIV-01 | Phase 5 Plan 05-01 | Complete |
 | SAFE-03 | Phase 5 Plan 05-01 | Complete |
 

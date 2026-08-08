@@ -1,5 +1,15 @@
 # Roadmap: Brief nach Berlin
 
+## Documentation reconciliation (2026-07-20)
+
+Source of truth: current `main` (`2f2169b`, equal to `origin/main`), current `web/` implementation, and committed Git history. Historical phase and plan descriptions remain below; their statuses reflect the implementation now present in the repository.
+
+- Phase 1, Phase 2, and Phase 3 are implemented. Remaining work is verification and maintenance, not rebuilding the original pipeline.
+- Phase 4 is implemented: polygon-area PLZ resolution and Wahlkreis grouping are present (`fe33519`, `c848a94`).
+- Phase 5 is implemented, including creator management (`53f335b`, `669ba9f`, `f1a534e`, `0ddf3c9`). Stripe/payment remains intentionally deferred; `markPaid` is a compatibility transition in the no-payment validation flow, not payment processing.
+- Phase 999.6 is implemented in its superseding v2 form: level routing, Bund/Land/Kommune recipient flow, official municipality addresses, institutional Landesregierung/Senat defaults, tests, and campaign-level integration are in `main` (`45ce7db` through `2f2169b`).
+- This file does not claim production flag state, remote Supabase migration state, or live deployment state from local code alone.
+
 ## Overview
 
 Three phases deliver a complete citizen-to-politician letter pipeline. Phase 1 ships the landing page and preprocesses the data that makes PLZ lookup possible. Phase 2 builds the core engine: input capture, politician lookup, safety checks, and AI letter generation — the product actually works at the end of this phase. Phase 3 wires in email delivery and closes all DSGVO/privacy obligations, making the product publicly safe to promote.
@@ -12,9 +22,9 @@ Three phases deliver a complete citizen-to-politician letter pipeline. Phase 1 s
 
 Decimal phases appear between their surrounding integers in numeric order.
 
-- [ ] **Phase 1: Landing Page & Data Infrastructure** - Ship the landing page and preprocess PLZ/politician data so the core engine has what it needs
-- [ ] **Phase 2: Core Engine** - Build the full input → lookup → safety → letter generation pipeline
-- [ ] **Phase 3: Email Delivery & Privacy Compliance** - Wire in email delivery and satisfy all DSGVO obligations
+- [x] **Phase 1: Landing Page & Data Infrastructure** - Ship the landing page and preprocess PLZ/politician data so the core engine has what it needs
+- [x] **Phase 2: Core Engine** - Build the full input → lookup → safety → letter generation pipeline
+- [x] **Phase 3: Email Delivery & Privacy Compliance** - Wire in email delivery and satisfy all DSGVO obligations
 
 ## Phase Details
 
@@ -47,7 +57,7 @@ Plans:
 - [x] 02-01-PLAN.md — Foundation: types, Zod schemas, PLZ lookup, moderation wrapper
 - [x] 02-02-PLAN.md — Voice recording subsystem: AudioRecorder, VoiceRecorder, /api/transcribe
 - [x] 02-03-PLAN.md — AI pipeline: Mistral letter generation, server actions
-- [ ] 02-04-PLAN.md — Wizard UI: WizardShell, Step1-3 components, full integration
+- [x] 02-04-PLAN.md — Wizard UI: WizardShell, Step1-3 components, full integration
 
 **UI hint**: yes
 
@@ -104,7 +114,11 @@ Plans:
 Plans:
 - [ ] TBD (promote with /gsd:review-backlog when ready)
 
-### Phase 999.6: Landtag + Kommune politician coverage expansion (BACKLOG)
+### Phase 999.6: Landtag + Kommune politician coverage expansion (IMPLEMENTED; v2 superseded the original plan)
+
+**Implementation status:** Complete in current `main`. The shipped flow uses a level-selection step, Land routing with institutional Landesregierung/Senat defaults, Kommune routing with official Destatis municipality addresses, server-side recipient derivation, level-aware prompts/emails, campaign target-level handling, and regression tests. Landtag-person selection remains an explicit secondary path where available; it is not the default.
+
+**Remaining operational work:** verify the 16 institutional addresses before a deliberate production flag flip, set/verify `ROUTING_TOKEN_SECRET`, run the documented staged smoke test, and refresh Land data after elections. These are rollout/maintenance tasks, not open implementation of 999.6.
 
 **Goal:** Expand politician data beyond Bund-level MdBs to Landtag and Kommune representatives. Currently only Bundestag MdBs are cached — ~80% of real citizen concerns (local infrastructure, education, housing, policing, waste, Bauanträge) are routed to the wrong level of government. The letter prompt papers over this by asking the AI to justify contacting a Bund-MdB about a local issue; proper fix = real multi-level coverage.
 
@@ -118,13 +132,13 @@ Integration points: extend `fetch-politician-data.ts` with per-level fetchers; `
 **Plans:** 7 plans (post-review 2026-05-21)
 
 Plans:
-- [ ] 999.6-01-PLAN.md — Build-time PLZ→Stimmkreis pipeline for top-4 Länder + OpenPLZ enrichment (Wave 1)
-- [ ] 999.6-02-PLAN.md — Fetch Landtag mandates for all 16 parliaments via Abgeordnetenwatch (Wave 2)
-- [ ] 999.6-03-PLAN.md — Static landtag-addresses.json + zustaendigkeit-taxonomie.json (Wave 1)
-- [ ] 999.6-04-PLAN.md — routeToLevel Mistral server function + Land-aware lookupPLZ + graceful degradation (Wave 3)
-- [ ] 999.6-05-PLAN.md — LevelBadge + LevelOverrideChips + EuComingSoonCard + disambiguation grouping + coverage hint (Wave 4)
-- [ ] 999.6-06-PLAN.md — generateLetter level+mode adaptation (Anrede gender-resolved, no GG-Artikel, Stellvertretend-Framing) (Wave 4)
-- [ ] 999.6-07-PLAN.md — Generic-Rathaus-Brief mit synthetischem Stadtverwaltung / Bezirksamt-Recipient + RathausAdresseHint + Stadtstaat re-route (Wave 4)
+- [x] 999.6-01-PLAN.md — Superseded by the implemented v2 build-time data pipeline; original top-4 Länder scope not used
+- [x] 999.6-02-PLAN.md — Superseded by all-16-Länder data and institutional Land default
+- [x] 999.6-03-PLAN.md — Superseded by the implemented static data artifacts
+- [x] 999.6-04-PLAN.md — Implemented in the v2 level router and signed routing-token flow
+- [x] 999.6-05-PLAN.md — Superseded by the implemented Ebene-Auswahl UX and existing grouping UI
+- [x] 999.6-06-PLAN.md — Implemented in the level-aware generation flow; gender-resolved salutation was intentionally not added
+- [x] 999.6-07-PLAN.md — Implemented and extended with official Destatis addresses and institutional Land recipients
 
 ### Phase 999.8: Disambiguation UI — show district / Kreis context (BACKLOG)
 
@@ -717,6 +731,56 @@ Plans:
 Plans:
 - [ ] TBD (promote with /gsd-review-backlog when ready)
 
+### Phase 999.33: Non-Request-Prompt — ehrlicher Brief bei Dank/Gruß statt erfundener Forderung (BACKLOG)
+
+**Goal:** Wenn der Nutzertext kein politisches Anliegen, sondern nur Dank, Lob, eine Grußbotschaft oder eine Meinung ohne Bitte/Forderung enthält (z.B. "Dankeschön, dass die Projekte anlaufen. Viel Erfolg bei den Senatswahlen"), soll der Brief ehrlich und warm genau das ausdrücken — und KEINEN Anlass, KEINE Bitte, KEINE Forderung und KEINE Handlungserwartung erfinden.
+
+**Auslöser:** Live-Review 1★ „Ki Sprache" (2026-08-07, Artem, an Jan-Marco Luczak CDU). Die Ebene-Klassifikation hat korrekt `confidence=low` geliefert, aber die Briefgenerierung läuft trotzdem identisch durch: `SYSTEM_PROMPT_TEMPLATE` in [web/src/lib/generation/generateLetter.ts](web/src/lib/generation/generateLetter.ts) erzwingt via `ARGUMENTATIONSAUFBAU` (L88–93) und `PFLICHT-ELEMENTE` (L160–163) zwingend „Anlass → Begründung → Forderung" — bei einem Dank entsteht dadurch „Ki Sprache"-Füllstoff.
+
+**Fix (kleinster Eingriff, vom Subagent bestätigt):** Ein bedingter Prompt-Block im System-Prompt (`generateLetter.ts`): „WENN KEIN KONKRETES ANLIEGEN (nur Dank/Lob/Gruß/Meinung ohne Bitte): schreibe einen ehrlichen, warmen kurzen Brief, der genau das ausdrückt. Erfinde dann KEINEN Anlass, KEINE Bitte, KEINE Forderung." Ein einziger Prompt-Block, kein Routing-Umbau, keine neue AI-Abfrage, keine DSGVO-Veränderung.
+
+**Konflikt-Klärung:** „Auch ein Danke ist ein Brief" (`warum-ein-brief/page.tsx`). Der Fix blockiert Danksagungen NICHT, sondern macht sie ehrlich — das entspricht der Produktlinie.
+
+**Requirements:** TBD
+**Plans:** 0 plans
+
+Plans:
+- [ ] TBD (promote with /gsd-review-backlog when ready)
+
+### Phase 999.34: Follow-up-Review-Mail auch für Land (MdL/Landesregierung) und Kommune (BACKLOG)
+
+**Goal:** Die 3-Tage-Follow-up-Mail (Stern-Bewertung) wird heute nur an Briefe an Bundestags-MdBs verschickt. Auch Empfänger:innen von Land- und Kommunebriefen sollen den Follow-up mit Stern-Leiste bekommen — aktuell bekommen diese Briefe nur die Erstmail, was die Review-Rate auf diesen Ebenen systematisch senkt und die niedrigen Kommune-Sternwerte verzerrt.
+
+**Befund:** Review-Batch 2026-08-07: Kommune-Reviews im Schnitt 2,3★ vs. Bund 3,3★ (n=3 Kommune) — Confounder: Kommune-Reviewer erhalten nie einen Follow-up-Impuls. Gate in [web/src/app/api/generate-letter/route.ts](web/src/app/api/generate-letter/route.ts) L294: `if (recipient.kind === "mdb" && process.env.BREVO_FOLLOWUP_ENABLED === "true")`.
+
+**Einschätzung (vom Subagent geprüft): Schneller Fix möglich.** Nur zwei Stellen ändern:
+1. `route.ts` L294 — Bedingung erweitern auf `mdb`, `landtag`/`landesregierung` und `rathaus` (Liste der recipient-kinds prüfen).
+2. `buildFollowupHtml.ts` — zwei MdB-spezifische Textzeilen level-neutral machen (Share-Abschnitt „im Bundestag", Footer „Wer darf MdBs schreiben?" → z.B. „Wer darf Politiker:innen schreiben?").
+
+Aufwand ~0,5 Tag inkl. Smoke-Test. Einfachster Hebel gegen die niedrige Kommune-Review-Rate; Empfehlung: vor dem nächsten Review-Batch ziehen.
+
+**Requirements:** TBD
+**Plans:** 0 plans
+
+Plans:
+- [ ] TBD (promote with /gsd-review-backlog when ready)
+
+### Phase 999.35: Routing-Konfidenz in Review-Fetch sichtbar machen (BACKLOG)
+
+**Goal:** `fetch-reviews.ts` soll `routedPrimaryLevel`, `routedPrimaryConfidence`, `wasOverridden` und `selectedLevel` aus dem `debug_payload` jeder Review in Table-/MD-Output anzeigen — damit im Review-Batch sichtbar wird, ob ein negatives Review bei `confidence=low` oder nach einem User-Override entstand.
+
+**Auslöser:** Review-Batch 2026-08-08. Aktuell zeigt `fetch-reviews.ts` nur `level ${polLevel}→${repLevel}` ohne die Routing-Konfidenz. Die 1★-Review „Ki Sprache" (Artem, an Luczak) hing zu 100% mit `routedPrimaryConfidence=low` zusammen — ohne den Konfidenz-Wert im Fetch konnte man das nicht erkennen. KPI-Anspruch: „Routing-Qualität nach Konfidenz" (Reviews bei low vs. high), um Prompt-Tuning gezielt auf die low-Fälle zu lenken.
+
+**Fix:** Die `debug_payload`-Felder sind bereits im Code vorhanden ([web/src/lib/email/buildDebugPayload.ts](web/src/lib/email/buildDebugPayload.ts) — `routedPrimaryLevel`, `routedPrimaryConfidence`, `routedSecondaryLevel`, `wasOverridden`, `selectedLevel`). `fetch-reviews.ts` muss sie nur in `ReviewRow.debug_payload` (L261–276) aufnehmen und in `printTable`/`printMd` ausgeben. Aufwand ~15 Zeilen.
+
+**Anmerkung:** `fetch-reviews.ts` ist laut brief-review-batch-Skill offiziell „read-only, do not modify" — dieser Task erweitert bewusst nur den Output (kein Write), daher gilt das „do not modify" hier nicht als Blocker; Veto nötig, falls Thomas das Skript unangetastet lassen will.
+
+**Requirements:** TBD
+**Plans:** 0 plans
+
+Plans:
+- [ ] TBD (promote with /gsd-review-backlog when ready)
+
 ## Progress
 
 **Execution Order:**
@@ -724,11 +788,11 @@ Phases execute in numeric order: 1 → 2 → 3
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Landing Page & Data Infrastructure | 0/TBD | Not started | - |
-| 2. Core Engine | 0/4 | Planned | - |
-| 3. Email Delivery & Privacy Compliance | 0/3 | Planned | - |
+| 1. Landing Page & Data Infrastructure | Implemented | Complete in current code; ongoing data maintenance | Historical implementation commits |
+| 2. Core Engine | 4/4 | Implemented | Historical implementation commits |
+| 3. Email Delivery & Privacy Compliance | 3/3 | Implemented | Historical implementation commits |
 
-### Phase 4: Stadtstaaten PLZ-Wahlkreis Genauigkeit und Wahlkreis-Gruppierung im Wizard
+### Phase 4: Stadtstaaten PLZ-Wahlkreis Genauigkeit und Wahlkreis-Gruppierung im Wizard (IMPLEMENTED)
 
 **Goal:** For Stadtstaat PLZs (Berlin/Hamburg/Bremen) return only the responsible Wahlkreis(e) by computing a true PLZ-area intersection Wahlkreis-polygon area share at build time, replacing the centroid+perturbation+union over-reach, AND group the wizard's politician results by Wahlkreis with Direkt vs ueber-Liste labelling. Fully offline/build-time, no existing PLZ lookup may break, no PLZ may move to a wrong Wahlkreis, no result may go empty, no Bundesland boundary may be crossed.
 **Requirements**: POLI-02, POLI-04, PRIV-02
@@ -736,11 +800,11 @@ Phases execute in numeric order: 1 → 2 → 3
 **Plans:** 3 plans
 
 Plans:
-- [ ] 04-01-PLAN.md - Data foundation: filter + commit PLZ-polygon GeoJSON (Berlin/HH/Bremen), add turf devDeps, ODbL attribution
-- [ ] 04-02-PLAN.md - Build-script rewrite to polygon area-intersection, regenerate mapping, precision tests (20249 to [21], 20354 keeps [18,20])
-- [ ] 04-03-PLAN.md - Wizard grouping: results grouped by Wahlkreis with Direkt/ueber-Liste labels (via UI skill)
+- [x] 04-01-PLAN.md - Data foundation: filter + commit PLZ-polygon GeoJSON (Berlin/HH/Bremen), add turf devDeps, ODbL attribution
+- [x] 04-02-PLAN.md - Build-script rewrite to polygon area-intersection, regenerate mapping, precision tests (20249 to [21], 20354 keeps [18,20])
+- [x] 04-03-PLAN.md - Wizard grouping: results grouped by Wahlkreis with Direkt/ueber-Liste labels (via UI skill)
 
-### Phase 5: Creator Campaign Templates & Shareable Prefilled Pages
+### Phase 5: Creator Campaign Templates & Shareable Prefilled Pages (IMPLEMENTED; payment intentionally deferred)
 
 **Goal:** Creators can publish a moderated brief template behind a shareable no-login link, prefill the wizard's issue field for every visitor, and keep the actual letter generation individual per user by PLZ, recipient, and tone. The template owner can edit, pause, archive, and preserve revision history without user accounts. Stripe/payment is deferred until this campaign flow is validated with real partners.
 **Requirements**: ENGM-03, SAFE-03, PRIV-01, PRIV-04
@@ -751,4 +815,4 @@ Plans:
 - [x] 05-01-PLAN.md - Campaign schema, revision history, creator tokens, and server repository layer
 - [x] 05-02-PLAN.md - Creator setup flow: moderation, email verification, activation mails
 - [x] 05-03-PLAN.md - Public campaign landing page with editable prefill and wizard handoff reuse
-- [ ] 05-04-PLAN.md - Creator management: edit, pause/archive, publish-safe overwrites, Datenschutz update
+- [x] 05-04-PLAN.md - Creator management: edit, pause/archive, publish-safe overwrites, Datenschutz update

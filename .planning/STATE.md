@@ -4,8 +4,8 @@ milestone: v1.0
 milestone_name: milestone
 status: verifying
 stopped_at: Completed 05-04-PLAN.md
-last_updated: "2026-07-07T14:15:30.000Z"
-last_activity: 2026-07-07
+last_updated: "2026-07-20T00:00:00.000Z"
+last_activity: 2026-07-20
 progress:
   total_phases: 33
   completed_phases: 4
@@ -21,7 +21,25 @@ progress:
 See: .planning/PROJECT.md (updated 2026-04-10)
 
 **Core value:** A frustrated citizen can go from "this is broken" to "here's a letter to the person who can fix it" in under 3 minutes — with zero political knowledge required.
-**Current focus:** Phase 05 — Creator-Paid Brief Templates & Shareable Prefilled Pages
+**Current focus:** Betriebs- und Produktprüfung nach dem Land-/Kommune-Rollout
+
+## Current Truth Audit (2026-07-20)
+
+Der aktuelle `main`-Stand ist die Quelle der Wahrheit; ältere Roadmap-Checkboxen und Pending-Todos sind nicht automatisch offen. Im Code und in den Tests bereits vorhanden sind:
+
+- Land-/Kommune-Level-Routing mit Ebenen-Auswahl, Landesregierung als institutionellem Land-Empfänger, Rathaus-Flow und Kampagnen-Ziel-Ebene.
+- Level-spezifische Brief- und E-Mail-Logik einschließlich Betreff für Land, Landesregierung und Rathaus.
+- Creator-Kampagnen inklusive öffentlicher Prefill-Seite, Verwaltung sowie Pause/Archivierung.
+- 24 Jest-Suites / 220 Tests grün am 2026-07-20.
+
+Für die nächste Arbeit bleiben vor allem diese Punkte belastbar offen:
+
+1. Land-Rollout verifizieren: 16 Landtag-Adressen, `ROUTING_TOKEN_SECRET`, Feature-Flag-Smoke-Test, Cache-Fetch-Monitoring und veraltete PLZ-Fixtures.
+2. Land-Empfängerentscheidung abschließen: institutionelle Landesregierung als Standard gegen MdL-/Ausschussauswahl begründen und den aktuellen Personenlisten-Flow entsprechend weiterführen oder bewusst stoppen.
+3. Variant-Flow level-aware machen: politische Ebene aus der Erst-Mail mitgeben und das Kommune-Framing ohne „Wahlkreis“ halten.
+4. Den offenen Capture `fav=...` prüfen/umsetzen: URL-Parteipräferenzen existieren im aktuellen Code noch nicht.
+
+Der level-aware E-Mail-Betreff ist dagegen bereits implementiert und getestet; das zugehörige Pending-Todo ist veraltet.
 
 ## Current Position
 

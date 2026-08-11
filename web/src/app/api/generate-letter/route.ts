@@ -291,7 +291,9 @@ export async function POST(req: NextRequest) {
       // BREVO_FOLLOWUP_ENABLED erlaubt Notabschaltung ohne Deploy.
       // Dedup: max. 1 Followup pro Email in 24h. In-memory, also nicht
       // cross-instance-sicher, aber gut genug gegen ehrliche Mehrfach-Submissions.
-      if (recipient.kind === "mdb" && process.env.BREVO_FOLLOWUP_ENABLED === "true") {
+      // Alle Empfänger-Ebenen bekommen den Followup (999.34): ohne ihn sind
+      // Land-/Kommune-Reviews systematisch unterbewertet (2,3★ vs. Bund 3,3★).
+      if (process.env.BREVO_FOLLOWUP_ENABLED === "true") {
         const followupDedup = checkRateLimit(
           `followup:${hashIdentifier(data.email.toLowerCase())}`,
           1,

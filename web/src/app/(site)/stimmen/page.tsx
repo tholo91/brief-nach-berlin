@@ -305,33 +305,32 @@ export default async function StimmenPage() {
           </div>
         )}
 
-        {/* 7. Mithelfen + Sign-off (consolidated) */}
+        {/* 7. Sichtbarkeit + Sign-off */}
         <div className="mt-12 mb-16 text-center">
           <p className="font-handwriting text-2xl md:text-3xl text-waldgruen-dark leading-snug max-w-md mx-auto mb-5">
             Wenn du bis hier gelesen hast: schreib mir. Auch eine Zeile reicht.
           </p>
           <p className="font-body text-base text-warmgrau leading-relaxed max-w-md mx-auto mb-7">
             Brief-nach-Berlin ist ein Freizeitprojekt von einer Person. Am
-            meisten hilft mir gerade Sichtbarkeit: Wer mich mit Leuten
-            vernetzen kann, die dem Thema mediale Reichweite geben, Presse oder
-            Multiplikator:innen, ist mir die größte Hilfe. Auch wer es vor Ort
-            weitersagt oder einen Blick auf den{" "}
-            <a
-              href="https://github.com/tholo91/brief-nach-berlin"
-              target="_blank"
-              rel="noopener noreferrer"
+            meisten hilft mir gerade Sichtbarkeit: Wenn du das Projekt
+            weitergibst oder mich mit Menschen aus Presse, Medien oder
+            passenden Communities vernetzt, bringt mich das konkret weiter.
+            Wenn du an einer lokalen Version für ein anderes europäisches
+            Land arbeitest, findest du die Infos auf der{" "}
+            <Link
+              href="/europe"
               className="text-waldgruen-dark underline underline-offset-2 hover:text-waldgruen transition-colors"
             >
-              offenen Code bei GitHub
-            </a>{" "}
-            wirft, ist herzlich willkommen.
+              Europa-Seite
+            </Link>
+            .
           </p>
           <div className="flex flex-col sm:flex-row justify-center gap-3">
             <a
-              href={`mailto:${FOUNDER_EMAIL}?subject=Mitwirken%20bei%20Brief%20nach%20Berlin`}
+              href={`mailto:${FOUNDER_EMAIL}?subject=${encodeURIComponent("Sichtbarkeit für Brief-nach-Berlin")}`}
               className="inline-block font-body font-bold text-creme bg-waldgruen-dark hover:bg-waldgruen px-6 py-3 rounded-sm transition-colors text-center"
             >
-              Melde dich gerne bei mir
+              Kontakt herstellen
             </a>
             <a
               href={FOUNDER_FEEDBACK_URL}

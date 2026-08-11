@@ -384,37 +384,34 @@ export default function WasNochKommtPage() {
           <FAQAccordion items={faqs} />
         </Prose>
 
-        {/* Mithelfen */}
+        {/* Sichtbarkeit */}
         <div className="mt-16 p-6 sm:p-8 border-2 border-waldgruen/20 bg-creme/40 rounded-sm">
           <p className="font-typewriter text-xs font-bold tracking-widest uppercase text-waldgruen/60 mb-3">
-            Mitwirken
+            Sichtbarkeit
           </p>
           <h2 className="font-body text-xl md:text-2xl font-bold text-waldgruen-dark mb-3">
-            Mir liegt was dran. Unterstützung ist willkommen.
+            Was mir jetzt am meisten hilft
           </h2>
           <p className="font-body text-base text-warmgrau leading-relaxed mb-4">
             Brief-nach-Berlin ist ein Freizeitprojekt von einer Person. Am
-            meisten hilft mir gerade Sichtbarkeit: Wenn du mich mit Leuten
-            vernetzen kannst, die dem Thema mediale Reichweite geben, also
-            Presse, Multiplikator:innen oder Communities, bringt mich das
-            spürbar weiter. Genauso wertvoll sind lokale Daten, Kontakte und
-            Menschen, die das Muster in anderen europäischen Ländern selbst
-            bauen wollen. Auch wer als Entwickler:in einen Blick auf den{" "}
-            <a
-              href="https://github.com/tholo91/brief-nach-berlin"
-              target="_blank"
-              rel="noopener noreferrer"
+            meisten hilft mir gerade Sichtbarkeit: Wenn du das Projekt
+            weitergibst oder mich mit Menschen aus Presse, Medien oder
+            passenden Communities vernetzt, bringt mich das konkret weiter.
+            Wenn du an einer lokalen Version für ein anderes europäisches
+            Land arbeitest, findest du die Infos auf der{" "}
+            <Link
+              href="/europe"
               className="text-waldgruen hover:text-waldgruen-dark underline underline-offset-2 transition-colors"
             >
-              offenen Code bei GitHub
-            </a>{" "}
-            wirft, hilft dabei, Demokratie benutzbarer zu machen.
+              Europa-Seite
+            </Link>
+            .
           </p>
           <a
-            href={`mailto:${FOUNDER_EMAIL}?subject=Mitwirken%20bei%20Brief%20nach%20Berlin`}
+            href={`mailto:${FOUNDER_EMAIL}?subject=${encodeURIComponent("Sichtbarkeit für Brief-nach-Berlin")}`}
             className="inline-block font-body font-bold text-creme bg-waldgruen-dark hover:bg-waldgruen px-6 py-3 rounded-sm transition-colors"
           >
-            Meld dich
+            Kontakt herstellen
           </a>
         </div>
 

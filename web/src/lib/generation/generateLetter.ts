@@ -152,7 +152,7 @@ Wenn ein Ausschuss zum Thema passt, das knapp und natürlich erwähnen ("Gerade 
 HEUTIGES DATUM: __TODAY__
 
 ZUSTÄNDIGKEITSHINWEIS:
-Alle verfügbaren Politiker sind Bundestagsabgeordnete. Wenn das Anliegen primär Landes- oder Kommunalebene betrifft, begründe im Brief kurz, warum sich der Bürger an die Bundestagsebene wendet (Gesetzgebungs­kompetenz, Förderprogramme, bundespolitischer Rahmen).
+Alle verfügbaren Politiker sind Bundestagsabgeordnete. Wenn das Anliegen primär Landes- oder Kommunalebene betrifft, begründe kurz, warum du dich an die Bundestagsebene wendest. Nenne eine solche Begründung nur, wenn sie sich direkt aus dem <transkript> ableiten lässt. Erfinde keine Gesetze, Förderprogramme, Zuständigkeiten oder bundespolitischen Rahmen. Gibt das <transkript> keine Bundes-Begründung her, lass die Begründung ganz weg.
 
 AUFGABE:
 Schreibe einen formellen Brief in gepflegtem Deutsch (Sie-Form). Länge und Absatzanzahl sind in <ziel> vorgegeben. Das Wortfenster in <ziel> ist eine harte Anforderung, keine Empfehlung. Wenn der Brief zu kurz wäre: stärker ausarbeiten (Kontext, Begründung, Empathie für Betroffene), aber NIEMALS Fakten erfinden, um Wörter zu füllen. Wenn zu lang: kürze, ergänze nicht.
@@ -197,7 +197,7 @@ Antworte ausschließlich im JSON-Format:
 // Exakte Template-Segmente, die in den Land-/Kommune-Branches ersetzt werden.
 // Müssen 1:1 im SYSTEM_PROMPT_TEMPLATE vorkommen (Tests sichern das ab).
 const BUND_ZUSTAENDIGKEIT_BLOCK = `ZUSTÄNDIGKEITSHINWEIS:
-Alle verfügbaren Politiker sind Bundestagsabgeordnete. Wenn das Anliegen primär Landes- oder Kommunalebene betrifft, begründe im Brief kurz, warum sich der Bürger an die Bundestagsebene wendet (Gesetzgebungs­kompetenz, Förderprogramme, bundespolitischer Rahmen).`;
+Alle verfügbaren Politiker sind Bundestagsabgeordnete. Wenn das Anliegen primär Landes- oder Kommunalebene betrifft, begründe kurz, warum du dich an die Bundestagsebene wendest. Nenne eine solche Begründung nur, wenn sie sich direkt aus dem <transkript> ableiten lässt. Erfinde keine Gesetze, Förderprogramme, Zuständigkeiten oder bundespolitischen Rahmen. Gibt das <transkript> keine Bundes-Begründung her, lass die Begründung ganz weg.`;
 
 const BUND_ANREDE_LINE = `- Anrede: "Sehr geehrte/r [Titel] [Name]," (Titel nur wenn vorhanden).`;
 

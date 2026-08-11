@@ -13,7 +13,7 @@ export default function Vision() {
             Die Idee dahinter
           </h2>
 
-          <div className="font-body text-base md:text-lg text-warmgrau leading-[1.8] space-y-5 text-left">
+          <div className="font-body text-base md:text-lg text-warmgrau leading-relaxed space-y-5 text-left">
             <p>
               Ich habe selbst in Bundestagsbüros gesehen, was passiert, wenn ein
               persönlicher, handgeschriebener Brief auf einem Schreibtisch

@@ -113,7 +113,7 @@ export default function HowItWorksWithExample() {
                   {step.title}
                 </h3>
 
-                <p className="font-body text-[15px] text-warmgrau/80 leading-relaxed">
+                <p className="font-body text-base text-warmgrau/80 leading-relaxed">
                   {step.description}
                 </p>
                 {"link" in step && step.link && (

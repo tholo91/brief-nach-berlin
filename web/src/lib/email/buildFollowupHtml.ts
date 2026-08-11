@@ -50,14 +50,14 @@ export function buildFollowupHtml(params: BuildFollowupParams): FollowupRender {
     `${FOUNDER_HOMEPAGE} · Roadmap mitgestalten: ${base}/was-noch-kommt`,
     ``,
     `--`,
-    `Gemeinsam noch lauter: Briefe aus dem gleichen Wahlkreis bekommen im Bundestag mehr Gewicht. Teile Brief-nach-Berlin supergerne in deinem Umfeld: ${base}/weitersagen`,
+    `Gemeinsam noch lauter: Briefe erhalten mehr Gehör, wenn viele Menschen aus der gleichen Region schreiben. Teile Brief-nach-Berlin supergerne in deinem Umfeld: ${base}/weitersagen`,
     `WhatsApp: ${SHARE_URL_WHATSAPP}`,
     `Telegram: ${SHARE_URL_TELEGRAM}`,
     `E-Mail:   ${SHARE_URL_EMAIL}`,
     ``,
     `--`,
     `Einmalige Nachfrage, kein Newsletter.`,
-    `Wer darf MdBs schreiben? ${base}/wer-darf-mdb-schreiben`,
+    `Wer darf schreiben? ${base}/wer-darf-mdb-schreiben`,
     `Datenschutz: ${base}/datenschutz · Adresse löschen: ${FOUNDER_EMAIL} · Roadmap: ${base}/was-noch-kommt`,
   ].join("\n");
 
@@ -166,7 +166,7 @@ export function buildFollowupHtml(params: BuildFollowupParams): FollowupRender {
               <div style="background-color:#FAF8F5;border:1px solid #E0DCD7;border-radius:6px;padding:20px 22px;">
                 <h2 style="margin:0 0 8px;font-family:Georgia,'Times New Roman',serif;font-size:16px;color:#2D5016;font-weight:bold;">Gemeinsam noch lauter</h2>
                 <p style="margin:0 0 14px;font-family:Georgia,'Times New Roman',serif;font-size:14px;color:#4A4A4A;line-height:1.6;">
-                  Briefe aus dem gleichen Wahlkreis bekommen im Bundestag mehr Gewicht. Teile Brief-nach-Berlin supergerne in deinem Umfeld (<a href="${base}/weitersagen" style="color:#2D5016;text-decoration:underline;">mehr Infos</a>).
+                  Briefe erhalten mehr Gehör, wenn viele Menschen aus der gleichen Region schreiben. Teile Brief-nach-Berlin supergerne in deinem Umfeld (<a href="${base}/weitersagen" style="color:#2D5016;text-decoration:underline;">mehr Infos</a>).
                 </p>
                 <table role="presentation" cellpadding="0" cellspacing="0" width="100%">
                   <tr>
@@ -197,7 +197,7 @@ export function buildFollowupHtml(params: BuildFollowupParams): FollowupRender {
                 <a href="${APP_URL}" style="color:#2D5016;text-decoration:none;">Brief-nach-Berlin</a> · Deine Stimme zählt.
               </p>
               <p style="margin:6px 0 0;font-family:Georgia,'Times New Roman',serif;font-size:12px;color:#aaaaaa;line-height:1.5;">
-                Einmalige Nachfrage, kein Newsletter. <a href="${APP_URL}/datenschutz" style="color:#888888;">Datenschutz</a> · <a href="mailto:${FOUNDER_EMAIL}?subject=Brief%20nach%20Berlin%3A%20Adresse%20l%C3%B6schen&body=Hallo%20Thomas%2C%0A%0Abitte%20l%C3%B6sche%20meine%20E-Mail-Adresse%20aus%20deinen%20Followup-Listen.%0A%0ADanke!" style="color:#888888;">Adresse löschen</a> · <a href="${APP_URL}/was-noch-kommt" style="color:#888888;">Roadmap</a> · <a href="${APP_URL}/wer-darf-mdb-schreiben" style="color:#888888;">Wer darf MdBs schreiben?</a>
+                Einmalige Nachfrage, kein Newsletter. <a href="${APP_URL}/datenschutz" style="color:#888888;">Datenschutz</a> · <a href="mailto:${FOUNDER_EMAIL}?subject=Brief%20nach%20Berlin%3A%20Adresse%20l%C3%B6schen&body=Hallo%20Thomas%2C%0A%0Abitte%20l%C3%B6sche%20meine%20E-Mail-Adresse%20aus%20deinen%20Followup-Listen.%0A%0ADanke!" style="color:#888888;">Adresse löschen</a> · <a href="${APP_URL}/was-noch-kommt" style="color:#888888;">Roadmap</a> · <a href="${APP_URL}/wer-darf-mdb-schreiben" style="color:#888888;">Wer darf schreiben?</a>
               </p>
             </td>
           </tr>

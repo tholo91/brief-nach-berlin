@@ -1,5 +1,11 @@
 import { Suspense } from "react";
+import type { Metadata } from "next";
 import { WizardShell } from "@/components/wizard/WizardShell";
+
+export const metadata: Metadata = {
+  alternates: { canonical: "/app" },
+  robots: { index: false, follow: true },
+};
 
 function WizardShellFallback() {
   return (

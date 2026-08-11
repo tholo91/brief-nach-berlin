@@ -28,11 +28,14 @@ export default function WhyItWorks() {
           <br />
           als tausend Klicks
         </h2>
-        <p className="font-body text-sm md:text-base text-warmgrau/70 leading-relaxed mb-14 md:mb-16 max-w-xl text-center md:text-left">
+        <p className="font-body text-base md:text-lg text-warmgrau/70 leading-relaxed mb-14 md:mb-16 max-w-xl text-center md:text-left">
+          Ein handschriftlicher Brief macht Zeit und persönliches Interesse
+          sichtbar. Was Studien dazu sagen und wo die Grenzen liegen, steht
+          hier:
           <Link
             href="/handschriftliche-briefe-wirkung"
             prefetch={false}
-            className="text-waldgruen hover:text-waldgruen-dark underline decoration-waldgruen/30 underline-offset-2 hover:decoration-waldgruen transition-colors"
+            className="mt-2 inline-block text-waldgruen hover:text-waldgruen-dark underline decoration-waldgruen/30 underline-offset-2 hover:decoration-waldgruen transition-colors"
           >
             Warum handschriftliche Briefe trotzdem einen Unterschied machen
           </Link>
@@ -60,7 +63,7 @@ export default function WhyItWorks() {
                 <div className="font-typewriter text-5xl md:text-6xl font-bold text-waldgruen mb-3 leading-none">
                   {stat.number}
                 </div>
-                <p className="font-body text-base md:text-[17px] text-warmgrau leading-relaxed mb-2">
+                <p className="font-body text-base text-warmgrau leading-relaxed mb-2">
                   {stat.label}
                 </p>
                 <p className="font-body text-xs text-warmgrau/40 uppercase tracking-wide">

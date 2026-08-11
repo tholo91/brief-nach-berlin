@@ -107,7 +107,7 @@ export default function Hero() {
           <NgoCampaignBadge className="hidden sm:inline-flex absolute left-1/2 -top-5 z-20 ml-[9.75rem] rotate-[7deg]" />
         </div>
 
-        <p className="font-handwriting text-lg md:text-xl text-warmgrau leading-tight text-pretty max-w-3xl mx-auto mb-6">
+        <p className="font-body text-lg md:text-xl text-warmgrau leading-relaxed text-pretty max-w-3xl mx-auto mb-6">
           <span className="block sm:inline">In 3 Minuten ist dein Brief </span>
           <span className="block sm:inline sm:ml-1">an die passenden Abgeordneten fertig.</span>
         </p>

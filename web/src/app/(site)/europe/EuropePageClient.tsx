@@ -32,6 +32,15 @@ type Copy = {
 
 const STARTER_PROMPT = `You are working in a fork of https://github.com/tholo91/brief-nach-berlin.
 
+Start from the stable national-only version, not from the latest main:
+  git checkout international-starter
+(That tag points to commit cce073a, the last version that only routes one
+political level: the national parliament.)
+
+Important: keep the first version national-only. Do not implement the later
+Bund/Land/Kommune routing architecture. You can add more political levels
+after the local MVP works.
+
 First read:
 - README.md
 - ADAPT_TO_YOUR_COUNTRY.md
@@ -51,12 +60,15 @@ If GSD is not available, create the same structure manually.
 The plan must include:
 - MUST / SHOULD / OPTIONAL tasks
 - local data requirements
-- representative lookup strategy
+- representative lookup strategy for one political level
 - AI provider setup
 - output language and official-language decisions
 - email setup
 - domain setup
-- design localization
+- design localization: use a warm travel-letter aesthetic, warm and friendly,
+  handmade and slightly hand-drawn, not a cold AI-slop look; stay close to the
+  airmail/paper/green identity, but make the local version feel at home in its
+  own country rather than a flat translation
 - political letter prompt changes
 - local validation test cases
 
@@ -68,7 +80,7 @@ const copy: Record<Language, Copy> = {
     eyebrow: "Open Source für lokale Demokratien",
     title: "Brief-nach-Berlin für dein Land nutzen",
     lead:
-      "Der Code ist offen. Wenn du eine lokale Version für Österreich, die Schweiz oder ein anderes Land bauen willst, starte nicht mit Übersetzen. Lass zuerst einen Plan schreiben: Daten, Zuständigkeiten, Sprache, Mail, Domain und politische Brief-Logik. Wenn du jemanden in Österreich oder der Schweiz kennst, der helfen könnte, schick mir gern den Kontakt oder leite diese Seite weiter.",
+      "Der Code ist offen. Starte nicht mit Übersetzen, sondern mit dem festen Anfangsstand `international-starter` (Commit cce073a): der schlanken Version, die nur an nationale Abgeordnete schreibt. Mehr Ebenen kommen später. Lass zuerst einen Plan schreiben: Daten, Zuständigkeiten, Sprache, Mail, Domain und Brief-Logik. Kennst du jemanden in Österreich oder der Schweiz, der helfen könnte? Schick mir den Kontakt oder leite diese Seite weiter.",
     imageAlt:
       "Handgeschriebene Briefe fliegen über Europa, vorbei an Städten, Flüssen, Bahnlinien und Bergen.",
     impactSince: "Seit Mitte Mai 2026",
@@ -79,7 +91,7 @@ const copy: Record<Language, Copy> = {
       {
         title: "Repository forken",
         body:
-          "Nimm den offenen Code als Ausgangspunkt. Du brauchst keine Erlaubnis.",
+          "Nimm den offenen Code als Ausgangspunkt, idealerweise über den Tag `international-starter`. Du brauchst keine Erlaubnis.",
       },
       {
         title: "Prompt kopieren",
@@ -94,7 +106,7 @@ const copy: Record<Language, Copy> = {
     ],
     promptTitle: "Mit diesem Prompt starten",
     promptBody:
-      "Kopiere diesen Prompt in Codex, Claude, Cursor oder dein GSD-Setup. Er startet mit Planung, nicht mit Code.",
+      "Kopiere diesen Prompt in Codex, Claude, Cursor oder dein GSD-Setup. Er startet mit dem festen Anfangsstand und Planung, nicht mit Code.",
     copyLabel: "Kopieren",
     copiedLabel: "Kopiert",
     guideCta: "Adaptions-Guide lesen",
@@ -111,7 +123,7 @@ const copy: Record<Language, Copy> = {
     eyebrow: "Open source for local democracies",
     title: "Fork Brief-nach-Berlin for your country",
     lead:
-      "Brief-nach-Berlin is a German civic tech tool. People enter a postal code and a concern, then get a draft letter to the right political representative. The code is open. If you want to build this for another country, start with data, institutions, language and local testing, not with a straight translation.",
+      "Brief-nach-Berlin is a German civic tech tool. People enter a postal code and a concern, then get a draft letter to the right political representative. Do not start with a translation. Start with the fixed starter version `international-starter` (commit cce073a), the slim national-only build. More political levels come later. First write a plan: data, responsibilities, language, email, domain and letter logic. If you know someone in Austria or Switzerland who could help, send me the contact or pass this page on.",
     imageAlt:
       "Handwritten letters fly across Europe, passing cities, rivers, railway lines, and mountains.",
     impactSince: "Since mid-May 2026",
@@ -122,7 +134,7 @@ const copy: Record<Language, Copy> = {
       {
         title: "Fork the repo",
         body:
-          "Use the open code as a starting point. You do not need permission.",
+          "Use the open code as a starting point, ideally from the `international-starter` tag. You do not need permission.",
       },
       {
         title: "Copy the prompt",
@@ -137,7 +149,7 @@ const copy: Record<Language, Copy> = {
     ],
     promptTitle: "Start with this prompt",
     promptBody:
-      "Paste this into Codex, Claude, Cursor, or your GSD setup. It starts with planning, not code.",
+      "Paste this into Codex, Claude, Cursor, or your GSD setup. It starts with the fixed starter version and planning, not code.",
     copyLabel: "Copy",
     copiedLabel: "Copied",
     guideCta: "Read the adaptation guide",

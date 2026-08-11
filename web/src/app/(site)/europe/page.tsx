@@ -6,7 +6,7 @@ import { EuropePageContent } from "./EuropePageClient";
 
 const URL_PATH = "/europe";
 const PUBLISHED = "2026-06-26";
-const MODIFIED = "2026-07-06";
+const MODIFIED = "2026-08-11";
 const TITLE = "Brief-nach-Berlin für dein Land nutzen | Brief-nach-Berlin";
 const DESCRIPTION =
   "Forke Brief-nach-Berlin und plane eine lokale Version für Österreich, die Schweiz oder ein anderes Land.";

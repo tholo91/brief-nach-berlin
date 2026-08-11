@@ -11,10 +11,31 @@ their own country.
 
 Before changing code, create a plan.
 
+Start from the stable national-only version, not from the latest main:
+
+```sh
+git checkout international-starter
+```
+
+That tag points to commit `cce073a`, the last version that only routes one
+political level: the national parliament. Keep the first local MVP
+national-only. Do not implement the Bund/Land/Kommune routing that later
+versions of the German app added. More political levels come after the local
+MVP works.
+
 Recommended first prompt:
 
 ```text
 You are working in a fork of https://github.com/tholo91/brief-nach-berlin.
+
+Start from the stable national-only version, not from the latest main:
+  git checkout international-starter
+(That tag points to commit cce073a, the last version that only routes one
+political level: the national parliament.)
+
+Important: keep the first version national-only. Do not implement the later
+Bund/Land/Kommune routing architecture. You can add more political levels
+after the local MVP works.
 
 First read:
 - README.md
@@ -35,7 +56,7 @@ If GSD is not available, create the same structure manually.
 The plan must include:
 - MUST / SHOULD / OPTIONAL tasks
 - local data requirements
-- representative lookup strategy
+- representative lookup strategy for one political level
 - AI provider setup
 - output language and official-language decisions
 - email setup
@@ -238,6 +259,14 @@ Do not copy the German look. Copy the principle.
 The current design is inspired by a German children's-book and letter-writing
 feeling: warm, civic, postal, slightly nostalgic. That may work in Germany. It
 may feel strange, childish, or politically misplaced elsewhere.
+
+The design north star is a warm travel-letter aesthetic: curious, friendly,
+handmade, slightly hand-drawn, looking ahead. Think of postcards and letters a
+traveler sends home, not of a sterile app template. A local version should feel
+like it was made by a person who cares about that country, so it does not read
+as cold AI-generated boilerplate. Keep the airmail/paper/green identity as a
+family resemblance, then make the local version at home in its own country:
+own name, own language, own illustrations, own humor, own civic references.
 
 The local agent should answer:
 

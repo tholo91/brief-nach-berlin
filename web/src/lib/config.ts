@@ -73,7 +73,7 @@ brief-nach-berlin.de
 export const FOUNDER_NAME = "Thomas Lorenz" as const;
 export const FOUNDER_EMAIL = CONTACT.email;
 export const FOUNDER_HOMEPAGE = "https://www.thomas-lorenz.eu" as const;
-export const FOUNDER_LINKEDIN = "https://www.linkedin.com/in/tholo91/" as const;
+export const FOUNDER_LINKEDIN = "https://www.linkedin.com/in/thomaslorenz91/" as const;
 export const FOUNDER_FEEDBACK_URL = "https://www.heyspeak.io/l/WIOENjqJn6z6WKtkWgDEFg?email=on" as const;
 export const BRIEF_FEEDBACK_URL = "https://www.heyspeak.io/l/qi6CAgWkebX3KOY8J3MCrA" as const;
 export const CAMPAIGN_CREATOR_FEEDBACK_URL = "https://www.heyspeak.io/l/1e3SbSQrkg0e2hZqROgUJA" as const;

@@ -528,6 +528,8 @@ Plans:
 
 ### Phase 999.25: Named-MdB-Suche als zweiter Empfänger-Modus (BACKLOG)
 
+**Status:** Übernommen und erweitert durch Pending-Todo [`2026-08-11-bestimmte-abgeordnete-anschreiben-personensuche-fuer-brief-und-kampagne`](../todos/pending/2026-08-11-bestimmte-abgeordnete-anschreiben-personensuche-fuer-brief-und-kampagne.md) — Such-Modus für Bund **und** Landtag, plus optionaler fester Empfänger für Kampagnen. Diese Phase bleibt als Ursprungskonzept stehen, wird aber nicht separat gebaut.
+
 **Goal:** Empfänger-Auswahl erweitern, sodass Nutzer:innen statt der eigenen Wahlkreis-MdBs gezielt eine bestimmte Person anschreiben können (z. B. "ich will Karl Lauterbach schreiben" oder "die Innenministerin"). Heute zwingt der PLZ-Flow zur eigenen Wahlkreis-MdB.
 
 **Vorschlag:** Im Empfänger-Schritt ein Toggle "Meine Wahlkreis-MdBs" vs. "Anderer/andere MdB". Im zweiten Modus: Suchfeld mit Type-Ahead über alle Bundestagsabgeordneten. Datenquelle = bestehende Abgeordnetenwatch-API (`politicians`-Endpoint mit Namens-Filter), also kein neuer Daten-Layer.

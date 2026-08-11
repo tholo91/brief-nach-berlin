@@ -64,3 +64,4 @@ Die Entscheidung soll nicht danach fallen, welcher Datensatz am leichtesten einz
 
 - `2026-04-14-v2-politician-research-for-personalized-letters.md`
 - `2026-06-29-kampagnen-ziel-bund-oder-landesregierung-festlegen.md`
+- `2026-08-11-bestimmte-abgeordnete-anschreiben-personensuche-fuer-brief-und-kampagne.md`: Personen-Suche als opt-in Empfaenger-Modus fuer freie Briefe und Kampagnen. Kein Widerspruch zu dieser Entscheidung (Suche ist bewusste Ausnahme, keine Pflichtauswahl).

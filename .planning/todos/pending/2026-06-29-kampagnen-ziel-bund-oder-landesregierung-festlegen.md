@@ -47,3 +47,7 @@ Umsetzung auf Branch `codex/999-6-level-routing-v2` (Worktree `brief-nach-berlin
 2. PLZ-Mismatch bei fester Bindung: freundlich abfangen. Hinweis "Diese Kampagne richtet sich an den Landtag von X" plus Angebot, stattdessen einen freien Brief zum Thema zu schreiben (normale Ebenen-Erkennung, ohne Kampagnen-Kontext). Kein harter Stopp, kein Brief an den falschen Landtag.
 3. Bestehende Kampagnen ohne Feld gelten als `targetLevel: "Bund"`.
 4. Kampagnenseite: dezente Pill "Landtagskampagne · {Bundesland}" (bzw. ohne Bundesland nur "Landtagskampagne") nur bei Land-Kampagnen. Bund-Kampagnen ohne Pill, weil Bund das Default-Mental-Model ist.
+
+## Verwandte Backlog-Punkte
+
+- `2026-08-11-bestimmte-abgeordnete-anschreiben-personensuche-fuer-brief-und-kampagne.md`: Erweitert diese Kampagnen-Zielsetzung um einen optionalen festen Personen-Empfaenger (`targetPerson`) — gemeinsamer Such-Baustein fuer freie Briefe und Kampagnen.

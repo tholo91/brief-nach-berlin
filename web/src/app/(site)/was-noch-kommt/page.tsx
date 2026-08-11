@@ -5,21 +5,20 @@ import type { ReactNode } from "react";
 import { APP_URL, FOUNDER_FEEDBACK_URL, FOUNDER_EMAIL } from "@/lib/config";
 import { Prose } from "@/components/editorial/Prose";
 import { FAQAccordion } from "@/components/FAQAccordion";
-import { RoadmapSignupForm } from "./RoadmapSignupForm";
 
 const URL_PATH = "/was-noch-kommt";
 const PUBLISHED = "2026-05-22";
 const TITLE =
-  "Roadmap: Welche politischen Ebenen kommen als nächstes | Brief-nach-Berlin";
+  "Welche politischen Ebenen unterstützt Brief-nach-Berlin? | Brief-nach-Berlin";
 const DESCRIPTION =
-  "Brief-nach-Berlin testet jetzt Bund, Land und Kommune. Die EU steht weiter auf der Roadmap. Der offene Fahrplan inklusive Kampagnenmodus.";
+  "Brief-nach-Berlin unterstützt heute Bund, Land und Kommune. Hier steht, wie die Zuständigkeit funktioniert und was bewusst nicht versprochen wird.";
 
 export const metadata: Metadata = {
   title: TITLE,
   description: DESCRIPTION,
   alternates: { canonical: `${APP_URL}${URL_PATH}` },
   openGraph: {
-    title: "Roadmap: Welche politischen Ebenen kommen als nächstes",
+    title: "Welche politischen Ebenen unterstützt Brief-nach-Berlin?",
     description: DESCRIPTION,
     type: "article",
     locale: "de_DE",
@@ -27,7 +26,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Roadmap: Welche politischen Ebenen kommen als nächstes",
+    title: "Welche politischen Ebenen unterstützt Brief-nach-Berlin?",
     description: DESCRIPTION,
   },
 };
@@ -42,17 +41,6 @@ interface Level {
   body: ReactNode;
 }
 
-const feedbackLink = (
-  <a
-    href={FOUNDER_FEEDBACK_URL}
-    target="_blank"
-    rel="noopener noreferrer"
-    className="text-waldgruen-dark underline decoration-waldgruen/40 hover:decoration-waldgruen-dark"
-  >
-    Feedback-Seite
-  </a>
-);
-
 const levels: Level[] = [
   {
     key: "bund",
@@ -64,29 +52,27 @@ const levels: Level[] = [
   {
     key: "land",
     name: "Land",
-    badge: "Beta",
-    status: "beta",
-    body: "Schule, Polizei, Hochschulen, Wohnungspolitik: das gehört in den Landtag, nicht nach Berlin. Brief-nach-Berlin steuert die Landesebene jetzt an und testet die Zuordnung langsam mit echten Anliegen. Nicht jeder Randfall sitzt schon perfekt, aber der nächste Schritt ist live genug, um Feedback einzusammeln.",
+    badge: "Live",
+    status: "live",
+    body: "Schule, Polizei, Hochschulen, Wohnungspolitik: das gehört in den Landtag, nicht nach Berlin. Brief-nach-Berlin routet Landesthemen an die institutionell passende Landesadresse und berücksichtigt dabei auch Stadtstaaten.",
   },
   {
     key: "kommune",
     name: "Kommune",
-    badge: "Beta",
-    status: "beta",
-    body: "Spielplatz, Kita, Radweg, Bauantrag: hier hilft kein Brief nach Berlin, hier hilft ein Brief ans Rathaus. Brief-nach-Berlin kann kommunale Anliegen jetzt zur Stadt oder Gemeinde führen und nutzt dafür offizielle Anschriften, wo sie sauber zugeordnet werden können. Ich teste das bewusst schrittweise, weil Kommunaldaten schnell schiefgehen, wenn man zu viel verspricht.",
+    badge: "Live",
+    status: "live",
+    body: "Spielplatz, Kita, Radweg, Bauantrag: hier hilft kein Brief nach Berlin, hier hilft ein Brief ans Rathaus. Brief-nach-Berlin führt kommunale Anliegen anhand offizieller Gemeindeadressen zur passenden Stadt oder Gemeinde.",
   },
   {
     key: "eu",
     name: "EU",
-    badge: "Geplant",
+    badge: "Vorerst nicht geplant",
     status: "geplant",
     body: (
       <>
         Datenschutz, Klimaziele, Lieferketten, Agrarpolitik: vieles davon wird
-        in Brüssel entschieden, nicht in Berlin. Die Erweiterung auf
-        Europaabgeordnete steht auf der Roadmap, hat aber noch kein festes
-        Datum. Wenn die EU-Ebene für dich wichtig ist, sag mir Bescheid über
-        die {feedbackLink}.
+        in Brüssel entschieden, nicht in Berlin. Eine EU-Ebene ist derzeit
+        nicht Teil des Produkts. Wenn sich das ändert, steht es zuerst hier.
       </>
     ),
   },
@@ -106,31 +92,19 @@ function badgeClasses(status: LevelStatus): string {
 const faqs = [
   {
     q: "Welche politischen Ebenen werden aktuell unterstützt?",
-    a: "Aktuell unterstützt Brief-nach-Berlin Bund, Land und Kommune. Bund ist der stabile Kern. Land und Kommune laufen als Beta, werden langsam mit echten Anliegen getestet und bleiben deshalb bewusst vorsichtig formuliert. Die EU steht weiter hinten auf der Roadmap ohne festes Datum.",
+    a: "Aktuell unterstützt Brief-nach-Berlin Bund, Land und Kommune. Die drei Ebenen sind im normalen Briefprozess verfügbar. Die EU-Ebene ist derzeit nicht Teil des Produkts.",
   },
   {
     q: "Ist die Landtag-Ebene schon live?",
-    a: "Ja, als Beta. Brief-nach-Berlin kann Landesthemen inzwischen an die Landesebene routen. Ich teste das weiter mit echten Fällen, weil Bundesländer eigene Daten, Wahlkreislogiken und Adressformeln haben.",
+    a: "Ja. Landesthemen werden an die institutionell passende Landesadresse geroutet. Die Zuordnung berücksichtigt Bundesländer, Stadtstaaten und die jeweils passende Anrede.",
   },
   {
-    q: "Warum nicht alle Ebenen auf einmal?",
-    a: "Jede Ebene hat eigene Datenquellen, eigene Adressformeln und eigene Zuständigkeitslogik. Bund ist stabil, Land und Kommune sind jetzt in der Beta. Ich teste lieber langsam mit echten Nutzerinnen und Nutzern, statt so zu tun, als wären 16 Länder und tausende Kommunen nach einem Schalter perfekt.",
+    q: "Warum gibt es keine EU-Ebene?",
+    a: "Eine EU-Ebene wäre ein eigenes Produkt mit anderen Datenquellen, Zuständigkeiten und Adresslogiken. Ich verspreche sie derzeit nicht und sammle dafür auch keine Anmeldungen.",
   },
   {
-    q: "Kann ich vorschlagen, welche Ebene als nächstes kommt?",
-    a: "Ja. Die Reihenfolge richtet sich nach zwei Dingen: wie oft eine Ebene im Feedback genannt wird, und wie schnell ich an saubere Daten komme. Wenn du eine bestimmte Ebene priorisieren willst, sag es mir über die Feedback-Seite, das fließt direkt in die Reihenfolge ein.",
-    aNode: (
-      <>
-        Ja. Die Reihenfolge richtet sich nach zwei Dingen: wie oft eine Ebene
-        im Feedback genannt wird, und wie schnell ich an saubere Daten
-        komme. Wenn du eine bestimmte Ebene priorisieren willst, sag es mir
-        über die {feedbackLink}, das fließt direkt in die Reihenfolge ein.
-      </>
-    ),
-  },
-  {
-    q: "Was passiert mit meiner Anmeldung?",
-    a: "Gespeichert werden nur deine Email und die Ebene, die du angekreuzt hast. Du bekommst eine einzige Mail, wenn die Ebene live geht. Danach werden deine Daten gelöscht. Kein Newsletter, keine Weitergabe an Dritte, kein Tracking.",
+    q: "Kann ich eine weitere Ebene vorschlagen?",
+    a: "Ja, über die Feedback-Seite. Eine weitere Ebene kommt aber nur hinzu, wenn Zuständigkeit, Datenquellen und Adressierung sauber genug sind.",
   },
   {
     q: "Werden auch Bundesländer-spezifische Besonderheiten berücksichtigt?",
@@ -151,10 +125,10 @@ const faqJsonLd = {
 const articleJsonLd = {
   "@context": "https://schema.org",
   "@type": "Article",
-  headline: "Roadmap: Welche politischen Ebenen kommen als nächstes",
+  headline: "Welche politischen Ebenen unterstützt Brief-nach-Berlin?",
   description: DESCRIPTION,
   datePublished: PUBLISHED,
-  dateModified: "2026-07-20",
+  dateModified: "2026-08-11",
   author: { "@type": "Organization", name: "Brief-nach-Berlin" },
   publisher: {
     "@type": "Organization",
@@ -186,14 +160,14 @@ export default function WasNochKommtPage() {
         </Link>
 
         <p className="font-typewriter text-sm font-bold tracking-widest uppercase text-waldgruen/60 mb-3">
-          Roadmap
+          Zuständigkeit
         </p>
         <h1 className="font-body text-3xl md:text-5xl font-bold text-waldgruen-dark tracking-tight mb-6 text-balance">
-          Was noch kommt
+          Welche Ebenen heute funktionieren
         </h1>
         <p className="font-handwriting text-xl md:text-2xl text-warmgrau leading-relaxed mb-10 text-pretty">
-          Ich baue offen. Das hier ist der Fahrplan, und dein Feedback formt
-          die Reihenfolge mit.
+          Ich baue offen. Hier steht, welche politische Ebene heute für dein
+          Anliegen erreichbar ist — und was ich bewusst noch nicht verspreche.
         </p>
 
         <figure className="mb-12 -mx-2 sm:mx-0">
@@ -215,28 +189,27 @@ export default function WasNochKommtPage() {
           </p>
           <p className="font-body text-base md:text-lg text-waldgruen-dark leading-relaxed">
             Heute schreibst du mit Brief-nach-Berlin an Bund, Land oder
-            Kommune. Bund ist stabil, Land und Kommune laufen als Beta und
-            werden langsam mit echten Anliegen getestet. Die EU-Ebene ist
-            geplant, hat aber noch kein Datum.
+            Kommune. Diese drei Ebenen sind im Produkt verfügbar. Die
+            EU-Ebene ist derzeit nicht geplant.
           </p>
         </div>
 
         <div className="mb-14 rounded-2xl border border-airmail-rot/20 bg-white/70 p-6 sm:p-8 shadow-sm">
           <p className="font-typewriter text-xs font-bold uppercase tracking-widest text-airmail-rot/70 mb-3">
-            Was jetzt getestet wird
+            Was heute gilt
           </p>
           <p className="font-body text-base text-warmgrau leading-relaxed">
-            Land und Kommune sind nicht mehr nur Roadmap. Die App versucht
-            jetzt, dein Anliegen auf die richtige Ebene zu legen und dich zu
-            einer passenden Adresse zu führen. Das bleibt bewusst als Beta
-            markiert: Zuständigkeiten sind manchmal uneindeutig, und gerade
-            Kommunen brauchen saubere Daten statt geratenen Adressen.
+            Bund, Land und Kommune sind im normalen Produkt verfügbar. Die App
+            ordnet dein Anliegen einer passenden Ebene zu und führt dich, wo
+            die Daten sauber genug sind, zur richtigen institutionellen oder
+            politischen Adresse. Bei unklaren Fällen kannst du die Ebene selbst
+            korrigieren.
           </p>
         </div>
 
-        {/* Die vier Ebenen */}
+        {/* Die politischen Ebenen */}
         <h2 className="font-body text-2xl md:text-3xl font-bold text-waldgruen-dark pt-4 mb-8">
-          Die vier Ebenen
+          Die politischen Ebenen
         </h2>
 
         <div className="space-y-6 mb-16">
@@ -263,14 +236,6 @@ export default function WasNochKommtPage() {
                 {level.body}
               </p>
 
-              {level.key === "eu" ? (
-                <div className="mt-6">
-                  <p className="font-body text-sm font-semibold text-waldgruen-dark mb-3">
-                    Sag mir Bescheid, wenn die EU-Ebene dran ist.
-                  </p>
-                  <RoadmapSignupForm ebene="eu" />
-                </div>
-              ) : null}
             </section>
           ))}
         </div>
@@ -329,7 +294,7 @@ export default function WasNochKommtPage() {
             Brief-nach-Berlin für andere Länder
           </h2>
           <p className="font-body text-base text-warmgrau leading-relaxed mb-5">
-            Neben Bund, Land, Kommune und EU gibt es eine zweite Spur: Der Code
+            Neben Bund, Land und Kommune gibt es eine zweite Spur: Der Code
             ist offen. Menschen in Österreich, Portugal, den Niederlanden oder
             anderswo können das Muster nehmen und vor Ort übersetzen. Ich suche
             Kontakte, Datenquellen und Leute, die direkt anfangen wollen.
@@ -352,30 +317,29 @@ export default function WasNochKommtPage() {
 
         <Prose>
           <h2 className="font-body text-2xl md:text-3xl font-bold text-waldgruen-dark pt-4">
-            Wie die Roadmap entsteht
+            Wie die Zuständigkeit funktioniert
           </h2>
           <p>
-            Die Reihenfolge richtet sich inzwischen nach drei Größen. Erstens:
-            wie oft eine Ebene im Nutzer-Feedback genannt wird. Wer
+            Die aktuelle Struktur folgt einer einfachen Regel: Dein Anliegen
+            soll an die Ebene gehen, die tatsächlich handeln kann. Wer
             Bildungspolitik adressieren will, braucht den Landtag. Wer einen
-            Bauantrag oder Radweg betrifft, braucht die Kommune. Diese
-            Nennungen haben die Beta mit angeschoben.
+            Bauantrag oder Radweg betrifft, braucht die Kommune.
           </p>
           <p>
-            Zweitens: politische Dringlichkeit. Wenn aktuelle Ereignisse viele
-            Menschen gleichzeitig betreffen, kann ein Kampagnenmodus mehr
-            bewirken als die nächste Datenebene. Genau deshalb ist er zuerst
-            live gegangen.
+            Kampagnen können dabei mehrere persönliche Briefe zu einem Thema
+            bündeln. Der Brief bleibt trotzdem persönlich und wird nicht als
+            Massenbrief an eine ganze Liste von Empfänger:innen kopiert.
           </p>
           <p>
-            Drittens: die technische Komplexität der Datenquellen. Der
+            Die technische Komplexität der Datenquellen bleibt der wichtigste
+            Prüfstein. Der
             Bundestag liefert seine Mandate über eine einzige, gut gepflegte
             Schnittstelle (abgeordnetenwatch.de). Auf Landesebene sind die
             Strukturen heterogener, jedes Bundesland hat eigene
-            Wahlkreis-Logik. Auf Kommunalebene gibt es kein zentrales
-            Register, sondern rund 11.000 Gemeinden mit unterschiedlichen
-            Verwaltungsstrukturen. Deshalb teste ich Land und Kommune jetzt
-            langsam, statt so zu tun, als wäre jeder Randfall schon erledigt.
+            Wahlkreis-Logik. Auf Kommunalebene gibt es kein zentrales Register,
+            sondern viele Gemeinden mit unterschiedlichen Verwaltungsstrukturen.
+            Deshalb bleibt die Zuordnung transparent, statt jeden Randfall als
+            perfekt gelöst auszugeben.
           </p>
 
           <h2 className="font-body text-2xl md:text-3xl font-bold text-waldgruen-dark pt-4">

@@ -39,15 +39,27 @@ interface Monat {
 
 const monate: Monat[] = [
   {
+    key: "august-2026",
+    badge: "August 2026",
+    note: "Bund, Land und Kommune als aktueller Kern",
+    entries: [
+      "Bund, Land und Kommune sind jetzt der stabile Produktkern: Anliegen werden auf die passende politische oder institutionelle Ebene geroutet.",
+      "Landes- und Kommunalbriefe nutzen offizielle Adressen und eigene Anreden, statt Empfänger oder Zuständigkeit zu erraten.",
+      "Die Erklärung zur Wirkung handschriftlicher Briefe wurde mit Forschung eingeordnet und trennt direkte Evidenz von plausiblen Übertragungen.",
+      "Der Briefprozess prüft die maximale Länge des Anliegens jetzt bereits in der Oberfläche und zeigt verständliche Validierungsfehler.",
+      "Neue Roadmap-Anmeldungen werden nicht mehr gesammelt: Es gibt aktuell keine weitere politische Ebene, für die ich eine Benachrichtigung verspreche.",
+    ],
+  },
+  {
     key: "juli-2026",
     badge: "Juli 2026",
-    note: "Kampagnenmodus live, Land und Kommune als Beta",
+    note: "Kampagnenmodus live, Land und Kommune ausgebaut",
     entries: [
       "Kampagnenmodus gebaut: Creator können ein Anliegen mit Titel, Kurzlink, sichtbarem Absender, Beschreibung, optionalem Bild und externem Link anlegen.",
       "Kampagnen werden erst nach E-Mail-Bestätigung öffentlich und automatisch moderiert, damit keine problematischen Texte ungeprüft live gehen.",
       "Öffentliche Kampagnenseiten führen Menschen durch den normalen Briefprozess: PLZ, zuständige Bundestagsabgeordnete, persönlicher Entwurf statt Copy-Paste-Massenbrief.",
       "Für Kampagnen gibt es Verwaltungslinks zum Bearbeiten, Pausieren oder Archivieren sowie Teilen per Link und QR-Code.",
-      "Land und Kommune sind als Beta dazugekommen: Die App kann Anliegen jetzt auf Bund, Land oder Kommune routen und führt, wo die Daten sauber genug sind, zur passenden Adresse.",
+      "Land und Kommune sind dazugekommen: Die App kann Anliegen jetzt auf Bund, Land oder Kommune routen und führt, wo die Daten sauber genug sind, zur passenden offiziellen Adresse.",
     ],
   },
   {
@@ -77,7 +89,7 @@ const monate: Monat[] = [
     note: "Stimmen, Roadmap und spürbar bessere Briefe",
     entries: [
       "Bewertungen von echten Nutzern gesammelt und auf der Seite /stimmen veröffentlicht, mit Filter und Swipe-Funktion auf dem Handy.",
-      "Die Seite /was-noch-kommt (Roadmap) ist live, mit den vier politischen Ebenen und einem Anmeldeformular für die Landtag-Ebene.",
+      "Die Seite /was-noch-kommt erklärt den aktuellen Ebenen-Stand und welche Zuständigkeit hinter Bund, Land und Kommune steckt.",
       "E-Mail nach dem Briefversand überarbeitet: Footer mit direktem Link zur Abgeordneten-Seite, Sterne-Bewertung direkt in der Mail.",
       "Briefvorschau und Verbesserungs-Vorschläge auf Mobilgeräten benutzerfreundlicher gemacht.",
       "Postleitzahlen in Stadtstaaten wie Berlin, Hamburg und Bremen genauer aufgelöst, damit der Brief beim richtigen Wahlkreis landet.",
@@ -119,7 +131,7 @@ const articleJsonLd = {
   headline: "Was bisher geschah: Der Fortschritt von Brief-nach-Berlin",
   description: DESCRIPTION,
   datePublished: PUBLISHED,
-  dateModified: "2026-07-20",
+  dateModified: "2026-08-11",
   author: { "@type": "Organization", name: "Brief-nach-Berlin" },
   publisher: {
     "@type": "Organization",
@@ -217,18 +229,18 @@ export default async function WasBisherGeschahPage() {
           ))}
         </div>
 
-        {/* Roadmap-Verweis: das hier ist Vergangenheit, dort steht die Zukunft */}
+        {/* Verweis auf den aktuellen Ebenen-Stand */}
         <Link
           href="/was-noch-kommt"
           className="group mb-16 flex items-center justify-between gap-4 rounded-2xl border border-waldgruen/15 bg-white/60 px-5 py-4 transition-colors hover:border-waldgruen hover:bg-white"
         >
           <span className="font-body text-sm text-waldgruen-dark leading-snug">
-            <span className="font-bold">Was als Nächstes kommt</span> steht in
-            der Roadmap: die nächsten politischen Ebenen und warum sich
-            Land/Kommune verschoben haben.
+            <span className="font-bold">Wie es weitergeht</span> steht auf
+            der Ebenen-Seite: Bund, Land und Kommune, mit ihren aktuellen
+            Zuständigkeiten und Grenzen.
           </span>
           <span className="font-typewriter text-sm font-bold text-waldgruen whitespace-nowrap transition-transform group-hover:translate-x-1">
-            Fahrplan &rarr;
+            Ebenen ansehen &rarr;
           </span>
         </Link>
 

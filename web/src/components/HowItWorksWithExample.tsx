@@ -25,7 +25,11 @@ const steps = [
     number: "02",
     title: "Brief-nach-Berlin findet die passende Adresse",
     description:
-      "Anhand deiner PLZ ermittelt Brief-nach-Berlin, wer politisch zuständig ist. Datenschutzkonform, ohne Account, nichts wird gespeichert.",
+      "Anhand deiner PLZ ermittelt Brief-nach-Berlin, wer politisch zuständig ist – Bund, Land oder Kommune. Datenschutzkonform, ohne Account, nichts wird gespeichert.",
+    link: {
+      href: "/kommune-land-bund-eu",
+      label: "Wie politische Zuständigkeiten funktionieren",
+    },
     icon: (
       <svg width="40" height="40" viewBox="0 0 48 48" fill="none" className="text-waldgruen">
         <circle cx="24" cy="18" r="8" stroke="currentColor" strokeWidth="2" fill="none" />
@@ -112,6 +116,17 @@ export default function HowItWorksWithExample() {
                 <p className="font-body text-[15px] text-warmgrau/80 leading-relaxed">
                   {step.description}
                 </p>
+                {"link" in step && step.link && (
+                  <p className="mt-3 font-body text-sm text-warmgrau/70 leading-relaxed">
+                    <Link
+                      href={step.link.href}
+                      prefetch={false}
+                      className="text-waldgruen hover:text-waldgruen-dark underline decoration-waldgruen/30 underline-offset-2 hover:decoration-waldgruen transition-colors"
+                    >
+                      {step.link.label}
+                    </Link>
+                  </p>
+                )}
               </li>
             ))}
           </ol>

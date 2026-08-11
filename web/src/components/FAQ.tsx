@@ -23,7 +23,7 @@ const FAQ_ITEMS = [
   {
     question: "Welche politischen Ebenen sind dabei?",
     answer:
-      "Bund, Land und Kommune. Der Bundestag ist der stabile Kern, Landtag und kommunale Ebene laufen als Beta. Außerdem kannst du öffentliche Kampagnen starten.",
+      "Bund, Land und Kommune. Brief-nach-Berlin findet die passende politische Adresse auf allen drei Ebenen. Außerdem kannst du öffentliche Kampagnen starten.",
   },
   {
     question: "Wer steckt dahinter?",

@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Link from "next/link";
 
 const stats = [
   {
@@ -22,11 +23,20 @@ export default function WhyItWorks() {
         <p className="font-typewriter text-sm font-bold tracking-widest uppercase text-waldgruen/50 mb-3 text-center md:text-left">
           Warum ein Brief
         </p>
-        <h2 className="font-body text-3xl md:text-4xl font-bold text-waldgruen-dark tracking-tight mb-14 md:mb-16 max-w-xl text-center md:text-left">
+        <h2 className="font-body text-3xl md:text-4xl font-bold text-waldgruen-dark tracking-tight mb-3 max-w-xl text-center md:text-left">
           Warum ein Brief mehr bewegt
           <br />
           als tausend Klicks
         </h2>
+        <p className="font-body text-sm md:text-base text-warmgrau/70 leading-relaxed mb-14 md:mb-16 max-w-xl text-center md:text-left">
+          <Link
+            href="/handschriftliche-briefe-wirkung"
+            prefetch={false}
+            className="text-waldgruen hover:text-waldgruen-dark underline decoration-waldgruen/30 underline-offset-2 hover:decoration-waldgruen transition-colors"
+          >
+            Warum handschriftliche Briefe trotzdem einen Unterschied machen
+          </Link>
+        </p>
 
         <div className="grid md:grid-cols-2 gap-10 md:gap-16 items-center">
           {/* Left column: Ghibli illustration */}

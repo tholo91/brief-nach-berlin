@@ -45,9 +45,8 @@ export default function Roadmap() {
               </h3>
               <p className="font-body text-base text-warmgrau/80 leading-relaxed mb-3">
                 Nicht jedes Anliegen gehört nach Berlin. Brief-nach-Berlin
-                steuert jetzt Bund, Land und Kommune an. Bund ist stabil, Land
-                und Kommune laufen als Beta. Ich teste das langsam, weil
-                Zuständigkeit und Adresse auf diesen Ebenen genau sitzen müssen.
+                steuert jetzt Bund, Land und Kommune an – und liefert die
+                passende politische Adresse.
               </p>
               <p className="font-body text-sm text-warmgrau/70 leading-relaxed mb-4">
                 <Link href="/kommune-land-bund-eu" prefetch={false} className="text-waldgruen hover:text-waldgruen-dark underline decoration-waldgruen/30 underline-offset-2 hover:decoration-waldgruen transition-colors">
@@ -55,7 +54,7 @@ export default function Roadmap() {
                 </Link>
               </p>
               <span className="inline-block font-typewriter text-[10px] font-bold tracking-wider uppercase text-waldgruen bg-waldgruen/10 px-2 py-0.5 rounded-full">
-                Beta live
+                Live
               </span>
             </div>
           </div>

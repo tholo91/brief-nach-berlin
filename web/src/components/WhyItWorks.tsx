@@ -20,22 +20,22 @@ export default function WhyItWorks() {
   return (
     <section id="warum-briefe" className="py-20 md:py-28 px-6 bg-white">
       <div className="max-w-6xl mx-auto">
-        <p className="font-typewriter text-sm font-bold tracking-widest uppercase text-waldgruen/50 mb-3 text-center md:text-left">
+        <p className="font-typewriter text-sm font-bold tracking-widest uppercase text-waldgruen/50 mb-3">
           Warum ein Brief
         </p>
-        <h2 className="font-body text-3xl md:text-4xl font-bold text-waldgruen-dark tracking-tight mb-3 max-w-xl text-center md:text-left">
+        <h2 className="font-body text-3xl md:text-4xl font-bold text-waldgruen-dark tracking-tight mb-4 md:max-w-none max-w-xl">
           Warum ein Brief mehr bewegt
           <br />
           als tausend Klicks
         </h2>
-        <p className="font-body text-base md:text-lg text-warmgrau/70 leading-relaxed mb-14 md:mb-16 max-w-xl text-center md:text-left">
+        <p className="font-body text-base md:text-lg text-warmgrau/80 leading-relaxed mb-14 max-w-2xl">
           Ein handschriftlicher Brief macht Zeit und persönliches Interesse
           sichtbar. Was Studien dazu sagen und wo die Grenzen liegen, steht
-          hier:
+          hier: {" "}
           <Link
             href="/handschriftliche-briefe-wirkung"
             prefetch={false}
-            className="mt-2 inline-block text-waldgruen hover:text-waldgruen-dark underline decoration-waldgruen/30 underline-offset-2 hover:decoration-waldgruen transition-colors"
+            className="text-waldgruen hover:text-waldgruen-dark underline decoration-waldgruen/30 underline-offset-2 hover:decoration-waldgruen transition-colors"
           >
             Warum handschriftliche Briefe trotzdem einen Unterschied machen
           </Link>

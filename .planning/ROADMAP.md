@@ -78,6 +78,50 @@ Plans:
 
 ## Backlog
 
+### Phase 999.10: Accessibility-Kernflow (BACKLOG)
+
+**Goal:** Den bestehenden Landingpage- und Wizard-Flow fuer Tastatur- und
+Screenreader-Nutzer:innen robust bedienbar machen, ohne einen separaten
+Sonder-Wizard zu bauen.
+
+**Scope:** Skip-Link, eindeutiger Fokusbereich, Fokuswechsel zwischen
+Wizard-Schritten, semantische Fortschrittsanzeige, Live-Regionen fuer
+VoiceRecorder-/Transkriptionsstatus, korrekte Auswahlgruppen, sichtbarer Fokus,
+Kontrast, reduzierte Bewegung und Mobile-Navigation.
+
+**Definition of Done:** Tastatur- und VoiceOver-Test des Kernflows sind
+dokumentiert; es bleiben keine bekannten P0/P1-Probleme bei Fokus,
+Statusmeldungen oder Formularfehlern.
+
+**Requirements:** TBD
+**Plans:** 0 plans
+
+Plans:
+- [ ] TBD (nach Raul-Gespraech und Test mit mindestens einer betroffenen Person)
+
+### Phase 999.11: Gleichwertiger Briefabschluss (BACKLOG)
+
+**Goal:** Menschen, die nicht handschriftlich abschreiben, lange tippen oder per
+Post versenden koennen, erhalten einen gleichwertig nutzbaren Abschluss.
+
+**Scope:** Formulierungsoptionen fuer einfache Sprache und kurze Saetze,
+zugängliche Briefdarstellung, Kopier-/Downloadfunktion, realistische
+Alternativen zum handschriftlichen Abschreiben und eine ehrliche
+`/barrierefreiheit`-Seite als Erklaerungs- und Feedbackseite.
+
+**Nicht-Ziel:** Kein zweiter Wizard und keine Behauptung vollstaendiger
+Barrierefreiheit ohne Praxistest.
+
+**Definition of Done:** Mindestens drei konkrete Nutzungsszenarien mit Menschen
+mit unterschiedlichen Behinderungen getestet; angebotene Ausgabe- und
+Versandwege sind dokumentiert.
+
+**Requirements:** TBD
+**Plans:** 0 plans
+
+Plans:
+- [ ] TBD (nach Raul-Gespraech und Nutzer:innen-Tests)
+
 ### Phase 999.1: surv.ai User-Feedback Integration (BACKLOG)
 
 **Goal:** Embed a surv.ai feedback link after the letter generation flow to collect real user feedback ("Hat der Brief geholfen?"). Enables validation without building custom analytics.

@@ -322,6 +322,30 @@ export default function WarumPage() {
           <FAQAccordion items={faqs} />
         </Prose>
 
+        <div className="mt-16 border-t border-warmgrau/10 pt-8">
+          <p className="font-typewriter text-xs font-bold tracking-widest uppercase text-waldgruen/50 mb-4">
+            Weiter einordnen
+          </p>
+          <ul className="flex flex-col gap-3">
+            <li>
+              <Link
+                href="/handschriftliche-briefe-wirkung"
+                className="font-body text-waldgruen hover:text-waldgruen-dark underline underline-offset-2 transition-colors"
+              >
+                Was Studien zur Wirkung handschriftlicher Briefe sagen
+              </Link>
+            </li>
+            <li>
+              <Link
+                href="/brief-schreiben-wirkt"
+                className="font-body text-waldgruen hover:text-waldgruen-dark underline underline-offset-2 transition-colors"
+              >
+                Wie ein echter Brief aus Duisburg Wirkung bekam
+              </Link>
+            </li>
+          </ul>
+        </div>
+
         <div className="mt-20 p-8 md:p-10 bg-waldgruen/5 border border-waldgruen/15 rounded-2xl hover:bg-waldgruen/10 transition-colors">
           <p className="font-typewriter text-xs uppercase tracking-widest text-waldgruen/60 mb-3">
             Worauf wartest du?

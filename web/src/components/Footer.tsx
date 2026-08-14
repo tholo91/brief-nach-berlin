@@ -11,6 +11,7 @@ const footerSections = [
       { label: "Beispiele", href: "/beispiele" },
       { label: "Tipps", href: "/tipps" },
       { label: "Warum ein Brief?", href: "/warum-ein-brief" },
+      { label: "Studien zur Wirkung", href: "/handschriftliche-briefe-wirkung" },
       {
         label: "Treppe der Selbstwirksamkeit",
         href: "/treppe-der-selbstwirksamkeit",

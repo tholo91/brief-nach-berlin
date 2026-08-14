@@ -463,9 +463,9 @@ export default function AndereToolsPage() {
           </p>
           <p>
             Wenn du wissen willst, warum gerade ein handgeschriebener Brief
-            mehr bewirkt als eine E-Mail, lies{" "}
-            <Link href="/warum-ein-brief" className="text-waldgruen hover:underline">
-              Warum ein Brief mehr ist als ein Brief
+            anders wirkt als eine E-Mail, lies{" "}
+            <Link href="/handschriftliche-briefe-wirkung" className="text-waldgruen hover:underline">
+              Studien zur Wirkung handschriftlicher Briefe
             </Link>
             .
           </p>

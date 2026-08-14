@@ -578,12 +578,12 @@ export default function GuidePage() {
 
         <div className="mt-12 font-body text-sm text-warmgrau/70 leading-relaxed space-y-3">
           <p>
-            Warum ein Brief überhaupt mehr bewirkt als eine E-Mail, steht in{" "}
+            Warum ein handschriftlicher Brief anders wahrgenommen wird, steht in{" "}
             <Link
-              href="/warum-ein-brief"
+              href="/handschriftliche-briefe-wirkung"
               className="text-waldgruen hover:underline"
             >
-              Warum ein Brief mehr ist als ein Brief
+              Studien zur Wirkung handschriftlicher Briefe
             </Link>
             .
           </p>

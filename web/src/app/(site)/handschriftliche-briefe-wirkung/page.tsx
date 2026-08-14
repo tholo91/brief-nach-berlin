@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import type { Metadata } from "next";
 import { APP_URL } from "@/lib/config";
@@ -98,6 +99,17 @@ export default function HandschriftlicheBriefeWirkungPage() {
           Ein handschriftlicher Brief an eine Abgeordnete oder einen Abgeordneten kann mehr Aufmerksamkeit bekommen als eine kurze digitale Nachricht. Er zeigt, dass sich jemand Zeit genommen hat. Studien belegen diesen Effekt am klarsten bei personalisierter Post und bei Bürgerkontakten. Sie beweisen nicht, dass Handschrift allein politische Entscheidungen verändert. Inhalt, Zuständigkeit und persönlicher Bezug bleiben entscheidend.
         </p>
 
+        <figure className="mb-14 overflow-hidden rounded-xl border border-waldgruen/10 bg-white shadow-[0_24px_70px_-36px_rgba(45,80,22,0.45)]">
+          <Image
+            src="/images/postcard-fridge-hero.webp"
+            alt="Handgemalte Illustration einer handgeschriebenen Postkarte, die mit einem grünen Magneten an einem hellen Kühlschrank hängt."
+            width={1224}
+            height={765}
+            priority
+            className="h-auto w-full"
+          />
+        </figure>
+
         <Prose>
           <h2>Warum eine Urlaubspostkarte am Kühlschrank hängen bleibt</h2>
           <p>
@@ -190,7 +202,9 @@ export default function HandschriftlicheBriefeWirkungPage() {
         <div className="mt-16 border-t border-warmgrau/10 pt-8">
           <p className="mb-4 font-typewriter text-xs font-bold uppercase tracking-widest text-waldgruen/50">Mehr dazu</p>
           <ul className="flex flex-col gap-3">
+            <li><Link href="/brief-schreiben-wirkt" className="font-body text-waldgruen underline underline-offset-2 hover:text-waldgruen-dark">Wie ein echter Brief aus Duisburg Wirkung bekam</Link></li>
             <li><Link href="/lohnt-sich-brief-an-politiker" className="font-body text-waldgruen underline underline-offset-2 hover:text-waldgruen-dark">Was passiert mit einem Brief im Abgeordnetenbüro?</Link></li>
+            <li><Link href="/warum-ein-brief" className="font-body text-waldgruen underline underline-offset-2 hover:text-waldgruen-dark">Warum ein Brief mehr ist als ein Brief</Link></li>
             <li><Link href="/ngo-briefkampagne" className="font-body text-waldgruen underline underline-offset-2 hover:text-waldgruen-dark">Wie eine NGO eine Briefkampagne startet</Link></li>
             <li><Link href="/tipps" className="font-body text-waldgruen underline underline-offset-2 hover:text-waldgruen-dark">Tipps für einen persönlichen Brief</Link></li>
           </ul>

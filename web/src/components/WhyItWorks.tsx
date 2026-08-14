@@ -37,7 +37,7 @@ export default function WhyItWorks() {
             prefetch={false}
             className="text-waldgruen hover:text-waldgruen-dark underline decoration-waldgruen/30 underline-offset-2 hover:decoration-waldgruen transition-colors"
           >
-            Warum handschriftliche Briefe trotzdem einen Unterschied machen
+            Was Studien zur Wirkung handschriftlicher Briefe sagen
           </Link>
         </p>
 

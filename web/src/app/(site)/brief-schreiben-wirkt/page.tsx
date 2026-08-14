@@ -228,10 +228,10 @@ export default function BriefSchreibenWirktPage() {
             </li>
             <li>
               <Link
-                href="/warum-ein-brief"
+                href="/handschriftliche-briefe-wirkung"
                 className="font-body text-waldgruen hover:text-waldgruen-dark underline underline-offset-2 transition-colors"
               >
-                Warum ein Brief mehr ist als ein Brief
+                Was Studien zur Wirkung handschriftlicher Briefe sagen
               </Link>
             </li>
             <li>

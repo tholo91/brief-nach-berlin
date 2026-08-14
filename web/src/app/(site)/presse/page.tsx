@@ -436,10 +436,10 @@ export default async function PressePage() {
             </li>
             <li>
               <Link
-                href="/warum-ein-brief"
+                href="/handschriftliche-briefe-wirkung"
                 className="font-body text-waldgruen-dark underline decoration-waldgruen/30 underline-offset-4 hover:decoration-waldgruen"
               >
-                Warum ein Brief mehr ist als ein Brief
+                Studien zur Wirkung handschriftlicher Briefe
               </Link>
             </li>
             <li>

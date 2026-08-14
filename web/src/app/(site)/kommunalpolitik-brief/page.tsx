@@ -274,12 +274,12 @@ export default function KommunalpolitikBriefPage() {
             .
           </p>
           <p>
-            Warum handgeschriebene Briefe mehr bewirken als E-Mails, steht hier:{" "}
+            Warum handgeschriebene Briefe anders wirken als E-Mails, steht hier:{" "}
             <Link
-              href="/warum-ein-brief"
+              href="/handschriftliche-briefe-wirkung"
               className="text-waldgruen hover:underline"
             >
-              Warum ein Brief mehr ist als ein Brief
+              Studien zur Wirkung handschriftlicher Briefe
             </Link>
             .
           </p>

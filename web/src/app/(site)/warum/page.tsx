@@ -397,12 +397,12 @@ export default function WarumPage() {
         <div className="mt-12 font-body text-sm text-warmgrau/70 leading-relaxed space-y-3">
           <p>
             Wenn dich interessiert, warum gerade ein handgeschriebener Brief
-            mehr bewirkt als eine E-Mail, lies{" "}
+            anders wirkt als eine E-Mail, lies{" "}
             <Link
-              href="/warum-ein-brief"
+              href="/handschriftliche-briefe-wirkung"
               className="text-waldgruen hover:underline"
             >
-              Warum ein Brief mehr ist als ein Brief
+              Studien zur Wirkung handschriftlicher Briefe
             </Link>
             .
           </p>

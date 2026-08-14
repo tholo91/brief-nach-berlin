@@ -3,7 +3,7 @@ import type { ReactNode } from "react";
 
 export function CampaignBackground({ children }: { children: ReactNode }) {
   return (
-    <section className="relative isolate overflow-hidden bg-creme">
+    <section className="relative isolate flex flex-1 flex-col overflow-hidden bg-creme">
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(98,138,90,0.14),transparent_42%)]" />
       <div
         aria-hidden="true"

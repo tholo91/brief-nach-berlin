@@ -45,7 +45,7 @@ export default async function CampaignOpenGraphImage({
   const imageUrl =
     campaignLogoPublicUrl(campaign.logoPath) ??
     `${APP_URL}/images/campaign-creator-icon.webp`;
-  const backgroundImageUrl = `${APP_URL}/images/img-campaign-crowd-ghibli.png`;
+  const backgroundImageUrl = `${APP_URL}/images/img-campaign-crowd-ghibli.webp`;
   const fontSize = titleSize(title);
   const airmailStripe =
     "repeating-linear-gradient(-45deg, #C1121F, #C1121F 8px, #FAF8F5 8px, #FAF8F5 12px, #1D3557 12px, #1D3557 20px, #FAF8F5 20px, #FAF8F5 24px)";

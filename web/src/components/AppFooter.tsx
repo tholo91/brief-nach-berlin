@@ -1,85 +1,125 @@
+"use client";
+
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { FOUNDER_FEEDBACK_URL } from "@/lib/config";
 
-export default function AppFooter() {
+function AirmailStripe() {
   return (
-    <footer className="bg-creme mt-auto">
-      {/* Airmail stripe */}
-      <div
-        className="h-2 w-full"
-        style={{
-          background: `repeating-linear-gradient(
-            -45deg,
-            var(--color-airmail-rot),
-            var(--color-airmail-rot) 8px,
-            var(--color-creme) 8px,
-            var(--color-creme) 12px,
-            var(--color-airmail-blau) 12px,
-            var(--color-airmail-blau) 20px,
-            var(--color-creme) 20px,
-            var(--color-creme) 24px
-          )`,
-        }}
-      />
+    <div
+      className="h-2 w-full"
+      style={{
+        background: `repeating-linear-gradient(
+          -45deg,
+          var(--color-airmail-rot),
+          var(--color-airmail-rot) 8px,
+          var(--color-creme) 8px,
+          var(--color-creme) 12px,
+          var(--color-airmail-blau) 12px,
+          var(--color-airmail-blau) 20px,
+          var(--color-creme) 20px,
+          var(--color-creme) 24px
+        )`,
+      }}
+    />
+  );
+}
 
-      <div className="max-w-5xl mx-auto px-6 py-6 flex flex-col sm:flex-row items-center justify-between gap-4">
-        <span className="font-typewriter text-sm text-warmgrau/40">
-          Brief-nach-Berlin &copy; {new Date().getFullYear()}
-        </span>
+export default function AppFooter() {
+  const pathname = usePathname();
+  const isCampaignPage =
+    pathname === "/ngo-briefkampagne" ||
+    pathname === "/kampagne-starten" ||
+    pathname.startsWith("/kampagne/") ||
+    pathname === "/kampagne";
 
-        <div className="flex flex-wrap justify-center gap-x-5 gap-y-2">
-          <Link
-            href="/"
-            prefetch={false}
-            className="font-body text-sm text-warmgrau/40 hover:text-warmgrau transition-colors duration-200"
-          >
-            Startseite
-          </Link>
-          <Link
-            href="/brief-schreiben-wirkt"
-            prefetch={false}
-            className="font-body text-sm text-warmgrau/40 hover:text-warmgrau transition-colors duration-200"
-          >
-            Briefe wirken wirklich
-          </Link>
-          <a
-            href={FOUNDER_FEEDBACK_URL}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="font-body text-sm text-warmgrau/40 hover:text-warmgrau transition-colors duration-200"
-          >
-            Feedback
-          </a>
-          <Link
-            href="/ngo-briefkampagne"
-            prefetch={false}
-            className="font-body text-sm text-warmgrau/40 hover:text-warmgrau transition-colors duration-200"
-          >
-            NGO-Briefkampagne
-          </Link>
-          <Link
-            href="/kampagne/starten"
-            prefetch={false}
-            className="font-body text-sm text-warmgrau/40 hover:text-warmgrau transition-colors duration-200"
-          >
-            Kampagne starten
-          </Link>
-          <Link
-            href="/impressum"
-            prefetch={false}
-            className="font-body text-sm text-warmgrau/40 hover:text-warmgrau transition-colors duration-200"
-          >
-            Impressum
-          </Link>
-          <Link
-            href="/datenschutz"
-            prefetch={false}
-            className="font-body text-sm text-warmgrau/40 hover:text-warmgrau transition-colors duration-200"
-          >
-            Datenschutz
-          </Link>
+  return (
+    <footer className="mt-auto bg-creme">
+      <AirmailStripe />
+
+      {isCampaignPage ? (
+        <div className="mx-auto flex max-w-5xl flex-col items-center justify-between gap-4 px-6 py-6 sm:flex-row">
+          <span className="font-typewriter text-sm text-warmgrau/40">
+            Brief-nach-Berlin &copy; {new Date().getFullYear()}
+          </span>
+
+          <div className="flex items-center gap-5">
+            <Link
+              href="/impressum"
+              prefetch={false}
+              className="font-body text-sm text-warmgrau/40 transition-colors duration-200 hover:text-warmgrau"
+            >
+              Impressum
+            </Link>
+            <Link
+              href="/datenschutz"
+              prefetch={false}
+              className="font-body text-sm text-warmgrau/40 transition-colors duration-200 hover:text-warmgrau"
+            >
+              Datenschutz
+            </Link>
+          </div>
         </div>
-      </div>
+      ) : (
+        <div className="mx-auto flex max-w-5xl flex-col items-center justify-between gap-4 px-6 py-6 sm:flex-row">
+          <span className="font-typewriter text-sm text-warmgrau/40">
+            Brief-nach-Berlin &copy; {new Date().getFullYear()}
+          </span>
+
+          <div className="flex flex-wrap justify-center gap-x-5 gap-y-2">
+            <Link
+              href="/"
+              prefetch={false}
+              className="font-body text-sm text-warmgrau/40 transition-colors duration-200 hover:text-warmgrau"
+            >
+              Startseite
+            </Link>
+            <Link
+              href="/brief-schreiben-wirkt"
+              prefetch={false}
+              className="font-body text-sm text-warmgrau/40 transition-colors duration-200 hover:text-warmgrau"
+            >
+              Briefe wirken wirklich
+            </Link>
+            <a
+              href={FOUNDER_FEEDBACK_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="font-body text-sm text-warmgrau/40 transition-colors duration-200 hover:text-warmgrau"
+            >
+              Feedback
+            </a>
+            <Link
+              href="/ngo-briefkampagne"
+              prefetch={false}
+              className="font-body text-sm text-warmgrau/40 transition-colors duration-200 hover:text-warmgrau"
+            >
+              NGO-Briefkampagne
+            </Link>
+            <Link
+              href="/kampagne/starten"
+              prefetch={false}
+              className="font-body text-sm text-warmgrau/40 transition-colors duration-200 hover:text-warmgrau"
+            >
+              Kampagne starten
+            </Link>
+            <Link
+              href="/impressum"
+              prefetch={false}
+              className="font-body text-sm text-warmgrau/40 transition-colors duration-200 hover:text-warmgrau"
+            >
+              Impressum
+            </Link>
+            <Link
+              href="/datenschutz"
+              prefetch={false}
+              className="font-body text-sm text-warmgrau/40 transition-colors duration-200 hover:text-warmgrau"
+            >
+              Datenschutz
+            </Link>
+          </div>
+        </div>
+      )}
     </footer>
   );
 }

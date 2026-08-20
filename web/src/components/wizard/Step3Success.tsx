@@ -21,6 +21,11 @@ import {
   FOUNDER_FEEDBACK_URL,
 } from "@/lib/config";
 import { buildShareTarget } from "@/lib/share";
+import {
+  filterCampaignRecipients,
+  initialPoliticianId,
+  visibleLocalCampaignRecipients,
+} from "@/lib/campaign-recipient-picker";
 import { RathausAdresseButton } from "./RathausAdresseButton";
 
 // Phased loading copy. Rotates while the politician-pick spinner runs. This is
@@ -140,18 +145,36 @@ export function Step3Success({
   const isAmbiguousKommune =
     selectedLevel === "Kommune" &&
     rathaus?.ambiguous === true;
+  const campaignRestricted = Boolean(
+    result &&
+      "disambiguationNeeded" in result &&
+      result.disambiguationNeeded &&
+      result.campaignRestricted
+  );
+  const campaignRestrictedNoLocalMatch = Boolean(
+    result &&
+      "disambiguationNeeded" in result &&
+      result.disambiguationNeeded &&
+      result.campaignRestrictedNoLocalMatch
+  );
+  const campaignTargetCount =
+    result && "disambiguationNeeded" in result && result.disambiguationNeeded
+      ? result.campaignTargetCount ?? politicians.length
+      : politicians.length;
 
-  // Pre-select the first Direktmandat-holder so users land on the most
-  // politically relevant option without an extra click. If no Direktmandat
-  // exists (Wahlrechtsreform 2025: 23 Wahlkreise sind unbesetzt), the user
-  // chooses manually.
   const isNoMdbFound = politicians.length === 1 && politicians[0].id === -1;
 
   const [selectedPoliticianId, setSelectedPoliticianId] = useState<number | null>(
-    () => isAmbiguousLand
-      ? null
-      : politicians.find((p) => p.isDirect)?.id ?? (politicians.length === 1 && politicians[0].id === -1 ? -1 : null)
+    () =>
+      initialPoliticianId(politicians, {
+        ambiguousLand: isAmbiguousLand,
+        campaignRestricted,
+        campaignRestrictedNoLocalMatch,
+      })
   );
+  const [campaignSearch, setCampaignSearch] = useState("");
+  const [campaignPartyFilters, setCampaignPartyFilters] = useState<string[]>([]);
+  const [showMoreCampaignPoliticians, setShowMoreCampaignPoliticians] = useState(false);
   // Kommune: die einzige Rathaus-Karte ist vorausgewählt (ein Klick weniger)
   const [rathausSelected, setRathausSelected] = useState<boolean>(() => Boolean(rathaus));
   const [landesregierungSelected, setLandesregierungSelected] = useState<boolean>(
@@ -270,10 +293,55 @@ export function Step3Success({
     });
   }, []);
 
+  const displayedPoliticians = useMemo(() => {
+    if (campaignRestrictedNoLocalMatch) {
+      return filterCampaignRecipients(
+        politicians,
+        campaignSearch,
+        campaignPartyFilters
+      );
+    }
+    if (campaignRestricted) {
+      return visibleLocalCampaignRecipients(
+        politicians,
+        selectedPoliticianId,
+        showMoreCampaignPoliticians
+      );
+    }
+    return politicians;
+  }, [
+    campaignRestricted,
+    campaignRestrictedNoLocalMatch,
+    campaignPartyFilters,
+    campaignSearch,
+    politicians,
+    selectedPoliticianId,
+    showMoreCampaignPoliticians,
+  ]);
+
+  const campaignPartyOptions = useMemo(
+    () =>
+      [...new Set(politicians.map((politician) => politician.party))].sort(
+        new Intl.Collator("de-DE").compare
+      ),
+    [politicians]
+  );
+
+  const toggleCampaignParty = useCallback((party: string) => {
+    setCampaignPartyFilters((current) =>
+      current.includes(party)
+        ? current.filter((value) => value !== party)
+        : [...current, party]
+    );
+    setSelectedPoliticianId(null);
+  }, []);
+
   // Direktmandate first, then list/Nachrücker (stable within each group)
   const sortedPoliticians = useMemo(() => {
-    return [...politicians].sort((a, b) => Number(b.isDirect) - Number(a.isDirect));
-  }, [politicians]);
+    return [...displayedPoliticians].sort(
+      (a, b) => Number(b.isDirect) - Number(a.isDirect)
+    );
+  }, [displayedPoliticians]);
 
   const selectedPolitician = useMemo(
     () => politicians.find((p) => p.id === selectedPoliticianId) ?? null,
@@ -310,6 +378,17 @@ export function Step3Success({
     }[] = [];
     const indexById = new Map<number, number>();
     for (const p of sortedPoliticians) {
+      if (campaignRestrictedNoLocalMatch) {
+        if (groups.length === 0) {
+          groups.push({
+            wahlkreisId: -1,
+            wahlkreisName: "Kampagnenauswahl",
+            politicians: [],
+          });
+        }
+        groups[0].politicians.push(p);
+        continue;
+      }
       let gi = indexById.get(p.wahlkreisId);
       if (gi === undefined) {
         gi = groups.length;
@@ -331,7 +410,7 @@ export function Step3Success({
         flatIndex: flatIndex++,
       })),
     }));
-  }, [sortedPoliticians]);
+  }, [campaignRestrictedNoLocalMatch, sortedPoliticians]);
 
   // >5 total cards => 2-col grid per group, else single column.
   const cardsMultiCol = sortedPoliticians.length > 5;
@@ -1066,6 +1145,13 @@ export function Step3Success({
           : selectedPolitician
             ? `${selectedPolitician.firstName} ${selectedPolitician.lastName}${selectedPoliticianParty ? ` (${selectedPoliticianParty})` : ""}`
             : null;
+    const campaignAttribution = wizardData.campaign?.creatorName?.trim()
+      ? `Die Kampagne von ${wizardData.campaign.creatorName.trim()}`
+      : "Diese Kampagne";
+    const campaignTargetLabel =
+      campaignTargetCount === 1
+        ? "eine ausgewählte Person"
+        : `${campaignTargetCount} ausgewählte Abgeordnete`;
     const isKommune = selectedLevel === "Kommune" && rathaus !== null;
     const isLand = selectedLevel === "Land";
     const selectionTitle = isKommune
@@ -1076,6 +1162,8 @@ export function Step3Success({
           : landesregierung
             ? `Dein Brief geht an ${landesregierung.institutionKind === "senat" ? "den" : "die"} ${landesregierung.label}`
             : "Dein Brief geht an die Landesregierung"
+        : campaignRestricted
+          ? "Wähle ein MdB aus"
         : !isNoMdbFound && sortedPoliticians.length > 1
           ? `${sortedPoliticians.length} Abgeordnete für PLZ ${wizardData.plz}`
           : "Wer vertritt deinen Wahlkreis?";
@@ -1085,6 +1173,12 @@ export function Step3Success({
         ? showLandPersonPicker
           ? "Wähle selbst eine Person aus deiner PLZ-Zuordnung. Wir treffen keine automatische Personen- oder Parteiauswahl."
           : "Der institutionelle Empfänger ist bereits vorausgewählt."
+        : campaignRestricted
+          ? campaignRestrictedNoLocalMatch
+            ? "Filtere nach Partei oder suche nach Name, Wahlkreis und Ausschuss."
+            : selectedPolitician
+              ? "Die passende Person ist bereits vorausgewählt."
+              : "Wähle eine der passenden Personen aus."
         : isNoMdbFound
           ? `Für die PLZ ${wizardData.plz} wurde kein MdB gefunden. Du kannst den Brief dennoch formulieren lassen und dein MdB später auswählen oder deine PLZ anpassen.`
           : wahlkreisGroups.length === 1
@@ -1152,16 +1246,22 @@ export function Step3Success({
           {introCopy}
         </p>
 
-        {result.campaignRestrictedNoLocalMatch && (
+        {campaignRestricted && (
           <div
             role="note"
             className="mt-4 rounded-xl border border-waldgruen/25 bg-waldgruen/8 p-4 font-body text-sm leading-relaxed text-warmgrau"
           >
             <p className="font-semibold text-waldgruen-dark">
-              Keine Kampagnenperson ist deiner PLZ direkt zugeordnet.
+              {campaignAttribution} richtet sich an {campaignTargetLabel}.
             </p>
             <p className="mt-1">
-              Du kannst trotzdem eine Person aus der für diese Kampagne festgelegten Auswahl anschreiben.
+              {campaignRestrictedNoLocalMatch
+                ? "Für deine PLZ ist keine Person aus dieser Auswahl direkt zuständig. Wähle eine Person aus der Kampagnenauswahl."
+                : selectedPolitician
+                  ? politicians.length === 1
+                    ? `Für deine PLZ ist ${selectedPolitician.firstName} ${selectedPolitician.lastName} zuständig und bereits ausgewählt.`
+                    : `${selectedPolitician.firstName} ${selectedPolitician.lastName} ist vorausgewählt. Du kannst weitere passende Personen anzeigen.`
+                  : `Für deine PLZ passen ${politicians.length} Personen aus dieser Auswahl.`}
             </p>
           </div>
         )}
@@ -1323,20 +1423,97 @@ export function Step3Success({
         )}
 
         {!isKommune && (!isLand || showLandPersonPicker) && (
-        <div
-          role="radiogroup"
-          aria-label="Abgeordnete auswählen"
-          className="mt-6 space-y-6"
-        >
-          {wahlkreisGroups.map((group) => (
+        <div className="mt-6">
+          {campaignRestrictedNoLocalMatch && (
+            <div className="mb-6 grid gap-5">
+              <div className="grid gap-2">
+                <p className="font-body text-sm font-semibold text-waldgruen-dark">
+                  Parteien filtern
+                </p>
+                <div className="flex flex-wrap gap-2" aria-label="Parteien filtern">
+                  {campaignPartyOptions.map((party) => {
+                    const active = campaignPartyFilters.includes(party);
+                    return (
+                      <button
+                        key={party}
+                        type="button"
+                        aria-pressed={active}
+                        onClick={() => toggleCampaignParty(party)}
+                        className={[
+                          "rounded-full border px-3 py-1.5 font-body text-sm font-semibold transition-colors active:scale-[0.98]",
+                          active
+                            ? "border-waldgruen bg-waldgruen text-creme"
+                            : "border-warmgrau/25 bg-creme text-waldgruen-dark hover:border-waldgruen/50",
+                        ].join(" ")}
+                      >
+                        {formatPartyShort(party)}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
+              <label className="grid gap-1.5" htmlFor="campaign-recipient-search">
+                <span className="font-body text-sm font-semibold text-waldgruen-dark">
+                  MdB suchen
+                </span>
+                <input
+                  id="campaign-recipient-search"
+                  type="search"
+                  value={campaignSearch}
+                  onChange={(event) => {
+                    setCampaignSearch(event.target.value);
+                    setSelectedPoliticianId(null);
+                  }}
+                  placeholder="Name, Partei, Wahlkreis oder Ausschuss"
+                  className="rounded-lg border border-warmgrau/30 bg-creme px-4 py-3 font-body text-base text-warmgrau outline-none focus:border-waldgruen focus:ring-2 focus:ring-waldgruen"
+                />
+                <span className="font-body text-sm text-warmgrau/60" aria-live="polite">
+                  {displayedPoliticians.length} von {campaignTargetCount} Personen
+                </span>
+              </label>
+            </div>
+          )}
+
+          {campaignRestricted &&
+            !campaignRestrictedNoLocalMatch &&
+            politicians.length > 1 &&
+            selectedPoliticianId !== null && (
+              <button
+                type="button"
+                onClick={() => setShowMoreCampaignPoliticians((current) => !current)}
+                aria-expanded={showMoreCampaignPoliticians}
+                className="mb-5 font-body text-sm font-semibold text-waldgruen underline decoration-waldgruen/35 underline-offset-4 hover:text-waldgruen-dark"
+              >
+                {showMoreCampaignPoliticians
+                  ? "Weitere passende Abgeordnete ausblenden"
+                  : `Weitere passende Abgeordnete anzeigen (${politicians.length - 1})`}
+              </button>
+            )}
+
+          {displayedPoliticians.length === 0 ? (
+            <p className="rounded-lg border border-warmgrau/20 bg-creme px-4 py-5 font-body text-sm text-warmgrau/70">
+              Keine passende Person gefunden. Ändere deine Suche.
+            </p>
+          ) : (
+          <div
+            role="radiogroup"
+            aria-label="Abgeordnete auswählen"
+            className="space-y-6"
+          >
+            {wahlkreisGroups.map((group) => (
             <div key={group.wahlkreisId}>
-              <p className="font-body text-xs font-semibold uppercase tracking-wide text-warmgrau/55 mb-2 flex items-center gap-2">
-                {!isNoMdbFound && <span className="h-px flex-shrink-0 w-3 bg-warmgrau/25" aria-hidden="true" />}
-                {isNoMdbFound ? group.wahlkreisName : `${isLand && isAmbiguousLand ? "Möglicher Landtagswahlkreis" : isLand ? "Landtagswahlkreis" : "Wahlkreis"} ${group.wahlkreisId} · ${group.wahlkreisName}`}
-              </p>
+              {!campaignRestrictedNoLocalMatch && (
+                <p className="font-body text-xs font-semibold uppercase tracking-wide text-warmgrau/55 mb-2 flex items-center gap-2">
+                  {!isNoMdbFound && <span className="h-px flex-shrink-0 w-3 bg-warmgrau/25" aria-hidden="true" />}
+                  {isNoMdbFound ? group.wahlkreisName : `${isLand && isAmbiguousLand ? "Möglicher Landtagswahlkreis" : isLand ? "Landtagswahlkreis" : "Wahlkreis"} ${group.wahlkreisId} · ${group.wahlkreisName}`}
+                </p>
+              )}
               <div
                 className={
-                  cardsMultiCol
+                  campaignRestrictedNoLocalMatch
+                    ? "grid grid-cols-1 gap-3 md:grid-cols-2"
+                    : cardsMultiCol
                     ? "grid grid-cols-1 sm:grid-cols-2 gap-3"
                     : "space-y-3"
                 }
@@ -1350,7 +1527,7 @@ export function Step3Success({
                     onClick={() => handleCardSelect(p.id)}
                     onKeyDown={(e) => handleCardKeyDown(e, flatIndex, p.id)}
                     className={[
-                      "w-full text-left p-4 rounded-lg border-2 transition-colors cursor-pointer",
+                      "h-full w-full text-left p-4 rounded-lg border-2 transition-colors cursor-pointer",
                       selectedPoliticianId === p.id
                         ? "border-waldgruen bg-waldgruen/10"
                         : "border-waldgruen/20 bg-creme hover:border-waldgruen/40",
@@ -1378,6 +1555,21 @@ export function Step3Success({
                         <p className="font-body text-sm text-warmgrau mt-0.5">
                           {formatPartyShort(p.party)}
                         </p>
+                        {campaignRestrictedNoLocalMatch && (
+                          <p className="mt-2 font-body text-xs leading-relaxed text-warmgrau/65">
+                            Wahlkreis {p.wahlkreisId} · {p.wahlkreisName}
+                          </p>
+                        )}
+                        {campaignRestricted && p.committees?.length ? (
+                          <div className="mt-3 border-t border-warmgrau/15 pt-3">
+                            <p className="font-body text-[11px] font-semibold uppercase tracking-wide text-warmgrau/55">
+                              Ausschüsse
+                            </p>
+                            <p className="mt-1 font-body text-xs leading-relaxed text-warmgrau/70">
+                              {p.committees.join(" · ")}
+                            </p>
+                          </div>
+                        ) : null}
                         {p.abgeordnetenwatchUrl && (
                           <a
                             href={p.abgeordnetenwatchUrl}
@@ -1411,7 +1603,9 @@ export function Step3Success({
                 ))}
               </div>
             </div>
-          ))}
+            ))}
+          </div>
+          )}
         </div>
         )}
 

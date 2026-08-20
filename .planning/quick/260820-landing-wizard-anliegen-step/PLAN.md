@@ -1,21 +1,20 @@
-# Landing-Anliegen im Wizard bearbeiten
+# Landing-Anliegen ohne Wiederholung an den Wizard übergeben
 
 ## Ziel
 
-Ein von der Landing übernommenes Anliegen öffnet im Wizard wieder den vorausgefüllten Schritt „Dein Anliegen“, inklusive Tipps. Bearbeitung bleibt vollständig im Wizard.
+Ein auf der Landing eingegebenes Anliegen wird in den Wizard übernommen, ohne dass dieselbe Eingabe direkt erneut erscheint. Direkte Wizard-Besuche beginnen weiterhin beim Anliegen.
 
 ## Umsetzung
 
-- Landing-Handoff startet in Wizard-Schritt 1 statt direkt bei PLZ und E-Mail.
-- Der reguläre `Step2Issue` zeigt den übernommenen Text und die bestehende Tipp-Akkordeonlogik.
-- Der Handoff bleibt bis zur Empfängerauswahl erhalten, damit Reload und Browser-History keinen Text verlieren.
+- Landing-Handoff startet direkt bei PLZ und E-Mail.
+- Der Handoff bleibt bis zur Empfängerauswahl erhalten, damit Reload und Browser-History keinen Text verlieren, und verfällt nach 30 Minuten automatisch.
 - Kampagnen-Starts bleiben bewusst direkt bei PLZ und E-Mail; ihr Zurück-Button führt zur öffentlichen Kampagnenseite.
-- Der manuelle Morph misst nach Navigation das tatsächlich gerenderte Wizard-Feld. Es gibt keine hart codierte Zielgeometrie mehr.
-- Bei reduzierter Bewegung, fehlendem Feld oder fehlgeschlagener Animation erfolgt sofort eine korrekte Navigation.
+- Die Landing speichert den Handoff vor der normalen Router-Navigation. Ein fehleranfälliger Shared-Element-Morph entfällt.
 
 ## Abnahme
 
-- Landing → `/app` zeigt den bearbeitbaren Text mit Tipps.
-- Änderungen überleben Weiter, Zurück und Reload im selben Tab.
+- Landing → `/app` zeigt direkt PLZ und E-Mail, ohne das Anliegen zu wiederholen.
+- Das Anliegen überlebt Weiter, Zurück und Reload im selben Tab innerhalb von 30 Minuten.
+- Ein direkter Besuch von `/app` ohne gültigen Handoff startet beim Anliegen.
 - Kampagnen bleiben beim direkten Kontakt-Schritt und können zurück zur Kampagnenseite.
-- Landing-Morph funktioniert ohne weißen Zwischenzustand auf Mobile und Desktop.
+- Die normale Navigation funktioniert auf Mobile und Desktop ohne hängenbleibenden Overlay-Klon.

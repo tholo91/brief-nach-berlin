@@ -1,5 +1,6 @@
 import {
   clearHandoff,
+  entryStepForHandoff,
   peekHandoff,
   saveHandoff,
 } from "@/lib/wizard-handoff";
@@ -22,6 +23,7 @@ class SessionStorageMock {
 
 describe("wizard handoff", () => {
   beforeEach(() => {
+    jest.restoreAllMocks();
     Object.defineProperty(global, "sessionStorage", {
       value: new SessionStorageMock(),
       configurable: true,
@@ -43,12 +45,28 @@ describe("wizard handoff", () => {
     });
   });
 
+  it("starts handoffs at contact details and direct visits at the issue", () => {
+    expect(entryStepForHandoff(null)).toBe(1);
+    expect(entryStepForHandoff({ issueText: "Landing", source: "landing" })).toBe(2);
+    expect(entryStepForHandoff({ issueText: "Kampagne", source: "campaign" })).toBe(2);
+  });
+
   it("removes the handoff once the recipient flow has started", () => {
     saveHandoff({ issueText: "Mehr sichere Schulwege in unserem Stadtteil." });
 
     clearHandoff();
 
     expect(peekHandoff()).toBeNull();
+  });
+
+  it("removes an abandoned sensitive handoff after 30 minutes", () => {
+    const dateNow = jest.spyOn(Date, "now").mockReturnValue(1_000_000);
+    saveHandoff({ issueText: "Dieser Entwurf soll nicht im Tab liegen bleiben." });
+
+    dateNow.mockReturnValue(1_000_000 + 30 * 60 * 1000 + 1);
+
+    expect(peekHandoff()).toBeNull();
+    expect(sessionStorage.getItem("wizard-handoff")).toBeNull();
   });
 
   it("preserves a campaign source across reloads so its direct contact entry can be restored", () => {

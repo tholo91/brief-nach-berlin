@@ -6,7 +6,6 @@ import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useRef } from "react";
 import { Step2Issue } from "@/components/wizard/Step2Issue";
 import { saveHandoff } from "@/lib/wizard-handoff";
-import { morphAnliegenFieldToWizard } from "@/lib/field-morph";
 import { WIZARD_PATH } from "@/lib/config";
 
 export default function Hero() {
@@ -21,23 +20,15 @@ export default function Hero() {
 
   // Warm the wizard route on mount so the very first submit navigates snappily.
   // Without this, router.push hits an uncached /app route (RSC fetch in prod,
-  // on-demand compile in dev) and the wizard appears noticeably later. Note:
-  // prefetch is a no-op in dev (Next only prefetches in production), so the
-  // morph clone covers any dev compile gap until #issueText is painted.
+  // on-demand compile in dev) and the wizard appears noticeably later.
   useEffect(() => {
     router.prefetch(WIZARD_PATH);
   }, [router]);
 
   const handleSubmit = useCallback(
     (issueText: string, usedSpeechToText: boolean) => {
-      // Keep the issue out of the URL and let the user review and edit it in
-      // the first wizard step. The wizard keeps this handoff for reload/back
-      // navigation until the recipient flow starts.
-      morphAnliegenFieldToWizard({
-        onBeforeNavigate: () =>
-          saveHandoff({ issueText, usedSpeechToText, source: "landing" }),
-        navigate: () => router.push(WIZARD_PATH),
-      });
+      saveHandoff({ issueText, usedSpeechToText, source: "landing" });
+      router.push(WIZARD_PATH);
     },
     [router]
   );

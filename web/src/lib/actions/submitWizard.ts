@@ -156,22 +156,25 @@ export async function submitWizardAction(
     // letter. The expensive steps (AI/email in selectPoliticianAction) stay
     // behind the rate limit below.
     const { wahlkreisIds, politicians: localPoliticians } = lookupPLZ(data.plz);
-    const campaignTargetIds = campaignTarget?.targetPoliticianIds ?? [];
+    const campaignTargetIds = [...new Set(campaignTarget?.targetPoliticianIds ?? [])];
+    const campaignPoliticians = getBundestagPoliticiansByIds(campaignTargetIds);
+    const validCampaignTargetIds = new Set(campaignPoliticians.map((politician) => politician.id));
     const localCampaignPoliticians = localPoliticians.filter((politician) =>
-      campaignTargetIds.includes(politician.id)
+      validCampaignTargetIds.has(politician.id)
     );
     const campaignRestricted = campaignTargetIds.length > 0;
     const campaignRestrictedNoLocalMatch = campaignRestricted && localCampaignPoliticians.length === 0;
     const politicians = campaignRestricted
       ? localCampaignPoliticians.length > 0
         ? localCampaignPoliticians
-        : getBundestagPoliticiansByIds(campaignTargetIds)
+        : campaignPoliticians
       : localPoliticians;
     log("plz lookup", {
       wahlkreisCount: wahlkreisIds.length,
       politicianCount: politicians.length,
       campaignRestricted,
       campaignRestrictedNoLocalMatch,
+      campaignTargetCount: campaignPoliticians.length,
     });
     if (campaignRestricted && politicians.length === 0) {
       return {
@@ -304,6 +307,7 @@ export async function submitWizardAction(
       politicians,
       ...(campaignRestricted ? { campaignRestricted: true } : {}),
       ...(campaignRestrictedNoLocalMatch ? { campaignRestrictedNoLocalMatch: true } : {}),
+      ...(campaignRestricted ? { campaignTargetCount: campaignPoliticians.length } : {}),
       ...(levelRouting ? { levelRouting } : {}),
       ...(resolvedRoutingToken ? { routingToken: resolvedRoutingToken } : {}),
       ...(campaignTarget ? { campaignTargetLevel: campaignTarget.targetLevel } : {}),

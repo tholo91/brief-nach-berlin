@@ -11,6 +11,8 @@
 // selection is ready.
 
 const HANDOFF_KEY = "wizard-handoff";
+const HANDOFF_TTL_MS = 30 * 60 * 1000;
+const HANDOFF_SAVED_AT_KEY = "savedAt";
 
 export interface WizardHandoff {
   issueText: string;
@@ -30,9 +32,16 @@ export interface WizardHandoff {
   usedSpeechToText?: boolean;
 }
 
+export function entryStepForHandoff(handoff: WizardHandoff | null): 1 | 2 {
+  return handoff ? 2 : 1;
+}
+
 export function saveHandoff(data: WizardHandoff): void {
   try {
-    sessionStorage.setItem(HANDOFF_KEY, JSON.stringify(data));
+    sessionStorage.setItem(
+      HANDOFF_KEY,
+      JSON.stringify({ ...data, [HANDOFF_SAVED_AT_KEY]: Date.now() })
+    );
   } catch {
     // sessionStorage can throw (private mode, quota). The handoff is a
     // progressive enhancement -- if it fails, the wizard simply starts on
@@ -52,6 +61,16 @@ export function peekHandoff(): WizardHandoff | null {
       parsed !== null &&
       typeof (parsed as WizardHandoff).issueText === "string"
     ) {
+      const savedAt = (parsed as Record<string, unknown>)[HANDOFF_SAVED_AT_KEY];
+      if (
+        typeof savedAt !== "number" ||
+        !Number.isFinite(savedAt) ||
+        Date.now() - savedAt > HANDOFF_TTL_MS ||
+        savedAt > Date.now()
+      ) {
+        clearHandoff();
+        return null;
+      }
       const {
         issueText,
         toneLevel,

@@ -10,8 +10,6 @@ interface Step1FormProps {
   defaultValues?: Partial<Step1Data>;
   plzError?: string | null;
   onPlzErrorDismiss?: () => void;
-  issueSummary?: string;
-  onEditIssue?: () => void;
 }
 
 export function Step1Form({
@@ -19,8 +17,6 @@ export function Step1Form({
   defaultValues,
   plzError,
   onPlzErrorDismiss,
-  issueSummary,
-  onEditIssue,
 }: Step1FormProps) {
   const {
     register,
@@ -90,30 +86,6 @@ export function Step1Form({
       <p className="font-body text-sm text-warmgrau/70 mb-8">
         Deine Postleitzahl zeigt, welche Abgeordneten dein Brief erreichen soll. Den fertigen Brief bekommst du per E-Mail.
       </p>
-
-      {issueSummary && (
-        <div className="mb-8 rounded-r-lg border-l-4 border-waldgruen/45 bg-waldgruen/5 px-4 py-3">
-          <div className="flex items-start justify-between gap-3">
-            <div className="min-w-0">
-              <p className="font-body text-xs font-semibold uppercase tracking-widest text-waldgruen/65">
-                Dein Anliegen
-              </p>
-              <p className="mt-1 line-clamp-3 font-body text-sm leading-relaxed text-warmgrau">
-                {issueSummary}
-              </p>
-            </div>
-            {onEditIssue && (
-              <button
-                type="button"
-                onClick={onEditIssue}
-                className="shrink-0 font-body text-sm font-semibold text-waldgruen underline underline-offset-4 hover:text-waldgruen-dark cursor-pointer"
-              >
-                Ändern
-              </button>
-            )}
-          </div>
-        </div>
-      )}
 
       <div className="space-y-4">
         {/* PLZ */}

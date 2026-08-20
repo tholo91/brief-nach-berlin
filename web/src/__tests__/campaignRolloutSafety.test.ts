@@ -258,6 +258,7 @@ describe("campaign rollout safety", () => {
 
   it("intersects a Bund campaign with the PLZ-derived MdBs", async () => {
     jest.mocked(getActiveCampaignBySlug).mockResolvedValue(campaign("Bund", null, [politician.id]));
+    jest.mocked(getBundestagPoliticiansByIds).mockReturnValue([politician]);
 
     const result = await submitWizardAction({
       ...baseData,
@@ -268,12 +269,15 @@ describe("campaign rollout safety", () => {
       disambiguationNeeded: true,
       politicians: [politician],
       campaignRestricted: true,
+      campaignTargetCount: 1,
     });
   });
 
-  it("shows the full current campaign list when the PLZ has no local match", async () => {
+  it("shows the unique valid campaign list when the PLZ has no local match", async () => {
     const campaignPolitician = { ...politician, id: 7, politicianId: 8 };
-    jest.mocked(getActiveCampaignBySlug).mockResolvedValue(campaign("Bund", null, [campaignPolitician.id]));
+    jest.mocked(getActiveCampaignBySlug).mockResolvedValue(
+      campaign("Bund", null, [campaignPolitician.id, campaignPolitician.id, 999999])
+    );
     jest.mocked(getBundestagPoliticiansByIds).mockReturnValue([campaignPolitician]);
 
     const result = await submitWizardAction({
@@ -286,6 +290,8 @@ describe("campaign rollout safety", () => {
       politicians: [campaignPolitician],
       campaignRestricted: true,
       campaignRestrictedNoLocalMatch: true,
+      campaignTargetCount: 1,
     });
+    expect(getBundestagPoliticiansByIds).toHaveBeenCalledWith([campaignPolitician.id, 999999]);
   });
 });

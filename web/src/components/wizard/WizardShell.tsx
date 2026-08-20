@@ -14,8 +14,14 @@ import type { Step1Data } from "@/lib/validation/wizardSchemas";
 import { submitWizardAction } from "@/lib/actions/submitWizard";
 import { prefetchRoutingAction } from "@/lib/actions/prefetchRouting";
 import { campaignLogoPublicUrl } from "@/lib/campaigns/logo";
-import { peekHandoff, clearHandoff, saveHandoff } from "@/lib/wizard-handoff";
+import {
+  peekHandoff,
+  clearHandoff,
+  entryStepForHandoff,
+  saveHandoff,
+} from "@/lib/wizard-handoff";
 import { clearLandingDraft } from "@/lib/landing-draft";
+import { bundRecipientsForCampaign } from "@/lib/campaign-recipient-picker";
 import { Step1Form } from "./Step1Form";
 import { StepPreferences, type StepPreferencesData } from "./StepPreferences";
 import { Step2Issue } from "./Step2Issue";
@@ -64,14 +70,19 @@ function stepToProgress(step: WizardStep): number {
 function recipientsForLevel(
   politicians: Politician[],
   levelRouting: LevelRoutingContext | null,
-  level: PoliticalLevel | null
+  level: PoliticalLevel | null,
+  campaignRestricted: boolean
 ): Recipient[] {
   if (!levelRouting || !level) {
     return politicians.map((p) => ({ ...p, kind: p.level === "Land" ? "mdl" : "mdb" }));
   }
   if (level === "Kommune") return levelRouting.byLevel.Kommune;
   if (level === "Land") return levelRouting.byLevel.Land;
-  return levelRouting.byLevel.Bund.map((p) => ({ ...p, kind: "mdb" as const }));
+  return bundRecipientsForCampaign(
+    politicians,
+    levelRouting.byLevel.Bund,
+    campaignRestricted
+  ).map((p) => ({ ...p, kind: "mdb" as const }));
 }
 
 export function WizardShell() {
@@ -86,8 +97,8 @@ export function WizardShell() {
     }
     return data;
   });
-  // Direct visits and landing handoffs start on the editable issue step.
-  // Campaigns already supply their campaign draft and stay on contact details.
+  // Direct visits start on the issue step. Landing and campaign handoffs have
+  // already collected the issue and continue with contact details.
   const [step, setStep] = useState<WizardStep>(1);
   const [entrySource, setEntrySource] = useState<"direct" | "landing" | "campaign">("direct");
   const [handoffPending, setHandoffPending] = useState(true);
@@ -101,9 +112,8 @@ export function WizardShell() {
   const [campaignMismatch, setCampaignMismatch] = useState<{ message: string } | null>(null);
   const hasMountedRef = useRef(false);
   // 999.6 Ebenen-Routing: Kontext aus submitWizardAction, gewählte Ebene und
-  // der signierte Prefetch-Token (LOCK-10). Der Prefetch startet bei Step-1-
-  // Weiter (erste Mistral-Berührung des Anliegens) und läuft, während der
-  // User PLZ/E-Mail ausfüllt.
+  // der signierte Prefetch-Token (LOCK-10). Der Prefetch läuft spätestens
+  // parallel zu Ton- und Längenauswahl.
   const [levelRouting, setLevelRouting] = useState<LevelRoutingContext | null>(null);
   const [selectedLevel, setSelectedLevel] = useState<PoliticalLevel | null>(null);
   const [routingToken, setRoutingToken] = useState<string | null>(null);
@@ -144,7 +154,7 @@ export function WizardShell() {
             }
           : {}),
       }));
-      setStep(handoff.source === "campaign" ? 2 : 1);
+      setStep(entryStepForHandoff(handoff));
       setHandoffPending(false);
     }, 0);
 
@@ -167,10 +177,16 @@ export function WizardShell() {
     }
   }, [handoffPending, step, wizardData, router]);
 
-  // Step 1: Anliegen — stores state and advances. Erst hier geht das Anliegen
-  // zum ersten Mal an Mistral: der Ebenen-Prefetch startet fire-and-forget und
-  // überlappt mit der Eingabe von PLZ/E-Mail. Ändert der User den Text,
-  // ersetzt der neue Prefetch den alten (Hash-Bindung im Token).
+  const ensureRoutingPrefetch = useCallback((issueText: string) => {
+    if (!issueText || routingPrefetchRef.current?.issueText === issueText) return;
+    routingPrefetchRef.current = {
+      issueText,
+      promise: prefetchRoutingAction(issueText).catch(() => null),
+    };
+  }, []);
+
+  // Step 1: Anliegen — stores state and advances. This step is reached on a
+  // direct visit or when a landing visitor explicitly goes back to edit.
   const handleStep1Complete = useCallback(
     (issueText: string, usedSpeechToText: boolean, tipsOpened: boolean) => {
       // OR the step-1 open into any open that already happened on the landing
@@ -195,23 +211,23 @@ export function WizardShell() {
           tipsOpened: Boolean(handoff?.tipsOpened || tipsOpened),
         });
       }
-      if (routingPrefetchRef.current?.issueText !== issueText) {
-        routingPrefetchRef.current = {
-          issueText,
-          promise: prefetchRoutingAction(issueText).catch(() => null),
-        };
-      }
+      ensureRoutingPrefetch(issueText);
       setStep(2);
     },
-    []
+    [ensureRoutingPrefetch]
   );
 
-  // Step 2: Contact (PLZ + Email) — just stores state and advances.
-  const handleStep2Complete = useCallback((data: Step1Data) => {
-    setWizardData((prev) => ({ ...prev, ...data }));
-    setPlzError(null);
-    setStep("2b");
-  }, []);
+  // Step 2: start routing while the visitor chooses tone and length. This also
+  // covers landing/campaign entries that intentionally skipped the issue step.
+  const handleStep2Complete = useCallback(
+    (data: Step1Data) => {
+      setWizardData((prev) => ({ ...prev, ...data }));
+      ensureRoutingPrefetch(wizardData.issueText ?? "");
+      setPlzError(null);
+      setStep("2b");
+    },
+    [ensureRoutingPrefetch, wizardData.issueText]
+  );
 
   const handlePreferencesChange = useCallback((data: StepPreferencesData) => {
     setWizardData((prev) => ({
@@ -381,6 +397,19 @@ export function WizardShell() {
   const showIndicator = step !== 3;
   const showBack = !handoffPending && (step === 2 || step === "2b" || step === "level");
   const campaignContext = wizardData.campaign;
+  const campaignRestricted = Boolean(
+    actionResult &&
+      "disambiguationNeeded" in actionResult &&
+      actionResult.disambiguationNeeded &&
+      actionResult.campaignRestricted
+  );
+  const showWideCampaignPicker = Boolean(
+    step === 3 &&
+      actionResult &&
+      "disambiguationNeeded" in actionResult &&
+      actionResult.disambiguationNeeded &&
+      actionResult.campaignRestrictedNoLocalMatch
+  );
   const campaignLogoUrl = campaignLogoPublicUrl(campaignContext?.logoPath);
   const campaignInitial = (
     campaignContext?.creatorName ||
@@ -402,7 +431,9 @@ export function WizardShell() {
 
   return (
     <>
-      <div className="max-w-xl mx-auto px-4 pt-8 pb-16 sm:px-8 sm:py-16 w-full">
+      <div
+        className={`${showWideCampaignPicker ? "max-w-5xl" : "max-w-xl"} mx-auto w-full px-4 pb-16 pt-8 sm:px-8 sm:py-16`}
+      >
       {(showIndicator || showBack) && (
         <div className="mb-8 flex items-center justify-between sm:mb-12">
           <div className="w-20">
@@ -545,10 +576,6 @@ export function WizardShell() {
             defaultValues={{ plz: wizardData.plz, email: wizardData.email }}
             plzError={plzError}
             onPlzErrorDismiss={() => setPlzError(null)}
-            issueSummary={wizardData.issueText}
-            onEditIssue={
-              entrySource === "campaign" ? () => router.back() : () => setStep(1)
-            }
           />
         )}
         {step === "2b" && campaignMismatch && (
@@ -605,7 +632,12 @@ export function WizardShell() {
             key={selectedLevel ?? "flat"}
             result={actionResult}
             wizardData={wizardData as WizardData}
-            recipients={recipientsForLevel(politicians, levelRouting, selectedLevel)}
+            recipients={recipientsForLevel(
+              politicians,
+              levelRouting,
+              selectedLevel,
+              campaignRestricted
+            )}
             optionalLandRecipients={
               selectedLevel === "Land"
                 ? (levelRouting?.optionalByLevel.Land ?? []).map((p) => ({

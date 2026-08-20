@@ -119,6 +119,7 @@ export type WizardActionResult =
       levelRouting?: LevelRoutingContext;
       campaignRestricted?: boolean;
       campaignRestrictedNoLocalMatch?: boolean;
+      campaignTargetCount?: number;
     }
   | { error: "moderation_rejected"; message: string }
   | { error: "output_moderation_rejected"; message: string }

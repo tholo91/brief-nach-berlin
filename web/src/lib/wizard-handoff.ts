@@ -1,13 +1,14 @@
 // Landing -> Wizard handoff via sessionStorage.
 //
 // When a visitor types their issue on the landing page and clicks "Weiter",
-// we hand the text to /app so the wizard's step 1 opens pre-filled with what
-// they already wrote (they pick the tone there). We also carry whether they
+// we hand the text to /app so the wizard can continue with contact details
+// without showing the issue field a second time. We also carry whether they
 // opened the tips disclosure on the landing, so it surfaces in the debug
 // payload. We use sessionStorage instead of a ?text= URL param so the issue
-// text never lands in the address bar (privacy). The entry is short-lived:
-// WizardShell clears it right after reading, so a manual reload of /app
-// restarts cleanly.
+// text never lands in the address bar (privacy). The entry stays for the
+// unfinished contact and preference flow in this tab, so reload and browser
+// history can restore the same draft. WizardShell clears it once the recipient
+// selection is ready.
 
 const HANDOFF_KEY = "wizard-handoff";
 

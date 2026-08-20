@@ -451,7 +451,7 @@ export function Step3Success({
           };
           throw new Error(`HTTP ${res.status}`);
         }
-        return res.json() as Promise<{ letterText?: string }>;
+        return res.json() as Promise<{ letterText?: string; letterNumber?: number }>;
       })
       .then((data) => {
         if (data.letterText) {
@@ -1151,6 +1151,20 @@ export function Step3Success({
         <p className="font-body text-base text-warmgrau mt-2">
           {introCopy}
         </p>
+
+        {result.campaignRestrictedNoLocalMatch && (
+          <div
+            role="note"
+            className="mt-4 rounded-xl border border-waldgruen/25 bg-waldgruen/8 p-4 font-body text-sm leading-relaxed text-warmgrau"
+          >
+            <p className="font-semibold text-waldgruen-dark">
+              Keine Kampagnenperson ist deiner PLZ direkt zugeordnet.
+            </p>
+            <p className="mt-1">
+              Du kannst trotzdem eine Person aus der für diese Kampagne festgelegten Auswahl anschreiben.
+            </p>
+          </div>
+        )}
 
         {(isAmbiguousLand || isAmbiguousKommune) && (
           <div role="note" className="mt-4 rounded-xl border border-waldgruen/25 bg-waldgruen/8 p-4 font-body text-sm text-warmgrau leading-relaxed">

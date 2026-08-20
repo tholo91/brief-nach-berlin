@@ -11,7 +11,12 @@ import {
   step1bSchema,
   step2Schema,
 } from "@/lib/validation/wizardSchemas";
-import { lookupPLZ, lookupPLZWithLevel, buildCoverageHint } from "@/lib/lookup/plzLookup";
+import {
+  getBundestagPoliticiansByIds,
+  lookupPLZ,
+  lookupPLZWithLevel,
+  buildCoverageHint,
+} from "@/lib/lookup/plzLookup";
 import { routeToLevel, type RoutingResult } from "@/lib/lookup/levelRouter";
 import {
   hashRoutingIssue,
@@ -122,7 +127,11 @@ export async function submitWizardAction(
     // slug is present, the active, moderated campaign and its target binding
     // are resolved again with the service-role client.
     let campaignTarget:
-      | { targetLevel: CampaignTargetLevel; targetState: keyof typeof BUNDESLAND_NAMES | null }
+      | {
+          targetLevel: CampaignTargetLevel;
+          targetState: keyof typeof BUNDESLAND_NAMES | null;
+          targetPoliticianIds: number[];
+        }
       | null = null;
     if (data.campaign?.slug) {
       const campaign = await getActiveCampaignBySlug(data.campaign.slug);
@@ -135,6 +144,7 @@ export async function submitWizardAction(
       campaignTarget = {
         targetLevel: campaign.targetLevel,
         targetState: campaign.targetState,
+        targetPoliticianIds: campaign.targetPoliticianIds,
       };
     }
 
@@ -145,8 +155,31 @@ export async function submitWizardAction(
     // Wahlkreis) could lock themselves out for 24h without ever sending a
     // letter. The expensive steps (AI/email in selectPoliticianAction) stay
     // behind the rate limit below.
-    const { wahlkreisIds, politicians } = lookupPLZ(data.plz);
-    log("plz lookup", { wahlkreisCount: wahlkreisIds.length, politicianCount: politicians.length });
+    const { wahlkreisIds, politicians: localPoliticians } = lookupPLZ(data.plz);
+    const campaignTargetIds = campaignTarget?.targetPoliticianIds ?? [];
+    const localCampaignPoliticians = localPoliticians.filter((politician) =>
+      campaignTargetIds.includes(politician.id)
+    );
+    const campaignRestricted = campaignTargetIds.length > 0;
+    const campaignRestrictedNoLocalMatch = campaignRestricted && localCampaignPoliticians.length === 0;
+    const politicians = campaignRestricted
+      ? localCampaignPoliticians.length > 0
+        ? localCampaignPoliticians
+        : getBundestagPoliticiansByIds(campaignTargetIds)
+      : localPoliticians;
+    log("plz lookup", {
+      wahlkreisCount: wahlkreisIds.length,
+      politicianCount: politicians.length,
+      campaignRestricted,
+      campaignRestrictedNoLocalMatch,
+    });
+    if (campaignRestricted && politicians.length === 0) {
+      return {
+        error: "server_error",
+        message:
+          "Die ausgewählten Personen dieser Kampagne sind derzeit nicht verfügbar. Bitte versuche es später erneut.",
+      };
+    }
     // Fallback is handled within lookupPLZ.ts, returning an anonymous politician if none are found.
 
     // Kampagne mit fester Bundesland-Bindung: liegt die Besucher-PLZ in einem
@@ -169,19 +202,6 @@ export async function submitWizardAction(
           message: `Diese Kampagne richtet sich an ${targetArticle} ${targetLabel}. Deine Postleitzahl liegt in einem anderen Bundesland.`,
         };
       }
-    }
-
-    const landtagRoutingEnabled =
-      process.env.LANDTAG_ROUTING_ENABLED === "true" &&
-      process.env.LETTER_PROMPT_LEVEL_AWARE === "true";
-    if (campaignTarget?.targetLevel === "Land" && !landtagRoutingEnabled) {
-      return {
-        error: "level_data_missing",
-        level: "Land",
-        fallbackUrl: "/",
-        message:
-          "Die Landesfunktion dieser Kampagne ist gerade nicht verfügbar. Du kannst stattdessen einen freien Brief schreiben.",
-      };
     }
 
     // 1b. Rate limit check (IP + email) BEFORE moderation/AI spend.
@@ -210,13 +230,12 @@ export async function submitWizardAction(
       };
     }
 
-    // 999.6: Ebenen-Routing (Bund/Land/Kommune), gated hinter
-    // LANDTAG_ROUTING_ENABLED. Wenn das Flag aus ist, verhält sich die Action
-    // exakt wie bisher (flacher Bund-Pfad).
+    // Ebenen-Routing (Bund/Land/Kommune) mit einem serverseitig signierten
+    // Prefetch-Token; ohne Token folgt der zeitlich begrenzte Fallback.
     let levelRouting: LevelRoutingContext | undefined;
     let resolvedRoutingToken: string | undefined;
 
-    if (landtagRoutingEnabled) {
+    {
       // Prefetch-Token verifizieren (Signatur, TTL, Issue-Hash) — sonst
       // Foreground-Fallback. Rohe Client-Routing-Objekte gibt es nicht (LOCK-10).
       let routing: RoutingResult | null = null;
@@ -270,8 +289,6 @@ export async function submitWizardAction(
         kommuneCount: levelResult.byLevel.Kommune.length,
         landSupported: levelResult.coverage.landSupported,
       });
-    } else {
-      log("routing source: legacy-flag-off");
     }
 
     // 4. Always route through the politician picker. Even for a single
@@ -285,6 +302,8 @@ export async function submitWizardAction(
     return {
       disambiguationNeeded: true,
       politicians,
+      ...(campaignRestricted ? { campaignRestricted: true } : {}),
+      ...(campaignRestrictedNoLocalMatch ? { campaignRestrictedNoLocalMatch: true } : {}),
       ...(levelRouting ? { levelRouting } : {}),
       ...(resolvedRoutingToken ? { routingToken: resolvedRoutingToken } : {}),
       ...(campaignTarget ? { campaignTargetLevel: campaignTarget.targetLevel } : {}),

@@ -23,10 +23,6 @@ const ROUTING_TIMEOUT_MS = 3500;
 export async function prefetchRoutingAction(
   issueText: string
 ): Promise<{ token: string } | null> {
-  if (
-    process.env.LANDTAG_ROUTING_ENABLED !== "true" ||
-    process.env.LETTER_PROMPT_LEVEL_AWARE !== "true"
-  ) return null;
   if (!issueText || issueText.trim().length < 10) return null;
 
   const ipHash = hashIdentifier(await getClientIp());

@@ -72,27 +72,20 @@ function input(overrides: Partial<GenerateLetterInput> = {}): GenerateLetterInpu
   };
 }
 
-const originalFlag = process.env.LETTER_PROMPT_LEVEL_AWARE;
-afterEach(() => {
-  if (originalFlag === undefined) delete process.env.LETTER_PROMPT_LEVEL_AWARE;
-  else process.env.LETTER_PROMPT_LEVEL_AWARE = originalFlag;
-});
-
-describe("buildSystemPrompt: Flag aus (gemeinsamer Grundprompt)", () => {
-  it("liefert für alle Ebenen denselben Bund-Prompt", () => {
-    process.env.LETTER_PROMPT_LEVEL_AWARE = "false";
+describe("buildSystemPrompt: Ebenen", () => {
+  it("verwendet für jede Ebene einen passenden Zuständigkeits-Prompt", () => {
     const bund = buildSystemPrompt(input({ level: "Bund" }));
     const land = buildSystemPrompt(input({ level: "Land", politicians: [mdl] }));
     const kommune = buildSystemPrompt(input({ level: "Kommune", rathaus, politicians: [] }));
-    expect(land).toBe(bund);
-    expect(kommune).toBe(bund);
+
     expect(bund).toContain("Alle verfügbaren Politiker sind Bundestagsabgeordnete.");
+    expect(land).toContain("Alle verfügbaren Politiker sind Landtagsabgeordnete.");
+    expect(kommune).toContain("STRATEGIE FÜR DIE KOMMUNALE EBENE");
   });
 
-  it("hängt auch bei Override keinen Mismatch-Block an", () => {
-    process.env.LETTER_PROMPT_LEVEL_AWARE = "false";
+  it("hängt bei einer bewusst abweichenden Ebene den Mismatch-Block an", () => {
     const prompt = buildSystemPrompt(input({ level: "Bund", mismatchRecommendedLevel: "Land" }));
-    expect(prompt).not.toContain("KOMPETENZ-HINWEIS");
+    expect(prompt).toContain("KOMPETENZ-HINWEIS");
   });
 });
 
@@ -121,17 +114,7 @@ describe("tonalityBlock", () => {
   });
 });
 
-describe("buildSystemPrompt — Flag an", () => {
-  beforeEach(() => {
-    process.env.LETTER_PROMPT_LEVEL_AWARE = "true";
-  });
-
-  it("Bund bleibt byte-identisch zum Flag-aus-Prompt (LOCK-1)", () => {
-    const flagOn = buildSystemPrompt(input({ level: "Bund" }));
-    process.env.LETTER_PROMPT_LEVEL_AWARE = "false";
-    const flagOff = buildSystemPrompt(input({ level: "Bund" }));
-    expect(flagOn).toBe(flagOff);
-  });
+describe("buildSystemPrompt — Empfängerlogik", () => {
 
   it("Bund default (level fehlt) bleibt ebenfalls der heutige Prompt", () => {
     const prompt = buildSystemPrompt(input());

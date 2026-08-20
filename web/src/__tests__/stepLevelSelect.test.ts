@@ -31,7 +31,6 @@ function renderStep(routing: LevelRoutingContext): string {
     createElement(StepLevelSelect, {
       routing,
       onContinue: () => undefined,
-      onBack: () => undefined,
     })
   );
 }

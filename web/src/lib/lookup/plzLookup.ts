@@ -18,6 +18,11 @@ import {
 const plzMapping = plzMappingJson as Record<string, number[]>;
 const politiciansCache = politiciansJson as PoliticiansCache;
 
+export function getBundestagPoliticiansByIds(ids: readonly number[]): Politician[] {
+  const allowedIds = new Set(ids);
+  return politiciansCache.bundestag.filter((politician) => allowedIds.has(politician.id));
+}
+
 interface PlzEnrichment {
   bundeslandKey: string;
   bundeslandName: string;

@@ -25,6 +25,7 @@ import type { Campaign } from "@/lib/campaigns/schema";
 import { campaignPublicUrl } from "@/lib/share";
 import { CampaignQrDownload } from "./CampaignQrDownload";
 import { CampaignUrlCopyField } from "./CampaignUrlCopyField";
+import { MdbCampaignSelector } from "./MdbCampaignSelector";
 
 type ActionResult =
   | UpdateCampaignResult
@@ -92,6 +93,10 @@ export function CampaignManager({ campaign }: { campaign: Campaign }) {
   const [isPending, startTransition] = useTransition();
   const [logoPreviewUrl, setLogoPreviewUrl] = useState<string | null>(null);
   const [logoError, setLogoError] = useState<string | null>(null);
+  const [targetPoliticianIds, setTargetPoliticianIds] = useState<number[]>(campaign.targetPoliticianIds);
+  const [hasTargetMdbSelection, setHasTargetMdbSelection] = useState(
+    campaign.targetPoliticianIds.length > 0
+  );
   const isBusy = isPending || actionPending;
   const canEdit = campaign.status !== "archived" && campaign.status !== "blocked";
   const canPause = campaign.status === "active";
@@ -280,6 +285,49 @@ export function CampaignManager({ campaign }: { campaign: Campaign }) {
             />
           </div>
         </div>
+
+        {campaign.targetLevel === "Bund" ? (
+          <div className="grid gap-4 rounded-md border border-waldgruen/20 bg-waldgruen/5 p-4">
+            <h2 className="font-typewriter text-sm font-bold text-waldgruen-dark">
+              Ziel der Bundestagskampagne
+            </h2>
+            <label className="flex cursor-pointer items-start gap-3">
+              <input
+                type="checkbox"
+                checked={hasTargetMdbSelection}
+                disabled={!canEdit || isBusy}
+                onChange={(event) => setHasTargetMdbSelection(event.target.checked)}
+                className="mt-1 h-4 w-4 shrink-0 accent-waldgruen"
+              />
+              <span className="grid gap-0.5">
+                <span className="font-body text-base font-semibold text-waldgruen-dark">
+                  An eine Auswahl von Abgeordneten richten
+                </span>
+                <span className="font-body text-sm leading-relaxed text-warmgrau/65">
+                  Ohne Auswahl bleibt es eine normale Bundestagskampagne für die jeweils zuständigen MdBs.
+                </span>
+              </span>
+            </label>
+            {hasTargetMdbSelection && (
+              <div className="border-t border-waldgruen/15 pt-4">
+                <MdbCampaignSelector
+                  selectedIds={targetPoliticianIds}
+                  onChange={setTargetPoliticianIds}
+                  disabled={!canEdit || isBusy}
+                />
+                {result?.ok === false && "fieldErrors" in result && result.fieldErrors?.targetPoliticianIds && (
+                  <p className="mt-2 font-body text-sm text-airmail-rot">
+                    {result.fieldErrors.targetPoliticianIds}
+                  </p>
+                )}
+              </div>
+            )}
+          </div>
+        ) : (
+          <p className="rounded-md border border-warmgrau/15 bg-white/55 px-4 py-3 font-body text-sm leading-relaxed text-warmgrau/70">
+            Diese Landeskampagne richtet sich weiterhin an die institutionelle Landesregierung. Eine konkrete MdB-Auswahl ist hier nicht aktiv.
+          </p>
+        )}
 
         <div className="grid gap-2">
           <label className="font-typewriter text-sm font-bold text-waldgruen-dark" htmlFor="logo">

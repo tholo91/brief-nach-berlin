@@ -9,6 +9,7 @@ jest.mock("@/lib/lookup/plzLookup", () => ({
   lookupPLZ: jest.fn(),
   lookupPLZWithLevel: jest.fn(),
   buildCoverageHint: jest.fn(() => null),
+  getBundestagPoliticiansByIds: jest.fn(),
 }));
 jest.mock("@/lib/lookup/levelRouter", () => ({
   routeToLevel: jest.fn(),
@@ -30,7 +31,7 @@ jest.mock("@/lib/rateLimit", () => ({
 }));
 
 import { getActiveCampaignBySlug } from "@/lib/campaigns/repository";
-import { lookupPLZ, lookupPLZWithLevel } from "@/lib/lookup/plzLookup";
+import { getBundestagPoliticiansByIds, lookupPLZ, lookupPLZWithLevel } from "@/lib/lookup/plzLookup";
 import { routeToLevel } from "@/lib/lookup/levelRouter";
 import { signRoutingToken } from "@/lib/lookup/routingToken";
 import { submitWizardAction } from "@/lib/actions/submitWizard";
@@ -58,7 +59,11 @@ const baseData: WizardData = {
   letterLength: "1",
 };
 
-function campaign(targetLevel: "Bund" | "Land", targetState: Campaign["targetState"]): Campaign {
+function campaign(
+  targetLevel: "Bund" | "Land",
+  targetState: Campaign["targetState"],
+  targetPoliticianIds: number[] = []
+): Campaign {
   return {
     id: "campaign-1",
     slug: "sichere-schulwege",
@@ -74,6 +79,7 @@ function campaign(targetLevel: "Bund" | "Land", targetState: Campaign["targetSta
     moderationCategories: [],
     targetLevel,
     targetState,
+    targetPoliticianIds,
     emailVerifiedAt: "2026-07-19T00:00:00.000Z",
     activatedAt: "2026-07-19T00:00:00.000Z",
     pausedAt: null,
@@ -120,6 +126,7 @@ describe("campaign rollout safety", () => {
       wahlkreisIds: [3],
       politicians: [politician],
     });
+    jest.mocked(getBundestagPoliticiansByIds).mockReturnValue([]);
     jest.mocked(lookupPLZWithLevel).mockReturnValue(levelLookup);
     jest.mocked(routeToLevel).mockResolvedValue({
       primary: { level: "Bund", confidence: "high" },
@@ -233,15 +240,52 @@ describe("campaign rollout safety", () => {
     });
   });
 
-  it("preserves the legacy non-campaign Bund path when routing is off", async () => {
+  it("provides the level-routing context for a non-campaign brief without release flags", async () => {
     process.env.LANDTAG_ROUTING_ENABLED = "false";
 
     const result = await submitWizardAction(baseData);
 
     expect(getActiveCampaignBySlug).not.toHaveBeenCalled();
-    expect(result).toEqual({
+    expect(result).toMatchObject({
       disambiguationNeeded: true,
       politicians: [politician],
+      routingToken: "fresh-routing-token",
+      levelRouting: {
+        recommended: { level: "Bund", confidence: "high" },
+      },
+    });
+  });
+
+  it("intersects a Bund campaign with the PLZ-derived MdBs", async () => {
+    jest.mocked(getActiveCampaignBySlug).mockResolvedValue(campaign("Bund", null, [politician.id]));
+
+    const result = await submitWizardAction({
+      ...baseData,
+      campaign: { slug: "sichere-schulwege", title: "Sichere Schulwege" },
+    });
+
+    expect(result).toMatchObject({
+      disambiguationNeeded: true,
+      politicians: [politician],
+      campaignRestricted: true,
+    });
+  });
+
+  it("shows the full current campaign list when the PLZ has no local match", async () => {
+    const campaignPolitician = { ...politician, id: 7, politicianId: 8 };
+    jest.mocked(getActiveCampaignBySlug).mockResolvedValue(campaign("Bund", null, [campaignPolitician.id]));
+    jest.mocked(getBundestagPoliticiansByIds).mockReturnValue([campaignPolitician]);
+
+    const result = await submitWizardAction({
+      ...baseData,
+      campaign: { slug: "sichere-schulwege", title: "Sichere Schulwege" },
+    });
+
+    expect(result).toMatchObject({
+      disambiguationNeeded: true,
+      politicians: [campaignPolitician],
+      campaignRestricted: true,
+      campaignRestrictedNoLocalMatch: true,
     });
   });
 });

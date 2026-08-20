@@ -115,8 +115,10 @@ export type WizardActionResult =
   | {
       disambiguationNeeded: true;
       politicians: Politician[];
-      /** Nur gesetzt, wenn LANDTAG_ROUTING_ENABLED aktiv ist */
+      /** Serverseitig aus PLZ und Anliegen abgeleitete Empfänger je Ebene. */
       levelRouting?: LevelRoutingContext;
+      campaignRestricted?: boolean;
+      campaignRestrictedNoLocalMatch?: boolean;
     }
   | { error: "moderation_rejected"; message: string }
   | { error: "output_moderation_rejected"; message: string }

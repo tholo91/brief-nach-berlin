@@ -38,33 +38,6 @@ describe("generate-letter RecipientSelection hardening", () => {
   });
 
   it.each([
-    { kind: "landesregierung" },
-    { kind: "rathaus" },
-  ])("sperrt $kind auch bei aktivem Routing, solange der Ebenen-Prompt aus ist", async (selection) => {
-    process.env.LANDTAG_ROUTING_ENABLED = "true";
-    process.env.LETTER_PROMPT_LEVEL_AWARE = "false";
-
-    const response = await POST(requestWith({
-      wizardData: {},
-      selection,
-    }));
-
-    expect(response.status).toBe(400);
-    await expect(response.json()).resolves.toEqual({ error: "Empfänger nicht verfügbar." });
-  });
-
-  it.each([
-    { kind: "mdl", selectedPoliticianId: 12 },
-    { kind: "landesregierung" },
-    { kind: "rathaus" },
-  ])("sperrt $kind am finalen API-Boundary, wenn das Flag aus ist", async (selection) => {
-    const response = await POST(requestWith({ wizardData: {}, selection }));
-
-    expect(response.status).toBe(400);
-    await expect(response.json()).resolves.toEqual({ error: "Empfänger nicht verfügbar." });
-  });
-
-  it.each([
     { kind: "mdl", selectedPoliticianId: "12" },
     { kind: "landesregierung", selectedPoliticianId: 1 },
     { kind: "landesregierung", address: "Manipulierte Adresse" },

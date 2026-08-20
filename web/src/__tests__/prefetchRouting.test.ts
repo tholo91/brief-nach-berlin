@@ -64,21 +64,25 @@ describe("prefetchRoutingAction", () => {
     );
   });
 
-  it("behält den deaktivierten Bund-Pfad ohne IP- oder Modellaufruf bei", async () => {
+  it("routet auch ohne frühere Release-Flags", async () => {
     process.env.LANDTAG_ROUTING_ENABLED = "false";
 
-    await expect(prefetchRoutingAction("Lehrermangel an unserer Schule")).resolves.toBeNull();
+    await expect(prefetchRoutingAction("Lehrermangel an unserer Schule")).resolves.toMatchObject({
+      token: expect.any(String),
+    });
 
-    expect(mockedGetClientIp).not.toHaveBeenCalled();
-    expect(mockedRouteToLevel).not.toHaveBeenCalled();
+    expect(mockedGetClientIp).toHaveBeenCalled();
+    expect(mockedRouteToLevel).toHaveBeenCalled();
   });
 
-  it("ruft ohne aktivierten Ebenen-Prompt kein Modell auf", async () => {
+  it("routet auch ohne früheren Ebenen-Prompt-Schalter", async () => {
     process.env.LETTER_PROMPT_LEVEL_AWARE = "false";
 
-    await expect(prefetchRoutingAction("Lehrermangel an unserer Schule")).resolves.toBeNull();
+    await expect(prefetchRoutingAction("Lehrermangel an unserer Schule")).resolves.toMatchObject({
+      token: expect.any(String),
+    });
 
-    expect(mockedGetClientIp).not.toHaveBeenCalled();
-    expect(mockedRouteToLevel).not.toHaveBeenCalled();
+    expect(mockedGetClientIp).toHaveBeenCalled();
+    expect(mockedRouteToLevel).toHaveBeenCalled();
   });
 });

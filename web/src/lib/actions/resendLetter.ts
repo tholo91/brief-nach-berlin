@@ -15,6 +15,7 @@ import { sendLetterEmail, prepareLetterEmail } from "@/lib/email/sendLetterEmail
 import { buildResendDebugPayload } from "@/lib/email/buildDebugPayload";
 import { DEFAULT_LETTER_LENGTH } from "@/lib/config";
 import { checkRateLimit, getClientIp, hashIdentifier, LIMITS } from "@/lib/rateLimit";
+import { getActiveCampaignBySlug } from "@/lib/campaigns/repository";
 
 const RESEND_LIMIT_MESSAGE =
   "Der Brief wurde jetzt mehrfach gesendet. Bitte prüfe noch einmal deinen Spam-Ordner und die E-Mail-Adresse. Falls weiterhin nichts ankommt, melde dich gerne direkt.";
@@ -49,13 +50,6 @@ export async function resendLetterAction(
       return { error: "validation", message: "Ungültige Eingabe." };
     }
     const normalizedSelection: RecipientSelection = parsedSelection.data;
-    if (
-      normalizedSelection.kind !== "mdb" &&
-      (process.env.LANDTAG_ROUTING_ENABLED !== "true" ||
-        process.env.LETTER_PROMPT_LEVEL_AWARE !== "true")
-    ) {
-      return { error: "validation", message: "Empfänger nicht verfügbar." };
-    }
     console.log("[resendLetter] start", { email: "***", kind: normalizedSelection.kind });
 
     const s1 = step1Schema.safeParse(data);
@@ -76,6 +70,17 @@ export async function resendLetterAction(
 
     if (!cachedLetterText || typeof cachedLetterText !== "string" || !cachedLetterText.trim()) {
       return { error: "validation", message: "Ungültige Eingabe." };
+    }
+
+    const campaign = data.campaign?.slug
+      ? await getActiveCampaignBySlug(data.campaign.slug)
+      : null;
+    if (data.campaign?.slug && !campaign) {
+      return { error: "validation", message: "Diese Kampagne ist aktuell nicht aktiv." };
+    }
+    const allowedPoliticianIds = campaign?.targetPoliticianIds ?? [];
+    if (allowedPoliticianIds.length > 0 && normalizedSelection.kind !== "mdb") {
+      return { error: "validation", message: "Empfänger nicht gefunden." };
     }
 
     // Rate limit BEFORE moderation spend (matches submitWizard pattern).
@@ -103,7 +108,9 @@ export async function resendLetterAction(
     // Re-derive recipient server-side — never trust client-supplied recipient
     // data. mdb/mdl: ID muss in der PLZ-abgeleiteten Ebenen-Liste stehen;
     // rathaus/landesregierung werden komplett aus der PLZ gebaut (LOCK-5).
-    const resolved = resolveRecipientSelection(data.plz, normalizedSelection);
+    const resolved = allowedPoliticianIds.length > 0
+      ? resolveRecipientSelection(data.plz, normalizedSelection, { allowedPoliticianIds })
+      : resolveRecipientSelection(data.plz, normalizedSelection);
     if (!resolved.ok) {
       console.warn("[resendLetter] selection not resolvable", {
         plz: data.plz,

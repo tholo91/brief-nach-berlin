@@ -29,17 +29,13 @@ export default function Hero() {
   }, [router]);
 
   const handleSubmit = useCallback(
-    (issueText: string, _toneLevel: number, usedSpeechToText: boolean) => {
-      // Hand the issue off via sessionStorage (not the URL) so it never lands
-      // in the address bar, then jump to the wizard's step 1 (pre-filled). The
-      // tone is chosen in the wizard, so we don't carry it from here. Den
-      // Voice-Flag aber sehr wohl: ohne ihn meldet der Debug-Payload spaeter
-      // faelschlich Voice=false, obwohl auf der Landing gesprochen wurde.
-      //
-      // Der Morph-Klon legt sich ueber das Feld und faehrt es auf die Box des
-      // Wizard-Felds; saveHandoff + router.push feuern parallel dahinter.
+    (issueText: string, usedSpeechToText: boolean) => {
+      // Keep the issue out of the URL and let the user review and edit it in
+      // the first wizard step. The wizard keeps this handoff for reload/back
+      // navigation until the recipient flow starts.
       morphAnliegenFieldToWizard({
-        onBeforeNavigate: () => saveHandoff({ issueText, usedSpeechToText }),
+        onBeforeNavigate: () =>
+          saveHandoff({ issueText, usedSpeechToText, source: "landing" }),
         navigate: () => router.push(WIZARD_PATH),
       });
     },

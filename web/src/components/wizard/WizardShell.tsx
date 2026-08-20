@@ -11,26 +11,24 @@ import type {
 import type { Politician, PoliticalLevel } from "@/lib/types/politician";
 import type { Recipient } from "@/lib/lookup/rathausRecipient";
 import type { Step1Data } from "@/lib/validation/wizardSchemas";
-import type { Step1bData } from "@/lib/validation/wizardSchemas";
 import { submitWizardAction } from "@/lib/actions/submitWizard";
 import { prefetchRoutingAction } from "@/lib/actions/prefetchRouting";
 import { campaignLogoPublicUrl } from "@/lib/campaigns/logo";
-import { peekHandoff, clearHandoff } from "@/lib/wizard-handoff";
+import { peekHandoff, clearHandoff, saveHandoff } from "@/lib/wizard-handoff";
 import { clearLandingDraft } from "@/lib/landing-draft";
 import { Step1Form } from "./Step1Form";
-import { Step1bOptional } from "./Step1bOptional";
+import { StepPreferences, type StepPreferencesData } from "./StepPreferences";
 import { Step2Issue } from "./Step2Issue";
 import { StepLevelSelect } from "./StepLevelSelect";
 import { Step3Success } from "./Step3Success";
 import FadeFooterImage from "../FadeFooterImage";
-import { WIZARD_PROGRESS_EVENT } from "../AppHeader";
 
 const PARAM_KEYS = ["plz", "letterLength"] as const;
 
 const STEP_LABELS = [
   "Dein Anliegen",
-  "Kontaktdaten",
-  "Zusätzliche Infos",
+  "PLZ & E-Mail",
+  "Ton & Länge",
 ] as const;
 
 function readParamsToData(searchParams: URLSearchParams): Partial<WizardData> {
@@ -56,8 +54,7 @@ function writeDataToParams(router: ReturnType<typeof useRouter>, data: Partial<W
 function stepToProgress(step: WizardStep): number {
   if (step === 1) return 1; // Anliegen
   if (step === 2) return 2; // Kontaktdaten
-  if (step === "2b") return 3; // Zusätzliche Infos
-  return 3; // "level" + step 3 — indicator is hidden there
+  return 3; // Präferenzen und Ebenenwahl
 }
 
 /**
@@ -89,10 +86,11 @@ export function WizardShell() {
     }
     return data;
   });
-  // Always start on step 1 (Anliegen). With a landing handoff the field is
-  // pre-filled so the visitor reviews the same input and picks the tone here,
-  // rather than being dropped straight into the contact step.
+  // Direct visits and landing handoffs start on the editable issue step.
+  // Campaigns already supply their campaign draft and stay on contact details.
   const [step, setStep] = useState<WizardStep>(1);
+  const [entrySource, setEntrySource] = useState<"direct" | "landing" | "campaign">("direct");
+  const [handoffPending, setHandoffPending] = useState(true);
   const [politicians, setPoliticians] = useState<Politician[]>([]);
   const [actionResult, setActionResult] = useState<WizardActionResult | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -114,71 +112,89 @@ export function WizardShell() {
     promise: Promise<{ token: string } | null>;
   } | null>(null);
 
-  // Landing -> wizard handoff (sessionStorage): pre-fill step 1 with the
-  // issue the visitor already wrote on the landing. Read after mount so the
-  // server and initial client render stay identical.
+  // Landing -> wizard handoff (sessionStorage): hydrate the issue without
+  // rendering another issue field. Read after mount so sessionStorage never
+  // affects the server render.
   useEffect(() => {
-    const handoff = peekHandoff();
-    if (handoff) {
-      window.setTimeout(() => {
-        setWizardData((current) => ({
-          ...current,
-          issueText: handoff.issueText,
-          ...(handoff.toneLevel != null ? { toneLevel: handoff.toneLevel } : {}),
-          ...(handoff.tipsOpened ? { tipsOpened: true } : {}),
-          ...(handoff.usedSpeechToText ? { usedSpeechToText: true } : {}),
-          ...(handoff.source === "campaign" && handoff.campaignSlug
-            ? {
-                campaign: {
-                  slug: handoff.campaignSlug,
-                  title: handoff.campaignTitle ?? "Kampagne",
-                  creatorName: handoff.campaignCreatorName,
-                  externalUrl: handoff.campaignExternalUrl,
-                  logoPath: handoff.campaignLogoPath,
-                  targetLevel: handoff.campaignTargetLevel ?? "Bund",
-                  targetState: handoff.campaignTargetState ?? null,
-                },
-              }
-            : {}),
-        }));
-      }, 0);
-    }
-    clearHandoff();
+    const timer = window.setTimeout(() => {
+      const handoff = peekHandoff();
+      if (!handoff) {
+        setHandoffPending(false);
+        return;
+      }
+
+      setEntrySource(handoff.source ?? "landing");
+      setWizardData((current) => ({
+        ...current,
+        issueText: handoff.issueText,
+        ...(handoff.toneLevel != null ? { toneLevel: handoff.toneLevel } : {}),
+        ...(handoff.tipsOpened ? { tipsOpened: true } : {}),
+        ...(handoff.usedSpeechToText ? { usedSpeechToText: true } : {}),
+        ...(handoff.source === "campaign" && handoff.campaignSlug
+          ? {
+              campaign: {
+                slug: handoff.campaignSlug,
+                title: handoff.campaignTitle ?? "Kampagne",
+                creatorName: handoff.campaignCreatorName,
+                externalUrl: handoff.campaignExternalUrl,
+                logoPath: handoff.campaignLogoPath,
+                targetLevel: handoff.campaignTargetLevel ?? "Bund",
+                targetState: handoff.campaignTargetState ?? null,
+              },
+            }
+          : {}),
+      }));
+      setStep(handoff.source === "campaign" ? 2 : 1);
+      setHandoffPending(false);
+    }, 0);
+
+    return () => window.clearTimeout(timer);
   }, []);
 
-  // Erfolgreicher Versand (Step 3) ist der Abschluss des Anliegens: den auf der
-  // Landing gemerkten Entwurf verwerfen, damit ein zurückkehrender Besucher im
-  // selben Tab ein frisches Feld sieht statt des alten Textes.
+  // Sobald die Empfängerauswahl bereitsteht, ist der Landing-Handoff verbraucht.
+  // Ein späterer neuer Start im selben Tab darf deshalb keinen alten Entwurf laden.
   useEffect(() => {
-    if (step === 3) clearLandingDraft(wizardData.campaign?.slug);
+    if (step === 3) {
+      clearLandingDraft(wizardData.campaign?.slug);
+      clearHandoff();
+    }
   }, [step, wizardData.campaign?.slug]);
 
   // Sync URL params when step/data change
   useEffect(() => {
-    if (step !== 3) {
+    if (!handoffPending && step !== 3) {
       writeDataToParams(router, wizardData, step);
     }
-  }, [step, wizardData, router]);
+  }, [handoffPending, step, wizardData, router]);
 
-  // Step 1: Anliegen — stores state and advances. Erst hier (nach dem
-  // bewussten "Weiter" im Review-/Tonalitäts-Schritt) geht das Anliegen zum
-  // ersten Mal an Mistral: der Ebenen-Prefetch startet fire-and-forget und
+  // Step 1: Anliegen — stores state and advances. Erst hier geht das Anliegen
+  // zum ersten Mal an Mistral: der Ebenen-Prefetch startet fire-and-forget und
   // überlappt mit der Eingabe von PLZ/E-Mail. Ändert der User den Text,
   // ersetzt der neue Prefetch den alten (Hash-Bindung im Token).
   const handleStep1Complete = useCallback(
-    (issueText: string, toneLevel: number, usedSpeechToText: boolean, tipsOpened: boolean) => {
+    (issueText: string, usedSpeechToText: boolean, tipsOpened: boolean) => {
       // OR the step-1 open into any open that already happened on the landing
       // (seeded from the handoff), so "tips ever opened" survives both places.
       setWizardData((prev) => ({
         ...prev,
         issueText,
-        toneLevel,
+        toneLevel: prev.toneLevel ?? 3,
         // OR mit einem evtl. von der Landing uebernommenen Voice-Flag, damit er
         // ueberlebt, wenn im Wizard nicht erneut aufgenommen wird (gleiche
         // Logik wie bei tipsOpened darunter).
         usedSpeechToText: prev.usedSpeechToText || usedSpeechToText,
         tipsOpened: prev.tipsOpened || tipsOpened,
       }));
+      const handoff = peekHandoff();
+      if (handoff?.source !== "campaign") {
+        saveHandoff({
+          ...handoff,
+          issueText,
+          source: "landing",
+          usedSpeechToText: Boolean(handoff?.usedSpeechToText || usedSpeechToText),
+          tipsOpened: Boolean(handoff?.tipsOpened || tipsOpened),
+        });
+      }
       if (routingPrefetchRef.current?.issueText !== issueText) {
         routingPrefetchRef.current = {
           issueText,
@@ -197,16 +213,33 @@ export function WizardShell() {
     setStep("2b");
   }, []);
 
+  const handlePreferencesChange = useCallback((data: StepPreferencesData) => {
+    setWizardData((prev) => ({
+      ...prev,
+      party: data.party,
+      ngo: data.ngo,
+      letterLength: data.letterLength,
+      toneLevel: data.toneLevel,
+    }));
+  }, []);
+
   const handleBack = useCallback(() => {
     setCampaignMismatch(null);
-    if (step === 2) setStep(1);
+    if (step === 2) {
+      if (entrySource === "campaign") {
+        router.back();
+      } else {
+        setStep(1);
+      }
+    }
     else if (step === "2b") setStep(2);
-  }, [step]);
+    else if (step === "level") setStep("2b");
+  }, [entrySource, router, step]);
 
-  // Step 2b: Optional — this is where we actually submit to the backend.
-  // Both "Weiter" (with values) and "Überspringen" (no values) end up here.
+  // Step 3: Preferences — this is where we actually submit to the backend.
+  // The advanced fields remain optional and may stay empty.
   const submitWizard = useCallback(
-    async (optionalData: Partial<Step1bData>) => {
+    async (optionalData: Partial<StepPreferencesData>) => {
       setIsSubmitting(true);
       setErrorMessage(null);
 
@@ -216,8 +249,8 @@ export function WizardShell() {
         party: optionalData.party,
         ngo: optionalData.ngo,
         letterLength: optionalData.letterLength ?? wizardData.letterLength,
+        toneLevel: optionalData.toneLevel ?? wizardData.toneLevel ?? 3,
         issueText: wizardData.issueText ?? "",
-        toneLevel: wizardData.toneLevel,
         usedSpeechToText: wizardData.usedSpeechToText,
         tipsOpened: wizardData.tipsOpened,
         campaign: wizardData.campaign,
@@ -287,6 +320,7 @@ export function WizardShell() {
           party: optionalData.party,
           ngo: optionalData.ngo,
           letterLength: optionalData.letterLength ?? prev.letterLength,
+          toneLevel: optionalData.toneLevel ?? prev.toneLevel ?? 3,
         }));
 
         if ("disambiguationNeeded" in result && result.disambiguationNeeded) {
@@ -333,7 +367,7 @@ export function WizardShell() {
   );
 
   const handleStep2bComplete = useCallback(
-    (data: Step1bData) => {
+    (data: StepPreferencesData) => {
       void submitWizard(data);
     },
     [submitWizard]
@@ -344,8 +378,8 @@ export function WizardShell() {
   }, []);
 
   const progress = stepToProgress(step);
-  const showIndicator = step !== 3 && step !== "level";
-  const showBack = step === 2 || step === "2b";
+  const showIndicator = step !== 3;
+  const showBack = !handoffPending && (step === 2 || step === "2b" || step === "level");
   const campaignContext = wizardData.campaign;
   const campaignLogoUrl = campaignLogoPublicUrl(campaignContext?.logoPath);
   const campaignInitial = (
@@ -355,22 +389,6 @@ export function WizardShell() {
   )
     .charAt(0)
     .toUpperCase();
-
-  useEffect(() => {
-    window.dispatchEvent(
-      new CustomEvent(WIZARD_PROGRESS_EVENT, {
-        detail: { progress: showIndicator ? progress : null },
-      })
-    );
-
-    return () => {
-      window.dispatchEvent(
-        new CustomEvent(WIZARD_PROGRESS_EVENT, {
-          detail: { progress: null },
-        })
-      );
-    };
-  }, [progress, showIndicator]);
 
   useEffect(() => {
     if (!hasMountedRef.current) {
@@ -385,59 +403,59 @@ export function WizardShell() {
   return (
     <>
       <div className="max-w-xl mx-auto px-4 pt-8 pb-16 sm:px-8 sm:py-16 w-full">
-      {/* Progress indicator */}
-      {showIndicator && (
-        <div className="hidden sm:flex items-center justify-center gap-6 mb-12">
-          {STEP_LABELS.map((label, i) => {
-            const dotNum = i + 1;
-            const isActive = dotNum === progress;
-            const isDone = dotNum < progress;
-            return (
-              <div key={label} className="relative flex items-center gap-2 group">
-                <div
-                  className={`w-2.5 h-2.5 rounded-full transition-colors duration-150 ${
-                    isActive
-                      ? "bg-waldgruen"
-                      : isDone
-                        ? "bg-waldgruen/40"
-                        : "bg-warmgrau/30"
-                  }`}
+      {(showIndicator || showBack) && (
+        <div className="mb-8 flex items-center justify-between sm:mb-12">
+          <div className="w-20">
+            {showBack && (
+              <button
+                type="button"
+                onClick={handleBack}
+                className="flex items-center gap-1 font-body text-sm text-warmgrau/60 transition-colors hover:text-warmgrau"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="14"
+                  height="14"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
                   aria-hidden="true"
-                />
-                <span
-                  className="absolute left-1/2 -translate-x-1/2 top-full mt-1.5 font-body text-xs text-warmgrau/70 whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-150 pointer-events-none"
                 >
-                  {label}
-                </span>
-              </div>
-            );
-          })}
+                  <path d="m15 18-6-6 6-6" />
+                </svg>
+                zurück
+              </button>
+            )}
+          </div>
+          {showIndicator && (
+            <div className="flex items-center gap-6" aria-label={`Schritt ${progress} von 3`}>
+              {STEP_LABELS.map((label, i) => {
+                const dotNum = i + 1;
+                const isActive = dotNum === progress;
+                const isDone = dotNum < progress;
+                return (
+                  <div key={label} className="group relative flex items-center gap-2">
+                    <div
+                      className={`h-2.5 w-2.5 rounded-full transition-colors duration-150 ${
+                        isActive
+                          ? "bg-waldgruen"
+                          : isDone
+                            ? "bg-waldgruen/40"
+                            : "bg-warmgrau/30"
+                      }`}
+                      aria-hidden="true"
+                    />
+                    <span className="sr-only">{label}</span>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+          <div className="w-20" aria-hidden="true" />
         </div>
-      )}
-
-      {/* Back button */}
-      {showBack && (
-        <button
-          type="button"
-          onClick={handleBack}
-          className="font-body text-sm text-warmgrau/60 hover:text-warmgrau transition-colors mb-6 cursor-pointer flex items-center gap-1"
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="14"
-            height="14"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            aria-hidden="true"
-          >
-            <path d="m15 18-6-6 6-6" />
-          </svg>
-          zurück
-        </button>
       )}
 
       {campaignContext && step !== 3 && (
@@ -508,21 +526,29 @@ export function WizardShell() {
 
       {/* Step content */}
       <div className="transition-opacity duration-150 ease-in" key={step}>
-        {step === 1 && (
+        {handoffPending && (
+          <div className="py-16 text-center" role="status" aria-live="polite">
+            <p className="font-body text-sm text-warmgrau/70">Dein Anliegen wird übernommen …</p>
+          </div>
+        )}
+        {!handoffPending && step === 1 && (
           <Step2Issue
             autoFocus
             onSubmit={handleStep1Complete}
             defaultValue={wizardData.issueText}
-            defaultToneLevel={wizardData.toneLevel}
             isCampaign={Boolean(campaignContext)}
           />
         )}
-        {step === 2 && (
+        {!handoffPending && step === 2 && (
           <Step1Form
             onNext={handleStep2Complete}
             defaultValues={{ plz: wizardData.plz, email: wizardData.email }}
             plzError={plzError}
             onPlzErrorDismiss={() => setPlzError(null)}
+            issueSummary={wizardData.issueText}
+            onEditIssue={
+              entrySource === "campaign" ? () => router.back() : () => setStep(1)
+            }
           />
         )}
         {step === "2b" && campaignMismatch && (
@@ -549,9 +575,10 @@ export function WizardShell() {
             </button>
           </div>
         )}
-        {step === "2b" && !campaignMismatch && (
-          <Step1bOptional
+        {!handoffPending && step === "2b" && !campaignMismatch && (
+          <StepPreferences
             onNext={handleStep2bComplete}
+            onChange={handlePreferencesChange}
             isSubmitting={isSubmitting}
             errorMessage={errorMessage}
             onErrorDismiss={handleErrorDismiss}
@@ -559,9 +586,8 @@ export function WizardShell() {
               party: wizardData.party,
               ngo: wizardData.ngo,
               letterLength: wizardData.letterLength,
+              toneLevel: wizardData.toneLevel,
             }}
-            issueText={wizardData.issueText}
-            onBackToIssue={() => setStep(1)}
           />
         )}
         {step === "level" && levelRouting && (
@@ -572,7 +598,6 @@ export function WizardShell() {
               setSelectedLevel(level);
               setStep(3);
             }}
-            onBack={() => setStep("2b")}
           />
         )}
         {step === 3 && (

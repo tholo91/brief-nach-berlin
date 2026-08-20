@@ -24,18 +24,14 @@ function WizardShellFallback() {
 
       <div>
         <h1 className="font-typewriter text-[28px] font-semibold leading-[1.2] text-waldgruen-dark mb-2">
-          Was beschäftigt dich gerade?
+          Wer ist für dein Anliegen zuständig?
         </h1>
         <p className="font-body text-sm text-warmgrau/70 mb-4">
-          Sprich drauflos und passe deinen Text danach an. Oder nenne ein paar
-          Stichpunkte, du musst keine ganzen Sätze schreiben.
+          Deine Postleitzahl und E-Mail-Adresse reichen für den nächsten Schritt.
         </p>
-        <div className="mb-4 rounded-r-lg border-l-4 border-waldgruen bg-waldgruen/5 px-4 py-3">
-          <div className="h-5 w-3/4 rounded bg-waldgruen/10" />
-        </div>
-        <div className="h-40 w-full rounded-lg border border-warmgrau/30 bg-creme shadow-sm" />
-        <div className="mt-1 flex min-h-[22px] justify-end">
-          <div className="h-4 w-20 rounded bg-warmgrau/10" />
+        <div className="space-y-4">
+          <div className="h-12 w-full rounded-lg border border-warmgrau/30 bg-creme shadow-sm" />
+          <div className="h-12 w-full rounded-lg border border-warmgrau/30 bg-creme shadow-sm" />
         </div>
       </div>
     </div>

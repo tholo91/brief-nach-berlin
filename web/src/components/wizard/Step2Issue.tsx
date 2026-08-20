@@ -241,12 +241,9 @@ function clampToTwoLines(text: string, lineWidth: number, font: string): string 
 const HEIGHT_MAX = 320;
 const HEIGHT_MIN_WIZARD = 160;
 
-const TONE_LABELS = ["freundlich", "höflich", "sachlich", "bestimmt", "nachdrücklich"] as const;
-
 interface Step2IssueProps {
-  onSubmit: (issueText: string, toneLevel: number, usedSpeechToText: boolean, tipsOpened: boolean) => void;
+  onSubmit: (issueText: string, usedSpeechToText: boolean, tipsOpened: boolean) => void;
   defaultValue?: string;
-  defaultToneLevel?: number;
   /** "landing" hides the heading/intro/tips and renders a slim, auto-growing
    *  hero field. "wizard" (default) is the full step-1 layout. */
   variant?: "wizard" | "landing";
@@ -259,7 +256,6 @@ interface Step2IssueProps {
 export function Step2Issue({
   onSubmit,
   defaultValue,
-  defaultToneLevel,
   variant = "wizard",
   autoFocus = false,
   isCampaign = false,
@@ -274,7 +270,6 @@ export function Step2Issue({
   // on the landing the disclosure lives in Hero, which tracks it separately).
   const tipsOpenedRef = useRef(false);
   const [placeholderIndex, setPlaceholderIndex] = useState(0);
-  const [toneLevel, setToneLevel] = useState(defaultToneLevel ?? 3);
   // Auto-grow bookkeeping. fieldHeight lets the in-field mic + submit pin
   // themselves to the bottom-right corner of the (always multi-line) landing
   // field, riding down as the box grows with each new line.
@@ -480,7 +475,7 @@ export function Step2Issue({
 
   const handleSubmit = () => {
     if (canProceed) {
-      onSubmit(issueText, toneLevel, usedVoiceRef.current, tipsOpenedRef.current);
+      onSubmit(issueText, usedVoiceRef.current, tipsOpenedRef.current);
     }
   };
 
@@ -714,49 +709,6 @@ export function Step2Issue({
           )}
         </div>
       </div>
-
-      {/* Tone slider — wizard only. Removed from the landing to keep the hero
-          calm; landing visitors choose the tone here in the wizard. It appears
-          softly once enough is typed to make a tone choice meaningful. */}
-      {!isLanding && (
-      <div
-        aria-hidden={!canProceed}
-        className={[
-          "overflow-hidden transition-all duration-500 ease-out",
-          canProceed
-            ? "opacity-100 max-h-40 mt-4 md:mt-6"
-            : "opacity-0 max-h-0 mt-0 pointer-events-none",
-        ].join(" ")}
-      >
-        <label className="block font-body text-sm font-semibold text-waldgruen-dark mb-3">
-          Tonalität des finalen Briefes
-        </label>
-        <input
-          type="range"
-          min={1}
-          max={5}
-          step={1}
-          value={toneLevel}
-          onChange={(e) => setToneLevel(Number(e.target.value))}
-          className="w-full accent-waldgruen cursor-pointer disabled:opacity-50"
-          aria-label="Tonlage des finalen Briefes"
-          tabIndex={canProceed ? 0 : -1}
-        />
-        <div className="flex justify-between mt-1">
-          {TONE_LABELS.map((label, i) => (
-            <span
-              key={label}
-              className={[
-                "font-body text-xs transition-colors",
-                toneLevel === i + 1 ? "text-waldgruen font-semibold" : "text-warmgrau/40",
-              ].join(" ")}
-            >
-              {label}
-            </span>
-          ))}
-        </div>
-      </div>
-      )}
 
       {/* Submit button — wizard only. On the landing the submit lives as a round
           CTA inside the field (next to the mic), so there's no full-width button

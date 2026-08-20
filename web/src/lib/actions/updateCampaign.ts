@@ -8,10 +8,11 @@ import {
   publishCampaignEdits,
 } from "@/lib/campaigns/repository";
 import { CAMPAIGN_LOGO_BUCKET } from "@/lib/campaigns/logo";
-import { campaignExternalUrlSchema } from "@/lib/campaigns/schema";
+import { campaignExternalUrlSchema, campaignTargetPoliticianIdsSchema } from "@/lib/campaigns/schema";
 import { getCampaignManagementSession } from "@/lib/campaigns/session";
 import { moderateText } from "@/lib/moderation/moderateText";
 import { getServiceRoleClient } from "@/lib/supabase/server";
+import { getBundestagPoliticiansByIds } from "@/lib/lookup/plzLookup";
 
 const MAX_LOGO_BYTES = 524288;
 const logoMimeTypes = new Map([
@@ -32,6 +33,7 @@ const updateCampaignSchema = z.object({
     .optional()
     .transform((value) => (value ? value : undefined))
     .pipe(campaignExternalUrlSchema.optional()),
+  targetPoliticianIds: campaignTargetPoliticianIdsSchema,
 });
 
 export type UpdateCampaignResult =
@@ -41,6 +43,13 @@ export type UpdateCampaignResult =
 function value(formData: FormData, key: string): string {
   const raw = formData.get(key);
   return typeof raw === "string" ? raw : "";
+}
+
+function numberValues(formData: FormData, key: string): number[] {
+  return formData
+    .getAll(key)
+    .filter((raw): raw is string => typeof raw === "string" && raw.trim() !== "")
+    .map(Number);
 }
 
 function validationErrors(error: z.ZodError): Record<string, string> {
@@ -121,6 +130,7 @@ export async function updateCampaignAction(
     description: value(formData, "description") || undefined,
     creatorName: value(formData, "creatorName") || undefined,
     externalUrl: value(formData, "externalUrl") || undefined,
+    targetPoliticianIds: numberValues(formData, "targetPoliticianId"),
   });
 
   if (!parsed.success) {
@@ -167,6 +177,24 @@ export async function updateCampaignAction(
     };
   }
 
+  if (input.targetPoliticianIds.length > 0 && campaign.targetLevel !== "Bund") {
+    return {
+      ok: false,
+      message: "Bestimmte MdBs können nur bei Bundestagskampagnen ausgewählt werden.",
+      fieldErrors: { targetPoliticianIds: "Diese Kampagne richtet sich an die Landesregierung." },
+    };
+  }
+  if (
+    input.targetPoliticianIds.length > 0 &&
+    getBundestagPoliticiansByIds(input.targetPoliticianIds).length !== input.targetPoliticianIds.length
+  ) {
+    return {
+      ok: false,
+      message: "Mindestens ein ausgewählter MdB ist nicht mehr im aktuellen Datensatz verfügbar.",
+      fieldErrors: { targetPoliticianIds: "Bitte aktualisiere die MdB-Auswahl." },
+    };
+  }
+
   const uploadedLogo = await uploadCampaignLogo(formData, campaign.slug);
   if (uploadedLogo.error) {
     return {
@@ -183,6 +211,7 @@ export async function updateCampaignAction(
       description: input.description,
       creatorName: input.creatorName,
       externalUrl: input.externalUrl,
+      targetPoliticianIds: input.targetPoliticianIds,
       logoPath: uploadedLogo.logoPath,
     }, moderation.categories);
     if (uploadedLogo.logoPath && campaign.logoPath !== uploadedLogo.logoPath) {

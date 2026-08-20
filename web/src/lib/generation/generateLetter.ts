@@ -188,10 +188,8 @@ Antworte ausschließlich im JSON-Format:
 }`;
 
 // ---------------------------------------------------------------------------
-// Level-aware Prompt-Branches (999.6, LOCK-1):
-// Gemeinsame Prompt-Regeln gelten für alle Ebenen. Nur Land und Kommune bekommen
-// zusätzliche ebenenspezifische Ersetzungen, und auch die nur, wenn
-// LETTER_PROMPT_LEVEL_AWARE=true ist (Wave-4-Kill-Switch, LOCK-6).
+// Level-aware Prompt-Branches: Gemeinsame Prompt-Regeln gelten für alle Ebenen.
+// Land und Kommune erhalten zusätzlich spezifische Zuständigkeitsregeln.
 // ---------------------------------------------------------------------------
 
 // Exakte Template-Segmente, die in den Land-/Kommune-Branches ersetzt werden.
@@ -281,15 +279,14 @@ Der Bürger hat sich bewusst entschieden, an die ${LEVEL_LABELS[selected]} zu sc
 }
 
 /**
- * Baut den System-Prompt abhängig von Ebene und Flag.
- * - Flag aus ODER level=Bund: gemeinsames Grundtemplate ohne Ebenen-Ersetzungen.
+ * Baut den System-Prompt abhängig von der gewählten Ebene.
+ * - Bund: gemeinsames Grundtemplate ohne Ebenen-Ersetzungen.
  * - Land/Kommune: gezielte Block-Ersetzungen + Strategie-Block.
  * Exportiert für die Snapshot-Tests.
  */
 export function buildSystemPrompt(input: GenerateLetterInput): string {
   const base = SYSTEM_PROMPT_TEMPLATE.replace("__TODAY__", todayInGerman());
-  const levelAware = process.env.LETTER_PROMPT_LEVEL_AWARE === "true";
-  const level: PoliticalLevel = levelAware ? input.level ?? "Bund" : "Bund";
+  const level: PoliticalLevel = input.level ?? "Bund";
 
   let prompt = base;
   if (level === "Land") {
@@ -315,7 +312,6 @@ export function buildSystemPrompt(input: GenerateLetterInput): string {
   }
 
   if (
-    levelAware &&
     input.mismatchRecommendedLevel &&
     input.mismatchRecommendedLevel !== level
   ) {

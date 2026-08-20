@@ -10,6 +10,7 @@ import {
   step2Schema,
 } from "@/lib/validation/wizardSchemas";
 import { resolveRecipientSelection } from "@/lib/lookup/resolveRecipient";
+import { getActiveCampaignBySlug } from "@/lib/campaigns/repository";
 import { DEFAULT_LETTER_LENGTH } from "@/lib/config";
 
 const recipientSelectionSchema = z.discriminatedUnion("kind", [
@@ -62,15 +63,23 @@ export async function selectPoliticianAction(
       return { error: "server_error", message: "Ungültige Eingabe." };
     }
     const normalizedSelection: RecipientSelection = parsedSelection.data;
-    if (
-      normalizedSelection.kind !== "mdb" &&
-      (process.env.LANDTAG_ROUTING_ENABLED !== "true" ||
-        process.env.LETTER_PROMPT_LEVEL_AWARE !== "true")
-    ) {
-      return { error: "server_error", message: "Empfänger nicht verfügbar." };
+    const campaign = data.campaign?.slug
+      ? await getActiveCampaignBySlug(data.campaign.slug)
+      : null;
+    if (data.campaign?.slug && !campaign) {
+      return {
+        error: "server_error",
+        message: "Diese Kampagne ist aktuell nicht aktiv.",
+      };
+    }
+    const allowedPoliticianIds = campaign?.targetPoliticianIds ?? [];
+    if (allowedPoliticianIds.length > 0 && normalizedSelection.kind !== "mdb") {
+      return { error: "server_error", message: "Empfänger nicht gefunden." };
     }
 
-    const resolved = resolveRecipientSelection(data.plz, normalizedSelection);
+    const resolved = allowedPoliticianIds.length > 0
+      ? resolveRecipientSelection(data.plz, normalizedSelection, { allowedPoliticianIds })
+      : resolveRecipientSelection(data.plz, normalizedSelection);
     if (!resolved.ok) {
       console.warn("[selectPolitician] selection not resolvable", {
         plz: data.plz,

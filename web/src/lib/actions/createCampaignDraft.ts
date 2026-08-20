@@ -11,12 +11,14 @@ import {
 import { createCampaignToken } from "@/lib/campaigns/tokens";
 import {
   campaignExternalUrlSchema,
+  campaignTargetPoliticianIdsSchema,
   campaignTargetLevelSchema,
   campaignTargetStateSchema,
   isReservedCampaignSlug,
   isValidCampaignSlug,
   normalizeCampaignSlug,
 } from "@/lib/campaigns/schema";
+import { getBundestagPoliticiansByIds } from "@/lib/lookup/plzLookup";
 import { moderateText } from "@/lib/moderation/moderateText";
 import { sendCampaignCreatorEmail } from "@/lib/email/sendCampaignCreatorEmail";
 import { getServiceRoleClient } from "@/lib/supabase/server";
@@ -81,6 +83,8 @@ const createCampaignDraftSchema = z.object({
     ),
   targetLevel: campaignTargetLevelSchema.default("Bund"),
   targetState: campaignTargetStateSchema.optional(),
+  targetMode: z.enum(["default", "specific"]).default("default"),
+  targetPoliticianIds: campaignTargetPoliticianIdsSchema,
   responsibilityAccepted: z
     .string()
     .optional()
@@ -98,6 +102,27 @@ const createCampaignDraftSchema = z.object({
         message: "Ein Bundesland ist nur bei Landeskampagnen erlaubt.",
       });
     }
+    if (data.targetMode === "specific" && data.targetPoliticianIds.length === 0) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["targetPoliticianIds"],
+        message: "Wähle mindestens einen MdB aus.",
+      });
+    }
+    if (data.targetMode === "default" && data.targetPoliticianIds.length > 0) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["targetPoliticianIds"],
+        message: "Die MdB-Auswahl gehört zur Option „Bestimmte MdBs“.",
+      });
+    }
+    if (data.targetPoliticianIds.length > 0 && data.targetLevel !== "Bund") {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["targetPoliticianIds"],
+        message: "Bestimmte MdBs können nur bei Bundestagskampagnen ausgewählt werden.",
+      });
+    }
   })
   .transform((data) => ({
     ...data,
@@ -111,6 +136,13 @@ export type CreateCampaignDraftResult =
 function value(formData: FormData, key: string): string {
   const raw = formData.get(key);
   return typeof raw === "string" ? raw : "";
+}
+
+function numberValues(formData: FormData, key: string): number[] {
+  return formData
+    .getAll(key)
+    .filter((raw): raw is string => typeof raw === "string" && raw.trim() !== "")
+    .map(Number);
 }
 
 function validationErrors(error: z.ZodError): Record<string, string> {
@@ -189,6 +221,8 @@ export async function createCampaignDraftAction(
     slug: value(formData, "slug"),
     targetLevel: value(formData, "targetLevel") || "Bund",
     targetState: value(formData, "targetState") || undefined,
+    targetMode: value(formData, "targetMode") || "default",
+    targetPoliticianIds: numberValues(formData, "targetPoliticianId"),
     responsibilityAccepted: value(formData, "responsibilityAccepted"),
     creationConfirmed: value(formData, "creationConfirmed"),
   });
@@ -202,6 +236,16 @@ export async function createCampaignDraftAction(
   }
 
   const input = parsed.data;
+  if (
+    input.targetPoliticianIds.length > 0 &&
+    getBundestagPoliticiansByIds(input.targetPoliticianIds).length !== input.targetPoliticianIds.length
+  ) {
+    return {
+      ok: false,
+      message: "Mindestens ein ausgewählter MdB ist nicht mehr im aktuellen Datensatz verfügbar.",
+      fieldErrors: { targetPoliticianIds: "Bitte aktualisiere die MdB-Auswahl." },
+    };
+  }
   const uploadedLogo = await uploadCampaignLogo(formData, input.slug);
   if (uploadedLogo.error) {
     return {

@@ -14,6 +14,7 @@ import {
   type CreateCampaignDraftResult,
 } from "@/lib/actions/createCampaignDraft";
 import { BUNDESLAND_NAMES } from "@/lib/campaigns/schema";
+import { MdbCampaignSelector } from "./MdbCampaignSelector";
 
 const initialResult: CreateCampaignDraftResult | null = null;
 const draftStorageKey = "bnb_creator_campaign_draft";
@@ -23,7 +24,7 @@ const issueTextMinChars = 100;
 const issueTextBetterChars = 200;
 const issueTextMaxChars = 4000;
 const acceptedLogoTypes = new Set(["image/png", "image/jpeg", "image/webp"]);
-const firstStepErrorFields = new Set(["title", "issueText", "slug", "creatorName"]);
+const firstStepErrorFields = new Set(["title", "issueText", "slug", "creatorName", "targetPoliticianIds"]);
 const slugPattern = /^[a-z0-9][a-z0-9-]{1,78}[a-z0-9]$/;
 const draftFields = [
   "title",
@@ -35,9 +36,10 @@ const draftFields = [
   "creatorEmail",
   "targetLevel",
   "targetState",
+  "targetMode",
 ] as const;
 type DraftField = (typeof draftFields)[number];
-type CampaignDraft = Record<DraftField, string>;
+type CampaignDraft = Record<DraftField, string> & { targetPoliticianIds: number[] };
 type FormStep = 1 | 2;
 const emptyDraft: CampaignDraft = {
   title: "",
@@ -49,6 +51,8 @@ const emptyDraft: CampaignDraft = {
   creatorEmail: "",
   targetLevel: "Bund",
   targetState: "",
+  targetMode: "default",
+  targetPoliticianIds: [],
 };
 const targetLevelOptions = [
   {
@@ -163,8 +167,8 @@ export function CreatorCampaignForm() {
     if (!rawDraft) return;
 
     try {
-      const savedDraft = JSON.parse(rawDraft) as Partial<Record<DraftField, string>>;
-      const nextDraft = {
+      const savedDraft = JSON.parse(rawDraft) as Partial<CampaignDraft>;
+      const nextDraft: CampaignDraft = {
         ...emptyDraft,
         ...Object.fromEntries(
           draftFields.map((field) => [
@@ -172,10 +176,18 @@ export function CreatorCampaignForm() {
             typeof savedDraft[field] === "string" ? savedDraft[field] : "",
           ])
         ),
+        targetPoliticianIds: Array.isArray(savedDraft.targetPoliticianIds)
+          ? savedDraft.targetPoliticianIds.filter(
+            (id): id is number => Number.isInteger(id) && id > 0
+            )
+          : [],
       };
       if (nextDraft.targetLevel !== "Land") {
         nextDraft.targetLevel = "Bund";
         nextDraft.targetState = "";
+      }
+      if (nextDraft.targetPoliticianIds.length > 0) {
+        nextDraft.targetMode = "specific";
       }
       window.setTimeout(() => setDraft(nextDraft), 0);
     } catch {
@@ -195,6 +207,34 @@ export function CreatorCampaignForm() {
       if (field === "targetLevel" && value !== "Land") {
         nextDraft.targetState = "";
       }
+      window.localStorage.setItem(draftStorageKey, JSON.stringify(nextDraft));
+      return nextDraft;
+    });
+  }
+
+  function updateTargetMode(targetMode: "default" | "specific") {
+    setDraft((currentDraft) => {
+      const nextDraft: CampaignDraft = {
+        ...currentDraft,
+        targetMode,
+        ...(targetMode === "specific"
+          ? { targetLevel: "Bund", targetState: "" }
+          : { targetPoliticianIds: [] }),
+      };
+      window.localStorage.setItem(draftStorageKey, JSON.stringify(nextDraft));
+      return nextDraft;
+    });
+  }
+
+  function updateTargetPoliticianIds(ids: number[]) {
+    setDraft((currentDraft) => {
+      const nextDraft = {
+        ...currentDraft,
+        targetMode: "specific",
+        targetLevel: "Bund",
+        targetState: "",
+        targetPoliticianIds: ids,
+      } as CampaignDraft;
       window.localStorage.setItem(draftStorageKey, JSON.stringify(nextDraft));
       return nextDraft;
     });
@@ -325,6 +365,7 @@ export function CreatorCampaignForm() {
           <input type="hidden" name="creatorName" value={draft.creatorName} />
           <input type="hidden" name="targetLevel" value={draft.targetLevel} />
           <input type="hidden" name="targetState" value={draft.targetState} />
+          <input type="hidden" name="targetMode" value={draft.targetMode} />
         </>
       )}
 
@@ -460,7 +501,7 @@ export function CreatorCampaignForm() {
         )}
       </div>
 
-      <fieldset className="grid gap-2">
+      <fieldset className="grid gap-3">
         <legend className="font-typewriter text-sm font-bold text-waldgruen-dark">
           Wohin soll die Kampagne gehen?
         </legend>
@@ -481,7 +522,10 @@ export function CreatorCampaignForm() {
                   name="targetLevel"
                   value={option.value}
                   checked={isSelected}
-                  onChange={() => updateDraft("targetLevel", option.value)}
+                  onChange={() => {
+                    if (option.value === "Land") updateTargetMode("default");
+                    updateDraft("targetLevel", option.value);
+                  }}
                   className="mt-1 h-4 w-4 shrink-0 border-warmgrau/30 text-waldgruen accent-waldgruen"
                 />
                 <span className="grid gap-0.5">
@@ -496,6 +540,39 @@ export function CreatorCampaignForm() {
             );
           })}
         </div>
+        {draft.targetLevel === "Bund" && (
+          <div className="rounded-md border border-waldgruen/20 bg-waldgruen/5 p-4">
+            <label className="flex cursor-pointer items-start gap-3">
+              <input
+                type="checkbox"
+                checked={draft.targetMode === "specific"}
+                onChange={(event) => updateTargetMode(event.target.checked ? "specific" : "default")}
+                className="mt-1 h-4 w-4 shrink-0 accent-waldgruen"
+              />
+              <span className="grid gap-0.5">
+                <span className="font-body text-base font-semibold text-waldgruen-dark">
+                  An eine Auswahl von Abgeordneten richten
+                </span>
+                <span className="font-body text-sm leading-relaxed text-warmgrau/65">
+                  Ohne Auswahl bleibt es eine normale Bundestagskampagne für die jeweils zuständigen MdBs.
+                </span>
+              </span>
+            </label>
+            {draft.targetMode === "specific" && (
+              <div className="mt-4 border-t border-waldgruen/15 pt-4">
+                <MdbCampaignSelector
+                  selectedIds={draft.targetPoliticianIds}
+                  onChange={updateTargetPoliticianIds}
+                />
+                {fieldError(result, "targetPoliticianIds") && (
+                  <p className="mt-2 font-body text-sm text-airmail-rot">
+                    {fieldError(result, "targetPoliticianIds")}
+                  </p>
+                )}
+              </div>
+            )}
+          </div>
+        )}
         {draft.targetLevel === "Land" && (
           <div className="grid gap-2">
             <label

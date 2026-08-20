@@ -112,6 +112,10 @@ export function isReservedCampaignSlug(slug: string): boolean {
 export const campaignStatusSchema = z.enum(CAMPAIGN_STATUSES);
 export const campaignTargetLevelSchema = z.enum(CAMPAIGN_TARGET_LEVELS);
 export const campaignTargetStateSchema = z.enum(BUNDESLAND_KEYS);
+export const campaignTargetPoliticianIdsSchema = z
+  .array(z.number().int().positive())
+  .refine((ids) => new Set(ids).size === ids.length, "Eine Person darf nur einmal ausgewählt werden.")
+  .default([]);
 export const campaignTargetSchema = z
   .object({
     targetLevel: campaignTargetLevelSchema,
@@ -164,6 +168,7 @@ export const createCampaignSchema = campaignPublicFieldsSchema
     moderationCategories: z.array(z.string().trim().min(1).max(80)).max(20).default([]),
     targetLevel: campaignTargetLevelSchema.default("Bund"),
     targetState: campaignTargetStateSchema.nullable().default(null),
+    targetPoliticianIds: campaignTargetPoliticianIdsSchema,
   })
   .superRefine((value, ctx) => {
     if (value.targetLevel === "Bund" && value.targetState !== null) {
@@ -173,9 +178,19 @@ export const createCampaignSchema = campaignPublicFieldsSchema
         message: "Ein Bundesland ist nur bei Landeskampagnen erlaubt.",
       });
     }
+    if (value.targetPoliticianIds.length > 0 && value.targetLevel !== "Bund") {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["targetPoliticianIds"],
+        message: "Bestimmte MdBs können nur bei Bundestagskampagnen ausgewählt werden.",
+      });
+    }
   });
 
+export const updateCampaignTargetSchema = campaignTargetPoliticianIdsSchema.optional();
+
 export const updateCampaignPublicFieldsSchema = campaignPublicFieldsSchema
+  .extend({ targetPoliticianIds: campaignTargetPoliticianIdsSchema.optional() })
   .partial()
   .refine((value) => Object.keys(value).length > 0, "Keine Änderungen übergeben.");
 
@@ -200,6 +215,7 @@ export type Campaign = {
   moderationCategories: string[];
   targetLevel: CampaignTargetLevel;
   targetState: BundeslandKey | null;
+  targetPoliticianIds: number[];
   emailVerifiedAt: string | null;
   activatedAt: string | null;
   pausedAt: string | null;
@@ -221,6 +237,7 @@ export type CampaignRevision = {
   externalUrl: string | null;
   moderationStatus: CampaignModerationStatus;
   moderationCategories: string[];
+  targetPoliticianIds: number[];
   createdAt: string;
 };
 

@@ -30,6 +30,7 @@ type CampaignRow = {
   moderation_categories: string[] | null;
   target_level: string | null;
   target_state: string | null;
+  target_politician_ids: number[] | null;
   email_verified_at: string | null;
   activated_at: string | null;
   paused_at: string | null;
@@ -51,6 +52,7 @@ type CampaignRevisionRow = {
   external_url: string | null;
   moderation_status: CampaignModerationStatus;
   moderation_categories: string[] | null;
+  target_politician_ids: number[] | null;
   created_at: string;
 };
 
@@ -64,6 +66,7 @@ type CampaignUpdate = Partial<{
   status: CampaignStatus;
   moderation_status: CampaignModerationStatus;
   moderation_categories: string[];
+  target_politician_ids: number[];
   email_verified_at: string;
   activated_at: string;
   paused_at: string;
@@ -100,6 +103,7 @@ function mapCampaign(row: CampaignRow): Campaign {
     moderationStatus: row.moderation_status,
     moderationCategories: row.moderation_categories ?? [],
     ...resolveCampaignTarget(row),
+    targetPoliticianIds: row.target_politician_ids ?? [],
     emailVerifiedAt: row.email_verified_at,
     activatedAt: row.activated_at,
     pausedAt: row.paused_at,
@@ -123,6 +127,7 @@ function mapRevision(row: CampaignRevisionRow): CampaignRevision {
     externalUrl: row.external_url,
     moderationStatus: row.moderation_status,
     moderationCategories: row.moderation_categories ?? [],
+    targetPoliticianIds: row.target_politician_ids ?? [],
     createdAt: row.created_at,
   };
 }
@@ -191,6 +196,7 @@ export async function createCampaign(
       moderation_categories: parsed.moderationCategories,
       target_level: parsed.targetLevel,
       target_state: parsed.targetLevel === "Land" ? parsed.targetState : null,
+      target_politician_ids: parsed.targetPoliticianIds,
     })
     .select("*")
     .single();
@@ -306,6 +312,9 @@ export async function updateCampaignPublicFields(
   if (parsed.creatorName !== undefined) patch.creator_name = nullableText(parsed.creatorName);
   if (parsed.externalUrl !== undefined) patch.external_url = nullableText(parsed.externalUrl);
   if (parsed.logoPath !== undefined) patch.logo_path = nullableText(parsed.logoPath);
+  if (parsed.targetPoliticianIds !== undefined) {
+    patch.target_politician_ids = parsed.targetPoliticianIds;
+  }
 
   return updateCampaignRow(campaignId, patch, db);
 }
@@ -352,6 +361,7 @@ async function createCampaignRevisionFromCampaign(
       external_url: campaign.externalUrl,
       moderation_status: campaign.moderationStatus,
       moderation_categories: campaign.moderationCategories,
+      target_politician_ids: campaign.targetPoliticianIds,
     })
     .select("*")
     .single();
@@ -407,6 +417,10 @@ export async function publishCampaignEdits(
       parsed.logoPath !== undefined
         ? nullableText(parsed.logoPath)
         : campaign.logoPath,
+    targetPoliticianIds:
+      parsed.targetPoliticianIds !== undefined
+        ? parsed.targetPoliticianIds
+        : campaign.targetPoliticianIds,
   };
 
   const { data: revisionData, error: revisionError } = await client(db)
@@ -421,6 +435,7 @@ export async function publishCampaignEdits(
       external_url: next.externalUrl,
       moderation_status: "approved",
       moderation_categories: moderationCategories,
+      target_politician_ids: next.targetPoliticianIds,
     })
     .select("*")
     .single();
@@ -443,6 +458,7 @@ export async function publishCampaignEdits(
       logo_path: next.logoPath,
       moderation_status: "approved",
       moderation_categories: moderationCategories,
+      target_politician_ids: next.targetPoliticianIds,
       last_published_revision_id: revision.id,
     },
     db

@@ -23,6 +23,7 @@ import { checkRateLimit, hashIdentifier, LIMITS } from "@/lib/rateLimit";
 import { DEFAULT_LETTER_LENGTH } from "@/lib/config";
 import { MistralProviderUnavailableError } from "@/lib/mistral";
 import { incrementLetterCounters } from "@/lib/counter";
+import { getActiveCampaignBySlug } from "@/lib/campaigns/repository";
 
 // Client-Auswahl: diskriminierte Union (999.6). Institutionelle Empfänger
 // tragen bewusst KEINE ID; der Server leitet sie aus der PLZ ab (LOCK-5).
@@ -135,14 +136,6 @@ export async function POST(req: NextRequest) {
     if (!data || !selection) {
       return NextResponse.json({ error: "Ungültige Anfrage." }, { status: 400 });
     }
-    if (
-      selection.kind !== "mdb" &&
-      (process.env.LANDTAG_ROUTING_ENABLED !== "true" ||
-        process.env.LETTER_PROMPT_LEVEL_AWARE !== "true")
-    ) {
-      return NextResponse.json({ error: "Empfänger nicht verfügbar." }, { status: 400 });
-    }
-
     // Re-validate (defense in depth — client could call this endpoint directly)
     const step1Result = step1Schema.safeParse(data);
     if (!step1Result.success) {
@@ -181,10 +174,23 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    const campaign = data.campaign?.slug
+      ? await getActiveCampaignBySlug(data.campaign.slug)
+      : null;
+    if (data.campaign?.slug && !campaign) {
+      return NextResponse.json({ error: "Diese Kampagne ist aktuell nicht aktiv." }, { status: 400 });
+    }
+    const allowedPoliticianIds = campaign?.targetPoliticianIds ?? [];
+    if (allowedPoliticianIds.length > 0 && selection.kind !== "mdb") {
+      return NextResponse.json({ error: "Empfänger nicht gefunden." }, { status: 400 });
+    }
+
     // Re-derive recipient server-side — never trust client-supplied data.
     // mdb/mdl: ID muss in der PLZ-abgeleiteten Ebenen-Liste stehen.
     // Institutionelle Empfänger werden komplett aus der PLZ gebaut (LOCK-5).
-    const resolved = resolveRecipientSelection(data.plz, selection);
+    const resolved = allowedPoliticianIds.length > 0
+      ? resolveRecipientSelection(data.plz, selection, { allowedPoliticianIds })
+      : resolveRecipientSelection(data.plz, selection);
     if (!resolved.ok) {
       return NextResponse.json({ error: "Empfänger nicht gefunden." }, { status: 400 });
     }
@@ -257,9 +263,17 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Send email + increment counter fire-and-forget
+    // Increment before responding so the public counter is current after a
+    // successful letter generation. A counter failure must not block delivery.
+    let letterNumber: number | undefined;
+    try {
+      letterNumber = await incrementLetterCounters(data.campaign?.slug);
+    } catch (error) {
+      console.error("[brief-nach-berlin][counter] increment failed", error);
+    }
+
+    // Send email and follow-up after the response
     after(async () => {
-      const letterNumber = await incrementLetterCounters(data.campaign?.slug);
       const debugPayload = buildDebugPayload(
         data,
         result,
@@ -319,6 +333,7 @@ export async function POST(req: NextRequest) {
       politician: result.selectedPolitician,
       recipient: result.selectedRecipient,
       politicalLevel: result.politicalLevel,
+      letterNumber,
     });
   } catch (error) {
     // errorId: billiger Live-Grep-Anker für Vercel-Logs im Moment des Fehlers.

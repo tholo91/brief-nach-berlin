@@ -1,9 +1,17 @@
-import { lookupPLZ, lookupPLZWithLevel } from "./plzLookup";
+import {
+  getBundestagPoliticiansByIds,
+  lookupPLZ,
+  lookupPLZWithLevel,
+} from "./plzLookup";
 import type { Recipient, RecipientSelection } from "./rathausRecipient";
 
 export type ResolveRecipientResult =
   | { ok: true; recipient: Recipient; availableCount: number }
   | { ok: false; reason: "not_found" | "kommune_not_applicable" };
+
+type ResolveRecipientOptions = {
+  allowedPoliticianIds?: readonly number[];
+};
 
 /**
  * Löst eine Client-Auswahl serverseitig in einen vertrauenswürdigen Empfänger
@@ -16,11 +24,18 @@ export type ResolveRecipientResult =
  */
 export function resolveRecipientSelection(
   plz: string,
-  selection: RecipientSelection
+  selection: RecipientSelection,
+  options: ResolveRecipientOptions = {}
 ): ResolveRecipientResult {
   if (selection.kind === "mdb") {
-    // Bestehender Bund-Pfad inkl. Fallback-Eintrag (id -1) bleibt erhalten.
-    const { politicians } = lookupPLZ(plz);
+    const localPoliticians = lookupPLZ(plz).politicians;
+    const allowedIds = options.allowedPoliticianIds ?? [];
+    const politicians =
+      allowedIds.length > 0
+        ? localPoliticians.filter((politician) => allowedIds.includes(politician.id)).length > 0
+          ? localPoliticians.filter((politician) => allowedIds.includes(politician.id))
+          : getBundestagPoliticiansByIds(allowedIds)
+        : localPoliticians;
     const match = politicians.find((p) => p.id === selection.selectedPoliticianId);
     if (!match) return { ok: false, reason: "not_found" };
     return {

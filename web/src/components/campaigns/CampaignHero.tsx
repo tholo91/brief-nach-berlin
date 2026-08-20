@@ -16,6 +16,7 @@ type PublicCampaign = Pick<
   | "letterCount"
   | "targetLevel"
   | "targetState"
+  | "targetPoliticianIds"
 >;
 
 const COMMON_FAQ_ITEMS = [
@@ -96,6 +97,7 @@ export function CampaignHero({ campaign }: { campaign: PublicCampaign }) {
   const sourceInitial = sourceName.charAt(0).toUpperCase();
   const sourceHostname = formatHostname(campaign.externalUrl);
   const isLandCampaign = campaign.targetLevel === "Land";
+  const hasTargetMdbs = campaign.targetPoliticianIds.length > 0;
   const targetStateName = campaign.targetState
     ? BUNDESLAND_NAMES[campaign.targetState] ?? null
     : null;
@@ -103,7 +105,9 @@ export function CampaignHero({ campaign }: { campaign: PublicCampaign }) {
     ? getLandesregierungRecipient(campaign.targetState)
     : null;
   const heroRecipient = !isLandCampaign
-    ? "dein Mitglied des Bundestags"
+    ? hasTargetMdbs
+      ? "ein ausgewähltes Mitglied des Bundestags"
+      : "dein Mitglied des Bundestags"
     : governmentRecipient
       ? `${governmentRecipient.institutionKind === "senat" ? "den" : "die"} ${governmentRecipient.label}`
       : "die Landesregierung deines Bundeslands";
@@ -132,6 +136,11 @@ export function CampaignHero({ campaign }: { campaign: PublicCampaign }) {
               {targetStateName
                 ? `Landeskampagne · ${targetStateName}`
                 : "Landeskampagne"}
+            </span>
+          )}
+          {hasTargetMdbs && (
+            <span className="mt-3 inline-flex w-fit items-center rounded-full border border-waldgruen/20 bg-waldgruen/10 px-3 py-1 font-body text-xs font-semibold text-waldgruen-dark">
+              Kampagne mit ausgewählten MdBs
             </span>
           )}
           <p className="mt-5 max-w-xl font-body text-lg leading-relaxed text-warmgrau/75">

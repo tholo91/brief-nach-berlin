@@ -79,22 +79,26 @@ describe("RecipientSelection server hardening", () => {
     expect(mockedResolveRecipientSelection).not.toHaveBeenCalled();
   });
 
-  it("sperrt MdL am selectPoliticianAction-Boundary, wenn das Flag aus ist", async () => {
+  it("prüft eine MdL-Auswahl serverseitig auch ohne frühere Release-Flags", async () => {
     await expect(
       selectPoliticianAction({ ...data }, { kind: "mdl", selectedPoliticianId: 12 })
-    ).resolves.toMatchObject({ error: "server_error", message: "Empfänger nicht verfügbar." });
-    expect(mockedResolveRecipientSelection).not.toHaveBeenCalled();
+    ).resolves.toMatchObject({ preCheckOk: true });
+    expect(mockedResolveRecipientSelection).toHaveBeenCalledWith("50667", {
+      kind: "mdl",
+      selectedPoliticianId: 12,
+    });
   });
 
-  it("sperrt Landesregierung am selectPoliticianAction-Boundary, wenn das Flag aus ist", async () => {
+  it("prüft die Landesregierung serverseitig auch ohne frühere Release-Flags", async () => {
     await expect(
       selectPoliticianAction({ ...data }, { kind: "landesregierung" })
-    ).resolves.toMatchObject({ error: "server_error", message: "Empfänger nicht verfügbar." });
-    expect(mockedResolveRecipientSelection).not.toHaveBeenCalled();
+    ).resolves.toMatchObject({ preCheckOk: true });
+    expect(mockedResolveRecipientSelection).toHaveBeenCalledWith("50667", {
+      kind: "landesregierung",
+    });
   });
 
-  it("akzeptiert Landesregierung ohne Client-ID nur bei beiden aktiven Flags", async () => {
-    process.env.LANDTAG_ROUTING_ENABLED = "true";
+  it("akzeptiert Landesregierung ohne Client-ID", async () => {
     mockedResolveRecipientSelection.mockReturnValue({
       ok: true,
       recipient: {
@@ -124,14 +128,16 @@ describe("RecipientSelection server hardening", () => {
     });
   });
 
-  it("sperrt Landesregierung, wenn nur der Ebenen-Prompt deaktiviert ist", async () => {
+  it("bleibt bei der Landesregierung auch mit früher deaktiviertem Prompt serverseitig", async () => {
     process.env.LANDTAG_ROUTING_ENABLED = "true";
     process.env.LETTER_PROMPT_LEVEL_AWARE = "false";
 
     await expect(
       selectPoliticianAction({ ...data }, { kind: "landesregierung" })
-    ).resolves.toMatchObject({ error: "server_error", message: "Empfänger nicht verfügbar." });
-    expect(mockedResolveRecipientSelection).not.toHaveBeenCalled();
+    ).resolves.toMatchObject({ preCheckOk: true });
+    expect(mockedResolveRecipientSelection).toHaveBeenCalledWith("50667", {
+      kind: "landesregierung",
+    });
   });
 
   it("behält die numerische Legacy-Bund-Auswahl bei deaktiviertem Flag bei", async () => {
@@ -155,11 +161,15 @@ describe("RecipientSelection server hardening", () => {
     expect(mockedCheckRateLimit).not.toHaveBeenCalled();
   });
 
-  it("sperrt Rathaus am Resend-Boundary, wenn das Flag aus ist", async () => {
+  it("akzeptiert eine strukturell gültige Rathaus-Auswahl am Resend-Boundary", async () => {
+    mockedModerateText.mockResolvedValue({ flagged: false, categories: [] });
+    mockedBuildResendDebugPayload.mockReturnValue({} as never);
+    mockedPrepareLetterEmail.mockReturnValue({ feedbackToken: "token", params: {} as never });
+    mockedSendLetterEmail.mockResolvedValue({ success: true, messageId: "id" });
     await expect(
       resendLetterAction({ ...data }, { kind: "rathaus" }, "Ein gültiger Brieftext")
-    ).resolves.toMatchObject({ error: "validation", message: "Empfänger nicht verfügbar." });
-    expect(mockedCheckRateLimit).not.toHaveBeenCalled();
+    ).resolves.toMatchObject({ success: true });
+    expect(mockedResolveRecipientSelection).toHaveBeenCalledWith("50667", { kind: "rathaus" });
   });
 
   it("Resend leitet die Landesregierung erneut aus der PLZ ab", async () => {

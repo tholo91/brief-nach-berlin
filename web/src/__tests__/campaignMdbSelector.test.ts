@@ -1,8 +1,11 @@
 import {
   filterCampaignPoliticians,
+  MdbCampaignHiddenInputs,
   mergeCampaignPoliticianIds,
 } from "@/components/campaigns/MdbCampaignSelector";
 import type { Politician } from "@/lib/types/politician";
+import { createElement } from "react";
+import { renderToStaticMarkup } from "react-dom/server";
 
 const people: Politician[] = [
   {
@@ -57,5 +60,14 @@ describe("MdB campaign selector filtering", () => {
 
   it("adds all currently filtered results without duplicates", () => {
     expect(mergeCampaignPoliticianIds([2], [people[0]!, people[1]!])).toEqual([2, 1]);
+  });
+
+  it("serializes every selected MdB for the final form step", () => {
+    const html = renderToStaticMarkup(
+      createElement(MdbCampaignHiddenInputs, { selectedIds: [2, 3] })
+    );
+
+    expect(html).toContain('name="targetPoliticianId" value="2"');
+    expect(html).toContain('name="targetPoliticianId" value="3"');
   });
 });

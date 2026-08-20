@@ -58,6 +58,15 @@ type MdbCampaignSelectorProps = {
   inputName?: string;
 };
 
+export function MdbCampaignHiddenInputs({
+  selectedIds,
+  inputName = "targetPoliticianId",
+}: Pick<MdbCampaignSelectorProps, "selectedIds" | "inputName">) {
+  return selectedIds.map((id) => (
+    <input key={id} type="hidden" name={inputName} value={id} />
+  ));
+}
+
 export function MdbCampaignSelector({
   selectedIds,
   onChange,
@@ -203,9 +212,7 @@ export function MdbCampaignSelector({
         </p>
       )}
 
-      {selectedIds.map((id) => (
-        <input key={id} type="hidden" name={inputName} value={id} />
-      ))}
+      <MdbCampaignHiddenInputs selectedIds={selectedIds} inputName={inputName} />
 
       <div
         className="grid max-h-[32rem] gap-2 overflow-x-hidden overflow-y-auto rounded-md border border-warmgrau/15 bg-white/55 p-2"

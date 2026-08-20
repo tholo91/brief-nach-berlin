@@ -14,7 +14,10 @@ import {
   type CreateCampaignDraftResult,
 } from "@/lib/actions/createCampaignDraft";
 import { BUNDESLAND_NAMES } from "@/lib/campaigns/schema";
-import { MdbCampaignSelector } from "./MdbCampaignSelector";
+import {
+  MdbCampaignHiddenInputs,
+  MdbCampaignSelector,
+} from "./MdbCampaignSelector";
 
 const initialResult: CreateCampaignDraftResult | null = null;
 const draftStorageKey = "bnb_creator_campaign_draft";
@@ -366,6 +369,9 @@ export function CreatorCampaignForm() {
           <input type="hidden" name="targetLevel" value={draft.targetLevel} />
           <input type="hidden" name="targetState" value={draft.targetState} />
           <input type="hidden" name="targetMode" value={draft.targetMode} />
+          {draft.targetMode === "specific" && (
+            <MdbCampaignHiddenInputs selectedIds={draft.targetPoliticianIds} />
+          )}
         </>
       )}
 

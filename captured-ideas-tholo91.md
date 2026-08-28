@@ -50,6 +50,48 @@
 
 - 2026-06-26: Offene Captures sollen zu Sessionbeginn weiter gruppiert gelistet werden. Danach nicht automatisch auf Anweisung warten, außer der User spricht den Capture-Check ausdrücklich an.
 
+## Ausgearbeitetes Backlog-Item: Partei-Priorisierung über geteilte URLs
+
+**Ausgangslage**
+
+Der bestehende Capture „Per URL Parameter Partei im array forcieren“ soll nicht als offener Parameter `fav=CDU,afd` umgesetzt werden, wenn daraus im Open-Source-Code eine politische Präferenz des Projekts oder der Kampagnenbetreibenden ablesbar wäre. Der eigentliche Zweck ist: progressive Anliegen sollen auch Abgeordnete der politischen Mitte bzw. konservative Parteien zuverlässig erreichen können.
+
+**Problem mit `fav=CDU,afd`**
+
+Eine echte politische Präferenz lässt sich in Open Source nicht dauerhaft geheim halten. Versteckte Client-Logik, verschlüsselte Parameter oder Minifizierung wären nur Scheinschutz und würden Vertrauen beschädigen. Außerdem könnte ein beliebiger Link-Ersteller damit Empfänger:innen politisch beeinflussen, ohne dass Nutzer:innen die Auswahl verstehen.
+
+**Optionen**
+
+1. **Transparenter `fav`-Parameter**: technisch einfach und überprüfbar, aber politische Absicht und Priorisierung sind öffentlich nachvollziehbar. Nur vertretbar, wenn `fav` ausdrücklich als Kampagnenkontext dokumentiert und im UI erklärt wird.
+2. **Opaque Kampagnen-ID statt Parteienliste**: URL enthält z. B. `campaign=<öffentliche-id>`; die Zuordnung zu Parteien liegt in einer kampagnenbezogenen Konfiguration. Besser für redaktionelle Kontrolle und kurze Links, aber die Zuordnung bleibt über Laufzeitverhalten, Datenbank oder API prinzipiell rekonstruierbar.
+3. **Signierter, serverseitig validierter Kontext-Token**: verhindert Manipulation und begrenzt den Parameter auf veröffentlichte Kampagnen. Er versteckt politische Präferenzen jedoch nicht zuverlässig und ist für das Kernprodukt wahrscheinlich zu komplex.
+4. **Kein Partei-Parameter; explizite Auswahl im Flow**: Nutzer:innen wählen selbst mehrere passende Empfänger:innen. Am transparentesten und neutralsten, aber für Kampagnen weniger bequem.
+
+**Empfehlung für ein späteres MVP**
+
+Option 2 als Kampagnenmechanik, kombiniert mit Option 4 als sichtbarer Nutzerkontrolle: Kampagnen teilen eine öffentliche Kampagnen-ID; die Konfiguration kann eine oder mehrere Zielparteien als „zusätzliche Ansprache“ markieren. Die UI zeigt diese Auswahl bzw. den Grund verständlich an und lässt sie ändern. Keine geheime politische Voreinstellung und kein autonomes Vorauswählen ohne sichtbare Erklärung.
+
+**Sortier- und Routingregel**
+
+- Zuerst entscheidet die sachliche Ebene des Anliegens: Bund → MdB, Land → MdL/Landtag, Kommune → kommunale Stelle. Eine Partei-Priorisierung darf diese Zuständigkeit niemals überstimmen.
+- Innerhalb der zuständigen, nach PLZ bzw. Wahlkreis ermittelten Liste bleiben Direktmandat/Wahlkreisbezug, Datenqualität und Erreichbarkeit die primären Kriterien.
+- Der Kampagnenkontext darf nur als nachgelagerter Tie-Breaker wirken: passende Zielpartei(en) nach oben, mehrere Treffer in der vom Kampagnenbetreiber begründeten Reihenfolge; keine passenden Treffer → normale neutrale Reihenfolge.
+- Wenn es kein direkt zugeordnetes Mandat gibt, dürfen passende Listenabgeordnete aus derselben zuständigen Region vorgeschlagen werden. Das darf nicht zu einer bundesweiten oder landesweiten beliebigen Parteiauswahl führen.
+- Nutzer:innen müssen die Empfehlung vor dem Erstellen des Briefs sehen, abwählen und weitere zuständige Abgeordnete hinzufügen können. Bei MdB und MdL gilt dieselbe Logik, aber jeweils nur innerhalb der passenden Ebene.
+- Für die Kommunikationslogik gilt: progressive Anliegen können gezielt konservative bzw. bürgerliche Abgeordnete ansprechen, weil parlamentarische Wirksamkeit nicht voraussetzt, dass Empfänger:innen politisch gleich denken. Das ist ein Kampagnenziel, keine allgemeine parteipolitische Sortierregel des Produkts.
+
+**Akzeptanzkriterien für die spätere Umsetzung**
+
+- Keine politische Präferenz ist als globale Default-Logik im Open-Source-Code versteckt.
+- Kampagnenkontext ist öffentlich erklärbar, signiert/validiert und auf erlaubte Parteien sowie zuständige Ebenen begrenzt.
+- Ohne Kampagnenkontext bleibt die bestehende neutrale Reihenfolge unverändert.
+- `fav` bzw. die neue Kampagnen-ID kann keine unzuständigen MdB/MdL einschleusen und keine PLZ-/Wahlkreislogik umgehen.
+- Tests decken Bund/Land, Direktmandat, Listenfallback, mehrere Zielparteien, keine Treffer und manipulierte/unbekannte Parameter ab.
+
+**Offene Produktentscheidung**
+
+Vor Umsetzung festlegen, ob Kampagnenbetreiber die Zielparteien selbst konfigurieren dürfen oder ob Brief-nach-Berlin jede Kampagnenkonfiguration redaktionell freigibt. Empfehlung: redaktionelle Freigabe, weil die Empfängerpriorisierung politisch sensibel ist.
+
 ## Spateres Produkt-To-do
 
 - **Varianten-Flow aus Review und E-Mail schlank zusammenfuhren** (Priority: ⚪ Normal)

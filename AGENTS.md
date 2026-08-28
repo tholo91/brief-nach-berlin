@@ -11,7 +11,8 @@ Dieses Repo ist mit der Gitty-App für mobiles Task-Capturing verbunden. Capture
 
 ## Projektorientierung
 
-- Brief nach Berlin ist ein deutsches, überparteiliches Civic-Tech-Projekt: Nutzer:innen beschreiben ein Anliegen, die App findet zuständige Politiker:innen und erzeugt einen formal brauchbaren Brief zum Abschreiben und Abschicken.
+- Brief-nach-Berlin ist ein deutsches, überparteiliches Civic-Tech-Projekt: Nutzer:innen beschreiben ein Anliegen, die App findet zuständige Politiker:innen und erzeugt einen formal brauchbaren Brief zum Abschreiben und Abschicken.
+- Markenschreibweise: „Brief-nach-Berlin“ immer mit Bindestrichen schreiben; bestehende URLs bleiben unverändert.
 - Aktive Produktentwicklung liegt in `web/`. Root-Dokumente enthalten Strategie, Datenschutz, Anpassungsleitfäden, Presse- und Projektkontext.
 - Öffentliche Sprache ist Deutsch, per Du, sachlich, ermutigend und nicht aktivistisch-aggressiv. Generierte Briefe an Politiker:innen bleiben formal per Sie.
 - Für Marken-, Landing- oder größere UI-Arbeiten zuerst `.planning/brand-identity.md` lesen und bei Bedarf UI-Skills wie `frontend-design` oder `design-taste-frontend` nutzen.

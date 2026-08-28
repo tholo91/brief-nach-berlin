@@ -3,19 +3,64 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useCallback, useEffect, useRef } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { Step2Issue } from "@/components/wizard/Step2Issue";
 import { saveHandoff } from "@/lib/wizard-handoff";
 import { WIZARD_PATH } from "@/lib/config";
 
 export default function Hero() {
+  const sectionRef = useRef<HTMLElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
+  const [isVideoPlaying, setIsVideoPlaying] = useState(false);
   const router = useRouter();
 
   useEffect(() => {
     const video = videoRef.current;
-    if (!video) return;
+    const section = sectionRef.current;
+    if (!video || !section) return;
+
+    let isInViewport = false;
+    let isMounted = true;
+
+    const attemptPlayback = () => {
+      if (!video.paused) return;
+
+      video.muted = true;
+      const playPromise = video.play();
+      playPromise?.catch(() => {
+        if (isMounted) setIsVideoPlaying(false);
+      });
+    };
+
     video.playbackRate = 0.5;
+
+    const observer = new IntersectionObserver(([entry]) => {
+      isInViewport = entry.isIntersecting;
+      if (isInViewport) {
+        attemptPlayback();
+      } else {
+        video.pause();
+      }
+    });
+
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === "visible" && isInViewport) {
+        attemptPlayback();
+      }
+    };
+
+    observer.observe(section);
+    const sectionBounds = section.getBoundingClientRect();
+    isInViewport =
+      sectionBounds.bottom > 0 && sectionBounds.top < window.innerHeight;
+    if (isInViewport) attemptPlayback();
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+
+    return () => {
+      isMounted = false;
+      observer.disconnect();
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+    };
   }, []);
 
   // Warm the wizard route on mount so the very first submit navigates snappily.
@@ -34,21 +79,40 @@ export default function Hero() {
   );
 
   return (
-    <section className="relative min-h-[72vh] lg:min-h-[92vh] flex items-start lg:items-center justify-center overflow-hidden">
+    <section
+      ref={sectionRef}
+      className="relative min-h-[72vh] lg:min-h-[92vh] flex items-start lg:items-center justify-center overflow-hidden"
+    >
       {/* Background video */}
       <video
         ref={videoRef}
-        autoPlay
         loop
         muted
         playsInline
         preload="auto"
-        className="absolute inset-0 w-full h-full object-cover"
+        aria-hidden="true"
+        tabIndex={-1}
+        onPlaying={() => setIsVideoPlaying(true)}
+        onPause={() => setIsVideoPlaying(false)}
+        onError={() => setIsVideoPlaying(false)}
+        className="pointer-events-none absolute inset-0 w-full h-full object-cover"
         poster="/hero-bg.webp"
       >
         <source src="/hero-bg.webm" type="video/webm" />
         <source src="/hero-bg.mp4" type="video/mp4" />
       </video>
+
+      <Image
+        src="/hero-bg.webp"
+        alt=""
+        fill
+        priority
+        sizes="100vw"
+        aria-hidden="true"
+        className={`pointer-events-none absolute inset-0 object-cover transition-opacity duration-200 ${
+          isVideoPlaying ? "opacity-0" : "opacity-100"
+        }`}
+      />
 
       {/* Gradient overlay */}
       <div

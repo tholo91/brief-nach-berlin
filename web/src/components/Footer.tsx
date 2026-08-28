@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { FOUNDER_FEEDBACK_URL } from "@/lib/config";
+import { FOUNDER_FEEDBACK_URL, WE_AID_PROJECT_URL } from "@/lib/config";
 import { getLetterCount } from "@/lib/counter";
 import { formatNumber } from "@/lib/formatNumber";
 
@@ -11,6 +11,10 @@ const footerSections = [
       { label: "Beispiele", href: "/beispiele" },
       { label: "Tipps", href: "/tipps" },
       { label: "Warum ein Brief?", href: "/warum-ein-brief" },
+      {
+        label: "Brief schreiben wirkt: erste Ergebnisse",
+        href: "/brief-schreiben-wirkt",
+      },
       { label: "Studien zur Wirkung", href: "/handschriftliche-briefe-wirkung" },
       {
         label: "Treppe der Selbstwirksamkeit",
@@ -35,6 +39,11 @@ const footerSections = [
     title: "Mitmachen",
     links: [
       { label: "Feedback", href: FOUNDER_FEEDBACK_URL, external: true },
+      {
+        label: "Brief-nach-Berlin unterstützen",
+        href: WE_AID_PROJECT_URL,
+        external: true,
+      },
       { label: "Weitersagen", href: "/weitersagen" },
       { label: "Briefkampagnen für NGOs", href: "/ngo-briefkampagne" },
       { label: "Kampagne starten", href: "/kampagne/starten" },

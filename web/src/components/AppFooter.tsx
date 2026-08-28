@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { FOUNDER_FEEDBACK_URL } from "@/lib/config";
+import { FOUNDER_FEEDBACK_URL, WE_AID_PROJECT_URL } from "@/lib/config";
 
 function AirmailStripe() {
   return (
@@ -79,7 +79,7 @@ export default function AppFooter() {
               prefetch={false}
               className="font-body text-sm text-warmgrau/40 transition-colors duration-200 hover:text-warmgrau"
             >
-              Briefe wirken wirklich
+              Brief schreiben wirkt: erste Ergebnisse
             </Link>
             <a
               href={FOUNDER_FEEDBACK_URL}
@@ -88,6 +88,14 @@ export default function AppFooter() {
               className="font-body text-sm text-warmgrau/40 transition-colors duration-200 hover:text-warmgrau"
             >
               Feedback
+            </a>
+            <a
+              href={WE_AID_PROJECT_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="font-body text-sm text-warmgrau/40 transition-colors duration-200 hover:text-warmgrau"
+            >
+              Brief-nach-Berlin unterstützen
             </a>
             <Link
               href="/ngo-briefkampagne"

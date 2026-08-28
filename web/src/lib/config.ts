@@ -77,6 +77,7 @@ export const FOUNDER_LINKEDIN = "https://www.linkedin.com/in/thomaslorenz91/" as
 export const FOUNDER_FEEDBACK_URL = "https://www.heyspeak.io/l/WIOENjqJn6z6WKtkWgDEFg?email=on" as const;
 export const BRIEF_FEEDBACK_URL = "https://www.heyspeak.io/l/qi6CAgWkebX3KOY8J3MCrA" as const;
 export const CAMPAIGN_CREATOR_FEEDBACK_URL = "https://www.heyspeak.io/l/1e3SbSQrkg0e2hZqROgUJA" as const;
+export const WE_AID_PROJECT_URL = "https://www.we-aid.org/de/project-details/176/" as const;
 
 // Build a public abgeordnetenwatch.de profile URL from a politician's name.
 // Format: lowercase, German umlaut transliteration, hyphen-joined.

@@ -11,11 +11,12 @@ function shuffle<T>(arr: T[]): T[] {
 }
 
 function pickBalancedReviews(reviews: PublicReview[]): PublicReview[] {
-  const fourStar = shuffle(reviews.filter((r) => r.rating === 4));
-  const fiveStar = shuffle(reviews.filter((r) => r.rating === 5));
+  const eligible = reviews.filter((r) => r.rating === 4 || r.rating === 5);
+  const fourStar = shuffle(eligible.filter((r) => r.rating === 4));
+  const fiveStar = shuffle(eligible.filter((r) => r.rating === 5));
   const perRating = Math.min(6, fourStar.length, fiveStar.length);
 
-  if (perRating === 0) return shuffle(reviews).slice(0, 12);
+  if (perRating === 0) return shuffle(eligible).slice(0, 12);
 
   return shuffle([
     ...fourStar.slice(0, perRating),
@@ -25,8 +26,6 @@ function pickBalancedReviews(reviews: PublicReview[]): PublicReview[] {
 
 /**
  * Fetches hand-curated hero reviews (hero_featured = true, rating >= 4).
- * Falls back to the latest 5-star reviews if none are curated yet.
- * Uses the anon client — RLS ensures only consented rows are returned.
  */
 export async function getHeroReviews(): Promise<PublicReview[]> {
   try {
@@ -41,31 +40,13 @@ export async function getHeroReviews(): Promise<PublicReview[]> {
       .order("created_at", { ascending: false })
       .limit(30);
 
-    if (!featuredError && featured && featured.length > 0) {
-      const filtered = (featured as PublicReview[]).filter(
-        (r) => r.body && r.body.trim().length > 0
-      );
-      return pickBalancedReviews(filtered);
-    }
-
-    // Fallback: top-rated recent reviews (fetch more so shuffle has variety)
-    const { data: fallback, error: fallbackError } = await supabase
-      .from("reviews")
-      .select("id, created_at, rating, body, display_name")
-      .eq("consent", true)
-      .gte("rating", 4)
-      .not("body", "is", null)
-      .gte("created_at", MIN_PUBLIC_REVIEW_DATE)
-      .order("created_at", { ascending: false })
-      .limit(30);
-
-    if (fallbackError) {
-      console.error("[getHeroReviews] fallback error:", fallbackError.message);
+    if (featuredError) {
+      console.error("[getHeroReviews] query error:", featuredError.message);
       return [];
     }
 
     return pickBalancedReviews(
-      ((fallback as PublicReview[]) ?? []).filter(
+      ((featured as PublicReview[]) ?? []).filter(
         (r) => r.body && r.body.trim().length > 0
       )
     );

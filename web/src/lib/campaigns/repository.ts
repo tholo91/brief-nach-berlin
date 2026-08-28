@@ -4,6 +4,7 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 import { getServiceRoleClient } from "@/lib/supabase/server";
 import {
   createCampaignSchema,
+  compactCampaignSlug,
   resolveCampaignTarget,
   updateCampaignPublicFieldsSchema,
   type Campaign,
@@ -272,6 +273,28 @@ export async function getActiveCampaignBySlug(
     throw new CampaignRepositoryError(`Active campaign lookup failed: ${error.message}`);
   }
   return data ? mapCampaign(data as CampaignRow) : null;
+}
+
+export async function getActiveCampaignByCompactSlug(
+  compactSlug: string,
+  db?: RepositoryClient
+): Promise<Campaign | null> {
+  const normalizedCompactSlug = compactCampaignSlug(compactSlug);
+  if (!normalizedCompactSlug) return null;
+
+  const { data, error } = await client(db)
+    .from("campaigns")
+    .select("*")
+    .eq("compact_slug", normalizedCompactSlug)
+    .eq("status", "active")
+    .eq("moderation_status", "approved")
+    .limit(2);
+
+  if (error) {
+    throw new CampaignRepositoryError(`Compact campaign lookup failed: ${error.message}`);
+  }
+  if (!data || data.length !== 1) return null;
+  return mapCampaign(data[0] as CampaignRow);
 }
 
 export async function getRecentActiveCampaigns(

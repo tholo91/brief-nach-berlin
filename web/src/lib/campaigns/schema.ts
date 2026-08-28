@@ -89,16 +89,21 @@ const reservedCampaignSlugs = new Set(["starten", "verifizieren", "verwalten"]);
 export function normalizeCampaignSlug(input: string): string {
   return input
     .trim()
-    .normalize("NFKD")
-    .replace(/[\u0300-\u036f]/g, "")
+    .normalize("NFC")
     .toLowerCase()
     .replace(/ä/g, "ae")
     .replace(/ö/g, "oe")
     .replace(/ü/g, "ue")
     .replace(/ß/g, "ss")
+    .normalize("NFKD")
+    .replace(/[\u0300-\u036f]/g, "")
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/^-+|-+$/g, "")
     .replace(/-{2,}/g, "-");
+}
+
+export function compactCampaignSlug(input: string): string {
+  return normalizeCampaignSlug(input).replaceAll("-", "");
 }
 
 export function isValidCampaignSlug(slug: string): boolean {

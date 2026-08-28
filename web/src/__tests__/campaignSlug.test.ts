@@ -1,5 +1,6 @@
 import {
   campaignSlugSchema,
+  compactCampaignSlug,
   isReservedCampaignSlug,
   normalizeCampaignSlug,
 } from "@/lib/campaigns/schema";
@@ -7,6 +8,14 @@ import {
 describe("campaign slugs", () => {
   it("normalizes human input into URL-safe slugs", () => {
     expect(normalizeCampaignSlug(" Sichere Schulwege! ")).toBe("sichere-schulwege");
+    expect(normalizeCampaignSlug("München für Fußgänger:innen ÄÖÜß")).toBe(
+      "muenchen-fuer-fussgaenger-innen-aeoeuess"
+    );
+    expect(normalizeCampaignSlug("   ")).toBe("");
+  });
+
+  it("creates compact variants for spoken campaign URLs", () => {
+    expect(compactCampaignSlug("Duisburg retten")).toBe("duisburgretten");
   });
 
   it("rejects reserved campaign routes", () => {
@@ -17,5 +26,8 @@ describe("campaign slugs", () => {
 
   it("accepts ordinary campaign slugs", () => {
     expect(campaignSlugSchema.safeParse("sichere-schulwege").success).toBe(true);
+    expect(campaignSlugSchema.safeParse("a-b").success).toBe(true);
+    expect(campaignSlugSchema.safeParse("ab").success).toBe(false);
+    expect(campaignSlugSchema.safeParse("a".repeat(81)).success).toBe(false);
   });
 });

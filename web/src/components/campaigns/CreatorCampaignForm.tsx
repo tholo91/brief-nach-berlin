@@ -13,7 +13,7 @@ import {
   createCampaignDraftAction,
   type CreateCampaignDraftResult,
 } from "@/lib/actions/createCampaignDraft";
-import { BUNDESLAND_NAMES } from "@/lib/campaigns/schema";
+import { BUNDESLAND_NAMES, normalizeCampaignSlug } from "@/lib/campaigns/schema";
 import {
   MdbCampaignHiddenInputs,
   MdbCampaignSelector,
@@ -26,6 +26,7 @@ const maxLogoDisplaySize = 512;
 const issueTextMinChars = 100;
 const issueTextBetterChars = 200;
 const issueTextMaxChars = 4000;
+const campaignDescriptionMaxChars = 400;
 const acceptedLogoTypes = new Set(["image/png", "image/jpeg", "image/webp"]);
 const firstStepErrorFields = new Set(["title", "issueText", "slug", "creatorName", "targetPoliticianIds"]);
 const slugPattern = /^[a-z0-9][a-z0-9-]{1,78}[a-z0-9]$/;
@@ -43,6 +44,7 @@ const draftFields = [
 ] as const;
 type DraftField = (typeof draftFields)[number];
 type CampaignDraft = Record<DraftField, string> & { targetPoliticianIds: number[] };
+type StoredCampaignDraft = Partial<CampaignDraft> & { slugManuallyEdited?: boolean };
 type FormStep = 1 | 2;
 const emptyDraft: CampaignDraft = {
   title: "",
@@ -83,18 +85,7 @@ function fieldError(
 }
 
 function slugPreview(value: string): string {
-  return value
-    .trim()
-    .normalize("NFKD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .toLowerCase()
-    .replace(/ä/g, "ae")
-    .replace(/ö/g, "oe")
-    .replace(/ü/g, "ue")
-    .replace(/ß/g, "ss")
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-+|-+$/g, "")
-    .replace(/-{2,}/g, "-");
+  return normalizeCampaignSlug(value);
 }
 
 function isFirstStepComplete(draft: CampaignDraft, normalizedSlug: string): boolean {
@@ -149,6 +140,7 @@ export function CreatorCampaignForm() {
   const [draft, setDraft] = useState<CampaignDraft>(emptyDraft);
   const [step, setStep] = useState<FormStep>(1);
   const [confirmOpen, setConfirmOpen] = useState(false);
+  const [slugManuallyEdited, setSlugManuallyEdited] = useState(false);
   const [logoPreviewUrl, setLogoPreviewUrl] = useState<string | null>(null);
   const [logoFileName, setLogoFileName] = useState<string | null>(null);
   const [logoError, setLogoError] = useState<string | null>(null);
@@ -167,10 +159,13 @@ export function CreatorCampaignForm() {
 
   useEffect(() => {
     const rawDraft = window.localStorage.getItem(draftStorageKey);
-    if (!rawDraft) return;
+    if (!rawDraft) {
+      window.localStorage.removeItem(`${draftStorageKey}:slug-manual`);
+      return;
+    }
 
     try {
-      const savedDraft = JSON.parse(rawDraft) as Partial<CampaignDraft>;
+      const savedDraft = JSON.parse(rawDraft) as StoredCampaignDraft;
       const nextDraft: CampaignDraft = {
         ...emptyDraft,
         ...Object.fromEntries(
@@ -192,9 +187,20 @@ export function CreatorCampaignForm() {
       if (nextDraft.targetPoliticianIds.length > 0) {
         nextDraft.targetMode = "specific";
       }
+      const restoredSlugManuallyEdited =
+        savedDraft.slugManuallyEdited === true ||
+        window.localStorage.getItem(`${draftStorageKey}:slug-manual`) === "true" ||
+        (nextDraft.slug.length > 0 && slugPreview(nextDraft.slug) !== slugPreview(nextDraft.title));
+      window.localStorage.removeItem(`${draftStorageKey}:slug-manual`);
+      window.localStorage.setItem(
+        draftStorageKey,
+        JSON.stringify({ ...nextDraft, slugManuallyEdited: restoredSlugManuallyEdited })
+      );
+      setSlugManuallyEdited(restoredSlugManuallyEdited);
       window.setTimeout(() => setDraft(nextDraft), 0);
     } catch {
       window.localStorage.removeItem(draftStorageKey);
+      window.localStorage.removeItem(`${draftStorageKey}:slug-manual`);
     }
   }, []);
 
@@ -210,7 +216,25 @@ export function CreatorCampaignForm() {
       if (field === "targetLevel" && value !== "Land") {
         nextDraft.targetState = "";
       }
-      window.localStorage.setItem(draftStorageKey, JSON.stringify(nextDraft));
+      window.localStorage.setItem(
+        draftStorageKey,
+        JSON.stringify({ ...nextDraft, slugManuallyEdited })
+      );
+      return nextDraft;
+    });
+  }
+
+  function updateTitle(value: string) {
+    setDraft((currentDraft) => {
+      const nextDraft = {
+        ...currentDraft,
+        title: value,
+        ...(slugManuallyEdited ? {} : { slug: slugPreview(value) }),
+      };
+      window.localStorage.setItem(
+        draftStorageKey,
+        JSON.stringify({ ...nextDraft, slugManuallyEdited })
+      );
       return nextDraft;
     });
   }
@@ -224,7 +248,10 @@ export function CreatorCampaignForm() {
           ? { targetLevel: "Bund", targetState: "" }
           : { targetPoliticianIds: [] }),
       };
-      window.localStorage.setItem(draftStorageKey, JSON.stringify(nextDraft));
+      window.localStorage.setItem(
+        draftStorageKey,
+        JSON.stringify({ ...nextDraft, slugManuallyEdited })
+      );
       return nextDraft;
     });
   }
@@ -238,7 +265,10 @@ export function CreatorCampaignForm() {
         targetState: "",
         targetPoliticianIds: ids,
       } as CampaignDraft;
-      window.localStorage.setItem(draftStorageKey, JSON.stringify(nextDraft));
+      window.localStorage.setItem(
+        draftStorageKey,
+        JSON.stringify({ ...nextDraft, slugManuallyEdited })
+      );
       return nextDraft;
     });
   }
@@ -313,6 +343,7 @@ export function CreatorCampaignForm() {
       }
       if (nextResult.ok) {
         window.localStorage.removeItem(draftStorageKey);
+        window.localStorage.removeItem(`${draftStorageKey}:slug-manual`);
         router.push(`/kampagne/${nextResult.slug}/erstellt`);
       }
     });
@@ -387,7 +418,7 @@ export function CreatorCampaignForm() {
           required
           maxLength={120}
           value={draft.title}
-          onChange={(event) => updateDraft("title", event.target.value)}
+          onChange={(event) => updateTitle(event.target.value)}
           aria-invalid={Boolean(titleError)}
           aria-describedby={titleError ? "title-error" : undefined}
           className="rounded-md border border-warmgrau/20 bg-white px-4 py-3 font-body text-base outline-none focus:border-waldgruen"
@@ -622,7 +653,17 @@ export function CreatorCampaignForm() {
             name="slug"
             required
             value={draft.slug}
-            onChange={(event) => updateDraft("slug", event.target.value)}
+            onChange={(event) => {
+              setSlugManuallyEdited(true);
+              setDraft((currentDraft) => {
+                const nextDraft = { ...currentDraft, slug: event.target.value };
+                window.localStorage.setItem(
+                  draftStorageKey,
+                  JSON.stringify({ ...nextDraft, slugManuallyEdited: true })
+                );
+                return nextDraft;
+              });
+            }}
             autoCapitalize="none"
             autoCorrect="off"
             spellCheck={false}
@@ -632,6 +673,9 @@ export function CreatorCampaignForm() {
             placeholder="sichere-schulwege"
           />
         </div>
+        <p className="font-body text-sm text-warmgrau/60">
+          Wird aus dem Titel vorgeschlagen. Du kannst die Kurzadresse anpassen.
+        </p>
         {slugError && (
           <p id="slug-error" className="font-body text-sm text-airmail-rot">
             {slugError}
@@ -785,16 +829,30 @@ export function CreatorCampaignForm() {
           </div>
 
           <div className="grid gap-2">
-            <label className="font-typewriter text-sm font-bold text-waldgruen-dark" htmlFor="description">
-              Kurze Beschreibung
-            </label>
+            <div className="flex items-baseline justify-between gap-4">
+              <label className="font-typewriter text-sm font-bold text-waldgruen-dark" htmlFor="description">
+                Kurze Beschreibung
+              </label>
+              <span
+                className={`font-body text-sm ${
+                  draft.description.length >= campaignDescriptionMaxChars
+                    ? "text-airmail-rot"
+                    : "text-warmgrau/60"
+                }`}
+                aria-live="polite"
+              >
+                {draft.description.length} / {campaignDescriptionMaxChars} Zeichen
+              </span>
+            </div>
             <textarea
               id="description"
               name="description"
-              maxLength={400}
+              maxLength={campaignDescriptionMaxChars}
               rows={3}
               value={draft.description}
-              onChange={(event) => updateDraft("description", event.target.value)}
+              onChange={(event) =>
+                updateDraft("description", event.target.value.slice(0, campaignDescriptionMaxChars))
+              }
               aria-invalid={Boolean(descriptionError)}
               aria-describedby={descriptionError ? "description-error" : undefined}
               className="rounded-md border border-warmgrau/20 bg-white px-4 py-3 font-body text-base leading-relaxed outline-none focus:border-waldgruen"

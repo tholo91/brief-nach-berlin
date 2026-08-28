@@ -28,6 +28,11 @@ function titleSize(title: string): number {
   return 76;
 }
 
+function campaignClaim(issueText: string, description: string | null): string {
+  const source = description?.trim() || issueText.trim().split(/\n\s*\n/)[0];
+  return compactText(source, 148);
+}
+
 export default async function CampaignOpenGraphImage({
   params,
 }: CampaignOpenGraphImageProps) {
@@ -42,6 +47,7 @@ export default async function CampaignOpenGraphImage({
   const creatorName = campaign.creatorName
     ? compactText(campaign.creatorName, 46)
     : null;
+  const claim = campaignClaim(campaign.issueText, campaign.description);
   const imageUrl =
     campaignLogoPublicUrl(campaign.logoPath) ??
     `${APP_URL}/images/campaign-creator-icon.webp`;
@@ -75,7 +81,7 @@ export default async function CampaignOpenGraphImage({
             width: "100%",
             height: "100%",
             objectFit: "cover",
-            opacity: 0.11,
+            opacity: 0.2,
           }}
         />
         <div
@@ -84,7 +90,7 @@ export default async function CampaignOpenGraphImage({
             inset: 0,
             display: "flex",
             background:
-              "linear-gradient(90deg, rgba(250,248,242,0.95) 0%, rgba(250,248,242,0.9) 52%, rgba(250,248,242,0.74) 100%)",
+              "linear-gradient(90deg, rgba(250,248,242,0.96) 0%, rgba(250,248,242,0.91) 52%, rgba(250,248,242,0.72) 100%)",
           }}
         />
         <div
@@ -126,18 +132,29 @@ export default async function CampaignOpenGraphImage({
           {creatorName && (
             <div
               style={{
-                marginTop: 34,
+                marginTop: 26,
                 display: "flex",
                 alignItems: "center",
                 gap: 16,
-                fontSize: 33,
+                fontSize: 29,
                 lineHeight: 1.15,
                 color: "#4f584f",
               }}
             >
-              von {creatorName}
+              Ein Anliegen von {creatorName}
             </div>
           )}
+          <div
+            style={{
+              marginTop: creatorName ? 24 : 28,
+              maxWidth: 650,
+              fontSize: 28,
+              lineHeight: 1.2,
+              color: "#3f4b43",
+            }}
+          >
+            {claim}
+          </div>
         </div>
         <div
           style={{

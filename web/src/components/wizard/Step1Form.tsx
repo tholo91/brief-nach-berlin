@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { step1Schema, type Step1Data } from "@/lib/validation/wizardSchemas";
+import { WizardForwardIcon } from "@/components/wizard/WizardForwardIcon";
 
 interface Step1FormProps {
   onNext: (data: Step1Data) => void;
@@ -157,7 +158,7 @@ export function Step1Form({
           type="submit"
           disabled={!isValid}
           className={[
-            "bg-waldgruen text-creme font-semibold text-base px-8 py-4 rounded-xl",
+            "relative bg-waldgruen text-creme font-semibold text-base px-8 pr-14 py-4 rounded-xl whitespace-nowrap",
             "transition-colors min-h-[44px] w-full",
             isValid
               ? "hover:bg-waldgruen-dark cursor-pointer"
@@ -165,6 +166,7 @@ export function Step1Form({
           ].join(" ")}
         >
           Weiter
+          <WizardForwardIcon className="absolute right-5 top-1/2 -translate-y-1/2" />
         </button>
       </div>
     </form>

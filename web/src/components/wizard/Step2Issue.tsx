@@ -5,6 +5,7 @@ import { useState, useCallback, useEffect, useLayoutEffect, useRef } from "react
 import { VoiceRecorder, type VoiceRecorderState } from "@/components/audio/VoiceRecorder";
 import { readLandingDraft, writeLandingDraft } from "@/lib/landing-draft";
 import { ISSUE_TEXT_MAX } from "@/lib/validation/wizardSchemas";
+import { WizardForwardIcon } from "@/components/wizard/WizardForwardIcon";
 
 // SSR-safe layout effect: avoids the "useLayoutEffect does nothing on the
 // server" warning while still running before paint on the client (so the
@@ -627,7 +628,7 @@ export function Step2Issue({
               }
               aria-hidden="true"
             >
-              {keyboardHint} weiter
+              {keyboardHint} starten
             </div>
           )}
           {/* Landing: ChatGPT-style round submit CTA next to the mic. Always
@@ -658,7 +659,7 @@ export function Step2Issue({
                 aria-label={
                   voiceState === "recording"
                     ? "Aufnahme beenden und Text übernehmen"
-                    : "Weiter zum Brief"
+                    : "Anliegen starten"
                 }
                 onMouseEnter={() => {
                   if (tooShort) triggerHint("short");
@@ -687,23 +688,9 @@ export function Step2Issue({
                       : "mr-0 max-w-0 opacity-0",
                   ].join(" ")}
                 >
-                  Weiter
+                  Starten
                 </span>
-                <svg
-                  width="16"
-                  height="16"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  aria-hidden="true"
-                  className="shrink-0"
-                >
-                  <path d="M5 12h14" />
-                  <path d="m13 6 6 6-6 6" />
-                </svg>
+                <WizardForwardIcon className="shrink-0" />
               </button>
             </>
           )}
@@ -720,12 +707,13 @@ export function Step2Issue({
             onClick={handleSubmit}
             disabled={!canProceed}
             className={[
-              "bg-waldgruen text-creme font-semibold text-base py-4 rounded-xl px-8",
+              "relative bg-waldgruen text-creme font-semibold text-base py-4 rounded-xl px-8 pr-14 whitespace-nowrap",
               "hover:bg-waldgruen-dark transition-colors min-h-[44px] w-full",
               canProceed ? "cursor-pointer" : "opacity-60 cursor-not-allowed",
             ].join(" ")}
           >
-            Weiter
+            Starten
+            <WizardForwardIcon className="absolute right-5 top-1/2 -translate-y-1/2" />
           </button>
         </div>
       )}

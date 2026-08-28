@@ -609,6 +609,7 @@ export function WizardShell() {
             isSubmitting={isSubmitting}
             errorMessage={errorMessage}
             onErrorDismiss={handleErrorDismiss}
+            isCampaign={Boolean(campaignContext)}
             defaultValues={{
               party: wizardData.party,
               ngo: wizardData.ngo,

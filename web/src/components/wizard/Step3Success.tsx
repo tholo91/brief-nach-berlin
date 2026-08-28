@@ -27,6 +27,7 @@ import {
   visibleLocalCampaignRecipients,
 } from "@/lib/campaign-recipient-picker";
 import { RathausAdresseButton } from "./RathausAdresseButton";
+import { WizardForwardIcon } from "./WizardForwardIcon";
 
 // Phased loading copy. Rotates while the politician-pick spinner runs. This is
 // the user's final click - they sit here waiting for the letter to be drafted,
@@ -1632,7 +1633,7 @@ export function Step3Success({
               onClick={handleSelectPolitician}
               disabled={isGenerating}
               className={[
-                "w-full bg-waldgruen text-creme font-semibold text-base px-8 py-4 rounded-xl",
+                "relative w-full bg-waldgruen text-creme font-semibold text-base px-8 pr-14 py-4 rounded-xl whitespace-nowrap",
                 "hover:bg-waldgruen-dark transition-colors min-h-[44px]",
                 isGenerating ? "opacity-60 cursor-not-allowed" : "cursor-pointer",
               ].join(" ")}
@@ -1659,7 +1660,10 @@ export function Step3Success({
                   </span>
                 </span>
               ) : (
-                "Brief erstellen"
+                <>
+                  Brief erstellen
+                  <WizardForwardIcon className="absolute right-5 top-1/2 -translate-y-1/2" />
+                </>
               )}
             </button>
             <p className="text-xs text-warmgrau/60 mt-3 text-center">
@@ -1683,7 +1687,7 @@ export function Step3Success({
               onClick={handleSelectPolitician}
               disabled={isGenerating}
               className={[
-                "w-full bg-waldgruen text-creme font-semibold text-base px-8 py-4 rounded-xl",
+                "relative w-full bg-waldgruen text-creme font-semibold text-base px-8 pr-14 py-4 rounded-xl whitespace-nowrap",
                 "hover:bg-waldgruen-dark transition-colors min-h-[44px]",
                 isGenerating ? "opacity-60 cursor-not-allowed" : "cursor-pointer",
               ].join(" ")}
@@ -1710,7 +1714,10 @@ export function Step3Success({
                   </span>
                 </span>
               ) : (
-                "Brief erstellen"
+                <>
+                  Brief erstellen
+                  <WizardForwardIcon className="absolute right-5 top-1/2 -translate-y-1/2" />
+                </>
               )}
             </button>
             <p className="mt-2 text-center font-body text-xs text-warmgrau/60">

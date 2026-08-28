@@ -3,6 +3,7 @@
 import { useMemo, useState } from "react";
 import type { PoliticalLevel } from "@/lib/types/politician";
 import type { LevelRoutingContext } from "@/lib/types/wizard";
+import { WizardForwardIcon } from "@/components/wizard/WizardForwardIcon";
 
 interface StepLevelSelectProps {
   routing: LevelRoutingContext;
@@ -297,12 +298,13 @@ export function StepLevelSelect({
           onClick={() => selected && onContinue(selected)}
           disabled={!selected}
           className={[
-            "w-full bg-waldgruen text-creme font-semibold text-base px-8 py-4 rounded-xl",
+            "relative w-full bg-waldgruen text-creme font-semibold text-base px-8 pr-14 py-4 rounded-xl whitespace-nowrap",
             "hover:bg-waldgruen-dark transition-colors min-h-[44px]",
             selected ? "cursor-pointer" : "opacity-60 cursor-not-allowed",
           ].join(" ")}
         >
-          Weiter
+          Empfänger auswählen
+          <WizardForwardIcon className="absolute right-5 top-1/2 -translate-y-1/2" />
         </button>
       </div>
     </div>

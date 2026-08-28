@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import type { Step1bData } from "@/lib/validation/wizardSchemas";
 import { DEFAULT_LETTER_LENGTH, LETTER_LENGTHS, type LetterLength } from "@/lib/config";
+import { WizardForwardIcon } from "@/components/wizard/WizardForwardIcon";
 
 const TONE_LABELS = ["freundlich", "höflich", "sachlich", "bestimmt", "nachdrücklich"] as const;
 
@@ -18,6 +19,7 @@ interface StepPreferencesProps {
   errorMessage?: string | null;
   onErrorDismiss?: () => void;
   defaultValues?: Partial<StepPreferencesData>;
+  isCampaign?: boolean;
 }
 
 function PartyExplainer() {
@@ -69,6 +71,7 @@ export function StepPreferences({
   errorMessage,
   onErrorDismiss,
   defaultValues,
+  isCampaign = false,
 }: StepPreferencesProps) {
   const [advancedOpen, setAdvancedOpen] = useState(
     Boolean(defaultValues?.party?.trim() || defaultValues?.ngo?.trim())
@@ -287,12 +290,17 @@ export function StepPreferences({
           type="submit"
           disabled={isSubmitting}
           className={[
-            "bg-waldgruen text-creme font-semibold text-base px-8 py-4 rounded-xl",
+            "relative bg-waldgruen text-creme font-semibold text-base px-8 pr-14 py-4 rounded-xl whitespace-nowrap",
             "hover:bg-waldgruen-dark transition-colors min-h-[44px] w-full shadow-md",
             isSubmitting ? "opacity-60 cursor-not-allowed" : "cursor-pointer active:scale-[0.99]",
           ].join(" ")}
         >
-          {isSubmitting ? "Wahlkreis finden..." : "Abgeordnete auswählen"}
+          {isSubmitting
+            ? "Wahlkreis finden..."
+            : isCampaign
+              ? "Abgeordnete auswählen"
+              : "Politische Ebene wählen"}
+          {!isSubmitting && <WizardForwardIcon className="absolute right-5 top-1/2 -translate-y-1/2" />}
         </button>
       </div>
     </form>

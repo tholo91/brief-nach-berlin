@@ -1,6 +1,6 @@
 # Vollständigen Brief in einen E-Mail-Link packen
 
-Stand: 24.08.2026  
+Stand: 24.08.2026
 Recherchefrage: Ist ein kompletter Brief als `mailto:`-Body sinnvoll, und welche Best Practices gelten für URL-Länge, Tracking, Zustellbarkeit und URL-Shortener?
 
 ## Kurzfazit

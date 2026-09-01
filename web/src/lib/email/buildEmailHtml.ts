@@ -96,10 +96,11 @@ function buildFinancingNoticeHtml(locale: ReturnType<typeof resolveEmailLocale>)
 }
 
 export function buildLetterEmailText(data: SendLetterEmailParams): string {
+  const copy = getEmailCopy(data.locale);
   const supportCopy = SUPPORT_EMAIL_COPY[resolveEmailLocale(data.locale)];
   const parts = [
     normalizeLetterClosing(data.letterText),
-    `Beste Grüße aus Bremen\n\nThomas\nEine Initiative von ${FOUNDER_HOMEPAGE}`,
+    `${copy.greeting}\n\nThomas\n${copy.initiative} ${FOUNDER_HOMEPAGE}`,
   ];
   if (isFirstLetterEmail(data)) {
     parts.push(

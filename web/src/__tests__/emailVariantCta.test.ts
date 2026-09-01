@@ -82,6 +82,15 @@ describe("letter email variant CTA", () => {
     expect(buildFollowupHtml({ token: "signed-token" }).text).not.toContain(learnMoreUrl);
   });
 
+  it("localizes the plaintext sign-off", () => {
+    expect(buildLetterEmailText({ ...makeParams(), locale: "en" })).toContain(
+      "Best wishes from Bremen ✌️\n\nThomas\nAn initiative by"
+    );
+    expect(buildLetterEmailText({ ...makeParams(), locale: "tr" })).toContain(
+      "Bremen'den selamlar ✌️\n\nThomas\nBir girişim:"
+    );
+  });
+
   it("links to the no-storage variant flow with email only in the hash", () => {
     const html = buildEmailHtml(makeParams());
 

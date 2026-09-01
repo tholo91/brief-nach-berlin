@@ -1,6 +1,6 @@
 # E-Mail-Link zum Briefentwurf anpassen
 
-**Recherche- und Datumsstand:** 24.08.2026  
+**Recherche- und Datumsstand:** 24.08.2026
 **Fragestellung:** Kann der komplette Brief in den Anpassungs-Link, und helfen Tiny-URLs oder andere Konventionen bei Usability und Zustellbarkeit?
 
 ## Kurzfazit

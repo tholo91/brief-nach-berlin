@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { FOUNDER_FEEDBACK_URL, WE_AID_PROJECT_URL } from "@/lib/config";
+import { DONATION_PATH, FOUNDER_FEEDBACK_URL } from "@/lib/config";
 
 function AirmailStripe() {
   return (
@@ -43,7 +43,14 @@ export default function AppFooter() {
             Brief-nach-Berlin &copy; {new Date().getFullYear()}
           </span>
 
-          <div className="flex items-center gap-5">
+          <div className="flex flex-wrap items-center justify-center gap-x-5 gap-y-2">
+            <Link
+              href={DONATION_PATH}
+              prefetch={false}
+              className="font-body text-sm text-warmgrau/40 transition-colors duration-200 hover:text-warmgrau"
+            >
+              Spenden
+            </Link>
             <Link
               href="/impressum"
               prefetch={false}
@@ -89,14 +96,13 @@ export default function AppFooter() {
             >
               Feedback
             </a>
-            <a
-              href={WE_AID_PROJECT_URL}
-              target="_blank"
-              rel="noopener noreferrer"
+            <Link
+              href={DONATION_PATH}
+              prefetch={false}
               className="font-body text-sm text-warmgrau/40 transition-colors duration-200 hover:text-warmgrau"
             >
-              Brief-nach-Berlin unterstützen
-            </a>
+              Spenden
+            </Link>
             <Link
               href="/ngo-briefkampagne"
               prefetch={false}

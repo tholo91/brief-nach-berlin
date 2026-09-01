@@ -36,6 +36,7 @@ type ActionResult =
 const statusLabels: Record<Campaign["status"], string> = {
   draft: "Entwurf",
   awaiting_email_verification: "wartet auf E-Mail-Bestätigung",
+  awaiting_approval: "wartet auf Freigabe",
   active: "aktiv",
   paused: "pausiert",
   archived: "archiviert",

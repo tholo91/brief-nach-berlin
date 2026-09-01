@@ -3,6 +3,7 @@ import { z } from "zod";
 export const CAMPAIGN_STATUSES = [
   "draft",
   "awaiting_email_verification",
+  "awaiting_approval",
   "active",
   "paused",
   "archived",

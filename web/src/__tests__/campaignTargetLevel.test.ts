@@ -106,7 +106,7 @@ describe("BUNDESLAND_NAMES", () => {
     const expectedKeys = [
       "BB", "BE", "BW", "BY", "HB", "HE", "HH", "MV",
       "NI", "NW", "RP", "SH", "SL", "SN", "ST", "TH",
-    ];
+    ] as const;
     expect(Object.keys(BUNDESLAND_NAMES).sort()).toEqual(expectedKeys);
     for (const key of expectedKeys) {
       expect(BUNDESLAND_NAMES[key]).toBeTruthy();

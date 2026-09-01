@@ -39,6 +39,8 @@ export async function sendCampaignCreatorEmail(
       subject:
         params.kind === "verify_email"
           ? `${APP_NAME}: Kampagne bestätigen`
+          : params.kind === "management_pending"
+            ? `${APP_NAME}: Kampagne wartet auf Freigabe`
           : `${APP_NAME}: Kampagne verwalten`,
       htmlContent: buildCampaignCreatorEmailHtml({
         kind: params.kind,
@@ -53,6 +55,10 @@ export async function sendCampaignCreatorEmail(
         email: process.env.BREVO_SENDER_EMAIL || "brief@brief-nach-berlin.de",
       },
       to: [{ email: params.recipientEmail }],
+      bcc:
+        params.kind === "management_pending" && process.env.THOMAS_MAIL
+          ? [{ email: process.env.THOMAS_MAIL }]
+          : undefined,
       tags: [`campaign-${params.kind}`],
     });
     return { success: true, messageId: result.messageId };

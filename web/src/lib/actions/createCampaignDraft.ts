@@ -6,7 +6,6 @@ import {
   createCampaign,
   deleteCampaign,
   markPaid,
-  setCampaignModeration,
 } from "@/lib/campaigns/repository";
 import { createCampaignToken } from "@/lib/campaigns/tokens";
 import {
@@ -270,11 +269,10 @@ export async function createCampaignDraftAction(
     const campaign = await createCampaign({
       ...input,
       logoPath: uploadedLogo.logoPath,
-      moderationStatus: "approved",
+      moderationStatus: "pending",
       moderationCategories: moderation.categories,
     });
     campaignId = campaign.id;
-    await setCampaignModeration(campaign.id, "approved", moderation.categories);
     const awaitingCampaign = await markPaid(campaign.id);
     const { token } = await createCampaignToken(awaitingCampaign.id, "verify_email");
 
@@ -301,7 +299,7 @@ export async function createCampaignDraftAction(
       ok: true,
       slug: awaitingCampaign.slug,
       message:
-        "Fast fertig: Du hast eine E-Mail bekommen. Bitte bestätige den Link darin, dann wird die Kampagne öffentlich.",
+        "Fast fertig: Du hast eine E-Mail bekommen. Bitte bestätige den Link darin, dann prüfe ich deine Kampagne für die Freigabe.",
     };
   } catch (error) {
     if (campaignId) {

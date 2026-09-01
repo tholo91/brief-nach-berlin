@@ -61,6 +61,8 @@ const campaign: Campaign = {
 describe("campaign page resolution", () => {
   beforeEach(() => {
     jest.clearAllMocks();
+    jest.mocked(getActiveCampaignBySlug).mockResolvedValue(null);
+    jest.mocked(getActiveCampaignByCompactSlug).mockResolvedValue(null);
   });
 
   it("prefers an exact canonical slug over its compact alias", async () => {
@@ -86,8 +88,6 @@ describe("campaign page resolution", () => {
   });
 
   it("does not redirect an ambiguous compact alias", async () => {
-    jest.mocked(getActiveCampaignByCompactSlug).mockResolvedValue(null);
-
     await expect(
       CampaignPage({ params: Promise.resolve({ slug: "duisburgretten" }) })
     ).rejects.toThrow("not found");

@@ -54,24 +54,44 @@ function ViewIcon() {
   );
 }
 
-async function confirmCampaignEmail(token: string) {
-  "use server";
-
-  const result = await verifyCampaignEmailAction(token);
-  if (result.status === "activated") {
-    redirect(
-      `/kampagne/verifizieren?status=aktiv&slug=${encodeURIComponent(result.slug)}`
-    );
-  }
-  redirect(`/kampagne/verifizieren?status=${encodeURIComponent(result.status)}`);
-}
-
 export default async function VerifyCampaignEmailPage({
   searchParams,
 }: {
   searchParams: Promise<{ token?: string; status?: string; slug?: string }>;
 }) {
   const params = await searchParams;
+  if (params.token) {
+    const result = await verifyCampaignEmailAction(params.token);
+    const status =
+      result.status === "awaiting_approval"
+        ? "wartet"
+        : result.status === "blocked"
+          ? "blockiert"
+          : result.status;
+    redirect(`/kampagne/verifizieren?status=${encodeURIComponent(status)}`);
+  }
+
+  if (params.status === "wartet") {
+    return (
+      <section className="relative overflow-hidden bg-creme">
+        <div className="mx-auto max-w-2xl px-6 py-14 md:py-20">
+          <div className="rounded-md border border-warmgrau/12 bg-white/80 p-6 text-center shadow-sm md:p-8">
+            <CampaignCreatorMark />
+            <p className="mt-4 font-typewriter text-sm font-bold uppercase tracking-widest text-waldgruen/60">
+              E-Mail bestätigt
+            </p>
+            <h1 className="mt-3 font-typewriter text-3xl font-bold leading-tight text-waldgruen-dark md:text-4xl">
+              Kampagne wartet auf Freigabe
+            </h1>
+            <p className="mx-auto mt-5 max-w-xl font-body text-base leading-relaxed text-warmgrau/75">
+              Thomas prüft deine Kampagne in der Regel innerhalb von 24 Stunden. Deinen Verwaltungslink bekommst du separat per E-Mail.
+            </p>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
   if (params.status === "aktiv" && params.slug) {
     const parsedSlug = campaignSlugSchema.safeParse(params.slug);
     const campaign = parsedSlug.success
@@ -135,44 +155,12 @@ export default async function VerifyCampaignEmailPage({
     );
   }
 
-  if (params.token) {
-    return (
-      <section className="relative overflow-hidden bg-creme">
-        <div className="mx-auto max-w-2xl px-6 py-14 md:py-20">
-          <div className="rounded-md border border-warmgrau/12 bg-white/80 p-6 text-center shadow-sm md:p-8">
-            <CampaignCreatorMark />
-            <p className="mt-4 font-typewriter text-sm font-bold uppercase tracking-widest text-waldgruen/60">
-              Kampagne bestätigen
-            </p>
-            <h1 className="mt-3 font-typewriter text-3xl font-bold leading-tight text-waldgruen-dark md:text-4xl">
-              E-Mail-Bestätigung abschließen
-            </h1>
-            <p className="mx-auto mt-5 max-w-xl font-body text-base leading-relaxed text-warmgrau/75">
-              Klicke auf den Button, damit deine Kampagne öffentlich wird. So verhindern wir, dass automatische E-Mail-Prüfungen den Link vor dir auslösen.
-            </p>
-            <form
-              action={confirmCampaignEmail.bind(null, params.token)}
-              className="mt-6"
-            >
-              <button
-                type="submit"
-                className="inline-flex min-h-12 w-full items-center justify-center rounded-md bg-waldgruen px-5 py-3 font-body text-base font-semibold text-creme transition-colors hover:bg-waldgruen-dark sm:w-auto"
-              >
-                Kampagne jetzt bestätigen
-              </button>
-            </form>
-          </div>
-        </div>
-      </section>
-    );
-  }
-
   const result = {
     status: params.status ?? "invalid",
     message:
       params.status === "already_used"
         ? "Dieser Bestätigungslink wurde bereits genutzt oder ist abgelaufen."
-        : params.status === "blocked"
+        : params.status === "blockiert"
           ? "Die E-Mail ist bestätigt, aber der aktuelle Kampagnentext wurde nicht freigeschaltet."
           : params.status === "error"
             ? "Die Bestätigung konnte gerade nicht abgeschlossen werden. Bitte versuch es später noch einmal."

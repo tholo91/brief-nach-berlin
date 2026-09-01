@@ -5,7 +5,10 @@ import {
 } from "@/lib/config";
 import { buildShareTarget } from "@/lib/share";
 
-export type CampaignCreatorEmailKind = "verify_email" | "management";
+export type CampaignCreatorEmailKind =
+  | "verify_email"
+  | "management_pending"
+  | "management";
 
 export interface BuildCampaignCreatorEmailHtmlParams {
   kind: CampaignCreatorEmailKind;
@@ -32,28 +35,36 @@ export function buildCampaignCreatorEmailHtml(
   const creatorName = params.creatorName?.trim();
   const greeting = creatorName ? `Moin ${escapeHtml(creatorName)},` : "Moin,";
   const isVerification = params.kind === "verify_email";
-  const share = isVerification
-    ? null
-    : buildShareTarget(
+  const isPendingManagement = params.kind === "management_pending";
+  const isPublicManagement = params.kind === "management";
+  const share = isPublicManagement
+    ? buildShareTarget(
         {
           slug: params.slug,
           title: params.campaignTitle,
         },
         "creator"
-      );
+      )
+    : null;
   const headline = isVerification
     ? "Bitte bestätige deine Kampagne"
-    : "Deine Kampagne ist aktiv";
+    : isPendingManagement
+      ? "Deine Kampagne wird geprüft"
+      : "Deine Kampagne ist aktiv";
   const intro = isVerification
-    ? "Ein letzter Klick: Danach prüfe ich den Kampagnentext automatisch und schalte die Seite frei, wenn alles passt."
-    : "Deine Kampagnenseite ist jetzt öffentlich. Teile den Link mit Menschen, die einen eigenen Brief mit ihren Worten schreiben sollen.";
+    ? "Ein Klick bestätigt deine E-Mail. Danach prüfe ich deine Kampagne für die Freigabe."
+    : isPendingManagement
+      ? "Deine E-Mail ist bestätigt. Ich prüfe deine Kampagne in der Regel innerhalb von 24 Stunden."
+      : "Deine Kampagnenseite ist jetzt öffentlich. Teile den Link mit Menschen, die einen eigenen Brief mit ihren Worten schreiben sollen.";
   const buttonText = isVerification
     ? "E-Mail bestätigen"
     : "Kampagne verwalten";
   const buttonIcon = isVerification ? "&#10003;" : "&#9998;";
   const statusText = isVerification
     ? "Status: wartet auf E-Mail-Bestätigung"
-    : "Status: aktiv und öffentlich teilbar";
+    : isPendingManagement
+      ? "Status: wartet auf Freigabe"
+      : "Status: aktiv und öffentlich teilbar";
   const managementHelp = isVerification
     ? `<div style="margin:0 0 22px;padding:16px 18px;background-color:#ffffff;border:1px solid #E0DCD7;border-radius:4px;">
         <p style="margin:0 0 8px;font-family:'Courier New',Courier,monospace;font-size:12px;font-weight:bold;text-transform:uppercase;color:#2D6A4F;">Danach</p>
@@ -62,13 +73,13 @@ export function buildCampaignCreatorEmailHtml(
     : `<div style="margin:0 0 22px;padding:16px 18px;background-color:#ffffff;border:1px solid #E0DCD7;border-radius:4px;">
         <p style="margin:0 0 8px;font-family:'Courier New',Courier,monospace;font-size:12px;font-weight:bold;text-transform:uppercase;color:#2D6A4F;">Verwaltungszugang</p>
         <p style="margin:0 0 8px;font-size:14px;line-height:1.6;color:#1B4332;"><strong>WICHTIG: DIESE E-MAIL AUFBEWAHREN</strong></p>
-        <p style="margin:0;font-size:14px;line-height:1.6;color:#666666;">Du kannst deine Kampagne ohne Account per Klick auf &bdquo;Kampagne verwalten&ldquo; anpassen.</p>
+        <p style="margin:0;font-size:14px;line-height:1.6;color:#666666;">${isPendingManagement ? "Über den Link siehst du den aktuellen Status. Wenn du vor der Freigabe etwas ändern möchtest, antworte bitte auf diese E-Mail." : "Du kannst deine Kampagne ohne Account per Klick auf &bdquo;Kampagne verwalten&ldquo; anpassen."}</p>
       </div>`;
-  const campaignLink = isVerification
-    ? ""
-    : `<p style="margin:10px 0 0;font-size:14px;line-height:1.5;"><a href="${params.campaignUrl}" target="_blank" rel="noopener noreferrer" style="color:#2D6A4F;text-decoration:underline;">Kampagnenseite öffnen</a></p>`;
+  const campaignLink = isPublicManagement
+    ? `<p style="margin:10px 0 0;font-size:14px;line-height:1.5;"><a href="${params.campaignUrl}" target="_blank" rel="noopener noreferrer" style="color:#2D6A4F;text-decoration:underline;">Kampagnenseite öffnen</a></p>`
+    : "";
   const shareBlock =
-    !isVerification && share
+    isPublicManagement && share
       ? `<div style="margin:0 0 22px;padding:16px 18px;background-color:#FAF8F5;border:1px solid #E0DCD7;border-radius:4px;">
                 <p style="margin:0 0 8px;font-family:'Courier New',Courier,monospace;font-size:12px;font-weight:bold;text-transform:uppercase;color:#2D6A4F;">Kampagne teilen</p>
                 <p style="margin:0 0 12px;font-size:14px;line-height:1.6;color:#666666;">Lade andere ein, einen eigenen Brief mit ihren Worten zu schreiben.</p>

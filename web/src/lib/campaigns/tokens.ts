@@ -132,6 +132,28 @@ export async function getUsableCampaignToken(
   return found ? mapToken(found as CampaignTokenRow) : null;
 }
 
+export async function getUsableCampaignTokenForCampaign(
+  campaignId: string,
+  kind: CampaignTokenKind,
+  db?: RepositoryClient
+): Promise<CampaignTokenRecord | null> {
+  const { data, error } = await client(db)
+    .from("campaign_tokens")
+    .select("*")
+    .eq("campaign_id", campaignId)
+    .eq("kind", campaignTokenKindSchema.parse(kind))
+    .is("used_at", null)
+    .gt("expires_at", new Date().toISOString())
+    .order("created_at", { ascending: false })
+    .limit(1)
+    .maybeSingle();
+
+  if (error) {
+    throw new CampaignTokenError(`Campaign token lookup failed: ${error.message}`);
+  }
+  return data ? mapToken(data as CampaignTokenRow) : null;
+}
+
 export async function revokeCampaignToken(
   tokenId: string,
   db?: RepositoryClient

@@ -44,7 +44,7 @@ export default async function CampaignCreatedPage({
             Bitte bestätige jetzt deine E-Mail.
           </h1>
           <p className="mt-5 font-body text-base leading-relaxed text-warmgrau/75">
-            Der Freischaltlink ist per E-Mail unterwegs. Erst nach dem Klick in dieser E-Mail wird die Kampagne öffentlich und kann von anderen genutzt werden.
+            Der Bestätigungslink ist per E-Mail unterwegs. Nach dem Klick prüft Thomas deine Kampagne für die Freigabe.
           </p>
 
           <div className="mt-6 rounded-md border border-waldgruen/15 bg-creme/70 px-4 py-4">
@@ -57,12 +57,12 @@ export default async function CampaignCreatedPage({
                 Ohne Bestätigung bleibt die Kampagne unsichtbar.
               </li>
               <li>
-                <strong className="text-waldgruen-dark">2. Verwaltungslink aufbewahren.</strong>{" "}
-                Damit kannst du Inhalte später bearbeiten, pausieren oder archivieren.
+                <strong className="text-waldgruen-dark">2. Freigabe abwarten.</strong>{" "}
+                Thomas prüft Kampagnen in der Regel innerhalb von 24 Stunden.
               </li>
               <li>
-                <strong className="text-waldgruen-dark">3. Kampagne teilen.</strong>{" "}
-                Teile den Link, sobald die Kampagne aktiv ist.
+                <strong className="text-waldgruen-dark">3. Verwaltungslink aufbewahren.</strong>{" "}
+                Den Link bekommst du nach der Bestätigung per E-Mail und nutzt ihn, sobald die Kampagne aktiv ist.
               </li>
             </ol>
           </div>
@@ -72,7 +72,7 @@ export default async function CampaignCreatedPage({
               Teilen kommt gleich
             </p>
             <p className="mt-2 font-body text-sm leading-relaxed text-warmgrau/70">
-              Nach deiner Bestätigung bekommst du die aktive Kampagnenseite und den Verwaltungslink per E-Mail.
+              Nach deiner Bestätigung bekommst du den Verwaltungslink. Teile deine Kampagne erst, wenn sie aktiv ist.
             </p>
           </div>
 

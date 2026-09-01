@@ -6,6 +6,24 @@ import { CampaignManager } from "@/components/campaigns/CampaignManager";
 import { getCampaignById } from "@/lib/campaigns/repository";
 import { getCampaignManagementSession } from "@/lib/campaigns/session";
 
+function PendingApprovalNotice() {
+  return (
+    <section className="mx-auto max-w-2xl px-6 py-16 md:py-24">
+      <div className="rounded-2xl border border-warmgrau/12 bg-white/75 p-6 shadow-sm md:p-8">
+        <p className="font-typewriter text-sm font-bold uppercase tracking-widest text-waldgruen/60">
+          Kampagne verwalten
+        </p>
+        <h1 className="mt-3 font-typewriter text-3xl font-bold leading-tight text-waldgruen-dark md:text-4xl">
+          Kampagne wartet auf Freigabe
+        </h1>
+        <p className="mt-5 font-body text-base leading-relaxed text-warmgrau/75">
+          Thomas prüft Kampagnen in der Regel innerhalb von 24 Stunden. Wenn du vorher etwas ändern möchtest, antworte bitte auf die E-Mail mit deinem Verwaltungslink.
+        </p>
+      </div>
+    </section>
+  );
+}
+
 export const metadata: Metadata = {
   title: "Kampagne verwalten | Brief-nach-Berlin",
   alternates: { canonical: "/kampagne/verwalten" },
@@ -57,9 +75,13 @@ export default async function ManageCampaignPage({
   return (
     <CampaignBackground>
       {campaign ? (
-        <section className="relative mx-auto max-w-4xl px-6 py-14 md:py-20">
-          <CampaignManager campaign={campaign} />
-        </section>
+        campaign.status === "awaiting_approval" ? (
+          <PendingApprovalNotice />
+        ) : (
+          <section className="relative mx-auto max-w-4xl px-6 py-14 md:py-20">
+            <CampaignManager campaign={campaign} />
+          </section>
+        )
       ) : (
         <AccessNotice message="Bitte öffne den aktuellen Verwaltungslink aus deiner Kampagnen-E-Mail. Es gibt keine Nutzerkonten und keinen Login-Bereich." />
       )}

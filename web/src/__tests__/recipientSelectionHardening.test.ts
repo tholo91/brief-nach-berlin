@@ -43,6 +43,10 @@ const data: WizardData = {
 
 const mdbRecipient = {
   kind: "mdb" as const,
+  politicianId: 1,
+  title: null,
+  wahlkreisId: 1,
+  wahlkreisName: "Köln",
   level: "Bund" as const,
   id: 1,
   firstName: "Max",
@@ -54,6 +58,8 @@ const mdbRecipient = {
   profileUrl: "https://example.org",
   committees: [],
   roles: [],
+  isDirect: false,
+  abgeordnetenwatchUrl: null,
 };
 
 describe("RecipientSelection server hardening", () => {

@@ -49,6 +49,7 @@ const people: Politician[] = [
     level: "Bund",
     postalAddress: "Berlin",
     isDirect: false,
+    abgeordnetenwatchUrl: null,
   },
 ];
 

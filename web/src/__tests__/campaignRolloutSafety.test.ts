@@ -106,6 +106,7 @@ const levelLookup = {
   bundeslandKey: "NW",
   bundeslandName: "Nordrhein-Westfalen",
   ortsname: "Köln",
+  gemeindeName: "Köln",
 };
 
 const governmentRecipient = getLandesregierungRecipient("NW")!;

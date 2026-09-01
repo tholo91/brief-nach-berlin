@@ -509,7 +509,32 @@ export async function markEmailVerified(
   assertStatus(campaign, ["awaiting_email_verification"], "markEmailVerified");
   return updateCampaignRow(
     campaignId,
-    { email_verified_at: new Date().toISOString() },
+    {
+      status: "awaiting_approval",
+      email_verified_at: new Date().toISOString(),
+    },
+    db
+  );
+}
+
+export async function blockCampaign(
+  campaignId: string,
+  moderationCategories: string[] = [],
+  db?: RepositoryClient
+): Promise<Campaign> {
+  const campaign = await requireCampaign(campaignId, db);
+  assertStatus(
+    campaign,
+    ["awaiting_email_verification", "awaiting_approval"],
+    "block"
+  );
+  return updateCampaignRow(
+    campaignId,
+    {
+      status: "blocked",
+      moderation_status: "rejected",
+      moderation_categories: moderationCategories,
+    },
     db
   );
 }
@@ -526,7 +551,7 @@ export async function activateVerifiedCampaign(
   campaign: Campaign,
   db?: RepositoryClient
 ): Promise<Campaign> {
-  assertStatus(campaign, ["awaiting_email_verification", "paused"], "activate");
+  assertStatus(campaign, ["awaiting_approval", "paused"], "activate");
   assertPubliclyPublishable(campaign, "activate");
   if (!campaign.emailVerifiedAt) {
     throw new CampaignRepositoryError("activate requires verified creator email");
@@ -562,7 +587,7 @@ export async function archiveCampaign(
   db?: RepositoryClient
 ): Promise<Campaign> {
   const campaign = await requireCampaign(campaignId, db);
-  assertStatus(campaign, ["draft", "awaiting_email_verification", "active", "paused", "blocked"], "archive");
+  assertStatus(campaign, ["draft", "awaiting_email_verification", "awaiting_approval", "active", "paused", "blocked"], "archive");
   return updateCampaignRow(
     campaignId,
     { status: "archived", archived_at: new Date().toISOString() },

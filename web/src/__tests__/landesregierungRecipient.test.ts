@@ -2,6 +2,7 @@ import governmentData from "../../data/landesregierung-addresses.json";
 import {
   buildLandesregierungRecipient,
   getLandesregierungRecipient,
+  type LandesregierungDataEntry,
 } from "@/lib/lookup/landesregierungRecipient";
 import { resolveRecipientSelection } from "@/lib/lookup/resolveRecipient";
 import type { RecipientSelection } from "@/lib/lookup/rathausRecipient";
@@ -11,12 +12,17 @@ const STATE_KEYS = [
   "NI", "NW", "RP", "SH", "SL", "SN", "ST", "TH",
 ] as const;
 
+const typedRecipients = governmentData.recipients as Record<
+  (typeof STATE_KEYS)[number],
+  LandesregierungDataEntry
+>;
+
 describe("landesregierung-addresses", () => {
   it("enthält genau die 16 Bundesland-Keys mit vollständigen amtlichen Quellen", () => {
     expect(Object.keys(governmentData.recipients).sort()).toEqual([...STATE_KEYS].sort());
 
     for (const key of STATE_KEYS) {
-      const entry = governmentData.recipients[key];
+      const entry = typedRecipients[key];
       expect(entry.stateKey).toBe(key);
       expect(entry.stateName).toBeTruthy();
       expect(entry.label).toBeTruthy();
@@ -30,7 +36,7 @@ describe("landesregierung-addresses", () => {
 
   it.each(STATE_KEYS)("erzeugt für %s genau einen institutionellen Recipient", (key) => {
     const recipient = getLandesregierungRecipient(key);
-    expect(recipient).toEqual(buildLandesregierungRecipient(governmentData.recipients[key]));
+    expect(recipient).toEqual(buildLandesregierungRecipient(typedRecipients[key]));
     expect(recipient).toMatchObject({
       kind: "landesregierung",
       level: "Land",

@@ -1,6 +1,7 @@
 import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { StepLevelSelect } from "@/components/wizard/StepLevelSelect";
+import { LocaleProvider } from "@/components/i18n/LocaleProvider";
 import type { LevelRoutingContext } from "@/lib/types/wizard";
 
 function routingContext(
@@ -10,6 +11,7 @@ function routingContext(
     recommended: { level: "Kommune", confidence: "high" },
     reasoning: "Über den Zustand deiner Straße entscheidet die Stadt",
     byLevel: { Bund: [], Land: [], Kommune: [] },
+    optionalByLevel: { Land: [] },
     coverage: {
       landSupported: true,
       kommuneSupported: true,
@@ -28,10 +30,14 @@ function routingContext(
 
 function renderStep(routing: LevelRoutingContext): string {
   return renderToStaticMarkup(
-    createElement(StepLevelSelect, {
-      routing,
-      onContinue: () => undefined,
-    })
+    createElement(
+      LocaleProvider,
+      null,
+      createElement(StepLevelSelect, {
+        routing,
+        onContinue: () => undefined,
+      })
+    )
   );
 }
 

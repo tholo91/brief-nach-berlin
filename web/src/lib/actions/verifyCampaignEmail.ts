@@ -1,14 +1,14 @@
 "use server";
 
 import {
-  activateVerifiedCampaign,
+  blockCampaign,
   CampaignRepositoryError,
   getCampaignById,
   markEmailVerified,
-  setCampaignModeration,
 } from "@/lib/campaigns/repository";
 import {
   createCampaignToken,
+  getUsableCampaignTokenForCampaign,
   getUsableCampaignToken,
   revokeCampaignToken,
   revokeCampaignTokensForCampaign,
@@ -17,7 +17,7 @@ import { moderateText } from "@/lib/moderation/moderateText";
 import { sendCampaignCreatorEmail } from "@/lib/email/sendCampaignCreatorEmail";
 
 export type VerifyCampaignEmailResult =
-  | { status: "activated"; title: string; slug: string; message: string }
+  | { status: "awaiting_approval"; title: string; message: string }
   | { status: "already_used"; message: string }
   | { status: "blocked"; title: string; message: string }
   | { status: "invalid"; message: string }
@@ -28,6 +28,41 @@ async function moderateCurrentPublicText(issueText: string, description: string 
   if (description) checks.push(await moderateText(description));
   const categories = [...new Set(checks.flatMap((check) => check.categories))];
   return { flagged: checks.some((check) => check.flagged), categories };
+}
+
+async function sendPendingManagementAccess(campaign: {
+  id: string;
+  creatorEmail: string;
+  title: string;
+  slug: string;
+  creatorName: string | null;
+}): Promise<VerifyCampaignEmailResult> {
+  await revokeCampaignTokensForCampaign(campaign.id, "manage");
+  const { token: manageToken, record } = await createCampaignToken(campaign.id, "manage");
+  const sent = await sendCampaignCreatorEmail({
+    kind: "management_pending",
+    recipientEmail: campaign.creatorEmail,
+    campaignTitle: campaign.title,
+    slug: campaign.slug,
+    token: manageToken,
+    creatorName: campaign.creatorName,
+  });
+
+  if (!sent.success) {
+    await revokeCampaignToken(record.id);
+    return {
+      status: "error",
+      message:
+        "Deine E-Mail ist bestätigt. Die Verwaltungs-E-Mail konnte gerade nicht verschickt werden. Bitte öffne den Bestätigungslink später noch einmal.",
+    };
+  }
+
+  return {
+    status: "awaiting_approval",
+    title: campaign.title,
+    message:
+      "Deine E-Mail ist bestätigt. Die Kampagne wartet jetzt auf Freigabe und dein Verwaltungslink ist unterwegs.",
+  };
 }
 
 export async function verifyCampaignEmailAction(
@@ -58,25 +93,37 @@ export async function verifyCampaignEmailAction(
       };
     }
 
-    if (campaign.status === "active" && campaign.emailVerifiedAt) {
+    if (campaign.emailVerifiedAt) {
+      if (campaign.status === "awaiting_approval") {
+        const managementToken = await getUsableCampaignTokenForCampaign(
+          campaign.id,
+          "manage"
+        );
+        if (!managementToken) {
+          return sendPendingManagementAccess(campaign);
+        }
+        return {
+          status: "awaiting_approval",
+          title: campaign.title,
+          message:
+            "Deine E-Mail ist bereits bestätigt. Die Kampagne wartet auf Freigabe.",
+        };
+      }
       return {
-        status: "activated",
-        title: campaign.title,
-        slug: campaign.slug,
-        message: "Diese Kampagne ist bereits aktiv.",
+        status: "already_used",
+        message:
+          "Diese E-Mail ist bereits bestätigt. Nutze für Änderungen den Verwaltungslink aus deiner E-Mail.",
       };
     }
 
-    const verified = campaign.emailVerifiedAt
-      ? campaign
-      : await markEmailVerified(campaign.id);
+    const verified = await markEmailVerified(campaign.id);
 
     const moderation = await moderateCurrentPublicText(
       campaign.issueText,
       campaign.description
     );
     if (moderation.flagged) {
-      await setCampaignModeration(campaign.id, "rejected", moderation.categories);
+      await blockCampaign(campaign.id, moderation.categories);
       return {
         status: "blocked",
         title: campaign.title,
@@ -85,41 +132,7 @@ export async function verifyCampaignEmailAction(
       };
     }
 
-    const approved = await setCampaignModeration(
-      verified.id,
-      "approved",
-      moderation.categories
-    );
-    const activated = await activateVerifiedCampaign(approved);
-    await revokeCampaignTokensForCampaign(activated.id, "manage");
-    const { token: manageToken } = await createCampaignToken(activated.id, "manage");
-    await revokeCampaignToken(tokenRecord.id);
-    const sent = await sendCampaignCreatorEmail({
-      kind: "management",
-      recipientEmail: activated.creatorEmail,
-      campaignTitle: activated.title,
-      slug: activated.slug,
-      token: manageToken,
-      creatorName: activated.creatorName,
-    });
-
-    if (!sent.success) {
-      return {
-        status: "activated",
-        title: activated.title,
-        slug: activated.slug,
-        message:
-          "Die Kampagne ist aktiv. Die Verwaltungs-E-Mail konnte gerade nicht verschickt werden.",
-      };
-    }
-
-    return {
-      status: "activated",
-      title: activated.title,
-      slug: activated.slug,
-      message:
-        "Deine E-Mail ist bestätigt. Die Kampagne ist jetzt aktiv und die Verwaltungs-E-Mail ist unterwegs.",
-    };
+    return sendPendingManagementAccess(verified);
   } catch (error) {
     if (error instanceof CampaignRepositoryError) {
       console.error("[verifyCampaignEmailAction] repository failed:", error.message);

@@ -1,6 +1,9 @@
 import type { Metadata } from "next";
+import { headers } from "next/headers";
+import { notFound } from "next/navigation";
 import { StatsPie } from "@/components/internalStats/StatsPie";
 import { formatDecimal, formatNumber } from "@/lib/formatNumber";
+import { isInternalStatsAuthorized } from "@/lib/internalStats/access";
 import { getInternalStats } from "@/lib/internalStats/getInternalStats";
 import {
   POLITICAL_LEVELS,
@@ -267,6 +270,17 @@ function DataError() {
 }
 
 export default async function InternalStatsPage() {
+  const requestHeaders = await headers();
+  if (
+    !isInternalStatsAuthorized(
+      requestHeaders.get("authorization"),
+      process.env.INTERNAL_STATS_USER,
+      process.env.INTERNAL_STATS_PASSWORD,
+    )
+  ) {
+    notFound();
+  }
+
   let stats: InternalStats;
   try {
     stats = await getInternalStats();

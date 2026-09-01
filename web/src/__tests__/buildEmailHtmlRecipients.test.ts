@@ -241,7 +241,7 @@ describe("buildEmailHtml — Empfänger-Arten", () => {
     expect(html).toContain("<strong>Bürgermeisteramt Köln</strong><br>");
     expect(html).toContain("Rathaus<br>50667 Köln");
     expect(html).toContain("google.com/search");
-    expect(html).toContain("Destatis</a>, Stand 31.01.2026");
+    expect(html).toContain("Destatis</a>, geprüft am 31.01.2026");
     expect(html).toContain("https://www.destatis.de/anschriften");
     expect(html).toContain(encodeURIComponent("Bürgermeisteramt Köln Postanschrift"));
     expect(html).not.toContain(encodeURIComponent("Bürgermeisteramt 50667 Köln"));

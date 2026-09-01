@@ -2,11 +2,27 @@
 
 ## What This Is
 
-A web app that turns citizens' frustrations into effective, personalized letters to the politicians responsible. Users describe their issue (text or voice), enter their postal code, and the platform uses AI to draft a formal letter addressed to the right representative — Bundestag, Landtag, or municipal level. The user then handwrites and mails the letter themselves. The core insight: handwritten letters actually get read and discussed in the Bundestag, unlike emails or petitions.
+A web app that helps people move from political frustration to a first concrete democratic action. Users describe their issue (text or voice), enter their postal code, and the platform uses AI to draft a personal letter addressed to the right representative — Bundestag, Landtag, or municipal level. The user then reviews, personalizes, handwrites, and mails the letter themselves.
+
+Brief-nach-Berlin removes a concrete research and writing barrier. It does not remove the person's own opinion, responsibility, or decision to act. The letter is a possible first step when a larger action feels too difficult, not a complete platform for every form of democratic participation.
 
 ## Core Value
 
-A frustrated citizen can go from "this is broken" to "here's a letter to the person who can fix it" in under 3 minutes — with zero political knowledge required.
+A frustrated citizen can go from "this is broken" to "here's a letter to the person who can fix it" in under 3 minutes — with zero political knowledge required. Brief-nach-Berlin helps people move from political powerlessness into action by removing the excuse that finding the address and writing the letter takes too much time.
+
+### Positioning by audience
+
+- **Default:** A first, concrete step into political action.
+- **Deeper explanation:** A small action that can strengthen democratic self-efficacy, without promising a guaranteed response or political outcome.
+- **Media and podcast CTA:** After a political article, podcast, or video, Brief-nach-Berlin offers a practical next step for people who do not want to stop at frustration or agreement.
+
+### Product guardrails
+
+- No automatic mass mailing and no generated message flood.
+- The AI produces a draft; the person must decide whether to use it, adapt it, handwrite it, and send it.
+- Correct political responsibility and personal relevance matter more than volume.
+- Do not promise a reply, individual processing, or policy change.
+- Open source is a trust and adaptation layer: the pattern can be adapted to other countries, while political data and responsibility rules remain local.
 
 ## Requirements
 
@@ -46,11 +62,11 @@ A frustrated citizen can go from "this is broken" to "here's a letter to the per
 
 ## Context
 
-- **Founder insight:** Thomas did a Bundestag internship and saw firsthand that handwritten letters are read, discussed, and tracked internally — unlike mass emails or petitions
-- **Political science background:** Responsiveness research confirms direct citizen contact is the most effective influence channel
+- **Founder insight:** Thomas did a Bundestag internship and saw firsthand that personal letters stand out among institutional communications. The project started with a smaller question: how could he remove his mother's excuse not to write to her political representative when she was frustrated with politics?
+- **Political science background:** Research connects political self-efficacy and participation, and suggests that concrete, planned actions are more useful for activation than general encouragement. Evidence for the specific effect of an individual handwritten letter remains limited.
 - **Market gap:** No tool in Germany combines AI drafting + PLZ-to-politician matching + handwritten letter focus. Closest tools (Abgeordnetenwatch, Resistbot US) do different things
 - **Key data sources:** Abgeordnetenwatch API (free, CC0), Bundeswahlleiter open data for PLZ-to-Wahlkreis mapping
-- **Market research:** Completed (see MARKET-RESEARCH.md) — competitive gap is wide open, strong evidence for handwritten letter effectiveness
+- **Market research:** Completed (see MARKET-RESEARCH.md) — competitive gap is wide open. The product's strongest defensible claim is lowered friction for a real personal action, not guaranteed political effectiveness of handwriting.
 - **Visual direction:** Ghibli-style solarpunk Berlin aesthetic chosen for hero imagery (see prompts/)
 - **Technical challenge:** PLZ-to-Wahlkreis mapping is non-trivial — postal codes don't align with electoral district boundaries
 
@@ -73,7 +89,7 @@ A frustrated citizen can go from "this is broken" to "here's a letter to the per
 | Next.js directly (skip Lovable) | Existing Next.js app in /web already has landing page structure. Lovable exports Vite, not Next.js — migration overhead not worth it. | ✓ Good |
 | OpenAI API over Claude API for letter generation | Thomas has existing OpenAI API key, cost matters | — Pending |
 | No user accounts in v1 | Zero friction > feature completeness. Optional email only. | — Pending |
-| Handwrite-and-mail-yourself (no auto-pen in v1) | Authenticity + simplicity. Auto-pen is v2 with Pensaki. | — Pending |
+| Handwrite-and-mail-yourself (no auto-pen in v1) | Keeps the human decision and effort in the loop. The draft is a starting point, not an automatically dispatched message. Auto-pen is v2 with Pensaki. | — Pending |
 | Free with no donations in v1 | Pure validation — don't let monetization distract from learning | — Pending |
 | Bundestag + Landtag + Kommune in v1, EU in v2 | Good German coverage without EU API complexity. Tease Brussels. | — Pending |
 

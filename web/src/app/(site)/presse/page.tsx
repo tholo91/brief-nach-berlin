@@ -120,7 +120,11 @@ const coverage = [
     internal: true,
   },
   {
-    outlet: "ARD Sounds",
+    outlet: "Der KI-Podcast (ARD Sounds)",
+    href: "https://www.ardsounds.de/episode/urn:ard:episode:a71c5b1d1a2f94a9/",
+  },
+  {
+    outlet: "hr INFO Aktuell (ARD Sounds)",
     href: "https://www.ardsounds.de/episode/urn:ard:episode:5006a718e92c83f9/",
   },
   {

@@ -196,8 +196,10 @@ export function CreatorCampaignForm() {
         draftStorageKey,
         JSON.stringify({ ...nextDraft, slugManuallyEdited: restoredSlugManuallyEdited })
       );
-      setSlugManuallyEdited(restoredSlugManuallyEdited);
-      window.setTimeout(() => setDraft(nextDraft), 0);
+      window.setTimeout(() => {
+        setSlugManuallyEdited(restoredSlugManuallyEdited);
+        setDraft(nextDraft);
+      }, 0);
     } catch {
       window.localStorage.removeItem(draftStorageKey);
       window.localStorage.removeItem(`${draftStorageKey}:slug-manual`);

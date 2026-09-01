@@ -68,14 +68,18 @@ async function main() {
   const raw = brotliDecompressSync(compressed);
   console.log(`Decompressed: ${(raw.length / 1024 / 1024).toFixed(1)} MB`);
 
-  const full = JSON.parse(raw.toString("utf-8"));
+  const full = JSON.parse(raw.toString("utf-8")) as {
+    copyright?: string;
+    license?: string;
+    features?: Array<{ properties?: { postcode?: unknown } }>;
+  };
 
   if (!Array.isArray(full.features)) {
     throw new Error("Unexpected GeoJSON shape: no features array");
   }
 
   const counts: Record<string, number> = { Berlin: 0, Hamburg: 0, Bremen: 0 };
-  const filtered = full.features.filter((f: any) => {
+  const filtered = full.features.filter((f) => {
     const code = f?.properties?.postcode;
     if (typeof code !== "string" || !/^\d{5}$/.test(code)) return false;
     const n = parseInt(code, 10);

@@ -256,7 +256,7 @@ function main() {
   // ("Berlin, Stadt") so AGS-5 matching returns every Wahlkreis in the city.
   // We resolve the actual Wahlkreis via point-in-polygon on the official
   // Bundestag boundary file instead.
-  let stadtstaatPolygons: WkrPolygon[] = [];
+  const stadtstaatPolygons: WkrPolygon[] = [];
   if (fs.existsSync(STADTSTAAT_POLYGONS)) {
     // The Bundestag dataset mixes ring shapes per Wahlkreis: some entries are
     // a flat ring [[lat,lon], ...] (simple polygon), others are wrapped one

@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { CONTACT } from "@/lib/contact";
+import { SUPPORT_CONTENT } from "@/lib/support-content";
 
 export const metadata = {
   title: "Datenschutz | Brief-nach-Berlin",
@@ -185,12 +186,13 @@ export default function Datenschutz() {
               6. Verarbeitung der E-Mail-Adresse
             </h2>
             <p>
-              Zweck: einmaliger Versand des generierten Briefs als
-              Transaktionsmail. Verarbeitete Daten: E-Mail-Adresse. Empfänger:
-              Brevo SAS (siehe Abschnitt 11). Ich speichere die E-Mail-Adresse
-              nicht bei mir; es wird kein Newsletter und keine Empfängerliste
-              geführt. Rechtsgrundlage: Art. 6 Abs. 1 lit. b DSGVO (Erfüllung
-              Ihrer Anfrage).
+              Zweck: Versand des generierten Briefs als Transaktionsmail an die
+              von Ihnen angegebene Adresse. Zusätzlich kann eine einmalige,
+              zeitversetzt geplante Feedback-Nachfrage folgen. Verarbeitete
+              Daten: E-Mail-Adresse. Empfänger: Brevo SAS (siehe Abschnitt 11).
+              Ich speichere die E-Mail-Adresse nicht bei mir; es wird kein
+              Newsletter und keine Empfängerliste geführt. Die Feedback-Nachfrage
+              ist keine Anmeldung zu einem Newsletter.
             </p>
           </div>
 
@@ -332,7 +334,11 @@ export default function Datenschutz() {
             <p className="mt-2">
               Brevo wird ausschließlich als Transaktionsversender eingesetzt; ein
               Newsletter, eine Marketingliste oder ein Tracking (Open- bzw.
-              Click-Tracking) findet nicht statt. Brevo speichert die
+              Click-Tracking) findet nicht statt. Neben der ersten
+              Transaktionsmail kann Brevo eine einzelne Feedback-Nachfrage zu
+              einem späteren Zeitpunkt planen und zustellen. Diese Nachricht
+              enthält einen signierten Link zur freiwilligen Bewertung; sie
+              enthält keinen Newsletterversand. Brevo speichert die
               Versand-Logs entsprechend ihrer eigenen Aufbewahrungsfristen
               (typischerweise wenige Tage bis Wochen). Brevo handelt als
               Auftragsverarbeiter im Sinne des Art. 28 DSGVO.
@@ -357,8 +363,32 @@ export default function Datenschutz() {
               .
             </p>
             <p className="mt-2">
-              Rechtsgrundlage: Art. 6 Abs. 1 lit. b DSGVO (Erfüllung Ihrer
-              Anfrage).
+              Die erste Mail wird zur Erfüllung Ihrer Anfrage versendet. Die
+              zusätzliche zeitversetzte Feedback-Nachfrage dient ausschließlich
+              der freiwilligen Bewertung und Verbesserung des Dienstes. Für
+              diese Nachfrage ist die Rechtsgrundlage Art. 6 Abs. 1 lit. f DSGVO
+              (berechtigtes Interesse an der Produktverbesserung). Sie können
+              der weiteren Kontaktaufnahme jederzeit widersprechen, indem Sie
+              sich über die in der Feedback-Mail genannte Kontaktmöglichkeit
+              melden.
+            </p>
+            <p className="mt-2">
+              Finanzierungshinweise in der ersten Mail verlinken auf eine
+              separate Informationsseite. Wenn Sie dort auf „Spenden“ klicken,
+              verlassen Sie diese Website und werden an den externen Anbieter{" "}
+              <a
+                href={SUPPORT_CONTENT.ctas.donate.href}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-waldgruen hover:underline"
+              >
+                WE AID
+              </a>{" "}
+              weitergeleitet. Für die dortige Verarbeitung, eine mögliche
+              Spendenabwicklung und die entsprechenden Nachweise ist der externe
+              Anbieter nach seinen eigenen Datenschutzhinweisen verantwortlich;
+              Brief-nach-Berlin erhält dadurch nicht automatisch Ihre
+              Zahlungsdaten.
             </p>
           </div>
 

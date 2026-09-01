@@ -54,7 +54,7 @@ export function PrivacyDisclosure() {
               Marketing, keine Weitergabe.
             </p>
             <p>
-              Wenn du das Häkchen „öffentlich zeigen" stehen lässt, kann deine
+              Wenn du das Häkchen „öffentlich zeigen“ stehen lässt, kann deine
               Bewertung später anonymisiert auf brief-nach-berlin.de
               erscheinen, mit deinem Namen oder Pseudonym, falls du einen
               angegeben hast.{" "}

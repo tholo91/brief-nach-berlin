@@ -1,16 +1,23 @@
 import Link from "next/link";
 import Image from "next/image";
 import type { Metadata } from "next";
-import { APP_URL, FOUNDER_LINKEDIN, FOUNDER_FEEDBACK_URL } from "@/lib/config";
+import {
+  APP_URL,
+  DONATION_PATH,
+  FOUNDER_FEEDBACK_URL,
+  FOUNDER_LINKEDIN,
+} from "@/lib/config";
 import { Figure } from "@/components/editorial/Figure";
 import { Prose } from "@/components/editorial/Prose";
 import { FAQAccordion } from "@/components/FAQAccordion";
+import { SUPPORT_CONTENT } from "@/lib/support-content";
 
 const TITLE = "Warum es Brief-nach-Berlin gibt";
 const DESCRIPTION =
   "Die Geschichte hinter Brief-nach-Berlin. Viele Menschen beschweren sich über Politik, aber kaum jemand schreibt. Brief-nach-Berlin nimmt die Hürden zwischen Frust und Briefkasten weg.";
 const URL_PATH = "/warum";
 const PUBLISHED = "2026-05-20";
+const UPDATED = "2026-08-31";
 
 export const metadata: Metadata = {
   title: `${TITLE} | Brief-nach-Berlin`,
@@ -35,11 +42,11 @@ export const metadata: Metadata = {
 const faqs = [
   {
     q: "Wer steckt hinter Brief-nach-Berlin?",
-    a: "Thomas Lorenz, ein Indie Builder aus Bremen. Politikwissenschaft studiert in Lissabon, Leipzig und Bologna. Brief-nach-Berlin wird aus eigener Tasche finanziert, ohne Organisation, ohne Team, ohne Werbung.",
+    a: `Thomas Lorenz, ein Indie Builder aus Bremen. Politikwissenschaft studiert in Lissabon, Leipzig und Bologna. ${SUPPORT_CONTENT.status}`,
   },
   {
     q: "Was kostet Brief-nach-Berlin?",
-    a: "Nichts. Brief-nach-Berlin ist kostenlos, ohne Werbung, ohne Bezahlschranke. Server, KI-Kosten und Domain trägt der Gründer selbst.",
+    a: "Nichts. Brief-nach-Berlin ist kostenlos, ohne Werbung und ohne Bezahlschranke. Betrieb und Weiterentwicklung werden durch Spenden und Eigenleistung ermöglicht.",
   },
   {
     q: "Ist Brief-nach-Berlin eine Petitionsplattform?",
@@ -71,7 +78,7 @@ const articleJsonLd = {
   name: TITLE,
   description: DESCRIPTION,
   datePublished: PUBLISHED,
-  dateModified: PUBLISHED,
+  dateModified: UPDATED,
   author: {
     "@type": "Person",
     name: "Thomas Lorenz",
@@ -124,10 +131,8 @@ export default function WarumPage() {
               Wer dahintersteht
             </h2>
             <p>
-              Hinter Brief-nach-Berlin steht keine Organisation und kein Team,
-              sondern eine Person, die das Projekt aus eigener Tasche und in
-              eigener Verantwortung baut. Damit klar ist, an wen du dich
-              wendest:
+              Initiator und Entwickler von Brief-nach-Berlin ist Thomas Lorenz. {" "}
+              {SUPPORT_CONTENT.status} Damit klar ist, an wen du dich wendest:
             </p>
 
           <div className="not-prose flex flex-col sm:flex-row gap-6 items-start sm:items-center my-6">
@@ -326,12 +331,17 @@ export default function WarumPage() {
           </div>
 
           <h2 className="font-body text-2xl font-bold text-waldgruen-dark pt-4">
-            Warum ich das aus eigener Tasche bezahle
+            Wie Brief-nach-Berlin finanziert wird
           </h2>
           <p>
-            Brief-nach-Berlin ist kostenlos, ohne Werbung, ohne Bezahlschranke.
-            Server, KI-Kosten, Domain, alles läuft über mich. Ich verdiene
-            hier nichts, und das ist Absicht.
+            Brief-nach-Berlin ist kostenlos, ohne Werbung und ohne
+            Bezahlschranke. Betrieb und Weiterentwicklung werden durch Spenden
+            und Eigenleistung ermöglicht.
+          </p>
+          <p>
+            {SUPPORT_CONTENT.status} {SUPPORT_CONTENT.fiscalHost.text} Wofür
+            Unterstützung eingesetzt wird, erfährst du auf der Seite zum{" "}
+            <Link href={DONATION_PATH}>Unterstützen von Brief-nach-Berlin</Link>.
           </p>
           <p>
             Der Grund: Ich schätze unser politisches System in Deutschland
@@ -352,9 +362,9 @@ export default function WarumPage() {
             verändert etwas.
           </p>
           <p>
-            Solange Brief-nach-Berlin Leuten dabei hilft, trage ich die Kosten
-            gerne selbst. Sollte es eines Tages zu groß werden, frage ich um
-            Unterstützung. Bis dahin läuft es einfach weiter.
+            Ich entwickle Brief-nach-Berlin weiter, damit möglichst viele
+            Menschen ihre Anliegen an die richtige politische Stelle bringen
+            können. Spenden helfen dabei, das verlässlich und dauerhaft zu tun.
           </p>
 
 

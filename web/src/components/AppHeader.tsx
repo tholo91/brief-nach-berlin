@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { LanguageSwitcher } from "@/components/i18n/LanguageSwitcher";
 
 const NGO_NAV_LINKS = [
   { label: "Übersicht", href: "/ngo-briefkampagne#uebersicht" },
@@ -9,7 +10,7 @@ const NGO_NAV_LINKS = [
   { label: "FAQ", href: "/ngo-briefkampagne#faq" },
 ];
 
-export default function AppHeader() {
+export default function AppHeader({ showLanguageSwitcher = false }: { showLanguageSwitcher?: boolean }) {
   const pathname = usePathname();
   const showCampaignCta = pathname === "/ngo-briefkampagne";
 
@@ -55,6 +56,9 @@ export default function AppHeader() {
             </div>
           )}
 
+          <div className="flex items-center gap-2">
+          {showLanguageSwitcher && <LanguageSwitcher />}
+          {showLanguageSwitcher && <LanguageSwitcher mobile />}
           {showCampaignCta && (
             <Link
               href="/kampagne/starten"
@@ -64,6 +68,7 @@ export default function AppHeader() {
               <span className="hidden sm:inline">Kampagne starten</span>
             </Link>
           )}
+          </div>
         </nav>
       </header>
     </>

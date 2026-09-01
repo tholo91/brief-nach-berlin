@@ -4,14 +4,16 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState, useEffect } from "react";
 import { scrollToAnliegen } from "@/lib/scroll-to-input";
-
-const navLinks = [
-  { label: "Wie es funktioniert", href: "#so-funktionierts" },
-  { label: "Die Idee", href: "#warum-briefe" },
-  { label: "Mitmachen", href: "#mitmachen" },
-];
+import { LanguageSwitcher } from "@/components/i18n/LanguageSwitcher";
+import { useUiCopy } from "@/components/i18n/LocaleProvider";
 
 export default function Header() {
+  const copy = useUiCopy();
+  const navLinks = [
+    { label: copy.navigation.howItWorks, href: "#so-funktionierts" },
+    { label: copy.navigation.idea, href: "#warum-briefe" },
+    { label: copy.navigation.getInvolved, href: "#mitmachen" },
+  ];
   const pathname = usePathname();
   const isHome = pathname === "/";
   const [showNavCta, setShowNavCta] = useState(false);
@@ -95,7 +97,9 @@ export default function Header() {
             ))}
           </div>
 
-          <div className="flex items-center">
+          <div className="flex items-center gap-2">
+            <LanguageSwitcher />
+            <LanguageSwitcher mobile />
             {/* CTA — collapses on mobile when in hero section */}
             <div
               className={`overflow-hidden transition-all duration-300 md:max-w-[200px] md:opacity-100 md:pointer-events-auto ${
@@ -109,7 +113,7 @@ export default function Header() {
                 onClick={handleCtaClick}
                 className="whitespace-nowrap font-body text-sm font-semibold text-creme bg-waldgruen hover:bg-waldgruen-dark px-4 py-2 rounded-lg transition-colors block"
               >
-                Brief schreiben
+                {copy.navigation.writeLetter}
               </Link>
             </div>
 
@@ -126,7 +130,7 @@ export default function Header() {
               onClick={() => setMenuOpen((v) => !v)}
               aria-expanded={menuOpen}
               aria-controls="mobile-menu"
-              aria-label={menuOpen ? "Menü schließen" : "Menü öffnen"}
+              aria-label={menuOpen ? copy.navigation.closeMenu : copy.navigation.openMenu}
               className="relative w-10 h-10 flex items-center justify-center rounded-lg text-waldgruen-dark active:scale-95 transition-transform"
             >
               <span className="relative block w-6 h-4">
@@ -176,7 +180,7 @@ export default function Header() {
               onClick={(e) => { closeMenu(); handleCtaClick(e); }}
               className="mt-5 mb-1 inline-block text-center font-body text-base font-semibold text-creme bg-waldgruen hover:bg-waldgruen-dark px-4 py-3 rounded-lg transition-colors active:scale-[0.98] shadow-lg shadow-waldgruen/20"
             >
-              Brief schreiben
+              {copy.navigation.writeLetter}
             </Link>
           </div>
         </div>

@@ -1,6 +1,7 @@
 import { BrevoClient } from "@getbrevo/brevo";
 import { buildFollowupHtml } from "./buildFollowupHtml";
 import { EMAIL_SENDER_NAME, FOUNDER_EMAIL } from "@/lib/config";
+import { DEFAULT_LOCALE, type Locale } from "@/lib/i18n/locale";
 
 const apiKey = process.env.BREVO_API_KEY;
 if (!apiKey) {
@@ -11,6 +12,7 @@ if (!apiKey) {
 const brevo = new BrevoClient({ apiKey });
 
 export interface SendFollowupEmailParams {
+  locale?: Locale;
   recipientEmail: string;
   politicianName?: string;
   // Selber signierter Token wie für die Originalmail. Wir signieren NICHT neu —
@@ -31,6 +33,7 @@ export async function sendFollowupEmail(
     const { subject, html, text } = buildFollowupHtml({
       token: params.feedbackToken,
       politicianName: params.politicianName,
+      locale: params.locale ?? DEFAULT_LOCALE,
     });
     const scheduledAt =
       params.scheduledAt instanceof Date

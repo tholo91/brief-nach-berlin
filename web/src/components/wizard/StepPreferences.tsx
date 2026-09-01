@@ -3,10 +3,9 @@
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import type { Step1bData } from "@/lib/validation/wizardSchemas";
-import { DEFAULT_LETTER_LENGTH, LETTER_LENGTHS, type LetterLength } from "@/lib/config";
+import { DEFAULT_LETTER_LENGTH, type LetterLength } from "@/lib/config";
+import { useUiCopy } from "@/components/i18n/LocaleProvider";
 import { WizardForwardIcon } from "@/components/wizard/WizardForwardIcon";
-
-const TONE_LABELS = ["freundlich", "höflich", "sachlich", "bestimmt", "nachdrücklich"] as const;
 
 export interface StepPreferencesData extends Step1bData {
   toneLevel: number;
@@ -24,6 +23,7 @@ interface StepPreferencesProps {
 
 function PartyExplainer() {
   const [open, setOpen] = useState(false);
+  const copy = useUiCopy();
 
   return (
     <div className="mt-2 text-xs text-warmgrau/70 font-body">
@@ -48,15 +48,15 @@ function PartyExplainer() {
           <path d="M12 16v-4" />
           <path d="M12 8h.01" />
         </svg>
-        Warum wird das gefragt?
+        {copy.preferences.partyWhy}
       </button>
       {open && (
         <div className="mt-2 border-l-4 border-waldgruen/50 bg-waldgruen/5 rounded-r-lg p-3 leading-relaxed text-warmgrau">
           <p>
-            Wenn <span className="font-semibold text-waldgruen-dark">du selbst</span> Mitglied einer Partei bist und an Abgeordnete derselben Partei schreibst, kann der Brief das aufgreifen.
+            {copy.preferences.partyExplanation}
           </p>
           <p className="mt-2 text-warmgrau/75">
-            Die Angabe wird nicht gespeichert und nicht weitergegeben.
+            {copy.preferences.partyPrivacy}
           </p>
         </div>
       )}
@@ -73,6 +73,7 @@ export function StepPreferences({
   defaultValues,
   isCampaign = false,
 }: StepPreferencesProps) {
+  const copy = useUiCopy();
   const [advancedOpen, setAdvancedOpen] = useState(
     Boolean(defaultValues?.party?.trim() || defaultValues?.ngo?.trim())
   );
@@ -117,10 +118,10 @@ export function StepPreferences({
       noValidate
     >
       <h1 className="font-typewriter text-[28px] font-semibold leading-[1.2] text-waldgruen-dark mb-2">
-        Wie soll dein Brief klingen?
+        {copy.preferences.heading}
       </h1>
       <p className="font-body text-sm text-warmgrau/70 mb-8">
-        Wähle noch Ton und Länge. Zusätzliche Angaben über dich sind freiwillig.
+        {copy.preferences.intro}
       </p>
 
       {errorMessage && (
@@ -135,7 +136,7 @@ export function StepPreferences({
       <div className="space-y-8">
         <fieldset>
           <legend className="block font-body text-sm font-semibold text-warmgrau mb-3">
-            Tonalität des Briefes
+            {copy.preferences.toneLegend}
           </legend>
           <input
             type="range"
@@ -150,10 +151,10 @@ export function StepPreferences({
               notifyChange({ toneLevel: nextToneLevel });
             }}
             className="w-full accent-waldgruen cursor-pointer"
-            aria-label="Tonlage des Briefes"
+            aria-label={copy.preferences.toneAriaLabel}
           />
           <div className="mt-1 flex justify-between gap-2">
-            {TONE_LABELS.map((label, index) => (
+            {copy.preferences.tones.map((label, index) => (
               <span
                 key={label}
                 className={[
@@ -171,7 +172,7 @@ export function StepPreferences({
 
         <fieldset>
           <legend className="block font-body text-sm font-semibold text-warmgrau mb-3">
-            Gewünschte Brieflänge
+            {copy.preferences.lengthLegend}
           </legend>
           <div className="flex gap-2">
             {(["1", "1.5", "2"] as LetterLength[]).map((length) => {
@@ -193,13 +194,17 @@ export function StepPreferences({
                       : "bg-creme text-waldgruen-dark border-warmgrau/30 hover:border-waldgruen/50",
                   ].join(" ")}
                 >
-                  {LETTER_LENGTHS[length].label}
+                  {length === "1"
+                    ? copy.preferences.lengthOne
+                    : length === "1.5"
+                      ? copy.preferences.lengthOneHalf
+                      : copy.preferences.lengthTwo}
                 </button>
               );
             })}
           </div>
           <p className="text-xs text-warmgrau/50 mt-2">
-            Eine Seite ist voreingestellt: prägnant und in 5–10 Minuten auf Papier abgeschrieben.
+            {copy.preferences.lengthHint}
           </p>
         </fieldset>
 
@@ -213,10 +218,10 @@ export function StepPreferences({
           >
             <span>
               <span className="block font-body text-base font-semibold text-waldgruen-dark">
-                Erweitert
+                {copy.preferences.advanced}
               </span>
               <span className="mt-1 block font-body text-sm text-warmgrau/65">
-                Zusätzliche Infos über dich (optional)
+                {copy.preferences.advancedDescription}
               </span>
             </span>
             <svg
@@ -242,12 +247,12 @@ export function StepPreferences({
             >
               <div>
                 <label htmlFor="party" className="block font-body text-sm font-semibold text-warmgrau mb-1">
-                  Bist du selbst Mitglied einer Partei?
+                  {copy.preferences.partyLabel}
                 </label>
                 <input
                   id="party"
                   type="text"
-                  placeholder="z.B. SPD, Grüne, CDU"
+                  placeholder={copy.preferences.partyPlaceholder}
                   className={inputClassName}
                   onFocus={() => onErrorDismiss?.()}
                   {...partyField}
@@ -261,12 +266,12 @@ export function StepPreferences({
 
               <div>
                 <label htmlFor="ngo" className="block font-body text-sm font-semibold text-warmgrau mb-1">
-                  Bist du in einer Organisation oder Gewerkschaft aktiv?
+                  {copy.preferences.organisationLabel}
                 </label>
                 <input
                   id="ngo"
                   type="text"
-                  placeholder="z.B. Greenpeace, ver.di"
+                  placeholder={copy.preferences.organisationPlaceholder}
                   className={inputClassName}
                   onFocus={() => onErrorDismiss?.()}
                   {...ngoField}
@@ -278,7 +283,7 @@ export function StepPreferences({
               </div>
 
               <p className="font-body text-xs leading-relaxed text-warmgrau/65">
-                Diese Angaben helfen nur bei der Formulierung deines aktuellen Briefs. Sie werden nicht dauerhaft gespeichert.
+                {copy.preferences.advancedPrivacy}
               </p>
             </div>
           )}
@@ -296,10 +301,10 @@ export function StepPreferences({
           ].join(" ")}
         >
           {isSubmitting
-            ? "Wahlkreis finden..."
+            ? copy.preferences.findingDistrict
             : isCampaign
-              ? "Abgeordnete auswählen"
-              : "Politische Ebene wählen"}
+              ? copy.preferences.chooseRecipients
+              : copy.preferences.chooseLevel}
           {!isSubmitting && <WizardForwardIcon className="absolute right-5 top-1/2 -translate-y-1/2" />}
         </button>
       </div>

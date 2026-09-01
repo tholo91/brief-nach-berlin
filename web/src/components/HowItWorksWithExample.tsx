@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { EXAMPLE_LETTERS } from "@/lib/example-letters";
 import LetterPaper from "./LetterPaper";
+import { useUiCopy } from "@/components/i18n/LocaleProvider";
 
 const ROTATION_INTERVAL_MS = 5000;
 
@@ -57,6 +58,13 @@ const steps = [
 ];
 
 export default function HowItWorksWithExample() {
+  const copy = useUiCopy();
+  const translatedSteps = steps.map((step, index) => ({
+    ...step,
+    title: [copy.howItWorks.step1Title, copy.howItWorks.step2Title, copy.howItWorks.step3Title][index]!,
+    description: [copy.howItWorks.step1Description, copy.howItWorks.step2Description, copy.howItWorks.step3Description][index]!,
+    link: step.link ? { ...step.link, label: copy.howItWorks.step2Link } : undefined,
+  }));
   const letter = EXAMPLE_LETTERS[0];
   const recipients = letter.rotatingRecipients ?? [letter.recipient];
 
@@ -85,20 +93,19 @@ export default function HowItWorksWithExample() {
       <div className="max-w-6xl mx-auto">
         <div className="text-center mb-12 md:mb-14">
           <p className="font-typewriter text-sm font-bold tracking-widest uppercase text-waldgruen/50 mb-3">
-            In drei Schritten
+            {copy.howItWorks.eyebrow}
           </p>
           <h2 className="font-body text-2xl md:text-3xl font-bold text-waldgruen-dark tracking-tight">
-            So einfach geht&apos;s
+            {copy.howItWorks.title}
           </h2>
           <p className="mt-3 font-body text-base text-warmgrau/80 max-w-xl mx-auto text-balance">
-            Du musst kein Politik-Profi sein. Brief-nach-Berlin findet die
-            richtigen Worte und Adressen und formuliert deinen Brief.
+            {copy.howItWorks.intro}
           </p>
         </div>
 
         <div className="grid md:grid-cols-2 gap-12 md:gap-16 items-start">
           <ol className="flex flex-col gap-10">
-            {steps.map((step) => (
+            {translatedSteps.map((step) => (
               <li key={step.number} className="relative">
                 <div className="flex items-center gap-3 mb-4">
                   <div className="p-2.5 rounded-2xl bg-waldgruen/10 shrink-0">
@@ -149,7 +156,7 @@ export default function HowItWorksWithExample() {
               </div>
 
               <p className="text-center mt-6 font-handwriting text-xl text-waldgruen-dark group-hover:text-waldgruen transition-colors duration-150">
-                Ganzen Brief lesen
+                {copy.howItWorks.readExample}
                 <span aria-hidden="true" className="ml-2 inline-block transition-transform duration-150 group-hover:translate-x-1">
                   &rarr;
                 </span>

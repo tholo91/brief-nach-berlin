@@ -1,28 +1,22 @@
+"use client";
+
 import Link from "next/link";
 import { CONTACT } from "@/lib/contact";
+import { useUiCopy } from "@/components/i18n/LocaleProvider";
 
 export default function Roadmap() {
+  const copy = useUiCopy();
   return (
     <section id="roadmap" className="py-20 md:py-28 px-6 bg-waldgruen-dark/[0.03]">
       <div className="max-w-5xl mx-auto">
         <p className="font-typewriter text-sm font-bold tracking-widest uppercase text-waldgruen/50 mb-3">
-          Wo es hingeht
+          {copy.roadmap.eyebrow}
         </p>
         <h2 className="font-body text-3xl md:text-4xl font-bold text-waldgruen-dark tracking-tight mb-4 md:max-w-none max-w-xl">
-          Brief-nach-Berlin wird mit euch immer besser
+          {copy.roadmap.title}
         </h2>
         <p className="font-body text-base md:text-lg text-warmgrau/80 leading-relaxed mb-14 max-w-2xl">
-          Das Projekt ist{" "}
-          <a
-            href="https://github.com/tholo91/brief-nach-berlin"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-waldgruen hover:text-waldgruen-dark underline underline-offset-2 transition-colors duration-200"
-          >
-            Open Source
-          </a>
-          . Ich baue Brief-nach-Berlin mit eurem Feedback stetig weiter. Hier
-          ist, was gerade neu ist und wo ich Feedback brauche:
+          {copy.roadmap.intro}
         </p>
 
         <div className="grid md:grid-cols-3 gap-8">
@@ -37,23 +31,21 @@ export default function Roadmap() {
             </div>
             <div>
               <p className="font-typewriter text-xs font-bold tracking-widest uppercase text-waldgruen/50 mb-2">
-                Richtiges politisches Level
+                {copy.roadmap.levelEyebrow}
               </p>
               <h3 className="font-body text-lg font-bold text-waldgruen-dark leading-snug mb-3">
-                Bund, Land oder Kommune
+                {copy.roadmap.levelTitle}
               </h3>
               <p className="font-body text-base text-warmgrau/80 leading-relaxed mb-3">
-                Nicht jedes Anliegen gehört nach Berlin. Brief-nach-Berlin
-                steuert jetzt Bund, Land und Kommune an und liefert die
-                passende politische Adresse.
+                {copy.roadmap.levelDescription}
               </p>
               <p className="font-body text-sm text-warmgrau/70 leading-relaxed mb-4">
                 <Link href="/kommune-land-bund-eu" prefetch={false} className="text-waldgruen hover:text-waldgruen-dark underline decoration-waldgruen/30 underline-offset-2 hover:decoration-waldgruen transition-colors">
-                  Wer ist eigentlich wofür zuständig?
+                  {copy.roadmap.levelLink}
                 </Link>
               </p>
               <span className="inline-block font-typewriter text-[10px] font-bold tracking-wider uppercase text-waldgruen bg-waldgruen/10 px-2 py-0.5 rounded-full">
-                Live
+                {copy.roadmap.live}
               </span>
             </div>
           </div>
@@ -69,30 +61,25 @@ export default function Roadmap() {
               </svg>
             </div>
             <p className="font-typewriter text-xs font-bold tracking-widest uppercase text-waldgruen/50">
-              Sichtbarkeit
+              {copy.roadmap.visibilityEyebrow}
             </p>
             <h3 className="font-body text-xl md:text-2xl font-bold text-waldgruen-dark leading-snug">
-              Was mir jetzt am meisten hilft
+              {copy.roadmap.visibilityTitle}
             </h3>
             <p className="font-body text-base text-warmgrau leading-relaxed max-w-xl">
-              Brief-nach-Berlin ist ein Freizeitprojekt von einer Person. Am
-              meisten hilft mir gerade Sichtbarkeit: Wenn du das Projekt
-              weitergibst oder mich mit Menschen aus Presse, Medien oder
-              passenden Communities vernetzt, bringt mich das konkret weiter.
-              Wenn du an einer lokalen Version für ein anderes europäisches
-              Land arbeitest, findest du die Infos auf der{" "}
+              {copy.roadmap.visibilityDescription} {" "}
               <Link
                 href="/europe"
                 prefetch={false}
                 className="text-waldgruen hover:text-waldgruen-dark underline underline-offset-2 transition-colors"
               >
-                Europa-Seite
+                {copy.roadmap.europeLink}
               </Link>
               .
             </p>
             <div className="mt-1">
               <p className="font-body text-base text-warmgrau leading-relaxed mb-1">
-                Beste Grüße aus Bremen
+                {copy.roadmap.greeting}
               </p>
               <p className="font-handwriting text-2xl text-waldgruen-dark/60">
                 Thomas
@@ -100,21 +87,21 @@ export default function Roadmap() {
             </div>
             <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 mt-2 max-w-xl">
               <a
-                href={`mailto:${CONTACT.email}?subject=${encodeURIComponent("Sichtbarkeit für Brief-nach-Berlin")}`}
+                href={`mailto:${CONTACT.email}?subject=${encodeURIComponent(copy.roadmap.visibilityTitle)}`}
                 className="inline-flex min-h-12 items-center justify-center gap-2 whitespace-nowrap bg-waldgruen text-creme font-body font-semibold text-sm sm:text-base px-5 py-3 rounded-xl hover:bg-waldgruen-dark transition-colors cursor-pointer shadow-lg shadow-waldgruen/20 active:scale-[0.98]"
               >
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" className="shrink-0">
                   <rect x="2" y="4" width="20" height="16" rx="3" stroke="currentColor" strokeWidth="2" fill="none" />
                   <path d="M2 8l10 7 10-7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                 </svg>
-                Kontakt herstellen
+                {copy.roadmap.contact}
               </a>
               <Link
                 href="/europe"
                 prefetch={false}
                 className="inline-flex min-h-12 items-center justify-center gap-2 whitespace-nowrap bg-white text-waldgruen border-2 border-waldgruen font-body font-semibold text-sm sm:text-base px-5 py-3 rounded-xl hover:bg-waldgruen/5 transition-colors cursor-pointer active:scale-[0.98]"
               >
-                Europa-Seite ansehen
+                {copy.roadmap.viewEurope}
               </Link>
             </div>
           </div>

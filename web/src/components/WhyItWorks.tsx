@@ -1,43 +1,32 @@
+"use client";
+
 import Image from "next/image";
 import Link from "next/link";
-
-const stats = [
-  {
-    number: "9.260",
-    label:
-      "Petitionen gingen 2024 beim Bundestag ein. Nur 607 wurden im Ausschuss einzeln beraten. Ein Brief an deinen Wahlkreisabgeordneten landet nicht in dieser Schlange.",
-    source: "Petitionsausschuss, Jahresbericht 2024",
-  },
-  {
-    number: "70 %",
-    label:
-      "der befragten US-Abgeordnetenbüros sagen: Weniger als 50 persönliche Zuschriften können reichen, damit ein Thema auf die Agenda kommt.",
-    source: "Congressional Management Foundation",
-  },
-];
+import { useUiCopy } from "@/components/i18n/LocaleProvider";
 
 export default function WhyItWorks() {
+  const copy = useUiCopy();
+  const stats = [
+    { number: "9.260", label: copy.whyItWorks.stat1, source: copy.whyItWorks.stat1Source },
+    { number: "70 %", label: copy.whyItWorks.stat2, source: copy.whyItWorks.stat2Source },
+  ];
   return (
     <section id="warum-briefe" className="py-20 md:py-28 px-6 bg-white">
       <div className="max-w-6xl mx-auto">
         <p className="font-typewriter text-sm font-bold tracking-widest uppercase text-waldgruen/50 mb-3">
-          Warum ein Brief
+          {copy.whyItWorks.eyebrow}
         </p>
         <h2 className="font-body text-3xl md:text-4xl font-bold text-waldgruen-dark tracking-tight mb-4 md:max-w-none max-w-xl">
-          Warum ein Brief mehr bewegt
-          <br />
-          als tausend Klicks
+          {copy.whyItWorks.title}
         </h2>
         <p className="font-body text-base md:text-lg text-warmgrau/80 leading-relaxed mb-14 max-w-2xl">
-          Ein handschriftlicher Brief macht Zeit und persönliches Interesse
-          sichtbar. Was Studien dazu sagen und wo die Grenzen liegen, steht
-          hier: {" "}
+          {copy.whyItWorks.description}{" "}
           <Link
             href="/handschriftliche-briefe-wirkung"
             prefetch={false}
             className="text-waldgruen hover:text-waldgruen-dark underline decoration-waldgruen/30 underline-offset-2 hover:decoration-waldgruen transition-colors"
           >
-            Was Studien zur Wirkung handschriftlicher Briefe sagen
+            {copy.whyItWorks.studiesLink}
           </Link>
         </p>
 
@@ -47,7 +36,7 @@ export default function WhyItWorks() {
             <div className="relative aspect-square rounded-2xl overflow-hidden shadow-[0_24px_60px_-24px_rgba(45,80,22,0.35)] ring-1 ring-warmgrau/10">
               <Image
                 src="/images/letter-on-desk.webp"
-                alt="Ein handgeschriebener Brief wird in einem Berliner Abgeordnetenbüro gelesen, mit Blick auf grüne Altbau-Fassaden."
+                alt={copy.whyItWorks.imageAlt}
                 fill
                 sizes="(min-width: 768px) 50vw, 100vw"
                 className="object-cover"
@@ -67,7 +56,7 @@ export default function WhyItWorks() {
                   {stat.label}
                 </p>
                 <p className="font-body text-xs text-warmgrau/40 uppercase tracking-wide">
-                  Quelle: {stat.source}
+                  {copy.whyItWorks.source.replace("{source}", stat.source)}
                 </p>
               </div>
             ))}

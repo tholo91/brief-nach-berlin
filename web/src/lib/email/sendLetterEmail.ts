@@ -1,10 +1,11 @@
 import { BrevoClient } from "@getbrevo/brevo";
-import { buildEmailHtml, buildLetterEmailSubject } from "./buildEmailHtml";
+import { buildEmailHtml, buildLetterEmailSubject, buildLetterEmailText } from "./buildEmailHtml";
 import { signFeedbackToken } from "@/lib/feedback/token";
 import type { Politician } from "@/lib/types/politician";
 import type { RathausRecipient, Recipient } from "@/lib/lookup/rathausRecipient";
 import { EMAIL_SENDER_NAME } from "@/lib/config";
 import type { WizardData } from "@/lib/types/wizard";
+import { DEFAULT_LOCALE, type Locale } from "@/lib/i18n/locale";
 
 const apiKey = process.env.BREVO_API_KEY;
 if (!apiKey) {
@@ -68,6 +69,9 @@ export interface LetterDebugPayload {
 }
 
 export interface SendLetterEmailParams {
+  // The UI language selected for this wizard session. The political letter
+  // itself remains German, but all delivery guidance uses this locale.
+  locale?: Locale;
   recipientEmail: string;
   politicianName: string;
   politicianFirstName: string;
@@ -115,6 +119,7 @@ export interface SendLetterEmailParams {
 // signierten Token gibt die Funktion zurück, weil der Erstversand ihn zusätzlich
 // für die Followup-Mail wiederverwendet.
 export function prepareLetterEmail(args: {
+  locale?: Locale;
   recipientEmail: string;
   recipient: Recipient;
   letterText: string;
@@ -123,13 +128,23 @@ export function prepareLetterEmail(args: {
   campaign?: WizardData["campaign"];
   letterNumber?: number;
 }): { params: SendLetterEmailParams; feedbackToken: string } {
-  const { recipientEmail, recipient, letterText, issueText, debug, campaign, letterNumber } = args;
+  const {
+    locale = DEFAULT_LOCALE,
+    recipientEmail,
+    recipient,
+    letterText,
+    issueText,
+    debug,
+    campaign,
+    letterNumber,
+  } = args;
   const feedbackToken = signFeedbackToken(debug);
 
   if (recipient.kind === "rathaus") {
     return {
       feedbackToken,
       params: {
+        locale,
         recipientEmail,
         politicianName: recipient.label,
         politicianFirstName: "",
@@ -161,6 +176,7 @@ export function prepareLetterEmail(args: {
     return {
       feedbackToken,
       params: {
+        locale,
         recipientEmail,
         politicianName: recipient.label,
         politicianFirstName: "",
@@ -195,6 +211,7 @@ export function prepareLetterEmail(args: {
   return {
     feedbackToken,
     params: {
+      locale,
       recipientEmail,
       politicianName: `${politician.firstName} ${politician.lastName}`,
       politicianFirstName: politician.firstName,
@@ -228,6 +245,7 @@ export async function sendLetterEmail(
     const result = await brevo.transactionalEmails.sendTransacEmail({
       subject: buildLetterEmailSubject(params),
       htmlContent: buildEmailHtml(params),
+      textContent: buildLetterEmailText(params),
       // params.feedbackToken is read by buildEmailHtml to render the star bar
       // in place of the static "Profil auf abgeordnetenwatch" button.
       sender: {

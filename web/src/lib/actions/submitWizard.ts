@@ -10,6 +10,7 @@ import {
   step1Schema,
   step1bSchema,
   step2Schema,
+  localeSchema,
 } from "@/lib/validation/wizardSchemas";
 import {
   getBundestagPoliticiansByIds,
@@ -96,6 +97,7 @@ export async function submitWizardAction(
   });
 
   try {
+    data.locale = localeSchema.safeParse(data.locale).success ? data.locale : "de";
     // 1. Validate input server-side with Zod (T-02-09)
     const step1Result = step1Schema.safeParse(data);
     if (!step1Result.success) {

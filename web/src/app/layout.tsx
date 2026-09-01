@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Courier_Prime, Source_Sans_3, Caveat } from "next/font/google";
 import { AnalyticsWrapper } from "@/components/AnalyticsWrapper";
+import { LocaleProvider } from "@/components/i18n/LocaleProvider";
 import { APP_URL, FOUNDER_HOMEPAGE, FOUNDER_LINKEDIN } from "@/lib/config";
 import "./globals.css";
 
@@ -98,8 +99,10 @@ export default function RootLayout({
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(brandJsonLd) }}
         />
-        {children}
-        <AnalyticsWrapper />
+        <LocaleProvider>
+          {children}
+          <AnalyticsWrapper />
+        </LocaleProvider>
       </body>
     </html>
   );

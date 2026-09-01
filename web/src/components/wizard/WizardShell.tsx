@@ -28,6 +28,7 @@ import { Step2Issue } from "./Step2Issue";
 import { StepLevelSelect } from "./StepLevelSelect";
 import { Step3Success } from "./Step3Success";
 import FadeFooterImage from "../FadeFooterImage";
+import { useLocale } from "@/components/i18n/LocaleProvider";
 
 const PARAM_KEYS = ["plz", "letterLength"] as const;
 
@@ -88,6 +89,7 @@ function recipientsForLevel(
 export function WizardShell() {
   const searchParams = useSearchParams();
   const router = useRouter();
+  const { locale } = useLocale();
 
   const [wizardData, setWizardData] = useState<Partial<WizardData>>(() => {
     const data = readParamsToData(searchParams);
@@ -97,6 +99,7 @@ export function WizardShell() {
     }
     return data;
   });
+
   // Direct visits start on the issue step. Landing and campaign handoffs have
   // already collected the issue and continue with contact details.
   const [step, setStep] = useState<WizardStep>(1);
@@ -260,6 +263,7 @@ export function WizardShell() {
       setErrorMessage(null);
 
       const fullData: WizardData = {
+        locale,
         plz: wizardData.plz ?? "",
         email: wizardData.email ?? "",
         party: optionalData.party,
@@ -379,7 +383,7 @@ export function WizardShell() {
         setIsSubmitting(false);
       }
     },
-    [wizardData]
+    [wizardData, locale]
   );
 
   const handleStep2bComplete = useCallback(

@@ -2,10 +2,12 @@ import type { Politician, PoliticalLevel } from "./politician";
 import type { RathausRecipient, Recipient } from "@/lib/lookup/rathausRecipient";
 import type { LandesregierungRecipient } from "@/lib/lookup/landesregierungRecipient";
 import type { LetterLength } from "@/lib/config";
+import type { Locale } from "@/lib/i18n/locale";
 
 export type WizardStep = 1 | 2 | "2b" | "level" | 3;
 
 export interface WizardData {
+  locale?: Locale;
   plz: string;
   email: string;
   party?: string;

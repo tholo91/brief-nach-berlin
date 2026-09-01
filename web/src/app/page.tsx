@@ -14,8 +14,6 @@ import { getHeroReviews } from "@/lib/reviews/getHeroReviews";
 import { getLetterCount } from "@/lib/counter";
 import { formatNumber } from "@/lib/formatNumber";
 
-const LETTER_COUNT_DISPLAY_THRESHOLD = 50;
-
 export const metadata: Metadata = {
   alternates: { canonical: "/" },
   title: "Brief-nach-Berlin | Dein Anliegen an die Politik",
@@ -38,15 +36,11 @@ export default async function Home() {
         {/* Press logos + review strip below hero */}
         <section className="relative z-20 -mt-12 md:-mt-12 lg:-mt-24 pb-2">
           <PressMarquee />
+          <p className="mt-4 md:mt-8 text-center font-typewriter text-xs sm:text-sm tracking-widest uppercase text-warmgrau/50 mb-1 px-6">
+            Schon <span className="font-bold text-waldgruen">{formattedLetterCount}</span> Briefe geschrieben
+          </p>
           {heroReviews.length > 0 && (
             <div className="mt-4 md:mt-8">
-              {letterCount >= LETTER_COUNT_DISPLAY_THRESHOLD && (
-                <p className="text-center font-typewriter text-xs sm:text-sm tracking-widest uppercase text-warmgrau/50 mb-1 px-6">
-                  Schon{" "}
-                  <span className="font-bold text-waldgruen">{formattedLetterCount}</span>{" "}
-                  Briefe geschrieben
-                </p>
-              )}
               <ReviewMarquee reviews={heroReviews} variant="compact" limit={20} cardHref="/stimmen" />
             </div>
           )}

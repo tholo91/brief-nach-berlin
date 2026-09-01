@@ -7,8 +7,12 @@ import {
   SHARE_URL_EMAIL,
 } from "@/lib/config";
 import { buildStarBarHtml } from "./buildEmailHtml";
+import { getEmailCopy, resolveEmailLocale } from "./mailLocale";
+import type { Locale } from "@/lib/i18n/locale";
+import { SUPPORT_CONTENT, SUPPORT_EMAIL_COPY } from "@/lib/support-content";
 
 export interface BuildFollowupParams {
+  locale?: Locale;
   token: string;
   politicianName?: string;
   // Overrides die Basis-URL für absolute Links und Bild-Assets in der Mail.
@@ -24,18 +28,45 @@ export interface FollowupRender {
   text: string;
 }
 
+function escapeHtml(text: string): string {
+  return text
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
+
 export function buildFollowupHtml(params: BuildFollowupParams): FollowupRender {
   const { token } = params;
   const base = params.baseUrl ?? APP_URL;
-
-  const subject = "Wie fandest du deinen Brief?";
+  const locale = resolveEmailLocale(params.locale);
+  const copy = getEmailCopy(locale).followup;
+  const supportCopy = SUPPORT_EMAIL_COPY[locale];
+  const subject = getEmailCopy(locale).feedbackSubject;
+  const isTurkish = locale === "tr";
+  const shareText = isTurkish
+    ? `Brief-nach-Berlin ile siyasete kişisel bir mektup hazırladım. Sen de kendi sözlerinle bir mektup yazmak ister misin? ${base}`
+    : locale === "en"
+      ? `I just prepared a personal letter to politicians with Brief-nach-Berlin. Would you also like to write a letter in your own words? ${base}`
+      : undefined;
+  const shareWhatsappUrl = shareText
+    ? `https://wa.me/?text=${encodeURIComponent(shareText)}`
+    : SHARE_URL_WHATSAPP;
+  const shareTelegramUrl = shareText
+    ? `https://t.me/share/url?url=${encodeURIComponent(base)}&text=${encodeURIComponent(shareText)}`
+    : SHARE_URL_TELEGRAM;
+  const shareEmailUrl = shareText
+    ? `mailto:?subject=${encodeURIComponent(isTurkish ? "Sen de Brief-nach-Berlin ile bir mektup yazar mısın?" : "Would you also write a letter with Brief-nach-Berlin?")}&body=${encodeURIComponent(shareText)}`
+    : SHARE_URL_EMAIL;
+  const deleteUrl = `mailto:${FOUNDER_EMAIL}?subject=${encodeURIComponent(copy.feedbackMailSubject)}&body=${encodeURIComponent(copy.feedbackMailBody)}`;
 
   const text = [
-    `Moin 👋`,
+    copy.greeting,
     ``,
-    `Vor ein paar Tagen hast du deinen Brief nach Berlin (${base}) erstellt und das freut mich sehr. Ich hoffe, du hast ihn in deinem Stil personalisiert und handgeschrieben bereits eingeworfen?`,
+    `${copy.created} (${base})`,
     ``,
-    `Wichtig für die Zukunft des Projekts ist das Feedback von Menschen wie dir: Wie hat dir dein Brief gefallen? Sei bitte schonungslos ehrlich bei Kritik, gerne aber auch bei Lob 😉`,
+    copy.feedback,
     ``,
     `1 Stern: ${base}/feedback?r=1&t=${token}&s=2`,
     `2 Sterne: ${base}/feedback?r=2&t=${token}&s=2`,
@@ -43,26 +74,28 @@ export function buildFollowupHtml(params: BuildFollowupParams): FollowupRender {
     `4 Sterne: ${base}/feedback?r=4&t=${token}&s=2`,
     `5 Sterne: ${base}/feedback?r=5&t=${token}&s=2`,
     ``,
-    `Falls du schon deinen Brief bewertet hast, kannst du diese Mail ignorieren.`,
-    `Tausend Dank dir und beste Grüße aus Bremen`,
+    `${supportCopy.button}: ${SUPPORT_CONTENT.ctas.donate.href}`,
+    ``,
+    copy.ignore,
+    copy.thanks,
     ``,
     `Thomas`,
-    `${FOUNDER_HOMEPAGE} · Roadmap mitgestalten: ${base}/was-noch-kommt`,
+    `${FOUNDER_HOMEPAGE} · ${copy.roadmap}: ${base}/was-noch-kommt`,
     ``,
     `--`,
-    `Gemeinsam noch lauter: Briefe erhalten mehr Gehör, wenn viele Menschen aus der gleichen Region schreiben. Teile Brief-nach-Berlin supergerne in deinem Umfeld: ${base}/weitersagen`,
-    `WhatsApp: ${SHARE_URL_WHATSAPP}`,
-    `Telegram: ${SHARE_URL_TELEGRAM}`,
-    `E-Mail:   ${SHARE_URL_EMAIL}`,
+    `${copy.shareHeading}: ${copy.share}: ${base}/weitersagen`,
+    `WhatsApp: ${shareWhatsappUrl}`,
+    `Telegram: ${shareTelegramUrl}`,
+    `E-Mail:   ${shareEmailUrl}`,
     ``,
     `--`,
-    `Einmalige Nachfrage, kein Newsletter.`,
-    `Wer darf schreiben? ${base}/wer-darf-mdb-schreiben`,
-    `Datenschutz: ${base}/datenschutz · Adresse löschen: ${FOUNDER_EMAIL} · Roadmap: ${base}/was-noch-kommt`,
+    copy.oneOff,
+    `${copy.write} ${base}/wer-darf-mdb-schreiben`,
+    `${copy.privacy}: ${base}/datenschutz · ${copy.delete}: ${FOUNDER_EMAIL} · ${copy.roadmap}: ${base}/was-noch-kommt`,
   ].join("\n");
 
   const html = `<!DOCTYPE html>
-<html lang="de">
+<html lang="${locale}">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -77,13 +110,17 @@ export function buildFollowupHtml(params: BuildFollowupParams): FollowupRender {
     @media only screen and (max-width: 480px) {
       .followup-envelope { display: none !important; }
       .followup-title-cell { padding: 0 !important; }
+      .followup-action-column { display: block !important; width: 100% !important; }
+      .followup-action-gap { display: block !important; width: 100% !important; height: 12px !important; line-height: 12px !important; }
+      .bnb-feedback-break { display: inline !important; }
+      .bnb-feedback-space { display: none !important; }
     }
   </style>
 </head>
 <body style="margin:0;padding:0;background-color:#FAF8F5;font-family:Georgia,'Times New Roman',serif;">
   <!-- Preview text (hidden) -->
   <div style="display:none;max-height:0;overflow:hidden;font-size:1px;line-height:1px;color:#FAF8F5;opacity:0;">
-    Dein Feedback mit nur 1 Klick, hilft mir sehr bei der Weiterentwicklung.
+    ${getEmailCopy(locale).feedbackPreview}
   </div>
 
   <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color:#FAF8F5;">
@@ -107,7 +144,7 @@ export function buildFollowupHtml(params: BuildFollowupParams): FollowupRender {
                 <tr>
                   <td class="followup-title-cell" style="vertical-align:middle;text-align:center;padding:0 130px;">
                     <h1 style="margin:0;font-family:Georgia,'Times New Roman',serif;font-size:22px;color:#2D5016;font-weight:bold;letter-spacing:0.5px;">Brief-nach-Berlin</h1>
-                    <p style="margin:8px 0 0;font-family:Georgia,'Times New Roman',serif;font-size:14px;color:#666666;">Wie fandest du deinen Brief?</p>
+                    <p style="margin:8px 0 0;font-family:Georgia,'Times New Roman',serif;font-size:14px;color:#666666;">${subject}</p>
                   </td>
                 </tr>
               </table>
@@ -125,22 +162,38 @@ export function buildFollowupHtml(params: BuildFollowupParams): FollowupRender {
           <!-- Body -->
           <tr>
             <td style="padding:8px 32px 8px;background-color:#ffffff;">
-              <p style="margin:0 0 14px;font-family:Georgia,'Times New Roman',serif;font-size:15px;color:#4A4A4A;line-height:1.75;">Moin 👋</p>
+              <p style="margin:0 0 14px;font-family:Georgia,'Times New Roman',serif;font-size:15px;color:#4A4A4A;line-height:1.75;">${copy.greeting}</p>
               <p style="margin:0 0 14px;font-family:Georgia,'Times New Roman',serif;font-size:15px;color:#4A4A4A;line-height:1.75;">
-                Vor ein paar Tagen hast du deinen <a href="${base}" style="color:#2D5016;text-decoration:underline;">Brief-nach-Berlin</a> erstellt und das freut mich sehr. Ich hoffe, du hast ihn in deinem Stil personalisiert und handgeschrieben bereits eingeworfen?
+                ${copy.created}
               </p>
               <p style="margin:0 0 6px;font-family:Georgia,'Times New Roman',serif;font-size:15px;color:#4A4A4A;line-height:1.75;">
-                Wichtig für die Zukunft des Projekts ist das <strong style="font-weight:700;color:#2D5016;">Feedback von Menschen wie dir</strong>: Wie hat dir dein Brief gefallen? Sei bitte schonungslos ehrlich bei Kritik, gerne aber auch bei Lob 😉
+                ${copy.feedback}
               </p>
             </td>
           </tr>
 
-          <!-- Star bar, centered -->
+          <!-- Primary rating action with a compact secondary donation CTA -->
           <tr>
-            <td style="padding:8px 32px 20px;background-color:#ffffff;text-align:center;">
-              <div style="display:inline-block;background-color:#FAF8F5;border:1px solid #E0DCD7;border-radius:6px;padding:18px 24px;">
-                ${buildStarBarHtml(token, 2)}
-              </div>
+            <td style="padding:8px 32px 20px;background-color:#ffffff;">
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="width:100%;border-collapse:separate;border-spacing:0;">
+                <tr>
+                  <td class="followup-action-column followup-rating-column" width="48.5%" valign="middle" bgcolor="#FAF8F5" style="width:48.5%;background-color:#FAF8F5;border:1px solid #E0DCD7;border-radius:6px;padding:18px 16px;text-align:center;">
+                    ${buildStarBarHtml(token, 2, locale)}
+                  </td>
+                  <td class="followup-action-gap" width="3%" style="width:3%;font-size:0;line-height:0;">&nbsp;</td>
+                  <td class="followup-action-column" width="48.5%" valign="middle" bgcolor="#FAF8F5" style="width:48.5%;background-color:#FAF8F5;border:1px solid #E0DCD7;border-radius:6px;padding:14px 12px;text-align:center;">
+                    <p style="margin:0 0 10px;font-family:Georgia,'Times New Roman',serif;font-size:12px;color:#2D5016;font-weight:bold;line-height:1.4;">${escapeHtml(supportCopy.compactHeading)}</p>
+                    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="width:100%;border-collapse:collapse;">
+                      <tr>
+                        <td bgcolor="#2D5016" style="border-radius:4px;text-align:center;">
+                          <a href="${SUPPORT_CONTENT.ctas.donate.href}" target="_blank" rel="noopener noreferrer" style="display:block;background-color:#2D5016;color:#ffffff;font-family:Georgia,'Times New Roman',serif;font-size:12px;font-weight:bold;text-decoration:none;padding:10px 8px;border-radius:4px;line-height:1.4;text-align:center;">${escapeHtml(supportCopy.compactButton)}</a>
+                        </td>
+                      </tr>
+                    </table>
+                    <p style="margin:8px 0 0;font-family:Georgia,'Times New Roman',serif;font-size:12px;color:#b0b0b0;line-height:1.4;">${escapeHtml(supportCopy.providerLabel)}</p>
+                  </td>
+                </tr>
+              </table>
             </td>
           </tr>
 
@@ -148,14 +201,14 @@ export function buildFollowupHtml(params: BuildFollowupParams): FollowupRender {
           <tr>
             <td style="padding:16px 32px 24px;background-color:#ffffff;text-align:left;">
               <p style="margin:0 0 10px;font-family:Georgia,'Times New Roman',serif;font-size:15px;color:#4A4A4A;line-height:1.75;">
-                Falls du schon deinen Brief bewertet hast, kannst du diese Mail ignorieren.<br>
-                Tausend Dank dir und beste Grüße aus Bremen
+                ${copy.ignore}<br>
+                ${copy.thanks}
               </p>
               <p style="margin:0;font-family:'Caveat','Brush Script MT','Lucida Handwriting',cursive;font-size:32px;color:#1D3557;line-height:1.1;">
                 Thomas
               </p>
               <p style="margin:10px 0 0;font-family:Georgia,'Times New Roman',serif;font-size:12px;color:#bcbcbc;line-height:1.5;">
-                Eine Initiative von <a href="${FOUNDER_HOMEPAGE}" target="_blank" rel="noopener noreferrer" style="color:#bcbcbc;text-decoration:underline;">www.thomas-lorenz.eu</a> · <a href="${base}/was-noch-kommt" target="_blank" rel="noopener noreferrer" style="color:#bcbcbc;text-decoration:underline;">Roadmap mitgestalten</a>
+                ${getEmailCopy(locale).initiative} <a href="${FOUNDER_HOMEPAGE}" target="_blank" rel="noopener noreferrer" style="color:#bcbcbc;text-decoration:underline;">www.thomas-lorenz.eu</a> · <a href="${base}/was-noch-kommt" target="_blank" rel="noopener noreferrer" style="color:#bcbcbc;text-decoration:underline;">${copy.roadmap}</a>
               </p>
             </td>
           </tr>
@@ -164,20 +217,20 @@ export function buildFollowupHtml(params: BuildFollowupParams): FollowupRender {
           <tr>
             <td style="padding:8px 32px 24px;background-color:#ffffff;">
               <div style="background-color:#FAF8F5;border:1px solid #E0DCD7;border-radius:6px;padding:20px 22px;">
-                <h2 style="margin:0 0 8px;font-family:Georgia,'Times New Roman',serif;font-size:16px;color:#2D5016;font-weight:bold;">Gemeinsam noch lauter</h2>
+                <h2 style="margin:0 0 8px;font-family:Georgia,'Times New Roman',serif;font-size:16px;color:#2D5016;font-weight:bold;">${copy.shareHeading}</h2>
                 <p style="margin:0 0 14px;font-family:Georgia,'Times New Roman',serif;font-size:14px;color:#4A4A4A;line-height:1.6;">
-                  Briefe erhalten mehr Gehör, wenn viele Menschen aus der gleichen Region schreiben. Teile Brief-nach-Berlin supergerne in deinem Umfeld (<a href="${base}/weitersagen" style="color:#2D5016;text-decoration:underline;">mehr Infos</a>).
+                  ${copy.share} (<a href="${base}/weitersagen" style="color:#2D5016;text-decoration:underline;">${copy.moreInfo}</a>).
                 </p>
                 <table role="presentation" cellpadding="0" cellspacing="0" width="100%">
                   <tr>
                     <td style="padding-right:6px;width:34%;" valign="top">
-                      <a href="${SHARE_URL_WHATSAPP}" style="display:block;text-align:center;background-color:#ffffff;color:#2D5016;font-family:Georgia,'Times New Roman',serif;font-size:14px;font-weight:bold;text-decoration:none;padding:10px 8px;border-radius:6px;border:2px solid #2D5016;">WhatsApp</a>
+                      <a href="${shareWhatsappUrl}" style="display:block;text-align:center;background-color:#ffffff;color:#2D5016;font-family:Georgia,'Times New Roman',serif;font-size:14px;font-weight:bold;text-decoration:none;padding:10px 8px;border-radius:6px;border:2px solid #2D5016;">WhatsApp</a>
                     </td>
                     <td style="padding:0 3px;width:33%;" valign="top">
-                      <a href="${SHARE_URL_TELEGRAM}" style="display:block;text-align:center;background-color:#ffffff;color:#2D5016;font-family:Georgia,'Times New Roman',serif;font-size:14px;font-weight:bold;text-decoration:none;padding:10px 8px;border-radius:6px;border:2px solid #2D5016;">Telegram</a>
+                      <a href="${shareTelegramUrl}" style="display:block;text-align:center;background-color:#ffffff;color:#2D5016;font-family:Georgia,'Times New Roman',serif;font-size:14px;font-weight:bold;text-decoration:none;padding:10px 8px;border-radius:6px;border:2px solid #2D5016;">Telegram</a>
                     </td>
                     <td style="padding-left:6px;width:33%;" valign="top">
-                      <a href="${SHARE_URL_EMAIL}" style="display:block;text-align:center;background-color:#ffffff;color:#2D5016;font-family:Georgia,'Times New Roman',serif;font-size:14px;font-weight:bold;text-decoration:none;padding:10px 8px;border-radius:6px;border:2px solid #2D5016;">E-Mail</a>
+                      <a href="${shareEmailUrl}" style="display:block;text-align:center;background-color:#ffffff;color:#2D5016;font-family:Georgia,'Times New Roman',serif;font-size:14px;font-weight:bold;text-decoration:none;padding:10px 8px;border-radius:6px;border:2px solid #2D5016;">E-Mail</a>
                     </td>
                   </tr>
                 </table>
@@ -194,10 +247,10 @@ export function buildFollowupHtml(params: BuildFollowupParams): FollowupRender {
           <tr>
             <td style="padding:20px 32px 24px;background-color:#FAF8F5;text-align:center;">
               <p style="margin:0;font-family:Georgia,'Times New Roman',serif;font-size:12px;color:#999999;">
-                <a href="${APP_URL}" style="color:#2D5016;text-decoration:none;">Brief-nach-Berlin</a> · Deine Stimme zählt.
+                <a href="${APP_URL}" style="color:#2D5016;text-decoration:none;">Brief-nach-Berlin</a> · ${getEmailCopy(locale).voiceCounts}
               </p>
               <p style="margin:6px 0 0;font-family:Georgia,'Times New Roman',serif;font-size:12px;color:#aaaaaa;line-height:1.5;">
-                Einmalige Nachfrage, kein Newsletter. <a href="${APP_URL}/datenschutz" style="color:#888888;">Datenschutz</a> · <a href="mailto:${FOUNDER_EMAIL}?subject=Brief%20nach%20Berlin%3A%20Adresse%20l%C3%B6schen&body=Hallo%20Thomas%2C%0A%0Abitte%20l%C3%B6sche%20meine%20E-Mail-Adresse%20aus%20deinen%20Followup-Listen.%0A%0ADanke!" style="color:#888888;">Adresse löschen</a> · <a href="${APP_URL}/was-noch-kommt" style="color:#888888;">Roadmap</a> · <a href="${APP_URL}/wer-darf-mdb-schreiben" style="color:#888888;">Wer darf schreiben?</a>
+                ${copy.oneOff} <a href="${APP_URL}/datenschutz" style="color:#888888;">${copy.privacy}</a> · <a href="${deleteUrl}" style="color:#888888;">${copy.delete}</a> · <a href="${APP_URL}/was-noch-kommt" style="color:#888888;">${copy.roadmap}</a> · <a href="${APP_URL}/wer-darf-mdb-schreiben" style="color:#888888;">${copy.write}</a>
               </p>
             </td>
           </tr>

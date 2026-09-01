@@ -1,14 +1,14 @@
 import AppHeader from "@/components/AppHeader";
-import AppFooter from "@/components/AppFooter";
+import { WizardFooter } from "@/components/WizardFooter";
 
 export default function AppSectionLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
     <div className="min-h-screen flex flex-col bg-creme">
-      <AppHeader />
+      <AppHeader showLanguageSwitcher />
       <main className="flex-1 flex flex-col">{children}</main>
-      <AppFooter />
+      <WizardFooter />
     </div>
   );
 }

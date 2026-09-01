@@ -5,6 +5,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { step1Schema, type Step1Data } from "@/lib/validation/wizardSchemas";
 import { WizardForwardIcon } from "@/components/wizard/WizardForwardIcon";
+import { useUiCopy } from "@/components/i18n/LocaleProvider";
 
 interface Step1FormProps {
   onNext: (data: Step1Data) => void;
@@ -19,6 +20,7 @@ export function Step1Form({
   plzError,
   onPlzErrorDismiss,
 }: Step1FormProps) {
+  const copy = useUiCopy();
   const {
     register,
     handleSubmit,
@@ -82,24 +84,24 @@ export function Step1Form({
   return (
     <form onSubmit={handleSubmit(onSubmit)} noValidate>
       <h1 className="font-typewriter text-[28px] font-semibold leading-[1.2] text-waldgruen-dark mb-2">
-        Wer ist für dein Anliegen zuständig?
+        {copy.contact.heading}
       </h1>
       <p className="font-body text-sm text-warmgrau/70 mb-8">
-        Deine Postleitzahl zeigt, welche Abgeordneten dein Brief erreichen soll. Den fertigen Brief bekommst du per E-Mail.
+        {copy.contact.intro}
       </p>
 
       <div className="space-y-4">
         {/* PLZ */}
         <div>
           <label htmlFor="plz" className="block font-body text-sm font-semibold text-warmgrau mb-1">
-            Postleitzahl *
+            {copy.contact.postalCodeLabel}
           </label>
           <input
             id="plz"
             type="text"
             inputMode="numeric"
             maxLength={5}
-            placeholder="z.B. 10115"
+            placeholder={copy.contact.postalCodePlaceholder}
             className={inputClassName((!!errors.plz && !!touchedFields.plz) || !!plzError)}
             aria-describedby={errors.plz && touchedFields.plz ? "plz-error" : plzError ? "plz-server-error" : "plz-hint"}
             aria-invalid={(!!errors.plz && !!touchedFields.plz) || !!plzError}
@@ -112,12 +114,12 @@ export function Step1Form({
             aria-live="polite"
           >
             {locality
-              ? `Abgeordnete für ${locality.ort} werden gesucht`
-              : "Damit werden deine zuständigen Abgeordneten gefunden"}
+              ? copy.contact.localityLookup.replace("{locality}", locality.ort)
+              : copy.contact.postalCodeHint}
           </p>
           {errors.plz && touchedFields.plz && (
             <p id="plz-error" role="alert" className="text-sm text-airmail-rot mt-1">
-              {errors.plz.message}
+              {copy.contact.postalCodeInvalid}
             </p>
           )}
           {plzError && !errors.plz && (
@@ -130,23 +132,23 @@ export function Step1Form({
         {/* Email */}
         <div>
           <label htmlFor="email" className="block font-body text-sm font-semibold text-warmgrau mb-1">
-            E-Mail-Adresse *
+            {copy.contact.emailLabel}
           </label>
           <input
             id="email"
             type="email"
-            placeholder="deine@email.de"
+            placeholder={copy.contact.emailPlaceholder}
             className={inputClassName(!!errors.email && !!touchedFields.email)}
             aria-describedby={errors.email && touchedFields.email ? "email-error" : "email-hint"}
             aria-invalid={!!errors.email && !!touchedFields.email}
             {...register("email")}
           />
           <p id="email-hint" className="text-sm text-warmgrau/60 mt-1">
-            Dein Brief kommt per Mail zu dir. Deine Adresse wird nur für den Versand genutzt und danach gelöscht.
+            {copy.contact.emailHint}
           </p>
           {errors.email && touchedFields.email && (
             <p id="email-error" role="alert" className="text-sm text-airmail-rot mt-1">
-              {errors.email.message}
+              {copy.contact.emailInvalid}
             </p>
           )}
         </div>
@@ -165,7 +167,7 @@ export function Step1Form({
               : "opacity-50 cursor-not-allowed",
           ].join(" ")}
         >
-          Weiter
+          {copy.contact.next}
           <WizardForwardIcon className="absolute right-5 top-1/2 -translate-y-1/2" />
         </button>
       </div>

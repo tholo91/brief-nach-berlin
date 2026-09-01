@@ -7,8 +7,11 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { Step2Issue } from "@/components/wizard/Step2Issue";
 import { saveHandoff } from "@/lib/wizard-handoff";
 import { WIZARD_PATH } from "@/lib/config";
+import { useLocale, useUiCopy } from "@/components/i18n/LocaleProvider";
 
 export default function Hero() {
+  const { locale } = useLocale();
+  const copy = useUiCopy();
   const sectionRef = useRef<HTMLElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
   const [isVideoPlaying, setIsVideoPlaying] = useState(false);
@@ -152,15 +155,16 @@ export default function Hero() {
 
         <div className="relative mb-4">
           <h1 className="font-body text-4xl md:text-5xl font-bold text-waldgruen-dark leading-[1.1] tracking-tight text-balance">
-            Dein Anliegen.{" "}
-            <span className="block text-waldgruen">Direkt an die Politik.</span>
+            {copy.hero.titleStart}{" "}
+            <span className="block text-waldgruen">{copy.hero.titleEmphasis}</span>
           </h1>
-          <NgoCampaignBadge className="hidden sm:inline-flex absolute left-1/2 -top-5 z-20 ml-[9.75rem] rotate-[7deg]" />
+          {locale === "de" && (
+            <NgoCampaignBadge className="hidden sm:inline-flex absolute left-1/2 -top-5 z-20 ml-[9.75rem] rotate-[7deg]" />
+          )}
         </div>
 
         <p className="font-body text-lg md:text-xl text-warmgrau leading-relaxed text-pretty max-w-3xl mx-auto mb-6">
-          <span className="block sm:inline">In 3 Minuten ist dein Brief </span>
-          <span className="block sm:inline sm:ml-1">an die passenden Abgeordneten fertig.</span>
+          {copy.hero.subtitle}
         </p>
 
         {/* Anliegen field — the primary action and the visitor's first contact.
@@ -183,29 +187,31 @@ export default function Hero() {
             <svg width="13" height="13" viewBox="0 0 16 16" fill="none" className="shrink-0 -translate-y-px">
               <path d="M3 8l4 4 6-6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
-            <span className="md:hidden">kostenlos</span>
-            <span className="hidden md:inline">Vollständig kostenlos</span>
+            <span className="md:hidden">{copy.hero.trustFreeShort}</span>
+            <span className="hidden md:inline">{copy.hero.trustFree}</span>
           </span>
           <span className="inline-flex items-center gap-1.5 text-waldgruen font-body text-xs md:text-sm font-semibold leading-none px-2 md:px-2.5 py-1 md:py-1.5 whitespace-nowrap">
             <svg width="13" height="13" viewBox="0 0 16 16" fill="none" className="shrink-0 -translate-y-px">
               <path d="M3 8l4 4 6-6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
-            <span className="md:hidden">ohne Account</span>
-            <span className="hidden md:inline">Kein Account erforderlich</span>
+            <span className="md:hidden">{copy.hero.trustNoAccountShort}</span>
+            <span className="hidden md:inline">{copy.hero.trustNoAccount}</span>
           </span>
           <span className="inline-flex items-center gap-1.5 text-waldgruen font-body text-xs md:text-sm font-semibold leading-none px-2 md:px-2.5 py-1 md:py-1.5 whitespace-nowrap">
             <svg width="13" height="13" viewBox="0 0 16 16" fill="none" className="shrink-0 -translate-y-px">
               <path d="M3 8l4 4 6-6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
-            <span className="md:hidden">KI aus EU</span>
-            <span className="hidden md:inline">KI aus Europa, kein Datentracking</span>
+            <span className="md:hidden">{copy.hero.trustPrivacyShort}</span>
+            <span className="hidden md:inline">{copy.hero.trustPrivacy}</span>
           </span>
         </div>
 
 
       </div>
 
-      <NgoCampaignBadge className="inline-flex sm:hidden absolute top-6 right-3 z-20 rotate-[6deg]" />
+      {locale === "de" && (
+        <NgoCampaignBadge className="inline-flex sm:hidden absolute top-6 right-3 z-20 rotate-[6deg]" />
+      )}
 
     </section>
   );

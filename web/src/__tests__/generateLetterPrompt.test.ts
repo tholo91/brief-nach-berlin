@@ -5,7 +5,7 @@ jest.mock("@/lib/mistral", () => ({
   withMistralRetry: <T,>(_label: string, fn: () => Promise<T>) => fn(),
 }));
 
-import { mdbContextBlock, buildUserPrompt } from "@/lib/generation/generateLetter";
+import { buildSystemPrompt, mdbContextBlock, buildUserPrompt } from "@/lib/generation/generateLetter";
 import type { GenerateLetterInput, MdbContext } from "@/lib/types/wizard";
 import type { Politician } from "@/lib/types/politician";
 
@@ -73,6 +73,16 @@ describe("mdbContextBlock", () => {
 });
 
 describe("buildUserPrompt", () => {
+  it("accepts English or Turkish input while requiring a German final letter", () => {
+    const prompt = buildSystemPrompt({
+      ...makeInput(),
+      issueText: "I would like safer streets for children.",
+    });
+
+    expect(prompt).toContain("Englisch oder Türkisch");
+    expect(prompt).toContain("immer auf Deutsch");
+  });
+
   it("embeds the defensive mdb_kontext block when mdbContext is undefined", () => {
     const prompt = buildUserPrompt(makeInput(undefined), 200, 280, 3);
     expect(prompt).toContain(DEFENSIVE_MARKER);

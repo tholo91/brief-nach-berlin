@@ -1,6 +1,9 @@
 import { NextResponse } from "next/server";
 import { buildCampaignCreatorEmailHtml } from "@/lib/email/buildCampaignCreatorEmailHtml";
-import { buildEmailHtml } from "@/lib/email/buildEmailHtml";
+import {
+  buildEmailHtml,
+  buildLetterEmailText,
+} from "@/lib/email/buildEmailHtml";
 import { buildFollowupHtml } from "@/lib/email/buildFollowupHtml";
 import { buildVariantEmailHtml } from "@/lib/email/buildVariantEmailHtml";
 import { APP_URL } from "@/lib/config";
@@ -11,6 +14,8 @@ import { APP_URL } from "@/lib/config";
 // - /api/email-preview?type=variant            → Angepasster Brief
 // - /api/email-preview?type=campaign-creator   → Kampagnen-Bestätigungs-Mail
 // - /api/email-preview?type=campaign-management → Kampagnen-Verwaltungs-Mail
+// - /api/email-preview?type=campaign-management-pending → Verwaltungs-Mail vor Freigabe
+// - /api/email-preview?campaign=1              → Letter mail with campaign context
 // - ?format=text                               → Plain-Text-Variante anzeigen
 // Returns 404 in production so this never leaks externally.
 export async function GET(request: Request) {
@@ -24,6 +29,7 @@ export async function GET(request: Request) {
   const origin = url.origin;
   const type = url.searchParams.get("type");
   const wantText = url.searchParams.get("format") === "text";
+  const includeCampaign = url.searchParams.get("campaign") === "1";
 
   if (type === "followup") {
     const dummyToken =
@@ -97,6 +103,23 @@ Eine Bürgerin aus Ihrem Wahlkreis`,
     });
   }
 
+  if (type === "campaign-management-pending") {
+    const html = buildCampaignCreatorEmailHtml({
+      kind: "management_pending",
+      campaignTitle: "Mehr Pommes in Bremen",
+      slug: "pommes",
+      campaignUrl: `${origin}/kampagne/pommes`,
+      actionUrl: `${origin}/kampagne/verwalten?token=dummy-management-token`,
+      creatorName: "Gesellschaft für XYZ",
+    });
+    const localHtml = html.split(APP_URL).join(origin);
+
+    return new NextResponse(localHtml, {
+      status: 200,
+      headers: { "Content-Type": "text/html; charset=utf-8" },
+    });
+  }
+
   const dummyLetter = `Sehr geehrte Frau Dr. Müller,
 
 ich wende mich heute an Sie, weil mich die aktuelle Situation auf den Radwegen in unserem Viertel sehr beschäftigt. Seit Monaten warten wir auf die versprochene Sanierung, und mit jedem Regen werden die Schlaglöcher tiefer.
@@ -108,7 +131,7 @@ Ich bitte Sie deshalb, sich im Bundestag dafür einzusetzen, dass die Mittel fü
 Mit freundlichen Grüßen
 Eine Bürgerin aus Ihrem Wahlkreis`;
 
-  const html = buildEmailHtml({
+  const previewData = {
     recipientEmail: "preview@example.com",
     politicianName: "Müller",
     politicianFirstName: "Anna",
@@ -121,19 +144,28 @@ Eine Bürgerin aus Ihrem Wahlkreis`;
     letterText: dummyLetter,
     issueText: "Radwege im Viertel sind seit Monaten kaputt",
     feedbackToken: "dummy-token-for-preview",
-    campaign: {
-      slug: "sichere-radwege",
-      title: "Mehr sichere Radwege",
-      creatorName: "Initiative Radentscheid",
-      externalUrl: "https://example.com",
-    },
+    campaign: includeCampaign
+      ? {
+          slug: "sichere-radwege",
+          title: "Mehr sichere Radwege",
+          creatorName: "Initiative Radentscheid",
+          externalUrl: "https://example.com",
+        }
+      : undefined,
     letterNumber: 662,
-  });
+  } as const;
 
-  const localHtml = html.split(APP_URL).join(origin);
+  const previewBody = wantText
+    ? buildLetterEmailText(previewData)
+    : buildEmailHtml(previewData);
+  const localBody = previewBody.split(APP_URL).join(origin);
 
-  return new NextResponse(localHtml, {
+  return new NextResponse(localBody, {
     status: 200,
-    headers: { "Content-Type": "text/html; charset=utf-8" },
+    headers: {
+      "Content-Type": wantText
+        ? "text/plain; charset=utf-8"
+        : "text/html; charset=utf-8",
+    },
   });
 }

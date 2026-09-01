@@ -8,6 +8,7 @@ import {
   step1Schema,
   step1bSchema,
   step2Schema,
+  localeSchema,
 } from "@/lib/validation/wizardSchemas";
 import { resolveRecipientSelection } from "@/lib/lookup/resolveRecipient";
 import { lookupPLZWithLevel } from "@/lib/lookup/plzLookup";
@@ -136,6 +137,7 @@ export async function POST(req: NextRequest) {
     if (!data || !selection) {
       return NextResponse.json({ error: "Ungültige Anfrage." }, { status: 400 });
     }
+    data.locale = localeSchema.safeParse(data.locale).success ? data.locale : "de";
     // Re-validate (defense in depth — client could call this endpoint directly)
     const step1Result = step1Schema.safeParse(data);
     if (!step1Result.success) {
@@ -286,6 +288,7 @@ export async function POST(req: NextRequest) {
           ? result.selectedRecipient.label
           : `${result.selectedRecipient.firstName} ${result.selectedRecipient.lastName}`;
       const { params, feedbackToken } = prepareLetterEmail({
+        locale: data.locale ?? "de",
         recipientEmail: data.email,
         recipient: result.selectedRecipient,
         letterText: result.letter,
@@ -316,6 +319,7 @@ export async function POST(req: NextRequest) {
         if (followupDedup.allowed) {
           const scheduledAt = computeFollowupSlot();
           const followupResult = await sendFollowupEmail({
+            locale: data.locale ?? "de",
             recipientEmail: data.email,
             politicianName: politicianFullName,
             feedbackToken,

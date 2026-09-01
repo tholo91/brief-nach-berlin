@@ -19,22 +19,16 @@ const PRESS_ITEMS = [
     href: "https://www.zeit.de/news/2026-06/24/brief-nach-berlin-so-einfach-geht-der-kontakt-zur-politik",
   },
   {
+    key: "sz",
+    logo: "/press-logos/sueddeutsche.svg",
+    outlet: "Süddeutsche Zeitung",
+    href: "https://www.sueddeutsche.de/politik/schreiben-an-politiker-brief-nach-berlin-so-einfach-geht-der-kontakt-zur-politik-dpa.urn-newsml-dpa-com-20090101-260624-930-272418",
+  },
+  {
     key: "hb",
     logo: "/press-logos/handelsblatt.svg",
     outlet: "Handelsblatt",
     href: "https://www.handelsblatt.com/politik/deutschland/schreiben-an-politiker-brief-nach-berlin-so-einfach-geht-der-kontakt-zur-politik/100235368.html",
-  },
-  {
-    key: "stern",
-    logo: "/press-logos/stern.svg",
-    outlet: "Stern",
-    href: "https://www.stern.de/politik/deutschland/schreiben-an-politiker--brief-nach-berlin---so-einfach-geht-der-kontakt-zur-politik-37592804.html",
-  },
-  {
-    key: "tol",
-    logo: "/press-logos/t-online.svg",
-    outlet: "t-online",
-    href: "https://www.t-online.de/nachrichten/deutschland/id_101310228/brief-nach-berlin-so-einfach-geht-der-kontakt-zur-politik.html",
   },
   {
     key: "wiwo",
@@ -49,46 +43,22 @@ const PRESS_ITEMS = [
     href: "https://www.welt.de/newsticker/dpa_nt/infoline_nt/Politik__Inland_/article6a3b4a3abee7c015a23d8f2f/brief-nach-berlin-so-einfach-geht-der-kontakt-zur-politik.html",
   },
   {
-    key: "sz",
-    logo: "/press-logos/sueddeutsche.svg",
-    outlet: "Süddeutsche Zeitung",
-    href: "https://www.sueddeutsche.de/politik/schreiben-an-politiker-brief-nach-berlin-so-einfach-geht-der-kontakt-zur-politik-dpa.urn-newsml-dpa-com-20090101-260624-930-272418",
+    key: "stern",
+    logo: "/press-logos/stern.svg",
+    outlet: "Stern",
+    href: "https://www.stern.de/politik/deutschland/schreiben-an-politiker--brief-nach-berlin---so-einfach-geht-der-kontakt-zur-politik-37592804.html",
   },
   {
     key: "ard",
     logo: "/press-logos/ard.svg",
-    outlet: "ARD Sounds",
-    href: "https://www.ardsounds.de/episode/urn:ard:episode:5006a718e92c83f9/",
-  },
-  {
-    key: "detektor",
-    logo: "/press-logos/detektor-fm.svg",
-    outlet: "detektor.fm",
-    href: "https://detektor.fm/unsere-newsletter/dazwischen/dazwischen-warum-80-prozent-ans-weggehen-denken",
+    outlet: "Der KI-Podcast (ARD Sounds)",
+    href: "https://www.ardsounds.de/episode/urn:ard:episode:a71c5b1d1a2f94a9/",
   },
   {
     key: "wk",
     logo: "/press-logos/weser-kurier.svg",
     outlet: "Weser-Kurier",
     href: "https://www.weser-kurier.de/bremen/politik/bremer-erstellt-ki-portal-um-schnell-politiker-kontaktieren-zu-koennen-doc861z47hb3ieyv6y21iy",
-  },
-  {
-    key: "rp",
-    logo: "/press-logos/rp-online.svg",
-    outlet: "RP Online",
-    href: "https://rp-online.de/kruschel/kindernachrichten/webseite-hilft-beim-brief-schreiben_aid-150411177",
-  },
-  {
-    key: "stzt",
-    logo: "/press-logos/stuttgarter-zeitung.svg",
-    outlet: "Stuttgarter Zeitung",
-    href: "https://www.stuttgarter-zeitung.de/gallery.schreiben-an-politiker-brief-nach-berlin-so-einfach-geht-der-kontakt-zur-politik.d17934c8-9e2a-4506-af4a-f564e76b129e.html",
-  },
-  {
-    key: "rdu",
-    logo: "/press-logos/radio-duisburg.svg",
-    outlet: "Radio Duisburg",
-    href: "https://www.radioduisburg.de/dpa/brief-nach-berlin-so-einfach-geht-der-kontakt-zur-politik-2683443",
   },
 ];
 
@@ -201,7 +171,7 @@ export function PressMarquee() {
 
       <div className="py-1 md:py-2">
         <p className="text-center font-typewriter text-xs sm:text-sm tracking-widest uppercase text-warmgrau/50 mb-1 px-6">
-          Bekannt aus <span className="font-bold text-waldgruen">zahlreichen</span> Medien
+          Ausgewählte Berichterstattung
         </p>
         <div
           ref={containerRef}

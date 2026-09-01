@@ -138,6 +138,7 @@ export async function resendLetterAction(
       cachedLetterText
     );
     const { params } = prepareLetterEmail({
+      locale: data.locale ?? "de",
       recipientEmail: data.email,
       recipient,
       letterText: cachedLetterText,

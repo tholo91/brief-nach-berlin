@@ -1,4 +1,5 @@
-import { buildEmailHtml } from "@/lib/email/buildEmailHtml";
+import { buildEmailHtml, buildLetterEmailText } from "@/lib/email/buildEmailHtml";
+import { buildFollowupHtml } from "@/lib/email/buildFollowupHtml";
 import type { SendLetterEmailParams } from "@/lib/email/sendLetterEmail";
 
 function makeParams(
@@ -49,6 +50,38 @@ function makeDebug(): NonNullable<SendLetterEmailParams["debug"]> {
 }
 
 describe("letter email variant CTA", () => {
+  it("adds the donation CTA once to the first letter email HTML and plaintext", () => {
+    const params = makeParams();
+    const donationUrl = "https://spende.we-aid.org/Brief-nach-Berlin";
+    const learnMoreUrl = "https://www.brief-nach-berlin.de/spenden?src=email";
+    const html = buildEmailHtml(params);
+    const text = buildLetterEmailText(params);
+
+    expect(html.match(new RegExp(donationUrl.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), "g"))).toHaveLength(1);
+    expect(text.match(new RegExp(donationUrl.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), "g"))).toHaveLength(1);
+    expect(html.match(new RegExp(learnMoreUrl.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), "g"))).toHaveLength(1);
+    expect(text.match(new RegExp(learnMoreUrl.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), "g"))).toHaveLength(1);
+    expect(html).toContain("Brief-nach-Berlin unterstützen");
+    expect(html).toContain("Brief-nach-Berlin unterstützen ❤️");
+    expect(html).toContain("Mein Projekt soll weiterhin für alle kostenlos und unabhängig bleiben.");
+    expect(html).toContain("Jetzt über WE AID spenden");
+    expect(html).toContain("Mehr Informationen");
+    expect(html).toContain("gemeinnützige Initiative in Trägerschaft der WE AID gGmbH");
+    expect(text).toContain("Hinweis zur Finanzierung: Brief-nach-Berlin ist eine gemeinnützige Initiative in Trägerschaft der WE AID gGmbH.");
+    expect(text.indexOf("Thomas")).toBeLessThan(text.indexOf("Hinweis zur Finanzierung"));
+  });
+
+  it("does not add the financing notice to a resent/follow-up letter email", () => {
+    const params = makeParams();
+    const resentDebug = { ...makeDebug(), resent: true };
+    const learnMoreUrl = "https://www.brief-nach-berlin.de/spenden?src=email";
+
+    expect(buildEmailHtml({ ...params, debug: resentDebug })).not.toContain(learnMoreUrl);
+    expect(buildLetterEmailText({ ...params, debug: resentDebug })).not.toContain(learnMoreUrl);
+    expect(buildFollowupHtml({ token: "signed-token" }).html).not.toContain(learnMoreUrl);
+    expect(buildFollowupHtml({ token: "signed-token" }).text).not.toContain(learnMoreUrl);
+  });
+
   it("links to the no-storage variant flow with email only in the hash", () => {
     const html = buildEmailHtml(makeParams());
 

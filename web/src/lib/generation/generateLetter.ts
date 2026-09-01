@@ -156,6 +156,7 @@ Alle verfügbaren Politiker sind Bundestagsabgeordnete. Wenn das Anliegen primä
 
 AUFGABE:
 Schreibe einen formellen Brief in gepflegtem Deutsch (Sie-Form). Länge und Absatzanzahl sind in <ziel> vorgegeben. Das Wortfenster in <ziel> ist eine harte Anforderung, keine Empfehlung. Wenn der Brief zu kurz wäre: stärker ausarbeiten (Kontext, Begründung, Empathie für Betroffene), aber NIEMALS Fakten erfinden, um Wörter zu füllen. Wenn zu lang: kürze, ergänze nicht.
+Das <transkript> kann auf Deutsch, Englisch oder Türkisch vorliegen. Verstehe es als die alleinige Quelle für Fakten und formuliere den fertigen Brief trotzdem immer auf Deutsch.
 
 PFLICHT-ELEMENTE:
 1. KONKRETER ANLASS in Absatz 1: ein Detail aus <transkript> (Ort, Erlebnis, Beobachtung). Wenn das Transkript keinen konkreten Anlass nennt, beschreibe das Problem persönlich-allgemein. Nichts erfinden.

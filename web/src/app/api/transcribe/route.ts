@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { z } from "zod";
 import { mistral, MISTRAL_MODELS } from "@/lib/mistral";
 import { checkRateLimit, hashIdentifier, LIMITS } from "@/lib/rateLimit";
 
@@ -22,6 +23,7 @@ const ALLOWED_MIME = new Set([
   "audio/mpeg",
   "audio/x-m4a",
 ]);
+const transcriptionLanguageSchema = z.enum(["de", "en"]).default("de");
 
 export async function POST(req: NextRequest) {
   if (!process.env.MISTRAL_API_KEY) {
@@ -39,6 +41,14 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Audiodatei zu groß." }, { status: 413 });
     }
 
+    const formData = await req.formData();
+    const languageResult = transcriptionLanguageSchema.safeParse(
+      formData.get("language") ?? undefined
+    );
+    if (!languageResult.success) {
+      return NextResponse.json({ error: "Ungültige Transkriptionssprache." }, { status: 400 });
+    }
+
     const ipHash = hashIdentifier(ipFromRequest(req));
     const limit = checkRateLimit(
       `transcribe:ip:${ipHash}`,
@@ -52,7 +62,6 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const formData = await req.formData();
     const audioBlob = formData.get("audio") as Blob | null;
 
     if (!audioBlob || !(audioBlob instanceof Blob)) {
@@ -84,7 +93,7 @@ export async function POST(req: NextRequest) {
       {
         model: MISTRAL_MODELS.transcription,
         file: audioFile,
-        language: "de",
+        language: languageResult.data,
       },
       { timeoutMs: 45_000 }
     );

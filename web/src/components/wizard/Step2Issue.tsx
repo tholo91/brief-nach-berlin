@@ -3,6 +3,7 @@
 import * as React from "react";
 import { useState, useCallback, useEffect, useLayoutEffect, useRef } from "react";
 import { VoiceRecorder, type VoiceRecorderState } from "@/components/audio/VoiceRecorder";
+import { useLocale, useUiCopy } from "@/components/i18n/LocaleProvider";
 import { readLandingDraft, writeLandingDraft } from "@/lib/landing-draft";
 import { ISSUE_TEXT_MAX } from "@/lib/validation/wizardSchemas";
 import { WizardForwardIcon } from "@/components/wizard/WizardForwardIcon";
@@ -18,6 +19,7 @@ export function TipsDisclosure({
   onOpen,
   variant = "wizard",
 }: { onOpen?: () => void; variant?: "landing" | "wizard" } = {}) {
+  const copy = useUiCopy();
   const isLandingTips = variant === "landing";
   const [open, setOpen] = useState(false);
   const [hint, setHint] = useState(true);
@@ -87,9 +89,9 @@ export function TipsDisclosure({
           {/* Phones keep the terse line; from small tablets up (>=640px, so
               all iPads incl. the 744px mini) there's room for the fuller,
               more motivating version. */}
-          <span className="sm:hidden">Je konkreter, desto wirksamer</span>
+          <span className="sm:hidden">{copy.issue.tipsSummary}</span>
           <span className="hidden sm:inline">
-            Je konkreter dein Anliegen, desto wirksamer der Brief
+            {copy.issue.tipsSummary}
           </span>
         </span>
         <svg
@@ -115,79 +117,26 @@ export function TipsDisclosure({
       >
         <div className="px-4 pb-4 pt-1 font-body text-sm text-warmgrau leading-relaxed space-y-3.5">
           <div>
-            <p className="font-semibold text-waldgruen-dark mb-0.5">Stichpunkte genügen.</p>
-            <p>Was siehst du, was nervt dich, was schlägst du vor? Daraus entstehen die Sätze.</p>
+            <p className="font-semibold text-waldgruen-dark mb-0.5">{copy.issue.tipsPoint1Title}</p>
+            <p>{copy.issue.tipsPoint1Text}</p>
           </div>
           <div>
-            <p className="font-semibold text-waldgruen-dark mb-0.5">Sag kurz, wer du bist.</p>
-            <p>
-              Beruf, Familie, Verein: solche Details geben Gewicht und verhindern, dass
-              Annahmen über dich getroffen werden, die nicht stimmen.
-            </p>
+            <p className="font-semibold text-waldgruen-dark mb-0.5">{copy.issue.tipsPoint2Title}</p>
+            <p>{copy.issue.tipsPoint2Text}</p>
           </div>
           <div>
-            <p className="font-semibold text-waldgruen-dark mb-0.5">Eine konkrete Bitte reicht.</p>
-            <p>
-              Was sollen die Abgeordneten <em>tun</em>? Ein präziser Satz schlägt eine
-              lange Wunschliste.
-            </p>
+            <p className="font-semibold text-waldgruen-dark mb-0.5">{copy.issue.tipsPoint3Title}</p>
+            <p>{copy.issue.tipsPoint3Text}</p>
           </div>
           <div>
-            <p className="font-semibold text-waldgruen-dark mb-0.5">
-              Sag auch, was du <em>nicht meinst</em>.
-            </p>
-            <p>
-              Wenn etwas missverstanden werden könnte (&bdquo;ich bin für X, aber gegen Y&ldquo;),
-              schreib&rsquo;s explizit dazu.
-            </p>
-          </div>
-          <div className="mt-3 rounded-md bg-creme/70 border border-warmgrau/15 px-3 py-2 font-typewriter text-[13px] text-warmgrau/85 italic">
-            Beispiel: &bdquo;Ich wohne in der Bremer Neustadt. Letzten Mittwoch stand ich morgens
-            am Hauptbahnhof und habe gesehen, wie...&ldquo;
+            <p className="font-semibold text-waldgruen-dark mb-0.5">{copy.issue.tipsPoint4Title}</p>
+            <p>{copy.issue.tipsPoint4Text}</p>
           </div>
         </div>
       </div>
     </div>
   );
 }
-
-const PLACEHOLDER_EXAMPLES: string[] = [
-  "z.B. Radwege bei uns kaputt, Schlaglöcher überall, gefährlich für Schulkinder",
-  "z.B. Miete explodiert in unserem Viertel, Familien ziehen weg, was kann man tun?",
-  "z.B. Die Radwege in meiner Stadt sind in einem katastrophalen Zustand. Als Vater von zwei Kindern fahre ich täglich...",
-  "z.B. Die Mieten in meiner Nachbarschaft sind in den letzten Jahren massiv gestiegen. Junge Familien können sich die Stadt nicht mehr leisten...",
-  "z.B. An der Grundschule meines Kindes teilen sich 340 Kinder zwölf Tablets. Der Digitalpakt Schule kommt nicht an...",
-  "z.B. Ich mache mir Sorgen um ein menschenunfreundliches Klima und vermisse echten Klimaschutz vor Ort...",
-  "z.B. In unserer Region wird eine Waldfläche für ein Logistikzentrum gerodet, obwohl Alternativstandorte existieren...",
-  "z.B. In meinem Landkreis gibt es keinen freien Kinderarzt mehr. Die nächste Praxis mit Kapazität ist 45 Kilometer entfernt...",
-  "z.B. Ich mache mir Sorgen um den Umgangston in politischen Debatten und den wachsenden Vertrauensverlust in demokratische Institutionen...",
-];
-
-// Phone variants for the two-line landing field: medium-length mini-prompts
-// that fill roughly two lines and model "write a bit more". Capped to a
-// two-line budget by ellipsize() so they never spill onto a third line.
-const LANDING_PLACEHOLDER_EXAMPLES: string[] = [
-  "z.B. Bei uns sind die Radwege kaputt, gefährlich für Schulkinder",
-  "z.B. Die Mieten im Viertel explodieren, Familien ziehen weg",
-  "z.B. Kein freier Kinderarzt mehr, nächste Praxis 45 km weg",
-  "z.B. An der Schule teilen sich 340 Kinder zwölf Tablets",
-  "z.B. Für ein Logistikzentrum soll bei uns Wald gerodet werden",
-  "z.B. Mir macht der raue Ton in der Politik echt Sorgen",
-  "z.B. Ich vermisse echten Klimaschutz vor Ort, nicht nur Reden",
-];
-
-// iPad/desktop have room for fuller two-line prompts; phones use the slightly
-// shorter set above. Same topics, richer phrasing so the field reads as an
-// invitation to describe the situation, not a one-word search box.
-const LANDING_PLACEHOLDER_EXAMPLES_WIDE: string[] = [
-  "z.B. Die Radwege bei uns sind kaputt und voller Schlaglöcher, für Schulkinder echt gefährlich",
-  "z.B. Die Mieten in meinem Viertel explodieren, junge Familien können sich die Stadt nicht mehr leisten",
-  "z.B. In unserem Landkreis gibt es keinen freien Kinderarzt mehr, die nächste Praxis ist 45 km entfernt",
-  "z.B. An der Grundschule meines Kindes teilen sich 340 Kinder gerade einmal zwölf Tablets",
-  "z.B. Bei uns soll Wald für ein Logistikzentrum weichen, obwohl es Alternativstandorte gäbe",
-  "z.B. Mir macht der raue Ton in politischen Debatten Sorgen, das Vertrauen in die Demokratie schwindet",
-  "z.B. Ich vermisse echten Klimaschutz vor Ort, bei uns bleibt es leider bei Ankündigungen",
-];
 
 const PLACEHOLDER_ROTATE_MS = 4000;
 const MIN_CHARS = 50;
@@ -261,7 +210,11 @@ export function Step2Issue({
   autoFocus = false,
   isCampaign = false,
 }: Step2IssueProps) {
+  const { locale } = useLocale();
+  const copy = useUiCopy();
   const isLanding = variant === "landing";
+  const voiceUnavailable = locale === "tr";
+  const transcriptionLanguage = locale === "en" ? "en" : "de";
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const [issueText, setIssueText] = useState(defaultValue ?? "");
   const lastDefaultValueRef = useRef(defaultValue);
@@ -305,16 +258,16 @@ export function Step2Issue({
   const showExpandedLandingCta = isLanding && canProceed;
   const placeholderExamples = isLanding
     ? isWide
-      ? LANDING_PLACEHOLDER_EXAMPLES_WIDE
-      : LANDING_PLACEHOLDER_EXAMPLES
-    : PLACEHOLDER_EXAMPLES;
+      ? copy.issue.placeholdersWide
+      : copy.issue.placeholders
+    : copy.issue.placeholders;
   const placeholder =
     voiceState === "requesting"
-      ? "Bereite das Mikrofon vor..."
+      ? copy.issue.placeholderPreparingMic
       : voiceState === "recording"
-      ? "Sprich jetzt, dein Text erscheint hier..."
+      ? copy.issue.placeholderRecording
       : voiceState === "processing"
-        ? "Transkribiere deine Aufnahme..."
+        ? copy.issue.placeholderTranscribing
         : placeholderExamples[placeholderIndex % placeholderExamples.length];
   // Two-line field: let the example wrap to a second line, clamping it (with an
   // ellipsis) only if it would spill onto a third.
@@ -514,14 +467,10 @@ export function Step2Issue({
       {!isLanding && (
         <>
           <h1 className="font-typewriter text-[28px] font-semibold leading-[1.2] text-waldgruen-dark mb-2">
-            {isCampaign
-              ? "Möchtest du den Brief persönlicher machen?"
-              : "Was beschäftigt dich gerade?"}
+            {isCampaign ? copy.issue.campaignHeading : copy.issue.heading}
           </h1>
           <p className="font-body text-sm text-warmgrau/70 mb-4">
-            {isCampaign
-              ? "Die Kampagne hat bereits einen Entwurf vorbereitet. Du kannst ihn direkt übernehmen oder kurz ergänzen, warum dir das Thema persönlich wichtig ist. Stichpunkte reichen."
-              : "Sprich drauflos und passe deinen Text danach an. Oder nenne ein paar Stichpunkte, du musst keine ganzen Sätze schreiben. Daraus wird dein Briefentwurf formuliert."}
+            {isCampaign ? copy.issue.campaignIntro : copy.issue.intro}
           </p>
 
           {/* Tips disclosure — subtle nudge toward effective writing */}
@@ -548,10 +497,13 @@ export function Step2Issue({
                 ? "block rounded-xl border border-warmgrau/30 px-3.5 pt-3.5 pb-12 text-base md:text-lg shadow-sm leading-snug placeholder-truncate"
                 : "rounded-lg border border-warmgrau/30 px-4 pt-3 pb-12 pr-14 text-base",
             ].join(" ")}
-            aria-label={isLanding ? "Dein Anliegen" : undefined}
+            aria-label={isLanding ? copy.issue.textareaAriaLabel : undefined}
             aria-describedby="issueText-counter"
           />
           <VoiceRecorder
+            key={locale}
+            language={transcriptionLanguage}
+            hidden={voiceUnavailable}
             hasText={charCount > 0}
             charCount={charCount}
             fieldHeight={fieldHeight}
@@ -641,7 +593,7 @@ export function Step2Issue({
                   aria-hidden="true"
                   className="absolute left-1/2 -translate-x-1/2 -top-9 whitespace-nowrap z-10 bg-waldgruen-dark text-creme font-body text-xs px-3 py-1.5 rounded-lg transition-opacity duration-200 pointer-events-none"
                 >
-                  Schreib noch etwas mehr
+                  {copy.issue.writeMore}
                   <span className="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-waldgruen-dark" />
                 </div>
               )}
@@ -650,7 +602,7 @@ export function Step2Issue({
                   aria-hidden="true"
                   className="absolute left-1/2 -translate-x-1/2 -top-9 whitespace-nowrap z-10 bg-airmail-rot text-creme font-body text-xs px-3 py-1.5 rounded-lg transition-opacity duration-200 pointer-events-none"
                 >
-                  Bitte kürze dein Anliegen
+                  {copy.issue.shortenIssue}
                   <span className="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-airmail-rot" />
                 </div>
               )}
@@ -658,8 +610,8 @@ export function Step2Issue({
                 type="button"
                 aria-label={
                   voiceState === "recording"
-                    ? "Aufnahme beenden und Text übernehmen"
-                    : "Anliegen starten"
+                    ? copy.issue.stopRecordingAriaLabel
+                    : copy.issue.startIssueAriaLabel
                 }
                 onMouseEnter={() => {
                   if (tooShort) triggerHint("short");
@@ -688,13 +640,18 @@ export function Step2Issue({
                       : "mr-0 max-w-0 opacity-0",
                   ].join(" ")}
                 >
-                  Starten
+                  {copy.issue.start}
                 </span>
                 <WizardForwardIcon className="shrink-0" />
               </button>
             </>
           )}
         </div>
+        {voiceUnavailable && (
+          <p className="mt-2 font-body text-xs leading-snug text-warmgrau/65">
+            {copy.language.turkishTypingNotice}
+          </p>
+        )}
       </div>
 
       {/* Submit button — wizard only. On the landing the submit lives as a round
@@ -712,7 +669,7 @@ export function Step2Issue({
               canProceed ? "cursor-pointer" : "opacity-60 cursor-not-allowed",
             ].join(" ")}
           >
-            Starten
+            {copy.issue.start}
             <WizardForwardIcon className="absolute right-5 top-1/2 -translate-y-1/2" />
           </button>
         </div>

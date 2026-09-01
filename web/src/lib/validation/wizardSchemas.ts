@@ -1,5 +1,7 @@
 import { z } from "zod";
 
+export const localeSchema = z.enum(["de", "en", "tr"]);
+
 export const ISSUE_TEXT_MIN = 10;
 export const ISSUE_TEXT_MAX = 5000;
 

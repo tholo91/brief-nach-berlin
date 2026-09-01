@@ -11,6 +11,10 @@ import {
 interface VoiceRecorderProps {
   onTranscription: (text: string) => void;
   onStateChange?: (state: UIState) => void;
+  /** Language passed to the transcription API. */
+  language?: TranscriptionLanguage;
+  /** Keep the recorder mounted but hide its controls when voice input is unavailable. */
+  hidden?: boolean;
   disabled?: boolean;
   /** When the textarea is empty we show a more prominent mic. */
   hasText?: boolean;
@@ -46,8 +50,35 @@ interface VoiceRecorderProps {
 }
 
 type UIState = "idle" | "requesting" | "recording" | "processing" | "error";
+export type TranscriptionLanguage = "de" | "en";
 
 const BAR_COUNT = 5;
+
+const VOICE_COPY: Record<TranscriptionLanguage, {
+  start: string;
+  startTitle: string;
+  stop: string;
+  preparing: string;
+  processing: string;
+  failed: string;
+}> = {
+  de: {
+    start: "Sprachaufnahme starten",
+    startTitle: "Diktieren: deine Worte werden ins Textfeld übernommen. Du kannst den Text danach noch ändern.",
+    stop: "Aufnahme beenden und Text übernehmen",
+    preparing: "Mikrofon wird vorbereitet...",
+    processing: "Transkribiere deine Aufnahme...",
+    failed: "Aufnahme fehlgeschlagen, bitte erneut versuchen",
+  },
+  en: {
+    start: "Start voice input",
+    startTitle: "Dictate your concern. Your words will be added to the text field, which you can still edit afterwards.",
+    stop: "Stop recording and add text",
+    preparing: "Preparing microphone...",
+    processing: "Transcribing your recording...",
+    failed: "Recording failed. Please try again.",
+  },
+};
 
 function formatElapsed(seconds: number): string {
   return (
@@ -83,6 +114,8 @@ export type { UIState as VoiceRecorderState };
 export function VoiceRecorder({
   onTranscription,
   onStateChange,
+  language = "de",
+  hidden = false,
   disabled,
   hasText = false,
   charCount,
@@ -98,6 +131,7 @@ export function VoiceRecorder({
   pinToBottom = false,
   stopRequestKey = 0,
 }: VoiceRecorderProps) {
+  const copy = VOICE_COPY[language];
   const [uiState, setUiStateInternal] = useState<UIState>("idle");
   const [elapsedSeconds, setElapsedSeconds] = useState(0);
 
@@ -196,12 +230,21 @@ export function VoiceRecorder({
     }, 3000);
   }, [clearTimer, stopMeter, setUiState]);
 
+  useEffect(() => {
+    if (!hidden) return;
+    clearTimer();
+    stopMeter();
+    audioRecorderRef.current?.destroy();
+    audioRecorderRef.current = null;
+  }, [hidden, clearTimer, stopMeter]);
+
   const transcribe = useCallback(
     async (result: RecordingResult) => {
       setUiState("processing");
       try {
         const formData = new FormData();
         formData.append("audio", result.blob, "recording.webm");
+        formData.append("language", language);
 
         const response = await fetch("/api/transcribe", {
           method: "POST",
@@ -229,7 +272,7 @@ export function VoiceRecorder({
         flashError();
       }
     },
-    [onTranscription, setUiState, flashError]
+    [onTranscription, language, setUiState, flashError]
   );
 
   const startRecording = useCallback(async () => {
@@ -320,14 +363,16 @@ export function VoiceRecorder({
 
   const ariaStatus =
     uiState === "recording"
-      ? "Aufnahme läuft"
+      ? language === "en" ? "Recording in progress" : "Aufnahme läuft"
       : uiState === "requesting"
-        ? "Mikrofon wird vorbereitet"
+        ? copy.preparing
         : uiState === "processing"
-          ? "Transkription läuft"
+          ? copy.processing
           : uiState === "error"
-            ? "Aufnahme fehlgeschlagen"
+            ? copy.failed
             : "";
+
+  if (hidden) return null;
 
   return (
     <>
@@ -358,8 +403,8 @@ export function VoiceRecorder({
             type="button"
             onClick={handleToggle}
             disabled={disabled}
-            aria-label="Sprachaufnahme starten"
-            title="Diktieren: deine Worte werden ins Textfeld übernommen. Du kannst den Text danach noch ändern."
+            aria-label={copy.start}
+            title={copy.startTitle}
             className={[
               "flex items-center justify-center rounded-full transition-colors",
               forceSubtle
@@ -378,7 +423,7 @@ export function VoiceRecorder({
           <button
             type="button"
             onClick={handleToggle}
-            aria-label="Aufnahme beenden und Text übernehmen"
+            aria-label={copy.stop}
             className={[
               "relative flex cursor-pointer items-center justify-center rounded-full bg-waldgruen text-creme shadow-sm",
               forceSubtle ? "h-8 w-8" : "h-9 w-9",
@@ -427,7 +472,7 @@ export function VoiceRecorder({
 
         {isError && (
           <div
-            title="Aufnahme fehlgeschlagen, bitte erneut versuchen"
+            title={copy.failed}
             className="flex h-9 w-9 items-center justify-center rounded-full border border-airmail-rot/40 bg-airmail-rot/10 text-airmail-rot"
           >
             <svg
@@ -492,7 +537,7 @@ export function VoiceRecorder({
                   <path d="M21 12a9 9 0 1 1-6.219-8.56" />
                 </svg>
                 <span className="font-body text-warmgrau">
-                  Mikrofon wird vorbereitet...
+                  {copy.preparing}
                 </span>
               </>
               )}
@@ -514,7 +559,7 @@ export function VoiceRecorder({
                   <path d="M21 12a9 9 0 1 1-6.219-8.56" />
                 </svg>
                 <span className="font-body text-warmgrau">
-                  Transkribiere deine Aufnahme...
+                  {copy.processing}
                 </span>
               </>
               )}

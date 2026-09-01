@@ -1,36 +1,6 @@
-const FAQ_ITEMS = [
-  {
-    question: "Ist das wirklich kostenlos?",
-    answer:
-      "Ja. Du zahlst nichts, kein Abo, keine Premium-Stufe. Die Nutzung bleibt kostenlos.",
-  },
-  {
-    question: "Was passiert mit meinen Daten?",
-    answer:
-      "Dein Anliegen wird einmalig an die KI geschickt, der Brief kommt zurück. Brief-nach-Berlin speichert nichts. Kein Account, kein Tracking, keine Werbung.",
-  },
-  {
-    question: "Wirken handgeschriebene Briefe wirklich?",
-    answer:
-      "Ja, in einem Maß, das viele unterschätzen. In einem Bundestagsbüro landen täglich Dutzende Mails und Online-Petitionen. Ein handgeschriebener Brief mit Wahlkreisbezug ist die Ausnahme und landet oben auf dem Stapel. Genau dafür ist Brief-nach-Berlin gebaut.",
-  },
-  {
-    question:
-      "Warum schreibe ich an meinen Wahlkreisabgeordneten und nicht an den Fachausschuss?",
-    answer:
-      "Weil deine direkte Vertretung im Bundestag dir gegenüber rechenschaftspflichtig ist. Ein fachfremder Ausschussabgeordneter aus einem anderen Wahlkreis muss auf dich nicht reagieren, deine eigene Vertretung schon. Genau das macht deinen Brief wirksam. Geht es um ein bundesweites Thema, leitet dein Abgeordneter es an die zuständigen Fachpolitiker weiter.",
-  },
-  {
-    question: "Welche politischen Ebenen sind dabei?",
-    answer:
-      "Bund, Land und Kommune. Brief-nach-Berlin findet die passende politische Adresse auf allen drei Ebenen. Außerdem kannst du öffentliche Kampagnen starten.",
-  },
-  {
-    question: "Wer steckt dahinter?",
-    answer:
-      "Thomas Lorenz, Produktentwickler aus Bremen mit politikwissenschaftlichem Hintergrund. Brief-nach-Berlin ist ein unabhängiges, parteiloses Projekt. Keine Lobby, kein NGO-Apparat, kein Werbebudget.",
-  },
-];
+"use client";
+
+import { useUiCopy } from "@/components/i18n/LocaleProvider";
 
 function ChevronIcon() {
   return (
@@ -54,18 +24,27 @@ function ChevronIcon() {
 }
 
 export default function FAQ() {
+  const copy = useUiCopy();
+  const items = [
+    [copy.faq.freeQuestion, copy.faq.freeAnswer],
+    [copy.faq.dataQuestion, copy.faq.dataAnswer],
+    [copy.faq.lettersQuestion, copy.faq.lettersAnswer],
+    [copy.faq.representativeQuestion, copy.faq.representativeAnswer],
+    [copy.faq.levelsQuestion, copy.faq.levelsAnswer],
+    [copy.faq.aboutQuestion, copy.faq.aboutAnswer],
+  ].map(([question, answer]) => ({ question, answer }));
   return (
     <section id="faq" className="py-20 md:py-28 px-6 bg-creme">
       <div className="max-w-2xl mx-auto">
         <p className="font-typewriter text-sm font-bold tracking-widest uppercase text-waldgruen/50 mb-3">
-          Häufige Fragen
+          {copy.faq.eyebrow}
         </p>
         <h2 className="font-body text-2xl md:text-3xl font-bold text-waldgruen-dark tracking-tight mb-12">
-          Was viele fragen
+          {copy.faq.title}
         </h2>
 
         <div className="divide-y divide-waldgruen/15 border-y border-waldgruen/15">
-          {FAQ_ITEMS.map((item) => (
+          {items.map((item) => (
             <details
               key={item.question}
               className="group [&[open]_svg]:rotate-180 [&[open]]:bg-waldgruen/[0.03] rounded-lg transition-colors duration-150 -mx-3 px-3"

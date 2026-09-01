@@ -1,14 +1,15 @@
 import type { SendLetterEmailParams, LetterDebugPayload } from "./sendLetterEmail";
 import {
   APP_URL,
-  EMAIL_SUBJECT,
   FOUNDER_HOMEPAGE,
   FOUNDER_FEEDBACK_URL,
   abgeordnetenwatchProfileUrl,
 } from "@/lib/config";
+import { SUPPORT_CONTENT, SUPPORT_EMAIL_COPY } from "@/lib/support-content";
 import { formatPartyShort } from "@/lib/formatParty";
 import { buildShareTarget } from "@/lib/share";
 import { normalizeLetterClosing } from "./normalizeLetterClosing";
+import { getEmailCopy, resolveEmailLocale } from "./mailLocale";
 
 function buildDebugUrl(d: LetterDebugPayload): string {
   // base64url-encode JSON payload so it survives URLs without padding/+/ issues
@@ -36,7 +37,12 @@ function buildVariantUrl(recipientEmail: string, debug?: LetterDebugPayload): st
 // invites a "besser/schlechter"-Polarität — leaving it as 4/5 made the
 // rating look already-decided. The form on /feedback prefills with
 // whichever star was clicked and lets the user change it.
-export function buildStarBarHtml(token: string, seq?: number): string {
+export function buildStarBarHtml(token: string, seq?: number, locale?: SendLetterEmailParams["locale"]): string {
+  const copy = getEmailCopy(locale);
+  const feedbackQuestion = copy.feedbackQuestion.replace(
+    "<br>",
+    '<span class="bnb-feedback-break" style="display:none;"><br></span><span class="bnb-feedback-space"> </span>',
+  );
   const seqParam = seq != null ? `&s=${seq}` : "";
   const url = (n: number) => `${APP_URL}/feedback?r=${n}&t=${token}${seqParam}`;
   // Padding bumped to clear the 44pt iOS HIG tap target on mobile mail.
@@ -44,9 +50,9 @@ export function buildStarBarHtml(token: string, seq?: number): string {
     <a href="${url(n)}" target="_blank" rel="noopener noreferrer"
        style="color:#D4A017;mso-color-alt:#D4A017;text-decoration:none;font-size:26px;line-height:1;padding:8px 4px;display:inline-block;">${glyph === "filled" ? "&#9733;" : "&#9734;"}</a>`;
   return `
-    <p style="margin:0 0 8px;font-family:Georgia,'Times New Roman',serif;font-size:12px;color:#2D5016;font-weight:bold;">Wie findest du<br>deinen Brief?</p>
+    <p style="margin:0 0 8px;font-family:Georgia,'Times New Roman',serif;font-size:12px;color:#2D5016;font-weight:bold;line-height:1.4;">${feedbackQuestion}</p>
     <div style="white-space:nowrap;line-height:1;">${star(1, "filled")}${star(2, "filled")}${star(3, "filled")}${star(4, "outline")}${star(5, "outline")}</div>
-    <p style="margin:8px 0 0;font-family:Georgia,'Times New Roman',serif;font-size:12px;color:#b0b0b0;line-height:1.4;">Dauert 10 Sek, hilft mir sehr</p>`;
+    <p style="margin:8px 0 0;font-family:Georgia,'Times New Roman',serif;font-size:12px;color:#b0b0b0;line-height:1.4;">${copy.feedbackHint}</p>`;
 }
 
 // Escape HTML entities to prevent HTML injection in email (T-03-02)
@@ -64,18 +70,59 @@ function nlToBr(text: string): string {
   return escapeHtml(text).replace(/\n/g, "<br>");
 }
 
+function isFirstLetterEmail(data: SendLetterEmailParams): boolean {
+  return !data.debug?.resent;
+}
+
+function buildFinancingNoticeHtml(locale: ReturnType<typeof resolveEmailLocale>): string {
+  const supportCopy = SUPPORT_EMAIL_COPY[locale];
+  const donationUrl = SUPPORT_CONTENT.ctas.donate.href;
+  const learnMoreUrl = `${APP_URL}${SUPPORT_CONTENT.ctas.learnMore.href}?src=email`;
+  return `<div class="bnb-inner-pad" style="background-color:#FAF8F5;border:1px solid #E0DCD7;border-radius:6px;padding:18px 20px;">
+      <h2 style="margin:0 0 8px;font-family:Georgia,'Times New Roman',serif;font-size:16px;color:#2D5016;font-weight:bold;">${escapeHtml(supportCopy.heading)}</h2>
+      <p style="margin:0 0 14px;font-family:Georgia,'Times New Roman',serif;font-size:14px;color:#4A4A4A;line-height:1.6;">${escapeHtml(supportCopy.body)}</p>
+      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="width:100%;border-collapse:collapse;">
+        <tr>
+          <td class="bnb-support-action bnb-support-action-primary" width="52%" valign="top" style="width:52%;padding-right:5px;">
+            <a href="${donationUrl}" target="_blank" rel="noopener noreferrer" style="display:block;background-color:#2D5016;color:#ffffff;font-family:Georgia,'Times New Roman',serif;font-size:14px;font-weight:bold;text-decoration:none;padding:11px 10px;border:2px solid #2D5016;border-radius:4px;line-height:1.4;text-align:center;">${escapeHtml(supportCopy.button)}</a>
+          </td>
+          <td class="bnb-support-action" width="48%" valign="top" style="width:48%;padding-left:5px;">
+            <a href="${learnMoreUrl}" target="_blank" rel="noopener noreferrer" style="display:block;background-color:#ffffff;color:#2D5016;font-family:Georgia,'Times New Roman',serif;font-size:14px;font-weight:bold;text-decoration:none;padding:11px 10px;border:2px solid #2D5016;border-radius:4px;line-height:1.4;text-align:center;">${escapeHtml(supportCopy.infoButton)}</a>
+          </td>
+        </tr>
+      </table>
+      <p style="margin:12px 0 0;font-family:Georgia,'Times New Roman',serif;font-size:12px;color:#bcbcbc;line-height:1.5;">${escapeHtml(supportCopy.status)}</p>
+    </div>`;
+}
+
+export function buildLetterEmailText(data: SendLetterEmailParams): string {
+  const supportCopy = SUPPORT_EMAIL_COPY[resolveEmailLocale(data.locale)];
+  const parts = [
+    normalizeLetterClosing(data.letterText),
+    `Beste Grüße aus Bremen\n\nThomas\nEine Initiative von ${FOUNDER_HOMEPAGE}`,
+  ];
+  if (isFirstLetterEmail(data)) {
+    parts.push(
+      `${supportCopy.prefix} ${supportCopy.status}\n${supportCopy.button}: ${SUPPORT_CONTENT.ctas.donate.href}\n${supportCopy.learnMore}: ${APP_URL}${SUPPORT_CONTENT.ctas.learnMore.href}?src=email`,
+    );
+  }
+  return parts.join("\n\n");
+}
+
 function buildCampaignAttributionHtml(
-  campaign: SendLetterEmailParams["campaign"]
+  campaign: SendLetterEmailParams["campaign"],
+  locale?: SendLetterEmailParams["locale"],
 ): string {
   if (!campaign?.slug) return "";
 
+  const copy = getEmailCopy(locale);
   const campaignUrl = `${APP_URL}/kampagne/${encodeURIComponent(campaign.slug)}`;
   const creator = campaign.creatorName?.trim();
   return `
     <div class="bnb-inner-pad" style="margin:0 0 16px;background-color:#FAF8F5;border:1px solid #E0DCD7;border-radius:4px;padding:14px 18px;">
       <p style="margin:0;font-family:Georgia,'Times New Roman',serif;font-size:13px;color:#4A4A4A;line-height:1.6;">
-        ${creator ? `Diese Kampagne wurde von <strong>${escapeHtml(creator)}</strong> gestartet.` : "Dieser Brief gehört zu einer öffentlichen Kampagne."}
-        <a href="${campaignUrl}" target="_blank" rel="noopener noreferrer" style="color:#2D5016;text-decoration:underline;">Zur Kampagne</a>
+        ${copy.campaignBy(creator ? escapeHtml(creator) : undefined)}
+        <a href="${campaignUrl}" target="_blank" rel="noopener noreferrer" style="color:#2D5016;text-decoration:underline;">${copy.campaignLink}</a>
       </p>
     </div>`;
 }
@@ -161,59 +208,62 @@ function getGovernmentAddressLines(data: SendLetterEmailParams): string {
 }
 
 export function buildLetterEmailSubject(data: SendLetterEmailParams): string {
+  const copy = getEmailCopy(data.locale);
   if (data.recipientKind === "landesregierung") {
     const destination = getGovernmentDestination(data.politicianPostalAddress);
-    return destination ? `Dein Brief nach ${destination} ist fertig` : EMAIL_SUBJECT;
+    return destination ? copy.subject.destination(destination) : copy.subject.standard;
   }
   if (data.recipientKind === "mdl") {
     const destination = getLandtagDestination(data.politicianPostalAddress);
-    return destination ? `Dein Brief nach ${destination} ist fertig` : EMAIL_SUBJECT;
+    return destination ? copy.subject.destination(destination) : copy.subject.standard;
   }
   if (data.recipientKind === "rathaus") {
     const destination = data.rathausSearch?.ort?.trim();
-    return destination
-      ? `Dein Brief ans Rathaus in ${destination} ist fertig`
-      : "Dein Brief ans Rathaus ist fertig";
+    return copy.subject.townHall(destination);
   }
-  return EMAIL_SUBJECT;
+  return copy.subject.standard;
 }
 
 function getEmailIntro(data: SendLetterEmailParams): string {
+  const copy = getEmailCopy(data.locale);
   if (data.recipientKind === "landesregierung") {
     const destination = getGovernmentDestination(data.politicianPostalAddress);
     return destination
-      ? `Dein Brief nach ${destination} ist fertig zum Absenden.`
-      : "Dein Brief an die Landesregierung ist fertig zum Absenden.";
+      ? copy.intro.destination(destination)
+      : copy.intro.state;
   }
   if (data.recipientKind === "mdl") {
     const destination = getLandtagDestination(data.politicianPostalAddress);
     return destination
-      ? `Dein Brief nach ${destination} ist fertig zum Absenden.`
-      : "Dein Brief an den Landtag ist fertig zum Absenden.";
+      ? copy.intro.destination(destination)
+      : copy.intro.parliament;
   }
   if (data.recipientKind === "rathaus") {
     const destination = data.rathausSearch?.ort?.trim();
     return destination
-      ? `Dein Brief ans Rathaus in ${destination} ist fertig zum Absenden.`
-      : "Dein Brief ans Rathaus ist fertig zum Absenden.";
+      ? copy.intro.townHall(destination)
+      : copy.intro.townHall();
   }
-  return "Dein Briefentwurf ist fertig zum Absenden.";
+  return copy.intro.standard;
 }
 
 function getPersonalImpactCopy(data: SendLetterEmailParams): string {
+  const copy = getEmailCopy(data.locale);
   if (data.recipientKind === "landesregierung") {
-    return "Ein persönlicher Brief macht dein Anliegen auf Landesebene konkret und nachvollziehbar.";
+    return copy.impact.state;
   }
   if (data.recipientKind === "mdl") {
-    return "Handgeschriebene Briefe fallen in Abgeordnetenbüros auf. Inmitten unpersönlicher Drucksachen signalisieren sie echtes Engagement.";
+    return copy.impact.mdl;
   }
   if (data.recipientKind === "rathaus") {
-    return "Ein persönlicher Brief macht dein Anliegen für die Verwaltung konkret und nachvollziehbar.";
+    return copy.impact.townHall;
   }
-  return "Handgeschriebene Briefe fallen in Bundestagsbüros auf. Inmitten unpersönlicher Drucksachen signalisieren sie echtes Engagement.";
+  return copy.impact.mdb;
 }
 
 function getRecruitCopy(data: SendLetterEmailParams): string {
+  const copy = getEmailCopy(data.locale);
+  if (data.locale && data.locale !== "de") return copy.recruit;
   if (data.campaign?.slug) {
     if (data.recipientKind === "landesregierung") {
       return "Dein Brief ist ein Anfang. Teile die Kampagne, damit weitere Menschen aus ihrem Bundesland mit eigenen Worten schreiben.";
@@ -239,6 +289,27 @@ function getRecruitCopy(data: SendLetterEmailParams): string {
 }
 
 function buildEmailShareTarget(data: SendLetterEmailParams) {
+  const locale = resolveEmailLocale(data.locale);
+  if (locale !== "de") {
+    const url = data.campaign?.slug
+      ? `${APP_URL}/kampagne/${encodeURIComponent(data.campaign.slug)}`
+      : APP_URL;
+    const isTurkish = locale === "tr";
+    const subject = isTurkish
+      ? "Sen de Brief-nach-Berlin ile bir mektup yazar mısın?"
+      : "Would you also write a letter with Brief-nach-Berlin?";
+    const text = isTurkish
+      ? `Brief-nach-Berlin ile siyasete kişisel bir mektup hazırladım. Sen de kendi sözlerinle bir mektup yazmak ister misin? ${url}`
+      : `I just prepared a personal letter to politicians with Brief-nach-Berlin. Would you also like to write a letter in your own words? ${url}`;
+    return {
+      url,
+      text,
+      subject,
+      whatsappUrl: `https://wa.me/?text=${encodeURIComponent(text)}`,
+      telegramUrl: `https://t.me/share/url?url=${encodeURIComponent(url)}&text=${encodeURIComponent(text)}`,
+      emailUrl: `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(text)}`,
+    };
+  }
   const level =
     data.recipientKind === "rathaus"
       ? "Kommune"
@@ -282,6 +353,8 @@ function getFooterBannerHtml(data: SendLetterEmailParams): string {
 }
 
 export function buildEmailHtml(data: SendLetterEmailParams): string {
+  const locale = resolveEmailLocale(data.locale);
+  const copy = getEmailCopy(locale);
   const isRathaus = data.recipientKind === "rathaus";
   const isMdl = data.recipientKind === "mdl";
   const isLandesregierung = data.recipientKind === "landesregierung";
@@ -331,7 +404,7 @@ export function buildEmailHtml(data: SendLetterEmailParams): string {
     : isLandesregierung
       ? `<strong>${escapeHtml(formatGovernmentDisplayName(data.politicianName))}</strong><br>`
     : isFallback
-      ? `<strong><a href="${fallbackUrl}" target="_blank" rel="noopener noreferrer" style="color:#2D5016;text-decoration:underline;">Kein MdB zugeordnet</a></strong><br>`
+      ? `<strong><a href="${fallbackUrl}" target="_blank" rel="noopener noreferrer" style="color:#2D5016;text-decoration:underline;">${copy.noRepresentative}</a></strong><br>`
       : `<strong><a href="${profileUrl}" target="_blank" rel="noopener noreferrer" style="color:#2D5016;text-decoration:underline;">${fullName}, ${mandateLabel}${party ? ` (${party})` : ""}</a></strong><br>`;
 
   // Institutionszeile: für MdB heutiges Layout (postalAddress trägt nur die
@@ -349,15 +422,15 @@ export function buildEmailHtml(data: SendLetterEmailParams): string {
   const rathausSearchLine =
     isRathaus && rathausSearchUrl
       ? officialRathausAddress
-        ? `<p style="margin:10px 0 0;font-family:Georgia,'Times New Roman',serif;font-size:12px;color:#666666;line-height:1.5;">Quelle: <a href="${escapeHtml(officialRathausAddress.sourceUrl)}" target="_blank" rel="noopener noreferrer" style="color:#2D5016;text-decoration:underline;">Destatis</a>, Stand ${escapeHtml(officialRathausAddress.sourceStand)}. Du kannst die Adresse bei Google noch einmal <a href="${rathausSearchUrl}" target="_blank" rel="noopener noreferrer" style="color:#2D5016;text-decoration:underline;">hier</a> prüfen.</p>`
-        : `<p style="margin:10px 0 0;font-family:Georgia,'Times New Roman',serif;font-size:12px;color:#666666;line-height:1.5;">Für diese Postleitzahl ließ sich keine eindeutige amtliche Anschrift zuordnen. Ergänze in der Suche deinen Wohnort. Die genaue Anschrift findest du <a href="${rathausSearchUrl}" target="_blank" rel="noopener noreferrer" style="color:#2D5016;text-decoration:underline;">hier</a>.</p>`
+        ? `<p style="margin:10px 0 0;font-family:Georgia,'Times New Roman',serif;font-size:12px;color:#666666;line-height:1.5;">${copy.source} <a href="${escapeHtml(officialRathausAddress.sourceUrl)}" target="_blank" rel="noopener noreferrer" style="color:#2D5016;text-decoration:underline;">Destatis</a>, ${copy.checked} ${escapeHtml(officialRathausAddress.sourceStand)}. ${copy.verifyGoogle} <a href="${rathausSearchUrl}" target="_blank" rel="noopener noreferrer" style="color:#2D5016;text-decoration:underline;">${copy.verifyHere}</a> ${copy.verifyEnd}</p>`
+        : `<p style="margin:10px 0 0;font-family:Georgia,'Times New Roman',serif;font-size:12px;color:#666666;line-height:1.5;">${copy.noAddress} <a href="${rathausSearchUrl}" target="_blank" rel="noopener noreferrer" style="color:#2D5016;text-decoration:underline;">${copy.verifyHere}</a>.</p>`
       : "";
   const governmentSourceLine =
     isLandesregierung && data.governmentSource
-      ? `<p style="margin:10px 0 0;font-family:Georgia,'Times New Roman',serif;font-size:12px;color:#666666;line-height:1.5;">Quelle: <a href="${escapeHtml(data.governmentSource.url)}" target="_blank" rel="noopener noreferrer" style="color:#2D5016;text-decoration:underline;">${escapeHtml(formatGovernmentDisplayName(data.governmentSource.title))}</a>, geprüft am ${escapeHtml(formatGermanDate(data.governmentSource.stand))}.</p>`
+      ? `<p style="margin:10px 0 0;font-family:Georgia,'Times New Roman',serif;font-size:12px;color:#666666;line-height:1.5;">${copy.source} <a href="${escapeHtml(data.governmentSource.url)}" target="_blank" rel="noopener noreferrer" style="color:#2D5016;text-decoration:underline;">${escapeHtml(formatGovernmentDisplayName(data.governmentSource.title))}</a>, ${copy.checked} ${escapeHtml(formatGermanDate(data.governmentSource.stand))}.</p>`
       : "";
 
-  const profileButtonText = isFallback ? "Empfänger finden" : "Profil auf<br>abgeordnetenwatch";
+  const profileButtonText = isFallback ? copy.findRecipient : copy.profile;
   const profileButtonUrl = isFallback ? fallbackUrl : profileUrl;
   const profileButtonHtml = profileButtonUrl
     ? `<a href="${profileButtonUrl}" target="_blank" rel="noopener noreferrer" style="display:inline-block;background-color:#2D5016;color:#ffffff;font-family:Georgia,'Times New Roman',serif;font-size:14px;font-weight:bold;text-decoration:none;padding:10px 14px;border-radius:4px;line-height:1.5;text-align:center;">${profileButtonText}</a>`
@@ -367,20 +440,20 @@ export function buildEmailHtml(data: SendLetterEmailParams): string {
 
   const share = buildEmailShareTarget(data);
   const instagramUrl = `${APP_URL}/weitersagen#insta`;
-  const variantUrl = buildVariantUrl(data.recipientEmail, data.debug);
+  const variantUrl = locale === "de" ? buildVariantUrl(data.recipientEmail, data.debug) : null;
   const emailIntro = escapeHtml(getEmailIntro(data));
   const personalImpactCopy = getPersonalImpactCopy(data);
   const recruitCopy = getRecruitCopy(data);
   const footerGuideLink =
     data.recipientKind === "mdb"
-      ? `<a href="${APP_URL}/wer-darf-mdb-schreiben" style="color:#888888;">Wer darf MdBs schreiben?</a>`
-      : `<a href="${APP_URL}/guide" style="color:#888888;">Mehr zum Briefeschreiben</a>`;
+      ? `<a href="${APP_URL}/wer-darf-mdb-schreiben" style="color:#888888;">${copy.guideMdb}</a>`
+      : `<a href="${APP_URL}/guide" style="color:#888888;">${copy.guide}</a>`;
 
   // Letter text: escape then convert newlines to <br> for email clients
   const letterHtml = nlToBr(normalizeLetterClosing(data.letterText));
 
   return `<!DOCTYPE html>
-<html lang="de">
+<html lang="${locale}">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -395,6 +468,10 @@ export function buildEmailHtml(data: SendLetterEmailParams): string {
       .bnb-stack-left { padding: 0 0 14px 0 !important; width: 100% !important; }
       .bnb-stack-right { padding: 14px 0 0 0 !important; border-left: 0 !important; border-top: 1px solid #E0DCD7 !important; width: 100% !important; text-align: center !important; }
       .bnb-bleed { margin-left: -14px !important; margin-right: -14px !important; }
+      .bnb-support-action { display: block !important; width: 100% !important; padding-left: 0 !important; padding-right: 0 !important; }
+      .bnb-support-action-primary { padding-bottom: 8px !important; }
+      .bnb-feedback-break { display: inline !important; }
+      .bnb-feedback-space { display: none !important; }
       /* Share row: on mobile only the square icon-buttons remain (labels hidden). */
       .bnb-share-label { display: none !important; }
       .bnb-share-btn { padding: 14px 0 !important; }
@@ -429,7 +506,7 @@ export function buildEmailHtml(data: SendLetterEmailParams): string {
                 <!-- Intro: warm founder voice -->
                 <tr>
                   <td colspan="7" class="bnb-pad" style="padding:0 32px 20px;background-color:#ffffff;">
-                    <p style="margin:0;font-family:Georgia,'Times New Roman',serif;font-size:14px;color:#4A4A4A;line-height:1.6;">Lies ihn gründlich durch und pass ihn an, damit es dein Brief wird. Dieser Entwurf dient als Schnellstart, <a href="${APP_URL}/brief-verbessern" target="_blank" rel="noopener noreferrer" style="color:#2D5016;text-decoration:underline;">verbessere ihn gern</a>, damit er sich wirklich nach dir anhört.<span class="bnb-desk"><br>Bitte bewerte anschließend deinen Brief 🙏 Danke, dass du dich engagierst!</span><span class="bnb-mob" style="display:none;"><br>Danke, dass du dich engagierst 🙏</span></p>
+                    <p style="margin:0;font-family:Georgia,'Times New Roman',serif;font-size:14px;color:#4A4A4A;line-height:1.6;">${copy.review}${locale === "de" ? ` <a href="${APP_URL}/brief-verbessern" target="_blank" rel="noopener noreferrer" style="color:#2D5016;text-decoration:underline;">${copy.improve}</a>,` : ""} ${copy.reviewEnd}<span class="bnb-desk"><br>${copy.reviewRating}</span><span class="bnb-mob" style="display:none;"><br>${copy.reviewMobile}</span></p>
                   </td>
                 </tr>
 
@@ -445,18 +522,18 @@ export function buildEmailHtml(data: SendLetterEmailParams): string {
                   </td>
                 </tr>
 
-                <!-- Brief anpassen CTA: inline, no stored letter body, email only in URL hash. -->
+                ${variantUrl ? `<!-- Brief anpassen CTA: only for German, because the target flow is German-only. -->
                 <tr>
                   <td colspan="7" class="bnb-pad" style="padding:8px 32px 8px;background-color:#ffffff;text-align:center;">
                     <p style="margin:0;font-family:Georgia,'Times New Roman',serif;font-size:14px;color:#4A4A4A;line-height:1.6;text-align:center;">Nicht ganz dein Ton? Hier deinen &rarr; <a href="${variantUrl}" target="_blank" rel="noopener noreferrer" style="color:#2D5016;text-decoration:underline;">Briefentwurf schnell anpassen</a></p>
                   </td>
-                </tr>
+                </tr>` : ""}
 
                 <!-- Postadresse (D-08, section 2): name links to abgeordnetenwatch,
                      right column hosts the star-rating widget instead of a static profile button. -->
                 <tr>
                   <td colspan="7" class="bnb-pad" style="padding:16px 32px 24px;background-color:#ffffff;">
-                    <h2 style="margin:0 0 12px;font-family:Georgia,'Times New Roman',serif;font-size:16px;color:#2D5016;font-weight:bold;">Adresse</h2>
+                    <h2 style="margin:0 0 12px;font-family:Georgia,'Times New Roman',serif;font-size:16px;color:#2D5016;font-weight:bold;">${copy.address}</h2>
                     <div class="bnb-inner-pad" style="background-color:#FAF8F5;border:1px solid #E0DCD7;border-radius:4px;padding:16px 20px;">
                       <table role="presentation" cellpadding="0" cellspacing="0" width="100%">
                         <tr>
@@ -467,7 +544,7 @@ export function buildEmailHtml(data: SendLetterEmailParams): string {
                             </p>${rathausSearchLine}${governmentSourceLine}
                           </td>
                           <td class="bnb-stack bnb-stack-right" style="vertical-align:middle;text-align:center;padding-left:16px;border-left:1px solid #E0DCD7;width:40%;">
-                            ${data.feedbackToken ? buildStarBarHtml(data.feedbackToken) : profileButtonHtml}
+                            ${data.feedbackToken ? buildStarBarHtml(data.feedbackToken, undefined, locale) : profileButtonHtml}
                           </td>
                         </tr>
                       </table>
@@ -478,25 +555,25 @@ export function buildEmailHtml(data: SendLetterEmailParams): string {
                 <!-- Naechste Schritte (D-08, section 3) -->
                 <tr>
                   <td colspan="7" class="bnb-pad" style="padding:0 32px 8px;background-color:#ffffff;">
-                    <h2 style="margin:0 0 16px;font-family:Georgia,'Times New Roman',serif;font-size:16px;color:#2D5016;font-weight:bold;">Nächste Schritte</h2>
+                    <h2 style="margin:0 0 16px;font-family:Georgia,'Times New Roman',serif;font-size:16px;color:#2D5016;font-weight:bold;">${copy.nextSteps}</h2>
 
                     <table role="presentation" cellpadding="0" cellspacing="0" width="100%">
                       <tr>
                         <td style="padding:6px 0;font-family:Georgia,'Times New Roman',serif;font-size:14px;color:#4A4A4A;line-height:1.5;">
                           <span style="display:inline-block;width:24px;height:24px;background-color:#2D5016;color:#ffffff;border-radius:50%;text-align:center;line-height:24px;font-size:12px;font-weight:bold;margin-right:10px;vertical-align:middle;">1</span>
-                          <span class="bnb-desk">Brief von Hand abschreiben (oder ausdrucken)</span><span class="bnb-mob" style="display:none;">Brief von Hand abschreiben</span>
+                          <span class="bnb-desk">${copy.steps[0]}</span><span class="bnb-mob" style="display:none;">${copy.steps[0]}</span>
                         </td>
                       </tr>
                       <tr>
                         <td style="padding:6px 0;font-family:Georgia,'Times New Roman',serif;font-size:14px;color:#4A4A4A;line-height:1.5;">
                           <span style="display:inline-block;width:24px;height:24px;background-color:#2D5016;color:#ffffff;border-radius:50%;text-align:center;line-height:24px;font-size:12px;font-weight:bold;margin-right:10px;vertical-align:middle;">2</span>
-                          <span class="bnb-desk">Empfangs- und Absenderadresse auf den Umschlag</span><span class="bnb-mob" style="display:none;">Adressen auf den Umschlag</span>
+                          <span class="bnb-desk">${copy.steps[1]}</span><span class="bnb-mob" style="display:none;">${copy.steps[1]}</span>
                         </td>
                       </tr>
                       <tr>
                         <td style="padding:6px 0;font-family:Georgia,'Times New Roman',serif;font-size:14px;color:#4A4A4A;line-height:1.5;">
                           <span style="display:inline-block;width:24px;height:24px;background-color:#2D5016;color:#ffffff;border-radius:50%;text-align:center;line-height:24px;font-size:12px;font-weight:bold;margin-right:10px;vertical-align:middle;">3</span>
-                          <span class="bnb-desk"><a href="https://www.deutschepost.de/de/m/mobile-briefmarke.html" target="_blank" rel="noopener noreferrer" style="color:#2D5016;text-decoration:underline;">Briefmarke aufkleben</a> (aktuell 0,95 EUR) und ab in den Briefkasten!</span><span class="bnb-mob" style="display:none;"><a href="https://www.deutschepost.de/de/m/mobile-briefmarke.html" target="_blank" rel="noopener noreferrer" style="color:#2D5016;text-decoration:underline;">Briefmarke drauf</a> + absenden</span>
+                          <span class="bnb-desk"><a href="https://www.deutschepost.de/de/m/mobile-briefmarke.html" target="_blank" rel="noopener noreferrer" style="color:#2D5016;text-decoration:underline;">${copy.steps[2]}</a> ${copy.stampTail}</span><span class="bnb-mob" style="display:none;"><a href="https://www.deutschepost.de/de/m/mobile-briefmarke.html" target="_blank" rel="noopener noreferrer" style="color:#2D5016;text-decoration:underline;">${copy.steps[2]}</a></span>
                         </td>
                       </tr>
                     </table>
@@ -508,24 +585,32 @@ export function buildEmailHtml(data: SendLetterEmailParams): string {
                 <tr>
                   <td colspan="7" class="bnb-pad" style="padding:8px 32px 16px;background-color:#ffffff;text-align:left;">
                     <p style="margin:0 0 14px;font-family:Georgia,'Times New Roman',serif;font-size:14px;color:#4A4A4A;line-height:1.6;">
-                      ${personalImpactCopy} &rarr; <a href="${APP_URL}/tipps" style="color:#2D5016;text-decoration:underline;">Tipps für den perfekten Brief</a>
+                      ${personalImpactCopy} &rarr; <a href="${APP_URL}/tipps" style="color:#2D5016;text-decoration:underline;">${copy.tips}</a>
                     </p>
                     <p style="margin:0 0 20px;font-family:Georgia,'Times New Roman',serif;font-size:14px;color:#4A4A4A;line-height:1.6;">
-                      Toll, dass du dir die Zeit für unsere Demokratie nimmst. Melde dich super gerne bei <a href="${FOUNDER_FEEDBACK_URL}" target="_blank" rel="noopener noreferrer" style="color:#2D5016;text-decoration:underline;">Fragen oder weiteren Anregungen</a>. Beste Grüße aus Bremen ✌️
+                      ${copy.engagement} <a href="${FOUNDER_FEEDBACK_URL}" target="_blank" rel="noopener noreferrer" style="color:#2D5016;text-decoration:underline;">${copy.questions}</a>. ${copy.greeting}
                     </p>
                     <p style="margin:0;font-family:'Caveat','Brush Script MT','Lucida Handwriting',cursive;font-size:32px;color:#1D3557;line-height:1.1;">
                       Thomas
                     </p>
                     <p style="margin:6px 0 0;font-family:Georgia,'Times New Roman',serif;font-size:12px;color:#bcbcbc;line-height:1.5;">
-                      Eine Initiative von <a href="${FOUNDER_HOMEPAGE}" target="_blank" rel="noopener noreferrer" style="color:#bcbcbc;text-decoration:underline;">www.thomas-lorenz.eu</a>
+                      ${copy.initiative} <a href="${FOUNDER_HOMEPAGE}" target="_blank" rel="noopener noreferrer" style="color:#bcbcbc;text-decoration:underline;">www.thomas-lorenz.eu</a>
                     </p>
                   </td>
                 </tr>
 
+                ${isFirstLetterEmail(data) ? `
+                <!-- Donation CTA: first letter email only, before sharing. -->
+                <tr>
+                  <td colspan="7" class="bnb-pad" style="padding:0 32px 16px;background-color:#ffffff;text-align:left;">
+                    ${buildFinancingNoticeHtml(locale)}
+                  </td>
+                </tr>` : ""}
+
                 ${data.campaign?.slug ? `
                 <tr>
                   <td colspan="7" class="bnb-pad" style="padding:0 32px 8px;background-color:#ffffff;">
-                    ${buildCampaignAttributionHtml(data.campaign)}
+                    ${buildCampaignAttributionHtml(data.campaign, locale)}
                   </td>
                 </tr>` : ""}
 
@@ -533,7 +618,7 @@ export function buildEmailHtml(data: SendLetterEmailParams): string {
                 <tr>
                   <td colspan="7" class="bnb-pad" style="padding:8px 32px 24px;background-color:#ffffff;">
                     <div class="bnb-inner-pad" style="background-color:#FAF8F5;border:1px solid #E0DCD7;border-radius:6px;padding:20px 22px;">
-                      <h2 style="margin:0 0 8px;font-family:Georgia,'Times New Roman',serif;font-size:16px;color:#2D5016;font-weight:bold;">${data.campaign?.slug ? "Diese Kampagne weitertragen" : "Gemeinsam noch lauter"}</h2>
+                      <h2 style="margin:0 0 8px;font-family:Georgia,'Times New Roman',serif;font-size:16px;color:#2D5016;font-weight:bold;">${data.campaign?.slug ? copy.campaignShareHeading : copy.shareHeading}</h2>
                       <p style="margin:0 0 14px;font-family:Georgia,'Times New Roman',serif;font-size:14px;color:#4A4A4A;line-height:1.6;">
                         ${recruitCopy}
                       </p>
@@ -555,9 +640,9 @@ export function buildEmailHtml(data: SendLetterEmailParams): string {
                       </table>
                       <!-- Secondary links: weiterführende Seiten, normale Schriftgröße, eine Zeile -->
                       <p style="margin:16px 0 0;font-family:Georgia,'Times New Roman',serif;font-size:14px;color:#4A4A4A;line-height:1.6;text-align:center;">
-                        <a href="${APP_URL}/aktiv-werden" target="_blank" rel="noopener noreferrer" style="color:#2D5016;text-decoration:underline;">Was du sonst noch tun kannst</a>
+                        <a href="${APP_URL}/aktiv-werden" target="_blank" rel="noopener noreferrer" style="color:#2D5016;text-decoration:underline;">${copy.otherAction}</a>
                         &nbsp;·&nbsp;
-                        <a href="${APP_URL}/andere-tools" target="_blank" rel="noopener noreferrer" style="color:#2D5016;text-decoration:underline;">Weitere Tools</a>
+                        <a href="${APP_URL}/andere-tools" target="_blank" rel="noopener noreferrer" style="color:#2D5016;text-decoration:underline;">${copy.otherTools}</a>
                       </p>
                       ${getFooterBannerHtml(data)}
                     </div>
@@ -573,7 +658,7 @@ export function buildEmailHtml(data: SendLetterEmailParams): string {
                 <tr>
                   <td colspan="7" class="bnb-pad" style="padding:24px 32px 16px;background-color:#FAF8F5;text-align:center;">
                     <p style="margin:0;font-family:Georgia,'Times New Roman',serif;font-size:12px;color:#999999;">
-                      <a href="${APP_URL}" style="color:#2D5016;text-decoration:none;">Brief-nach-Berlin</a>${letterNumberText} · Deine Stimme zählt.
+                      <a href="${APP_URL}" style="color:#2D5016;text-decoration:none;">Brief-nach-Berlin</a>${letterNumberText} · ${copy.voiceCounts}
                     </p>
                   </td>
                 </tr>
@@ -582,10 +667,10 @@ export function buildEmailHtml(data: SendLetterEmailParams): string {
                 <tr>
                   <td colspan="7" class="bnb-pad" style="padding:8px 32px 24px;background-color:#FAF8F5;text-align:center;">
                     <p style="margin:0 0 6px;font-family:Georgia,'Times New Roman',serif;font-size:12px;color:#aaaaaa;line-height:1.5;">
-                      <strong>Hinweis:</strong> Diese Mail ist ein generierter Entwurf. Bitte passe ihn an und prüfe die Daten vor dem Versand${profileUrl ? ` bei <a href="${profileUrl}" target="_blank" rel="noopener noreferrer" style="color:#888888;">${disclaimerSiteName}</a>` : ""}. Die Verantwortung für den Inhalt liegt bei dir.
+                      <strong>${copy.notice}</strong> ${copy.noticeText}${profileUrl ? ` <a href="${profileUrl}" target="_blank" rel="noopener noreferrer" style="color:#888888;">${disclaimerSiteName}</a>` : ""}. ${copy.responsibility}
                     </p>
                     <p style="margin:0;font-family:Georgia,'Times New Roman',serif;font-size:12px;color:#aaaaaa;line-height:1.5;">
-                      <a href="${APP_URL}/datenschutz" style="color:#888888;">Datenschutz</a>: deine Daten werden nicht gespeichert. · ${footerGuideLink}${data.debug ? ` · <a href="${buildDebugUrl(data.debug)}" style="color:#888888;text-decoration:none;">Debug</a>` : ""}
+                      <a href="${APP_URL}/datenschutz" style="color:#888888;">${copy.privacy}</a>: ${copy.dataPolicy} · ${footerGuideLink}${data.debug ? ` · <a href="${buildDebugUrl(data.debug)}" style="color:#888888;text-decoration:none;">Debug</a>` : ""}
                     </p>
                   </td>
                 </tr>

@@ -20,6 +20,9 @@ const TITLE = "Stimmen & Bewertungen | Brief-nach-Berlin";
 const DESCRIPTION =
   "Echte Rückmeldungen von Menschen, die einen Brief generiert haben. Schnitt, durchlaufende Karten, ausgewählte Quotes. Seit Mai 2026.";
 
+// Review-Daten sollen sich ohne neuen Deploy aktualisieren.
+export const revalidate = 300;
+
 export const metadata: Metadata = {
   title: TITLE,
   description: DESCRIPTION,

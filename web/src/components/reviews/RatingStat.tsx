@@ -32,9 +32,14 @@ function StarBar({ rating, max = 5 }: { rating: number; max?: number }) {
 export function RatingStat({ stats, showDistribution = false }: RatingStatProps) {
   if (stats.totalCount === 0) {
     return (
-      <p className="font-typewriter text-sm text-warmgrau/60">
-        Noch zu wenig Bewertungen
-      </p>
+      <div className="flex flex-col gap-2">
+        <p className="font-typewriter text-sm text-warmgrau/60">
+          Bewertungszahl wird gerade aktualisiert
+        </p>
+        <p className="font-typewriter text-sm text-waldgruen-dark">
+          Seit Mitte Mai sind über 1.000 Briefe entstanden.
+        </p>
+      </div>
     );
   }
 

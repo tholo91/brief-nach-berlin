@@ -2,6 +2,7 @@ import { revalidateTag, unstable_cache } from "next/cache";
 import { supabase } from "@/lib/supabase";
 
 const LETTER_COUNT_TAG = "letter-count";
+const LAST_KNOWN_LETTER_COUNT = 1770;
 
 const readLetterCount = unstable_cache(
   async (): Promise<number> => {
@@ -12,17 +13,19 @@ const readLetterCount = unstable_cache(
       .single();
 
     if (error) {
-      console.error("[counter] read failed:", error.message);
-      return 0;
+      throw new Error(`[counter] read failed: ${error.message}`);
     }
-    return data?.value ?? 0;
+    if (typeof data?.value !== "number" || data.value < 0) {
+      throw new Error("[counter] read returned an invalid value");
+    }
+    return data.value;
   },
   [LETTER_COUNT_TAG],
   { revalidate: 3600, tags: [LETTER_COUNT_TAG] },
 );
 
 export function invalidateLetterCountCache(): void {
-  revalidateTag(LETTER_COUNT_TAG, { expire: 0 });
+  revalidateTag(LETTER_COUNT_TAG, "max");
 }
 
 export async function incrementLetterCount(): Promise<void> {
@@ -45,5 +48,10 @@ export async function incrementLetterCounters(campaignSlug?: string): Promise<nu
 }
 
 export async function getLetterCount(): Promise<number> {
-  return readLetterCount();
+  try {
+    return await readLetterCount();
+  } catch (error) {
+    console.error(error);
+    return LAST_KNOWN_LETTER_COUNT;
+  }
 }

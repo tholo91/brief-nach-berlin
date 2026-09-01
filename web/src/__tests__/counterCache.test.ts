@@ -34,13 +34,6 @@ describe("letter counter caching", () => {
     });
   });
 
-  it("reuses the cached public counter value", async () => {
-    await expect(getLetterCount()).resolves.toBe(41);
-    await expect(getLetterCount()).resolves.toBe(41);
-
-    expect(mockFrom).toHaveBeenCalledTimes(1);
-  });
-
   it("invalidates the counter after an increment", async () => {
     mockRpc.mockResolvedValue({ data: 42, error: null });
 
@@ -49,6 +42,25 @@ describe("letter counter caching", () => {
     expect(mockRpc).toHaveBeenCalledWith("increment_letter_counters", {
       campaign_slug: null,
     });
-    expect(mockRevalidateTag).toHaveBeenCalledWith("letter-count", { expire: 0 });
+    expect(mockRevalidateTag).toHaveBeenCalledWith("letter-count", "max");
+  });
+
+  it("returns the last known value when Supabase cannot be read", async () => {
+    mockFrom.mockReturnValue({
+      select: () => ({
+        eq: () => ({
+          single: jest.fn().mockResolvedValue({ data: null, error: { message: "temporary outage" } }),
+        }),
+      }),
+    });
+
+    await expect(getLetterCount()).resolves.toBe(1770);
+  });
+
+  it("reuses the cached public counter value", async () => {
+    await expect(getLetterCount()).resolves.toBe(41);
+    await expect(getLetterCount()).resolves.toBe(41);
+
+    expect(mockFrom).toHaveBeenCalledTimes(1);
   });
 });

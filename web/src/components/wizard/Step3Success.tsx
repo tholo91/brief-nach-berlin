@@ -1,5 +1,7 @@
 "use client";
 
+import Link from "next/link";
+import Image from "next/image";
 import { useState, useCallback, useMemo, useRef, useEffect } from "react";
 import type { WizardData, WizardActionResult } from "@/lib/types/wizard";
 import type { PoliticalLevel } from "@/lib/types/politician";
@@ -17,9 +19,11 @@ import { reportErrorAction } from "@/lib/actions/reportError";
 import { installClientLogBuffer, getClientLogs } from "@/lib/clientLogBuffer";
 import { formatPartyShort } from "@/lib/formatParty";
 import {
+  DONATION_PATH,
   FOUNDER_EMAIL,
   FOUNDER_FEEDBACK_URL,
 } from "@/lib/config";
+import { SUPPORT_CONTENT } from "@/lib/support-content";
 import { buildShareTarget } from "@/lib/share";
 import {
   filterCampaignRecipients,
@@ -28,6 +32,7 @@ import {
 } from "@/lib/campaign-recipient-picker";
 import { RathausAdresseButton } from "./RathausAdresseButton";
 import { WizardForwardIcon } from "./WizardForwardIcon";
+import { useUiCopy } from "@/components/i18n/LocaleProvider";
 
 // Phased loading copy. Rotates while the politician-pick spinner runs. This is
 // the user's final click - they sit here waiting for the letter to be drafted,
@@ -117,6 +122,7 @@ export function Step3Success({
   onChangePlz,
   onChangeLevel,
 }: Step3SuccessProps) {
+  const copy = useUiCopy();
   // Abgeordneten-Karten (mdb/mdl) und der synthetische Rathaus-Empfänger
   // teilen sich den Step; Kommune zeigt genau eine Verwaltungs-Karte.
   const [showLandPersonPicker, setShowLandPersonPicker] = useState(false);
@@ -683,10 +689,6 @@ export function Step3Success({
     selectedLevel ??
     generatedRecipient?.level ??
     (result && "success" in result && result.success ? result.politicalLevel : "Bund");
-  const effectiveLandInstitution =
-    generatedRecipient?.kind === "landesregierung" ? generatedRecipient : landesregierung;
-  const effectiveLandArticle = effectiveLandInstitution?.institutionKind === "senat" ? "dem" : "der";
-  const effectiveLandLabel = effectiveLandInstitution?.label ?? "Landesregierung";
   const handwrittenImpactCopy = effectiveLevel === "Bund"
     ? "Handgeschriebene Briefe werden im Bundestag tatsächlich gelesen und besprochen."
     : effectiveLevel === "Land"
@@ -695,11 +697,6 @@ export function Step3Success({
   const addressInstruction = effectiveLevel === "Kommune"
     ? "Nutze die Suchhilfe, prüfe die vollständige Anschrift und schreib sie auf den Umschlag."
     : "Die Adresse findest du im Brief.";
-  const shareImpactCopy = effectiveLevel === "Bund"
-    ? "Dein Brief wirkt. Und er wirkt noch stärker, wenn weitere Stimmen aus deinem Wahlkreis dazukommen. Briefe aus derselben Gegend zum gleichen Thema bekommen im Bundestag besonderes Gewicht."
-    : effectiveLevel === "Land"
-      ? `Dein Brief wirkt. Und er wirkt noch stärker, wenn weitere Menschen aus deinem Bundesland ${effectiveLandArticle} ${effectiveLandLabel} mit eigenen Worten schreiben.`
-      : "Dein Brief wirkt. Und er wirkt noch stärker, wenn weitere Menschen aus deiner Stadt oder Gemeinde ihr Anliegen bei der Verwaltung sichtbar machen.";
   const campaignShareImpactCopy = effectiveLevel === "Bund"
     ? "Dein Brief ist ein Anfang. Teile die Kampagne, damit weitere Menschen aus ihrem Wahlkreis mit eigenen Worten schreiben."
     : effectiveLevel === "Land"
@@ -746,19 +743,23 @@ export function Step3Success({
             <path d="M4 13 L24 28 L44 13" stroke="currentColor" strokeWidth="2.5" fill="none" strokeLinejoin="round" />
           </svg>
           <h1 className="font-typewriter text-[28px] font-semibold leading-[1.2] text-waldgruen-dark m-0">
-            Dein Brief ist fertig!
+            {copy.status.letterReady}
           </h1>
         </div>
         <p className="font-body text-base text-warmgrau leading-relaxed mt-3">
           {letterReady ? (
-            "Dein Brief ist auf dem Weg zu dir. Schau in dein E-Mail-Postfach."
+            copy.status.sent
           ) : (
             <>
-              Dein Brief ist auf dem Weg zu dir. Schau gleich in dein E-Mail-Postfach
+              {copy.status.sending}
               <span aria-hidden="true">{loadingDots}</span>
             </>
           )}
         </p>
+
+        {wizardData.locale !== "de" && (
+          <p className="mt-2 font-body text-sm text-warmgrau/70">{copy.language.germanLetterNotice}</p>
+        )}
 
         {/* Notice: Brief ist Entwurf, eigene Stimme */}
         <div className="mt-6 border-l-4 border-waldgruen/50 bg-waldgruen/8 rounded-r-lg p-4 space-y-2">
@@ -1025,54 +1026,54 @@ export function Step3Success({
           </div>
         </div>
 
-        {/* Cause-recruit share section: motivate Wahlkreis-Bürger to write their own letters */}
+        {/* One clear post-success action, followed by compact sharing and feedback. */}
         <div className="mt-10 pt-8 border-t border-warmgrau/15">
-          <div className="rounded-xl bg-waldgruen/8 border border-waldgruen/20 p-5">
-            <h2 className="font-typewriter text-lg font-semibold text-waldgruen-dark">
-              {wizardData.campaign?.slug ? "Diese Kampagne weitertragen" : "Gemeinsam noch lauter"}
-            </h2>
-            <p className="font-body text-sm text-warmgrau leading-relaxed mt-2">
-              {wizardData.campaign?.slug
-                ? campaignShareImpactCopy
-                : shareImpactCopy}
+          <div className="rounded-xl border border-waldgruen/20 bg-waldgruen/8 p-5 sm:p-6">
+            <div className="flex items-start gap-4">
+              <Image
+                src={SUPPORT_CONTENT.founder.portraitPath}
+                alt=""
+                width={56}
+                height={50}
+                aria-hidden="true"
+                className="h-[50px] w-14 flex-none rounded-lg border-2 border-white object-cover shadow-sm"
+              />
+              <div>
+                <p className="font-typewriter text-xs font-bold uppercase tracking-widest text-waldgruen/65">
+                  Kostenlos und unabhängig
+                </p>
+                <h2 className="mt-1 font-typewriter text-xl font-semibold text-waldgruen-dark">
+                  Hilfst du, Brief-nach-Berlin kostenlos zu halten?
+                </h2>
+                <p className="mt-2 font-body text-sm leading-relaxed text-warmgrau">
+                  {SUPPORT_CONTENT.founder.successText}
+                </p>
+              </div>
+            </div>
+            <Link
+              href={DONATION_PATH}
+              prefetch={false}
+              className="mt-5 inline-flex w-full items-center justify-center gap-2 rounded-lg bg-waldgruen px-4 py-3 font-body text-sm font-semibold text-creme transition-colors hover:bg-waldgruen-dark focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-waldgruen sm:w-auto"
+            >
+              {SUPPORT_CONTENT.headline}
+              <span aria-hidden="true">&rarr;</span>
+            </Link>
+          </div>
+
+          <div className="mt-5 text-center">
+            <p className="font-typewriter text-sm font-semibold text-waldgruen-dark">
+              {wizardData.campaign?.slug ? "Diese Kampagne weitertragen" : "Lieber weitersagen?"}
             </p>
-            {!wizardData.campaign?.slug && (
-              <p className="font-body text-sm text-warmgrau leading-relaxed mt-3">
-                Motiviere gern andere, mitzumachen! Über Politik meckern fühlt sich noch besser an, wenn man einen Brief schreibt 😉
+            {wizardData.campaign?.slug && (
+              <p className="mx-auto mt-1 max-w-lg font-body text-sm leading-relaxed text-warmgrau/75">
+                {campaignShareImpactCopy}
               </p>
             )}
-
-            <div className="grid grid-cols-2 gap-3 mt-5">
-              <a
-                href={share.whatsappUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center justify-center gap-2 rounded-lg bg-waldgruen px-3 py-3 font-body text-sm font-semibold text-creme transition-colors hover:bg-waldgruen-dark"
-              >
-                WhatsApp
-              </a>
-              <a
-                href={share.telegramUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center justify-center gap-2 rounded-lg bg-waldgruen px-3 py-3 font-body text-sm font-semibold text-creme transition-colors hover:bg-waldgruen-dark"
-              >
-                Telegram
-              </a>
-              <a
-                href={share.emailUrl}
-                className="inline-flex items-center justify-center gap-2 font-body text-sm font-semibold text-creme bg-waldgruen hover:bg-waldgruen-dark px-3 py-3 rounded-lg transition-colors"
-              >
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                  <rect width="20" height="16" x="2" y="4" rx="2" />
-                  <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
-                </svg>
-                Per E-Mail
-              </a>
+            <div className="mt-3 flex flex-wrap items-center justify-center gap-x-4 gap-y-2">
               <button
                 type="button"
                 onClick={handleShare}
-                className="inline-flex items-center justify-center gap-2 font-body text-sm font-semibold text-creme bg-waldgruen hover:bg-waldgruen-dark px-3 py-3 rounded-lg transition-colors cursor-pointer"
+                className="inline-flex items-center justify-center gap-2 rounded-lg border border-waldgruen/35 bg-creme px-4 py-2 font-body text-sm font-semibold text-waldgruen transition-colors hover:border-waldgruen hover:bg-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-waldgruen cursor-pointer"
               >
                 {copied ? (
                   <>
@@ -1092,11 +1093,24 @@ export function Step3Success({
                   </>
                 )}
               </button>
+              {wizardData.campaign?.slug && (
+                <>
+                  <a href={share.whatsappUrl} target="_blank" rel="noopener noreferrer" className="font-body text-xs font-semibold text-waldgruen/75 underline-offset-4 hover:text-waldgruen hover:underline">
+                    WhatsApp
+                  </a>
+                  <a href={share.telegramUrl} target="_blank" rel="noopener noreferrer" className="font-body text-xs font-semibold text-waldgruen/75 underline-offset-4 hover:text-waldgruen hover:underline">
+                    Telegram
+                  </a>
+                  <a href={share.emailUrl} className="font-body text-xs font-semibold text-waldgruen/75 underline-offset-4 hover:text-waldgruen hover:underline">
+                    E-Mail
+                  </a>
+                </>
+              )}
             </div>
 
             {/* Clipboard fallback: shown only when clipboard API is blocked */}
             {clipboardFallbackUrl && (
-              <div className="mt-3 border-l-4 border-warmgrau/30 bg-warmgrau/5 rounded-r-lg px-3 py-2 text-xs font-body text-warmgrau/80 leading-relaxed">
+              <div className="mt-3 border-l-4 border-warmgrau/30 bg-warmgrau/5 rounded-r-lg px-3 py-2 text-left text-xs font-body text-warmgrau/80 leading-relaxed">
                 Kopieren nicht möglich - bitte Link manuell kopieren:&nbsp;
                 <span
                   className="font-mono text-waldgruen-dark select-all break-all cursor-text"
@@ -1112,17 +1126,13 @@ export function Step3Success({
               </div>
             )}
 
-            {/* Secondary feedback button */}
             <a
               href={founderFeedbackUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="mt-3 inline-flex w-full items-center justify-center gap-2 font-body text-sm font-semibold text-waldgruen bg-creme border-2 border-waldgruen/40 hover:border-waldgruen hover:bg-white px-3 py-2.5 rounded-lg transition-colors"
+              className="mt-4 inline-block font-body text-xs text-warmgrau/55 underline underline-offset-4 transition-colors hover:text-warmgrau"
             >
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
-              </svg>
-              Was kann am Tool besser werden?
+              Feedback geben
             </a>
           </div>
         </div>

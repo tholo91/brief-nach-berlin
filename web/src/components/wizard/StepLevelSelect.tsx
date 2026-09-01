@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { useLocale, useUiCopy } from "@/components/i18n/LocaleProvider";
 import type { PoliticalLevel } from "@/lib/types/politician";
 import type { LevelRoutingContext } from "@/lib/types/wizard";
 import { WizardForwardIcon } from "@/components/wizard/WizardForwardIcon";
@@ -12,10 +13,28 @@ interface StepLevelSelectProps {
   onContinue: (level: PoliticalLevel) => void;
 }
 
-const RECOMMENDATION_COPY: Record<PoliticalLevel, string> = {
-  Bund: "Wahrscheinlich ist dein Anliegen am besten beim Bund aufgehoben.",
-  Land: "Wahrscheinlich ist dein Anliegen am besten auf Landesebene aufgehoben.",
-  Kommune: "Wahrscheinlich ist dein Anliegen am besten bei der Kommune aufgehoben.",
+const RECOMMENDATION_COPY = {
+  de: {
+    Bund: "Wahrscheinlich ist dein Anliegen am besten beim Bund aufgehoben.",
+    Land: "Wahrscheinlich ist dein Anliegen am besten auf Landesebene aufgehoben.",
+    Kommune: "Wahrscheinlich ist dein Anliegen am besten bei der Kommune aufgehoben.",
+  },
+  en: {
+    Bund: "Your concern will probably be best addressed at the federal level.",
+    Land: "Your concern will probably be best addressed at the state level.",
+    Kommune: "Your concern will probably be best addressed locally.",
+  },
+  tr: {
+    Bund: "Talebiniz muhtemelen en iyi federal düzeyde ele alınır.",
+    Land: "Talebiniz muhtemelen en iyi eyalet düzeyinde ele alınır.",
+    Kommune: "Talebiniz muhtemelen en iyi yerel düzeyde ele alınır.",
+  },
+};
+
+const FALLBACK_REGION_COPY = {
+  de: "deinem Bundesland",
+  en: "your state",
+  tr: "eyaletiniz",
 };
 
 // Inline-SVGs (lucide-Pfade) statt neuer Dependency — Konvention im Projekt.
@@ -64,35 +83,15 @@ function LevelIcon({ level, className }: { level: PoliticalLevel; className?: st
   );
 }
 
-interface LevelCardConfig {
-  level: PoliticalLevel;
-  title: string;
-  examples: string;
-}
-
-const LEVEL_CARDS: LevelCardConfig[] = [
-  {
-    level: "Bund",
-    title: "Bund",
-    examples: "Bundesgesetze, Rente, Asyl, Mieten, Verteidigung",
-  },
-  {
-    level: "Land",
-    title: "Land",
-    examples: "Schule, Polizei, Krankenhäuser, Landespolitik",
-  },
-  {
-    level: "Kommune",
-    title: "Kommune",
-    examples: "Straße, Kita, Müll, Spielplatz, lokale Verwaltung",
-  },
-];
+const LEVELS: PoliticalLevel[] = ["Bund", "Land", "Kommune"];
 
 export function StepLevelSelect({
   routing,
   initialLevel,
   onContinue,
 }: StepLevelSelectProps) {
+  const { locale } = useLocale();
+  const copy = useUiCopy();
   const recommended = routing.recommended;
 
   const availability: Record<PoliticalLevel, boolean> = useMemo(
@@ -141,19 +140,19 @@ export function StepLevelSelect({
   const unavailableHint = (level: PoliticalLevel): string | null => {
     if (availability[level]) return null;
     if (level === "Land") {
-      const region = routing.bundeslandName ?? "deinem Bundesland";
-      return `Für deine PLZ in ${region} ist die Landesebene noch nicht verfügbar. Du kannst weiterhin den Bund wählen.`;
+      const region = routing.bundeslandName ?? FALLBACK_REGION_COPY[locale];
+      return copy.levels.stateUnavailable.replace("{region}", region);
     }
     if (level === "Kommune") {
       if (routing.coverage.stadtstaatEinheitsgemeinde && routing.bundeslandName) {
-        return `${routing.bundeslandName} ist Stadt und Bundesland zugleich. Kommunale Anliegen laufen deshalb über die Landesebene.`;
+        return copy.levels.cityStateHint.replace("{state}", routing.bundeslandName);
       }
-      return "Für diese PLZ fehlt noch die Zuordnung zur Kommune.";
+      return copy.levels.localUnavailable;
     }
     return null;
   };
 
-  const focusLevel = selected ?? LEVEL_CARDS.find((card) => availability[card.level])?.level;
+  const focusLevel = selected ?? LEVELS.find((level) => availability[level]);
 
   const handleKeyDown = (e: React.KeyboardEvent, level: PoliticalLevel) => {
     if (e.key === "Enter" || e.key === " ") {
@@ -161,9 +160,7 @@ export function StepLevelSelect({
       if (availability[level]) setSelected(level);
     } else if (["ArrowDown", "ArrowUp", "Home", "End"].includes(e.key)) {
       e.preventDefault();
-      const availableLevels = LEVEL_CARDS
-        .map((card) => card.level)
-        .filter((candidate) => availability[candidate]);
+      const availableLevels = LEVELS.filter((candidate) => availability[candidate]);
       const currentIndex = Math.max(0, availableLevels.indexOf(level));
       const nextLevel = e.key === "Home"
         ? availableLevels[0]
@@ -182,12 +179,12 @@ export function StepLevelSelect({
   return (
     <div>
       <h1 className="font-typewriter text-[28px] font-semibold leading-[1.2] text-waldgruen-dark">
-        Welche Ebene passt zu deinem Anliegen?
+        {copy.levels.heading}
       </h1>
       {preselectedRecommendationLevel ? (
         <div className="mt-4 font-body text-sm leading-relaxed text-warmgrau">
           <p className="font-semibold text-waldgruen-dark">
-            {RECOMMENDATION_COPY[preselectedRecommendationLevel]}
+            {RECOMMENDATION_COPY[locale][preselectedRecommendationLevel]}
           </p>
           <p className="mt-1">
             {routing.reasoning && !recommendationWasBundledUnderLand && (
@@ -196,38 +193,38 @@ export function StepLevelSelect({
                 {routing.reasoning.endsWith(".") ? "" : "."}{" "}
               </>
             )}
-            <span className="text-warmgrau/75">Du kannst dich trotzdem anders entscheiden.</span>
+            <span className="text-warmgrau/75">{copy.levels.canChooseAnother}</span>
           </p>
         </div>
       ) : (
         <p className="mt-4 font-body text-sm leading-relaxed text-warmgrau">
-          Die passende Ebene ist nicht eindeutig. Wähle selbst, wohin dein Brief gehen soll.
+          {copy.levels.noRecommendation}
         </p>
       )}
 
-      <div role="radiogroup" aria-label="Politische Ebene wählen" className="mt-6 space-y-3">
-        {LEVEL_CARDS.map((card) => {
-          const isAvailable = availability[card.level];
-          const isSelected = selected === card.level;
-          const isBeta = card.level !== "Bund";
-          const hint = unavailableHint(card.level);
-          const hintId = hint ? `level-${card.level.toLowerCase()}-hint` : undefined;
+      <div role="radiogroup" aria-label={copy.levels.groupAriaLabel} className="mt-6 space-y-3">
+        {LEVELS.map((level) => {
+          const isAvailable = availability[level];
+          const isSelected = selected === level;
+          const isBeta = level !== "Bund";
+          const hint = unavailableHint(level);
+          const hintId = hint ? `level-${level.toLowerCase()}-hint` : undefined;
           const isBundledUnderLand =
-            card.level === "Kommune" &&
+            level === "Kommune" &&
             !isAvailable &&
             routing.coverage.stadtstaatEinheitsgemeinde &&
             Boolean(routing.bundeslandName);
           return (
             <div
-              key={card.level}
+              key={level}
               role="radio"
               aria-checked={isSelected}
               aria-disabled={!isAvailable}
               aria-describedby={hintId}
-              data-level-card={card.level}
-              tabIndex={isAvailable && focusLevel === card.level ? 0 : -1}
-              onClick={() => isAvailable && setSelected(card.level)}
-              onKeyDown={(e) => handleKeyDown(e, card.level)}
+              data-level-card={level}
+              tabIndex={isAvailable && focusLevel === level ? 0 : -1}
+              onClick={() => isAvailable && setSelected(level)}
+              onKeyDown={(e) => handleKeyDown(e, level)}
               className={[
                 "w-full text-left p-4 rounded-lg border-2 transition-colors",
                 isAvailable ? "cursor-pointer active:scale-[0.99]" : "cursor-not-allowed",
@@ -249,24 +246,28 @@ export function StepLevelSelect({
                         : "border-warmgrau/20 bg-warmgrau/10 text-warmgrau/45",
                   ].join(" ")}
                 >
-                  <LevelIcon level={card.level} />
+                  <LevelIcon level={level} />
                 </div>
                 <div className="min-w-0 flex-1">
                   <div className="flex flex-wrap items-start gap-2">
                     <p
                       className={`min-w-0 flex-1 font-body text-base font-semibold ${isAvailable ? "text-warmgrau" : "text-warmgrau/60"}`}
                     >
-                      {card.title}
+                      {level === "Bund"
+                        ? copy.levels.federal
+                        : level === "Land"
+                          ? copy.levels.state
+                          : copy.levels.local}
                     </p>
                     <div className="ml-auto flex max-w-full flex-wrap justify-end gap-2">
                       {isBundledUnderLand && (
                         <span className="inline-block font-body text-[11px] font-semibold uppercase tracking-wide text-warmgrau/70 bg-warmgrau/10 px-2 py-0.5 rounded">
-                          In {routing.bundeslandName} unter Land
+                          {copy.levels.underState.replace("{state}", routing.bundeslandName ?? "")}
                         </span>
                       )}
                       {isBeta && (
                         <span className="inline-block font-body text-[11px] font-semibold uppercase tracking-wide text-bernstein bg-bernstein/10 px-2 py-0.5 rounded">
-                          Beta
+                          {copy.levels.beta}
                         </span>
                       )}
                     </div>
@@ -274,7 +275,11 @@ export function StepLevelSelect({
                   <p
                     className={`font-body text-sm mt-0.5 ${isAvailable ? "text-warmgrau/75" : "text-warmgrau/50"}`}
                   >
-                    {card.examples}
+                    {level === "Bund"
+                      ? copy.levels.federalExamples
+                      : level === "Land"
+                        ? copy.levels.stateExamples
+                        : copy.levels.localExamples}
                   </p>
 
                   {hint && (
@@ -303,7 +308,7 @@ export function StepLevelSelect({
             selected ? "cursor-pointer" : "opacity-60 cursor-not-allowed",
           ].join(" ")}
         >
-          Empfänger auswählen
+          {copy.levels.chooseRecipients}
           <WizardForwardIcon className="absolute right-5 top-1/2 -translate-y-1/2" />
         </button>
       </div>

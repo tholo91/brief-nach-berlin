@@ -8,7 +8,8 @@ import { buildShareTarget } from "@/lib/share";
 export type CampaignCreatorEmailKind =
   | "verify_email"
   | "management_pending"
-  | "management";
+  | "management"
+  | "transfer";
 
 export interface BuildCampaignCreatorEmailHtmlParams {
   kind: CampaignCreatorEmailKind;
@@ -17,6 +18,7 @@ export interface BuildCampaignCreatorEmailHtmlParams {
   campaignUrl: string;
   actionUrl: string;
   creatorName?: string | null;
+  campaignStatus?: "awaiting_approval" | "active" | "paused";
 }
 
 function escapeHtml(text: string): string {
@@ -36,7 +38,9 @@ export function buildCampaignCreatorEmailHtml(
   const greeting = creatorName ? `Moin ${escapeHtml(creatorName)},` : "Moin,";
   const isVerification = params.kind === "verify_email";
   const isPendingManagement = params.kind === "management_pending";
-  const isPublicManagement = params.kind === "management";
+  const isPausedManagement = params.kind === "management" && params.campaignStatus === "paused";
+  const isPublicManagement = params.kind === "management" && !isPausedManagement;
+  const isTransfer = params.kind === "transfer";
   const share = isPublicManagement
     ? buildShareTarget(
         {
@@ -48,32 +52,51 @@ export function buildCampaignCreatorEmailHtml(
     : null;
   const headline = isVerification
     ? "Bitte bestätige deine Kampagne"
+    : isTransfer
+      ? "Kampagne übernehmen"
     : isPendingManagement
       ? "Deine Kampagne wird geprüft"
-      : "Deine Kampagne ist aktiv";
+      : isPausedManagement
+        ? "Deine Kampagne ist pausiert"
+        : "Deine Kampagne ist aktiv";
   const intro = isVerification
     ? "Ein Klick bestätigt deine E-Mail. Danach prüfe ich deine Kampagne für die Freigabe."
+    : isTransfer
+      ? "Du wurdest eingeladen, diese Kampagne zu übernehmen. Ein Klick bestätigt deine E-Mail-Adresse und öffnet den Verwaltungszugang."
     : isPendingManagement
       ? "Deine E-Mail ist bestätigt. Ich prüfe deine Kampagne in der Regel innerhalb von 24 Stunden."
-      : "Deine Kampagnenseite ist jetzt öffentlich. Teile den Link mit Menschen, die einen eigenen Brief mit ihren Worten schreiben sollen.";
+      : isPausedManagement
+        ? "Die Kampagnenseite ist aktuell pausiert. Du kannst sie über den Verwaltungslink prüfen und wieder aktivieren."
+        : "Deine Kampagnenseite ist jetzt öffentlich. Teile den Link mit Menschen, die einen eigenen Brief mit ihren Worten schreiben sollen.";
   const buttonText = isVerification
     ? "E-Mail bestätigen"
+    : isTransfer
+      ? "Kampagne übernehmen"
     : "Kampagne verwalten";
-  const buttonIcon = isVerification ? "&#10003;" : "&#9998;";
+  const buttonIcon = isVerification ? "&#10003;" : isTransfer ? "&#8594;" : "&#9998;";
   const statusText = isVerification
     ? "Status: wartet auf E-Mail-Bestätigung"
+    : isTransfer
+      ? "Status: Übergabe wartet auf deine Bestätigung"
     : isPendingManagement
       ? "Status: wartet auf Freigabe"
-      : "Status: aktiv und öffentlich teilbar";
+      : isPausedManagement
+        ? "Status: pausiert"
+        : "Status: aktiv und öffentlich teilbar";
   const managementHelp = isVerification
     ? `<div style="margin:0 0 22px;padding:16px 18px;background-color:#ffffff;border:1px solid #E0DCD7;border-radius:4px;">
         <p style="margin:0 0 8px;font-family:'Courier New',Courier,monospace;font-size:12px;font-weight:bold;text-transform:uppercase;color:#2D6A4F;">Danach</p>
         <p style="margin:0;font-size:14px;line-height:1.6;color:#666666;">Du bekommst eine zweite E-Mail mit deinem Verwaltungslink. Darüber kannst du Inhalte ändern, die Kampagne pausieren oder archivieren.</p>
       </div>`
-    : `<div style="margin:0 0 22px;padding:16px 18px;background-color:#ffffff;border:1px solid #E0DCD7;border-radius:4px;">
+    : isTransfer
+      ? `<div style="margin:0 0 22px;padding:16px 18px;background-color:#ffffff;border:1px solid #E0DCD7;border-radius:4px;">
+        <p style="margin:0 0 8px;font-family:'Courier New',Courier,monospace;font-size:12px;font-weight:bold;text-transform:uppercase;color:#2D6A4F;">Wichtig</p>
+        <p style="margin:0;font-size:14px;line-height:1.6;color:#666666;">Der Link ist nur einmal verwendbar. Nach deiner Bestätigung erhältst du zusätzlich eine E-Mail mit deinem dauerhaften Verwaltungslink.</p>
+      </div>`
+      : `<div style="margin:0 0 22px;padding:16px 18px;background-color:#ffffff;border:1px solid #E0DCD7;border-radius:4px;">
         <p style="margin:0 0 8px;font-family:'Courier New',Courier,monospace;font-size:12px;font-weight:bold;text-transform:uppercase;color:#2D6A4F;">Verwaltungszugang</p>
         <p style="margin:0 0 8px;font-size:14px;line-height:1.6;color:#1B4332;"><strong>WICHTIG: DIESE E-MAIL AUFBEWAHREN</strong></p>
-        <p style="margin:0;font-size:14px;line-height:1.6;color:#666666;">${isPendingManagement ? "Über den Link siehst du den aktuellen Status. Wenn du vor der Freigabe etwas ändern möchtest, antworte bitte auf diese E-Mail." : "Du kannst deine Kampagne ohne Account per Klick auf &bdquo;Kampagne verwalten&ldquo; anpassen."}</p>
+        <p style="margin:0;font-size:14px;line-height:1.6;color:#666666;">${isPendingManagement ? "Über den Link siehst du den aktuellen Status und kannst die Angaben bis zur Freigabe noch korrigieren." : "Du kannst deine Kampagne ohne Account per Klick auf &bdquo;Kampagne verwalten&ldquo; anpassen."}</p>
       </div>`;
   const campaignLink = isPublicManagement
     ? `<p style="margin:10px 0 0;font-size:14px;line-height:1.5;"><a href="${params.campaignUrl}" target="_blank" rel="noopener noreferrer" style="color:#2D6A4F;text-decoration:underline;">Kampagnenseite öffnen</a></p>`
@@ -156,7 +179,9 @@ export function buildCampaignCreatorEmailHtml(
               ${
                 isVerification
                   ? `<p style="margin:0 0 18px;font-size:14px;line-height:1.6;color:#666666;">Wenn du diese Kampagne nicht angelegt hast, kannst du diese E-Mail ignorieren. Ohne Bestätigung wird die Seite nicht öffentlich.</p>`
-                  : ""
+                  : isTransfer
+                    ? `<p style="margin:0 0 18px;font-size:14px;line-height:1.6;color:#666666;">Wenn du diese Übergabe nicht erwartest, kannst du diese E-Mail ignorieren.</p>`
+                    : ""
               }
               ${managementHelp}
               ${shareBlock}

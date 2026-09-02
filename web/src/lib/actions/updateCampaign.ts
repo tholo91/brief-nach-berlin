@@ -6,6 +6,7 @@ import {
   CampaignRepositoryError,
   getCampaignById,
   publishCampaignEdits,
+  saveAwaitingApprovalCampaignEdits,
 } from "@/lib/campaigns/repository";
 import { CAMPAIGN_LOGO_BUCKET } from "@/lib/campaigns/logo";
 import { campaignExternalUrlSchema, campaignTargetPoliticianIdsSchema } from "@/lib/campaigns/schema";
@@ -177,6 +178,13 @@ export async function updateCampaignAction(
     };
   }
 
+  if (campaign.creatorEmail.toLowerCase() !== session.creatorEmail.toLowerCase()) {
+    return {
+      ok: false,
+      message: "Dieser Verwaltungslink ist nicht mehr gültig.",
+    };
+  }
+
   if (input.targetPoliticianIds.length > 0 && campaign.targetLevel !== "Bund") {
     return {
       ok: false,
@@ -205,7 +213,7 @@ export async function updateCampaignAction(
   }
 
   try {
-    const updated = await publishCampaignEdits(input.campaignId, {
+    const updateInput = {
       title: input.title,
       issueText: input.issueText,
       description: input.description,
@@ -213,7 +221,10 @@ export async function updateCampaignAction(
       externalUrl: input.externalUrl,
       targetPoliticianIds: input.targetPoliticianIds,
       logoPath: uploadedLogo.logoPath,
-    }, moderation.categories);
+    };
+    const updated = campaign.status === "awaiting_approval"
+      ? await saveAwaitingApprovalCampaignEdits(input.campaignId, updateInput, moderation.categories)
+      : await publishCampaignEdits(input.campaignId, updateInput, moderation.categories);
     if (uploadedLogo.logoPath && campaign.logoPath !== uploadedLogo.logoPath) {
       await deleteCampaignLogo(campaign.logoPath);
     }
@@ -222,7 +233,10 @@ export async function updateCampaignAction(
 
     return {
       ok: true,
-      message: "Änderungen veröffentlicht. Die öffentliche Kampagnenseite nutzt jetzt deine neuen Angaben.",
+      message:
+        campaign.status === "awaiting_approval"
+          ? "Änderungen gespeichert. Die Kampagne bleibt bis zur Freigabe privat."
+          : "Änderungen veröffentlicht. Die öffentliche Kampagnenseite nutzt jetzt deine neuen Angaben.",
     };
   } catch (error) {
     await deleteCampaignLogo(uploadedLogo.logoPath ?? null);

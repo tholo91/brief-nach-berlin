@@ -18,6 +18,8 @@ export interface SendCampaignCreatorEmailParams {
   slug: string;
   token: string;
   creatorName?: string | null;
+  adminCopy?: boolean;
+  campaignStatus?: "awaiting_approval" | "active" | "paused";
 }
 
 function campaignUrl(slug: string): string {
@@ -49,6 +51,7 @@ export async function sendCampaignCreatorEmail(
         campaignUrl: campaignUrl(params.slug),
         actionUrl: actionUrl(params.kind, params.token),
         creatorName: params.creatorName,
+        campaignStatus: params.campaignStatus,
       }),
       sender: {
         name: EMAIL_SENDER_NAME,
@@ -56,7 +59,7 @@ export async function sendCampaignCreatorEmail(
       },
       to: [{ email: params.recipientEmail }],
       bcc:
-        params.kind === "management_pending" && process.env.THOMAS_MAIL
+        params.adminCopy && process.env.THOMAS_MAIL
           ? [{ email: process.env.THOMAS_MAIL }]
           : undefined,
       tags: [`campaign-${params.kind}`],

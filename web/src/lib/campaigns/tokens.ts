@@ -14,6 +14,7 @@ type CampaignTokenRow = {
   campaign_id: string;
   kind: CampaignTokenKind;
   token_hash: string;
+  recipient_email: string | null;
   expires_at: string;
   used_at: string | null;
   created_at: string;
@@ -23,6 +24,7 @@ type RepositoryClient = SupabaseClient;
 
 const DEFAULT_TOKEN_TTL_SECONDS = 60 * 60 * 24 * 7;
 const MANAGE_TOKEN_TTL_SECONDS = 60 * 60 * 24 * 365 * 100;
+const TRANSFER_TOKEN_TTL_SECONDS = MANAGE_TOKEN_TTL_SECONDS;
 
 export class CampaignTokenError extends Error {
   constructor(message: string) {
@@ -41,6 +43,7 @@ function mapToken(row: CampaignTokenRow): CampaignTokenRecord {
     campaignId: row.campaign_id,
     kind: row.kind,
     tokenHash: row.token_hash,
+    recipientEmail: row.recipient_email,
     expiresAt: row.expires_at,
     usedAt: row.used_at,
     createdAt: row.created_at,
@@ -79,6 +82,37 @@ export async function createCampaignToken(
 
   if (error) {
     throw new CampaignTokenError(`Campaign token create failed: ${error.message}`);
+  }
+
+  return { token, record: mapToken(data as CampaignTokenRow) };
+}
+
+export async function createCampaignTransferToken(
+  campaignId: string,
+  recipientEmail: string,
+  db?: RepositoryClient
+): Promise<{ token: string; record: CampaignTokenRecord }> {
+  await revokeCampaignTokensForCampaign(campaignId, "transfer", db);
+  const token = createCampaignTokenValue();
+  const tokenHash = hashCampaignToken(token);
+  const expiresAt = new Date(
+    Date.now() + TRANSFER_TOKEN_TTL_SECONDS * 1000
+  ).toISOString();
+
+  const { data, error } = await client(db)
+    .from("campaign_tokens")
+    .insert({
+      campaign_id: campaignId,
+      kind: "transfer",
+      token_hash: tokenHash,
+      recipient_email: recipientEmail.trim().toLowerCase(),
+      expires_at: expiresAt,
+    })
+    .select("*")
+    .single();
+
+  if (error) {
+    throw new CampaignTokenError(`Campaign transfer token create failed: ${error.message}`);
   }
 
   return { token, record: mapToken(data as CampaignTokenRow) };
@@ -152,6 +186,35 @@ export async function getUsableCampaignTokenForCampaign(
     throw new CampaignTokenError(`Campaign token lookup failed: ${error.message}`);
   }
   return data ? mapToken(data as CampaignTokenRow) : null;
+}
+
+export async function getUsableCampaignTransferToken(
+  token: string,
+  db?: RepositoryClient
+): Promise<CampaignTokenRecord | null> {
+  return getUsableCampaignToken(token, "transfer", db);
+}
+
+export type CampaignTransferAcceptance = {
+  campaignId: string;
+  recipientEmail: string;
+};
+
+export async function consumeCampaignTransfer(
+  token: string,
+  db?: RepositoryClient
+): Promise<CampaignTransferAcceptance | null> {
+  const { data, error } = await client(db).rpc("accept_campaign_transfer", {
+    transfer_token_hash: hashCampaignToken(token),
+  });
+
+  if (error) {
+    throw new CampaignTokenError(`Campaign transfer accept failed: ${error.message}`);
+  }
+  if (!data) return null;
+
+  const row = data as { id: string; creator_email: string };
+  return { campaignId: row.id, recipientEmail: row.creator_email };
 }
 
 export async function revokeCampaignToken(

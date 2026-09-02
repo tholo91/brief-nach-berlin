@@ -12,7 +12,7 @@ export const CAMPAIGN_STATUSES = [
 
 export const MODERATION_STATUSES = ["pending", "approved", "rejected"] as const;
 
-export const CAMPAIGN_TOKEN_KINDS = ["verify_email", "manage"] as const;
+export const CAMPAIGN_TOKEN_KINDS = ["verify_email", "manage", "transfer"] as const;
 
 export const REVISION_REASONS = [
   "created",
@@ -252,6 +252,7 @@ export type CampaignTokenRecord = {
   campaignId: string;
   kind: CampaignTokenKind;
   tokenHash: string;
+  recipientEmail: string | null;
   expiresAt: string;
   usedAt: string | null;
   createdAt: string;

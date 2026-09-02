@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import {
   archiveCampaign,
   CampaignRepositoryError,
+  getCampaignById,
 } from "@/lib/campaigns/repository";
 import { getCampaignManagementSession } from "@/lib/campaigns/session";
 
@@ -23,6 +24,11 @@ export async function archiveCampaignAction(
   }
   if (campaignId !== session.campaignId) {
     return { ok: false, message: "Dieser Verwaltungslink gehört nicht zu dieser Kampagne." };
+  }
+
+  const currentCampaign = await getCampaignById(campaignId);
+  if (!currentCampaign || currentCampaign.creatorEmail.toLowerCase() !== session.creatorEmail.toLowerCase()) {
+    return { ok: false, message: "Dieser Verwaltungslink ist nicht mehr gültig." };
   }
 
   try {

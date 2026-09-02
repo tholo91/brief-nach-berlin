@@ -6,9 +6,10 @@ import { CampaignManager } from "@/components/campaigns/CampaignManager";
 import { getCampaignById } from "@/lib/campaigns/repository";
 import { getCampaignManagementSession } from "@/lib/campaigns/session";
 
-function PendingApprovalNotice() {
+function PendingApprovalNotice({ campaign }: { campaign: NonNullable<Awaited<ReturnType<typeof getCampaignById>>> }) {
   return (
-    <section className="mx-auto max-w-2xl px-6 py-16 md:py-24">
+    <>
+    <section className="mx-auto max-w-2xl px-6 py-10 md:py-14">
       <div className="rounded-2xl border border-warmgrau/12 bg-white/75 p-6 shadow-sm md:p-8">
         <p className="font-typewriter text-sm font-bold uppercase tracking-widest text-waldgruen/60">
           Kampagne verwalten
@@ -17,10 +18,14 @@ function PendingApprovalNotice() {
           Kampagne wartet auf Freigabe
         </h1>
         <p className="mt-5 font-body text-base leading-relaxed text-warmgrau/75">
-          Thomas prüft Kampagnen in der Regel innerhalb von 24 Stunden. Wenn du vorher etwas ändern möchtest, antworte bitte auf die E-Mail mit deinem Verwaltungslink.
+          Thomas prüft Kampagnen in der Regel innerhalb von 24 Stunden. Du kannst die Angaben bis dahin noch korrigieren. Die Kampagne bleibt bis zur Freigabe privat.
         </p>
       </div>
     </section>
+    <section className="relative mx-auto max-w-4xl px-6 pb-14 md:pb-20">
+      <CampaignManager campaign={campaign} />
+    </section>
+    </>
   );
 }
 
@@ -56,7 +61,7 @@ function AccessNotice({ message }: { message: string }) {
 export default async function ManageCampaignPage({
   searchParams,
 }: {
-  searchParams: Promise<{ token?: string }>;
+  searchParams: Promise<{ token?: string; transfer?: string }>;
 }) {
   const params = await searchParams;
   if (params.token) {
@@ -72,16 +77,39 @@ export default async function ManageCampaignPage({
     campaign = await getCampaignById(session.campaignId);
   }
 
+  const transferMessage =
+    params.transfer === "accepted"
+      ? "Die Kampagne wurde übertragen. Du bist jetzt als neue Inhaberin eingetragen. Eine neue Verwaltungs-Mail wurde verschickt."
+      : params.transfer === "mail_failed"
+        ? "Die Übergabe ist abgeschlossen, aber die neue Verwaltungs-Mail konnte nicht verschickt werden. Bewahre diesen Verwaltungszugang auf und melde dich, wenn du einen neuen Link brauchst."
+        : params.transfer === "error"
+          ? "Die Übergabe konnte nicht abgeschlossen werden. Der Link ist möglicherweise ungültig oder die Kampagne wurde inzwischen beendet."
+          : null;
+
+  const authorizedCampaign =
+    campaign && session && campaign.creatorEmail.toLowerCase() === session.creatorEmail.toLowerCase()
+      ? campaign
+      : null;
+
   return (
     <CampaignBackground>
-      {campaign ? (
-        campaign.status === "awaiting_approval" ? (
-          <PendingApprovalNotice />
-        ) : (
-          <section className="relative mx-auto max-w-4xl px-6 py-14 md:py-20">
-            <CampaignManager campaign={campaign} />
-          </section>
-        )
+      {authorizedCampaign ? (
+        <>
+          {transferMessage && (
+            <section className="mx-auto max-w-4xl px-6 pt-10 md:pt-14">
+              <div className="rounded-md border border-waldgruen/20 bg-waldgruen/8 px-4 py-3 font-body text-sm leading-relaxed text-waldgruen-dark">
+                {transferMessage}
+              </div>
+            </section>
+          )}
+          {authorizedCampaign.status === "awaiting_approval" ? (
+            <PendingApprovalNotice campaign={authorizedCampaign} />
+          ) : (
+            <section className="relative mx-auto max-w-4xl px-6 py-14 md:py-20">
+              <CampaignManager campaign={authorizedCampaign} />
+            </section>
+          )}
+        </>
       ) : (
         <AccessNotice message="Bitte öffne den aktuellen Verwaltungslink aus deiner Kampagnen-E-Mail. Es gibt keine Nutzerkonten und keinen Login-Bereich." />
       )}

@@ -325,9 +325,36 @@ export async function updateCampaignPublicFields(
   db?: RepositoryClient
 ): Promise<Campaign> {
   const campaign = await requireCampaign(campaignId, db);
-  assertStatus(campaign, ["draft", "awaiting_email_verification", "active", "paused"], "edit");
+  assertStatus(campaign, ["draft", "awaiting_email_verification", "awaiting_approval", "active", "paused"], "edit");
   const parsed = updateCampaignPublicFieldsSchema.parse(input);
   const patch: CampaignUpdate = {};
+
+  if (parsed.title !== undefined) patch.title = parsed.title;
+  if (parsed.issueText !== undefined) patch.issue_text = parsed.issueText;
+  if (parsed.description !== undefined) patch.description = nullableText(parsed.description);
+  if (parsed.creatorName !== undefined) patch.creator_name = nullableText(parsed.creatorName);
+  if (parsed.externalUrl !== undefined) patch.external_url = nullableText(parsed.externalUrl);
+  if (parsed.logoPath !== undefined) patch.logo_path = nullableText(parsed.logoPath);
+  if (parsed.targetPoliticianIds !== undefined) {
+    patch.target_politician_ids = parsed.targetPoliticianIds;
+  }
+
+  return updateCampaignRow(campaignId, patch, db);
+}
+
+export async function saveAwaitingApprovalCampaignEdits(
+  campaignId: string,
+  input: UpdateCampaignPublicFieldsInput,
+  moderationCategories: string[] = [],
+  db?: RepositoryClient
+): Promise<Campaign> {
+  const campaign = await requireCampaign(campaignId, db);
+  assertStatus(campaign, ["awaiting_approval"], "edit");
+  const parsed = updateCampaignPublicFieldsSchema.parse(input);
+  const patch: CampaignUpdate = {
+    moderation_status: "pending",
+    moderation_categories: moderationCategories,
+  };
 
   if (parsed.title !== undefined) patch.title = parsed.title;
   if (parsed.issueText !== undefined) patch.issue_text = parsed.issueText;

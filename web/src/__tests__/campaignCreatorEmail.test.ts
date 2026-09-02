@@ -28,4 +28,18 @@ describe("campaign creator emails", () => {
     expect(html).toContain(base.campaignUrl);
     expect(html).toContain("Kampagne teilen");
   });
+
+  it("offers a one-time campaign takeover without exposing pending campaign links", () => {
+    const html = buildCampaignCreatorEmailHtml({
+      ...base,
+      kind: "transfer",
+      actionUrl: "https://www.brief-nach-berlin.de/kampagne/verwalten?token=transfer",
+    });
+
+    expect(html).toContain("Kampagne übernehmen");
+    expect(html).toContain("nur einmal verwendbar");
+    expect(html).toContain("token=transfer");
+    expect(html).not.toContain("Kampagne teilen");
+    expect(html).not.toContain(base.campaignUrl);
+  });
 });

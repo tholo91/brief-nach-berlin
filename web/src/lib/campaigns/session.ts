@@ -3,6 +3,7 @@ import "server-only";
 import { createHmac, timingSafeEqual } from "node:crypto";
 import { cookies } from "next/headers";
 import { z } from "zod";
+import { getCampaignById } from "./repository";
 import { consumeCampaignToken } from "./tokens";
 import type { CampaignTokenKind } from "./schema";
 
@@ -13,6 +14,7 @@ const SESSION_TTL_SECONDS = 60 * 60 * 2;
 
 const managementSessionSchema = z.object({
   campaignId: z.string().uuid(),
+  creatorEmail: z.string().email(),
   iat: z.number().int().positive(),
   exp: z.number().int().positive(),
 });
@@ -53,12 +55,14 @@ function sign(body: string): string {
 
 export function createCampaignManagementSessionValue(
   campaignId: string,
+  creatorEmail: string,
   ttlSeconds = SESSION_TTL_SECONDS
 ): string {
   const now = Math.floor(Date.now() / 1000);
   const body = b64url(
     JSON.stringify({
       campaignId,
+      creatorEmail: creatorEmail.trim().toLowerCase(),
       iat: now,
       exp: now + ttlSeconds,
     })
@@ -94,12 +98,13 @@ export function verifyCampaignManagementSessionValue(
 
 export async function setCampaignManagementSession(
   campaignId: string,
+  creatorEmail: string,
   ttlSeconds = SESSION_TTL_SECONDS
 ): Promise<void> {
   const cookieStore = await cookies();
   cookieStore.set({
     name: CAMPAIGN_MANAGEMENT_SESSION_COOKIE,
-    value: createCampaignManagementSessionValue(campaignId, ttlSeconds),
+    value: createCampaignManagementSessionValue(campaignId, creatorEmail, ttlSeconds),
     httpOnly: true,
     sameSite: "lax",
     secure: process.env.NODE_ENV === "production",
@@ -133,6 +138,8 @@ export async function exchangeCampaignTokenForManagementSession(
 ): Promise<CampaignManagementSession | null> {
   const record = await consumeCampaignToken(token, expectedKind);
   if (!record) return null;
-  await setCampaignManagementSession(record.campaignId);
+  const campaign = await getCampaignById(record.campaignId);
+  if (!campaign) return null;
+  await setCampaignManagementSession(record.campaignId, campaign.creatorEmail);
   return getCampaignManagementSession();
 }

@@ -20,8 +20,12 @@ import {
   archiveCampaignAction,
   type ArchiveCampaignResult,
 } from "@/lib/actions/archiveCampaign";
+import {
+  transferCampaignAction,
+  type TransferCampaignResult,
+} from "@/lib/actions/transferCampaign";
 import { campaignLogoPublicUrl } from "@/lib/campaigns/logo";
-import type { Campaign } from "@/lib/campaigns/schema";
+import { compactCampaignSlug, type Campaign } from "@/lib/campaigns/schema";
 import { campaignPublicUrl } from "@/lib/share";
 import { CampaignQrDownload } from "./CampaignQrDownload";
 import { CampaignUrlCopyField } from "./CampaignUrlCopyField";
@@ -39,7 +43,7 @@ const statusLabels: Record<Campaign["status"], string> = {
   awaiting_approval: "wartet auf Freigabe",
   active: "aktiv",
   paused: "pausiert",
-  archived: "archiviert",
+  archived: "beendet / archiviert",
   blocked: "blockiert",
 };
 
@@ -98,16 +102,21 @@ export function CampaignManager({ campaign }: { campaign: Campaign }) {
   const [hasTargetMdbSelection, setHasTargetMdbSelection] = useState(
     campaign.targetPoliticianIds.length > 0
   );
+  const [transferResult, setTransferResult] = useState<TransferCampaignResult | null>(null);
   const isBusy = isPending || actionPending;
   const canEdit = campaign.status !== "archived" && campaign.status !== "blocked";
   const canPause = campaign.status === "active";
-  const canArchive = campaign.status !== "archived";
+  const canArchive = campaign.status !== "archived" && campaign.status !== "blocked";
+  const canTransfer = ["awaiting_approval", "active", "paused"].includes(campaign.status);
   const currentLogoUrl = campaignLogoPublicUrl(campaign.logoPath);
   const shownLogoUrl = logoPreviewUrl ?? currentLogoUrl;
   const logoFileButtonClass = shownLogoUrl
     ? "file:bg-warmgrau/18 file:text-waldgruen-dark hover:file:bg-warmgrau/25"
     : "file:bg-waldgruen file:text-creme hover:file:bg-waldgruen-dark";
   const publicUrl = campaignPublicUrl(campaign.slug);
+  const compactSlug = compactCampaignSlug(campaign.slug);
+  const hasCompactUrl = compactSlug !== campaign.slug;
+  const compactUrl = campaignPublicUrl(compactSlug);
   const formattedLetterCount = numberFormatter.format(campaign.letterCount);
   const letterCountLabel = campaign.letterCount === 1 ? "Brief erstellt" : "Briefe erstellt";
   const liveSinceLabel = campaign.activatedAt
@@ -167,6 +176,23 @@ export function CampaignManager({ campaign }: { campaign: Campaign }) {
     });
   }
 
+  async function submitTransfer(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    if (!event.currentTarget.reportValidity()) return;
+
+    setTransferResult(null);
+    setActionPending(true);
+    const formData = new FormData(event.currentTarget);
+
+    startTransition(async () => {
+      try {
+        setTransferResult(await transferCampaignAction(formData));
+      } finally {
+        setActionPending(false);
+      }
+    });
+  }
+
   return (
     <div className="grid gap-8">
       <section className="rounded-md border border-warmgrau/12 bg-white/75 p-5 shadow-sm md:p-7">
@@ -180,6 +206,22 @@ export function CampaignManager({ campaign }: { campaign: Campaign }) {
             </h1>
             <div className="mt-3 max-w-xl">
               <CampaignUrlCopyField url={publicUrl} variant="compact" />
+              {hasCompactUrl ? (
+                <div className="mt-2 rounded-md border border-waldgruen/12 bg-waldgruen/5 px-3 py-3">
+                  <p className="font-body text-xs leading-relaxed text-warmgrau/70">
+                    Diese Kampagne ist unter zwei Adressen erreichbar. Der Link ohne
+                    Bindestriche eignet sich besonders für Radio, Podcast oder Fernsehen:
+                  </p>
+                  <p className="mt-1 break-all font-body text-sm font-semibold text-waldgruen-dark">
+                    {compactUrl}
+                  </p>
+                </div>
+              ) : (
+                <p className="mt-2 font-body text-xs leading-relaxed text-warmgrau/65">
+                  Diese Kampagne hat nur eine Adresse, weil ihre Kurzadresse keine
+                  Bindestriche enthält.
+                </p>
+              )}
             </div>
           </div>
           <div className="rounded-md border border-waldgruen/15 bg-creme px-4 py-3 font-body text-sm font-semibold text-waldgruen-dark">
@@ -187,8 +229,11 @@ export function CampaignManager({ campaign }: { campaign: Campaign }) {
           </div>
         </div>
         <p className="mt-5 font-body text-sm leading-relaxed text-warmgrau/70">
-          Änderungen werden vor der Veröffentlichung automatisch geprüft. Wenn die
-          Prüfung scheitert, bleibt der bisherige öffentliche Text unverändert.
+          {campaign.status === "archived"
+            ? "Diese Kampagne ist beendet und kann nicht mehr verändert werden."
+            : campaign.status === "blocked"
+              ? "Diese Kampagne ist blockiert und kann nicht mehr verändert werden."
+              : "Änderungen werden vor der Veröffentlichung automatisch geprüft. Wenn die Prüfung scheitert, bleibt der bisherige öffentliche Text unverändert."}
         </p>
         <div className="mt-6 grid gap-4 border-y border-warmgrau/12 py-4 sm:grid-cols-2">
           <div>
@@ -215,6 +260,52 @@ export function CampaignManager({ campaign }: { campaign: Campaign }) {
           </div>
         </div>
       </section>
+
+      {canTransfer && (
+        <section className="grid gap-4 rounded-md border border-waldgruen/18 bg-waldgruen/5 p-5 shadow-sm md:p-7">
+          <div>
+            <h2 className="font-typewriter text-xl font-bold text-waldgruen-dark">
+              Kampagne übertragen
+            </h2>
+            <p className="mt-2 max-w-2xl font-body text-sm leading-relaxed text-warmgrau/70">
+              Gib die E-Mail-Adresse der Organisation ein, die diese Kampagne künftig verwalten soll. Die neue Inhaberin bekommt einen einmaligen Bestätigungslink. Bis dahin bleibt dein Zugang bestehen.
+            </p>
+          </div>
+          <form className="grid gap-3 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-end" onSubmit={submitTransfer}>
+            <div className="grid gap-2">
+              <label className="font-typewriter text-sm font-bold text-waldgruen-dark" htmlFor="recipientEmail">
+                Neue E-Mail-Adresse
+              </label>
+              <input
+                id="recipientEmail"
+                name="recipientEmail"
+                type="email"
+                required
+                maxLength={200}
+                placeholder="verein@beispiel.de"
+                disabled={isBusy}
+                className="rounded-md border border-warmgrau/20 bg-white px-4 py-3 font-body text-base outline-none focus:border-waldgruen disabled:opacity-60"
+              />
+              <input type="hidden" name="campaignId" value={campaign.id} />
+              {transferResult?.ok === false && transferResult.fieldErrors?.recipientEmail && (
+                <p className="font-body text-sm text-airmail-rot">{transferResult.fieldErrors.recipientEmail}</p>
+              )}
+            </div>
+            <button
+              type="submit"
+              disabled={isBusy}
+              className="rounded-md bg-waldgruen px-5 py-3 font-body text-base font-semibold text-creme transition-colors hover:bg-waldgruen-dark disabled:cursor-not-allowed disabled:opacity-60"
+            >
+              {isBusy ? "Wird verschickt..." : "Übergabe starten"}
+            </button>
+          </form>
+          {transferResult && (
+            <div className={`rounded-md border px-4 py-3 font-body text-sm ${transferResult.ok ? "border-waldgruen/20 bg-white/60 text-waldgruen-dark" : "border-airmail-rot/25 bg-airmail-rot/5 text-airmail-rot"}`}>
+              {transferResult.message}
+            </div>
+          )}
+        </section>
+      )}
 
       <form
         className="grid gap-5 rounded-md border border-warmgrau/12 bg-creme/80 p-5 shadow-sm md:p-7"

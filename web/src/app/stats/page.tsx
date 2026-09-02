@@ -1,9 +1,12 @@
 import type { Metadata } from "next";
-import { headers } from "next/headers";
-import { notFound } from "next/navigation";
+import { cookies } from "next/headers";
 import { StatsPie } from "@/components/internalStats/StatsPie";
 import { formatDecimal, formatNumber } from "@/lib/formatNumber";
-import { isInternalStatsAuthorized } from "@/lib/internalStats/access";
+import { lockInternalStats, unlockInternalStats } from "@/lib/internalStats/actions";
+import {
+  INTERNAL_STATS_COOKIE,
+  isInternalStatsCookieValid,
+} from "@/lib/internalStats/access";
 import { getInternalStats } from "@/lib/internalStats/getInternalStats";
 import {
   POLITICAL_LEVELS,
@@ -269,16 +272,58 @@ function DataError() {
   );
 }
 
-export default async function InternalStatsPage() {
-  const requestHeaders = await headers();
-  if (
-    !isInternalStatsAuthorized(
-      requestHeaders.get("authorization"),
-      process.env.INTERNAL_STATS_USER,
-      process.env.INTERNAL_STATS_PASSWORD,
-    )
-  ) {
-    notFound();
+function StatsLogin({ configured, error }: { configured: boolean; error: boolean }) {
+  return (
+    <main className="min-h-screen bg-creme px-5 py-10 sm:px-8 sm:py-16">
+      <AirmailStripe />
+      <section className="mx-auto mt-10 max-w-md rounded-2xl border border-warmgrau/10 bg-white/75 p-6 shadow-sm sm:p-8">
+        <p className="font-typewriter text-xs font-bold uppercase tracking-[0.18em] text-waldgruen/65">
+          Brief-nach-Berlin · intern
+        </p>
+        <h1 className="mt-3 font-typewriter text-3xl font-bold text-waldgruen-dark">
+          Interne Statistik
+        </h1>
+        {configured ? (
+          <form action={unlockInternalStats} className="mt-6 grid gap-4">
+            <label htmlFor="stats-password" className="font-body text-sm text-warmgrau/75">
+              Passwort für die Demo-Ansicht
+            </label>
+            <input
+              id="stats-password"
+              name="password"
+              type="password"
+              autoComplete="current-password"
+              required
+              className="rounded-md border border-warmgrau/20 bg-white px-3 py-2 font-body text-warmgrau outline-none focus:border-waldgruen focus:ring-2 focus:ring-waldgruen/20"
+            />
+            {error && <p className="font-body text-sm text-airmail-rot">Das Passwort stimmt nicht.</p>}
+            <button
+              type="submit"
+              className="rounded-md bg-waldgruen-dark px-4 py-2.5 font-body font-semibold text-creme transition-colors hover:bg-waldgruen"
+            >
+              Statistik öffnen
+            </button>
+          </form>
+        ) : (
+          <p className="mt-4 font-body leading-relaxed text-warmgrau/70">
+            Der interne Zugang ist noch nicht konfiguriert.
+          </p>
+        )}
+      </section>
+    </main>
+  );
+}
+
+type InternalStatsPageProps = {
+  searchParams?: Promise<{ error?: string }>;
+};
+
+export default async function InternalStatsPage({ searchParams }: InternalStatsPageProps) {
+  const configuredPassword = process.env.INTERNAL_STATS_PASSWORD;
+  const cookieValue = (await cookies()).get(INTERNAL_STATS_COOKIE)?.value;
+  if (!isInternalStatsCookieValid(cookieValue, configuredPassword)) {
+    const params = await searchParams;
+    return <StatsLogin configured={Boolean(configuredPassword)} error={params?.error === "1"} />;
   }
 
   let stats: InternalStats;
@@ -309,6 +354,11 @@ export default async function InternalStatsPage() {
           <div className="font-typewriter text-xs leading-relaxed text-warmgrau/55 sm:text-right">
             <p>Live aus Supabase</p>
             <p>Abgerufen: {formatDateTime(stats.fetchedAt)}</p>
+            <form action={lockInternalStats} className="mt-2">
+              <button type="submit" className="underline underline-offset-2 hover:text-waldgruen-dark">
+                Zugang sperren
+              </button>
+            </form>
           </div>
         </header>
 

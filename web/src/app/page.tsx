@@ -21,6 +21,9 @@ export const metadata: Metadata = {
     "Beschreibe dein Anliegen. Brief-nach-Berlin findet die passenden Abgeordneten und formuliert in wenigen Minuten deinen persönlichen Brief.",
 };
 
+// Review- und Briefzähler-Daten sollen nicht im Build-Ergebnis einfrieren.
+export const revalidate = 300;
+
 export default async function Home() {
   const [heroReviews, letterCount] = await Promise.all([
     getHeroReviews(),

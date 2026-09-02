@@ -13,7 +13,11 @@ import {
   createCampaignDraftAction,
   type CreateCampaignDraftResult,
 } from "@/lib/actions/createCampaignDraft";
-import { BUNDESLAND_NAMES, normalizeCampaignSlug } from "@/lib/campaigns/schema";
+import {
+  BUNDESLAND_NAMES,
+  compactCampaignSlug,
+  normalizeCampaignSlug,
+} from "@/lib/campaigns/schema";
 import {
   MdbCampaignHiddenInputs,
   MdbCampaignSelector,
@@ -145,6 +149,11 @@ export function CreatorCampaignForm() {
   const [logoFileName, setLogoFileName] = useState<string | null>(null);
   const [logoError, setLogoError] = useState<string | null>(null);
   const normalizedSlug = useMemo(() => slugPreview(draft.slug), [draft.slug]);
+  const normalizedCompactSlug = useMemo(
+    () => compactCampaignSlug(normalizedSlug),
+    [normalizedSlug]
+  );
+  const hasCompactSlug = normalizedCompactSlug !== normalizedSlug;
   const titleError = fieldError(result, "title");
   const issueTextError = fieldError(result, "issueText");
   const slugError = fieldError(result, "slug");
@@ -676,8 +685,40 @@ export function CreatorCampaignForm() {
           />
         </div>
         <p className="font-body text-sm text-warmgrau/60">
-          Wird aus dem Titel vorgeschlagen. Du kannst die Kurzadresse anpassen.
+          Wird aus dem Titel vorgeschlagen. Du kannst die Kurzadresse anpassen. Mit
+          Bindestrichen lässt sie sich leichter lesen und aufschreiben; für Radio,
+          Podcast oder Fernsehen funktionieren beide Varianten.
         </p>
+        <div className="grid gap-2 rounded-md border border-waldgruen/12 bg-waldgruen/5 px-3 py-3">
+          <div>
+            <p className="font-body text-xs font-semibold uppercase tracking-wide text-waldgruen/65">
+              Empfohlen zum Teilen
+            </p>
+            <p className="mt-1 break-all font-body text-sm text-waldgruen-dark">
+              brief-nach-berlin.de/kampagne/{normalizedSlug || "..."}
+            </p>
+          </div>
+          {hasCompactSlug ? (
+            <>
+              <div>
+                <p className="font-body text-xs font-semibold uppercase tracking-wide text-waldgruen/65">
+                  Für gesprochene Weitergabe
+                </p>
+                <p className="mt-1 break-all font-body text-sm text-waldgruen-dark">
+                  brief-nach-berlin.de/kampagne/{normalizedCompactSlug || "..."}
+                </p>
+              </div>
+              <p className="font-body text-xs leading-relaxed text-warmgrau/65">
+                Beide Adressen führen zur selben Kampagne.
+              </p>
+            </>
+          ) : (
+            <p className="font-body text-xs leading-relaxed text-warmgrau/65">
+              Diese Kurzadresse enthält keine Bindestriche und hat deshalb keine zweite
+              Variante.
+            </p>
+          )}
+        </div>
         {slugError && (
           <p id="slug-error" className="font-body text-sm text-airmail-rot">
             {slugError}
@@ -955,10 +996,32 @@ export function CreatorCampaignForm() {
             <dl className="mt-5 grid gap-3 rounded-md border border-warmgrau/15 bg-white/70 p-4">
               <div>
                 <dt className="font-body text-xs font-semibold uppercase tracking-wide text-warmgrau/50">
-                  Kurzadresse
+                  Aufrufbare Adressen
                 </dt>
-                <dd className="mt-1 break-all font-body text-sm font-semibold text-waldgruen-dark">
-                  brief-nach-berlin.de/kampagne/{normalizedSlug || "..."}
+                <dd className="mt-1 grid gap-2 font-body text-sm font-semibold text-waldgruen-dark">
+                  <div>
+                    <span className="block text-xs font-normal text-warmgrau/60">
+                      Mit Bindestrichen – empfohlen zum Teilen
+                    </span>
+                    <span className="block break-all">
+                      brief-nach-berlin.de/kampagne/{normalizedSlug || "..."}
+                    </span>
+                  </div>
+                  {hasCompactSlug ? (
+                    <div>
+                      <span className="block text-xs font-normal text-warmgrau/60">
+                        Ohne Bindestriche – für Radio, Podcast oder Fernsehen
+                      </span>
+                      <span className="block break-all">
+                        brief-nach-berlin.de/kampagne/{normalizedCompactSlug || "..."}
+                      </span>
+                    </div>
+                  ) : (
+                    <span className="block text-xs font-normal text-warmgrau/60">
+                      Diese Kurzadresse enthält keine Bindestriche und hat deshalb keine
+                      zweite Variante.
+                    </span>
+                  )}
                 </dd>
               </div>
               <div>

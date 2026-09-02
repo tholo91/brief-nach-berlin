@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { getRecentActiveCampaigns } from "@/lib/campaigns/repository";
+import { campaignLogoPublicUrl } from "@/lib/campaigns/logo";
 
 export default async function CampaignNotFound() {
   const campaigns = await getRecentActiveCampaigns(5).catch(() => []);
@@ -24,16 +25,38 @@ export default async function CampaignNotFound() {
               <Link
                 key={campaign.id}
                 href={`/kampagne/${campaign.slug}`}
-                className="rounded-md border border-warmgrau/15 bg-white/75 px-4 py-4 transition-colors hover:border-waldgruen/40 hover:bg-white"
+                className="flex items-center gap-3 rounded-md border border-warmgrau/15 bg-white/75 px-4 py-4 transition-colors hover:border-waldgruen/40 hover:bg-white"
               >
-                <span className="font-body text-base font-semibold text-waldgruen-dark">
-                  {campaign.title}
-                </span>
-                {campaign.creatorName && (
-                  <span className="mt-1 block font-body text-sm text-warmgrau/60">
-                    von {campaign.creatorName}
+                {campaignLogoPublicUrl(campaign.logoPath) ? (
+                  <span
+                    role="img"
+                    aria-label={`Logo oder Bild von ${campaign.creatorName?.trim() || campaign.title}`}
+                    className="h-12 w-12 shrink-0 rounded-full border border-warmgrau/15 bg-white shadow-sm"
+                    style={{
+                      backgroundImage: `url(${campaignLogoPublicUrl(campaign.logoPath)})`,
+                      backgroundPosition: "center",
+                      backgroundRepeat: "no-repeat",
+                      backgroundSize: "contain",
+                    }}
+                  />
+                ) : (
+                  <span
+                    aria-hidden="true"
+                    className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full border border-waldgruen/15 bg-waldgruen/10 font-typewriter text-lg font-bold text-waldgruen-dark"
+                  >
+                    {campaign.title.trim().charAt(0).toUpperCase()}
                   </span>
                 )}
+                <span className="min-w-0">
+                  <span className="block font-body text-base font-semibold text-waldgruen-dark">
+                    {campaign.title}
+                  </span>
+                  {campaign.creatorName && (
+                    <span className="mt-1 block font-body text-sm text-warmgrau/60">
+                      von {campaign.creatorName}
+                    </span>
+                  )}
+                </span>
               </Link>
             ))}
           </div>

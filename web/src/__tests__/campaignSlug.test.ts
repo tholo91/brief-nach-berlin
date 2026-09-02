@@ -18,6 +18,11 @@ describe("campaign slugs", () => {
     expect(compactCampaignSlug("Duisburg retten")).toBe("duisburgretten");
   });
 
+  it("does not create a second variant for one-word slugs", () => {
+    expect(compactCampaignSlug("solidarität")).toBe("solidaritaet");
+    expect(compactCampaignSlug("solidaritaet")).toBe("solidaritaet");
+  });
+
   it("rejects reserved campaign routes", () => {
     expect(isReservedCampaignSlug("starten")).toBe(true);
     expect(campaignSlugSchema.safeParse("verwalten").success).toBe(false);

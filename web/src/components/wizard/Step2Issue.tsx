@@ -139,6 +139,10 @@ export function TipsDisclosure({
 }
 
 const PLACEHOLDER_ROTATE_MS = 4000;
+const TYPEWRITER_TYPE_MS = 42;
+const TYPEWRITER_HOLD_MS = 1200;
+const TYPEWRITER_DELETE_MS = 24;
+const TYPEWRITER_NEXT_MS = 350;
 const MIN_CHARS = 50;
 const ISSUE_TEXT_MAX_HINT = 4500;
 
@@ -224,6 +228,8 @@ export function Step2Issue({
   // on the landing the disclosure lives in Hero, which tracks it separately).
   const tipsOpenedRef = useRef(false);
   const [placeholderIndex, setPlaceholderIndex] = useState(0);
+  const [animatedPlaceholder, setAnimatedPlaceholder] = useState("");
+  const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
   // Auto-grow bookkeeping. fieldHeight lets the in-field mic + submit pin
   // themselves to the bottom-right corner of the (always multi-line) landing
   // field, riding down as the box grows with each new line.
@@ -275,6 +281,10 @@ export function Step2Issue({
     isLanding && phWidth > 0
       ? clampToTwoLines(placeholder, phWidth, phFont)
       : placeholder;
+  const displayAnimatedPlaceholder =
+    isLanding && phWidth > 0
+      ? clampToTwoLines(animatedPlaceholder, phWidth, phFont)
+      : animatedPlaceholder;
   const keyboardHint = canProceed ? (isMac ? "⌘↵" : "Ctrl+↵") : undefined;
   const maxCharsLabel = ISSUE_TEXT_MAX.toLocaleString("de-DE");
   const charCountLabel = charCount.toLocaleString("de-DE");
@@ -303,9 +313,10 @@ export function Step2Issue({
     return () => { if (hintTimeoutRef.current) clearTimeout(hintTimeoutRef.current); };
   }, []);
 
-  // Rotate placeholder every few seconds while textarea is empty, so users
-  // get a sense of the kinds of issues that work without a category picker.
+  // Rotate the wizard placeholder every few seconds. The landing variant uses
+  // the typewriter effect below instead.
   useEffect(() => {
+    if (isLanding) return;
     if (issueText.length > 0) return;
     if (
       voiceState === "requesting" ||
@@ -316,7 +327,64 @@ export function Step2Issue({
       setPlaceholderIndex((i) => (i + 1) % placeholderExamples.length);
     }, PLACEHOLDER_ROTATE_MS);
     return () => clearInterval(interval);
-  }, [issueText, voiceState, placeholderExamples]);
+  }, [isLanding, issueText, voiceState, placeholderExamples]);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const mediaQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const update = () => setPrefersReducedMotion(mediaQuery.matches);
+    update();
+    mediaQuery.addEventListener("change", update);
+    return () => mediaQuery.removeEventListener("change", update);
+  }, []);
+
+  // Landing placeholder: type, hold, delete, then continue with the next
+  // example while the field remains empty, including while it is focused.
+  useEffect(() => {
+    if (!isLanding || issueText.length > 0 || voiceState !== "idle" || prefersReducedMotion) return;
+
+    let cancelled = false;
+    let timeout: ReturnType<typeof setTimeout> | undefined;
+
+    const animate = (index: number) => {
+      const fullText = placeholderExamples[index % placeholderExamples.length] ?? "";
+      let visibleCharacters = 0;
+
+      const typeNext = () => {
+        if (cancelled) return;
+        visibleCharacters += 1;
+        setAnimatedPlaceholder(fullText.slice(0, visibleCharacters));
+        if (visibleCharacters < fullText.length) {
+          timeout = setTimeout(typeNext, TYPEWRITER_TYPE_MS);
+        } else {
+          timeout = setTimeout(deleteNext, TYPEWRITER_HOLD_MS);
+        }
+      };
+
+      const deleteNext = () => {
+        if (cancelled) return;
+        visibleCharacters -= 1;
+        setAnimatedPlaceholder(fullText.slice(0, visibleCharacters));
+        if (visibleCharacters > 0) {
+          timeout = setTimeout(deleteNext, TYPEWRITER_DELETE_MS);
+        } else {
+          timeout = setTimeout(() => animate(index + 1), TYPEWRITER_NEXT_MS);
+        }
+      };
+
+      timeout = setTimeout(() => {
+        if (cancelled) return;
+        setAnimatedPlaceholder("");
+        timeout = setTimeout(typeNext, TYPEWRITER_TYPE_MS);
+      }, 0);
+    };
+
+    animate(0);
+    return () => {
+      cancelled = true;
+      if (timeout) clearTimeout(timeout);
+    };
+  }, [isLanding, issueText, voiceState, prefersReducedMotion, placeholderExamples]);
 
   // Auto-grow: the field follows its content (ChatGPT-style) instead of being a
   // fixed box with a drag handle. On the landing variant it starts slim and
@@ -487,7 +555,7 @@ export function Step2Issue({
             value={issueText}
             onChange={handleTextChange}
             onKeyDown={handleKeyDown}
-            placeholder={displayPlaceholder}
+            placeholder={isLanding && voiceState === "idle" ? "" : displayPlaceholder}
             rows={1}
             className={[
               "w-full font-body text-warmgrau bg-creme resize-none overflow-y-auto scrollbar-hide",
@@ -500,6 +568,14 @@ export function Step2Issue({
             aria-label={isLanding ? copy.issue.textareaAriaLabel : undefined}
             aria-describedby="issueText-counter"
           />
+          {isLanding && issueText.length === 0 && voiceState === "idle" && (
+            <div
+              aria-hidden="true"
+              className="pointer-events-none absolute left-3.5 right-3.5 top-3.5 overflow-hidden text-left font-body text-base leading-snug text-warmgrau/40 md:text-lg"
+            >
+              {prefersReducedMotion ? displayPlaceholder : displayAnimatedPlaceholder}
+            </div>
+          )}
           <VoiceRecorder
             key={locale}
             language={transcriptionLanguage}

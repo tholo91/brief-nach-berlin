@@ -32,6 +32,20 @@ Das Projekt ist Open Source. Dadurch kann das Grundmuster auch für andere Länd
 
 ---
 
+## Open Source
+
+Der Quellcode von Brief-nach-Berlin steht unter der [MIT-Lizenz](LICENSE). Du darfst ihn für eigene Projekte verwenden, anpassen und weiterveröffentlichen, solange der Copyright- und Lizenzhinweis erhalten bleibt.
+
+Die deutsche Zuständigkeits-, Wahlkreis- und Datenlogik muss für andere Länder durch zuverlässige lokale Quellen und Regeln ersetzt werden. Die Marke Brief-nach-Berlin, Logos, Bilder, redaktionelle Inhalte und externe Datenquellen können eigenen Rechten oder Lizenzen unterliegen.
+
+## For builders outside Germany
+
+Brief-nach-Berlin is an open source civic-tech project that can be adapted to other countries and democratic systems.
+
+Start with the [adaptation guide](ADAPT_TO_YOUR_COUNTRY.md). The German politician, constituency and data layer must be replaced with reliable local sources. If you build an adaptation, we would be glad to hear about it.
+
+---
+
 ## Traction
 
 - ~700 Briefe generiert in einem Monat
@@ -55,6 +69,8 @@ Kein Account. Keine persistenten Nutzerdaten. DSGVO-konform by design.
 ## Finanzierung
 
 Brief-nach-Berlin ist eine gemeinnützige Initiative in Trägerschaft der WE AID gGmbH. Das Projekt bleibt kostenlos; Spenden helfen bei Betrieb und Weiterentwicklung. Mehr dazu unter [brief-nach-berlin.de/spenden](https://www.brief-nach-berlin.de/spenden).
+
+If this project helps you, you can support its continued operation via [WE AID](https://www.brief-nach-berlin.de/spenden). Sharing, adapting and contributing are equally valuable.
 
 ---
 

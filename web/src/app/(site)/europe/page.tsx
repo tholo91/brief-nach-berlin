@@ -7,9 +7,9 @@ import { EuropePageContent } from "./EuropePageClient";
 const URL_PATH = "/europe";
 const PUBLISHED = "2026-06-26";
 const MODIFIED = "2026-08-11";
-const TITLE = "Brief-nach-Berlin für dein Land nutzen | Brief-nach-Berlin";
+const TITLE = "Use Brief-nach-Berlin in your country | Brief-nach-Berlin";
 const DESCRIPTION =
-  "Forke Brief-nach-Berlin und plane eine lokale Version für Österreich, die Schweiz oder ein anderes Land.";
+  "Fork Brief-nach-Berlin and plan a local version for Austria, Switzerland, or another country.";
 
 export const metadata: Metadata = {
   title: TITLE,
@@ -19,13 +19,22 @@ export const metadata: Metadata = {
     title: TITLE,
     description: DESCRIPTION,
     type: "article",
-    locale: "de_DE",
+    locale: "en_US",
     url: `${APP_URL}${URL_PATH}`,
+    images: [
+      {
+        url: `${APP_URL}/images/europe-correspondence.webp`,
+        width: 1376,
+        height: 768,
+        alt: "Handwritten letters crossing Europe",
+      },
+    ],
   },
   twitter: {
     card: "summary_large_image",
     title: TITLE,
     description: DESCRIPTION,
+    images: [`${APP_URL}/images/europe-correspondence.webp`],
   },
 };
 
@@ -44,7 +53,7 @@ const articleJsonLd = {
   },
   mainEntityOfPage: `${APP_URL}${URL_PATH}`,
   url: `${APP_URL}${URL_PATH}`,
-  inLanguage: ["de-DE", "en"],
+  inLanguage: "en",
 };
 
 type Language = "de" | "en";

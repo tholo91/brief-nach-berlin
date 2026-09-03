@@ -29,19 +29,22 @@ describe("support content", () => {
     expect(SUPPORT_CONTENT.fiscalHost.text).toContain("Spendenbescheinigungen");
     expect(SUPPORT_CONTENT.founder.name).toBe(FOUNDER_NAME);
     expect(SUPPORT_CONTENT.founder.portraitPath).toBe("/images/thomas-portrait.webp");
+    expect(SUPPORT_CONTENT.founder.text).toContain("Mai 2026");
+    expect(SUPPORT_CONTENT.founder.text).toContain("ehrenamtlich");
+    expect(SUPPORT_CONTENT.founder.text).toContain("Zeit");
     expect(SUPPORT_CONTENT.costCategories).toEqual([
       {
-        title: "Betrieb",
-        description: "Hosting, Domain, E-Mail sowie Software- und KI-Kosten.",
+        title: "KI & Infrastruktur",
+        description: "KI-Dienste, Hosting, Domain, E-Mail und weitere Softwarekosten.",
       },
       {
-        title: "Weiterentwicklung",
-        description: "Barrierearme Weiterentwicklung und Design.",
+        title: "Zeit",
+        description: "Der größte Einsatz: Entwicklung, Pflege und persönliche Weiterarbeit am Projekt.",
       },
       {
-        title: "Reichweite",
+        title: "Reichweite & Verbreitung",
         description:
-          "Outreach, Dokumentation sowie dokumentierte Veranstaltungs- und Reisekosten.",
+          "Damit mehr Menschen von Brief-nach-Berlin erfahren und das Werkzeug nutzen können.",
       },
     ]);
   });

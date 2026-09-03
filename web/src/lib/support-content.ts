@@ -19,23 +19,23 @@ export const SUPPORT_CONTENT = {
     name: FOUNDER_NAME,
     portraitPath: "/images/thomas-portrait.webp",
     text:
-      "Ich bin Thomas Lorenz und baue Brief-nach-Berlin in meiner Freizeit. Ich entwickle das Projekt weiter, damit Menschen ihre Anliegen unkompliziert und kostenlos an die zuständigen politischen Vertreter:innen richten können.",
+      "Ich bin Thomas Lorenz und betreibe Brief-nach-Berlin seit Mai 2026 ehrenamtlich – mit viel Herzblut und vor allem viel Zeit. Ich entwickle das Projekt weiter, damit Menschen ihre Anliegen unkompliziert und kostenlos an die zuständigen politischen Vertreter:innen richten können.",
     successText:
-      "Moin, ich bin Thomas. Ich baue Brief-nach-Berlin in meiner Freizeit und halte den Zugang bewusst kostenlos.",
+      "Seit Mai 2026 baue ich Brief-nach-Berlin ehrenamtlich und halte den Zugang bewusst kostenlos.",
   },
   costCategories: [
     {
-      title: "Betrieb",
-      description: "Hosting, Domain, E-Mail sowie Software- und KI-Kosten.",
+      title: "KI & Infrastruktur",
+      description: "KI-Dienste, Hosting, Domain, E-Mail und weitere Softwarekosten.",
     },
     {
-      title: "Weiterentwicklung",
-      description: "Barrierearme Weiterentwicklung und Design.",
+      title: "Zeit",
+      description: "Der größte Einsatz: Entwicklung, Pflege und persönliche Weiterarbeit am Projekt.",
     },
     {
-      title: "Reichweite",
+      title: "Reichweite & Verbreitung",
       description:
-        "Outreach, Dokumentation sowie dokumentierte Veranstaltungs- und Reisekosten.",
+        "Damit mehr Menschen von Brief-nach-Berlin erfahren und das Werkzeug nutzen können.",
     },
   ],
   sharePrompt:

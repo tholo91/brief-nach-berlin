@@ -127,6 +127,48 @@ video::-webkit-media-controls-start-playback-button {
   animation: log-rise 620ms cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
+/* Directional entry for the main wizard. The outgoing step is replaced by the
+   keyed content above; only the incoming block is animated to keep the flow
+   lightweight and avoid animating layout dimensions. */
+@keyframes wizard-step-enter-forward {
+  from {
+    opacity: 0;
+    transform: translate3d(28px, 0, 0);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+@keyframes wizard-step-enter-backward {
+  from {
+    opacity: 0;
+    transform: translate3d(-28px, 0, 0);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+.wizard-step-stage {
+  overflow-x: clip;
+}
+
+.wizard-step-content-forward,
+.wizard-step-content-backward {
+  will-change: transform, opacity;
+}
+
+.wizard-step-content-forward {
+  animation: wizard-step-enter-forward 340ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.wizard-step-content-backward {
+  animation: wizard-step-enter-backward 340ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
 /* Respect users who don't want motion. */
 @media (prefers-reduced-motion: reduce) {
   .animate-feedback-in,
@@ -136,7 +178,9 @@ video::-webkit-media-controls-start-playback-button {
   .animate-progress,
   .animate-envelope-fly-x,
   .animate-envelope-fly-y,
-  .animate-log-rise {
+  .animate-log-rise,
+  .wizard-step-content-forward,
+  .wizard-step-content-backward {
     animation: none !important;
   }
 }

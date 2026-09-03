@@ -29,6 +29,10 @@ import { StepLevelSelect } from "./StepLevelSelect";
 import { Step3Success } from "./Step3Success";
 import FadeFooterImage from "../FadeFooterImage";
 import { useLocale } from "@/components/i18n/LocaleProvider";
+import {
+  wizardStepDirection,
+  type WizardStepDirection,
+} from "@/lib/wizard-navigation";
 
 const PARAM_KEYS = ["plz", "letterLength"] as const;
 
@@ -103,6 +107,7 @@ export function WizardShell() {
   // Direct visits start on the issue step. Landing and campaign handoffs have
   // already collected the issue and continue with contact details.
   const [step, setStep] = useState<WizardStep>(1);
+  const [stepDirection, setStepDirection] = useState<WizardStepDirection>("none");
   const [entrySource, setEntrySource] = useState<"direct" | "landing" | "campaign">("direct");
   const [handoffPending, setHandoffPending] = useState(true);
   const [politicians, setPoliticians] = useState<Politician[]>([]);
@@ -124,6 +129,19 @@ export function WizardShell() {
     issueText: string;
     promise: Promise<{ token: string } | null>;
   } | null>(null);
+
+  const navigateToStep = useCallback(
+    (nextStep: WizardStep) => {
+      setStepDirection(wizardStepDirection(step, nextStep));
+      setStep(nextStep);
+    },
+    [step],
+  );
+
+  const setStepWithoutAnimation = useCallback((nextStep: WizardStep) => {
+    setStepDirection("none");
+    setStep(nextStep);
+  }, []);
 
   // Landing -> wizard handoff (sessionStorage): hydrate the issue without
   // rendering another issue field. Read after mount so sessionStorage never
@@ -157,12 +175,12 @@ export function WizardShell() {
             }
           : {}),
       }));
-      setStep(entryStepForHandoff(handoff));
+      setStepWithoutAnimation(entryStepForHandoff(handoff));
       setHandoffPending(false);
     }, 0);
 
     return () => window.clearTimeout(timer);
-  }, []);
+  }, [setStepWithoutAnimation]);
 
   // Sobald die Empfängerauswahl bereitsteht, ist der Landing-Handoff verbraucht.
   // Ein späterer neuer Start im selben Tab darf deshalb keinen alten Entwurf laden.
@@ -215,9 +233,9 @@ export function WizardShell() {
         });
       }
       ensureRoutingPrefetch(issueText);
-      setStep(2);
+      navigateToStep(2);
     },
-    [ensureRoutingPrefetch]
+    [ensureRoutingPrefetch, navigateToStep]
   );
 
   // Step 2: start routing while the visitor chooses tone and length. This also
@@ -227,9 +245,9 @@ export function WizardShell() {
       setWizardData((prev) => ({ ...prev, ...data }));
       ensureRoutingPrefetch(wizardData.issueText ?? "");
       setPlzError(null);
-      setStep("2b");
+      navigateToStep("2b");
     },
-    [ensureRoutingPrefetch, wizardData.issueText]
+    [ensureRoutingPrefetch, navigateToStep, wizardData.issueText]
   );
 
   const handlePreferencesChange = useCallback((data: StepPreferencesData) => {
@@ -248,12 +266,12 @@ export function WizardShell() {
       if (entrySource === "campaign") {
         router.back();
       } else {
-        setStep(1);
+        navigateToStep(1);
       }
     }
-    else if (step === "2b") setStep(2);
-    else if (step === "level") setStep("2b");
-  }, [entrySource, router, step]);
+    else if (step === "2b") navigateToStep(2);
+    else if (step === "level") navigateToStep("2b");
+  }, [entrySource, navigateToStep, router, step]);
 
   // Step 3: Preferences — this is where we actually submit to the backend.
   // The advanced fields remain optional and may stay empty.
@@ -304,7 +322,7 @@ export function WizardShell() {
           if (result.error === "plz_not_found") {
             setPlzError(result.message);
             setIsSubmitting(false);
-            setStep(2);
+            setStepWithoutAnimation(2);
             return;
           }
           if (result.error === "campaign_state_mismatch") {
@@ -360,21 +378,21 @@ export function WizardShell() {
             }
             setLevelRouting(result.levelRouting ?? null);
             setSelectedLevel(result.campaignTargetLevel);
-            setStep(3);
+            navigateToStep(3);
           } else if (result.levelRouting) {
             // Ebenen-Routing aktiv: erst der eigene Ebene-Auswahl-Step,
             // danach die konkrete Empfängerwahl.
             setLevelRouting(result.levelRouting);
             setSelectedLevel(null);
-            setStep("level");
+            navigateToStep("level");
           } else {
             setLevelRouting(null);
             setSelectedLevel(null);
-            setStep(3);
+            navigateToStep(3);
           }
         } else if ("success" in result && result.success) {
           setActionResult(result);
-          setStep(3);
+          navigateToStep(3);
         }
       } catch (error) {
         console.error("[wizard] submit threw", error);
@@ -383,7 +401,7 @@ export function WizardShell() {
         setIsSubmitting(false);
       }
     },
-    [wizardData, locale]
+    [locale, navigateToStep, setStepWithoutAnimation, wizardData]
   );
 
   const handleStep2bComplete = useCallback(
@@ -560,7 +578,11 @@ export function WizardShell() {
       )}
 
       {/* Step content */}
-      <div className="transition-opacity duration-150 ease-in" key={step}>
+      <div className="wizard-step-stage">
+        <div
+          className={`wizard-step-content wizard-step-content-${stepDirection}`}
+          key={step}
+        >
         {handoffPending && (
           <div className="py-16 text-center" role="status" aria-live="polite">
             <p className="font-body text-sm text-warmgrau/70">Dein Anliegen wird übernommen …</p>
@@ -598,7 +620,7 @@ export function WizardShell() {
               onClick={() => {
                 setWizardData((prev) => ({ ...prev, campaign: undefined }));
                 setCampaignMismatch(null);
-                setStep("2b");
+                setStepWithoutAnimation("2b");
               }}
               className="mt-4 rounded-md bg-waldgruen px-5 py-3 font-body text-base font-semibold text-creme transition-colors hover:bg-waldgruen-dark"
             >
@@ -628,7 +650,7 @@ export function WizardShell() {
             initialLevel={selectedLevel}
             onContinue={(level) => {
               setSelectedLevel(level);
-              setStep(3);
+              navigateToStep(3);
             }}
           />
         )}
@@ -660,7 +682,7 @@ export function WizardShell() {
                     setPoliticians([]);
                     setLevelRouting(null);
                     setSelectedLevel(null);
-                    setStep(2);
+                    navigateToStep(2);
                   }
                 : undefined
             }
@@ -670,11 +692,12 @@ export function WizardShell() {
               actionResult &&
               "disambiguationNeeded" in actionResult &&
               actionResult.disambiguationNeeded
-                ? () => setStep("level")
+                ? () => navigateToStep("level")
                 : undefined
             }
           />
         )}
+        </div>
       </div>
       </div>
       <FadeFooterImage

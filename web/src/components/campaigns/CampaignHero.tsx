@@ -182,7 +182,7 @@ export function CampaignHero({ campaign }: { campaign: PublicCampaign }) {
                   backgroundImage: `url(${logoUrl})`,
                   backgroundPosition: "center",
                   backgroundRepeat: "no-repeat",
-                  backgroundSize: "contain",
+                  backgroundSize: "103%",
                 }}
               />
             ) : (

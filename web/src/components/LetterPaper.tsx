@@ -7,6 +7,7 @@ type Props = {
   recipientOverride?: Recipient;
   /** When true, body is clipped and a fade gradient is layered at the bottom. */
   truncated?: boolean;
+  truncatedParagraphCount?: number;
   /** Compact paddings for teaser placement. */
   size?: "default" | "compact";
 };
@@ -16,6 +17,7 @@ export default function LetterPaper({
   rotate = "none",
   recipientOverride,
   truncated = false,
+  truncatedParagraphCount,
   size = "default",
 }: Props) {
   const recipient = recipientOverride ?? letter.recipient;
@@ -34,6 +36,10 @@ export default function LetterPaper({
       : "px-7 md:px-10 py-8 md:py-10";
 
   const bodyParagraphs = letter.body.split(/\n\s*\n/).filter((p) => p.trim());
+  const visibleBodyParagraphs =
+    truncated && truncatedParagraphCount
+      ? bodyParagraphs.slice(0, truncatedParagraphCount)
+      : bodyParagraphs;
 
   return (
     <article
@@ -62,7 +68,7 @@ export default function LetterPaper({
         <div
           className={`${size === "compact" ? "mb-4 pb-3" : "mb-7 pb-5"} border-b border-warmgrau/15`}
         >
-          <p className="font-typewriter text-[11px] tracking-widest uppercase text-warmgrau/50 mb-1">
+          <p className="font-typewriter text-xs tracking-widest uppercase text-warmgrau/50 mb-1">
             Aus {fromCity} an
           </p>
           <p className="font-body text-base font-semibold text-waldgruen-dark transition-opacity duration-500">
@@ -75,12 +81,12 @@ export default function LetterPaper({
 
         {/* Letter body */}
         <div
-          className={`font-body ${size === "compact" ? "text-[14px] leading-[1.75]" : "text-[15px] md:text-base leading-[1.85]"} text-warmgrau`}
+          className={`font-body ${size === "compact" ? "text-sm leading-[1.75]" : "text-base leading-[1.85]"} text-warmgrau`}
         >
           <p className={size === "compact" ? "mb-3" : "mb-5"}>
             {recipient.salutation},
           </p>
-          {bodyParagraphs.map((para, i) => (
+          {visibleBodyParagraphs.map((para, i) => (
             <p key={i} className={size === "compact" ? "mb-3" : "mb-5"}>
               {para}
             </p>
@@ -102,7 +108,7 @@ export default function LetterPaper({
         {/* Truncation fade */}
         {truncated && (
           <div
-            className="pointer-events-none absolute inset-x-0 bottom-0 h-32 rounded-b-sm"
+            className="pointer-events-none absolute inset-x-0 bottom-0 h-24 rounded-b-sm"
             style={{
               background:
                 "linear-gradient(to bottom, rgba(255,255,255,0) 0%, rgba(255,255,255,0.85) 60%, #ffffff 100%)",

@@ -17,16 +17,11 @@ export default function Vision() {
             {copy.vision.title}
           </h2>
 
-          <div className="font-body text-base md:text-lg text-warmgrau leading-relaxed space-y-5 text-left">
+          <div className="font-body text-base text-warmgrau leading-relaxed space-y-5 text-left">
             <p>
               {copy.vision.paragraph1}
             </p>
-            <p>
-              {copy.vision.paragraph2}{" "}
-              <span className="text-waldgruen-dark font-semibold">
-                Brief-nach-Berlin nimmt dir diese Hürden ab.
-              </span>
-            </p>
+            <p>{copy.vision.paragraph2}</p>
             <p>
               {copy.vision.paragraph3}{" "}
               <Link

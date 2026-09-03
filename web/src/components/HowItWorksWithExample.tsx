@@ -2,69 +2,33 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import { useUiCopy } from "@/components/i18n/LocaleProvider";
 import { EXAMPLE_LETTERS } from "@/lib/example-letters";
 import LetterPaper from "./LetterPaper";
-import { useUiCopy } from "@/components/i18n/LocaleProvider";
 
 const ROTATION_INTERVAL_MS = 5000;
 
-const steps = [
-  {
-    number: "01",
-    title: "Erzähl, was dich beschäftigt",
-    description:
-      "Stichpunkte oder Gedanken per Spracheingabe, Brief-nach-Berlin übernimmt die Formulierung. Egal ob Müll auf dem Spielplatz, bezahlbarer Wohnraum oder Sorgen um die Demokratie.",
-    icon: (
-      <svg width="40" height="40" viewBox="0 0 48 48" fill="none" className="text-waldgruen">
-        <path d="M10 10h28v24H22l-7 6v-6h-5V10z" stroke="currentColor" strokeWidth="2" strokeLinejoin="round" fill="none" />
-        <line x1="17" y1="19" x2="31" y2="19" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-        <line x1="17" y1="25" x2="27" y2="25" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-      </svg>
-    ),
-  },
-  {
-    number: "02",
-    title: "Brief-nach-Berlin findet die passende Adresse",
-    description:
-      "Anhand deiner PLZ ermittelt Brief-nach-Berlin, wer politisch zuständig ist – Bund, Land oder Kommune. Datenschutzkonform, ohne Account, nichts wird gespeichert.",
-    link: {
-      href: "/kommune-land-bund-eu",
-      label: "Wie politische Zuständigkeiten funktionieren",
-    },
-    icon: (
-      <svg width="40" height="40" viewBox="0 0 48 48" fill="none" className="text-waldgruen">
-        <circle cx="24" cy="18" r="8" stroke="currentColor" strokeWidth="2" fill="none" />
-        <path d="M24 26c-8 0-14 5-14 10h28c0-5-6-10-14-10z" stroke="currentColor" strokeWidth="2" fill="none" />
-        <path d="M36 10l-4 4m4-4l4 4m-4-4v10" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-      </svg>
-    ),
-  },
-  {
-    number: "03",
-    title: "Dein Brief, fertig zum Abschicken",
-    description:
-      "Brief-nach-Berlin formuliert aus deinem Input einen persönlichen, sachlichen Brief mit den besten Argumenten. Eine Seite, in deinem Postfach.",
-    icon: (
-      <svg width="40" height="40" viewBox="0 0 48 48" fill="none" className="text-waldgruen">
-        <rect x="8" y="6" width="28" height="36" rx="2" stroke="currentColor" strokeWidth="2" fill="none" />
-        <line x1="14" y1="14" x2="30" y2="14" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-        <line x1="14" y1="20" x2="30" y2="20" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-        <line x1="14" y1="26" x2="26" y2="26" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-        <line x1="14" y1="32" x2="22" y2="32" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-        <rect x="32" y="4" width="10" height="12" rx="1" stroke="currentColor" strokeWidth="1.5" fill="none" strokeDasharray="2 2" />
-      </svg>
-    ),
-  },
-];
+const stepNumbers = ["1.", "2.", "3."] as const;
 
 export default function HowItWorksWithExample() {
   const copy = useUiCopy();
-  const translatedSteps = steps.map((step, index) => ({
-    ...step,
-    title: [copy.howItWorks.step1Title, copy.howItWorks.step2Title, copy.howItWorks.step3Title][index]!,
-    description: [copy.howItWorks.step1Description, copy.howItWorks.step2Description, copy.howItWorks.step3Description][index]!,
-    link: step.link ? { ...step.link, label: copy.howItWorks.step2Link } : undefined,
-  }));
+  const steps = [
+    {
+      number: stepNumbers[0],
+      title: copy.howItWorks.step1Title,
+      description: copy.howItWorks.step1Description,
+    },
+    {
+      number: stepNumbers[1],
+      title: copy.howItWorks.step2Title,
+      description: copy.howItWorks.step2Description,
+    },
+    {
+      number: stepNumbers[2],
+      title: copy.howItWorks.step3Title,
+      description: copy.howItWorks.step3Description,
+    },
+  ];
   const letter = EXAMPLE_LETTERS[0];
   const recipients = letter.rotatingRecipients ?? [letter.recipient];
 
@@ -88,76 +52,86 @@ export default function HowItWorksWithExample() {
   return (
     <section
       id="so-funktionierts"
-      className="py-16 md:py-20 px-6 scroll-mt-20"
+      className="scroll-mt-20 px-6 py-16 md:py-20"
     >
-      <div className="max-w-6xl mx-auto">
-        <div className="text-center mb-12 md:mb-14">
-          <p className="font-typewriter text-sm font-bold tracking-widest uppercase text-waldgruen/50 mb-3">
+      <div className="mx-auto max-w-6xl">
+        <div className="mb-12 text-center md:mb-14">
+          <p className="mb-3 font-typewriter text-sm font-bold uppercase tracking-widest text-waldgruen/50">
             {copy.howItWorks.eyebrow}
           </p>
-          <h2 className="font-body text-2xl md:text-3xl font-bold text-waldgruen-dark tracking-tight">
+          <h2 className="font-body text-3xl font-bold tracking-tight text-waldgruen-dark md:text-4xl">
             {copy.howItWorks.title}
           </h2>
-          <p className="mt-3 font-body text-base text-warmgrau/80 max-w-xl mx-auto text-balance">
+          <p className="mx-auto mt-3 max-w-2xl text-balance font-body text-base leading-relaxed text-warmgrau/80">
             {copy.howItWorks.intro}
           </p>
         </div>
 
-        <div className="grid md:grid-cols-2 gap-12 md:gap-16 items-start">
-          <ol className="flex flex-col gap-10">
-            {translatedSteps.map((step) => (
-              <li key={step.number} className="relative">
-                <div className="flex items-center gap-3 mb-4">
-                  <div className="p-2.5 rounded-2xl bg-waldgruen/10 shrink-0">
-                    {step.icon}
-                  </div>
-                  <span className="font-typewriter text-[11px] tracking-widest text-warmgrau/50 font-bold uppercase">
-                    Schritt {step.number}
+        <div className="grid items-start gap-12 md:grid-cols-2 md:gap-16">
+          <ol className="flex flex-col">
+            {steps.map((step, index) => (
+              <li
+                key={step.number}
+                className="grid grid-cols-[3.5rem_minmax(0,1fr)] gap-5 pb-10 last:pb-0 md:grid-cols-[4rem_minmax(0,1fr)] md:gap-6 md:pb-12"
+              >
+                <div className="flex justify-center">
+                  <span
+                    aria-hidden="true"
+                    className="-mt-1 font-typewriter text-4xl font-bold leading-none tracking-tight text-waldgruen md:text-5xl"
+                  >
+                    {step.number}
                   </span>
                 </div>
 
-                <h3 className="font-body text-lg md:text-xl font-bold text-waldgruen-dark mb-3 tracking-tight leading-snug">
-                  {step.title}
-                </h3>
-
-                <p className="font-body text-base text-warmgrau/80 leading-relaxed">
-                  {step.description}
-                </p>
-                {"link" in step && step.link && (
-                  <p className="mt-3 font-body text-sm text-warmgrau/70 leading-relaxed">
-                    <Link
-                      href={step.link.href}
-                      prefetch={false}
-                      className="text-waldgruen hover:text-waldgruen-dark underline decoration-waldgruen/30 underline-offset-2 hover:decoration-waldgruen transition-colors"
-                    >
-                      {step.link.label}
-                    </Link>
+                <div>
+                  <span className="sr-only">
+                    {copy.howItWorks.stepLabel.replace(
+                      "{number}",
+                      String(index + 1),
+                    )}
+                    {": "}
+                  </span>
+                  <h3 className="mb-2 font-body text-xl font-bold leading-snug tracking-tight text-waldgruen-dark md:text-2xl">
+                    {step.title}
+                  </h3>
+                  <p className="max-w-[34rem] font-body text-base leading-relaxed text-warmgrau/80">
+                    {step.description}
                   </p>
-                )}
+                </div>
               </li>
             ))}
           </ol>
 
-          <div id="beispiel" className="md:sticky md:top-24 scroll-mt-20">
+          <div
+            id="beispiel"
+            className="scroll-mt-20 md:sticky md:top-24 md:pt-6"
+          >
+            <p className="mb-4 text-center font-typewriter text-xs font-bold uppercase tracking-widest text-waldgruen/50">
+              {copy.howItWorks.resultLabel}
+            </p>
             <Link
               href="/beispiele"
               prefetch={false}
-              className="block max-w-md mx-auto group cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-waldgruen focus-visible:ring-offset-4 focus-visible:ring-offset-creme rounded-sm"
-              aria-label="Vollständigen Brief und weitere Beispiele lesen"
+              className="group mx-auto block max-w-md cursor-pointer rounded-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-waldgruen focus-visible:ring-offset-4 focus-visible:ring-offset-creme"
+              aria-label={copy.howItWorks.exampleAriaLabel}
             >
               <div className="transition-[transform,filter] duration-300 ease-out group-hover:-translate-y-1.5 group-hover:drop-shadow-[0_20px_40px_rgba(45,80,22,0.22)]">
                 <LetterPaper
                   letter={letter}
                   recipientOverride={recipient}
                   truncated
+                  truncatedParagraphCount={3}
                   size="compact"
                   rotate="left"
                 />
               </div>
 
-              <p className="text-center mt-6 font-handwriting text-xl text-waldgruen-dark group-hover:text-waldgruen transition-colors duration-150">
+              <p className="mt-6 text-center font-handwriting text-xl text-waldgruen-dark transition-colors duration-150 group-hover:text-waldgruen">
                 {copy.howItWorks.readExample}
-                <span aria-hidden="true" className="ml-2 inline-block transition-transform duration-150 group-hover:translate-x-1">
+                <span
+                  aria-hidden="true"
+                  className="ml-2 inline-block transition-transform duration-150 group-hover:translate-x-1"
+                >
                   &rarr;
                 </span>
               </p>

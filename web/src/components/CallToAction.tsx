@@ -32,13 +32,13 @@ export default function CallToAction() {
           {copy.callToAction.title}
         </h2>
 
-        <p className="font-body text-base md:text-lg text-creme/85 leading-relaxed mb-10 max-w-md mx-auto">
+        <p className="font-body text-base text-creme/85 leading-relaxed mb-10 max-w-md mx-auto">
           {copy.callToAction.description}
         </p>
 
         <button
           onClick={scrollToAnliegen}
-          className="inline-block bg-creme text-waldgruen-dark font-body font-semibold text-base md:text-lg px-10 py-4 rounded-xl hover:bg-creme/90 transition-colors cursor-pointer shadow-lg active:scale-[0.98]"
+          className="inline-block bg-creme text-waldgruen-dark font-body font-semibold text-base px-10 py-4 rounded-xl hover:bg-creme/90 transition-colors cursor-pointer shadow-lg active:scale-[0.98]"
         >
           {copy.callToAction.button} &rarr;
         </button>

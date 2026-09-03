@@ -4,7 +4,7 @@ import Hero from "@/components/Hero";
 import HowItWorksWithExample from "@/components/HowItWorksWithExample";
 import WhyItWorks from "@/components/WhyItWorks";
 import Vision from "@/components/Vision";
-import Roadmap from "@/components/Roadmap";
+import ProjectSupport from "@/components/ProjectSupport";
 import FAQ from "@/components/FAQ";
 import CallToAction from "@/components/CallToAction";
 import Footer from "@/components/Footer";
@@ -51,7 +51,7 @@ export default async function Home() {
         <HowItWorksWithExample />
         <WhyItWorks />
         <Vision />
-        <Roadmap />
+        <ProjectSupport />
         <FAQ />
         <CallToAction />
       </main>

@@ -19,7 +19,7 @@ export default function WhyItWorks() {
         <h2 className="font-body text-3xl md:text-4xl font-bold text-waldgruen-dark tracking-tight mb-4 md:max-w-none max-w-xl">
           {copy.whyItWorks.title}
         </h2>
-        <p className="font-body text-base md:text-lg text-warmgrau/80 leading-relaxed mb-14 max-w-2xl">
+        <p className="font-body text-base text-warmgrau/80 leading-relaxed mb-14 max-w-2xl">
           {copy.whyItWorks.description}{" "}
           <Link
             href="/handschriftliche-briefe-wirkung"

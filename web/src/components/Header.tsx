@@ -99,7 +99,7 @@ export default function Header() {
 
           <div className="flex items-center gap-2">
             <LanguageSwitcher />
-            <LanguageSwitcher mobile />
+            {!showNavCta && <LanguageSwitcher mobile />}
             {/* CTA — collapses on mobile when in hero section */}
             <div
               className={`overflow-hidden transition-all duration-300 md:max-w-[200px] md:opacity-100 md:pointer-events-auto ${
@@ -117,40 +117,34 @@ export default function Header() {
               </Link>
             </div>
 
-            {/* Burger — mobile only, collapses once CTA appears */}
-            <div
-              className={`md:hidden overflow-hidden transition-all duration-300 ${
-                showNavCta
-                  ? "max-w-0 opacity-0 pointer-events-none"
-                  : "max-w-[2.5rem] opacity-100"
-              }`}
-            >
-            <button
-              type="button"
-              onClick={() => setMenuOpen((v) => !v)}
-              aria-expanded={menuOpen}
-              aria-controls="mobile-menu"
-              aria-label={menuOpen ? copy.navigation.closeMenu : copy.navigation.openMenu}
-              className="relative w-10 h-10 flex items-center justify-center rounded-lg text-waldgruen-dark active:scale-95 transition-transform"
-            >
-              <span className="relative block w-6 h-4">
-                <span
-                  className={`absolute left-0 top-0 h-[2px] w-6 bg-current rounded-full transition-transform duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] ${
-                    menuOpen ? "translate-y-[7px] rotate-45" : ""
-                  }`}
-                />
-                <span
-                  className={`absolute left-0 top-1/2 -translate-y-1/2 h-[2px] w-6 bg-current rounded-full transition-opacity duration-200 ${
-                    menuOpen ? "opacity-0" : "opacity-100"
-                  }`}
-                />
-                <span
-                  className={`absolute left-0 bottom-0 h-[2px] w-6 bg-current rounded-full transition-transform duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] ${
-                    menuOpen ? "-translate-y-[7px] -rotate-45" : ""
-                  }`}
-                />
-              </span>
-            </button>
+            {/* Burger — mobile only */}
+            <div className="md:hidden">
+              <button
+                type="button"
+                onClick={() => setMenuOpen((v) => !v)}
+                aria-expanded={menuOpen}
+                aria-controls="mobile-menu"
+                aria-label={menuOpen ? copy.navigation.closeMenu : copy.navigation.openMenu}
+                className="relative w-10 h-10 flex items-center justify-center rounded-lg text-waldgruen-dark active:scale-95 transition-transform"
+              >
+                <span className="relative block w-6 h-4">
+                  <span
+                    className={`absolute left-0 top-0 h-[2px] w-6 bg-current rounded-full transition-transform duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] ${
+                      menuOpen ? "translate-y-[7px] rotate-45" : ""
+                    }`}
+                  />
+                  <span
+                    className={`absolute left-0 top-1/2 -translate-y-1/2 h-[2px] w-6 bg-current rounded-full transition-opacity duration-200 ${
+                      menuOpen ? "opacity-0" : "opacity-100"
+                    }`}
+                  />
+                  <span
+                    className={`absolute left-0 bottom-0 h-[2px] w-6 bg-current rounded-full transition-transform duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] ${
+                      menuOpen ? "-translate-y-[7px] -rotate-45" : ""
+                    }`}
+                  />
+                </span>
+              </button>
             </div>
           </div>
         </nav>
@@ -175,6 +169,12 @@ export default function Header() {
                 {link.label}
               </a>
             ))}
+            {showNavCta && (
+              <div className="flex items-center justify-between border-b border-warmgrau/8 py-4">
+                <span className="font-body text-base text-waldgruen-dark">{copy.language.selectLabel}</span>
+                <LanguageSwitcher mobile />
+              </div>
+            )}
             <Link
               href={isHome ? "/#anliegen" : "/app"}
               onClick={(e) => { closeMenu(); handleCtaClick(e); }}

@@ -7,7 +7,7 @@ describe("campaign transfer tokens", () => {
     jest.useRealTimers();
   });
 
-  it("expires takeover links after seven days", async () => {
+  it("keeps takeover links available for long-running handoffs", async () => {
     const now = new Date("2026-09-04T00:00:00.000Z");
     jest.useFakeTimers().setSystemTime(now);
 
@@ -58,7 +58,9 @@ describe("campaign transfer tokens", () => {
 
     expect(inserted).toMatchObject({
       recipient_email: "new.owner@example.org",
-      expires_at: "2026-09-11T00:00:00.000Z",
+      expires_at: new Date(
+        now.getTime() + 100 * 365 * 24 * 60 * 60 * 1000,
+      ).toISOString(),
     });
   });
 });

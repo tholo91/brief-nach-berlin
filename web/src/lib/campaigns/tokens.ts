@@ -24,7 +24,7 @@ type RepositoryClient = SupabaseClient;
 
 const DEFAULT_TOKEN_TTL_SECONDS = 60 * 60 * 24 * 7;
 const MANAGE_TOKEN_TTL_SECONDS = 60 * 60 * 24 * 365 * 100;
-const TRANSFER_TOKEN_TTL_SECONDS = DEFAULT_TOKEN_TTL_SECONDS;
+const TRANSFER_TOKEN_TTL_SECONDS = MANAGE_TOKEN_TTL_SECONDS;
 
 export class CampaignTokenError extends Error {
   constructor(message: string) {

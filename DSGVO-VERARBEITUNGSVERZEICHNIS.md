@@ -2,8 +2,8 @@
 
 **Verantwortlicher:** Thomas Lorenz, Zur Plangemühle 5, 47198 Duisburg, Deutschland
 **Kontakt:** thomas_lorenz@posteo.de
-**Dienst:** Brief nach Berlin (brief-nach-berlin.de)
-**Stand:** 2026-04-27
+**Dienst:** Brief-nach-Berlin (brief-nach-berlin.de)
+**Stand:** 2026-09-02
 
 Es ist kein Datenschutzbeauftragter bestellt (keine Pflicht nach § 38 BDSG, da unter 20 Personen mit der automatisierten Verarbeitung beschäftigt; keine Kerntätigkeit i.S.v. Art. 37 DSGVO).
 
@@ -20,7 +20,7 @@ Es ist kein Datenschutzbeauftragter bestellt (keine Pflicht nach § 38 BDSG, da 
 | Rechtsgrundlage | Art. 6 Abs. 1 lit. b DSGVO (Erfüllung der Anfrage); für besondere Kategorien zusätzlich Art. 9 Abs. 2 lit. a DSGVO (ausdrückliche Einwilligung durch Absenden). |
 | Empfänger / Auftragsverarbeiter | Vercel Inc. (Hosting, Region fra1 / Frankfurt); Mistral AI SAS, Paris (Brief-Generierung, Moderation, Spracherkennung); Brevo SAS, Paris (Transaktionsmail-Versand). |
 | Drittlandtransfer | Vercel Inc. (USA): EU-U.S. Data Privacy Framework + ergänzende SCCs; Vercel-DPA: vercel.com/legal/dpa. Mistral & Brevo: kein Drittland (FR). |
-| Speicherfrist | Auf eigenen Servern: keine Speicherung. Vercel-Logs: bis zu 30 Tage. Mistral API-Logs: typischerweise bis zu 30 Tage. Brevo Versandlogs: typischerweise wenige Tage bis Wochen. |
+| Speicherfrist | Auf eigenen Servern: keine Speicherung des Anliegen- oder Brief-Volltexts. Vercel-Logs: gemäß aktuellem Hosting-Tarif und verifizierter Projekteinstellung. Mistral-Ein- und Ausgaben: gemäß verifizierter API-Privacy-Einstellung; Zero Data Retention muss vor Aktivierung der Themensignale im Admin-Panel nachgewiesen werden. Brevo: Transaktionslogs werden laut Anbieter standardmäßig unbegrenzt gespeichert; vor Livegang muss eine begrenzte Retention gesetzt und das Speichern von E-Mail-Previews deaktiviert bzw. begründet werden. |
 | TOMs (Art. 32) | TLS, Server-Region EU (Frankfurt), Rate-Limiting, Input- und Output-Moderation, Zod-Validierung, HTML-Escaping in der ausgehenden Mail, Security-Header (HSTS, X-Frame-Options, Permissions-Policy etc.), API-Keys ausschließlich serverseitig in Vercel-Env-Vars. |
 
 ---
@@ -84,12 +84,31 @@ Es ist kein Datenschutzbeauftragter bestellt (keine Pflicht nach § 38 BDSG, da 
 
 ---
 
+## VT-6 - Freiwillige Themensignale
+
+| Punkt | Inhalt |
+|---|---|
+| Zweck | Interne Auswertung freiwillig geteilter Themen und politischer Ebenen sowie unmittelbare Anzeige des zugehörigen PLZ-Kartenpunkts. Keine Werbung, kein Verkauf und kein individuelles politisches Profiling. |
+| Betroffene Personen | Nutzer, die auf der Successpage ausdrücklich und freiwillig zustimmen. Die Brief-Erstellung funktioniert auch ohne Zustimmung. |
+| Datenkategorien | Normalisierte Klartext-E-Mail, fünfstellige PLZ, daraus abgeleitete Kartenposition und Bundesland, gewählte politische Ebene, 1-3 erlaubte Oberkategorien, 1-3 minimierte Unterthemen, Zeitpunkt, optionaler Kampagnen-Slug, zufällige `letter_id`, HMAC der normalisierten E-Mail und versionierter Einwilligungsnachweis. |
+| Nicht gespeicherte Daten | Kein Brieftext, kein Anliegen-Volltext, kein Name, keine Empfängerperson und keine IP-Adresse. |
+| Besondere Kategorien (Art. 9) | Das Themensignal kann politische Meinungen oder andere besondere Kategorien mittelbar erkennen lassen. Die Daten sind pseudonymisiert, nicht anonym. |
+| Rechtsgrundlage | Art. 6 Abs. 1 lit. a DSGVO und, soweit besondere Kategorien betroffen sind, Art. 9 Abs. 2 lit. a DSGVO (ausdrückliche Einwilligung). |
+| Empfänger / Auftragsverarbeiter | Supabase Inc. (Speicherung in der EU-Region); Mistral AI SAS (Ableitung des minimierten Themensignals im ohnehin erforderlichen Routing-/Generierungsaufruf). |
+| Drittlandtransfer | Gemäß den jeweils aktuellen AVV, Subprozessoren und verifizierten Account-/Regionseinstellungen. Vor Livegang gesondert zu dokumentieren. |
+| Speicherfrist | Bis zum Widerruf, Ende des dokumentierten Analysezwecks oder Projektende. Eine fehlgeschlagene Briefgenerierung löscht den freiwilligen Kartenbeitrag nicht. |
+| Betroffenenrechte | Widerruf und Löschung über den Link „Meine gespeicherten Daten löschen“ in der Feedback-Mail. Die vorbefüllte E-Mail muss von der betroffenen Person abgesendet werden. Die Wartungsroutine zeigt zuerst einen Dry-Run und löscht erst nach gesonderter Bestätigung Reviews und Themensignale. |
+| Technische Sicherheit | Zufällige `letter_id`; HMAC-Verknüpfung zur E-Mail; kurzlebige signierte Kontexte; serverseitige Prüfung der beim Opt-in übermittelten Klartext-E-Mail; Service-Role-Zugriff; `ENABLE/FORCE RLS`; vollständige Revokes für `anon`, `authenticated` und `PUBLIC`; keine öffentliche Rohdaten-View. |
+| Öffentliche Nutzung | Ab dem ersten freiwilligen Beitrag erscheint ein projizierter Punkt am ungefähren Mittelpunkt der fünfstelligen PLZ. Die API gibt nur Koordinaten, aggregierte Anzahl und Summen aus, aber keine PLZ, E-Mail, Themen, `letter_id` oder Einzelzeitpunkte. Die Position kann die ungefähre PLZ-Region erkennen lassen. |
+
+---
+
 ## Auftragsverarbeiter im Überblick
 
 | Verarbeiter | Sitz | Zweck | DPA / AVV |
 |---|---|---|---|
 | Vercel Inc. | Walnut, CA, USA (Region fra1 / Frankfurt) | Hosting | https://vercel.com/legal/dpa |
-| Mistral AI SAS | Paris, FR | KI-Briefgenerierung, Moderation, Spracherkennung (Scale Plan seit 2026-05-19, Training auf Kundendaten standardmäßig deaktiviert) | https://mistral.ai/terms#data-processing-agreement |
-| Brevo SAS | Paris, FR | Transaktionsmail-Versand | https://www.brevo.com/legal/termsofuse/dpa/ |
-| Supabase Inc. | San Francisco, CA, USA (Region eu-central-1 / Frankfurt) | Datenbank-Speicherung Nutzer-Bewertungen | https://supabase.com/legal/dpa |
+| Mistral AI SAS | Paris, FR | KI-Briefgenerierung, Moderation, Spracherkennung und minimierte Themenableitung. Training-Opt-out und Zero Data Retention sind getrennte Einstellungen und vor Livegang im Admin-Panel zu verifizieren. | https://legal.mistral.ai/terms/data-processing-addendum |
+| Brevo SAS | Paris, FR | Transaktionsmail-Versand und einmalige Feedback-Mail; Account-Retention und Preview-Speicherung vor Livegang prüfen. | https://www.brevo.com/legal/termsofuse/dpa/ |
+| Supabase Inc. | San Francisco, CA, USA (Region eu-central-1 / Frankfurt) | Datenbank-Speicherung von Nutzer-Bewertungen und freiwilligen Themensignalen | https://supabase.com/legal/dpa |
 | Posteo e.K. | Berlin, DE | E-Mail-Postfach für Verantwortlichen | https://posteo.de/site/datenschutz |

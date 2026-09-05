@@ -22,9 +22,16 @@ import { computeFollowupSlot } from "@/lib/email/computeFollowupSlot";
 import { buildDebugPayload, type LetterRoutingInfo } from "@/lib/email/buildDebugPayload";
 import { checkRateLimit, hashIdentifier, LIMITS } from "@/lib/rateLimit";
 import { DEFAULT_LETTER_LENGTH } from "@/lib/config";
-import { MistralProviderUnavailableError } from "@/lib/mistral";
+import {
+  MistralProviderUnavailableError,
+  MistralStageError,
+  type MistralStage,
+} from "@/lib/mistral";
 import { incrementLetterCounters } from "@/lib/counter";
 import { getActiveCampaignBySlug } from "@/lib/campaigns/repository";
+import { buildLetterSignalContext, doesLetterSignalContextMatch } from "@/lib/letterSignals/context";
+import { createGenerationProof, verifyLetterSignalContext } from "@/lib/letterSignals/token";
+import { markLetterSignalGeneratedAction } from "@/lib/actions/letterSignals";
 
 // Client-Auswahl: diskriminierte Union (999.6). Institutionelle Empfänger
 // tragen bewusst KEINE ID; der Server leitet sie aus der PLZ ab (LOCK-5).
@@ -49,29 +56,25 @@ function ipFromRequest(req: NextRequest): string {
 }
 
 // Zieht aus einem geworfenen Fehler die für die "Fehler melden"-Mail nützlichen
-// Felder. Wichtig: Vercel-Free-Logs verfallen nach ~1h, daher MUSS dieses Detail
-// (inkl. Mistral-Status/Body) in die Antwort, damit es selbst-enthaltend in
-// Thomas' Postfach landet. Stack wird auf die ersten Zeilen gekürzt.
+// Felder. Provider-Bodies und Ursachen werden bewusst nicht an den Client
+// zurückgegeben: Sie könnten den Anliegen-Text oder Promptbestandteile spiegeln.
+// Stack wird auf die ersten Zeilen gekürzt.
 interface ErrorDetail {
   name: string;
   message: string;
   stack?: string;
   status?: number;
-  body?: string;
+  stage?: MistralStage;
 }
 
 function extractErrorDetail(error: unknown): ErrorDetail {
   if (!(error instanceof Error)) {
-    let message: string;
-    try {
-      message = typeof error === "string" ? error : JSON.stringify(error);
-    } catch {
-      message = String(error);
-    }
-    return { name: "NonError", message };
+    return { name: "NonError", message: "Briefgenerierung fehlgeschlagen." };
   }
 
-  const e = error as Error & {
+  const stageError = error instanceof MistralStageError ? error : null;
+  const source = stageError?.cause ?? error;
+  const e = source as Error & {
     statusCode?: number;
     status?: number;
     body?: unknown;
@@ -84,33 +87,14 @@ function extractErrorDetail(error: unknown): ErrorDetail {
         ? e.status
         : undefined;
 
-  const readBody = (raw: unknown): string | undefined => {
-    if (raw === undefined || raw === null) return undefined;
-    try {
-      return (typeof raw === "string" ? raw : JSON.stringify(raw)).slice(0, 2000);
-    } catch {
-      return String(raw).slice(0, 2000);
-    }
-  };
-
-  let message = e.message;
-  let body = readBody(e.body);
-
-  // MistralProviderUnavailableError wraps the real provider error in `cause`.
-  const cause = e.cause;
-  if (cause) {
-    const causeMsg =
-      cause instanceof Error ? cause.message : typeof cause === "string" ? cause : undefined;
-    if (causeMsg) message += ` | cause: ${causeMsg}`;
-    if (body === undefined) body = readBody((cause as { body?: unknown }).body);
-  }
-
   return {
-    name: e.name,
-    message,
-    stack: e.stack ? e.stack.split("\n").slice(0, 8).join("\n") : undefined,
+    name: stageError?.name ?? e.name,
+    message: "Briefgenerierung fehlgeschlagen.",
+    stack: !stageError && error.stack
+      ? error.stack.split("\n").filter((line) => line.trimStart().startsWith("at ")).slice(0, 7).join("\n")
+      : undefined,
     status,
-    body,
+    ...(stageError ? { stage: stageError.stage } : {}),
   };
 }
 
@@ -121,6 +105,7 @@ export async function POST(req: NextRequest) {
       selection?: unknown;
       selectedPoliticianId?: unknown;
       routingToken?: unknown;
+      letterSignalContext?: unknown;
     };
     const { wizardData: data } = body;
 
@@ -198,6 +183,27 @@ export async function POST(req: NextRequest) {
     }
     const recipient = resolved.recipient;
 
+    let letterId: string = randomUUID();
+    let verifiedSignalContext: ReturnType<typeof verifyLetterSignalContext> = null;
+    let suppliedSignalToken: string | null = null;
+    if (body.letterSignalContext !== undefined) {
+      if (typeof body.letterSignalContext !== "string") {
+        return NextResponse.json({ error: "Ungültiger Signal-Kontext." }, { status: 400 });
+      }
+      const context = verifyLetterSignalContext(body.letterSignalContext);
+      if (!context || !doesLetterSignalContextMatch({
+        context,
+        data,
+        recipient,
+        campaignSlug: campaign?.slug ?? null,
+      })) {
+        return NextResponse.json({ error: "Ungültiger Signal-Kontext." }, { status: 400 });
+      }
+      letterId = context.letterId;
+      verifiedSignalContext = context;
+      suppliedSignalToken = body.letterSignalContext;
+    }
+
     // Routing-Kontext: NUR über den signierten Prefetch-Token (LOCK-10).
     // Daraus leiten sich Kompetenz-Mismatch-Framing und Debug-Telemetrie ab —
     // beides serverseitig, ohne dem Client zu vertrauen.
@@ -256,8 +262,31 @@ export async function POST(req: NextRequest) {
       mismatchRecommendedLevel,
     });
 
+    const resolvedSignal = verifiedSignalContext
+      ? { context: verifiedSignalContext, token: suppliedSignalToken! }
+      : buildLetterSignalContext({
+          data,
+          recipient: result.selectedRecipient,
+          letterId,
+          topic: result.topic,
+          campaignSlug: campaign?.slug ?? null,
+        });
+    const generationProof = createGenerationProof({
+      letterId,
+      issueText: data.issueText,
+      plz: data.plz,
+      recipient: result.selectedRecipient,
+      letterText: result.letter,
+      campaignSlug: campaign?.slug ?? null,
+    });
+
     // Moderate output
-    const outputModeration = await moderateText(result.letter);
+    let outputModeration;
+    try {
+      outputModeration = await moderateText(result.letter);
+    } catch (error) {
+      throw new MistralStageError("moderation", error);
+    }
     if (outputModeration.flagged) {
       return NextResponse.json(
         { error: "Beim Erstellen deines Briefes ist ein Problem aufgetreten. Bitte formuliere dein Anliegen anders und versuche es erneut." },
@@ -276,11 +305,19 @@ export async function POST(req: NextRequest) {
 
     // Send email and follow-up after the response
     after(async () => {
+      // Generation is optional metadata. The voluntary map contribution was
+      // already accepted independently and remains valid if mail delivery fails.
+      const finalized = await markLetterSignalGeneratedAction({ generationProof });
+      if ("error" in finalized && finalized.error === "server_error") {
+        console.error("[brief-nach-berlin][after][letter-signals] finalize failed");
+      }
+
       const debugPayload = buildDebugPayload(
         data,
         result,
         resolved.availableCount,
-        routingInfo ?? undefined
+        routingInfo ?? undefined,
+        letterId,
       );
       const politicianFullName =
         result.selectedRecipient.kind === "rathaus" ||
@@ -296,6 +333,7 @@ export async function POST(req: NextRequest) {
         debug: debugPayload,
         campaign: data.campaign,
         letterNumber,
+        letterId,
       });
 
       const letterResult = await sendLetterEmail(params);
@@ -338,6 +376,9 @@ export async function POST(req: NextRequest) {
       recipient: result.selectedRecipient,
       politicalLevel: result.politicalLevel,
       letterNumber,
+      letterId,
+      letterSignalContext: resolvedSignal?.token ?? null,
+      generationProof,
     });
   } catch (error) {
     // errorId: billiger Live-Grep-Anker für Vercel-Logs im Moment des Fehlers.
@@ -346,7 +387,8 @@ export async function POST(req: NextRequest) {
     const errorId = randomUUID().slice(0, 8);
     const detail = extractErrorDetail(error);
     console.error(`[generate-letter] error [${errorId}]:`, detail);
-    if (error instanceof MistralProviderUnavailableError) {
+    const upstreamError = error instanceof MistralStageError ? error.cause : error;
+    if (upstreamError instanceof MistralProviderUnavailableError) {
       return NextResponse.json(
         {
           error:
@@ -355,6 +397,17 @@ export async function POST(req: NextRequest) {
           detail,
         },
         { status: 503, headers: { "Retry-After": "60" } }
+      );
+    }
+    if (error instanceof MistralStageError && detail.status !== undefined) {
+      return NextResponse.json(
+        {
+          error:
+            "Der KI-Dienst konnte den Brief gerade nicht verarbeiten. Bitte versuche es in ein, zwei Minuten erneut.",
+          errorId,
+          detail,
+        },
+        { status: 502 }
       );
     }
     return NextResponse.json(

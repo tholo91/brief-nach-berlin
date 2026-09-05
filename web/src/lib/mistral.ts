@@ -13,6 +13,8 @@ export const MISTRAL_MODELS = {
   levelRouting: "mistral-small-latest",
 } as const;
 
+export type MistralStage = "routing" | "generation" | "moderation";
+
 const RETRYABLE_HTTP_STATUS = new Set([408, 429, 500, 502, 503, 504]);
 const RETRYABLE_NETWORK_CODES = new Set([
   "ECONNRESET",
@@ -44,6 +46,21 @@ function extractStatus(err: unknown): number | undefined {
   if (typeof e.statusCode === "number") return e.statusCode;
   if (typeof e.status === "number") return e.status;
   return undefined;
+}
+
+export class MistralStageError extends Error {
+  readonly statusCode: number | undefined;
+  readonly cause: unknown;
+
+  constructor(
+    readonly stage: MistralStage,
+    cause: unknown,
+  ) {
+    super(`Mistral ${stage} failed`);
+    this.name = "MistralStageError";
+    this.statusCode = extractStatus(cause);
+    this.cause = cause;
+  }
 }
 
 function isRetryable(err: unknown): { retryable: boolean; status?: number } {

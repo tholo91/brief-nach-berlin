@@ -24,8 +24,14 @@ export default function Hero() {
 
     let isInViewport = false;
     let isMounted = true;
+    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
 
     const attemptPlayback = () => {
+      if (reducedMotion.matches) {
+        video.pause();
+        if (isMounted) setIsVideoPlaying(false);
+        return;
+      }
       if (!video.paused) return;
 
       video.muted = true;
@@ -52,17 +58,28 @@ export default function Hero() {
       }
     };
 
+    const handleMotionPreferenceChange = () => {
+      if (reducedMotion.matches) {
+        video.pause();
+        if (isMounted) setIsVideoPlaying(false);
+      } else if (isInViewport && document.visibilityState === "visible") {
+        attemptPlayback();
+      }
+    };
+
     observer.observe(section);
     const sectionBounds = section.getBoundingClientRect();
     isInViewport =
       sectionBounds.bottom > 0 && sectionBounds.top < window.innerHeight;
     if (isInViewport) attemptPlayback();
     document.addEventListener("visibilitychange", handleVisibilityChange);
+    reducedMotion.addEventListener("change", handleMotionPreferenceChange);
 
     return () => {
       isMounted = false;
       observer.disconnect();
       document.removeEventListener("visibilitychange", handleVisibilityChange);
+      reducedMotion.removeEventListener("change", handleMotionPreferenceChange);
     };
   }, []);
 
@@ -97,6 +114,10 @@ export default function Hero() {
         tabIndex={-1}
         onPlaying={() => setIsVideoPlaying(true)}
         onPause={() => setIsVideoPlaying(false)}
+        onWaiting={() => setIsVideoPlaying(false)}
+        onStalled={() => setIsVideoPlaying(false)}
+        onSuspend={() => setIsVideoPlaying(false)}
+        onEmptied={() => setIsVideoPlaying(false)}
         onError={() => setIsVideoPlaying(false)}
         className="pointer-events-none absolute inset-0 w-full h-full object-cover"
         poster="/hero-bg.webp"

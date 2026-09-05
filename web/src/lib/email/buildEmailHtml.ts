@@ -70,10 +70,6 @@ function nlToBr(text: string): string {
   return escapeHtml(text).replace(/\n/g, "<br>");
 }
 
-function isFirstLetterEmail(data: SendLetterEmailParams): boolean {
-  return !data.debug?.resent;
-}
-
 function buildFinancingNoticeHtml(locale: ReturnType<typeof resolveEmailLocale>): string {
   const supportCopy = SUPPORT_EMAIL_COPY[locale];
   const donationUrl = SUPPORT_CONTENT.ctas.donate.href;
@@ -102,11 +98,9 @@ export function buildLetterEmailText(data: SendLetterEmailParams): string {
     normalizeLetterClosing(data.letterText),
     `${copy.greeting}\n\nThomas\n${copy.initiative} ${FOUNDER_HOMEPAGE}`,
   ];
-  if (isFirstLetterEmail(data)) {
-    parts.push(
-      `${supportCopy.prefix} ${supportCopy.status}\n${supportCopy.button}: ${SUPPORT_CONTENT.ctas.donate.href}\n${supportCopy.learnMore}: ${APP_URL}${SUPPORT_CONTENT.ctas.learnMore.href}?src=email`,
-    );
-  }
+  parts.push(
+    `${supportCopy.prefix} ${supportCopy.status}\n${supportCopy.button}: ${SUPPORT_CONTENT.ctas.donate.href}\n${supportCopy.learnMore}: ${APP_URL}${SUPPORT_CONTENT.ctas.learnMore.href}?src=email`,
+  );
   return parts.join("\n\n");
 }
 
@@ -600,13 +594,12 @@ export function buildEmailHtml(data: SendLetterEmailParams): string {
                   </td>
                 </tr>
 
-                ${isFirstLetterEmail(data) ? `
-                <!-- Donation CTA: first letter email only, before sharing. -->
+                <!-- Donation CTA: shared by first letter emails and resends, before sharing. -->
                 <tr>
                   <td colspan="7" class="bnb-pad" style="padding:0 32px 16px;background-color:#ffffff;text-align:left;">
                     ${buildFinancingNoticeHtml(locale)}
                   </td>
-                </tr>` : ""}
+                </tr>
 
                 ${data.campaign?.slug ? `
                 <tr>

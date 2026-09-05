@@ -1,5 +1,6 @@
 import "server-only";
-import { createHash, createHmac, timingSafeEqual } from "node:crypto";
+import { createHash, createHmac, randomUUID, timingSafeEqual } from "node:crypto";
+import { z } from "zod";
 import { RoutingResultSchema, type RoutingResult } from "./levelRouter";
 
 // Kurzlebiger, HMAC-signierter Token für das Routing-Prefetch (LOCK-10):
@@ -25,13 +26,24 @@ function b64url(buf: Buffer): string {
 
 /** Kanonischer Input für Routing-Aufruf und Token-Bindung. */
 export function normalizeRoutingIssue(issueText: string): string {
-  return issueText.trim().replace(/\s+/g, " ").slice(0, 1500);
+  return issueText.trim().replace(/\s+/g, " ");
 }
 
 export function hashRoutingIssue(issueText: string): string {
   return createHash("sha256")
     .update(normalizeRoutingIssue(issueText), "utf8")
     .digest("hex");
+}
+
+export function deriveRoutingLetterId(nonce: string, contextKey: string): string {
+  const bytes = createHmac("sha256", secret())
+    .update(`routing-letter-v1:${nonce}:${contextKey}`, "utf8")
+    .digest()
+    .subarray(0, 16);
+  bytes[6] = (bytes[6]! & 0x0f) | 0x40;
+  bytes[8] = (bytes[8]! & 0x3f) | 0x80;
+  const hex = bytes.toString("hex");
+  return `${hex.slice(0, 8)}-${hex.slice(8, 12)}-${hex.slice(12, 16)}-${hex.slice(16, 20)}-${hex.slice(20)}`;
 }
 
 export function signRoutingToken(args: {
@@ -42,6 +54,7 @@ export function signRoutingToken(args: {
     v: SCHEMA_VERSION,
     issueHash: args.issueHash,
     routing: args.routing,
+    letterId: randomUUID(),
     iat: Math.floor(Date.now() / 1000),
   };
   const body = b64url(Buffer.from(JSON.stringify(payload), "utf8"));
@@ -53,7 +66,10 @@ export function signRoutingToken(args: {
  * Gibt das Routing-Ergebnis zurück, wenn Signatur, Alter, Schema-Version und
  * Issue-Hash passen — sonst null (Aufrufer routet dann serverseitig neu).
  */
-export function verifyRoutingToken(token: string, issueText: string): RoutingResult | null {
+export function verifyRoutingTokenEnvelope(
+  token: string,
+  issueText: string,
+): { routing: RoutingResult; letterId: string } | null {
   if (token.length > TOKEN_MAX_LENGTH) return null;
   const dot = token.indexOf(".");
   if (dot < 1 || dot === token.length - 1) return null;
@@ -76,6 +92,7 @@ export function verifyRoutingToken(token: string, issueText: string): RoutingRes
       v?: number;
       issueHash?: string;
       routing?: unknown;
+      letterId?: string;
       iat?: number;
     };
     if (parsed.v !== SCHEMA_VERSION) return null;
@@ -85,8 +102,15 @@ export function verifyRoutingToken(token: string, issueText: string): RoutingRes
     if (now - parsed.iat > TOKEN_MAX_AGE_SECONDS) return null;
     if (parsed.issueHash !== hashRoutingIssue(issueText)) return null;
     const routing = RoutingResultSchema.safeParse(parsed.routing);
-    return routing.success ? routing.data : null;
+    const letterId = z.string().uuid().safeParse(parsed.letterId);
+    return routing.success && letterId.success
+      ? { routing: routing.data, letterId: letterId.data }
+      : null;
   } catch {
     return null;
   }
+}
+
+export function verifyRoutingToken(token: string, issueText: string): RoutingResult | null {
+  return verifyRoutingTokenEnvelope(token, issueText)?.routing ?? null;
 }

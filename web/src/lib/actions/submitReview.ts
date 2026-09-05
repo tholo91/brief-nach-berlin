@@ -8,6 +8,11 @@ import {
   FEEDBACK_TAG_SLUGS,
   type FeedbackTagSlug,
 } from "@/lib/feedback/feedbackTags";
+import {
+  POLITICAL_POWERLESSNESS_FREQUENCY_VALUES,
+  POLITICAL_SELF_EFFICACY_VALUES,
+  validatePoliticalReviewAnswers,
+} from "@/lib/feedback/politicalActivation";
 import { checkRateLimit, getClientIp, hashIdentifier, LIMITS } from "@/lib/rateLimit";
 import type { LetterDebugPayload } from "@/lib/email/sendLetterEmail";
 
@@ -32,6 +37,14 @@ const reviewSchema = z.object({
   // who only filled the body but skipped the radio should still be able to
   // submit the form.
   letterSent: z.boolean().nullable().default(null),
+  politicalSelfEfficacy: z
+    .enum(POLITICAL_SELF_EFFICACY_VALUES)
+    .nullable()
+    .default(null),
+  politicalPowerlessnessFrequency: z
+    .enum(POLITICAL_POWERLESSNESS_FREQUENCY_VALUES)
+    .nullable()
+    .default(null),
   // Quick-Tap-Chips: multi-select, server-side allowlist via z.enum.
   // Max accommodates 7 negative + 3 fact-check + headroom.
   feedbackTags: z.array(feedbackTagSchema).max(12).optional(),
@@ -64,6 +77,10 @@ export async function submitReviewAction(
     return { error: "validation", message: "Ungültige Eingabe." };
   }
   const data = parsed.data;
+  const politicalAnswersError = validatePoliticalReviewAnswers(data);
+  if (politicalAnswersError) {
+    return { error: "validation", message: politicalAnswersError };
+  }
 
   const payload = verifyFeedbackToken<LetterDebugPayload & { source?: string }>(
     data.token
@@ -136,6 +153,7 @@ export async function submitReviewAction(
       politician_id:
         payload.politicianId != null ? String(payload.politicianId) : null,
       plz: payload.plz ?? null,
+      letter_id: payload.letterId ?? null,
       debug_payload: data.mailSeq != null
         ? { ...payload, mail_seq: data.mailSeq }
         : payload,
@@ -179,6 +197,9 @@ export async function submitReviewAction(
         body: data.body.trim() || null,
         consent: data.consent,
         letter_sent: data.letterSent,
+        political_self_efficacy: data.politicalSelfEfficacy,
+        political_powerlessness_frequency:
+          data.politicalPowerlessnessFrequency,
         full_feedback_submitted: true,
         // Empty array → null so the row doesn't show "{}" in the DB for "no chips".
         feedback_tags: tagsForInsert.length ? tagsForInsert : null,

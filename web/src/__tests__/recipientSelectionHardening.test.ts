@@ -1,6 +1,12 @@
 jest.mock("@/lib/lookup/resolveRecipient", () => ({
   resolveRecipientSelection: jest.fn(),
 }));
+jest.mock("@/lib/lookup/routingToken", () => ({
+  verifyRoutingToken: jest.fn(),
+  verifyRoutingTokenEnvelope: jest.fn(() => null),
+  deriveRoutingLetterId: jest.fn(() => "11111111-1111-4111-8111-111111111111"),
+}));
+jest.mock("@/lib/letterSignals/context", () => ({ buildLetterSignalContext: jest.fn(() => null) }));
 jest.mock("@/lib/moderation/moderateText", () => ({ moderateText: jest.fn() }));
 jest.mock("@/lib/email/sendLetterEmail", () => ({
   sendLetterEmail: jest.fn(),
@@ -24,8 +30,10 @@ import { checkRateLimit } from "@/lib/rateLimit";
 import { moderateText } from "@/lib/moderation/moderateText";
 import { prepareLetterEmail, sendLetterEmail } from "@/lib/email/sendLetterEmail";
 import { buildResendDebugPayload } from "@/lib/email/buildDebugPayload";
+import { buildLetterSignalContext } from "@/lib/letterSignals/context";
 import type { WizardData } from "@/lib/types/wizard";
 import type { RecipientSelection } from "@/lib/lookup/rathausRecipient";
+import { createGenerationProof } from "@/lib/letterSignals/token";
 
 const mockedResolveRecipientSelection = jest.mocked(resolveRecipientSelection);
 const mockedCheckRateLimit = jest.mocked(checkRateLimit);
@@ -33,6 +41,7 @@ const mockedModerateText = jest.mocked(moderateText);
 const mockedPrepareLetterEmail = jest.mocked(prepareLetterEmail);
 const mockedSendLetterEmail = jest.mocked(sendLetterEmail);
 const mockedBuildResendDebugPayload = jest.mocked(buildResendDebugPayload);
+const mockedBuildLetterSignalContext = jest.mocked(buildLetterSignalContext);
 
 const data: WizardData = {
   plz: "50667",
@@ -67,6 +76,7 @@ describe("RecipientSelection server hardening", () => {
     jest.clearAllMocks();
     process.env.LANDTAG_ROUTING_ENABLED = "false";
     process.env.LETTER_PROMPT_LEVEL_AWARE = "true";
+    process.env.LETTER_SIGNAL_TOKEN_SECRET = "recipient-selection-test-secret";
     mockedCheckRateLimit.mockReturnValue({ allowed: true });
     mockedResolveRecipientSelection.mockReturnValue({
       ok: true,
@@ -157,6 +167,24 @@ describe("RecipientSelection server hardening", () => {
     });
   });
 
+  it("mintet den freiwilligen Karten-Kontext schon beim Pre-Check vor der Briefgenerierung", async () => {
+    mockedBuildLetterSignalContext.mockReturnValue({
+      context: {} as never,
+      token: "pre-generation-signal-context",
+    });
+
+    await expect(
+      selectPoliticianAction({ ...data }, { kind: "mdb", selectedPoliticianId: 1 }),
+    ).resolves.toMatchObject({
+      preCheckOk: true,
+      letterSignalContext: "pre-generation-signal-context",
+    });
+    expect(mockedBuildLetterSignalContext).toHaveBeenCalledWith(expect.objectContaining({
+      data,
+      recipient: mdbRecipient,
+    }));
+  });
+
   it("weist eine strukturell ungültige Auswahl in resendLetterAction vor Limits ab", async () => {
     const malformed = { kind: "rathaus", selectedPoliticianId: 1 } as unknown as RecipientSelection;
 
@@ -165,6 +193,41 @@ describe("RecipientSelection server hardening", () => {
       message: "Ungültige Eingabe.",
     });
     expect(mockedCheckRateLimit).not.toHaveBeenCalled();
+  });
+
+  it("weist einen manipulierten Generierungsnachweis beim Resend ab", async () => {
+    await expect(
+      resendLetterAction(
+        { ...data },
+        { kind: "mdb", selectedPoliticianId: 1 },
+        "Ein gültiger Brieftext",
+        "not-a-valid-generation-proof",
+      ),
+    ).resolves.toMatchObject({ error: "validation" });
+    expect(mockedCheckRateLimit).not.toHaveBeenCalled();
+    expect(mockedSendLetterEmail).not.toHaveBeenCalled();
+  });
+
+  it("weist einen gültig signierten, aber kreuzgebundenen Resend ab", async () => {
+    const proof = createGenerationProof({
+      letterId: "11111111-1111-4111-8111-111111111111",
+      issueText: data.issueText,
+      plz: data.plz,
+      recipient: mdbRecipient,
+      letterText: "Ursprünglicher Brieftext",
+      campaignSlug: null,
+    });
+
+    await expect(
+      resendLetterAction(
+        { ...data },
+        { kind: "mdb", selectedPoliticianId: 1 },
+        "Manipulierter Brieftext",
+        proof,
+      ),
+    ).resolves.toMatchObject({ error: "validation" });
+    expect(mockedModerateText).not.toHaveBeenCalled();
+    expect(mockedSendLetterEmail).not.toHaveBeenCalled();
   });
 
   it("akzeptiert eine strukturell gültige Rathaus-Auswahl am Resend-Boundary", async () => {

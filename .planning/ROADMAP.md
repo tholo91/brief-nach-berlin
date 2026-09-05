@@ -675,26 +675,26 @@ Plans:
 Plans:
 - [ ] TBD (promote with /gsd-review-backlog when ready)
 
-### Phase 999.29: Opt-in Brief-Freigabe für aggregierte Themen-Übersicht (BACKLOG)
+### Phase 999.29: Freiwillige Themensignale und persönliche Kartenbestätigung (IN PROGRESS)
 
-**Goal:** Nach erfolgreicher Briefgenerierung freiwillig anbieten, den konkreten Briefentwurf für die interne Verbesserung von Brief-nach-Berlin freizugeben. Thomas kann Briefqualität, Themen, Regionen und Bund-/Land-/Kommune-Unterschiede auswerten und spätere Reviews exakt zuordnen, ohne einzelne Briefe zu veröffentlichen oder Daten zu verkaufen.
+**Goal:** Während der Briefgenerierung freiwillig anbieten, ein reduziertes Themensignal zu teilen. Gespeichert werden Thema, PLZ, Ebene, Zeitpunkt und eine Review-verknüpfbare Brief-ID, aber weder Brief- noch Anliegen-Volltext.
 
-**Produktentscheidung (2026-08-21):**
-- ausdrücklicher, ungekoppelter Opt-in erst nach fertigem Brief;
-- intern: Brief-Fließtext, vollständige PLZ, Ebene und wenige Empfänger-Metadaten;
-- keine Klartext-E-Mail in der Brieftabelle; Review-Verknüpfung über zufällige `letter_id`;
-- feste Aufbewahrung von zwölf Monaten für Volltext und volle PLZ, noch durch Thomas zu bestätigen;
-- kein rückwirkender Brevo-Import;
-- vor Livegang Datenschutzcopy, Brevo-Retention und Remote-Review-Schema verifizieren;
-- Clustering und öffentliche Deutschlandkarte bleiben eine getrennte Follow-up-Story und verwenden später nur ausreichend große Aggregate.
+**Produktentscheidung (2026-09-02):**
+- ausdrücklicher, ungekoppelter Opt-in bereits während der Generierung;
+- `pending` bei Zustimmung, `generated` erst nach erfolgreichem Brief;
+- intern: volle PLZ, Bundesland, Ebene, stabile Oberkategorien, freie Unterthemen, Zeitpunkt und `letter_id`;
+- keine Speicherung von Brieftext, Anliegen-Volltext oder Klartext-E-Mail in der Signaltabelle;
+- Review-Verknüpfung über zufällige `letter_id`, Löschung über E-Mail-HMAC;
+- kein rückwirkender Brevo-Import und keine öffentliche Rohdaten-View;
+- öffentliche Deutschlandkarte bleibt eine getrennte Follow-up-Story mit vergröberten Aggregaten.
 
-**Erwarteter Impact:** Qualitative Briefdaten plus Review-Verknüpfung schaffen eine belastbare Grundlage, um Briefqualität und tatsächliche Themenmuster zu verbessern. Eine spätere aggregierte Deutschlandkarte kann Beteiligung sichtbar machen, ohne Rohdaten zu veröffentlichen.
+**Erwarteter Impact:** Regionale Themensignale plus Review-Verknüpfung zeigen, was Menschen bewegt und welche Themen zu guten Briefen führen, ohne sensible Freitexte dauerhaft zu speichern.
 
 **Requirements:** `.planning/phases/999.29-opt-in-brief-freigabe/999.29-opt-in-brief-freigabe-STORY.md`
 **Plans:** 2 Story-Dokumente
 
 Plans:
-- [ ] Freiwillige, vertrauliche Brief-Freigabe zur Produktverbesserung — DRAFT
+- [ ] Freiwillige Themensignale und persönliche Kartenbestätigung — IN PROGRESS
 - [ ] Themenclustering und aggregierte Deutschlandkarte — BACKLOG
 
 ### Phase 999.30: Brief-Verbesserungs-Flow über Mail-Link bei niedriger Bewertung (BACKLOG)

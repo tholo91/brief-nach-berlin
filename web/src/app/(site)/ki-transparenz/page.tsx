@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { APP_URL, FOUNDER_HOMEPAGE } from "@/lib/config";
 import { Prose } from "@/components/editorial/Prose";
 import { FAQAccordion } from "@/components/FAQAccordion";
+import { MISTRAL_MODELS } from "@/lib/mistral";
 
 const TITLE = "KI & Transparenz";
 const DESCRIPTION =
@@ -33,27 +34,27 @@ export const metadata: Metadata = {
 const faqs = [
   {
     q: "Welche KI nutzt Brief-nach-Berlin?",
-    a: "Brief-nach-Berlin generiert die Brief-Entwürfe mit Mistral, einem KI-Anbieter mit Sitz in Paris. Konkret läuft die Textgenerierung über das Modell mistral-medium, die Inhaltsprüfung über mistral-moderation. Alle Aufrufe gehen direkt an Mistrals API in der EU.",
+    a: `Brief-nach-Berlin generiert die Brief-Entwürfe mit Mistral, einem KI-Anbieter mit Sitz in Paris. Konkret läuft die Textgenerierung über ${MISTRAL_MODELS.letter}, die Inhaltsprüfung über ${MISTRAL_MODELS.moderation}. Die API-Region und Zero-Data-Retention werden vor Aktivierung freiwilliger Themensignale gesondert geprüft.`,
   },
   {
     q: "Warum nicht OpenAI oder ein anderes US-Modell?",
-    a: "US-Anbieter unterliegen Gesetzen wie dem CLOUD Act, die US-Behörden Zugriff auf Daten geben können, auch wenn Server in Europa stehen. Für ein Tool, in dem Menschen politische Anliegen formulieren, ist das die falsche Grundlage. Mistral ist europäisch, unterliegt EU-Recht und nutzt deine Eingaben vertraglich nicht für Training.",
+    a: "US-Anbieter unterliegen Gesetzen wie dem CLOUD Act, die US-Behörden Zugriff auf Daten geben können, auch wenn Server in Europa stehen. Für ein Tool, in dem Menschen politische Anliegen formulieren, ist das ein zusätzlicher Risikofaktor. Mistral ist ein europäischer Anbieter; Region, Aufbewahrung und Trainingseinstellungen werden trotzdem getrennt geprüft.",
   },
   {
     q: "Werden meine Eingaben gespeichert?",
-    a: "Nein. Brief-nach-Berlin speichert weder dein Anliegen noch den generierten Brief in einer Datenbank. Sobald du die Seite schließt, ist beides weg. Mistral verpflichtet sich vertraglich, deine Eingaben nicht für Modelltraining zu verwenden.",
+    a: "Für die Brief-Erstellung werden dein Anliegen und der generierte Brief nicht in unserer Datenbank gespeichert. Wenn du freiwillig ein Themensignal freigibst, speichern wir daraus nur Kategorien, kurze Themenlabels, PLZ-/Regiondaten und Metadaten — niemals den Brieftext oder dein Anliegen. Mistrals Aufbewahrungs- und Trainingseinstellungen werden vor Aktivierung dieses Opt-ins separat verifiziert.",
   },
   {
     q: "Werden meine Daten für KI-Training verwendet?",
-    a: "Nein. Mistral nutzt die Eingaben aus Brief-nach-Berlin laut Vertrag nicht für das Training neuer Modelle.",
+    a: "Mistral beschreibt für API-Daten einen Training-Opt-out. Ob die dafür nötige Einstellung im verwendeten Konto aktiv ist, wird vor Aktivierung freiwilliger Themensignale separat dokumentiert und freigegeben.",
   },
   {
     q: "Wo läuft die App?",
-    a: "Auf europäischen Servern, ausgeliefert über ein Frankfurter Rechenzentrum. Auch die wenigen Metriken (etwa der Brief-Zähler) liegen bei einem europäischen Anbieter. Keine Daten verlassen den europäischen Rechtsraum.",
+    a: "Die App läuft in einer Frankfurter Hosting-Region. Für KI-Aufrufe nutze ich Mistral; dessen Datenstandort, Subprozessoren und Zero-Data-Retention-Einstellung dokumentiere und prüfe ich separat.",
   },
   {
     q: "Wurde Brief-nach-Berlin mit KI gebaut?",
-    a: "Ja, die Entwicklung erfolgte mit Claude Code von Anthropic. Aber Claude läuft nicht im Betrieb mit: Wenn du Brief-nach-Berlin benutzt, verarbeitet ausschließlich Mistral in Europa deine Eingaben.",
+    a: "Ja, die Entwicklung erfolgte mit Claude Code von Anthropic. Claude läuft aber nicht im Betrieb mit: Deine Eingaben für Routing, Moderation und Brief-Erstellung verarbeitet die Mistral-API.",
   },
 ];
 
@@ -129,11 +130,11 @@ export default function KiTransparenzPage() {
                 Mistral
               </a>
               , einem KI-Anbieter mit Sitz in Paris. Konkret läuft die
-              Textgenerierung über das Modell <em>mistral-medium</em>, die
-              Inhaltsprüfung über <em>mistral-moderation</em>. Beide Aufrufe
-              gehen direkt an Mistrals API in der EU. Kein Umweg über andere
-              Anbieter, kein Zwischenspeichern, keine Trainingsdaten aus deinen
-              Texten.
+              Textgenerierung über das Modell <em>{MISTRAL_MODELS.letter}</em>, die
+              Inhaltsprüfung über <em>{MISTRAL_MODELS.moderation}</em>. Beide
+              Aufrufe gehen direkt an Mistrals API. Die konkrete API-Region,
+              Subprozessoren und Zero-Data-Retention prüfe und dokumentiere ich
+              vor der Aktivierung freiwilliger Themensignale gesondert.
             </p>
 
             <h2 className="font-body text-2xl font-bold text-waldgruen-dark pt-4">
@@ -150,11 +151,11 @@ export default function KiTransparenzPage() {
             </p>
             <p>
               Mistral ist ein europäisches Unternehmen unter europäischem
-              Recht. Die Datenverarbeitung läuft in EU-Rechenzentren. Mistral
-              verpflichtet sich vertraglich, deine Eingaben nicht für das
-              Training neuer Modelle zu verwenden. Das ist nicht perfekt, aber
-              es ist die mit Abstand sauberste Lösung, die heute praktisch
-              verfügbar ist.
+              Recht. Mistral beschreibt für API-Daten einen Training-Opt-out.
+              Ob diese separate Einstellung im verwendeten Konto aktiv ist,
+              wird zusammen mit Datenstandort und Aufbewahrung vor der
+              Aktivierung freiwilliger Themensignale dokumentiert und
+              freigegeben.
             </p>
             <p>
               Dahinter steht eine Überzeugung: Wenn wir wollen, dass digitale
@@ -168,16 +169,21 @@ export default function KiTransparenzPage() {
               Was die KI sieht, und was nicht
             </h2>
             <p>
-              An Mistral geht das, was du in das Eingabefeld schreibst, plus
-              den Namen deines Abgeordneten und die Wahlkreis-Information.
-              Mehr nicht. Kein Name von dir, keine Adresse, keine IP. Brief-nach-Berlin
-              braucht das nicht, also wird es auch nicht erhoben.
+              An Mistral gehen dein Anliegen, gewünschte Tonalität und
+              Brieflänge sowie die für den Brief nötigen Empfängerdaten. Wenn
+              du freiwillig Name, Partei oder Organisation angibst, werden
+              auch diese Angaben für den Entwurf übermittelt. Je nach
+              Empfänger können verifizierte politische Kontextinformationen
+              hinzukommen. Deine E-Mail-Adresse und deine Nutzer-IP sind kein
+              Bestandteil des Mistral-Prompts.
             </p>
             <p>
-              Der fertige Brief existiert nur in deinem Browser. Brief-nach-Berlin
-              speichert weder dein Anliegen noch den Brief in einer Datenbank.
-              Sobald du die Seite schließt, ist beides weg. Was bleibt, ist
-              der Brief, den du selbst von Hand abschreibst und abschickst.
+              Brief-nach-Berlin speichert weder dein Anliegen noch den Brief in
+              der Anwendungsdatenbank. Der fertige Entwurf wird über Brevo an
+              dein E-Mail-Postfach übertragen und liegt anschließend dort; für
+              technische Logs und Vorschauen des E-Mail-Anbieters gelten die in
+              der Datenschutzerklärung beschriebenen und vor Livegang zu
+              prüfenden Aufbewahrungseinstellungen.
             </p>
             <p>
               Mehr Details dazu stehen in der{" "}
@@ -194,12 +200,12 @@ export default function KiTransparenzPage() {
               Hosting in Deutschland
             </h2>
             <p>
-              Die Web-Anwendung läuft auf europäischen Servern, ausgeliefert
-              über ein Frankfurter Rechenzentrum. Auch die wenigen Daten, die
-              die Anwendung überhaupt braucht (zum Beispiel der Zähler, wie viele
-              Briefe geschrieben wurden), liegen bei einem europäischen
-              Anbieter mit EU-Datenverarbeitung. Keine Daten verlassen den
-              europäischen Rechtsraum.
+              Die Web-Anwendung wird über eine Frankfurter Hosting-Region
+              ausgeliefert. Datenbank und KI-Verarbeitung haben eigene
+              Anbieter- und Regionseinstellungen; diese stehen transparent in
+              der Datenschutzerklärung und werden bei Änderungen separat
+              geprüft. Deshalb behaupte ich hier nicht pauschal, dass jede
+              technische Verarbeitung ausschließlich in Deutschland erfolgt.
             </p>
 
             <h2 className="font-body text-2xl font-bold text-waldgruen-dark pt-4">
@@ -253,9 +259,9 @@ export default function KiTransparenzPage() {
               Wichtig dabei: Claude Code kommt nur beim Bauen zum Einsatz, nicht
               im Betrieb. Wenn du Brief-nach-Berlin benutzt, läuft kein Claude irgendwo
               im Hintergrund mit. Die Architektur und der Code wurden mit Claude
-              entwickelt, die laufende Verarbeitung deiner Eingaben erfolgt
-              ausschließlich über Mistral in Europa. Datenschutzrechtlich passt
-              das sauber zusammen: Wie ein Tool gebaut wurde, ist eine andere
+              entwickelt, die laufende KI-Verarbeitung deiner Eingaben erfolgt
+              über die Mistral-API. Datenschutzrechtlich sind Entwicklung und
+              Produktivbetrieb getrennte Vorgänge: Wie ein Tool gebaut wurde, ist eine andere
               Frage als womit es im Alltag arbeitet.
             </p>
             <p>
@@ -275,9 +281,10 @@ export default function KiTransparenzPage() {
               Probier es aus
             </h2>
             <p className="font-body text-warmgrau leading-relaxed mb-6">
-              Drei Minuten, ein Brief, kein Account. Deine Eingaben gehen
-              ausschließlich an Mistral in Europa und werden nirgendwo
-              gespeichert.
+              Drei Minuten, ein Brief, kein Account. Deine Eingaben werden für
+              Routing, Moderation und Brief-Erstellung an Mistral übermittelt. Für eine interne
+              Themenauswertung kannst du freiwillig ein Signal freigeben;
+              Brief- und Anliegen-Volltext werden dabei nicht gespeichert.
             </p>
             <Link
               href="/app"

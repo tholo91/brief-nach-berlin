@@ -13,7 +13,15 @@ import {
   type InternalStats,
   type PoliticalLevel,
   type SendBreakdown,
+  topicCategoryLabel,
 } from "@/lib/internalStats/aggregate";
+import { TOPIC_CATEGORY_CODES } from "@/lib/topics/topicTaxonomy";
+import {
+  POLITICAL_POWERLESSNESS_FREQUENCY_LABELS,
+  POLITICAL_POWERLESSNESS_FREQUENCY_VALUES,
+  POLITICAL_SELF_EFFICACY_LABELS,
+  POLITICAL_SELF_EFFICACY_VALUES,
+} from "@/lib/feedback/politicalActivation";
 
 export const dynamic = "force-dynamic";
 
@@ -118,6 +126,22 @@ function SectionHeading({ eyebrow, title, detail }: { eyebrow: string; title: st
   );
 }
 
+function EmptyState({ children = "Noch keine freigegebenen Signale." }: { children?: string }) {
+  return <p className="rounded-lg bg-warmgrau/5 px-4 py-5 font-body text-sm leading-relaxed text-warmgrau/60">{children}</p>;
+}
+
+function RankedBars({ values, labels }: { values: Record<string, number>; labels?: (key: string) => string }) {
+  const entries = Object.entries(values).sort((a, b) => b[1] - a[1]).slice(0, 12);
+  const max = entries[0]?.[1] ?? 0;
+  if (!entries.length) return <EmptyState />;
+  return <div className="grid gap-3">{entries.map(([key, value]) => (
+    <div key={key}>
+      <div className="flex items-baseline justify-between gap-3"><span className="font-body text-sm font-semibold text-waldgruen-dark">{labels?.(key) ?? key}</span><span className="font-typewriter text-xs tabular-nums text-warmgrau/60">{formatNumber(value)}</span></div>
+      <div className="mt-1.5 h-2 overflow-hidden rounded-full bg-warmgrau/10"><div className="h-full rounded-full bg-airmail-rot" style={{ width: `${max ? (value / max) * 100 : 0}%` }} /></div>
+    </div>
+  ))}</div>;
+}
+
 function RatingBars({ stats }: { stats: InternalStats }) {
   return (
     <div className="grid gap-3">
@@ -133,6 +157,45 @@ function RatingBars({ stats }: { stats: InternalStats }) {
             <span className="text-right font-typewriter text-sm tabular-nums text-waldgruen-dark">
               {formatNumber(count)}
             </span>
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
+function SurveyDistributionBars({
+  values,
+  options,
+  total,
+  color,
+}: {
+  values: Record<string, number>;
+  options: readonly { key: string; label: string }[];
+  total: number;
+  color: string;
+}) {
+  return (
+    <div className="grid gap-3">
+      {options.map(({ key, label }) => {
+        const count = values[key] ?? 0;
+        const share = total > 0 ? (count / total) * 100 : 0;
+        return (
+          <div key={key}>
+            <div className="flex items-baseline justify-between gap-3">
+              <span className="font-body text-sm font-semibold text-waldgruen-dark">
+                {label}
+              </span>
+              <span className="font-typewriter text-xs tabular-nums text-warmgrau/60">
+                {formatNumber(count)} · {percent(count, total)}
+              </span>
+            </div>
+            <div className="mt-1.5 h-2 overflow-hidden rounded-full bg-warmgrau/10">
+              <div
+                className="h-full rounded-full"
+                style={{ backgroundColor: color, width: `${share}%` }}
+              />
+            </div>
           </div>
         );
       })}
@@ -172,6 +235,18 @@ const ratingBands = [
   { label: "3 Sterne", ratings: [3] as const, color: "#C58B18" },
   { label: "4–5 Sterne", ratings: [4, 5] as const, color: "#2D6A4F" },
 ] as const;
+
+const selfEfficacyOptions = POLITICAL_SELF_EFFICACY_VALUES.map((key) => ({
+  key,
+  label: POLITICAL_SELF_EFFICACY_LABELS[key],
+}));
+
+const powerlessnessOptions = POLITICAL_POWERLESSNESS_FREQUENCY_VALUES.map(
+  (key) => ({
+    key,
+    label: POLITICAL_POWERLESSNESS_FREQUENCY_LABELS[key],
+  }),
+);
 
 const positiveSignals = [
   { key: "sofort_verschickbar", label: "Sofort verschickbar" },
@@ -333,6 +408,10 @@ export default async function InternalStatsPage({ searchParams }: InternalStatsP
     console.error("[internal-stats] read failed", error);
     return <DataError />;
   }
+  const activation = stats.politicalActivation;
+  const hasActivationCrossData = Object.values(
+    activation.efficacyByPowerlessness,
+  ).some((item) => item.answered > 0);
 
   return (
     <main className="min-h-screen overflow-hidden bg-creme text-warmgrau">
@@ -376,6 +455,21 @@ export default async function InternalStatsPage({ searchParams }: InternalStatsP
           />
         </section>
 
+        <section className="mt-10 rounded-2xl border border-airmail-rot/15 bg-white/75 p-5 shadow-[0_16px_36px_rgba(27,67,50,0.06)] sm:p-8">
+          <SectionHeading eyebrow="Freiwillige Themensignale" title="Was bewegt die Menschen?" detail={`${formatNumber(stats.letterSignals.signalCount)} erfolgreich erzeugte Signale · keine Brieftexte oder Einzelzeilen`} />
+          {stats.letterSignals.signalCount === 0 ? <EmptyState>Es gibt noch keine freigegebenen Themensignale. Diese Übersicht füllt sich erst nach dem freiwilligen Opt-in.</EmptyState> : (
+            <div className="grid gap-8 lg:grid-cols-2">
+              <div><h3 className="mb-4 font-typewriter text-sm font-bold uppercase tracking-[0.12em] text-waldgruen-dark">Oberkategorien</h3><RankedBars values={stats.letterSignals.categoryCounts} labels={topicCategoryLabel} /></div>
+              <div><h3 className="mb-4 font-typewriter text-sm font-bold uppercase tracking-[0.12em] text-waldgruen-dark">Unterthemen</h3><RankedBars values={stats.letterSignals.labelCounts} /></div>
+              <div><h3 className="mb-4 font-typewriter text-sm font-bold uppercase tracking-[0.12em] text-waldgruen-dark">Politische Ebene</h3><RankedBars values={stats.letterSignals.levelCounts} /></div>
+              <div><h3 className="mb-4 font-typewriter text-sm font-bold uppercase tracking-[0.12em] text-waldgruen-dark">Bundesländer</h3><RankedBars values={stats.letterSignals.bundeslandCounts} /></div>
+              <div><h3 className="mb-4 font-typewriter text-sm font-bold uppercase tracking-[0.12em] text-waldgruen-dark">PLZ-Regionen</h3><RankedBars values={stats.letterSignals.plzPrefixCounts} /></div>
+              <div><h3 className="mb-4 font-typewriter text-sm font-bold uppercase tracking-[0.12em] text-waldgruen-dark">Monatsverlauf</h3><RankedBars values={stats.letterSignals.monthCounts} /></div>
+              <div className="lg:col-span-2"><h3 className="mb-4 font-typewriter text-sm font-bold uppercase tracking-[0.12em] text-waldgruen-dark">Bewertung & Versandabsicht nach Oberkategorie</h3>{Object.keys(stats.letterSignals.reviewByCategory).length === 0 ? <EmptyState>Noch keine verknüpften Reviews mit diesen Signalen.</EmptyState> : <div className="grid gap-3 sm:grid-cols-2">{TOPIC_CATEGORY_CODES.filter((code) => stats.letterSignals.reviewByCategory[code]).map((code) => { const item = stats.letterSignals.reviewByCategory[code]; const average = item.ratings ? (item.ratingSum / item.ratings).toFixed(1).replace(".", ",") : "—"; const sent = item.knownSent ? `${Math.round((item.sent / item.knownSent) * 100)} %` : "—"; return <div key={code} className="rounded-lg border border-warmgrau/10 bg-creme/60 px-4 py-3"><p className="font-body text-sm font-semibold text-waldgruen-dark">{topicCategoryLabel(code)}</p><p className="mt-1 font-typewriter text-xs text-warmgrau/60">{item.ratings} Bewertungen · Ø {average} · Versandabsicht {sent}</p></div>; })}</div>}</div>
+            </div>
+          )}
+        </section>
+
         <section className="mt-10 rounded-2xl border border-warmgrau/10 bg-white/75 p-5 shadow-[0_16px_36px_rgba(27,67,50,0.06)] sm:p-8">
           <SectionHeading
             eyebrow="Der wichtigste Pitch"
@@ -386,6 +480,117 @@ export default async function InternalStatsPage({ searchParams }: InternalStatsP
           <p className="mt-8 border-t border-warmgrau/10 pt-4 font-typewriter text-xs leading-relaxed text-warmgrau/55">
             Basis: {formatNumber(stats.reviewCount)} Feedbackzeilen · {formatNumber(stats.knownSendCount)} beantwortete Versandfragen · {formatNumber(stats.noAnswerCount)} ohne Angabe
           </p>
+        </section>
+
+        <section className="mt-10 rounded-2xl border border-waldgruen/15 bg-white/75 p-5 shadow-[0_16px_36px_rgba(27,67,50,0.06)] sm:p-8">
+          <SectionHeading
+            eyebrow="Politische Selbstwirksamkeit"
+            title="Vom Betroffensein ins Handeln"
+            detail="Selbstauskunft direkt im Review. Die Werte zeigen ein wahrgenommenes Gefühl, keine tatsächlich beobachtete spätere Handlung."
+          />
+          <div className="grid gap-8 lg:grid-cols-2 lg:gap-12">
+            <article>
+              <h3 className="font-typewriter text-sm font-bold uppercase tracking-[0.12em] text-waldgruen-dark">
+                Handlungsfähiger durch den Brief
+              </h3>
+              <p className="mt-2 font-body text-sm leading-relaxed text-warmgrau/65">
+                „Fühlst du dich durch diesen Brief eher in der Lage, dich
+                politisch einzubringen?“
+              </p>
+              {activation.selfEfficacyAnswerCount === 0 ? (
+                <div className="mt-5">
+                  <EmptyState>Noch keine Antworten zur politischen Handlungsfähigkeit.</EmptyState>
+                </div>
+              ) : (
+                <>
+                  <p className="mt-5 font-typewriter text-4xl font-bold tabular-nums text-waldgruen-dark">
+                    {formatDecimal(activation.selfEfficacyPositiveRatePercent)} %
+                  </p>
+                  <p className="mt-1 font-body text-xs leading-relaxed text-warmgrau/60">
+                    „Ja, deutlich“ oder „Eher ja“ unter den gerichteten
+                    Antworten
+                  </p>
+                  <div className="mt-6">
+                    <SurveyDistributionBars
+                      values={activation.selfEfficacyDistribution}
+                      options={selfEfficacyOptions}
+                      total={activation.selfEfficacyAnswerCount}
+                      color="#2D6A4F"
+                    />
+                  </div>
+                </>
+              )}
+              <p className="mt-5 border-t border-warmgrau/10 pt-4 font-typewriter text-[11px] leading-relaxed text-warmgrau/55">
+                Basis: {formatNumber(activation.selfEfficacyAnswerCount)} beantwortet · {formatNumber(activation.selfEfficacyDirectionalCount)} gerichtet · {formatNumber(activation.selfEfficacyNoAnswerCount)} ältere Versand-Ja-Antworten ohne diese Frage
+              </p>
+            </article>
+
+            <article>
+              <h3 className="font-typewriter text-sm font-bold uppercase tracking-[0.12em] text-waldgruen-dark">
+                Politische Ohnmacht im Alltag
+              </h3>
+              <p className="mt-2 font-body text-sm leading-relaxed text-warmgrau/65">
+                Wie oft politische Inhalte beschäftigen, ohne dass ein
+                konkreter nächster Schritt klar ist.
+              </p>
+              {activation.powerlessnessAnswerCount === 0 ? (
+                <div className="mt-5">
+                  <EmptyState>Noch keine freiwilligen Antworten zur politischen Ohnmacht.</EmptyState>
+                </div>
+              ) : (
+                <div className="mt-6">
+                  <SurveyDistributionBars
+                    values={activation.powerlessnessDistribution}
+                    options={powerlessnessOptions}
+                    total={activation.powerlessnessAnswerCount}
+                    color="#C58B18"
+                  />
+                </div>
+              )}
+              <p className="mt-5 border-t border-warmgrau/10 pt-4 font-typewriter text-[11px] leading-relaxed text-warmgrau/55">
+                Basis: {formatNumber(activation.powerlessnessAnswerCount)} freiwillig beantwortet · {formatNumber(activation.powerlessnessNoAnswerCount)} vollständige Reviews ohne Angabe
+              </p>
+            </article>
+          </div>
+
+          <div className="mt-10 border-t border-warmgrau/10 pt-8">
+            <h3 className="font-typewriter text-sm font-bold uppercase tracking-[0.12em] text-waldgruen-dark">
+              Positive Wirkung nach Ohnmachtsfrequenz
+            </h3>
+            <p className="mt-2 font-body text-sm leading-relaxed text-warmgrau/65">
+              Nur Reviews mit Antworten auf beide Fragen. „Kann ich noch nicht
+              sagen“ bleibt sichtbar, zählt aber nicht in die positive Quote.
+            </p>
+            {!hasActivationCrossData ? (
+              <div className="mt-5">
+                <EmptyState>Noch keine gemeinsam auswertbaren Antworten.</EmptyState>
+              </div>
+            ) : (
+              <div className="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+                {POLITICAL_POWERLESSNESS_FREQUENCY_VALUES.map((frequency) => {
+                  const item = activation.efficacyByPowerlessness[frequency];
+                  return (
+                    <div
+                      key={frequency}
+                      className="rounded-lg border border-warmgrau/10 bg-creme/60 px-4 py-4"
+                    >
+                      <p className="font-body text-sm font-semibold text-waldgruen-dark">
+                        {POLITICAL_POWERLESSNESS_FREQUENCY_LABELS[frequency]}
+                      </p>
+                      <p className="mt-2 font-typewriter text-2xl font-bold tabular-nums text-waldgruen-dark">
+                        {item.directional > 0
+                          ? `${formatDecimal(item.positiveRatePercent)} %`
+                          : "—"}
+                      </p>
+                      <p className="mt-1 font-typewriter text-[11px] leading-relaxed text-warmgrau/55">
+                        {formatNumber(item.positive)} von {formatNumber(item.directional)} gerichtet · {formatNumber(item.unsure)} unsicher
+                      </p>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </div>
         </section>
 
         <section className="mt-10 grid gap-6 lg:grid-cols-2">

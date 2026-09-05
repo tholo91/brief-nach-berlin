@@ -1,5 +1,5 @@
 import AppHeader from "@/components/AppHeader";
-import AppFooter from "@/components/AppFooter";
+import Footer from "@/components/Footer";
 import ConditionalFadeFooterImage from "@/components/ConditionalFadeFooterImage";
 
 export default function SiteLayout({
@@ -10,7 +10,7 @@ export default function SiteLayout({
       <AppHeader />
       <main className="flex-1 flex flex-col">{children}</main>
       <ConditionalFadeFooterImage />
-      <AppFooter />
+      <Footer />
     </div>
   );
 }

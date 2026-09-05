@@ -1,6 +1,12 @@
 import { z } from "zod";
-import { mistral, withMistralRetry, MISTRAL_MODELS } from "@/lib/mistral";
+import { mistral, MistralStageError, withMistralRetry, MISTRAL_MODELS } from "@/lib/mistral";
 import { extractJsonObject } from "@/lib/mistral-json";
+import {
+  TopicSignalWithMetadataSchema,
+  buildTopicSignal,
+  TOPIC_JSON_SCHEMA_PROPERTIES,
+  type TopicSignal,
+} from "@/lib/topics/topicTaxonomy";
 import taxonomy from "../../../data/zustaendigkeit-taxonomie.json";
 
 // Kanonisches Enum — muss exakt PoliticalLevel entsprechen ("Kommune", nie
@@ -26,8 +32,13 @@ export const RoutingResultSchema = z.object({
       const trimmed = s.trim().slice(0, 200);
       return trimmed && REASONING_REGEX.test(trimmed) ? trimmed : "";
     }),
+  // Optional keeps old pre-topic routing tokens verifiable. New calls return
+  // null when Mistral omitted or failed the topic contract.
+  topic: TopicSignalWithMetadataSchema.nullable().optional(),
 });
-export type RoutingResult = z.infer<typeof RoutingResultSchema>;
+export type RoutingResult = z.infer<typeof RoutingResultSchema> & {
+  topic?: TopicSignal | null;
+};
 
 export class LevelRouterError extends Error {
   constructor(message: string, public cause?: unknown) {
@@ -37,14 +48,14 @@ export class LevelRouterError extends Error {
 }
 
 // Input-Cap: Token-Budget + kleinere Injection-Fläche
-const MAX_ANLIEGEN_CHARS = 1500;
+const MAX_ANLIEGEN_CHARS = 5000;
 
 /**
  * System-Prompt 1:1 aus dem G1-Gate (scripts/test-level-routing.ts,
  * Re-Test 2026-05-21: 22/22 PASS). Der Prompt erlaubt Mistral weiterhin ein
- * "secondary"-Feld, damit das validierte Verhalten unverändert bleibt —
- * das Feld wird beim Parsen verworfen (der Ebene-Auswahl-Step zeigt ohnehin
- * alle drei Ebenen).
+ * Der Provider-Vertrag enthält nur die Ebene und die Erklärung. Themen und
+ * Nebenebenen sind optionale Signale und dürfen die Klassifikation nicht
+ * blockieren.
  */
 function buildSystemPrompt(): string {
   return [
@@ -68,12 +79,11 @@ function buildSystemPrompt(): string {
     ...taxonomy.kommune.exclusive.map((t: string) => `- ${t}`),
     "",
     "Antworte ausschließlich als JSON mit dieser Struktur:",
-    '{"primary":{"level":"Bund|Land|Kommune","confidence":"high|medium|low"},"secondary":{"level":"Bund|Land|Kommune","confidence":"high|medium|low"},"reasoning":"kurze Begründung auf Deutsch"}',
+    '{"primary":{"level":"Bund|Land|Kommune","confidence":"high|medium|low"},"reasoning":"kurze Begründung auf Deutsch","topic_categories":["1 bis 3 passende Codes"],"topic_labels":["1 bis 3 kurze, neutrale Unterthemen"]}',
     "",
     "Regeln:",
     "- primary = die EINE konkret handlungsfähige Ebene. Der User soll sich nicht entscheiden müssen.",
-    "- secondary nur dann setzen, wenn eine zweite Ebene ebenfalls klar plausibel ist (z.B. lokales Anliegen mit bundesweitem Muster: primary=Land, secondary=Bund als 'stellvertretende Stimme'). Sonst secondary weglassen.",
-    "- confidence='low' nur wenn das Anliegen WEDER klar einer Ebene zuordenbar ist NOCH eine plausible Sekundärebene hat (z.B. private Beschwerde 'Mein Nachbar nervt', kein politisches Anliegen, oder Mehrfachthema 'Lehrer UND Schlaglöcher UND Rente'). Bei 'low' setze secondary NICHT.",
+    "- confidence='low' nur wenn das Anliegen keiner Ebene klar zuordenbar ist.",
     "- reasoning: ein kurzer, konkreter deutscher Satz, der erklärt, warum die gewählte Ebene handeln kann (Substantive groß, max 15 Wörter, max 200 Zeichen). Nenne die Zuständigkeit statt die Einordnung nur zu wiederholen. Wird dem User direkt angezeigt. Beginne natürlich, z.B. 'Bildungspolitik ist Ländersache.' oder 'Asylrecht ist ausschließliche Bundeskompetenz.' KEINE URLs, KEINE Klammern mit Sonderzeichen, KEIN Markup.",
   ].join("\n");
 }
@@ -103,7 +113,31 @@ export async function routeToLevel(
           {
             model: MISTRAL_MODELS.levelRouting,
             temperature: 0.1,
-            responseFormat: { type: "json_object" },
+            responseFormat: {
+              type: "json_schema",
+              jsonSchema: {
+                name: "brief_routing",
+                strict: true,
+                schemaDefinition: {
+                  type: "object",
+                  additionalProperties: false,
+                  properties: {
+                    primary: {
+                      type: "object",
+                      additionalProperties: false,
+                      properties: {
+                        level: { type: "string", enum: ["Bund", "Land", "Kommune"] },
+                        confidence: { type: "string", enum: ["high", "medium", "low"] },
+                      },
+                      required: ["level", "confidence"],
+                    },
+                    reasoning: { type: "string" },
+                    ...TOPIC_JSON_SCHEMA_PROPERTIES,
+                  },
+                  required: ["primary", "reasoning"],
+                },
+              },
+            },
             messages: [
               { role: "system", content: buildSystemPrompt() },
               // XML-Wrap: User-Input ist Daten, keine Instruktion
@@ -119,17 +153,20 @@ export async function routeToLevel(
     const content = res.choices?.[0]?.message?.content;
     raw = typeof content === "string" ? content : JSON.stringify(content);
   } catch (err) {
-    throw new LevelRouterError("Mistral routing call failed", err);
+    throw new LevelRouterError("Mistral routing call failed", new MistralStageError("routing", err));
   }
 
   const parsed = extractJsonObject(raw);
   if (parsed === null) {
-    throw new LevelRouterError(`Mistral returned non-JSON: ${raw.slice(0, 200)}`);
+    throw new LevelRouterError("Mistral returned non-JSON");
   }
 
   const result = RoutingResultSchema.safeParse(parsed);
   if (!result.success) {
-    throw new LevelRouterError(`Mistral output failed schema: ${result.error.message}`);
+    throw new LevelRouterError("Mistral output failed schema");
   }
-  return result.data;
+  return {
+    ...result.data,
+    topic: buildTopicSignal(parsed, "routing", MISTRAL_MODELS.levelRouting),
+  };
 }

@@ -1,7 +1,7 @@
 import { BUNDESLAND_NAMES, type Campaign } from "@/lib/campaigns/schema";
-import { campaignLogoPublicUrl } from "@/lib/campaigns/logo";
 import { CampaignBackground } from "./CampaignBackground";
 import { CampaignIssueStarter } from "./CampaignIssueStarter";
+import { CampaignLogo } from "./CampaignLogo";
 import { getLandesregierungRecipient } from "@/lib/lookup/landesregierungRecipient";
 
 type PublicCampaign = Pick<
@@ -88,13 +88,11 @@ function formatHostname(url: string | null): string | null {
 
 export function CampaignHero({ campaign }: { campaign: PublicCampaign }) {
   const attribution = campaign.creatorName?.trim();
-  const logoUrl = campaignLogoPublicUrl(campaign.logoPath);
   const formattedLetterCount = new Intl.NumberFormat("de-DE").format(
     campaign.letterCount
   );
   const letterCountLabel = campaign.letterCount === 1 ? "Brief" : "Briefe";
   const sourceName = attribution || "Kampagnenersteller:in";
-  const sourceInitial = sourceName.charAt(0).toUpperCase();
   const sourceHostname = formatHostname(campaign.externalUrl);
   const isLandCampaign = campaign.targetLevel === "Land";
   const hasTargetMdbs = campaign.targetPoliticianIds.length > 0;
@@ -173,26 +171,11 @@ export function CampaignHero({ campaign }: { campaign: PublicCampaign }) {
 
         <div className="rounded-md border border-waldgruen/15 bg-white/70 p-4 shadow-sm backdrop-blur-sm lg:col-start-1 lg:row-start-2">
           <div className="flex items-center gap-4">
-            {logoUrl ? (
-              <div
-                role="img"
-                aria-label={`Logo oder Bild von ${sourceName}`}
-                className="h-14 w-14 shrink-0 rounded-full border border-warmgrau/15 bg-white shadow-sm"
-                style={{
-                  backgroundImage: `url(${logoUrl})`,
-                  backgroundPosition: "center",
-                  backgroundRepeat: "no-repeat",
-                  backgroundSize: "103%",
-                }}
-              />
-            ) : (
-              <div
-                aria-hidden="true"
-                className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full border border-waldgruen/15 bg-waldgruen/10 font-typewriter text-xl font-bold text-waldgruen-dark"
-              >
-                {sourceInitial}
-              </div>
-            )}
+            <CampaignLogo
+              logoPath={campaign.logoPath}
+              name={sourceName}
+              size="md"
+            />
             <div className="min-w-0">
               <p className="font-typewriter text-xs font-bold uppercase tracking-widest text-waldgruen/60">
                 Kampagne von

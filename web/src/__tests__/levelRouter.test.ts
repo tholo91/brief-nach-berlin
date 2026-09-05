@@ -14,6 +14,13 @@ jest.mock("@/lib/mistral", () => ({
     transcription: "voxtral-mini-latest",
     levelRouting: "mistral-small-latest",
   },
+  MistralStageError: class extends Error {
+    constructor(stage: string, cause: unknown) {
+      super(`Mistral ${stage} failed`);
+      this.name = "MistralStageError";
+      Object.assign(this, { stage, cause });
+    }
+  },
 }));
 
 import { routeToLevel, LevelRouterError, RoutingResultSchema } from "@/lib/lookup/levelRouter";
@@ -38,9 +45,10 @@ describe("routeToLevel", () => {
     expect(result.primary.level).toBe("Kommune");
     expect(result.primary.confidence).toBe("high");
     expect(result.reasoning).toBe("Lokale Straßen sind kommunale Aufgabe.");
+    expect(result.topic).toBeNull();
   });
 
-  it("verwirft ein secondary-Feld aus der Modell-Antwort", async () => {
+  it("verwirft ein optionales secondary-Feld aus einer älteren Modell-Antwort", async () => {
     mockResponse({
       primary: { level: "Land", confidence: "high" },
       secondary: { level: "Bund", confidence: "medium" },
@@ -60,10 +68,14 @@ describe("routeToLevel", () => {
     const request = completeMock.mock.calls[0][0] as {
       model: string;
       temperature: number;
+      responseFormat: { type: string; jsonSchema?: { strict?: boolean } };
       messages: Array<{ role: string; content: string }>;
     };
     expect(request.model).toBe("mistral-small-latest");
     expect(request.temperature).toBe(0.1);
+    expect(request.responseFormat).toMatchObject({ type: "json_schema", jsonSchema: { strict: true } });
+    expect(JSON.stringify(request.responseFormat)).not.toContain("secondary");
+    expect(JSON.stringify(request.responseFormat)).toContain("topic_categories");
     expect(request.messages[0].content).toContain(
       "warum die gewählte Ebene handeln kann"
     );
@@ -73,17 +85,16 @@ describe("routeToLevel", () => {
     expect(request.messages[1].content).toBe("<anliegen>Asylpolitik</anliegen>");
   });
 
-  it("kappt das Anliegen bei 1500 Zeichen", async () => {
+  it("kappt das Anliegen bei der validierten Maximallänge von 5000 Zeichen", async () => {
     mockResponse({
       primary: { level: "Bund", confidence: "medium" },
       reasoning: "Rentenpolitik ist Bundeskompetenz.",
     });
-    await routeToLevel("x".repeat(4000));
+    await routeToLevel("x".repeat(6000));
     const request = completeMock.mock.calls[0][0] as {
       messages: Array<{ role: string; content: string }>;
     };
-    // 1500 Zeichen + <anliegen></anliegen> (21 Zeichen)
-    expect(request.messages[1].content.length).toBe(1500 + "<anliegen></anliegen>".length);
+    expect(request.messages[1].content.length).toBe(5000 + "<anliegen></anliegen>".length);
   });
 
   it("wirft bei zu kurzem Anliegen ohne Mistral-Call", async () => {
@@ -112,6 +123,18 @@ describe("routeToLevel", () => {
   it("wirft bei Nicht-JSON-Antwort", async () => {
     mockResponse("Hier ist leider kein JSON");
     await expect(routeToLevel("Mindestlohn erhöhen")).rejects.toThrow(LevelRouterError);
+  });
+
+  it("lässt ungültige Themen weg, ohne das Routing zu verwerfen", async () => {
+    mockResponse({
+      primary: { level: "Bund", confidence: "high" },
+      reasoning: "Rentenpolitik ist Bundeskompetenz.",
+      topic_categories: ["rentenpolitik"],
+      topic_labels: ["Muster GmbH"],
+    });
+    const result = await routeToLevel("Rentenpolitik");
+    expect(result.primary.level).toBe("Bund");
+    expect(result.topic).toBeNull();
   });
 
   it("sanitized Reasoning mit URL auf leeren String", async () => {

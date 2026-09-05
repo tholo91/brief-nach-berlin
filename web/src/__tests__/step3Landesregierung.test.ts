@@ -60,4 +60,35 @@ describe("Step3Success — institutioneller Land-Default", () => {
     expect(html).not.toContain("Landesliste");
     expect(html).not.toContain("Dein Brief geht an die Landesregierung");
   });
+
+  it("zeigt im fertigen Legacy-Pfad eine ehrliche mobile CTA-Hierarchie ohne Versandbehauptung", () => {
+    const html = renderToStaticMarkup(
+      React.createElement(
+        LocaleProvider,
+        null,
+        React.createElement(Step3Success, {
+          result: {
+            success: true,
+            politician: bremenMdls[0]!,
+            politicalLevel: "Land",
+            letterText: "Sehr geehrte Damen und Herren, dies ist ein fertiger Entwurf.",
+          },
+          wizardData: {
+            plz: "28203",
+            email: "test@eigene-domain.example",
+            issueText: "Ein landespolitisches Anliegen",
+          },
+          recipients: [],
+          optionalLandRecipients: [],
+        }),
+      ),
+    );
+
+    expect(html).toContain("Dein Brief ist fertig");
+    expect(html).toContain("Dein Entwurf und alle nächsten Schritte sind an");
+    expect(html).toContain("Öffne jetzt dein E-Mail-Postfach");
+    expect(html).toContain("So geht es weiter");
+    expect(html).toContain("Jetzt spenden");
+    expect(html).not.toContain("Ich habe deinen Entwurf");
+  });
 });

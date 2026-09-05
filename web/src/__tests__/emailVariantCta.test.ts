@@ -71,13 +71,13 @@ describe("letter email variant CTA", () => {
     expect(text.indexOf("Thomas")).toBeLessThan(text.indexOf("Hinweis zur Finanzierung"));
   });
 
-  it("does not add the financing notice to a resent/follow-up letter email", () => {
+  it("adds the financing notice to resent letter emails but not follow-up emails", () => {
     const params = makeParams();
     const resentDebug = { ...makeDebug(), resent: true };
     const learnMoreUrl = "https://www.brief-nach-berlin.de/spenden?src=email";
 
-    expect(buildEmailHtml({ ...params, debug: resentDebug })).not.toContain(learnMoreUrl);
-    expect(buildLetterEmailText({ ...params, debug: resentDebug })).not.toContain(learnMoreUrl);
+    expect(buildEmailHtml({ ...params, debug: resentDebug })).toContain(learnMoreUrl);
+    expect(buildLetterEmailText({ ...params, debug: resentDebug })).toContain(learnMoreUrl);
     expect(buildFollowupHtml({ token: "signed-token" }).html).not.toContain(learnMoreUrl);
     expect(buildFollowupHtml({ token: "signed-token" }).text).not.toContain(learnMoreUrl);
   });

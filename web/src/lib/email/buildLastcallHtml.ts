@@ -73,8 +73,8 @@ export function buildLastcallHtml(
     ``,
     `--`,
     `Das war meine allerletzte Mail an dich. Kein Newsletter, keine weitere Nachricht.`,
-    `Es wird kein Brief und kein Inhalt gespeichert. Deine E-Mail-Adresse nutze ich nur für diese einmalige Nachfrage.`,
-    `Datenschutz: ${base}/datenschutz · Adresse löschen: ${FOUNDER_EMAIL}`,
+    `Dein Brief und dein Anliegen werden nicht in meiner Datenbank gespeichert. Falls du freiwillig ein Themensignal freigegeben oder eine Bewertung abgegeben hast, kannst du beides löschen lassen.`,
+    `Datenschutz: ${base}/datenschutz · Gespeicherte Daten löschen: ${FOUNDER_EMAIL}`,
   ].join("\n");
 
   const html = `<!DOCTYPE html>
@@ -233,10 +233,10 @@ export function buildLastcallHtml(
                 <strong style="color:#2D5016;">Das war meine allerletzte Mail an dich.</strong> Kein Newsletter, keine weitere Nachricht.
               </p>
               <p style="margin:0 0 10px;font-family:Georgia,'Times New Roman',serif;font-size:12px;color:#999999;line-height:1.6;">
-                Es wird kein Brief und kein Inhalt gespeichert. Deine E-Mail-Adresse nutze ich nur für diese einmalige Nachfrage.
+                Dein Brief und dein Anliegen werden nicht in meiner Datenbank gespeichert. Falls du freiwillig ein Themensignal freigegeben oder eine Bewertung abgegeben hast, kannst du beides löschen lassen.
               </p>
               <p style="margin:0;font-family:Georgia,'Times New Roman',serif;font-size:12px;color:#aaaaaa;line-height:1.5;">
-                <a href="${base}/datenschutz" style="color:#888888;">Datenschutz</a> · <a href="mailto:${FOUNDER_EMAIL}?subject=Brief%20nach%20Berlin%3A%20Adresse%20l%C3%B6schen&body=Hallo%20Thomas%2C%0A%0Abitte%20l%C3%B6sche%20meine%20E-Mail-Adresse%20aus%20deinen%20Followup-Listen.%0A%0ADanke!" style="color:#888888;">Adresse löschen</a>
+                <a href="${base}/datenschutz" style="color:#888888;">Datenschutz</a> · <a href="mailto:${FOUNDER_EMAIL}?subject=${encodeURIComponent("Brief-nach-Berlin: Meine gespeicherten Daten löschen")}&body=${encodeURIComponent("Hallo Thomas,\n\nbitte lösche alle Bewertungen und freiwillig gespeicherten Themensignale, die mit dieser E-Mail-Adresse verknüpft sind. Mir ist bewusst, dass ich diese E-Mail noch absenden muss.\n\nDanke!")}" style="color:#888888;">Gespeicherte Daten löschen</a>
               </p>
             </td>
           </tr>

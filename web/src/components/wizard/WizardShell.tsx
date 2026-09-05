@@ -94,6 +94,30 @@ export function WizardShell() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const { locale } = useLocale();
+  const isSuccessPreview =
+    process.env.NODE_ENV === "development" &&
+    searchParams.get("preview") === "success";
+  const previewPolitician: Politician = {
+    id: 1,
+    politicianId: 1,
+    firstName: "Anna",
+    lastName: "Beispiel",
+    title: null,
+    party: "Partei",
+    wahlkreisId: 1,
+    wahlkreisName: "Berlin-Mitte",
+    level: "Bund",
+    postalAddress: "Platz der Republik 1, 11011 Berlin",
+    isDirect: true,
+    abgeordnetenwatchUrl: null,
+  };
+  const previewResult = {
+    success: true,
+    politician: previewPolitician,
+    politicalLevel: "Bund",
+    letterText: "Vorschau",
+    letterSignalContext: "preview-token",
+  } as WizardActionResult;
 
   const [wizardData, setWizardData] = useState<Partial<WizardData>>(() => {
     const data = readParamsToData(searchParams);
@@ -101,17 +125,26 @@ export function WizardShell() {
     if (textParam) {
       data.issueText = textParam;
     }
+    if (isSuccessPreview) {
+      data.plz = "47167";
+      data.email = "vorschau@posteo.de";
+      data.issueText = "Eine sichere und lebendige Nachbarschaft in unserem Viertel.";
+    }
     return data;
   });
 
   // Direct visits start on the issue step. Landing and campaign handoffs have
   // already collected the issue and continue with contact details.
-  const [step, setStep] = useState<WizardStep>(1);
+  const [step, setStep] = useState<WizardStep>(isSuccessPreview ? 3 : 1);
   const [stepDirection, setStepDirection] = useState<WizardStepDirection>("none");
   const [entrySource, setEntrySource] = useState<"direct" | "landing" | "campaign">("direct");
   const [handoffPending, setHandoffPending] = useState(true);
-  const [politicians, setPoliticians] = useState<Politician[]>([]);
-  const [actionResult, setActionResult] = useState<WizardActionResult | null>(null);
+  const [politicians, setPoliticians] = useState<Politician[]>(
+    isSuccessPreview ? [previewPolitician] : []
+  );
+  const [actionResult, setActionResult] = useState<WizardActionResult | null>(
+    isSuccessPreview ? previewResult : null
+  );
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [plzError, setPlzError] = useState<string | null>(null);
@@ -452,9 +485,9 @@ export function WizardShell() {
   }, [step]);
 
   return (
-    <>
+    <div className={step === 3 ? "relative isolate flex flex-1 flex-col overflow-hidden" : "flex flex-1 flex-col"}>
       <div
-        className={`${showWideCampaignPicker ? "max-w-5xl" : "max-w-xl"} mx-auto w-full px-4 pb-16 pt-8 sm:px-8 sm:py-16`}
+        className={`${step === 3 || showWideCampaignPicker ? "max-w-5xl" : "max-w-xl"} relative z-[1] mx-auto w-full px-4 ${step === 3 ? "pb-10 pt-7 sm:px-8 sm:py-8 lg:py-4" : "pb-16 pt-8 sm:px-8 sm:py-16"}`}
       >
       {(showIndicator || showBack) && (
         <div className="mb-8 flex items-center justify-between sm:mb-12">
@@ -702,7 +735,8 @@ export function WizardShell() {
       </div>
       <FadeFooterImage
         variant={step === "level" ? "level" : step === 3 ? "success" : "wizard"}
+        successBackground={step === 3}
       />
-    </>
+    </div>
   );
 }

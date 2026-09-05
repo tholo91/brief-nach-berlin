@@ -14,6 +14,7 @@ import { resolveRecipientSelection } from "@/lib/lookup/resolveRecipient";
 import { sendLetterEmail, prepareLetterEmail } from "@/lib/email/sendLetterEmail";
 import { buildResendDebugPayload } from "@/lib/email/buildDebugPayload";
 import { DEFAULT_LETTER_LENGTH } from "@/lib/config";
+import { doesGenerationProofMatch, verifyGenerationProof } from "@/lib/letterSignals/token";
 import { checkRateLimit, getClientIp, hashIdentifier, LIMITS } from "@/lib/rateLimit";
 import { getActiveCampaignBySlug } from "@/lib/campaigns/repository";
 
@@ -26,6 +27,7 @@ const recipientSelectionSchema = z.discriminatedUnion("kind", [
   z.object({ kind: z.literal("landesregierung") }).strict(),
   z.object({ kind: z.literal("rathaus") }).strict(),
 ]);
+const generationProofSchema = z.string().min(20).max(4096).optional();
 
 // SECURITY NOTE (2026-04-27):
 // Previous signature accepted a full Politician object from the client, which
@@ -40,7 +42,8 @@ const recipientSelectionSchema = z.discriminatedUnion("kind", [
 export async function resendLetterAction(
   data: WizardData,
   selection: RecipientSelection | number,
-  cachedLetterText: string
+  cachedLetterText: string,
+  generationProof?: string,
 ): Promise<{ success: true } | { error: string; message: string; retryAfterSeconds?: number }> {
   try {
     const rawSelection: unknown =
@@ -50,6 +53,13 @@ export async function resendLetterAction(
       return { error: "validation", message: "Ungültige Eingabe." };
     }
     const normalizedSelection: RecipientSelection = parsedSelection.data;
+    const parsedProof = generationProofSchema.safeParse(generationProof);
+    if (!parsedProof.success) {
+      return { error: "validation", message: "Ungültige Eingabe." };
+    }
+    const verifiedProof = parsedProof.data ? verifyGenerationProof(parsedProof.data) : null;
+    const letterId = verifiedProof?.letterId;
+    if (parsedProof.data && !verifiedProof) return { error: "validation", message: "Ungültige Eingabe." };
     console.log("[resendLetter] start", { email: "***", kind: normalizedSelection.kind });
 
     const s1 = step1Schema.safeParse(data);
@@ -120,6 +130,15 @@ export async function resendLetterAction(
       return { error: "validation", message: "Ungültige Eingabe." };
     }
     const recipient = resolved.recipient;
+    if (verifiedProof && !doesGenerationProofMatch(verifiedProof, {
+      issueText: data.issueText,
+      plz: data.plz,
+      recipient,
+      letterText: cachedLetterText,
+      campaignSlug: campaign?.slug ?? null,
+    })) {
+      return { error: "validation", message: "Ungültige Eingabe." };
+    }
 
     // Moderate the cached letter text before re-sending (defense-in-depth)
     const outMod = await moderateText(cachedLetterText);
@@ -135,7 +154,8 @@ export async function resendLetterAction(
       data,
       recipient,
       resolved.availableCount,
-      cachedLetterText
+      cachedLetterText,
+      letterId,
     );
     const { params } = prepareLetterEmail({
       locale: data.locale ?? "de",
@@ -145,6 +165,7 @@ export async function resendLetterAction(
       issueText: data.issueText,
       debug: debugPayload,
       campaign: data.campaign,
+      letterId,
     });
 
     const emailResult = await sendLetterEmail(params);

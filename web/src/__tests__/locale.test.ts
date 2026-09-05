@@ -1,5 +1,4 @@
 import {
-  DEFAULT_LOCALE,
   isLocale,
   resolveBrowserLocale,
 } from "@/lib/i18n/locale";
@@ -9,8 +8,8 @@ describe("locale resolution", () => {
     [["tr-TR", "de-DE"], "tr"],
     [["en-GB", "de-DE"], "en"],
     [["de-AT"], "de"],
-    [["fr-FR", "ar"], DEFAULT_LOCALE],
-    [[], DEFAULT_LOCALE],
+    [["fr-FR", "ar"], "en"],
+    [[], "en"],
   ] as const)("chooses %s as %s", (languages, expected) => {
     expect(resolveBrowserLocale(languages)).toBe(expected);
   });

@@ -79,6 +79,8 @@ export const LIMITS = {
   // Per IP: 10 letter generations per hour. Covers shared households/offices
   // behind NAT while stopping scripted abuse from a single origin.
   LETTERS_PER_IP: { max: 10, windowMs: 60 * 60_000 },
+  LETTER_SIGNALS_PER_IP: { max: 20, windowMs: 60 * 60_000 },
+  LETTER_SIGNALS_PER_EMAIL: { max: 10, windowMs: 24 * 60 * 60_000 },
   // Per IP: 30 transcription calls per hour. Voxtral is more expensive; users
   // typically record once or twice per session.
   TRANSCRIBE_PER_IP: { max: 30, windowMs: 60 * 60_000 },

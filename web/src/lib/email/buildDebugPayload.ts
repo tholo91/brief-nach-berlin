@@ -12,11 +12,6 @@ export interface LetterRoutingInfo {
   selectedLevel: PoliticalLevel;
 }
 
-// Max-Länge des Anliegen-Auszugs im Debug-Link. Hält die base64-URL klein
-// genug, dass Gmail/Outlook sie nicht kürzen. 600 deckt praktisch jeden realen
-// Anliegen-Text voll ab und bleibt im sicheren URL-Rahmen.
-const ISSUE_TEXT_PREVIEW_MAX = 600;
-
 export const TONE_LABELS: Record<number, string> = {
   1: "freundlich-einladend",
   2: "höflich-konstruktiv",
@@ -29,7 +24,8 @@ export function buildDebugPayload(
   data: WizardData,
   result: GenerateLetterResult,
   availablePoliticianCount: number,
-  routing?: LetterRoutingInfo
+  routing?: LetterRoutingInfo,
+  letterId?: string,
 ): LetterDebugPayload {
   const lengthKey = data.letterLength ?? DEFAULT_LETTER_LENGTH;
   const { min, max } = LETTER_LENGTHS[lengthKey];
@@ -49,7 +45,6 @@ export function buildDebugPayload(
     letterLengthMin: min,
     letterLengthMax: max,
     issueTextLength: data.issueText?.length ?? 0,
-    issueTextPreview: data.issueText?.slice(0, ISSUE_TEXT_PREVIEW_MAX),
     wordCount: result.wordCount,
     wordCountInRange: result.wordCountInRange,
     fallbackUsed: result.fallbackUsed,
@@ -83,6 +78,7 @@ export function buildDebugPayload(
     userEmail: data.email,
     politicianId: p?.id,
     plz: data.plz,
+    letterId,
     ...(routing
       ? {
           routedPrimaryLevel: routing.routedPrimaryLevel,
@@ -103,7 +99,8 @@ export function buildResendDebugPayload(
   data: WizardData,
   recipient: Recipient,
   availablePoliticianCount: number,
-  cachedLetterText: string
+  cachedLetterText: string,
+  letterId?: string,
 ): LetterDebugPayload {
   const lengthKey = data.letterLength ?? DEFAULT_LETTER_LENGTH;
   const { min, max } = LETTER_LENGTHS[lengthKey];
@@ -124,7 +121,6 @@ export function buildResendDebugPayload(
     letterLengthMin: min,
     letterLengthMax: max,
     issueTextLength: data.issueText?.length ?? 0,
-    issueTextPreview: data.issueText?.slice(0, ISSUE_TEXT_PREVIEW_MAX),
     wordCount,
     wordCountInRange: wordCount >= min && wordCount <= max,
     // Generierungs-spezifisch, beim Resend nicht vorhanden:
@@ -159,6 +155,7 @@ export function buildResendDebugPayload(
     userEmail: data.email,
     politicianId: politician?.id,
     plz: data.plz,
+    letterId,
     resent: true,
   };
 }

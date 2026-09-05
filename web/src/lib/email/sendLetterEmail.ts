@@ -23,11 +23,6 @@ export interface LetterDebugPayload {
   letterLengthMin: number;
   letterLengthMax: number;
   issueTextLength: number;
-  // Gekürzter Auszug des Original-Anliegens (max 600 Zeichen), damit /debug
-  // den Kontext zeigt, ohne die Mail zurückzuverfolgen. Optional, da ältere
-  // serialisierte Payloads das Feld nicht haben. Nur der briefschreibende
-  // Nutzer sieht diesen Link — kein Fremd-PII-Risiko.
-  issueTextPreview?: string;
   wordCount: number;
   wordCountInRange: boolean;
   fallbackUsed: boolean;
@@ -56,6 +51,7 @@ export interface LetterDebugPayload {
   userEmail?: string;
   politicianId?: number;
   plz?: string;
+  letterId?: string;
   // True für Resends: es gab keinen neuen Generierungslauf, daher sind die
   // generierungs-spezifischen Felder (model/temperature/generationMs/…) Platzhalter.
   // /debug zeigt das als Hinweis an, damit man die Werte nicht fehlinterpretiert.
@@ -110,6 +106,7 @@ export interface SendLetterEmailParams {
   feedbackToken?: string;
   campaign?: WizardData["campaign"];
   letterNumber?: number;
+  letterId?: string;
 }
 
 // Gemeinsamer Versand-Tail für Erst- UND Resend-Pfad: mappt einen Politician +
@@ -127,6 +124,7 @@ export function prepareLetterEmail(args: {
   debug: LetterDebugPayload;
   campaign?: WizardData["campaign"];
   letterNumber?: number;
+  letterId?: string;
 }): { params: SendLetterEmailParams; feedbackToken: string } {
   const {
     locale = DEFAULT_LOCALE,
@@ -134,10 +132,12 @@ export function prepareLetterEmail(args: {
     recipient,
     letterText,
     issueText,
-    debug,
+    debug: initialDebug,
     campaign,
     letterNumber,
+    letterId,
   } = args;
+  const debug = letterId ? { ...initialDebug, letterId } : initialDebug;
   const feedbackToken = signFeedbackToken(debug);
 
   if (recipient.kind === "rathaus") {

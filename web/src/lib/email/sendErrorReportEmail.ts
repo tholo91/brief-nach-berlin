@@ -3,10 +3,9 @@ import { CONTACT } from "@/lib/contact";
 
 // Selbst-enthaltende Fehler-Report-Mail an Thomas (Frühwarnsystem).
 // Bewusst KEIN Vercel-Abruf: Free/Hobby-Logs verfallen nach ~1h und sind aus
-// App-Code nicht erreichbar. Stattdessen trägt diese Mail den vollen Kontext:
-// echte Server-Fehlermeldung + Stack + Mistral-Status/Body (aus dem detail-Feld
-// der generate-letter-Route), HTTP-Status, Client-Console-Logs und den
-// User-Kontext inkl. Eingabetext. Geht NUR an CONTACT.email.
+// App-Code nicht erreichbar. Stattdessen trägt diese Mail nur serverseitig
+// bereinigte technische Metadaten. Freie Client-Texte, Console-Logs, Anliegen-
+// oder Brieftexte werden bewusst nicht in die Fehler-Mail übernommen.
 //
 // apiKey-Guard ist hier weich (return success:false statt throw): Das
 // Fehler-Melde-Feature darf selbst nicht crashen, wenn der Key fehlt.
@@ -23,7 +22,6 @@ export interface ErrorReportInput {
   context: {
     plz: string | null;
     email: string | null;
-    issueText: string | null;
     politicianId: number | null;
     retryCount: number;
   };
@@ -80,9 +78,6 @@ function buildHtml(input: ErrorReportInput): string {
 
   <h3 style="margin:0 0 6px;">Server-Fehler (detail)</h3>
   <pre style="background:#f5f5f5;padding:12px;border-radius:6px;overflow:auto;font-size:12px;white-space:pre-wrap;">${esc(stringifyDetail(input.detail))}</pre>
-
-  <h3 style="margin:16px 0 6px;">Anliegen-Text des Users</h3>
-  <pre style="background:#f5f5f5;padding:12px;border-radius:6px;overflow:auto;font-size:12px;white-space:pre-wrap;">${esc(context.issueText ?? "(leer)")}</pre>
 
   <h3 style="margin:16px 0 6px;">Client-Console (letzte Einträge)</h3>
   <pre style="background:#f5f5f5;padding:12px;border-radius:6px;overflow:auto;font-size:12px;white-space:pre-wrap;">${esc(consoleBlock)}</pre>

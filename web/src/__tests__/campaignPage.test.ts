@@ -104,11 +104,16 @@ describe("campaign not-found page", () => {
   });
 
   it("links only to campaigns returned by the public repository query", async () => {
-    jest.mocked(getRecentActiveCampaigns).mockResolvedValue([campaign]);
+    jest.mocked(getRecentActiveCampaigns).mockResolvedValue([
+      { ...campaign, creatorName: "Initiative Bremen" },
+    ]);
 
     const markup = renderToStaticMarkup(await CampaignNotFound());
 
     expect(getRecentActiveCampaigns).toHaveBeenCalledWith(5);
     expect(markup).toContain('href="/kampagne/duisburg-retten"');
+    expect(markup).toContain("Anliegen von");
+    expect(markup).toContain("25.08.2026");
+    expect(markup).toContain("Öffnen");
   });
 });

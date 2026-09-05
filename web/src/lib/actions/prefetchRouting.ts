@@ -1,6 +1,7 @@
 "use server";
 
-import { routeToLevel } from "@/lib/lookup/levelRouter";
+import { LevelRouterError, routeToLevel } from "@/lib/lookup/levelRouter";
+import { MistralStageError } from "@/lib/mistral";
 import {
   signRoutingToken,
   hashRoutingIssue,
@@ -59,7 +60,10 @@ export async function prefetchRoutingAction(
     const isAbort = err instanceof Error && (err.name === "AbortError" || /abort/i.test(err.message));
     console.warn(`[prefetchRouting] ${isAbort ? "timeout" : "failed"}`, {
       elapsed: Date.now() - t0,
-      err: err instanceof Error ? err.message : String(err),
+      errorName: err instanceof Error ? err.name : "NonError",
+      ...(err instanceof LevelRouterError && err.cause instanceof MistralStageError
+        ? { stage: err.cause.stage }
+        : {}),
     });
     return null;
   } finally {

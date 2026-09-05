@@ -64,6 +64,7 @@ export async function POST(request: Request) {
       politician_id:
         payload.politicianId != null ? String(payload.politicianId) : null,
       plz: payload.plz ?? null,
+      letter_id: payload.letterId ?? null,
       debug_payload: debugPayload,
       debug_token: token,
     });

@@ -83,6 +83,14 @@ html {
   animation: redirect-progress 20000ms linear both;
 }
 
+@keyframes panel-tab-progress {
+  from { transform: scaleX(0); }
+  to { transform: scaleX(1); }
+}
+.animate-panel-tab-progress {
+  animation: panel-tab-progress 5000ms linear both;
+}
+
 /* Envelope flies in from lower-left, sweeping up to the endpoint along a soft
    rising arc (like a growth graph). Outer wrapper handles X, inner handles Y;
    different easings on each axis give the organic curve. */
@@ -176,6 +184,7 @@ video::-webkit-media-controls-start-playback-button {
   .animate-danke-pop,
   .animate-twinkle,
   .animate-progress,
+  .animate-panel-tab-progress,
   .animate-envelope-fly-x,
   .animate-envelope-fly-y,
   .animate-log-rise,

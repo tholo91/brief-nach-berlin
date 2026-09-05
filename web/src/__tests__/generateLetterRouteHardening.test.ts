@@ -20,9 +20,29 @@ jest.mock("@/lib/rateLimit", () => ({
   },
 }));
 jest.mock("@/lib/counter", () => ({ incrementLetterCounters: jest.fn() }));
-jest.mock("@/lib/mistral", () => ({ MistralProviderUnavailableError: class extends Error {} }));
+jest.mock("@/lib/mistral", () => ({
+  MistralProviderUnavailableError: class extends Error {},
+  MistralStageError: class extends Error {
+    readonly stage: string;
+    readonly statusCode: number | undefined;
+    readonly cause: unknown;
+    constructor(stage: string, cause: unknown) {
+      super(`Mistral ${stage} failed`);
+      this.name = "MistralStageError";
+      this.stage = stage;
+      this.cause = cause;
+      this.statusCode = typeof (cause as { status?: unknown })?.status === "number"
+        ? (cause as { status: number }).status
+        : undefined;
+    }
+  },
+}));
 
 import { POST } from "@/app/api/generate-letter/route";
+import { generateLetter } from "@/lib/generation/generateLetter";
+import { resolveRecipientSelection } from "@/lib/lookup/resolveRecipient";
+import { checkRateLimit, hashIdentifier } from "@/lib/rateLimit";
+import { MistralStageError } from "@/lib/mistral";
 
 function requestWith(body: unknown) {
   return {
@@ -49,5 +69,44 @@ describe("generate-letter RecipientSelection hardening", () => {
 
     expect(response.status).toBe(400);
     await expect(response.json()).resolves.toEqual({ error: "Ungültige Anfrage." });
+  });
+
+  it("maps a staged provider 400 to a technical upstream response", async () => {
+    jest.mocked(checkRateLimit).mockReturnValue({ allowed: true });
+    jest.mocked(hashIdentifier).mockReturnValue("hashed");
+    jest.mocked(resolveRecipientSelection).mockReturnValue({
+      ok: true,
+      availableCount: 1,
+      recipient: {
+        kind: "rathaus",
+        level: "Kommune",
+        recipientKind: "buergermeisteramt",
+        gemeindeName: "Musterstadt",
+        plz: "28203",
+        label: "Bürgermeisteramt Musterstadt",
+        postalAddress: "Musterstraße 1",
+        address: { source: "fallback" },
+      },
+    });
+    jest.mocked(generateLetter).mockRejectedValue(
+      new MistralStageError("generation", Object.assign(new Error("Bad schema"), { status: 400 })),
+    );
+
+    const response = await POST(requestWith({
+      wizardData: {
+        plz: "28203",
+        email: "test@example.org",
+        issueText: "Ein ausreichend langes Anliegen für den Test.",
+        letterLength: "1.5",
+        toneLevel: 3,
+      },
+      selection: { kind: "rathaus" },
+    }));
+
+    expect(response.status).toBe(502);
+    await expect(response.json()).resolves.toMatchObject({
+      errorId: expect.any(String),
+      detail: { name: "MistralStageError", status: 400, stage: "generation" },
+    });
   });
 });

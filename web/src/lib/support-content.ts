@@ -10,6 +10,10 @@ export const SUPPORT_CONTENT = {
     "Brief-nach-Berlin ist eine gemeinnützige Initiative in Trägerschaft der WE AID gGmbH.",
   intro:
     "Brief-nach-Berlin soll für alle kostenlos und unabhängig bleiben. Deine Spende hilft, das Projekt dauerhaft zu betreiben.",
+  costIntro:
+    "Ich trage die laufenden Kosten derzeit selbst. Deine Spende hilft dort, wo Brief-nach-Berlin stabil, unabhängig und für alle kostenlos bleibt.",
+  costNote:
+    "Die tatsächlichen Kosten schwanken mit der Nutzung. Deshalb nenne ich bewusst die wichtigsten Kostenarten statt einer Scheingenauigkeit.",
   fiscalHost: {
     name: "WE AID gGmbH",
     text:
@@ -25,19 +29,23 @@ export const SUPPORT_CONTENT = {
   },
   costCategories: [
     {
-      title: "KI & Infrastruktur",
-      description: "KI-Dienste, Hosting, Domain, E-Mail und weitere Softwarekosten.",
-    },
-    {
-      title: "Zeit",
-      description: "Der größte Einsatz: Entwicklung, Pflege und persönliche Weiterarbeit am Projekt.",
-    },
-    {
-      title: "Reichweite & Verbreitung",
+      title: "Laufender Betrieb",
       description:
-        "Damit mehr Menschen von Brief-nach-Berlin erfahren und das Werkzeug nutzen können.",
+        "Mistral für KI-Aufrufe, Brevo für den E-Mail-Versand, Vercel für Hosting sowie Domain- und weitere Infrastrukturkosten. Diese Ausgaben wachsen mit der Nutzung.",
+    },
+    {
+      title: "Technische Betreuung",
+      description:
+        "KI-Abos und Software für Entwicklung, Fehleranalyse und Pflege — zusätzlich zu meiner ehrenamtlichen Zeit.",
+    },
+    {
+      title: "Reichweite & Vernetzung",
+      description:
+        "Konferenzen, Gespräche und später kleine Ausgaben für Werbung oder Informationsmaterial, damit mehr Menschen das Werkzeug finden.",
     },
   ],
+  fundingNote:
+    "Ich möchte Brief-nach-Berlin nicht nur starten, sondern nachhaltig weiterbetreuen. Wenn dir das Projekt wichtig ist, hilf mit, dass es nicht dauerhaft an meiner privaten Kasse hängt.",
   sharePrompt:
     "Du kannst gerade nicht spenden? Eine Empfehlung an drei Menschen hilft dem Projekt ebenfalls.",
   relatedLinks: [

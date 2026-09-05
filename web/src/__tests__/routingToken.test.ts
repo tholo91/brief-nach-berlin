@@ -18,8 +18,10 @@ jest.mock("@/lib/mistral", () => ({
 import {
   signRoutingToken,
   verifyRoutingToken,
+  verifyRoutingTokenEnvelope,
   hashRoutingIssue,
   normalizeRoutingIssue,
+  deriveRoutingLetterId,
 } from "@/lib/lookup/routingToken";
 import type { RoutingResult } from "@/lib/lookup/levelRouter";
 
@@ -39,6 +41,29 @@ describe("routingToken", () => {
     expect(verified?.reasoning).toBe("Bildungspolitik ist Ländersache.");
   });
 
+  it("bindet genau eine zufällige letter_id an jeden Routing-Token", () => {
+    const token = signRoutingToken({ issueHash: hashRoutingIssue(issueText), routing });
+    const first = verifyRoutingTokenEnvelope(token, issueText);
+    const second = verifyRoutingTokenEnvelope(token, issueText);
+    const other = verifyRoutingTokenEnvelope(
+      signRoutingToken({ issueHash: hashRoutingIssue(issueText), routing }),
+      issueText,
+    );
+
+    expect(first?.letterId).toMatch(/^[0-9a-f-]{36}$/);
+    expect(second?.letterId).toBe(first?.letterId);
+    expect(other?.letterId).not.toBe(first?.letterId);
+  });
+
+  it("derives a stable but context-bound letter_id from the routing nonce", () => {
+    const token = signRoutingToken({ issueHash: hashRoutingIssue(issueText), routing });
+    const nonce = verifyRoutingTokenEnvelope(token, issueText)!.letterId;
+    const first = deriveRoutingLetterId(nonce, "plz=28203&email=a@example.org&recipient=Land");
+
+    expect(deriveRoutingLetterId(nonce, "plz=28203&email=a@example.org&recipient=Land")).toBe(first);
+    expect(deriveRoutingLetterId(nonce, "plz=10115&email=a@example.org&recipient=Bund")).not.toBe(first);
+  });
+
   it("toleriert Whitespace-Unterschiede im Anliegen (Normalisierung)", () => {
     const token = signRoutingToken({ issueHash: hashRoutingIssue(issueText), routing });
     expect(verifyRoutingToken(token, `  ${issueText.replace(" ", "   ")}  `)).not.toBeNull();
@@ -52,6 +77,12 @@ describe("routingToken", () => {
   it("lehnt einen Token für einen anderen Anliegen-Text ab", () => {
     const token = signRoutingToken({ issueHash: hashRoutingIssue(issueText), routing });
     expect(verifyRoutingToken(token, "Ein ganz anderes Anliegen")).toBeNull();
+  });
+
+  it("bindet auch Textänderungen nach Zeichen 1500", () => {
+    const longIssue = `${"A".repeat(1600)} Ende A`;
+    const token = signRoutingToken({ issueHash: hashRoutingIssue(longIssue), routing });
+    expect(verifyRoutingToken(token, `${"A".repeat(1600)} Ende B`)).toBeNull();
   });
 
   it("lehnt manipulierte Tokens ab", () => {

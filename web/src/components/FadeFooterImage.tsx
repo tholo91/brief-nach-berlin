@@ -51,22 +51,28 @@ const VARIANTS: Record<Variant, {
 
 interface FadeFooterImageProps {
   variant: Variant;
+  successBackground?: boolean;
 }
 
 // Dezente, breitwandige Footer-Illustration im Ghibli-Solarpunk-Stil. Sitzt
-// unter dem Seiteninhalt, oberhalb des AppFooter. Wird per CSS-Maske nach oben
+// unter dem Seiteninhalt, oberhalb des Seitenfooters. Wird per CSS-Maske nach oben
 // transparent ausgeblendet, damit der Lesebereich darüber ruhig bleibt.
 // Decorative — aria-hidden, leerer alt.
-export default function FadeFooterImage({ variant }: FadeFooterImageProps) {
+export default function FadeFooterImage({ variant, successBackground = false }: FadeFooterImageProps) {
   const { src, alt, fadeStart, width, height, fullHeight } = VARIANTS[variant];
   const mask = `linear-gradient(to top, rgba(0,0,0,1) ${fadeStart}, rgba(0,0,0,0) 100%)`;
 
   return (
     <div
       aria-hidden="true"
-      className="pointer-events-none select-none w-full max-w-[1584px] mx-auto overflow-hidden mt-auto"
+      className={successBackground
+        ? "pointer-events-none absolute inset-x-0 bottom-0 mx-auto w-full select-none overflow-hidden"
+        : "pointer-events-none mx-auto mt-auto w-full select-none overflow-hidden"
+      }
       style={
-        fullHeight
+        successBackground
+          ? { height: "min(48vh, 520px)", maxWidth: `${width}px` }
+          : fullHeight
           ? { maxHeight: "min(48vh, 520px)", maxWidth: `${width}px` }
           : { height: "clamp(180px, 22vw, 300px)", maxWidth: `${width}px` }
       }
@@ -79,8 +85,10 @@ export default function FadeFooterImage({ variant }: FadeFooterImageProps) {
         sizes="100vw"
         loading="lazy"
         className={
-          fullHeight
-            ? "w-full h-auto object-contain"
+          successBackground
+            ? "h-full w-full object-cover object-bottom"
+            : fullHeight
+            ? "h-auto w-full object-contain"
             : "w-full h-full object-cover object-bottom"
         }
         style={{

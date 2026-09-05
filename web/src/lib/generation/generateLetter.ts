@@ -1,11 +1,33 @@
-import { mistral, withMistralRetry, MISTRAL_MODELS } from "@/lib/mistral";
+import { mistral, MistralStageError, withMistralRetry, MISTRAL_MODELS } from "@/lib/mistral";
 import type { GenerateLetterInput, GenerateLetterResult, MdbContext } from "@/lib/types/wizard";
 import type { PoliticalLevel } from "@/lib/types/politician";
 import type { Recipient } from "@/lib/lookup/rathausRecipient";
 import { extractJsonObject } from "@/lib/mistral-json";
 import { LETTER_LENGTHS, DEFAULT_LETTER_LENGTH } from "@/lib/config";
+import {
+  buildTopicSignal,
+  TOPIC_JSON_SCHEMA_PROPERTIES,
+  type TopicSignal,
+} from "@/lib/topics/topicTaxonomy";
 
 const MISTRAL_TEMPERATURE = 0.4;
+const LETTER_RESPONSE_FORMAT = {
+  type: "json_schema" as const,
+  jsonSchema: {
+    name: "generated_letter",
+    strict: true,
+    schemaDefinition: {
+      type: "object",
+      additionalProperties: false,
+      properties: {
+        selected_politician_id: { type: "integer" },
+        letter: { type: "string" },
+        ...TOPIC_JSON_SCHEMA_PROPERTIES,
+      },
+      required: ["selected_politician_id", "letter"],
+    },
+  },
+};
 
 interface ToneRegister {
   register: string;
@@ -182,10 +204,10 @@ VOR DER AUSGABE: Lies deinen Brief einmal in Gedanken laut. Klingt das wie ein M
 
 Antworte ausschließlich im JSON-Format:
 {
-  "political_level": "Bund" | "Land" | "Kommune",
   "selected_politician_id": <number>,
-  "voice_check": "<ein Satz: warum klingt dein Brief wie ein Bürger und nicht wie ein Pressetext>",
-  "letter": "<vollständiger Brieftext>"
+  "letter": "<vollständiger Brieftext>",
+  "topic_categories": ["<1 bis 3 passende Codes aus der Taxonomie>"],
+  "topic_labels": ["<1 bis 3 kurze, neutrale Unterthemen>"]
 }`;
 
 // ---------------------------------------------------------------------------
@@ -286,7 +308,8 @@ Der Bürger hat sich bewusst entschieden, an die ${LEVEL_LABELS[selected]} zu sc
  * Exportiert für die Snapshot-Tests.
  */
 export function buildSystemPrompt(input: GenerateLetterInput): string {
-  const base = SYSTEM_PROMPT_TEMPLATE.replace("__TODAY__", todayInGerman());
+  const base = SYSTEM_PROMPT_TEMPLATE
+    .replace("__TODAY__", todayInGerman());
   const level: PoliticalLevel = input.level ?? "Bund";
 
   let prompt = base;
@@ -418,9 +441,9 @@ ${politiciansJson}
 }
 
 interface ParsedLetter {
-  political_level: string;
   selected_politician_id: number;
-  voice_check?: string;
+  topic_categories?: unknown;
+  topic_labels?: unknown;
   letter: string;
 }
 
@@ -460,20 +483,25 @@ export async function generateLetter(
 
   const generationStart = Date.now();
 
-  const firstResponse = await withMistralRetry("generateLetter:first", () =>
-    mistral.chat.complete({
-      model: MISTRAL_MODELS.letter,
-      messages: [
-        { role: "system", content: systemPrompt },
-        { role: "user", content: userPrompt },
-      ],
-      responseFormat: { type: "json_object" },
-      temperature: MISTRAL_TEMPERATURE,
-      maxTokens,
-      frequencyPenalty: 0.3,
-      presencePenalty: 0.4,
-    })
-  );
+  let firstResponse;
+  try {
+    firstResponse = await withMistralRetry("generateLetter:first", () =>
+      mistral.chat.complete({
+        model: MISTRAL_MODELS.letter,
+        messages: [
+          { role: "system", content: systemPrompt },
+          { role: "user", content: userPrompt },
+        ],
+        responseFormat: LETTER_RESPONSE_FORMAT,
+        temperature: MISTRAL_TEMPERATURE,
+        maxTokens,
+        frequencyPenalty: 0.3,
+        presencePenalty: 0.4,
+      })
+    );
+  } catch (error) {
+    throw new MistralStageError("generation", error);
+  }
 
   let parsed = parseLetterResponse(firstResponse.choices?.[0]?.message?.content);
   let wordCount = countWords(parsed.letter);
@@ -505,24 +533,23 @@ export async function generateLetter(
       direction: wordCount < acceptableMin ? "too_short" : "too_long",
     });
 
-    const retryResponse = await withMistralRetry("generateLetter:length-retry", () =>
-      mistral.chat.complete({
-        model: MISTRAL_MODELS.letter,
-        messages: [
-          { role: "system", content: systemPrompt },
-          { role: "user", content: userPrompt },
-          { role: "assistant", content: firstResponse.choices?.[0]?.message?.content as string ?? "" },
-          { role: "user", content: directive },
-        ],
-        responseFormat: { type: "json_object" },
-        temperature: MISTRAL_TEMPERATURE,
-        maxTokens,
-        frequencyPenalty: 0.3,
-        presencePenalty: 0.4,
-      })
-    );
-
     try {
+      const retryResponse = await withMistralRetry("generateLetter:length-retry", () =>
+        mistral.chat.complete({
+          model: MISTRAL_MODELS.letter,
+          messages: [
+            { role: "system", content: systemPrompt },
+            { role: "user", content: userPrompt },
+            { role: "assistant", content: firstResponse.choices?.[0]?.message?.content as string ?? "" },
+            { role: "user", content: directive },
+          ],
+          responseFormat: LETTER_RESPONSE_FORMAT,
+          temperature: MISTRAL_TEMPERATURE,
+          maxTokens,
+          frequencyPenalty: 0.3,
+          presencePenalty: 0.4,
+        })
+      );
       const retryParsed = parseLetterResponse(retryResponse.choices?.[0]?.message?.content);
       const retryWordCount = countWords(retryParsed.letter);
       // Only accept the retry if it's actually closer to target than the first attempt.
@@ -539,7 +566,9 @@ export async function generateLetter(
         });
       }
     } catch (err) {
-      console.error("[generateLetter] retry parse failed, keeping original", err);
+      console.error("[generateLetter] retry failed, keeping original", {
+        name: err instanceof Error ? err.name : "NonError",
+      });
     }
   }
 
@@ -554,11 +583,13 @@ export async function generateLetter(
     });
   }
 
-  // voice_check is a self-reflection field that forces the model to read its own output.
-  // We do not surface it to the user, but we log it for prompt iteration.
-  if (parsed.voice_check) {
-    console.log("[generateLetter] voice_check:", parsed.voice_check.slice(0, 200));
-  }
+  // Topics are an optional signal for the later opt-in flow. A malformed
+  // model field must never invalidate an otherwise usable letter.
+  const topic: TopicSignal | null = buildTopicSignal(
+    parsed,
+    "generation_fallback",
+    MISTRAL_MODELS.letter,
+  );
 
   // Empfänger auflösen: Kommune hat einen vorbestimmten Verwaltungs-Empfänger
   // (keine Auswahl durch das Modell); mdb/mdl laufen über die bisherige
@@ -612,6 +643,7 @@ export async function generateLetter(
     wordCountInRange,
     fallbackUsed,
     mdbContextUsed,
+    topic,
     retried,
     model: MISTRAL_MODELS.letter,
     temperature: MISTRAL_TEMPERATURE,

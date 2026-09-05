@@ -41,6 +41,10 @@ export function PrivacyDisclosure() {
               <li>Dein Name oder Pseudonym, falls du einen angibst</li>
               <li>Dein Häkchen für die öffentliche Anzeige</li>
               <li>Deine Antwort, ob der Brief tatsächlich rausgeht</li>
+              <li>
+                Deine Antworten zur politischen Handlungsfähigkeit und,
+                freiwillig, zu politischer Ohnmacht
+              </li>
               <li>Deine E-Mail-Adresse (aus dem Link in der Mail)</li>
               <li>Eine technische Verknüpfung zum erstellten Brief</li>
               <li>

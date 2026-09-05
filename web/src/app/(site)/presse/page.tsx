@@ -128,6 +128,10 @@ const coverage = [
     href: "https://www.ardsounds.de/episode/urn:ard:episode:5006a718e92c83f9/",
   },
   {
+    outlet: "Deutschlandfunk Kultur (Sarah Bosetti)",
+    href: "https://www.deutschlandfunkkultur.de/der-tag-mit-sarah-bosetti-konstruktiv-aktiv-werden-100.html",
+  },
+  {
     outlet: "detektor.fm",
     href: "https://detektor.fm/unsere-newsletter/dazwischen/dazwischen-warum-80-prozent-ans-weggehen-denken",
   },

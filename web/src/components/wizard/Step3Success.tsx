@@ -1,7 +1,7 @@
 "use client";
 
-import Link from "next/link";
 import Image from "next/image";
+import Link from "next/link";
 import { useState, useCallback, useMemo, useRef, useEffect } from "react";
 import type { WizardData, WizardActionResult } from "@/lib/types/wizard";
 import type { PoliticalLevel } from "@/lib/types/politician";
@@ -19,20 +19,24 @@ import { reportErrorAction } from "@/lib/actions/reportError";
 import { installClientLogBuffer, getClientLogs } from "@/lib/clientLogBuffer";
 import { formatPartyShort } from "@/lib/formatParty";
 import {
-  DONATION_PATH,
   FOUNDER_EMAIL,
   FOUNDER_FEEDBACK_URL,
 } from "@/lib/config";
-import { SUPPORT_CONTENT } from "@/lib/support-content";
-import { buildShareTarget } from "@/lib/share";
+import { SUPPORT_CONTENT, SUPPORT_EMAIL_COPY } from "@/lib/support-content";
 import {
   filterCampaignRecipients,
   initialPoliticianId,
   visibleLocalCampaignRecipients,
 } from "@/lib/campaign-recipient-picker";
-import { RathausAdresseButton } from "./RathausAdresseButton";
 import { WizardForwardIcon } from "./WizardForwardIcon";
-import { useUiCopy } from "@/components/i18n/LocaleProvider";
+import { LetterSignalCard } from "./LetterSignalCard";
+
+function maskEmail(email: string): string {
+  const [local, domain] = email.split("@");
+  if (!local || !domain) return "deine E-Mail-Adresse";
+  const visible = local.length <= 2 ? local[0] ?? "" : local.slice(0, 2);
+  return `${visible}${"•".repeat(Math.max(1, Math.min(5, local.length - visible.length)))}@${domain}`;
+}
 
 // Phased loading copy. Rotates while the politician-pick spinner runs. This is
 // the user's final click - they sit here waiting for the letter to be drafted,
@@ -122,7 +126,6 @@ export function Step3Success({
   onChangePlz,
   onChangeLevel,
 }: Step3SuccessProps) {
-  const copy = useUiCopy();
   // Abgeordneten-Karten (mdb/mdl) und der synthetische Rathaus-Empfänger
   // teilen sich den Step; Kommune zeigt genau eine Verwaltungs-Karte.
   const [showLandPersonPicker, setShowLandPersonPicker] = useState(false);
@@ -246,6 +249,16 @@ export function Step3Success({
   // during the final letter-generation wait.
   const [genPhase, setGenPhase] = useState(0);
   const submitButtonRef = useRef<HTMLButtonElement | null>(null);
+  const [letterSignalContext, setLetterSignalContext] = useState<string | null>(() =>
+    result && "letterSignalContext" in result && typeof result.letterSignalContext === "string"
+      ? result.letterSignalContext
+      : null,
+  );
+  const [generationProof, setGenerationProof] = useState<string | null>(() =>
+    result && "generationProof" in result && typeof result.generationProof === "string"
+      ? result.generationProof
+      : null,
+  );
 
   useEffect(() => {
     if (!isGenerating) return;
@@ -446,8 +459,16 @@ export function Step3Success({
         // discriminated selection (kind + optional numeric ID) is user input.
         const selectResult = await selectPoliticianAction(
           wizardData,
-          currentSelection
+          currentSelection,
+          routingToken ?? undefined,
         );
+
+        if ("letterSignalContext" in selectResult && typeof selectResult.letterSignalContext === "string") {
+          setLetterSignalContext(selectResult.letterSignalContext);
+        }
+        if ("generationProof" in selectResult && typeof selectResult.generationProof === "string") {
+          setGenerationProof(selectResult.generationProof);
+        }
 
         if ("error" in selectResult) {
           setGenerationError(selectResult.message);
@@ -470,7 +491,7 @@ export function Step3Success({
         setIsGenerating(false);
       }
     },
-    [currentSelection, wizardData]
+    [currentSelection, wizardData, routingToken]
   );
 
   // Animate ". .. ..." while letter is still being generated.
@@ -502,9 +523,10 @@ export function Step3Success({
     fetch("/api/generate-letter", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        wizardData,
-        selection: generatedSelection,
+        body: JSON.stringify({
+          wizardData,
+          selection: generatedSelection,
+          ...(letterSignalContext ? { letterSignalContext } : {}),
         ...(routingToken ? { routingToken } : {}),
       }),
       signal: controller.signal,
@@ -537,9 +559,17 @@ export function Step3Success({
           };
           throw new Error(`HTTP ${res.status}`);
         }
-        return res.json() as Promise<{ letterText?: string; letterNumber?: number }>;
+        return res.json() as Promise<{
+          letterText?: string;
+          letterNumber?: number;
+          letterId?: string;
+          letterSignalContext?: string;
+          generationProof?: string;
+        }>;
       })
       .then((data) => {
+        if (data.letterSignalContext) setLetterSignalContext(data.letterSignalContext);
+        if (data.generationProof) setGenerationProof(data.generationProof);
         if (data.letterText) {
           setLetterText(data.letterText);
           setLetterReady(true);
@@ -562,7 +592,9 @@ export function Step3Success({
             clientError: err.message,
           };
         }
-        if (retryCount === 0) {
+        const status = lastErrorRef.current?.httpStatus ?? null;
+        const retryable = status === null || status >= 500;
+        if (retryCount === 0 && retryable) {
           autoRetryTimer = setTimeout(() => setRetryCount(1), 3000);
         } else {
           setGenerationFetchError(
@@ -576,10 +608,10 @@ export function Step3Success({
       if (autoRetryTimer) clearTimeout(autoRetryTimer);
     };
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [generationComplete, letterReady, retryCount, generatedSelection]);
+  }, [generationComplete, letterReady, retryCount, generatedSelection, letterSignalContext]);
 
-  // Ein-Klick-Fehlerreport: sammelt Server-Detail + Client-Console + Kontext und
-  // mailt alles an Thomas. Die Mail ist selbst-enthaltend (kein Vercel nötig).
+  // Ein-Klick-Fehlerreport: übergibt den Fehlerstatus; die Server-Action verwirft
+  // Freitext und versendet ausschließlich erlaubte technische Metadaten.
   const handleReportError = useCallback(async () => {
     setReportState("sending");
     const e = lastErrorRef.current;
@@ -593,7 +625,6 @@ export function Step3Success({
       context: {
         plz: wizardData.plz ?? null,
         email: wizardData.email ?? null,
-        issueText: wizardData.issueText ?? null,
         politicianId:
           generatedSelection &&
           (generatedSelection.kind === "mdb" || generatedSelection.kind === "mdl")
@@ -627,48 +658,12 @@ export function Step3Success({
     }
   };
 
-  const [copied, setCopied] = useState(false);
-  const [clipboardFallbackUrl, setClipboardFallbackUrl] = useState<string | null>(null);
-  const share = useMemo(
-    () =>
-      buildShareTarget(
-        wizardData.campaign,
-        "participant",
-        selectedLevel ?? "Bund",
-        landesregierung?.institutionKind ?? "landesregierung"
-      ),
-    [wizardData.campaign, selectedLevel, landesregierung]
-  );
-
-  // Single "Teilen" button: native share when available, fall back to clipboard copy.
-  const handleShare = async () => {
-    if (typeof navigator !== "undefined" && "share" in navigator) {
-      try {
-        await navigator.share({
-          title: wizardData.campaign?.title ?? "Brief-nach-Berlin",
-          text: share.text,
-          url: share.url,
-        });
-        return;
-      } catch {
-        // User cancelled or share failed - fall through to copy fallback below
-      }
-    }
-    try {
-      await navigator.clipboard.writeText(share.text);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2200);
-    } catch {
-      setClipboardFallbackUrl(share.url);
-    }
-  };
-
   const handleResend = useCallback(async () => {
     if (resendState === "sending" || resendState === "sent" || resendState === "limited") return;
     if (!letterText || generatedSelection === null) return;
     setResendState("sending");
     try {
-      const res = await resendLetterAction({ ...wizardData, email: resendEmail }, generatedSelection, letterText);
+      const res = await resendLetterAction({ ...wizardData, email: resendEmail }, generatedSelection, letterText, generationProof ?? undefined);
       if ("success" in res) {
         setResendState("sent");
       } else if (res.error === "rate_limited") {
@@ -680,7 +675,7 @@ export function Step3Success({
     } catch {
       setResendState("error");
     }
-  }, [resendState, letterText, generatedSelection, wizardData, resendEmail]);
+  }, [resendState, letterText, generatedSelection, wizardData, resendEmail, generationProof]);
 
   const founderFeedbackUrl = wizardData.email
     ? `${FOUNDER_FEEDBACK_URL}?email=${encodeURIComponent(wizardData.email)}`
@@ -697,12 +692,6 @@ export function Step3Success({
   const addressInstruction = effectiveLevel === "Kommune"
     ? "Nutze die Suchhilfe, prüfe die vollständige Anschrift und schreib sie auf den Umschlag."
     : "Die Adresse findest du im Brief.";
-  const campaignShareImpactCopy = effectiveLevel === "Bund"
-    ? "Dein Brief ist ein Anfang. Teile die Kampagne, damit weitere Menschen aus ihrem Wahlkreis mit eigenen Worten schreiben."
-    : effectiveLevel === "Land"
-      ? "Dein Brief ist ein Anfang. Teile die Kampagne, damit weitere Menschen aus ihrem Bundesland mit eigenen Worten schreiben."
-      : "Dein Brief ist ein Anfang. Teile die Kampagne, damit weitere Menschen vor Ort mit eigenen Worten schreiben.";
-
   if (!result) return null;
 
   // Sub-state C: Level data missing (D-07)
@@ -735,83 +724,76 @@ export function Step3Success({
     generationComplete
   ) {
     return (
-      <div>
+      <div className="grid gap-x-8 gap-y-7 md:grid-cols-[minmax(0,1.05fr)_minmax(18rem,0.95fr)] lg:grid-cols-[minmax(0,1.08fr)_minmax(20rem,0.92fr)] lg:gap-x-12">
+        <section className="min-w-0 md:col-start-1 md:row-start-1">
         {/* Header: envelope + headline side by side */}
-        <div className="flex items-center gap-3 mb-3">
+        <div className="mb-3 flex items-center gap-3">
           <svg width="44" height="44" viewBox="0 0 48 48" fill="none" className="text-waldgruen flex-shrink-0" aria-hidden="true">
             <rect x="4" y="10" width="40" height="28" rx="3" stroke="currentColor" strokeWidth="2.5" fill="none" />
             <path d="M4 13 L24 28 L44 13" stroke="currentColor" strokeWidth="2.5" fill="none" strokeLinejoin="round" />
           </svg>
           <h1 className="font-typewriter text-[28px] font-semibold leading-[1.2] text-waldgruen-dark m-0">
-            {copy.status.letterReady}
+            Dein Brief ist fertig
           </h1>
         </div>
         <p className="font-body text-base text-warmgrau leading-relaxed mt-3">
           {letterReady ? (
-            copy.status.sent
+            <>Dein Entwurf und alle nächsten Schritte sind an <strong>{maskEmail(wizardData.email)}</strong> unterwegs.</>
           ) : (
             <>
-              {copy.status.sending}
+              Brief und nächste Schritte kommen per E-Mail zu dir
               <span aria-hidden="true">{loadingDots}</span>
             </>
           )}
         </p>
 
-        {wizardData.locale !== "de" && (
-          <p className="mt-2 font-body text-sm text-warmgrau/70">{copy.language.germanLetterNotice}</p>
-        )}
-
-        {/* Notice: Brief ist Entwurf, eigene Stimme */}
-        <div className="mt-6 border-l-4 border-waldgruen/50 bg-waldgruen/8 rounded-r-lg p-4 space-y-2">
-          <p className="font-body text-sm font-semibold text-waldgruen-dark flex items-center gap-2">
-            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="flex-shrink-0 text-waldgruen" aria-hidden="true">
-              <path d="M17 3a2.85 2.85 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/>
-            </svg>
-            Mach diesen Brief zu deinem Brief.
-          </p>
-          <p className="font-body text-sm text-warmgrau/75 leading-relaxed">
-            Lies dir die Mail durch und pass den Brief an, damit er sich nach dir anfühlt und dein Anliegen perfekt platziert. Ton, Formulierungen, einzelne Argumente:
-            <br />
-            Der Entwurf ist ein Anfang, die Unterschrift ist deine.
-          </p>
-        </div>
-
-        {/* Kommune-Brief: Google-Adresshilfe für die exakte Rathaus-Anschrift (LOCK-3) */}
-        {generatedRecipient?.kind === "rathaus" && (
-          <RathausAdresseButton
-            recipient={generatedRecipient}
-            className="mt-4"
-          />
-        )}
-
-        {/* "Keine E-Mail erhalten?" + (mobile) "Mail-App öffnen" - both hidden
-            until letter is ready. The webmail deep-link sits left of the
-            resend trigger on mobile only (sm:hidden) so users can jump into
-            their inbox with one tap; desktop users typically have mail open
-            elsewhere already. Generic label "Mail-App öffnen" - we don't
-            expose the user's email provider in the UI. */}
-        <div className={`transition-opacity duration-500 ${letterReady ? "opacity-100" : "opacity-0 pointer-events-none select-none"}`}>
-          <div className="mt-3 flex items-center justify-center gap-4">
-            {mailAppHref && (
+        {/* Recognized providers get a direct inbox link on every device;
+            unknown domains keep the neutral manual instruction. */}
+        <div className={letterReady ? "block" : "hidden"}>
+          <div className="mt-5">
+            {mailAppHref ? (
               <a
                 href={mailAppHref}
                 target={isIOS ? undefined : "_blank"}
                 rel={isIOS ? undefined : "noopener noreferrer"}
-                className="sm:hidden inline-flex items-center gap-1.5 font-body text-sm font-semibold text-waldgruen-dark px-3 py-1.5 rounded-lg border border-waldgruen/30 hover:bg-waldgruen/5 transition-colors"
+                className="inline-flex w-full items-center justify-center gap-2 rounded-lg bg-waldgruen px-4 py-3 font-body text-sm font-semibold text-creme transition-[background-color,transform] duration-200 hover:bg-waldgruen-dark active:translate-y-px focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-waldgruen"
               >
-                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                  <rect width="20" height="16" x="2" y="4" rx="2" />
-                  <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
-                </svg>
-                Mail-App öffnen
+                Postfach öffnen <span aria-hidden="true">→</span>
               </a>
+            ) : (
+              <p className="rounded-lg border border-waldgruen/20 bg-waldgruen/5 px-4 py-3 text-center font-body text-sm leading-relaxed text-waldgruen-dark">
+                Öffne jetzt dein E-Mail-Postfach und suche nach „Dein Brief nach Berlin ist fertig“.
+              </p>
             )}
+          </div>
+          <div className="mt-3 flex items-center justify-center divide-x divide-warmgrau/20">
             <button
               type="button"
-              onClick={() => setResendOpen((o) => !o)}
-              className="font-body text-sm text-warmgrau/55 hover:text-warmgrau/75 transition-colors cursor-pointer underline underline-offset-2"
+              onClick={() => {
+                setResendOpen((open) => !open);
+                setStepsOpen(false);
+              }}
+              aria-expanded={resendOpen}
+              className="cursor-pointer px-3 font-body text-sm text-warmgrau/55 underline underline-offset-2 transition-colors hover:text-warmgrau/75"
             >
               Keine E-Mail erhalten?
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                setStepsOpen((open) => !open);
+                setResendOpen(false);
+              }}
+              aria-expanded={stepsOpen}
+              className="inline-flex cursor-pointer items-center gap-1.5 px-3 font-body text-sm text-warmgrau/55 transition-colors hover:text-warmgrau/75"
+            >
+              <span className="underline underline-offset-2">So geht es weiter</span>
+              <span
+                aria-hidden="true"
+                className={`text-[9px] transition-transform duration-300 ${stepsOpen ? "rotate-180" : ""}`}
+              >
+                ▾
+              </span>
             </button>
           </div>
         </div>
@@ -908,8 +890,7 @@ export function Step3Success({
           )}
 
         {/* Generation error banner - shown if /api/generate-letter fails after auto-retry.
-            Doubles as Thomas' early-warning system: one click mails the full error
-            context (server detail + client console + input) so he can fix it fast. */}
+            The report sends only server-sanitized technical metadata. */}
         {generationFetchError && (
           reportState === "sent" ? (
             <div
@@ -978,30 +959,25 @@ export function Step3Success({
           )
         )}
 
-        {/* Step-by-step instructions - collapsed accordion: same steps live in
-            the email, so we keep the success page lean and let curious users
-            expand if they want a peek now. */}
-        <div className="mt-8">
-          <button
-            type="button"
-            onClick={() => setStepsOpen((v) => !v)}
-            aria-expanded={stepsOpen}
-            className="w-full flex items-center justify-between gap-2 py-2 font-body text-sm font-semibold text-warmgrau/70 uppercase tracking-wide hover:text-warmgrau transition-colors cursor-pointer"
-          >
-            <span>So geht es weiter</span>
-            <span
-              aria-hidden="true"
-              className={`text-[10px] text-warmgrau/50 transition-transform duration-300 ${stepsOpen ? "rotate-180" : ""}`}
-            >
-              ▾
-            </span>
-          </button>
+        {/* The trigger lives beside the resend action to keep the default
+            success state compact. Details expand in place only on demand. */}
+        <div className={stepsOpen ? "mt-3" : undefined}>
           <div
             className={`grid transition-all duration-300 ease-out ${
-              stepsOpen ? "grid-rows-[1fr] opacity-100 mt-3" : "grid-rows-[0fr] opacity-0"
+              stepsOpen ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0"
             }`}
           >
-            <div className="overflow-hidden">
+            <div className={`overflow-hidden ${stepsOpen ? "rounded-lg bg-warmgrau/5 p-4" : ""}`}>
+              {letterReady && (
+                <div className="mb-4 border-l-2 border-waldgruen/35 pl-4">
+                  <p className="font-body text-sm font-semibold text-waldgruen-dark">
+                    Mach diesen Brief zu deinem Brief.
+                  </p>
+                  <p className="mt-1 font-body text-sm leading-relaxed text-warmgrau/75">
+                    Lies dir die Mail durch und pass Ton, Formulierungen oder einzelne Argumente so an, dass der Brief sich nach dir anfühlt. Der Entwurf ist ein Anfang, die Unterschrift ist deine.
+                  </p>
+                </div>
+              )}
               <ol className="space-y-3 pt-1">
                 <li className="flex gap-3">
                   <span className="flex-shrink-0 w-6 h-6 rounded-full bg-waldgruen/15 text-waldgruen font-body text-xs font-bold flex items-center justify-center mt-0.5">1</span>
@@ -1025,118 +1001,63 @@ export function Step3Success({
             </div>
           </div>
         </div>
+        </section>
 
-        {/* One clear post-success action, followed by compact sharing and feedback. */}
-        <div className="mt-10 pt-8 border-t border-warmgrau/15">
-          <div className="rounded-xl border border-waldgruen/20 bg-waldgruen/8 p-5 sm:p-6">
-            <div className="flex items-start gap-4">
+        <aside className="min-w-0 border-t border-warmgrau/15 pt-6 md:-mt-1 md:col-start-2 md:row-span-2 md:row-start-1 md:border-l md:border-t-0 md:pl-8 md:pt-12">
+          {letterSignalContext && (
+            <LetterSignalCard
+              contextToken={letterSignalContext}
+              generationProof={generationProof}
+              email={wizardData.email}
+              letterPending={!letterReady}
+            />
+          )}
+        </aside>
+
+        <section
+          aria-labelledby="success-support-title"
+          className="overflow-hidden rounded-2xl border border-waldgruen/15 bg-creme/90 px-5 py-5 shadow-[0_18px_50px_-38px_rgba(24,70,51,0.7)] backdrop-blur-[2px] sm:px-6 md:col-start-1 md:row-start-2"
+        >
+          <h2 id="success-support-title" className="font-body text-lg font-semibold leading-snug text-waldgruen-dark">
+            {SUPPORT_CONTENT.headline}
+          </h2>
+
+          <div className="mt-4 flex items-start gap-4">
+            <div className="relative h-20 w-20 shrink-0 overflow-hidden rounded-xl ring-1 ring-waldgruen/10">
               <Image
                 src={SUPPORT_CONTENT.founder.portraitPath}
-                alt=""
-                width={56}
-                height={50}
-                aria-hidden="true"
-                className="h-[50px] w-14 flex-none rounded-lg border-2 border-white object-cover shadow-sm"
+                alt="Thomas Lorenz, der Brief-nach-Berlin entwickelt"
+                fill
+                sizes="80px"
+                className="object-cover"
               />
-              <div>
-                <p className="font-typewriter text-xs font-bold uppercase tracking-widest text-waldgruen/65">
-                  Kostenlos und unabhängig
-                </p>
-                <h2 className="mt-1 font-typewriter text-xl font-semibold text-waldgruen-dark">
-                  Hilfst du, Brief-nach-Berlin kostenlos zu halten?
-                </h2>
-                <p className="mt-2 font-body text-sm leading-relaxed text-warmgrau">
-                  {SUPPORT_CONTENT.founder.successText}
-                </p>
-              </div>
             </div>
-            <Link
-              href={DONATION_PATH}
-              prefetch={false}
-              className="mt-5 inline-flex w-full items-center justify-center gap-2 rounded-lg bg-waldgruen px-4 py-3 font-body text-sm font-semibold text-creme transition-colors hover:bg-waldgruen-dark focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-waldgruen sm:w-auto"
-            >
-              {SUPPORT_CONTENT.headline}
-              <span aria-hidden="true">&rarr;</span>
-            </Link>
+            <p className="font-body text-sm leading-relaxed text-warmgrau/75">
+              {SUPPORT_EMAIL_COPY.de.body}
+            </p>
           </div>
 
-          <div className="mt-5 text-center">
-            <p className="font-typewriter text-sm font-semibold text-waldgruen-dark">
-              {wizardData.campaign?.slug ? "Diese Kampagne weitertragen" : "Lieber weitersagen?"}
-            </p>
-            {wizardData.campaign?.slug && (
-              <p className="mx-auto mt-1 max-w-lg font-body text-sm leading-relaxed text-warmgrau/75">
-                {campaignShareImpactCopy}
-              </p>
-            )}
-            <div className="mt-3 flex flex-wrap items-center justify-center gap-x-4 gap-y-2">
-              <button
-                type="button"
-                onClick={handleShare}
-                className="inline-flex items-center justify-center gap-2 rounded-lg border border-waldgruen/35 bg-creme px-4 py-2 font-body text-sm font-semibold text-waldgruen transition-colors hover:border-waldgruen hover:bg-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-waldgruen cursor-pointer"
-              >
-                {copied ? (
-                  <>
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                      <path d="M20 6 9 17l-5-5"/>
-                    </svg>
-                    Kopiert
-                  </>
-                ) : (
-                  <>
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                      <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8" />
-                      <polyline points="16 6 12 2 8 6" />
-                      <line x1="12" x2="12" y1="2" y2="15" />
-                    </svg>
-                    Teilen
-                  </>
-                )}
-              </button>
-              {wizardData.campaign?.slug && (
-                <>
-                  <a href={share.whatsappUrl} target="_blank" rel="noopener noreferrer" className="font-body text-xs font-semibold text-waldgruen/75 underline-offset-4 hover:text-waldgruen hover:underline">
-                    WhatsApp
-                  </a>
-                  <a href={share.telegramUrl} target="_blank" rel="noopener noreferrer" className="font-body text-xs font-semibold text-waldgruen/75 underline-offset-4 hover:text-waldgruen hover:underline">
-                    Telegram
-                  </a>
-                  <a href={share.emailUrl} className="font-body text-xs font-semibold text-waldgruen/75 underline-offset-4 hover:text-waldgruen hover:underline">
-                    E-Mail
-                  </a>
-                </>
-              )}
-            </div>
-
-            {/* Clipboard fallback: shown only when clipboard API is blocked */}
-            {clipboardFallbackUrl && (
-              <div className="mt-3 border-l-4 border-warmgrau/30 bg-warmgrau/5 rounded-r-lg px-3 py-2 text-left text-xs font-body text-warmgrau/80 leading-relaxed">
-                Kopieren nicht möglich - bitte Link manuell kopieren:&nbsp;
-                <span
-                  className="font-mono text-waldgruen-dark select-all break-all cursor-text"
-                  onClick={(e) => {
-                    const range = document.createRange();
-                    range.selectNodeContents(e.currentTarget);
-                    window.getSelection()?.removeAllRanges();
-                    window.getSelection()?.addRange(range);
-                  }}
-                >
-                  {clipboardFallbackUrl}
-                </span>
-              </div>
-            )}
-
+          <div className="mt-4 grid gap-2 min-[440px]:grid-cols-2">
             <a
-              href={founderFeedbackUrl}
+              href={SUPPORT_CONTENT.ctas.donate.href}
               target="_blank"
               rel="noopener noreferrer"
-              className="mt-4 inline-block font-body text-xs text-warmgrau/55 underline underline-offset-4 transition-colors hover:text-warmgrau"
+              className="inline-flex min-h-11 items-center justify-center gap-2 rounded-lg bg-waldgruen px-5 py-2.5 font-body text-sm font-semibold text-creme transition-[background-color,transform] duration-200 hover:bg-waldgruen-dark active:translate-y-px focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-waldgruen"
             >
-              Feedback geben
+              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                <path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 0 0 0-7.8Z" />
+              </svg>
+              {SUPPORT_EMAIL_COPY.de.compactButton}
             </a>
+            <Link
+              href={SUPPORT_CONTENT.ctas.learnMore.href}
+              prefetch={false}
+              className="inline-flex min-h-11 items-center justify-center rounded-lg border border-waldgruen/30 bg-white/45 px-5 py-2.5 font-body text-sm font-semibold text-waldgruen transition-[border-color,background-color,transform] duration-200 hover:border-waldgruen hover:bg-white/80 active:translate-y-px focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-waldgruen"
+            >
+              {SUPPORT_EMAIL_COPY.de.infoButton}
+            </Link>
           </div>
-        </div>
-
+        </section>
       </div>
     );
   }

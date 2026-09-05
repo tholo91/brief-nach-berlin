@@ -20,6 +20,14 @@ import {
   type SubmitReviewResult,
 } from "@/lib/actions/submitReview";
 import { ALLOWED_HINT_TAGS, NOTIZ_MAX } from "@/lib/improve/feedbackHints";
+import {
+  POLITICAL_POWERLESSNESS_FREQUENCY_LABELS,
+  POLITICAL_POWERLESSNESS_FREQUENCY_VALUES,
+  POLITICAL_SELF_EFFICACY_LABELS,
+  POLITICAL_SELF_EFFICACY_VALUES,
+  type PoliticalPowerlessnessFrequency,
+  type PoliticalSelfEfficacy,
+} from "@/lib/feedback/politicalActivation";
 
 interface FeedbackFormProps {
   initialRating: number;
@@ -84,6 +92,10 @@ export function FeedbackForm({
   const [consent, setConsent] = useState(false);
   // No default. The user picks one before submit; null blocks submission.
   const [letterSent, setLetterSent] = useState<boolean | null>(null);
+  const [politicalSelfEfficacy, setPoliticalSelfEfficacy] =
+    useState<PoliticalSelfEfficacy | null>(null);
+  const [politicalPowerlessnessFrequency, setPoliticalPowerlessnessFrequency] =
+    useState<PoliticalPowerlessnessFrequency | null>(null);
   const [feedbackTags, setFeedbackTags] = useState<FeedbackTagSlug[]>([]);
   // Optional fields collapsed by default to keep the page lean.
   const [moreOpen, setMoreOpen] = useState(false);
@@ -168,6 +180,11 @@ export function FeedbackForm({
     );
   }
 
+  function selectLetterSent(value: boolean) {
+    setLetterSent(value);
+    if (!value) setPoliticalSelfEfficacy(null);
+  }
+
   function onSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (pending) return;
@@ -181,6 +198,12 @@ export function FeedbackForm({
       setErrorMessage("Bitte beantworte noch, ob dein Brief rausgeht.");
       return;
     }
+    if (letterSent && politicalSelfEfficacy === null) {
+      setErrorMessage(
+        "Bitte beantworte noch, ob du dich durch den Brief eher politisch einbringen kannst."
+      );
+      return;
+    }
 
     startTransition(async () => {
       const result: SubmitReviewResult = await submitReviewAction({
@@ -190,6 +213,8 @@ export function FeedbackForm({
         displayName: displayName.trim(),
         consent,
         letterSent,
+        politicalSelfEfficacy,
+        politicalPowerlessnessFrequency,
         feedbackTags: feedbackTags.length ? feedbackTags : undefined,
         token,
         bypassRateLimit,
@@ -318,16 +343,62 @@ export function FeedbackForm({
         >
           <SentTab
             checked={letterSent === true}
-            onSelect={() => setLetterSent(true)}
+            onSelect={() => selectLetterSent(true)}
             label="Ja, geht raus"
             emoji="✉️"
           />
           <SentTab
             checked={letterSent === false}
-            onSelect={() => setLetterSent(false)}
+            onSelect={() => selectLetterSent(false)}
             label="Eher nicht"
             emoji="🤷"
           />
+        </div>
+      </fieldset>
+
+      {letterSent === true ? (
+        <fieldset className="animate-feedback-in">
+          <legend className="block font-body text-sm font-semibold text-warmgrau mb-3">
+            Fühlst du dich durch diesen Brief eher in der Lage, dich politisch
+            einzubringen?
+          </legend>
+          <div
+            role="radiogroup"
+            aria-label="Politische Handlungsfähigkeit durch den Brief"
+            className="grid grid-cols-2 gap-2"
+          >
+            {POLITICAL_SELF_EFFICACY_VALUES.map((value, index) => (
+              <SurveyChoice
+                key={value}
+                checked={politicalSelfEfficacy === value}
+                onSelect={() => setPoliticalSelfEfficacy(value)}
+                label={POLITICAL_SELF_EFFICACY_LABELS[value]}
+                wide={index === POLITICAL_SELF_EFFICACY_VALUES.length - 1}
+              />
+            ))}
+          </div>
+        </fieldset>
+      ) : null}
+
+      <fieldset>
+        <legend className="block font-body text-sm font-semibold text-warmgrau mb-3">
+          Wie oft kennst du das: Du liest, siehst oder hörst etwas Politisches,
+          das dich beschäftigt – aber weißt nicht, was du konkret tun kannst?{" "}
+          <span className="font-normal text-warmgrau/60">(optional)</span>
+        </legend>
+        <div
+          role="radiogroup"
+          aria-label="Häufigkeit politischer Ohnmacht"
+          className="grid grid-cols-2 gap-2"
+        >
+          {POLITICAL_POWERLESSNESS_FREQUENCY_VALUES.map((value) => (
+            <SurveyChoice
+              key={value}
+              checked={politicalPowerlessnessFrequency === value}
+              onSelect={() => setPoliticalPowerlessnessFrequency(value)}
+              label={POLITICAL_POWERLESSNESS_FREQUENCY_LABELS[value]}
+            />
+          ))}
         </div>
       </fieldset>
 
@@ -545,6 +616,37 @@ function SentTab({
         {emoji}
       </span>
       <span>{label}</span>
+    </button>
+  );
+}
+
+function SurveyChoice({
+  checked,
+  onSelect,
+  label,
+  wide = false,
+}: {
+  checked: boolean;
+  onSelect: () => void;
+  label: string;
+  wide?: boolean;
+}) {
+  return (
+    <button
+      type="button"
+      role="radio"
+      aria-checked={checked}
+      onClick={onSelect}
+      className={[
+        "min-h-[44px] rounded-lg border px-3 py-2.5 font-body text-sm transition-colors",
+        "cursor-pointer focus:outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-waldgruen",
+        wide ? "col-span-2" : "",
+        checked
+          ? "border-waldgruen bg-waldgruen text-creme font-semibold"
+          : "border-warmgrau/20 bg-creme text-warmgrau hover:border-waldgruen/50 hover:text-waldgruen-dark",
+      ].join(" ")}
+    >
+      {label}
     </button>
   );
 }

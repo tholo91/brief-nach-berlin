@@ -3,6 +3,7 @@ import type { RathausRecipient, Recipient } from "@/lib/lookup/rathausRecipient"
 import type { LandesregierungRecipient } from "@/lib/lookup/landesregierungRecipient";
 import type { LetterLength } from "@/lib/config";
 import type { Locale } from "@/lib/i18n/locale";
+import type { TopicSignal } from "@/lib/topics/topicTaxonomy";
 
 export type WizardStep = 1 | 2 | "2b" | "level" | 3;
 
@@ -96,6 +97,8 @@ export interface GenerateLetterInput {
 
 export interface GenerateLetterResult {
   letter: string;
+  /** Optional, schema-validated topic signal used by the later opt-in flow. */
+  topic: TopicSignal | null;
   /** Der aufgelöste Empfänger */
   selectedRecipient: Recipient;
   /** Für mdb/mdl der Politician; für institutionelle Empfänger null */
@@ -113,7 +116,12 @@ export interface GenerateLetterResult {
 
 export type WizardActionResult =
   | { success: true; politician: Politician; politicalLevel: PoliticalLevel; letterText: string }
-  | { preCheckOk: true; recipient: Recipient }
+  | {
+      preCheckOk: true;
+      recipient: Recipient;
+      letterId?: string;
+      letterSignalContext?: string | null;
+    }
   | {
       disambiguationNeeded: true;
       politicians: Politician[];

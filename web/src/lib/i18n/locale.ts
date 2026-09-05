@@ -22,5 +22,5 @@ export function resolveBrowserLocale(languages: readonly string[] | undefined): 
     if (normalized === "en" || normalized.startsWith("en-")) return "en";
     if (normalized === "de" || normalized.startsWith("de-")) return "de";
   }
-  return DEFAULT_LOCALE;
+  return "en";
 }

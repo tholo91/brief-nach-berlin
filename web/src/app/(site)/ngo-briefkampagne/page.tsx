@@ -4,8 +4,8 @@ import type { Metadata } from "next";
 import { APP_URL } from "@/lib/config";
 import { FAQAccordion } from "@/components/FAQAccordion";
 import { CampaignBackground } from "@/components/campaigns/CampaignBackground";
+import { CampaignList } from "@/components/campaigns/CampaignList";
 import { getRecentActiveCampaigns } from "@/lib/campaigns/repository";
-import type { Campaign } from "@/lib/campaigns/schema";
 
 const URL_PATH = "/ngo-briefkampagne";
 const PUBLISHED = "2026-07-06";
@@ -33,15 +33,6 @@ export const metadata: Metadata = {
 };
 
 export const dynamic = "force-dynamic";
-
-type CampaignListItem = Pick<
-  Campaign,
-  | "slug"
-  | "title"
-  | "creatorName"
-  | "activatedAt"
-  | "createdAt"
->;
 
 const faqs = [
   {
@@ -109,18 +100,6 @@ const shortPoints = [
   },
 ];
 
-const dateFormatter = new Intl.DateTimeFormat("de-DE", {
-  day: "2-digit",
-  month: "2-digit",
-  year: "numeric",
-});
-
-function formatCampaignDate(campaign: CampaignListItem): string {
-  return dateFormatter.format(
-    new Date(campaign.activatedAt ?? campaign.createdAt)
-  );
-}
-
 function ArrowUpRightIcon() {
   return (
     <svg
@@ -156,45 +135,6 @@ function ArrowDownIcon() {
         strokeWidth="1.667"
       />
     </svg>
-  );
-}
-
-function CampaignList({ campaigns }: { campaigns: CampaignListItem[] }) {
-  if (campaigns.length === 0) {
-    return (
-      <p className="font-body text-sm leading-relaxed text-warmgrau/70">
-        Noch keine öffentlichen Kampagnen. Wenn du ein Anliegen testen willst,
-        kannst du hier die erste Kampagne starten.
-      </p>
-    );
-  }
-
-  return (
-    <ol className="grid gap-2">
-      {campaigns.map((campaign) => (
-        <li key={campaign.slug}>
-          <Link
-            href={`/kampagne/${campaign.slug}`}
-            className="group block rounded-md border border-waldgruen/12 bg-white/55 p-3 transition-colors duration-150 hover:bg-white/85 active:scale-[0.99]"
-          >
-            <div className="flex items-start justify-between gap-3">
-              <p className="break-words font-body text-sm font-bold leading-snug text-waldgruen-dark group-hover:text-waldgruen">
-                {campaign.title}
-              </p>
-              <span className="shrink-0 font-typewriter text-[10px] font-bold uppercase tracking-wider text-waldgruen/75">
-                Öffnen
-              </span>
-            </div>
-            <div className="mt-2 flex flex-wrap gap-x-2 gap-y-1 font-body text-[11px] font-semibold text-warmgrau/55">
-              {campaign.creatorName && (
-                <span>Anliegen von {campaign.creatorName}</span>
-              )}
-              <span>{formatCampaignDate(campaign)}</span>
-            </div>
-          </Link>
-        </li>
-      ))}
-    </ol>
   );
 }
 
@@ -298,7 +238,10 @@ export default async function NgoBriefkampagnePage() {
                 Folgende Kampagnen laufen bereits, schau sie dir gerne an:
               </p>
             </div>
-            <CampaignList campaigns={campaigns} />
+            <CampaignList
+              campaigns={campaigns}
+              emptyMessage="Noch keine öffentlichen Kampagnen. Wenn du ein Anliegen testen willst, kannst du hier die erste Kampagne starten."
+            />
           </section>
 
           <div id="faq" className="mt-10 scroll-mt-28">

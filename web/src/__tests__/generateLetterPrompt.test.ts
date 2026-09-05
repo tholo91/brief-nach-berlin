@@ -73,6 +73,15 @@ describe("mdbContextBlock", () => {
 });
 
 describe("buildUserPrompt", () => {
+  it("fordert den Brief- und Themenvertrag an", () => {
+    const prompt = buildSystemPrompt(makeInput());
+    expect(prompt).toContain("selected_politician_id");
+    expect(prompt).toContain('"letter"');
+    expect(prompt).not.toContain("THEMEN-SIGNAL");
+    expect(prompt).toContain("topic_categories");
+    expect(prompt).toContain("topic_labels");
+  });
+
   it("accepts English or Turkish input while requiring a German final letter", () => {
     const prompt = buildSystemPrompt({
       ...makeInput(),

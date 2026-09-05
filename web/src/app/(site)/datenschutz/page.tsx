@@ -69,12 +69,14 @@ export default function Datenschutz() {
               Briefs an Ihren zuständigen Abgeordneten. Ich lege keine
               Nutzerkonten an. Alle eingegebenen
               Daten (Postleitzahl, E-Mail-Adresse, Anliegen, optionale Angaben,
-              optionale Spracheingabe) werden ausschließlich während der
-              Verarbeitung Ihrer Anfrage verwendet und danach verworfen. Eine
-              dauerhafte Speicherung Ihrer Brief-Daten findet nicht statt.
+              optionale Spracheingabe) werden für die Brief-Erstellung nur
+              während der Verarbeitung verwendet und danach verworfen. Eine
+              zusätzliche Speicherung für die freiwillige Themenauswertung
+              erfolgt nur nach einem ausdrücklichen Opt-in auf der Successpage;
+              dabei werden kein Brieftext und kein Anliegen-Volltext gespeichert.
               Ausnahmen: optionale Bewertungen nach dem Versand (siehe
               Abschnitt 17) und creator-seitig angelegte Kampagnen (siehe
-              Abschnitt 19). Für Kampagnen-Verwaltungslinks wird ein technisch
+              Abschnitt 20). Für Kampagnen-Verwaltungslinks wird ein technisch
               notwendiges, kurzlebiges HttpOnly-Cookie gesetzt. Die eingesetzten
               Dienstleister Mistral AI
               (Abschnitt 9) und Brevo (Abschnitt 11) speichern Daten im Rahmen
@@ -94,13 +96,13 @@ export default function Datenschutz() {
               besondere Kategorien personenbezogener Daten verarbeitet werden,
               etwa Angaben zu Gesundheit, religiöser oder weltanschaulicher
               Überzeugung oder Gewerkschaftszugehörigkeit. Die Verarbeitung
-              dieser Daten erfolgt ausschließlich auf Grundlage Ihrer
-              ausdrücklichen Einwilligung gemäß{" "}
+              dieser Daten erfolgt für die Brief-Erstellung ausschließlich auf
+              Grundlage Ihrer ausdrücklichen Einwilligung gemäß{" "}
               <strong>Art. 9 Abs. 2 lit. a DSGVO</strong>, die Sie durch das
               freiwillige Eintragen Ihres Anliegens und das Absenden des
-              Formulars erteilen. Sie können die Einwilligung jederzeit für die
-              Zukunft widerrufen; eine Speicherung der Daten findet bei mir
-              ohnehin nicht statt.
+              Formulars erteilen. Für die optionale Themenauswertung gibt es
+              eine separate Einwilligung; sie kann über die Feedback-Mail
+              widerrufen werden.
             </p>
           </div>
 
@@ -163,7 +165,9 @@ export default function Datenschutz() {
               Verarbeitete Daten: Postleitzahl (5 Ziffern). Die Zuordnung erfolgt
               vollständig lokal auf meinem Server anhand statischer
               Referenzdaten der Bundeswahlleiterin; die Postleitzahl wird nicht
-              an Dritte übermittelt. Speicherdauer: keine Speicherung.
+              an Dritte übermittelt. Speicherdauer: keine Speicherung für die
+              Brief-Erstellung; bei freiwilliger Themenauswertung Speicherung
+              in pseudonymisierter Form bis zum Widerruf bzw. Zweckfortfall.
               Rechtsgrundlage: Art. 6 Abs. 1 lit. b DSGVO (Durchführung
               vorvertraglicher Maßnahmen auf Ihre Anfrage).
             </p>
@@ -190,9 +194,12 @@ export default function Datenschutz() {
               von Ihnen angegebene Adresse. Zusätzlich kann eine einmalige,
               zeitversetzt geplante Feedback-Nachfrage folgen. Verarbeitete
               Daten: E-Mail-Adresse. Empfänger: Brevo SAS (siehe Abschnitt 11).
-              Ich speichere die E-Mail-Adresse nicht bei mir; es wird kein
-              Newsletter und keine Empfängerliste geführt. Die Feedback-Nachfrage
-              ist keine Anmeldung zu einem Newsletter.
+              Ich speichere die E-Mail-Adresse nicht für die reine
+              Brief-Erstellung; es wird kein Newsletter und keine
+              Empfängerliste geführt. Bei freiwilligem Opt-in wird nur ein
+              nicht rückrechenbarer Prüfwert zur späteren Zuordnung und
+              Löschung gespeichert. Die Feedback-Nachfrage ist keine Anmeldung
+              zu einem Newsletter.
             </p>
           </div>
 
@@ -208,7 +215,11 @@ export default function Datenschutz() {
               Spracheingabe), optionale Angaben (Name, Parteizugehörigkeit,
               Organisationszugehörigkeit, Tonalität, gewünschte Brieflänge), der
               im Anschluss generierte Brieftext. Empfänger: Mistral AI (siehe
-              Abschnitt 9). Speicherdauer: keine Speicherung auf meinem Server.
+              Abschnitt 9). Speicherdauer: keine Speicherung auf meinem Server
+              für die Brief-Erstellung. Bei freiwilligem Opt-in werden nur
+              Themenkategorien, kurze Themenlabels, PLZ-/Regiondaten und
+              Metadaten gespeichert; Brief- und Anliegen-Volltext werden nicht
+              gespeichert.
               Rechtsgrundlage: Art. 6 Abs. 1 lit. b DSGVO; soweit besondere
               Kategorien personenbezogener Daten betroffen sind (z. B. politische
               Meinung, Gesundheit), zusätzlich Art. 9 Abs. 2 lit. a DSGVO
@@ -261,24 +272,28 @@ export default function Datenschutz() {
             </p>
             <p className="mt-2">
               Empfänger: Mistral AI, 15 rue des Halles, 75001 Paris, Frankreich.
-              Eingesetzte Modelle: <em>mistral-medium-latest</em> (Briefe),{" "}
+              Eingesetzte Modelle: <em>mistral-large-latest</em> (Briefe),{" "}
+              <em>mistral-small-latest</em> (Zuständigkeit und Themen),{" "}
               <em>mistral-moderation-latest</em> (Inhaltsprüfung),{" "}
-              <em>voxtral-mini-latest</em> (Spracherkennung).
-              Serverstandort: Europäische Union (Frankreich). Es findet kein
-              Drittlandtransfer statt.
+              <em>voxtral-mini-latest</em> (Spracherkennung). Mistral
+              dokumentiert die standardmäßige Datenhaltung in der Europäischen
+              Union; je nach Dienst und Subprozessor können dennoch abgesicherte
+              Übermittlungen außerhalb der EU stattfinden.
             </p>
             <p className="mt-2">
               Mistral AI verarbeitet die übermittelten Daten als
-              Auftragsverarbeiter im Sinne des Art. 28 DSGVO. Die übermittelten
-              API-Daten werden nach Auskunft von Mistral nicht zum Training der
-              Modelle verwendet. Auftragsverarbeitungsvertrag:{" "}
+              Auftragsverarbeiter im Sinne des Art. 28 DSGVO. Für API-Daten
+              bietet Mistral einen separaten Ausschluss vom
+              Modelltraining an. Die aktive Kontoeinstellung wird vor der
+              Aktivierung freiwilliger Themensignale verifiziert.
+              Auftragsverarbeitungsvertrag:{" "}
               <a
-                href="https://mistral.ai/terms#data-processing-agreement"
+                href="https://legal.mistral.ai/terms/data-processing-addendum"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-waldgruen hover:underline"
               >
-                mistral.ai/terms#data-processing-agreement
+                legal.mistral.ai/terms/data-processing-addendum
               </a>
               . Datenschutzhinweise:{" "}
               <a
@@ -292,8 +307,12 @@ export default function Datenschutz() {
               .
             </p>
             <p className="mt-2 text-sm">
-              Speicherdauer: Mistral speichert API-Anfragen typischerweise bis zu
-              30 Tage zur Missbrauchsvermeidung und löscht sie anschließend.
+              Speicherdauer: Sie hängt von der vertraglichen und technischen
+              API-Einstellung ab. Zero Data Retention und der Ausschluss von
+              Modelltraining sind getrennte Kontrollen. Die freiwillige
+              Themenauswertung wird erst aktiviert, wenn Zero Data Retention für
+              die verwendeten stateless API-Endpunkte im Mistral-Adminbereich
+              nachgewiesen ist.
             </p>
             <p className="mt-2">
               Rechtsgrundlage: Art. 6 Abs. 1 lit. b DSGVO; für besondere
@@ -333,14 +352,17 @@ export default function Datenschutz() {
             </p>
             <p className="mt-2">
               Brevo wird ausschließlich als Transaktionsversender eingesetzt; ein
-              Newsletter, eine Marketingliste oder ein Tracking (Open- bzw.
-              Click-Tracking) findet nicht statt. Neben der ersten
+              Newsletter oder eine Marketingliste wird nicht geführt. Neben der ersten
               Transaktionsmail kann Brevo eine einzelne Feedback-Nachfrage zu
               einem späteren Zeitpunkt planen und zustellen. Diese Nachricht
               enthält einen signierten Link zur freiwilligen Bewertung; sie
-              enthält keinen Newsletterversand. Brevo speichert die
-              Versand-Logs entsprechend ihrer eigenen Aufbewahrungsfristen
-              (typischerweise wenige Tage bis Wochen). Brevo handelt als
+              enthält keinen Newsletterversand. Brevo kann Versandereignisse
+              und – abhängig von der Account-Einstellung – E-Mail-Previews
+              speichern. Der Anbieter sieht standardmäßig eine unbegrenzte
+              Log-Aufbewahrung vor. Vor Aktivierung der freiwilligen
+              Themenauswertung werden die Logs auf einen Monat begrenzt,
+              E-Mail-Previews deaktiviert und Open-/Click-Tracking geprüft.
+              Brevo handelt als
               Auftragsverarbeiter im Sinne des Art. 28 DSGVO.
               Auftragsverarbeitungsvertrag:{" "}
               <a
@@ -521,10 +543,10 @@ export default function Datenschutz() {
               >
                 {CONTACT.email}
               </a>
-              . Da ich selbst keine personenbezogenen Daten speichere, können
-              Auskunfts- oder Löschanfragen, die Daten bei meinen
-              Auftragsverarbeitern (Vercel, Mistral, Brevo) betreffen, von mir
-              nur mit deren Mitwirkung beantwortet werden.
+              . Bewertungen, Kampagnendaten und freiwillige Themensignale kann
+              ich nach Zuordnung der verwendeten E-Mail-Adresse löschen.
+              Anfragen zu Daten bei Auftragsverarbeitern (Vercel, Mistral,
+              Brevo und Supabase) beantworte ich bei Bedarf mit deren Mitwirkung.
             </p>
           </div>
 
@@ -563,6 +585,14 @@ export default function Datenschutz() {
               <li>Ihr Häkchen für die öffentliche Anzeige (an oder aus)</li>
               <li>
                 Ihre Angabe, ob der Brief tatsächlich verschickt wird (Ja / Nein)
+              </li>
+              <li>
+                Ihre Angabe, ob Sie sich durch den Brief eher in der Lage
+                fühlen, sich politisch einzubringen
+              </li>
+              <li>
+                Optional: Ihre Angabe, wie häufig Sie politische Ohnmacht ohne
+                konkrete Handlungsmöglichkeit erleben
               </li>
               <li>
                 Verknüpfung zum erstellten Brief (intern: Politiker-ID, PLZ,
@@ -623,8 +653,56 @@ export default function Datenschutz() {
           </div>
 
           <div>
+            <h2 id="freiwillige-themensignale" className="font-semibold text-waldgruen-dark mb-2 scroll-mt-24">
+              18. Freiwillige Themensignale
+            </h2>
+            <p className="mb-3">
+              Auf der Successpage können Sie freiwillig zustimmen, ein
+              minimiertes Themensignal zur internen Verbesserung und einen
+              Kartenpunkt zu speichern. Ihr Brief wird unabhängig von dieser
+              Entscheidung erstellt und per E-Mail verschickt. Die Einwilligung
+              kann deshalb bereits während der Briefgenerierung erteilt werden.
+            </p>
+            <p className="mb-3">
+              Gespeichert werden die normalisierte E-Mail-Adresse, die
+              fünfstellige PLZ, daraus abgeleitet Bundesland und Kartenposition,
+              die tatsächlich gewählte Ebene Bund/Land/Kommune, ein bis drei erlaubte
+              Oberkategorien, ein bis drei minimierte Unterthemen, Zeitpunkt,
+              optionaler Kampagnen-Slug, eine zufällige Brief-ID, ein HMAC der
+              normalisierten E-Mail-Adresse und die Version der Einwilligung.
+              Nicht gespeichert werden Anliegen- oder Brief-Volltext,
+              Name, Empfängerperson oder IP-Adresse.
+            </p>
+            <p className="mb-3">
+              Diese Daten sind pseudonymisiert, nicht anonym. Die Brief-ID kann
+              intern mit einer später freiwillig abgegebenen Bewertung verknüpft
+              werden. Es findet kein Verkauf, keine Werbenutzung und kein
+              individuelles politisches Profiling statt. Öffentlich erscheint
+              unmittelbar ein Punkt am ungefähren Mittelpunkt der fünfstelligen
+              PLZ. Dadurch lässt sich die ungefähre PLZ-Region erkennen. E-Mail,
+              Thema, Brief-ID, Zeitpunkt und Briefinhalt werden nicht öffentlich
+              ausgegeben. Mehrere Beiträge derselben PLZ werden zusammengezählt.
+            </p>
+            <p className="mb-3">
+              Rechtsgrundlage ist Ihre ausdrückliche Einwilligung nach Art. 6
+              Abs. 1 lit. a DSGVO und, soweit besondere Kategorien betroffen
+              sind, Art. 9 Abs. 2 lit. a DSGVO. Empfänger sind Supabase für die
+              Speicherung und Mistral für die Themenableitung im ohnehin
+              erforderlichen Routing- oder Generierungsaufruf.
+            </p>
+            <p>
+              Ein Kartenbeitrag bleibt unabhängig vom Erfolg der Briefgenerierung
+              bis zu Ihrem Widerruf, dem Wegfall des Analysezwecks oder dem
+              Projektende gespeichert. Über
+              den Link „Meine gespeicherten Daten löschen“ in der Feedback-Mail
+              können Sie eine vorbefüllte E-Mail öffnen; die Löschanfrage wird
+              erst übermittelt, wenn Sie diese E-Mail selbst absenden.
+            </p>
+          </div>
+
+          <div>
             <h2 className="font-semibold text-waldgruen-dark mb-2">
-              18. KI-generierte Inhalte und Disclaimer
+              19. KI-generierte Inhalte und Disclaimer
             </h2>
             <p className="mb-3">
               Brief-nach-Berlin nutzt künstliche Intelligenz, um Ihr Anliegen
@@ -672,7 +750,7 @@ export default function Datenschutz() {
 
           <div>
             <h2 className="font-semibold text-waldgruen-dark mb-2">
-              19. Kampagnen von Creatorinnen und Creatorn
+              20. Kampagnen von Creatorinnen und Creatorn
             </h2>
             <p className="mb-3">
               Wenn Sie eine Kampagne starten, speichere ich die von Ihnen
@@ -722,7 +800,7 @@ export default function Datenschutz() {
             </p>
           </div>
 
-          <p className="text-sm text-warmgrau/50">Stand: Juni 2026</p>
+          <p className="text-sm text-warmgrau/50">Stand: 2. September 2026</p>
         </div>
       </div>
     </div>

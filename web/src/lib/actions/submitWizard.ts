@@ -71,7 +71,7 @@ async function routeToLevelWithTimeout(text: string): Promise<RoutingResult | nu
     } else {
       console.warn("[submitWizard] routeToLevel failed", {
         elapsed,
-        err: err instanceof Error ? err.message : String(err),
+        errorName: err instanceof Error ? err.name : "NonError",
       });
     }
     return null;
@@ -315,16 +315,13 @@ export async function submitWizardAction(
       ...(campaignTarget ? { campaignTargetLevel: campaignTarget.targetLevel } : {}),
     };
   } catch (error) {
-    const err = error as Error & { status?: number; code?: string; cause?: unknown };
+    const err = error as Error & { status?: number; code?: string };
     console.error("[submitWizard] FAILED", {
       name: err?.name,
-      message: err?.message,
       status: err?.status,
       code: err?.code,
-      cause: err?.cause,
       issueTextLength: data.issueText?.length ?? 0,
       plz: data.plz,
-      stack: err?.stack,
     });
     return {
       error: "server_error",

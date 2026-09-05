@@ -11,6 +11,7 @@
     "test:watch": "jest --watch",
     "build:data": "tsx scripts/parse-plz-mapping.ts && tsx scripts/fetch-politician-data.ts",
     "build:plz": "tsx scripts/parse-plz-mapping.ts",
+    "build:signal-map": "tsx scripts/build-letter-signal-map.ts",
     "fetch:politicians": "tsx scripts/fetch-politician-data.ts",
     "build:plz-bundesland": "tsx scripts/build-plz-bundesland.ts",
     "build:rathaus-addresses": "tsx scripts/import-destatis-addresses.ts",
@@ -33,7 +34,9 @@
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
     "@turf/area": "^7.3.5",
+    "@turf/boolean-point-in-polygon": "^7.4.0",
     "@turf/intersect": "^7.3.5",
+    "@turf/point-on-feature": "^7.4.0",
     "@types/jest": "^29.5.14",
     "@types/node": "^20",
     "@types/react": "^19",
@@ -44,12 +47,12 @@
     "has-flag": "^4.0.0",
     "jest": "^29.7.0",
     "playwright": "^1.59.1",
+    "read-excel-file": "^9.3.2",
     "sharp": "^0.34.5",
     "tailwindcss": "^4",
     "ts-jest": "^29.4.9",
     "ts-node": "^10.9.2",
     "tsx": "^4.21.0",
-    "typescript": "^5",
-    "read-excel-file": "^9.3.2"
+    "typescript": "^5"
   }
 }

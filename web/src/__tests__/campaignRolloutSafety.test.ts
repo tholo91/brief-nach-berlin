@@ -19,6 +19,8 @@ jest.mock("@/lib/lookup/routingToken", () => ({
   normalizeRoutingIssue: jest.fn((value: string) => value.trim().replace(/\s+/g, " ")),
   signRoutingToken: jest.fn(() => "fresh-routing-token"),
   verifyRoutingToken: jest.fn(() => null),
+  verifyRoutingTokenEnvelope: jest.fn(() => null),
+  deriveRoutingLetterId: jest.fn(() => "11111111-1111-4111-8111-111111111111"),
 }));
 jest.mock("@/lib/rateLimit", () => ({
   checkRateLimit: jest.fn(() => ({ allowed: true, retryAfterSeconds: 0 })),

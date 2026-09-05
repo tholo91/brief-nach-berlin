@@ -12,6 +12,13 @@ jest.mock("@/lib/mistral", () => ({
   mistral: { chat: { complete: jest.fn() } },
   withMistralRetry: <T,>(_label: string, fn: () => Promise<T>) => fn(),
   MISTRAL_MODELS: { letter: "mistral-large-latest", levelRouting: "mistral-small-latest" },
+  MistralStageError: class extends Error {
+    constructor(stage: string, cause: unknown) {
+      super(`Mistral ${stage} failed`);
+      this.name = "MistralStageError";
+      Object.assign(this, { stage, cause });
+    }
+  },
 }));
 
 import { mistral } from "@/lib/mistral";
@@ -378,5 +385,85 @@ describe("generateLetter — serverseitig aufgelöste Ebene", () => {
     expect(result.selectedPolitician).toBeNull();
     expect(result.politicalLevel).toBe("Land");
     expect(result.fallbackUsed).toBe(false);
+  });
+
+  it("liefert Themen als validierten Fallback mit Herkunftsvertrag", async () => {
+    (mistral.chat.complete as jest.Mock).mockResolvedValue({
+      choices: [{
+        message: {
+          content: JSON.stringify({
+            political_level: "Bund",
+            selected_politician_id: 1,
+            topic_categories: ["verkehr_mobilitaet"],
+            topic_labels: ["Sichere Straßen"],
+            letter,
+          }),
+        },
+      }],
+    });
+
+    const result = await generateLetter(input());
+
+    expect(result.topic?.topicCategories).toEqual(["verkehr_mobilitaet"]);
+    expect(result.topic?.topicLabels).toEqual(["Sichere Straßen"]);
+    expect(result.topic?.topicSource).toBe("generation_fallback");
+    expect(result.topic?.topicTaxonomyVersion).toBe("v1");
+    expect(result.topic?.topicModel).toBe("mistral-large-latest");
+  });
+
+  it("sendet nur von Mistral unterstützte Structured-Output-Constraints", async () => {
+    (mistral.chat.complete as jest.Mock).mockResolvedValue({
+      choices: [{
+        message: {
+          content: JSON.stringify({
+            selected_politician_id: 1,
+            topic_categories: ["verkehr_mobilitaet"],
+            topic_labels: ["Sichere Straßen"],
+            letter,
+          }),
+        },
+      }],
+    });
+
+    await generateLetter(input());
+
+    const request = (mistral.chat.complete as jest.Mock).mock.calls[0][0];
+    expect(request.responseFormat.type).toBe("json_schema");
+    expect(JSON.stringify(request.responseFormat)).not.toContain("uniqueItems");
+  });
+
+  it("blockiert den Brief nicht, wenn Mistral ungültige Themen liefert", async () => {
+    (mistral.chat.complete as jest.Mock).mockResolvedValue({
+      choices: [{
+        message: {
+          content: JSON.stringify({
+            political_level: "Bund",
+            selected_politician_id: 1,
+            topic_categories: ["nicht_in_taxonomie"],
+            topic_labels: ["unbrauchbar"],
+            letter,
+          }),
+        },
+      }],
+    });
+
+    const result = await generateLetter(input());
+
+    expect(result.letter).toBe(letter);
+    expect(result.topic).toBeNull();
+  });
+
+  it("behält den ersten Brief, wenn die Längen-Korrektur beim Provider fehlschlägt", async () => {
+    const shortLetter = Array.from({ length: 40 }, (_, index) => `Wort${index}`).join(" ");
+    (mistral.chat.complete as jest.Mock)
+      .mockResolvedValueOnce({
+        choices: [{ message: { content: JSON.stringify({ selected_politician_id: 1, letter: shortLetter }) } }],
+      })
+      .mockRejectedValueOnce(Object.assign(new Error("Bad schema"), { name: "SDKError", status: 400 }));
+
+    const result = await generateLetter(input());
+
+    expect(result.letter).toBe(shortLetter);
+    expect(result.retried).toBe(true);
   });
 });

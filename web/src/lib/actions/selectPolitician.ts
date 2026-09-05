@@ -1,6 +1,7 @@
 "use server";
 
 import { z } from "zod";
+import { randomUUID } from "node:crypto";
 import type { WizardData, WizardActionResult } from "@/lib/types/wizard";
 import type { RecipientSelection } from "@/lib/lookup/rathausRecipient";
 import {
@@ -12,6 +13,8 @@ import {
 import { resolveRecipientSelection } from "@/lib/lookup/resolveRecipient";
 import { getActiveCampaignBySlug } from "@/lib/campaigns/repository";
 import { DEFAULT_LETTER_LENGTH } from "@/lib/config";
+import { deriveRoutingLetterId, verifyRoutingTokenEnvelope } from "@/lib/lookup/routingToken";
+import { buildLetterSignalContext } from "@/lib/letterSignals/context";
 
 const recipientSelectionSchema = z.discriminatedUnion("kind", [
   z.object({ kind: z.literal("mdb"), selectedPoliticianId: z.number().int() }),
@@ -31,7 +34,8 @@ const recipientSelectionSchema = z.discriminatedUnion("kind", [
 // Legacy-Aufrufe mit nackter Zahl werden als Bund-Auswahl (mdb) behandelt.
 export async function selectPoliticianAction(
   data: WizardData,
-  selection: RecipientSelection | number
+  selection: RecipientSelection | number,
+  routingToken?: string | null,
 ): Promise<WizardActionResult> {
   try {
     // Re-validate user-supplied input (WR-02: prevent bypassing initial validation)
@@ -89,11 +93,35 @@ export async function selectPoliticianAction(
       return { error: "server_error", message: "Empfänger nicht gefunden." };
     }
 
+    const routingEnvelope = routingToken
+      ? verifyRoutingTokenEnvelope(routingToken, data.issueText)
+      : null;
+    const letterId = routingEnvelope
+      ? deriveRoutingLetterId(
+          routingEnvelope.letterId,
+          JSON.stringify({
+            plz: data.plz,
+            email: data.email.trim().toLowerCase(),
+            selection: normalizedSelection,
+            campaignSlug: campaign?.slug ?? null,
+          }),
+        )
+      : randomUUID();
+    const signal = buildLetterSignalContext({
+      data,
+      recipient: resolved.recipient,
+      letterId,
+      topic: routingEnvelope?.routing.topic,
+      campaignSlug: campaign?.slug ?? null,
+    });
+
     // Pre-checks passed — letter generation happens async via /api/generate-letter
     // on the Success-Page, so we return immediately without blocking the user.
     return {
       preCheckOk: true,
       recipient: resolved.recipient,
+      letterId,
+      letterSignalContext: signal?.token ?? null,
     };
   } catch (error) {
     console.error("[brief-nach-berlin] selectPoliticianAction error:", error);

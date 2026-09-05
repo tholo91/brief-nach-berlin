@@ -222,10 +222,6 @@ export async function generateLetterVariant(
     });
   }
 
-  if (parsed.preservation_check) {
-    console.log("[generateLetterVariant] preservation_check:", parsed.preservation_check.slice(0, 200));
-  }
-
   return {
     letter,
     wordCount,

@@ -9,6 +9,9 @@ jest.mock("@/lib/lookup/levelRouter", () => ({
     safeParse: jest.fn((value) => ({ success: true, data: value })),
   },
 }));
+jest.mock("@/lib/mistral", () => ({
+  MistralStageError: class extends Error {},
+}));
 jest.mock("@/lib/rateLimit", () => ({
   checkRateLimit: jest.fn(),
   getClientIp: jest.fn(),

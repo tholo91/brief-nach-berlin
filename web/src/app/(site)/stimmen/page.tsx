@@ -14,6 +14,7 @@ import { getReviewStats } from "@/lib/reviews/getReviewStats";
 import type { PublicReview } from "@/lib/reviews/types";
 import { getLetterCount } from "@/lib/counter";
 import { formatNumber } from "@/lib/formatNumber";
+import { LetterActivityCard } from "@/components/letter-signals/LetterActivityCard";
 
 const URL_PATH = "/stimmen";
 const TITLE = "Stimmen & Bewertungen | Brief-nach-Berlin";
@@ -227,6 +228,10 @@ export default async function StimmenPage() {
             </p>
           </div>
         </div>
+      </div>
+
+      <div className="max-w-2xl mx-auto px-6 mb-28">
+        <LetterActivityCard />
       </div>
 
       {/* 3. ReviewMarquee: full viewport breakout with edge fade */}

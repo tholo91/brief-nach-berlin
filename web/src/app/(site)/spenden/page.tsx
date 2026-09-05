@@ -81,8 +81,11 @@ export default function SpendenPage() {
             Wofür deine Spende eingesetzt wird
           </p>
           <h2 className="font-body text-2xl font-bold tracking-tight text-waldgruen-dark md:text-3xl">
-            Drei Bereiche, die das Projekt am Laufen halten
+            Ein klarer Überblick statt Kleingedrucktem
           </h2>
+          <p className="mt-4 max-w-xl font-body text-base leading-relaxed text-warmgrau md:text-lg">
+            {SUPPORT_CONTENT.costIntro}
+          </p>
 
           <ol className="mt-7 border-y border-waldgruen/15">
             {SUPPORT_CONTENT.costCategories.map((category, index) => (
@@ -104,6 +107,9 @@ export default function SpendenPage() {
               </li>
             ))}
           </ol>
+          <p className="mt-4 font-body text-sm leading-relaxed text-warmgrau/75">
+            {SUPPORT_CONTENT.costNote}
+          </p>
         </section>
 
         <section className="mt-14 rounded-sm border-2 border-waldgruen/20 p-6 sm:p-8">
@@ -114,8 +120,7 @@ export default function SpendenPage() {
             Wenn du kannst, hilf mit.
           </h2>
           <p className="mt-3 font-body text-base leading-relaxed text-warmgrau">
-            Jeder Beitrag hilft, Brief-nach-Berlin verlässlich weiterzubetreiben
-            und für alle kostenlos zugänglich zu halten.
+            {SUPPORT_CONTENT.fundingNote}
           </p>
           <div className="mt-6 grid gap-3 sm:grid-cols-2">
             <a

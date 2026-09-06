@@ -1605,7 +1605,7 @@ export function Step3Success({
 
         {currentSelection !== null && (
           <div
-            className="fixed inset-x-0 bottom-0 z-40 sm:hidden border-t border-warmgrau/15 bg-creme/95 px-4 pt-3 backdrop-blur"
+            className="fixed inset-x-0 bottom-0 z-40 sm:hidden border-t border-warmgrau/15 bg-transparent px-4 pt-3"
             style={{ paddingBottom: "calc(env(safe-area-inset-bottom) + 0.75rem)" }}
           >
             {selectedPoliticianLabel && (

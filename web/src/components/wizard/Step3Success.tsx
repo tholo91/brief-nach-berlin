@@ -504,7 +504,9 @@ export function Step3Success({
   }, [letterReady]);
 
   // Fetch the generated letter from the server once pre-checks pass.
-  // Retries once automatically on failure, then shows a manual error banner.
+  // A manual retry remains available after a failed request. Automatic retries
+  // are unsafe because the server may already have generated, moderated, and
+  // queued the email before the client observes a network failure.
   //
   // fetchInFlightRef verhindert, dass ein laufender Request durch einen
   // Re-render (z.B. neue wizardData-Referenz) abgebrochen und sofort neu
@@ -518,8 +520,6 @@ export function Step3Success({
     fetchInFlightRef.current = true;
 
     const controller = new AbortController();
-    let autoRetryTimer: ReturnType<typeof setTimeout> | null = null;
-
     fetch("/api/generate-letter", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -578,8 +578,8 @@ export function Step3Success({
         }
       })
       .catch((err: Error) => {
-        // Ref freigeben, damit der einmalige Auto-Retry (retryCount 0→1) oder
-        // ein Abort-bedingter Re-run einen neuen Request starten darf.
+        // Ref freigeben, damit ein manueller Retry oder ein Abort-bedingter
+        // Re-run einen neuen Request starten darf.
         fetchInFlightRef.current = false;
         if (err.name === "AbortError") return;
         // Client-/Netzwerkfehler (kein HTTP-Status erfasst) festhalten.
@@ -592,20 +592,13 @@ export function Step3Success({
             clientError: err.message,
           };
         }
-        const status = lastErrorRef.current?.httpStatus ?? null;
-        const retryable = status === null || status >= 500;
-        if (retryCount === 0 && retryable) {
-          autoRetryTimer = setTimeout(() => setRetryCount(1), 3000);
-        } else {
-          setGenerationFetchError(
-            "Beim Erstellen deines Briefes ist ein Fehler aufgetreten."
-          );
-        }
+        setGenerationFetchError(
+          "Beim Erstellen deines Briefes ist ein Fehler aufgetreten."
+        );
       });
 
     return () => {
       controller.abort();
-      if (autoRetryTimer) clearTimeout(autoRetryTimer);
     };
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [generationComplete, letterReady, retryCount, generatedSelection, letterSignalContext]);
@@ -889,7 +882,7 @@ export function Step3Success({
             </div>
           )}
 
-        {/* Generation error banner - shown if /api/generate-letter fails after auto-retry.
+        {/* Generation error banner - shown if /api/generate-letter fails.
             The report sends only server-sanitized technical metadata. */}
         {generationFetchError && (
           reportState === "sent" ? (

@@ -24,6 +24,12 @@ describe("public letter signal map endpoint", () => {
     const response = await GET();
 
     expect(response.status).toBe(200);
+    expect(response.headers.get("cache-control")).toBe(
+      "public, max-age=60, stale-while-revalidate=60",
+    );
+    expect(response.headers.get("vercel-cdn-cache-control")).toBe(
+      "max-age=300, stale-while-revalidate=60",
+    );
     const body = await response.json();
     expect(body).toEqual({
       points: [

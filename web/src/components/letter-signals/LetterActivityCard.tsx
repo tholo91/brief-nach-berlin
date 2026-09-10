@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { GERMANY_MAP_ATTRIBUTION } from "@/lib/letterSignals/germanyMapGeometry.generated";
 import type { LetterMapData } from "@/lib/letterSignals/mapTypes";
+import { loadPublicLetterMapData } from "@/lib/letterSignals/publicMapClient";
 import { GermanyContributionMap } from "./GermanyContributionMap";
 
 type MapState = "loading" | "ready" | "error";
@@ -18,21 +19,20 @@ export function LetterActivityCard() {
   const [mapState, setMapState] = useState<MapState>("loading");
 
   useEffect(() => {
-    const controller = new AbortController();
-    fetch("/api/letter-signals/map", { cache: "no-store", signal: controller.signal })
-      .then((response) => {
-        if (!response.ok) throw new Error(`HTTP ${response.status}`);
-        return response.json() as Promise<LetterMapData>;
-      })
+    let active = true;
+    loadPublicLetterMapData()
       .then((body) => {
+        if (!active) return;
         if (!Array.isArray(body.points)) throw new Error("Invalid map response");
         setMapData(body);
         setMapState("ready");
       })
       .catch((error: Error) => {
-        if (error.name !== "AbortError") setMapState("error");
+        if (active && error.name !== "AbortError") setMapState("error");
       });
-    return () => controller.abort();
+    return () => {
+      active = false;
+    };
   }, []);
 
   return (

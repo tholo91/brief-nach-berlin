@@ -52,10 +52,24 @@ describe("campaign Open Graph image", () => {
   it("uses renderer-compatible PNG assets in its 1200x630 render tree", async () => {
     const result = (await CampaignOpenGraphImage({
       params: Promise.resolve({ slug: campaign.slug }),
-    })) as unknown as { element: React.ReactElement; options: { width: number; height: number } };
+    })) as unknown as {
+      element: React.ReactElement;
+      options: {
+        width: number;
+        height: number;
+        headers: Record<string, string>;
+      };
+    };
     const markup = renderToStaticMarkup(result.element);
 
-    expect(result.options).toEqual({ width: 1200, height: 630 });
+    expect(result.options).toEqual({
+      width: 1200,
+      height: 630,
+      headers: {
+        "Cache-Control": "public, max-age=300, stale-while-revalidate=60",
+        "Vercel-CDN-Cache-Control": "max-age=3600, stale-while-revalidate=60",
+      },
+    });
     expect(markup).toContain("Duisburg retten");
     expect(markup).toContain("Mehr sichere und bezahlbare öffentliche Räume für Duisburg.");
     expect(markup).toContain("img-campaign-crowd-ghibli.png");

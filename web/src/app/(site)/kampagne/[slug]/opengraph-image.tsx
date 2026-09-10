@@ -12,6 +12,11 @@ export const size = {
 
 export const contentType = "image/png";
 
+const OPEN_GRAPH_CACHE_HEADERS = {
+  "Cache-Control": "public, max-age=300, stale-while-revalidate=60",
+  "Vercel-CDN-Cache-Control": "max-age=3600, stale-while-revalidate=60",
+};
+
 type CampaignOpenGraphImageProps = {
   params: Promise<{ slug: string }>;
 };
@@ -217,6 +222,9 @@ export default async function CampaignOpenGraphImage({
         />
       </div>
     ),
-    size
+    {
+      ...size,
+      headers: OPEN_GRAPH_CACHE_HEADERS,
+    },
   );
 }

@@ -1,5 +1,6 @@
 import type { Politician } from "../types/politician";
 import type { LandesregierungRecipient } from "./landesregierungRecipient";
+import type { BundeskanzlerRecipient } from "./bundeskanzlerRecipient";
 
 // Discriminated Union für Brief-Empfänger (LOCK-5):
 // - mdb/mdl sind echte Politician-Objekte mit Abgeordnetenwatch-IDs, die
@@ -47,6 +48,7 @@ export interface RathausRecipient {
 export type Recipient =
   | MdbRecipient
   | MdlRecipient
+  | BundeskanzlerRecipient
   | RathausRecipient
   | LandesregierungRecipient;
 
@@ -54,6 +56,7 @@ export type Recipient =
 export type RecipientSelection =
   | { kind: "mdb"; selectedPoliticianId: number }
   | { kind: "mdl"; selectedPoliticianId: number }
+  | { kind: "bundeskanzler" }
   | { kind: "landesregierung" }
   | { kind: "rathaus" };
 

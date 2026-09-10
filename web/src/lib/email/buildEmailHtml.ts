@@ -244,6 +244,9 @@ function getEmailIntro(data: SendLetterEmailParams): string {
 
 function getPersonalImpactCopy(data: SendLetterEmailParams): string {
   const copy = getEmailCopy(data.locale);
+  if (data.recipientKind === "bundeskanzler") {
+    return "Ein persönlicher Brief macht dein Anliegen für die Bundesregierung konkret und nachvollziehbar.";
+  }
   if (data.recipientKind === "landesregierung") {
     return copy.impact.state;
   }
@@ -260,6 +263,9 @@ function getRecruitCopy(data: SendLetterEmailParams): string {
   const copy = getEmailCopy(data.locale);
   if (data.locale && data.locale !== "de") return copy.recruit;
   if (data.campaign?.slug) {
+    if (data.recipientKind === "bundeskanzler") {
+      return "Dein Brief ist ein Anfang. Teile die Kampagne, damit weitere Menschen dem Bundeskanzler mit eigenen Worten schreiben.";
+    }
     if (data.recipientKind === "landesregierung") {
       return "Dein Brief ist ein Anfang. Teile die Kampagne, damit weitere Menschen aus ihrem Bundesland mit eigenen Worten schreiben.";
     }
@@ -336,7 +342,11 @@ function buildEmailShareTarget(data: SendLetterEmailParams) {
 }
 
 function getFooterBannerHtml(data: SendLetterEmailParams): string {
-  if (data.recipientKind === "mdl" || data.recipientKind === "landesregierung") return "";
+  if (
+    data.recipientKind === "mdl" ||
+    data.recipientKind === "landesregierung" ||
+    data.recipientKind === "bundeskanzler"
+  ) return "";
   const path =
     data.recipientKind === "rathaus"
       ? "/images/email-variants/email-rathaus-banner.webp"
@@ -353,6 +363,7 @@ export function buildEmailHtml(data: SendLetterEmailParams): string {
   const isRathaus = data.recipientKind === "rathaus";
   const isMdl = data.recipientKind === "mdl";
   const isLandesregierung = data.recipientKind === "landesregierung";
+  const isBundeskanzler = data.recipientKind === "bundeskanzler";
   const isFallback =
     !isRathaus && !isLandesregierung && data.politicianFirstName === "" && data.politicianLastName === "MdB";
   const letterNumberText =
@@ -378,6 +389,8 @@ export function buildEmailHtml(data: SendLetterEmailParams): string {
     ? `${escapeHtml(officialRathausAddress.streetAddress)}<br>${escapeHtml(officialRathausAddress.postalCode)} ${escapeHtml(officialRathausAddress.city)}`
     : isLandesregierung && data.governmentSource
       ? getGovernmentAddressLines(data)
+    : isBundeskanzler
+      ? addressLines.split("<br>").slice(3).join("<br>")
     : isRathaus
       ? ""
       : addressLines;
@@ -385,7 +398,7 @@ export function buildEmailHtml(data: SendLetterEmailParams): string {
   // Profile link (Abgeordnetenwatch: voting record, public Q&A, transparent source).
   // Prefer the API-provided URL; fall back to a slug-derived URL.
   // Rathaus-Empfänger haben kein Abgeordnetenwatch-Profil — kein Link.
-  const profileUrl = isRathaus || isLandesregierung
+  const profileUrl = isRathaus || isLandesregierung || isBundeskanzler
     ? null
     : data.politicianAbgeordnetenwatchUrl ??
       abgeordnetenwatchProfileUrl(data.politicianFirstName, data.politicianLastName);
@@ -398,6 +411,8 @@ export function buildEmailHtml(data: SendLetterEmailParams): string {
       ? `<strong>${escapeHtml(formatGovernmentDisplayName(data.governmentSource.officeName))}</strong><br>`
     : isLandesregierung
       ? `<strong>${escapeHtml(formatGovernmentDisplayName(data.politicianName))}</strong><br>`
+    : isBundeskanzler
+      ? `<strong>Bundeskanzler ${fullName}</strong><br>`
     : isFallback
       ? `<strong><a href="${fallbackUrl}" target="_blank" rel="noopener noreferrer" style="color:#2D5016;text-decoration:underline;">${copy.noRepresentative}</a></strong><br>`
       : `<strong><a href="${profileUrl}" target="_blank" rel="noopener noreferrer" style="color:#2D5016;text-decoration:underline;">${fullName}, ${mandateLabel}${party ? ` (${party})` : ""}</a></strong><br>`;
@@ -405,7 +420,11 @@ export function buildEmailHtml(data: SendLetterEmailParams): string {
   // Institutionszeile: für MdB heutiges Layout (postalAddress trägt nur die
   // Straße, die Institution steht hier). MdL/Rathaus tragen die Institution
   // bereits in der postalAddress — keine Extra-Zeile.
-  const institutionLine = data.recipientKind === "mdb" ? "Deutscher Bundestag<br>" : "";
+  const institutionLine = data.recipientKind === "mdb"
+    ? "Deutscher Bundestag<br>"
+    : isBundeskanzler
+      ? "Bundeskanzleramt<br>"
+      : "";
 
   // Google dient bei einem amtlichen Treffer nur zur Kontrolle. Ohne
   // eindeutige Destatis-Zuordnung ist die Suche der ehrliche Fallback.
@@ -423,6 +442,10 @@ export function buildEmailHtml(data: SendLetterEmailParams): string {
   const governmentSourceLine =
     isLandesregierung && data.governmentSource
       ? `<p style="margin:10px 0 0;font-family:Georgia,'Times New Roman',serif;font-size:12px;color:#666666;line-height:1.5;">${copy.source} <a href="${escapeHtml(data.governmentSource.url)}" target="_blank" rel="noopener noreferrer" style="color:#2D5016;text-decoration:underline;">${escapeHtml(formatGovernmentDisplayName(data.governmentSource.title))}</a>, ${copy.checked} ${escapeHtml(formatGermanDate(data.governmentSource.stand))}.</p>`
+      : "";
+  const bundeskanzlerSourceLine =
+    isBundeskanzler && data.bundeskanzlerSource
+      ? `<p style="margin:10px 0 0;font-family:Georgia,'Times New Roman',serif;font-size:12px;color:#666666;line-height:1.5;">${copy.source} <a href="${escapeHtml(data.bundeskanzlerSource.url)}" target="_blank" rel="noopener noreferrer" style="color:#2D5016;text-decoration:underline;">${escapeHtml(data.bundeskanzlerSource.title)}</a>, ${copy.checked} ${escapeHtml(formatGermanDate(data.bundeskanzlerSource.stand))}.</p>`
       : "";
 
   const profileButtonText = isFallback ? copy.findRecipient : copy.profile;
@@ -536,7 +559,7 @@ export function buildEmailHtml(data: SendLetterEmailParams): string {
                             <p style="margin:0;font-family:'Courier New',Courier,monospace;font-size:14px;line-height:1.8;color:#4A4A4A;">
                               ${addressNameLine}
                               ${institutionLine}${visibleAddressLines}
-                            </p>${rathausSearchLine}${governmentSourceLine}
+                            </p>${rathausSearchLine}${governmentSourceLine}${bundeskanzlerSourceLine}
                           </td>
                           <td class="bnb-stack bnb-stack-right" style="vertical-align:middle;text-align:center;padding-left:16px;border-left:1px solid #E0DCD7;width:40%;">
                             ${data.feedbackToken ? buildStarBarHtml(data.feedbackToken, undefined, locale) : profileButtonHtml}

@@ -4,6 +4,10 @@ import {
   lookupPLZWithLevel,
 } from "./plzLookup";
 import type { Recipient, RecipientSelection } from "./rathausRecipient";
+import {
+  getBundeskanzlerRecipient,
+  isBundeskanzlerCampaignSlug,
+} from "./bundeskanzlerRecipient";
 
 export type ResolveRecipientResult =
   | { ok: true; recipient: Recipient; availableCount: number }
@@ -11,6 +15,7 @@ export type ResolveRecipientResult =
 
 type ResolveRecipientOptions = {
   allowedPoliticianIds?: readonly number[];
+  campaignSlug?: string | null;
 };
 
 /**
@@ -27,6 +32,17 @@ export function resolveRecipientSelection(
   selection: RecipientSelection,
   options: ResolveRecipientOptions = {}
 ): ResolveRecipientResult {
+  if (selection.kind === "bundeskanzler") {
+    if (!isBundeskanzlerCampaignSlug(options.campaignSlug)) {
+      return { ok: false, reason: "not_found" };
+    }
+    return {
+      ok: true,
+      recipient: getBundeskanzlerRecipient(),
+      availableCount: 1,
+    };
+  }
+
   if (selection.kind === "mdb") {
     const localPoliticians = lookupPLZ(plz).politicians;
     const allowedIds = options.allowedPoliticianIds ?? [];

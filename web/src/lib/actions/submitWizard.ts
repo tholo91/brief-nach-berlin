@@ -33,6 +33,12 @@ import {
 } from "@/lib/campaigns/schema";
 import { DEFAULT_LETTER_LENGTH } from "@/lib/config";
 import { getLandesregierungRecipient } from "@/lib/lookup/landesregierungRecipient";
+import {
+  getBundeskanzlerRecipient,
+  isBundeskanzlerCampaignTarget,
+  isBundeskanzlerCampaignSlug,
+  type BundeskanzlerRecipient,
+} from "@/lib/lookup/bundeskanzlerRecipient";
 
 const RATE_LIMIT_MESSAGE =
   "Du hast in kurzer Zeit viele Briefe erstellt. Bitte versuche es später erneut.";
@@ -135,6 +141,7 @@ export async function submitWizardAction(
           targetPoliticianIds: number[];
         }
       | null = null;
+    let featuredRecipient: BundeskanzlerRecipient | null = null;
     if (data.campaign?.slug) {
       const campaign = await getActiveCampaignBySlug(data.campaign.slug);
       if (!campaign) {
@@ -148,6 +155,15 @@ export async function submitWizardAction(
         targetState: campaign.targetState,
         targetPoliticianIds: campaign.targetPoliticianIds,
       };
+      if (isBundeskanzlerCampaignSlug(campaign.slug)) {
+        if (!isBundeskanzlerCampaignTarget(campaign)) {
+          return {
+            error: "server_error",
+            message: "Diese Kampagne ist aktuell nicht korrekt konfiguriert.",
+          };
+        }
+        featuredRecipient = getBundeskanzlerRecipient();
+      }
     }
 
     // PLZ lookup using Phase 1 static data. Runs BEFORE the rate-limit checks
@@ -313,6 +329,7 @@ export async function submitWizardAction(
       ...(levelRouting ? { levelRouting } : {}),
       ...(resolvedRoutingToken ? { routingToken: resolvedRoutingToken } : {}),
       ...(campaignTarget ? { campaignTargetLevel: campaignTarget.targetLevel } : {}),
+      ...(featuredRecipient ? { featuredRecipient } : {}),
     };
   } catch (error) {
     const err = error as Error & { status?: number; code?: string };

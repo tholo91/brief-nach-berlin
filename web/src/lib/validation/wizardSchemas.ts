@@ -11,6 +11,14 @@ export function firstZodIssueMessage(error: z.ZodError, fallback = "Ungültige E
 
 export const toneLevelSchema = z.number().int().min(1).max(5).optional();
 
+export const recipientSelectionSchema = z.discriminatedUnion("kind", [
+  z.object({ kind: z.literal("mdb"), selectedPoliticianId: z.number().int() }).strict(),
+  z.object({ kind: z.literal("mdl"), selectedPoliticianId: z.number().int() }).strict(),
+  z.object({ kind: z.literal("bundeskanzler") }).strict(),
+  z.object({ kind: z.literal("landesregierung") }).strict(),
+  z.object({ kind: z.literal("rathaus") }).strict(),
+]);
+
 export const step1Schema = z.object({
   plz: z.string()
     .regex(/^\d{5}$/, { message: "Bitte gib eine gültige 5-stellige Postleitzahl ein." })

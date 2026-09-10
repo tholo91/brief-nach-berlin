@@ -1,6 +1,7 @@
 import type { Politician, PoliticalLevel } from "./politician";
 import type { RathausRecipient, Recipient } from "@/lib/lookup/rathausRecipient";
 import type { LandesregierungRecipient } from "@/lib/lookup/landesregierungRecipient";
+import type { BundeskanzlerRecipient } from "@/lib/lookup/bundeskanzlerRecipient";
 import type { LetterLength } from "@/lib/config";
 import type { Locale } from "@/lib/i18n/locale";
 import type { TopicSignal } from "@/lib/topics/topicTaxonomy";
@@ -88,6 +89,8 @@ export interface GenerateLetterInput {
   rathaus?: RathausRecipient;
   /** Land: institutioneller Regierungs-/Senats-Empfänger statt politicians[] */
   landesregierung?: LandesregierungRecipient;
+  /** Schreib-Merz: serverseitig aufgelöster Bundeskanzler statt politicians[]. */
+  bundeskanzler?: BundeskanzlerRecipient;
   /**
    * Gesetzt, wenn der User bewusst eine andere Ebene als die empfohlene
    * gewählt hat — der Brief macht den Kompetenz-Mismatch transparent.
@@ -130,6 +133,7 @@ export type WizardActionResult =
       campaignRestricted?: boolean;
       campaignRestrictedNoLocalMatch?: boolean;
       campaignTargetCount?: number;
+      featuredRecipient?: BundeskanzlerRecipient;
     }
   | { error: "moderation_rejected"; message: string }
   | { error: "output_moderation_rejected"; message: string }

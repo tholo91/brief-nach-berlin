@@ -34,7 +34,9 @@ export function buildDebugPayload(
   const p = result.selectedPolitician;
   const fullName = p
     ? [p.title, p.firstName, p.lastName].filter(Boolean).join(" ")
-    : recipient.kind === "rathaus" || recipient.kind === "landesregierung"
+    : recipient.kind === "rathaus" ||
+        recipient.kind === "landesregierung" ||
+        recipient.kind === "bundeskanzler"
       ? recipient.label
       : "—";
 
@@ -56,13 +58,17 @@ export function buildDebugPayload(
         ? `${recipient.plz} ${recipient.gemeindeName}`
         : recipient.kind === "landesregierung"
           ? recipient.bundeslandName
-          : p?.wahlkreisName ?? "—",
+          : recipient.kind === "bundeskanzler"
+            ? "Bundesregierung"
+            : p?.wahlkreisName ?? "—",
     recipientRegion:
       recipient.kind === "rathaus"
         ? `${recipient.plz} ${recipient.gemeindeName}`
         : recipient.kind === "landesregierung"
           ? recipient.bundeslandName
-          : p?.wahlkreisName ?? "—",
+          : recipient.kind === "bundeskanzler"
+            ? "Bundesregierung"
+            : p?.wahlkreisName ?? "—",
     representativeLevel: recipient.level ?? "—",
     representativeParty: p?.party ?? null,
     representativeKind: recipient.kind,
@@ -109,7 +115,9 @@ export function buildResendDebugPayload(
     recipient.kind === "mdb" || recipient.kind === "mdl" ? recipient : null;
   const fullName = politician
     ? [politician.title, politician.firstName, politician.lastName].filter(Boolean).join(" ")
-    : recipient.kind === "rathaus" || recipient.kind === "landesregierung"
+    : recipient.kind === "rathaus" ||
+        recipient.kind === "landesregierung" ||
+        recipient.kind === "bundeskanzler"
       ? recipient.label
       : "—";
   const wordCount = cachedLetterText.trim().split(/\s+/).filter(Boolean).length;
@@ -133,12 +141,16 @@ export function buildResendDebugPayload(
         ? `${recipient.plz} ${recipient.gemeindeName}`
         : recipient.kind === "landesregierung"
           ? recipient.bundeslandName
-        : politician?.wahlkreisName ?? "—",
+          : recipient.kind === "bundeskanzler"
+            ? "Bundesregierung"
+            : politician?.wahlkreisName ?? "—",
     recipientRegion:
       recipient.kind === "rathaus"
         ? `${recipient.plz} ${recipient.gemeindeName}`
         : recipient.kind === "landesregierung"
           ? recipient.bundeslandName
+          : recipient.kind === "bundeskanzler"
+            ? "Bundesregierung"
           : politician?.wahlkreisName ?? "—",
     representativeLevel: recipient.level ?? "—",
     representativeParty: politician?.party ?? null,

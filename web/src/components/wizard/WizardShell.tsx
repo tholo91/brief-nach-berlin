@@ -697,6 +697,13 @@ export function WizardShell() {
               levelRouting,
               selectedLevel,
               campaignRestricted
+            ).concat(
+              actionResult &&
+                "disambiguationNeeded" in actionResult &&
+                actionResult.disambiguationNeeded &&
+                actionResult.featuredRecipient
+                ? [actionResult.featuredRecipient]
+                : []
             )}
             optionalLandRecipients={
               selectedLevel === "Land"

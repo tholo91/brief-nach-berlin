@@ -1,10 +1,10 @@
 import { NextRequest, NextResponse, after } from "next/server";
 import { randomUUID } from "node:crypto";
-import { z } from "zod";
 import type { WizardData } from "@/lib/types/wizard";
 import type { RecipientSelection } from "@/lib/lookup/rathausRecipient";
 import {
   firstZodIssueMessage,
+  recipientSelectionSchema,
   step1Schema,
   step1bSchema,
   step2Schema,
@@ -32,16 +32,10 @@ import { getActiveCampaignBySlug } from "@/lib/campaigns/repository";
 import { buildLetterSignalContext, doesLetterSignalContextMatch } from "@/lib/letterSignals/context";
 import { createGenerationProof, verifyLetterSignalContext } from "@/lib/letterSignals/token";
 import { markLetterSignalGeneratedAction } from "@/lib/actions/letterSignals";
+import { isBundeskanzlerCampaignTarget } from "@/lib/lookup/bundeskanzlerRecipient";
 
 // Client-Auswahl: diskriminierte Union (999.6). Institutionelle Empfänger
 // tragen bewusst KEINE ID; der Server leitet sie aus der PLZ ab (LOCK-5).
-const selectionSchema = z.discriminatedUnion("kind", [
-  z.object({ kind: z.literal("mdb"), selectedPoliticianId: z.number().int() }),
-  z.object({ kind: z.literal("mdl"), selectedPoliticianId: z.number().int() }).strict(),
-  z.object({ kind: z.literal("landesregierung") }).strict(),
-  z.object({ kind: z.literal("rathaus") }).strict(),
-]);
-
 export const maxDuration = 60;
 
 const RATE_LIMIT_MESSAGE =
@@ -113,7 +107,7 @@ export async function POST(req: NextRequest) {
     // bleibt als Legacy-Pfad (Bund/mdb) akzeptiert.
     let selection: RecipientSelection | null = null;
     if (body.selection !== undefined) {
-      const parsedSelection = selectionSchema.safeParse(body.selection);
+      const parsedSelection = recipientSelectionSchema.safeParse(body.selection);
       if (parsedSelection.success) selection = parsedSelection.data;
     } else if (typeof body.selectedPoliticianId === "number") {
       selection = { kind: "mdb", selectedPoliticianId: body.selectedPoliticianId };
@@ -168,6 +162,12 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Diese Kampagne ist aktuell nicht aktiv." }, { status: 400 });
     }
     const allowedPoliticianIds = campaign?.targetPoliticianIds ?? [];
+    if (
+      selection.kind === "bundeskanzler" &&
+      !isBundeskanzlerCampaignTarget(campaign)
+    ) {
+      return NextResponse.json({ error: "Empfänger nicht gefunden." }, { status: 400 });
+    }
     if (allowedPoliticianIds.length > 0 && selection.kind !== "mdb") {
       return NextResponse.json({ error: "Empfänger nicht gefunden." }, { status: 400 });
     }
@@ -175,9 +175,10 @@ export async function POST(req: NextRequest) {
     // Re-derive recipient server-side — never trust client-supplied data.
     // mdb/mdl: ID muss in der PLZ-abgeleiteten Ebenen-Liste stehen.
     // Institutionelle Empfänger werden komplett aus der PLZ gebaut (LOCK-5).
-    const resolved = allowedPoliticianIds.length > 0
-      ? resolveRecipientSelection(data.plz, selection, { allowedPoliticianIds })
-      : resolveRecipientSelection(data.plz, selection);
+    const resolved = resolveRecipientSelection(data.plz, selection, {
+      allowedPoliticianIds,
+      campaignSlug: campaign?.slug ?? null,
+    });
     if (!resolved.ok) {
       return NextResponse.json({ error: "Empfänger nicht gefunden." }, { status: 400 });
     }
@@ -259,6 +260,8 @@ export async function POST(req: NextRequest) {
       rathaus: recipient.kind === "rathaus" ? recipient : undefined,
       landesregierung:
         recipient.kind === "landesregierung" ? recipient : undefined,
+      bundeskanzler:
+        recipient.kind === "bundeskanzler" ? recipient : undefined,
       mismatchRecommendedLevel,
     });
 
@@ -321,7 +324,8 @@ export async function POST(req: NextRequest) {
       );
       const politicianFullName =
         result.selectedRecipient.kind === "rathaus" ||
-        result.selectedRecipient.kind === "landesregierung"
+        result.selectedRecipient.kind === "landesregierung" ||
+        result.selectedRecipient.kind === "bundeskanzler"
           ? result.selectedRecipient.label
           : `${result.selectedRecipient.firstName} ${result.selectedRecipient.lastName}`;
       const { params, feedbackToken } = prepareLetterEmail({

@@ -33,7 +33,7 @@ export interface LetterDebugPayload {
   recipientRegion?: string;
   representativeLevel: string;
   representativeParty: string | null;
-  representativeKind?: "mdb" | "mdl" | "landesregierung" | "rathaus";
+  representativeKind?: "mdb" | "mdl" | "bundeskanzler" | "landesregierung" | "rathaus";
   mdbContextUsed: boolean;
   availablePoliticianCount: number;
   model: string;
@@ -81,12 +81,17 @@ export interface SendLetterEmailParams {
   // "mdb" hält das heutige Layout exakt; "mdl" nutzt die Landtag-Anschrift aus
   // postalAddress (keine "Deutscher Bundestag"-Zeile); "rathaus" hat weder
   // Partei noch Profil-Link und nutzt amtliche Adressdetails oder den Fallback.
-  recipientKind: "mdb" | "mdl" | "landesregierung" | "rathaus";
+  recipientKind: "mdb" | "mdl" | "bundeskanzler" | "landesregierung" | "rathaus";
   // Nur für mdl: ISO 3166-2:DE-Länderkürzel zur Auswahl der Landeswappen-Marke.
   bundeslandKey?: string;
   governmentSource?: {
     institutionKind: "landesregierung" | "senat";
     officeName: string;
+    title: string;
+    url: string;
+    stand: string;
+  };
+  bundeskanzlerSource?: {
     title: string;
     url: string;
     stand: string;
@@ -193,6 +198,35 @@ export function prepareLetterEmail(args: {
         governmentSource: {
           institutionKind: recipient.institutionKind,
           officeName: recipient.officeName,
+          title: recipient.address.sourceTitle,
+          url: recipient.address.sourceUrl,
+          stand: recipient.address.sourceStand,
+        },
+        letterText,
+        issueText,
+        debug,
+        feedbackToken,
+        campaign,
+        letterNumber,
+      },
+    };
+  }
+
+  if (recipient.kind === "bundeskanzler") {
+    return {
+      feedbackToken,
+      params: {
+        locale,
+        recipientEmail,
+        politicianName: `${recipient.firstName} ${recipient.lastName}`,
+        politicianFirstName: recipient.firstName,
+        politicianLastName: recipient.lastName,
+        politicianTitle: recipient.title,
+        politicianParty: null,
+        politicianPostalAddress: recipient.postalAddress,
+        politicianAbgeordnetenwatchUrl: null,
+        recipientKind: "bundeskanzler",
+        bundeskanzlerSource: {
           title: recipient.address.sourceTitle,
           url: recipient.address.sourceUrl,
           stand: recipient.address.sourceStand,

@@ -1,11 +1,11 @@
 "use server";
 
-import { z } from "zod";
 import { randomUUID } from "node:crypto";
 import type { WizardData, WizardActionResult } from "@/lib/types/wizard";
 import type { RecipientSelection } from "@/lib/lookup/rathausRecipient";
 import {
   firstZodIssueMessage,
+  recipientSelectionSchema,
   step1Schema,
   step1bSchema,
   step2Schema,
@@ -15,13 +15,7 @@ import { getActiveCampaignBySlug } from "@/lib/campaigns/repository";
 import { DEFAULT_LETTER_LENGTH } from "@/lib/config";
 import { deriveRoutingLetterId, verifyRoutingTokenEnvelope } from "@/lib/lookup/routingToken";
 import { buildLetterSignalContext } from "@/lib/letterSignals/context";
-
-const recipientSelectionSchema = z.discriminatedUnion("kind", [
-  z.object({ kind: z.literal("mdb"), selectedPoliticianId: z.number().int() }),
-  z.object({ kind: z.literal("mdl"), selectedPoliticianId: z.number().int() }).strict(),
-  z.object({ kind: z.literal("landesregierung") }).strict(),
-  z.object({ kind: z.literal("rathaus") }).strict(),
-]);
+import { isBundeskanzlerCampaignTarget } from "@/lib/lookup/bundeskanzlerRecipient";
 
 // SECURITY NOTE (2026-04-17, erweitert 2026-07-07 für 999.6):
 // Der Client liefert nie Politician-Objekte, sondern nur eine diskriminierte
@@ -77,12 +71,21 @@ export async function selectPoliticianAction(
       };
     }
     const allowedPoliticianIds = campaign?.targetPoliticianIds ?? [];
+    if (
+      normalizedSelection.kind === "bundeskanzler" &&
+      !isBundeskanzlerCampaignTarget(campaign)
+    ) {
+      return { error: "server_error", message: "Empfänger nicht gefunden." };
+    }
     if (allowedPoliticianIds.length > 0 && normalizedSelection.kind !== "mdb") {
       return { error: "server_error", message: "Empfänger nicht gefunden." };
     }
 
-    const resolved = allowedPoliticianIds.length > 0
-      ? resolveRecipientSelection(data.plz, normalizedSelection, { allowedPoliticianIds })
+    const resolved = campaign
+      ? resolveRecipientSelection(data.plz, normalizedSelection, {
+          allowedPoliticianIds,
+          campaignSlug: campaign.slug,
+        })
       : resolveRecipientSelection(data.plz, normalizedSelection);
     if (!resolved.ok) {
       console.warn("[selectPolitician] selection not resolvable", {

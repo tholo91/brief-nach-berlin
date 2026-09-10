@@ -220,12 +220,28 @@ Antworte ausschließlich im JSON-Format:
 const BUND_ZUSTAENDIGKEIT_BLOCK = `ZUSTÄNDIGKEITSHINWEIS:
 Alle verfügbaren Politiker sind Bundestagsabgeordnete. Wenn das Anliegen primär Landes- oder Kommunalebene betrifft, begründe kurz, warum du dich an die Bundestagsebene wendest. Nenne eine solche Begründung nur, wenn sie sich direkt aus dem <transkript> ableiten lässt. Erfinde keine Gesetze, Förderprogramme, Zuständigkeiten oder bundespolitischen Rahmen. Gibt das <transkript> keine Bundes-Begründung her, lass die Begründung ganz weg.`;
 
+const BUNDESKANZLER_ZUSTAENDIGKEIT_BLOCK = `ZUSTÄNDIGKEITSHINWEIS:
+Der Empfänger ist Friedrich Merz in seiner Rolle als Bundeskanzler. Der Brief richtet sich an die politische Führung der Bundesregierung, nicht an einen Bundestagsabgeordneten, einen Wahlkreis, eine Partei oder einen Ausschuss.
+
+STRATEGIE FÜR DEN BUNDESKANZLER (nicht verhandelbar):
+- Richte die Forderung an den allgemeinen bundespolitischen Handlungsmöglichkeiten und der Richtlinienverantwortung des Bundeskanzlers aus.
+- Erfinde KEIN Ministerium, Ressort, Programm, Gesetz, Ausschuss und keine persönliche Zuständigkeit.
+- Versprich KEINE Weiterleitung, Bearbeitung, Antwort oder persönliche Kenntnisnahme.
+- Wenn das Anliegen primär Landes- oder Kommunalebene betrifft, benenne die begrenzte unmittelbare Zuständigkeit ehrlich, ohne dem Bundeskanzler eine konkrete Befugnis zuzuschreiben.`;
+
 const BUND_ANREDE_LINE = `- Anrede: "Sehr geehrte/r [Titel] [Name]," (Titel nur wenn vorhanden).`;
+
+const BUNDESKANZLER_ANREDE_LINE = `- Anrede: exakt "Sehr geehrter Herr Bundeskanzler,". Kein akademischer Titel und kein Name in der Anrede.`;
 
 const BUND_BITTE_LINE = `2. EINE BITTE: genau ein konkretes Verb plus ein konkretes politisches Handlungsobjekt. Keine Aufzählung und keine Wunschliste. Erfinde keinen Ausschuss, kein Programm und keine Zuständigkeit. Leite die Bitte aus <transkript> ab. Nutze Angaben aus <mdb_kontext> nur, wenn sie dort verifiziert stehen.`;
 
+const BUNDESKANZLER_BITTE_LINE = `2. EINE BITTE: genau ein konkretes Verb plus ein konkretes politisches Handlungsobjekt. Keine Aufzählung und keine Wunschliste. Richte die Bitte an den Bundeskanzler und die politische Führung der Bundesregierung. Erfinde kein Ministerium, Ressort, Programm, Gesetz und keine konkrete Zuständigkeit.`;
+
 const BUND_MDB_CONTEXT_BLOCK = `MdB-KONTEXT NUTZEN (nur wenn <mdb_kontext> mitgeliefert):
 Wenn ein Ausschuss zum Thema passt, das knapp und natürlich erwähnen ("Gerade als Mitglied des Ausschusses für ... haben Sie hier Einfluss"). Wenn eine jüngste Position zum Thema passt, knapp aufgreifen, ohne sie wörtlich zu zitieren. NIEMALS Ausschüsse, Reden oder Positionen erfinden, die nicht in <mdb_kontext> stehen.`;
+
+const BUND_WAHLKREIS_BLOCK = `WAHLKREIS-BEZUG KONKRET, NICHT NOMINAL:
+Nutze, wenn möglich, Stadtteil, Straße oder Ortsteil aus dem Input ("ich wohne in der Bremer Neustadt"). "Aus dem Wahlkreis Bremen I" nur als Fallback und niemals als allererste Selbstbezeichnung. Echte Bürger benennen sich nicht über die Wahlkreisnummer.`;
 
 const LAND_ABGEORDNETEN_CONTEXT_BLOCK = `ABGEORDNETEN-KONTEXT NUTZEN (nur wenn <mdb_kontext> mitgeliefert):
 Wenn ein Ausschuss zum Thema passt, das knapp und natürlich erwähnen ("Gerade als Mitglied des Ausschusses für ... haben Sie hier Einfluss"). Wenn eine jüngste Position zum Thema passt, knapp aufgreifen, ohne sie wörtlich zu zitieren. NIEMALS Ausschüsse, Reden oder Positionen erfinden, die nicht in <mdb_kontext> stehen.`;
@@ -269,6 +285,9 @@ const LANDESREGIERUNG_BITTE_LINE = `2. EINE BITTE: genau ein konkretes Verb plus
 const BUND_PARTEI_HEADER = `PARTEI-BEWUSSTES FRAMING (Werte, nicht Strategie):
 Passe die Werte-Sprache an die Partei der Empfängerin/des Empfängers an, damit das Anliegen anschluss­fähig wird. Du benennst keine Parteien außer der adressierten und kommentierst keine Parteidynamiken.`;
 
+const BUNDESKANZLER_PARTEI_HEADER = `PARTEI-NEUTRALITÄT (Bundeskanzler):
+Der Brief richtet sich an das Amt und die Verantwortung des Bundeskanzlers. Verwende KEINE parteibezogene Werte-Sprache, keine Wahlkreislogik und keine strategische Ansprache einer Partei.`;
+
 const KOMMUNE_PARTEI_HEADER = `PARTEI-NEUTRALITÄT (Kommune):
 Für das Bürgermeisteramt oder Bezirksamt liegen keine verifizierten Parteiinformationen vor. Verwende KEINE parteibezogene Werte-Sprache und benenne keine Parteien.`;
 
@@ -290,15 +309,24 @@ const LEVEL_LABELS: Record<PoliticalLevel, string> = {
   Kommune: "kommunale Ebene (Bürgermeisteramt/Bezirksamt)",
 };
 
-function mismatchBlock(selected: PoliticalLevel, recommended: PoliticalLevel): string {
+function mismatchBlock(
+  selected: PoliticalLevel,
+  recommended: PoliticalLevel,
+  bundeskanzler = false
+): string {
   const reason =
-    selected === "Kommune"
+    bundeskanzler
+      ? "politische Führung und Verantwortung der Bundesregierung"
+      : selected === "Kommune"
       ? "öffentliche Verantwortung der Verwaltung"
       : "politisches Gewicht, öffentliche Aufmerksamkeit, Verantwortung als gewählte Stimme";
+  const selectedLabel = bundeskanzler
+    ? "Bundesebene (Bundesregierung)"
+    : LEVEL_LABELS[selected];
   return `
 
 KOMPETENZ-HINWEIS (wichtig):
-Der Bürger hat sich bewusst entschieden, an die ${LEVEL_LABELS[selected]} zu schreiben, obwohl sein Anliegen primär in die Zuständigkeit der ${LEVEL_LABELS[recommended]} fällt. Verschweige diese Spannung nicht: Mache früh im Brief in einem Satz transparent, dass die unmittelbare Zuständigkeit woanders liegt, und begründe, warum der Bürger trotzdem an diese Adresse schreibt (${reason}). Verspreche dem Empfänger keine Handlungsmacht, die er nicht hat.`;
+Der Bürger hat sich bewusst entschieden, an die ${selectedLabel} zu schreiben, obwohl sein Anliegen primär in die Zuständigkeit der ${LEVEL_LABELS[recommended]} fällt. Verschweige diese Spannung nicht: Mache früh im Brief in einem Satz transparent, dass die unmittelbare Zuständigkeit woanders liegt, und begründe, warum der Bürger trotzdem an diese Adresse schreibt (${reason}). Verspreche dem Empfänger keine Handlungsmacht, die er nicht hat.`;
 }
 
 /**
@@ -313,7 +341,16 @@ export function buildSystemPrompt(input: GenerateLetterInput): string {
   const level: PoliticalLevel = input.level ?? "Bund";
 
   let prompt = base;
-  if (level === "Land") {
+  if (input.bundeskanzler) {
+    prompt = prompt
+      .replace(BUND_ZUSTAENDIGKEIT_BLOCK, BUNDESKANZLER_ZUSTAENDIGKEIT_BLOCK)
+      .replace(BUND_ANREDE_LINE, BUNDESKANZLER_ANREDE_LINE)
+      .replace(BUND_BITTE_LINE, BUNDESKANZLER_BITTE_LINE)
+      .replace(BUND_PARTEI_HEADER, BUNDESKANZLER_PARTEI_HEADER)
+      .replace(`\n${BUND_PARTEI_LIST}`, "")
+      .replace(BUND_WAHLKREIS_BLOCK, "")
+      .replace(`${BUND_MDB_CONTEXT_BLOCK}\n\n`, "");
+  } else if (level === "Land") {
     prompt = input.landesregierung
       ? prompt
           .replace(BUND_ZUSTAENDIGKEIT_BLOCK, LANDESREGIERUNG_ZUSTAENDIGKEIT_BLOCK)
@@ -339,7 +376,11 @@ export function buildSystemPrompt(input: GenerateLetterInput): string {
     input.mismatchRecommendedLevel &&
     input.mismatchRecommendedLevel !== level
   ) {
-    prompt += mismatchBlock(level, input.mismatchRecommendedLevel);
+    prompt += mismatchBlock(
+      level,
+      input.mismatchRecommendedLevel,
+      Boolean(input.bundeskanzler)
+    );
   }
   return prompt;
 }
@@ -385,16 +426,21 @@ export function buildUserPrompt(
   // Kommune: der synthetische Verwaltungs-Empfänger ersetzt die Politiker-Liste.
   // Die Pseudo-ID 0 existiert nur im Prompt-Kontrakt (Antwortformat verlangt
   // selected_politician_id); sie wird nie gegen Abgeordnetenwatch-Daten geprüft.
-  const institutionalRecipient = input.landesregierung ?? input.rathaus;
+  const institutionalRecipient =
+    input.bundeskanzler ?? input.landesregierung ?? input.rathaus;
   const empfaenger = institutionalRecipient
     ? [
         {
           id: 0,
           name: institutionalRecipient.label,
-          anrede: "Sehr geehrte Damen und Herren,",
-          ort: input.landesregierung
-            ? input.landesregierung.bundeslandName
-            : input.rathaus &&
+          anrede: input.bundeskanzler
+            ? input.bundeskanzler.anrede
+            : "Sehr geehrte Damen und Herren,",
+          ort: input.bundeskanzler
+            ? "Bundeskanzleramt, Berlin"
+            : input.landesregierung
+              ? input.landesregierung.bundeslandName
+              : input.rathaus &&
                 (input.rathaus.address.source === "destatis" ||
                   input.rathaus.recipientKind === "bezirksamt")
               ? `${input.rathaus.plz} ${input.rathaus.gemeindeName}`
@@ -598,7 +644,9 @@ export async function generateLetter(
   let chosenPolitician: (typeof input.politicians)[number] | null = null;
   let fallbackUsed = false;
 
-  if (input.landesregierung) {
+  if (input.bundeskanzler) {
+    selectedRecipient = input.bundeskanzler;
+  } else if (input.landesregierung) {
     selectedRecipient = input.landesregierung;
   } else if (input.rathaus) {
     selectedRecipient = input.rathaus;
@@ -630,6 +678,7 @@ export async function generateLetter(
   const mdbContextUsed = Boolean(
     !input.rathaus &&
       !input.landesregierung &&
+      !input.bundeskanzler &&
       input.mdbContext &&
       (input.mdbContext.committees.length > 0 || input.mdbContext.recentRelevant.length > 0)
   );

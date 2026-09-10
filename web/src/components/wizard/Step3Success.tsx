@@ -13,6 +13,7 @@ import type {
   RathausRecipient,
 } from "@/lib/lookup/rathausRecipient";
 import type { LandesregierungRecipient } from "@/lib/lookup/landesregierungRecipient";
+import type { BundeskanzlerRecipient } from "@/lib/lookup/bundeskanzlerRecipient";
 import { selectPoliticianAction } from "@/lib/actions/selectPolitician";
 import { resendLetterAction } from "@/lib/actions/resendLetter";
 import { reportErrorAction } from "@/lib/actions/reportError";
@@ -146,6 +147,13 @@ export function Step3Success({
       ) ?? null,
     [recipients]
   );
+  const bundeskanzler = useMemo(
+    () =>
+      recipients.find(
+        (r): r is BundeskanzlerRecipient => r.kind === "bundeskanzler"
+      ) ?? null,
+    [recipients]
+  );
   const landWahlkreisCount = useMemo(
     () => new Set(politicians.map((p) => p.wahlkreisId)).size,
     [politicians]
@@ -176,11 +184,13 @@ export function Step3Success({
 
   const [selectedPoliticianId, setSelectedPoliticianId] = useState<number | null>(
     () =>
-      initialPoliticianId(politicians, {
-        ambiguousLand: isAmbiguousLand,
-        campaignRestricted,
-        campaignRestrictedNoLocalMatch,
-      })
+      bundeskanzler
+        ? null
+        : initialPoliticianId(politicians, {
+            ambiguousLand: isAmbiguousLand,
+            campaignRestricted,
+            campaignRestrictedNoLocalMatch,
+          })
   );
   const [campaignSearch, setCampaignSearch] = useState("");
   const [campaignPartyFilters, setCampaignPartyFilters] = useState<string[]>([]);
@@ -189,6 +199,9 @@ export function Step3Success({
   const [rathausSelected, setRathausSelected] = useState<boolean>(() => Boolean(rathaus));
   const [landesregierungSelected, setLandesregierungSelected] = useState<boolean>(
     () => Boolean(landesregierung)
+  );
+  const [bundeskanzlerSelected, setBundeskanzlerSelected] = useState<boolean>(
+    () => Boolean(bundeskanzler)
   );
   const [isGenerating, setIsGenerating] = useState(false);
   const [generationComplete, setGenerationComplete] = useState(false);
@@ -298,6 +311,7 @@ export function Step3Success({
     setSelectedPoliticianId(politicianId);
     setRathausSelected(false);
     setLandesregierungSelected(false);
+    setBundeskanzlerSelected(false);
     requestAnimationFrame(() => {
       const reduce =
         typeof window !== "undefined" &&
@@ -371,6 +385,7 @@ export function Step3Success({
   // Diskriminierte Auswahl für die Server-Seite: rathaus trägt bewusst keine
   // ID (LOCK-5), Abgeordnete gehen mit kind + Abgeordnetenwatch-ID raus.
   const currentSelection = useMemo<RecipientSelection | null>(() => {
+    if (bundeskanzler && bundeskanzlerSelected) return { kind: "bundeskanzler" };
     if (landesregierung && landesregierungSelected) return { kind: "landesregierung" };
     if (rathaus && rathausSelected) return { kind: "rathaus" };
     if (selectedPolitician) {
@@ -381,7 +396,7 @@ export function Step3Success({
       return { kind: "mdb", selectedPoliticianId };
     }
     return null;
-  }, [landesregierung, landesregierungSelected, rathaus, rathausSelected, selectedPolitician, selectedPoliticianId]);
+  }, [bundeskanzler, bundeskanzlerSelected, landesregierung, landesregierungSelected, rathaus, rathausSelected, selectedPolitician, selectedPoliticianId]);
 
   // Group the disambiguation cards by Wahlkreis. sortedPoliticians is already
   // Direkt-first, so insertion order puts the group holding the pre-selected
@@ -1061,7 +1076,9 @@ export function Step3Success({
       ? formatPartyShort(selectedPolitician.party).replace(/^Die Linke$/, "die Linke")
       : "";
     const selectedPoliticianLabel =
-      landesregierung && landesregierungSelected
+      bundeskanzler && bundeskanzlerSelected
+        ? bundeskanzler.label
+        : landesregierung && landesregierungSelected
         ? landesregierung.label
         : rathaus && rathausSelected
         ? rathaus.label
@@ -1079,7 +1096,9 @@ export function Step3Success({
         : `${campaignTargetCount} ausgewählte Abgeordnete`;
     const isKommune = selectedLevel === "Kommune" && rathaus !== null;
     const isLand = selectedLevel === "Land";
-    const selectionTitle = isKommune
+    const selectionTitle = bundeskanzler
+      ? "An wen soll dein Brief gehen?"
+      : isKommune
       ? "Dein Brief geht an die Verwaltung"
       : isLand
         ? showLandPersonPicker
@@ -1092,7 +1111,9 @@ export function Step3Success({
         : !isNoMdbFound && sortedPoliticians.length > 1
           ? `${sortedPoliticians.length} Abgeordnete für PLZ ${wizardData.plz}`
           : "Wer vertritt deinen Wahlkreis?";
-    const introCopy = isKommune
+    const introCopy = bundeskanzler
+      ? "Der Bundeskanzler ist vorausgewählt. Du kannst stattdessen auch ein Mitglied des Bundestags aus deinem Wahlkreis wählen."
+      : isKommune
       ? "Der kommunale Empfänger ist bereits vorausgewählt."
       : isLand
         ? showLandPersonPicker
@@ -1347,8 +1368,71 @@ export function Step3Success({
           </div>
         )}
 
+        {bundeskanzler && (
+          <div role="radiogroup" aria-label="Institutionellen Empfänger auswählen" className="mt-6">
+            <div
+              role="radio"
+              aria-checked={bundeskanzlerSelected}
+              tabIndex={0}
+              onClick={() => {
+                setBundeskanzlerSelected(true);
+                setSelectedPoliticianId(null);
+              }}
+              onKeyDown={(event) => {
+                if (event.key === "Enter" || event.key === " ") {
+                  event.preventDefault();
+                  setBundeskanzlerSelected(true);
+                  setSelectedPoliticianId(null);
+                }
+              }}
+              className={[
+                "w-full cursor-pointer rounded-lg border-2 p-4 text-left transition-colors",
+                bundeskanzlerSelected
+                  ? "border-waldgruen bg-waldgruen/10"
+                  : "border-waldgruen/20 bg-creme hover:border-waldgruen/40",
+              ].join(" ")}
+            >
+              <span className="mb-1.5 inline-block rounded bg-waldgruen/15 px-2 py-0.5 font-body text-[11px] font-semibold uppercase tracking-wide text-waldgruen-dark">
+                Bundeskanzler
+              </span>
+              <p className="font-body text-base font-semibold text-warmgrau">
+                Friedrich Merz
+              </p>
+              <p className="mt-1 font-body text-sm leading-relaxed text-warmgrau">
+                {bundeskanzler.officeName}
+                <br />
+                {bundeskanzler.address.addressLines.slice(3).map((line) => (
+                  <span key={line} className="block">{line}</span>
+                ))}
+              </p>
+              <p className="mt-3 font-body text-sm leading-relaxed text-warmgrau/80">
+                Dein Brief richtet sich an Friedrich Merz in seiner Rolle als Leiter der Bundesregierung.
+              </p>
+              <p className="mt-2 font-body text-xs leading-relaxed text-warmgrau/70">
+                Amtliche Anschrift: {" "}
+                <a
+                  href={bundeskanzler.address.sourceUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  title={bundeskanzler.address.sourceTitle}
+                  onClick={(event) => event.stopPropagation()}
+                  className="font-semibold text-waldgruen-dark underline underline-offset-2"
+                >
+                  Bundeskanzler.de
+                </a>
+                , geprüft am {bundeskanzler.address.sourceStand.split("-").reverse().join(".")}
+              </p>
+            </div>
+          </div>
+        )}
+
         {!isKommune && (!isLand || showLandPersonPicker) && (
         <div className="mt-6">
+          {bundeskanzler && (
+            <p className="mb-3 font-body text-sm font-semibold text-waldgruen-dark">
+              Oder: ein Mitglied des Bundestags aus deinem Wahlkreis
+            </p>
+          )}
           {campaignRestrictedNoLocalMatch && (
             <div className="mb-6 grid gap-5">
               <div className="grid gap-2">

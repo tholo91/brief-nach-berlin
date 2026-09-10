@@ -6,6 +6,10 @@ import {
   getActiveCampaignBySlug,
 } from "@/lib/campaigns/repository";
 import { campaignSlugSchema } from "@/lib/campaigns/schema";
+import {
+  getSpecialCampaignBySlug,
+  SCHREIB_MERZ_CAMPAIGN,
+} from "@/lib/campaigns/specialCampaigns";
 
 type CampaignPageProps = {
   params: Promise<{ slug: string }>;
@@ -35,6 +39,14 @@ export async function generateMetadata({
   params,
 }: CampaignPageProps): Promise<Metadata> {
   const { slug: rawSlug } = await params;
+  const specialCampaign = getSpecialCampaignBySlug(rawSlug);
+  if (specialCampaign) {
+    return {
+      title: `${specialCampaign.title} | Brief-nach-Berlin`,
+      description: specialCampaign.description,
+      alternates: { canonical: specialCampaign.path },
+    };
+  }
   const resolved = await resolveCampaign(rawSlug);
   if (!resolved) return {};
   const { campaign } = resolved;
@@ -65,6 +77,9 @@ export async function generateMetadata({
 
 export default async function CampaignPage({ params }: CampaignPageProps) {
   const { slug: rawSlug } = await params;
+  if (getSpecialCampaignBySlug(rawSlug)) {
+    permanentRedirect(SCHREIB_MERZ_CAMPAIGN.path);
+  }
   const resolved = await resolveCampaign(rawSlug);
   if (!resolved) notFound();
   if (resolved.shouldRedirect) {

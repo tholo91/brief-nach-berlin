@@ -109,6 +109,9 @@ function recipientProofValue(recipient: Recipient): string {
   if (recipient.kind === "landesregierung") {
     return `${recipient.kind}:${recipient.bundeslandKey}`;
   }
+  if (recipient.kind === "bundeskanzler") {
+    return `${recipient.kind}:${recipient.lastName}`;
+  }
   const localKey = recipient.address.source === "destatis"
     ? recipient.address.ags
     : `${recipient.plz}:${recipient.gemeindeName}`;

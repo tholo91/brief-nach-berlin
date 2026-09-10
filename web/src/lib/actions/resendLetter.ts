@@ -5,6 +5,7 @@ import type { WizardData } from "@/lib/types/wizard";
 import type { RecipientSelection } from "@/lib/lookup/rathausRecipient";
 import {
   firstZodIssueMessage,
+  recipientSelectionSchema,
   step1Schema,
   step1bSchema,
   step2Schema,
@@ -17,16 +18,11 @@ import { DEFAULT_LETTER_LENGTH } from "@/lib/config";
 import { doesGenerationProofMatch, verifyGenerationProof } from "@/lib/letterSignals/token";
 import { checkRateLimit, getClientIp, hashIdentifier, LIMITS } from "@/lib/rateLimit";
 import { getActiveCampaignBySlug } from "@/lib/campaigns/repository";
+import { isBundeskanzlerCampaignTarget } from "@/lib/lookup/bundeskanzlerRecipient";
 
 const RESEND_LIMIT_MESSAGE =
   "Der Brief wurde jetzt mehrfach gesendet. Bitte prüfe noch einmal deinen Spam-Ordner und die E-Mail-Adresse. Falls weiterhin nichts ankommt, melde dich gerne direkt.";
 
-const recipientSelectionSchema = z.discriminatedUnion("kind", [
-  z.object({ kind: z.literal("mdb"), selectedPoliticianId: z.number().int() }),
-  z.object({ kind: z.literal("mdl"), selectedPoliticianId: z.number().int() }).strict(),
-  z.object({ kind: z.literal("landesregierung") }).strict(),
-  z.object({ kind: z.literal("rathaus") }).strict(),
-]);
 const generationProofSchema = z.string().min(20).max(4096).optional();
 
 // SECURITY NOTE (2026-04-27):
@@ -89,6 +85,12 @@ export async function resendLetterAction(
       return { error: "validation", message: "Diese Kampagne ist aktuell nicht aktiv." };
     }
     const allowedPoliticianIds = campaign?.targetPoliticianIds ?? [];
+    if (
+      normalizedSelection.kind === "bundeskanzler" &&
+      !isBundeskanzlerCampaignTarget(campaign)
+    ) {
+      return { error: "validation", message: "Empfänger nicht gefunden." };
+    }
     if (allowedPoliticianIds.length > 0 && normalizedSelection.kind !== "mdb") {
       return { error: "validation", message: "Empfänger nicht gefunden." };
     }
@@ -118,8 +120,11 @@ export async function resendLetterAction(
     // Re-derive recipient server-side — never trust client-supplied recipient
     // data. mdb/mdl: ID muss in der PLZ-abgeleiteten Ebenen-Liste stehen;
     // rathaus/landesregierung werden komplett aus der PLZ gebaut (LOCK-5).
-    const resolved = allowedPoliticianIds.length > 0
-      ? resolveRecipientSelection(data.plz, normalizedSelection, { allowedPoliticianIds })
+    const resolved = campaign
+      ? resolveRecipientSelection(data.plz, normalizedSelection, {
+          allowedPoliticianIds,
+          campaignSlug: campaign.slug,
+        })
       : resolveRecipientSelection(data.plz, normalizedSelection);
     if (!resolved.ok) {
       console.warn("[resendLetter] selection not resolvable", {

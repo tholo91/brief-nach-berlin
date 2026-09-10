@@ -2,7 +2,6 @@ import { NextRequest, NextResponse } from "next/server";
 import { randomUUID } from "node:crypto";
 import { letterVariantSchema } from "@/lib/validation/wizardSchemas";
 import { generateLetterVariant } from "@/lib/generation/generateLetterVariant";
-import { moderateText } from "@/lib/moderation/moderateText";
 import { sendVariantEmail } from "@/lib/email/sendVariantEmail";
 import { buildVariantDebugPayload } from "@/lib/email/variantDebugPayload";
 import { checkRateLimit, hashIdentifier, LIMITS } from "@/lib/rateLimit";
@@ -68,14 +67,6 @@ export async function POST(req: NextRequest) {
       letterLength: data.letterLength,
       changeRequest: data.changeRequest,
     });
-
-    const outputModeration = await moderateText(result.letter);
-    if (outputModeration.flagged) {
-      return NextResponse.json(
-        { error: "Beim Anpassen deines Briefes ist ein Problem aufgetreten. Bitte prüfe den eingefügten Text und versuche es erneut." },
-        { status: 422 }
-      );
-    }
 
     const debugPayload = buildVariantDebugPayload(data, result);
     const emailResult = await sendVariantEmail({

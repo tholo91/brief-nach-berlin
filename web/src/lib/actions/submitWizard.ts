@@ -225,7 +225,7 @@ export async function submitWizardAction(
       }
     }
 
-    // 1b. Rate limit check (IP + email) BEFORE moderation/AI spend.
+    // 1b. Rate limit check (IP + email) BEFORE AI spend.
     // IP and email are salted-hashed before use as bucket keys (DSGVO M7).
     const ipHash = hashIdentifier(await getClientIp());
     const ipLimit = checkRateLimit(`letter:ip:${ipHash}`, LIMITS.LETTERS_PER_IP.max, LIMITS.LETTERS_PER_IP.windowMs);

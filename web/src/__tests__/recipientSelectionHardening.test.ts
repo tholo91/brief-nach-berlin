@@ -241,6 +241,21 @@ describe("RecipientSelection server hardening", () => {
     expect(mockedResolveRecipientSelection).toHaveBeenCalledWith("50667", { kind: "rathaus" });
   });
 
+  it("sendet einen persönlichen Brief erneut, ohne moderateText aufzurufen", async () => {
+    mockedModerateText.mockResolvedValue({
+      flagged: true,
+      categories: ["hate_and_discrimination"],
+    });
+    mockedBuildResendDebugPayload.mockReturnValue({} as never);
+    mockedPrepareLetterEmail.mockReturnValue({ feedbackToken: "token", params: {} as never });
+    mockedSendLetterEmail.mockResolvedValue({ success: true, messageId: "id" });
+
+    await expect(
+      resendLetterAction({ ...data }, { kind: "mdb", selectedPoliticianId: 1 }, "Ein persönlicher Brieftext")
+    ).resolves.toEqual({ success: true });
+    expect(mockedModerateText).not.toHaveBeenCalled();
+  });
+
   it("Resend leitet die Landesregierung erneut aus der PLZ ab", async () => {
     process.env.LANDTAG_ROUTING_ENABLED = "true";
     const recipient = {

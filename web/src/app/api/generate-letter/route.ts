@@ -13,7 +13,6 @@ import {
 import { resolveRecipientSelection } from "@/lib/lookup/resolveRecipient";
 import { lookupPLZWithLevel } from "@/lib/lookup/plzLookup";
 import { verifyRoutingToken } from "@/lib/lookup/routingToken";
-import { moderateText } from "@/lib/moderation/moderateText";
 import { generateLetter } from "@/lib/generation/generateLetter";
 import { fetchMdbContext } from "@/lib/enrichment/fetchMdbContext";
 import { sendLetterEmail, prepareLetterEmail } from "@/lib/email/sendLetterEmail";
@@ -282,20 +281,6 @@ export async function POST(req: NextRequest) {
       letterText: result.letter,
       campaignSlug: campaign?.slug ?? null,
     });
-
-    // Moderate output
-    let outputModeration;
-    try {
-      outputModeration = await moderateText(result.letter);
-    } catch (error) {
-      throw new MistralStageError("moderation", error);
-    }
-    if (outputModeration.flagged) {
-      return NextResponse.json(
-        { error: "Beim Erstellen deines Briefes ist ein Problem aufgetreten. Bitte formuliere dein Anliegen anders und versuche es erneut." },
-        { status: 422 }
-      );
-    }
 
     // Increment before responding so the public counter is current after a
     // successful letter generation. A counter failure must not block delivery.

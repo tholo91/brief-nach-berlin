@@ -34,7 +34,7 @@ const reportSchema = z.object({
   pageUrl: z.string().max(500).nullable().default(null),
 });
 
-const mistralStageSchema = z.enum(["routing", "generation", "moderation"]);
+const mistralStageSchema = z.enum(["routing", "generation"]);
 
 export type ReportErrorResult = { success: boolean };
 

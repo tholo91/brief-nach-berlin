@@ -135,8 +135,6 @@ export type WizardActionResult =
       campaignTargetCount?: number;
       featuredRecipient?: BundeskanzlerRecipient;
     }
-  | { error: "moderation_rejected"; message: string }
-  | { error: "output_moderation_rejected"; message: string }
   | { error: "generation_failed"; message: string }
   | { error: "plz_not_found"; message: string }
   | { error: "campaign_state_mismatch"; targetStateName: string; message: string }

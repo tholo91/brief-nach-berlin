@@ -13,7 +13,7 @@ export const MISTRAL_MODELS = {
   levelRouting: "mistral-small-latest",
 } as const;
 
-export type MistralStage = "routing" | "generation" | "moderation";
+export type MistralStage = "routing" | "generation";
 
 const RETRYABLE_HTTP_STATUS = new Set([408, 429, 500, 502, 503, 504]);
 const RETRYABLE_NETWORK_CODES = new Set([

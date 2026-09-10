@@ -10,7 +10,6 @@ import {
   step1bSchema,
   step2Schema,
 } from "@/lib/validation/wizardSchemas";
-import { moderateText } from "@/lib/moderation/moderateText";
 import { resolveRecipientSelection } from "@/lib/lookup/resolveRecipient";
 import { sendLetterEmail, prepareLetterEmail } from "@/lib/email/sendLetterEmail";
 import { buildResendDebugPayload } from "@/lib/email/buildDebugPayload";
@@ -32,9 +31,8 @@ const generationProofSchema = z.string().min(20).max(4096).optional();
 // politician server-side from the authoritative static lookup. Nothing
 // politician-shaped from the client is used beyond the numeric ID.
 //
-// Letter text is now cached on the client from the initial generation and passed
-// back here, avoiding a redundant Mistral API call on each resend. The cached
-// text is re-moderated before sending as a defense-in-depth measure.
+// Letter text is cached on the client from the initial generation and passed
+// back here, avoiding a redundant Mistral API call on each resend.
 export async function resendLetterAction(
   data: WizardData,
   selection: RecipientSelection | number,
@@ -95,7 +93,7 @@ export async function resendLetterAction(
       return { error: "validation", message: "Empfänger nicht gefunden." };
     }
 
-    // Rate limit BEFORE moderation spend (matches submitWizard pattern).
+    // Rate limit before recipient resolution and email work.
     // IP and email are salted-hashed before use as bucket keys (DSGVO M7).
     const ipHash = hashIdentifier(await getClientIp());
     const ipLimit = checkRateLimit(
@@ -143,12 +141,6 @@ export async function resendLetterAction(
       campaignSlug: campaign?.slug ?? null,
     })) {
       return { error: "validation", message: "Ungültige Eingabe." };
-    }
-
-    // Moderate the cached letter text before re-sending (defense-in-depth)
-    const outMod = await moderateText(cachedLetterText);
-    if (outMod.flagged) {
-      return { error: "moderation", message: "Brief kann nicht gesendet werden." };
     }
 
     // Resend bekommt dieselbe Mail wie der Erstversand: Debug-Link im Footer +

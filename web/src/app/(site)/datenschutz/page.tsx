@@ -255,15 +255,15 @@ export default function Datenschutz() {
 
           <div>
             <h2 className="font-semibold text-waldgruen-dark mb-2">
-              9. KI-gestützte Briefgenerierung, Inhaltsmoderation und
+              9. KI-gestützte Briefgenerierung, Zuständigkeitsprüfung und
               Spracherkennung (Mistral AI)
             </h2>
             <p>
               Zweck: (a) Erstellung eines formalen, persönlichen Briefs auf Basis
-              Ihres Anliegens, (b) automatische Inhaltsprüfung Ihres Anliegens
-              und des generierten Briefs auf beleidigende, bedrohliche oder
-              schädliche Inhalte, (c) optional: Transkription Ihrer
-              Sprachaufnahme.
+              Ihres Anliegens, (b) Einordnung der zuständigen politischen Ebene
+              und optionaler Themen, (c) optional: Transkription Ihrer
+              Sprachaufnahme. Persönliche Anliegen und generierte persönliche
+              Brieftexte werden nicht zusätzlich inhaltlich moderiert.
             </p>
             <p className="mt-2">
               Verarbeitete Daten: Ihr Anliegen, optionale Angaben (Name, Partei,
@@ -274,7 +274,8 @@ export default function Datenschutz() {
               Empfänger: Mistral AI, 15 rue des Halles, 75001 Paris, Frankreich.
               Eingesetzte Modelle: <em>mistral-large-latest</em> (Briefe),{" "}
               <em>mistral-small-latest</em> (Zuständigkeit und Themen),{" "}
-              <em>mistral-moderation-latest</em> (Inhaltsprüfung),{" "}
+              <em>mistral-moderation-latest</em> (Inhaltsprüfung öffentlicher
+              Kampagnentexte),{" "}
               <em>voxtral-mini-latest</em> (Spracherkennung). Mistral
               dokumentiert die standardmäßige Datenhaltung in der Europäischen
               Union; je nach Dienst und Subprozessor können dennoch abgesicherte
@@ -317,9 +318,9 @@ export default function Datenschutz() {
             <p className="mt-2">
               Rechtsgrundlage: Art. 6 Abs. 1 lit. b DSGVO; für besondere
               Kategorien zusätzlich Art. 9 Abs. 2 lit. a DSGVO. Für die
-              Inhaltsmoderation gilt zusätzlich Art. 6 Abs. 1 lit. f DSGVO
-              (berechtigtes Interesse an der Verhinderung von Missbrauch und an
-              der Einhaltung gesetzlicher Vorgaben gegenüber Mandatsträgern).
+              Inhaltsmoderation öffentlicher Kampagnentexte gilt zusätzlich Art. 6
+              Abs. 1 lit. f DSGVO (berechtigtes Interesse an der Verhinderung von
+              Missbrauch und an der Einhaltung gesetzlicher Vorgaben).
             </p>
           </div>
 
@@ -800,7 +801,7 @@ export default function Datenschutz() {
             </p>
           </div>
 
-          <p className="text-sm text-warmgrau/50">Stand: 2. September 2026</p>
+          <p className="text-sm text-warmgrau/50">Stand: 10. September 2026</p>
         </div>
       </div>
     </div>

@@ -10,6 +10,7 @@ const DESCRIPTION =
   "Welche KI Brief-nach-Berlin nutzt, warum die Wahl auf Mistral aus Europa gefallen ist und wie das Tool transparent mit Claude Code als Freizeitprojekt entstanden ist.";
 const URL_PATH = "/ki-transparenz";
 const PUBLISHED = "2026-05-20";
+const MODIFIED = "2026-09-10";
 
 export const metadata: Metadata = {
   title: `${TITLE} | Brief-nach-Berlin`,
@@ -34,7 +35,7 @@ export const metadata: Metadata = {
 const faqs = [
   {
     q: "Welche KI nutzt Brief-nach-Berlin?",
-    a: `Brief-nach-Berlin generiert die Brief-Entwürfe mit Mistral, einem KI-Anbieter mit Sitz in Paris. Konkret läuft die Textgenerierung über ${MISTRAL_MODELS.letter}, die Inhaltsprüfung über ${MISTRAL_MODELS.moderation}. Die API-Region und Zero-Data-Retention werden vor Aktivierung freiwilliger Themensignale gesondert geprüft.`,
+    a: `Brief-nach-Berlin generiert die Brief-Entwürfe mit Mistral, einem KI-Anbieter mit Sitz in Paris. Die Textgenerierung läuft über ${MISTRAL_MODELS.letter}. ${MISTRAL_MODELS.moderation} prüft ausschließlich öffentliche Kampagnentexte; persönliche Anliegen und persönliche Briefentwürfe werden nicht zusätzlich moderiert. Die API-Region und Zero-Data-Retention werden vor Aktivierung freiwilliger Themensignale gesondert geprüft.`,
   },
   {
     q: "Warum nicht OpenAI oder ein anderes US-Modell?",
@@ -54,7 +55,7 @@ const faqs = [
   },
   {
     q: "Wurde Brief-nach-Berlin mit KI gebaut?",
-    a: "Ja, die Entwicklung erfolgte mit Claude Code von Anthropic. Claude läuft aber nicht im Betrieb mit: Deine Eingaben für Routing, Moderation und Brief-Erstellung verarbeitet die Mistral-API.",
+    a: "Ja, die Entwicklung erfolgte mit Claude Code von Anthropic. Claude läuft aber nicht im Betrieb mit: Deine Eingaben für Zuständigkeitsprüfung und Brief-Erstellung verarbeitet die Mistral-API. Wenn du eine öffentliche Kampagne anlegst, prüft Mistral zusätzlich deren öffentlichen Text.",
   },
 ];
 
@@ -74,7 +75,7 @@ const articleJsonLd = {
   headline: TITLE,
   description: DESCRIPTION,
   datePublished: PUBLISHED,
-  dateModified: PUBLISHED,
+  dateModified: MODIFIED,
   author: { "@type": "Organization", name: "Brief-nach-Berlin" },
   publisher: {
     "@type": "Organization",
@@ -130,9 +131,11 @@ export default function KiTransparenzPage() {
                 Mistral
               </a>
               , einem KI-Anbieter mit Sitz in Paris. Konkret läuft die
-              Textgenerierung über das Modell <em>{MISTRAL_MODELS.letter}</em>, die
-              Inhaltsprüfung über <em>{MISTRAL_MODELS.moderation}</em>. Beide
-              Aufrufe gehen direkt an Mistrals API. Die konkrete API-Region,
+              Textgenerierung über das Modell <em>{MISTRAL_MODELS.letter}</em>.
+              Persönliche Anliegen und persönliche Briefentwürfe werden nicht
+              zusätzlich moderiert. Nur öffentliche Kampagnentexte prüft{" "}
+              <em>{MISTRAL_MODELS.moderation}</em>. Diese Aufrufe gehen direkt an
+              Mistrals API. Die konkrete API-Region,
               Subprozessoren und Zero-Data-Retention prüfe und dokumentiere ich
               vor der Aktivierung freiwilliger Themensignale gesondert.
             </p>
@@ -282,8 +285,10 @@ export default function KiTransparenzPage() {
             </h2>
             <p className="font-body text-warmgrau leading-relaxed mb-6">
               Drei Minuten, ein Brief, kein Account. Deine Eingaben werden für
-              Routing, Moderation und Brief-Erstellung an Mistral übermittelt. Für eine interne
-              Themenauswertung kannst du freiwillig ein Signal freigeben;
+              Zuständigkeitsprüfung und Brief-Erstellung an Mistral übermittelt.
+              Eine zusätzliche Inhaltsmoderation gibt es nur für öffentliche
+              Kampagnentexte. Für eine interne Themenauswertung kannst du
+              freiwillig ein Signal freigeben;
               Brief- und Anliegen-Volltext werden dabei nicht gespeichert.
             </p>
             <Link

@@ -447,9 +447,6 @@ export function Step3Success({
     }));
   }, [campaignRestrictedNoLocalMatch, sortedPoliticians]);
 
-  // >5 total cards => 2-col grid per group, else single column.
-  const cardsMultiCol = sortedPoliticians.length > 5;
-
   const handleSelectPolitician = useCallback(
     async () => {
       if (currentSelection === null) return;
@@ -1214,7 +1211,7 @@ export function Step3Success({
 
         {(isAmbiguousLand || isAmbiguousKommune) && (
           <div role="note" className="mt-4 rounded-xl border border-waldgruen/25 bg-waldgruen/8 p-4 font-body text-sm text-warmgrau leading-relaxed">
-            <p className="font-semibold text-waldgruen-dark">Beta-Hinweis</p>
+            <p className="font-semibold text-waldgruen-dark">Hinweis zur Zuordnung</p>
             <p className="mt-1">
               {isAmbiguousLand
                 ? "Eine PLZ kann mehrere Landtagswahlkreise abdecken. Prüfe über das verlinkte Profil, welcher Wahlkreis zu deiner Wohnadresse gehört, bevor du auswählst."
@@ -1519,13 +1516,7 @@ export function Step3Success({
                 </p>
               )}
               <div
-                className={
-                  campaignRestrictedNoLocalMatch
-                    ? "grid grid-cols-1 gap-3 md:grid-cols-2"
-                    : cardsMultiCol
-                    ? "grid grid-cols-1 sm:grid-cols-2 gap-3"
-                    : "space-y-3"
-                }
+                className="grid grid-cols-1 gap-3 md:grid-cols-2"
               >
                 {group.cards.map(({ politician: p, flatIndex }) => (
                   <div

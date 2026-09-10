@@ -53,7 +53,7 @@ describe("StepLevelSelect", () => {
     expect(html).not.toContain("Vorausgewählt");
     expect(html).not.toContain("Unsere Empfehlung");
     expect(html).not.toContain("Sicherheit der Einschätzung");
-    expect(html).not.toContain("Landtag und Kommune sind neu als Beta dabei");
+    expect(html).not.toContain("Beta");
   });
 
   it("zeigt bei niedriger Confidence keine sichtbare Confidence oder Begründung", () => {

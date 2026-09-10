@@ -4,7 +4,13 @@ import { CampaignLogo } from "./CampaignLogo";
 
 export type CampaignListItem = Pick<
   Campaign,
-  "slug" | "title" | "creatorName" | "logoPath" | "activatedAt" | "createdAt"
+  | "slug"
+  | "title"
+  | "creatorName"
+  | "logoPath"
+  | "activatedAt"
+  | "createdAt"
+  | "letterCount"
 >;
 
 type CampaignListProps = {
@@ -50,14 +56,21 @@ export function CampaignList({
                 name={campaign.creatorName?.trim() || campaign.title}
               />
               <div className="min-w-0 flex-1">
-                <p className="break-words font-body text-sm font-bold leading-snug text-waldgruen-dark group-hover:text-waldgruen">
-                  {campaign.title}
-                </p>
-                <div className="mt-2 flex flex-wrap gap-x-2 gap-y-1 font-body text-[11px] font-semibold text-warmgrau/55">
-                  {campaign.creatorName && (
-                    <span>Anliegen von {campaign.creatorName}</span>
+                <p className="flex min-w-0 items-baseline font-body text-sm font-bold leading-snug text-waldgruen-dark group-hover:text-waldgruen">
+                  <span className="min-w-0 truncate">{campaign.title}</span>
+                  {campaign.letterCount > 20 && (
+                    <span className="ml-1 shrink-0 font-body text-xs font-semibold text-warmgrau/55">
+                      20+ Briefe
+                    </span>
                   )}
-                  <span>{formatCampaignDate(campaign)}</span>
+                </p>
+                <div className="mt-2 flex min-w-0 items-center gap-x-2 overflow-hidden whitespace-nowrap font-body text-[11px] font-semibold text-warmgrau/55">
+                  {campaign.creatorName && (
+                    <span className="min-w-0 truncate">
+                      Anliegen von {campaign.creatorName}
+                    </span>
+                  )}
+                  <span className="shrink-0">{formatCampaignDate(campaign)}</span>
                 </div>
               </div>
               <span className="shrink-0 pt-0.5 font-typewriter text-[10px] font-bold uppercase tracking-wider text-waldgruen/75">

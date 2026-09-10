@@ -8,7 +8,7 @@ function InstagramIcon() {
 }
 
 function LinkedInIcon() {
-  return <svg aria-hidden="true" viewBox="0 0 24 24" className="h-4 w-4 fill-current"><path d="M5.3 8.1H2.7V21h2.6V8.1ZM4 3a1.6 1.6 0 1 0 0 3.2A1.6 1.6 0 0 0 4 3ZM9.1 8.1H6.6V21h2.5v-6.4c0-1.7.3-3.4 2.5-3.4 2.2 0 2.2 2 2.2 3.5V21h2.6v-6.9c0-3.4-.7-6-4.6-6-1.9 0-3.1 1-3.6 1.9h-.1V8.1ZM18.9 8.1h2.4V21h-2.4V8.1Z" /></svg>;
+  return <svg aria-hidden="true" viewBox="0 0 24 24" className="h-4 w-4 fill-current"><path d="M22.22 0H1.77C.8 0 0 .77 0 1.73v20.54C0 23.22.8 24 1.77 24h20.45c.98 0 1.78-.78 1.78-1.73V1.73C24 .77 23.2 0 22.22 0zM7.12 20.45H3.56V9h3.56v11.45zM5.34 7.43a2.06 2.06 0 1 1 0-4.13 2.06 2.06 0 0 1 0 4.13zM20.45 20.45h-3.56v-5.57c0-1.33-.03-3.04-1.85-3.04-1.85 0-2.14 1.45-2.14 2.94v5.67H9.35V9h3.41v1.56h.05c.48-.9 1.64-1.85 3.37-1.85 3.6 0 4.27 2.37 4.27 5.46v6.28z" /></svg>;
 }
 
 export function SocialFollow({ label }: { label: string }) {

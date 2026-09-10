@@ -237,9 +237,9 @@ export function buildCoverageHint(
   if (routedLevel === "Land" && !result.coverage.landSupported) {
     const region = result.bundeslandName ?? "Dein Bundesland";
     if (result.coverage.stadtstaatEinheitsgemeinde || result.bundeslandName) {
-      return `${region} ist in der Beta noch nicht sauber abgedeckt. Solange schreibst du an deine Bundestagsabgeordneten: Sie haben das Mandat, Themen aus allen Bundesländern in Berlin einzubringen.`;
+      return `Für deine PLZ in ${region} können wir die Landesebene noch nicht sicher zuordnen. Solange schreibst du an deine Bundestagsabgeordneten: Sie haben das Mandat, Themen aus allen Bundesländern in Berlin einzubringen.`;
     }
-    return `Dieses Bundesland ist in der Beta noch nicht sauber abgedeckt. Solange schreibst du an deine Bundestagsabgeordneten: Sie haben das Mandat, Themen aus allen Bundesländern in Berlin einzubringen.`;
+    return `Für diese PLZ können wir die Landesebene noch nicht sicher zuordnen. Solange schreibst du an deine Bundestagsabgeordneten: Sie haben das Mandat, Themen aus allen Bundesländern in Berlin einzubringen.`;
   }
   if (routedLevel === "Kommune" && !result.coverage.kommuneSupported) {
     if (result.coverage.stadtstaatEinheitsgemeinde && result.bundeslandName) {

@@ -162,6 +162,8 @@ video::-webkit-media-controls-start-playback-button {
 
 .wizard-step-stage {
   overflow-x: clip;
+  margin-inline: -2px;
+  padding-inline: 2px;
 }
 
 .wizard-step-content-forward,
@@ -170,11 +172,11 @@ video::-webkit-media-controls-start-playback-button {
 }
 
 .wizard-step-content-forward {
-  animation: wizard-step-enter-forward 340ms cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation: wizard-step-enter-forward 600ms cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
 .wizard-step-content-backward {
-  animation: wizard-step-enter-backward 340ms cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation: wizard-step-enter-backward 600ms cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
 /* Respect users who don't want motion. */

@@ -206,7 +206,6 @@ export function StepLevelSelect({
         {LEVELS.map((level) => {
           const isAvailable = availability[level];
           const isSelected = selected === level;
-          const isBeta = level !== "Bund";
           const hint = unavailableHint(level);
           const hintId = hint ? `level-${level.toLowerCase()}-hint` : undefined;
           const isBundledUnderLand =
@@ -263,11 +262,6 @@ export function StepLevelSelect({
                       {isBundledUnderLand && (
                         <span className="inline-block font-body text-[11px] font-semibold uppercase tracking-wide text-warmgrau/70 bg-warmgrau/10 px-2 py-0.5 rounded">
                           {copy.levels.underState.replace("{state}", routing.bundeslandName ?? "")}
-                        </span>
-                      )}
-                      {isBeta && (
-                        <span className="inline-block font-body text-[11px] font-semibold uppercase tracking-wide text-bernstein bg-bernstein/10 px-2 py-0.5 rounded">
-                          {copy.levels.beta}
                         </span>
                       )}
                     </div>

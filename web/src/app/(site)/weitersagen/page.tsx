@@ -5,14 +5,11 @@ import { FAQAccordion } from "@/components/FAQAccordion";
 import {
   APP_URL,
   FOUNDER_FEEDBACK_URL,
-  SHARE_URL_WHATSAPP,
-  SHARE_URL_TELEGRAM,
-  SHARE_URL_EMAIL,
-  SHARE_URL_LINKEDIN,
   INSTAGRAM_CAPTION,
 } from "@/lib/config";
 import { CopyButton } from "@/components/CopyButton";
 import { CONTACT } from "@/lib/contact";
+import { WeitersagenShareActions } from "@/components/WeitersagenShareActions";
 
 const TITLE = "Brief-nach-Berlin weitersagen";
 const DESCRIPTION =
@@ -43,7 +40,7 @@ export const metadata: Metadata = {
 const faqs = [
   {
     q: "Warum hat es mehr Wirkung, wenn mehrere Leute schreiben?",
-    a: "Briefe aus dem gleichen Wahlkreis zum gleichen Thema bekommen im Büro einer oder eines Abgeordneten besonderes Gewicht. Aus zwei oder drei Briefen wird ein Muster, aus einem Muster wird ein Anliegen, das im Wahlkreisbüro auf den Tisch landet. Eine Stimme allein ist leicht zu überhören, fünf Stimmen aus derselben Gegend sind es nicht.",
+    a: "Briefe aus dem gleichen Wahlkreis zum gleichen Thema bekommen im Büro einer oder eines Abgeordneten besonderes Gewicht. Aus zwei oder drei Briefen wird ein Muster, aus einem Muster wird ein Anliegen, das im Wahlkreisbüro auf dem Tisch landet. Eine Stimme allein ist leicht zu überhören, fünf Stimmen aus derselben Gegend sind es nicht.",
   },
   {
     q: "Was schreibe ich am besten in die WhatsApp-Nachricht?",
@@ -146,58 +143,7 @@ export default function WeitersagenPage() {
             vorher noch anpassen.
           </p>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            <a
-              href={SHARE_URL_WHATSAPP}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center justify-between gap-3 bg-white border border-waldgruen/15 rounded-xl px-5 py-4 hover:border-waldgruen/40 hover:shadow-md transition-all"
-            >
-              <span className="font-body font-semibold text-waldgruen-dark">
-                WhatsApp
-              </span>
-              <span className="font-typewriter text-xs uppercase tracking-wider text-warmgrau/60">
-                Öffnen &rarr;
-              </span>
-            </a>
-            <a
-              href={SHARE_URL_TELEGRAM}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center justify-between gap-3 bg-white border border-waldgruen/15 rounded-xl px-5 py-4 hover:border-waldgruen/40 hover:shadow-md transition-all"
-            >
-              <span className="font-body font-semibold text-waldgruen-dark">
-                Telegram
-              </span>
-              <span className="font-typewriter text-xs uppercase tracking-wider text-warmgrau/60">
-                Öffnen &rarr;
-              </span>
-            </a>
-            <a
-              href={SHARE_URL_EMAIL}
-              className="flex items-center justify-between gap-3 bg-white border border-waldgruen/15 rounded-xl px-5 py-4 hover:border-waldgruen/40 hover:shadow-md transition-all"
-            >
-              <span className="font-body font-semibold text-waldgruen-dark">
-                E-Mail
-              </span>
-              <span className="font-typewriter text-xs uppercase tracking-wider text-warmgrau/60">
-                Öffnen &rarr;
-              </span>
-            </a>
-            <a
-              href={SHARE_URL_LINKEDIN}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center justify-between gap-3 bg-white border border-waldgruen/15 rounded-xl px-5 py-4 hover:border-waldgruen/40 hover:shadow-md transition-all"
-            >
-              <span className="font-body font-semibold text-waldgruen-dark">
-                LinkedIn
-              </span>
-              <span className="font-typewriter text-xs uppercase tracking-wider text-warmgrau/60">
-                Öffnen &rarr;
-              </span>
-            </a>
-          </div>
+          <WeitersagenShareActions />
         </section>
 
         {/* Instagram */}

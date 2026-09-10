@@ -36,7 +36,7 @@ export function CampaignLogo({
           backgroundImage: `url(${logoUrl})`,
           backgroundPosition: "center",
           backgroundRepeat: "no-repeat",
-          backgroundSize: "103%",
+          backgroundSize: "105%",
         }}
       />
     );

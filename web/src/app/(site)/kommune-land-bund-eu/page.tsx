@@ -50,7 +50,7 @@ const faqs = [
   },
   {
     q: "Unterstützt Brief-nach-Berlin alle Ebenen?",
-    a: "Brief-nach-Berlin unterstützt aktuell Bund, Land und Kommune. Bund ist der stabile Kern. Land und Kommune laufen als Beta und werden langsam mit echten Anliegen getestet. Die EU steht weiter auf der Roadmap.",
+    a: "Brief-nach-Berlin unterstützt aktuell Bund, Land und Kommune. Die EU steht weiter auf der Roadmap.",
   },
 ];
 
@@ -219,7 +219,7 @@ export default function KommuneLandBundEuPage() {
             Hier hat Brief-nach-Berlin angefangen: Über deine Postleitzahl
             findet das Projekt deinen Bundestagsabgeordneten und hilft dir,
             ihn oder sie anzuschreiben. Inzwischen werden auch Land und Kommune
-            als Beta angesteuert.
+            direkt angesteuert.
           </p>
 
           <h2 className="font-body text-2xl font-bold text-waldgruen-dark pt-4">
@@ -294,13 +294,12 @@ export default function KommuneLandBundEuPage() {
 
           <div className="p-4 bg-waldgruen/5 border border-waldgruen/15 rounded-xl my-6">
             <span className="font-typewriter text-xs uppercase tracking-widest text-waldgruen/60 block mb-1">
-              Jetzt in der Beta
+              Jetzt verfügbar
             </span>
             <span>
               Brief-nach-Berlin unterstützt aktuell Bund, Land und Kommune.
-              Bund ist stabil. Land und Kommune werden langsam getestet, weil
-              Zuständigkeiten und Adressen dort schneller uneindeutig werden.
-              Wenn etwas falsch einsortiert wirkt, ist Feedback gerade besonders
+              Zuständigkeiten und Adressen können vor Ort schneller uneindeutig
+              werden. Wenn etwas falsch einsortiert wirkt, ist Feedback besonders
               wertvoll.
             </span>
           </div>

@@ -51,6 +51,37 @@ export default function Impressum() {
 
           <div>
             <h2 className="font-semibold text-waldgruen-dark mb-2">
+              Projektträgerschaft
+            </h2>
+            <p>
+              Brief-nach-Berlin steht als gemeinnütziges Projekt unter der
+              Trägerschaft der{" "}
+              <a
+                href="https://www.we-aid.org/de/impressum/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-waldgruen hover:underline"
+              >
+                WE AID gGmbH
+              </a>
+              . Für die Annahme und Verwaltung von Spenden und Fördermitteln
+              ist WE AID gGmbH als Projektträgerin zuständig.
+            </p>
+            <p className="mt-2">
+              WE AID gGmbH
+              <br />
+              Anna-Louisa-Karsch-Str. 2
+              <br />
+              10178 Berlin
+              <br />
+              Registergericht: Amtsgericht Charlottenburg
+              <br />
+              Registernummer: HRB 241239 B
+            </p>
+          </div>
+
+          <div>
+            <h2 className="font-semibold text-waldgruen-dark mb-2">
               Verantwortlich für den Inhalt nach § 18 Abs. 2 MStV
             </h2>
             <p>
@@ -69,19 +100,6 @@ export default function Impressum() {
               Streitschlichtung
             </h2>
             <p>
-              Die Europäische Kommission stellt eine Plattform zur
-              Online-Streitbeilegung (OS) bereit:{" "}
-              <a
-                href="https://ec.europa.eu/consumers/odr"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-waldgruen hover:underline"
-              >
-                https://ec.europa.eu/consumers/odr
-              </a>
-              .
-            </p>
-            <p className="mt-2">
               Ich bin nicht bereit oder verpflichtet, an
               Streitbeilegungsverfahren vor einer Verbraucherschlichtungsstelle
               teilzunehmen.

@@ -9,8 +9,9 @@ import { FactCallout } from "@/components/editorial/FactCallout";
 
 const URL_PATH = "/handschriftliche-briefe-wirkung";
 const PUBLISHED = "2026-08-11";
+const MODIFIED = "2026-09-09";
 const TITLE =
-  "Wirken handschriftliche Briefe an Abgeordnete? Studien und Erfahrungen | Brief nach Berlin";
+  "Wirken handschriftliche Briefe an Abgeordnete? Studien und Erfahrungen | Brief-nach-Berlin";
 const DESCRIPTION =
   "Was Studien über handschriftliche Briefe an Abgeordnete zeigen, warum persönlicher Aufwand zählt und was der Postkarten-Effekt damit zu tun hat.";
 
@@ -31,7 +32,7 @@ export const metadata: Metadata = {
 const faqs = [
   {
     q: "Gibt es einen direkten Beweis, dass handschriftliche Briefe an Abgeordnete wirken?",
-    a: "Die direkte Evidenz ist kleiner als oft behauptet. Eine randomisierte Feldstudie zeigte, dass Bürgerkontakte die Zustimmung von Abgeordneten zu einem Gesetz um etwa 12 Prozentpunkte erhöhen konnten. Der Kontakt erfolgte vor allem telefonisch. Für handschriftliche Briefe lässt sich daraus kein eigener Handschrift-Bonus ableiten. Die Studie zeigt aber, dass Bürgerpost politische Entscheidungen erreichen kann.",
+    a: "Die direkte Evidenz ist kleiner als oft behauptet. Eine randomisierte Feldstudie zeigte, dass eine organisierte Kampagne mit 22 bis 65 Anrufen pro Abgeordnetem die Zustimmung zu einem Gesetz um etwa 12 Prozentpunkte erhöhen konnte. Das belegt weder die Wirkung eines einzelnen Briefs noch einen Handschrift-Bonus. Es zeigt nur, dass gebündelter Bürgerkontakt politische Entscheidungen erreichen kann.",
   },
   {
     q: "Was ist der Postkarten-Effekt?",
@@ -67,9 +68,9 @@ const articleJsonLd = {
   headline: TITLE,
   description: DESCRIPTION,
   datePublished: PUBLISHED,
-  dateModified: PUBLISHED,
-  author: { "@type": "Organization", name: "Brief nach Berlin" },
-  publisher: { "@type": "Organization", name: "Brief nach Berlin", url: APP_URL },
+  dateModified: MODIFIED,
+  author: { "@type": "Organization", name: "Brief-nach-Berlin" },
+  publisher: { "@type": "Organization", name: "Brief-nach-Berlin", url: APP_URL },
   url: `${APP_URL}${URL_PATH}`,
   mainEntityOfPage: `${APP_URL}${URL_PATH}`,
   inLanguage: "de-DE",
@@ -130,15 +131,25 @@ export default function HandschriftlicheBriefeWirkungPage() {
 
           <FactCallout
             number="≈ 12"
-            label="Prozentpunkte höher lag in einer randomisierten Feldstudie die Wahrscheinlichkeit, dass Abgeordnete für ein bestimmtes Gesetz stimmten, wenn Bürger:innen sie dazu kontaktierten. Der Versuch untersuchte vor allem Telefonkontakte, nicht Handschrift."
+            label="Prozentpunkte höher lag in einer randomisierten Feldstudie die Zustimmung zu einem Gesetz nach einer organisierten Kampagne mit 22 bis 65 Anrufen pro Abgeordnetem. Untersucht wurden weder ein einzelner Brief noch Handschrift."
             source="Bergan und Cole, Political Behavior, 2015"
           />
 
           <p>
-            Daniel Bergan und Richard Cole ordneten Abgeordnete im US-Bundesstaat Michigan zufällig einer Kontaktkampagne oder einer Kontrollgruppe zu. Die Studie zeigt etwas Wichtiges für Brief nach Berlin: Bürgerkontakte können in politischen Büros ankommen und mit einer konkreten Entscheidung zusammenhängen. Sie sagt nicht, dass ein Brief immer stärker wirkt als ein Anruf oder eine E-Mail.
+            Daniel Bergan und Richard Cole ordneten alle 148 Abgeordneten im
+            Parlament des US-Bundesstaats Michigan zufällig einer organisierten
+            Telefonkampagne oder einer Kontrollgruppe zu. Die Studie zeigt,
+            dass gebündelter Bürgerkontakt eine konkrete Entscheidung erreichen
+            kann. Sie sagt nichts darüber, was ein einzelner Brief bewirkt oder
+            ob ein Brief stärker wirkt als ein Anruf oder eine E-Mail.
           </p>
           <p>
-            Eine europäische Feldstudie von Tom Dobber und Kolleg:innen untersuchte personalisierte politische Post in den Niederlanden. Die adressierten Personen wollten eher für die betreffende Partei stimmen. Bei den tatsächlichen Stimmen zeigte sich dieser Effekt nicht. Auch hier gilt: Persönliche Relevanz kann Aufmerksamkeit und Absicht verändern. Das ist noch kein sicherer Weg zu einer politischen Entscheidung.
+            Eine kleine niederländische Feldstudie von Tom Dobber und
+            Kolleg:innen untersuchte thematisch zugeschnittene politische Post;
+            nur die Adresse war handgeschrieben. Bei den Teilnehmenden stieg die
+            angegebene Wahlabsicht, bei den tatsächlichen Stimmen zeigte sich
+            kein belastbarer Effekt. Aufmerksamkeit wurde nicht gemessen und
+            Handschrift nicht isoliert getestet.
           </p>
 
           <h2>Warum kann Handschrift Ernsthaftigkeit vermitteln?</h2>
@@ -146,7 +157,12 @@ export default function HandschriftlicheBriefeWirkungPage() {
             Die <a className={sourceLinkClass} href="https://doi.org/10.1016/j.copsyc.2022.101442" target="_blank" rel="noreferrer">Costly Signaling Theory</a> liefert dafür eine Erklärung. Sichtbarer Aufwand kann glaubwürdiger wirken, weil er schwerer zu fälschen ist. Eine handschriftliche Seite kostet Zeit. Sie entsteht nicht nebenbei durch einen Klick.
           </p>
           <p>
-            Das ist eine Übertragung aus der Kommunikationsforschung, keine direkte Studie zu Abgeordnetenbriefen. Eine randomisierte Feldstudie im Onlinehandel fand, dass handgeschriebene Notizen die Ausgaben treuer Kund:innen erhöhten. Als Erklärung nennen die Autor:innen ein Gefühl von Wärme. Ein politischer Brief ist kein Paket vom Onlinehandel. Die Studie zeigt trotzdem, dass Handschrift messbar anders wahrgenommen werden kann.
+            Das ist eine Übertragung aus der Kommunikationsforschung, keine
+            direkte Studie zu Abgeordnetenbriefen. Eine randomisierte
+            Feldstudie im Onlinehandel fand zwar höhere Ausgaben nach
+            handschriftlich wirkenden Notizen. Fotokopierte Handschrift wirkte
+            aber ähnlich wie das Original. Das spricht eher für den visuellen
+            Eindruck von Wärme als für nachweislich erkannten echten Aufwand.
           </p>
 
           <h2>Warum persönliche Briefe aus dem Wahlkreis zählen</h2>
@@ -154,7 +170,20 @@ export default function HandschriftlicheBriefeWirkungPage() {
             Ein Brief aus dem eigenen Wahlkreis hat eine klare Adresse. Er kommt von jemandem, den die Abgeordnete oder der Abgeordnete tatsächlich vertritt. Wenn mehrere Menschen unabhängig voneinander zum gleichen Thema schreiben, wird daraus ein Muster, das ein Büro schwerer als Einzelfall ablegen kann.
           </p>
           <p>
-            Das funktioniert nicht durch möglichst viele identische Texte. Ein Serienbrief lässt sich schnell als Kampagne erkennen und gesammelt beantworten. Persönliche Briefe zeigen dagegen, dass verschiedene Menschen ein Anliegen aus ihrem Alltag heraus wichtig finden. Genau deshalb setzt Brief nach Berlin auf eigene Worte, eine zuständige Adresse und den letzten Schritt beim Menschen: lesen, ändern, abschreiben, abschicken.
+            Näher am deutschen Kontext ist ein Feldexperiment mit 494
+            Bundestagsabgeordneten. Bei standardisierten E-Mails erhöhte ein
+            persönliches Signal zur Wahlabsicht die Antwortquote insgesamt von
+            59 auf 67 Prozent. Direkt gewählte Abgeordnete reagierten besonders.
+            Das ist Evidenz für politische Responsivität auf einen persönlichen
+            Wahlkreisbezug, nicht für Handschrift oder politische
+            Meinungsänderung. Siehe{" "}
+            <a className={sourceLinkClass} href="https://doi.org/10.1111/1475-6765.12408" target="_blank" rel="noreferrer">
+              Bol et al. (2021)
+            </a>
+            .
+          </p>
+          <p>
+            Das funktioniert nicht durch möglichst viele identische Texte. Ein Serienbrief lässt sich schnell als Kampagne erkennen und gesammelt beantworten. Persönliche Briefe zeigen dagegen, dass verschiedene Menschen ein Anliegen aus ihrem Alltag heraus wichtig finden. Genau deshalb setzt Brief-nach-Berlin auf eigene Worte, eine zuständige Adresse und den letzten Schritt beim Menschen: lesen, ändern, abschreiben, abschicken.
           </p>
 
           <h2>Was bedeutet das für Briefkampagnen von NGOs?</h2>
@@ -162,10 +191,16 @@ export default function HandschriftlicheBriefeWirkungPage() {
             Eine NGO kann den gemeinsamen Anlass liefern und trotzdem persönliche Briefe ermöglichen. Unterstützer:innen bekommen einen Startpunkt, wählen ihre zuständige politische Vertretung und ergänzen, warum sie selbst betroffen sind oder das Thema wichtig finden. Die Organisation schickt keine identischen Nachrichten automatisch an ein Büro.
           </p>
           <p>
-            Studien zu NGO-Kampagnen zeigen, dass persönliche Geschichten Menschen eher zum Handeln bewegen können als reine Sachinformationen. Das ist keine Handschriftstudie. Für eine Briefkampagne ist es trotzdem relevant: Ein guter Kampagnentext sollte Menschen nicht ersetzen, sondern ihnen helfen, den eigenen Grund zu formulieren.
+            In einem einzelnen Onlineexperiment zu einer fiktiven
+            Menschenrechtskampagne lösten persönliche Geschichten häufiger
+            unmittelbare Unterstützung aus als reine Sachinformationen. Das ist
+            weder eine Handschriftstudie noch ein Beleg für langfristige
+            Aktivierung. Für eine Briefkampagne bleibt die praktische Lehre:
+            Ein guter Kampagnentext sollte Menschen nicht ersetzen, sondern
+            ihnen helfen, den eigenen Grund zu formulieren.
           </p>
           <p>
-            <Link className={sourceLinkClass} href="/ngo-briefkampagne">Mehr über NGO-Briefkampagnen mit Brief nach Berlin</Link>.
+            <Link className={sourceLinkClass} href="/ngo-briefkampagne">Mehr über NGO-Briefkampagnen mit Brief-nach-Berlin</Link>.
           </p>
 
           <h2>Welche Quellen sind für Bürgerbriefe besonders nützlich?</h2>
@@ -174,28 +209,43 @@ export default function HandschriftlicheBriefeWirkungPage() {
               <a className={sourceLinkClass} href="https://doi.org/10.1007/s11109-014-9277-1" target="_blank" rel="noreferrer">Bergan und Cole, 2015</a>: Randomisierte Feldstudie zu Bürgerkontakten und Abstimmungsverhalten von Abgeordneten. Direkt relevant für die politische Kontaktaufnahme, aber nicht speziell für Handschrift.
             </li>
             <li>
-              <a className={sourceLinkClass} href="https://doi.org/10.1080/01972243.2022.2134240" target="_blank" rel="noreferrer">Dobber, Trilling, Helberger und de Vreese, 2023</a>: Feldexperiment mit personalisierter politischer Post in den Niederlanden. Die Wahlabsicht stieg, tatsächliche Stimmen jedoch nicht.
+              <a className={sourceLinkClass} href="https://doi.org/10.1111/1475-6765.12408" target="_blank" rel="noreferrer">Bol et al., 2021</a>: Feldexperiment mit 494 Bundestagsabgeordneten zu persönlichem Wahlkreisbezug und Antwortwahrscheinlichkeit. Untersucht wurden standardisierte E-Mails, keine Briefe.
             </li>
             <li>
-              <a className={sourceLinkClass} href="https://doi.org/10.1186/1472-6963-6-111" target="_blank" rel="noreferrer">Scott und Edwards, 2006</a>: Meta-Analyse von 14 randomisierten Studien. Persönliche Adressierung und handgeschriebene Unterschriften erhöhten die Rücklaufquote postalischer Fragebögen. Das ist Evidenz für Aufmerksamkeit, nicht für politische Überzeugung.
+              <a className={sourceLinkClass} href="https://doi.org/10.1080/01972243.2022.2134240" target="_blank" rel="noreferrer">Dobber, Trilling, Helberger und de Vreese, 2023</a>: Kleines Feldexperiment mit thematisch personalisierter politischer Post in den Niederlanden. Die Wahlabsicht stieg, tatsächliche Stimmen jedoch nicht; Handschrift wurde nicht isoliert getestet.
+            </li>
+            <li>
+              <a className={sourceLinkClass} href="https://doi.org/10.1186/1472-6963-6-111" target="_blank" rel="noreferrer">Scott und Edwards, 2006</a>: Meta-Analyse von 14 randomisierten Studien. Personalisierte Anschreiben mit handschriftlicher Unterschrift erhöhten den Rücklauf postalischer Fragebögen. Der Anteil der Handschrift wurde nicht getrennt gemessen; politische Überzeugung war nicht Gegenstand der Studien.
             </li>
             <li>
               <a className={sourceLinkClass} href="https://doi.org/10.1016/j.copsyc.2022.101442" target="_blank" rel="noreferrer">Chaudhry und Wald, 2022</a>: Review zu Costly Signaling und wahrgenommener Ehrlichkeit. Der Beitrag erklärt den möglichen Mechanismus, ist aber keine Studie zu Briefen.
             </li>
             <li>
-              <a className={sourceLinkClass} href="https://doi.org/10.1177/10949968221102306" target="_blank" rel="noreferrer">Kim, Choi und Kim, 2022</a>: Randomisierte Feldstudie zu handgeschriebenen Notizen im Onlinehandel. Die Notizen steigerten Ausgaben bei treuen Kund:innen, vermittelt über wahrgenommene Wärme. Das ist eine Übertragung, keine Politikstudie.
+              <a className={sourceLinkClass} href="https://doi.org/10.1177/10949968221102306" target="_blank" rel="noreferrer">Kim, Choi und Kim, 2022</a>: Branchenfremde Feldstudie zu handschriftlich wirkenden Notizen im Onlinehandel. Auch Fotokopien wirkten, weshalb sie keinen Beleg für einen erkannten echten Aufwand liefert.
             </li>
             <li>
               <a className={sourceLinkClass} href="https://doi.org/10.1017/S0003055415000295" target="_blank" rel="noreferrer">McEntire, Leiby und Krain, 2015</a>: Experiment zu NGO-Kampagnen. Persönliche Narrative mobilisierten eher als reine Informationsframes. Die Untersuchung betrifft Kampagnenbotschaften, nicht handgeschriebene Briefe.
             </li>
             <li>
-              <a className={sourceLinkClass} href="https://obamawhitehouse.archives.gov/letters/" target="_blank" rel="noreferrer">Obama Presidential Oral History Project</a>: Primärquelle zur Praxis, dass Barack Obama täglich zehn Briefe aus der Bürgerpost vorgelegt bekam. Das ist ein Beispiel für Aufmerksamkeit, keine Wirksamkeitsstudie.
+              <a className={sourceLinkClass} href="https://obamawhitehouse.archives.gov/letters/" target="_blank" rel="noreferrer">Archiv des Obama White House</a>: Historisches Beispiel dafür, dass Barack Obama täglich zehn Nachrichten aus der Bürgerpost vorgelegt bekam. Das ist eine Anekdote über Auswahl und Aufmerksamkeit, keine Wirksamkeitsstudie und kein Handschriftvergleich.
             </li>
           </ol>
 
           <h2>Was lässt sich daraus ehrlich sagen?</h2>
           <p>
             Ein handschriftlicher Brief ist kein Zaubertrick. Er macht Zeit, Mühe und persönliche Betroffenheit sichtbar. Das kann die Chance erhöhen, dass ein Anliegen im Büro als Stimme aus dem Wahlkreis wahrgenommen wird. Die direkte Forschung zu handschriftlichen Bürgerbriefen an Abgeordnete ist noch dünn. Gerade deshalb ist es besser, den Brief gut zu schreiben und seine Wirkung nicht größer zu behaupten, als die Quellen hergeben.
+          </p>
+          <p>
+            Ein Brief kann außerdem für die Person wichtig sein, die ihn
+            abschickt: Aus einem diffusen Gefühl wird eine konkrete Handlung.
+            Ob dadurch politische Selbstwirksamkeit wächst und später weitere
+            Beteiligung folgt, ist wissenschaftlich plausibel, für einen
+            einzelnen Brief aber nicht bewiesen. Die Studien und Gegenbefunde
+            dazu stehen unter{" "}
+            <Link className={sourceLinkClass} href="/was-tun-gegen-politische-ohnmacht">
+              Was tun gegen politische Ohnmacht?
+            </Link>
+            .
           </p>
         </Prose>
 
@@ -205,6 +255,7 @@ export default function HandschriftlicheBriefeWirkungPage() {
             <li><Link href="/brief-schreiben-wirkt" className="font-body text-waldgruen underline underline-offset-2 hover:text-waldgruen-dark">Wie ein echter Brief aus Duisburg Wirkung bekam</Link></li>
             <li><Link href="/lohnt-sich-brief-an-politiker" className="font-body text-waldgruen underline underline-offset-2 hover:text-waldgruen-dark">Was passiert mit einem Brief im Abgeordnetenbüro?</Link></li>
             <li><Link href="/warum-ein-brief" className="font-body text-waldgruen underline underline-offset-2 hover:text-waldgruen-dark">Warum ein Brief mehr ist als ein Brief</Link></li>
+            <li><Link href="/was-tun-gegen-politische-ohnmacht" className="font-body text-waldgruen underline underline-offset-2 hover:text-waldgruen-dark">Was ein erster Brief mit politischer Selbstwirksamkeit zu tun haben kann</Link></li>
             <li><Link href="/ngo-briefkampagne" className="font-body text-waldgruen underline underline-offset-2 hover:text-waldgruen-dark">Wie eine NGO eine Briefkampagne startet</Link></li>
             <li><Link href="/tipps" className="font-body text-waldgruen underline underline-offset-2 hover:text-waldgruen-dark">Tipps für einen persönlichen Brief</Link></li>
           </ul>

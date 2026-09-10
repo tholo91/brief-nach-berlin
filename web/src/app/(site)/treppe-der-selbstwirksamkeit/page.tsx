@@ -11,6 +11,7 @@ const DESCRIPTION =
   "Wählen alle vier Jahre ist die unterste Stufe. Hier sind zehn konkrete Wege, wie du als Bürgerin oder Bürger in Deutschland politisch wirklich etwas bewegst, sortiert nach Aufwand. Vom 1-Klick-Mitzeichnen einer Petition bis zum Gründen einer eigenen Bürgerinitiative.";
 const URL_PATH = "/treppe-der-selbstwirksamkeit";
 const PUBLISHED = "2026-05-20";
+const MODIFIED = "2026-09-09";
 
 export const metadata: Metadata = {
   title: `${TITLE} | Brief-nach-Berlin`,
@@ -39,11 +40,11 @@ const faqs = [
   },
   {
     q: "Was ist politische Selbstwirksamkeit?",
-    a: "Das Gefühl, dass dein politisches Handeln einen Unterschied macht. Wer einmal über das Wählen hinaus aktiv war, schätzt seine Wirksamkeit dauerhaft höher ein und gibt weniger schnell auf.",
+    a: "Forschung unterscheidet zwei Seiten: das Gefühl, politische Prozesse verstehen und selbst handeln zu können, und die Erwartung, dass Politik Menschen wie dir zuhört. Beides hängt positiv mit Beteiligung zusammen. Ein einzelner Schritt stärkt diese Gefühle aber nicht automatisch oder dauerhaft.",
   },
   {
     q: "Welche Stufe ist die wirkungsvollste für den Aufwand?",
-    a: "Der handgeschriebene Brief an die Abgeordnete (Stufe 3). Niedriger Aufwand (eine Stunde), hohe Wirkung im Wahlkreisbüro, und er stärkt deine eigene Selbstwirksamkeit nachweislich. Wer Stufe 3 erreicht hat, ist weiter als die große Mehrheit der Bevölkerung.",
+    a: "Das lässt sich nicht allgemeingültig beantworten. Für viele ist ein persönlicher Brief ein machbarer Einstieg, weil er ohne Gruppe und festen Termin möglich ist. Dass er die wirksamste Beteiligungsform ist oder die eigene Selbstwirksamkeit sicher stärkt, ist nicht belegt.",
   },
   {
     q: "Wie wird man Parteimitglied?",
@@ -71,7 +72,7 @@ const articleJsonLd = {
   headline: TITLE,
   description: DESCRIPTION,
   datePublished: PUBLISHED,
-  dateModified: PUBLISHED,
+  dateModified: MODIFIED,
   author: { "@type": "Organization", name: "Brief-nach-Berlin" },
   publisher: {
     "@type": "Organization",
@@ -102,8 +103,9 @@ const steps: Step[] = [
           source="Bundeswahlleiterin, 2025"
         />
         <p>
-          Wählen ist die unterste Stufe und das Mindeste. Wer hier nicht steht,
-          kann nirgendwo sonst stehen.
+          Wählen ist ein grundlegender demokratischer Schritt. Wer eine Wahl
+          ausgelassen hat oder nicht wählen darf, kann trotzdem an jeder
+          anderen Stelle dieser Treppe anfangen.
         </p>
       </>
     ),
@@ -124,10 +126,9 @@ const steps: Step[] = [
           epetitionen.bundestag.de
         </a>{" "}
         kannst du öffentliche Petitionen mit deinem Namen unterstützen. Bei
-        30.000 Mitzeichnungen innerhalb von sechs Wochen wird die Petition im
-        Petitionsausschuss öffentlich angehört. Das Quorum wurde 2024 von 50.000
-        auf 30.000 gesenkt: deine Unterschrift zählt heute mehr als noch vor
-        zwei Jahren.
+        30.000 Mitzeichnungen innerhalb von sechs Wochen erreicht die Petition
+        das Quorum für eine öffentliche Beratung im Petitionsausschuss. Das
+        Quorum wurde 2024 von 50.000 auf 30.000 gesenkt.
       </p>
     ),
   },
@@ -145,11 +146,11 @@ const steps: Step[] = [
           rotate="right"
         />
         <p>
-          Ein handgeschriebener Brief landet auf dem Schreibtisch eines
-          Abgeordneten und wird gelesen. E-Mails laufen durch Filter, Tweets gehen
-          unter. Briefe werden geöffnet. Sie zählen in vielen Büros statistisch
-          mit, manche sortieren sie nach Wahlkreis und Thema. Wenn du nicht weißt,
-          an wen genau du schreiben sollst:{" "}
+          Ein persönlicher Brief richtet dein Anliegen an eine konkrete
+          politische Vertretung. Handschrift kann Zeit und Ernsthaftigkeit
+          sichtbar machen. Dass sie grundsätzlich stärker wirkt als eine gute
+          persönliche E-Mail, ist jedoch nicht belegt. Wenn du nicht weißt, an
+          wen genau du schreiben sollst:{" "}
           <Link
             href="/app"
             className="text-waldgruen hover:underline font-semibold"
@@ -315,11 +316,10 @@ export default function TreppePage() {
 
         <div className="font-body text-warmgrau leading-relaxed space-y-3 mb-14">
           <p>
-            Du musst nicht oben anfangen und du musst nicht alles tun. Wer auf
-            Stufe 3 steht, ist schon weiter als 95 % der Bevölkerung. Wer auf
-            Stufe 7 steht, hat etwas, das die meisten Lobbyisten nicht haben:
-            eine Wählerstimme, ein Gesicht und einen Namen, der im Wahlkreisbüro
-            bekannt ist.
+            Du musst nicht oben anfangen und du musst nicht alles tun. Such dir
+            den kleinsten Schritt aus, den du gerade wirklich gehen kannst. Aus
+            einem Brief muss keine politische Karriere werden. Aber aus einem
+            abstrakten Ärger wird damit eine konkrete Handlung.
           </p>
         </div>
 
@@ -358,11 +358,10 @@ export default function TreppePage() {
             Wo fängst du an?
           </h2>
           <p className="font-body text-warmgrau leading-relaxed mb-6">
-            Wenn du heute eine Stufe nehmen willst, ist Stufe 3 die mit dem
-            besten Verhältnis aus Aufwand und Wirkung. Schreib einen Brief.
-            Direkt an die Person in Berlin, die für dein Anliegen zuständig ist.
-            Brief-nach-Berlin hilft dir, die richtige Person zu finden und den
-            Brief zu formulieren.
+            Wenn du heute eine Stufe nehmen willst, kann Stufe 3 ein gut
+            machbarer Anfang sein. Schreib direkt an die Person, die für dein
+            Anliegen zuständig ist. Brief-nach-Berlin hilft dir, diese Person zu
+            finden und den Brief zu formulieren.
           </p>
           <Link
             href="/app"
@@ -381,13 +380,13 @@ export default function TreppePage() {
 
         <div className="mt-12 font-body text-sm text-warmgrau/70 leading-relaxed">
           <p>
-            Mehr dazu, warum gerade ein Brief so eine starke Stufe ist, steht
-            unter{" "}
+            Was Forschung über erste politische Schritte, Selbstwirksamkeit und
+            die Grenzen dieser Idee sagt, liest du unter{" "}
             <Link
-              href="/warum-ein-brief"
+              href="/was-tun-gegen-politische-ohnmacht"
               className="text-waldgruen hover:underline"
             >
-              Warum ein Brief mehr ist als ein Brief
+              Was tun gegen politische Ohnmacht?
             </Link>
             .
           </p>

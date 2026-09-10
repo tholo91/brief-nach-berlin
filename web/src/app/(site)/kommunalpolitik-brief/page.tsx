@@ -50,7 +50,7 @@ const faqs = [
   },
   {
     q: "Unterstützt Brief-nach-Berlin auch Briefe an den Stadtrat?",
-    a: "Ja, als Beta. Brief-nach-Berlin kann kommunale Anliegen inzwischen zur Stadt oder Gemeinde führen, wo eine saubere Zuordnung möglich ist. Weil kommunale Daten schnell uneindeutig werden, bleibt diese Ebene bewusst im Test.",
+    a: "Ja. Brief-nach-Berlin führt kommunale Anliegen zur passenden Stadt- oder Gemeindeverwaltung, wo eine saubere Zuordnung möglich ist.",
   },
 ];
 
@@ -225,17 +225,14 @@ export default function KommunalpolitikBriefPage() {
             Was kommt als nächstes bei Brief-nach-Berlin?
           </h2>
           <p>
-            Brief-nach-Berlin unterstützt jetzt Bund, Land und Kommune. Bund ist
-            der stabile Kern. Kommune läuft als Beta, weil ein Rathaus nicht so
-            einfach zu finden ist wie ein Bundestagsbüro: Stadtstaaten,
+            Brief-nach-Berlin unterstützt jetzt Bund, Land und Kommune. Für ein
+            Rathaus braucht es mehr als für ein Bundestagsbüro: Stadtstaaten,
             Bezirke, Gemeinden und amtliche Anschriften müssen sauber
             auseinandergehalten werden.
           </p>
           <p>
-            Genau deshalb teste ich diese Ebene langsam. Wenn die App dein
-            Anliegen falsch einsortiert oder eine kommunale Adresse fehlt, ist
-            das gerade kein peinlicher Fehler, sondern der wichtigste Input für
-            die nächste Runde.
+            Wenn die App dein Anliegen falsch einsortiert oder eine kommunale
+            Adresse fehlt, ist das der wichtigste Input für die nächste Runde.
           </p>
           <p>
             Wenn dein Thema vor Ort liegt, kannst du jetzt direkt starten und

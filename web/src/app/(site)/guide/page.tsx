@@ -157,8 +157,8 @@ const steps: Step[] = [
         </ul>
         <p className="mt-3">
           Wenn du deine Postleitzahl bei Brief-nach-Berlin eingibst, wird der
-          passende Weg inzwischen für Bund, Land und Kommune geprüft. Bund ist
-          stabil, Land und Kommune laufen als Beta. Für kommunale Themen lies{" "}
+          passende Weg inzwischen für Bund, Land und Kommune geprüft. Für
+          kommunale Themen lies{" "}
           <Link
             href="/kommunalpolitik-brief"
             className="text-waldgruen hover:underline"

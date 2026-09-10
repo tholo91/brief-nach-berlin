@@ -63,7 +63,7 @@ const faqs = [
   },
   {
     q: "Was wurde dank Feedback konkret verbessert?",
-    a: "Drei Dinge: Der Prompt formuliert jetzt keine unnötigen Komplexitäts-Einleitungen mehr, nach mehrfacher Rückmeldung, dass das aufgesetzt klingt. Der Kampagnenmodus wurde wegen aktueller politischer Ereignisse vorgezogen. Land und Kommune laufen jetzt als Beta, weil viele Anliegen eben nicht in den Bundestag gehören. Und der Ton der Followup-Mail wurde kürzer und direkter, weil die erste Version zu formal war.",
+    a: "Drei Dinge: Der Prompt formuliert jetzt keine unnötigen Komplexitäts-Einleitungen mehr, nach mehrfacher Rückmeldung, dass das aufgesetzt klingt. Der Kampagnenmodus wurde wegen aktueller politischer Ereignisse vorgezogen. Land und Kommune sind dazugekommen, weil viele Anliegen eben nicht in den Bundestag gehören. Und der Ton der Followup-Mail wurde kürzer und direkter, weil die erste Version zu formal war.",
   },
   {
     q: "Wie kann ich Feedback geben?",

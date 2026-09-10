@@ -31,7 +31,7 @@ export const metadata: Metadata = {
   },
 };
 
-type LevelStatus = "live" | "beta" | "geplant";
+type LevelStatus = "live" | "geplant";
 
 interface Level {
   key: "bund" | "land" | "kommune" | "eu";
@@ -82,8 +82,6 @@ function badgeClasses(status: LevelStatus): string {
   switch (status) {
     case "live":
       return "bg-waldgruen text-creme";
-    case "beta":
-      return "bg-waldgruen/15 text-waldgruen-dark";
     case "geplant":
       return "bg-warmgrau/15 text-warmgrau";
   }

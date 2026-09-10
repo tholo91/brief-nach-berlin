@@ -9,6 +9,7 @@ import { Figure } from "@/components/editorial/Figure";
 
 const URL_PATH = "/was-tun-gegen-politische-ohnmacht";
 const PUBLISHED = "2026-05-19";
+const MODIFIED = "2026-09-09";
 const TITLE =
   "Was tun gegen politische Ohnmacht? Sechs konkrete Schritte | Brief-nach-Berlin";
 const DESCRIPTION =
@@ -43,11 +44,11 @@ const faqs = [
   },
   {
     q: "Was hilft mehr: demonstrieren oder schreiben?",
-    a: "Beides hilft, aber an unterschiedlichen Stellen. Eine Demo erzeugt öffentlichen Druck. Ein Brief erzeugt persönlichen Druck im Büro einer bestimmten Person. Wer beides macht, deckt zwei verschiedene Hebel ab.",
+    a: "Beides kann an unterschiedlichen Stellen ansetzen. Eine Demonstration macht ein Anliegen öffentlich sichtbar. Ein Brief richtet es persönlich an eine konkrete politische Vertretung. Welche Form mehr bewirkt, hängt vom Thema, vom Zeitpunkt und von den Menschen ab, die sich beteiligen.",
   },
   {
     q: "Ich habe schon mal geschrieben und nichts gehört. Bringt das was?",
-    a: "Antworten sind kein guter Erfolgsmaßstab. Viele Briefe wirken über die interne Statistik der Themen, die im Büro auflaufen, nicht über die Antwort selbst. Wenn fünfzig Menschen aus deinem Wahlkreis zum gleichen Thema schreiben, ändert das die interne Wahrnehmung, auch ohne Rückbrief.",
+    a: "Eine ausbleibende Antwort beweist nicht, dass dein Brief ignoriert wurde. Eine Antwort ist aber relevant: Forschung deutet darauf hin, dass erlebte Reaktion das Verhältnis zur konkret antwortenden politischen Vertretung verbessern kann. Wenn du nichts hörst, kannst du nach einigen Wochen freundlich im Wahlkreisbüro nachfragen.",
   },
   {
     q: "Welcher Schritt ist der einfachste Einstieg?",
@@ -55,7 +56,7 @@ const faqs = [
   },
   {
     q: "Lohnt es sich für mich als Nichtwähler oder Wechselwähler?",
-    a: "Ja. Abgeordnete vertreten ihren ganzen Wahlkreis, nicht nur die eigenen Wählerinnen und Wähler. Wer schreibt, signalisiert, dass ihm ein Thema wichtig genug ist, um Zeit zu investieren. Das wirkt unabhängig vom Wahlverhalten.",
+    a: "Ja. Abgeordnete vertreten ihren ganzen Wahlkreis, nicht nur die eigenen Wählerinnen und Wähler. Wer schreibt, macht sichtbar, dass ihm ein Thema wichtig genug ist, um Zeit zu investieren. Eine Antwort oder politische Wirkung ist unabhängig vom Wahlverhalten trotzdem nicht garantiert.",
   },
 ];
 
@@ -75,7 +76,7 @@ const articleJsonLd = {
   headline: "Was tun gegen politische Ohnmacht? Sechs konkrete Schritte",
   description: DESCRIPTION,
   datePublished: PUBLISHED,
-  dateModified: PUBLISHED,
+  dateModified: MODIFIED,
   author: { "@type": "Organization", name: "Brief-nach-Berlin" },
   publisher: {
     "@type": "Organization",
@@ -119,7 +120,7 @@ export default function OhnmachtPage() {
           kann. Der erste Hebel darf klein sein.
         </p>
         <p className="font-typewriter text-xs uppercase tracking-widest text-warmgrau/50 mb-12">
-          6 Minuten Lesezeit
+          8 Minuten Lesezeit
         </p>
 
         <Prose>
@@ -195,9 +196,10 @@ export default function OhnmachtPage() {
               <br />
               Zehn bis dreißig Minuten. Du brauchst eine konkrete Situation aus
               deinem Alltag und einen Wunsch. Den Rest, also die richtige
-              Adresse und den formellen Ton, übernimmt Brief-nach-Berlin. Handschriftlich
-              wirkt am stärksten, weil Abgeordnete kaum noch handgeschriebene
-              Briefe bekommen.
+              Adresse und den formellen Ton, übernimmt Brief-nach-Berlin. Ein
+              handgeschriebener Brief macht deinen Aufwand sichtbar. Dass
+              Handschrift grundsätzlich stärker wirkt als eine persönliche
+              E-Mail, ist wissenschaftlich aber nicht belegt.
             </li>
             <li>
               <strong className="font-body font-bold text-waldgruen-dark">
@@ -205,7 +207,17 @@ export default function OhnmachtPage() {
               </strong>
               <br />
               Fünf Minuten. Der Bundestag hat einen eigenen Petitionsausschuss.
-              Petitionen ab 50.000 Unterzeichnungen werden öffentlich behandelt.
+              Seit Juli 2024 liegt das{" "}
+              <a
+                href="https://www.bundestag.de/dokumente/textarchiv/2024/kw26-pa-petitionen-quorum-1010108"
+                target="_blank"
+                rel="noreferrer"
+                className="text-waldgruen hover:text-waldgruen-dark underline decoration-waldgruen/30 underline-offset-2"
+              >
+                Quorum für eine öffentliche Beratung bei 30.000 Mitzeichnungen
+                innerhalb von sechs Wochen
+              </a>
+              .
               Wichtig: Petition mitzeichnen ist kein Ersatz für den eigenen
               Brief. Eine Unterschrift ist ein Klick, ein Brief ist eine
               Position.
@@ -263,79 +275,143 @@ export default function OhnmachtPage() {
             brauchst zehn Minuten und einen Stift. Und du bekommst etwas
             zurück, das die anderen Wege nicht so direkt geben: das Gefühl,
             etwas Konkretes weggeschickt zu haben. Eine Adresse, ein Anliegen,
-            ein Datum auf dem Umschlag. Das verändert etwas in dir, bevor es
-            irgendetwas in Berlin verändert.
+            ein Datum auf dem Umschlag. Das kann sich anders anfühlen als
+            bloßes Lesen, bevor es irgendetwas in Berlin verändert.
           </p>
           <p>
             Wenn später eine Antwort im Briefkasten liegt oder du merkst, dass
             dein Anliegen in deinem politischen Umfeld weitergetragen wird,
             kann das Gefühl eigener Handlungsfähigkeit wachsen. Eine solche
             Reaktion ist nicht sicher und kein notwendiges Erfolgskriterium.
-            Selbstwirksamkeit baut sich nicht aus Theorie auf, sondern aus
-            kleinen eigenen Erfahrungen.
+            Forschung legt nahe, dass eigene Erfahrungen dabei eine Rolle
+            spielen können. Sie zeigt aber nicht, dass jeder erste Schritt
+            automatisch zum nächsten führt.
           </p>
 
           <h2 className="font-body text-2xl md:text-3xl font-bold text-waldgruen-dark pt-4">
             Was die Forschung dazu sagt
           </h2>
           <p>
-            Forschung findet einen positiven, eher kleinen bis moderaten
-            Zusammenhang zwischen politischer Selbstwirksamkeit und politischer
-            Beteiligung. Die Richtung ist dabei wahrscheinlich nicht einseitig:
-            Wer sich handlungsfähig fühlt, beteiligt sich eher; wer sich
-            beteiligt, kann sich danach auch handlungsfähiger fühlen. Das ist
-            ein guter Grund für einen machbaren ersten Schritt, aber kein
-            Versprechen, dass jeder Brief automatisch weitere Aktivität auslöst.
-            Siehe die Meta-Analyse von{" "}
+            Forschung unterscheidet dabei zwei Dinge: interne politische
+            Selbstwirksamkeit, also „Ich kann politisch handeln“, und externe
+            Selbstwirksamkeit, also „Politik hört Menschen wie mir zu“.
+            Brief-nach-Berlin kann unmittelbar die Hürde zum eigenen Handeln
+            senken. Ob danach auch das Gefühl wächst, dass Politik zuhört,
+            dürfte besonders von einer ernsthaften Reaktion abhängen.
+          </p>
+          <p>
+            Eine Meta-Analyse bündelt 184 Befunde aus 48
+            Studien mit insgesamt 51.860 Menschen. Politische
+            Selbstwirksamkeit und politische Beteiligung hängen demnach
+            positiv, aber eher schwach zusammen. Weil die meisten Studien
+            beobachtend sind, bleibt die Richtung offen: Führt das Gefühl von
+            Handlungsfähigkeit zu Beteiligung, entsteht es durch Beteiligung
+            oder gilt beides? Siehe{" "}
             <a
               href="https://doi.org/10.1080/10584609.2022.2086329"
               className="text-waldgruen hover:text-waldgruen-dark underline decoration-waldgruen/30 underline-offset-2"
+              target="_blank"
+              rel="noreferrer"
             >
-              Salanova et al. (2022)
+              Oser et al. (2022)
+            </a>
+            . Eine deutsche Langzeitstudie zeigt ergänzend, dass höhere interne
+            Selbstwirksamkeit spätere Beteiligungsabsichten und teilweise
+            konventionelle Beteiligung vorhersagt. Auch sie beweist nicht, dass
+            ein erster Schritt die Selbstwirksamkeit verursacht. Siehe{" "}
+            <a
+              href="https://doi.org/10.5964/ejop.v12i2.1095"
+              className="text-waldgruen hover:text-waldgruen-dark underline decoration-waldgruen/30 underline-offset-2"
+              target="_blank"
+              rel="noreferrer"
+            >
+              Reichert (2016)
             </a>
             .
           </p>
           <p>
-            Besonders hilfreich ist offenbar nicht ein allgemeiner Appell wie
-            „Engagier dich“, sondern ein konkreter nächster Schritt. In einem
-            großen Feldexperiment erhöhte die Planung von Zeitpunkt, Ort und
-            Vorgehen die Wahlbeteiligung stärker als allgemeine Ermutigung. Das
-            war eine Studie zur Wahl, nicht zu Briefen, passt aber zu unserem
-            Ansatz, Adresse, Formulierung und nächsten Schritt konkret zu
-            machen. Siehe{" "}
+            Besonders nah am Produkt ist ein kleines „Letter-Writing
+            Lunch“-Pilotprojekt. Nach einem kurzen Training zur politischen
+            Kontaktaufnahme fühlten sich Medizinstudierende zunächst
+            selbstwirksamer. Sechs Monate später war ihre gemessene politische
+            Aktivität jedoch unverändert. Weil es keine Kontrollgruppe gab und
+            nur wenige Personen am Follow-up teilnahmen, ist das ein Hinweis,
+            kein Wirkungsnachweis. Siehe{" "}
             <a
-              href="https://doi.org/10.1177/0956797609359326"
+              href="https://pmc.ncbi.nlm.nih.gov/articles/PMC10351431/"
               className="text-waldgruen hover:text-waldgruen-dark underline decoration-waldgruen/30 underline-offset-2"
+              target="_blank"
+              rel="noreferrer"
             >
-              Nickerson und Rogers (2010)
+              Robinson und Mishori (2023)
             </a>
             .
           </p>
           <p>
-            Für Deutschland gibt es außerdem Forschung dazu, dass persönliche
-            wahlkreisbezogene Signale die Reaktionswahrscheinlichkeit auf
-            Zuschriften beeinflussen können. Das ist kein Beleg dafür, dass
-            Handschrift gegenüber einer persönlichen E-Mail überlegen ist. Für
-            genau diesen Vergleich und für einen einzelnen Brief aus
-            Brief-nach-Berlin gibt es keine robuste direkte Studie. Siehe{" "}
+            Eine Studie mit 123 Menschen, die 295 echte Briefe an ihre
+            Abgeordneten schrieben, zeigt, warum eine Reaktion trotzdem wichtig
+            sein kann. Wer eine Antwort erhielt, bewertete die konkrete
+            Abgeordnete oder den konkreten Abgeordneten später positiver. Der
+            Effekt sprang aber nicht auf Partei, Parlament oder allgemeines
+            Vertrauen über. Weil die Antworten nicht zufällig verteilt wurden,
+            ist auch das kein sauberer Kausalbeweis. Siehe{" "}
             <a
-              href="https://doi.org/10.1111/1475-6765.12408"
+              href="https://doi.org/10.1017/psrm.2015.83"
               className="text-waldgruen hover:text-waldgruen-dark underline decoration-waldgruen/30 underline-offset-2"
+              target="_blank"
+              rel="noreferrer"
             >
-              Bol et al. (2021)
+              Butler, Karpowitz und Pope (2017)
+            </a>
+            .
+          </p>
+          <p>
+            Ein starkes kausales Indiz gibt es bislang eher für die umgekehrte
+            Richtung. In einer großen randomisierten Studie mit 31.324 Menschen
+            steigerte eine Botschaft über kollektive Wirksamkeit und positive
+            Gefühle die unmittelbare politische Beteiligung. Dazu gehörten auch
+            echte Schreiben an politische Vertreter:innen. Das zeigt:
+            Wirksamkeitserwartung kann den ersten Schritt erleichtern. Es zeigt
+            nicht, dass der abgeschickte Brief später die Wirksamkeitserwartung
+            erhöht. Siehe{" "}
+            <a
+              href="https://doi.org/10.1093/pnasnexus/pgaf400"
+              className="text-waldgruen hover:text-waldgruen-dark underline decoration-waldgruen/30 underline-offset-2"
+              target="_blank"
+              rel="noreferrer"
+            >
+              Goldwert et al. (2026)
+            </a>
+            .
+          </p>
+          <p>
+            Auch eine Meta-Analyse von 100 Studien zu demokratischen
+            Beteiligungsformaten warnt vor pauschalen Aussagen: Ob Beteiligung
+            späteres Engagement oder Selbstwirksamkeit stärkt, hängt stark vom
+            Format ab; für allgemeine partizipative Prozesse fand sie keine
+            robuste Wirkung auf spätere politische Beteiligung. Siehe{" "}
+            <a
+              href="https://doi.org/10.1111/1475-6765.12722"
+              className="text-waldgruen hover:text-waldgruen-dark underline decoration-waldgruen/30 underline-offset-2"
+              target="_blank"
+              rel="noreferrer"
+            >
+              Theuwis, Van Ham und Jacobs
             </a>
             .
           </p>
           <p className="text-sm text-warmgrau/75">
-            Die Forschung stützt also die Idee, konkrete Hürden zu senken und
-            einen ersten Schritt planbar zu machen. Sie beweist nicht, dass
-            Brief-nach-Berlin langfristiges politisches Engagement oder eine
-            Antwort erzeugt.
+            Der faire Schluss für Brief-nach-Berlin: Ein klarer Adressat, ein
+            formulierbarer Wunsch und ein konkreter Versandweg senken die Hürde
+            für einen ersten politischen Schritt. Ob Menschen danach häufiger
+            eine Bürgersprechstunde besuchen, eine Petition starten oder sich
+            langfristig stärker engagieren, ist eine plausible, aber noch zu
+            prüfende Wirkungshypothese.
           </p>
 
           <PullQuote>
-            Selbstwirksamkeit baut sich nicht aus Theorie auf, sondern aus
-            kleinen Bestätigungen.
+            Ein machbarer erster Schritt kann aus Ohnmacht Handlung machen. Ob
+            daraus der nächste Schritt entsteht, entscheidet sich danach.
           </PullQuote>
 
           <h2 className="font-body text-2xl md:text-3xl font-bold text-waldgruen-dark pt-4">

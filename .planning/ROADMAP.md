@@ -78,6 +78,15 @@ Plans:
 
 ## Backlog
 
+### Successpage: Häufige E-Mail-Tippfehler erkennen (BACKLOG)
+
+**Goal:** Auf der Successpage erkennen, wenn die eingegebene Domain sehr wahrscheinlich ein Tippfehler bei einem gängigen Anbieter ist, zum Beispiel `gmail.vom` statt `gmail.com`.
+
+**Scope:** Nur bei hoher Sicherheit einen Hinweis mit vorgeschlagener Korrektur anzeigen. Die Adresse nie automatisch ändern; Nutzer:innen bestätigen die Korrektur oder geben selbst eine andere Adresse ein und verwenden anschließend den bestehenden Resend-Flow. Normale und unbekannte eigene Domains bleiben unverändert. Kein Brevo-Webhook und kein externer E-Mail-Validierungsdienst für diesen Schritt.
+
+Plans:
+- [ ] Gemeinsame Domain-Tippfehlerprüfung, Successpage-Hinweis und Tests umsetzen
+
 ### Phase 999.10: Accessibility-Kernflow (BACKLOG)
 
 **Goal:** Den bestehenden Landingpage- und Wizard-Flow fuer Tastatur- und

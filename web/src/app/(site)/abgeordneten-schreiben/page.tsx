@@ -220,8 +220,7 @@ export default function AbgeordnetenSchreibenPage() {
           </p>
           <p>
             Brief-nach-Berlin findet über deine Postleitzahl automatisch die
-            zuständige Adresse. Bund ist stabil, Landtag und Kommune laufen als
-            Beta und werden langsam mit echten Anliegen getestet.
+            zuständige Adresse für Bund, Land und Kommune.
           </p>
 
           <h2 className="font-body text-2xl font-bold text-waldgruen-dark pt-4">

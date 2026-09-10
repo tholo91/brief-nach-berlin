@@ -87,37 +87,18 @@ const articleJsonLd = {
 
 const shortPoints = [
   {
-    title: "Guter Einsatz",
-    text: "Wenn ihr ein klares politisches Ziel habt: Gesetz, Haushalt, Förderung, lokaler Missstand. Für reine Aufmerksamkeit ist es zu konkret. Für ein Anliegen mit Adresse passt es gut.",
+    title: "Ihr gestaltet den Inhalt",
+    text: "Ihr beschreibt euer Anliegen und erstellt einen Ausgangstext für den Brief. Er gibt die Richtung vor; eure Zielgruppe kann eigene Gründe ergänzen und den Text anpassen.",
   },
   {
-    title: "Für Unterstützer:innen",
-    text: "Sie sehen euer Anliegen und gehen dann durch den normalen Briefprozess: PLZ, zuständige Abgeordnete, persönlicher Entwurf. Der Kampagnentext bleibt Startpunkt, nicht Endfassung.",
+    title: "Eure Zielgruppe macht mit",
+    text: "Teilt den Kampagnenlink mit eurem Publikum. Wer mitmachen will, gibt die PLZ ein, findet die zuständigen Abgeordneten und macht den Entwurf zum eigenen Brief.",
   },
   {
     title: "Klare Grenze",
-    text: "Brief-nach-Berlin verschickt nichts automatisch. Keine Fake-Beteiligung, keine hundert Varianten aus der Maschine. Wer mitmacht, muss den Text selbst prüfen und weiterverwenden.",
+    text: "Brief-nach-Berlin verschickt nichts automatisch. Keine Fake-Beteiligung und keine hundert Varianten aus der Maschine: Wer mitmacht, prüft den Text selbst und schickt den Brief eigenständig ab.",
   },
 ];
-
-function ArrowUpRightIcon() {
-  return (
-    <svg
-      aria-hidden="true"
-      className="h-4 w-4 shrink-0"
-      fill="none"
-      viewBox="0 0 20 20"
-    >
-      <path
-        d="M5.833 14.167 14.167 5.833M14.167 5.833H7.5M14.167 5.833V12.5"
-        stroke="currentColor"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        strokeWidth="1.667"
-      />
-    </svg>
-  );
-}
 
 function ArrowDownIcon() {
   return (
@@ -186,7 +167,6 @@ export default async function NgoBriefkampagnePage() {
               className="inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-lg bg-waldgruen px-6 py-3 font-body text-sm font-semibold text-creme transition-colors hover:bg-waldgruen-dark active:translate-y-px"
             >
               <span>Kampagne starten</span>
-              <ArrowUpRightIcon />
             </Link>
             <Link
               href="#laufende-kampagnen"
@@ -265,7 +245,6 @@ export default async function NgoBriefkampagnePage() {
               className="inline-flex items-center justify-center gap-2 rounded-lg bg-waldgruen px-8 py-3 font-body font-semibold text-creme transition-colors hover:bg-waldgruen-dark active:translate-y-px"
             >
               <span>Kampagne starten</span>
-              <ArrowUpRightIcon />
             </Link>
           </div>
 

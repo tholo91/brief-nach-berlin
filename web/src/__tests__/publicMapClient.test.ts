@@ -35,9 +35,9 @@ describe("public map client cache", () => {
 
   it("shares concurrent requests and serves the successful result within its short TTL", async () => {
     fetchMock.mockResolvedValueOnce(responseFor(firstMap));
-    const { loadPublicLetterMapData } = require(
-      "@/lib/letterSignals/publicMapClient",
-    ) as typeof import("@/lib/letterSignals/publicMapClient");
+    const { loadPublicLetterMapData } = await import(
+      "@/lib/letterSignals/publicMapClient"
+    );
 
     const first = loadPublicLetterMapData();
     const second = loadPublicLetterMapData();
@@ -52,9 +52,9 @@ describe("public map client cache", () => {
 
   it("refetches after the TTL so public aggregate data does not stay stale indefinitely", async () => {
     fetchMock.mockResolvedValueOnce(responseFor(firstMap));
-    const { loadPublicLetterMapData } = require(
-      "@/lib/letterSignals/publicMapClient",
-    ) as typeof import("@/lib/letterSignals/publicMapClient");
+    const { loadPublicLetterMapData } = await import(
+      "@/lib/letterSignals/publicMapClient"
+    );
 
     await expect(loadPublicLetterMapData()).resolves.toEqual(firstMap);
     jest.advanceTimersByTime(60_001);

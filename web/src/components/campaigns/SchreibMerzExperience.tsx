@@ -98,7 +98,7 @@ export function SchreibMerzExperience() {
   const [selectedTopicIds, setSelectedTopicIds] = useState<string[]>([]);
   const [topicTexts, setTopicTexts] = useState<Record<string, string>>({});
   const [personalText, setPersonalText] = useState("");
-  const [sharedRequest, setSharedRequest] = useState(
+  const [sharedRequest, setSharedRequest] = useState<string>(
     SCHREIB_MERZ_CAMPAIGN.sharedRequest
   );
   const [draftHydrated, setDraftHydrated] = useState(false);
@@ -107,30 +107,34 @@ export function SchreibMerzExperience() {
   useEffect(() => {
     router.prefetch(WIZARD_PATH);
     const saved = readDraft();
-    if (saved) {
-      const validTopicIds = saved.selectedTopicIds
-        .filter((id) =>
-          SCHREIB_MERZ_CAMPAIGN.topics.some((topic) => topic.id === id)
-        )
-        .slice(0, MAX_TOPICS);
-      const restoredTexts = Object.fromEntries(
-        validTopicIds.map((id) => {
-          const topic = SCHREIB_MERZ_CAMPAIGN.topics.find(
-            (candidate) => candidate.id === id
-          );
-          const savedText = saved.topicTexts[id];
-          return [
-            id,
-            typeof savedText === "string" ? savedText : (topic?.issueText ?? ""),
-          ];
-        })
-      );
-      setSelectedTopicIds(validTopicIds);
-      setTopicTexts(restoredTexts);
-      setPersonalText(saved.personalText.slice(0, 1000));
-      setSharedRequest(saved.sharedRequest.slice(0, 800));
-    }
-    setDraftHydrated(true);
+    const frame = requestAnimationFrame(() => {
+      if (saved) {
+        const validTopicIds = saved.selectedTopicIds
+          .filter((id) =>
+            SCHREIB_MERZ_CAMPAIGN.topics.some((topic) => topic.id === id)
+          )
+          .slice(0, MAX_TOPICS);
+        const restoredTexts = Object.fromEntries(
+          validTopicIds.map((id) => {
+            const topic = SCHREIB_MERZ_CAMPAIGN.topics.find(
+              (candidate) => candidate.id === id
+            );
+            const savedText = saved.topicTexts[id];
+            return [
+              id,
+              typeof savedText === "string" ? savedText : (topic?.issueText ?? ""),
+            ];
+          })
+        );
+        setSelectedTopicIds(validTopicIds);
+        setTopicTexts(restoredTexts);
+        setPersonalText(saved.personalText.slice(0, 1000));
+        setSharedRequest(saved.sharedRequest.slice(0, 800));
+      }
+      setDraftHydrated(true);
+    });
+
+    return () => cancelAnimationFrame(frame);
   }, [router]);
 
   useEffect(() => {

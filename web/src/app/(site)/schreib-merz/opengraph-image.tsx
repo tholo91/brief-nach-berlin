@@ -1,5 +1,4 @@
 import { ImageResponse } from "next/og";
-import { APP_URL } from "@/lib/config";
 
 export const alt = "Schreib Merz – dein persönlicher Brief an den Bundeskanzler";
 export const size = { width: 1200, height: 630 };
@@ -51,7 +50,7 @@ export default function SchreibMerzOpenGraphImage() {
           <div
             style={{
               display: "flex",
-              width: "fit-content",
+              alignSelf: "flex-start",
               border: "2px solid rgba(45,106,79,0.26)",
               background: "rgba(255,255,255,0.72)",
               padding: "10px 16px",
@@ -118,13 +117,69 @@ export default function SchreibMerzOpenGraphImage() {
               transform: "rotate(2deg)",
             }}
           >
-            <img
-              src={`${APP_URL}/images/schreib-merz-editorial.jpg`}
-              alt=""
-              width="370"
-              height="450"
-              style={{ width: "100%", height: "100%", objectFit: "cover" }}
-            />
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                width: "100%",
+                height: "100%",
+                padding: 38,
+                background:
+                  "linear-gradient(135deg, rgba(255,255,255,0.94), rgba(236,230,216,0.94))",
+              }}
+            >
+              <div
+                style={{
+                  display: "flex",
+                  color: "#c1121f",
+                  fontFamily: "Courier New, monospace",
+                  fontSize: 22,
+                  fontWeight: 700,
+                  letterSpacing: 2,
+                }}
+              >
+                BERLIN
+              </div>
+              <div
+                style={{
+                  display: "flex",
+                  marginTop: 42,
+                  width: "100%",
+                  height: 3,
+                  background: "rgba(27,67,50,0.35)",
+                }}
+              />
+              <div
+                style={{
+                  display: "flex",
+                  marginTop: 22,
+                  width: "82%",
+                  height: 3,
+                  background: "rgba(27,67,50,0.30)",
+                }}
+              />
+              <div
+                style={{
+                  display: "flex",
+                  marginTop: 22,
+                  width: "91%",
+                  height: 3,
+                  background: "rgba(27,67,50,0.30)",
+                }}
+              />
+              <div
+                style={{
+                  display: "flex",
+                  marginTop: "auto",
+                  color: "#1b4332",
+                  fontFamily: "Georgia, serif",
+                  fontSize: 42,
+                  fontStyle: "italic",
+                }}
+              >
+                Dein Anliegen.
+              </div>
+            </div>
           </div>
           <div
             style={{

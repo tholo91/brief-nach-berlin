@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useEffect, useState } from "react";
+import { useSyncExternalStore } from "react";
 import {
   APP_URL,
   SHARE_TEXT_CAUSE,
@@ -37,6 +37,21 @@ function isIOSDevice(): boolean {
     /iPad|iPhone|iPod/.test(userAgent) ||
     (userAgent.includes("Mac") && navigator.maxTouchPoints > 1)
   );
+}
+
+const subscribeToDeviceCapabilities = () => () => {};
+
+function useIOSNativeShare() {
+  const isIOS = useSyncExternalStore(
+    subscribeToDeviceCapabilities,
+    isIOSDevice,
+    () => false,
+  );
+
+  return {
+    isIOS,
+    canNativeShare: isIOS && typeof navigator.share === "function",
+  };
 }
 
 function ChannelIcon({ icon, iconOnly }: { icon: ShareIcon; iconOnly: boolean }) {
@@ -82,14 +97,7 @@ function NativeShareIcon() {
 }
 
 export function WeitersagenShareActions() {
-  const [isIOS, setIsIOS] = useState(false);
-  const [canNativeShare, setCanNativeShare] = useState(false);
-
-  useEffect(() => {
-    const ios = isIOSDevice();
-    setIsIOS(ios);
-    setCanNativeShare(ios && typeof navigator.share === "function");
-  }, []);
+  const { isIOS, canNativeShare } = useIOSNativeShare();
 
   const iconOnly = isIOS;
   const buttonClassName = iconOnly

@@ -57,6 +57,8 @@ function writeDataToParams(router: ReturnType<typeof useRouter>, data: Partial<W
     const val = data[key as keyof WizardData];
     if (val) params.set(key, String(val));
   }
+  const language = new URLSearchParams(window.location.search).get("lang");
+  if (language) params.set("lang", language);
   params.set("step", String(step));
   router.replace(`?${params.toString()}`, { scroll: false });
 }

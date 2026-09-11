@@ -20,13 +20,10 @@ export function LetterSignalCard({
   contextToken,
   generationProof,
   email,
-  letterPending = false,
 }: {
   contextToken: string;
   generationProof?: string | null;
   email: string;
-  /** Der freiwillige Kartenbeitrag ist nicht vom fertigen Brief abhängig. */
-  letterPending?: boolean;
 }) {
   const [mapData, setMapData] = useState<LetterMapData>(EMPTY_MAP);
   const [mapState, setMapState] = useState<MapState>("loading");
@@ -117,11 +114,6 @@ export function LetterSignalCard({
           <p className="mt-2 font-body text-sm leading-relaxed text-warmgrau/75">
             Setz dein Anliegen auf die Karte und mach sichtbar, von wo aus Menschen ihre Briefe nach Berlin schreiben.
           </p>
-          {letterPending && (
-            <p className="mt-2 font-body text-xs leading-relaxed text-warmgrau/60">
-              Du kannst dein Anliegen schon jetzt unabhängig vom Briefentwurf eintragen.
-            </p>
-          )}
         </div>
 
         <div className={mapState === "loading" ? "animate-pulse opacity-55" : "opacity-100"}>

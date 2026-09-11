@@ -436,16 +436,16 @@ export function buildEmailHtml(data: SendLetterEmailParams): string {
   const rathausSearchLine =
     isRathaus && rathausSearchUrl
       ? officialRathausAddress
-        ? `<p style="margin:10px 0 0;font-family:Georgia,'Times New Roman',serif;font-size:12px;color:#666666;line-height:1.5;">${copy.source} <a href="${escapeHtml(officialRathausAddress.sourceUrl)}" target="_blank" rel="noopener noreferrer" style="color:#2D5016;text-decoration:underline;">Destatis</a>, ${copy.checked} ${escapeHtml(officialRathausAddress.sourceStand)}. ${copy.verifyGoogle} <a href="${rathausSearchUrl}" target="_blank" rel="noopener noreferrer" style="color:#2D5016;text-decoration:underline;">${copy.verifyHere}</a> ${copy.verifyEnd}</p>`
-        : `<p style="margin:10px 0 0;font-family:Georgia,'Times New Roman',serif;font-size:12px;color:#666666;line-height:1.5;">${copy.noAddress} <a href="${rathausSearchUrl}" target="_blank" rel="noopener noreferrer" style="color:#2D5016;text-decoration:underline;">${copy.verifyHere}</a>.</p>`
+        ? `<p style="margin:8px 0 0;font-family:Georgia,'Times New Roman',serif;font-size:12px;color:#b0b0b0;line-height:1.4;">${copy.source} <a href="${escapeHtml(officialRathausAddress.sourceUrl)}" target="_blank" rel="noopener noreferrer" style="color:#b0b0b0;text-decoration:underline;">Destatis</a>, ${copy.checked} ${escapeHtml(officialRathausAddress.sourceStand)}. ${copy.verifyGoogle} <a href="${rathausSearchUrl}" target="_blank" rel="noopener noreferrer" style="color:#b0b0b0;text-decoration:underline;">${copy.verifyHere}</a> ${copy.verifyEnd}</p>`
+        : `<p style="margin:8px 0 0;font-family:Georgia,'Times New Roman',serif;font-size:12px;color:#b0b0b0;line-height:1.4;">${copy.noAddress} <a href="${rathausSearchUrl}" target="_blank" rel="noopener noreferrer" style="color:#b0b0b0;text-decoration:underline;">${copy.verifyHere}</a>.</p>`
       : "";
   const governmentSourceLine =
     isLandesregierung && data.governmentSource
-      ? `<p style="margin:10px 0 0;font-family:Georgia,'Times New Roman',serif;font-size:12px;color:#666666;line-height:1.5;">${copy.source} <a href="${escapeHtml(data.governmentSource.url)}" target="_blank" rel="noopener noreferrer" style="color:#2D5016;text-decoration:underline;">${escapeHtml(formatGovernmentDisplayName(data.governmentSource.title))}</a>, ${copy.checked} ${escapeHtml(formatGermanDate(data.governmentSource.stand))}.</p>`
+      ? `<p style="margin:8px 0 0;font-family:Georgia,'Times New Roman',serif;font-size:12px;color:#b0b0b0;line-height:1.4;">${copy.source} <a href="${escapeHtml(data.governmentSource.url)}" target="_blank" rel="noopener noreferrer" style="color:#b0b0b0;text-decoration:underline;">${escapeHtml(formatGovernmentDisplayName(data.governmentSource.title))}</a>, ${copy.checked} ${escapeHtml(formatGermanDate(data.governmentSource.stand))}.</p>`
       : "";
   const bundeskanzlerSourceLine =
     isBundeskanzler && data.bundeskanzlerSource
-      ? `<p style="margin:10px 0 0;font-family:Georgia,'Times New Roman',serif;font-size:12px;color:#666666;line-height:1.5;">${copy.source} <a href="${escapeHtml(data.bundeskanzlerSource.url)}" target="_blank" rel="noopener noreferrer" style="color:#2D5016;text-decoration:underline;">${escapeHtml(data.bundeskanzlerSource.title)}</a>, ${copy.checked} ${escapeHtml(formatGermanDate(data.bundeskanzlerSource.stand))}.</p>`
+      ? `<p style="margin:8px 0 0;font-family:Georgia,'Times New Roman',serif;font-size:12px;color:#b0b0b0;line-height:1.4;">${copy.source} <a href="${escapeHtml(data.bundeskanzlerSource.url)}" target="_blank" rel="noopener noreferrer" style="color:#b0b0b0;text-decoration:underline;">${escapeHtml(data.bundeskanzlerSource.title)}</a>, ${copy.checked} ${escapeHtml(formatGermanDate(data.bundeskanzlerSource.stand))}.</p>`
       : "";
 
   const profileButtonText = isFallback ? copy.findRecipient : copy.profile;

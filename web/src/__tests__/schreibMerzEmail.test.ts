@@ -69,6 +69,12 @@ describe("Schreib-Merz email", () => {
     expect(html).toContain("Willy-Brandt-Straße 1<br>10557 Berlin");
     expect(html).toContain("Kontakt zum Bundeskanzler");
     expect(html).toContain("geprüft am 10.09.2026");
+    expect(html).toContain(
+      'margin:8px 0 0;font-family:Georgia,\'Times New Roman\',serif;font-size:12px;color:#b0b0b0;line-height:1.4;">Quelle: <a href=',
+    );
+    expect(html).not.toContain(
+      'font-size:12px;color:#666666;line-height:1.5;">Quelle: <a href=',
+    );
     expect(html).not.toContain("abgeordnetenwatch.de/profile");
     expect(html).not.toContain(", MdB (");
   });

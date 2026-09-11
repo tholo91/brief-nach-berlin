@@ -7,9 +7,11 @@ import {
   FOUNDER_FEEDBACK_URL,
   INSTAGRAM_CAPTION,
 } from "@/lib/config";
-import { CopyButton } from "@/components/CopyButton";
+import {
+  CopyCaptionButton,
+  WeitersagenShareActions,
+} from "@/components/WeitersagenShareActions";
 import { CONTACT } from "@/lib/contact";
-import { WeitersagenShareActions } from "@/components/WeitersagenShareActions";
 
 const TITLE = "Brief-nach-Berlin weitersagen";
 const DESCRIPTION =
@@ -162,11 +164,7 @@ export default function WeitersagenPage() {
               {INSTAGRAM_CAPTION}
             </p>
           </div>
-          <CopyButton
-            text={INSTAGRAM_CAPTION}
-            label="Caption kopieren"
-            labelCopied="Kopiert - jetzt Instagram öffnen"
-          />
+          <CopyCaptionButton text={INSTAGRAM_CAPTION} />
         </section>
 
         {/* QR-Code */}

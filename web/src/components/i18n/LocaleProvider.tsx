@@ -29,6 +29,9 @@ function subscribeToLocale(onChange: () => void): () => void {
 }
 
 function getClientLocale(): Locale {
+  const queryLocale = new URLSearchParams(window.location.search).get("lang");
+  if (isLocale(queryLocale)) return queryLocale;
+
   const stored = window.sessionStorage.getItem(LOCALE_SESSION_KEY);
   return isLocale(stored) ? stored : resolveBrowserLocale(window.navigator.languages);
 }
@@ -41,6 +44,10 @@ export function LocaleProvider({ children }: { children: React.ReactNode }) {
   const locale = useSyncExternalStore(subscribeToLocale, getClientLocale, getServerLocale);
 
   useEffect(() => {
+    const queryLocale = new URLSearchParams(window.location.search).get("lang");
+    if (isLocale(queryLocale)) {
+      window.sessionStorage.setItem(LOCALE_SESSION_KEY, queryLocale);
+    }
     document.documentElement.lang = locale;
   }, [locale]);
 

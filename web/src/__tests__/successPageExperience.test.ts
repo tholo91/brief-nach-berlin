@@ -56,10 +56,15 @@ describe("success page experience", () => {
     expect(mapSource).not.toContain("Details zum Datenschutz");
   });
 
-  it("offers the voluntary map contribution before the asynchronous letter is ready", () => {
-    expect(successSource).toContain("letterPending={!letterReady}");
-    expect(mapSource).toContain("Du kannst dein Anliegen schon jetzt unabhängig vom Briefentwurf eintragen.");
+  it("keeps the voluntary map contribution self-explanatory while the letter loads", () => {
+    expect(successSource).not.toContain("letterPending");
+    expect(mapSource).not.toContain("Du kannst dein Anliegen schon jetzt unabhängig vom Briefentwurf eintragen.");
     expect(mapSource).toContain("Dein Brief wird nicht gespeichert");
+  });
+
+  it("keeps resend controls together on tablet and desktop, stacked on mobile", () => {
+    expect(successSource).toContain("sm:grid-cols-[minmax(0,1fr)_auto]");
+    expect(successSource).toContain("Brief erneut senden");
   });
 
   it("keeps the postbox action available across breakpoints and moves personalization into the accordion", () => {

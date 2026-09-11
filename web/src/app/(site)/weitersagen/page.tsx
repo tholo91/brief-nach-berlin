@@ -134,10 +134,10 @@ export default function WeitersagenPage() {
           </p>
         </div>
 
-        {/* WhatsApp & andere Messenger */}
+        {/* Direkte Teilen-Optionen */}
         <section className="mb-12">
           <h2 className="font-body text-2xl md:text-3xl font-bold text-waldgruen-dark mb-2">
-            In einer Minute weitergeben
+            Direkt teilen
           </h2>
           <p className="font-body text-warmgrau leading-relaxed mb-6">
             Tipp auf einen Knopf, fertige Nachricht öffnet sich, du schickst
@@ -159,12 +159,12 @@ export default function WeitersagenPage() {
             Post. Kopiere den Text unten, lad dein Foto hoch und füg ihn ein.
             Und wenn du magst: <span className="font-semibold text-waldgruen-dark">#BriefNachBerlin</span>.
           </p>
-          <div className="bg-white border border-waldgruen/15 rounded-xl p-5 mb-4">
-            <p className="font-body text-sm text-warmgrau whitespace-pre-line leading-relaxed">
+          <div className="bg-white border border-waldgruen/15 rounded-xl p-5 mb-4 flex items-start justify-between gap-4">
+            <p className="flex-1 font-body text-sm text-warmgrau whitespace-pre-line leading-relaxed">
               {INSTAGRAM_CAPTION}
             </p>
+            <CopyCaptionButton text={INSTAGRAM_CAPTION} />
           </div>
-          <CopyCaptionButton text={INSTAGRAM_CAPTION} />
         </section>
 
         {/* QR-Code */}

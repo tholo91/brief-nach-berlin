@@ -301,7 +301,7 @@ export async function getRecentActiveCampaigns(
   limit = 5,
   db?: RepositoryClient
 ): Promise<Campaign[]> {
-  const cappedLimit = Math.min(Math.max(limit, 1), 5);
+  const cappedLimit = Math.min(Math.max(limit, 1), 6);
   const { data, error } = await client(db)
     .from("campaigns")
     .select("*")

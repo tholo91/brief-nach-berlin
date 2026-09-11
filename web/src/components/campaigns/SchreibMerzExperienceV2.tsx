@@ -214,7 +214,7 @@ export function SchreibMerzExperienceV2() {
             Für 16- bis 25-Jährige
           </div>
           <h1 className="mt-6 max-w-2xl text-balance font-typewriter text-[2.55rem] font-bold leading-[1.02] tracking-[-0.035em] text-waldgruen-dark sm:text-6xl lg:text-7xl">
-            Was möchtest du dem Kanzler sagen?
+            Was ist dir und deiner Generation in der Politik wichtig?
           </h1>
           <p className="mt-6 max-w-xl text-pretty font-body text-lg leading-relaxed text-warmgrau/80 sm:text-xl">
             Schreib dein Anliegen in deinen eigenen Worten. Wenn ein Thema passt,
@@ -251,12 +251,6 @@ export function SchreibMerzExperienceV2() {
               className="object-cover"
             />
             <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-waldgruen-dark/90 via-waldgruen-dark/55 to-transparent px-5 pb-5 pt-20 text-creme sm:px-7 sm:pb-7">
-              <p className="font-typewriter text-xs font-bold uppercase tracking-[0.18em] text-creme/75">
-                Deine Worte kommen zuerst.
-              </p>
-              <p className="mt-1 max-w-sm font-body text-base leading-snug text-creme/95 sm:text-lg">
-                Aus deinem Anliegen wird ein Brief, der nach dir klingt.
-              </p>
               <p className="mt-3 inline-flex rounded-full border border-creme/30 bg-waldgruen-dark/35 px-2.5 py-1 font-body text-xs font-medium text-creme/90">
                 KI-generierte Illustration
               </p>

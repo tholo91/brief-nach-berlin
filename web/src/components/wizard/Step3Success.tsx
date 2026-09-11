@@ -697,6 +697,7 @@ export function Step3Success({
   const addressInstruction = effectiveLevel === "Kommune"
     ? "Nutze die Suchhilfe, prüfe die vollständige Anschrift und schreib sie auf den Umschlag."
     : "Die Adresse findest du im Brief.";
+  const isSchreibMerzCampaign = wizardData.campaign?.slug === "schreib-merz";
   if (!result) return null;
 
   // Sub-state C: Level data missing (D-07)
@@ -808,18 +809,38 @@ export function Step3Success({
                 Prüfe deinen Spam-Ordner. Falls nichts ankommt, überprüfe deine E-Mail-Adresse und sende den Brief erneut.
               </p>
               {resendState !== "sent" && resendState !== "limited" && (
-                <div>
-                  <label htmlFor="resend-email" className="font-body text-xs text-warmgrau/60 mb-1 block">
-                    E-Mail-Adresse
-                  </label>
-                  <input
-                    id="resend-email"
-                    type="email"
-                    value={resendEmail}
-                    onChange={(e) => { setResendEmail(e.target.value); setResendState("idle"); }}
-                    className="w-full font-body text-sm text-warmgrau bg-white border border-warmgrau/25 rounded-lg px-3 py-2 focus:outline-none focus:border-waldgruen transition-colors"
-                    disabled={resendState === "sending"}
-                  />
+                <div className="grid gap-3 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-end">
+                  <div className="min-w-0">
+                    <label htmlFor="resend-email" className="font-body text-xs text-warmgrau/60 mb-1 block">
+                      E-Mail-Adresse
+                    </label>
+                    <input
+                      id="resend-email"
+                      type="email"
+                      value={resendEmail}
+                      onChange={(e) => { setResendEmail(e.target.value); setResendState("idle"); }}
+                      className="w-full font-body text-sm text-warmgrau bg-white border border-warmgrau/25 rounded-lg px-3 py-2 focus:outline-none focus:border-waldgruen transition-colors"
+                      disabled={resendState === "sending"}
+                    />
+                  </div>
+                  <button
+                    type="button"
+                    onClick={handleResend}
+                    disabled={resendState === "sending" || !resendEmail.trim()}
+                    className={[
+                      "w-full justify-self-start whitespace-nowrap font-body text-sm font-semibold text-waldgruen border border-waldgruen/30 px-4 py-2 rounded-lg transition-colors sm:w-auto sm:justify-self-auto",
+                      resendState === "sending" || !resendEmail.trim() ? "opacity-60 cursor-not-allowed" : "hover:bg-waldgruen/8 cursor-pointer",
+                    ].join(" ")}
+                  >
+                    {resendState === "sending" ? (
+                      <span className="flex items-center gap-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="animate-spin" aria-hidden="true"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>
+                        Wird gesendet...
+                      </span>
+                    ) : (
+                      "Brief erneut senden"
+                    )}
+                  </button>
                 </div>
               )}
               <div>
@@ -870,26 +891,7 @@ export function Step3Success({
                       </button>
                     </div>
                   </div>
-                ) : (
-                  <button
-                    type="button"
-                    onClick={handleResend}
-                    disabled={resendState === "sending" || !resendEmail.trim()}
-                    className={[
-                      "font-body text-sm font-semibold text-waldgruen border border-waldgruen/30 px-4 py-2 rounded-lg transition-colors",
-                      resendState === "sending" || !resendEmail.trim() ? "opacity-60 cursor-not-allowed" : "hover:bg-waldgruen/8 cursor-pointer",
-                    ].join(" ")}
-                  >
-                    {resendState === "sending" ? (
-                      <span className="flex items-center gap-2">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="animate-spin" aria-hidden="true"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>
-                        Wird gesendet...
-                      </span>
-                    ) : (
-                      "Brief erneut senden"
-                    )}
-                  </button>
-                )}
+                ) : null}
               </div>
             </div>
           )}
@@ -1009,12 +1011,28 @@ export function Step3Success({
         </section>
 
         <aside className="min-w-0 border-t border-warmgrau/15 pt-6 md:-mt-1 md:col-start-2 md:row-span-2 md:row-start-1 md:border-l md:border-t-0 md:pl-8 md:pt-12">
+          {isSchreibMerzCampaign && (
+            <figure className="mb-7 overflow-hidden rounded-xl border border-waldgruen/15 bg-creme/70 shadow-[0_18px_50px_-38px_rgba(24,70,51,0.75)]">
+              <div className="relative aspect-[4/5] overflow-hidden bg-warmgrau/10">
+                <Image
+                  src="/images/schreib-merz-success.webp"
+                  alt="KI-generierte Illustration: Friedrich Merz hält einen beispielhaft beschriebenen Brief in die Kamera"
+                  fill
+                  sizes="(max-width: 767px) 100vw, 34vw"
+                  className="object-cover"
+                />
+              </div>
+              <figcaption className="border-t border-waldgruen/10 px-4 py-3 font-body text-xs leading-relaxed text-warmgrau/65">
+                <span className="font-semibold text-waldgruen-dark">KI-generierte Illustration.</span>{" "}
+                Beispielhafte Darstellung eines Briefs.
+              </figcaption>
+            </figure>
+          )}
           {letterSignalContext && (
             <LetterSignalCard
               contextToken={letterSignalContext}
               generationProof={generationProof}
               email={wizardData.email}
-              letterPending={!letterReady}
             />
           )}
         </aside>

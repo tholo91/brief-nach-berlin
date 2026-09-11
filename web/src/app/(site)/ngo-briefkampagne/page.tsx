@@ -6,6 +6,7 @@ import { FAQAccordion } from "@/components/FAQAccordion";
 import { CampaignBackground } from "@/components/campaigns/CampaignBackground";
 import { CampaignList } from "@/components/campaigns/CampaignList";
 import { getRecentActiveCampaigns } from "@/lib/campaigns/repository";
+import { SPECIAL_CAMPAIGN_SLUG } from "@/lib/campaigns/specialCampaigns";
 
 const URL_PATH = "/ngo-briefkampagne";
 const PUBLISHED = "2026-07-06";
@@ -120,7 +121,9 @@ function ArrowDownIcon() {
 }
 
 export default async function NgoBriefkampagnePage() {
-  const campaigns = await getRecentActiveCampaigns(5);
+  const campaigns = (await getRecentActiveCampaigns(6))
+    .filter((campaign) => campaign.slug !== SPECIAL_CAMPAIGN_SLUG)
+    .slice(0, 5);
 
   return (
     <CampaignBackground>

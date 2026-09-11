@@ -12,6 +12,8 @@ type Copy = {
   eyebrow: string;
   title: string;
   lead: string;
+  costTitle: string;
+  costBody: string;
   imageAlt: string;
   impactSince: string;
   impactLabel: string;
@@ -81,6 +83,9 @@ const copy: Record<Language, Copy> = {
     title: "Brief-nach-Berlin für dein Land nutzen",
     lead:
       "Der Code ist offen. Starte nicht mit Übersetzen, sondern mit dem festen Anfangsstand `international-starter` (Commit cce073a): der schlanken Version, die nur an nationale Abgeordnete schreibt. Mehr Ebenen kommen später. Lass zuerst einen Plan schreiben: Daten, Zuständigkeiten, Sprache, Mail, Domain und Brief-Logik. Kennst du jemanden in Österreich oder der Schweiz, der helfen könnte? Schick mir den Kontakt oder leite diese Seite weiter.",
+    costTitle: "Etwa 1 € im Monat für den Betrieb",
+    costBody:
+      "Bis zu 2.000 erzeugte Briefe pro Monat – je nach Setup. Eine erste lokale Version kannst du schnell online bringen. Starte klein und entwickle sie mit echten Menschen weiter.",
     imageAlt:
       "Handgeschriebene Briefe fliegen über Europa, vorbei an Städten, Flüssen, Bahnlinien und Bergen.",
     impactSince: "Seit Mitte Mai 2026",
@@ -124,6 +129,9 @@ const copy: Record<Language, Copy> = {
     title: "Fork Brief-nach-Berlin for your country",
     lead:
       "Brief-nach-Berlin is a German civic tech tool. People enter a postal code and a concern, then get a draft letter to the right political representative. Do not start with a translation. Start with the fixed starter version `international-starter` (commit cce073a), the slim national-only build. More political levels come later. First write a plan: data, responsibilities, language, email, domain and letter logic. If you know someone in Austria or Switzerland who could help, send me the contact or pass this page on.",
+    costTitle: "Around €1/month to run",
+    costBody:
+      "Up to 2,000 generated letters per month, depending on your setup. Get a first local version online quickly. Start small and improve it with real people.",
     imageAlt:
       "Handwritten letters fly across Europe, passing cities, rivers, railway lines, and mountains.",
     impactSince: "Since mid-May 2026",
@@ -415,6 +423,14 @@ export function EuropePageContent({
               {t.lead}
             </p>
           </header>
+          <aside className="mt-6 rounded-sm border border-waldgruen/20 bg-[#f8edc8] p-5">
+            <h2 className="mb-2 font-body text-xl font-bold text-waldgruen-dark">
+              {t.costTitle}
+            </h2>
+            <p className="font-body text-base leading-relaxed text-warmgrau">
+              {t.costBody}
+            </p>
+          </aside>
           <figure className="mt-8 -mx-2 md:mx-0">
             <Image
               src="/images/europe-correspondence.webp"

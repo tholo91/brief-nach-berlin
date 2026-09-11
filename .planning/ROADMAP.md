@@ -87,6 +87,37 @@ Plans:
 Plans:
 - [ ] Gemeinsame Domain-Tippfehlerprüfung, Successpage-Hinweis und Tests umsetzen
 
+### Phase 999.36: Schulmodus `/schule` — Briefe selbst verfassen lernen (BACKLOG)
+
+**Goal:** Brief-nach-Berlin wird für Schulklassen und Schüler:innen zu einer
+angeleiteten Formulierungshilfe. Der Wizard führt weiterhin durch Anliegen,
+politische Zuständigkeit und PLZ, aber das Ergebnis ist kein fertig
+generierter Brief, den man nur noch abschreibt. Schüler:innen sollen am Ende
+verstehen, wie sie einen eigenen Brief strukturieren und formulieren.
+
+**Scope:** Eigene Einstiegsseite unter `/schule`; vereinfachte, schulgeeignete
+Wizard-Texte und Erklärungen; zuverlässige Suche der zuständigen Adresse als
+zentraler Output; kurze Formulierungshilfen, Strukturvorschläge und Beispiele
+für die abschließende E-Mail bzw. den Brief. Die Schüler:innen formulieren und
+überarbeiten den eigentlichen Text selbst. Die Hinweise sollen auch praktische
+Tipps vermitteln, zum Beispiel konkretes Anliegen, persönliche Betroffenheit,
+klare Bitte und höflicher Abschluss.
+
+**Nicht-Ziel:** Kein zweiter vollautomatischer Briefgenerator und kein
+„perfektes“ Endresultat, das die eigene Schreib- und Denkaufgabe ersetzt.
+
+**Offene Fragen:** Altersstufen und Unterrichtskontext; welche Daten nur lokal
+im Browser bleiben; ob Lehrkräfte einen Klassenmodus oder Material zur
+Vorbereitung brauchen; wie stark sich der Schulmodus vom normalen Wizard
+visuell und sprachlich unterscheiden soll.
+
+**Requirements:** TBD
+**Plans:** 0 plans
+
+Plans:
+- [ ] Konzept mit mindestens einem schulischen Nutzungsszenario und einem
+  Beispiel-Flow konkretisieren
+
 ### Phase 999.10: Accessibility-Kernflow (BACKLOG)
 
 **Goal:** Den bestehenden Landingpage- und Wizard-Flow fuer Tastatur- und

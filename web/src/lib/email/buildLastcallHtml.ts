@@ -6,6 +6,11 @@ import {
   SHARE_URL_TELEGRAM,
   SHARE_URL_EMAIL,
 } from "@/lib/config";
+import { buildDataDeletionMailto } from "./mailLocale";
+import {
+  buildSocialFollowHtml,
+  buildSocialFollowText,
+} from "./buildSocialFollowHtml";
 
 // Dritte und letzte Follow-up-Mail ("Last-Call"), ~2-3 Monate nach dem
 // Briefversand. Reine Neugier-Mail: Hat sich das MdB gemeldet? Mag die
@@ -41,6 +46,7 @@ export function buildLastcallHtml(
   const base = params.baseUrl ?? APP_URL;
 
   const subject = "Brief aus Berlin?";
+  const deleteUrl = buildDataDeletionMailto("de");
 
   const instagramUrl = `${base}/weitersagen#insta`;
 
@@ -72,9 +78,10 @@ export function buildLastcallHtml(
     `Eine Initiative von ${FOUNDER_HOMEPAGE}`,
     ``,
     `--`,
-    `Das war meine allerletzte Mail an dich. Kein Newsletter, keine weitere Nachricht.`,
+    `Das ist die dritte und letzte automatische Mail an dich. Kein Newsletter, keine weitere Nachricht.`,
+    buildSocialFollowText(),
     `Dein Brief und dein Anliegen werden nicht in meiner Datenbank gespeichert. Falls du freiwillig ein Themensignal freigegeben oder eine Bewertung abgegeben hast, kannst du beides löschen lassen.`,
-    `Datenschutz: ${base}/datenschutz · Gespeicherte Daten löschen: ${FOUNDER_EMAIL}`,
+    `Datenschutz: ${base}/datenschutz · Gespeicherte Daten löschen: ${deleteUrl}`,
   ].join("\n");
 
   const html = `<!DOCTYPE html>
@@ -230,13 +237,14 @@ export function buildLastcallHtml(
           <tr>
             <td style="padding:20px 32px 24px;background-color:#FAF8F5;text-align:center;">
               <p style="margin:0 0 8px;font-family:Georgia,'Times New Roman',serif;font-size:13px;color:#777777;line-height:1.6;">
-                <strong style="color:#2D5016;">Das war meine allerletzte Mail an dich.</strong> Kein Newsletter, keine weitere Nachricht.
+                <strong style="color:#2D5016;">Das ist die dritte und letzte automatische Mail an dich.</strong> Kein Newsletter, keine weitere Nachricht.
               </p>
-              <p style="margin:0 0 10px;font-family:Georgia,'Times New Roman',serif;font-size:12px;color:#999999;line-height:1.6;">
+              ${buildSocialFollowHtml({ baseUrl: base })}
+              <p style="margin:8px 0 10px;font-family:Georgia,'Times New Roman',serif;font-size:12px;color:#999999;line-height:1.6;">
                 Dein Brief und dein Anliegen werden nicht in meiner Datenbank gespeichert. Falls du freiwillig ein Themensignal freigegeben oder eine Bewertung abgegeben hast, kannst du beides löschen lassen.
               </p>
               <p style="margin:0;font-family:Georgia,'Times New Roman',serif;font-size:12px;color:#aaaaaa;line-height:1.5;">
-                <a href="${base}/datenschutz" style="color:#888888;">Datenschutz</a> · <a href="mailto:${FOUNDER_EMAIL}?subject=${encodeURIComponent("Brief-nach-Berlin: Meine gespeicherten Daten löschen")}&body=${encodeURIComponent("Hallo Thomas,\n\nbitte lösche alle Bewertungen und freiwillig gespeicherten Themensignale, die mit dieser E-Mail-Adresse verknüpft sind. Mir ist bewusst, dass ich diese E-Mail noch absenden muss.\n\nDanke!")}" style="color:#888888;">Gespeicherte Daten löschen</a>
+                <a href="${base}/datenschutz" style="color:#888888;">Datenschutz</a> · <a href="${deleteUrl}" style="color:#888888;">Gespeicherte Daten löschen</a>
               </p>
             </td>
           </tr>

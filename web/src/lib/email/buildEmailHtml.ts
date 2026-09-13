@@ -10,6 +10,10 @@ import { formatPartyShort } from "@/lib/formatParty";
 import { buildShareTarget } from "@/lib/share";
 import { normalizeLetterClosing } from "./normalizeLetterClosing";
 import { getEmailCopy, resolveEmailLocale } from "./mailLocale";
+import {
+  buildSocialFollowHtml,
+  buildSocialFollowText,
+} from "./buildSocialFollowHtml";
 
 function buildDebugUrl(d: LetterDebugPayload): string {
   // base64url-encode JSON payload so it survives URLs without padding/+/ issues
@@ -101,6 +105,8 @@ export function buildLetterEmailText(data: SendLetterEmailParams): string {
   parts.push(
     `${supportCopy.prefix} ${supportCopy.status}\n${supportCopy.button}: ${SUPPORT_CONTENT.ctas.donate.href}\n${supportCopy.learnMore}: ${APP_URL}${SUPPORT_CONTENT.ctas.learnMore.href}?src=email`,
   );
+  parts.push(`${copy.privacy}: ${copy.dataPolicy}`);
+  parts.push(buildSocialFollowText(resolveEmailLocale(data.locale)));
   return parts.join("\n\n");
 }
 
@@ -677,6 +683,7 @@ export function buildEmailHtml(data: SendLetterEmailParams): string {
                     <p style="margin:0;font-family:Georgia,'Times New Roman',serif;font-size:12px;color:#999999;">
                       <a href="${APP_URL}" style="color:#2D5016;text-decoration:none;">Brief-nach-Berlin</a>${letterNumberText} · ${copy.voiceCounts}
                     </p>
+                    ${buildSocialFollowHtml({ locale })}
                   </td>
                 </tr>
 

@@ -7,9 +7,13 @@ import {
   SHARE_URL_EMAIL,
 } from "@/lib/config";
 import { buildStarBarHtml } from "./buildEmailHtml";
-import { getEmailCopy, resolveEmailLocale } from "./mailLocale";
+import { buildDataDeletionMailto, getEmailCopy, resolveEmailLocale } from "./mailLocale";
 import type { Locale } from "@/lib/i18n/locale";
 import { SUPPORT_CONTENT, SUPPORT_EMAIL_COPY } from "@/lib/support-content";
+import {
+  buildSocialFollowHtml,
+  buildSocialFollowText,
+} from "./buildSocialFollowHtml";
 
 export interface BuildFollowupParams {
   locale?: Locale;
@@ -59,7 +63,7 @@ export function buildFollowupHtml(params: BuildFollowupParams): FollowupRender {
   const shareEmailUrl = shareText
     ? `mailto:?subject=${encodeURIComponent(isTurkish ? "Sen de Brief-nach-Berlin ile bir mektup yazar mısın?" : "Would you also write a letter with Brief-nach-Berlin?")}&body=${encodeURIComponent(shareText)}`
     : SHARE_URL_EMAIL;
-  const deleteUrl = `mailto:${FOUNDER_EMAIL}?subject=${encodeURIComponent(copy.feedbackMailSubject)}&body=${encodeURIComponent(copy.feedbackMailBody)}`;
+  const deleteUrl = buildDataDeletionMailto(locale);
 
   const text = [
     copy.greeting,
@@ -90,6 +94,7 @@ export function buildFollowupHtml(params: BuildFollowupParams): FollowupRender {
     ``,
     `--`,
     copy.oneOff,
+    buildSocialFollowText(locale),
     `${copy.write} ${base}/wer-darf-mdb-schreiben`,
     `${copy.privacy}: ${base}/datenschutz · ${copy.delete}: ${FOUNDER_EMAIL} · ${copy.roadmap}: ${base}/was-noch-kommt`,
   ].join("\n");
@@ -249,7 +254,8 @@ export function buildFollowupHtml(params: BuildFollowupParams): FollowupRender {
               <p style="margin:0;font-family:Georgia,'Times New Roman',serif;font-size:12px;color:#999999;">
                 <a href="${APP_URL}" style="color:#2D5016;text-decoration:none;">Brief-nach-Berlin</a> · ${getEmailCopy(locale).voiceCounts}
               </p>
-              <p style="margin:6px 0 0;font-family:Georgia,'Times New Roman',serif;font-size:12px;color:#aaaaaa;line-height:1.5;">
+              ${buildSocialFollowHtml({ locale, baseUrl: base })}
+              <p style="margin:8px 0 0;font-family:Georgia,'Times New Roman',serif;font-size:12px;color:#aaaaaa;line-height:1.5;">
                 ${copy.oneOff} <a href="${APP_URL}/datenschutz" style="color:#888888;">${copy.privacy}</a> · <a href="${deleteUrl}" style="color:#888888;">${copy.delete}</a> · <a href="${APP_URL}/was-noch-kommt" style="color:#888888;">${copy.roadmap}</a> · <a href="${APP_URL}/wer-darf-mdb-schreiben" style="color:#888888;">${copy.write}</a>
               </p>
             </td>

@@ -100,7 +100,7 @@ Auch mit `fra1` bleibt Vercel Inc. (Delaware, USA) der Vertragspartner. Das Mutt
 - Optional: Debug-Payload (base64)
 - Social-Share-Links
 
-**Kein Newsletter, keine Liste, kein Marketing.** Brevo ist hier nur SMTP-Versand-Dienstleister.
+**Kein Newsletter, keine Liste, kein Marketing.** Brevo ist hier nur SMTP-Versand-Dienstleister. Öffentliche Datenschutz- und Kontaktanfragen gehen an Brief-nach-Berlin@posteo.de.
 
 ### DSGVO-Bewertung Brevo
 
@@ -133,7 +133,7 @@ await brevo.transactionalEmails.sendTransacEmail({
 1. Open-/Click-Tracking deaktivieren (in Brevo-Account).
 2. Brevo DPA-Link in Datenschutzerklärung einfügen.
 3. Speicherfrist der Transaktionsmail-Logs in Brevo prüfen und in Erklärung nennen ("typisch 7-30 Tage").
-4. Eigenen `Reply-To` setzen, der nicht thomas_lorenz@posteo.de ist - sonst landet jede Antwort + ggf. Kommunikation in deinem Posteo. Das ist okay, aber du verarbeitest dann Folge-Kommunikation in einem weiteren System.
+4. Eigenen `Reply-To` setzen, der nicht in einem privaten Postfach landet. Öffentliche Antworten laufen über Brief-nach-Berlin@posteo.de.
 
 ---
 
@@ -182,7 +182,7 @@ Vercel Frankfurt (fra1)
 | 7 | Einwilligung | ⚠️ | Aktuell implizit - Checkbox bei Step1 mit "Ich willige ein, dass mein Anliegen zur KI-gestützten Briefgenerierung an Mistral (FR) übermittelt wird" wäre sauberer |
 | 9 | Besondere Kategorien | ❌ | **Nirgends erwähnt, dass politische Meinung verarbeitet wird** |
 | 13 | Informationspflichten | ⚠️ | Großteils erfüllt, aber Empfänger-Listen, Speicherfristen unvollständig |
-| 15-22 | Betroffenenrechte | ⚠️ | In Erklärung erwähnt, aber kein Self-Service. Email an thomas_lorenz@posteo.de reicht für Größe. |
+| 15-22 | Betroffenenrechte | ⚠️ | In Erklärung erwähnt, aber kein Self-Service. E-Mail an Brief-nach-Berlin@posteo.de reicht für die aktuelle Größe. |
 | 25 | Privacy by Design | ✅ | Vorbildlich (keine DB, keine Cookies) |
 | 28 | AV-Verträge | ⚠️ | Mit Mistral, Brevo, Vercel: vorhanden? Unterzeichnet? Im Repo abgelegt? |
 | 30 | Verarbeitungsverzeichnis | ❌ | Existiert vermutlich nicht. Pflicht auch für Einzelpersonen, wenn regelmäßig PII verarbeitet wird |

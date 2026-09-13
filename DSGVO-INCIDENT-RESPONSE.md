@@ -1,6 +1,6 @@
 # Datenpannen-Notfallplan (Art. 33 / 34 DSGVO)
 
-**Verantwortlicher:** Thomas Lorenz, thomas_lorenz@posteo.de
+**Verantwortlicher:** Thomas Lorenz, Brief-nach-Berlin@posteo.de
 **Zuständige Aufsichtsbehörde:** LDI NRW (Landesbeauftragte für Datenschutz und Informationsfreiheit Nordrhein-Westfalen), Kavalleriestr. 2-4, 40213 Düsseldorf, https://www.ldi.nrw.de
 **Stand:** 2026-04-27
 

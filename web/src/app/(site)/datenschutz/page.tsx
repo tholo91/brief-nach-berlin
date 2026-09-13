@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { CONTACT } from "@/lib/contact";
+import { buildDataDeletionMailto } from "@/lib/email/mailLocale";
 import { SUPPORT_CONTENT } from "@/lib/support-content";
 
 export const metadata = {
@@ -191,15 +192,16 @@ export default function Datenschutz() {
             </h2>
             <p>
               Zweck: Versand des generierten Briefs als Transaktionsmail an die
-              von Ihnen angegebene Adresse. Zusätzlich kann eine einmalige,
-              zeitversetzt geplante Feedback-Nachfrage folgen. Verarbeitete
-              Daten: E-Mail-Adresse. Empfänger: Brevo SAS (siehe Abschnitt 11).
-              Ich speichere die E-Mail-Adresse nicht für die reine
-              Brief-Erstellung; es wird kein Newsletter und keine
-              Empfängerliste geführt. Bei freiwilligem Opt-in wird nur ein
-              nicht rückrechenbarer Prüfwert zur späteren Zuordnung und
-              Löschung gespeichert. Die Feedback-Nachfrage ist keine Anmeldung
-              zu einem Newsletter.
+              von Ihnen angegebene Adresse. Im normalen Ablauf können höchstens
+              drei automatische E-Mails folgen: die Brief-Mail, eine
+              Bewertungsnachfrage nach einigen Tagen und, falls vorgesehen,
+              einige Monate später eine letzte Frage nach einer Reaktion.
+              Verarbeitete Daten: E-Mail-Adresse. Empfänger: Brevo SAS (siehe
+              Abschnitt 11). Für die reine Brief-Erstellung führe ich kein
+              Nutzerkonto und keine Newsletter- oder Marketingliste. Bei
+              freiwilliger Bewertung oder freiwilligem Themensignal kann eine
+              Zuordnung zur späteren Löschung gespeichert werden. Diese Mails
+              sind keine Anmeldung zu einem Newsletter.
             </p>
           </div>
 
@@ -353,11 +355,14 @@ export default function Datenschutz() {
             </p>
             <p className="mt-2">
               Brevo wird ausschließlich als Transaktionsversender eingesetzt; ein
-              Newsletter oder eine Marketingliste wird nicht geführt. Neben der ersten
-              Transaktionsmail kann Brevo eine einzelne Feedback-Nachfrage zu
-              einem späteren Zeitpunkt planen und zustellen. Diese Nachricht
-              enthält einen signierten Link zur freiwilligen Bewertung; sie
-              enthält keinen Newsletterversand. Brevo kann Versandereignisse
+              Newsletter oder eine Marketingliste wird nicht geführt. Im
+              normalen Ablauf können höchstens drei automatische Mails
+              zugestellt werden: die erste Transaktionsmail, eine
+              Bewertungsnachfrage nach einigen Tagen und, falls vorgesehen,
+              einige Monate später eine letzte Frage nach einer Reaktion. Die
+              Bewertungsnachfrage enthält einen signierten Link zur freiwilligen
+              Bewertung; keine dieser Nachrichten ist ein Newsletterversand.
+              Brevo kann Versandereignisse
               und – abhängig von der Account-Einstellung – E-Mail-Previews
               speichern. Der Anbieter sieht standardmäßig eine unbegrenzte
               Log-Aufbewahrung vor. Vor Aktivierung der freiwilligen
@@ -640,16 +645,16 @@ export default function Datenschutz() {
             </p>
             <p>
               <strong>Aufbewahrung:</strong> Maximal 24 Monate. Sie können
-              Ihre Bewertung jederzeit löschen lassen, indem Sie eine kurze
-              E-Mail an{" "}
+              Ihre Bewertung jederzeit löschen lassen. Öffnen Sie dafür die
+              vorbefüllte{" "}
               <a
-                href="mailto:datenschutz@brief-nach-berlin.de"
+                href={buildDataDeletionMailto("de")}
                 className="text-waldgruen hover:underline"
               >
-                datenschutz@brief-nach-berlin.de
+                Löschmail
               </a>{" "}
-              schreiben. Geben Sie dafür die E-Mail-Adresse an, mit der Sie
-              den Brief versendet haben.
+              an {CONTACT.email} und senden Sie sie selbst ab. Geben Sie dafür
+              die E-Mail-Adresse an, mit der Sie den Brief versendet haben.
             </p>
           </div>
 

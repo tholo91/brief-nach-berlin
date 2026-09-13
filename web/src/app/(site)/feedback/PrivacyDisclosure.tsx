@@ -1,6 +1,8 @@
 "use client";
 
 import { useState } from "react";
+import { BRIEF_EMAIL } from "@/lib/contact";
+import { buildDataDeletionMailto } from "@/lib/email/mailLocale";
 
 export function PrivacyDisclosure() {
   const [open, setOpen] = useState(false);
@@ -65,15 +67,15 @@ export function PrivacyDisclosure() {
               <strong>Deine E-Mail wird niemals öffentlich gezeigt.</strong>
             </p>
             <p>
-              Löschen kannst du deine Bewertung jederzeit, einfach eine Mail
-              an{" "}
+              Deine Bewertung kannst du jederzeit löschen lassen. Öffne dafür
+              die vorbefüllte{" "}
               <a
-                href="mailto:datenschutz@brief-nach-berlin.de"
+                href={buildDataDeletionMailto("de")}
                 className="text-waldgruen underline hover:text-waldgruen-dark"
               >
-                datenschutz@brief-nach-berlin.de
-              </a>
-              .
+                Löschmail an {BRIEF_EMAIL}
+              </a>{" "}
+              und sende sie selbst ab.
             </p>
             <p className="text-xs text-warmgrau/70">
               Mehr Details:{" "}

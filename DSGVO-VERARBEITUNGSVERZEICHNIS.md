@@ -1,7 +1,7 @@
 # Verzeichnis von Verarbeitungstätigkeiten (Art. 30 DSGVO)
 
 **Verantwortlicher:** Thomas Lorenz, Zur Plangemühle 5, 47198 Duisburg, Deutschland
-**Kontakt:** thomas_lorenz@posteo.de
+**Kontakt:** Brief-nach-Berlin@posteo.de
 **Dienst:** Brief-nach-Berlin (brief-nach-berlin.de)
 **Stand:** 2026-09-02
 
@@ -63,7 +63,7 @@ Es ist kein Datenschutzbeauftragter bestellt (keine Pflicht nach § 38 BDSG, da 
 | Betroffene Personen | Personen, die freiwillig per E-Mail Kontakt aufnehmen. |
 | Datenkategorien | Absender-Adresse, Inhalt der Nachricht. |
 | Rechtsgrundlage | Art. 6 Abs. 1 lit. f DSGVO; bei Anfragen nach Art. 15 ff.: Art. 6 Abs. 1 lit. c DSGVO (rechtliche Verpflichtung). |
-| Empfänger | Posteo e.K., Berlin (Mail-Provider von thomas_lorenz@posteo.de). |
+| Empfänger | Posteo e.K., Berlin (Mail-Provider von Brief-nach-Berlin@posteo.de). |
 | Drittlandtransfer | Keiner (DE). |
 | Speicherfrist | Bis Erledigung des Anliegens; bei nachweispflichtigen Vorgängen (z. B. Auskunft) 3 Jahre. |
 
@@ -80,7 +80,7 @@ Es ist kein Datenschutzbeauftragter bestellt (keine Pflicht nach § 38 BDSG, da 
 | Empfänger | Supabase Inc. (Auftragsverarbeiter), Server-Region Frankfurt (eu-central-1). |
 | Drittlandtransfer | Keiner (Server in EU/DE). Supabase Inc. ist in den USA ansässig; Datenverarbeitung erfolgt in der EU-Region. |
 | Technische Sicherheit | Schreibzugriff nur server-seitig mit Service-Role-Key; RLS-Policy schränkt Lesezugriff via anon-Key auf consented Rows ein. Bewertungs-Link ist HMAC-signiert, ungültige Tokens werden ohne DB-Schreibvorgang abgewiesen. IP wird per HMAC-SHA256 (Salt: `REVIEW_IP_SALT`) pseudonymisiert. |
-| Speicherfrist | Maximal 24 Monate. Löschung auf Anfrage jederzeit per E-Mail an datenschutz@brief-nach-berlin.de. |
+| Speicherfrist | Maximal 24 Monate. Löschung auf Anfrage jederzeit per E-Mail an Brief-nach-Berlin@posteo.de. |
 
 ---
 

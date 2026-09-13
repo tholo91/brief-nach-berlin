@@ -1,5 +1,5 @@
 // Central app configuration — change once, updates everywhere
-import { CONTACT } from "@/lib/contact";
+import { BRIEF_EMAIL } from "@/lib/contact";
 
 export const APP_NAME = "Brief-nach-Berlin" as const;
 export const APP_URL = "https://www.brief-nach-berlin.de" as const;
@@ -71,7 +71,9 @@ brief-nach-berlin.de
 
 // Founder credit (footer of email + success page)
 export const FOUNDER_NAME = "Thomas Lorenz" as const;
-export const FOUNDER_EMAIL = CONTACT.email;
+// Backwards-compatible name for existing user-facing mail links. The public
+// contact address belongs to the project, not to Thomas's private inbox.
+export const FOUNDER_EMAIL = BRIEF_EMAIL;
 export const FOUNDER_HOMEPAGE = "https://www.thomas-lorenz.eu" as const;
 export const FOUNDER_LINKEDIN = "https://www.linkedin.com/in/thomaslorenz91/" as const;
 export const FOUNDER_INSTAGRAM = "https://www.instagram.com/thomas_duisi/" as const;

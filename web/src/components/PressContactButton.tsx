@@ -1,12 +1,12 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { BRIEF_EMAIL } from "@/lib/contact";
 
 // Adresse bewusst in Teilen, damit sie nicht als Klartext im statischen HTML
 // steht. Sie wird erst im Browser zusammengesetzt, Crawler greifen sie so
-// nicht ab. Entspricht thomas_lorenz@posteo.de.
-const USER = "thomas_lorenz";
-const DOMAIN = "posteo.de";
+// nicht ab.
+const [USER, DOMAIN] = BRIEF_EMAIL.split("@");
 const SUBJECT = "Presseanfrage: Brief-nach-Berlin";
 
 export function PressContactButton() {

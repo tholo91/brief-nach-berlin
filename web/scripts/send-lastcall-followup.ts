@@ -20,10 +20,10 @@
 //
 // Flags:
 //   --exclude=PATH   CSV mit bereits angeschriebenen Adressen (werden übersprungen)
-//   --dry-run        Schickt nur einen einzigen Test an thomas_lorenz@posteo.de
+//   --dry-run        Schickt nur einen einzigen Test an Brief-nach-Berlin@posteo.de
 //   --yes            Skipt den Confirm-Prompt (Vorsicht)
 //   --allow-large    Hebt den 500-Empfänger-Schutz auf
-//   --reply-to=EMAIL Reply-To überschreiben (default: thomas_lorenz@posteo.de)
+//   --reply-to=EMAIL Reply-To überschreiben (default: Brief-nach-Berlin@posteo.de)
 //
 // Voraussetzungen:
 //   1. web/.env.local enthält BREVO_API_KEY, BREVO_SENDER_EMAIL
@@ -40,7 +40,7 @@ loadEnvLocal();
 
 const MAX_RECIPIENTS = 500;
 const THROTTLE_MS = 300;
-const TEST_RECIPIENT = "thomas_lorenz@posteo.de";
+const TEST_RECIPIENT = "Brief-nach-Berlin@posteo.de";
 
 interface Args {
   csvPath: string;
@@ -171,7 +171,7 @@ function parseArgs(): Args {
   let dryRun = false;
   let yes = false;
   let allowLarge = false;
-  let replyTo = "thomas_lorenz@posteo.de";
+  let replyTo = "Brief-nach-Berlin@posteo.de";
 
   for (const a of argv) {
     if (a === "--dry-run") dryRun = true;

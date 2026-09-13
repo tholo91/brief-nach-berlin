@@ -36,6 +36,7 @@ loadEnvLocal();
 // the operator view. Extend as needed.
 const TEST_EMAILS = new Set<string>(
   [
+    "Brief-nach-Berlin@posteo.de",
     "tholorenz@posteo.de",
     "thomas-lorenz@posteo.de",
     "thomas_lorenz@posteo.de",

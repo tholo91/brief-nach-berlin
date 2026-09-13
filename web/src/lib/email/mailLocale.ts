@@ -1,4 +1,5 @@
 import { DEFAULT_LOCALE, type Locale } from "@/lib/i18n/locale";
+import { BRIEF_EMAIL } from "@/lib/contact";
 
 export function resolveEmailLocale(locale: Locale | undefined): Locale {
   return locale ?? DEFAULT_LOCALE;
@@ -64,7 +65,7 @@ export const emailCopy = {
     noticeText: "Diese Mail ist ein generierter Entwurf. Bitte passe ihn an und prüfe die Daten vor dem Versand",
     responsibility: "Die Verantwortung für den Inhalt liegt bei dir.",
     privacy: "Datenschutz",
-    dataPolicy: "wir speichern Brieftext und Anliegen nicht in unserer Anwendungsdatenbank; technische E-Mail-Aufbewahrung und freiwillige Themensignale erklärt die Datenschutzerklärung.",
+    dataPolicy: "Wir speichern Brieftext und Anliegen nicht in unserer Anwendungsdatenbank. Kein Newsletter: Im normalen Ablauf kommen höchstens drei automatische E-Mails – die Brief-Mail, eine Bewertungsnachfrage nach einigen Tagen und, falls vorgesehen, einige Monate später eine letzte Frage nach einer Reaktion.",
     guideMdb: "Wer darf MdBs schreiben?",
     guide: "Mehr zum Briefeschreiben",
     followup: {
@@ -77,12 +78,12 @@ export const emailCopy = {
       shareHeading: "Gemeinsam noch lauter",
       share: "Briefe erhalten mehr Gehör, wenn viele Menschen aus der gleichen Region schreiben. Teile Brief-nach-Berlin supergerne in deinem Umfeld",
       moreInfo: "mehr Infos",
-      oneOff: "Einmalige Nachfrage, kein Newsletter.",
+      oneOff: "Eine von höchstens drei automatischen Mails, kein Newsletter.",
       write: "Wer darf schreiben?",
       privacy: "Datenschutz",
       delete: "Meine gespeicherten Daten löschen",
       feedbackMailSubject: "Brief-nach-Berlin: Meine gespeicherten Daten löschen",
-      feedbackMailBody: "Hallo Thomas,\n\nbitte lösche alle Bewertungen und freiwillig gespeicherten Themensignale, die mit dieser E-Mail-Adresse verknüpft sind. Mir ist bewusst, dass ich diese E-Mail noch absenden muss.\n\nDanke!",
+      feedbackMailBody: "Hallo Brief-nach-Berlin-Team,\n\nbitte lösche alle Bewertungen und freiwillig gespeicherten Themensignale, die mit dieser E-Mail-Adresse verknüpft sind. Mir ist bewusst, dass ich diese E-Mail noch absenden muss.\n\nDanke!",
     },
   },
   en: {
@@ -144,7 +145,7 @@ export const emailCopy = {
     noticeText: "This email contains a generated draft. The letter itself is in German; review its details before sending",
     responsibility: "You are responsible for its content.",
     privacy: "Privacy policy (in German)",
-    dataPolicy: "we do not store your letter text or request in our application database; technical email retention and voluntary topic signals are explained in the privacy policy.",
+    dataPolicy: "We do not store your letter text or request in our application database. No newsletter: in the normal flow, you receive at most three automated emails – the letter email, a rating question after a few days and, if scheduled, one final question about a response after a few months.",
     guideMdb: "Who may write to MPs? (in German)",
     guide: "More about writing letters (in German)",
     followup: {
@@ -157,12 +158,12 @@ export const emailCopy = {
       shareHeading: "Make more voices heard",
       share: "Letters receive more attention when many people from the same region write. Feel free to share Brief-nach-Berlin with people you know",
       moreInfo: "more information (in German)",
-      oneOff: "A one-time question, not a newsletter.",
+      oneOff: "One of at most three automated emails, not a newsletter.",
       write: "Who may write? (in German)",
       privacy: "Privacy policy (in German)",
       delete: "Delete my stored data",
       feedbackMailSubject: "Brief-nach-Berlin: Delete my stored data",
-      feedbackMailBody: "Hello Thomas,\n\nplease delete all reviews and voluntarily stored topic signals linked to this email address. I understand that I still need to send this email.\n\nThank you!",
+      feedbackMailBody: "Hello Brief-nach-Berlin team,\n\nplease delete all reviews and voluntarily stored topic signals linked to this email address. I understand that I still need to send this email.\n\nThank you!",
     },
   },
   tr: {
@@ -224,7 +225,7 @@ export const emailCopy = {
     noticeText: "Bu e-posta oluşturulmuş bir taslak içerir. Mektubun kendisi Almancadır; göndermeden önce ayrıntıları kontrol edin",
     responsibility: "İçeriğinden siz sorumlusunuz.",
     privacy: "Gizlilik politikası (Almanca)",
-    dataPolicy: "mektup metninizi veya talebinizi uygulama veritabanımızda saklamayız; teknik e-posta saklama ve gönüllü konu sinyalleri gizlilik politikasında açıklanır.",
+    dataPolicy: "Mektup metninizi veya talebinizi uygulama veritabanımızda saklamayız. Bülten yok: normal akışta en fazla üç otomatik e-posta alırsınız – mektup e-postası, birkaç gün sonra bir değerlendirme sorusu ve planlandıysa birkaç ay sonra tepki olup olmadığına dair son bir soru.",
     guideMdb: "Milletvekillerine kim yazabilir? (Almanca)",
     guide: "Mektup yazma hakkında daha fazlası (Almanca)",
     followup: {
@@ -237,16 +238,21 @@ export const emailCopy = {
       shareHeading: "Daha çok ses duyulsun",
       share: "Aynı bölgeden birçok kişi yazdığında mektuplar daha fazla dikkat çeker. Brief-nach-Berlin'i tanıdıklarınızla paylaşabilirsiniz",
       moreInfo: "daha fazla bilgi (Almanca)",
-      oneOff: "Tek seferlik bir soru, bülten değil.",
+      oneOff: "En fazla üç otomatik e-postadan biri, bülten değil.",
       write: "Kim yazabilir? (Almanca)",
       privacy: "Gizlilik politikası (Almanca)",
       delete: "Kayıtlı verilerimi sil",
       feedbackMailSubject: "Brief-nach-Berlin: Kayıtlı verilerimi sil",
-      feedbackMailBody: "Merhaba Thomas,\n\nlütfen bu e-posta adresiyle bağlantılı tüm değerlendirmeleri ve gönüllü olarak kaydedilmiş konu sinyallerini sil. Bu e-postayı ayrıca göndermem gerektiğini biliyorum.\n\nTeşekkürler!",
+      feedbackMailBody: "Merhaba Brief-nach-Berlin ekibi,\n\nlütfen bu e-posta adresiyle bağlantılı tüm değerlendirmeleri ve gönüllü olarak kaydedilmiş konu sinyallerini sil. Bu e-postayı ayrıca göndermem gerektiğini biliyorum.\n\nTeşekkürler!",
     },
   },
 } as const satisfies Record<Locale, Record<string, unknown>>;
 
 export function getEmailCopy(locale: Locale | undefined) {
   return emailCopy[resolveEmailLocale(locale)];
+}
+
+export function buildDataDeletionMailto(locale: Locale | undefined = DEFAULT_LOCALE): string {
+  const copy = getEmailCopy(locale).followup;
+  return `mailto:${BRIEF_EMAIL}?subject=${encodeURIComponent(copy.feedbackMailSubject)}&body=${encodeURIComponent(copy.feedbackMailBody)}`;
 }

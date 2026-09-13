@@ -214,7 +214,7 @@ export function SchreibMerzExperienceV2() {
             Für 16- bis 25-Jährige
           </div>
           <h1 className="mt-6 max-w-2xl text-balance font-typewriter text-[2.55rem] font-bold leading-[1.02] tracking-[-0.035em] text-waldgruen-dark sm:text-6xl lg:text-7xl">
-            Was ist dir und deiner Generation in der Politik wichtig?
+            Was willst du dem Kanzler sagen?
           </h1>
           <p className="mt-6 max-w-xl text-pretty font-body text-lg leading-relaxed text-warmgrau/80 sm:text-xl">
             Schreib dein Anliegen in deinen eigenen Worten. Wenn ein Thema passt,

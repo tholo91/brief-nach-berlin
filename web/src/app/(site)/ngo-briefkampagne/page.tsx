@@ -10,6 +10,7 @@ import { SPECIAL_CAMPAIGN_SLUG } from "@/lib/campaigns/specialCampaigns";
 
 const URL_PATH = "/ngo-briefkampagne";
 const PUBLISHED = "2026-07-06";
+const MODIFIED = "2026-09-13";
 const TITLE =
   "NGO-Briefkampagne: aus eurem Anliegen viele persönliche Briefe machen | Brief-nach-Berlin";
 const DESCRIPTION =
@@ -74,7 +75,7 @@ const articleJsonLd = {
   headline: TITLE,
   description: DESCRIPTION,
   datePublished: PUBLISHED,
-  dateModified: PUBLISHED,
+  dateModified: MODIFIED,
   author: { "@type": "Organization", name: "Brief-nach-Berlin" },
   publisher: {
     "@type": "Organization",
@@ -208,6 +209,30 @@ export default async function NgoBriefkampagnePage() {
               className="h-auto w-full"
             />
           </figure>
+
+          <section className="mt-10 rounded-xl border border-waldgruen/12 bg-white/45 p-6 sm:p-8">
+            <p className="font-typewriter text-xs font-bold uppercase tracking-widest text-waldgruen/50">
+              Was Forschung zu Kampagnentexten sagt
+            </p>
+            <p className="mt-3 font-body text-sm leading-relaxed text-warmgrau/80">
+              Ein Onlineexperiment verglich persönliche Geschichten,
+              Sachinformationen und keine Botschaft. Geschichten führten
+              häufiger als gar keine Botschaft zu einem einfachen
+              Unterstützungsklick. Gegenüber Sachinformationen war der
+              Unterschied nicht belastbar. Die Studie untersuchte keine Briefe
+              oder politischen Büros. Für uns ist sie ein Hinweis, Raum für den
+              eigenen Grund zu geben – kein Wirkungsversprechen. Siehe{" "}
+              <a
+                href="https://doi.org/10.1017/S0003055415000295"
+                className="text-waldgruen underline decoration-waldgruen/30 underline-offset-2 hover:text-waldgruen-dark"
+                target="_blank"
+                rel="noreferrer"
+              >
+                McEntire, Leiby und Krain (2015)
+              </a>
+              .
+            </p>
+          </section>
 
           <section id="laufende-kampagnen" className="mt-10 scroll-mt-28">
             <div className="mb-4">

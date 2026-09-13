@@ -120,33 +120,26 @@ export default function WeitersagenPage() {
           Anliegen, das im Wahlkreisbüro nicht mehr übersehen wird.
         </p>
 
-        <div className="font-body text-warmgrau leading-relaxed space-y-3 mb-12">
-          <p>
-            Briefe aus dem gleichen Wahlkreis zum gleichen Thema bekommen im
-            Büro einer oder eines Abgeordneten besonderes Gewicht. Wenn du
-            Brief-nach-Berlin gut findest, ist eine kurze Nachricht an drei
-            Bekannte oft der wirksamste nächste Schritt, den du machen kannst.
-          </p>
-          <p>
-            Hier findest du fertige Nachrichten, einen druckbaren QR-Code und
-            einen direkten Draht zu mir, wenn du Material für eine eigene
-            Aktion brauchst.
-          </p>
-        </div>
-
         {/* Direkte Teilen-Optionen */}
         <section className="mb-12">
           <h2 className="font-body text-2xl md:text-3xl font-bold text-waldgruen-dark mb-2">
             Direkt teilen
           </h2>
           <p className="font-body text-warmgrau leading-relaxed mb-6">
-            Tipp auf einen Knopf, fertige Nachricht öffnet sich, du schickst
-            sie an die Person oder die Gruppe deiner Wahl. Du kannst den Text
-            vorher noch anpassen.
+            Wähle einen Kanal. Die Nachricht ist vorbereitet und kann vor dem
+            Senden angepasst werden.
           </p>
 
           <WeitersagenShareActions />
         </section>
+
+        <div className="font-body text-warmgrau leading-relaxed space-y-3 mb-12">
+          <p>
+            Wenn du Brief-nach-Berlin gut findest, schick den Link an drei
+            Menschen aus deinem Umfeld. Fertige Nachrichten und weitere
+            Materialien findest du hier.
+          </p>
+        </div>
 
         {/* Instagram */}
         <section id="insta" className="mb-12 scroll-mt-8">

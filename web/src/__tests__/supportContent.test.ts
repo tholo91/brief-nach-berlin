@@ -11,6 +11,7 @@ describe("support content", () => {
     expect(DONATION_PROVIDER_URL).toBe("https://spende.we-aid.org/Brief-nach-Berlin");
     expect(SUPPORT_CONTENT.ctas.learnMore.href).toBe(DONATION_PATH);
     expect(SUPPORT_CONTENT.ctas.donate.href).toBe(DONATION_PROVIDER_URL);
+    expect(SUPPORT_CONTENT.ctas.share.label).toBe("Brief-nach-Berlin weiterempfehlen");
     expect(SUPPORT_CONTENT.ctas.share.href).toBe("/weitersagen");
   });
 

@@ -75,7 +75,7 @@ export const SUPPORT_CONTENT = {
       href: DONATION_PATH,
     },
     share: {
-      label: "Brief-nach-Berlin weitersagen",
+      label: "Brief-nach-Berlin weiterempfehlen",
       href: "/weitersagen",
     },
   },

@@ -74,6 +74,15 @@ export default function SpendenPage() {
           <p className="mt-2 font-body text-base leading-relaxed text-warmgrau">
             {SUPPORT_CONTENT.fiscalHost.text}
           </p>
+          <a
+            href={DONATION_PROVIDER_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="mt-4 inline-flex items-center gap-2 font-typewriter text-sm font-bold text-waldgruen underline decoration-waldgruen/40 underline-offset-4 transition-colors hover:text-waldgruen-dark hover:decoration-waldgruen"
+          >
+            Direkt über WE AID spenden
+            <span aria-hidden="true">&rarr;</span>
+          </a>
         </section>
 
         <section>

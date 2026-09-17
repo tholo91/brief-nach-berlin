@@ -135,6 +135,10 @@ const coverage = [
     outlet: "detektor.fm",
     href: "https://detektor.fm/unsere-newsletter/dazwischen/dazwischen-warum-80-prozent-ans-weggehen-denken",
   },
+  {
+    outlet: "FluxFM Berlin (live vorgestellt am 14. September 2026, 9:30 Uhr)",
+    href: "https://www.fluxfm.de/channels/FluxFM?moment=m40d8453cp8NXq",
+  },
 ];
 
 const faqs = [

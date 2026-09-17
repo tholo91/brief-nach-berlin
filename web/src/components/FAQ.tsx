@@ -24,7 +24,7 @@ function ChevronIcon() {
   );
 }
 
-export default function FAQ() {
+export default function FAQ({ letterCount }: { letterCount: number }) {
   const copy = useUiCopy();
   const items = [
     [copy.faq.freeQuestion, copy.faq.freeAnswer],
@@ -65,7 +65,7 @@ export default function FAQ() {
           </div>
         </div>
         <div className="lg:pb-1">
-          <LetterActivityCard />
+          <LetterActivityCard letterCount={letterCount} />
         </div>
       </div>
     </section>

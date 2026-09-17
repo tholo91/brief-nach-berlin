@@ -15,7 +15,7 @@ type Panel = "letter" | "map" | "story";
 
 const panels: Panel[] = ["letter", "map", "story"];
 
-export default function HowItWorksWithExample() {
+export default function HowItWorksWithExample({ letterCount }: { letterCount: number }) {
   const copy = useUiCopy();
   const steps = [
     { number: stepNumbers[0], title: copy.howItWorks.step1Title, description: copy.howItWorks.step1Description },
@@ -228,7 +228,7 @@ export default function HowItWorksWithExample() {
               </div>
 
               <div id="map-panel" role="tabpanel" aria-labelledby="map-panel-tab" className="min-w-full snap-start px-1 py-6">
-                <LetterActivityCard />
+                <LetterActivityCard letterCount={letterCount} />
               </div>
 
               <div id="story-panel" role="tabpanel" aria-labelledby="story-panel-tab" className="min-w-full snap-start px-1 py-6">

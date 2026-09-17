@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { GERMANY_MAP_ATTRIBUTION } from "@/lib/letterSignals/germanyMapGeometry.generated";
 import type { LetterMapData } from "@/lib/letterSignals/mapTypes";
 import { loadPublicLetterMapData } from "@/lib/letterSignals/publicMapClient";
 import { GermanyContributionMap } from "./GermanyContributionMap";
@@ -14,7 +13,9 @@ const EMPTY_MAP: LetterMapData = {
   postcodeAreas: 0,
 };
 
-export function LetterActivityCard() {
+const SHORT_MAP_ATTRIBUTION = "Karte: © OSM (ODbL) · GeoNames (CC BY 4.0) · Natural Earth (PD)";
+
+export function LetterActivityCard({ letterCount }: { letterCount: number }) {
   const [mapData, setMapData] = useState<LetterMapData>(EMPTY_MAP);
   const [mapState, setMapState] = useState<MapState>("loading");
 
@@ -45,7 +46,7 @@ export function LetterActivityCard() {
         {mapState === "loading" && <div className="h-4 w-48 animate-pulse rounded bg-waldgruen/10" aria-label="Kartenbeiträge werden geladen" />}
         {mapState === "ready" && mapData.totalContributions > 0 && (
           <p className="font-body text-sm font-semibold text-waldgruen-dark">
-            {mapData.totalContributions.toLocaleString("de-DE")} freiwillige {mapData.totalContributions === 1 ? "Kartenbeitrag" : "Kartenbeiträge"} aus {mapData.postcodeAreas.toLocaleString("de-DE")} {mapData.postcodeAreas === 1 ? "Ort" : "Orten"}
+            {letterCount.toLocaleString("de-DE")} Briefe aus {mapData.postcodeAreas.toLocaleString("de-DE")}+ Orten
           </p>
         )}
         {mapState === "ready" && mapData.totalContributions === 0 && <p className="font-body text-sm text-warmgrau/65">Die ersten freiwilligen Punkte erscheinen hier in Kürze.</p>}
@@ -54,9 +55,9 @@ export function LetterActivityCard() {
 
       <figure className="m-0 mt-4">
         <div className={mapState === "loading" ? "animate-pulse opacity-55" : "opacity-100"}>
-          <GermanyContributionMap points={mapData.points} variant="landing" label={`Deutschlandkarte mit ${mapData.totalContributions} freiwilligen Kartenbeiträgen aus ${mapData.postcodeAreas} ${mapData.postcodeAreas === 1 ? "Ort" : "Orten"}`} />
+          <GermanyContributionMap points={mapData.points} variant="landing" label={`Deutschlandkarte mit Briefen aus ${mapData.postcodeAreas} Orten`} />
         </div>
-        <figcaption className="mx-auto mt-3 max-w-md text-center font-body text-[11px] leading-relaxed text-warmgrau/45">{GERMANY_MAP_ATTRIBUTION}</figcaption>
+        <figcaption className="mx-auto mt-3 max-w-md whitespace-nowrap text-center font-body text-[10px] leading-relaxed tracking-tight text-warmgrau/45">{SHORT_MAP_ATTRIBUTION}</figcaption>
       </figure>
     </div>
   );

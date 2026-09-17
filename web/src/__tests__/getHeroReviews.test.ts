@@ -47,6 +47,7 @@ function review(id: string, rating: 4 | 5) {
 
 describe("getHeroReviews", () => {
   afterEach(() => {
+    jest.restoreAllMocks();
     jest.clearAllMocks();
   });
 
@@ -81,6 +82,58 @@ describe("getHeroReviews", () => {
 
     await expect(getHeroReviews()).resolves.toEqual([]);
     expect(mockedSupabase.from).toHaveBeenCalledTimes(1);
+  });
+
+  it("keeps the review order stable within the same hour", async () => {
+    const query = makeQuery({
+      data: [
+        review("4a", 4),
+        review("4b", 4),
+        review("4c", 4),
+        review("5a", 5),
+        review("5b", 5),
+        review("5c", 5),
+      ],
+      error: null,
+    });
+    mockedSupabase.from.mockReturnValue(query as never);
+    const nowSpy = jest.spyOn(Date, "now");
+    const randomSpy = jest.spyOn(Math, "random");
+
+    nowSpy.mockReturnValue(Date.UTC(2026, 8, 17, 10, 0));
+    const firstResult = await getHeroReviews();
+    nowSpy.mockReturnValue(Date.UTC(2026, 8, 17, 10, 59));
+    const secondResult = await getHeroReviews();
+
+    expect(secondResult.map((item) => item.id)).toEqual(
+      firstResult.map((item) => item.id)
+    );
+    expect(randomSpy).not.toHaveBeenCalled();
+  });
+
+  it("rotates the review order when the hour changes", async () => {
+    const query = makeQuery({
+      data: [
+        review("4a", 4),
+        review("4b", 4),
+        review("4c", 4),
+        review("5a", 5),
+        review("5b", 5),
+        review("5c", 5),
+      ],
+      error: null,
+    });
+    mockedSupabase.from.mockReturnValue(query as never);
+    const nowSpy = jest.spyOn(Date, "now");
+
+    nowSpy.mockReturnValue(Date.UTC(2026, 8, 17, 10, 59));
+    const firstResult = await getHeroReviews();
+    nowSpy.mockReturnValue(Date.UTC(2026, 8, 17, 11, 0));
+    const secondResult = await getHeroReviews();
+
+    expect(secondResult.map((item) => item.id)).not.toEqual(
+      firstResult.map((item) => item.id)
+    );
   });
 
   it("returns no reviews when the featured query fails", async () => {

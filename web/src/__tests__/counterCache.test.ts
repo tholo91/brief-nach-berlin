@@ -34,7 +34,7 @@ describe("letter counter caching", () => {
     });
   });
 
-  it("invalidates the counter after an increment", async () => {
+  it("does not fan out cache invalidation after an increment", async () => {
     mockRpc.mockResolvedValue({ data: 42, error: null });
 
     await expect(incrementLetterCounters()).resolves.toBe(42);
@@ -42,7 +42,20 @@ describe("letter counter caching", () => {
     expect(mockRpc).toHaveBeenCalledWith("increment_letter_counters", {
       campaign_slug: null,
     });
-    expect(mockRevalidateTag).toHaveBeenCalledWith("letter-count", "max");
+    expect(mockRevalidateTag).not.toHaveBeenCalled();
+  });
+
+  it("does not fan out cache invalidation through the fallback increment", async () => {
+    mockRpc
+      .mockResolvedValueOnce({ data: null, error: { message: "temporary outage" } })
+      .mockResolvedValueOnce({ data: null, error: null });
+
+    await expect(incrementLetterCounters()).resolves.toBeUndefined();
+
+    expect(mockRpc).toHaveBeenNthCalledWith(2, "increment_counter", {
+      key_name: "letter_count",
+    });
+    expect(mockRevalidateTag).not.toHaveBeenCalled();
   });
 
   it("returns the last known value when Supabase cannot be read", async () => {

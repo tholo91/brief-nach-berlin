@@ -18,11 +18,11 @@ export const metadata: Metadata = {
   alternates: { canonical: "/" },
   title: "Brief-nach-Berlin | Dein Anliegen an die Politik",
   description:
-    "Beschreibe dein Anliegen. Brief-nach-Berlin findet die passenden Abgeordneten und formuliert in wenigen Minuten deinen persönlichen Brief.",
+    "Dein Anliegen direkt an die Politik: Brief-nach-Berlin findet, wer zuständig ist, und formuliert deinen persönlichen Brief – kostenlos in 3 Minuten.",
 };
 
-// Review- und Briefzähler-Daten sollen nicht im Build-Ergebnis einfrieren.
-export const revalidate = 300;
+// Review- und Briefzähler-Daten werden stündlich aktualisiert.
+export const revalidate = 3600;
 
 export default async function Home() {
   const [heroReviews, letterCount] = await Promise.all([
@@ -48,11 +48,11 @@ export default async function Home() {
             </div>
           )}
         </section>
-        <HowItWorksWithExample />
+        <HowItWorksWithExample letterCount={letterCount} />
         <WhyItWorks />
         <Vision />
         <ProjectSupport />
-        <FAQ />
+        <FAQ letterCount={letterCount} />
         <CallToAction />
       </main>
       <Footer />

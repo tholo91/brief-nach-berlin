@@ -21,8 +21,8 @@ const TITLE = "Stimmen & Bewertungen | Brief-nach-Berlin";
 const DESCRIPTION =
   "Echte Rückmeldungen von Menschen, die einen Brief generiert haben. Schnitt, durchlaufende Karten, ausgewählte Quotes. Seit Mai 2026.";
 
-// Review-Daten sollen sich ohne neuen Deploy aktualisieren.
-export const revalidate = 300;
+// Review-Daten sollen sich stündlich ohne neuen Deploy aktualisieren.
+export const revalidate = 3600;
 
 export const metadata: Metadata = {
   title: TITLE,
@@ -231,7 +231,7 @@ export default async function StimmenPage() {
       </div>
 
       <div className="max-w-2xl mx-auto px-6 mb-28">
-        <LetterActivityCard />
+        <LetterActivityCard letterCount={letterCount} />
       </div>
 
       {/* 3. ReviewMarquee: full viewport breakout with edge fade */}

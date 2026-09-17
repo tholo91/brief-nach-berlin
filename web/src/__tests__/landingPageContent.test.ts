@@ -79,19 +79,17 @@ describe("landing page content", () => {
     const voicesSource = readFileSync(join(process.cwd(), "src/app/(site)/stimmen/page.tsx"), "utf8");
 
     expect(pageSource).not.toContain("LetterActivitySection");
-    expect(mapSource).toContain(
-      "Hier zeigen freiwillige Kartenbeiträge",
-    );
-    expect(mapSource).toContain('mapData.totalContributions === 1 ? "Kartenbeitrag" : "Kartenbeiträge"');
-    expect(mapSource).toContain('mapData.postcodeAreas === 1 ? "Ort" : "Orten"');
+    expect(mapSource).toContain('{letterCount.toLocaleString("de-DE")} Briefe aus {mapData.postcodeAreas.toLocaleString("de-DE")}+ Orten');
+    expect(mapSource).toContain("SHORT_MAP_ATTRIBUTION");
+    expect(mapSource).toContain("whitespace-nowrap");
     expect(voicesSource).toContain('import { LetterActivityCard } from "@/components/letter-signals/LetterActivityCard";');
-    expect(voicesSource).toContain("<LetterActivityCard />");
+    expect(voicesSource).toContain("<LetterActivityCard letterCount={letterCount} />");
     expect(workflowSource).toContain("snap-x snap-mandatory");
     expect(workflowSource).toContain('role="tablist"');
     expect(workflowSource).toContain('aria-controls="map-panel"');
     expect(workflowSource).toContain('aria-controls="story-panel"');
-    expect(workflowSource).toContain("<LetterActivityCard />");
-    expect(faqSource).toContain("<LetterActivityCard />");
+    expect(workflowSource).toContain("<LetterActivityCard letterCount={letterCount} />");
+    expect(faqSource).toContain("<LetterActivityCard letterCount={letterCount} />");
     expect(faqSource).toContain("lg:grid-cols-[minmax(0,1fr)_minmax(20rem,0.82fr)]");
     expect(workflowSource).toContain('href="/brief-schreiben-wirkt"');
     expect(workflowSource).toContain('src="/images/erste-nutzerin-brief-nach-berlin.webp"');

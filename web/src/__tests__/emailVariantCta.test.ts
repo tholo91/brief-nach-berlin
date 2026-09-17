@@ -63,7 +63,9 @@ describe("letter email variant CTA", () => {
     expect(text.match(new RegExp(learnMoreUrl.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), "g"))).toHaveLength(1);
     expect(html).toContain("Brief-nach-Berlin unterstützen");
     expect(html).toContain("Brief-nach-Berlin unterstützen ❤️");
-    expect(html).toContain("Mein Projekt soll weiterhin für alle kostenlos und unabhängig bleiben.");
+    expect(html).toContain(
+      "Ich baue Brief-nach-Berlin allein und ehrenamtlich in meiner Freizeit und trage die laufenden Kosten bisher selbst.",
+    );
     expect(html).toContain("Jetzt über WE AID spenden");
     expect(html).toContain("Mehr Informationen");
     expect(html).toContain("gemeinnützige Initiative in Trägerschaft der WE AID gGmbH");

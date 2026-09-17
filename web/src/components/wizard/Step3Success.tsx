@@ -17,6 +17,7 @@ import type { BundeskanzlerRecipient } from "@/lib/lookup/bundeskanzlerRecipient
 import { selectPoliticianAction } from "@/lib/actions/selectPolitician";
 import { resendLetterAction } from "@/lib/actions/resendLetter";
 import { reportErrorAction } from "@/lib/actions/reportError";
+import { WEBMAIL_PROVIDERS } from "@/lib/email/emailProviders";
 import { installClientLogBuffer, getClientLogs } from "@/lib/clientLogBuffer";
 import { formatPartyShort } from "@/lib/formatParty";
 import {
@@ -31,6 +32,8 @@ import {
 } from "@/lib/campaign-recipient-picker";
 import { WizardForwardIcon } from "./WizardForwardIcon";
 import { LetterSignalCard } from "./LetterSignalCard";
+import { AlternativeRecipientPicker } from "./AlternativeRecipientPicker";
+import type { RecipientSearchCard } from "@/lib/lookup/recipientSearch";
 
 function maskEmail(email: string): string {
   const [local, domain] = email.split("@");
@@ -55,36 +58,6 @@ const LETTER_GEN_MIN_DISPLAY_MS = 4000;
 // We only render the button when wizardData.email's domain matches one of
 // these entries - better no button than a broken one for custom domains.
 // Universal Links on iOS/Android usually route these to the installed app.
-const WEBMAIL_PROVIDERS: Record<string, { label: string; url: string }> = {
-  "gmail.com": { label: "Gmail öffnen", url: "https://mail.google.com/" },
-  "googlemail.com": { label: "Gmail öffnen", url: "https://mail.google.com/" },
-  "gmx.de": { label: "GMX öffnen", url: "https://www.gmx.net/" },
-  "gmx.net": { label: "GMX öffnen", url: "https://www.gmx.net/" },
-  "gmx.com": { label: "GMX öffnen", url: "https://www.gmx.com/" },
-  "web.de": { label: "Web.de öffnen", url: "https://web.de/" },
-  "outlook.com": { label: "Outlook öffnen", url: "https://outlook.live.com/mail/" },
-  "outlook.de": { label: "Outlook öffnen", url: "https://outlook.live.com/mail/" },
-  "hotmail.com": { label: "Outlook öffnen", url: "https://outlook.live.com/mail/" },
-  "hotmail.de": { label: "Outlook öffnen", url: "https://outlook.live.com/mail/" },
-  "live.de": { label: "Outlook öffnen", url: "https://outlook.live.com/mail/" },
-  "live.com": { label: "Outlook öffnen", url: "https://outlook.live.com/mail/" },
-  "msn.com": { label: "Outlook öffnen", url: "https://outlook.live.com/mail/" },
-  "yahoo.com": { label: "Yahoo öffnen", url: "https://mail.yahoo.com/" },
-  "yahoo.de": { label: "Yahoo öffnen", url: "https://mail.yahoo.de/" },
-  "icloud.com": { label: "iCloud Mail öffnen", url: "https://www.icloud.com/mail" },
-  "me.com": { label: "iCloud Mail öffnen", url: "https://www.icloud.com/mail" },
-  "mac.com": { label: "iCloud Mail öffnen", url: "https://www.icloud.com/mail" },
-  "t-online.de": { label: "T-Online öffnen", url: "https://email.t-online.de/" },
-  "aol.com": { label: "AOL Mail öffnen", url: "https://mail.aol.com/" },
-  "aol.de": { label: "AOL Mail öffnen", url: "https://mail.aol.de/" },
-  "proton.me": { label: "Proton Mail öffnen", url: "https://mail.proton.me/" },
-  "protonmail.com": { label: "Proton Mail öffnen", url: "https://mail.proton.me/" },
-  "pm.me": { label: "Proton Mail öffnen", url: "https://mail.proton.me/" },
-  "mailbox.org": { label: "mailbox.org öffnen", url: "https://login.mailbox.org/" },
-  "posteo.de": { label: "Posteo öffnen", url: "https://posteo.de/" },
-  "posteo.net": { label: "Posteo öffnen", url: "https://posteo.de/" },
-};
-
 function resolveWebmail(email: string | undefined): { label: string; url: string } | null {
   if (!email) return null;
   const domain = email.split("@")[1]?.toLowerCase().trim();
@@ -136,6 +109,22 @@ export function Step3Success({
     );
     return showLandPersonPicker ? [...standard, ...optionalLandRecipients] : standard;
   }, [recipients, optionalLandRecipients, showLandPersonPicker]);
+  const [alternativePolitician, setAlternativePolitician] = useState<
+    MdbRecipient | MdlRecipient | null
+  >(null);
+  const [showAlternativePicker, setShowAlternativePicker] = useState(
+    () =>
+      selectedLevel === "Bund" &&
+      !recipients.some((recipient) => recipient.kind === "mdb") &&
+      !recipients.some((recipient) => recipient.kind === "bundeskanzler") &&
+      !(
+        result &&
+        "disambiguationNeeded" in result &&
+        result.disambiguationNeeded &&
+        result.campaignRestricted
+      )
+  );
+  const [mdbLaterSelected, setMdbLaterSelected] = useState(false);
   const rathaus = useMemo(
     () => recipients.find((r): r is RathausRecipient => r.kind === "rathaus") ?? null,
     [recipients]
@@ -180,7 +169,8 @@ export function Step3Success({
       ? result.campaignTargetCount ?? politicians.length
       : politicians.length;
 
-  const isNoMdbFound = politicians.length === 1 && politicians[0].id === -1;
+  const hasNoLocalMdb =
+    selectedLevel === "Bund" && politicians.length === 0 && !bundeskanzler;
 
   const [selectedPoliticianId, setSelectedPoliticianId] = useState<number | null>(
     () =>
@@ -236,6 +226,7 @@ export function Step3Success({
     return false;
   });
   const [generationFetchError, setGenerationFetchError] = useState<string | null>(null);
+  const [generationMayHaveSucceeded, setGenerationMayHaveSucceeded] = useState(false);
   const [retryCount, setRetryCount] = useState(0);
   // "Fehler melden"-Frühwarnsystem: Kontext des letzten Generierungsfehlers
   // (HTTP-Status, Server-Detail, Client-Fehler) wird hier festgehalten und beim
@@ -309,6 +300,7 @@ export function Step3Success({
   // prefers-reduced-motion (vestibular-disorder safety, WCAG 2.3.3).
   const handleCardSelect = useCallback((politicianId: number) => {
     setSelectedPoliticianId(politicianId);
+    setMdbLaterSelected(false);
     setRathausSelected(false);
     setLandesregierungSelected(false);
     setBundeskanzlerSelected(false);
@@ -378,8 +370,24 @@ export function Step3Success({
   }, [displayedPoliticians]);
 
   const selectedPolitician = useMemo(
-    () => politicians.find((p) => p.id === selectedPoliticianId) ?? null,
-    [politicians, selectedPoliticianId]
+    () =>
+      politicians.find((p) => p.id === selectedPoliticianId) ??
+      (alternativePolitician?.id === selectedPoliticianId
+        ? alternativePolitician
+        : null),
+    [alternativePolitician, politicians, selectedPoliticianId]
+  );
+
+  const handleAlternativeSelect = useCallback(
+    (politician: RecipientSearchCard) => {
+      const recipient = {
+        ...politician,
+        kind: politician.level === "Land" ? "mdl" : "mdb",
+      } as MdbRecipient | MdlRecipient;
+      setAlternativePolitician(recipient);
+      handleCardSelect(recipient.id);
+    },
+    [handleCardSelect]
   );
 
   // Diskriminierte Auswahl für die Server-Seite: rathaus trägt bewusst keine
@@ -388,15 +396,12 @@ export function Step3Success({
     if (bundeskanzler && bundeskanzlerSelected) return { kind: "bundeskanzler" };
     if (landesregierung && landesregierungSelected) return { kind: "landesregierung" };
     if (rathaus && rathausSelected) return { kind: "rathaus" };
+    if (mdbLaterSelected) return { kind: "mdb_later" };
     if (selectedPolitician) {
       return { kind: selectedPolitician.kind, selectedPoliticianId: selectedPolitician.id };
     }
-    if (selectedPoliticianId !== null) {
-      // Fallback-Karte (id -1, "MdB später auswählen") ist kein echtes Politician-Objekt
-      return { kind: "mdb", selectedPoliticianId };
-    }
     return null;
-  }, [bundeskanzler, bundeskanzlerSelected, landesregierung, landesregierungSelected, rathaus, rathausSelected, selectedPolitician, selectedPoliticianId]);
+  }, [bundeskanzler, bundeskanzlerSelected, landesregierung, landesregierungSelected, mdbLaterSelected, rathaus, rathausSelected, selectedPolitician]);
 
   // Group the disambiguation cards by Wahlkreis. sortedPoliticians is already
   // Direkt-first, so insertion order puts the group holding the pre-selected
@@ -569,6 +574,7 @@ export function Step3Success({
             detail,
             clientError: null,
           };
+          setGenerationMayHaveSucceeded(false);
           throw new Error(`HTTP ${res.status}`);
         }
         return res.json() as Promise<{
@@ -603,6 +609,7 @@ export function Step3Success({
             detail: undefined,
             clientError: err.message,
           };
+          setGenerationMayHaveSucceeded(true);
         }
         setGenerationFetchError(
           "Beim Erstellen deines Briefes ist ein Fehler aufgetreten."
@@ -642,6 +649,13 @@ export function Step3Success({
     }).catch(() => ({ success: false }));
     setReportState(result.success ? "sent" : "failed");
   }, [wizardData, generatedSelection, retryCount]);
+
+  const handleGenerationRetry = useCallback(() => {
+    setGenerationFetchError(null);
+    setGenerationMayHaveSucceeded(false);
+    setReportState("idle");
+    setRetryCount((count) => count + 1);
+  }, []);
 
   // Keyboard navigation for politician cards
   const handleCardKeyDown = (
@@ -909,16 +923,35 @@ export function Step3Success({
                 Danke für deine Hilfe!
               </p>
               <p className="text-waldgruen/80">
-                Ich habe die Fehlermeldung bekommen. Ich beeile mich und melde mich, sobald das behoben ist.
+                {generationMayHaveSucceeded
+                  ? "Danke, ich habe die technischen Daten bekommen. Bitte prüfe jetzt dein Postfach und den Spam-Ordner – dein Brief könnte bereits angekommen sein."
+                  : "Danke, ich habe die technischen Daten bekommen und schaue mir den Fehler an."}
               </p>
+              {generationMayHaveSucceeded && (
+                <button
+                  type="button"
+                  onClick={handleGenerationRetry}
+                  className="mt-3 font-semibold text-waldgruen underline underline-offset-2 hover:text-waldgruen/80 transition-colors cursor-pointer"
+                >
+                  Nach zwei Minuten noch keine E-Mail? Nochmal versuchen
+                </button>
+              )}
             </div>
           ) : (
             <div
               role="alert"
               className="mt-6 bg-airmail-rot/10 border-l-4 border-airmail-rot p-4 rounded-r-lg font-body text-sm"
             >
-              <p className="font-semibold text-airmail-rot mb-1">Brief konnte nicht erstellt werden</p>
-              <p className="text-airmail-rot/80 mb-3">{generationFetchError}</p>
+              <p className="font-semibold text-airmail-rot mb-1">
+                {generationMayHaveSucceeded
+                  ? "Wir konnten die Erstellung nicht bestätigen"
+                  : "Brief konnte nicht erstellt werden"}
+              </p>
+              <p className="text-airmail-rot/80 mb-3">
+                {generationMayHaveSucceeded
+                  ? "Dein Brief wurde möglicherweise trotzdem erstellt und per E-Mail verschickt. Bitte prüfe zuerst dein Postfach und den Spam-Ordner. Wenn nach zwei Minuten nichts angekommen ist, kannst du es noch einmal versuchen."
+                  : generationFetchError}
+              </p>
               <div className="flex flex-wrap items-center gap-3">
                 <button
                   type="button"
@@ -942,11 +975,7 @@ export function Step3Success({
                 </button>
                 <button
                   type="button"
-                  onClick={() => {
-                    setGenerationFetchError(null);
-                    setReportState("idle");
-                    setRetryCount((c) => c + 1);
-                  }}
+                  onClick={handleGenerationRetry}
                   className="font-semibold text-airmail-rot underline underline-offset-2 hover:text-airmail-rot/80 transition-colors cursor-pointer"
                 >
                   Nochmal versuchen
@@ -1091,15 +1120,15 @@ export function Step3Success({
       ? formatPartyShort(selectedPolitician.party).replace(/^Die Linke$/, "die Linke")
       : "";
     const selectedPoliticianLabel =
-      bundeskanzler && bundeskanzlerSelected
+      mdbLaterSelected
+        ? "MdB später auswählen"
+        : bundeskanzler && bundeskanzlerSelected
         ? bundeskanzler.label
         : landesregierung && landesregierungSelected
         ? landesregierung.label
         : rathaus && rathausSelected
         ? rathaus.label
-        : selectedPolitician?.id === -1
-          ? "MdB später auswählen"
-          : selectedPolitician
+        : selectedPolitician
             ? `${selectedPolitician.firstName} ${selectedPolitician.lastName}${selectedPoliticianParty ? ` (${selectedPoliticianParty})` : ""}`
             : null;
     const campaignAttribution = wizardData.campaign?.creatorName?.trim()
@@ -1123,7 +1152,7 @@ export function Step3Success({
             : "Dein Brief geht an die Landesregierung"
         : campaignRestricted
           ? "Wähle ein MdB aus"
-        : !isNoMdbFound && sortedPoliticians.length > 1
+        : !hasNoLocalMdb && sortedPoliticians.length > 1
           ? `${sortedPoliticians.length} Abgeordnete für PLZ ${wizardData.plz}`
           : "Wer vertritt deinen Wahlkreis?";
     const introCopy = bundeskanzler
@@ -1140,8 +1169,8 @@ export function Step3Success({
             : selectedPolitician
               ? "Die passende Person ist bereits vorausgewählt."
               : "Wähle eine der passenden Personen aus."
-        : isNoMdbFound
-          ? `Für die PLZ ${wizardData.plz} wurde kein MdB gefunden. Du kannst den Brief dennoch formulieren lassen und dein MdB später auswählen oder deine PLZ anpassen.`
+        : hasNoLocalMdb
+          ? `Für die PLZ ${wizardData.plz} wurde kein lokales MdB gefunden. Suche bundesweit nach einer Person oder erstelle einen neutralen Entwurf, den du später adressierst.`
           : wahlkreisGroups.length === 1
             ? "Dein Wahlkreis wird von folgenden MdBs vertreten. Das MdB mit Direktmandat ist vorausgewählt, du kannst aber auch jemand anderen wählen."
             : "Deine PLZ liegt an einer Wahlkreis-Grenze. Wähle das MdB, das deinen Wahlkreis vertritt. Das Direktmandat ist je Wahlkreis vorausgewählt.";
@@ -1320,12 +1349,14 @@ export function Step3Success({
               onClick={() => {
                 setLandesregierungSelected(true);
                 setSelectedPoliticianId(null);
+                setMdbLaterSelected(false);
               }}
               onKeyDown={(e) => {
                 if (e.key === "Enter" || e.key === " ") {
                   e.preventDefault();
                   setLandesregierungSelected(true);
                   setSelectedPoliticianId(null);
+                  setMdbLaterSelected(false);
                 }
               }}
               className={[
@@ -1367,19 +1398,19 @@ export function Step3Success({
                 , geprüft am {landesregierung.address.sourceStand}
               </p>
             </div>
-            {optionalLandRecipients.length > 0 && (
-              <button
-                type="button"
-                onClick={() => {
-                  setShowLandPersonPicker(true);
-                  setLandesregierungSelected(false);
-                  setSelectedPoliticianId(null);
-                }}
-                className="mt-4 font-body text-sm font-semibold text-waldgruen underline underline-offset-4 hover:text-waldgruen-dark"
-              >
-                Lieber einer Person schreiben
-              </button>
-            )}
+            <button
+              type="button"
+              onClick={() => {
+                setShowLandPersonPicker(true);
+                setShowAlternativePicker(optionalLandRecipients.length === 0);
+                setLandesregierungSelected(false);
+                setSelectedPoliticianId(null);
+                setMdbLaterSelected(false);
+              }}
+              className="mt-4 font-body text-sm font-semibold text-waldgruen underline underline-offset-4 hover:text-waldgruen-dark"
+            >
+              Lieber einer Person im Landtag schreiben?
+            </button>
           </div>
         )}
 
@@ -1441,7 +1472,9 @@ export function Step3Success({
           </div>
         )}
 
-        {!isKommune && (!isLand || showLandPersonPicker) && (
+        {!isKommune &&
+          (!isLand || showLandPersonPicker) &&
+          (displayedPoliticians.length > 0 || campaignRestricted) && (
         <div className="mt-6">
           {bundeskanzler && (
             <p className="mb-3 font-body text-sm font-semibold text-waldgruen-dark">
@@ -1529,8 +1562,8 @@ export function Step3Success({
             <div key={group.wahlkreisId}>
               {!campaignRestrictedNoLocalMatch && (
                 <p className="font-body text-xs font-semibold uppercase tracking-wide text-warmgrau/55 mb-2 flex items-center gap-2">
-                  {!isNoMdbFound && <span className="h-px flex-shrink-0 w-3 bg-warmgrau/25" aria-hidden="true" />}
-                  {isNoMdbFound ? group.wahlkreisName : `${isLand && isAmbiguousLand ? "Möglicher Landtagswahlkreis" : isLand ? "Landtagswahlkreis" : "Wahlkreis"} ${group.wahlkreisId} · ${group.wahlkreisName}`}
+                  <span className="h-px flex-shrink-0 w-3 bg-warmgrau/25" aria-hidden="true" />
+                  {`${isLand && isAmbiguousLand ? "Möglicher Landtagswahlkreis" : isLand ? "Landtagswahlkreis" : "Wahlkreis"} ${group.wahlkreisId} · ${group.wahlkreisName}`}
                 </p>
               )}
               <div
@@ -1551,12 +1584,7 @@ export function Step3Success({
                         : "border-waldgruen/20 bg-creme hover:border-waldgruen/40",
                     ].join(" ")}
                   >
-                    {p.id === -1 ? (
-                      <p className="font-body text-base font-semibold text-warmgrau">
-                        MdB später auswählen
-                      </p>
-                    ) : (
-                      <>
+                    <>
                         {p.isDirect ? (
                           <span className="inline-block font-body text-[11px] font-semibold uppercase tracking-wide text-waldgruen-dark bg-waldgruen/15 px-2 py-0.5 rounded mb-1.5">
                             Direktmandat
@@ -1615,8 +1643,7 @@ export function Step3Success({
                             </svg>
                           </a>
                         )}
-                      </>
-                    )}
+                    </>
                   </div>
                 ))}
               </div>
@@ -1627,12 +1654,87 @@ export function Step3Success({
         </div>
         )}
 
+        {!campaignRestricted &&
+          !bundeskanzler &&
+          selectedLevel === "Bund" && (
+            <div className={politicians.length > 0 ? "mt-5" : "mt-6"}>
+              {politicians.length > 0 && (
+                <button
+                  type="button"
+                  aria-expanded={showAlternativePicker}
+                  onClick={() => setShowAlternativePicker((current) => !current)}
+                  className="font-body text-sm font-semibold text-waldgruen underline underline-offset-4 hover:text-waldgruen-dark"
+                >
+                  Lieber einer anderen Person im Bundestag schreiben?
+                </button>
+              )}
+              {showAlternativePicker && (
+                <AlternativeRecipientPicker
+                  level="Bund"
+                  plz={wizardData.plz}
+                  selectedId={alternativePolitician?.kind === "mdb" ? selectedPoliticianId : null}
+                  onSelect={handleAlternativeSelect}
+                />
+              )}
+              {hasNoLocalMdb && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setMdbLaterSelected(true);
+                    setSelectedPoliticianId(null);
+                    setAlternativePolitician(null);
+                    setRathausSelected(false);
+                    setLandesregierungSelected(false);
+                    setBundeskanzlerSelected(false);
+                  }}
+                  className={[
+                    "mt-4 w-full rounded-lg border px-4 py-3 text-left font-body text-sm font-semibold transition-colors",
+                    mdbLaterSelected
+                      ? "border-waldgruen bg-waldgruen/10 text-waldgruen-dark"
+                      : "border-warmgrau/25 bg-creme text-warmgrau hover:border-waldgruen/45",
+                  ].join(" ")}
+                >
+                  Ohne Person fortfahren
+                  <span className="mt-1 block text-xs font-normal leading-relaxed text-warmgrau/65">
+                    Du setzt Name, Anschrift und Anrede vor dem Abschreiben selbst ein.
+                  </span>
+                </button>
+              )}
+            </div>
+          )}
+
+        {!campaignRestricted && isLand && showLandPersonPicker && (
+          <div className="mt-5">
+            {optionalLandRecipients.length > 0 && (
+              <button
+                type="button"
+                aria-expanded={showAlternativePicker}
+                onClick={() => setShowAlternativePicker((current) => !current)}
+                className="font-body text-sm font-semibold text-waldgruen underline underline-offset-4 hover:text-waldgruen-dark"
+              >
+                Lieber einer anderen Person im Landtag schreiben?
+              </button>
+            )}
+            {showAlternativePicker && (
+              <AlternativeRecipientPicker
+                level="Land"
+                plz={wizardData.plz}
+                selectedId={alternativePolitician?.kind === "mdl" ? selectedPoliticianId : null}
+                onSelect={handleAlternativeSelect}
+              />
+            )}
+          </div>
+        )}
+
         {isLand && showLandPersonPicker && (
           <button
             type="button"
             onClick={() => {
               setShowLandPersonPicker(false);
+              setShowAlternativePicker(false);
+              setAlternativePolitician(null);
               setSelectedPoliticianId(null);
+              setMdbLaterSelected(false);
               setLandesregierungSelected(true);
             }}
             className="mt-5 font-body text-sm font-semibold text-waldgruen underline underline-offset-4 hover:text-waldgruen-dark"

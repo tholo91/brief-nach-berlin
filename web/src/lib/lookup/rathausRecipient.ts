@@ -17,6 +17,13 @@ export interface MdlRecipient extends Politician {
   kind: "mdl";
 }
 
+export interface MdbLaterRecipient {
+  kind: "mdb_later";
+  level: "Bund";
+  label: "Mitglied des Deutschen Bundestages";
+  postalAddress: "Platz der Republik 1, 11011 Berlin";
+}
+
 export interface RathausRecipient {
   kind: "rathaus";
   level: "Kommune";
@@ -48,14 +55,22 @@ export interface RathausRecipient {
 export type Recipient =
   | MdbRecipient
   | MdlRecipient
+  | MdbLaterRecipient
   | BundeskanzlerRecipient
   | RathausRecipient
   | LandesregierungRecipient;
+
+export type RecipientRelation =
+  | "local"
+  | "outside_constituency"
+  | "institutional"
+  | "unassigned";
 
 /** Client → Server Auswahl-Objekt. Institutionelle Empfänger übertragen KEINE ID. */
 export type RecipientSelection =
   | { kind: "mdb"; selectedPoliticianId: number }
   | { kind: "mdl"; selectedPoliticianId: number }
+  | { kind: "mdb_later" }
   | { kind: "bundeskanzler" }
   | { kind: "landesregierung" }
   | { kind: "rathaus" };

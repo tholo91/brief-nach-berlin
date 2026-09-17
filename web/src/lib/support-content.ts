@@ -87,14 +87,14 @@ export const SUPPORT_EMAIL_COPY = {
   de: {
     prefix: "Hinweis zur Finanzierung:",
     heading: "Brief-nach-Berlin unterstützen ❤️",
-    compactHeading: SUPPORT_CONTENT.headline,
+    compactHeading: "Mein unabhängiges Soloprojekt",
     body:
-      "Mein Projekt soll weiterhin für alle kostenlos und unabhängig bleiben. Deine Spende hilft, Brief-nach-Berlin dauerhaft zu betreiben.",
+      "Ich baue Brief-nach-Berlin allein und ehrenamtlich in meiner Freizeit und trage die laufenden Kosten bisher selbst. Deine Spende hilft, das Projekt kostenlos und unabhängig weiterzubetreiben.",
     status: SUPPORT_CONTENT.status,
     learnMore: SUPPORT_CONTENT.ctas.learnMore.label,
     button: SUPPORT_CONTENT.ctas.donate.label,
     compactButton: "Jetzt spenden",
-    providerLabel: "über WE AID",
+    providerLabel: "ehrenamtlich · über WE AID",
     infoButton: "Mehr Informationen",
   },
   en: {

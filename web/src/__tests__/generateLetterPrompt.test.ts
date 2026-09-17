@@ -118,4 +118,36 @@ describe("buildUserPrompt", () => {
     expect(prompt).not.toContain(DEFENSIVE_MARKER);
     expect(prompt).toContain("Innenausschuss");
   });
+
+  it("erzwingt bei nichtlokalen Personen eine ehrliche Wahlkreisbeziehung", () => {
+    const prompt = buildSystemPrompt({
+      ...makeInput(),
+      recipientRelation: "outside_constituency",
+    });
+    expect(prompt).toContain("vertritt NICHT den Wahlkreis des Absenders");
+    expect(prompt).toContain("nie als gemeinsame Wahlkreisbeziehung");
+  });
+
+  it("baut den generischen MdB-Entwurf ohne Partei, Ausschuss oder Person", () => {
+    const input: GenerateLetterInput = {
+      issueText: "Tempo 30 in der Innenstadt",
+      politicians: [],
+      level: "Bund",
+      recipientRelation: "unassigned",
+      mdbLater: {
+        kind: "mdb_later",
+        level: "Bund",
+        label: "Mitglied des Deutschen Bundestages",
+        postalAddress: "Platz der Republik 1, 11011 Berlin",
+      },
+    };
+    const systemPrompt = buildSystemPrompt(input);
+    const userPrompt = buildUserPrompt(input, 200, 280, 3);
+    expect(systemPrompt).toContain('Anrede: exakt "Sehr geehrte Damen und Herren,"');
+    expect(systemPrompt).toContain("Der konkrete Empfänger steht noch nicht fest");
+    expect(systemPrompt).not.toContain("MdB-KONTEXT NUTZEN");
+    expect(systemPrompt).not.toContain("- SPD:");
+    expect(userPrompt).toContain("Deutscher Bundestag, Platz der Republik 1, 11011 Berlin");
+    expect(userPrompt).not.toContain(DEFENSIVE_MARKER);
+  });
 });

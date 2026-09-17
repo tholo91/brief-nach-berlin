@@ -67,6 +67,18 @@ describe("success page experience", () => {
     expect(successSource).toContain("Brief erneut senden");
   });
 
+  it("treats a lost generation response as a possible email success", () => {
+    expect(successSource).toContain("setGenerationMayHaveSucceeded(true)");
+    expect(successSource).toContain("setGenerationMayHaveSucceeded(false)");
+    expect(successSource).toContain("Wir konnten die Erstellung nicht bestätigen");
+    expect(successSource).toContain("Bitte prüfe zuerst dein Postfach und den Spam-Ordner");
+    expect(successSource).toContain("Wenn nach zwei Minuten nichts angekommen ist");
+    expect(successSource).toContain("Bitte prüfe jetzt dein Postfach und den Spam-Ordner");
+    expect(successSource).toContain("Nach zwei Minuten noch keine E-Mail? Nochmal versuchen");
+    expect(successSource).toContain("Brief konnte nicht erstellt werden");
+    expect(successSource).not.toContain("Ich beeile mich und melde mich");
+  });
+
   it("keeps the postbox action available across breakpoints and moves personalization into the accordion", () => {
     expect(successSource).toContain("Postfach öffnen");
     expect(successSource).not.toContain("E-Mail-App öffnen");

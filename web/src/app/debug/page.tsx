@@ -75,6 +75,9 @@ function format(payload: DebugPayload | { error: string }): string {
     `Letter length         ${d.letterLengthKey} (${d.letterLengthMin}–${d.letterLengthMax} Wörter)`,
     `Word count            ${wcLabel}`,
     `Issue text length     ${d.issueTextLength} chars`,
+    "",
+    "Anliegen (Auszug, max 600 Zeichen):",
+    d.issueTextPreview || "—",
     `Political level       ${d.politicalLevel}`,
     `${recipientLabel.padEnd(21)} ${d.representativeName} (${d.representativeLevel}, ${recipientRegion})`,
     ...(d.representativeKind === "landesregierung" || d.representativeKind === "rathaus"

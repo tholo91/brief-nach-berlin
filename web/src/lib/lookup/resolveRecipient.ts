@@ -1,16 +1,27 @@
 import {
+  getAllBundestagPoliticians,
   getBundestagPoliticiansByIds,
+  getLandtagPoliticiansForBundesland,
   lookupPLZ,
   lookupPLZWithLevel,
 } from "./plzLookup";
-import type { Recipient, RecipientSelection } from "./rathausRecipient";
+import type {
+  Recipient,
+  RecipientRelation,
+  RecipientSelection,
+} from "./rathausRecipient";
 import {
   getBundeskanzlerRecipient,
   isBundeskanzlerCampaignSlug,
 } from "./bundeskanzlerRecipient";
 
 export type ResolveRecipientResult =
-  | { ok: true; recipient: Recipient; availableCount: number }
+  | {
+      ok: true;
+      recipient: Recipient;
+      availableCount: number;
+      relation: RecipientRelation;
+    }
   | { ok: false; reason: "not_found" | "kommune_not_applicable" };
 
 type ResolveRecipientOptions = {
@@ -40,37 +51,73 @@ export function resolveRecipientSelection(
       ok: true,
       recipient: getBundeskanzlerRecipient(),
       availableCount: 1,
+      relation: "institutional",
     };
   }
 
   if (selection.kind === "mdb") {
     const localPoliticians = lookupPLZ(plz).politicians;
     const allowedIds = options.allowedPoliticianIds ?? [];
-    const politicians =
-      allowedIds.length > 0
+    const isCampaign = Boolean(options.campaignSlug) || allowedIds.length > 0;
+    const politicians = isCampaign
+      ? allowedIds.length > 0
         ? localPoliticians.filter((politician) => allowedIds.includes(politician.id)).length > 0
           ? localPoliticians.filter((politician) => allowedIds.includes(politician.id))
           : getBundestagPoliticiansByIds(allowedIds)
-        : localPoliticians;
+        : localPoliticians
+      : getAllBundestagPoliticians();
     const match = politicians.find((p) => p.id === selection.selectedPoliticianId);
     if (!match) return { ok: false, reason: "not_found" };
     return {
       ok: true,
       recipient: { ...match, kind: "mdb" },
       availableCount: politicians.length,
+      relation: localPoliticians.some((politician) => politician.id === match.id)
+        ? "local"
+        : "outside_constituency",
+    };
+  }
+
+  if (selection.kind === "mdb_later") {
+    if (
+      options.campaignSlug ||
+      (options.allowedPoliticianIds?.length ?? 0) > 0 ||
+      lookupPLZ(plz).politicians.length > 0
+    ) {
+      return { ok: false, reason: "not_found" };
+    }
+    return {
+      ok: true,
+      recipient: {
+        kind: "mdb_later",
+        level: "Bund",
+        label: "Mitglied des Deutschen Bundestages",
+        postalAddress: "Platz der Republik 1, 11011 Berlin",
+      },
+      availableCount: 0,
+      relation: "unassigned",
     };
   }
 
   if (selection.kind === "mdl") {
     const result = lookupPLZWithLevel(plz);
-    const match = result.optionalByLevel.Land.find(
+    const localPoliticians = result.optionalByLevel.Land;
+    const politicians = options.campaignSlug
+      ? localPoliticians
+      : result.bundeslandKey
+        ? getLandtagPoliticiansForBundesland(result.bundeslandKey)
+        : [];
+    const match = politicians.find(
       (p) => p.id === selection.selectedPoliticianId
     );
     if (!match) return { ok: false, reason: "not_found" };
     return {
       ok: true,
       recipient: { ...match, kind: "mdl" },
-      availableCount: result.optionalByLevel.Land.length,
+      availableCount: politicians.length,
+      relation: localPoliticians.some((politician) => politician.id === match.id)
+        ? "local"
+        : "outside_constituency",
     };
   }
 
@@ -78,7 +125,12 @@ export function resolveRecipientSelection(
     const result = lookupPLZWithLevel(plz);
     const landesregierung = result.byLevel.Land[0];
     if (!landesregierung) return { ok: false, reason: "not_found" };
-    return { ok: true, recipient: landesregierung, availableCount: 1 };
+    return {
+      ok: true,
+      recipient: landesregierung,
+      availableCount: 1,
+      relation: "institutional",
+    };
   }
 
   // rathaus: vollständig PLZ-abgeleitet, Client-Daten fließen nicht ein
@@ -90,5 +142,10 @@ export function resolveRecipientSelection(
       reason: result.coverage.stadtstaatEinheitsgemeinde ? "kommune_not_applicable" : "not_found",
     };
   }
-  return { ok: true, recipient: rathaus, availableCount: 1 };
+  return {
+    ok: true,
+    recipient: rathaus,
+    availableCount: 1,
+    relation: "institutional",
+  };
 }

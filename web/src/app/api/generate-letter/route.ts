@@ -261,6 +261,8 @@ export async function POST(req: NextRequest) {
         recipient.kind === "landesregierung" ? recipient : undefined,
       bundeskanzler:
         recipient.kind === "bundeskanzler" ? recipient : undefined,
+      mdbLater: recipient.kind === "mdb_later" ? recipient : undefined,
+      recipientRelation: resolved.relation,
       mismatchRecommendedLevel,
     });
 
@@ -282,8 +284,9 @@ export async function POST(req: NextRequest) {
       campaignSlug: campaign?.slug ?? null,
     });
 
-    // Increment before responding so the public counter is current after a
-    // successful letter generation. A counter failure must not block delivery.
+    // Increment before responding so this user receives the current letter number.
+    // The public aggregate refreshes through its hourly cache; invalidating it here
+    // would fan out ISR rewrites across every route that renders the shared footer.
     let letterNumber: number | undefined;
     try {
       letterNumber = await incrementLetterCounters(data.campaign?.slug);
@@ -310,7 +313,8 @@ export async function POST(req: NextRequest) {
       const politicianFullName =
         result.selectedRecipient.kind === "rathaus" ||
         result.selectedRecipient.kind === "landesregierung" ||
-        result.selectedRecipient.kind === "bundeskanzler"
+        result.selectedRecipient.kind === "bundeskanzler" ||
+        result.selectedRecipient.kind === "mdb_later"
           ? result.selectedRecipient.label
           : `${result.selectedRecipient.firstName} ${result.selectedRecipient.lastName}`;
       const { params, feedbackToken } = prepareLetterEmail({

@@ -33,7 +33,7 @@ export interface LetterDebugPayload {
   recipientRegion?: string;
   representativeLevel: string;
   representativeParty: string | null;
-  representativeKind?: "mdb" | "mdl" | "bundeskanzler" | "landesregierung" | "rathaus";
+  representativeKind?: "mdb" | "mdb_later" | "mdl" | "bundeskanzler" | "landesregierung" | "rathaus";
   mdbContextUsed: boolean;
   availablePoliticianCount: number;
   model: string;
@@ -62,6 +62,9 @@ export interface LetterDebugPayload {
   routedPrimaryConfidence?: "high" | "medium" | "low" | null;
   wasOverridden?: boolean;
   selectedLevel?: "Bund" | "Land" | "Kommune";
+  // Datensparsamer Diagnosekontext. Der vollständige Anliegenstext bleibt aus
+  // URL, Mail und Feedback-Metadaten heraus; alte Payloads haben das Feld nicht.
+  issueTextPreview?: string;
 }
 
 export interface SendLetterEmailParams {
@@ -81,7 +84,7 @@ export interface SendLetterEmailParams {
   // "mdb" hält das heutige Layout exakt; "mdl" nutzt die Landtag-Anschrift aus
   // postalAddress (keine "Deutscher Bundestag"-Zeile); "rathaus" hat weder
   // Partei noch Profil-Link und nutzt amtliche Adressdetails oder den Fallback.
-  recipientKind: "mdb" | "mdl" | "bundeskanzler" | "landesregierung" | "rathaus";
+  recipientKind: "mdb" | "mdb_later" | "mdl" | "bundeskanzler" | "landesregierung" | "rathaus";
   // Nur für mdl: ISO 3166-2:DE-Länderkürzel zur Auswahl der Landeswappen-Marke.
   bundeslandKey?: string;
   governmentSource?: {
@@ -143,7 +146,11 @@ export function prepareLetterEmail(args: {
     letterId,
   } = args;
   const debug = letterId ? { ...initialDebug, letterId } : initialDebug;
-  const feedbackToken = signFeedbackToken(debug);
+  // Der Anliegen-Auszug gehört nur in den Debug-Link, nicht in den signierten
+  // Feedback-Token, der später als Review-Metadaten gespeichert werden kann.
+  const feedbackPayload = { ...debug };
+  delete feedbackPayload.issueTextPreview;
+  const feedbackToken = signFeedbackToken(feedbackPayload);
 
   if (recipient.kind === "rathaus") {
     return {
@@ -231,6 +238,30 @@ export function prepareLetterEmail(args: {
           url: recipient.address.sourceUrl,
           stand: recipient.address.sourceStand,
         },
+        letterText,
+        issueText,
+        debug,
+        feedbackToken,
+        campaign,
+        letterNumber,
+      },
+    };
+  }
+
+  if (recipient.kind === "mdb_later") {
+    return {
+      feedbackToken,
+      params: {
+        locale,
+        recipientEmail,
+        politicianName: "Mitglied des Deutschen Bundestages",
+        politicianFirstName: "",
+        politicianLastName: "MdB",
+        politicianTitle: null,
+        politicianParty: null,
+        politicianPostalAddress: recipient.postalAddress,
+        politicianAbgeordnetenwatchUrl: null,
+        recipientKind: "mdb_later",
         letterText,
         issueText,
         debug,

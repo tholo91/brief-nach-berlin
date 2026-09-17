@@ -20,6 +20,8 @@ export const TONE_LABELS: Record<number, string> = {
   5: "konfrontativ-aber-respektvoll",
 };
 
+export const ISSUE_TEXT_PREVIEW_MAX = 600;
+
 export function buildDebugPayload(
   data: WizardData,
   result: GenerateLetterResult,
@@ -36,7 +38,8 @@ export function buildDebugPayload(
     ? [p.title, p.firstName, p.lastName].filter(Boolean).join(" ")
     : recipient.kind === "rathaus" ||
         recipient.kind === "landesregierung" ||
-        recipient.kind === "bundeskanzler"
+        recipient.kind === "bundeskanzler" ||
+        recipient.kind === "mdb_later"
       ? recipient.label
       : "—";
 
@@ -47,6 +50,7 @@ export function buildDebugPayload(
     letterLengthMin: min,
     letterLengthMax: max,
     issueTextLength: data.issueText?.length ?? 0,
+    issueTextPreview: data.issueText?.slice(0, ISSUE_TEXT_PREVIEW_MAX) ?? "",
     wordCount: result.wordCount,
     wordCountInRange: result.wordCountInRange,
     fallbackUsed: result.fallbackUsed,
@@ -60,6 +64,8 @@ export function buildDebugPayload(
           ? recipient.bundeslandName
           : recipient.kind === "bundeskanzler"
             ? "Bundesregierung"
+            : recipient.kind === "mdb_later"
+              ? "Noch nicht ausgewählt"
             : p?.wahlkreisName ?? "—",
     recipientRegion:
       recipient.kind === "rathaus"
@@ -68,6 +74,8 @@ export function buildDebugPayload(
           ? recipient.bundeslandName
           : recipient.kind === "bundeskanzler"
             ? "Bundesregierung"
+            : recipient.kind === "mdb_later"
+              ? "Noch nicht ausgewählt"
             : p?.wahlkreisName ?? "—",
     representativeLevel: recipient.level ?? "—",
     representativeParty: p?.party ?? null,
@@ -117,7 +125,8 @@ export function buildResendDebugPayload(
     ? [politician.title, politician.firstName, politician.lastName].filter(Boolean).join(" ")
     : recipient.kind === "rathaus" ||
         recipient.kind === "landesregierung" ||
-        recipient.kind === "bundeskanzler"
+        recipient.kind === "bundeskanzler" ||
+        recipient.kind === "mdb_later"
       ? recipient.label
       : "—";
   const wordCount = cachedLetterText.trim().split(/\s+/).filter(Boolean).length;
@@ -129,6 +138,7 @@ export function buildResendDebugPayload(
     letterLengthMin: min,
     letterLengthMax: max,
     issueTextLength: data.issueText?.length ?? 0,
+    issueTextPreview: data.issueText?.slice(0, ISSUE_TEXT_PREVIEW_MAX) ?? "",
     wordCount,
     wordCountInRange: wordCount >= min && wordCount <= max,
     // Generierungs-spezifisch, beim Resend nicht vorhanden:
@@ -143,6 +153,8 @@ export function buildResendDebugPayload(
           ? recipient.bundeslandName
           : recipient.kind === "bundeskanzler"
             ? "Bundesregierung"
+            : recipient.kind === "mdb_later"
+              ? "Noch nicht ausgewählt"
             : politician?.wahlkreisName ?? "—",
     recipientRegion:
       recipient.kind === "rathaus"
@@ -151,6 +163,8 @@ export function buildResendDebugPayload(
           ? recipient.bundeslandName
           : recipient.kind === "bundeskanzler"
             ? "Bundesregierung"
+            : recipient.kind === "mdb_later"
+              ? "Noch nicht ausgewählt"
           : politician?.wahlkreisName ?? "—",
     representativeLevel: recipient.level ?? "—",
     representativeParty: politician?.party ?? null,

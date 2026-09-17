@@ -52,7 +52,7 @@ describe("Step3Success — institutioneller Land-Default", () => {
     expect(html).toContain("Dein Brief geht an den Senat der Freien Hansestadt Bremen");
     expect(html).toContain("Senatskanzlei Bremen");
     expect(html).toContain("Am Markt 21");
-    expect(html).toContain("Lieber einer Person schreiben");
+    expect(html).toContain("Lieber einer Person im Landtag schreiben?");
     expect(html).toContain("Brief erstellen");
     expect(html).not.toContain("72 mögliche Landtagsabgeordnete");
     expect(html).not.toContain("Vorname0");

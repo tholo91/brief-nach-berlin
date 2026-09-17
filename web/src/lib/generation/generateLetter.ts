@@ -243,6 +243,17 @@ Wenn ein Ausschuss zum Thema passt, das knapp und natürlich erwähnen ("Gerade 
 const BUND_WAHLKREIS_BLOCK = `WAHLKREIS-BEZUG KONKRET, NICHT NOMINAL:
 Nutze, wenn möglich, Stadtteil, Straße oder Ortsteil aus dem Input ("ich wohne in der Bremer Neustadt"). "Aus dem Wahlkreis Bremen I" nur als Fallback und niemals als allererste Selbstbezeichnung. Echte Bürger benennen sich nicht über die Wahlkreisnummer.`;
 
+const OUTSIDE_CONSTITUENCY_BLOCK = `WAHLKREIS-BEZUG BEI NICHTLOKALER PERSON (nicht verhandelbar):
+Die ausgewählte Person vertritt NICHT den Wahlkreis des Absenders. Behaupte niemals, sie sei die zuständige, lokale oder direkt gewählte Vertretung des Absenders. Ein Ort aus dem <transkript> darf als Lebensrealität des Absenders genannt werden, aber nie als gemeinsame Wahlkreisbeziehung.`;
+
+const MDB_LATER_ZUSTAENDIGKEIT_BLOCK = `ZUSTÄNDIGKEITSHINWEIS:
+Der konkrete Empfänger steht noch nicht fest. Der Entwurf richtet sich allgemein an ein Mitglied des Deutschen Bundestages. Behaupte keine persönliche, parteipolitische, Ausschuss- oder Wahlkreisbeziehung und erfinde keine Zuständigkeit.`;
+
+const MDB_LATER_ANREDE_LINE = `- Anrede: exakt "Sehr geehrte Damen und Herren,". Kein Name, kein Titel und keine persönliche Anrede.`;
+
+const MDB_LATER_PARTEI_HEADER = `PARTEI-NEUTRALITÄT (Empfänger noch offen):
+Der konkrete Empfänger und dessen Partei stehen noch nicht fest. Verwende KEINE parteibezogene Werte-Sprache und benenne keine Partei.`;
+
 const LAND_ABGEORDNETEN_CONTEXT_BLOCK = `ABGEORDNETEN-KONTEXT NUTZEN (nur wenn <mdb_kontext> mitgeliefert):
 Wenn ein Ausschuss zum Thema passt, das knapp und natürlich erwähnen ("Gerade als Mitglied des Ausschusses für ... haben Sie hier Einfluss"). Wenn eine jüngste Position zum Thema passt, knapp aufgreifen, ohne sie wörtlich zu zitieren. NIEMALS Ausschüsse, Reden oder Positionen erfinden, die nicht in <mdb_kontext> stehen.`;
 
@@ -350,6 +361,14 @@ export function buildSystemPrompt(input: GenerateLetterInput): string {
       .replace(`\n${BUND_PARTEI_LIST}`, "")
       .replace(BUND_WAHLKREIS_BLOCK, "")
       .replace(`${BUND_MDB_CONTEXT_BLOCK}\n\n`, "");
+  } else if (input.mdbLater) {
+    prompt = prompt
+      .replace(BUND_ZUSTAENDIGKEIT_BLOCK, MDB_LATER_ZUSTAENDIGKEIT_BLOCK)
+      .replace(BUND_ANREDE_LINE, MDB_LATER_ANREDE_LINE)
+      .replace(BUND_PARTEI_HEADER, MDB_LATER_PARTEI_HEADER)
+      .replace(`\n${BUND_PARTEI_LIST}`, "")
+      .replace(BUND_WAHLKREIS_BLOCK, "")
+      .replace(`${BUND_MDB_CONTEXT_BLOCK}\n\n`, "");
   } else if (level === "Land") {
     prompt = input.landesregierung
       ? prompt
@@ -370,6 +389,10 @@ export function buildSystemPrompt(input: GenerateLetterInput): string {
       .replace(BUND_PARTEI_HEADER, KOMMUNE_PARTEI_HEADER)
       .replace(`\n${BUND_PARTEI_LIST}`, "")
       .replace(`${BUND_MDB_CONTEXT_BLOCK}\n\n`, "");
+  }
+
+  if (input.recipientRelation === "outside_constituency") {
+    prompt = prompt.replace(BUND_WAHLKREIS_BLOCK, OUTSIDE_CONSTITUENCY_BLOCK);
   }
 
   if (
@@ -427,7 +450,7 @@ export function buildUserPrompt(
   // Die Pseudo-ID 0 existiert nur im Prompt-Kontrakt (Antwortformat verlangt
   // selected_politician_id); sie wird nie gegen Abgeordnetenwatch-Daten geprüft.
   const institutionalRecipient =
-    input.bundeskanzler ?? input.landesregierung ?? input.rathaus;
+    input.bundeskanzler ?? input.mdbLater ?? input.landesregierung ?? input.rathaus;
   const empfaenger = institutionalRecipient
     ? [
         {
@@ -438,6 +461,8 @@ export function buildUserPrompt(
             : "Sehr geehrte Damen und Herren,",
           ort: input.bundeskanzler
             ? "Bundeskanzleramt, Berlin"
+            : input.mdbLater
+              ? "Deutscher Bundestag, Platz der Republik 1, 11011 Berlin"
             : input.landesregierung
               ? input.landesregierung.bundeslandName
               : input.rathaus &&
@@ -646,6 +671,8 @@ export async function generateLetter(
 
   if (input.bundeskanzler) {
     selectedRecipient = input.bundeskanzler;
+  } else if (input.mdbLater) {
+    selectedRecipient = input.mdbLater;
   } else if (input.landesregierung) {
     selectedRecipient = input.landesregierung;
   } else if (input.rathaus) {
@@ -679,6 +706,7 @@ export async function generateLetter(
     !input.rathaus &&
       !input.landesregierung &&
       !input.bundeskanzler &&
+      !input.mdbLater &&
       input.mdbContext &&
       (input.mdbContext.committees.length > 0 || input.mdbContext.recentRelevant.length > 0)
   );

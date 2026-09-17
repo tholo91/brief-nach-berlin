@@ -81,6 +81,7 @@ describe("generate-letter RecipientSelection hardening", () => {
     jest.mocked(resolveRecipientSelection).mockReturnValue({
       ok: true,
       availableCount: 1,
+      relation: "institutional",
       recipient,
     });
     jest.mocked(generateLetter).mockResolvedValue({
@@ -141,6 +142,7 @@ describe("generate-letter RecipientSelection hardening", () => {
     jest.mocked(resolveRecipientSelection).mockReturnValue({
       ok: true,
       availableCount: 1,
+      relation: "institutional",
       recipient: {
         kind: "rathaus",
         level: "Kommune",

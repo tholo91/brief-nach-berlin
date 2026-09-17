@@ -9,6 +9,7 @@ jest.mock("@/lib/feedback/token", () => ({
 }));
 
 import { getLandesregierungRecipient } from "@/lib/lookup/landesregierungRecipient";
+import { signFeedbackToken } from "@/lib/feedback/token";
 
 describe("prepareLetterEmail — Landesregierung", () => {
   const originalBrevoKey = process.env.BREVO_API_KEY;
@@ -47,5 +48,18 @@ describe("prepareLetterEmail — Landesregierung", () => {
         url: "https://www.rathaus.bremen.de/impressum-744",
       },
     });
+  });
+
+  it("hält den Anliegen-Auszug aus dem Feedback-Token heraus", async () => {
+    const { prepareLetterEmail } = await import("@/lib/email/sendLetterEmail");
+    prepareLetterEmail({
+      recipientEmail: "test@example.org",
+      recipient: getLandesregierungRecipient("HB")!,
+      letterText: "Testbrief",
+      issueText: "Testanliegen",
+      debug: { issueTextPreview: "vertraulicher Auszug" } as never,
+    });
+
+    expect(signFeedbackToken).toHaveBeenLastCalledWith({});
   });
 });

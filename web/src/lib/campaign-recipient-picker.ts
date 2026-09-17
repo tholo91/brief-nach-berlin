@@ -37,7 +37,7 @@ export function initialPoliticianId(
     return politicians[0].id;
   }
 
-  return politicians.length === 1 && politicians[0].id === -1 ? -1 : null;
+  return null;
 }
 
 export function filterCampaignRecipients<T extends PickerPolitician>(

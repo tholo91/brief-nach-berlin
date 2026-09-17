@@ -1,5 +1,10 @@
 import type { Politician, PoliticalLevel } from "./politician";
-import type { RathausRecipient, Recipient } from "@/lib/lookup/rathausRecipient";
+import type {
+  MdbLaterRecipient,
+  RathausRecipient,
+  Recipient,
+  RecipientRelation,
+} from "@/lib/lookup/rathausRecipient";
 import type { LandesregierungRecipient } from "@/lib/lookup/landesregierungRecipient";
 import type { BundeskanzlerRecipient } from "@/lib/lookup/bundeskanzlerRecipient";
 import type { LetterLength } from "@/lib/config";
@@ -91,6 +96,10 @@ export interface GenerateLetterInput {
   landesregierung?: LandesregierungRecipient;
   /** Schreib-Merz: serverseitig aufgelöster Bundeskanzler statt politicians[]. */
   bundeskanzler?: BundeskanzlerRecipient;
+  /** Neutraler Bund-Entwurf, dessen konkrete Person später eingesetzt wird. */
+  mdbLater?: MdbLaterRecipient;
+  /** Serverseitig abgeleitete Beziehung zwischen PLZ und Empfänger. */
+  recipientRelation?: RecipientRelation;
   /**
    * Gesetzt, wenn der User bewusst eine andere Ebene als die empfohlene
    * gewählt hat — der Brief macht den Kompetenz-Mismatch transparent.

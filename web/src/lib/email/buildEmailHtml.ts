@@ -102,6 +102,11 @@ export function buildLetterEmailText(data: SendLetterEmailParams): string {
     normalizeLetterClosing(data.letterText),
     `${copy.greeting}\n\nThomas\n${copy.initiative} ${FOUNDER_HOMEPAGE}`,
   ];
+  if (data.recipientKind === "mdb_later") {
+    parts.push(
+      "Vor dem Abschreiben:\n1. Wähle ein Mitglied in der Abgeordnetensuche: https://www.bundestag.de/abgeordnete\n2. Ersetze Name, Anschrift und Anrede im Entwurf.\n3. Prüfe den Brief und schreibe ihn erst dann ab."
+    );
+  }
   parts.push(
     `${supportCopy.prefix} ${supportCopy.status}\n${supportCopy.button}: ${SUPPORT_CONTENT.ctas.donate.href}\n${supportCopy.learnMore}: ${APP_URL}${SUPPORT_CONTENT.ctas.learnMore.href}?src=email`,
   );
@@ -292,6 +297,9 @@ function getRecruitCopy(data: SendLetterEmailParams): string {
   if (data.recipientKind === "mdl") {
     return "Dein Brief wirkt. Und er wirkt noch stärker, wenn weitere Stimmen aus deiner Region dazukommen. Teile Brief-nach-Berlin per…";
   }
+  if (data.recipientKind === "mdb_later") {
+    return "Dein Brief wirkt. Und er wirkt noch stärker, wenn weitere Menschen mit eigenen Worten an die Politik schreiben. Teile Brief-nach-Berlin per…";
+  }
   return "Dein Brief wirkt. Und er wirkt noch stärker, wenn weitere Stimmen aus deinem Wahlkreis dazukommen. Teile Brief-nach-Berlin per…";
 }
 
@@ -329,7 +337,11 @@ function buildEmailShareTarget(data: SendLetterEmailParams) {
     level,
     data.governmentSource?.institutionKind ?? "landesregierung"
   );
-  if (data.campaign?.slug || data.recipientKind === "mdb") return share;
+  if (
+    data.campaign?.slug ||
+    data.recipientKind === "mdb" ||
+    data.recipientKind === "mdb_later"
+  ) return share;
 
   const text =
     data.recipientKind === "landesregierung"
@@ -370,10 +382,19 @@ export function buildEmailHtml(data: SendLetterEmailParams): string {
   const isMdl = data.recipientKind === "mdl";
   const isLandesregierung = data.recipientKind === "landesregierung";
   const isBundeskanzler = data.recipientKind === "bundeskanzler";
+  const isMdbLater = data.recipientKind === "mdb_later";
   const isFallback =
-    !isRathaus && !isLandesregierung && data.politicianFirstName === "" && data.politicianLastName === "MdB";
+    isMdbLater ||
+    (!isRathaus && !isLandesregierung && data.politicianFirstName === "" && data.politicianLastName === "MdB");
   const letterNumberText =
-    typeof data.letterNumber === "number" ? ` · Brief # ${data.letterNumber}` : "";
+    typeof data.letterNumber === "number"
+      ? `Brief #${new Intl.NumberFormat(locale).format(data.letterNumber)} · `
+      : "";
+  const voiceCountsInline = copy.voiceCounts.replace(/[.!?]+$/, "");
+  const followBrandHtml = locale === "tr"
+    ? `<a href="${APP_URL}" style="color:#2D5016;text-decoration:none;">Brief-nach-Berlin'i</a> takip et`
+    : `${locale === "en" ? "Follow" : "Folge"} <a href="${APP_URL}" style="color:#2D5016;text-decoration:none;">Brief-nach-Berlin</a>`;
+  const compactFooterLabel = `${letterNumberText}${voiceCountsInline} · ${followBrandHtml}`;
 
   const fullName = data.politicianTitle
     ? `${escapeHtml(data.politicianTitle)} ${escapeHtml(data.politicianName)}`
@@ -404,7 +425,7 @@ export function buildEmailHtml(data: SendLetterEmailParams): string {
   // Profile link (Abgeordnetenwatch: voting record, public Q&A, transparent source).
   // Prefer the API-provided URL; fall back to a slug-derived URL.
   // Rathaus-Empfänger haben kein Abgeordnetenwatch-Profil — kein Link.
-  const profileUrl = isRathaus || isLandesregierung || isBundeskanzler
+  const profileUrl = isRathaus || isLandesregierung || isBundeskanzler || isMdbLater
     ? null
     : data.politicianAbgeordnetenwatchUrl ??
       abgeordnetenwatchProfileUrl(data.politicianFirstName, data.politicianLastName);
@@ -426,7 +447,7 @@ export function buildEmailHtml(data: SendLetterEmailParams): string {
   // Institutionszeile: für MdB heutiges Layout (postalAddress trägt nur die
   // Straße, die Institution steht hier). MdL/Rathaus tragen die Institution
   // bereits in der postalAddress — keine Extra-Zeile.
-  const institutionLine = data.recipientKind === "mdb"
+  const institutionLine = data.recipientKind === "mdb" || isMdbLater
     ? "Deutscher Bundestag<br>"
     : isBundeskanzler
       ? "Bundeskanzleramt<br>"
@@ -469,12 +490,19 @@ export function buildEmailHtml(data: SendLetterEmailParams): string {
   const personalImpactCopy = getPersonalImpactCopy(data);
   const recruitCopy = getRecruitCopy(data);
   const footerGuideLink =
-    data.recipientKind === "mdb"
+    data.recipientKind === "mdb" || isMdbLater
       ? `<a href="${APP_URL}/wer-darf-mdb-schreiben" style="color:#888888;">${copy.guideMdb}</a>`
       : `<a href="${APP_URL}/guide" style="color:#888888;">${copy.guide}</a>`;
 
   // Letter text: escape then convert newlines to <br> for email clients
   const letterHtml = nlToBr(normalizeLetterClosing(data.letterText));
+  const nextSteps = isMdbLater
+    ? [
+        '<a href="https://www.bundestag.de/abgeordnete" target="_blank" rel="noopener noreferrer" style="color:#2D5016;text-decoration:underline;">Mitglied in der Abgeordnetensuche auswählen</a>',
+        "Name, Anschrift und Anrede im Entwurf ersetzen",
+        "Brief prüfen, abschreiben und erst dann versenden",
+      ]
+    : copy.steps;
 
   return `<!DOCTYPE html>
 <html lang="${locale}">
@@ -585,19 +613,19 @@ export function buildEmailHtml(data: SendLetterEmailParams): string {
                       <tr>
                         <td style="padding:6px 0;font-family:Georgia,'Times New Roman',serif;font-size:14px;color:#4A4A4A;line-height:1.5;">
                           <span style="display:inline-block;width:24px;height:24px;background-color:#2D5016;color:#ffffff;border-radius:50%;text-align:center;line-height:24px;font-size:12px;font-weight:bold;margin-right:10px;vertical-align:middle;">1</span>
-                          <span class="bnb-desk">${copy.steps[0]}</span><span class="bnb-mob" style="display:none;">${copy.steps[0]}</span>
+                          <span class="bnb-desk">${nextSteps[0]}</span><span class="bnb-mob" style="display:none;">${nextSteps[0]}</span>
                         </td>
                       </tr>
                       <tr>
                         <td style="padding:6px 0;font-family:Georgia,'Times New Roman',serif;font-size:14px;color:#4A4A4A;line-height:1.5;">
                           <span style="display:inline-block;width:24px;height:24px;background-color:#2D5016;color:#ffffff;border-radius:50%;text-align:center;line-height:24px;font-size:12px;font-weight:bold;margin-right:10px;vertical-align:middle;">2</span>
-                          <span class="bnb-desk">${copy.steps[1]}</span><span class="bnb-mob" style="display:none;">${copy.steps[1]}</span>
+                          <span class="bnb-desk">${nextSteps[1]}</span><span class="bnb-mob" style="display:none;">${nextSteps[1]}</span>
                         </td>
                       </tr>
                       <tr>
                         <td style="padding:6px 0;font-family:Georgia,'Times New Roman',serif;font-size:14px;color:#4A4A4A;line-height:1.5;">
                           <span style="display:inline-block;width:24px;height:24px;background-color:#2D5016;color:#ffffff;border-radius:50%;text-align:center;line-height:24px;font-size:12px;font-weight:bold;margin-right:10px;vertical-align:middle;">3</span>
-                          <span class="bnb-desk"><a href="https://www.deutschepost.de/de/m/mobile-briefmarke.html" target="_blank" rel="noopener noreferrer" style="color:#2D5016;text-decoration:underline;">${copy.steps[2]}</a> ${copy.stampTail}</span><span class="bnb-mob" style="display:none;"><a href="https://www.deutschepost.de/de/m/mobile-briefmarke.html" target="_blank" rel="noopener noreferrer" style="color:#2D5016;text-decoration:underline;">${copy.steps[2]}</a></span>
+                          <span class="bnb-desk">${isMdbLater ? nextSteps[2] : `<a href="https://www.deutschepost.de/de/m/mobile-briefmarke.html" target="_blank" rel="noopener noreferrer" style="color:#2D5016;text-decoration:underline;">${nextSteps[2]}</a> ${copy.stampTail}`}</span><span class="bnb-mob" style="display:none;">${isMdbLater ? nextSteps[2] : `<a href="https://www.deutschepost.de/de/m/mobile-briefmarke.html" target="_blank" rel="noopener noreferrer" style="color:#2D5016;text-decoration:underline;">${nextSteps[2]}</a>`}</span>
                         </td>
                       </tr>
                     </table>
@@ -679,11 +707,8 @@ export function buildEmailHtml(data: SendLetterEmailParams): string {
 
                 <!-- Footer -->
                 <tr>
-                  <td colspan="7" class="bnb-pad" style="padding:24px 32px 16px;background-color:#FAF8F5;text-align:center;">
-                    <p style="margin:0;font-family:Georgia,'Times New Roman',serif;font-size:12px;color:#999999;">
-                      <a href="${APP_URL}" style="color:#2D5016;text-decoration:none;">Brief-nach-Berlin</a>${letterNumberText} · ${copy.voiceCounts}
-                    </p>
-                    ${buildSocialFollowHtml({ locale })}
+                  <td colspan="7" class="bnb-pad" style="padding:20px 32px 12px;background-color:#FAF8F5;text-align:center;">
+                    ${buildSocialFollowHtml({ locale, labelHtml: compactFooterLabel, marginTop: 0, wrapLabel: true })}
                   </td>
                 </tr>
 

@@ -23,6 +23,16 @@ export function getBundestagPoliticiansByIds(ids: readonly number[]): Politician
   return politiciansCache.bundestag.filter((politician) => allowedIds.has(politician.id));
 }
 
+export function getAllBundestagPoliticians(): Politician[] {
+  return politiciansCache.bundestag;
+}
+
+export function getLandtagPoliticiansForBundesland(bundeslandKey: string): Politician[] {
+  return politiciansCache.landtag.filter(
+    (politician) => politician.bundeslandKey === bundeslandKey
+  );
+}
+
 interface PlzEnrichment {
   bundeslandKey: string;
   bundeslandName: string;
@@ -33,6 +43,27 @@ interface PlzEnrichment {
 }
 const plzBundesland = plzBundeslandJson as Record<string, PlzEnrichment>;
 const plzLandtagWahlkreis = plzLandtagWahlkreisJson as Record<string, number[]>;
+
+export function getBundeslandForPlz(plz: string): string | null {
+  return plzBundesland[plz]?.bundeslandKey ?? null;
+}
+
+const bundestagWahlkreisBundesland = new Map<number, string>();
+for (const [plz, wahlkreisIds] of Object.entries(plzMapping)) {
+  const bundeslandKey = plzBundesland[plz]?.bundeslandKey;
+  if (!bundeslandKey) continue;
+  for (const wahlkreisId of wahlkreisIds) {
+    if (!bundestagWahlkreisBundesland.has(wahlkreisId)) {
+      bundestagWahlkreisBundesland.set(wahlkreisId, bundeslandKey);
+    }
+  }
+}
+
+export function getBundestagPoliticianBundesland(
+  politician: Pick<Politician, "wahlkreisId">
+): string | null {
+  return bundestagWahlkreisBundesland.get(politician.wahlkreisId) ?? null;
+}
 
 interface OfficialMunicipalAddress {
   ags: string;
@@ -65,26 +96,6 @@ export function lookupPLZ(plz: string): { wahlkreisIds: number[]; politicians: P
   const politicians = politiciansCache.bundestag.filter((p) =>
     wahlkreisIds.includes(p.wahlkreisId)
   );
-
-  if (politicians.length === 0) {
-    const fallbackWahlkreis = wahlkreisIds.length > 0 ? `Wahlkreis ${wahlkreisIds[0]}` : "Unbekannter Wahlkreis";
-    const fallbackWahlkreisId = wahlkreisIds.length > 0 ? wahlkreisIds[0] : 0;
-
-    politicians.push({
-      id: -1,
-      politicianId: -1,
-      firstName: "",
-      lastName: "MdB",
-      title: null,
-      party: "Unbekannt",
-      wahlkreisId: fallbackWahlkreisId,
-      wahlkreisName: fallbackWahlkreis,
-      level: "Bund",
-      postalAddress: "Platz der Republik 1, 11011 Berlin",
-      isDirect: false,
-      abgeordnetenwatchUrl: `https://www.bundestag.de/abgeordnete/wahlkreissuche?wknr=${fallbackWahlkreisId}`,
-    });
-  }
 
   return { wahlkreisIds, politicians };
 }

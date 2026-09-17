@@ -115,6 +115,21 @@ describe("letter email variant CTA", () => {
     expect(html).not.toContain("letterText=");
   });
 
+  it("carries the issue preview in the normal letter email debug URL", () => {
+    const html = buildEmailHtml({
+      ...makeParams(),
+      debug: { ...makeDebug(), issueTextPreview: "Sichere Radwege" },
+    });
+    const href = html.match(/href="([^"]+\/debug\?d=[^"]+)"/)?.[1];
+    expect(href).toBeDefined();
+
+    const debugUrl = new URL(href!);
+    const encoded = debugUrl.searchParams.get("d")!;
+    const padded = encoded.replace(/-/g, "+").replace(/_/g, "/") + "=".repeat((4 - (encoded.length % 4)) % 4);
+    const payload = JSON.parse(Buffer.from(padded, "base64").toString("utf8"));
+    expect(payload.issueTextPreview).toBe("Sichere Radwege");
+  });
+
   it("normalizes alternative closing formulas before rendering the letter email", () => {
     const html = buildEmailHtml(
       makeParams(

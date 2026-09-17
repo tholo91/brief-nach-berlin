@@ -1,6 +1,7 @@
 import {
   buildDebugPayload,
   buildResendDebugPayload,
+  ISSUE_TEXT_PREVIEW_MAX,
 } from "@/lib/email/buildDebugPayload";
 
 const recipient = {
@@ -11,6 +12,12 @@ const recipient = {
   wahlkreisName: "Bochum I",
   party: "SPD",
   id: 1,
+  politicianId: 101,
+  title: null,
+  wahlkreisId: 140,
+  postalAddress: "Platz der Republik 1, 11011 Berlin",
+  isDirect: true,
+  abgeordnetenwatchUrl: null,
 };
 
 const issueText = "Anliegen ".repeat(100);
@@ -40,17 +47,19 @@ const generationResult = {
   temperature: 0.4,
   generationMs: 1000,
   letter: "Testbrief",
+  topic: null,
 };
 
 describe("Debug-Payload", () => {
-  it("contains the issue text length but never its content", () => {
+  it("contains a bounded issue text preview", () => {
     const payload = buildDebugPayload(wizardData, generationResult, 6);
 
     expect(payload.issueTextLength).toBe(issueText.length);
-    expect(JSON.stringify(payload)).not.toContain(issueText.slice(0, 80));
+    expect(payload.issueTextPreview).toBe(issueText.slice(0, ISSUE_TEXT_PREVIEW_MAX));
+    expect(payload.issueTextPreview?.length).toBeLessThanOrEqual(ISSUE_TEXT_PREVIEW_MAX);
   });
 
-  it("keeps the issue text out of resend payloads", () => {
+  it("includes the same bounded preview in resend payloads", () => {
     const payload = buildResendDebugPayload(
       wizardData,
       recipient,
@@ -59,6 +68,7 @@ describe("Debug-Payload", () => {
     );
 
     expect(payload.issueTextLength).toBe(issueText.length);
-    expect(JSON.stringify(payload)).not.toContain(issueText.slice(0, 80));
+    expect(payload.issueTextPreview).toBe(issueText.slice(0, ISSUE_TEXT_PREVIEW_MAX));
+    expect(payload.issueTextPreview?.length).toBeLessThanOrEqual(ISSUE_TEXT_PREVIEW_MAX);
   });
 });

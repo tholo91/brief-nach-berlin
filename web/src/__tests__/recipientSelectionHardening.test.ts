@@ -82,6 +82,7 @@ describe("RecipientSelection server hardening", () => {
       ok: true,
       recipient: mdbRecipient,
       availableCount: 1,
+      relation: "local",
     });
   });
 
@@ -134,6 +135,7 @@ describe("RecipientSelection server hardening", () => {
         },
       },
       availableCount: 1,
+      relation: "institutional",
     });
 
     await expect(
@@ -274,7 +276,12 @@ describe("RecipientSelection server hardening", () => {
         sourceStand: "2026-07-20",
       },
     };
-    mockedResolveRecipientSelection.mockReturnValue({ ok: true, recipient, availableCount: 1 });
+    mockedResolveRecipientSelection.mockReturnValue({
+      ok: true,
+      recipient,
+      availableCount: 1,
+      relation: "institutional",
+    });
     mockedModerateText.mockResolvedValue({ flagged: false, categories: [] });
     mockedBuildResendDebugPayload.mockReturnValue({} as never);
     mockedPrepareLetterEmail.mockReturnValue({

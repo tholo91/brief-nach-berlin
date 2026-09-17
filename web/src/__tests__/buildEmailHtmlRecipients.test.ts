@@ -44,6 +44,26 @@ describe("buildEmailHtml — Empfänger-Arten", () => {
     expect(html).not.toContain("google.com/search");
   });
 
+  it("mdb_later: zeigt generische Adresse und drei Anpassungsschritte", () => {
+    const html = buildEmailHtml(
+      baseParams({
+        recipientKind: "mdb_later",
+        politicianName: "Mitglied des Deutschen Bundestages",
+        politicianFirstName: "",
+        politicianLastName: "MdB",
+        politicianParty: null,
+        politicianAbgeordnetenwatchUrl: null,
+      })
+    );
+    expect(html).toContain("Deutscher Bundestag<br>");
+    expect(html).toContain("Mitglied in der Abgeordnetensuche auswählen");
+    expect(html).toContain("https://www.bundestag.de/abgeordnete");
+    expect(html).toContain("Name, Anschrift und Anrede im Entwurf ersetzen");
+    expect(html).toContain("Brief prüfen, abschreiben und erst dann versenden");
+    expect(html).toContain("/kein-mdb-im-wahlkreis");
+    expect(html).not.toContain(", MdB (");
+  });
+
   it("mdl: Landtag-Anschrift ohne Bundestag-Zeile, MdL-Label", () => {
     const params = baseParams({
         recipientKind: "mdl",

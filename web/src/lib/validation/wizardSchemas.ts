@@ -14,6 +14,7 @@ export const toneLevelSchema = z.number().int().min(1).max(5).optional();
 export const recipientSelectionSchema = z.discriminatedUnion("kind", [
   z.object({ kind: z.literal("mdb"), selectedPoliticianId: z.number().int() }).strict(),
   z.object({ kind: z.literal("mdl"), selectedPoliticianId: z.number().int() }).strict(),
+  z.object({ kind: z.literal("mdb_later") }).strict(),
   z.object({ kind: z.literal("bundeskanzler") }).strict(),
   z.object({ kind: z.literal("landesregierung") }).strict(),
   z.object({ kind: z.literal("rathaus") }).strict(),

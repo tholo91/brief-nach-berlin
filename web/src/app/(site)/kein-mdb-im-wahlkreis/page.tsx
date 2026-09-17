@@ -9,7 +9,8 @@ import { FAQAccordion } from "@/components/FAQAccordion";
 
 const URL_PATH = "/kein-mdb-im-wahlkreis";
 const PUBLISHED = "2026-07-11";
-const TITLE = "Kein MdB im Wahlkreis? So schreibst du trotzdem nach Berlin | Brief nach Berlin";
+const MODIFIED = "2026-09-17";
+const TITLE = "Kein MdB im Wahlkreis? So schreibst du trotzdem nach Berlin | Brief-nach-Berlin";
 const DESCRIPTION =
   "Dein Wahlkreis hat gerade kein zugeordnetes MdB? Hier erfährst du, an wen dein Brief geht, warum das passiert und wie du weiter machst.";
 
@@ -34,7 +35,7 @@ const faqs = [
   },
   {
     q: "An wen schreibe ich, wenn mein Wahlkreis kein MdB hat?",
-    a: "Schreibe zunächst an eine Abgeordnete oder einen Abgeordneten aus deinem Bundesland, deren oder dessen Arbeit zu deinem Thema passt. Die offizielle Abgeordnetensuche des Bundestages lässt sich nach Bundesland, Wahlkreis und Fraktion filtern.",
+    a: "Nutze im Brief-Flow die bundesweite Suche. Personen aus deinem Bundesland erscheinen zuerst. Du kannst nach Name, Partei, Wahlkreis oder Ausschuss suchen und die Auswahl selbst treffen.",
   },
   {
     q: "Kann ich den Brief trotzdem abschicken?",
@@ -66,9 +67,9 @@ const articleJsonLd = {
   headline: TITLE,
   description: DESCRIPTION,
   datePublished: PUBLISHED,
-  dateModified: PUBLISHED,
-  author: { "@type": "Organization", name: "Brief nach Berlin" },
-  publisher: { "@type": "Organization", name: "Brief nach Berlin", url: APP_URL },
+  dateModified: MODIFIED,
+  author: { "@type": "Organization", name: "Brief-nach-Berlin" },
+  publisher: { "@type": "Organization", name: "Brief-nach-Berlin", url: APP_URL },
   url: `${APP_URL}${URL_PATH}`,
   mainEntityOfPage: `${APP_URL}${URL_PATH}`,
   inLanguage: "de-DE",
@@ -92,7 +93,7 @@ export default function KeinMdbImWahlkreisPage() {
           Kein MdB im Wahlkreis? Dein Brief kann trotzdem losgehen.
         </h1>
         <p className="font-body text-lg text-warmgrau/80 leading-relaxed mb-8 text-pretty">
-          Wenn deinem Wahlkreis gerade kein MdB zugeordnet ist, schreibe an eine Abgeordnete oder einen Abgeordneten aus deinem Bundesland, die oder der zu deinem Thema passt. Die neutrale Empfängerzeile in deiner Mail ist ein Hinweis, keine Sackgasse. Wähle den Namen und die Adresse vor dem Versand selbst aus.
+          Wenn deinem Wahlkreis gerade kein MdB zugeordnet ist, öffnet Brief-nach-Berlin automatisch die bundesweite Suche. Personen aus deinem Bundesland stehen dabei zuerst. Du kannst direkt jemanden auswählen oder mit einem neutralen Entwurf fortfahren und Name, Adresse und Anrede später einsetzen.
         </p>
 
         <Figure
@@ -110,19 +111,19 @@ export default function KeinMdbImWahlkreisPage() {
           <ol className="list-none space-y-4 pl-0">
             <li className="p-4 bg-waldgruen/5 border border-waldgruen/15 rounded-xl">
               <span className="font-typewriter text-xs uppercase tracking-widest text-waldgruen/60 block mb-1">1. Thema festlegen</span>
-              Entscheide, welche Fraktion oder welches Fachgebiet zu deinem Anliegen passt. Bei Gesundheit, Arbeit oder Familie kann ein thematisch zuständiger Ausschuss ein guter Anhaltspunkt sein.
+              Nutze im Brief-Flow die Partei-Filter oder suche nach Name, Partei, Wahlkreis oder Ausschuss. Brief-nach-Berlin trifft dabei keine politische Empfehlung für dich.
             </li>
             <li className="p-4 bg-waldgruen/5 border border-waldgruen/15 rounded-xl">
               <span className="font-typewriter text-xs uppercase tracking-widest text-waldgruen/60 block mb-1">2. Person auswählen</span>
-              Suche auf der offiziellen <a href="https://www.bundestag.de/abgeordnete" target="_blank" rel="noopener noreferrer" className="text-waldgruen hover:underline">Abgeordnetenseite des Bundestages</a> nach Bundesland, Fraktion oder Wahlkreis. So findest du einen realen Empfänger mit einem öffentlichen Bundestagsbüro.
+              Wähle eine Person direkt in der internen Suche. Falls du lieber selbst gegenprüfen möchtest, kannst du weiterhin die offizielle <a href="https://www.bundestag.de/abgeordnete" target="_blank" rel="noopener noreferrer" className="text-waldgruen hover:underline">Abgeordnetenseite des Bundestages</a> nutzen.
             </li>
             <li className="p-4 bg-waldgruen/5 border border-waldgruen/15 rounded-xl">
               <span className="font-typewriter text-xs uppercase tracking-widest text-waldgruen/60 block mb-1">3. Adresse ersetzen</span>
-              Trage Name, Anrede und Postadresse in deinen Entwurf ein. Schreibe kurz dazu, dass du aus dem Wahlkreis kommst, auch wenn die Person dort kein Direktmandat hat.
+              Nur beim neutralen Notfallentwurf: Trage Name, Anrede und Postadresse ein. Behaupte bei einer nichtlokalen Person nicht, sie vertrete deinen Wahlkreis.
             </li>
           </ol>
 
-          <FactCallout number="1" label="Eine Person aus deinem Bundesland reicht als konkreter nächster Empfänger." source="Vor dem Versand Namen und Adresse prüfen" />
+          <FactCallout number="1" label="Die Auswahl bleibt bei dir. Brief-nach-Berlin sortiert regional, bewertet aber keine Partei." source="Vor dem Versand Namen und Adresse prüfen" />
 
           <PullQuote decorative>
             Dein Wahlkreis braucht eine Stimme. Dafür muss nicht zwingend ein einzelner Name in der ersten Mail stehen.

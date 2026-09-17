@@ -201,7 +201,8 @@ export async function submitWizardAction(
           "Die ausgewählten Personen dieser Kampagne sind derzeit nicht verfügbar. Bitte versuche es später erneut.",
       };
     }
-    // Fallback is handled within lookupPLZ.ts, returning an anonymous politician if none are found.
+    // Kein lokales MdB ist ein gültiger Zustand. Step 3 öffnet dann die
+    // bundesweite Suche und bietet den expliziten mdb_later-Notfallpfad an.
 
     // Kampagne mit fester Bundesland-Bindung: liegt die Besucher-PLZ in einem
     // anderen Bundesland, freundlich abfangen. Läuft wie plz_not_found VOR dem

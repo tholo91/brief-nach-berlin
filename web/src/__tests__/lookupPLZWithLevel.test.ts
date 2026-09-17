@@ -114,14 +114,12 @@ describe("lookupPLZWithLevel", () => {
     expect(recipient.postalAddress).toBe("Zuständiges Bürgermeisteramt");
   });
 
-  it("unbekannte PLZ (00000): keine Anreicherung, Ebenen leer bis auf Bund-Fallback", () => {
+  it("unbekannte PLZ (00000): keine Anreicherung und keine erfundene Bund-Person", () => {
     const r = lookupPLZWithLevel("00000");
     expect(r.bundeslandKey).toBeNull();
     expect(r.byLevel.Land).toHaveLength(0);
     expect(r.byLevel.Kommune).toHaveLength(0);
-    // Bund behält den heutigen Fallback-Eintrag (id -1)
-    expect(r.byLevel.Bund).toHaveLength(1);
-    expect(r.byLevel.Bund[0].id).toBe(-1);
+    expect(r.byLevel.Bund).toHaveLength(0);
   });
 
   it("Legacy-lookupPLZ liefert nur Bundestagsabgeordnete (keine MdL-Kollisionen)", () => {

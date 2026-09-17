@@ -25,22 +25,31 @@ const letterParams: SendLetterEmailParams = {
   recipientKind: "mdb",
   letterText: "Sehr geehrte Frau Müller,\n\nTestbrief.\n\nMit freundlichen Grüßen",
   issueText: "Testanliegen",
+  letterNumber: 2356,
 };
 
 describe("email social follow footer", () => {
   it("adds the compact Instagram and LinkedIn links to user journey emails", () => {
-    const userMailHtml = [
-      buildEmailHtml(letterParams),
+    const letterMailHtml = buildEmailHtml(letterParams);
+    const otherUserMailHtml = [
       buildFollowupHtml({ token: "signed-token" }).html,
       buildLastcallHtml().html,
       buildVariantEmailHtml(letterParams.letterText, letterParams.recipientEmail),
     ];
 
-    for (const html of userMailHtml) {
+    expect(letterMailHtml).toContain("Brief #2.356 · Deine Stimme zählt · Folge");
+    expect(letterMailHtml).toContain(">Brief-nach-Berlin</a>");
+    expect(letterMailHtml).not.toContain("Folge Brief-nach-Berlin:");
+
+    for (const html of otherUserMailHtml) {
       expect(html).toContain("Updates von Thomas zu Brief-nach-Berlin:");
+    }
+
+    for (const html of [letterMailHtml, ...otherUserMailHtml]) {
       expect(html).toContain(`href="${FOUNDER_INSTAGRAM}"`);
       expect(html).toContain(`href="${FOUNDER_LINKEDIN}"`);
-      expect(html).toContain('width="32" height="32"');
+      expect(html).toContain('width="18" height="18"');
+      expect(html).toContain("background-color:transparent;border:0");
     }
   });
 

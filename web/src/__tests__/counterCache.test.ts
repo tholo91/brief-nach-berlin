@@ -45,15 +45,14 @@ describe("letter counter caching", () => {
     expect(mockRevalidateTag).not.toHaveBeenCalled();
   });
 
-  it("does not fan out cache invalidation through the fallback increment", async () => {
-    mockRpc
-      .mockResolvedValueOnce({ data: null, error: { message: "temporary outage" } })
-      .mockResolvedValueOnce({ data: null, error: null });
+  it("does not retry an ambiguous counter RPC failure", async () => {
+    mockRpc.mockResolvedValue({ data: null, error: { message: "temporary outage" } });
 
     await expect(incrementLetterCounters()).resolves.toBeUndefined();
 
-    expect(mockRpc).toHaveBeenNthCalledWith(2, "increment_counter", {
-      key_name: "letter_count",
+    expect(mockRpc).toHaveBeenCalledTimes(1);
+    expect(mockRpc).toHaveBeenCalledWith("increment_letter_counters", {
+      campaign_slug: null,
     });
     expect(mockRevalidateTag).not.toHaveBeenCalled();
   });

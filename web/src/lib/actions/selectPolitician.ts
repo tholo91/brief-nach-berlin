@@ -117,6 +117,12 @@ export async function selectPoliticianAction(
       topic: routingEnvelope?.routing.topic,
       campaignSlug: campaign?.slug ?? null,
     });
+    if (!signal) {
+      return {
+        error: "server_error",
+        message: "Die Briefanfrage konnte nicht sicher vorbereitet werden. Bitte versuche es erneut.",
+      };
+    }
 
     // Pre-checks passed — letter generation happens async via /api/generate-letter
     // on the Success-Page, so we return immediately without blocking the user.
@@ -124,7 +130,7 @@ export async function selectPoliticianAction(
       preCheckOk: true,
       recipient: resolved.recipient,
       letterId,
-      letterSignalContext: signal?.token ?? null,
+      letterSignalContext: signal.token,
     };
   } catch (error) {
     console.error("[brief-nach-berlin] selectPoliticianAction error:", error);

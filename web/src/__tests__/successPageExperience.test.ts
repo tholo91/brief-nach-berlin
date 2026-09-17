@@ -68,8 +68,12 @@ describe("success page experience", () => {
   });
 
   it("treats a lost generation response as a possible email success", () => {
-    expect(successSource).toContain("setGenerationMayHaveSucceeded(true)");
-    expect(successSource).toContain("setGenerationMayHaveSucceeded(false)");
+    expect(successSource).toContain('setGenerationFailureKind("uncertain")');
+    expect(successSource).toContain("setGenerationRequestId(selectResult.letterId)");
+    expect(successSource).toContain("letterId: generationRequestId");
+    expect(successSource).toContain('code === "generation_in_progress"');
+    expect(successSource).toContain('code === "generation_already_processed"');
+    expect(successSource).toContain('setGenerationFailureKind("definite")');
     expect(successSource).toContain("Wir konnten die Erstellung nicht bestätigen");
     expect(successSource).toContain("Bitte prüfe zuerst dein Postfach und den Spam-Ordner");
     expect(successSource).toContain("Wenn nach zwei Minuten nichts angekommen ist");

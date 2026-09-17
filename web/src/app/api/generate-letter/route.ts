@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse, after } from "next/server";
 import { randomUUID } from "node:crypto";
-import { z } from "zod";
 import type { WizardData } from "@/lib/types/wizard";
 import type { RecipientSelection } from "@/lib/lookup/rathausRecipient";
 import {
@@ -29,16 +28,10 @@ import {
 } from "@/lib/mistral";
 import { incrementLetterCounters } from "@/lib/counter";
 import { getActiveCampaignBySlug } from "@/lib/campaigns/repository";
-import { doesLetterSignalContextMatch } from "@/lib/letterSignals/context";
+import { buildLetterSignalContext, doesLetterSignalContextMatch } from "@/lib/letterSignals/context";
 import { createGenerationProof, verifyLetterSignalContext } from "@/lib/letterSignals/token";
 import { markLetterSignalGeneratedAction } from "@/lib/actions/letterSignals";
 import { isBundeskanzlerCampaignTarget } from "@/lib/lookup/bundeskanzlerRecipient";
-import {
-  claimLetterGeneration,
-  completeLetterGenerationClaim,
-  markLetterGenerationIrreversible,
-  releaseLetterGenerationClaim,
-} from "@/lib/generation/idempotency";
 
 // Client-Auswahl: diskriminierte Union (999.6). Institutionelle Empfänger
 // tragen bewusst KEINE ID; der Server leitet sie aus der PLZ ab (LOCK-5).
@@ -99,9 +92,6 @@ function extractErrorDetail(error: unknown): ErrorDetail {
 }
 
 export async function POST(req: NextRequest) {
-  let claimedLetterId: string | null = null;
-  let claimOwnerToken: string | null = null;
-  let irreversibleWorkStarted = false;
   try {
     const body = await req.json() as {
       wizardData?: WizardData;
@@ -109,7 +99,6 @@ export async function POST(req: NextRequest) {
       selectedPoliticianId?: unknown;
       routingToken?: unknown;
       letterSignalContext?: unknown;
-      letterId?: unknown;
     };
     const { wizardData: data } = body;
 
@@ -194,46 +183,26 @@ export async function POST(req: NextRequest) {
     }
     const recipient = resolved.recipient;
 
-    const parsedLetterId = z.string().uuid().safeParse(body.letterId);
-    if (!parsedLetterId.success) {
-      return NextResponse.json({ error: "Ungültige Anfrage." }, { status: 400 });
+    let letterId: string = randomUUID();
+    let verifiedSignalContext: ReturnType<typeof verifyLetterSignalContext> = null;
+    let suppliedSignalToken: string | null = null;
+    if (body.letterSignalContext !== undefined) {
+      if (typeof body.letterSignalContext !== "string") {
+        return NextResponse.json({ error: "Ungültiger Signal-Kontext." }, { status: 400 });
+      }
+      const context = verifyLetterSignalContext(body.letterSignalContext);
+      if (!context || !doesLetterSignalContextMatch({
+        context,
+        data,
+        recipient,
+        campaignSlug: campaign?.slug ?? null,
+      })) {
+        return NextResponse.json({ error: "Ungültiger Signal-Kontext." }, { status: 400 });
+      }
+      letterId = context.letterId;
+      verifiedSignalContext = context;
+      suppliedSignalToken = body.letterSignalContext;
     }
-    const letterId = parsedLetterId.data;
-    if (typeof body.letterSignalContext !== "string") {
-      return NextResponse.json({ error: "Ungültiger Signal-Kontext." }, { status: 400 });
-    }
-    const verifiedSignalContext = verifyLetterSignalContext(body.letterSignalContext);
-    if (!verifiedSignalContext || !doesLetterSignalContextMatch({
-      context: verifiedSignalContext,
-      data,
-      recipient,
-      campaignSlug: campaign?.slug ?? null,
-    })) {
-      return NextResponse.json({ error: "Ungültiger Signal-Kontext." }, { status: 400 });
-    }
-    if (verifiedSignalContext.letterId !== letterId) {
-      return NextResponse.json({ error: "Ungültiger Signal-Kontext." }, { status: 400 });
-    }
-    const suppliedSignalToken = body.letterSignalContext;
-
-    const generationClaim = await claimLetterGeneration(letterId);
-    if (generationClaim.status !== "claimed") {
-      const inProgress = generationClaim.status === "in_progress";
-      return NextResponse.json(
-        {
-          error: inProgress
-            ? "Diese Briefanfrage wird bereits verarbeitet. Bitte prüfe gleich dein Postfach und den Spam-Ordner."
-            : "Diese Briefanfrage wurde bereits verarbeitet. Bitte prüfe dein Postfach und den Spam-Ordner.",
-          code: inProgress
-            ? "generation_in_progress"
-            : "generation_already_processed",
-          letterId,
-        },
-        { status: 409 },
-      );
-    }
-    claimedLetterId = letterId;
-    claimOwnerToken = generationClaim.ownerToken;
 
     // Routing-Kontext: NUR über den signierten Prefetch-Token (LOCK-10).
     // Daraus leiten sich Kompetenz-Mismatch-Framing und Debug-Telemetrie ab —
@@ -297,6 +266,15 @@ export async function POST(req: NextRequest) {
       mismatchRecommendedLevel,
     });
 
+    const resolvedSignal = verifiedSignalContext
+      ? { context: verifiedSignalContext, token: suppliedSignalToken! }
+      : buildLetterSignalContext({
+          data,
+          recipient: result.selectedRecipient,
+          letterId,
+          topic: result.topic,
+          campaignSlug: campaign?.slug ?? null,
+        });
     const generationProof = createGenerationProof({
       letterId,
       issueText: data.issueText,
@@ -309,11 +287,6 @@ export async function POST(req: NextRequest) {
     // Increment before responding so this user receives the current letter number.
     // The public aggregate refreshes through its hourly cache; invalidating it here
     // would fan out ISR rewrites across every route that renders the shared footer.
-    // Ab hier darf derselbe Claim nie wieder freigegeben werden: Der Zaehler-
-    // RPC kann trotz verlorener Antwort bereits committed haben, und danach
-    // werden Mail und Follow-up eingereiht.
-    await markLetterGenerationIrreversible(letterId, claimOwnerToken);
-    irreversibleWorkStarted = true;
     let letterNumber: number | undefined;
     try {
       letterNumber = await incrementLetterCounters(data.campaign?.slug);
@@ -390,8 +363,6 @@ export async function POST(req: NextRequest) {
       }
     });
 
-    await completeLetterGenerationClaim(letterId, claimOwnerToken);
-
     return NextResponse.json({
       letterText: result.letter,
       politician: result.selectedPolitician,
@@ -399,13 +370,10 @@ export async function POST(req: NextRequest) {
       politicalLevel: result.politicalLevel,
       letterNumber,
       letterId,
-      letterSignalContext: suppliedSignalToken,
+      letterSignalContext: resolvedSignal?.token ?? null,
       generationProof,
     });
   } catch (error) {
-    if (claimedLetterId && claimOwnerToken && !irreversibleWorkStarted) {
-      await releaseLetterGenerationClaim(claimedLetterId, claimOwnerToken);
-    }
     // errorId: billiger Live-Grep-Anker für Vercel-Logs im Moment des Fehlers.
     // detail: der eigentliche, selbst-enthaltende Fehlerkontext für die
     // "Fehler melden"-Mail. Wird im Client NIE gerendert, nur weitergereicht.
@@ -420,6 +388,7 @@ export async function POST(req: NextRequest) {
             "Der KI-Anbieter ist gerade kurz nicht erreichbar. Bitte versuche es in ein, zwei Minuten erneut.",
           errorId,
           detail,
+          retrySafe: true,
         },
         { status: 503, headers: { "Retry-After": "60" } }
       );
@@ -431,6 +400,7 @@ export async function POST(req: NextRequest) {
             "Der KI-Dienst konnte den Brief gerade nicht verarbeiten. Bitte versuche es in ein, zwei Minuten erneut.",
           errorId,
           detail,
+          retrySafe: true,
         },
         { status: 502 }
       );

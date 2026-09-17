@@ -6,12 +6,7 @@ jest.mock("@/lib/lookup/routingToken", () => ({
   verifyRoutingTokenEnvelope: jest.fn(() => null),
   deriveRoutingLetterId: jest.fn(() => "11111111-1111-4111-8111-111111111111"),
 }));
-jest.mock("@/lib/letterSignals/context", () => ({
-  buildLetterSignalContext: jest.fn(() => ({
-    context: {},
-    token: "signed-generation-context",
-  })),
-}));
+jest.mock("@/lib/letterSignals/context", () => ({ buildLetterSignalContext: jest.fn(() => null) }));
 jest.mock("@/lib/moderation/moderateText", () => ({ moderateText: jest.fn() }));
 jest.mock("@/lib/email/sendLetterEmail", () => ({
   sendLetterEmail: jest.fn(),

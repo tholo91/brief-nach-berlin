@@ -68,17 +68,17 @@ describe("success page experience", () => {
   });
 
   it("treats a lost generation response as a possible email success", () => {
-    expect(successSource).toContain('setGenerationFailureKind("uncertain")');
-    expect(successSource).toContain("setGenerationRequestId(selectResult.letterId)");
-    expect(successSource).toContain("letterId: generationRequestId");
-    expect(successSource).toContain('code === "generation_in_progress"');
-    expect(successSource).toContain('code === "generation_already_processed"');
-    expect(successSource).toContain('setGenerationFailureKind("definite")');
+    expect(successSource).toContain("setGenerationMayHaveSucceeded(true)");
+    expect(successSource).toContain("setGenerationMayHaveSucceeded(false)");
     expect(successSource).toContain("Wir konnten die Erstellung nicht bestätigen");
     expect(successSource).toContain("Bitte prüfe zuerst dein Postfach und den Spam-Ordner");
-    expect(successSource).toContain("Wenn nach zwei Minuten nichts angekommen ist");
+    expect(successSource).toContain("Um einen doppelten Versand zu vermeiden");
     expect(successSource).toContain("Bitte prüfe jetzt dein Postfach und den Spam-Ordner");
-    expect(successSource).toContain("Nach zwei Minuten noch keine E-Mail? Nochmal versuchen");
+    expect(successSource).not.toContain("Nach zwei Minuten noch keine E-Mail? Nochmal versuchen");
+    expect(successSource).not.toContain("Wenn nach zwei Minuten nichts angekommen ist");
+    expect(successSource).toContain("const retryIsSafe = res.status < 500 || errBody?.retrySafe === true");
+    expect(successSource).toContain("setGenerationMayHaveSucceeded(!retryIsSafe)");
+    expect(successSource).toContain("{!generationMayHaveSucceeded && (");
     expect(successSource).toContain("Brief konnte nicht erstellt werden");
     expect(successSource).not.toContain("Ich beeile mich und melde mich");
   });

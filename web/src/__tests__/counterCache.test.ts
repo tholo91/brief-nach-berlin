@@ -45,7 +45,7 @@ describe("letter counter caching", () => {
     expect(mockRevalidateTag).not.toHaveBeenCalled();
   });
 
-  it("does not retry an ambiguous counter RPC failure", async () => {
+  it("does not retry an increment after an ambiguous RPC error", async () => {
     mockRpc.mockResolvedValue({ data: null, error: { message: "temporary outage" } });
 
     await expect(incrementLetterCounters()).resolves.toBeUndefined();

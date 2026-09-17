@@ -131,8 +131,8 @@ export type WizardActionResult =
   | {
       preCheckOk: true;
       recipient: Recipient;
-      letterId: string;
-      letterSignalContext: string;
+      letterId?: string;
+      letterSignalContext?: string | null;
     }
   | {
       disambiguationNeeded: true;

@@ -24,21 +24,6 @@ jest.mock("@/lib/rateLimit", () => ({
   },
 }));
 jest.mock("@/lib/counter", () => ({ incrementLetterCounters: jest.fn() }));
-jest.mock("@/lib/letterSignals/context", () => ({
-  doesLetterSignalContextMatch: jest.fn(() => true),
-}));
-jest.mock("@/lib/letterSignals/token", () => ({
-  createGenerationProof: jest.fn(() => "signed-generation-proof"),
-  verifyLetterSignalContext: jest.fn(() => ({
-    letterId: "11111111-1111-4111-8111-111111111111",
-  })),
-}));
-jest.mock("@/lib/generation/idempotency", () => ({
-  claimLetterGeneration: jest.fn(),
-  completeLetterGenerationClaim: jest.fn(),
-  markLetterGenerationIrreversible: jest.fn(),
-  releaseLetterGenerationClaim: jest.fn(),
-}));
 jest.mock("@/lib/mistral", () => ({
   MistralProviderUnavailableError: class extends Error {},
   MistralStageError: class extends Error {
@@ -58,31 +43,15 @@ jest.mock("@/lib/mistral", () => ({
 }));
 
 import { POST } from "@/app/api/generate-letter/route";
-import { after } from "next/server";
 import { generateLetter } from "@/lib/generation/generateLetter";
-import { incrementLetterCounters } from "@/lib/counter";
 import { resolveRecipientSelection } from "@/lib/lookup/resolveRecipient";
 import { moderateText } from "@/lib/moderation/moderateText";
 import { checkRateLimit, hashIdentifier } from "@/lib/rateLimit";
 import { MistralStageError } from "@/lib/mistral";
-import {
-  claimLetterGeneration,
-  completeLetterGenerationClaim,
-  markLetterGenerationIrreversible,
-  releaseLetterGenerationClaim,
-} from "@/lib/generation/idempotency";
 
 function requestWith(body: unknown) {
-  const bodyWithGenerationContext =
-    typeof body === "object" && body !== null && !Array.isArray(body)
-      ? {
-          letterId: "11111111-1111-4111-8111-111111111111",
-          letterSignalContext: "signed-test-context",
-          ...body,
-        }
-      : body;
   return {
-    json: async () => bodyWithGenerationContext,
+    json: async () => body,
     headers: new Headers(),
   } as Parameters<typeof POST>[0];
 }
@@ -94,13 +63,6 @@ describe("generate-letter RecipientSelection hardening", () => {
     process.env.LETTER_PROMPT_LEVEL_AWARE = "true";
     process.env.LETTER_SIGNAL_TOKEN_SECRET = "generate-letter-route-test-secret";
     process.env.LETTER_SIGNAL_EMAIL_HASH_SECRET = "generate-letter-route-email-test-secret";
-    jest.mocked(claimLetterGeneration).mockResolvedValue({
-      status: "claimed",
-      ownerToken: "22222222-2222-4222-8222-222222222222",
-    });
-    jest.mocked(completeLetterGenerationClaim).mockResolvedValue();
-    jest.mocked(markLetterGenerationIrreversible).mockResolvedValue();
-    jest.mocked(releaseLetterGenerationClaim).mockResolvedValue();
   });
 
   it("liefert einen persönlichen Brief aus, ohne ihn durch moderateText abzubrechen", async () => {
@@ -160,118 +122,6 @@ describe("generate-letter RecipientSelection hardening", () => {
     expect(moderateText).not.toHaveBeenCalled();
   });
 
-  it("verarbeitet dieselbe serverseitige letterId nur einmal", async () => {
-    jest.mocked(claimLetterGeneration)
-      .mockResolvedValueOnce({
-        status: "claimed",
-        ownerToken: "22222222-2222-4222-8222-222222222222",
-      })
-      .mockResolvedValueOnce({ status: "duplicate" });
-    const recipient = {
-      kind: "rathaus" as const,
-      level: "Kommune" as const,
-      recipientKind: "buergermeisteramt" as const,
-      gemeindeName: "Musterstadt",
-      plz: "28203",
-      label: "Bürgermeisteramt Musterstadt",
-      postalAddress: "Musterstraße 1",
-      address: { source: "fallback" as const },
-    };
-    jest.mocked(checkRateLimit).mockReturnValue({ allowed: true });
-    jest.mocked(hashIdentifier).mockReturnValue("hashed");
-    jest.mocked(resolveRecipientSelection).mockReturnValue({
-      ok: true,
-      availableCount: 1,
-      relation: "institutional",
-      recipient,
-    });
-    jest.mocked(generateLetter).mockResolvedValue({
-      letter: "Sachlich umformulierter persönlicher Brief.",
-      topic: null,
-      selectedRecipient: recipient,
-      selectedPolitician: null,
-      politicalLevel: "Kommune",
-      wordCount: 4,
-      wordCountInRange: false,
-      fallbackUsed: false,
-      mdbContextUsed: false,
-      retried: false,
-      model: "test-model",
-      temperature: 0,
-      generationMs: 1,
-    });
-
-    const body = {
-      wizardData: {
-        plz: "28203",
-        email: "test@example.org",
-        issueText: "Ein ausreichend langes Anliegen für den Test.",
-        letterLength: "1.5",
-        toneLevel: 3,
-      },
-      selection: { kind: "rathaus" },
-      letterId: "11111111-1111-4111-8111-111111111111",
-    };
-
-    const firstResponse = await POST(requestWith(body));
-    const duplicateResponse = await POST(requestWith(body));
-
-    expect(firstResponse.status).toBe(200);
-    expect(duplicateResponse.status).toBe(409);
-    await expect(duplicateResponse.json()).resolves.toMatchObject({
-      code: "generation_already_processed",
-    });
-    expect(generateLetter).toHaveBeenCalledTimes(1);
-    expect(incrementLetterCounters).toHaveBeenCalledTimes(1);
-    expect(after).toHaveBeenCalledTimes(1);
-    expect(markLetterGenerationIrreversible).toHaveBeenCalledTimes(1);
-    expect(completeLetterGenerationClaim).toHaveBeenCalledTimes(1);
-    expect(jest.mocked(markLetterGenerationIrreversible).mock.invocationCallOrder[0])
-      .toBeLessThan(jest.mocked(incrementLetterCounters).mock.invocationCallOrder[0]);
-    expect(jest.mocked(markLetterGenerationIrreversible).mock.invocationCallOrder[0])
-      .toBeLessThan(jest.mocked(after).mock.invocationCallOrder[0]);
-  });
-
-  it("startet eine bereits laufende Briefanfrage nicht parallel", async () => {
-    jest.mocked(claimLetterGeneration).mockResolvedValue({ status: "in_progress" });
-    jest.mocked(checkRateLimit).mockReturnValue({ allowed: true });
-    jest.mocked(hashIdentifier).mockReturnValue("hashed");
-    jest.mocked(resolveRecipientSelection).mockReturnValue({
-      ok: true,
-      availableCount: 1,
-      relation: "institutional",
-      recipient: {
-        kind: "rathaus",
-        level: "Kommune",
-        recipientKind: "buergermeisteramt",
-        gemeindeName: "Musterstadt",
-        plz: "28203",
-        label: "Bürgermeisteramt Musterstadt",
-        postalAddress: "Musterstraße 1",
-        address: { source: "fallback" },
-      },
-    });
-
-    const response = await POST(requestWith({
-      wizardData: {
-        plz: "28203",
-        email: "test@example.org",
-        issueText: "Ein ausreichend langes Anliegen für den Test.",
-        letterLength: "1.5",
-        toneLevel: 3,
-      },
-      selection: { kind: "rathaus" },
-    }));
-
-    expect(response.status).toBe(409);
-    await expect(response.json()).resolves.toMatchObject({
-      code: "generation_in_progress",
-    });
-    expect(generateLetter).not.toHaveBeenCalled();
-    expect(incrementLetterCounters).not.toHaveBeenCalled();
-    expect(after).not.toHaveBeenCalled();
-  });
-
   it.each([
     { kind: "mdl", selectedPoliticianId: "12" },
     { kind: "landesregierung", selectedPoliticianId: 1 },
@@ -323,11 +173,7 @@ describe("generate-letter RecipientSelection hardening", () => {
     await expect(response.json()).resolves.toMatchObject({
       errorId: expect.any(String),
       detail: { name: "MistralStageError", status: 400, stage: "generation" },
+      retrySafe: true,
     });
-    expect(releaseLetterGenerationClaim).toHaveBeenCalledWith(
-      "11111111-1111-4111-8111-111111111111",
-      "22222222-2222-4222-8222-222222222222",
-    );
-    expect(completeLetterGenerationClaim).not.toHaveBeenCalled();
   });
 });

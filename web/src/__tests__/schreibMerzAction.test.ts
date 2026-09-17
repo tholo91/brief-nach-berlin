@@ -6,10 +6,7 @@ jest.mock("@/lib/lookup/routingToken", () => ({
   deriveRoutingLetterId: jest.fn(() => "11111111-1111-4111-8111-111111111111"),
 }));
 jest.mock("@/lib/letterSignals/context", () => ({
-  buildLetterSignalContext: jest.fn(() => ({
-    context: {},
-    token: "signed-generation-context",
-  })),
+  buildLetterSignalContext: jest.fn(() => null),
 }));
 
 import { selectPoliticianAction } from "@/lib/actions/selectPolitician";

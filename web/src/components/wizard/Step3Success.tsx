@@ -226,10 +226,7 @@ export function Step3Success({
     return false;
   });
   const [generationFetchError, setGenerationFetchError] = useState<string | null>(null);
-  const [generationFailureKind, setGenerationFailureKind] = useState<
-    "definite" | "uncertain" | "in_progress" | "duplicate"
-  >("definite");
-  const [generationRequestId, setGenerationRequestId] = useState<string | null>(null);
+  const [generationMayHaveSucceeded, setGenerationMayHaveSucceeded] = useState(false);
   const [retryCount, setRetryCount] = useState(0);
   // "Fehler melden"-Frühwarnsystem: Kontext des letzten Generierungsfehlers
   // (HTTP-Status, Server-Detail, Client-Fehler) wird hier festgehalten und beim
@@ -498,7 +495,6 @@ export function Step3Success({
 
         if ("preCheckOk" in selectResult && selectResult.preCheckOk) {
           await minDisplayTimer;
-          setGenerationRequestId(selectResult.letterId);
           setGenerationComplete(true);
           setGeneratedSelection(currentSelection);
           setGeneratedRecipient(selectResult.recipient);
@@ -525,9 +521,9 @@ export function Step3Success({
   }, [letterReady]);
 
   // Fetch the generated letter from the server once pre-checks pass.
-  // A manual retry remains available after a failed request. Automatic retries
-  // are unsafe because the server may already have generated, moderated, and
-  // queued the email before the client observes a network failure.
+  // Ein manueller Retry bleibt nach einem eindeutig fehlgeschlagenen Server-Request möglich.
+  // Bei einem Client-/Netzwerkfehler kann der Server die E-Mail bereits
+  // eingereiht haben; dann bieten wir keinen zweiten Versand an.
   //
   // fetchInFlightRef verhindert, dass ein laufender Request durch einen
   // Re-render (z.B. neue wizardData-Referenz) abgebrochen und sofort neu
@@ -536,13 +532,7 @@ export function Step3Success({
   // den Deps: es ändert sich nach generationComplete nicht mehr, und als
   // Closure-Variable ist der Wert zum Zeitpunkt des Fires korrekt.
   useEffect(() => {
-    if (
-      !generationComplete ||
-      letterReady ||
-      generatedSelection === null ||
-      generationRequestId === null ||
-      letterSignalContext === null
-    ) return;
+    if (!generationComplete || letterReady || generatedSelection === null) return;
     if (fetchInFlightRef.current) return;
     fetchInFlightRef.current = true;
 
@@ -550,11 +540,10 @@ export function Step3Success({
     fetch("/api/generate-letter", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        wizardData,
-        selection: generatedSelection,
-        letterId: generationRequestId,
-        letterSignalContext,
+        body: JSON.stringify({
+          wizardData,
+          selection: generatedSelection,
+          ...(letterSignalContext ? { letterSignalContext } : {}),
         ...(routingToken ? { routingToken } : {}),
       }),
       signal: controller.signal,
@@ -566,25 +555,21 @@ export function Step3Success({
           let serverMessage: string | null = null;
           let errorId: string | null = null;
           let detail: unknown;
-          let failureKind: typeof generationFailureKind = "definite";
           try {
             const errBody = (await res.json()) as {
               error?: string;
               errorId?: string;
               detail?: unknown;
-              code?: string;
+              retrySafe?: boolean;
             };
             serverMessage = errBody?.error ?? null;
             errorId = errBody?.errorId ?? null;
             detail = errBody?.detail;
-            if (errBody?.code === "generation_in_progress") {
-              failureKind = "in_progress";
-            } else if (errBody?.code === "generation_already_processed") {
-              failureKind = "duplicate";
-            }
-            setGenerationFailureKind(failureKind);
+            const retryIsSafe = res.status < 500 || errBody?.retrySafe === true;
+            setGenerationMayHaveSucceeded(!retryIsSafe);
           } catch {
             // Body nicht lesbar (z.B. HTML-Errorpage) - Status reicht.
+            setGenerationMayHaveSucceeded(res.status >= 500);
           }
           lastErrorRef.current = {
             httpStatus: res.status,
@@ -593,9 +578,7 @@ export function Step3Success({
             detail,
             clientError: null,
           };
-          throw new Error(
-            `HTTP ${res.status} ${failureKind.toUpperCase()}`,
-          );
+          throw new Error(`HTTP ${res.status}`);
         }
         return res.json() as Promise<{
           letterText?: string;
@@ -616,8 +599,8 @@ export function Step3Success({
         }
       })
       .catch((err: Error) => {
-        // Ref freigeben, damit ein manueller Retry oder ein Abort-bedingter
-        // Re-run einen neuen Request starten darf.
+        // Ref freigeben, damit ein Retry nach einem eindeutig fehlgeschlagenen
+        // Server-Request einen neuen Request starten darf.
         fetchInFlightRef.current = false;
         if (err.name === "AbortError") return;
         // Client-/Netzwerkfehler (kein HTTP-Status erfasst) festhalten.
@@ -629,14 +612,10 @@ export function Step3Success({
             detail: undefined,
             clientError: err.message,
           };
-          setGenerationFailureKind("uncertain");
+          setGenerationMayHaveSucceeded(true);
         }
         setGenerationFetchError(
-          err.message.includes("IN_PROGRESS")
-            ? "Diese Briefanfrage läuft bereits. Damit Zähler und E-Mail nicht doppelt ausgelöst werden, starten wir sie nicht parallel."
-            : err.message.includes("DUPLICATE")
-            ? "Diese Briefanfrage wurde bereits verarbeitet. Damit Zähler und E-Mail nicht doppelt ausgelöst werden, starten wir sie nicht noch einmal."
-            : "Beim Erstellen deines Briefes ist ein Fehler aufgetreten.",
+          "Beim Erstellen deines Briefes ist ein Fehler aufgetreten."
         );
       });
 
@@ -644,14 +623,7 @@ export function Step3Success({
       controller.abort();
     };
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [
-    generationComplete,
-    letterReady,
-    retryCount,
-    generatedSelection,
-    generationRequestId,
-    letterSignalContext,
-  ]);
+  }, [generationComplete, letterReady, retryCount, generatedSelection, letterSignalContext]);
 
   // Ein-Klick-Fehlerreport: übergibt den Fehlerstatus; die Server-Action verwirft
   // Freitext und versendet ausschließlich erlaubte technische Metadaten.
@@ -683,7 +655,7 @@ export function Step3Success({
 
   const handleGenerationRetry = useCallback(() => {
     setGenerationFetchError(null);
-    setGenerationFailureKind("definite");
+    setGenerationMayHaveSucceeded(false);
     setReportState("idle");
     setRetryCount((count) => count + 1);
   }, []);
@@ -954,20 +926,10 @@ export function Step3Success({
                 Danke für deine Hilfe!
               </p>
               <p className="text-waldgruen/80">
-                {generationFailureKind !== "definite"
+                {generationMayHaveSucceeded
                   ? "Danke, ich habe die technischen Daten bekommen. Bitte prüfe jetzt dein Postfach und den Spam-Ordner – dein Brief könnte bereits angekommen sein."
                   : "Danke, ich habe die technischen Daten bekommen und schaue mir den Fehler an."}
               </p>
-              {(generationFailureKind === "uncertain" ||
-                generationFailureKind === "in_progress") && (
-                <button
-                  type="button"
-                  onClick={handleGenerationRetry}
-                  className="mt-3 font-semibold text-waldgruen underline underline-offset-2 hover:text-waldgruen/80 transition-colors cursor-pointer"
-                >
-                  Nach zwei Minuten noch keine E-Mail? Nochmal versuchen
-                </button>
-              )}
             </div>
           ) : (
             <div
@@ -975,20 +937,13 @@ export function Step3Success({
               className="mt-6 bg-airmail-rot/10 border-l-4 border-airmail-rot p-4 rounded-r-lg font-body text-sm"
             >
               <p className="font-semibold text-airmail-rot mb-1">
-                {generationFailureKind === "duplicate"
-                  ? "Briefanfrage wurde nicht erneut gestartet"
-                  : generationFailureKind === "in_progress"
-                  ? "Briefanfrage läuft bereits"
-                  : generationFailureKind === "uncertain"
+                {generationMayHaveSucceeded
                   ? "Wir konnten die Erstellung nicht bestätigen"
                   : "Brief konnte nicht erstellt werden"}
               </p>
               <p className="text-airmail-rot/80 mb-3">
-                {generationFailureKind === "duplicate" ||
-                generationFailureKind === "in_progress"
-                  ? generationFetchError
-                  : generationFailureKind === "uncertain"
-                  ? "Dein Brief wurde möglicherweise trotzdem erstellt und per E-Mail verschickt. Bitte prüfe zuerst dein Postfach und den Spam-Ordner. Wenn nach zwei Minuten nichts angekommen ist, kannst du es noch einmal versuchen."
+                {generationMayHaveSucceeded
+                  ? "Dein Brief wurde möglicherweise trotzdem erstellt und per E-Mail verschickt. Bitte prüfe zuerst dein Postfach und den Spam-Ordner. Um einen doppelten Versand zu vermeiden, starten wir die Erstellung nicht erneut."
                   : generationFetchError}
               </p>
               <div className="flex flex-wrap items-center gap-3">
@@ -1012,7 +967,7 @@ export function Step3Success({
                     "Fehler melden"
                   )}
                 </button>
-                {generationFailureKind !== "duplicate" && (
+                {!generationMayHaveSucceeded && (
                   <button
                     type="button"
                     onClick={handleGenerationRetry}

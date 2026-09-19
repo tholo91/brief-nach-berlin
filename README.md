@@ -2,80 +2,88 @@
 
 > Deine Meinung. Handschriftlich. An die Richtigen.
 
-**Brief-nach-Berlin** hilft Menschen, aus politischer Ohnmacht ins Handeln zu kommen: Das Tool macht aus einem eigenen Anliegen in wenigen Minuten einen persönlichen Brief an die zuständige politische Vertretung.
+[![Live ausprobieren](https://img.shields.io/badge/live-brief--nach--berlin.de-1f6feb?labelColor=24292f)](https://brief-nach-berlin.de)
+[![MIT License](https://img.shields.io/badge/license-MIT-1f6feb?labelColor=24292f)](LICENSE)
 
-Live unter [brief-nach-berlin.de](https://brief-nach-berlin.de)
+Brief-nach-Berlin hilft Menschen, aus einem politischen Anliegen einen persönlichen Brief an die zuständige politische Vertretung zu machen. Anliegen beschreiben, Zuständigkeit prüfen, Entwurf anpassen, abschreiben und selbst abschicken.
 
-🇪🇺 Want to bring this open source approach to Austria, Portugal, the Netherlands, or another European democracy? Start here: [brief-nach-berlin.de/europe](https://www.brief-nach-berlin.de/europe)
+[Live-App öffnen](https://brief-nach-berlin.de) · [Anpassung für andere Länder](ADAPT_TO_YOUR_COUNTRY.md) · [Issues und Ideen](https://github.com/tholo91/brief-nach-berlin/issues)
 
-AI fork guide: [ADAPT_TO_YOUR_COUNTRY.md](ADAPT_TO_YOUR_COUNTRY.md)
+![Illustration einer handschriftlichen Postkarte auf dem Weg zu einem Briefkasten vor der Berliner Stadtsilhouette](web/src/app/opengraph-image.jpg)
 
----
+## Für Nutzer:innen
 
-## Wie es funktioniert
-
-1. Frustration beschreiben - als Text, Sprachnachricht oder Foto
+1. Anliegen als Text oder Sprachnachricht beschreiben
 2. PLZ eingeben
-3. Die KI identifiziert zuständige Politiker (Bund, Land, Kommune, EU)
-4. Ein Brief wird generiert - genau eine Seite, formell, adressiert
-5. Abschreiben und abschicken - per Hand, per Post
+3. Zuständige politische Ebene und Vertretung prüfen
+4. Einen persönlichen Briefentwurf erhalten
+5. Anpassen, von Hand abschreiben und per Post abschicken
 
-Warum handschriftlich? Weil der Brief dadurch nicht bei der Formulierung endet: Du liest ihn, passt ihn an, schreibst ihn selbst ab und schickst ihn ab. Diese menschliche Handlung ist der Punkt, nicht möglichst viel automatisierte Post.
+Die KI nimmt niemandem die eigene Meinung ab. Sie erleichtert Recherche und Formulierung. Ob der Brief passt und ob er abgeschickt wird, entscheidet die Person selbst. Brief-nach-Berlin ist keine Petition, kein automatisierter Massenversand und kein politischer Autopilot.
 
-## Selbstverständnis
+Warum handschriftlich? Weil der Brief dadurch nicht bei der Formulierung endet: Du liest ihn, passt ihn an, schreibst ihn selbst ab und schickst ihn ab. Diese menschliche Handlung ist der Punkt.
 
-Brief-nach-Berlin nimmt Menschen nicht die eigene Meinung ab. Es nimmt eine konkrete Hürde weg: Wer ein politisches Anliegen hat, muss nicht erst die richtige Adresse recherchieren, Amtsdeutsch beherrschen oder lange überlegen, wie ein Brief aufgebaut sein soll. Ein Entwurf ist in wenigen Minuten da. Die Entscheidung, ihn zu prüfen, persönlich zu machen und abzuschicken, bleibt bei der Person selbst.
+## Datenschutz und Datenfluss
 
-Der Brief ist kein vollständiges Beteiligungsprogramm und keine Garantie für eine Antwort. Er kann aber ein erster, asynchroner Schritt sein, wenn der nächste Schritt sonst zu groß wirkt. So kann aus „Die da oben müssten doch mal …“ ein eigener Anspruch an die politische Vertretung werden.
+- Kein Nutzerkonto und keine persönliche Brief-Historie
+- Persönliche Anliegen und Briefentwürfe werden nicht als allgemeine Nutzerhistorie gespeichert
+- Supabase wird für klar abgegrenzte Funktionen wie aggregierte Statistik, freiwilliges Feedback, Themensignale und öffentliche Kampagnen genutzt
+- KI unterstützt Entwurf, Moderation und Transkription; der persönliche Text wird nicht als öffentlicher Prompt- oder Log-Dump geführt
 
-Das Projekt ist Open Source. Dadurch kann das Grundmuster auch für andere Länder angepasst werden: Anliegen aufnehmen, politische Zuständigkeit erklären, die passende Adresse finden und Menschen zu einer eigenen Handlung ermutigen. Die konkrete Daten- und Zuständigkeitslogik bleibt dabei jeweils lokal.
+Details stehen in der [Datenschutzerklärung](https://brief-nach-berlin.de/datenschutz), im [DSGVO-Audit](DSGVO-AUDIT.md) und im [Technik- und Datenschutz-Spicker](TECHNIK-SPICKER.md).
 
----
+## Für Entwickler:innen
 
-## Open Source
+### Voraussetzungen
 
-Der Quellcode von Brief-nach-Berlin steht unter der [MIT-Lizenz](LICENSE). Du darfst ihn für eigene Projekte verwenden, anpassen und weiterveröffentlichen, solange der Copyright- und Lizenzhinweis erhalten bleibt.
+- Node.js und npm
+- API-Schlüssel für die Funktionen, die lokal getestet werden sollen
 
-Die deutsche Zuständigkeits-, Wahlkreis- und Datenlogik muss für andere Länder durch zuverlässige lokale Quellen und Regeln ersetzt werden. Die Marke Brief-nach-Berlin, Logos, Bilder, redaktionelle Inhalte und externe Datenquellen können eigenen Rechten oder Lizenzen unterliegen.
+### Lokal starten
+
+```bash
+cd web
+npm ci
+cp .env.example .env.local
+npm run dev
+```
+
+Danach ist die lokale App unter [http://localhost:3000](http://localhost:3000) erreichbar. Für einen vollständigen Brief-Flow müssen die benötigten Werte in `web/.env.local` gesetzt werden. Die Vorlage dokumentiert auch die relevanten Datenschutz- und Feature-Flag-Hinweise.
+
+Weitere technische Hinweise stehen in [`web/README.md`](web/README.md). Für Prüfungen sind unter anderem `npm run lint`, `npm test` und `npm run build` verfügbar.
+
+## Technik und Datenquellen
+
+- **Next.js, React und TypeScript** für Oberfläche und Serverlogik
+- **Vercel** für Hosting und serverseitige Funktionen
+- **Mistral AI / Voxtral** für Briefentwurf, Moderation und Sprachtranskription
+- **Supabase** für abgegrenzte Statistik-, Feedback- und Kampagnenfunktionen
+- **Brevo** für den optionalen E-Mail-Versand des eigenen Briefs
+- **Bundeswahlleiterin** für das PLZ-Wahlkreis-Mapping
+- **Abgeordnetenwatch API** für Politiker-Daten
+
+Die fachlich kritische Zuständigkeits-, Wahlkreis- und Datenlogik wird lokal gepflegt und muss bei einer Länderanpassung durch verlässliche Quellen und Regeln des jeweiligen Landes ersetzt werden.
+
+## Open Source und Anpassung
+
+Der Quellcode steht unter der [MIT-Lizenz](LICENSE). Du darfst ihn für eigene Projekte verwenden, anpassen und weiterveröffentlichen, solange Copyright- und Lizenzhinweis erhalten bleiben.
+
+Die deutsche Zuständigkeitslogik, die Marke Brief-nach-Berlin, Logos, Bilder, redaktionelle Inhalte und externe Datenquellen können eigenen Rechten oder Lizenzen unterliegen. Eine Länderanpassung ist daher mehr als eine Übersetzung: Zuständigkeiten, Datenquellen, Sprache, politische Ebenen und Datenschutz müssen vor Ort neu geprüft werden.
+
+Der beste Einstieg dafür ist der [Guide zur Anpassung an ein anderes Land](ADAPT_TO_YOUR_COUNTRY.md). Ideen, Fragen und konkrete Verbesserungen kannst du als [GitHub Issue](https://github.com/tholo91/brief-nach-berlin/issues) eröffnen.
 
 ## For builders outside Germany
 
-Brief-nach-Berlin is an open source civic-tech project that can be adapted to other countries and democratic systems.
+Brief-nach-Berlin is an open-source civic-tech project for turning a personal political concern into a well-addressed letter. People review, personalize and send their own letters.
 
-Start with the [adaptation guide](ADAPT_TO_YOUR_COUNTRY.md). The German politician, constituency and data layer must be replaced with reliable local sources. If you build an adaptation, we would be glad to hear about it.
+To adapt it to another country, start with the [adaptation guide](ADAPT_TO_YOUR_COUNTRY.md). Replace the German representative, constituency and data layers with reliable local sources, then validate the political routing, language, privacy model and mailing flow locally.
 
----
+If you build an adaptation, please open an [issue](https://github.com/tholo91/brief-nach-berlin/issues) so others can find it.
 
-## Traction
+## Projekt und Finanzierung
 
-- ~700 Briefe generiert in einem Monat
-- Erwähnt in [Lage der Nation](https://lagedernation.org) - dem meistgehörten politischen Podcast Deutschlands
+Brief-nach-Berlin ist eine kostenlose, gemeinnützige Initiative in Trägerschaft der [WE AID gGmbH](https://www.brief-nach-berlin.de/spenden). Spenden helfen bei Betrieb und Weiterentwicklung; Teilen, Anpassen und Beitragen sind ebenso wertvoll.
 
----
-
-## Stack
-
-- **Next.js** + Vercel
-- **Mistral AI** - Briefgenerierung und Sprachtranskription (Voxtral)
-- **Supabase** - Statistiken, kein User-Storage
-- **Brevo** - optionaler E-Mail-Versand
-- PLZ-Wahlkreis-Mapping via statischem CSV der Bundeswahlleiterin
-- Politiker-Daten via Abgeordnetenwatch API
-
-Kein Account. Keine persistenten Nutzerdaten. DSGVO-konform by design.
-
----
-
-## Finanzierung
-
-Brief-nach-Berlin ist eine gemeinnützige Initiative in Trägerschaft der WE AID gGmbH. Das Projekt bleibt kostenlos; Spenden helfen bei Betrieb und Weiterentwicklung. Mehr dazu unter [brief-nach-berlin.de/spenden](https://www.brief-nach-berlin.de/spenden).
-
-If this project helps you, you can support its continued operation via [WE AID](https://www.brief-nach-berlin.de/spenden). Sharing, adapting and contributing are equally valuable.
-
----
-
-## Hintergrund
-
-Entstanden aus einem Bundestags-Praktikum und einem Studium der Politikwissenschaft. Die persönliche Ausgangsfrage war einfacher: Wie kann ich meiner Mutter die Ausrede nehmen, einen Brief nicht zu schreiben, obwohl sie sich über Politik ärgert? Daraus wurde ein Tool, das Recherche und Formulierung erleichtert, damit aus Meckern ein eigener Anspruch an die politische Vertretung werden kann.
+Das Projekt wurde aus einem Bundestags-Praktikum und einem Studium der Politikwissenschaft heraus entwickelt. Die Ausgangsfrage war: Wie kann ich meiner Mutter die Ausrede nehmen, einen Brief nicht zu schreiben, obwohl sie sich über Politik ärgert?
 
 Ein Solo-Projekt von [Thomas Lorenz](https://thomas-lorenz.eu).

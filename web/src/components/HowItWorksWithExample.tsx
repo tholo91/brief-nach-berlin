@@ -85,6 +85,13 @@ export default function HowItWorksWithExample({ letterCount }: { letterCount: nu
     viewport?.scrollTo({ left: index * viewport.clientWidth, behavior: reducedMotion ? "auto" : "smooth" });
   }, []);
 
+  const handlePanelTabClick = (event: React.MouseEvent<HTMLButtonElement>, panel: Panel) => {
+    if (event.detail > 0 && window.matchMedia("(max-width: 767px)").matches) {
+      setIsPanelInteractionActive(false);
+    }
+    selectPanel(panel);
+  };
+
   const shouldAutoRotatePanels = isMobile
     && isPanelVisible
     && isPageVisible
@@ -177,7 +184,7 @@ export default function HowItWorksWithExample({ letterCount }: { letterCount: nu
                 aria-controls="letter-panel"
                 aria-selected={activePanel === "letter"}
                 tabIndex={activePanel === "letter" ? 0 : -1}
-                onClick={() => selectPanel("letter")}
+                onClick={(event) => handlePanelTabClick(event, "letter")}
                 onKeyDown={handleTabKeyDown}
                 className={`relative min-w-0 px-2 py-2.5 font-body text-[11px] font-semibold leading-tight tracking-tight transition-colors focus-visible:z-10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-waldgruen focus-visible:ring-inset md:rounded-full md:px-4 md:py-2 md:text-sm md:tracking-normal md:focus-visible:ring-offset-2 md:focus-visible:ring-offset-creme ${activePanel === "letter" ? "bg-waldgruen text-creme md:shadow-none" : "text-waldgruen/75 hover:bg-waldgruen/8 md:bg-waldgruen/8 md:text-waldgruen md:hover:bg-waldgruen/14"}`}
               >
@@ -191,7 +198,7 @@ export default function HowItWorksWithExample({ letterCount }: { letterCount: nu
                 aria-controls="map-panel"
                 aria-selected={activePanel === "map"}
                 tabIndex={activePanel === "map" ? 0 : -1}
-                onClick={() => selectPanel("map")}
+                onClick={(event) => handlePanelTabClick(event, "map")}
                 onKeyDown={handleTabKeyDown}
                 className={`relative min-w-0 px-2 py-2.5 font-body text-[11px] font-semibold leading-tight tracking-tight transition-colors focus-visible:z-10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-waldgruen focus-visible:ring-inset md:rounded-full md:px-4 md:py-2 md:text-sm md:tracking-normal md:focus-visible:ring-offset-2 md:focus-visible:ring-offset-creme ${activePanel === "map" ? "bg-waldgruen text-creme md:shadow-none" : "text-waldgruen/75 hover:bg-waldgruen/8 md:bg-waldgruen/8 md:text-waldgruen md:hover:bg-waldgruen/14"}`}
               >
@@ -205,7 +212,7 @@ export default function HowItWorksWithExample({ letterCount }: { letterCount: nu
                 aria-controls="story-panel"
                 aria-selected={activePanel === "story"}
                 tabIndex={activePanel === "story" ? 0 : -1}
-                onClick={() => selectPanel("story")}
+                onClick={(event) => handlePanelTabClick(event, "story")}
                 onKeyDown={handleTabKeyDown}
                 className={`relative min-w-0 px-2 py-2.5 font-body text-[11px] font-semibold leading-tight tracking-tight transition-colors focus-visible:z-10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-waldgruen focus-visible:ring-inset md:rounded-full md:px-4 md:py-2 md:text-sm md:tracking-normal md:focus-visible:ring-offset-2 md:focus-visible:ring-offset-creme ${activePanel === "story" ? "bg-waldgruen text-creme md:shadow-none" : "text-waldgruen/75 hover:bg-waldgruen/8 md:bg-waldgruen/8 md:text-waldgruen md:hover:bg-waldgruen/14"}`}
               >

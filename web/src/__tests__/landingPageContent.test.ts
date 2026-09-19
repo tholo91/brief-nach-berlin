@@ -8,8 +8,9 @@ const expectedCopy = {
     steps: ["Anliegen schildern", "Angaben ergänzen", "Abschreiben und abschicken"],
     stepLabel: "Schritt 1",
     exampleLink: "Ganzen Beispielbrief lesen",
-    storyTab: "Echte Geschichte",
+    storyTab: "Erste Erfolge",
     impactTitle: "Meine Mutter schreibt den 1. Brief mit Brief-nach-Berlin",
+    impactPoint3: "Mama ist jetzt Demokratie-Fan Nr. 1 in Duisburg",
     projectTitle: "Kostenlos, gemeinnützig, offen",
   },
   en: {
@@ -18,6 +19,7 @@ const expectedCopy = {
     exampleLink: "Read the full sample letter",
     storyTab: "True story",
     impactTitle: "My mother writes the first letter with Brief-nach-Berlin",
+    impactPoint3: "She called me, completely happy ☺",
     projectTitle: "Free, non-profit, open",
   },
   tr: {
@@ -26,6 +28,7 @@ const expectedCopy = {
     exampleLink: "Örnek mektubun tamamını oku",
     storyTab: "Gerçek hikâye",
     impactTitle: "Annem Brief-nach-Berlin ile ilk mektubunu yazıyor",
+    impactPoint3: "Beni çok mutlu aradı ☺",
     projectTitle: "Ücretsiz, kâr amacı gütmeyen, açık",
   },
 } as const;
@@ -48,6 +51,7 @@ describe("landing page content", () => {
       expect(copy.howItWorks.readExample).toBe(expected.exampleLink);
       expect(copy.howItWorks.storyTab).toBe(expected.storyTab);
       expect(copy.howItWorks.impactTitle).toBe(expected.impactTitle);
+      expect(copy.howItWorks.impactPoint3).toBe(expected.impactPoint3);
       expect(copy.howItWorks.impactPoint1).toBeTruthy();
       expect(copy.howItWorks.impactPoint2).toBeTruthy();
       expect(copy.howItWorks.impactPoint3).toBeTruthy();
@@ -97,6 +101,8 @@ describe("landing page content", () => {
     expect(workflowSource).toContain('className="min-w-0 scroll-mt-20');
     expect(workflowSource).toContain('window.matchMedia("(max-width: 767px)")');
     expect(workflowSource).toContain("animate-panel-tab-progress");
+    expect(workflowSource).toContain('event.detail > 0 && window.matchMedia("(max-width: 767px)").matches');
+    expect(workflowSource).toContain("setIsPanelInteractionActive(false)");
     expect(workflowSource).toContain("IntersectionObserver");
     expect(workflowSource).not.toContain("ghibli-pin.webp");
     expect(workflowSource).toContain("list-disc");

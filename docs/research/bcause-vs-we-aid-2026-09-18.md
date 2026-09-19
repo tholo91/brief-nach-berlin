@@ -1,0 +1,50 @@
+# bcause vs. WE AID für Brief-nach-Berlin
+
+Stand: 18. September 2026. Grundlage sind öffentliche Originalquellen der Anbieter; ein konkreter Vertrag zwischen Brief-nach-Berlin und WE AID wurde nicht geprüft.
+
+## Kurzfazit
+
+**WE AID und bcause sind eher Ergänzung als Alternative.** WE AID ist der operative gemeinnützige Träger für Initiativen ohne eigene Rechtsform: WE AID kann Verträge schließen, Rechnungen bezahlen, Auslagen erstatten, Fördermittel beantragen und die gemeinnützigkeitsrechtliche Verantwortung tragen. bcause ist primär eine digitale Spenden-, Stiftungsfonds- und Fundraising-Infrastruktur: Gebende verwalten ein [Stiftungskonto nach dem Donor-Advised-Fund-Modell](https://bcause.com/); bereits gemeinnützige Organisationen erhalten ein Spendenkonto und können Mittel abrufen.
+
+**Empfehlung für Brief-nach-Berlin:** WE AID vorerst als rechtlich-operatives Dach behalten. bcause nur als zusätzlichen Fundraising- und Zugangsweg zu Gebenden prüfen – idealerweise mit WE AID als formalem Zuwendungsempfänger und Brief-nach-Berlin als klar bezeichnetem Verwendungszweck. Vorher schriftlich mit beiden Seiten klären, ob dieser Geldfluss, die Projektmarke, Spenderdaten, Quittierung und der WE-AID-Kostenbeitrag so zulässig sind.
+
+## Vergleich
+
+| Punkt | WE AID | bcause | Bedeutung für Brief-nach-Berlin |
+|---|---|---|---|
+| Rechts-/Organisationsmodell | Gemeinnützige WE AID gGmbH, die Initiativen als **Fiscal Host/Projektträger** unter ihr Dach nimmt. [Transparenz](https://www.we-aid.org/de/transparency/), [Angebot](https://www.we-aid.org/de/about-us/) | Die Plattform betreibt die bcause GmbH; Einzahlungen gehen an eine gemeinnützige bcause-Treuhandstiftung und werden von der bcause Treuhand GmbH verwaltet. Ein persönliches Stiftungskonto hat keine eigene Rechtsform. [AGB](https://bcause.com/agb-und-datenschutz), [Transparenz](https://bcause.com/initiative-transparente-zivilgesellschaft) | WE AID gibt dem **Projekt** einen operativen Rechtsrahmen. bcause gibt **Gebenden** ein digitales Stiftungs-/Spendenvehikel bzw. gemeinnützigen Organisationen einen Fundraising-Kanal. |
+| Kernleistung | Spenden annehmen, Zuwendungsbestätigungen ausstellen, Ausgaben tätigen, Fördermittel beantragen und Verträge abschließen. [FAQ](https://www.we-aid.org/de/faq/), [Über uns](https://www.we-aid.org/de/about-us/) | Basic-Stiftungskonto und Spendenaktionen; Professional Foundation mit Rollen, Fundraising-Tools, internationalen Organisationen und Impact-Investments. Für bestehende gemeinnützige Organisationen gibt es ein Spendenkonto und Fundraising-Tools. [Mitgliedschaften](https://bcause.com/mitgliedschaften), [Organisationen](https://bcause.com/organisationen) | bcause ersetzt die laufende Projektträgerschaft von WE AID nicht. |
+| Zielgruppen | Einzelpersonen und Initiativen ohne eigene Struktur, Unternehmen, gemeinnützige Organisationen sowie andere Fiscal Hosts. [Über uns](https://www.we-aid.org/de/about-us/) | Privatpersonen, Familien, Unternehmen und Family Offices als Gebende; steuerbegünstigte Organisationen als Empfänger. [Startseite](https://bcause.com/), [Organisationen](https://bcause.com/organisationen) | Brief-nach-Berlin passt als Initiative ohne eigene Rechtsform direkt zum WE-AID-Modell. Bei bcause passt aktuell eher WE AID als rechtlicher Empfänger als Brief-nach-Berlin selbst. |
+| Kosten und Mindestbeträge | Start kostenlos; je nach Aufwand 5 % für private reine Spendensammlung, 7 % mit Förderanträgen, 10 % bei Auslandseinsatz; Institutionen grundsätzlich 10 %. Ab 500.000 Euro Spendenvolumen nennt WE AID 6 %. Kein öffentlich genanntes Mindestvolumen. [FAQ](https://www.we-aid.org/de/faq/) | Basic kostenlos, keine Transaktionskosten für registrierte Nutzer:innen; Professional 590 Euro je Foundation/Jahr und ohne Mindesteinlage. Bei Organisationskonten sind Überweisung/SEPA kostenlos; Gastspenden per Karte/PayPal kosten 1,5 %. [Mitgliedschaften](https://bcause.com/mitgliedschaften), [Professional](https://bcause.com/spenden/professional), [Organisationen](https://bcause.com/organisationen) | Bei einem kombinierten Modell ist offen, ob zusätzlich zum bcause-Zahlungsentgelt der WE-AID-Prozentsatz auf die weitergeleitete Zuwendung anfällt. |
+| Spendenquittungen | WE AID stellt sie für Spenden an WE AID bzw. seine Initiativen aus; bis 300 Euro reicht grundsätzlich der vereinfachte Nachweis. [FAQ](https://www.we-aid.org/de/faq/) | Im bcause-Weg spendet die gebende Person an bcause ONE und erhält von dort die Quittung. Gibt bcause ONE die Mittel weiter, stellt die Empfängerorganisation ihre Zuwendungsbestätigung an bcause ONE aus – nicht noch einmal an die ursprüngliche Person. [Spendenweg](https://bcause1956.zendesk.com/hc/de/articles/27345243598109-Wie-ist-der-Weg-der-Spende-Wer-stellt-die-Spendenbescheinigung-aus), [Quittung der Empfängerorganisation](https://bcause1956.zendesk.com/hc/de/articles/27345412800669-Ich-habe-als-Organisation-eine-Spende-von-bcause-bekommen-Wer-erh%C3%A4lt-die-Zuwendungsbest%C3%A4tigung-f%C3%BCr-diese-Spende) | Für dieselbe Spende darf es nicht zwei Quittungen an die gebende Person geben. In einem kombinierten Kanal würde bcause die Person quittieren; WE AID müsste die Weiterleitung von bcause ONE korrekt verbuchen und gegenüber bcause ONE bestätigen. |
+| Operative Kontrolle und Haftung | WE AID ist Vertragspartner und Rechnungsempfänger, bezahlt Rechnungen/erstattet Auslagen und verantwortet als Projektträger Prozesse gegenüber Förderern und Spender:innen. Die Initiative kann im Namen von WE AID Verpflichtungen eingehen, aber auf ihr Projekt und dessen Vermögen begrenzt. [Über uns](https://www.we-aid.org/de/about-us/), [FAQ](https://www.we-aid.org/de/faq/) | Beim Stiftungskonto wird die Einzahlung Vermögen der Treuhandstiftung. Der Verwendungswunsch des Mitglieds soll berücksichtigt werden, begründet aber keinen Rechtsanspruch. Beim Organisationskonto beantragt die gemeinnützige Organisation Auszahlungen selbst. Nutzer:innen bleiben für ihre Inhalte verantwortlich; bcause begrenzt seine vertragliche Haftung. [AGB](https://bcause.com/agb-und-datenschutz), [AGB für Organisationen](https://bcause.com/agb-fuer-organisationen) | WE AID ist näher am täglichen Projektbetrieb. bcause kontrolliert die Stiftungsmittel rechtlich, betreibt aber nicht die Ausgaben und Verträge des Projekts. |
+| Onboarding und Eignung | Registrierung plus Basisinformationen; WE AID prüft Gemeinnützigkeit und die handelnden Personen. Das kann laut WE AID Stunden bis Tage dauern. [Initiative starten](https://www.we-aid.org/de/listing/?current-step=startInitiatives) | Personenregistrierung kann bcause ohne Begründung ablehnen. Organisationen brauchen für eine Auszahlung einen aktuellen Freistellungsbescheid, Körperschaftsteuerbescheid oder geeigneten §-60a-Nachweis. Organisationen in Gründung können sammeln, erhalten das Geld aber erst nach Anerkennung. [AGB](https://bcause.com/agb-und-datenschutz), [Organisations-AGB](https://bcause.com/agb-fuer-organisationen), [Organisationen](https://bcause.com/organisationen) | Ohne eigene steuerbegünstigte Körperschaft kann Brief-nach-Berlin bcause nicht wie eine bestehende Organisation mit frei abrufbaren Mitteln nutzen. |
+
+## Kann Brief-nach-Berlin bei beiden sein?
+
+**Nach den öffentlichen Informationen: wahrscheinlich ja, aber nicht zweimal in derselben Rolle.** In den öffentlichen bcause-AGB ist keine Exklusivitätsklausel erkennbar. Eine Person kann ein bcause-Stiftungskonto nutzen und zugleich an einem WE-AID-Projekt arbeiten. Ein zusätzlicher bcause-Fundraiser zugunsten einer steuerbegünstigten Organisation erscheint strukturell vereinbar; ob der konkrete WE-AID-Vertrag das erlaubt, ist damit noch nicht geklärt.
+
+Für Brief-nach-Berlin sind drei Varianten denkbar:
+
+1. **Empfohlen: WE AID bleibt Träger; bcause wird Fundraising-Kanal.** bcause sammelt, WE AID ist formaler Empfänger, Brief-nach-Berlin der abgestimmte Zweck. Ob bcause die Unterinitiative sichtbar abbilden kann, ist nicht öffentlich eindeutig dokumentiert.
+2. **Thomas nutzt bcause als Gebender.** Ein persönliches Stiftungskonto kann Mittel später an WE AID bzw. andere gemeinnützige Organisationen vorschlagen. Das ist keine Projektträgerschaft.
+3. **Brief-nach-Berlin sammelt als Organisation in Gründung.** bcause hält die Mittel bis zur eigenen Anerkennung der Gemeinnützigkeit zurück. Das finanziert den heutigen Betrieb unter WE AID daher nicht direkt. [bcause für Organisationen](https://bcause.com/organisationen)
+
+**Nicht verifiziert:** Ob der konkrete WE-AID-Vertrag parallele Spendenkanäle, eine Untermarke auf bcause oder eine Weiterleitung ohne zusätzlichen Kostenbeitrag erlaubt. Dafür braucht es die Vertragsprüfung bzw. eine schriftliche Bestätigung von WE AID.
+
+## Vier Fragen für bcause und WE AID
+
+1. Kann auf bcause ein Fundraiser für **Brief-nach-Berlin** erscheinen, wenn rechtlicher Empfänger und Projektträger die WE AID gGmbH ist?
+2. Wie wird eine solche zweckgebundene Weiterleitung quittiert und verbucht, damit weder Doppelquittung noch falscher Empfängereindruck entsteht?
+3. Welche bcause-Kosten und welcher WE-AID-Kostenbeitrag fallen in diesem Aufbau tatsächlich an?
+4. Wer erhält welche Spenderdaten und welche Einwilligung braucht Brief-nach-Berlin für eigene Kommunikation?
+
+## Kontakt bei bcause
+
+Der naheliegendste Gründerkontakt ist **Felix Oldenburg, Gründer & CEO**. Ebenfalls als Gründerin und CLO wird **Nicole Weyde** geführt; für die rechtliche Struktur wäre sie fachlich besonders passend. [Teamseite](https://bcause.com/team-und-investierende), [Felix Oldenburg auf LinkedIn](https://de.linkedin.com/in/felixoldenburg)
+
+### LinkedIn-Verbindungsanfrage an Felix
+
+> Hi Felix, ich baue Brief-nach-Berlin: Bürger:innen schreiben ihrer zuständigen politischen Vertretung einen persönlichen Brief. WE AID gibt uns den gemeinnützigen Rahmen. Mich reizt die Frage, wie Fiscal Hosting und bcause zusammenspielen können. Lust auf 20 Min Austausch?
+
+Der Aufhänger ist bewusst keine allgemeine Produktvorstellung, sondern eine konkrete Strukturfrage, die zu bcause passt und aus der Praxis von Brief-nach-Berlin kommt.

@@ -395,8 +395,9 @@ export function buildEmailHtml(data: SendLetterEmailParams): string {
     ? `<a href="${APP_URL}" style="color:#999999;text-decoration:none;">Brief-nach-Berlin'i</a> takip et`
     : `${locale === "en" ? "Follow" : "Folge"} <a href="${APP_URL}" style="color:#999999;text-decoration:none;">Brief-nach-Berlin</a>`;
   // "Deine Stimme zählt" wird auf Mobile ausgeblendet, damit der Footer
-  // kurz bleibt. Die Trennzeichen bleiben dadurch korrekt.
-  const compactFooterLabel = `${letterNumberText}<span class="bnb-footer-tagline">${voiceCountsInline}</span> · ${followBrandHtml}`;
+  // kurz bleibt. Das Trennzeichen liegt mit im Span, damit mobil kein
+  // doppeltes " · " stehen bleibt.
+  const compactFooterLabel = `${letterNumberText}<span class="bnb-footer-tagline">${voiceCountsInline} · </span>${followBrandHtml}`;
 
   const fullName = data.politicianTitle
     ? `${escapeHtml(data.politicianTitle)} ${escapeHtml(data.politicianName)}`

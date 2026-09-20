@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { BRIEF_EMAIL } from "@/lib/contact";
 import { buildDataDeletionMailto } from "@/lib/email/mailLocale";
 
@@ -79,12 +80,12 @@ export function PrivacyDisclosure() {
             </p>
             <p className="text-xs text-warmgrau/70">
               Mehr Details:{" "}
-              <a
+              <Link
                 href="/datenschutz"
                 className="underline hover:text-warmgrau"
               >
                 Datenschutzerklärung
-              </a>
+              </Link>
               .
             </p>
           </div>

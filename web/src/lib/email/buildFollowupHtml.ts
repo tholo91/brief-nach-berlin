@@ -119,6 +119,8 @@ export function buildFollowupHtml(params: BuildFollowupParams): FollowupRender {
       .followup-action-gap { display: block !important; width: 100% !important; height: 12px !important; line-height: 12px !important; }
       .bnb-feedback-break { display: inline !important; }
       .bnb-feedback-space { display: none !important; }
+      /* Footer: Tagline "Deine Stimme zählt." auf Mobile ausblenden. */
+      .bnb-footer-tagline { display: none !important; }
     }
   </style>
 </head>
@@ -252,7 +254,7 @@ export function buildFollowupHtml(params: BuildFollowupParams): FollowupRender {
           <tr>
             <td style="padding:20px 32px 24px;background-color:#FAF8F5;text-align:center;">
               <p style="margin:0;font-family:Georgia,'Times New Roman',serif;font-size:12px;color:#999999;">
-                <a href="${APP_URL}" style="color:#2D5016;text-decoration:none;">Brief-nach-Berlin</a> · ${getEmailCopy(locale).voiceCounts}
+                <a href="${APP_URL}" style="color:#999999;text-decoration:none;">Brief-nach-Berlin</a><span class="bnb-footer-tagline"> · ${getEmailCopy(locale).voiceCounts}</span>
               </p>
               ${buildSocialFollowHtml({ locale, baseUrl: base })}
               <p style="margin:8px 0 0;font-family:Georgia,'Times New Roman',serif;font-size:12px;color:#aaaaaa;line-height:1.5;">

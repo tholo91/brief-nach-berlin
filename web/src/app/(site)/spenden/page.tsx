@@ -47,6 +47,19 @@ export default function SpendenPage() {
           {SUPPORT_CONTENT.intro}
         </p>
 
+        <a
+          href={DONATION_PROVIDER_URL}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="mb-10 inline-flex items-center justify-center gap-2 rounded-lg bg-waldgruen px-6 py-3 font-body text-base font-bold text-creme transition-colors hover:bg-waldgruen-dark active:translate-y-px focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-waldgruen"
+        >
+          {SUPPORT_CONTENT.ctas.donate.label}
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+            <path d="M7 17 17 7" />
+            <path d="M7 7h10v10" />
+          </svg>
+        </a>
+
         <section className="flex flex-col items-start gap-6 sm:flex-row sm:items-center">
           <figure className="w-full max-w-[180px] shrink-0">
             <Image
@@ -57,9 +70,6 @@ export default function SpendenPage() {
               sizes="180px"
               className="h-auto w-full rounded-2xl border-4 border-creme object-cover shadow-lg shadow-waldgruen/20"
             />
-            <figcaption className="mt-3 text-center font-typewriter text-xs text-waldgruen/60">
-              {SUPPORT_CONTENT.founder.name}, Bremen
-            </figcaption>
           </figure>
 
           <p className="font-body text-base leading-relaxed text-warmgrau md:text-lg">
@@ -74,15 +84,6 @@ export default function SpendenPage() {
           <p className="mt-2 font-body text-base leading-relaxed text-warmgrau">
             {SUPPORT_CONTENT.fiscalHost.text}
           </p>
-          <a
-            href={DONATION_PROVIDER_URL}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="mt-4 inline-flex items-center gap-2 font-typewriter text-sm font-bold text-waldgruen underline decoration-waldgruen/40 underline-offset-4 transition-colors hover:text-waldgruen-dark hover:decoration-waldgruen"
-          >
-            Direkt über WE AID spenden
-            <span aria-hidden="true">&rarr;</span>
-          </a>
         </section>
 
         <section>

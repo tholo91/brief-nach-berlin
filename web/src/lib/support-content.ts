@@ -17,13 +17,13 @@ export const SUPPORT_CONTENT = {
   fiscalHost: {
     name: "WE AID gGmbH",
     text:
-      "WE AID nimmt die Spenden zweckgebunden entgegen, übernimmt die Abwicklung und stellt auf Wunsch Spendenbescheinigungen aus.",
+      "WE AID nimmt Spenden zweckgebunden entgegen und stellt auf Wunsch Spendenbescheinigungen aus.",
   },
   founder: {
     name: FOUNDER_NAME,
     portraitPath: "/images/thomas-portrait.webp",
     text:
-      "Ich bin Thomas Lorenz und betreibe Brief-nach-Berlin seit Mai 2026 ehrenamtlich – mit viel Herzblut und vor allem viel Zeit. Ich entwickle das Projekt weiter, damit Menschen ihre Anliegen unkompliziert und kostenlos an die zuständigen politischen Vertreter:innen richten können.",
+      "Ich bin Thomas Lorenz und baue Brief-nach-Berlin seit Mai 2026 ehrenamtlich auf – mit viel Herzblut und vor allem Zeit. Damit Menschen ihre Anliegen unkompliziert und kostenlos an die zuständigen Abgeordneten richten können.",
     successText:
       "Seit Mai 2026 baue ich Brief-nach-Berlin ehrenamtlich und halte den Zugang bewusst kostenlos.",
   },
@@ -75,7 +75,7 @@ export const SUPPORT_CONTENT = {
       href: DONATION_PATH,
     },
     share: {
-      label: "Brief-nach-Berlin weiterempfehlen",
+      label: "Weiterempfehlen",
       href: "/weitersagen",
     },
   },

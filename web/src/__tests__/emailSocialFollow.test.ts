@@ -37,7 +37,7 @@ describe("email social follow footer", () => {
       buildVariantEmailHtml(letterParams.letterText, letterParams.recipientEmail),
     ];
 
-    expect(letterMailHtml).toContain("Brief #2.356 · Deine Stimme zählt · Folge");
+    expect(letterMailHtml).toContain('Brief #2.356 · <span class="bnb-footer-tagline">Deine Stimme zählt</span> · Folge');
     expect(letterMailHtml).toContain(">Brief-nach-Berlin</a>");
     expect(letterMailHtml).not.toContain("Folge Brief-nach-Berlin:");
 

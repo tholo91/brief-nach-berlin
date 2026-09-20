@@ -9,7 +9,7 @@ const expectedCopy = {
     stepLabel: "Schritt 1",
     exampleLink: "Ganzen Beispielbrief lesen",
     storyTab: "Erste Erfolge",
-    impactTitle: "Meine Mutter schreibt den 1. Brief mit Brief-nach-Berlin",
+    impactTitle: "Meine Mutter schreibt den 1. Brief nach Berlin",
     impactPoint3: "Mama ist jetzt Demokratie-Fan Nr. 1 in Duisburg",
     projectTitle: "Kostenlos, gemeinnützig, offen",
   },

@@ -392,9 +392,11 @@ export function buildEmailHtml(data: SendLetterEmailParams): string {
       : "";
   const voiceCountsInline = copy.voiceCounts.replace(/[.!?]+$/, "");
   const followBrandHtml = locale === "tr"
-    ? `<a href="${APP_URL}" style="color:#2D5016;text-decoration:none;">Brief-nach-Berlin'i</a> takip et`
-    : `${locale === "en" ? "Follow" : "Folge"} <a href="${APP_URL}" style="color:#2D5016;text-decoration:none;">Brief-nach-Berlin</a>`;
-  const compactFooterLabel = `${letterNumberText}${voiceCountsInline} · ${followBrandHtml}`;
+    ? `<a href="${APP_URL}" style="color:#999999;text-decoration:none;">Brief-nach-Berlin'i</a> takip et`
+    : `${locale === "en" ? "Follow" : "Folge"} <a href="${APP_URL}" style="color:#999999;text-decoration:none;">Brief-nach-Berlin</a>`;
+  // "Deine Stimme zählt" wird auf Mobile ausgeblendet, damit der Footer
+  // kurz bleibt. Die Trennzeichen bleiben dadurch korrekt.
+  const compactFooterLabel = `${letterNumberText}<span class="bnb-footer-tagline">${voiceCountsInline}</span> · ${followBrandHtml}`;
 
   const fullName = data.politicianTitle
     ? `${escapeHtml(data.politicianTitle)} ${escapeHtml(data.politicianName)}`
@@ -531,6 +533,8 @@ export function buildEmailHtml(data: SendLetterEmailParams): string {
       /* Mobile-only text swaps: kürzere Varianten auf kleinen Screens. */
       .bnb-desk { display: none !important; }
       .bnb-mob { display: inline !important; }
+      /* Footer: Tagline im Social-Follow-Label auf Mobile ausblenden. */
+      .bnb-footer-tagline { display: none !important; }
     }
   </style>
 </head>

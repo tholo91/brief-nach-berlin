@@ -43,14 +43,14 @@ export function CampaignList({
   }
 
   return (
-    <ol className="grid gap-2">
+    <ol className="grid w-full min-w-0 gap-2">
       {campaigns.map((campaign) => (
-        <li key={campaign.slug}>
+        <li key={campaign.slug} className="min-w-0">
           <Link
             href={`/kampagne/${campaign.slug}`}
-            className="group block rounded-md border border-waldgruen/12 bg-white/55 p-3 transition-colors duration-150 hover:bg-white/85 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-waldgruen active:scale-[0.99]"
+            className="group block w-full max-w-full rounded-md border border-waldgruen/12 bg-white/55 p-3 transition-colors duration-150 hover:bg-white/85 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-waldgruen active:scale-[0.99]"
           >
-            <div className="flex items-start gap-3">
+            <div className="flex min-w-0 items-start gap-3">
               <CampaignLogo
                 logoPath={campaign.logoPath}
                 name={campaign.creatorName?.trim() || campaign.title}
@@ -73,7 +73,7 @@ export function CampaignList({
                   <span className="shrink-0">{formatCampaignDate(campaign)}</span>
                 </div>
               </div>
-              <span className="shrink-0 pt-0.5 font-typewriter text-[10px] font-bold uppercase tracking-wider text-waldgruen/75">
+              <span className="hidden shrink-0 pt-0.5 font-typewriter text-[10px] font-bold uppercase tracking-wider text-waldgruen/75 sm:inline">
                 Öffnen
               </span>
             </div>

@@ -35,6 +35,10 @@ describe("CampaignList", () => {
     expect(markup).toContain("Anliegen von Initiative Bremen");
     expect(markup).toContain("25.08.2026");
     expect(markup).toContain("Öffnen");
+    expect(markup).toContain("hidden shrink-0");
+    expect(markup).toContain("sm:inline");
+    expect(markup).toContain("min-w-0");
+    expect(markup).toContain("w-full max-w-full");
     expect(markup).toContain("background-size:105%");
     expect(markup).toContain("Logo oder Bild von Initiative Bremen");
     expect(markup).toContain("whitespace-nowrap");
@@ -80,6 +84,8 @@ describe("CampaignList", () => {
 
     expect(markup).toContain("truncate");
     expect(markup).toContain("whitespace-nowrap");
+    expect(markup).toContain('class="min-w-0"');
+    expect(markup).toContain("grid w-full min-w-0");
   });
 
   it("renders the configured empty state", () => {

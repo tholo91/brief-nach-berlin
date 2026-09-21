@@ -9,11 +9,11 @@ export const SUPPORT_CONTENT = {
   status:
     "Brief-nach-Berlin ist eine gemeinnützige Initiative in Trägerschaft der WE AID gGmbH.",
   intro:
-    "Brief-nach-Berlin soll für alle kostenlos und unabhängig bleiben. Deine Spende hilft, das Projekt dauerhaft zu betreiben.",
+    "Brief-nach-Berlin soll für alle kostenlos und unabhängig bleiben. Deine Spende hält das Projekt am Laufen.",
   costIntro:
-    "Ich trage die laufenden Kosten derzeit selbst. Deine Spende hilft dort, wo Brief-nach-Berlin stabil, unabhängig und für alle kostenlos bleibt.",
+    "Die laufenden Kosten trage ich selbst. Deine Spende hält Brief-nach-Berlin stabil, unabhängig und kostenlos.",
   costNote:
-    "Die tatsächlichen Kosten schwanken mit der Nutzung. Deshalb nenne ich bewusst die wichtigsten Kostenarten statt einer Scheingenauigkeit.",
+    "Die Kosten schwanken mit der Nutzung. Deshalb nenne ich bewusst die wichtigsten Kostenarten statt einer Scheingenauigkeit.",
   fiscalHost: {
     name: "WE AID gGmbH",
     text:
@@ -23,7 +23,7 @@ export const SUPPORT_CONTENT = {
     name: FOUNDER_NAME,
     portraitPath: "/images/thomas-portrait.webp",
     text:
-      "Ich bin Thomas Lorenz und baue Brief-nach-Berlin seit Mai 2026 ehrenamtlich auf – mit viel Herzblut und vor allem Zeit. Damit Menschen ihre Anliegen unkompliziert und kostenlos an die zuständigen Abgeordneten richten können.",
+      "Ich bin Thomas Lorenz und baue Brief-nach-Berlin seit Mai 2026 ehrenamtlich auf. Damit Menschen ihre Anliegen einfach und kostenlos an die zuständigen Abgeordneten richten können.",
     successText:
       "Seit Mai 2026 baue ich Brief-nach-Berlin ehrenamtlich und halte den Zugang bewusst kostenlos.",
   },
@@ -36,7 +36,7 @@ export const SUPPORT_CONTENT = {
     {
       title: "Technische Betreuung",
       description:
-        "KI-Abos und Software für Entwicklung, Fehleranalyse und Pflege — zusätzlich zu meiner ehrenamtlichen Zeit.",
+        "KI-Abos und Software für Entwicklung, Fehleranalyse und Pflege, zusätzlich zu meiner ehrenamtlichen Zeit.",
     },
     {
       title: "Reichweite & Vernetzung",
@@ -45,9 +45,9 @@ export const SUPPORT_CONTENT = {
     },
   ],
   fundingNote:
-    "Ich möchte Brief-nach-Berlin nicht nur starten, sondern nachhaltig weiterbetreuen. Wenn dir das Projekt wichtig ist, hilf mit, dass es nicht dauerhaft an meiner privaten Kasse hängt.",
+    "Ich möchte Brief-nach-Berlin nicht nur starten, sondern dauerhaft weiterbetreuen. Wenn dir das Projekt wichtig ist, hilf mit, damit es nicht an meiner privaten Kasse hängt.",
   sharePrompt:
-    "Du kannst gerade nicht spenden? Eine Empfehlung an drei Menschen hilft dem Projekt ebenfalls.",
+    "Kannst du gerade nicht spenden? Drei Empfehlungen helfen genauso.",
   relatedLinks: [
     {
       title: "Wer steckt hinter Brief-nach-Berlin?",

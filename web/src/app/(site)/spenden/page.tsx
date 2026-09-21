@@ -47,19 +47,6 @@ export default function SpendenPage() {
           {SUPPORT_CONTENT.intro}
         </p>
 
-        <a
-          href={DONATION_PROVIDER_URL}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="mb-10 inline-flex items-center justify-center gap-2 rounded-lg bg-waldgruen px-6 py-3 font-body text-base font-bold text-creme transition-colors hover:bg-waldgruen-dark active:translate-y-px focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-waldgruen"
-        >
-          {SUPPORT_CONTENT.ctas.donate.label}
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-            <path d="M7 17 17 7" />
-            <path d="M7 7h10v10" />
-          </svg>
-        </a>
-
         <section className="flex flex-col items-start gap-6 sm:flex-row sm:items-center">
           <figure className="w-full max-w-[180px] shrink-0">
             <Image
@@ -77,16 +64,31 @@ export default function SpendenPage() {
           </p>
         </section>
 
-        <section className="my-14 border-y border-waldgruen/15 py-6">
-          <p className="font-body text-base font-bold leading-relaxed text-waldgruen-dark">
-            {SUPPORT_CONTENT.status}
-          </p>
-          <p className="mt-2 font-body text-base leading-relaxed text-warmgrau">
-            {SUPPORT_CONTENT.fiscalHost.text}
-          </p>
-        </section>
+        <div className="mt-12 flex flex-col gap-8 sm:flex-row sm:items-center sm:justify-between">
+          <a
+            href={DONATION_PROVIDER_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex shrink-0 items-center justify-center gap-2 rounded-lg bg-waldgruen px-6 py-3 font-body text-base font-bold text-creme transition-colors hover:bg-waldgruen-dark active:translate-y-px focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-waldgruen"
+          >
+            {SUPPORT_CONTENT.ctas.donate.label}
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+              <path d="M7 17 17 7" />
+              <path d="M7 7h10v10" />
+            </svg>
+          </a>
 
-        <section>
+          <div className="max-w-sm">
+            <p className="font-body text-sm font-bold leading-relaxed text-waldgruen-dark">
+              {SUPPORT_CONTENT.status}
+            </p>
+            <p className="mt-1 font-body text-sm leading-relaxed text-warmgrau/80">
+              {SUPPORT_CONTENT.fiscalHost.text}
+            </p>
+          </div>
+        </div>
+
+        <section className="mt-16">
           <p className="mb-3 font-typewriter text-sm font-bold uppercase tracking-widest text-waldgruen/60">
             Wofür deine Spende eingesetzt wird
           </p>

@@ -22,23 +22,59 @@ export type InternalReviewRow = {
 };
 
 export type InternalLetterSignalRow = {
+  letter_id: string;
+  created_at: string | null;
+  consented_at: string | null;
   generated_at: string | null;
   topic_categories: string[] | null;
   topic_labels: string[] | null;
   political_level: PoliticalLevel | null;
   bundesland_key: string | null;
   plz_prefix: string | null;
-  letter_id: string;
+  campaign_slug: string | null;
 };
 
 export type SignalReviewBreakdown = {
   signals: number;
+  reviews: number;
   ratings: number;
   ratingSum: number;
   sent: number;
   notSent: number;
+  noAnswer: number;
   knownSent: number;
 };
+
+export type SourceCounts = {
+  free: number;
+  unknown: number;
+  campaign: Record<string, number>;
+};
+
+export function totalSourceCounts(sourceCounts: SourceCounts): number {
+  return (
+    sourceCounts.free +
+    sourceCounts.unknown +
+    Object.values(sourceCounts.campaign).reduce((sum, value) => sum + value, 0)
+  );
+}
+
+export function campaignSourceTotal(sourceCounts: SourceCounts): number {
+  return Object.values(sourceCounts.campaign).reduce(
+    (sum, value) => sum + value,
+    0,
+  );
+}
+
+export function topCampaignSlug(
+  sourceCounts: SourceCounts,
+): { slug: string; count: number } | null {
+  let best = null as { slug: string; count: number } | null;
+  for (const [slug, count] of Object.entries(sourceCounts.campaign)) {
+    if (!best || count > best.count) best = { slug, count };
+  }
+  return best;
+}
 
 export type LetterSignalStats = {
   signalCount: number;
@@ -47,8 +83,9 @@ export type LetterSignalStats = {
   levelCounts: Record<PoliticalLevel, number>;
   bundeslandCounts: Record<string, number>;
   plzPrefixCounts: Record<string, number>;
-  monthCounts: Record<string, number>;
+  signalTimelineDayCounts: Record<string, number>;
   reviewByCategory: Record<string, SignalReviewBreakdown>;
+  sourceCounts: SourceCounts;
 };
 
 export type SendBreakdown = {
@@ -88,6 +125,23 @@ export type PoliticalActivationStats = {
   >;
 };
 
+export type TimeRange = "all" | 30 | 90;
+
+export type SourceFilter =
+  | { kind: "all" }
+  | { kind: "free" }
+  | { kind: "campaign"; campaignSlug?: string };
+
+export type StatsFilter = {
+  timeRange: TimeRange;
+  source: SourceFilter;
+};
+
+export const DEFAULT_STATS_FILTER: StatsFilter = {
+  timeRange: "all",
+  source: { kind: "all" },
+};
+
 export type InternalStats = {
   letterCount: number;
   reviewCount: number;
@@ -109,6 +163,9 @@ export type InternalStats = {
   fetchedAt: string;
   letterSignals: LetterSignalStats;
   politicalActivation: PoliticalActivationStats;
+  reviewSourceCounts: SourceCounts;
+  reviewTimelineDayCounts: Record<string, number>;
+  campaignLabels: Record<string, string>;
 };
 
 export function topicCategoryLabel(code: string): string {
@@ -121,6 +178,10 @@ export function topicCategoryLabel(code: string): string {
   return labels[code] ?? code.replaceAll("_", " ");
 }
 
+function emptySourceCounts(): SourceCounts {
+  return { free: 0, unknown: 0, campaign: {} };
+}
+
 function emptySignalStats(): LetterSignalStats {
   return {
     signalCount: 0,
@@ -129,9 +190,83 @@ function emptySignalStats(): LetterSignalStats {
     levelCounts: { Bund: 0, Land: 0, Kommune: 0 },
     bundeslandCounts: {},
     plzPrefixCounts: {},
-    monthCounts: {},
+    signalTimelineDayCounts: {},
     reviewByCategory: {},
+    sourceCounts: emptySourceCounts(),
   };
+}
+
+type SourceKind = "free" | "campaign" | "unknown";
+
+const DAY_KEY_PATTERN = /^\d{4}-\d{2}-\d{2}$/;
+
+function addCount(counts: Record<string, number>, key: string): void {
+  counts[key] = (counts[key] ?? 0) + 1;
+}
+
+function addTimelineDay(
+  timeline: Record<string, number>,
+  createdAt: string | null,
+): void {
+  const day = createdAt?.slice(0, 10);
+  if (day && DAY_KEY_PATTERN.test(day)) addCount(timeline, day);
+}
+
+function classifyReviewSource(
+  row: InternalReviewRow,
+  signalByLetter: Map<string, InternalLetterSignalRow>,
+): { kind: SourceKind; campaignSlug: string | null } {
+  if (!row.letter_id) return { kind: "unknown", campaignSlug: null };
+  const signal = signalByLetter.get(row.letter_id);
+  if (!signal) return { kind: "unknown", campaignSlug: null };
+  if (signal.campaign_slug) {
+    return { kind: "campaign", campaignSlug: signal.campaign_slug };
+  }
+  return { kind: "free", campaignSlug: null };
+}
+
+function matchesSource(
+  filter: SourceFilter,
+  kind: SourceKind,
+  campaignSlug: string | null,
+): boolean {
+  switch (filter.kind) {
+    case "all":
+      return true;
+    case "free":
+      return kind === "free";
+    case "campaign":
+      return (
+        kind === "campaign" &&
+        (filter.campaignSlug === undefined ||
+          filter.campaignSlug === campaignSlug)
+      );
+  }
+}
+
+function addSourceCount(
+  counts: SourceCounts,
+  kind: SourceKind,
+  campaignSlug: string | null,
+): void {
+  if (kind === "free") counts.free += 1;
+  else if (kind === "unknown" || !campaignSlug) counts.unknown += 1;
+  else addCount(counts.campaign, campaignSlug);
+}
+
+function cutoffIso(fetchedAt: string, timeRange: TimeRange): string | null {
+  if (timeRange === "all") return null;
+  const cutoff = new Date(Date.parse(fetchedAt) - timeRange * 24 * 60 * 60 * 1000);
+  return cutoff.toISOString();
+}
+
+function isWithinTimeRange(
+  createdAt: string | null,
+  cutoff: string | null,
+): boolean {
+  if (!cutoff) return true;
+  if (!createdAt) return false;
+  return Date.parse(createdAt) >= Date.parse(cutoff);
 }
 
 function aggregateLetterSignals(
@@ -158,25 +293,47 @@ function aggregateLetterSignals(
   }
   for (const row of rows) {
     result.signalCount += 1;
+    addTimelineDay(result.signalTimelineDayCounts, row.created_at);
+    if (row.campaign_slug) {
+      addCount(result.sourceCounts.campaign, row.campaign_slug);
+    } else {
+      result.sourceCounts.free += 1;
+    }
     for (const category of new Set(row.topic_categories ?? [])) {
       result.categoryCounts[category] = (result.categoryCounts[category] ?? 0) + 1;
       const review = reviewByLetter.get(row.letter_id);
       if (review) {
-        const breakdown = result.reviewByCategory[category] ??= { signals: 0, ratings: 0, ratingSum: 0, sent: 0, notSent: 0, knownSent: 0 };
+        const breakdown = result.reviewByCategory[category] ??= {
+          signals: 0,
+          reviews: 0,
+          ratings: 0,
+          ratingSum: 0,
+          sent: 0,
+          notSent: 0,
+          noAnswer: 0,
+          knownSent: 0,
+        };
         breakdown.signals += 1;
-        if (review.rating && review.rating >= 1 && review.rating <= 5) { breakdown.ratings += 1; breakdown.ratingSum += review.rating; }
-        if (review.letter_sent === true) { breakdown.sent += 1; breakdown.knownSent += 1; }
-        else if (review.letter_sent === false) { breakdown.notSent += 1; breakdown.knownSent += 1; }
+        breakdown.reviews += 1;
+        if (review.rating && review.rating >= 1 && review.rating <= 5) {
+          breakdown.ratings += 1;
+          breakdown.ratingSum += review.rating;
+        }
+        if (review.letter_sent === true) {
+          breakdown.sent += 1;
+          breakdown.knownSent += 1;
+        } else if (review.letter_sent === false) {
+          breakdown.notSent += 1;
+          breakdown.knownSent += 1;
+        } else {
+          breakdown.noAnswer += 1;
+        }
       }
     }
     for (const label of new Set(row.topic_labels ?? [])) result.labelCounts[label] = (result.labelCounts[label] ?? 0) + 1;
     if (row.political_level && row.political_level in result.levelCounts) result.levelCounts[row.political_level] += 1;
     if (row.bundesland_key) result.bundeslandCounts[row.bundesland_key] = (result.bundeslandCounts[row.bundesland_key] ?? 0) + 1;
     if (row.plz_prefix && /^\d{2}$/.test(row.plz_prefix)) result.plzPrefixCounts[row.plz_prefix] = (result.plzPrefixCounts[row.plz_prefix] ?? 0) + 1;
-    if (row.generated_at) {
-      const month = row.generated_at.slice(0, 7);
-      if (/^\d{4}-\d{2}$/.test(month)) result.monthCounts[month] = (result.monthCounts[month] ?? 0) + 1;
-    }
   }
   return result;
 }
@@ -268,7 +425,45 @@ export function aggregateInternalStats(
   letterCount: number,
   fetchedAt = new Date().toISOString(),
   letterSignalRows: InternalLetterSignalRow[] = [],
+  filter: StatsFilter = DEFAULT_STATS_FILTER,
+  campaignLabels: Record<string, string> = {},
 ): InternalStats {
+  const cutoff = cutoffIso(fetchedAt, filter.timeRange);
+  const signalByLetter = new Map<string, InternalLetterSignalRow>();
+  for (const signal of letterSignalRows) {
+    if (!signalByLetter.has(signal.letter_id)) {
+      signalByLetter.set(signal.letter_id, signal);
+    }
+  }
+
+  const filteredReviews: InternalReviewRow[] = [];
+  const filteredSignals: InternalLetterSignalRow[] = [];
+  const reviewSourceCounts = emptySourceCounts();
+  const reviewTimelineDayCounts: Record<string, number> = {};
+
+  for (const row of rows) {
+    if (!isWithinTimeRange(row.created_at, cutoff)) continue;
+    const source = classifyReviewSource(row, signalByLetter);
+    if (!matchesSource(filter.source, source.kind, source.campaignSlug)) continue;
+    filteredReviews.push(row);
+    addSourceCount(reviewSourceCounts, source.kind, source.campaignSlug);
+    addTimelineDay(reviewTimelineDayCounts, row.created_at);
+  }
+
+  for (const signal of letterSignalRows) {
+    if (!isWithinTimeRange(signal.created_at, cutoff)) continue;
+    if (
+      !matchesSource(
+        filter.source,
+        signal.campaign_slug ? "campaign" : "free",
+        signal.campaign_slug,
+      )
+    ) {
+      continue;
+    }
+    filteredSignals.push(signal);
+  }
+
   const ratingDistribution = emptyRatingDistribution();
   const sendByRating: Record<1 | 2 | 3 | 4 | 5, SendBreakdown> = {
     1: emptySendBreakdown(),
@@ -293,7 +488,7 @@ export function aggregateInternalStats(
   const reviewDates: string[] = [];
   const politicalActivation = emptyPoliticalActivationStats();
 
-  for (const row of rows) {
+  for (const row of filteredReviews) {
     if (row.created_at) reviewDates.push(row.created_at);
 
     if (row.full_feedback_submitted === true) fullFeedbackCount += 1;
@@ -410,7 +605,7 @@ export function aggregateInternalStats(
 
   return {
     letterCount,
-    reviewCount: rows.length,
+    reviewCount: filteredReviews.length,
     fullFeedbackCount,
     sentCount,
     notSentCount,
@@ -424,11 +619,14 @@ export function aggregateInternalStats(
     ratingDistribution,
     levelCounts,
     unknownLevelCount,
-    resolvedLevelCount: rows.length - unknownLevelCount,
+    resolvedLevelCount: filteredReviews.length - unknownLevelCount,
     oldestReviewAt: reviewDates[0] ?? null,
     newestReviewAt: reviewDates.at(-1) ?? null,
     fetchedAt,
-    letterSignals: aggregateLetterSignals(letterSignalRows, rows),
+    letterSignals: aggregateLetterSignals(filteredSignals, filteredReviews),
     politicalActivation,
+    reviewSourceCounts,
+    reviewTimelineDayCounts,
+    campaignLabels,
   };
 }

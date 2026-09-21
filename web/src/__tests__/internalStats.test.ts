@@ -18,12 +18,15 @@ function row(overrides: Partial<InternalReviewRow> = {}): InternalReviewRow {
 function signal(overrides: Partial<InternalLetterSignalRow> = {}): InternalLetterSignalRow {
   return {
     letter_id: "11111111-1111-4111-8111-111111111111",
-    generated_at: "2026-08-01T10:00:00Z",
+    created_at: "2026-08-01T10:00:00Z",
+    consented_at: "2026-08-01T10:00:00Z",
+    generated_at: "2026-08-01T12:00:00Z",
     topic_categories: ["bildung"],
     topic_labels: ["Schulwege"],
     political_level: "Bund",
     bundesland_key: "HB",
     plz_prefix: "28",
+    campaign_slug: null,
     ...overrides,
   };
 }
@@ -194,5 +197,145 @@ describe("aggregateInternalStats", () => {
       sent: 1,
       notSent: 0,
     });
+  });
+
+  it("filters reviews and signals by a 30-day time window using created_at", () => {
+    const inWindow = "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb";
+    const tooOld = "cccccccc-cccc-4ccc-8ccc-cccccccccccc";
+    const stats = aggregateInternalStats(
+      [
+        row({ letter_id: inWindow, created_at: "2026-08-15T10:00:00Z" }),
+        row({ letter_id: tooOld, created_at: "2026-06-01T10:00:00Z" }),
+      ],
+      0,
+      "2026-08-30T12:00:00Z",
+      [
+        signal({ letter_id: inWindow, created_at: "2026-08-16T10:00:00Z" }),
+        signal({ letter_id: tooOld, created_at: "2026-06-01T10:00:00Z" }),
+      ],
+      { timeRange: 30, source: { kind: "all" } },
+    );
+
+    expect(stats.reviewCount).toBe(1);
+    expect(stats.letterSignals.signalCount).toBe(1);
+    expect(stats.letterSignals.sourceCounts).toMatchObject({ free: 1, campaign: {} });
+  });
+
+  it("filters reviews and signals by a 90-day time window using created_at", () => {
+    const inWindow = "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb";
+    const tooOld = "cccccccc-cccc-4ccc-8ccc-cccccccccccc";
+    const stats = aggregateInternalStats(
+      [
+        row({ letter_id: inWindow, created_at: "2026-06-15T10:00:00Z" }),
+        row({ letter_id: tooOld, created_at: "2026-03-01T10:00:00Z" }),
+      ],
+      0,
+      "2026-08-30T12:00:00Z",
+      [
+        signal({ letter_id: inWindow, created_at: "2026-06-16T10:00:00Z" }),
+        signal({ letter_id: tooOld, created_at: "2026-03-01T10:00:00Z" }),
+      ],
+      { timeRange: 90, source: { kind: "all" } },
+    );
+
+    expect(stats.reviewCount).toBe(1);
+    expect(stats.letterSignals.signalCount).toBe(1);
+  });
+
+  it("classifies review sources via the linked letter signal and filters by source", () => {
+    const campaignLetter = "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa";
+    const freeLetter = "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb";
+    const signals = [
+      signal({ letter_id: campaignLetter, campaign_slug: "kampagne-a" }),
+      signal({ letter_id: freeLetter, campaign_slug: null }),
+    ];
+    const reviews = [
+      row({ letter_id: campaignLetter, created_at: "2026-08-02T10:00:00Z" }),
+      row({ letter_id: freeLetter, created_at: "2026-08-02T10:00:00Z" }),
+      row({ letter_id: null, created_at: "2026-08-02T10:00:00Z" }),
+    ];
+
+    const all = aggregateInternalStats(reviews, 0, "2026-08-30T12:00:00Z", signals, {
+      timeRange: "all",
+      source: { kind: "all" },
+    });
+    expect(all.reviewCount).toBe(3);
+    expect(all.reviewSourceCounts).toMatchObject({ free: 1, unknown: 1 });
+    expect(all.reviewSourceCounts.campaign).toEqual({ "kampagne-a": 1 });
+
+    const freeOnly = aggregateInternalStats(reviews, 0, "2026-08-30T12:00:00Z", signals, {
+      timeRange: "all",
+      source: { kind: "free" },
+    });
+    expect(freeOnly.reviewCount).toBe(1);
+    expect(freeOnly.letterSignals.signalCount).toBe(1);
+    expect(freeOnly.letterSignals.sourceCounts).toMatchObject({ free: 1, campaign: {} });
+
+    const campaignOnly = aggregateInternalStats(reviews, 0, "2026-08-30T12:00:00Z", signals, {
+      timeRange: "all",
+      source: { kind: "campaign" },
+    });
+    expect(campaignOnly.reviewCount).toBe(1);
+    expect(campaignOnly.letterSignals.signalCount).toBe(1);
+    expect(campaignOnly.letterSignals.sourceCounts.campaign).toEqual({ "kampagne-a": 1 });
+
+    const specific = aggregateInternalStats(reviews, 0, "2026-08-30T12:00:00Z", signals, {
+      timeRange: "all",
+      source: { kind: "campaign", campaignSlug: "kampagne-a" },
+    });
+    expect(specific.reviewCount).toBe(1);
+    expect(specific.letterSignals.signalCount).toBe(1);
+  });
+
+  it("builds the signal timeline from created_at and keeps signals without generated_at", () => {
+    const stats = aggregateInternalStats(
+      [],
+      0,
+      "2026-08-30T12:00:00Z",
+      [
+        signal({ letter_id: "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb", generated_at: null, created_at: "2026-08-10T00:00:00Z" }),
+        signal({ created_at: "2026-08-01T00:00:00Z" }),
+      ],
+      { timeRange: "all", source: { kind: "all" } },
+    );
+
+    expect(stats.letterSignals.signalTimelineDayCounts).toEqual({ "2026-08-01": 1, "2026-08-10": 1 });
+  });
+
+  it("counts multiple categories per signal separately so shares can exceed 100 percent", () => {
+    const stats = aggregateInternalStats([], 0, undefined, [
+      signal({ topic_categories: ["bildung", "klima_umwelt"], topic_labels: ["Schulwege", "Klima"] }),
+    ]);
+
+    expect(stats.letterSignals.signalCount).toBe(1);
+    expect(stats.letterSignals.categoryCounts).toEqual({ bildung: 1, klima_umwelt: 1 });
+    const totalAssignments = Object.values(stats.letterSignals.categoryCounts).reduce((a, b) => a + b, 0);
+    expect(totalAssignments).toBeGreaterThan(stats.letterSignals.signalCount);
+  });
+
+  it("separates answered and unanswered send questions per category", () => {
+    const letterId = "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa";
+    const stats = aggregateInternalStats(
+      [row({ letter_id: letterId, rating: 4, letter_sent: null, full_feedback_submitted: true })],
+      0,
+      undefined,
+      [signal({ letter_id: letterId })],
+    );
+
+    expect(stats.letterSignals.reviewByCategory.bildung).toMatchObject({
+      signals: 1,
+      reviews: 1,
+      ratings: 1,
+      ratingSum: 4,
+      sent: 0,
+      notSent: 0,
+      knownSent: 0,
+      noAnswer: 1,
+    });
+  });
+
+  it("records a review timeline from created_at", () => {
+    const stats = aggregateInternalStats([row({ created_at: "2026-08-03T10:00:00Z" })], 0);
+    expect(stats.reviewTimelineDayCounts).toEqual({ "2026-08-03": 1 });
   });
 });

@@ -7,7 +7,7 @@ import { APP_URL, FOUNDER_LINKEDIN, FOUNDER_FEEDBACK_URL } from "@/lib/config";
 
 const TITLE = "Andere Tools für mehr Demokratie";
 const DESCRIPTION =
-  "LiebeMdB, WeAct, innn.it, openPetition, Abgeordnetenwatch: Wo Brief-nach-Berlin sich abgrenzt und wo die anderen Tools die bessere Wahl sind. Ein ehrlicher Überblick.";
+  "LiebeMdB, Change.org, WeAct, innn.it, openPetition, Abgeordnetenwatch: Wo Brief-nach-Berlin sich abgrenzt und wo die anderen Tools die bessere Wahl sind. Ein ehrlicher Überblick.";
 const URL_PATH = "/andere-tools";
 const PUBLISHED = "2026-05-20";
 
@@ -112,10 +112,18 @@ const categories: Category[] = [
           "innn.it ist die schwerste Stufe der Mitwirkung mit dem höchsten Hebel. Brief-nach-Berlin ist die leichteste Einstiegsstufe. Wer noch nie politisch geschrieben hat, fängt nicht mit einem Volksbegehren an. Aber wer einmal einen Brief geschrieben und eine Antwort bekommen hat, ist näher dran, sich auch an ein Volksbegehren zu trauen.",
       },
       {
-        name: "Change.org und openPetition",
+        name: "Change.org",
+        url: "https://www.change.org",
+        what: "Die weltweit größte Petitionsplattform. Du unterschreibst bestehende Petitionen mit einem Klick oder startest selbst eine Kampagne und sammelst Unterschriften. Große Reichweite, auch weit über Deutschland hinaus.",
+        good: "Wenn du ein Anliegen teilst, das viele Menschen betrifft, und öffentlichen Druck sichtbar machen willst. Stark für virale Verbreitung und mediale Aufmerksamkeit – gerade wenn dein Thema nicht an einer einzelnen Parlamentsinstanz hängt.",
+        different:
+          "Eine Unterschrift auf Change.org ist ein schneller, oft unsichtbarer Klick in einer riesigen Liste. Ein Brief-nach-Berlin-Brief trägt deinen Namen, deine Postleitzahl, deine Worte und landet bei genau der Person, die du im Bundestag gewählt hast oder hättest wählen können. Das ist eine andere Tonlage: kein Ersatz, sondern ein Zusatzkanal. Eine Petition kann der öffentliche Druck sein, der deinem Brief den Weg bahnt.",
+      },
+      {
+        name: "openPetition",
         url: "https://www.openpetition.de",
-        what: "Petitionsplattformen mit großer Reichweite und niedriger Einstiegshürde. Du unterschreibst mit einem Klick, oder startest selbst eine Petition.",
-        good: "Wenn du eine bestehende Petition mit deiner Unterschrift unterstützen oder schnell eine Kampagne starten willst. Sehr gut für viral verbreitbare Anliegen.",
+        what: "Deutschsprachige Petitionsplattform mit Fokus auf Anliegen an Bundestag, Landtage und Kommunen. Du unterschreibst bestehende Petitionen oder startest selbst eine.",
+        good: "Wenn dein Anliegen eine konkrete deutsche Parlamentsinstanz oder Behörde adressiert und du dafür Unterschriften sammeln willst. Durch die regionale Ausrichtung oft näher am eigentlichen Entscheidungsweg als globale Plattformen.",
         different:
           "Eine Unterschrift in einer Liste ist ein wichtiger Akt, aber sie ist anonym in der Masse. Ein Brief-nach-Berlin-Brief trägt deinen Namen, deine Postleitzahl, deine Worte. Er landet bei einer Person, die du gewählt hast oder hättest wählen können. Das ist eine andere Tonlage als eine Petition, kein Ersatz, sondern ein Zusatzkanal.",
       },

@@ -21,6 +21,7 @@ import { reportErrorAction } from "@/lib/actions/reportError";
 import { WEBMAIL_PROVIDERS } from "@/lib/email/emailProviders";
 import { installClientLogBuffer, getClientLogs } from "@/lib/clientLogBuffer";
 import { formatPartyShort } from "@/lib/formatParty";
+import { formatSourceStand } from "@/lib/formatSourceStand";
 import {
   FOUNDER_EMAIL,
   FOUNDER_FEEDBACK_URL,
@@ -1340,7 +1341,7 @@ export function Step3Success({
                     >
                       Destatis
                     </a>
-                    , Stand {rathaus.address.sourceStand}
+                    , Stand {formatSourceStand(rathaus.address.sourceStand)}
                   </p>
                 </>
               ) : (
@@ -1410,7 +1411,7 @@ export function Step3Success({
                 >
                   Quelle
                 </a>
-                , geprüft am {landesregierung.address.sourceStand}
+                , geprüft am {formatSourceStand(landesregierung.address.sourceStand)}
               </p>
             </div>
             {governmentHead && (
@@ -1450,7 +1451,7 @@ export function Step3Success({
                   ))}
                 </p>
                 <p className="font-body text-xs text-warmgrau/70 mt-2 leading-relaxed">
-                  Amtliche Anschrift: <a href={governmentHead.address.sourceUrl} target="_blank" rel="noopener noreferrer" title={governmentHead.address.sourceTitle} className="font-semibold text-waldgruen-dark underline underline-offset-2">Quelle</a>, geprüft am {governmentHead.address.sourceStand}
+                  Amtliche Anschrift: <a href={governmentHead.address.sourceUrl} target="_blank" rel="noopener noreferrer" title={governmentHead.address.sourceTitle} className="font-semibold text-waldgruen-dark underline underline-offset-2">Quelle</a>, geprüft am {formatSourceStand(governmentHead.address.sourceStand)}
                 </p>
               </div>
             )}
@@ -1522,7 +1523,7 @@ export function Step3Success({
                 >
                   Bundeskanzler.de
                 </a>
-                , geprüft am {bundeskanzler.address.sourceStand.split("-").reverse().join(".")}
+                , geprüft am {formatSourceStand(bundeskanzler.address.sourceStand)}
               </p>
             </div>
           </div>

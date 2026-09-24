@@ -11,23 +11,25 @@ import {
 } from "@/lib/topics/topicTaxonomy";
 
 const MISTRAL_TEMPERATURE = 0.4;
-const LETTER_RESPONSE_FORMAT = {
-  type: "json_schema" as const,
-  jsonSchema: {
-    name: "generated_letter",
-    strict: true,
-    schemaDefinition: {
-      type: "object",
-      additionalProperties: false,
-      properties: {
-        selected_politician_id: { type: "integer" },
-        letter: { type: "string" },
-        ...TOPIC_JSON_SCHEMA_PROPERTIES,
+function letterResponseFormat(hasPreclassifiedTopic: boolean) {
+  return {
+    type: "json_schema" as const,
+    jsonSchema: {
+      name: "generated_letter",
+      strict: true,
+      schemaDefinition: {
+        type: "object",
+        additionalProperties: false,
+        properties: {
+          selected_politician_id: { type: "integer" },
+          letter: { type: "string" },
+          ...(hasPreclassifiedTopic ? {} : TOPIC_JSON_SCHEMA_PROPERTIES),
+        },
+        required: ["selected_politician_id", "letter"],
       },
-      required: ["selected_politician_id", "letter"],
     },
-  },
-};
+  };
+}
 
 interface ToneRegister {
   register: string;
@@ -203,12 +205,7 @@ REGELN:
 VOR DER AUSGABE: Lies deinen Brief einmal in Gedanken laut. Klingt das wie ein Mensch, der zum ersten Mal einen politischen Brief schreibt, oder wie ein Pressetext? Wenn Pressetext, schreibe um.
 
 Antworte ausschließlich im JSON-Format:
-{
-  "selected_politician_id": <number>,
-  "letter": "<vollständiger Brieftext>",
-  "topic_categories": ["<1 bis 3 passende Codes aus der Taxonomie>"],
-  "topic_labels": ["<1 bis 3 kurze, neutrale Unterthemen>"]
-}`;
+__RESPONSE_FORMAT__`;
 
 // ---------------------------------------------------------------------------
 // Level-aware Prompt-Branches: Gemeinsame Prompt-Regeln gelten für alle Ebenen.
@@ -276,6 +273,16 @@ STRATEGIE FÜR DIE LANDES-EBENE (nicht verhandelbar):
 - Fordere KEINE Bundesgesetzgebung, das wäre die falsche Ebene.
 - Zitiere KEINE Grundgesetz-Artikel mit Nummern. Allgemeine Begriffe wie "Kulturhoheit der Länder" sind erlaubt.`;
 
+const REGIERUNGSCHEF_ZUSTAENDIGKEIT_BLOCK = `ZUSTÄNDIGKEITSHINWEIS:
+Der Brief richtet sich persönlich an die amtierende Regierungsspitze des Bundeslands. Sprich die Person mit der vorgegebenen Anrede an und beziehe dich auf ihre politische Führungsverantwortung für das Land. Erfinde keine persönliche, parteipolitische, ministerielle oder Ausschusszuständigkeit.
+
+STRATEGIE FÜR DIE LANDES-EBENE (nicht verhandelbar):
+- Argumentiere mit den allgemeinen Handlungsmöglichkeiten des Landes und der gemeinsamen Länder im Bundesrat, sofern das Anliegen dazu passt.
+- Behaupte nicht, die Person könne allein Bundesgesetze ändern oder bundesweite Verfahren entscheiden.
+- Versprich keine Weiterleitung, Antwort oder persönliche Kenntnisnahme.
+- Erfinde keine Ministerien, Programme, Gesetze und Ausschüsse.
+- Zitiere keine Grundgesetz-Artikel mit Nummern.`;
+
 const KOMMUNE_ZUSTAENDIGKEIT_BLOCK = `ZUSTÄNDIGKEITSHINWEIS:
 Der Empfänger ist das Bürgermeisteramt der Gemeinde oder in Berlin das Bezirksamt. Der Brief richtet sich an die politische Leitung der Kommune, nicht an ein Fachamt.
 
@@ -288,6 +295,8 @@ STRATEGIE FÜR DIE KOMMUNALE EBENE (nicht verhandelbar):
 const KOMMUNE_ANREDE_LINE = `- Anrede: exakt "Sehr geehrte Damen und Herren,". Kein Name und kein Zusatz zum Amt.`;
 
 const LANDESREGIERUNG_ANREDE_LINE = `- Anrede: exakt "Sehr geehrte Damen und Herren,". Kein Name und kein Zusatz zur Institution.`;
+
+const REGIERUNGSCHEF_BITTE_LINE = `2. EINE BITTE: genau ein konkretes Verb plus ein konkretes politisches Handlungsobjekt. Richte die Bitte an die Regierungsspitze in ihrer Landesverantwortung. Behaupte keine persönliche Alleinzuständigkeit für Entscheidungen des Bundes oder des Bundesrats.`;
 
 const KOMMUNE_BITTE_LINE = `2. EINE BITTE: genau ein konkretes Verb plus ein konkretes Objekt. Keine Aufzählung und keine Wunschliste. Richte die Bitte an das Bürgermeisteramt oder Bezirksamt. Nenne kein Fachamt, keinen Ausschuss und kein Programm, das nicht im <transkript> steht.`;
 
@@ -348,7 +357,13 @@ Der Bürger hat sich bewusst entschieden, an die ${selectedLabel} zu schreiben, 
  */
 export function buildSystemPrompt(input: GenerateLetterInput): string {
   const base = SYSTEM_PROMPT_TEMPLATE
-    .replace("__TODAY__", todayInGerman());
+    .replace("__TODAY__", todayInGerman())
+    .replace(
+      "__RESPONSE_FORMAT__",
+      input.preclassifiedTopic
+        ? '{\n  "selected_politician_id": <number>,\n  "letter": "<vollständiger Brieftext>"\n}'
+        : '{\n  "selected_politician_id": <number>,\n  "letter": "<vollständiger Brieftext>",\n  "topic_categories": ["<1 bis 3 passende Codes aus der Taxonomie>"],\n  "topic_labels": ["<1 bis 3 kurze, neutrale Unterthemen>"]\n}',
+    );
   const level: PoliticalLevel = input.level ?? "Bund";
 
   let prompt = base;
@@ -372,9 +387,9 @@ export function buildSystemPrompt(input: GenerateLetterInput): string {
   } else if (level === "Land") {
     prompt = input.landesregierung
       ? prompt
-          .replace(BUND_ZUSTAENDIGKEIT_BLOCK, LANDESREGIERUNG_ZUSTAENDIGKEIT_BLOCK)
-          .replace(BUND_ANREDE_LINE, LANDESREGIERUNG_ANREDE_LINE)
-          .replace(BUND_BITTE_LINE, LANDESREGIERUNG_BITTE_LINE)
+          .replace(BUND_ZUSTAENDIGKEIT_BLOCK, input.landesregierung.addressee === "head" ? REGIERUNGSCHEF_ZUSTAENDIGKEIT_BLOCK : LANDESREGIERUNG_ZUSTAENDIGKEIT_BLOCK)
+          .replace(BUND_ANREDE_LINE, input.landesregierung.addressee === "head" ? `- Anrede: exakt "${input.landesregierung.salutation}". Nenne keine andere Person.` : LANDESREGIERUNG_ANREDE_LINE)
+          .replace(BUND_BITTE_LINE, input.landesregierung.addressee === "head" ? REGIERUNGSCHEF_BITTE_LINE : LANDESREGIERUNG_BITTE_LINE)
           .replace(BUND_PARTEI_HEADER, LANDESREGIERUNG_PARTEI_HEADER)
           .replace(`\n${BUND_PARTEI_LIST}`, "")
           .replace(`${BUND_MDB_CONTEXT_BLOCK}\n\n`, "")
@@ -458,6 +473,8 @@ export function buildUserPrompt(
           name: institutionalRecipient.label,
           anrede: input.bundeskanzler
             ? input.bundeskanzler.anrede
+            : input.landesregierung
+              ? input.landesregierung.salutation
             : "Sehr geehrte Damen und Herren,",
           ort: input.bundeskanzler
             ? "Bundeskanzleramt, Berlin"
@@ -540,6 +557,21 @@ function countWords(text: string): number {
   return text.trim().split(/\s+/).filter(Boolean).length;
 }
 
+function ensureGovernmentHeadSalutation(letter: string, salutation: string): string {
+  const trimmed = letter.trim();
+  const existing = /(^|\r?\n)[ \t]*(?:Sehr geehrte(?:r)?|Guten Tag)[^\r\n]*/i.exec(trimmed);
+  if (existing && existing.index < 300) {
+    const before = trimmed.slice(0, existing.index);
+    const after = trimmed.slice(existing.index + existing[0].length);
+    return `${before}${existing[1]}${salutation}${after}`;
+  }
+  const firstLine = trimmed.split(/\r?\n/, 1)[0] ?? "";
+  if (/\b\d{2}\.\d{2}\.\d{4}\b/.test(firstLine)) {
+    return `${firstLine}\n\n${salutation}${trimmed.slice(firstLine.length)}`;
+  }
+  return `${salutation}\n\n${trimmed}`;
+}
+
 export async function generateLetter(
   input: GenerateLetterInput
 ): Promise<GenerateLetterResult> {
@@ -551,6 +583,7 @@ export async function generateLetter(
 
   const systemPrompt = buildSystemPrompt(input);
   const userPrompt = buildUserPrompt(input, minWords, maxWords, toneLevel);
+  const responseFormat = letterResponseFormat(Boolean(input.preclassifiedTopic));
 
   const generationStart = Date.now();
 
@@ -563,7 +596,7 @@ export async function generateLetter(
           { role: "system", content: systemPrompt },
           { role: "user", content: userPrompt },
         ],
-        responseFormat: LETTER_RESPONSE_FORMAT,
+        responseFormat,
         temperature: MISTRAL_TEMPERATURE,
         maxTokens,
         frequencyPenalty: 0.3,
@@ -614,7 +647,7 @@ export async function generateLetter(
             { role: "assistant", content: firstResponse.choices?.[0]?.message?.content as string ?? "" },
             { role: "user", content: directive },
           ],
-          responseFormat: LETTER_RESPONSE_FORMAT,
+          responseFormat,
           temperature: MISTRAL_TEMPERATURE,
           maxTokens,
           frequencyPenalty: 0.3,
@@ -643,6 +676,11 @@ export async function generateLetter(
     }
   }
 
+  if (input.landesregierung?.addressee === "head") {
+    parsed.letter = ensureGovernmentHeadSalutation(parsed.letter, input.landesregierung.salutation);
+    wordCount = countWords(parsed.letter);
+  }
+
   const wordCountInRange = wordCount >= minWords && wordCount <= maxWords;
   if (!wordCountInRange) {
     console.warn("[generateLetter] final word count still out of range", {
@@ -656,7 +694,7 @@ export async function generateLetter(
 
   // Topics are an optional signal for the later opt-in flow. A malformed
   // model field must never invalidate an otherwise usable letter.
-  const topic: TopicSignal | null = buildTopicSignal(
+  const topic: TopicSignal | null = input.preclassifiedTopic ?? buildTopicSignal(
     parsed,
     "generation_fallback",
     MISTRAL_MODELS.letter,

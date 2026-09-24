@@ -114,7 +114,10 @@ export async function selectPoliticianAction(
       data,
       recipient: resolved.recipient,
       letterId,
-      topic: routingEnvelope?.routing.topic,
+      // A classified campaign carries one shared topic signal into internal
+      // stats. Until the silent background job finishes, keep the established
+      // routing-derived fallback for this individual letter.
+      topic: campaign?.topic ?? routingEnvelope?.routing.topic,
       campaignSlug: campaign?.slug ?? null,
     });
 

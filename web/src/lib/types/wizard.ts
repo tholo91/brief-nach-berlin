@@ -105,6 +105,11 @@ export interface GenerateLetterInput {
    * gewählt hat — der Brief macht den Kompetenz-Mismatch transparent.
    */
   mismatchRecommendedLevel?: PoliticalLevel;
+  /**
+   * Kampagnen werden einmal beim Speichern klassifiziert. Dann muss die
+   * Briefgeneration das gleiche Statistik-Signal nicht erneut erzeugen.
+   */
+  preclassifiedTopic?: TopicSignal | null;
 }
 
 export interface GenerateLetterResult {

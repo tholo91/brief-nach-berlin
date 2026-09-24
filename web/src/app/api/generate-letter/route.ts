@@ -264,6 +264,7 @@ export async function POST(req: NextRequest) {
       mdbLater: recipient.kind === "mdb_later" ? recipient : undefined,
       recipientRelation: resolved.relation,
       mismatchRecommendedLevel,
+      preclassifiedTopic: campaign?.topic,
     });
 
     const resolvedSignal = verifiedSignalContext
@@ -272,7 +273,7 @@ export async function POST(req: NextRequest) {
           data,
           recipient: result.selectedRecipient,
           letterId,
-          topic: result.topic,
+          topic: campaign?.topic ?? result.topic,
           campaignSlug: campaign?.slug ?? null,
         });
     const generationProof = createGenerationProof({

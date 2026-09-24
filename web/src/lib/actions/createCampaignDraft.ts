@@ -1,5 +1,6 @@
 "use server";
 
+import { after } from "next/server";
 import { z } from "zod";
 import {
   CampaignRepositoryError,
@@ -22,6 +23,7 @@ import { moderateText } from "@/lib/moderation/moderateText";
 import { sendCampaignCreatorEmail } from "@/lib/email/sendCampaignCreatorEmail";
 import { getServiceRoleClient } from "@/lib/supabase/server";
 import { CAMPAIGN_LOGO_BUCKET } from "@/lib/campaigns/logo";
+import { classifyAndSaveCampaignTopic } from "@/lib/campaigns/classifyTopic";
 
 const MAX_LOGO_BYTES = 524288;
 const logoMimeTypes = new Map([
@@ -294,6 +296,10 @@ export async function createCampaignDraftAction(
           "Die Bestätigungs-E-Mail konnte gerade nicht verschickt werden. Bitte versuch es später noch einmal.",
       };
     }
+
+    // Internal stats only. This deliberately runs after the response so a
+    // creator never waits for classification and never sees its result.
+    after(() => classifyAndSaveCampaignTopic(campaign.id, campaign.issueText));
 
     return {
       ok: true,

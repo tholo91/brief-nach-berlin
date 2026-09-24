@@ -70,6 +70,7 @@ const rathaus: RathausRecipient = {
   address: { source: "fallback" },
 };
 const landesregierung = getLandesregierungRecipient("NW")!;
+const regierungschef = getLandesregierungRecipient("NW", "head")!;
 
 function input(overrides: Partial<GenerateLetterInput> = {}): GenerateLetterInput {
   return {
@@ -156,6 +157,17 @@ describe("buildSystemPrompt — Empfängerlogik", () => {
     expect(prompt).not.toContain("Alle verfügbaren Politiker sind Landtagsabgeordnete");
     expect(prompt).not.toContain("ABGEORDNETEN-KONTEXT NUTZEN");
     expect(prompt).not.toContain("MdB-KONTEXT NUTZEN");
+    expect(prompt).not.toContain("- SPD:");
+  });
+
+  it("Regierungschef: nennt die richtige Person und Anrede ohne Parteikontext", () => {
+    const prompt = buildSystemPrompt(input({
+      level: "Land", landesregierung: regierungschef, politicians: [],
+    }));
+    expect(prompt).toContain(regierungschef.salutation);
+    expect(prompt).toContain("Regierungsspitze");
+    expect(prompt).not.toContain('Anrede: exakt "Sehr geehrte Damen und Herren,"');
+    expect(prompt).not.toContain("ABGEORDNETEN-KONTEXT NUTZEN");
     expect(prompt).not.toContain("- SPD:");
   });
 
@@ -329,6 +341,18 @@ describe("buildUserPrompt — Landesregierung", () => {
     expect(prompt).not.toContain('"party"');
     expect(prompt).not.toContain("<mdb_kontext>");
   });
+
+  it("sendet bei Personenwahl Name, Amt und korrekte Anrede an Mistral", () => {
+    const prompt = buildUserPrompt(
+      input({ level: "Land", landesregierung: regierungschef, politicians: [] }),
+      200, 280, 3,
+    );
+    expect(prompt).toContain(regierungschef.headName);
+    expect(prompt).toContain(regierungschef.label);
+    expect(prompt).toContain(regierungschef.salutation);
+    expect(prompt).not.toContain("Sehr geehrte Damen und Herren,");
+    expect(prompt).not.toContain('"party"');
+  });
 });
 
 describe("generateLetter — serverseitig aufgelöste Ebene", () => {
@@ -336,6 +360,20 @@ describe("generateLetter — serverseitig aufgelöste Ebene", () => {
 
   beforeEach(() => {
     (mistral.chat.complete as jest.Mock).mockReset();
+  });
+
+  it("ersetzt bei der Regierungsspitze eine falsche Anrede unterhalb des Datums", async () => {
+    (mistral.chat.complete as jest.Mock).mockResolvedValue({
+      choices: [{ message: { content: JSON.stringify({
+        selected_politician_id: 0,
+        letter: `24.09.2026\n\nSehr geehrte Damen und Herren,\n\n${letter}`,
+      }) } }],
+    });
+    const result = await generateLetter(input({
+      level: "Land", landesregierung: regierungschef, politicians: [], letterLength: "1",
+    }));
+    expect(result.letter).toContain(`24.09.2026\n\n${regierungschef.salutation}`);
+    expect(result.letter).not.toContain("Sehr geehrte Damen und Herren,");
   });
 
   it.each([

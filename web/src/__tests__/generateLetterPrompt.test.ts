@@ -82,6 +82,22 @@ describe("buildUserPrompt", () => {
     expect(prompt).toContain("topic_labels");
   });
 
+  it("spart Themen-Output, wenn eine Kampagne bereits klassifiziert ist", () => {
+    const prompt = buildSystemPrompt({
+      ...makeInput(),
+      preclassifiedTopic: {
+        topicCategories: ["verkehr_mobilitaet"],
+        topicLabels: ["Sichere Straßen"],
+        topicTaxonomyVersion: "v1",
+        topicSource: "campaign",
+        topicModel: "mistral-small-latest",
+      },
+    });
+
+    expect(prompt).not.toContain("topic_categories");
+    expect(prompt).not.toContain("topic_labels");
+  });
+
   it("accepts English or Turkish input while requiring a German final letter", () => {
     const prompt = buildSystemPrompt({
       ...makeInput(),

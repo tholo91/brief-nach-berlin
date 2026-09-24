@@ -102,6 +102,9 @@ export function buildLetterEmailText(data: SendLetterEmailParams): string {
     normalizeLetterClosing(data.letterText),
     `${copy.greeting}\n\nThomas\n${copy.initiative} ${FOUNDER_HOMEPAGE}`,
   ];
+  if (data.recipientKind === "landesregierung" && data.governmentSource?.addressee === "head" && data.governmentSource.addressLines) {
+    parts.push(`Postanschrift:\n${data.governmentSource.addressLines.join("\n")}`);
+  }
   if (data.recipientKind === "mdb_later") {
     parts.push(
       "Vor dem Abschreiben:\n1. Wähle ein Mitglied in der Abgeordnetensuche: https://www.bundestag.de/abgeordnete\n2. Ersetze Name, Anschrift und Anrede im Entwurf.\n3. Prüfe den Brief und schreibe ihn erst dann ab."
@@ -417,6 +420,8 @@ export function buildEmailHtml(data: SendLetterEmailParams): string {
       : null;
   const visibleAddressLines = officialRathausAddress
     ? `${escapeHtml(officialRathausAddress.streetAddress)}<br>${escapeHtml(officialRathausAddress.postalCode)} ${escapeHtml(officialRathausAddress.city)}`
+    : isLandesregierung && data.governmentSource?.addressee === "head" && data.governmentSource.addressLines
+      ? data.governmentSource.addressLines.slice(1).map(escapeHtml).join("<br>")
     : isLandesregierung && data.governmentSource
       ? getGovernmentAddressLines(data)
     : isBundeskanzler
@@ -437,6 +442,8 @@ export function buildEmailHtml(data: SendLetterEmailParams): string {
 
   const addressNameLine = isRathaus
     ? `<strong>${fullName}</strong><br>`
+    : isLandesregierung && data.governmentSource?.addressee === "head" && data.governmentSource.addressLines
+      ? `<strong>${escapeHtml(data.governmentSource.addressLines[0] ?? data.politicianName)}</strong><br>`
     : isLandesregierung && data.governmentSource
       ? `<strong>${escapeHtml(formatGovernmentDisplayName(data.governmentSource.officeName))}</strong><br>`
     : isLandesregierung

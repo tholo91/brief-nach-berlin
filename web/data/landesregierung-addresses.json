@@ -1,8 +1,8 @@
 {
   "_meta": {
     "schemaVersion": 1,
-    "verifiedAt": "2026-07-20",
-    "description": "Amtlich verifizierte institutionelle Postempfänger der 16 Landesregierungen. Keine Personen-, Ressort- oder Ausschusszuordnung."
+    "verifiedAt": "2026-09-24",
+    "description": "Amtlich verifizierte institutionelle Postempfänger und amtierende Regierungschefinnen und Regierungschefs der 16 Länder."
   },
   "recipients": {
     "BW": {
@@ -12,6 +12,17 @@
       "officeName": "Staatsministerium Baden-Württemberg",
       "institutionKind": "landesregierung",
       "addressLines": ["Richard-Wagner-Straße 15", "70184 Stuttgart"],
+      "headOfGovernment": {
+        "name": "Cem Özdemir",
+        "title": "Ministerpräsident von Baden-Württemberg",
+        "salutation": "Sehr geehrter Herr Ministerpräsident Özdemir,",
+        "addressLines": ["Ministerpräsident Cem Özdemir", "Staatsministerium Baden-Württemberg", "Richard-Wagner-Straße 15", "70184 Stuttgart"],
+        "source": {
+          "title": "Staatsministerium Baden-Württemberg: Biografie des Ministerpräsidenten",
+          "url": "https://stm.baden-wuerttemberg.de/de/ministerium/ministerpraesident/biografie",
+          "verifiedAt": "2026-09-24"
+        }
+      },
       "source": {
         "title": "Staatsministerium Baden-Württemberg: Kontakt",
         "url": "https://stm.baden-wuerttemberg.de/de/service/kontakt",
@@ -25,6 +36,17 @@
       "officeName": "Bayerische Staatskanzlei",
       "institutionKind": "landesregierung",
       "addressLines": ["Postfach 220011", "80535 München"],
+      "headOfGovernment": {
+        "name": "Dr. Markus Söder",
+        "title": "Ministerpräsident des Freistaates Bayern",
+        "salutation": "Sehr geehrter Herr Ministerpräsident Dr. Söder,",
+        "addressLines": ["Ministerpräsident Dr. Markus Söder", "Bayerische Staatskanzlei", "Postfach 220011", "80535 München"],
+        "source": {
+          "title": "Bayerisches Landesportal: Ministerpräsident und Postanschrift",
+          "url": "https://www.bayern.de/staatsregierung/ministerpraesident/",
+          "verifiedAt": "2026-09-24"
+        }
+      },
       "source": {
         "title": "Bayerisches Landesportal: Impressum",
         "url": "https://www.bayern.de/impressum/",
@@ -38,6 +60,17 @@
       "officeName": "Senatskanzlei Berlin",
       "institutionKind": "senat",
       "addressLines": ["Rotes Rathaus", "Jüdenstraße 1", "10178 Berlin"],
+      "headOfGovernment": {
+        "name": "Kai Wegner",
+        "title": "Regierender Bürgermeister von Berlin",
+        "salutation": "Sehr geehrter Herr Regierender Bürgermeister Wegner,",
+        "addressLines": ["Regierender Bürgermeister Kai Wegner", "Senatskanzlei Berlin", "Rotes Rathaus", "Jüdenstraße 1", "10178 Berlin"],
+        "source": {
+          "title": "Berlin.de: Amtszimmer des Regierenden Bürgermeisters und Kontakt",
+          "url": "https://www.berlin.de/rbmskzl/service/rotes-rathaus/amtszimmer-21795.php",
+          "verifiedAt": "2026-09-24"
+        }
+      },
       "source": {
         "title": "Berlin.de: Bürgerberatung der Senatskanzlei",
         "url": "https://www.berlin.de/rbmskzl/service/buergerberatung/",
@@ -51,6 +84,17 @@
       "officeName": "Staatskanzlei des Landes Brandenburg",
       "institutionKind": "landesregierung",
       "addressLines": ["Heinrich-Mann-Allee 107", "14473 Potsdam"],
+      "headOfGovernment": {
+        "name": "Dr. Dietmar Woidke",
+        "title": "Ministerpräsident des Landes Brandenburg",
+        "salutation": "Sehr geehrter Herr Ministerpräsident Dr. Woidke,",
+        "addressLines": ["Ministerpräsident Dr. Dietmar Woidke", "Staatskanzlei des Landes Brandenburg", "Heinrich-Mann-Allee 107", "14473 Potsdam"],
+        "source": {
+          "title": "Landesregierung Brandenburg: Anschriften der Landesregierung",
+          "url": "https://www.brandenburg.de/de/kontakt/bb1.c.476761.de",
+          "verifiedAt": "2026-09-24"
+        }
+      },
       "source": {
         "title": "Landesregierung Brandenburg: Die Staatskanzlei",
         "url": "https://brandenburg.de/de/staatskanzlei/bb1.c.482252.de",
@@ -64,6 +108,17 @@
       "officeName": "Senatskanzlei Bremen",
       "institutionKind": "senat",
       "addressLines": ["Am Markt 21", "28195 Bremen"],
+      "headOfGovernment": {
+        "name": "Dr. Andreas Bovenschulte",
+        "title": "Bürgermeister und Präsident des Senats der Freien Hansestadt Bremen",
+        "salutation": "Sehr geehrter Herr Bürgermeister Dr. Bovenschulte,",
+        "addressLines": ["Bürgermeister Dr. Andreas Bovenschulte", "Senatskanzlei Bremen", "Am Markt 21", "28195 Bremen"],
+        "source": {
+          "title": "Senatskanzlei Bremen: Geschäftsverteilung im Senat (23. Januar 2026)",
+          "url": "https://www.rathaus.bremen.de/sixcms/media.php/13/20260123_Gesch%C3%A4ftsverteilung-im-Senat.pdf",
+          "verifiedAt": "2026-09-24"
+        }
+      },
       "source": {
         "title": "Senatskanzlei Bremen: Impressum",
         "url": "https://www.rathaus.bremen.de/impressum-744",
@@ -77,6 +132,17 @@
       "officeName": "Senatskanzlei Hamburg",
       "institutionKind": "senat",
       "addressLines": ["Rathausmarkt 1", "20095 Hamburg"],
+      "headOfGovernment": {
+        "name": "Dr. Peter Tschentscher",
+        "title": "Erster Bürgermeister der Freien und Hansestadt Hamburg",
+        "salutation": "Sehr geehrter Herr Erster Bürgermeister Dr. Tschentscher,",
+        "addressLines": ["Erster Bürgermeister Dr. Peter Tschentscher", "Senatskanzlei Hamburg", "Rathausmarkt 1", "20095 Hamburg"],
+        "source": {
+          "title": "Hamburg.de: Erster Bürgermeister, Kontakt und Anschrift",
+          "url": "https://www.hamburg.de/politik-und-verwaltung/behoerden/senatskanzlei/wir-ueber-uns/erster-buergermeister-der-freien-und-hansestadt-hamburg-882174",
+          "verifiedAt": "2026-09-24"
+        }
+      },
       "source": {
         "title": "Hamburg Service: Senatskanzlei",
         "url": "https://www.hamburg.de/service/info/11283026/",
@@ -90,6 +156,17 @@
       "officeName": "Hessische Staatskanzlei",
       "institutionKind": "landesregierung",
       "addressLines": ["Postfach 3147", "65021 Wiesbaden"],
+      "headOfGovernment": {
+        "name": "Boris Rhein",
+        "title": "Ministerpräsident des Landes Hessen",
+        "salutation": "Sehr geehrter Herr Ministerpräsident Rhein,",
+        "addressLines": ["Ministerpräsident Boris Rhein", "Hessische Staatskanzlei", "Postfach 3147", "65021 Wiesbaden"],
+        "source": {
+          "title": "Hessische Staatskanzlei: Ministerpräsident Boris Rhein",
+          "url": "https://staatskanzlei.hessen.de/unser-ministerpraesident/boris-rhein",
+          "verifiedAt": "2026-09-24"
+        }
+      },
       "source": {
         "title": "Hessische Staatskanzlei: Erreichbarkeit",
         "url": "https://staatskanzlei.hessen.de/erreichbarkeit-der-hessischen-staatskanzlei",
@@ -103,6 +180,17 @@
       "officeName": "Staatskanzlei Mecklenburg-Vorpommern",
       "institutionKind": "landesregierung",
       "addressLines": ["19048 Schwerin"],
+      "headOfGovernment": {
+        "name": "Manuela Schwesig",
+        "title": "Ministerpräsidentin des Landes Mecklenburg-Vorpommern",
+        "salutation": "Sehr geehrte Frau Ministerpräsidentin Schwesig,",
+        "addressLines": ["Ministerpräsidentin Manuela Schwesig", "Staatskanzlei Mecklenburg-Vorpommern", "19048 Schwerin"],
+        "source": {
+          "title": "Regierungsportal Mecklenburg-Vorpommern: Ministerpräsidentin und Postanschrift",
+          "url": "https://www.regierung-mv.de/Landesregierung/stk/Staatskanzlei/Kontakt/",
+          "verifiedAt": "2026-09-24"
+        }
+      },
       "source": {
         "title": "Regierungsportal Mecklenburg-Vorpommern: Kontakt Staatskanzlei",
         "url": "https://www.regierung-mv.de/Landesregierung/stk/Staatskanzlei/Kontakt/",
@@ -116,6 +204,17 @@
       "officeName": "Niedersächsische Staatskanzlei",
       "institutionKind": "landesregierung",
       "addressLines": ["Planckstraße 2", "30169 Hannover"],
+      "headOfGovernment": {
+        "name": "Olaf Lies",
+        "title": "Ministerpräsident des Landes Niedersachsen",
+        "salutation": "Sehr geehrter Herr Ministerpräsident Lies,",
+        "addressLines": ["Ministerpräsident Olaf Lies", "Niedersächsische Staatskanzlei", "Planckstraße 2", "30169 Hannover"],
+        "source": {
+          "title": "Niedersächsische Staatskanzlei: Adressen und Wegbeschreibungen",
+          "url": "https://www.stk.niedersachsen.de/startseite/service/adressen_wegbeschreibung/adressen-wegbeschreibungen-2430.html",
+          "verifiedAt": "2026-09-24"
+        }
+      },
       "source": {
         "title": "Niedersächsische Staatskanzlei: Adressen und Wegbeschreibungen",
         "url": "https://www.stk.niedersachsen.de/startseite/service/adressen_wegbeschreibung/adressen-wegbeschreibungen-2430.html",
@@ -129,6 +228,17 @@
       "officeName": "Staatskanzlei des Landes Nordrhein-Westfalen",
       "institutionKind": "landesregierung",
       "addressLines": ["Horionplatz 1", "40190 Düsseldorf"],
+      "headOfGovernment": {
+        "name": "Hendrik Wüst",
+        "title": "Ministerpräsident des Landes Nordrhein-Westfalen",
+        "salutation": "Sehr geehrter Herr Ministerpräsident Wüst,",
+        "addressLines": ["Ministerpräsident Hendrik Wüst", "Staatskanzlei des Landes Nordrhein-Westfalen", "Horionplatz 1", "40190 Düsseldorf"],
+        "source": {
+          "title": "Staatskanzlei Nordrhein-Westfalen: Organisationsplan vom 1. September 2026",
+          "url": "https://www.land.nrw/media/35598/download?attachment=",
+          "verifiedAt": "2026-09-24"
+        }
+      },
       "source": {
         "title": "Staatskanzlei Nordrhein-Westfalen: Organisationsplan",
         "url": "https://www.land.nrw/media/34665/download",
@@ -142,6 +252,17 @@
       "officeName": "Staatskanzlei Rheinland-Pfalz",
       "institutionKind": "landesregierung",
       "addressLines": ["Peter-Altmeier-Allee 1", "55116 Mainz"],
+      "headOfGovernment": {
+        "name": "Alexander Schweitzer",
+        "title": "Ministerpräsident des Landes Rheinland-Pfalz",
+        "salutation": "Sehr geehrter Herr Ministerpräsident Schweitzer,",
+        "addressLines": ["Ministerpräsident Alexander Schweitzer", "Staatskanzlei Rheinland-Pfalz", "Postfach 3880", "55028 Mainz"],
+        "source": {
+          "title": "Staatskanzlei Rheinland-Pfalz: Organisationsplan vom 1. Januar 2026",
+          "url": "https://landesvertretung.rlp.de/fileadmin/02/Regierung/Staatskanzlei/Orga_Stk.pdf",
+          "verifiedAt": "2026-09-24"
+        }
+      },
       "source": {
         "title": "Rheinland-Pfalz: Bürgerbüro der Landesregierung",
         "url": "https://www.rlp.de/service/buergerbuero/",
@@ -155,6 +276,17 @@
       "officeName": "Staatskanzlei des Saarlandes",
       "institutionKind": "landesregierung",
       "addressLines": ["Am Ludwigsplatz 14", "66117 Saarbrücken"],
+      "headOfGovernment": {
+        "name": "Anke Rehlinger",
+        "title": "Ministerpräsidentin des Saarlandes",
+        "salutation": "Sehr geehrte Frau Ministerpräsidentin Rehlinger,",
+        "addressLines": ["Ministerpräsidentin Anke Rehlinger", "Staatskanzlei des Saarlandes", "Am Ludwigsplatz 14", "66117 Saarbrücken"],
+        "source": {
+          "title": "Saarland.de: Impressum mit Ministerpräsidentin und Anschrift",
+          "url": "https://www.saarland.de/DE/services/impressum",
+          "verifiedAt": "2026-09-24"
+        }
+      },
       "source": {
         "title": "Saarland.de: Impressum der Staatskanzlei",
         "url": "https://www.saarland.de/DE/services/impressum",
@@ -168,6 +300,17 @@
       "officeName": "Sächsische Staatskanzlei",
       "institutionKind": "landesregierung",
       "addressLines": ["Archivstraße 1", "01097 Dresden"],
+      "headOfGovernment": {
+        "name": "Michael Kretschmer",
+        "title": "Ministerpräsident des Freistaates Sachsen",
+        "salutation": "Sehr geehrter Herr Ministerpräsident Kretschmer,",
+        "addressLines": ["Ministerpräsident Michael Kretschmer", "Sächsische Staatskanzlei", "01095 Dresden"],
+        "source": {
+          "title": "Sächsische Staatskanzlei: Organigramm vom 17. August 2026",
+          "url": "https://www.sk.sachsen.de/download/sk/Organigramm_SK_Stand_17.08.26.pdf",
+          "verifiedAt": "2026-09-24"
+        }
+      },
       "source": {
         "title": "Sächsische Staatskanzlei: Kontakt und Anfahrt",
         "url": "https://www.sk.sachsen.de/kontakt-und-anfahrt-3608.html",
@@ -181,6 +324,17 @@
       "officeName": "Staatskanzlei des Landes Sachsen-Anhalt",
       "institutionKind": "landesregierung",
       "addressLines": ["Hegelstraße 40–42", "39104 Magdeburg"],
+      "headOfGovernment": {
+        "name": "Sven Schulze",
+        "title": "Ministerpräsident des Landes Sachsen-Anhalt",
+        "salutation": "Sehr geehrter Herr Ministerpräsident Schulze,",
+        "addressLines": ["Ministerpräsident Sven Schulze", "Staatskanzlei und Ministerium für Kultur des Landes Sachsen-Anhalt", "Postfach 4165", "39016 Magdeburg"],
+        "source": {
+          "title": "Staatskanzlei Sachsen-Anhalt: Organisationsplan vom 16. Februar 2026",
+          "url": "https://stk.sachsen-anhalt.de/fileadmin/Bibliothek/Politik_und_Verwaltung/StK/STK/Dokumente/Organigramm_Februa_16_2026.pdf",
+          "verifiedAt": "2026-09-24"
+        }
+      },
       "source": {
         "title": "Staatskanzlei Sachsen-Anhalt: Impressum",
         "url": "https://stk.sachsen-anhalt.de/staatskanzlei-und-ministerium-fuer-kultur/impressum",
@@ -194,6 +348,17 @@
       "officeName": "Staatskanzlei Schleswig-Holstein",
       "institutionKind": "landesregierung",
       "addressLines": ["Düsternbrooker Weg 104", "24105 Kiel"],
+      "headOfGovernment": {
+        "name": "Daniel Günther",
+        "title": "Ministerpräsident des Landes Schleswig-Holstein",
+        "salutation": "Sehr geehrter Herr Ministerpräsident Günther,",
+        "addressLines": ["Ministerpräsident Daniel Günther", "Staatskanzlei Schleswig-Holstein", "Postfach 7122", "24171 Kiel"],
+        "source": {
+          "title": "Schleswig-Holstein: Organisation und Ansprechpartner der Staatskanzlei",
+          "url": "https://www.schleswig-holstein.de/DE/landesregierung/ministerien-behoerden/I/Staatskanzlei/OrganisationAnsprechpartner",
+          "verifiedAt": "2026-09-24"
+        }
+      },
       "source": {
         "title": "Schleswig-Holstein: So erreichen Sie die Staatskanzlei",
         "url": "https://www.schleswig-holstein.de/DE/landesregierung/ministerien-behoerden/I/Service/Anfahrt",
@@ -207,6 +372,17 @@
       "officeName": "Thüringer Staatskanzlei",
       "institutionKind": "landesregierung",
       "addressLines": ["Regierungsstraße 73", "99084 Erfurt"],
+      "headOfGovernment": {
+        "name": "Mario Voigt",
+        "title": "Ministerpräsident des Freistaates Thüringen",
+        "salutation": "Sehr geehrter Herr Ministerpräsident Voigt,",
+        "addressLines": ["Ministerpräsident Mario Voigt", "Thüringer Staatskanzlei", "Postfach 90 02 53", "99105 Erfurt"],
+        "source": {
+          "title": "Thüringer Staatskanzlei: Organisationsplan mit Postanschrift",
+          "url": "https://thueringen.de/fileadmin/user_upload/TSK/Wir-ueber-uns/2025-11-17_Organigramm_extern_barrfrei.pdf",
+          "verifiedAt": "2026-09-24"
+        }
+      },
       "source": {
         "title": "Freistaat Thüringen: Impressum",
         "url": "https://karriere.thueringen.de/impressum",

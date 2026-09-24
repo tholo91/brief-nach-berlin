@@ -10,6 +10,7 @@ jest.mock("@/lib/feedback/token", () => ({
 
 import { getLandesregierungRecipient } from "@/lib/lookup/landesregierungRecipient";
 import { signFeedbackToken } from "@/lib/feedback/token";
+import { buildEmailHtml, buildLetterEmailText } from "@/lib/email/buildEmailHtml";
 
 describe("prepareLetterEmail — Landesregierung", () => {
   const originalBrevoKey = process.env.BREVO_API_KEY;
@@ -48,6 +49,40 @@ describe("prepareLetterEmail — Landesregierung", () => {
         url: "https://www.rathaus.bremen.de/impressum-744",
       },
     });
+  });
+
+  it("zeigt bei Personenwahl Name und Amt im kopierbaren E-Mail-Anschriftblock", async () => {
+    const { prepareLetterEmail } = await import("@/lib/email/sendLetterEmail");
+    const recipient = getLandesregierungRecipient("HB", "head")!;
+    const { params } = prepareLetterEmail({
+      recipientEmail: "test@example.org",
+      recipient,
+      letterText: `${recipient.salutation}\n\nTest.`,
+      issueText: "Testanliegen",
+      debug: {} as never,
+    });
+
+    expect(params).toMatchObject({
+      recipientKind: "landesregierung",
+      politicianName: recipient.headName,
+      politicianTitle: recipient.headTitle,
+      politicianPostalAddress: recipient.postalAddress,
+      governmentSource: {
+        addressee: "head",
+        addressLines: recipient.address.addressLines,
+        url: recipient.address.sourceUrl,
+      },
+    });
+    const html = buildEmailHtml(params);
+    const [nameLine, ...otherLines] = recipient.address.addressLines;
+    expect(html).toContain(`<strong>${nameLine}</strong><br>`);
+    expect(html).toContain(otherLines.join("<br>"));
+    expect(html).toContain(recipient.salutation);
+    expect(html).toContain(recipient.address.sourceUrl);
+    expect(html).not.toContain("abgeordnetenwatch.de/profile");
+    expect(buildLetterEmailText(params)).toContain(
+      `Postanschrift:\n${recipient.address.addressLines.join("\n")}`,
+    );
   });
 
   it("hält den Anliegen-Auszug aus dem Feedback-Token heraus", async () => {

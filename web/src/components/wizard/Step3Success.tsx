@@ -13,6 +13,7 @@ import type {
   RathausRecipient,
 } from "@/lib/lookup/rathausRecipient";
 import type { LandesregierungRecipient } from "@/lib/lookup/landesregierungRecipient";
+import { getLandesregierungRecipient } from "@/lib/lookup/landesregierungRecipient";
 import type { BundeskanzlerRecipient } from "@/lib/lookup/bundeskanzlerRecipient";
 import { selectPoliticianAction } from "@/lib/actions/selectPolitician";
 import { resendLetterAction } from "@/lib/actions/resendLetter";
@@ -136,6 +137,13 @@ export function Step3Success({
       ) ?? null,
     [recipients]
   );
+  const governmentHead = useMemo(
+    () =>
+      wizardData.campaign && landesregierung
+        ? getLandesregierungRecipient(landesregierung.bundeslandKey, "head")
+        : null,
+    [landesregierung, wizardData.campaign]
+  );
   const bundeskanzler = useMemo(
     () =>
       recipients.find(
@@ -190,6 +198,7 @@ export function Step3Success({
   const [landesregierungSelected, setLandesregierungSelected] = useState<boolean>(
     () => Boolean(landesregierung)
   );
+  const [landAddressee, setLandAddressee] = useState<"institution" | "head">("institution");
   const [bundeskanzlerSelected, setBundeskanzlerSelected] = useState<boolean>(
     () => Boolean(bundeskanzler)
   );
@@ -394,14 +403,18 @@ export function Step3Success({
   // ID (LOCK-5), Abgeordnete gehen mit kind + Abgeordnetenwatch-ID raus.
   const currentSelection = useMemo<RecipientSelection | null>(() => {
     if (bundeskanzler && bundeskanzlerSelected) return { kind: "bundeskanzler" };
-    if (landesregierung && landesregierungSelected) return { kind: "landesregierung" };
+    if (landesregierung && landesregierungSelected) {
+      return landAddressee === "head" && governmentHead
+        ? { kind: "landesregierung", addressee: "head" }
+        : { kind: "landesregierung" };
+    }
     if (rathaus && rathausSelected) return { kind: "rathaus" };
     if (mdbLaterSelected) return { kind: "mdb_later" };
     if (selectedPolitician) {
       return { kind: selectedPolitician.kind, selectedPoliticianId: selectedPolitician.id };
     }
     return null;
-  }, [bundeskanzler, bundeskanzlerSelected, landesregierung, landesregierungSelected, mdbLaterSelected, rathaus, rathausSelected, selectedPolitician]);
+  }, [bundeskanzler, bundeskanzlerSelected, governmentHead, landAddressee, landesregierung, landesregierungSelected, mdbLaterSelected, rathaus, rathausSelected, selectedPolitician]);
 
   // Group the disambiguation cards by Wahlkreis. sortedPoliticians is already
   // Direkt-first, so insertion order puts the group holding the pre-selected
@@ -1144,7 +1157,9 @@ export function Step3Success({
         ? showLandPersonPicker
           ? "Lieber einer Person schreiben"
           : landesregierung
-            ? `Dein Brief geht an ${landesregierung.institutionKind === "senat" ? "den" : "die"} ${landesregierung.label}`
+            ? landAddressee === "head" && governmentHead
+              ? `Dein Brief geht an ${governmentHead.label}`
+              : `Dein Brief geht an ${landesregierung.institutionKind === "senat" ? "den" : "die"} ${landesregierung.label}`
             : "Dein Brief geht an die Landesregierung"
         : campaignRestricted
           ? "Wähle ein MdB aus"
@@ -1158,7 +1173,9 @@ export function Step3Success({
       : isLand
         ? showLandPersonPicker
           ? "Wähle selbst eine Person aus deiner PLZ-Zuordnung. Wir treffen keine automatische Personen- oder Parteiauswahl."
-          : "Der institutionelle Empfänger ist bereits vorausgewählt."
+          : governmentHead
+            ? "Die Landesregierung ist vorausgewählt. Du kannst stattdessen die Regierungsspitze oder ein Mitglied des Landtags wählen."
+            : "Der institutionelle Empfänger ist bereits vorausgewählt."
         : campaignRestricted
           ? campaignRestrictedNoLocalMatch
             ? "Filtere nach Partei oder suche nach Name, Wahlkreis und Ausschuss."
@@ -1340,10 +1357,11 @@ export function Step3Success({
           <div role="radiogroup" aria-label="Empfänger auswählen" className="mt-6">
             <div
               role="radio"
-              aria-checked={landesregierungSelected}
+              aria-checked={landesregierungSelected && landAddressee === "institution"}
               tabIndex={0}
               onClick={() => {
                 setLandesregierungSelected(true);
+                setLandAddressee("institution");
                 setSelectedPoliticianId(null);
                 setMdbLaterSelected(false);
               }}
@@ -1351,13 +1369,14 @@ export function Step3Success({
                 if (e.key === "Enter" || e.key === " ") {
                   e.preventDefault();
                   setLandesregierungSelected(true);
+                  setLandAddressee("institution");
                   setSelectedPoliticianId(null);
                   setMdbLaterSelected(false);
                 }
               }}
               className={[
                 "w-full text-left p-4 rounded-lg border-2 transition-colors cursor-pointer",
-                landesregierungSelected
+                landesregierungSelected && landAddressee === "institution"
                   ? "border-waldgruen bg-waldgruen/10"
                   : "border-waldgruen/20 bg-creme hover:border-waldgruen/40",
               ].join(" ")}
@@ -1394,6 +1413,47 @@ export function Step3Success({
                 , geprüft am {landesregierung.address.sourceStand}
               </p>
             </div>
+            {governmentHead && (
+              <div
+                role="radio"
+                aria-checked={landesregierungSelected && landAddressee === "head"}
+                tabIndex={0}
+                onClick={() => {
+                  setLandesregierungSelected(true);
+                  setLandAddressee("head");
+                  setSelectedPoliticianId(null);
+                  setMdbLaterSelected(false);
+                }}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" || e.key === " ") {
+                    e.preventDefault();
+                    setLandesregierungSelected(true);
+                    setLandAddressee("head");
+                    setSelectedPoliticianId(null);
+                    setMdbLaterSelected(false);
+                  }
+                }}
+                className={[
+                  "mt-3 w-full text-left p-4 rounded-lg border-2 transition-colors cursor-pointer",
+                  landesregierungSelected && landAddressee === "head"
+                    ? "border-waldgruen bg-waldgruen/10"
+                    : "border-waldgruen/20 bg-creme hover:border-waldgruen/40",
+                ].join(" ")}
+              >
+                <span className="inline-block font-body text-[11px] font-semibold uppercase tracking-wide text-waldgruen-dark bg-waldgruen/15 px-2 py-0.5 rounded mb-1.5">
+                  Regierungschef:in
+                </span>
+                <p className="font-body text-base font-semibold text-warmgrau">{governmentHead.label}</p>
+                <p className="font-body text-sm text-warmgrau mt-1 leading-relaxed">
+                  {governmentHead.address.addressLines.slice(1).map((line) => (
+                    <span key={line} className="block">{line}</span>
+                  ))}
+                </p>
+                <p className="font-body text-xs text-warmgrau/70 mt-2 leading-relaxed">
+                  Amtliche Anschrift: <a href={governmentHead.address.sourceUrl} target="_blank" rel="noopener noreferrer" title={governmentHead.address.sourceTitle} className="font-semibold text-waldgruen-dark underline underline-offset-2">Quelle</a>, geprüft am {governmentHead.address.sourceStand}
+                </p>
+              </div>
+            )}
             <button
               type="button"
               onClick={() => {
@@ -1732,6 +1792,7 @@ export function Step3Success({
               setSelectedPoliticianId(null);
               setMdbLaterSelected(false);
               setLandesregierungSelected(true);
+              setLandAddressee("institution");
             }}
             className="mt-5 font-body text-sm font-semibold text-waldgruen underline underline-offset-4 hover:text-waldgruen-dark"
           >

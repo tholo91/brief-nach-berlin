@@ -14,6 +14,7 @@ import {
   getBundeskanzlerRecipient,
   isBundeskanzlerCampaignSlug,
 } from "./bundeskanzlerRecipient";
+import { getLandesregierungRecipient } from "./landesregierungRecipient";
 
 export type ResolveRecipientResult =
   | {
@@ -123,7 +124,12 @@ export function resolveRecipientSelection(
 
   if (selection.kind === "landesregierung") {
     const result = lookupPLZWithLevel(plz);
-    const landesregierung = result.byLevel.Land[0];
+    const landesregierung = result.bundeslandKey
+      ? getLandesregierungRecipient(
+          result.bundeslandKey,
+          selection.addressee === "head" ? "head" : "institution"
+        )
+      : null;
     if (!landesregierung) return { ok: false, reason: "not_found" };
     return {
       ok: true,

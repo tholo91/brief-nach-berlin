@@ -4,7 +4,7 @@ import type { WizardData } from "@/lib/types/wizard";
 import type { Recipient } from "@/lib/lookup/rathausRecipient";
 import { lookupPLZWithLevel } from "@/lib/lookup/plzLookup";
 import { ROUTING_FALLBACK_TOPIC, type TopicSignal } from "@/lib/topics/topicTaxonomy";
-import { bindLetterSignalIssue, createLetterSignalContext, hashLetterSignalEmail } from "./token";
+import { bindLetterSignalIssue, bindLetterSignalRecipient, createLetterSignalContext, hashLetterSignalEmail } from "./token";
 import type { LetterSignalContext } from "./types";
 
 export function buildLetterSignalContext(args: {
@@ -24,6 +24,9 @@ export function buildLetterSignalContext(args: {
       bundeslandKey,
       politicalLevel: args.recipient.level,
       recipientKind: args.recipient.kind,
+      ...(args.recipient.kind === "landesregierung"
+        ? { recipientBinding: bindLetterSignalRecipient(args.recipient) }
+        : {}),
       issueBinding: bindLetterSignalIssue(args.data.issueText),
       ...topic,
       campaignSlug: args.campaignSlug,
@@ -49,6 +52,11 @@ export function doesLetterSignalContextMatch(args: {
       args.context.bundeslandKey === bundeslandKey &&
       args.context.politicalLevel === args.recipient.level &&
       args.context.recipientKind === args.recipient.kind &&
+      (args.recipient.kind === "landesregierung"
+        ? args.context.recipientBinding === undefined
+          ? !("addressee" in args.recipient && args.recipient.addressee === "head")
+          : args.context.recipientBinding === bindLetterSignalRecipient(args.recipient)
+        : args.context.recipientBinding === undefined) &&
       args.context.issueBinding === bindLetterSignalIssue(args.data.issueText) &&
       args.context.campaignSlug === args.campaignSlug &&
       args.context.emailLookupHash === hashLetterSignalEmail(args.data.email)

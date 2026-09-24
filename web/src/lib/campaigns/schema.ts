@@ -1,4 +1,8 @@
 import { z } from "zod";
+import {
+  TopicSignalWithMetadataSchema,
+  type TopicSignal,
+} from "@/lib/topics/topicTaxonomy";
 
 export const CAMPAIGN_STATUSES = [
   "draft",
@@ -222,6 +226,8 @@ export type Campaign = {
   targetLevel: CampaignTargetLevel;
   targetState: BundeslandKey | null;
   targetPoliticianIds: number[];
+  /** Internes, beim Speichern der Kampagne ermitteltes Statistik-Signal. */
+  topic?: TopicSignal | null;
   emailVerifiedAt: string | null;
   activatedAt: string | null;
   pausedAt: string | null;
@@ -231,6 +237,22 @@ export type Campaign = {
   createdAt: string;
   updatedAt: string;
 };
+
+export function parseCampaignTopic(row: {
+  topic_categories?: unknown;
+  topic_labels?: unknown;
+  topic_taxonomy_version?: unknown;
+  topic_model?: unknown;
+}): TopicSignal | null {
+  const parsed = TopicSignalWithMetadataSchema.safeParse({
+    topicCategories: row.topic_categories,
+    topicLabels: row.topic_labels,
+    topicTaxonomyVersion: row.topic_taxonomy_version,
+    topicSource: "campaign",
+    topicModel: row.topic_model,
+  });
+  return parsed.success ? parsed.data : null;
+}
 
 export type CampaignRevision = {
   id: string;

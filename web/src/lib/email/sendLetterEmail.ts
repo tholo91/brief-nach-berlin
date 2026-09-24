@@ -88,6 +88,8 @@ export interface SendLetterEmailParams {
   // Nur für mdl: ISO 3166-2:DE-Länderkürzel zur Auswahl der Landeswappen-Marke.
   bundeslandKey?: string;
   governmentSource?: {
+    addressee?: "institution" | "head";
+    addressLines?: string[];
     institutionKind: "landesregierung" | "senat";
     officeName: string;
     title: string;
@@ -190,19 +192,20 @@ export function prepareLetterEmail(args: {
       params: {
         locale,
         recipientEmail,
-        politicianName: recipient.label,
+        politicianName: recipient.addressee === "head" ? recipient.headName ?? recipient.label : recipient.label,
         politicianFirstName: "",
-        politicianLastName: recipient.label,
-        politicianTitle: null,
+        politicianLastName: recipient.addressee === "head" ? recipient.headName ?? recipient.label : recipient.label,
+        politicianTitle: recipient.addressee === "head" ? recipient.headTitle ?? null : null,
         politicianParty: null,
-        politicianPostalAddress: [
-          recipient.officeName,
-          ...recipient.address.addressLines,
-        ].join(", "),
+        politicianPostalAddress: recipient.addressee === "head"
+          ? recipient.postalAddress
+          : [recipient.officeName, ...recipient.address.addressLines].join(", "),
         politicianAbgeordnetenwatchUrl: null,
         recipientKind: "landesregierung",
         bundeslandKey: recipient.bundeslandKey,
         governmentSource: {
+          addressee: recipient.addressee,
+          addressLines: recipient.addressee === "head" ? recipient.address.addressLines : undefined,
           institutionKind: recipient.institutionKind,
           officeName: recipient.officeName,
           title: recipient.address.sourceTitle,

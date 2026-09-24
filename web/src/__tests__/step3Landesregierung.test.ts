@@ -29,6 +29,35 @@ const bremenMdls: MdlRecipient[] = Array.from({ length: 72 }, (_, index) => ({
 }));
 
 describe("Step3Success — institutioneller Land-Default", () => {
+  it("zeigt in einer Landeskampagne Senat, namentlichen Regierungschef und MdL als drei Wege", () => {
+    const html = renderToStaticMarkup(
+      React.createElement(
+        LocaleProvider,
+        null,
+        React.createElement(Step3Success, {
+          result: { disambiguationNeeded: true, politicians: [] },
+          wizardData: {
+            plz: "28203",
+            email: "test@example.org",
+            issueText: "Ein landespolitisches Anliegen",
+            campaign: { slug: "landespolitik", title: "Landespolitik", targetLevel: "Land" },
+          },
+          recipients: [bremenSenat],
+          optionalLandRecipients: bremenMdls,
+          selectedLevel: "Land",
+        }),
+      ),
+    );
+
+    expect(html).toContain('role="radiogroup"');
+    expect(html).toContain("Senat der Freien Hansestadt Bremen");
+    expect(html).toContain("Regierungschef:in");
+    expect(html).toContain("Bürgermeister Dr. Andreas Bovenschulte");
+    expect(html).toContain("Lieber einer Person im Landtag schreiben?");
+    expect(html).toContain('role="radio" aria-checked="true"');
+    expect(html).toContain('role="radio" aria-checked="false"');
+  });
+
   it("zeigt für Bremen 28203 nur den vorausgewählten Senat und den optionalen Personenpfad", () => {
     const html = renderToStaticMarkup(
       React.createElement(

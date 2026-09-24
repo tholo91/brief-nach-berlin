@@ -1,6 +1,7 @@
 jest.mock("@/lib/lookup/resolveRecipient", () => ({
   resolveRecipientSelection: jest.fn(),
 }));
+jest.mock("@/lib/campaigns/repository", () => ({ getActiveCampaignBySlug: jest.fn() }));
 jest.mock("@/lib/lookup/routingToken", () => ({
   verifyRoutingToken: jest.fn(),
   verifyRoutingTokenEnvelope: jest.fn(() => null),
@@ -31,9 +32,11 @@ import { moderateText } from "@/lib/moderation/moderateText";
 import { prepareLetterEmail, sendLetterEmail } from "@/lib/email/sendLetterEmail";
 import { buildResendDebugPayload } from "@/lib/email/buildDebugPayload";
 import { buildLetterSignalContext } from "@/lib/letterSignals/context";
+import { getActiveCampaignBySlug } from "@/lib/campaigns/repository";
 import type { WizardData } from "@/lib/types/wizard";
 import type { RecipientSelection } from "@/lib/lookup/rathausRecipient";
 import { createGenerationProof } from "@/lib/letterSignals/token";
+import { getLandesregierungRecipient } from "@/lib/lookup/landesregierungRecipient";
 
 const mockedResolveRecipientSelection = jest.mocked(resolveRecipientSelection);
 const mockedCheckRateLimit = jest.mocked(checkRateLimit);
@@ -42,6 +45,7 @@ const mockedPrepareLetterEmail = jest.mocked(prepareLetterEmail);
 const mockedSendLetterEmail = jest.mocked(sendLetterEmail);
 const mockedBuildResendDebugPayload = jest.mocked(buildResendDebugPayload);
 const mockedBuildLetterSignalContext = jest.mocked(buildLetterSignalContext);
+const mockedGetActiveCampaignBySlug = jest.mocked(getActiveCampaignBySlug);
 
 const data: WizardData = {
   plz: "50667",
@@ -121,6 +125,8 @@ describe("RecipientSelection server hardening", () => {
       recipient: {
         kind: "landesregierung",
         level: "Land",
+        addressee: "institution",
+        salutation: "Sehr geehrte Damen und Herren,",
         institutionKind: "landesregierung",
         bundeslandKey: "NW",
         bundeslandName: "Nordrhein-Westfalen",
@@ -184,6 +190,31 @@ describe("RecipientSelection server hardening", () => {
     expect(mockedBuildLetterSignalContext).toHaveBeenCalledWith(expect.objectContaining({
       data,
       recipient: mdbRecipient,
+    }));
+  });
+
+  it("nutzt für Kampagnen den gespeicherten Themenbereich im freiwilligen Statistik-Kontext", async () => {
+    const campaignTopic = {
+      topicCategories: ["verkehr_mobilitaet"] as const,
+      topicLabels: ["Sichere Straßen"],
+      topicTaxonomyVersion: "v1" as const,
+      topicSource: "campaign" as const,
+      topicModel: "mistral-small-latest",
+    };
+    mockedGetActiveCampaignBySlug.mockResolvedValue({
+      slug: "sichere-schulwege",
+      targetPoliticianIds: [],
+      topic: campaignTopic,
+    } as never);
+
+    await selectPoliticianAction(
+      { ...data, campaign: { slug: "sichere-schulwege", title: "Sichere Schulwege" } },
+      { kind: "mdb", selectedPoliticianId: 1 },
+    );
+
+    expect(mockedBuildLetterSignalContext).toHaveBeenCalledWith(expect.objectContaining({
+      topic: campaignTopic,
+      campaignSlug: "sichere-schulwege",
     }));
   });
 
@@ -263,6 +294,8 @@ describe("RecipientSelection server hardening", () => {
     const recipient = {
       kind: "landesregierung" as const,
       level: "Land" as const,
+      addressee: "institution" as const,
+      salutation: "Sehr geehrte Damen und Herren,",
       institutionKind: "landesregierung" as const,
       bundeslandKey: "NW",
       bundeslandName: "Nordrhein-Westfalen",
@@ -290,8 +323,17 @@ describe("RecipientSelection server hardening", () => {
     });
     mockedSendLetterEmail.mockResolvedValue({ success: true, messageId: "id" });
 
+    const letterText = "Ein gültiger Brieftext";
+    const proof = createGenerationProof({
+      letterId: "11111111-1111-4111-8111-111111111111",
+      issueText: data.issueText,
+      plz: data.plz,
+      recipient,
+      letterText,
+      campaignSlug: null,
+    });
     await expect(
-      resendLetterAction({ ...data }, { kind: "landesregierung" }, "Ein gültiger Brieftext")
+      resendLetterAction({ ...data }, { kind: "landesregierung" }, letterText, proof)
     ).resolves.toEqual({ success: true });
     expect(mockedResolveRecipientSelection).toHaveBeenCalledWith("50667", {
       kind: "landesregierung",
@@ -299,5 +341,89 @@ describe("RecipientSelection server hardening", () => {
     expect(mockedPrepareLetterEmail).toHaveBeenCalledWith(
       expect.objectContaining({ recipient })
     );
+  });
+
+  it("weist beim Pre-Check manipulierte Personen- und Adressdaten vor der Auflösung ab", async () => {
+    const selection = {
+      kind: "landesregierung",
+      addressee: "head",
+      bundeslandKey: "BY",
+      headName: "Falsche Person",
+      postalAddress: "Falsche Anschrift",
+    } as unknown as RecipientSelection;
+    await expect(selectPoliticianAction({ ...data }, selection)).resolves.toMatchObject({ error: "server_error" });
+    expect(mockedResolveRecipientSelection).not.toHaveBeenCalled();
+  });
+
+  it("bindet Resend-Nachweis an Institution oder Regierungschef:in", async () => {
+    const institution = getLandesregierungRecipient("NW")!;
+    const head = getLandesregierungRecipient("NW", "head")!;
+    const letterText = "Sehr geehrte Damen und Herren,\n\nEin fertiger Brief.";
+    const proof = createGenerationProof({
+      letterId: "11111111-1111-4111-8111-111111111111",
+      issueText: data.issueText,
+      plz: data.plz,
+      recipient: institution,
+      letterText,
+      campaignSlug: null,
+    });
+    mockedResolveRecipientSelection.mockReturnValue({
+      ok: true,
+      recipient: head,
+      availableCount: 1,
+      relation: "institutional",
+    });
+
+    await expect(resendLetterAction(
+      { ...data },
+      { kind: "landesregierung", addressee: "head" },
+      letterText,
+      proof,
+    )).resolves.toMatchObject({ error: "validation" });
+    expect(mockedResolveRecipientSelection).toHaveBeenCalledWith(data.plz, {
+      kind: "landesregierung", addressee: "head",
+    });
+    expect(mockedSendLetterEmail).not.toHaveBeenCalled();
+  });
+
+  it("verlangt beim erneuten Versand an Landesregierung oder Regierungsspitze einen Nachweis", async () => {
+    for (const selection of [
+      { kind: "landesregierung" as const },
+      { kind: "landesregierung" as const, addressee: "head" as const },
+    ]) {
+      await expect(resendLetterAction({ ...data }, selection, "Ein fertiger Brief.")).resolves.toMatchObject({ error: "validation" });
+    }
+    expect(mockedResolveRecipientSelection).not.toHaveBeenCalled();
+    expect(mockedSendLetterEmail).not.toHaveBeenCalled();
+  });
+
+  it("sendet bei unveränderter Personenwahl erneut an den serverseitigen Empfänger", async () => {
+    const head = getLandesregierungRecipient("NW", "head")!;
+    const letterText = `${head.salutation}\n\nEin fertiger Brief.`;
+    const proof = createGenerationProof({
+      letterId: "11111111-1111-4111-8111-111111111111",
+      issueText: data.issueText,
+      plz: data.plz,
+      recipient: head,
+      letterText,
+      campaignSlug: null,
+    });
+    mockedResolveRecipientSelection.mockReturnValue({
+      ok: true,
+      recipient: head,
+      availableCount: 1,
+      relation: "institutional",
+    });
+    mockedBuildResendDebugPayload.mockReturnValue({} as never);
+    mockedPrepareLetterEmail.mockReturnValue({ feedbackToken: "token", params: {} as never });
+    mockedSendLetterEmail.mockResolvedValue({ success: true, messageId: "id" });
+
+    await expect(resendLetterAction(
+      { ...data },
+      { kind: "landesregierung", addressee: "head" },
+      letterText,
+      proof,
+    )).resolves.toEqual({ success: true });
+    expect(mockedPrepareLetterEmail).toHaveBeenCalledWith(expect.objectContaining({ recipient: head }));
   });
 });

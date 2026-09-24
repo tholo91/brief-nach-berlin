@@ -107,6 +107,13 @@ function recipientProofValue(recipient: Recipient): string {
     return `${recipient.kind}:${recipient.id}`;
   }
   if (recipient.kind === "landesregierung") {
+    if ("addressee" in recipient && recipient.addressee === "head") {
+      const headName = "headName" in recipient ? recipient.headName : undefined;
+      if (typeof headName !== "string" || !headName.trim()) {
+        throw new Error("Government head recipient is missing a name");
+      }
+      return `${recipient.kind}:${recipient.bundeslandKey}:head:${headName.trim()}`;
+    }
     return `${recipient.kind}:${recipient.bundeslandKey}`;
   }
   if (recipient.kind === "bundeskanzler") {
@@ -119,6 +126,10 @@ function recipientProofValue(recipient: Recipient): string {
     ? recipient.address.ags
     : `${recipient.plz}:${recipient.gemeindeName}`;
   return `${recipient.kind}:${localKey}`;
+}
+
+export function bindLetterSignalRecipient(recipient: Recipient): string {
+  return bindGenerationValue("recipient", recipientProofValue(recipient));
 }
 
 export function createLetterSignalContext(
@@ -161,7 +172,7 @@ export function createGenerationProof(
         letterId: input.letterId,
         issueBinding: bindLetterSignalIssue(input.issueText),
         plz: input.plz,
-        recipientBinding: bindGenerationValue("recipient", recipientProofValue(input.recipient)),
+        recipientBinding: bindLetterSignalRecipient(input.recipient),
         letterBinding: bindGenerationValue("letter", input.letterText),
         campaignSlug: input.campaignSlug,
       };
@@ -190,7 +201,7 @@ export function doesGenerationProofMatch(
   return (
     proof.issueBinding === bindLetterSignalIssue(input.issueText) &&
     proof.plz === input.plz &&
-    proof.recipientBinding === bindGenerationValue("recipient", recipientProofValue(input.recipient)) &&
+    proof.recipientBinding === bindLetterSignalRecipient(input.recipient) &&
     proof.letterBinding === bindGenerationValue("letter", input.letterText) &&
     proof.campaignSlug === input.campaignSlug
   );

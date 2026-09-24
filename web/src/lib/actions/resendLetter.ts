@@ -54,6 +54,9 @@ export async function resendLetterAction(
     const verifiedProof = parsedProof.data ? verifyGenerationProof(parsedProof.data) : null;
     const letterId = verifiedProof?.letterId;
     if (parsedProof.data && !verifiedProof) return { error: "validation", message: "Ungültige Eingabe." };
+    if (normalizedSelection.kind === "landesregierung" && !verifiedProof) {
+      return { error: "validation", message: "Ungültige Eingabe." };
+    }
     console.log("[resendLetter] start", { email: "***", kind: normalizedSelection.kind });
 
     const s1 = step1Schema.safeParse(data);

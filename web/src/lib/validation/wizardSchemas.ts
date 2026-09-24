@@ -16,7 +16,7 @@ export const recipientSelectionSchema = z.discriminatedUnion("kind", [
   z.object({ kind: z.literal("mdl"), selectedPoliticianId: z.number().int() }).strict(),
   z.object({ kind: z.literal("mdb_later") }).strict(),
   z.object({ kind: z.literal("bundeskanzler") }).strict(),
-  z.object({ kind: z.literal("landesregierung") }).strict(),
+  z.object({ kind: z.literal("landesregierung"), addressee: z.enum(["institution", "head"]).optional() }).strict(),
   z.object({ kind: z.literal("rathaus") }).strict(),
 ]);
 

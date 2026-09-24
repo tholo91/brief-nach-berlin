@@ -9,6 +9,7 @@ jest.mock("@/lib/lookup/plzLookup", () => ({ getBundestagPoliticiansByIds: jest.
 jest.mock("@/lib/moderation/moderateText", () => ({ moderateText: jest.fn() }));
 jest.mock("@/lib/email/sendCampaignCreatorEmail", () => ({ sendCampaignCreatorEmail: jest.fn() }));
 jest.mock("@/lib/supabase/server", () => ({ getServiceRoleClient: jest.fn() }));
+jest.mock("@/lib/campaigns/classifyTopic", () => ({ classifyAndSaveCampaignTopic: jest.fn() }));
 
 import { createCampaignDraftAction } from "@/lib/actions/createCampaignDraft";
 import { createCampaign } from "@/lib/campaigns/repository";

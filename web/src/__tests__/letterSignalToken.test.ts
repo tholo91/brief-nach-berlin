@@ -9,7 +9,7 @@ import {
   verifyGenerationProof,
   verifyLetterSignalContext,
 } from "@/lib/letterSignals/token";
-import { buildLetterSignalContext } from "@/lib/letterSignals/context";
+import { buildLetterSignalContext, doesLetterSignalContextMatch } from "@/lib/letterSignals/context";
 import type { LetterSignalContext } from "@/lib/letterSignals/types";
 import type { LandesregierungRecipient } from "@/lib/lookup/landesregierungRecipient";
 
@@ -32,18 +32,37 @@ const signal: LetterSignalContext = {
 const recipient: LandesregierungRecipient = {
   kind: "landesregierung",
   level: "Land",
+  addressee: "institution",
   institutionKind: "senat",
   bundeslandKey: "HB",
   bundeslandName: "Bremen",
   label: "Senat der Freien Hansestadt Bremen",
   officeName: "Senatskanzlei",
   postalAddress: "Am Markt 21, 28195 Bremen",
+  salutation: "Sehr geehrte Damen und Herren,",
   address: {
     addressLines: ["Am Markt 21", "28195 Bremen"],
     sourceTitle: "Test",
     sourceUrl: "https://example.org",
     sourceStand: "2026-09-02",
   },
+};
+
+const institutionRecipient = { ...recipient, addressee: "institution" as const };
+const headRecipient = {
+  ...recipient,
+  addressee: "head" as const,
+  headName: "Musterperson",
+  headTitle: "Bürgermeisterin",
+  salutation: "Sehr geehrte Frau Bürgermeisterin Musterperson,",
+};
+
+const wizardData = {
+  locale: "de" as const,
+  plz: "28203",
+  email: "test@example.org",
+  issueText: "Ein politisches Anliegen",
+  toneLevel: 3,
 };
 
 describe("letter signal tokens", () => {
@@ -104,6 +123,67 @@ describe("letter signal tokens", () => {
       ...input,
       letterText: "Manipulierter Brief",
     })).toBe(false);
+  });
+
+  it("does not reuse generation proofs between the institution and its named head", () => {
+    const input = {
+      letterId: signal.letterId,
+      issueText: wizardData.issueText,
+      plz: wizardData.plz,
+      recipient: institutionRecipient,
+      letterText: "Ein Brief",
+      campaignSlug: "landeskampagne",
+    };
+    const institutionProof = verifyGenerationProof(createGenerationProof(input));
+    const headProof = verifyGenerationProof(createGenerationProof({ ...input, recipient: headRecipient }));
+
+    expect(doesGenerationProofMatch(institutionProof!, { ...input, recipient: headRecipient })).toBe(false);
+    expect(doesGenerationProofMatch(headProof!, input)).toBe(false);
+    expect(doesGenerationProofMatch(headProof!, {
+      ...input,
+      recipient: { ...headRecipient, headName: "Andere Person" },
+    })).toBe(false);
+    expect(doesGenerationProofMatch(institutionProof!, { ...input, recipient })).toBe(true);
+  });
+
+  it("binds signal contexts to government addressee mode and name", () => {
+    const institutionContext = buildLetterSignalContext({
+      data: wizardData,
+      recipient: institutionRecipient,
+      letterId: signal.letterId,
+      topic: null,
+      campaignSlug: null,
+    })!.context;
+    const headContext = buildLetterSignalContext({
+      data: wizardData,
+      recipient: headRecipient,
+      letterId: signal.letterId,
+      topic: null,
+      campaignSlug: null,
+    })!.context;
+    const match = (context: LetterSignalContext, selectedRecipient: LandesregierungRecipient) =>
+      doesLetterSignalContextMatch({
+        context,
+        data: wizardData,
+        recipient: selectedRecipient,
+        campaignSlug: null,
+      });
+
+    expect(match(institutionContext, institutionRecipient)).toBe(true);
+    expect(match(institutionContext, headRecipient)).toBe(false);
+    expect(match(headContext, institutionRecipient)).toBe(false);
+    expect(match(headContext, headRecipient)).toBe(true);
+    expect(match(headContext, { ...headRecipient, headName: "Andere Person" })).toBe(false);
+    expect(match({
+      ...signal,
+      issueBinding: bindLetterSignalIssue(wizardData.issueText),
+      emailLookupHash: hashLetterSignalEmail(wizardData.email),
+    }, institutionRecipient)).toBe(true);
+    expect(match({
+      ...signal,
+      issueBinding: bindLetterSignalIssue(wizardData.issueText),
+      emailLookupHash: hashLetterSignalEmail(wizardData.email),
+    }, headRecipient)).toBe(false);
   });
 
   it("uses a case- and whitespace-insensitive HMAC lookup", () => {

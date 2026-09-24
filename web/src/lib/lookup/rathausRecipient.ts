@@ -72,7 +72,7 @@ export type RecipientSelection =
   | { kind: "mdl"; selectedPoliticianId: number }
   | { kind: "mdb_later" }
   | { kind: "bundeskanzler" }
-  | { kind: "landesregierung" }
+  | { kind: "landesregierung"; addressee?: "institution" | "head" }
   | { kind: "rathaus" };
 
 /** HH/HB: Einheitsgemeinde (Art. 28 Abs. 1 S. 2 GG) — Kommune-Ebene existiert nicht, Land übernimmt. */

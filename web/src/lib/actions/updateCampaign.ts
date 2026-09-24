@@ -1,6 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { after } from "next/server";
 import { z } from "zod";
 import {
   CampaignRepositoryError,
@@ -14,6 +15,7 @@ import { getCampaignManagementSession } from "@/lib/campaigns/session";
 import { moderateText } from "@/lib/moderation/moderateText";
 import { getServiceRoleClient } from "@/lib/supabase/server";
 import { getBundestagPoliticiansByIds } from "@/lib/lookup/plzLookup";
+import { classifyAndSaveCampaignTopic } from "@/lib/campaigns/classifyTopic";
 
 const MAX_LOGO_BYTES = 524288;
 const logoMimeTypes = new Map([
@@ -230,6 +232,9 @@ export async function updateCampaignAction(
     }
     revalidatePath(`/kampagne/${updated.slug}`);
     revalidatePath("/kampagne/verwalten");
+    if (updated.issueText !== campaign.issueText) {
+      after(() => classifyAndSaveCampaignTopic(updated.id, updated.issueText));
+    }
 
     return {
       ok: true,

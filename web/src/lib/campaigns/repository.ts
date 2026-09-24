@@ -5,6 +5,7 @@ import { getServiceRoleClient } from "@/lib/supabase/server";
 import {
   createCampaignSchema,
   compactCampaignSlug,
+  parseCampaignTopic,
   resolveCampaignTarget,
   updateCampaignPublicFieldsSchema,
   type Campaign,
@@ -32,6 +33,10 @@ type CampaignRow = {
   target_level: string | null;
   target_state: string | null;
   target_politician_ids: number[] | null;
+  topic_categories?: string[] | null;
+  topic_labels?: string[] | null;
+  topic_taxonomy_version?: string | null;
+  topic_model?: string | null;
   email_verified_at: string | null;
   activated_at: string | null;
   paused_at: string | null;
@@ -68,6 +73,11 @@ type CampaignUpdate = Partial<{
   moderation_status: CampaignModerationStatus;
   moderation_categories: string[];
   target_politician_ids: number[];
+  topic_categories: string[] | null;
+  topic_labels: string[] | null;
+  topic_taxonomy_version: string | null;
+  topic_model: string | null;
+  topic_classified_at: string | null;
   email_verified_at: string;
   activated_at: string;
   paused_at: string;
@@ -77,6 +87,18 @@ type CampaignUpdate = Partial<{
 }>;
 
 type RepositoryClient = SupabaseClient;
+
+function clearCampaignTopic(): Pick<CampaignUpdate,
+  "topic_categories" | "topic_labels" | "topic_taxonomy_version" | "topic_model" | "topic_classified_at"
+> {
+  return {
+    topic_categories: null,
+    topic_labels: null,
+    topic_taxonomy_version: null,
+    topic_model: null,
+    topic_classified_at: null,
+  };
+}
 
 export class CampaignRepositoryError extends Error {
   constructor(message: string) {
@@ -105,6 +127,7 @@ function mapCampaign(row: CampaignRow): Campaign {
     moderationCategories: row.moderation_categories ?? [],
     ...resolveCampaignTarget(row),
     targetPoliticianIds: row.target_politician_ids ?? [],
+    topic: parseCampaignTopic(row),
     emailVerifiedAt: row.email_verified_at,
     activatedAt: row.activated_at,
     pausedAt: row.paused_at,
@@ -209,6 +232,34 @@ export async function createCampaign(
   const campaign = mapCampaign(data as CampaignRow);
   await createCampaignRevision(campaign.id, "created", db);
   return campaign;
+}
+
+/**
+ * Speichert ein internes Kampagnen-Themensignal nur, solange der klassifizierte
+ * Text noch der aktuelle Kampagnentext ist. Ein paralleler Edit kann dadurch
+ * niemals ein veraltetes Signal zur Live-Kampagne machen.
+ */
+export async function saveCampaignTopic(
+  campaignId: string,
+  issueText: string,
+  topic: import("@/lib/topics/topicTaxonomy").TopicSignal,
+  db?: RepositoryClient,
+): Promise<void> {
+  const { error } = await client(db)
+    .from("campaigns")
+    .update({
+      topic_categories: topic.topicCategories,
+      topic_labels: topic.topicLabels,
+      topic_taxonomy_version: topic.topicTaxonomyVersion,
+      topic_model: topic.topicModel,
+      topic_classified_at: new Date().toISOString(),
+    })
+    .eq("id", campaignId)
+    .eq("issue_text", issueText);
+
+  if (error) {
+    throw new CampaignRepositoryError(`Campaign topic save failed: ${error.message}`);
+  }
 }
 
 export async function getCampaignById(
@@ -330,7 +381,10 @@ export async function updateCampaignPublicFields(
   const patch: CampaignUpdate = {};
 
   if (parsed.title !== undefined) patch.title = parsed.title;
-  if (parsed.issueText !== undefined) patch.issue_text = parsed.issueText;
+  if (parsed.issueText !== undefined) {
+    patch.issue_text = parsed.issueText;
+    if (parsed.issueText !== campaign.issueText) Object.assign(patch, clearCampaignTopic());
+  }
   if (parsed.description !== undefined) patch.description = nullableText(parsed.description);
   if (parsed.creatorName !== undefined) patch.creator_name = nullableText(parsed.creatorName);
   if (parsed.externalUrl !== undefined) patch.external_url = nullableText(parsed.externalUrl);
@@ -357,7 +411,10 @@ export async function saveAwaitingApprovalCampaignEdits(
   };
 
   if (parsed.title !== undefined) patch.title = parsed.title;
-  if (parsed.issueText !== undefined) patch.issue_text = parsed.issueText;
+  if (parsed.issueText !== undefined) {
+    patch.issue_text = parsed.issueText;
+    if (parsed.issueText !== campaign.issueText) Object.assign(patch, clearCampaignTopic());
+  }
   if (parsed.description !== undefined) patch.description = nullableText(parsed.description);
   if (parsed.creatorName !== undefined) patch.creator_name = nullableText(parsed.creatorName);
   if (parsed.externalUrl !== undefined) patch.external_url = nullableText(parsed.externalUrl);
@@ -502,6 +559,7 @@ export async function publishCampaignEdits(
     {
       title: next.title,
       issue_text: next.issueText,
+      ...(next.issueText !== campaign.issueText ? clearCampaignTopic() : {}),
       description: next.description,
       creator_name: next.creatorName,
       external_url: next.externalUrl,

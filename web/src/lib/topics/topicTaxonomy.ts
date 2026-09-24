@@ -36,7 +36,12 @@ export const TOPIC_JSON_SCHEMA_PROPERTIES = {
 } as const;
 
 export const TopicCategoryCodeSchema = z.enum(TOPIC_CATEGORY_CODES);
-export const TopicSourceSchema = z.enum(["routing", "routing_fallback", "generation_fallback"]);
+export const TopicSourceSchema = z.enum([
+  "routing",
+  "routing_fallback",
+  "generation_fallback",
+  "campaign",
+]);
 export type TopicSource = z.infer<typeof TopicSourceSchema>;
 
 const TOPIC_LABEL_REGEX = /^[\p{L}\p{N}][\p{L}\p{N} &'/-]{0,59}$/u;

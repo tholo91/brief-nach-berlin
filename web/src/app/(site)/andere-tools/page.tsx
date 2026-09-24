@@ -153,6 +153,14 @@ const categories: Category[] = [
         different:
           "FragDenStaat holt Informationen aus dem System heraus, Brief-nach-Berlin trägt deine Botschaft ins System hinein. Beides greift oft ineinander: eine IFG-Anfrage liefert die Fakten, der Brief an die MdB übersetzt sie in eine politische Forderung. Wer ein Anliegen ernsthaft betreibt, nutzt beides nacheinander.",
       },
+      {
+        name: "Demokratie-Wegweiser",
+        url: "https://karte.demokratie-wegweiser.de",
+        what: "Eine Karte, die zeigt, wer dich eigentlich vertritt: auf kommunaler, regionaler, Bundes- und Europa-Ebene. Mit deinem Standort findest du die gewählten Mandatsträger:innen, die für deine Gegend zuständig sind – vom Gemeinderat bis zur Europaabgeordneten. Entwickelt von der Gestaltungszentrale in Hamburg, zusammen mit politikwissenschaftlicher Forschung. Der verlinkte Ausschnitt springt direkt zur kommunalen Ebene.",
+        good: "Wenn du wissen willst, wem du dein Anliegen überhaupt schreiben kannst – gerade auf kommunaler Ebene, wo diese Zuordnung sonst erstaunlich mühsam ist. Für alle anderen Ebenen hilft der Wegweiser genauso.",
+        different:
+          "Der Wegweiser beantwortet die Frage, wer dich vertritt. Brief-nach-Berlin beantwortet die Frage, was du daraus machst: einen handgeschriebenen Brief an genau diese Person, der im Büro auf dem Tisch landet. Beide starten beim selben Gedanken – politische Zuständigkeit soll kein Insiderwissen bleiben – und enden an verschiedenen Stellen.",
+      },
     ],
   },
   {

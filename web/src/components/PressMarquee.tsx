@@ -152,7 +152,7 @@ export function PressMarquee() {
 
       <div className="py-1 md:py-2">
         <p className="text-center font-typewriter text-xs sm:text-sm tracking-widest uppercase text-warmgrau/50 mb-1 px-6">
-          Ausgewählte Berichterstattung
+          auch bekannt aus:
         </p>
         <div className="press-marquee-shell relative w-full overflow-hidden">
           <div

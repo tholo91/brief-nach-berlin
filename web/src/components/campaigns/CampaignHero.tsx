@@ -121,7 +121,7 @@ export function CampaignHero({ campaign }: { campaign: PublicCampaign }) {
 
   return (
     <CampaignBackground>
-      <div className="relative z-10 mx-auto grid max-w-6xl gap-8 px-5 py-8 sm:px-6 sm:py-10 lg:grid-cols-[0.92fr_1.08fr] lg:grid-rows-[auto_auto] lg:gap-x-12 lg:gap-y-6 lg:py-14">
+      <div className="relative z-10 mx-auto grid max-sm:grid-cols-1 max-w-6xl gap-8 px-5 py-8 sm:px-6 sm:py-10 lg:grid-cols-[0.92fr_1.08fr] lg:grid-rows-[auto_auto] lg:gap-x-12 lg:gap-y-6 lg:py-14">
         <div className="flex flex-col justify-center lg:col-start-1 lg:row-start-1">
           <p className="font-typewriter text-xs font-bold uppercase tracking-widest text-waldgruen/65 sm:text-sm">
             Öffentliche Briefkampagne

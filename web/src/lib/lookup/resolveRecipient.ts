@@ -15,6 +15,7 @@ import {
   isBundeskanzlerCampaignSlug,
 } from "./bundeskanzlerRecipient";
 import { getLandesregierungRecipient } from "./landesregierungRecipient";
+import type { CampaignFixedRecipientRecipient } from "./campaignFixedRecipient";
 
 export type ResolveRecipientResult =
   | {
@@ -28,6 +29,7 @@ export type ResolveRecipientResult =
 type ResolveRecipientOptions = {
   allowedPoliticianIds?: readonly number[];
   campaignSlug?: string | null;
+  campaignFixedRecipient?: CampaignFixedRecipientRecipient | null;
 };
 
 /**
@@ -37,13 +39,25 @@ type ResolveRecipientOptions = {
  * - mdb/mdl: die numerische Abgeordnetenwatch-ID muss in der PLZ-abgeleiteten
  *   Liste der jeweiligen Ebene stehen (WR-02-Muster).
  * - rathaus/landesregierung: es wird KEINE Client-ID akzeptiert; der Empfänger
- *   wird komplett aus der PLZ neu gebaut.
+ *   wird aus der PLZ oder aus dem serverseitig geladenen Kampagnenziel gebaut.
  */
 export function resolveRecipientSelection(
   plz: string,
   selection: RecipientSelection,
   options: ResolveRecipientOptions = {}
 ): ResolveRecipientResult {
+  if (selection.kind === "campaign_fixed") {
+    if (!options.campaignFixedRecipient) {
+      return { ok: false, reason: "not_found" };
+    }
+    return {
+      ok: true,
+      recipient: options.campaignFixedRecipient,
+      availableCount: 1,
+      relation: "institutional",
+    };
+  }
+
   if (selection.kind === "bundeskanzler") {
     if (!isBundeskanzlerCampaignSlug(options.campaignSlug)) {
       return { ok: false, reason: "not_found" };

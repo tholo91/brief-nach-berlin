@@ -1,5 +1,5 @@
 import { mistral, MistralStageError, withMistralRetry, MISTRAL_MODELS } from "@/lib/mistral";
-import type { GenerateLetterInput, GenerateLetterResult, MdbContext } from "@/lib/types/wizard";
+import type { GenerateLetterInput, GenerateLetterResult, MdbContext, RecipientLevel } from "@/lib/types/wizard";
 import type { PoliticalLevel } from "@/lib/types/politician";
 import type { Recipient } from "@/lib/lookup/rathausRecipient";
 import { extractJsonObject } from "@/lib/mistral-json";
@@ -273,6 +273,15 @@ STRATEGIE FÜR DIE LANDES-EBENE (nicht verhandelbar):
 - Fordere KEINE Bundesgesetzgebung, das wäre die falsche Ebene.
 - Zitiere KEINE Grundgesetz-Artikel mit Nummern. Allgemeine Begriffe wie "Kulturhoheit der Länder" sind erlaubt.`;
 
+const FIXED_CAMPAIGN_RECIPIENT_ZUSTAENDIGKEIT_BLOCK = `ZUSTÄNDIGKEITSHINWEIS:
+Der Empfänger ist ausschließlich die im <empfaenger>-Block fest hinterlegte Person oder Organisation. Aus Name und Anschrift folgt keine verifizierte politische Ebene, Funktion oder Zuständigkeit.
+
+REGELN FÜR DEN FESTEN EMPFÄNGER (nicht verhandelbar):
+- Richte den Brief ausschließlich an diesen Empfänger.
+- Erfinde keine Behörde, Abteilung, Funktion, Entscheidungsbefugnis oder Weiterleitung und keine Partei- oder Wahlkreisbeziehung.
+- Formuliere die Bitte so, dass der Empfänger im Rahmen seiner tatsächlichen Verantwortung handeln oder Stellung beziehen kann, ohne eine konkrete Kompetenz zu behaupten.
+- Die Anschrift beschreibt nur den Empfänger. Leite daraus niemals Wohnort, Herkunft oder persönliche Betroffenheit der schreibenden Person ab.`;
+
 const REGIERUNGSCHEF_ZUSTAENDIGKEIT_BLOCK = `ZUSTÄNDIGKEITSHINWEIS:
 Der Brief richtet sich persönlich an die amtierende Regierungsspitze des Bundeslands. Sprich die Person mit der vorgegebenen Anrede an und beziehe dich auf ihre politische Führungsverantwortung für das Land. Erfinde keine persönliche, parteipolitische, ministerielle oder Ausschusszuständigkeit.
 
@@ -302,6 +311,8 @@ const KOMMUNE_BITTE_LINE = `2. EINE BITTE: genau ein konkretes Verb plus ein kon
 
 const LANDESREGIERUNG_BITTE_LINE = `2. EINE BITTE: genau ein konkretes Verb plus ein konkretes politisches Handlungsobjekt. Keine Aufzählung und keine Wunschliste. Richte die Bitte institutionell an die Landesregierung oder den Senat. Nenne kein Ministerium, Ressort, Programm, Gesetz oder keinen Ausschuss, wenn es nicht im <transkript> steht.`;
 
+const FIXED_CAMPAIGN_RECIPIENT_BITTE_LINE = `2. EINE BITTE: genau ein konkretes Verb plus ein konkretes Handlungsobjekt. Keine Aufzählung und keine Wunschliste. Richte die Bitte ausschließlich an den festen Empfänger und erfinde keine Zuständigkeit.`;
+
 const BUND_PARTEI_HEADER = `PARTEI-BEWUSSTES FRAMING (Werte, nicht Strategie):
 Passe die Werte-Sprache an die Partei der Empfängerin/des Empfängers an, damit das Anliegen anschluss­fähig wird. Du benennst keine Parteien außer der adressierten und kommentierst keine Parteidynamiken.`;
 
@@ -313,6 +324,9 @@ Für das Bürgermeisteramt oder Bezirksamt liegen keine verifizierten Parteiinfo
 
 const LANDESREGIERUNG_PARTEI_HEADER = `PARTEI-NEUTRALITÄT (Landesregierung/Senat):
 Der institutionelle Empfänger hat in diesem Brief keinen verifizierten Personen- oder Parteikontext. Verwende KEINE parteibezogene Werte-Sprache und benenne keine Parteien.`;
+
+const FIXED_CAMPAIGN_RECIPIENT_PARTEI_HEADER = `EMPFÄNGER-NEUTRALITÄT:
+Für den festen Empfänger sind keine politische Ebene, Partei oder Wahlkreisbeziehung verifiziert. Erfinde nichts davon und benenne keine Partei.`;
 
 const BUND_PARTEI_LIST = `- SPD: Arbeitnehmerrechte, sozialer Zusammenhalt, faire Chancen.
 - Grüne: Generationengerechtigkeit, Nachhaltigkeit, Lebensqualität, ökologische Verantwortung.
@@ -364,10 +378,22 @@ export function buildSystemPrompt(input: GenerateLetterInput): string {
         ? '{\n  "selected_politician_id": <number>,\n  "letter": "<vollständiger Brieftext>"\n}'
         : '{\n  "selected_politician_id": <number>,\n  "letter": "<vollständiger Brieftext>",\n  "topic_categories": ["<1 bis 3 passende Codes aus der Taxonomie>"],\n  "topic_labels": ["<1 bis 3 kurze, neutrale Unterthemen>"]\n}',
     );
-  const level: PoliticalLevel = input.level ?? "Bund";
+  const level: RecipientLevel = input.level ?? "Bund";
 
   let prompt = base;
-  if (input.bundeskanzler) {
+  if (input.campaignFixedRecipient) {
+    prompt = prompt
+      .replace(BUND_ZUSTAENDIGKEIT_BLOCK, FIXED_CAMPAIGN_RECIPIENT_ZUSTAENDIGKEIT_BLOCK)
+      .replace(
+        BUND_ANREDE_LINE,
+        `- Anrede: exakt "${input.campaignFixedRecipient.salutation}". Verwende keine andere Anrede.`
+      )
+      .replace(BUND_BITTE_LINE, FIXED_CAMPAIGN_RECIPIENT_BITTE_LINE)
+      .replace(BUND_PARTEI_HEADER, FIXED_CAMPAIGN_RECIPIENT_PARTEI_HEADER)
+      .replace(`\n${BUND_PARTEI_LIST}`, "")
+      .replace(BUND_WAHLKREIS_BLOCK, "")
+      .replace(`${BUND_MDB_CONTEXT_BLOCK}\n\n`, "");
+  } else if (input.bundeskanzler) {
     prompt = prompt
       .replace(BUND_ZUSTAENDIGKEIT_BLOCK, BUNDESKANZLER_ZUSTAENDIGKEIT_BLOCK)
       .replace(BUND_ANREDE_LINE, BUNDESKANZLER_ANREDE_LINE)
@@ -411,6 +437,7 @@ export function buildSystemPrompt(input: GenerateLetterInput): string {
   }
 
   if (
+    level !== "Fixed" &&
     input.mismatchRecommendedLevel &&
     input.mismatchRecommendedLevel !== level
   ) {
@@ -465,18 +492,22 @@ export function buildUserPrompt(
   // Die Pseudo-ID 0 existiert nur im Prompt-Kontrakt (Antwortformat verlangt
   // selected_politician_id); sie wird nie gegen Abgeordnetenwatch-Daten geprüft.
   const institutionalRecipient =
-    input.bundeskanzler ?? input.mdbLater ?? input.landesregierung ?? input.rathaus;
+    input.campaignFixedRecipient ?? input.bundeskanzler ?? input.mdbLater ?? input.landesregierung ?? input.rathaus;
   const empfaenger = institutionalRecipient
     ? [
         {
           id: 0,
           name: institutionalRecipient.label,
-          anrede: input.bundeskanzler
+          anrede: input.campaignFixedRecipient
+            ? input.campaignFixedRecipient.salutation
+            : input.bundeskanzler
             ? input.bundeskanzler.anrede
             : input.landesregierung
               ? input.landesregierung.salutation
             : "Sehr geehrte Damen und Herren,",
-          ort: input.bundeskanzler
+          ort: input.campaignFixedRecipient
+            ? `${input.campaignFixedRecipient.address.postalCode} ${input.campaignFixedRecipient.address.city}`
+            : input.bundeskanzler
             ? "Bundeskanzleramt, Berlin"
             : input.mdbLater
               ? "Deutscher Bundestag, Platz der Republik 1, 11011 Berlin"
@@ -487,6 +518,9 @@ export function buildUserPrompt(
                   input.rathaus.recipientKind === "bezirksamt")
               ? `${input.rathaus.plz} ${input.rathaus.gemeindeName}`
               : "nicht eindeutig zugeordnet",
+          ...(input.campaignFixedRecipient
+            ? { anschrift: input.campaignFixedRecipient.postalAddress }
+            : {}),
           level: institutionalRecipient.level,
         },
       ]
@@ -676,8 +710,9 @@ export async function generateLetter(
     }
   }
 
-  if (input.landesregierung?.addressee === "head") {
-    parsed.letter = ensureGovernmentHeadSalutation(parsed.letter, input.landesregierung.salutation);
+  if (input.landesregierung?.addressee === "head" || input.campaignFixedRecipient) {
+    const salutation = input.campaignFixedRecipient?.salutation ?? input.landesregierung!.salutation;
+    parsed.letter = ensureGovernmentHeadSalutation(parsed.letter, salutation);
     wordCount = countWords(parsed.letter);
   }
 
@@ -707,7 +742,9 @@ export async function generateLetter(
   let chosenPolitician: (typeof input.politicians)[number] | null = null;
   let fallbackUsed = false;
 
-  if (input.bundeskanzler) {
+  if (input.campaignFixedRecipient) {
+    selectedRecipient = input.campaignFixedRecipient;
+  } else if (input.bundeskanzler) {
     selectedRecipient = input.bundeskanzler;
   } else if (input.mdbLater) {
     selectedRecipient = input.mdbLater;
@@ -743,6 +780,7 @@ export async function generateLetter(
   const mdbContextUsed = Boolean(
     !input.rathaus &&
       !input.landesregierung &&
+      !input.campaignFixedRecipient &&
       !input.bundeskanzler &&
       !input.mdbLater &&
       input.mdbContext &&

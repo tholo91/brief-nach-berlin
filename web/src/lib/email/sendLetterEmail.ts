@@ -33,7 +33,7 @@ export interface LetterDebugPayload {
   recipientRegion?: string;
   representativeLevel: string;
   representativeParty: string | null;
-  representativeKind?: "mdb" | "mdb_later" | "mdl" | "bundeskanzler" | "landesregierung" | "rathaus";
+  representativeKind?: "mdb" | "mdb_later" | "mdl" | "bundeskanzler" | "landesregierung" | "campaign_fixed" | "rathaus";
   mdbContextUsed: boolean;
   availablePoliticianCount: number;
   model: string;
@@ -61,7 +61,7 @@ export interface LetterDebugPayload {
   routedPrimaryLevel?: "Bund" | "Land" | "Kommune" | null;
   routedPrimaryConfidence?: "high" | "medium" | "low" | null;
   wasOverridden?: boolean;
-  selectedLevel?: "Bund" | "Land" | "Kommune";
+  selectedLevel?: "Bund" | "Land" | "Kommune" | "Fixed";
   // Datensparsamer Diagnosekontext. Der vollständige Anliegenstext bleibt aus
   // URL, Mail und Feedback-Metadaten heraus; alte Payloads haben das Feld nicht.
   issueTextPreview?: string;
@@ -84,7 +84,7 @@ export interface SendLetterEmailParams {
   // "mdb" hält das heutige Layout exakt; "mdl" nutzt die Landtag-Anschrift aus
   // postalAddress (keine "Deutscher Bundestag"-Zeile); "rathaus" hat weder
   // Partei noch Profil-Link und nutzt amtliche Adressdetails oder den Fallback.
-  recipientKind: "mdb" | "mdb_later" | "mdl" | "bundeskanzler" | "landesregierung" | "rathaus";
+  recipientKind: "mdb" | "mdb_later" | "mdl" | "bundeskanzler" | "landesregierung" | "campaign_fixed" | "rathaus";
   // Nur für mdl: ISO 3166-2:DE-Länderkürzel zur Auswahl der Landeswappen-Marke.
   bundeslandKey?: string;
   governmentSource?: {
@@ -95,6 +95,11 @@ export interface SendLetterEmailParams {
     title: string;
     url: string;
     stand: string;
+  };
+  fixedRecipient?: {
+    organizationName: string | null;
+    personName: string | null;
+    addressLines: string[];
   };
   bundeskanzlerSource?: {
     title: string;
@@ -211,6 +216,41 @@ export function prepareLetterEmail(args: {
           title: recipient.address.sourceTitle,
           url: recipient.address.sourceUrl,
           stand: recipient.address.sourceStand,
+        },
+        letterText,
+        issueText,
+        debug,
+        feedbackToken,
+        campaign,
+        letterNumber,
+      },
+    };
+  }
+
+  if (recipient.kind === "campaign_fixed") {
+    const addressLines = [
+      recipient.organizationName,
+      recipient.personName,
+      `${recipient.address.street} ${recipient.address.houseNumber}`,
+      `${recipient.address.postalCode} ${recipient.address.city}`,
+    ].filter((line): line is string => Boolean(line));
+    return {
+      feedbackToken,
+      params: {
+        locale,
+        recipientEmail,
+        politicianName: recipient.label,
+        politicianFirstName: "",
+        politicianLastName: recipient.label,
+        politicianTitle: null,
+        politicianParty: null,
+        politicianPostalAddress: recipient.postalAddress,
+        politicianAbgeordnetenwatchUrl: null,
+        recipientKind: "campaign_fixed",
+        fixedRecipient: {
+          organizationName: recipient.organizationName,
+          personName: recipient.personName,
+          addressLines,
         },
         letterText,
         issueText,

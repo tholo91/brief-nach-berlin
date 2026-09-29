@@ -29,10 +29,13 @@ import { checkRateLimit, getClientIp, hashIdentifier, LIMITS } from "@/lib/rateL
 import { getActiveCampaignBySlug } from "@/lib/campaigns/repository";
 import {
   BUNDESLAND_NAMES,
+  type BundeslandKey,
+  type CampaignFixedRecipient,
   type CampaignTargetLevel,
 } from "@/lib/campaigns/schema";
 import { DEFAULT_LETTER_LENGTH } from "@/lib/config";
 import { getLandesregierungRecipient } from "@/lib/lookup/landesregierungRecipient";
+import { getCampaignFixedRecipient } from "@/lib/lookup/campaignFixedRecipient";
 import {
   getBundeskanzlerRecipient,
   isBundeskanzlerCampaignTarget,
@@ -137,7 +140,8 @@ export async function submitWizardAction(
     let campaignTarget:
       | {
           targetLevel: CampaignTargetLevel;
-          targetState: keyof typeof BUNDESLAND_NAMES | null;
+          targetState: BundeslandKey | null;
+          targetRecipient: CampaignFixedRecipient | null;
           targetPoliticianIds: number[];
         }
       | null = null;
@@ -153,6 +157,7 @@ export async function submitWizardAction(
       campaignTarget = {
         targetLevel: campaign.targetLevel,
         targetState: campaign.targetState,
+        targetRecipient: campaign.targetRecipient,
         targetPoliticianIds: campaign.targetPoliticianIds,
       };
       if (isBundeskanzlerCampaignSlug(campaign.slug)) {
@@ -204,9 +209,8 @@ export async function submitWizardAction(
     // Kein lokales MdB ist ein gültiger Zustand. Step 3 öffnet dann die
     // bundesweite Suche und bietet den expliziten mdb_later-Notfallpfad an.
 
-    // Kampagne mit fester Bundesland-Bindung: liegt die Besucher-PLZ in einem
-    // anderen Bundesland, freundlich abfangen. Läuft wie plz_not_found VOR dem
-    // Rate-Limit, damit kein Brief-Token verbrannt wird.
+    // Bestehende Landeskampagnen bleiben bundeslandgebunden. Nur der neue
+    // Zieltyp Fixed ignoriert das Bundesland der Besucher-PLZ.
     if (campaignTarget?.targetLevel === "Land" && campaignTarget.targetState) {
       const derivedBundeslandKey = lookupPLZWithLevel(data.plz).bundeslandKey;
       if (derivedBundeslandKey !== campaignTarget.targetState) {
@@ -261,12 +265,12 @@ export async function submitWizardAction(
       // Prefetch-Token verifizieren (Signatur, TTL, Issue-Hash) — sonst
       // Foreground-Fallback. Rohe Client-Routing-Objekte gibt es nicht (LOCK-10).
       let routing: RoutingResult | null = null;
-      if (prefetchedRoutingToken) {
+      if (campaignTarget?.targetLevel !== "Fixed" && prefetchedRoutingToken) {
         routing = verifyRoutingToken(prefetchedRoutingToken, data.issueText);
         if (routing) resolvedRoutingToken = prefetchedRoutingToken;
         log(routing ? "routing source: prefetch-token" : "routing source: prefetch-token-invalid");
       }
-      if (!routing) {
+      if (campaignTarget?.targetLevel !== "Fixed" && !routing) {
         if (!prefetchedRoutingToken) log("routing source: foreground-fallback");
         const normalizedIssueText = normalizeRoutingIssue(data.issueText);
         routing = await routeToLevelWithTimeout(normalizedIssueText);
@@ -279,6 +283,8 @@ export async function submitWizardAction(
       }
 
       const levelResult = lookupPLZWithLevel(data.plz);
+      const campaignFixedRecipient =
+        campaignTarget ? getCampaignFixedRecipient(campaignTarget) : null;
       if (
         campaignTarget?.targetLevel === "Land" &&
         (!levelResult.coverage.landSupported || levelResult.byLevel.Land.length === 0)
@@ -302,7 +308,11 @@ export async function submitWizardAction(
         coverage: levelResult.coverage,
         bundeslandName: levelResult.bundeslandName,
         ortsname: levelResult.ortsname,
-        coverageHint: recommended ? buildCoverageHint(levelResult, recommended.level) : null,
+        ...(campaignFixedRecipient ? { fixedRecipient: campaignFixedRecipient } : {}),
+        coverageHint:
+          recommended && !campaignFixedRecipient
+            ? buildCoverageHint(levelResult, recommended.level)
+            : null,
       };
       log("level routing", {
         recommendedLevel: recommended?.level ?? null,
@@ -310,6 +320,7 @@ export async function submitWizardAction(
         landCount: levelResult.byLevel.Land.length,
         kommuneCount: levelResult.byLevel.Kommune.length,
         landSupported: levelResult.coverage.landSupported,
+        fixedRecipient: Boolean(campaignFixedRecipient),
       });
     }
 

@@ -62,9 +62,10 @@ const baseData: WizardData = {
 };
 
 function campaign(
-  targetLevel: "Bund" | "Land",
+  targetLevel: Campaign["targetLevel"],
   targetState: Campaign["targetState"],
-  targetPoliticianIds: number[] = []
+  targetPoliticianIds: number[] = [],
+  targetRecipient: Campaign["targetRecipient"] = null
 ): Campaign {
   return {
     id: "campaign-1",
@@ -81,6 +82,7 @@ function campaign(
     moderationCategories: [],
     targetLevel,
     targetState,
+    targetRecipient,
     targetPoliticianIds,
     emailVerifiedAt: "2026-07-19T00:00:00.000Z",
     activatedAt: "2026-07-19T00:00:00.000Z",
@@ -194,6 +196,55 @@ describe("campaign rollout safety", () => {
       targetStateName: "Berlin",
       message: expect.stringContaining("an den Senat von Berlin"),
     });
+  });
+
+  it("uses a fixed campaign address independently of the visitor state", async () => {
+    jest.mocked(getActiveCampaignBySlug).mockResolvedValue(campaign(
+      "Fixed",
+      null,
+      [],
+      {
+        organizationName: "Hessisches Ministerium der Justiz und für den Rechtsstaat",
+        personName: null,
+        salutation: "Sehr geehrte Damen und Herren,",
+        street: "Luisenstraße",
+        houseNumber: "13",
+        postalCode: "65185",
+        city: "Wiesbaden",
+        countryCode: "DE",
+      }
+    ));
+
+    const result = await submitWizardAction({
+      ...baseData,
+      campaign: { slug: "sichere-schulwege", title: "Sichere Schulwege" },
+    });
+
+    expect(result).toMatchObject({
+      disambiguationNeeded: true,
+      campaignTargetLevel: "Fixed",
+      levelRouting: {
+        fixedRecipient: expect.objectContaining({
+          kind: "campaign_fixed",
+          level: "Fixed",
+          label: "Hessisches Ministerium der Justiz und für den Rechtsstaat",
+          postalAddress: expect.stringContaining("Luisenstraße 13"),
+        }),
+      },
+    });
+    expect(routeToLevel).not.toHaveBeenCalled();
+  });
+
+  it("lehnt auch bei festem Empfänger eine ungültig formatierte PLZ ab", async () => {
+    const result = await submitWizardAction({
+      ...baseData,
+      plz: "1234",
+      campaign: { slug: "sichere-schulwege", title: "Sichere Schulwege" },
+    });
+
+    expect(result).toEqual({ error: "server_error", message: "Ungültige Eingabe." });
+    expect(getActiveCampaignBySlug).not.toHaveBeenCalled();
+    expect(routeToLevel).not.toHaveBeenCalled();
   });
 
   it("starts a Land campaign with the institutional default even without an MdL match", async () => {

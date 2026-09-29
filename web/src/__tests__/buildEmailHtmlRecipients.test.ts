@@ -224,6 +224,43 @@ describe("buildEmailHtml — Empfänger-Arten", () => {
     );
   });
 
+  it("fester Kampagnenempfänger: zeigt Organisation, Person und deutsche Anschrift ohne Landeslogik", () => {
+    const params = baseParams({
+      recipientKind: "campaign_fixed",
+      politicianName: "Hessisches Ministerium der Justiz und für den Rechtsstaat",
+      politicianFirstName: "",
+      politicianLastName: "Hessisches Ministerium der Justiz und für den Rechtsstaat",
+      politicianParty: null,
+      politicianPostalAddress:
+        "Hessisches Ministerium der Justiz und für den Rechtsstaat, Luisenstraße 13, 65185 Wiesbaden",
+      politicianAbgeordnetenwatchUrl: null,
+      bundeslandKey: "HE",
+      campaign: {
+        slug: "unterschrift-ist-kein-dienstvergehen",
+        title: "Unterschrift ist kein Dienstvergehen",
+      },
+      fixedRecipient: {
+        organizationName: "Hessisches Ministerium der Justiz und für den Rechtsstaat",
+        personName: "Frau Dr. Erika Beispiel",
+        addressLines: [
+          "Hessisches Ministerium der Justiz und für den Rechtsstaat",
+          "Frau Dr. Erika Beispiel",
+          "Luisenstraße 13",
+          "65185 Wiesbaden",
+        ],
+      },
+    });
+
+    const html = buildEmailHtml(params);
+    expect(html).toContain("Hessisches Ministerium der Justiz und für den Rechtsstaat</strong>");
+    expect(html).toContain("Frau Dr. Erika Beispiel<br>Luisenstraße 13<br>65185 Wiesbaden");
+    expect(html).toContain("Luisenstraße 13<br>65185 Wiesbaden");
+    expect(html).toContain("weitere Menschen diesem Empfänger");
+    expect(html).not.toContain("weitere Menschen aus ihrem Bundesland");
+    expect(html).not.toContain("Deutschland");
+    expect(html).not.toContain("abgeordnetenwatch.de/profile");
+  });
+
   it("rathaus: zeigt die vollständige amtliche Anschrift und Google nur zur Kontrolle", () => {
     const params = baseParams({
         recipientKind: "rathaus",

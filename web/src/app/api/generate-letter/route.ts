@@ -32,6 +32,7 @@ import { buildLetterSignalContext, doesLetterSignalContextMatch } from "@/lib/le
 import { createGenerationProof, verifyLetterSignalContext } from "@/lib/letterSignals/token";
 import { markLetterSignalGeneratedAction } from "@/lib/actions/letterSignals";
 import { isBundeskanzlerCampaignTarget } from "@/lib/lookup/bundeskanzlerRecipient";
+import { getCampaignFixedRecipient } from "@/lib/lookup/campaignFixedRecipient";
 
 // Client-Auswahl: diskriminierte Union (999.6). Institutionelle Empfänger
 // tragen bewusst KEINE ID; der Server leitet sie aus der PLZ ab (LOCK-5).
@@ -161,6 +162,9 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Diese Kampagne ist aktuell nicht aktiv." }, { status: 400 });
     }
     const allowedPoliticianIds = campaign?.targetPoliticianIds ?? [];
+    const campaignFixedRecipient = campaign
+      ? getCampaignFixedRecipient(campaign)
+      : null;
     if (
       selection.kind === "bundeskanzler" &&
       !isBundeskanzlerCampaignTarget(campaign)
@@ -170,13 +174,18 @@ export async function POST(req: NextRequest) {
     if (allowedPoliticianIds.length > 0 && selection.kind !== "mdb") {
       return NextResponse.json({ error: "Empfänger nicht gefunden." }, { status: 400 });
     }
+    if (campaignFixedRecipient && selection.kind !== "campaign_fixed") {
+      return NextResponse.json({ error: "Empfänger nicht gefunden." }, { status: 400 });
+    }
 
     // Re-derive recipient server-side — never trust client-supplied data.
     // mdb/mdl: ID muss in der PLZ-abgeleiteten Ebenen-Liste stehen.
-    // Institutionelle Empfänger werden komplett aus der PLZ gebaut (LOCK-5).
+    // Institutionelle Empfänger kommen aus der PLZ oder dem serverseitig
+    // geladenen festen Kampagnenziel (LOCK-5).
     const resolved = resolveRecipientSelection(data.plz, selection, {
       allowedPoliticianIds,
       campaignSlug: campaign?.slug ?? null,
+      campaignFixedRecipient,
     });
     if (!resolved.ok) {
       return NextResponse.json({ error: "Empfänger nicht gefunden." }, { status: 400 });
@@ -259,6 +268,8 @@ export async function POST(req: NextRequest) {
       rathaus: recipient.kind === "rathaus" ? recipient : undefined,
       landesregierung:
         recipient.kind === "landesregierung" ? recipient : undefined,
+      campaignFixedRecipient:
+        recipient.kind === "campaign_fixed" ? recipient : undefined,
       bundeskanzler:
         recipient.kind === "bundeskanzler" ? recipient : undefined,
       mdbLater: recipient.kind === "mdb_later" ? recipient : undefined,
@@ -314,6 +325,7 @@ export async function POST(req: NextRequest) {
       const politicianFullName =
         result.selectedRecipient.kind === "rathaus" ||
         result.selectedRecipient.kind === "landesregierung" ||
+        result.selectedRecipient.kind === "campaign_fixed" ||
         result.selectedRecipient.kind === "bundeskanzler" ||
         result.selectedRecipient.kind === "mdb_later"
           ? result.selectedRecipient.label

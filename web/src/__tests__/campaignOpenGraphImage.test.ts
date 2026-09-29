@@ -32,6 +32,7 @@ const campaign: Campaign = {
   moderationCategories: [],
   targetLevel: "Bund",
   targetState: null,
+  targetRecipient: null,
   targetPoliticianIds: [],
   emailVerifiedAt: null,
   activatedAt: null,

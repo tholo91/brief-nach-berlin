@@ -11,6 +11,7 @@ import {
 import { createCampaignToken } from "@/lib/campaigns/tokens";
 import {
   campaignExternalUrlSchema,
+  campaignFixedRecipientSchema,
   campaignTargetPoliticianIdsSchema,
   campaignTargetLevelSchema,
   campaignTargetStateSchema,
@@ -86,6 +87,8 @@ const createCampaignDraftSchema = z.object({
   targetState: campaignTargetStateSchema.optional(),
   targetMode: z.enum(["default", "specific"]).default("default"),
   targetPoliticianIds: campaignTargetPoliticianIdsSchema,
+  targetRecipient: campaignFixedRecipientSchema.nullable(),
+  fixedAddressAccepted: z.string().optional(),
   responsibilityAccepted: z
     .string()
     .optional()
@@ -96,7 +99,7 @@ const createCampaignDraftSchema = z.object({
     .refine((value) => value === "yes", "Bitte bestätige die Kampagnendaten vor dem Anlegen."),
 })
   .superRefine((data, ctx) => {
-    if (data.targetLevel === "Bund" && data.targetState !== undefined) {
+    if (data.targetLevel !== "Land" && data.targetState !== undefined) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
         path: ["targetState"],
@@ -124,10 +127,32 @@ const createCampaignDraftSchema = z.object({
         message: "Bestimmte MdBs können nur bei Bundestagskampagnen ausgewählt werden.",
       });
     }
+    if (data.targetLevel === "Fixed" && !data.targetRecipient) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["targetRecipient"],
+        message: "Bitte gib den festen Empfänger vollständig ein.",
+      });
+    }
+    if (data.targetLevel !== "Fixed" && data.targetRecipient) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["targetRecipient"],
+        message: "Eine feste Adresse ist nur für feste Kampagnenempfänger erlaubt.",
+      });
+    }
+    if (data.targetLevel === "Fixed" && data.fixedAddressAccepted !== "on") {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["fixedAddressAccepted"],
+        message: "Bitte bestätige den Hinweis zur Empfängeradresse.",
+      });
+    }
   })
   .transform((data) => ({
     ...data,
     targetState: data.targetLevel === "Land" ? data.targetState ?? null : null,
+    targetRecipient: data.targetLevel === "Fixed" ? data.targetRecipient : null,
   }));
 
 export type CreateCampaignDraftResult =
@@ -212,6 +237,7 @@ async function deleteCampaignLogo(path: string | null): Promise<void> {
 export async function createCampaignDraftAction(
   formData: FormData
 ): Promise<CreateCampaignDraftResult> {
+  const targetLevel = value(formData, "targetLevel") || "Bund";
   const parsed = createCampaignDraftSchema.safeParse({
     creatorEmail: value(formData, "creatorEmail"),
     title: value(formData, "title"),
@@ -220,10 +246,24 @@ export async function createCampaignDraftAction(
     description: value(formData, "description") || undefined,
     externalUrl: value(formData, "externalUrl") || undefined,
     slug: value(formData, "slug"),
-    targetLevel: value(formData, "targetLevel") || "Bund",
+    targetLevel,
     targetState: value(formData, "targetState") || undefined,
     targetMode: value(formData, "targetMode") || "default",
     targetPoliticianIds: numberValues(formData, "targetPoliticianId"),
+    targetRecipient:
+      targetLevel === "Fixed"
+        ? {
+            organizationName: value(formData, "fixedOrganizationName") || null,
+            personName: value(formData, "fixedPersonName") || null,
+            salutation: value(formData, "fixedSalutation"),
+            street: value(formData, "fixedStreet"),
+            houseNumber: value(formData, "fixedHouseNumber"),
+            postalCode: value(formData, "fixedPostalCode"),
+            city: value(formData, "fixedCity"),
+            countryCode: "DE",
+          }
+        : null,
+    fixedAddressAccepted: value(formData, "fixedAddressAccepted"),
     responsibilityAccepted: value(formData, "responsibilityAccepted"),
     creationConfirmed: value(formData, "creationConfirmed"),
   });

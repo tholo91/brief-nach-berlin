@@ -105,6 +105,9 @@ export function buildLetterEmailText(data: SendLetterEmailParams): string {
   if (data.recipientKind === "landesregierung" && data.governmentSource?.addressee === "head" && data.governmentSource.addressLines) {
     parts.push(`Postanschrift:\n${data.governmentSource.addressLines.join("\n")}`);
   }
+  if (data.recipientKind === "campaign_fixed" && data.fixedRecipient) {
+    parts.push(`Postanschrift:\n${data.fixedRecipient.addressLines.join("\n")}`);
+  }
   if (data.recipientKind === "mdb_later") {
     parts.push(
       "Vor dem Abschreiben:\n1. Wähle ein Mitglied in der Abgeordnetensuche: https://www.bundestag.de/abgeordnete\n2. Ersetze Name, Anschrift und Anrede im Entwurf.\n3. Prüfe den Brief und schreibe ihn erst dann ab."
@@ -264,6 +267,9 @@ function getPersonalImpactCopy(data: SendLetterEmailParams): string {
   if (data.recipientKind === "landesregierung") {
     return copy.impact.state;
   }
+  if (data.recipientKind === "campaign_fixed") {
+    return "Ein persönlicher Brief macht dein Anliegen beim festen Kampagnenempfänger konkret und nachvollziehbar.";
+  }
   if (data.recipientKind === "mdl") {
     return copy.impact.mdl;
   }
@@ -282,6 +288,9 @@ function getRecruitCopy(data: SendLetterEmailParams): string {
     }
     if (data.recipientKind === "landesregierung") {
       return "Dein Brief ist ein Anfang. Teile die Kampagne, damit weitere Menschen aus ihrem Bundesland mit eigenen Worten schreiben.";
+    }
+    if (data.recipientKind === "campaign_fixed") {
+      return "Dein Brief ist ein Anfang. Teile die Kampagne, damit weitere Menschen diesem Empfänger mit eigenen Worten schreiben.";
     }
     if (data.recipientKind === "rathaus") {
       return "Dein Brief ist ein Anfang. Teile die Kampagne, damit weitere Menschen vor Ort mit eigenen Worten schreiben.";
@@ -338,7 +347,7 @@ function buildEmailShareTarget(data: SendLetterEmailParams) {
     data.campaign,
     "participant",
     level,
-    data.governmentSource?.institutionKind ?? "landesregierung"
+    data.governmentSource?.institutionKind === "senat" ? "senat" : "landesregierung"
   );
   if (
     data.campaign?.slug ||
@@ -366,6 +375,7 @@ function getFooterBannerHtml(data: SendLetterEmailParams): string {
   if (
     data.recipientKind === "mdl" ||
     data.recipientKind === "landesregierung" ||
+    data.recipientKind === "campaign_fixed" ||
     data.recipientKind === "bundeskanzler"
   ) return "";
   const path =
@@ -384,11 +394,12 @@ export function buildEmailHtml(data: SendLetterEmailParams): string {
   const isRathaus = data.recipientKind === "rathaus";
   const isMdl = data.recipientKind === "mdl";
   const isLandesregierung = data.recipientKind === "landesregierung";
+  const isCampaignFixed = data.recipientKind === "campaign_fixed";
   const isBundeskanzler = data.recipientKind === "bundeskanzler";
   const isMdbLater = data.recipientKind === "mdb_later";
   const isFallback =
     isMdbLater ||
-    (!isRathaus && !isLandesregierung && data.politicianFirstName === "" && data.politicianLastName === "MdB");
+    (!isRathaus && !isLandesregierung && !isCampaignFixed && data.politicianFirstName === "" && data.politicianLastName === "MdB");
   const letterNumberText =
     typeof data.letterNumber === "number"
       ? `Brief #${new Intl.NumberFormat(locale).format(data.letterNumber)} · `
@@ -424,6 +435,8 @@ export function buildEmailHtml(data: SendLetterEmailParams): string {
       ? data.governmentSource.addressLines.slice(1).map(escapeHtml).join("<br>")
     : isLandesregierung && data.governmentSource
       ? getGovernmentAddressLines(data)
+    : isCampaignFixed && data.fixedRecipient
+      ? data.fixedRecipient.addressLines.slice(1).map(escapeHtml).join("<br>")
     : isBundeskanzler
       ? addressLines.split("<br>").slice(3).join("<br>")
     : isRathaus
@@ -433,7 +446,7 @@ export function buildEmailHtml(data: SendLetterEmailParams): string {
   // Profile link (Abgeordnetenwatch: voting record, public Q&A, transparent source).
   // Prefer the API-provided URL; fall back to a slug-derived URL.
   // Rathaus-Empfänger haben kein Abgeordnetenwatch-Profil — kein Link.
-  const profileUrl = isRathaus || isLandesregierung || isBundeskanzler || isMdbLater
+  const profileUrl = isRathaus || isLandesregierung || isCampaignFixed || isBundeskanzler || isMdbLater
     ? null
     : data.politicianAbgeordnetenwatchUrl ??
       abgeordnetenwatchProfileUrl(data.politicianFirstName, data.politicianLastName);
@@ -448,6 +461,8 @@ export function buildEmailHtml(data: SendLetterEmailParams): string {
       ? `<strong>${escapeHtml(formatGovernmentDisplayName(data.governmentSource.officeName))}</strong><br>`
     : isLandesregierung
       ? `<strong>${escapeHtml(formatGovernmentDisplayName(data.politicianName))}</strong><br>`
+    : isCampaignFixed && data.fixedRecipient
+      ? `<strong>${escapeHtml(data.fixedRecipient.addressLines[0] ?? data.politicianName)}</strong><br>`
     : isBundeskanzler
       ? `<strong>Bundeskanzler ${fullName}</strong><br>`
     : isFallback

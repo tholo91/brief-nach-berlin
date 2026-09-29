@@ -1,5 +1,5 @@
 import type { LetterDebugPayload } from "./sendLetterEmail";
-import type { GenerateLetterResult, WizardData } from "@/lib/types/wizard";
+import type { GenerateLetterResult, WizardData, RecipientLevel } from "@/lib/types/wizard";
 import type { Politician, PoliticalLevel } from "@/lib/types/politician";
 import type { Recipient } from "@/lib/lookup/rathausRecipient";
 import { LETTER_LENGTHS, DEFAULT_LETTER_LENGTH } from "@/lib/config";
@@ -9,7 +9,7 @@ export interface LetterRoutingInfo {
   routedPrimaryLevel: PoliticalLevel | null;
   routedPrimaryConfidence: "high" | "medium" | "low" | null;
   wasOverridden: boolean;
-  selectedLevel: PoliticalLevel;
+  selectedLevel: RecipientLevel;
 }
 
 export const TONE_LABELS: Record<number, string> = {
@@ -38,6 +38,7 @@ export function buildDebugPayload(
     ? [p.title, p.firstName, p.lastName].filter(Boolean).join(" ")
     : recipient.kind === "rathaus" ||
         recipient.kind === "landesregierung" ||
+        recipient.kind === "campaign_fixed" ||
         recipient.kind === "bundeskanzler" ||
         recipient.kind === "mdb_later"
       ? recipient.label
@@ -62,6 +63,8 @@ export function buildDebugPayload(
         ? `${recipient.plz} ${recipient.gemeindeName}`
         : recipient.kind === "landesregierung"
           ? recipient.bundeslandName
+          : recipient.kind === "campaign_fixed"
+            ? `${recipient.address.postalCode} ${recipient.address.city}`
           : recipient.kind === "bundeskanzler"
             ? "Bundesregierung"
             : recipient.kind === "mdb_later"
@@ -72,6 +75,8 @@ export function buildDebugPayload(
         ? `${recipient.plz} ${recipient.gemeindeName}`
         : recipient.kind === "landesregierung"
           ? recipient.bundeslandName
+          : recipient.kind === "campaign_fixed"
+            ? `${recipient.address.postalCode} ${recipient.address.city}`
           : recipient.kind === "bundeskanzler"
             ? "Bundesregierung"
             : recipient.kind === "mdb_later"
@@ -125,6 +130,7 @@ export function buildResendDebugPayload(
     ? [politician.title, politician.firstName, politician.lastName].filter(Boolean).join(" ")
     : recipient.kind === "rathaus" ||
         recipient.kind === "landesregierung" ||
+        recipient.kind === "campaign_fixed" ||
         recipient.kind === "bundeskanzler" ||
         recipient.kind === "mdb_later"
       ? recipient.label
@@ -151,6 +157,8 @@ export function buildResendDebugPayload(
         ? `${recipient.plz} ${recipient.gemeindeName}`
         : recipient.kind === "landesregierung"
           ? recipient.bundeslandName
+          : recipient.kind === "campaign_fixed"
+            ? `${recipient.address.postalCode} ${recipient.address.city}`
           : recipient.kind === "bundeskanzler"
             ? "Bundesregierung"
             : recipient.kind === "mdb_later"
@@ -161,6 +169,8 @@ export function buildResendDebugPayload(
         ? `${recipient.plz} ${recipient.gemeindeName}`
         : recipient.kind === "landesregierung"
           ? recipient.bundeslandName
+          : recipient.kind === "campaign_fixed"
+            ? `${recipient.address.postalCode} ${recipient.address.city}`
           : recipient.kind === "bundeskanzler"
             ? "Bundesregierung"
             : recipient.kind === "mdb_later"

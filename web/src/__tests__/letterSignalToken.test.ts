@@ -12,6 +12,7 @@ import {
 import { buildLetterSignalContext, doesLetterSignalContextMatch } from "@/lib/letterSignals/context";
 import type { LetterSignalContext } from "@/lib/letterSignals/types";
 import type { LandesregierungRecipient } from "@/lib/lookup/landesregierungRecipient";
+import { buildCampaignFixedRecipient } from "@/lib/lookup/campaignFixedRecipient";
 
 const signal: LetterSignalContext = {
   letterId: "6f5a0e93-3bb8-43cf-bb94-9bb7d0052ed0",
@@ -40,6 +41,7 @@ const recipient: LandesregierungRecipient = {
   officeName: "Senatskanzlei",
   postalAddress: "Am Markt 21, 28195 Bremen",
   salutation: "Sehr geehrte Damen und Herren,",
+  article: "den",
   address: {
     addressLines: ["Am Markt 21", "28195 Bremen"],
     sourceTitle: "Test",
@@ -56,6 +58,17 @@ const headRecipient = {
   headTitle: "Bürgermeisterin",
   salutation: "Sehr geehrte Frau Bürgermeisterin Musterperson,",
 };
+
+const fixedRecipient = buildCampaignFixedRecipient({
+  organizationName: "Hessisches Ministerium der Justiz und für den Rechtsstaat",
+  personName: null,
+  salutation: "Sehr geehrte Damen und Herren,",
+  street: "Luisenstraße",
+  houseNumber: "13",
+  postalCode: "65185",
+  city: "Wiesbaden",
+  countryCode: "DE",
+});
 
 const wizardData = {
   locale: "de" as const,
@@ -146,6 +159,30 @@ describe("letter signal tokens", () => {
     expect(doesGenerationProofMatch(institutionProof!, { ...input, recipient })).toBe(true);
   });
 
+  it("binds fixed-recipient proofs to every normalized address field", () => {
+    const input = {
+      letterId: signal.letterId,
+      issueText: wizardData.issueText,
+      plz: wizardData.plz,
+      recipient: fixedRecipient,
+      letterText: "Ein Brief",
+      campaignSlug: "unterschrift-ist-kein-dienstvergehen",
+    };
+    const proof = verifyGenerationProof(createGenerationProof(input));
+
+    expect(doesGenerationProofMatch(proof!, input)).toBe(true);
+    for (const recipient of [
+      { ...fixedRecipient, salutation: "Guten Tag," },
+      { ...fixedRecipient, organizationName: "Andere Organisation" },
+      { ...fixedRecipient, address: { ...fixedRecipient.address, street: "Andere Straße" } },
+      { ...fixedRecipient, address: { ...fixedRecipient.address, houseNumber: "99" } },
+      { ...fixedRecipient, address: { ...fixedRecipient.address, postalCode: "28195" } },
+      { ...fixedRecipient, address: { ...fixedRecipient.address, city: "Bremen" } },
+    ]) {
+      expect(doesGenerationProofMatch(proof!, { ...input, recipient })).toBe(false);
+    }
+  });
+
   it("binds signal contexts to government addressee mode and name", () => {
     const institutionContext = buildLetterSignalContext({
       data: wizardData,
@@ -184,6 +221,32 @@ describe("letter signal tokens", () => {
       issueBinding: bindLetterSignalIssue(wizardData.issueText),
       emailLookupHash: hashLetterSignalEmail(wizardData.email),
     }, headRecipient)).toBe(false);
+  });
+
+  it("binds signal contexts to the complete fixed recipient", () => {
+    const context = buildLetterSignalContext({
+      data: wizardData,
+      recipient: fixedRecipient,
+      letterId: signal.letterId,
+      topic: null,
+      campaignSlug: "unterschrift-ist-kein-dienstvergehen",
+    })!.context;
+
+    expect(doesLetterSignalContextMatch({
+      context,
+      data: wizardData,
+      recipient: fixedRecipient,
+      campaignSlug: "unterschrift-ist-kein-dienstvergehen",
+    })).toBe(true);
+    expect(doesLetterSignalContextMatch({
+      context,
+      data: wizardData,
+      recipient: {
+        ...fixedRecipient,
+        address: { ...fixedRecipient.address, houseNumber: "14" },
+      },
+      campaignSlug: "unterschrift-ist-kein-dienstvergehen",
+    })).toBe(false);
   });
 
   it("uses a case- and whitespace-insensitive HMAC lookup", () => {

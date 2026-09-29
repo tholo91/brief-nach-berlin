@@ -24,7 +24,7 @@ export function buildLetterSignalContext(args: {
       bundeslandKey,
       politicalLevel: args.recipient.level,
       recipientKind: args.recipient.kind,
-      ...(args.recipient.kind === "landesregierung"
+      ...(args.recipient.kind === "landesregierung" || args.recipient.kind === "campaign_fixed"
         ? { recipientBinding: bindLetterSignalRecipient(args.recipient) }
         : {}),
       issueBinding: bindLetterSignalIssue(args.data.issueText),
@@ -52,9 +52,9 @@ export function doesLetterSignalContextMatch(args: {
       args.context.bundeslandKey === bundeslandKey &&
       args.context.politicalLevel === args.recipient.level &&
       args.context.recipientKind === args.recipient.kind &&
-      (args.recipient.kind === "landesregierung"
+      (args.recipient.kind === "landesregierung" || args.recipient.kind === "campaign_fixed"
         ? args.context.recipientBinding === undefined
-          ? !("addressee" in args.recipient && args.recipient.addressee === "head")
+          ? args.recipient.kind === "landesregierung" && !("addressee" in args.recipient && args.recipient.addressee === "head")
           : args.context.recipientBinding === bindLetterSignalRecipient(args.recipient)
         : args.context.recipientBinding === undefined) &&
       args.context.issueBinding === bindLetterSignalIssue(args.data.issueText) &&

@@ -3,8 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useState, useCallback, useMemo, useRef, useEffect } from "react";
-import type { WizardData, WizardActionResult } from "@/lib/types/wizard";
-import type { PoliticalLevel } from "@/lib/types/politician";
+import type { WizardData, WizardActionResult, RecipientLevel } from "@/lib/types/wizard";
 import type {
   Recipient,
   RecipientSelection,
@@ -15,6 +14,7 @@ import type {
 import type { LandesregierungRecipient } from "@/lib/lookup/landesregierungRecipient";
 import { getLandesregierungRecipient } from "@/lib/lookup/landesregierungRecipient";
 import type { BundeskanzlerRecipient } from "@/lib/lookup/bundeskanzlerRecipient";
+import type { CampaignFixedRecipientRecipient } from "@/lib/lookup/campaignFixedRecipient";
 import { selectPoliticianAction } from "@/lib/actions/selectPolitician";
 import { resendLetterAction } from "@/lib/actions/resendLetter";
 import { reportErrorAction } from "@/lib/actions/reportError";
@@ -83,7 +83,7 @@ interface Step3SuccessProps {
   /** Optionale MdLs; erst nach bewusstem Wechsel in den Personenpfad sichtbar. */
   optionalLandRecipients?: MdlRecipient[];
   /** Gewählte Ebene (nur gesetzt, wenn der Ebene-Auswahl-Step aktiv war) */
-  selectedLevel?: PoliticalLevel;
+  selectedLevel?: RecipientLevel;
   /** Signierter Routing-Token — wird an /api/generate-letter durchgereicht */
   routingToken?: string | null;
   onChangePlz?: () => void;
@@ -151,6 +151,14 @@ export function Step3Success({
       ) ?? null,
     [recipients]
   );
+  const campaignFixedRecipient = useMemo(
+    () =>
+      recipients.find(
+        (recipient): recipient is CampaignFixedRecipientRecipient =>
+          recipient.kind === "campaign_fixed"
+      ) ?? null,
+    [recipients]
+  );
   const landWahlkreisCount = useMemo(
     () => new Set(politicians.map((p) => p.wahlkreisId)).size,
     [politicians]
@@ -201,6 +209,9 @@ export function Step3Success({
   const [landAddressee, setLandAddressee] = useState<"institution" | "head">("institution");
   const [bundeskanzlerSelected, setBundeskanzlerSelected] = useState<boolean>(
     () => Boolean(bundeskanzler)
+  );
+  const [campaignFixedSelected, setCampaignFixedSelected] = useState<boolean>(
+    () => Boolean(campaignFixedRecipient)
   );
   const [isGenerating, setIsGenerating] = useState(false);
   const [generationComplete, setGenerationComplete] = useState(false);
@@ -402,6 +413,7 @@ export function Step3Success({
   // Diskriminierte Auswahl für die Server-Seite: rathaus trägt bewusst keine
   // ID (LOCK-5), Abgeordnete gehen mit kind + Abgeordnetenwatch-ID raus.
   const currentSelection = useMemo<RecipientSelection | null>(() => {
+    if (campaignFixedRecipient && campaignFixedSelected) return { kind: "campaign_fixed" };
     if (bundeskanzler && bundeskanzlerSelected) return { kind: "bundeskanzler" };
     if (landesregierung && landesregierungSelected) {
       return landAddressee === "head" && governmentHead
@@ -414,7 +426,7 @@ export function Step3Success({
       return { kind: selectedPolitician.kind, selectedPoliticianId: selectedPolitician.id };
     }
     return null;
-  }, [bundeskanzler, bundeskanzlerSelected, governmentHead, landAddressee, landesregierung, landesregierungSelected, mdbLaterSelected, rathaus, rathausSelected, selectedPolitician]);
+  }, [bundeskanzler, bundeskanzlerSelected, campaignFixedRecipient, campaignFixedSelected, governmentHead, landAddressee, landesregierung, landesregierungSelected, mdbLaterSelected, rathaus, rathausSelected, selectedPolitician]);
 
   // Group the disambiguation cards by Wahlkreis. sortedPoliticians is already
   // Direkt-first, so insertion order puts the group holding the pre-selected
@@ -715,7 +727,7 @@ export function Step3Success({
   const founderFeedbackUrl = wizardData.email
     ? `${FOUNDER_FEEDBACK_URL}?email=${encodeURIComponent(wizardData.email)}`
     : FOUNDER_FEEDBACK_URL;
-  const effectiveLevel: PoliticalLevel =
+  const effectiveLevel: RecipientLevel =
     selectedLevel ??
     generatedRecipient?.level ??
     (result && "success" in result && result.success ? result.politicalLevel : "Bund");
@@ -723,7 +735,9 @@ export function Step3Success({
     ? "Handgeschriebene Briefe werden im Bundestag tatsächlich gelesen und besprochen."
     : effectiveLevel === "Land"
       ? "Ein persönlicher, handgeschriebener Brief macht dein Anliegen auf Landesebene konkret."
-      : "Ein persönlicher, handgeschriebener Brief macht dein Anliegen für die Verwaltung greifbar.";
+      : effectiveLevel === "Fixed"
+        ? "Ein persönlicher, handgeschriebener Brief macht dein Anliegen beim festen Kampagnenempfänger sichtbar."
+        : "Ein persönlicher, handgeschriebener Brief macht dein Anliegen für die Verwaltung greifbar.";
   const addressInstruction = effectiveLevel === "Kommune"
     ? "Nutze die Suchhilfe, prüfe die vollständige Anschrift und schreib sie auf den Umschlag."
     : "Die Adresse findest du im Brief.";
@@ -1131,6 +1145,8 @@ export function Step3Success({
     const selectedPoliticianLabel =
       mdbLaterSelected
         ? "MdB später auswählen"
+        : campaignFixedRecipient && campaignFixedSelected
+        ? campaignFixedRecipient.label
         : bundeskanzler && bundeskanzlerSelected
         ? bundeskanzler.label
         : landesregierung && landesregierungSelected
@@ -1149,7 +1165,10 @@ export function Step3Success({
         : `${campaignTargetCount} ausgewählte Abgeordnete`;
     const isKommune = selectedLevel === "Kommune" && rathaus !== null;
     const isLand = selectedLevel === "Land";
-    const selectionTitle = bundeskanzler
+    const isFixed = selectedLevel === "Fixed" && campaignFixedRecipient !== null;
+    const selectionTitle = isFixed
+      ? `Fester Empfänger: ${campaignFixedRecipient.label}`
+      : bundeskanzler
       ? "An wen soll dein Brief gehen?"
       : isKommune
       ? "Dein Brief geht an die Verwaltung"
@@ -1166,7 +1185,9 @@ export function Step3Success({
         : !hasNoLocalMdb && sortedPoliticians.length > 1
           ? `${sortedPoliticians.length} Abgeordnete für PLZ ${wizardData.plz}`
           : "Wer vertritt deinen Wahlkreis?";
-    const introCopy = bundeskanzler
+    const introCopy = isFixed
+      ? "Dieser Empfänger ist für die Kampagne festgelegt. Deine PLZ verändert die Adresse nicht."
+      : bundeskanzler
       ? "Der Bundeskanzler ist vorausgewählt. Du kannst stattdessen auch ein Mitglied des Bundestags aus deinem Wahlkreis wählen."
       : isKommune
       ? "Der kommunale Empfänger ist bereits vorausgewählt."
@@ -1297,6 +1318,20 @@ export function Step3Success({
             disambiguation step doesn't turn into an endless scroll. All cards
             stay one logical radiogroup; a flat index keeps arrow-key nav working
             across groups. */}
+        {isFixed && campaignFixedRecipient && (
+          <div role="radiogroup" aria-label="Empfänger auswählen" className="mt-6">
+            <div role="radio" aria-checked={campaignFixedSelected} tabIndex={0} onClick={() => setCampaignFixedSelected(true)} onKeyDown={(event) => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); setCampaignFixedSelected(true); } }} className="w-full cursor-pointer rounded-lg border-2 border-waldgruen bg-waldgruen/10 p-4 text-left">
+              <span className="inline-block rounded bg-waldgruen/15 px-2 py-0.5 font-body text-[11px] font-semibold uppercase tracking-wide text-waldgruen-dark">Fester Kampagnenempfänger</span>
+              {campaignFixedRecipient.organizationName && <p className="mt-2 font-body text-base font-semibold text-warmgrau">{campaignFixedRecipient.organizationName}</p>}
+              {campaignFixedRecipient.personName && <p className="font-body text-sm text-warmgrau">{campaignFixedRecipient.personName}</p>}
+              <p className="mt-1 font-body text-sm leading-relaxed text-warmgrau">
+                {campaignFixedRecipient.address.street} {campaignFixedRecipient.address.houseNumber}<br />
+                {campaignFixedRecipient.address.postalCode} {campaignFixedRecipient.address.city}
+              </p>
+              <p className="mt-2 font-body text-xs text-warmgrau/65">Du kannst aus ganz Deutschland teilnehmen.</p>
+            </div>
+          </div>
+        )}
         {/* Kommune: eine einzige Verwaltungs-Karte statt Abgeordneten-Gruppen */}
         {isKommune && rathaus && (
           <div role="radiogroup" aria-label="Empfänger auswählen" className="mt-6">

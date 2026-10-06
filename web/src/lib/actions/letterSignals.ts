@@ -72,6 +72,7 @@ export async function createLetterSignalAction(input: unknown): Promise<SignalAc
           email_normalized: normalizedEmail,
           email_lookup_hash: context.emailLookupHash,
           generated_at: generationProof ? new Date().toISOString() : null,
+          ...(generationProof?.letterNumber ? { letter_number: generationProof.letterNumber } : {}),
         },
         { onConflict: "letter_id", ignoreDuplicates: true },
       )
@@ -103,7 +104,10 @@ export async function markLetterSignalGeneratedAction(input: unknown): Promise<S
     const client = getServiceRoleClient();
     const { data, error } = await client
       .from("letter_signals")
-      .update({ generated_at: new Date().toISOString() })
+      .update({
+        generated_at: new Date().toISOString(),
+        ...(proof.letterNumber ? { letter_number: proof.letterNumber } : {}),
+      })
       .eq("letter_id", proof.letterId)
       .select("letter_id");
     if (error) {

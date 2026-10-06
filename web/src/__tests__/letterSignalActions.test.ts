@@ -146,6 +146,23 @@ describe("letter signal lifecycle actions", () => {
     expect(builder.update).not.toHaveBeenCalledWith(expect.objectContaining({ status: "generated" }));
   });
 
+  it("stores the signed letter number when generation is recorded", async () => {
+    const builder = query();
+    mockedClient.mockReturnValue({ from: jest.fn().mockReturnValue(builder) } as never);
+    const proof = createGenerationProof({
+      letterId: context.letterId,
+      issueText: "Mehr Geld für Schulen",
+      plz: context.plz,
+      recipient: { kind: "rathaus", label: "Rathaus" } as never,
+      letterText: "Sehr geehrte Damen und Herren, ...",
+      campaignSlug: null,
+      letterNumber: 3027,
+    });
+
+    await expect(markLetterSignalGeneratedAction({ generationProof: proof })).resolves.toEqual({ success: true });
+    expect(builder.update).toHaveBeenCalledWith(expect.objectContaining({ letter_number: 3027 }));
+  });
+
   it("does not report success when the proof has no pending or generated row", async () => {
     const updateSelect = jest.fn().mockResolvedValue({ data: [], error: null });
     const updateEq = jest.fn().mockReturnValue({ select: updateSelect });

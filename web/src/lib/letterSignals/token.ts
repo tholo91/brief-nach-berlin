@@ -24,6 +24,7 @@ const generationProofPayloadSchema = z.object({
   recipientBinding: z.string().regex(/^[a-f0-9]{64}$/),
   letterBinding: z.string().regex(/^[a-f0-9]{64}$/),
   campaignSlug: z.string().trim().min(1).max(120).nullable(),
+  letterNumber: z.number().int().positive().nullable().optional(),
 });
 
 type GenerationProofPayload = z.infer<typeof generationProofPayloadSchema>;
@@ -156,6 +157,7 @@ export function createGenerationProof(
     recipient: Recipient;
     letterText: string;
     campaignSlug: string | null;
+    letterNumber?: number | null;
   },
   nowSeconds = Math.floor(Date.now() / 1000),
 ): string {
@@ -175,6 +177,7 @@ export function createGenerationProof(
         recipientBinding: bindLetterSignalRecipient(input.recipient),
         letterBinding: bindGenerationValue("letter", input.letterText),
         campaignSlug: input.campaignSlug,
+        letterNumber: input.letterNumber ?? null,
       };
   return signEnvelope("letter_signal_generated", generationProofPayloadSchema.parse(payload), nowSeconds);
 }

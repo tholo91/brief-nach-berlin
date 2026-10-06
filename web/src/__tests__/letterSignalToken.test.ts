@@ -125,6 +125,21 @@ describe("letter signal tokens", () => {
     })).toBe(false);
   });
 
+  it("carries the signed letter number and still accepts proofs without one", () => {
+    const input = {
+      letterId: signal.letterId,
+      issueText: "Mehr Geld für Schulen",
+      plz: "28203",
+      recipient,
+      letterText: "Sehr geehrte Damen und Herren, ...",
+      campaignSlug: null,
+    };
+
+    expect(verifyGenerationProof(createGenerationProof({ ...input, letterNumber: 3027 }))?.letterNumber).toBe(3027);
+    expect(verifyGenerationProof(createGenerationProof(input))?.letterNumber).toBeNull();
+    expect(verifyGenerationProof(createGenerationProof(signal.letterId))).not.toBeNull();
+  });
+
   it("does not reuse generation proofs between the institution and its named head", () => {
     const input = {
       letterId: signal.letterId,

@@ -276,15 +276,6 @@ export async function POST(req: NextRequest) {
           topic: campaign?.topic ?? result.topic,
           campaignSlug: campaign?.slug ?? null,
         });
-    const generationProof = createGenerationProof({
-      letterId,
-      issueText: data.issueText,
-      plz: data.plz,
-      recipient: result.selectedRecipient,
-      letterText: result.letter,
-      campaignSlug: campaign?.slug ?? null,
-    });
-
     // Increment before responding so this user receives the current letter number.
     // The public aggregate refreshes through its hourly cache; invalidating it here
     // would fan out ISR rewrites across every route that renders the shared footer.
@@ -294,6 +285,16 @@ export async function POST(req: NextRequest) {
     } catch (error) {
       console.error("[brief-nach-berlin][counter] increment failed", error);
     }
+
+    const generationProof = createGenerationProof({
+      letterId,
+      issueText: data.issueText,
+      plz: data.plz,
+      recipient: result.selectedRecipient,
+      letterText: result.letter,
+      campaignSlug: campaign?.slug ?? null,
+      letterNumber: letterNumber ?? null,
+    });
 
     // Send email and follow-up after the response
     after(async () => {

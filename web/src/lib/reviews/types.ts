@@ -15,8 +15,13 @@ export type PublicReview = {
 
 export type RatingDistribution = Record<1 | 2 | 3 | 4 | 5, number>;
 
-export type ReviewStats = {
+export type RatingSummary = {
   averageRating: number;
   totalCount: number;
   distribution: RatingDistribution;
+};
+
+export type ReviewStats = RatingSummary & {
+  short: RatingSummary;
+  submitted: RatingSummary;
 };

@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Figure } from "@/components/editorial/Figure";
 import { Prose } from "@/components/editorial/Prose";
+import { StartLetterCta } from "@/components/editorial/StartLetterCta";
 import { FAQAccordion } from "@/components/FAQAccordion";
 import type { Metadata } from "next";
 import { APP_URL } from "@/lib/config";
@@ -118,9 +119,15 @@ export default function AbgeordnetenSchreibenPage() {
             keine Mustervorgabe. Du brauchst nur ein konkretes Anliegen und ein
             Blatt Papier.
           </p>
-          <p className="font-typewriter text-xs uppercase tracking-widest text-warmgrau/50 mb-12">
+          <p className="font-typewriter text-xs uppercase tracking-widest text-warmgrau/50 mb-8">
             3 Minuten Lesezeit
           </p>
+
+          <StartLetterCta eyebrow="Die Abkürzung" className="mb-12">
+            Du nennst dein Anliegen und deine Postleitzahl, Brief-nach-Berlin
+            schlägt dir einen Brief an die zuständige Person vor. Dauert rund
+            drei Minuten.
+          </StartLetterCta>
 
         <Prose>
           <h2 className="font-body text-2xl font-bold text-waldgruen-dark pt-4">
@@ -192,6 +199,11 @@ export default function AbgeordnetenSchreibenPage() {
               </span>
             </li>
           </ul>
+
+          <StartLetterCta eyebrow="Wer ist zuständig?">
+            Das musst du nicht selbst herausfinden. Brief-nach-Berlin sucht
+            über deine Postleitzahl die passende Person für dein Thema.
+          </StartLetterCta>
 
           <h2 className="font-body text-2xl font-bold text-waldgruen-dark pt-4">
             Wem schreibe ich eigentlich?

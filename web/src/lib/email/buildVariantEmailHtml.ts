@@ -2,6 +2,7 @@ import { APP_URL, FOUNDER_FEEDBACK_URL, FOUNDER_HOMEPAGE } from "@/lib/config";
 import type { LetterVariantDebugPayload } from "./variantDebugPayload";
 import { normalizeLetterClosing } from "./normalizeLetterClosing";
 import { buildSocialFollowHtml } from "./buildSocialFollowHtml";
+import { AI_CONTENT_BLOCK_ATTRIBUTES, AI_CONTENT_HTML_META } from "./aiContentMarking";
 
 function escapeHtml(text: string): string {
   return text
@@ -46,6 +47,7 @@ export function buildVariantEmailHtml(
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  ${AI_CONTENT_HTML_META}
   <style>
     @media only screen and (max-width: 600px) {
       .bnb-pad { padding-left: 16px !important; padding-right: 16px !important; }
@@ -75,7 +77,7 @@ export function buildVariantEmailHtml(
           <tr>
             <td class="bnb-pad" style="padding:0 32px 24px;background-color:#ffffff;">
               <div class="bnb-inner-pad" style="background-color:#FAF8F5;border:1px solid #E0DCD7;border-radius:4px;padding:24px;">
-                <p style="margin:0;font-family:'Courier New',Courier,monospace;font-size:14px;line-height:1.7;color:#4A4A4A;white-space:pre-wrap;">${letterHtml}</p>
+                <p ${AI_CONTENT_BLOCK_ATTRIBUTES} style="margin:0;font-family:'Courier New',Courier,monospace;font-size:14px;line-height:1.7;color:#4A4A4A;white-space:pre-wrap;">${letterHtml}</p>
               </div>
             </td>
           </tr>

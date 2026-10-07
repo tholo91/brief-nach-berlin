@@ -45,7 +45,28 @@ describe("aggregateInternalStats", () => {
     expect(stats.knownSendCount).toBe(2);
     expect(stats.sendRatePercent).toBe(50);
     expect(stats.fullFeedbackCount).toBe(1);
+    expect(stats.quickRatingCount).toBe(2);
     expect(stats.letterCount).toBe(1787);
+  });
+
+  it("partitions filtered reviews into submitted forms and quick ratings", () => {
+    const stats = aggregateInternalStats(
+      [
+        row({ full_feedback_submitted: true }),
+        row({ full_feedback_submitted: false }),
+        row({ full_feedback_submitted: null }),
+        row({ created_at: "2026-06-01T10:00:00Z", full_feedback_submitted: true }),
+      ],
+      0,
+      "2026-08-30T12:00:00Z",
+      [],
+      { timeRange: 30, source: { kind: "all" } },
+    );
+
+    expect(stats.reviewCount).toBe(3);
+    expect(stats.fullFeedbackCount).toBe(1);
+    expect(stats.quickRatingCount).toBe(2);
+    expect(stats.fullFeedbackCount + stats.quickRatingCount).toBe(stats.reviewCount);
   });
 
   it("aggregates ratings and both current and legacy level fields", () => {

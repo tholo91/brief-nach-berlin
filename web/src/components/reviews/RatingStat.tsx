@@ -1,8 +1,9 @@
-import type { ReviewStats } from "@/lib/reviews/types";
+"use client";
+
 import { formatDecimal, formatNumber } from "@/lib/formatNumber";
+import { useSelectedReviewStats } from "./ReviewStatsContext";
 
 interface RatingStatProps {
-  stats: ReviewStats;
   showDistribution?: boolean;
 }
 
@@ -29,18 +30,12 @@ function StarBar({ rating, max = 5 }: { rating: number; max?: number }) {
   );
 }
 
-export function RatingStat({ stats, showDistribution = false }: RatingStatProps) {
+export function RatingStat({ showDistribution = false }: RatingStatProps) {
+  const { selectedStats: stats, selectedGroup } = useSelectedReviewStats();
+
   if (stats.totalCount === 0) {
-    return (
-      <div className="flex flex-col gap-2">
-        <p className="font-typewriter text-sm text-warmgrau/60">
-          Bewertungszahl wird gerade aktualisiert
-        </p>
-        <p className="font-typewriter text-sm text-waldgruen-dark">
-          Seit Mitte Mai sind über 1.000 Briefe entstanden.
-        </p>
-      </div>
-    );
+    const groupLabel = selectedGroup === "submitted" ? "Formular-Feedback" : "Kurzbewertungen";
+    return <p className="font-typewriter text-sm text-warmgrau/60">Noch keine {groupLabel} vorhanden.</p>;
   }
 
   return (
@@ -48,6 +43,9 @@ export function RatingStat({ stats, showDistribution = false }: RatingStatProps)
       <StarBar rating={stats.averageRating} />
       <p className="font-typewriter text-sm text-warmgrau/70">
         bewertet mit {formatDecimal(stats.averageRating)}/5 aus {formatNumber(stats.totalCount)} Stimmen
+      </p>
+      <p className="font-body text-xs leading-relaxed text-warmgrau/55">
+        „Formular abgeschickt“ bedeutet, dass das Feedback-Formular gesendet wurde. Optionale Fragen waren freiwillig.
       </p>
       {showDistribution && (
         <div className="flex flex-col gap-1.5 mt-1">

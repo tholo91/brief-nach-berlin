@@ -1,14 +1,12 @@
-import type { ReviewStats } from "@/lib/reviews/types";
+"use client";
+
 import { formatNumber } from "@/lib/formatNumber";
+import { useSelectedReviewStats } from "./ReviewStatsContext";
 
-interface RatingDistributionBlockProps {
-  stats: ReviewStats;
-}
-
-export function RatingDistributionBlock({
-  stats,
-}: RatingDistributionBlockProps) {
+export function RatingDistributionBlock() {
+  const { selectedStats: stats, selectedGroup } = useSelectedReviewStats();
   if (stats.totalCount === 0) return null;
+  const groupLabel = selectedGroup === "submitted" ? "Feedback-Formularen" : "Kurzbewertungen";
 
   return (
     <section className="mt-10">
@@ -19,7 +17,7 @@ export function RatingDistributionBlock({
         Alle Sterne, ungeschönt
       </h2>
       <p className="font-typewriter text-xs text-warmgrau/60">
-        aus {formatNumber(stats.totalCount)} Bewertungen seit Mai 2026
+        aus {formatNumber(stats.totalCount)} {groupLabel} seit Mai 2026
       </p>
 
       <div className="grid grid-cols-[auto_1fr_auto] gap-x-4 gap-y-3 md:gap-y-3.5 mt-8">

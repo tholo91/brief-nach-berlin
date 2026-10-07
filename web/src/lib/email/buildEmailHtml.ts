@@ -10,6 +10,7 @@ import { formatPartyShort } from "@/lib/formatParty";
 import { buildShareTarget } from "@/lib/share";
 import { normalizeLetterClosing } from "./normalizeLetterClosing";
 import { getEmailCopy, resolveEmailLocale } from "./mailLocale";
+import { AI_CONTENT_BLOCK_ATTRIBUTES, AI_CONTENT_HTML_META } from "./aiContentMarking";
 import {
   buildSocialFollowHtml,
   buildSocialFollowText,
@@ -105,6 +106,9 @@ export function buildLetterEmailText(data: SendLetterEmailParams): string {
   if (data.recipientKind === "landesregierung" && data.governmentSource?.addressee === "head" && data.governmentSource.addressLines) {
     parts.push(`Postanschrift:\n${data.governmentSource.addressLines.join("\n")}`);
   }
+  if (data.recipientKind === "campaign_fixed" && data.fixedRecipient) {
+    parts.push(`Postanschrift:\n${data.fixedRecipient.addressLines.join("\n")}`);
+  }
   if (data.recipientKind === "mdb_later") {
     parts.push(
       "Vor dem Abschreiben:\n1. Wähle ein Mitglied in der Abgeordnetensuche: https://www.bundestag.de/abgeordnete\n2. Ersetze Name, Anschrift und Anrede im Entwurf.\n3. Prüfe den Brief und schreibe ihn erst dann ab."
@@ -112,6 +116,9 @@ export function buildLetterEmailText(data: SendLetterEmailParams): string {
   }
   parts.push(
     `${supportCopy.prefix} ${supportCopy.status}\n${supportCopy.button}: ${SUPPORT_CONTENT.ctas.donate.href}\n${supportCopy.learnMore}: ${APP_URL}${SUPPORT_CONTENT.ctas.learnMore.href}?src=email`,
+  );
+  parts.push(
+    `${copy.notice} ${copy.noticeText}${copy.noticeTextAfter ? `, ${copy.noticeTextAfter}` : ""}. ${copy.responsibility} ${copy.terms(copy.termsLabel)} ${APP_URL}/nutzungsbedingungen`,
   );
   parts.push(`${copy.privacy}: ${copy.dataPolicy}`);
   parts.push(buildSocialFollowText(resolveEmailLocale(data.locale)));
@@ -264,6 +271,9 @@ function getPersonalImpactCopy(data: SendLetterEmailParams): string {
   if (data.recipientKind === "landesregierung") {
     return copy.impact.state;
   }
+  if (data.recipientKind === "campaign_fixed") {
+    return "Ein persönlicher Brief macht dein Anliegen beim festen Kampagnenempfänger konkret und nachvollziehbar.";
+  }
   if (data.recipientKind === "mdl") {
     return copy.impact.mdl;
   }
@@ -282,6 +292,9 @@ function getRecruitCopy(data: SendLetterEmailParams): string {
     }
     if (data.recipientKind === "landesregierung") {
       return "Dein Brief ist ein Anfang. Teile die Kampagne, damit weitere Menschen aus ihrem Bundesland mit eigenen Worten schreiben.";
+    }
+    if (data.recipientKind === "campaign_fixed") {
+      return "Dein Brief ist ein Anfang. Teile die Kampagne, damit weitere Menschen diesem Empfänger mit eigenen Worten schreiben.";
     }
     if (data.recipientKind === "rathaus") {
       return "Dein Brief ist ein Anfang. Teile die Kampagne, damit weitere Menschen vor Ort mit eigenen Worten schreiben.";
@@ -338,7 +351,7 @@ function buildEmailShareTarget(data: SendLetterEmailParams) {
     data.campaign,
     "participant",
     level,
-    data.governmentSource?.institutionKind ?? "landesregierung"
+    data.governmentSource?.institutionKind === "senat" ? "senat" : "landesregierung"
   );
   if (
     data.campaign?.slug ||
@@ -366,6 +379,7 @@ function getFooterBannerHtml(data: SendLetterEmailParams): string {
   if (
     data.recipientKind === "mdl" ||
     data.recipientKind === "landesregierung" ||
+    data.recipientKind === "campaign_fixed" ||
     data.recipientKind === "bundeskanzler"
   ) return "";
   const path =
@@ -384,11 +398,12 @@ export function buildEmailHtml(data: SendLetterEmailParams): string {
   const isRathaus = data.recipientKind === "rathaus";
   const isMdl = data.recipientKind === "mdl";
   const isLandesregierung = data.recipientKind === "landesregierung";
+  const isCampaignFixed = data.recipientKind === "campaign_fixed";
   const isBundeskanzler = data.recipientKind === "bundeskanzler";
   const isMdbLater = data.recipientKind === "mdb_later";
   const isFallback =
     isMdbLater ||
-    (!isRathaus && !isLandesregierung && data.politicianFirstName === "" && data.politicianLastName === "MdB");
+    (!isRathaus && !isLandesregierung && !isCampaignFixed && data.politicianFirstName === "" && data.politicianLastName === "MdB");
   const letterNumberText =
     typeof data.letterNumber === "number"
       ? `Brief #${new Intl.NumberFormat(locale).format(data.letterNumber)} · `
@@ -424,6 +439,8 @@ export function buildEmailHtml(data: SendLetterEmailParams): string {
       ? data.governmentSource.addressLines.slice(1).map(escapeHtml).join("<br>")
     : isLandesregierung && data.governmentSource
       ? getGovernmentAddressLines(data)
+    : isCampaignFixed && data.fixedRecipient
+      ? data.fixedRecipient.addressLines.slice(1).map(escapeHtml).join("<br>")
     : isBundeskanzler
       ? addressLines.split("<br>").slice(3).join("<br>")
     : isRathaus
@@ -433,7 +450,7 @@ export function buildEmailHtml(data: SendLetterEmailParams): string {
   // Profile link (Abgeordnetenwatch: voting record, public Q&A, transparent source).
   // Prefer the API-provided URL; fall back to a slug-derived URL.
   // Rathaus-Empfänger haben kein Abgeordnetenwatch-Profil — kein Link.
-  const profileUrl = isRathaus || isLandesregierung || isBundeskanzler || isMdbLater
+  const profileUrl = isRathaus || isLandesregierung || isCampaignFixed || isBundeskanzler || isMdbLater
     ? null
     : data.politicianAbgeordnetenwatchUrl ??
       abgeordnetenwatchProfileUrl(data.politicianFirstName, data.politicianLastName);
@@ -448,6 +465,8 @@ export function buildEmailHtml(data: SendLetterEmailParams): string {
       ? `<strong>${escapeHtml(formatGovernmentDisplayName(data.governmentSource.officeName))}</strong><br>`
     : isLandesregierung
       ? `<strong>${escapeHtml(formatGovernmentDisplayName(data.politicianName))}</strong><br>`
+    : isCampaignFixed && data.fixedRecipient
+      ? `<strong>${escapeHtml(data.fixedRecipient.addressLines[0] ?? data.politicianName)}</strong><br>`
     : isBundeskanzler
       ? `<strong>Bundeskanzler ${fullName}</strong><br>`
     : isFallback
@@ -519,6 +538,7 @@ export function buildEmailHtml(data: SendLetterEmailParams): string {
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  ${AI_CONTENT_HTML_META}
   <!--[if mso]>
   <style>td { font-family: 'Courier New', Courier, monospace !important; }</style>
   <![endif]-->
@@ -579,7 +599,7 @@ export function buildEmailHtml(data: SendLetterEmailParams): string {
                      in die PNG eingebrannt (~80%), weil CSS opacity in Outlook nicht greift. -->
                 <tr>
                   <td colspan="7" class="bnb-pad" style="padding:0 32px 8px;background-color:#ffffff;">
-                    <div class="bnb-inner-pad" style="background-color:#FAF8F5;border:1px solid #E0DCD7;border-radius:4px;padding:24px;">
+                    <div class="bnb-inner-pad" ${AI_CONTENT_BLOCK_ATTRIBUTES} style="background-color:#FAF8F5;border:1px solid #E0DCD7;border-radius:4px;padding:24px;">
                       <img src="${APP_URL}${getEmailWatermarkPath(data)}" width="110" height="110" alt="" align="right" style="${getEmailWatermarkStyle(data)}">
                       <p style="margin:0;font-family:'Courier New',Courier,monospace;font-size:14px;line-height:1.7;color:#4A4A4A;white-space:pre-wrap;">${letterHtml}</p>
                     </div>
@@ -728,7 +748,7 @@ export function buildEmailHtml(data: SendLetterEmailParams): string {
                 <tr>
                   <td colspan="7" class="bnb-pad" style="padding:8px 32px 24px;background-color:#FAF8F5;text-align:center;">
                     <p style="margin:0 0 6px;font-family:Georgia,'Times New Roman',serif;font-size:12px;color:#aaaaaa;line-height:1.5;">
-                      <strong>${copy.notice}</strong> ${copy.noticeText}${profileUrl ? ` <a href="${profileUrl}" target="_blank" rel="noopener noreferrer" style="color:#888888;">${disclaimerSiteName}</a>` : ""}. ${copy.responsibility}
+                      <strong>${copy.notice}</strong> ${copy.noticeText}${profileUrl ? ` (<a href="${profileUrl}" target="_blank" rel="noopener noreferrer" style="color:#888888;">${disclaimerSiteName}</a>)` : ""}${copy.noticeTextAfter ? `, ${copy.noticeTextAfter}` : ""}. ${copy.responsibility} ${copy.terms(`<a href="${APP_URL}/nutzungsbedingungen" style="color:#888888;">${copy.termsLabel}</a>`)}
                     </p>
                     <p style="margin:0;font-family:Georgia,'Times New Roman',serif;font-size:12px;color:#aaaaaa;line-height:1.5;">
                       <a href="${APP_URL}/datenschutz" style="color:#888888;">${copy.privacy}</a>: ${copy.dataPolicy} · ${footerGuideLink}${data.debug ? ` · <a href="${buildDebugUrl(data.debug)}" style="color:#888888;text-decoration:none;">Debug</a>` : ""}

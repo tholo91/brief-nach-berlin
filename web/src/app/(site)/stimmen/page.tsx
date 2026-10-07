@@ -8,6 +8,7 @@ import { Figure } from "@/components/editorial/Figure";
 import { FAQAccordion } from "@/components/FAQAccordion";
 import { RatingStat } from "@/components/reviews/RatingStat";
 import { RatingDistributionBlock } from "@/components/reviews/RatingDistributionBlock";
+import { ReviewStatsProvider, ReviewStatsToggle } from "@/components/reviews/ReviewStatsContext";
 import { ReviewMarquee } from "@/components/reviews/ReviewMarquee";
 import { getPublicReviews } from "@/lib/reviews/getPublicReviews";
 import { getReviewStats } from "@/lib/reviews/getReviewStats";
@@ -147,6 +148,7 @@ export default async function StimmenPage() {
       : null;
 
   return (
+    <ReviewStatsProvider stats={stats}>
     <div className="min-h-screen bg-creme py-20">
       <script
         type="application/ld+json"
@@ -185,7 +187,8 @@ export default async function StimmenPage() {
           </div>
           <div className="flex flex-col sm:flex-row items-center sm:items-start gap-6 sm:gap-8 max-w-lg mx-auto">
             <div className="shrink-0">
-              <RatingStat stats={stats} showDistribution={false} />
+              <ReviewStatsToggle />
+              <RatingStat showDistribution={false} />
             </div>
             <div className="border-t sm:border-t-0 sm:border-l border-waldgruen/20 pt-4 sm:pt-0 sm:pl-8">
               <p className="font-handwriting text-xl md:text-2xl text-warmgrau leading-snug text-balance">
@@ -295,7 +298,7 @@ export default async function StimmenPage() {
               das, was hier vorne als nächstes auftaucht.
             </p>
           </Prose>
-          <RatingDistributionBlock stats={stats} />
+          <RatingDistributionBlock />
         </div>
 
         {/* 6. Quote 2 */}
@@ -366,5 +369,6 @@ export default async function StimmenPage() {
         </div>
       </div>
     </div>
+    </ReviewStatsProvider>
   );
 }

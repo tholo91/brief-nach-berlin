@@ -32,6 +32,7 @@ const campaign: Campaign = {
   moderationCategories: [],
   targetLevel: "Bund",
   targetState: null,
+  targetRecipient: null,
   targetPoliticianIds: [],
   emailVerifiedAt: null,
   activatedAt: null,
@@ -71,8 +72,12 @@ describe("campaign Open Graph image", () => {
       },
     });
     expect(markup).toContain("Duisburg retten");
-    expect(markup).toContain("Mehr sichere und bezahlbare öffentliche Räume für Duisburg.");
+    expect(markup).toContain("Ein Anliegen von Initiative Duisburg");
+    expect(markup).not.toContain("Mehr sichere und bezahlbare öffentliche Räume für Duisburg.");
+    expect(markup).not.toContain("Duisburg braucht jetzt mehr sichere und bezahlbare öffentliche Räume.");
     expect(markup).toContain("img-campaign-crowd-ghibli.png");
+    expect(markup).toContain("object-fit:cover");
+    expect(markup).toContain("rgba(250,248,242,0.84)");
     expect(markup).toContain("campaign-creator-icon.png");
     expect(markup).not.toContain("duisburg-retten/logo.webp");
     expect(markup).not.toContain("img-campaign-crowd-ghibli.webp");

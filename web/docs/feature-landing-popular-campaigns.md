@@ -1,7 +1,21 @@
 # Feature: Kuratierte Kampagnen auf der Startseite („Andere schreiben gerade zu …")
 
-> Stand: 19.09.2026 | Status: **Planungsdokument — noch nicht umgesetzt**
-> Erstellt aus einem UX-Entscheidungsworkshop (Thomas + Agent). Dieser Plan ist dafür gedacht, von einem Coding-Agenten umgesetzt zu werden. Der Agent soll gemäß `web/AGENTS.md` vorgehen (insb. Next.js-16-Hinweise lesen, `npm run lint` / `npm run test` / `npm run build` nach Risiko ausführen).
+> Stand: 05.10.2026 | Status: **Ersetzt durch die Hero-Pills (umgesetzt, siehe unten)**. Der ursprüngliche Plan vom 19.09.2026 steht ab Abschnitt 1 nur noch als Historie.
+
+## Umgesetzt: Kampagnen-Pills im Hero (05.10.2026)
+
+| Thema | Entscheidung |
+|---|---|
+| Umfang v1 | Nur Hero-Leiste. Hinweis im Wizard nach dem Tippen („Zu deinem Thema läuft eine Kampagne") folgt später als eigene Phase |
+| Position | Im Hero unter den 3 Trust-Checks (`HeroCampaignPills` in `Hero.tsx`) |
+| Form | Pills in einer Zeile: rundes Logo, Kurzlabel, Pfeil. Kein Zähler, keine Karten |
+| Breakpoints | Erst ab `md` (iPad). Mobil nicht sichtbar |
+| Kuratierung | `landing_rank` (1, 2, 3; null = nicht gezeigt) in Supabase Studio, max. 3 gerendert (Migration `024_campaign_landing_rank.sql`) |
+| Pill-Text | `landing_label` (max. 24 Zeichen), Fallback Kampagnentitel |
+| Neutralität | Höchstens 1 Kampagne pro Themenfeld. Absender per Logo, Tooltip und `aria-label` |
+| Copy | „Oder schau dir laufende Briefkampagnen an" |
+| Sprache | Nur `de` |
+| Datenschutz | `getLandingCampaigns` lädt nur `slug,title,creator_name,logo_path,landing_label`; kein `creator_email` im Client-Payload |
 
 ---
 

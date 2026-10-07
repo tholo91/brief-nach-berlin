@@ -37,6 +37,7 @@ import type { WizardData } from "@/lib/types/wizard";
 import type { RecipientSelection } from "@/lib/lookup/rathausRecipient";
 import { createGenerationProof } from "@/lib/letterSignals/token";
 import { getLandesregierungRecipient } from "@/lib/lookup/landesregierungRecipient";
+import { buildCampaignFixedRecipient } from "@/lib/lookup/campaignFixedRecipient";
 
 const mockedResolveRecipientSelection = jest.mocked(resolveRecipientSelection);
 const mockedCheckRateLimit = jest.mocked(checkRateLimit);
@@ -53,6 +54,24 @@ const data: WizardData = {
   issueText: "Lehrermangel an unserer Schule",
   letterLength: "1",
 };
+
+const fixedRecipientCampaign = {
+  slug: "unterschrift-ist-kein-dienstvergehen",
+  targetLevel: "Fixed",
+  targetState: null,
+  targetRecipient: {
+    organizationName: "Hessisches Ministerium der Justiz und für den Rechtsstaat",
+    personName: null,
+    salutation: "Sehr geehrte Damen und Herren,",
+    street: "Luisenstraße",
+    houseNumber: "13",
+    postalCode: "65185",
+    city: "Wiesbaden",
+    countryCode: "DE",
+  },
+  targetPoliticianIds: [],
+  topic: null,
+} as const;
 
 const mdbRecipient = {
   kind: "mdb" as const,
@@ -82,6 +101,7 @@ describe("RecipientSelection server hardening", () => {
     process.env.LETTER_PROMPT_LEVEL_AWARE = "true";
     process.env.LETTER_SIGNAL_TOKEN_SECRET = "recipient-selection-test-secret";
     mockedCheckRateLimit.mockReturnValue({ allowed: true });
+    mockedGetActiveCampaignBySlug.mockResolvedValue(null);
     mockedResolveRecipientSelection.mockReturnValue({
       ok: true,
       recipient: mdbRecipient,
@@ -119,6 +139,99 @@ describe("RecipientSelection server hardening", () => {
     });
   });
 
+  it("übergibt den festen Kampagnenempfänger aus der serverseitig geladenen Kampagne", async () => {
+    mockedGetActiveCampaignBySlug.mockResolvedValue(fixedRecipientCampaign as never);
+
+    await expect(selectPoliticianAction(
+      {
+        ...data,
+        campaign: {
+          slug: "unterschrift-ist-kein-dienstvergehen",
+          title: "Unterschrift ist kein Dienstvergehen",
+        },
+      },
+      { kind: "campaign_fixed" }
+    )).resolves.toMatchObject({ preCheckOk: true });
+
+    expect(mockedResolveRecipientSelection).toHaveBeenCalledWith(
+      "50667",
+      { kind: "campaign_fixed" },
+      {
+        allowedPoliticianIds: [],
+        campaignSlug: "unterschrift-ist-kein-dienstvergehen",
+        campaignFixedRecipient: expect.objectContaining({
+          kind: "campaign_fixed",
+          level: "Fixed",
+          label: "Hessisches Ministerium der Justiz und für den Rechtsstaat",
+        }),
+      }
+    );
+  });
+
+  it("lehnt bei festem Kampagnenempfänger jede andere Empfänger-Art ab", async () => {
+    mockedGetActiveCampaignBySlug.mockResolvedValue(fixedRecipientCampaign as never);
+
+    await expect(selectPoliticianAction(
+      {
+        ...data,
+        campaign: {
+          slug: "unterschrift-ist-kein-dienstvergehen",
+          title: "Unterschrift ist kein Dienstvergehen",
+        },
+      },
+      { kind: "mdb", selectedPoliticianId: 1 }
+    )).resolves.toEqual({
+      error: "server_error",
+      message: "Empfänger nicht gefunden.",
+    });
+
+    expect(mockedResolveRecipientSelection).not.toHaveBeenCalled();
+  });
+
+  it("lehnt eine am Client ergänzte Adresse für campaign_fixed vor der Auflösung ab", async () => {
+    mockedGetActiveCampaignBySlug.mockResolvedValue(fixedRecipientCampaign as never);
+    const manipulated = {
+      kind: "campaign_fixed",
+      postalAddress: "Private Straße 1, 12345 Beispielstadt",
+    } as unknown as RecipientSelection;
+
+    await expect(selectPoliticianAction(
+      {
+        ...data,
+        campaign: {
+          slug: "unterschrift-ist-kein-dienstvergehen",
+          title: "Unterschrift ist kein Dienstvergehen",
+        },
+      },
+      manipulated,
+    )).resolves.toEqual({
+      error: "server_error",
+      message: "Ungültige Eingabe.",
+    });
+    expect(mockedResolveRecipientSelection).not.toHaveBeenCalled();
+  });
+
+  it("lehnt dieselbe Manipulation auch beim erneuten Versand ab", async () => {
+    mockedGetActiveCampaignBySlug.mockResolvedValue(fixedRecipientCampaign as never);
+
+    await expect(resendLetterAction(
+      {
+        ...data,
+        campaign: {
+          slug: "unterschrift-ist-kein-dienstvergehen",
+          title: "Unterschrift ist kein Dienstvergehen",
+        },
+      },
+      { kind: "mdb", selectedPoliticianId: 1 },
+      "Ein gültiger Brieftext"
+    )).resolves.toEqual({
+      error: "validation",
+      message: "Empfänger nicht gefunden.",
+    });
+
+    expect(mockedResolveRecipientSelection).not.toHaveBeenCalled();
+  });
+
   it("akzeptiert Landesregierung ohne Client-ID", async () => {
     mockedResolveRecipientSelection.mockReturnValue({
       ok: true,
@@ -127,6 +240,7 @@ describe("RecipientSelection server hardening", () => {
         level: "Land",
         addressee: "institution",
         salutation: "Sehr geehrte Damen und Herren,",
+        article: "die",
         institutionKind: "landesregierung",
         bundeslandKey: "NW",
         bundeslandName: "Nordrhein-Westfalen",
@@ -296,6 +410,7 @@ describe("RecipientSelection server hardening", () => {
       level: "Land" as const,
       addressee: "institution" as const,
       salutation: "Sehr geehrte Damen und Herren,",
+      article: "die" as const,
       institutionKind: "landesregierung" as const,
       bundeslandKey: "NW",
       bundeslandName: "Nordrhein-Westfalen",
@@ -340,6 +455,53 @@ describe("RecipientSelection server hardening", () => {
     });
     expect(mockedPrepareLetterEmail).toHaveBeenCalledWith(
       expect.objectContaining({ recipient })
+    );
+  });
+
+  it("Resend lädt den festen Empfänger erneut aus der Kampagne", async () => {
+    const recipient = buildCampaignFixedRecipient(fixedRecipientCampaign.targetRecipient);
+    const letterText = `${recipient.salutation}\n\nEin fertiger Brief.`;
+    mockedGetActiveCampaignBySlug.mockResolvedValue(fixedRecipientCampaign as never);
+    mockedResolveRecipientSelection.mockReturnValue({
+      ok: true,
+      recipient,
+      availableCount: 1,
+      relation: "institutional",
+    });
+    mockedBuildResendDebugPayload.mockReturnValue({} as never);
+    mockedPrepareLetterEmail.mockReturnValue({ feedbackToken: "token", params: {} as never });
+    mockedSendLetterEmail.mockResolvedValue({ success: true, messageId: "id" });
+    const proof = createGenerationProof({
+      letterId: "11111111-1111-4111-8111-111111111111",
+      issueText: data.issueText,
+      plz: data.plz,
+      recipient,
+      letterText,
+      campaignSlug: fixedRecipientCampaign.slug,
+    });
+
+    await expect(resendLetterAction(
+      {
+        ...data,
+        campaign: {
+          slug: fixedRecipientCampaign.slug,
+          title: "Unterschrift ist kein Dienstvergehen",
+        },
+      },
+      { kind: "campaign_fixed" },
+      letterText,
+      proof,
+    )).resolves.toEqual({ success: true });
+    expect(mockedResolveRecipientSelection).toHaveBeenCalledWith(
+      data.plz,
+      { kind: "campaign_fixed" },
+      expect.objectContaining({
+        campaignSlug: fixedRecipientCampaign.slug,
+        campaignFixedRecipient: recipient,
+      }),
+    );
+    expect(mockedPrepareLetterEmail).toHaveBeenCalledWith(
+      expect.objectContaining({ recipient }),
     );
   });
 

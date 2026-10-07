@@ -25,7 +25,7 @@ export const REVISION_REASONS = [
   "activated",
 ] as const;
 
-export const CAMPAIGN_TARGET_LEVELS = ["Bund", "Land"] as const;
+export const CAMPAIGN_TARGET_LEVELS = ["Bund", "Land", "Fixed"] as const;
 
 export type CampaignTargetLevel = (typeof CAMPAIGN_TARGET_LEVELS)[number];
 
@@ -52,6 +52,27 @@ export const BUNDESLAND_KEYS = [
 
 export type BundeslandKey = (typeof BUNDESLAND_KEYS)[number];
 
+export const campaignFixedRecipientSchema = z.object({
+  organizationName: z.string().trim().max(200).nullable().default(null),
+  personName: z.string().trim().max(200).nullable().default(null),
+  salutation: z.string().trim().min(3).max(200),
+  street: z.string().trim().min(2).max(120),
+  houseNumber: z.string().trim().min(1).max(20),
+  postalCode: z.string().regex(/^\d{5}$/, "Bitte gib eine gültige 5-stellige Postleitzahl ein."),
+  city: z.string().trim().min(2).max(120),
+  countryCode: z.literal("DE"),
+}).superRefine((value, ctx) => {
+  if (!value.organizationName && !value.personName) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      path: ["organizationName"],
+      message: "Bitte gib eine Organisation oder eine Person ein.",
+    });
+  }
+});
+
+export type CampaignFixedRecipient = z.infer<typeof campaignFixedRecipientSchema>;
+
 export const BUNDESLAND_NAMES: Record<BundeslandKey, string> = {
   BW: "Baden-Württemberg",
   BY: "Bayern",
@@ -76,11 +97,26 @@ export const BUNDESLAND_NAMES: Record<BundeslandKey, string> = {
 export function resolveCampaignTarget(row: {
   target_level?: string | null;
   target_state?: string | null;
-}): { targetLevel: CampaignTargetLevel; targetState: BundeslandKey | null } {
-  return campaignTargetSchema.parse({
+  target_recipient?: unknown;
+}): {
+  targetLevel: CampaignTargetLevel;
+  targetState: BundeslandKey | null;
+  targetRecipient: CampaignFixedRecipient | null;
+} {
+  const target = campaignTargetSchema.parse({
     targetLevel: row.target_level ?? "Bund",
     targetState: row.target_state ?? null,
   });
+  const targetRecipient = row.target_recipient == null
+    ? null
+    : campaignFixedRecipientSchema.parse(row.target_recipient);
+  if (target.targetLevel === "Fixed" && !targetRecipient) {
+    throw new Error("Ein fester Kampagnenempfänger benötigt eine Adresse.");
+  }
+  if (target.targetLevel !== "Fixed" && targetRecipient) {
+    throw new Error("Eine feste Adresse ist nur für feste Kampagnenempfänger erlaubt.");
+  }
+  return { ...target, targetRecipient };
 }
 
 export type CampaignStatus = (typeof CAMPAIGN_STATUSES)[number];
@@ -132,7 +168,7 @@ export const campaignTargetSchema = z
     targetState: campaignTargetStateSchema.nullable(),
   })
   .superRefine((value, ctx) => {
-    if (value.targetLevel === "Bund" && value.targetState !== null) {
+    if (value.targetLevel !== "Land" && value.targetState !== null) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
         path: ["targetState"],
@@ -178,10 +214,11 @@ export const createCampaignSchema = campaignPublicFieldsSchema
     moderationCategories: z.array(z.string().trim().min(1).max(80)).max(20).default([]),
     targetLevel: campaignTargetLevelSchema.default("Bund"),
     targetState: campaignTargetStateSchema.nullable().default(null),
+    targetRecipient: campaignFixedRecipientSchema.nullable().default(null),
     targetPoliticianIds: campaignTargetPoliticianIdsSchema,
   })
   .superRefine((value, ctx) => {
-    if (value.targetLevel === "Bund" && value.targetState !== null) {
+    if (value.targetLevel !== "Land" && value.targetState !== null) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
         path: ["targetState"],
@@ -195,12 +232,31 @@ export const createCampaignSchema = campaignPublicFieldsSchema
         message: "Bestimmte MdBs können nur bei Bundestagskampagnen ausgewählt werden.",
       });
     }
+    if (value.targetLevel === "Fixed" && !value.targetRecipient) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["targetRecipient"],
+        message: "Bitte gib den festen Empfänger vollständig ein.",
+      });
+    }
+    if (value.targetLevel !== "Fixed" && value.targetRecipient) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["targetRecipient"],
+        message: "Eine feste Adresse ist nur für feste Kampagnenempfänger erlaubt.",
+      });
+    }
   });
 
 export const updateCampaignTargetSchema = campaignTargetPoliticianIdsSchema.optional();
 
 export const updateCampaignPublicFieldsSchema = campaignPublicFieldsSchema
-  .extend({ targetPoliticianIds: campaignTargetPoliticianIdsSchema.optional() })
+  .extend({
+    targetLevel: campaignTargetLevelSchema.optional(),
+    targetState: campaignTargetStateSchema.nullable().optional(),
+    targetRecipient: campaignFixedRecipientSchema.nullable().optional(),
+    targetPoliticianIds: campaignTargetPoliticianIdsSchema.optional(),
+  })
   .partial()
   .refine((value) => Object.keys(value).length > 0, "Keine Änderungen übergeben.");
 
@@ -225,6 +281,7 @@ export type Campaign = {
   moderationCategories: string[];
   targetLevel: CampaignTargetLevel;
   targetState: BundeslandKey | null;
+  targetRecipient: CampaignFixedRecipient | null;
   targetPoliticianIds: number[];
   /** Internes, beim Speichern der Kampagne ermitteltes Statistik-Signal. */
   topic?: TopicSignal | null;
@@ -237,6 +294,12 @@ export type Campaign = {
   createdAt: string;
   updatedAt: string;
 };
+
+export function isCampaignTargetLocked(
+  campaign: Pick<Campaign, "activatedAt">
+): boolean {
+  return campaign.activatedAt !== null;
+}
 
 export function parseCampaignTopic(row: {
   topic_categories?: unknown;
@@ -265,6 +328,9 @@ export type CampaignRevision = {
   externalUrl: string | null;
   moderationStatus: CampaignModerationStatus;
   moderationCategories: string[];
+  targetLevel: CampaignTargetLevel;
+  targetState: BundeslandKey | null;
+  targetRecipient: CampaignFixedRecipient | null;
   targetPoliticianIds: number[];
   createdAt: string;
 };

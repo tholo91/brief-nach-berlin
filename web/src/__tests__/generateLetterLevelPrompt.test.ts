@@ -32,6 +32,7 @@ import type { GenerateLetterInput } from "@/lib/types/wizard";
 import type { Politician } from "@/lib/types/politician";
 import type { RathausRecipient } from "@/lib/lookup/rathausRecipient";
 import { getLandesregierungRecipient } from "@/lib/lookup/landesregierungRecipient";
+import { getCampaignFixedRecipient } from "@/lib/lookup/campaignFixedRecipient";
 
 const mdb: Politician = {
   id: 1,
@@ -71,6 +72,19 @@ const rathaus: RathausRecipient = {
 };
 const landesregierung = getLandesregierungRecipient("NW")!;
 const regierungschef = getLandesregierungRecipient("NW", "head")!;
+const fixedCampaignRecipient = getCampaignFixedRecipient({
+  targetLevel: "Fixed",
+  targetRecipient: {
+    organizationName: "Hessisches Ministerium der Justiz und für den Rechtsstaat",
+    personName: null,
+    salutation: "Sehr geehrte Damen und Herren,",
+    street: "Luisenstraße",
+    houseNumber: "13",
+    postalCode: "65185",
+    city: "Wiesbaden",
+    countryCode: "DE",
+  },
+})!;
 
 function input(overrides: Partial<GenerateLetterInput> = {}): GenerateLetterInput {
   return {
@@ -158,6 +172,22 @@ describe("buildSystemPrompt — Empfängerlogik", () => {
     expect(prompt).not.toContain("ABGEORDNETEN-KONTEXT NUTZEN");
     expect(prompt).not.toContain("MdB-KONTEXT NUTZEN");
     expect(prompt).not.toContain("- SPD:");
+  });
+
+  it("fester Kampagnenempfänger: bindet Anrede und vermeidet erfundene politische Beziehungen", () => {
+    const prompt = buildSystemPrompt(input({
+      level: "Fixed",
+      campaignFixedRecipient: fixedCampaignRecipient,
+      politicians: [],
+    }));
+
+    expect(prompt).toContain("fest hinterlegte Person oder Organisation");
+    expect(prompt).toContain("keine verifizierte politische Ebene");
+    expect(prompt).toContain("Funktion oder Zuständigkeit");
+    expect(prompt).toContain("keine Partei- oder Wahlkreisbeziehung");
+    expect(prompt).toContain('Anrede: exakt "Sehr geehrte Damen und Herren,"');
+    expect(prompt).not.toContain("Der Empfänger ist die Landesregierung oder");
+    expect(prompt).not.toContain("ABGEORDNETEN-KONTEXT NUTZEN");
   });
 
   it("Regierungschef: nennt die richtige Person und Anrede ohne Parteikontext", () => {
@@ -355,6 +385,24 @@ describe("buildUserPrompt — Landesregierung", () => {
   });
 });
 
+describe("buildUserPrompt — fester Kampagnenempfänger", () => {
+  it("sendet nur den serverseitig geladenen Empfänger mit exakter Anrede", () => {
+    const prompt = buildUserPrompt(
+      input({ level: "Fixed", campaignFixedRecipient: fixedCampaignRecipient, politicians: [] }),
+      200,
+      280,
+      3,
+    );
+
+    expect(prompt).toContain("Hessisches Ministerium der Justiz und für den Rechtsstaat");
+    expect(prompt).toContain("Luisenstraße 13");
+    expect(prompt).toContain("65185 Wiesbaden");
+    expect(prompt).toContain("Sehr geehrte Damen und Herren,");
+    expect(prompt).not.toContain('"party"');
+    expect(prompt).not.toContain("Anna Müller");
+  });
+});
+
 describe("generateLetter — serverseitig aufgelöste Ebene", () => {
   const letter = Array.from({ length: 260 }, (_, index) => `Wort${index}`).join(" ");
 
@@ -423,6 +471,30 @@ describe("generateLetter — serverseitig aufgelöste Ebene", () => {
     expect(result.selectedPolitician).toBeNull();
     expect(result.politicalLevel).toBe("Land");
     expect(result.fallbackUsed).toBe(false);
+  });
+
+  it("liefert den festen Kampagnenempfänger unabhängig von der Modell-ID", async () => {
+    (mistral.chat.complete as jest.Mock).mockResolvedValue({
+      choices: [{
+        message: {
+          content: JSON.stringify({
+            political_level: "Bund",
+            selected_politician_id: 999,
+            letter: `24.09.2026\n\nFalsche Anrede,\n\n${letter}`,
+          }),
+        },
+      }],
+    });
+
+    const result = await generateLetter(input({
+      level: "Fixed",
+      campaignFixedRecipient: fixedCampaignRecipient,
+      politicians: [],
+    }));
+
+    expect(result.selectedRecipient).toBe(fixedCampaignRecipient);
+    expect(result.politicalLevel).toBe("Fixed");
+    expect(result.letter).toContain("Sehr geehrte Damen und Herren,");
   });
 
   it("liefert Themen als validierten Fallback mit Herkunftsvertrag", async () => {

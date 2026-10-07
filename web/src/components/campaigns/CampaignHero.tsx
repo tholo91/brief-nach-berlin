@@ -3,6 +3,8 @@ import { CampaignBackground } from "./CampaignBackground";
 import { CampaignIssueStarter } from "./CampaignIssueStarter";
 import { CampaignLogo } from "./CampaignLogo";
 import { getLandesregierungRecipient } from "@/lib/lookup/landesregierungRecipient";
+import { getCampaignFixedRecipient } from "@/lib/lookup/campaignFixedRecipient";
+import { CampaignFixedRecipientBadge } from "./CampaignFixedRecipientBadge";
 
 type PublicCampaign = Pick<
   Campaign,
@@ -16,6 +18,7 @@ type PublicCampaign = Pick<
   | "letterCount"
   | "targetLevel"
   | "targetState"
+  | "targetRecipient"
   | "targetPoliticianIds"
 >;
 
@@ -34,8 +37,8 @@ const COMMON_FAQ_ITEMS = [
 
 const TRUST_ITEMS = [
   "Kostenlos",
-  "Kein Account",
-  "Anliegen vorausgefüllt",
+  "Ohne Account",
+  "Vorbefüllt",
 ];
 
 function CheckIcon() {
@@ -95,6 +98,7 @@ export function CampaignHero({ campaign }: { campaign: PublicCampaign }) {
   const sourceName = attribution || "Kampagnenersteller:in";
   const sourceHostname = formatHostname(campaign.externalUrl);
   const isLandCampaign = campaign.targetLevel === "Land";
+  const isFixedCampaign = campaign.targetLevel === "Fixed";
   const hasTargetMdbs = campaign.targetPoliticianIds.length > 0;
   const targetStateName = campaign.targetState
     ? BUNDESLAND_NAMES[campaign.targetState] ?? null
@@ -102,26 +106,51 @@ export function CampaignHero({ campaign }: { campaign: PublicCampaign }) {
   const governmentRecipient = campaign.targetState
     ? getLandesregierungRecipient(campaign.targetState)
     : null;
-  const heroRecipient = !isLandCampaign
+  const fixedRecipient = getCampaignFixedRecipient(campaign);
+  const heroRecipient = isFixedCampaign && fixedRecipient
+    ? fixedRecipient.label
+    : !isLandCampaign
     ? hasTargetMdbs
       ? "ein ausgewähltes Mitglied des Bundestags"
       : "dein Mitglied des Bundestags"
     : governmentRecipient
-      ? `${governmentRecipient.institutionKind === "senat" ? "den" : "die"} ${governmentRecipient.label}`
+      ? `${governmentRecipient.article} ${governmentRecipient.label}`
       : "die Landesregierung deines Bundeslands";
   const faqItems = [
     {
       question: "Warum eine Briefkampagne?",
-      answer: isLandCampaign
+      answer: isFixedCampaign && fixedRecipient
+        ? `Jede Person formuliert und versendet ihren eigenen Brief. Der Empfänger ${fixedRecipient.label} ist für diese Kampagne festgelegt.`
+        : isLandCampaign
         ? "Ein persönlicher Brief bekommt eine klare amtliche Empfängeradresse bei der Landesregierung oder dem Senat. Jede Person formuliert und versendet ihren eigenen Brief."
         : "Ein persönlicher Brief geht mit Adresse und Wahlkreisbezug an ein konkretes Mitglied des Bundestags. Jede Person formuliert und versendet ihren eigenen Brief.",
     },
     ...COMMON_FAQ_ITEMS,
   ];
+  const mobileHeaderClass =
+    "mt-3 inline-flex w-fit max-w-full items-center gap-2 rounded-full border border-waldgruen/20 bg-waldgruen/10 px-2 py-1 font-body text-[11px] font-semibold leading-tight text-waldgruen-dark sm:hidden";
+  const mobileHeaderContent = (
+    <>
+      {!isFixedCampaign && <span className="max-w-36 shrink-0 truncate">
+        {targetStateName
+          ? `Landeskampagne · ${targetStateName}`
+          : "Landeskampagne"}
+      </span>}
+      {!isFixedCampaign && <span aria-hidden="true" className="h-4 border-l border-waldgruen/20" />}
+      <span className="min-w-0 truncate" title={sourceName}>
+        von {sourceName}
+      </span>
+      <CampaignLogo
+        logoPath={campaign.logoPath}
+        name={sourceName}
+        size="xs"
+      />
+    </>
+  );
 
   return (
     <CampaignBackground>
-      <div className="relative z-10 mx-auto grid max-w-6xl gap-8 px-5 py-8 sm:px-6 sm:py-10 lg:grid-cols-[0.92fr_1.08fr] lg:grid-rows-[auto_auto] lg:gap-x-12 lg:gap-y-6 lg:py-14">
+      <div className="relative z-10 mx-auto grid max-sm:grid-cols-1 max-w-6xl gap-8 px-5 py-8 sm:px-6 sm:py-10 lg:grid-cols-[0.92fr_1.08fr] lg:grid-rows-[auto_auto] lg:gap-x-12 lg:gap-y-6 lg:py-14">
         <div className="flex flex-col justify-center lg:col-start-1 lg:row-start-1">
           <p className="font-typewriter text-xs font-bold uppercase tracking-widest text-waldgruen/65 sm:text-sm">
             Öffentliche Briefkampagne
@@ -129,12 +158,26 @@ export function CampaignHero({ campaign }: { campaign: PublicCampaign }) {
           <h1 className="mt-3 max-w-xl text-balance font-body text-4xl font-bold leading-tight tracking-tight text-waldgruen-dark sm:text-5xl">
             {campaign.title}
           </h1>
-          {isLandCampaign && (
-            <span className="mt-3 inline-flex w-fit items-center rounded-full border border-waldgruen/20 bg-waldgruen/10 px-3 py-1 font-body text-xs font-semibold text-waldgruen-dark">
-              {targetStateName
-                ? `Landeskampagne · ${targetStateName}`
-                : "Landeskampagne"}
-            </span>
+          {(isLandCampaign || isFixedCampaign) && (
+            <>
+              {isFixedCampaign && <CampaignFixedRecipientBadge recipient={fixedRecipient} />}
+              {campaign.description ? (
+                <a
+                  href="#campaign-description"
+                  aria-label={`${isFixedCampaign ? "Kampagne mit festem Empfänger" : `Landeskampagne${targetStateName ? ` in ${targetStateName}` : ""}`} von ${sourceName}; zur Beschreibung`}
+                  className={mobileHeaderClass}
+                >
+                  {mobileHeaderContent}
+                </a>
+              ) : (
+                <span className={mobileHeaderClass}>{mobileHeaderContent}</span>
+              )}
+              {!isFixedCampaign && (
+                <span className="mt-3 hidden w-fit items-center rounded-full border border-waldgruen/20 bg-waldgruen/10 px-3 py-1 font-body text-xs font-semibold text-waldgruen-dark sm:inline-flex">
+                  {targetStateName ? `Landeskampagne · ${targetStateName}` : "Landeskampagne"}
+                </span>
+              )}
+            </>
           )}
           {hasTargetMdbs && (
             <span className="mt-3 inline-flex w-fit items-center rounded-full border border-waldgruen/20 bg-waldgruen/10 px-3 py-1 font-body text-xs font-semibold text-waldgruen-dark">
@@ -146,9 +189,9 @@ export function CampaignHero({ campaign }: { campaign: PublicCampaign }) {
             persönlichen Brief an {heroRecipient}. Du ergänzt, was dir wichtig
             ist, prüfst den Text und kannst den Brief abschicken.
           </p>
-          <div className="mt-5 flex flex-wrap gap-x-4 gap-y-2 font-body text-sm font-semibold text-waldgruen">
+          <div className="mt-5 flex flex-nowrap items-center gap-x-2 font-body text-[11px] font-semibold leading-tight text-waldgruen sm:gap-x-4 sm:text-sm">
             {TRUST_ITEMS.map((item) => (
-              <span key={item} className="inline-flex items-center gap-1.5">
+              <span key={item} className="inline-flex shrink-0 items-center gap-1">
                 <CheckIcon />
                 {item}
               </span>
@@ -196,7 +239,10 @@ export function CampaignHero({ campaign }: { campaign: PublicCampaign }) {
             </div>
           </div>
           {campaign.description && (
-            <p className="mt-4 border-t border-warmgrau/10 pt-4 font-body text-sm leading-relaxed text-warmgrau/70">
+            <p
+              id="campaign-description"
+              className="mt-4 scroll-mt-6 border-t border-warmgrau/10 pt-4 font-body text-sm leading-relaxed text-warmgrau/70"
+            >
               {campaign.description}
             </p>
           )}

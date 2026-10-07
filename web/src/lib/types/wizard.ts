@@ -7,11 +7,13 @@ import type {
 } from "@/lib/lookup/rathausRecipient";
 import type { LandesregierungRecipient } from "@/lib/lookup/landesregierungRecipient";
 import type { BundeskanzlerRecipient } from "@/lib/lookup/bundeskanzlerRecipient";
+import type { CampaignFixedRecipientRecipient } from "@/lib/lookup/campaignFixedRecipient";
 import type { LetterLength } from "@/lib/config";
 import type { Locale } from "@/lib/i18n/locale";
 import type { TopicSignal } from "@/lib/topics/topicTaxonomy";
 
 export type WizardStep = 1 | 2 | "2b" | "level" | 3;
+export type RecipientLevel = PoliticalLevel | "Fixed";
 
 export interface WizardData {
   locale?: Locale;
@@ -30,7 +32,7 @@ export interface WizardData {
     creatorName?: string;
     externalUrl?: string;
     logoPath?: string;
-    targetLevel?: "Bund" | "Land";
+    targetLevel?: "Bund" | "Land" | "Fixed";
     targetState?: string | null;
   };
 }
@@ -75,6 +77,7 @@ export interface LevelRoutingContext {
   };
   bundeslandName: string | null;
   ortsname: string | null;
+  fixedRecipient?: CampaignFixedRecipientRecipient;
   /** Ehrlicher Hinweis, wenn die empfohlene Ebene für die PLZ nicht abgedeckt ist */
   coverageHint: string | null;
 }
@@ -89,7 +92,7 @@ export interface GenerateLetterInput {
   toneLevel?: number;
   mdbContext?: MdbContext;
   /** Ebene des Empfängers; default "Bund" (heutiges Verhalten) */
-  level?: PoliticalLevel;
+  level?: RecipientLevel;
   /** Kommune: synthetischer Verwaltungs-Empfänger statt politicians[] */
   rathaus?: RathausRecipient;
   /** Land: institutioneller Regierungs-/Senats-Empfänger statt politicians[] */
@@ -98,6 +101,8 @@ export interface GenerateLetterInput {
   bundeskanzler?: BundeskanzlerRecipient;
   /** Neutraler Bund-Entwurf, dessen konkrete Person später eingesetzt wird. */
   mdbLater?: MdbLaterRecipient;
+  /** Kampagne: serverseitig geladener fester Empfänger. */
+  campaignFixedRecipient?: CampaignFixedRecipientRecipient;
   /** Serverseitig abgeleitete Beziehung zwischen PLZ und Empfänger. */
   recipientRelation?: RecipientRelation;
   /**
@@ -120,7 +125,7 @@ export interface GenerateLetterResult {
   selectedRecipient: Recipient;
   /** Für mdb/mdl der Politician; für institutionelle Empfänger null */
   selectedPolitician: Politician | null;
-  politicalLevel: PoliticalLevel;
+  politicalLevel: RecipientLevel;
   wordCount: number;
   wordCountInRange: boolean;
   fallbackUsed: boolean; // true when Mistral returned an unknown selected_politician_id

@@ -65,6 +65,13 @@ export default function AppFooter() {
             >
               Datenschutz
             </Link>
+            <Link
+              href="/nutzungsbedingungen"
+              prefetch={false}
+              className="font-body text-sm text-warmgrau/40 transition-colors duration-200 hover:text-warmgrau"
+            >
+              Nutzungsbedingungen
+            </Link>
           </div>
         </div>
       ) : (
@@ -130,6 +137,13 @@ export default function AppFooter() {
               className="font-body text-sm text-warmgrau/40 transition-colors duration-200 hover:text-warmgrau"
             >
               Datenschutz
+            </Link>
+            <Link
+              href="/nutzungsbedingungen"
+              prefetch={false}
+              className="font-body text-sm text-warmgrau/40 transition-colors duration-200 hover:text-warmgrau"
+            >
+              Nutzungsbedingungen
             </Link>
           </div>
         </div>

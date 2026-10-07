@@ -7,8 +7,9 @@ import type {
   WizardData,
   WizardActionResult,
   LevelRoutingContext,
+  RecipientLevel,
 } from "@/lib/types/wizard";
-import type { Politician, PoliticalLevel } from "@/lib/types/politician";
+import type { Politician } from "@/lib/types/politician";
 import type { Recipient } from "@/lib/lookup/rathausRecipient";
 import type { Step1Data } from "@/lib/validation/wizardSchemas";
 import { submitWizardAction } from "@/lib/actions/submitWizard";
@@ -77,11 +78,14 @@ function stepToProgress(step: WizardStep): number {
 function recipientsForLevel(
   politicians: Politician[],
   levelRouting: LevelRoutingContext | null,
-  level: PoliticalLevel | null,
+  level: RecipientLevel | null,
   campaignRestricted: boolean
 ): Recipient[] {
   if (!levelRouting || !level) {
     return politicians.map((p) => ({ ...p, kind: p.level === "Land" ? "mdl" : "mdb" }));
+  }
+  if (level === "Fixed") {
+    return levelRouting.fixedRecipient ? [levelRouting.fixedRecipient] : [];
   }
   if (level === "Kommune") return levelRouting.byLevel.Kommune;
   if (level === "Land") return levelRouting.byLevel.Land;
@@ -158,7 +162,7 @@ export function WizardShell() {
   // der signierte Prefetch-Token (LOCK-10). Der Prefetch läuft spätestens
   // parallel zu Ton- und Längenauswahl.
   const [levelRouting, setLevelRouting] = useState<LevelRoutingContext | null>(null);
-  const [selectedLevel, setSelectedLevel] = useState<PoliticalLevel | null>(null);
+  const [selectedLevel, setSelectedLevel] = useState<RecipientLevel | null>(null);
   const [routingToken, setRoutingToken] = useState<string | null>(null);
   const routingPrefetchRef = useRef<{
     issueText: string;
@@ -682,7 +686,7 @@ export function WizardShell() {
         {step === "level" && levelRouting && (
           <StepLevelSelect
             routing={levelRouting}
-            initialLevel={selectedLevel}
+            initialLevel={selectedLevel === "Fixed" ? null : selectedLevel}
             onContinue={(level) => {
               setSelectedLevel(level);
               navigateToStep(3);

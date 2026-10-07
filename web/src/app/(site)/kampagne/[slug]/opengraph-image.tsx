@@ -33,11 +33,6 @@ function titleSize(title: string): number {
   return 76;
 }
 
-function campaignClaim(issueText: string, description: string | null): string {
-  const source = description?.trim() || issueText.trim().split(/\n\s*\n/)[0];
-  return compactText(source, 148);
-}
-
 function campaignLogoForOpenGraph(path: string | null): string | null {
   if (!path || !/\.(?:png|jpe?g)$/i.test(path)) return null;
   return campaignLogoPublicUrl(path);
@@ -57,7 +52,6 @@ export default async function CampaignOpenGraphImage({
   const creatorName = campaign.creatorName
     ? compactText(campaign.creatorName, 46)
     : null;
-  const claim = campaignClaim(campaign.issueText, campaign.description);
   const imageUrl =
     campaignLogoForOpenGraph(campaign.logoPath) ??
     `${APP_URL}/images/campaign-creator-icon.png`;
@@ -91,7 +85,7 @@ export default async function CampaignOpenGraphImage({
             width: "100%",
             height: "100%",
             objectFit: "cover",
-            opacity: 0.2,
+            opacity: 0.24,
           }}
         />
         <div
@@ -100,7 +94,7 @@ export default async function CampaignOpenGraphImage({
             inset: 0,
             display: "flex",
             background:
-              "linear-gradient(90deg, rgba(250,248,242,0.96) 0%, rgba(250,248,242,0.91) 52%, rgba(250,248,242,0.72) 100%)",
+              "linear-gradient(90deg, rgba(250,248,242,0.84) 0%, rgba(250,248,242,0.76) 52%, rgba(250,248,242,0.58) 100%)",
           }}
         />
         <div
@@ -154,17 +148,6 @@ export default async function CampaignOpenGraphImage({
               Ein Anliegen von {creatorName}
             </div>
           )}
-          <div
-            style={{
-              marginTop: creatorName ? 24 : 28,
-              maxWidth: 650,
-              fontSize: 28,
-              lineHeight: 1.2,
-              color: "#3f4b43",
-            }}
-          >
-            {claim}
-          </div>
         </div>
         <div
           style={{

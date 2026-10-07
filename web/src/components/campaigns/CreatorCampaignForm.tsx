@@ -17,7 +17,9 @@ import {
   BUNDESLAND_NAMES,
   compactCampaignSlug,
   normalizeCampaignSlug,
+  type CampaignTargetLevel,
 } from "@/lib/campaigns/schema";
+import { normalizeCampaignTargetDraft } from "@/lib/campaigns/targetDraft";
 import {
   MdbCampaignHiddenInputs,
   MdbCampaignSelector,
@@ -32,7 +34,15 @@ const issueTextBetterChars = 200;
 const issueTextMaxChars = 4000;
 const campaignDescriptionMaxChars = 400;
 const acceptedLogoTypes = new Set(["image/png", "image/jpeg", "image/webp"]);
-const firstStepErrorFields = new Set(["title", "issueText", "slug", "creatorName", "targetPoliticianIds"]);
+const firstStepErrorFields = new Set([
+  "title",
+  "issueText",
+  "slug",
+  "creatorName",
+  "targetPoliticianIds",
+  "targetRecipient",
+  "fixedAddressAccepted",
+]);
 const slugPattern = /^[a-z0-9][a-z0-9-]{1,78}[a-z0-9]$/;
 const draftFields = [
   "title",
@@ -45,9 +55,19 @@ const draftFields = [
   "targetLevel",
   "targetState",
   "targetMode",
+  "fixedOrganizationName",
+  "fixedPersonName",
+  "fixedSalutation",
+  "fixedStreet",
+  "fixedHouseNumber",
+  "fixedPostalCode",
+  "fixedCity",
 ] as const;
 type DraftField = (typeof draftFields)[number];
-type CampaignDraft = Record<DraftField, string> & { targetPoliticianIds: number[] };
+type CampaignDraft = Omit<Record<DraftField, string>, "targetLevel"> & {
+  targetLevel: CampaignTargetLevel;
+  targetPoliticianIds: number[];
+};
 type StoredCampaignDraft = Partial<CampaignDraft> & { slugManuallyEdited?: boolean };
 type FormStep = 1 | 2;
 const emptyDraft: CampaignDraft = {
@@ -61,6 +81,13 @@ const emptyDraft: CampaignDraft = {
   targetLevel: "Bund",
   targetState: "",
   targetMode: "default",
+  fixedOrganizationName: "",
+  fixedPersonName: "",
+  fixedSalutation: "Sehr geehrte Damen und Herren,",
+  fixedStreet: "",
+  fixedHouseNumber: "",
+  fixedPostalCode: "",
+  fixedCity: "",
   targetPoliticianIds: [],
 };
 const targetLevelOptions = [
@@ -73,6 +100,11 @@ const targetLevelOptions = [
     value: "Land",
     title: "Landesregierung",
     text: "Briefe gehen institutionell an die Landesregierung oder in Stadtstaaten an den Senat.",
+  },
+  {
+    value: "Fixed",
+    title: "Fester Empfänger",
+    text: "Alle Briefe gehen an dieselbe Person oder Organisation mit deutscher Postadresse.",
   },
 ] as const;
 const commonCampaignWritingTips = [
@@ -92,12 +124,27 @@ function slugPreview(value: string): string {
   return normalizeCampaignSlug(value);
 }
 
-function isFirstStepComplete(draft: CampaignDraft, normalizedSlug: string): boolean {
+function isFirstStepComplete(
+  draft: CampaignDraft,
+  normalizedSlug: string,
+  fixedAddressAccepted: boolean
+): boolean {
+  const fixedRecipientComplete =
+    draft.targetLevel !== "Fixed" ||
+    ((draft.fixedOrganizationName.trim().length > 0 ||
+      draft.fixedPersonName.trim().length > 0) &&
+      draft.fixedSalutation.trim().length >= 3 &&
+      draft.fixedStreet.trim().length >= 2 &&
+      draft.fixedHouseNumber.trim().length > 0 &&
+      /^\d{5}$/.test(draft.fixedPostalCode) &&
+      draft.fixedCity.trim().length >= 2 &&
+      fixedAddressAccepted);
   return (
     draft.title.trim().length >= 3 &&
     draft.creatorName.trim().length >= 2 &&
     draft.issueText.trim().length >= issueTextMinChars &&
-    slugPattern.test(normalizedSlug)
+    slugPattern.test(normalizedSlug) &&
+    fixedRecipientComplete
   );
 }
 
@@ -148,6 +195,7 @@ export function CreatorCampaignForm() {
   const [logoPreviewUrl, setLogoPreviewUrl] = useState<string | null>(null);
   const [logoFileName, setLogoFileName] = useState<string | null>(null);
   const [logoError, setLogoError] = useState<string | null>(null);
+  const [fixedAddressAccepted, setFixedAddressAccepted] = useState(false);
   const normalizedSlug = useMemo(() => slugPreview(draft.slug), [draft.slug]);
   const normalizedCompactSlug = useMemo(
     () => compactCampaignSlug(normalizedSlug),
@@ -164,7 +212,13 @@ export function CreatorCampaignForm() {
   const responsibilityError = fieldError(result, "responsibilityAccepted");
   const logoServerError = fieldError(result, "logo");
   const issueTextCharCount = draft.issueText.trim().length;
-  const firstStepComplete = isFirstStepComplete(draft, normalizedSlug);
+  const targetRecipientError = fieldError(result, "targetRecipient");
+  const fixedAddressAcceptedError = fieldError(result, "fixedAddressAccepted");
+  const firstStepComplete = isFirstStepComplete(
+    draft,
+    normalizedSlug,
+    fixedAddressAccepted
+  );
 
   useEffect(() => {
     const rawDraft = window.localStorage.getItem(draftStorageKey);
@@ -189,11 +243,11 @@ export function CreatorCampaignForm() {
             )
           : [],
       };
-      if (nextDraft.targetLevel !== "Land") {
+      if (!["Bund", "Land", "Fixed"].includes(nextDraft.targetLevel)) {
         nextDraft.targetLevel = "Bund";
-        nextDraft.targetState = "";
       }
-      if (nextDraft.targetPoliticianIds.length > 0) {
+      Object.assign(nextDraft, normalizeCampaignTargetDraft(nextDraft));
+      if (nextDraft.targetLevel === "Bund" && nextDraft.targetPoliticianIds.length > 0) {
         nextDraft.targetMode = "specific";
       }
       const restoredSlugManuallyEdited =
@@ -223,9 +277,14 @@ export function CreatorCampaignForm() {
 
   function updateDraft(field: DraftField, value: string) {
     setDraft((currentDraft) => {
-      const nextDraft = { ...currentDraft, [field]: value };
-      if (field === "targetLevel" && value !== "Land") {
-        nextDraft.targetState = "";
+      const nextDraft = field === "targetLevel"
+        ? normalizeCampaignTargetDraft({
+            ...currentDraft,
+            targetLevel: value as CampaignTargetLevel,
+          })
+        : { ...currentDraft, [field]: value };
+      if (field === "targetLevel" && value !== "Fixed") {
+        setFixedAddressAccepted(false);
       }
       window.localStorage.setItem(
         draftStorageKey,
@@ -312,6 +371,17 @@ export function CreatorCampaignForm() {
 
     setResult(null);
     if (!form.reportValidity()) return;
+    if (draft.targetLevel === "Fixed" && !firstStepComplete) {
+      setResult({
+        ok: false,
+        message: "Bitte vervollständige den festen Empfänger.",
+        fieldErrors: {
+          targetRecipient:
+            "Bitte gib mindestens eine Organisation oder Person und die vollständige Adresse ein.",
+        },
+      });
+      return;
+    }
     setStep(2);
     window.requestAnimationFrame(() => {
       const top = form.getBoundingClientRect().top + window.scrollY - 96;
@@ -411,6 +481,16 @@ export function CreatorCampaignForm() {
           <input type="hidden" name="targetLevel" value={draft.targetLevel} />
           <input type="hidden" name="targetState" value={draft.targetState} />
           <input type="hidden" name="targetMode" value={draft.targetMode} />
+          <input type="hidden" name="fixedOrganizationName" value={draft.fixedOrganizationName} />
+          <input type="hidden" name="fixedPersonName" value={draft.fixedPersonName} />
+          <input type="hidden" name="fixedSalutation" value={draft.fixedSalutation} />
+          <input type="hidden" name="fixedStreet" value={draft.fixedStreet} />
+          <input type="hidden" name="fixedHouseNumber" value={draft.fixedHouseNumber} />
+          <input type="hidden" name="fixedPostalCode" value={draft.fixedPostalCode} />
+          <input type="hidden" name="fixedCity" value={draft.fixedCity} />
+          {fixedAddressAccepted && (
+            <input type="hidden" name="fixedAddressAccepted" value="on" />
+          )}
           {draft.targetMode === "specific" && (
             <MdbCampaignHiddenInputs selectedIds={draft.targetPoliticianIds} />
           )}
@@ -490,7 +570,12 @@ export function CreatorCampaignForm() {
           <ul className="grid gap-2 px-4 pb-4 pt-1 font-body text-sm leading-relaxed text-warmgrau/75">
             {[
               ...commonCampaignWritingTips,
-              ...(draft.targetLevel === "Land"
+              ...(draft.targetLevel === "Fixed"
+                ? [
+                    "Argumente: Warum ist genau diese Person oder Organisation der richtige Ansprechpartner?",
+                    "Anschluss: Formuliere eine konkrete Bitte, ohne politische Ebene, Partei, Wahlkreis oder Zuständigkeit zu unterstellen.",
+                  ]
+                : draft.targetLevel === "Land"
                 ? [
                     "Argumente: Warum braucht das Thema eine landesweite politische Entscheidung?",
                     "Anschluss: Formuliere eine konkrete Bitte an die Landesregierung, ohne ein Ressort oder Ministerium zu raten.",
@@ -553,7 +638,7 @@ export function CreatorCampaignForm() {
         <legend className="font-typewriter text-sm font-bold text-waldgruen-dark">
           Wohin soll die Kampagne gehen?
         </legend>
-        <div className="grid gap-2 sm:grid-cols-2">
+        <div className="grid gap-2 sm:grid-cols-3">
           {targetLevelOptions.map((option) => {
             const isSelected = draft.targetLevel === option.value;
             return (
@@ -571,7 +656,7 @@ export function CreatorCampaignForm() {
                   value={option.value}
                   checked={isSelected}
                   onChange={() => {
-                    if (option.value === "Land") updateTargetMode("default");
+                    if (option.value !== "Bund") updateTargetMode("default");
                     updateDraft("targetLevel", option.value);
                   }}
                   className="mt-1 h-4 w-4 shrink-0 border-warmgrau/30 text-waldgruen accent-waldgruen"
@@ -647,6 +732,64 @@ export function CreatorCampaignForm() {
             <p id="targetState-help" className="font-body text-sm text-warmgrau/60">
               Wähle ein festes Bundesland, oder lass &quot;Alle Bundesländer&quot; stehen, dann entscheidet die PLZ der schreibenden Person.
             </p>
+          </div>
+        )}
+        {draft.targetLevel === "Fixed" && (
+          <div className="grid gap-4 rounded-md border border-waldgruen/20 bg-waldgruen/5 p-4">
+            <div className="grid gap-3 sm:grid-cols-2">
+              <div className="grid gap-2">
+                <label className="font-typewriter text-sm font-bold text-waldgruen-dark" htmlFor="fixedOrganizationName">
+                  Organisation <span className="font-body font-normal text-warmgrau/55">(optional)</span>
+                </label>
+                <input id="fixedOrganizationName" name="fixedOrganizationName" maxLength={200} value={draft.fixedOrganizationName} onChange={(event) => updateDraft("fixedOrganizationName", event.target.value)} className="rounded-md border border-warmgrau/20 bg-white px-4 py-3 font-body text-base outline-none focus:border-waldgruen" placeholder="Hessisches Ministerium der Justiz" />
+              </div>
+              <div className="grid gap-2">
+                <label className="font-typewriter text-sm font-bold text-waldgruen-dark" htmlFor="fixedPersonName">
+                  Person <span className="font-body font-normal text-warmgrau/55">(optional)</span>
+                </label>
+                <input id="fixedPersonName" name="fixedPersonName" maxLength={200} value={draft.fixedPersonName} onChange={(event) => updateDraft("fixedPersonName", event.target.value)} className="rounded-md border border-warmgrau/20 bg-white px-4 py-3 font-body text-base outline-none focus:border-waldgruen" placeholder="Frau Dr. Erika Beispiel" />
+              </div>
+            </div>
+            <p className="font-body text-xs leading-relaxed text-warmgrau/60">
+              Mindestens Organisation oder Person ist erforderlich. Wenn du beides angibst, erscheinen beide Zeilen auf dem Umschlag.
+            </p>
+            <div className="grid gap-2">
+              <label className="font-typewriter text-sm font-bold text-waldgruen-dark" htmlFor="fixedSalutation">Briefanrede</label>
+              <input id="fixedSalutation" name="fixedSalutation" required maxLength={200} value={draft.fixedSalutation} onChange={(event) => updateDraft("fixedSalutation", event.target.value)} className="rounded-md border border-warmgrau/20 bg-white px-4 py-3 font-body text-base outline-none focus:border-waldgruen" />
+            </div>
+            <div className="grid gap-3 sm:grid-cols-[minmax(0,1fr)_120px]">
+              <div className="grid gap-2">
+                <label className="font-typewriter text-sm font-bold text-waldgruen-dark" htmlFor="fixedStreet">Straße</label>
+                <input id="fixedStreet" name="fixedStreet" required maxLength={120} value={draft.fixedStreet} onChange={(event) => updateDraft("fixedStreet", event.target.value)} className="rounded-md border border-warmgrau/20 bg-white px-4 py-3 font-body text-base outline-none focus:border-waldgruen" />
+              </div>
+              <div className="grid gap-2">
+                <label className="font-typewriter text-sm font-bold text-waldgruen-dark" htmlFor="fixedHouseNumber">Hausnummer</label>
+                <input id="fixedHouseNumber" name="fixedHouseNumber" required maxLength={20} value={draft.fixedHouseNumber} onChange={(event) => updateDraft("fixedHouseNumber", event.target.value)} className="rounded-md border border-warmgrau/20 bg-white px-4 py-3 font-body text-base outline-none focus:border-waldgruen" />
+              </div>
+            </div>
+            <div className="grid gap-3 sm:grid-cols-[140px_minmax(0,1fr)_180px]">
+              <div className="grid gap-2">
+                <label className="font-typewriter text-sm font-bold text-waldgruen-dark" htmlFor="fixedPostalCode">Postleitzahl</label>
+                <input id="fixedPostalCode" name="fixedPostalCode" required inputMode="numeric" pattern="[0-9]{5}" maxLength={5} value={draft.fixedPostalCode} onChange={(event) => updateDraft("fixedPostalCode", event.target.value.replace(/\D/g, "").slice(0, 5))} className="rounded-md border border-warmgrau/20 bg-white px-4 py-3 font-body text-base outline-none focus:border-waldgruen" />
+              </div>
+              <div className="grid gap-2">
+                <label className="font-typewriter text-sm font-bold text-waldgruen-dark" htmlFor="fixedCity">Ort</label>
+                <input id="fixedCity" name="fixedCity" required maxLength={120} value={draft.fixedCity} onChange={(event) => updateDraft("fixedCity", event.target.value)} className="rounded-md border border-warmgrau/20 bg-white px-4 py-3 font-body text-base outline-none focus:border-waldgruen" />
+              </div>
+              <div className="grid gap-2">
+                <span className="font-typewriter text-sm font-bold text-waldgruen-dark">Land</span>
+                <div className="rounded-md border border-warmgrau/15 bg-creme/70 px-4 py-3 font-body text-base text-warmgrau/70">Deutschland</div>
+              </div>
+            </div>
+            <label className="flex items-start gap-3 rounded-md border border-airmail-rot/20 bg-airmail-rot/5 p-3 font-body text-sm leading-relaxed text-warmgrau/80">
+              <input type="checkbox" checked={fixedAddressAccepted} onChange={(event) => setFixedAddressAccepted(event.target.checked)} required className="mt-1 h-4 w-4 shrink-0 accent-waldgruen" />
+              <span>Ich bestätige, dass dies eine öffentlich erreichbare Dienst-, Büro- oder Organisationsadresse und keine private Wohnadresse ist. Ich bin für die Richtigkeit und zulässige Nutzung der Angaben verantwortlich.</span>
+            </label>
+            {(targetRecipientError || fixedAddressAcceptedError) && (
+              <p className="font-body text-sm text-airmail-rot">
+                {targetRecipientError ?? fixedAddressAcceptedError}
+              </p>
+            )}
           </div>
         )}
       </fieldset>
@@ -952,7 +1095,11 @@ export function CreatorCampaignForm() {
             className="mt-1 h-4 w-4 rounded border-warmgrau/30 text-waldgruen accent-waldgruen"
           />
           <span>
-            Ich bestätige, dass ich diese Kampagne starten darf und für die bereitgestellten Inhalte verantwortlich bin.
+            Ich bestätige, dass ich diese Kampagne starten darf, für die bereitgestellten Inhalte verantwortlich bin und die{" "}
+            <a href="/nutzungsbedingungen" target="_blank" rel="noopener noreferrer" className="underline hover:text-waldgruen-dark">
+              Nutzungsbedingungen
+            </a>{" "}
+            akzeptiere.
           </span>
         </label>
         {responsibilityError && (
@@ -1048,9 +1195,22 @@ export function CreatorCampaignForm() {
                   {draft.creatorName || "..."}
                 </dd>
               </div>
+              {draft.targetLevel === "Fixed" && (
+                <div>
+                  <dt className="font-body text-xs font-semibold uppercase tracking-wide text-warmgrau/50">
+                    Fester Empfänger
+                  </dt>
+                  <dd className="mt-1 font-body text-sm text-waldgruen-dark">
+                    {draft.fixedOrganizationName && <span className="block font-semibold">{draft.fixedOrganizationName}</span>}
+                    {draft.fixedPersonName && <span className="block">{draft.fixedPersonName}</span>}
+                    <span className="block">{draft.fixedStreet} {draft.fixedHouseNumber}</span>
+                    <span className="block">{draft.fixedPostalCode} {draft.fixedCity}</span>
+                  </dd>
+                </div>
+              )}
             </dl>
             <p className="mt-4 font-body text-sm leading-relaxed text-warmgrau/75">
-              Nach dem Klick schicken wir dir eine E-Mail. Erst wenn du den Link darin bestätigst, wird die Kampagne öffentlich und du bekommst den Verwaltungslink.
+              Nach dem Klick schicken wir dir eine E-Mail. Wenn du den Link darin bestätigst, bekommst du den Verwaltungslink und ich prüfe deine Kampagne. Nach meiner Freigabe wird sie öffentlich.
             </p>
             <div className="mt-5 grid gap-3 sm:grid-cols-2">
               <button

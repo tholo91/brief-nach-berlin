@@ -80,4 +80,5 @@ describe("landesregierung-addresses", () => {
       expect(resolved.recipient.postalAddress).not.toContain("Manipulierte Adresse");
     }
   });
+
 });

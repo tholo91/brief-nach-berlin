@@ -5,6 +5,7 @@ import { getServiceRoleClient } from "@/lib/supabase/server";
 import {
   createCampaignSchema,
   compactCampaignSlug,
+  isCampaignTargetLocked,
   parseCampaignTopic,
   resolveCampaignTarget,
   updateCampaignPublicFieldsSchema,
@@ -16,6 +17,12 @@ import {
   type CreateCampaignInput,
   type UpdateCampaignPublicFieldsInput,
 } from "./schema";
+import {
+  LANDING_CAMPAIGN_COLUMNS,
+  toLandingCampaign,
+  type LandingCampaign,
+  type LandingCampaignRow,
+} from "./landing";
 
 type CampaignRow = {
   id: string;
@@ -32,6 +39,7 @@ type CampaignRow = {
   moderation_categories: string[] | null;
   target_level: string | null;
   target_state: string | null;
+  target_recipient: unknown;
   target_politician_ids: number[] | null;
   topic_categories?: string[] | null;
   topic_labels?: string[] | null;
@@ -58,6 +66,9 @@ type CampaignRevisionRow = {
   external_url: string | null;
   moderation_status: CampaignModerationStatus;
   moderation_categories: string[] | null;
+  target_level: string | null;
+  target_state: string | null;
+  target_recipient: unknown;
   target_politician_ids: number[] | null;
   created_at: string;
 };
@@ -72,6 +83,9 @@ type CampaignUpdate = Partial<{
   status: CampaignStatus;
   moderation_status: CampaignModerationStatus;
   moderation_categories: string[];
+  target_level: string;
+  target_state: string | null;
+  target_recipient: unknown;
   target_politician_ids: number[];
   topic_categories: string[] | null;
   topic_labels: string[] | null;
@@ -140,6 +154,7 @@ function mapCampaign(row: CampaignRow): Campaign {
 }
 
 function mapRevision(row: CampaignRevisionRow): CampaignRevision {
+  const target = resolveCampaignTarget(row);
   return {
     id: row.id,
     campaignId: row.campaign_id,
@@ -151,6 +166,7 @@ function mapRevision(row: CampaignRevisionRow): CampaignRevision {
     externalUrl: row.external_url,
     moderationStatus: row.moderation_status,
     moderationCategories: row.moderation_categories ?? [],
+    ...target,
     targetPoliticianIds: row.target_politician_ids ?? [],
     createdAt: row.created_at,
   };
@@ -159,6 +175,43 @@ function mapRevision(row: CampaignRevisionRow): CampaignRevision {
 function nullableText(value: string | null | undefined): string | null {
   const trimmed = value?.trim();
   return trimmed ? trimmed : null;
+}
+
+function targetChanged(
+  campaign: Campaign,
+  next: Pick<Campaign, "targetLevel" | "targetState" | "targetRecipient">
+): boolean {
+  return (
+    campaign.targetLevel !== next.targetLevel ||
+    campaign.targetState !== next.targetState ||
+    JSON.stringify(campaign.targetRecipient) !== JSON.stringify(next.targetRecipient)
+  );
+}
+
+function validateCampaignUpdate(
+  campaign: Campaign,
+  input: ReturnType<typeof updateCampaignPublicFieldsSchema.parse>
+): ReturnType<typeof createCampaignSchema.parse> {
+  return createCampaignSchema.parse({
+    slug: campaign.slug,
+    creatorEmail: campaign.creatorEmail,
+    title: input.title ?? campaign.title,
+    issueText: input.issueText ?? campaign.issueText,
+    description: input.description !== undefined ? input.description : campaign.description,
+    creatorName: input.creatorName !== undefined ? input.creatorName : campaign.creatorName,
+    externalUrl: input.externalUrl !== undefined ? input.externalUrl : campaign.externalUrl,
+    logoPath: input.logoPath !== undefined ? input.logoPath : campaign.logoPath,
+    moderationStatus: campaign.moderationStatus,
+    moderationCategories: campaign.moderationCategories,
+    targetLevel: input.targetLevel ?? campaign.targetLevel,
+    targetState: input.targetState !== undefined ? input.targetState : campaign.targetState,
+    targetRecipient:
+      input.targetRecipient !== undefined ? input.targetRecipient : campaign.targetRecipient,
+    targetPoliticianIds:
+      input.targetPoliticianIds !== undefined
+        ? input.targetPoliticianIds
+        : campaign.targetPoliticianIds,
+  });
 }
 
 function assertStatus(
@@ -220,6 +273,7 @@ export async function createCampaign(
       moderation_categories: parsed.moderationCategories,
       target_level: parsed.targetLevel,
       target_state: parsed.targetLevel === "Land" ? parsed.targetState : null,
+      target_recipient: parsed.targetRecipient,
       target_politician_ids: parsed.targetPoliticianIds,
     })
     .select("*")
@@ -370,6 +424,30 @@ export async function getRecentActiveCampaigns(
   return (data as CampaignRow[]).map(mapCampaign);
 }
 
+/** Von Thomas per landing_rank kuratierte Kampagnen für den Hero der Startseite. */
+export async function getLandingCampaigns(
+  limit = 3,
+  db?: RepositoryClient
+): Promise<LandingCampaign[]> {
+  const cappedLimit = Math.min(Math.max(limit, 1), 3);
+  const { data, error } = await client(db)
+    .from("campaigns")
+    .select(LANDING_CAMPAIGN_COLUMNS)
+    .eq("status", "active")
+    .eq("moderation_status", "approved")
+    .not("landing_rank", "is", null)
+    .order("landing_rank", { ascending: true })
+    .order("activated_at", { ascending: false, nullsFirst: false })
+    .limit(cappedLimit);
+
+  if (error) {
+    throw new CampaignRepositoryError(
+      `Landing campaign lookup failed: ${error.message}`
+    );
+  }
+  return (data as LandingCampaignRow[]).map(toLandingCampaign);
+}
+
 export async function updateCampaignPublicFields(
   campaignId: string,
   input: UpdateCampaignPublicFieldsInput,
@@ -378,6 +456,16 @@ export async function updateCampaignPublicFields(
   const campaign = await requireCampaign(campaignId, db);
   assertStatus(campaign, ["draft", "awaiting_email_verification", "awaiting_approval", "active", "paused"], "edit");
   const parsed = updateCampaignPublicFieldsSchema.parse(input);
+  const validated = validateCampaignUpdate(campaign, parsed);
+  const nextTarget = {
+    targetLevel: validated.targetLevel,
+    targetState: validated.targetState,
+    targetRecipient: validated.targetRecipient,
+    targetPoliticianIds: validated.targetPoliticianIds,
+  };
+  if (isCampaignTargetLocked(campaign) && targetChanged(campaign, nextTarget)) {
+    throw new CampaignRepositoryError("Campaign target is locked after activation");
+  }
   const patch: CampaignUpdate = {};
 
   if (parsed.title !== undefined) patch.title = parsed.title;
@@ -389,6 +477,9 @@ export async function updateCampaignPublicFields(
   if (parsed.creatorName !== undefined) patch.creator_name = nullableText(parsed.creatorName);
   if (parsed.externalUrl !== undefined) patch.external_url = nullableText(parsed.externalUrl);
   if (parsed.logoPath !== undefined) patch.logo_path = nullableText(parsed.logoPath);
+  if (parsed.targetLevel !== undefined) patch.target_level = parsed.targetLevel;
+  if (parsed.targetState !== undefined) patch.target_state = parsed.targetState;
+  if (parsed.targetRecipient !== undefined) patch.target_recipient = parsed.targetRecipient;
   if (parsed.targetPoliticianIds !== undefined) {
     patch.target_politician_ids = parsed.targetPoliticianIds;
   }
@@ -405,6 +496,7 @@ export async function saveAwaitingApprovalCampaignEdits(
   const campaign = await requireCampaign(campaignId, db);
   assertStatus(campaign, ["awaiting_approval"], "edit");
   const parsed = updateCampaignPublicFieldsSchema.parse(input);
+  validateCampaignUpdate(campaign, parsed);
   const patch: CampaignUpdate = {
     moderation_status: "pending",
     moderation_categories: moderationCategories,
@@ -419,6 +511,9 @@ export async function saveAwaitingApprovalCampaignEdits(
   if (parsed.creatorName !== undefined) patch.creator_name = nullableText(parsed.creatorName);
   if (parsed.externalUrl !== undefined) patch.external_url = nullableText(parsed.externalUrl);
   if (parsed.logoPath !== undefined) patch.logo_path = nullableText(parsed.logoPath);
+  if (parsed.targetLevel !== undefined) patch.target_level = parsed.targetLevel;
+  if (parsed.targetState !== undefined) patch.target_state = parsed.targetState;
+  if (parsed.targetRecipient !== undefined) patch.target_recipient = parsed.targetRecipient;
   if (parsed.targetPoliticianIds !== undefined) {
     patch.target_politician_ids = parsed.targetPoliticianIds;
   }
@@ -468,6 +563,9 @@ async function createCampaignRevisionFromCampaign(
       external_url: campaign.externalUrl,
       moderation_status: campaign.moderationStatus,
       moderation_categories: campaign.moderationCategories,
+      target_level: campaign.targetLevel,
+      target_state: campaign.targetState,
+      target_recipient: campaign.targetRecipient,
       target_politician_ids: campaign.targetPoliticianIds,
     })
     .select("*")
@@ -528,7 +626,35 @@ export async function publishCampaignEdits(
       parsed.targetPoliticianIds !== undefined
         ? parsed.targetPoliticianIds
         : campaign.targetPoliticianIds,
+    targetLevel: parsed.targetLevel ?? campaign.targetLevel,
+    targetState:
+      parsed.targetState !== undefined ? parsed.targetState : campaign.targetState,
+    targetRecipient:
+      parsed.targetRecipient !== undefined
+        ? parsed.targetRecipient
+        : campaign.targetRecipient,
   };
+
+  if (isCampaignTargetLocked(campaign) && targetChanged(campaign, next)) {
+    throw new CampaignRepositoryError("Campaign target is locked after activation");
+  }
+
+  createCampaignSchema.parse({
+    slug: campaign.slug,
+    creatorEmail: campaign.creatorEmail,
+    title: next.title,
+    issueText: next.issueText,
+    description: next.description,
+    creatorName: next.creatorName,
+    externalUrl: next.externalUrl,
+    logoPath: next.logoPath,
+    moderationStatus: "approved",
+    moderationCategories,
+    targetLevel: next.targetLevel,
+    targetState: next.targetState,
+    targetRecipient: next.targetRecipient,
+    targetPoliticianIds: next.targetPoliticianIds,
+  });
 
   const { data: revisionData, error: revisionError } = await client(db)
     .from("campaign_revisions")
@@ -542,6 +668,9 @@ export async function publishCampaignEdits(
       external_url: next.externalUrl,
       moderation_status: "approved",
       moderation_categories: moderationCategories,
+      target_level: next.targetLevel,
+      target_state: next.targetState,
+      target_recipient: next.targetRecipient,
       target_politician_ids: next.targetPoliticianIds,
     })
     .select("*")
@@ -566,6 +695,9 @@ export async function publishCampaignEdits(
       logo_path: next.logoPath,
       moderation_status: "approved",
       moderation_categories: moderationCategories,
+      target_level: next.targetLevel,
+      target_state: next.targetState,
+      target_recipient: next.targetRecipient,
       target_politician_ids: next.targetPoliticianIds,
       last_published_revision_id: revision.id,
     },

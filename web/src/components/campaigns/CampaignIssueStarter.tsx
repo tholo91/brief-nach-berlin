@@ -35,7 +35,7 @@ type CampaignIssueStarterProps = {
   creatorName?: string | null;
   externalUrl?: string | null;
   logoPath?: string | null;
-  targetLevel?: "Bund" | "Land";
+  targetLevel?: "Bund" | "Land" | "Fixed";
   targetState?: string | null;
 };
 

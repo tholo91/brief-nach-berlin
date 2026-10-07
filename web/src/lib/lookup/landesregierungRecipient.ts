@@ -32,6 +32,7 @@ export interface LandesregierungRecipient {
   headName?: string;
   headTitle?: string;
   salutation: string;
+  article: "den" | "die" | "das";
   institutionKind: "landesregierung" | "senat";
   bundeslandKey: string;
   bundeslandName: string;
@@ -64,6 +65,7 @@ export function buildLandesregierungRecipient(
       headName: head.name,
       headTitle: head.title,
       salutation: head.salutation,
+      article: "den",
       institutionKind: entry.institutionKind,
       bundeslandKey: entry.stateKey,
       bundeslandName: entry.stateName,
@@ -83,6 +85,7 @@ export function buildLandesregierungRecipient(
     level: "Land",
     addressee,
     salutation: "Sehr geehrte Damen und Herren,",
+    article: entry.institutionKind === "senat" ? "den" : "die",
     institutionKind: entry.institutionKind,
     bundeslandKey: entry.stateKey,
     bundeslandName: entry.stateName,

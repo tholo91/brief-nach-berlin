@@ -8,10 +8,13 @@ import { Step2Issue } from "@/components/wizard/Step2Issue";
 import { saveHandoff } from "@/lib/wizard-handoff";
 import { WIZARD_PATH } from "@/lib/config";
 import { useLocale, useUiCopy } from "@/components/i18n/LocaleProvider";
+import { HeroCampaignPills } from "@/components/campaigns/HeroCampaignPills";
+import type { LandingCampaign } from "@/lib/campaigns/landing";
 
-export default function Hero() {
+export default function Hero({ campaigns = [] }: { campaigns?: LandingCampaign[] }) {
   const { locale } = useLocale();
   const copy = useUiCopy();
+  const showCampaigns = locale === "de" && campaigns.length > 0;
   const sectionRef = useRef<HTMLElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
   const [isVideoPlaying, setIsVideoPlaying] = useState(false);
@@ -156,9 +159,12 @@ export default function Hero() {
       {/* Extra mobile overlay */}
       <div className="absolute inset-0 bg-creme/20 md:bg-transparent" />
 
-      {/* Content */}
+      {/* Content. With campaign pills the top padding shrinks on desktop so the
+          press logos below the hero stay where they were on laptop screens. */}
       <div
-        className="relative z-10 text-center max-w-2xl mx-auto px-8 pt-10 pb-24 lg:pt-24"
+        className={`relative z-10 text-center max-w-2xl mx-auto px-8 pt-10 pb-24 ${
+          showCampaigns ? "lg:pt-12" : "lg:pt-24"
+        }`}
       >
         {/* Envelope icon — flies in once on mount */}
         <div className="inline-block -mb-4 md:-mb-5 animate-envelope-fly-x">
@@ -227,6 +233,14 @@ export default function Hero() {
           </span>
         </div>
 
+        {/* Curated campaigns (landing_rank in Supabase) — tablet and up only,
+            so the mobile hero stays focused on the Anliegen field. */}
+        {showCampaigns && (
+          <HeroCampaignPills
+            campaigns={campaigns}
+            className="hidden md:block mt-8"
+          />
+        )}
 
       </div>
 

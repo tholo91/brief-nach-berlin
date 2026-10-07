@@ -1,13 +1,14 @@
 import type { Politician } from "../types/politician";
 import type { LandesregierungRecipient } from "./landesregierungRecipient";
 import type { BundeskanzlerRecipient } from "./bundeskanzlerRecipient";
+import type { CampaignFixedRecipientRecipient } from "./campaignFixedRecipient";
 
 // Discriminated Union für Brief-Empfänger (LOCK-5):
 // - mdb/mdl sind echte Politician-Objekte mit Abgeordnetenwatch-IDs, die
 //   serverseitig gegen die PLZ-abgeleitete Liste geprüft werden.
 // - rathaus und landesregierung sind synthetische institutionelle Empfänger
-//   OHNE id/politicianId. Sie werden IMMER serverseitig aus der PLZ neu
-//   abgeleitet, nie aus Client-Daten übernommen.
+//   OHNE id/politicianId. Sie werden serverseitig aus der PLZ oder dem fest
+//   konfigurierten Kampagnenziel abgeleitet, nie aus Client-Daten übernommen.
 
 export interface MdbRecipient extends Politician {
   kind: "mdb";
@@ -57,6 +58,7 @@ export type Recipient =
   | MdlRecipient
   | MdbLaterRecipient
   | BundeskanzlerRecipient
+  | CampaignFixedRecipientRecipient
   | RathausRecipient
   | LandesregierungRecipient;
 
@@ -72,6 +74,7 @@ export type RecipientSelection =
   | { kind: "mdl"; selectedPoliticianId: number }
   | { kind: "mdb_later" }
   | { kind: "bundeskanzler" }
+  | { kind: "campaign_fixed" }
   | { kind: "landesregierung"; addressee?: "institution" | "head" }
   | { kind: "rathaus" };
 

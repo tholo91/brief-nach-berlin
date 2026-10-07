@@ -12,6 +12,7 @@ import { ReviewMarquee } from "@/components/reviews/ReviewMarquee";
 import { PressMarquee } from "@/components/PressMarquee";
 import { getHeroReviews } from "@/lib/reviews/getHeroReviews";
 import { getLetterCount } from "@/lib/counter";
+import { getLandingCampaigns } from "@/lib/campaigns/repository";
 import { formatNumber } from "@/lib/formatNumber";
 
 export const metadata: Metadata = {
@@ -21,13 +22,14 @@ export const metadata: Metadata = {
     "Dein Anliegen direkt an die Politik: Brief-nach-Berlin findet, wer zuständig ist, und formuliert deinen persönlichen Brief – kostenlos in 3 Minuten.",
 };
 
-// Review- und Briefzähler-Daten werden stündlich aktualisiert.
+// Review-, Briefzähler- und Hero-Kampagnen-Daten werden stündlich aktualisiert.
 export const revalidate = 3600;
 
 export default async function Home() {
-  const [heroReviews, letterCount] = await Promise.all([
+  const [heroReviews, letterCount, landingCampaigns] = await Promise.all([
     getHeroReviews(),
     getLetterCount(),
+    getLandingCampaigns().catch(() => []),
   ]);
   const formattedLetterCount = formatNumber(letterCount);
 
@@ -35,7 +37,7 @@ export default async function Home() {
     <>
       <Header />
       <main>
-        <Hero />
+        <Hero campaigns={landingCampaigns} />
         {/* Press logos + review strip below hero */}
         <section className="relative z-20 -mt-12 md:-mt-12 lg:-mt-24 pb-2">
           <PressMarquee />

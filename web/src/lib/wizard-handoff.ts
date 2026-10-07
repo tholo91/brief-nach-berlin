@@ -24,7 +24,7 @@ export interface WizardHandoff {
   campaignCreatorName?: string;
   campaignExternalUrl?: string;
   campaignLogoPath?: string;
-  campaignTargetLevel?: "Bund" | "Land";
+  campaignTargetLevel?: "Bund" | "Land" | "Fixed";
   campaignTargetState?: string;
   // Ob auf der Landing eine Sprachnachricht genutzt wurde. Muss mitwandern,
   // sonst startet der Wizard mit einem frischen "false" und der Debug-Payload
@@ -99,7 +99,7 @@ export function peekHandoff(): WizardHandoff | null {
         campaignLogoPath:
           typeof campaignLogoPath === "string" ? campaignLogoPath : undefined,
         campaignTargetLevel:
-          campaignTargetLevel === "Bund" || campaignTargetLevel === "Land"
+          campaignTargetLevel === "Bund" || campaignTargetLevel === "Land" || campaignTargetLevel === "Fixed"
             ? campaignTargetLevel
             : undefined,
         campaignTargetState:

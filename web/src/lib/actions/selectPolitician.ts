@@ -16,6 +16,7 @@ import { DEFAULT_LETTER_LENGTH } from "@/lib/config";
 import { deriveRoutingLetterId, verifyRoutingTokenEnvelope } from "@/lib/lookup/routingToken";
 import { buildLetterSignalContext } from "@/lib/letterSignals/context";
 import { isBundeskanzlerCampaignTarget } from "@/lib/lookup/bundeskanzlerRecipient";
+import { getCampaignFixedRecipient } from "@/lib/lookup/campaignFixedRecipient";
 
 // SECURITY NOTE (2026-04-17, erweitert 2026-07-07 für 999.6):
 // Der Client liefert nie Politician-Objekte, sondern nur eine diskriminierte
@@ -23,8 +24,8 @@ import { isBundeskanzlerCampaignTarget } from "@/lib/lookup/bundeskanzlerRecipie
 // komplett aus der PLZ ab:
 // - mdb/mdl: die ID muss in der PLZ-abgeleiteten Liste der Ebene stehen.
 // - rathaus/landesregierung: es gibt keine ID; der institutionelle Empfänger
-//   wird zu 100% aus der PLZ gebaut (LOCK-5). Client-Daten können die Adresse
-//   nicht beeinflussen.
+//   wird aus der PLZ oder dem serverseitig geladenen Kampagnenziel gebaut
+//   (LOCK-5). Client-Daten können die Adresse nicht beeinflussen.
 // Legacy-Aufrufe mit nackter Zahl werden als Bund-Auswahl (mdb) behandelt.
 export async function selectPoliticianAction(
   data: WizardData,
@@ -71,6 +72,9 @@ export async function selectPoliticianAction(
       };
     }
     const allowedPoliticianIds = campaign?.targetPoliticianIds ?? [];
+    const campaignFixedRecipient = campaign
+      ? getCampaignFixedRecipient(campaign)
+      : null;
     if (
       normalizedSelection.kind === "bundeskanzler" &&
       !isBundeskanzlerCampaignTarget(campaign)
@@ -80,11 +84,15 @@ export async function selectPoliticianAction(
     if (allowedPoliticianIds.length > 0 && normalizedSelection.kind !== "mdb") {
       return { error: "server_error", message: "Empfänger nicht gefunden." };
     }
+    if (campaignFixedRecipient && normalizedSelection.kind !== "campaign_fixed") {
+      return { error: "server_error", message: "Empfänger nicht gefunden." };
+    }
 
     const resolved = campaign
       ? resolveRecipientSelection(data.plz, normalizedSelection, {
           allowedPoliticianIds,
           campaignSlug: campaign.slug,
+          campaignFixedRecipient,
         })
       : resolveRecipientSelection(data.plz, normalizedSelection);
     if (!resolved.ok) {

@@ -513,7 +513,6 @@ function Funnel({ stats }: { stats: InternalStats }) {
       note: "Gesamtzähler ohne Ereignisverlauf — wird vom Zeitraum-/Quellenfilter nicht verändert.",
     },
     { label: "Bewertung abgegeben", value: stats.reviewCount },
-    { label: "Vollständiges Feedback", value: stats.fullFeedbackCount },
     { label: "Versandfrage beantwortet", value: stats.knownSendCount },
     { label: "Positives Versandsignal", value: stats.sentCount },
   ];
@@ -546,6 +545,24 @@ function Funnel({ stats }: { stats: InternalStats }) {
               )}
             </div>
           </div>
+          {step.label === "Bewertung abgegeben" && stats.reviewCount > 0 && (
+            <div className="mt-3 grid gap-3 border-t border-warmgrau/10 pt-3 sm:grid-cols-2">
+              {[
+                { label: "Feedback-Formular abgeschickt", value: stats.fullFeedbackCount },
+                { label: "Kurzbewertung · nur Sterne", value: stats.quickRatingCount },
+              ].map((group) => (
+                <div key={group.label} className="flex items-baseline justify-between gap-3">
+                  <span className="font-body text-xs text-warmgrau/65">{group.label}</span>
+                  <span className="shrink-0 font-typewriter text-xs tabular-nums text-waldgruen-dark">
+                    {formatNumber(group.value)} · {shareParts(group.value, stats.reviewCount).shareText} %
+                  </span>
+                </div>
+              ))}
+              <p className="font-body text-xs leading-relaxed text-warmgrau/55 sm:col-span-2">
+                „Formular abgeschickt“ bezeichnet den gesendeten Formularschritt; optionale Fragen waren freiwillig.
+              </p>
+            </div>
+          )}
           {step.note && (
             <p className="mt-2 font-body text-xs leading-relaxed text-warmgrau/55">{step.note}</p>
           )}
@@ -870,16 +887,6 @@ export default async function InternalStatsPage({ searchParams }: InternalStatsP
               </h3>
               <div className="mt-5">
                 <RatingBars stats={stats} mode={mode} />
-              </div>
-              <div className="mt-6 grid grid-cols-2 gap-3 border-t border-warmgrau/10 pt-5">
-                <div>
-                  <p className="font-typewriter text-2xl font-bold tabular-nums text-waldgruen-dark">{formatNumber(stats.fullFeedbackCount)}</p>
-                  <p className="mt-1 font-body text-xs text-warmgrau/60">vollständig ausgefüllt</p>
-                </div>
-                <div>
-                  <p className="font-typewriter text-2xl font-bold tabular-nums text-waldgruen-dark">{formatNumber(stats.knownSendCount)}</p>
-                  <p className="mt-1 font-body text-xs text-warmgrau/60">Versandfrage beantwortet</p>
-                </div>
               </div>
             </div>
             <div>

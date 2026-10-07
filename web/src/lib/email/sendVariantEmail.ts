@@ -1,6 +1,7 @@
 import { BrevoClient } from "@getbrevo/brevo";
 import { EMAIL_SENDER_NAME } from "@/lib/config";
 import { buildVariantEmailHtml } from "./buildVariantEmailHtml";
+import { AI_CONTENT_EMAIL_HEADERS } from "./aiContentMarking";
 import type { LetterVariantDebugPayload } from "./variantDebugPayload";
 
 const apiKey = process.env.BREVO_API_KEY;
@@ -19,6 +20,7 @@ export async function sendVariantEmail(params: {
     const result = await brevo.transactionalEmails.sendTransacEmail({
       subject: "Dein angepasster Brief nach Berlin ist fertig",
       htmlContent: buildVariantEmailHtml(params.letterText, params.recipientEmail, params.debug),
+      headers: { ...AI_CONTENT_EMAIL_HEADERS },
       sender: {
         name: EMAIL_SENDER_NAME,
         email: process.env.BREVO_SENDER_EMAIL || "brief@brief-nach-berlin.de",

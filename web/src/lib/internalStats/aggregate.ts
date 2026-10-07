@@ -146,6 +146,7 @@ export type InternalStats = {
   letterCount: number;
   reviewCount: number;
   fullFeedbackCount: number;
+  quickRatingCount: number;
   sentCount: number;
   notSentCount: number;
   noAnswerCount: number;
@@ -607,6 +608,7 @@ export function aggregateInternalStats(
     letterCount,
     reviewCount: filteredReviews.length,
     fullFeedbackCount,
+    quickRatingCount: filteredReviews.length - fullFeedbackCount,
     sentCount,
     notSentCount,
     noAnswerCount,

@@ -117,6 +117,19 @@ function recipientProofValue(recipient: Recipient): string {
     }
     return `${recipient.kind}:${recipient.bundeslandKey}`;
   }
+  if (recipient.kind === "campaign_fixed") {
+    return [
+      recipient.kind,
+      recipient.organizationName ?? "",
+      recipient.personName ?? "",
+      recipient.salutation,
+      recipient.address.street,
+      recipient.address.houseNumber,
+      recipient.address.postalCode,
+      recipient.address.city,
+      recipient.address.countryCode,
+    ].join(":");
+  }
   if (recipient.kind === "bundeskanzler") {
     return `${recipient.kind}:${recipient.lastName}`;
   }

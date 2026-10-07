@@ -18,6 +18,7 @@ import { doesGenerationProofMatch, verifyGenerationProof } from "@/lib/letterSig
 import { checkRateLimit, getClientIp, hashIdentifier, LIMITS } from "@/lib/rateLimit";
 import { getActiveCampaignBySlug } from "@/lib/campaigns/repository";
 import { isBundeskanzlerCampaignTarget } from "@/lib/lookup/bundeskanzlerRecipient";
+import { getCampaignFixedRecipient } from "@/lib/lookup/campaignFixedRecipient";
 
 const RESEND_LIMIT_MESSAGE =
   "Der Brief wurde jetzt mehrfach gesendet. Bitte prüfe noch einmal deinen Spam-Ordner und die E-Mail-Adresse. Falls weiterhin nichts ankommt, melde dich gerne direkt.";
@@ -54,7 +55,11 @@ export async function resendLetterAction(
     const verifiedProof = parsedProof.data ? verifyGenerationProof(parsedProof.data) : null;
     const letterId = verifiedProof?.letterId;
     if (parsedProof.data && !verifiedProof) return { error: "validation", message: "Ungültige Eingabe." };
-    if (normalizedSelection.kind === "landesregierung" && !verifiedProof) {
+    if (
+      (normalizedSelection.kind === "landesregierung" ||
+        normalizedSelection.kind === "campaign_fixed") &&
+      !verifiedProof
+    ) {
       return { error: "validation", message: "Ungültige Eingabe." };
     }
     console.log("[resendLetter] start", { email: "***", kind: normalizedSelection.kind });
@@ -86,6 +91,9 @@ export async function resendLetterAction(
       return { error: "validation", message: "Diese Kampagne ist aktuell nicht aktiv." };
     }
     const allowedPoliticianIds = campaign?.targetPoliticianIds ?? [];
+    const campaignFixedRecipient = campaign
+      ? getCampaignFixedRecipient(campaign)
+      : null;
     if (
       normalizedSelection.kind === "bundeskanzler" &&
       !isBundeskanzlerCampaignTarget(campaign)
@@ -93,6 +101,9 @@ export async function resendLetterAction(
       return { error: "validation", message: "Empfänger nicht gefunden." };
     }
     if (allowedPoliticianIds.length > 0 && normalizedSelection.kind !== "mdb") {
+      return { error: "validation", message: "Empfänger nicht gefunden." };
+    }
+    if (campaignFixedRecipient && normalizedSelection.kind !== "campaign_fixed") {
       return { error: "validation", message: "Empfänger nicht gefunden." };
     }
 
@@ -120,11 +131,13 @@ export async function resendLetterAction(
 
     // Re-derive recipient server-side — never trust client-supplied recipient
     // data. mdb/mdl: ID muss in der PLZ-abgeleiteten Ebenen-Liste stehen;
-    // rathaus/landesregierung werden komplett aus der PLZ gebaut (LOCK-5).
+    // rathaus/landesregierung werden aus der PLZ oder dem serverseitig
+    // geladenen festen Kampagnenziel gebaut (LOCK-5).
     const resolved = campaign
       ? resolveRecipientSelection(data.plz, normalizedSelection, {
           allowedPoliticianIds,
           campaignSlug: campaign.slug,
+          campaignFixedRecipient,
         })
       : resolveRecipientSelection(data.plz, normalizedSelection);
     if (!resolved.ok) {

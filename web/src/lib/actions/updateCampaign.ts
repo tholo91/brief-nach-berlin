@@ -10,7 +10,15 @@ import {
   saveAwaitingApprovalCampaignEdits,
 } from "@/lib/campaigns/repository";
 import { CAMPAIGN_LOGO_BUCKET } from "@/lib/campaigns/logo";
-import { campaignExternalUrlSchema, campaignTargetPoliticianIdsSchema } from "@/lib/campaigns/schema";
+import {
+  campaignExternalUrlSchema,
+  campaignFixedRecipientSchema,
+  campaignTargetLevelSchema,
+  campaignTargetPoliticianIdsSchema,
+  campaignTargetStateSchema,
+  createCampaignSchema,
+  isCampaignTargetLocked,
+} from "@/lib/campaigns/schema";
 import { getCampaignManagementSession } from "@/lib/campaigns/session";
 import { moderateText } from "@/lib/moderation/moderateText";
 import { getServiceRoleClient } from "@/lib/supabase/server";
@@ -37,6 +45,10 @@ const updateCampaignSchema = z.object({
     .transform((value) => (value ? value : undefined))
     .pipe(campaignExternalUrlSchema.optional()),
   targetPoliticianIds: campaignTargetPoliticianIdsSchema,
+  targetLevel: campaignTargetLevelSchema.optional(),
+  targetState: campaignTargetStateSchema.nullable().optional(),
+  targetRecipient: campaignFixedRecipientSchema.nullable().optional(),
+  fixedAddressAccepted: z.string().optional(),
 });
 
 export type UpdateCampaignResult =
@@ -126,6 +138,7 @@ export async function updateCampaignAction(
     };
   }
 
+  const rawTargetLevel = value(formData, "targetLevel");
   const parsed = updateCampaignSchema.safeParse({
     campaignId: value(formData, "campaignId"),
     title: value(formData, "title"),
@@ -134,6 +147,24 @@ export async function updateCampaignAction(
     creatorName: value(formData, "creatorName") || undefined,
     externalUrl: value(formData, "externalUrl") || undefined,
     targetPoliticianIds: numberValues(formData, "targetPoliticianId"),
+    targetLevel: rawTargetLevel || undefined,
+    targetState: rawTargetLevel === "Land" ? value(formData, "targetState") || null : undefined,
+    targetRecipient:
+      rawTargetLevel === "Fixed"
+        ? {
+            organizationName: value(formData, "fixedOrganizationName") || null,
+            personName: value(formData, "fixedPersonName") || null,
+            salutation: value(formData, "fixedSalutation"),
+            street: value(formData, "fixedStreet"),
+            houseNumber: value(formData, "fixedHouseNumber"),
+            postalCode: value(formData, "fixedPostalCode"),
+            city: value(formData, "fixedCity"),
+            countryCode: "DE",
+          }
+        : rawTargetLevel
+          ? null
+          : undefined,
+    fixedAddressAccepted: value(formData, "fixedAddressAccepted") || undefined,
   });
 
   if (!parsed.success) {
@@ -187,7 +218,67 @@ export async function updateCampaignAction(
     };
   }
 
-  if (input.targetPoliticianIds.length > 0 && campaign.targetLevel !== "Bund") {
+  const targetLevel = input.targetLevel ?? campaign.targetLevel;
+  const targetState = input.targetLevel
+    ? input.targetLevel === "Land"
+      ? input.targetState ?? null
+      : null
+    : campaign.targetState;
+  const targetRecipient = input.targetLevel
+    ? input.targetLevel === "Fixed"
+      ? input.targetRecipient ?? null
+      : null
+    : campaign.targetRecipient;
+  const targetPoliticianIds =
+    targetLevel === "Bund" ? input.targetPoliticianIds : [];
+  const targetLocked = isCampaignTargetLocked(campaign);
+
+  if (
+    targetLocked &&
+    input.targetLevel &&
+    (targetLevel !== campaign.targetLevel ||
+      targetState !== campaign.targetState ||
+      JSON.stringify(targetRecipient) !== JSON.stringify(campaign.targetRecipient))
+  ) {
+    return {
+      ok: false,
+      message: "Der Kampagnenempfänger ist nach der ersten Aktivierung gesperrt.",
+    };
+  }
+
+  if (!targetLocked && targetLevel === "Fixed" && input.fixedAddressAccepted !== "on") {
+    return {
+      ok: false,
+      message: "Bitte bestätige den Hinweis zur Empfängeradresse.",
+      fieldErrors: { fixedAddressAccepted: "Bitte bestätige den Hinweis zur Empfängeradresse." },
+    };
+  }
+
+  const targetValidation = createCampaignSchema.safeParse({
+    slug: campaign.slug,
+    creatorEmail: campaign.creatorEmail,
+    title: input.title,
+    issueText: input.issueText,
+    description: input.description,
+    creatorName: input.creatorName,
+    externalUrl: input.externalUrl,
+    logoPath: campaign.logoPath,
+    moderationStatus: campaign.moderationStatus,
+    moderationCategories: campaign.moderationCategories,
+    targetLevel,
+    targetState,
+    targetRecipient,
+    targetPoliticianIds,
+  });
+  if (!targetValidation.success) {
+    return {
+      ok: false,
+      message: "Bitte prüfe den Kampagnenempfänger.",
+      fieldErrors: validationErrors(targetValidation.error),
+    };
+  }
+
+  if (targetPoliticianIds.length > 0 && targetLevel !== "Bund") {
     return {
       ok: false,
       message: "Bestimmte MdBs können nur bei Bundestagskampagnen ausgewählt werden.",
@@ -196,7 +287,7 @@ export async function updateCampaignAction(
   }
   if (
     input.targetPoliticianIds.length > 0 &&
-    getBundestagPoliticiansByIds(input.targetPoliticianIds).length !== input.targetPoliticianIds.length
+    getBundestagPoliticiansByIds(targetPoliticianIds).length !== targetPoliticianIds.length
   ) {
     return {
       ok: false,
@@ -221,7 +312,10 @@ export async function updateCampaignAction(
       description: input.description,
       creatorName: input.creatorName,
       externalUrl: input.externalUrl,
-      targetPoliticianIds: input.targetPoliticianIds,
+      targetPoliticianIds,
+      ...(!targetLocked
+        ? { targetLevel, targetState, targetRecipient }
+        : {}),
       logoPath: uploadedLogo.logoPath,
     };
     const updated = campaign.status === "awaiting_approval"

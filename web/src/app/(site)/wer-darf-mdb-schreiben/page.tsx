@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { APP_URL } from "@/lib/config";
 import { Figure } from "@/components/editorial/Figure";
 import { Prose } from "@/components/editorial/Prose";
+import { StartLetterCta } from "@/components/editorial/StartLetterCta";
 import { FAQAccordion } from "@/components/FAQAccordion";
 
 const TITLE = "Wer darf einem MdB schreiben? Brief an Abgeordnete, Kanzler & Co.";
@@ -116,9 +117,14 @@ export default function WerDarfSchreibenPage() {
           Kurz: jeder Mensch. Kein Mindestalter, kein deutscher Pass, kein
           Wahlrecht nötig. Das Grundgesetz ist hier ungewöhnlich großzügig.
         </p>
-        <p className="font-typewriter text-xs uppercase tracking-widest text-warmgrau/50 mb-12">
+        <p className="font-typewriter text-xs uppercase tracking-widest text-warmgrau/50 mb-8">
           3 Minuten Lesezeit
         </p>
+
+        <StartLetterCta eyebrow="Gleich loslegen" className="mb-12">
+          Beschreib dein Anliegen, gib deine Postleitzahl ein und du bekommst
+          einen Briefvorschlag zum Abschreiben. Kein Account nötig.
+        </StartLetterCta>
 
         <Prose>
           <h2 className="font-body text-2xl font-bold text-waldgruen-dark pt-4">

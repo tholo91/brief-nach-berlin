@@ -64,12 +64,19 @@ describe("shareParts", () => {
 
 describe("isoWeekKey", () => {
   it("groups adjacent days into the same ISO week", () => {
-    expect(isoWeekKey("2026-07-31")).toBe("2026-32");
-    expect(isoWeekKey("2026-08-01")).toBe("2026-32");
+    expect(isoWeekKey("2026-07-31")).toBe("2026-31");
+    expect(isoWeekKey("2026-08-01")).toBe("2026-31");
   });
 
   it("handles week boundaries", () => {
-    expect(isoWeekKey("2026-08-03")).toBe("2026-33");
+    expect(isoWeekKey("2026-08-03")).toBe("2026-32");
+  });
+
+  it("matches the ISO 8601 calendar at year edges", () => {
+    expect(isoWeekKey("2026-01-01")).toBe("2026-01");
+    expect(isoWeekKey("2025-12-29")).toBe("2026-01");
+    expect(isoWeekKey("2026-12-31")).toBe("2026-53");
+    expect(isoWeekKey("2027-01-04")).toBe("2027-01");
   });
 });
 
@@ -85,8 +92,8 @@ describe("bucketTimeline", () => {
   it("buckets by ISO week with a KW label", () => {
     const buckets = bucketTimeline({ "2026-07-31": 3, "2026-08-01": 4, "2026-08-03": 1 }, "week");
     expect(buckets).toEqual([
-      { key: "2026-32", label: "KW 32 · 26", count: 7 },
-      { key: "2026-33", label: "KW 33 · 26", count: 1 },
+      { key: "2026-31", label: "KW 31 · 26", count: 7 },
+      { key: "2026-32", label: "KW 32 · 26", count: 1 },
     ]);
   });
 

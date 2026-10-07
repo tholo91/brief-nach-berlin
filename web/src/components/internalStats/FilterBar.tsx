@@ -88,9 +88,8 @@ export function FilterBar({
       )}
 
       <p className="max-w-prose font-body text-xs leading-relaxed text-warmgrau/50">
-        Der Filter steuert die Datenbasis der Abschnitte. Der Brief-Zähler und
-        die Durchschnittsbewertung bleiben unverändert, weil ihnen kein
-        Ereignisverlauf zugrunde liegt.
+        Der Filter steuert die Datenbasis der Abschnitte. Nur der Brief-Zähler
+        bleibt unverändert, weil ihm kein Ereignisverlauf zugrunde liegt.
       </p>
     </div>
   );

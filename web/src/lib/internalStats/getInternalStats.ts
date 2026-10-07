@@ -23,7 +23,7 @@ export async function getInternalStats(
       client
         .from("letter_signals")
         .select(
-          "created_at,consented_at,generated_at,campaign_slug,topic_categories,topic_labels,political_level,bundesland_key,plz_prefix,letter_id",
+          "created_at,consented_at,generated_at,campaign_slug,topic_categories,topic_labels,political_level,bundesland_key,plz_prefix,letter_id,letter_number",
         )
         .eq("status", "contributed"),
       client

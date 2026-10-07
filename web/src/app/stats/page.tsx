@@ -5,10 +5,11 @@ import { cookies } from "next/headers";
 import { StatsPie } from "@/components/internalStats/StatsPie";
 import { FilterBar } from "@/components/internalStats/FilterBar";
 import { ValueEmphasis } from "@/components/internalStats/ValueEmphasis";
-import {
-  TimelineBars,
-  type TimelinePoint,
-} from "@/components/internalStats/TimelineBars";
+import { ColumnChart, type ColumnPoint } from "@/components/internalStats/ColumnChart";
+import { TopicHeatmap } from "@/components/internalStats/TopicHeatmap";
+import { SubtopicClusters } from "@/components/internalStats/SubtopicClusters";
+import { CopyButton } from "@/components/internalStats/CopyButton";
+import { SectionNav } from "@/components/internalStats/SectionNav";
 import { formatDecimal, formatNumber } from "@/lib/formatNumber";
 import { lockInternalStats, unlockInternalStats } from "@/lib/internalStats/actions";
 import {
@@ -24,11 +25,17 @@ import {
   topicCategoryLabel,
 } from "@/lib/internalStats/aggregate";
 import {
+  bucketCategoryTimeline,
+  bucketCounterTimeline,
   bucketTimeline,
+  daySpan,
   granularityForTimeRange,
   isSmallBasis,
   parseStatsFilter,
+  peakPoint,
   shareParts,
+  timeRangeFromDay,
+  topLabelsByCategory,
   VIEW_MODES,
   type ViewMode,
 } from "@/lib/internalStats/view";
@@ -111,7 +118,7 @@ function StatCard({
       >
         {eyebrow}
       </p>
-      <p className="mt-3 font-typewriter text-4xl font-bold tabular-nums sm:text-5xl">
+      <p className="mt-3 font-typewriter text-3xl font-bold tabular-nums sm:text-4xl lg:text-5xl">
         {value}
       </p>
       <p
@@ -156,6 +163,81 @@ function BasisBadge() {
     <span className="ml-2 inline-block rounded-full border border-bernstein/40 bg-bernstein/10 px-2 py-0.5 font-typewriter text-[10px] font-bold uppercase tracking-[0.1em] text-warmgrau/70">
       kleine Basis
     </span>
+  );
+}
+
+const SECTION_LINKS = [
+  { id: "ueberblick", label: "Überblick" },
+  { id: "verlauf", label: "Verlauf" },
+  { id: "themen", label: "Themen" },
+  { id: "feedback", label: "Feedback" },
+  { id: "wirkung", label: "Wirkung" },
+  { id: "definitionen", label: "Definitionen" },
+] as const;
+
+function Section({
+  id,
+  accent = "neutral",
+  children,
+}: {
+  id: string;
+  accent?: "neutral" | "rot" | "gruen";
+  children: ReactNode;
+}) {
+  const border =
+    accent === "rot"
+      ? "border-airmail-rot/15"
+      : accent === "gruen"
+        ? "border-waldgruen/15"
+        : "border-warmgrau/10";
+  return (
+    <section
+      id={id}
+      className={`mt-8 scroll-mt-16 rounded-2xl border ${border} bg-white/75 p-5 shadow-[0_16px_36px_rgba(27,67,50,0.06)] sm:mt-10 sm:p-8`}
+    >
+      {children}
+    </section>
+  );
+}
+
+function SubHeading({ children, detail }: { children: ReactNode; detail?: string }) {
+  return (
+    <div className="mb-4">
+      <h3 className="font-typewriter text-sm font-bold uppercase tracking-[0.12em] text-waldgruen-dark">
+        {children}
+      </h3>
+      {detail && <p className="mt-1 font-body text-xs leading-relaxed text-warmgrau/60">{detail}</p>}
+    </div>
+  );
+}
+
+/** Zugeklappter Nebenbereich; spart auf dem Handy Scrollweg. */
+function Collapsible({
+  summary,
+  detail,
+  children,
+}: {
+  summary: string;
+  detail?: string;
+  children: ReactNode;
+}) {
+  return (
+    <details className="group/collapsible">
+      <summary className="cursor-pointer list-none [&::-webkit-details-marker]:hidden">
+        <span className="inline-flex items-center gap-2 font-typewriter text-sm font-bold uppercase tracking-[0.12em] text-waldgruen-dark underline-offset-2 hover:underline">
+          <svg
+            aria-hidden="true"
+            viewBox="0 0 10 10"
+            className="h-3 w-3 transition-transform group-open/collapsible:rotate-90"
+          >
+            <path d="M3 1.5 6.5 5 3 8.5" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
+          {summary}
+        </span>
+        {detail && <p className="mt-1 pl-5 font-body text-xs leading-relaxed text-warmgrau/60">{detail}</p>}
+      </summary>
+      <div className="mt-4">{children}</div>
+    </details>
   );
 }
 
@@ -464,11 +546,11 @@ function CoreValues({
     activation.selfEfficacyAnswerCount - activation.selfEfficacyDirectionalCount;
 
   return (
-    <section className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+    <div className="mt-6 grid gap-3 min-[420px]:grid-cols-2 sm:gap-4 lg:grid-cols-4">
       <StatCard
         eyebrow="Brief-Erstellungen"
         value={formatNumber(stats.letterCount)}
-        label="gezählte Briefe seit Produktstart · kein 30-/90-Tage-Verlauf verfügbar"
+        label="gezählte Briefe seit Produktstart · Verlauf seit Einführung der Briefnummer unter „Verlauf“"
       />
       <StatCard
         eyebrow="Durchschnittliche Bewertung"
@@ -481,6 +563,7 @@ function CoreValues({
         value={
           <ValueEmphasis
             mode={mode}
+            tone="dark"
             value={stats.sentCount}
             total={stats.knownSendCount}
             unit="beantwortete Versandfragen"
@@ -501,7 +584,7 @@ function CoreValues({
           efficacyUnsure,
         )} unsicher`}
       />
-    </section>
+    </div>
   );
 }
 
@@ -686,15 +769,55 @@ export default async function InternalStatsPage({ searchParams }: InternalStatsP
       : 0;
   const dominantCampaign = topCampaignSlug(stats.letterSignals.sourceCounts);
 
-  const granularity = granularityForTimeRange(filter.timeRange);
-  const signalTimeline: TimelinePoint[] = bucketTimeline(
+  const granularity = granularityForTimeRange(
+    filter.timeRange,
+    daySpan(stats.oldestReviewAt, stats.newestReviewAt),
+  );
+  const granularityLabel =
+    granularity === "day" ? "pro Tag" : granularity === "week" ? "pro Kalenderwoche" : "pro Monat";
+  const fromDay = timeRangeFromDay(stats.fetchedAt, filter.timeRange);
+
+  const counterTimeline = bucketCounterTimeline(stats.letterCounterDayRange, granularity, fromDay);
+  const counterPoints: ColumnPoint[] = counterTimeline.map((point) => ({
+    key: point.key,
+    label: point.label,
+    count: point.count,
+    partial: point.partial,
+    detail: `Zählerstand ${formatNumber(point.counterEnd)}`,
+  }));
+  const counterPeak = peakPoint(counterTimeline.filter((point) => !point.partial));
+  const lettersInCounterPeriod = counterTimeline.reduce((sum, point) => sum + point.count, 0);
+  const counterDays = Object.keys(stats.letterCounterDayRange).sort();
+  const counterSinceLabel = counterDays[0] ? formatDate(counterDays[0]) : null;
+  const signalCoverage =
+    filter.source.kind === "all" && lettersInCounterPeriod > 0
+      ? Math.min(100, (stats.letterSignals.numberedSignalCount / lettersInCounterPeriod) * 100)
+      : null;
+
+  const signalTimeline: ColumnPoint[] = bucketTimeline(
     stats.letterSignals.signalTimelineDayCounts,
     granularity,
   );
-  const reviewTimeline: TimelinePoint[] = bucketTimeline(
+  const reviewTimeline: ColumnPoint[] = bucketTimeline(
     stats.reviewTimelineDayCounts,
     granularity,
   );
+  const signalPeak = peakPoint(signalTimeline);
+
+  const heatmapGranularity = granularity === "day" ? "week" : granularity;
+  const heatmapGranularityLabel =
+    heatmapGranularity === "week" ? "pro Kalenderwoche" : "pro Monat";
+  const topicHeatmap = bucketCategoryTimeline(
+    stats.letterSignals.categoryTimelineDayCounts,
+    heatmapGranularity,
+  );
+  const subtopicClusters = topLabelsByCategory(
+    stats.letterSignals.labelsByCategory,
+    stats.letterSignals.categoryCounts,
+  );
+  const topCategory = Object.entries(stats.letterSignals.categoryCounts).sort(
+    (a, b) => b[1] - a[1],
+  )[0];
 
   const rangeLabel =
     filter.timeRange === "all"
@@ -713,28 +836,57 @@ export default async function InternalStatsPage({ searchParams }: InternalStatsP
   const seNegative = (se.rather_no ?? 0) + (se.no ?? 0);
   const seUnsure = se.unsure ?? 0;
 
+  const quoteLines: string[] = [
+    `Stand ${formatDate(stats.fetchedAt)}: ${formatNumber(stats.letterCount)} Briefe wurden über Brief-nach-Berlin erstellt.`,
+  ];
+  if (stats.knownSendCount > 0) {
+    quoteLines.push(
+      `${formatDecimal(stats.sendRatePercent)} % der Nutzer:innen, die die Versandfrage beantwortet haben, geben an, den Brief verschickt zu haben oder ihn unmittelbar zu verschicken (${formatNumber(stats.sentCount)} von ${formatNumber(stats.knownSendCount)}).`,
+    );
+  }
+  if (stats.reviewCount > 0) {
+    quoteLines.push(
+      `Die generierten Briefe werden im Schnitt mit ${formatDecimal(stats.averageRating)} von 5 Sternen bewertet (${formatNumber(stats.reviewCount)} Bewertungen).`,
+    );
+  }
+  if (topCategory && stats.letterSignals.signalCount > 0) {
+    quoteLines.push(
+      `Häufigstes Thema: ${topicCategoryLabel(topCategory[0])} mit ${shareParts(topCategory[1], stats.letterSignals.signalCount).shareText} % der ${formatNumber(stats.letterSignals.signalCount)} freiwillig geteilten Themensignale.`,
+    );
+  }
+  if (activation.selfEfficacyDirectionalCount > 0) {
+    quoteLines.push(
+      `${formatDecimal(activation.selfEfficacyPositiveRatePercent)} % der Antwortenden fühlen sich durch den Brief eher in der Lage, sich politisch einzubringen (${formatNumber(activation.selfEfficacyPositiveCount)} von ${formatNumber(activation.selfEfficacyDirectionalCount)} gerichteten Antworten).`,
+    );
+  }
+  if (counterPeak) {
+    quoteLines.push(
+      `Stärkster Abschnitt (${granularityLabel.replace("pro ", "")}): ${counterPeak.label} mit ${formatNumber(counterPeak.count)} Briefen.`,
+    );
+  }
+  const quoteText = `${quoteLines.join("\n")}\n\nQuelle: Brief-nach-Berlin, interne Auswertung (${rangeLabel}, ${sourceLabel}). Selbstauskünfte, nur Aggregate.`;
+
   return (
-    <main className="min-h-screen overflow-hidden bg-creme text-warmgrau">
+    <main className="min-h-screen bg-creme text-warmgrau">
       <AirmailStripe />
-      <div className="mx-auto w-full max-w-6xl px-5 py-8 sm:px-8 sm:py-12 lg:px-10">
-        <header className="flex flex-col gap-5 border-b border-warmgrau/10 pb-8 sm:flex-row sm:items-end sm:justify-between">
+      <div className="mx-auto w-full max-w-6xl px-5 py-6 sm:px-8 sm:py-10 lg:px-10">
+        <header className="flex flex-col gap-4 pb-6 sm:flex-row sm:items-end sm:justify-between sm:pb-8">
           <div>
             <div className="flex items-center gap-2 font-typewriter text-[11px] font-bold uppercase tracking-[0.18em] text-waldgruen/65">
               <span className="h-2 w-2 rounded-full bg-waldgruen" />
               Brief-nach-Berlin · intern
             </div>
-            <h1 className="mt-4 max-w-2xl font-typewriter text-4xl font-bold leading-[0.98] tracking-tight text-waldgruen-dark sm:text-6xl">
+            <h1 className="mt-3 max-w-2xl font-typewriter text-3xl font-bold leading-[1.02] tracking-tight text-waldgruen-dark sm:text-5xl lg:text-6xl">
               Nutzung, Qualität und Selbstauskunft.
             </h1>
-            <p className="mt-4 max-w-xl font-body text-base leading-relaxed text-warmgrau/70 sm:text-lg">
+            <p className="mt-3 max-w-xl font-body text-sm leading-relaxed text-warmgrau/70 sm:text-lg">
               Aggregierte Produktdaten für Gespräche mit Organisationen, Medien und
               Multiplikator:innen. Alle Werte sind Selbstauskünfte und Aggregate.
             </p>
           </div>
-          <div className="font-typewriter text-xs leading-relaxed text-warmgrau/55 sm:text-right">
-            <p>Live aus Supabase</p>
-            <p>Abgerufen: {formatDateTime(stats.fetchedAt)}</p>
-            <form action={lockInternalStats} className="mt-2">
+          <div className="flex items-baseline gap-3 font-typewriter text-xs leading-relaxed text-warmgrau/55 sm:flex-col sm:items-end sm:gap-0 sm:text-right">
+            <p>Live aus Supabase · {formatDateTime(stats.fetchedAt)}</p>
+            <form action={lockInternalStats} className="sm:mt-2">
               <button type="submit" className="underline underline-offset-2 hover:text-waldgruen-dark">
                 Zugang sperren
               </button>
@@ -742,7 +894,9 @@ export default async function InternalStatsPage({ searchParams }: InternalStatsP
           </div>
         </header>
 
-        <div className="mt-8 flex flex-col gap-6 rounded-2xl border border-warmgrau/10 bg-white/60 p-5 sm:flex-row sm:items-end sm:justify-between sm:p-6">
+        <SectionNav links={[...SECTION_LINKS]} />
+
+        <div className="mt-6 flex flex-col gap-4 rounded-2xl border border-warmgrau/10 bg-white/60 p-4 sm:flex-row sm:items-end sm:justify-between sm:p-6">
           <FilterBar
             zeitraum={zeitraumRaw}
             quelle={quelleRaw}
@@ -759,53 +913,126 @@ export default async function InternalStatsPage({ searchParams }: InternalStatsP
           </div>
         </div>
 
-        <p className="mt-4 font-typewriter text-xs text-warmgrau/55">
-          Ansicht: {rangeLabel} · {sourceLabel} · {mode === "prozentual" ? "prozentual" : "absolut"}
+        <p className="mt-3 font-typewriter text-xs text-warmgrau/55">
+          Ansicht: {rangeLabel} · {sourceLabel} · {mode === "prozentual" ? "prozentual" : "absolut"} · {granularityLabel}
         </p>
 
-        <CoreValues stats={stats} mode={mode} activation={activation} />
+        <div id="ueberblick" className="scroll-mt-16">
+          <CoreValues stats={stats} mode={mode} activation={activation} />
 
-        <section className="mt-10 rounded-2xl border border-warmgrau/10 bg-white/75 p-5 shadow-[0_16px_36px_rgba(27,67,50,0.06)] sm:p-8">
-          <SectionHeading
-            eyebrow="Der Weg zum versendeten Brief"
-            title="Vom Erstellen bis zum Versandsignal"
-            detail="Funnel auf Basis der gefilterten Bewertungen. Prozentwerte gelten jeweils relativ zu allen Bewertungen; die Brief-Erstellungen sind ein Gesamtzähler ohne Verlauf und daher nicht prozentual verrechenbar."
-          />
-          <Funnel stats={stats} />
-          <BasisNote>
-            Erhebungszeitraum: {formatDate(stats.oldestReviewAt)} bis {formatDate(stats.newestReviewAt)} ·
-            Basis: {formatNumber(stats.reviewCount)} Reviews · {formatNumber(stats.knownSendCount)} beantwortete
-            Versandfragen · {formatNumber(stats.noAnswerCount)} ohne Angabe
-          </BasisNote>
-        </section>
+          <div className="mt-4 rounded-2xl border border-waldgruen/15 bg-white/75 p-5 shadow-[0_16px_36px_rgba(27,67,50,0.06)] sm:p-6">
+            <div className="flex flex-wrap items-start justify-between gap-3">
+              <div>
+                <p className="font-typewriter text-[11px] font-bold uppercase tracking-[0.18em] text-waldgruen/65">
+                  Zahlen zum Zitieren
+                </p>
+                <p className="mt-1 font-body text-xs leading-relaxed text-warmgrau/60">
+                  Fertige Sätze für Presseanfragen und Posts · Filter werden übernommen · Quelle hängt am Ende dran
+                </p>
+              </div>
+              <CopyButton text={quoteText} label="Alle kopieren" />
+            </div>
+            <ol className="mt-4 grid gap-2">
+              {quoteLines.map((line) => (
+                <li
+                  key={line}
+                  className="rounded-lg border border-warmgrau/10 bg-creme/60 px-4 py-2.5 font-body text-sm leading-relaxed text-waldgruen-dark"
+                >
+                  {line}
+                </li>
+              ))}
+            </ol>
+          </div>
+        </div>
 
-        <section className="mt-10 rounded-2xl border border-warmgrau/10 bg-white/75 p-5 shadow-[0_16px_36px_rgba(27,67,50,0.06)] sm:p-8">
+        <Section id="verlauf">
           <SectionHeading
             eyebrow="Entwicklung im Zeitverlauf"
-            title="Wann kommen die Signale?"
-            detail="Themensignale nach freiwilliger Einwilligung (created_at), Reviews nach Erstellung. Signale ohne generated_at werden hier nicht ausgeblendet."
+            title="Wann wurden Briefe geschrieben?"
+            detail="Briefvolumen aus dem globalen Zähler, dazu freiwillige Themensignale und Reviews. Die Spitze ist rot markiert."
           />
-          <div className="grid gap-8 lg:grid-cols-2">
+          <SubHeading
+            detail={`Seit dem ${counterSinceLabel ?? "Start der Briefnummer"} trägt jeder freigegebene Themenbeitrag die laufende Briefnummer. Aus der Differenz zwischen zwei Abschnitten ergibt sich das Volumen aller Briefe, nicht nur der Opt-ins. Der Quellenfilter wirkt hier nicht.`}
+          >
+            Brief-Erstellungen · {granularityLabel}
+          </SubHeading>
+          {counterPoints.length === 0 ? (
+            <EmptyState>
+              Noch keine Briefnummern im gewählten Zeitraum. Der Verlauf füllt sich automatisch, sobald Nutzer:innen nach dem Start der Briefnummer ihr Thema freigeben.
+            </EmptyState>
+          ) : (
+            <>
+              <ColumnChart
+                data={counterPoints}
+                unit="Briefe"
+                axisLabel={granularity === "day" ? "Tag" : granularity === "week" ? "Kalenderwoche" : "Monat"}
+                tableSummary="Briefe je Abschnitt als Tabelle"
+              />
+              <div className="mt-4 grid gap-3 sm:grid-cols-3">
+                <MiniStat label="Briefe im Zeitraum" value={formatNumber(lettersInCounterPeriod)} />
+                {counterPeak && (
+                  <MiniStat label={`Spitze · ${counterPeak.label}`} value={`${formatNumber(counterPeak.count)} Briefe`} />
+                )}
+                {signalCoverage !== null && (
+                  <MiniStat
+                    label="Themensignal-Abdeckung"
+                    value={`${formatDecimal(signalCoverage)} %`}
+                    detail={`${formatNumber(stats.letterSignals.numberedSignalCount)} Signale mit Briefnummer`}
+                  />
+                )}
+              </div>
+              {counterTimeline.some((point) => point.partial) && (
+                <p className="mt-3 font-body text-xs leading-relaxed text-warmgrau/55">
+                  Der erste Abschnitt (blass) hat keinen Vorwert und zeigt nur eine Untergrenze.
+                </p>
+              )}
+            </>
+          )}
+
+          <div className="mt-8 grid gap-8 border-t border-warmgrau/10 pt-6 lg:grid-cols-2 [&>*]:min-w-0">
             <div>
-              <h3 className="mb-3 font-typewriter text-sm font-bold uppercase tracking-[0.12em] text-waldgruen-dark">
-                Themensignale · {rangeLabel.toLowerCase()}
-              </h3>
-              <TimelineBars data={signalTimeline} />
+              <SubHeading detail="Nach Zeitpunkt der freiwilligen Einwilligung. Signale ohne generated_at bleiben enthalten.">
+                Themensignale · {granularityLabel}
+              </SubHeading>
+              {signalTimeline.length === 0 ? (
+                <EmptyState />
+              ) : (
+                <ColumnChart data={signalTimeline} unit="Signale" tableSummary="Signale als Tabelle" />
+              )}
+              {signalPeak && signalTimeline.length > 1 && (
+                <p className="mt-2 font-typewriter text-[11px] text-warmgrau/55">
+                  Spitze: {signalPeak.label} mit {formatNumber(signalPeak.count)} Signalen
+                </p>
+              )}
             </div>
             <div>
-              <h3 className="mb-3 font-typewriter text-sm font-bold uppercase tracking-[0.12em] text-waldgruen-dark">
-                Reviews · {rangeLabel.toLowerCase()}
-              </h3>
-              <TimelineBars data={reviewTimeline} />
+              <SubHeading detail="Nach Erstellung der Bewertung, Kurzbewertungen eingeschlossen.">
+                Reviews · {granularityLabel}
+              </SubHeading>
+              {reviewTimeline.length === 0 ? (
+                <EmptyState />
+              ) : (
+                <ColumnChart
+                  data={reviewTimeline}
+                  unit="Reviews"
+                  color="#D4A017"
+                  emphasisColor="#C1121F"
+                  tableSummary="Reviews als Tabelle"
+                />
+              )}
             </div>
           </div>
-        </section>
+          <BasisNote>
+            Basis: {formatNumber(stats.letterSignals.signalCount)} Themensignale · {formatNumber(stats.reviewCount)} Reviews ·
+            Briefnummern seit {counterSinceLabel ?? "—"} · Abschnitte ohne Beobachtung werden dem nächsten Abschnitt zugeschlagen
+          </BasisNote>
+        </Section>
 
-        <section className="mt-10 rounded-2xl border border-airmail-rot/15 bg-white/75 p-5 shadow-[0_16px_36px_rgba(27,67,50,0.06)] sm:p-8">
+        <Section id="themen" accent="rot">
           <SectionHeading
             eyebrow="Freiwillige Themensignale"
-            title="Themen und politische Ebene"
-            detail={`${formatNumber(stats.letterSignals.signalCount)} erfolgreich erzeugte Signale · keine Brieftexte oder Einzelzeilen · Mehrfachzuordnungen möglich, deshalb kann die Summe der Anteile über 100 % liegen`}
+            title="Worüber wird geschrieben?"
+            detail={`${formatNumber(stats.letterSignals.signalCount)} freigegebene Signale · keine Brieftexte oder Einzelzeilen · bis zu drei Oberkategorien je Brief, deshalb kann die Summe der Anteile über 100 % liegen`}
           />
           {signalCampaignShare > 0.5 && dominantCampaign && (
             <div className="mb-6 rounded-lg border border-bernstein/40 bg-bernstein/10 px-4 py-3">
@@ -820,33 +1047,63 @@ export default async function InternalStatsPage({ searchParams }: InternalStatsP
           {stats.letterSignals.signalCount === 0 ? (
             <EmptyState>Es gibt noch keine freigegebenen Themensignale. Diese Übersicht füllt sich erst nach dem freiwilligen Opt-in.</EmptyState>
           ) : (
-            <div className="grid gap-8 lg:grid-cols-2">
-              <div>
-                <h3 className="mb-4 font-typewriter text-sm font-bold uppercase tracking-[0.12em] text-waldgruen-dark">Oberkategorien</h3>
-                <RankedBars values={stats.letterSignals.categoryCounts} labels={topicCategoryLabel} total={stats.letterSignals.signalCount} mode={mode} />
+            <div className="grid gap-8 [&>*]:min-w-0">
+              <div className="grid gap-8 lg:grid-cols-[minmax(0,2fr)_minmax(0,3fr)] [&>*]:min-w-0">
+                <div>
+                  <SubHeading detail="Anteil an allen gefilterten Signalen.">Oberkategorien</SubHeading>
+                  <RankedBars values={stats.letterSignals.categoryCounts} labels={topicCategoryLabel} total={stats.letterSignals.signalCount} mode={mode} />
+                </div>
+                <div>
+                  <SubHeading detail="Die häufigsten neutralen Unterthemen je Oberkategorie. Zuordnung über die erste Oberkategorie eines Briefs.">
+                    Unterthemen je Oberkategorie
+                  </SubHeading>
+                  <SubtopicClusters
+                    clusters={subtopicClusters}
+                    categoryLabel={topicCategoryLabel}
+                    total={stats.letterSignals.signalCount}
+                  />
+                </div>
               </div>
-              <div>
-                <h3 className="mb-4 font-typewriter text-sm font-bold uppercase tracking-[0.12em] text-waldgruen-dark">Unterthemen</h3>
-                <RankedBars values={stats.letterSignals.labelCounts} total={stats.letterSignals.signalCount} mode={mode} />
+
+              <div className="border-t border-warmgrau/10 pt-6">
+                <SubHeading detail={`Signale je Oberkategorie und Abschnitt (${heatmapGranularityLabel}). Dunkler bedeutet mehr. Auf dem Handy horizontal wischen.`}>
+                  Themen im Zeitverlauf
+                </SubHeading>
+                {topicHeatmap.rows.length === 0 ? (
+                  <EmptyState />
+                ) : (
+                  <TopicHeatmap data={topicHeatmap} rowLabel={topicCategoryLabel} />
+                )}
               </div>
-              <div>
-                <h3 className="mb-4 font-typewriter text-sm font-bold uppercase tracking-[0.12em] text-waldgruen-dark">Politische Ebene</h3>
-                <RankedBars values={stats.letterSignals.levelCounts} total={stats.letterSignals.signalCount} mode={mode} />
+
+              <div className="grid gap-8 border-t border-warmgrau/10 pt-6 sm:grid-cols-2 [&>*]:min-w-0">
+                <div>
+                  <SubHeading>Politische Ebene</SubHeading>
+                  <RankedBars values={stats.letterSignals.levelCounts} total={stats.letterSignals.signalCount} mode={mode} />
+                </div>
+                <div>
+                  <SubHeading>Bundesländer</SubHeading>
+                  <RankedBars values={stats.letterSignals.bundeslandCounts} labels={bundeslandLabel} total={stats.letterSignals.signalCount} mode={mode} />
+                </div>
               </div>
-              <div>
-                <h3 className="mb-4 font-typewriter text-sm font-bold uppercase tracking-[0.12em] text-waldgruen-dark">Bundesländer</h3>
-                <RankedBars values={stats.letterSignals.bundeslandCounts} labels={bundeslandLabel} total={stats.letterSignals.signalCount} mode={mode} />
+
+              <div className="border-t border-warmgrau/10 pt-6">
+                <Collapsible summary="PLZ-Regionen" detail="Zweistellige Postleitzahl-Regionen, höchstens zwölf.">
+                  <div className="sm:max-w-md">
+                    <RankedBars values={stats.letterSignals.plzPrefixCounts} labels={(key) => `${key} · Region`} total={stats.letterSignals.signalCount} mode={mode} />
+                  </div>
+                </Collapsible>
               </div>
-              <div>
-                <h3 className="mb-4 font-typewriter text-sm font-bold uppercase tracking-[0.12em] text-waldgruen-dark">PLZ-Regionen</h3>
-                <RankedBars values={stats.letterSignals.plzPrefixCounts} labels={(key) => `${key} · Region`} total={stats.letterSignals.signalCount} mode={mode} />
-              </div>
-              <div className="lg:col-span-2">
-                <h3 className="mb-4 font-typewriter text-sm font-bold uppercase tracking-[0.12em] text-waldgruen-dark">Bewertung & Versandabsicht nach Oberkategorie</h3>
+
+              <div className="border-t border-warmgrau/10 pt-6">
+                <Collapsible
+                  summary="Bewertung & Versandabsicht nach Oberkategorie"
+                  detail="Nur Briefe mit verknüpftem Review. Bewertungen, beantwortete Versandfragen und fehlende Angaben getrennt."
+                >
                 {Object.keys(stats.letterSignals.reviewByCategory).length === 0 ? (
                   <EmptyState>Noch keine verknüpften Reviews mit diesen Signalen.</EmptyState>
                 ) : (
-                  <div className="grid gap-3 sm:grid-cols-2">
+                  <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
                     {TOPIC_CATEGORY_CODES.filter((code) => stats.letterSignals.reviewByCategory[code]).map((code) => {
                       const item = stats.letterSignals.reviewByCategory[code];
                       const average = item.ratings ? (item.ratingSum / item.ratings).toFixed(1).replace(".", ",") : "—";
@@ -854,16 +1111,17 @@ export default async function InternalStatsPage({ searchParams }: InternalStatsP
                         <div key={code} className="rounded-lg border border-warmgrau/10 bg-creme/60 px-4 py-3">
                           <p className="font-body text-sm font-semibold text-waldgruen-dark">{topicCategoryLabel(code)}</p>
                           <p className="mt-1 font-typewriter text-xs text-warmgrau/60">
-                            {item.reviews} Reviews verknüpft · {item.ratings} Bewertungen · Ø {average}
+                            {item.reviews} Reviews · Ø {average} ({item.ratings} Bewertungen)
                           </p>
                           <p className="mt-0.5 font-typewriter text-[11px] leading-relaxed text-warmgrau/55">
-                            Versandfrage: {item.knownSent} beantwortet ({item.sent} positiv) · {item.noAnswer} ohne Angabe
+                            Versandfrage: {item.sent} von {item.knownSent} positiv · {item.noAnswer} ohne Angabe
                           </p>
                         </div>
                       );
                     })}
                   </div>
                 )}
+                </Collapsible>
               </div>
             </div>
           )}
@@ -872,30 +1130,27 @@ export default async function InternalStatsPage({ searchParams }: InternalStatsP
             aus Kampagnen · {formatNumber(stats.letterSignals.sourceCounts.free)} freie Anliegen · Erhebung ab{" "}
             {formatDate(stats.oldestReviewAt)}
           </BasisNote>
-        </section>
+        </Section>
 
-        <section className="mt-10 rounded-2xl border border-warmgrau/10 bg-white/75 p-5 shadow-[0_16px_36px_rgba(27,67,50,0.06)] sm:p-8">
+        <Section id="feedback">
           <SectionHeading
-            eyebrow="Bewertung & Versandsignal"
+            eyebrow="Feedback & Versandsignal"
             title="Wie kommt der Brief an?"
             detail="Selbstauskunft aus dem Feedbackprozess. „Ja, geht raus“ umfasst bereits verschickte und unmittelbar geplante Briefe — es ist kein physischer Versandnachweis."
           />
-          <div className="grid gap-8 lg:grid-cols-2 lg:gap-12">
+          <SubHeading detail="Prozentwerte gelten relativ zu allen Bewertungen; die Brief-Erstellungen sind ein Gesamtzähler ohne Verlauf und daher nicht prozentual verrechenbar.">
+            Vom Erstellen bis zum Versandsignal
+          </SubHeading>
+          <Funnel stats={stats} />
+
+          <div className="mt-8 grid gap-8 border-t border-warmgrau/10 pt-6 lg:grid-cols-2 lg:gap-12">
             <div>
-              <h3 className="font-typewriter text-sm font-bold uppercase tracking-[0.12em] text-waldgruen-dark">
-                Bewertung ({formatDecimal(stats.averageRating)} / 5)
-              </h3>
-              <div className="mt-5">
-                <RatingBars stats={stats} mode={mode} />
-              </div>
+              <SubHeading>Bewertung ({formatDecimal(stats.averageRating)} / 5)</SubHeading>
+              <RatingBars stats={stats} mode={mode} />
             </div>
             <div>
-              <h3 className="font-typewriter text-sm font-bold uppercase tracking-[0.12em] text-waldgruen-dark">
-                Versandsignal
-              </h3>
-              <div className="mt-5">
-                <StatsPie stats={stats} mode={mode} />
-              </div>
+              <SubHeading>Versandsignal</SubHeading>
+              <StatsPie stats={stats} mode={mode} />
               <p className="mt-4 font-typewriter text-xs leading-relaxed text-warmgrau/55">
                 Positive Quote nur auf beantworteter Basis: {formatNumber(stats.sentCount)} von{" "}
                 {formatNumber(stats.knownSendCount)} ({formatDecimal(stats.sendRatePercent)} %) —{" "}
@@ -903,83 +1158,77 @@ export default async function InternalStatsPage({ searchParams }: InternalStatsP
               </p>
             </div>
           </div>
-          <BasisNote>
-            Erhebungszeitraum: {formatDate(stats.oldestReviewAt)} bis {formatDate(stats.newestReviewAt)} · Basis:{" "}
-            {formatNumber(stats.reviewCount)} Feedbackzeilen · {formatNumber(stats.knownSendCount)} beantwortete
-            Versandfragen · {formatNumber(stats.noAnswerCount)} ohne Angabe
-          </BasisNote>
-        </section>
 
-        <section className="mt-10 rounded-2xl border border-warmgrau/10 bg-white/75 p-5 shadow-[0_16px_36px_rgba(27,67,50,0.06)] sm:p-8">
-          <SectionHeading
-            eyebrow="Was wir lernen"
-            title="Qualität entscheidet mit"
-            detail="Zwischen Briefbewertung und Versandabsicht zeigt sich ein Zusammenhang. Das ist eine Korrelation, kein Kausalitätsnachweis."
-          />
-          <div className="grid gap-10 lg:grid-cols-2 lg:gap-14">
-            <div>
-              <h3 className="font-typewriter text-sm font-bold uppercase tracking-[0.12em] text-waldgruen-dark">
-                Versandabsicht nach Bewertung
-              </h3>
-              <div className="mt-5 grid gap-5">
-                {ratingBands.map((band) => {
-                  const values = sumRatingBreakdowns(stats, band.ratings);
-                  return (
-                    <div key={band.label}>
-                      <div className="flex items-baseline justify-between gap-3">
-                        <span className="font-body text-sm font-semibold text-waldgruen-dark">
-                          {band.label}
-                          {isSmallBasis(values.known) && <BasisBadge />}
-                        </span>
-                        {values.known > 0 ? (
-                          <ShareStat mode={mode} value={values.sent} total={values.known} />
-                        ) : (
-                          <span className="font-typewriter text-xs tabular-nums text-warmgrau/60">—</span>
-                        )}
-                      </div>
-                      <div className="mt-1.5 h-3 overflow-hidden rounded-full bg-warmgrau/10">
-                        <div
-                          className="h-full rounded-full"
-                          style={{ backgroundColor: band.color, width: `${values.ratePercent}%` }}
-                        />
-                      </div>
-                      <p className="mt-1 font-typewriter text-[11px] text-warmgrau/55">
-                        {values.known > 0
-                          ? `${formatNumber(values.sent)} von ${formatNumber(values.known)} mit Angabe`
-                          : "Keine beantworteten Versandfragen"}
-                      </p>
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-
-            <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-1 lg:gap-7">
+          <div className="mt-8 border-t border-warmgrau/10 pt-6">
+            <SubHeading detail="Zwischen Briefbewertung und Versandabsicht zeigt sich ein Zusammenhang. Das ist eine Korrelation, kein Kausalitätsnachweis.">
+              Qualität entscheidet mit
+            </SubHeading>
+            <div className="grid gap-8 lg:grid-cols-2 lg:gap-14">
               <div>
-                <h3 className="font-typewriter text-sm font-bold uppercase tracking-[0.12em] text-waldgruen-dark">
-                  Das hilft beim Abschicken
-                </h3>
-                <div className="mt-5">
-                  <SignalList stats={stats} signals={positiveSignals} color="#2D6A4F" mode={mode} />
+                <p className="font-body text-xs font-semibold uppercase tracking-[0.1em] text-warmgrau/55">
+                  Versandabsicht nach Bewertung
+                </p>
+                <div className="mt-4 grid gap-5">
+                  {ratingBands.map((band) => {
+                    const values = sumRatingBreakdowns(stats, band.ratings);
+                    return (
+                      <div key={band.label}>
+                        <div className="flex items-baseline justify-between gap-3">
+                          <span className="font-body text-sm font-semibold text-waldgruen-dark">
+                            {band.label}
+                            {isSmallBasis(values.known) && <BasisBadge />}
+                          </span>
+                          {values.known > 0 ? (
+                            <ShareStat mode={mode} value={values.sent} total={values.known} />
+                          ) : (
+                            <span className="font-typewriter text-xs tabular-nums text-warmgrau/60">—</span>
+                          )}
+                        </div>
+                        <div className="mt-1.5 h-3 overflow-hidden rounded-full bg-warmgrau/10">
+                          <div
+                            className="h-full rounded-full"
+                            style={{ backgroundColor: band.color, width: `${values.ratePercent}%` }}
+                          />
+                        </div>
+                        <p className="mt-1 font-typewriter text-[11px] text-warmgrau/55">
+                          {values.known > 0
+                            ? `${formatNumber(values.sent)} von ${formatNumber(values.known)} mit Angabe`
+                            : "Keine beantworteten Versandfragen"}
+                        </p>
+                      </div>
+                    );
+                  })}
                 </div>
               </div>
-              <div>
-                <h3 className="font-typewriter text-sm font-bold uppercase tracking-[0.12em] text-waldgruen-dark">
-                  Das bremst
-                </h3>
-                <div className="mt-5">
-                  <SignalList stats={stats} signals={frictionSignals} color="#C1121F" mode={mode} />
+
+              <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-1 lg:gap-7">
+                <div>
+                  <p className="font-body text-xs font-semibold uppercase tracking-[0.1em] text-warmgrau/55">
+                    Das hilft beim Abschicken
+                  </p>
+                  <div className="mt-4">
+                    <SignalList stats={stats} signals={positiveSignals} color="#2D6A4F" mode={mode} />
+                  </div>
+                </div>
+                <div>
+                  <p className="font-body text-xs font-semibold uppercase tracking-[0.1em] text-warmgrau/55">
+                    Das bremst
+                  </p>
+                  <div className="mt-4">
+                    <SignalList stats={stats} signals={frictionSignals} color="#C1121F" mode={mode} />
+                  </div>
                 </div>
               </div>
             </div>
           </div>
           <BasisNote>
-            Feedback-Markierungen können sich überschneiden. „Ja, geht raus“ bleibt eine Selbstauskunft und kein
-            physischer Versandnachweis. Anteile beziehen sich auf Markierungen mit Versandangabe.
+            Erhebungszeitraum: {formatDate(stats.oldestReviewAt)} bis {formatDate(stats.newestReviewAt)} · Basis:{" "}
+            {formatNumber(stats.reviewCount)} Feedbackzeilen · {formatNumber(stats.knownSendCount)} beantwortete
+            Versandfragen · {formatNumber(stats.noAnswerCount)} ohne Angabe · Feedback-Markierungen können sich überschneiden
           </BasisNote>
-        </section>
+        </Section>
 
-        <section className="mt-10 rounded-2xl border border-waldgruen/15 bg-white/75 p-5 shadow-[0_16px_36px_rgba(27,67,50,0.06)] sm:p-8">
+        <Section id="wirkung" accent="gruen">
           <SectionHeading
             eyebrow="Politische Selbstwirksamkeit"
             title="Vom Betroffensein ins Handeln"
@@ -987,19 +1236,14 @@ export default async function InternalStatsPage({ searchParams }: InternalStatsP
           />
           <div className="grid gap-8 lg:grid-cols-2 lg:gap-12">
             <article>
-              <h3 className="font-typewriter text-sm font-bold uppercase tracking-[0.12em] text-waldgruen-dark">
+              <SubHeading detail="„Fühlst du dich durch diesen Brief eher in der Lage, dich politisch einzubringen?“">
                 Handlungsfähiger durch den Brief
-              </h3>
-              <p className="mt-2 font-body text-sm leading-relaxed text-warmgrau/65">
-                „Fühlst du dich durch diesen Brief eher in der Lage, dich politisch einzubringen?“
-              </p>
+              </SubHeading>
               {activation.selfEfficacyAnswerCount === 0 ? (
-                <div className="mt-5">
-                  <EmptyState>Noch keine Antworten zur politischen Handlungsfähigkeit.</EmptyState>
-                </div>
+                <EmptyState>Noch keine Antworten zur politischen Handlungsfähigkeit.</EmptyState>
               ) : (
                 <>
-                  <div className="mt-5 flex flex-wrap gap-6">
+                  <div className="flex flex-wrap gap-6">
                     <div className="flex-1">
                       <ValueEmphasis
                         mode={mode}
@@ -1042,26 +1286,19 @@ export default async function InternalStatsPage({ searchParams }: InternalStatsP
             </article>
 
             <article>
-              <h3 className="font-typewriter text-sm font-bold uppercase tracking-[0.12em] text-waldgruen-dark">
+              <SubHeading detail="Wie oft politische Inhalte beschäftigen, ohne dass ein konkreter nächster Schritt klar ist.">
                 Politische Ohnmacht im Alltag
-              </h3>
-              <p className="mt-2 font-body text-sm leading-relaxed text-warmgrau/65">
-                Wie oft politische Inhalte beschäftigen, ohne dass ein konkreter nächster Schritt klar ist.
-              </p>
+              </SubHeading>
               {activation.powerlessnessAnswerCount === 0 ? (
-                <div className="mt-5">
-                  <EmptyState>Noch keine freiwilligen Antworten zur politischen Ohnmacht.</EmptyState>
-                </div>
+                <EmptyState>Noch keine freiwilligen Antworten zur politischen Ohnmacht.</EmptyState>
               ) : (
-                <div className="mt-6">
-                  <SurveyDistributionBars
-                    values={activation.powerlessnessDistribution}
-                    options={powerlessnessOptions}
-                    total={activation.powerlessnessAnswerCount}
-                    color="#C58B18"
-                    mode={mode}
-                  />
-                </div>
+                <SurveyDistributionBars
+                  values={activation.powerlessnessDistribution}
+                  options={powerlessnessOptions}
+                  total={activation.powerlessnessAnswerCount}
+                  color="#C58B18"
+                  mode={mode}
+                />
               )}
               <BasisNote>
                 Basis: {formatNumber(activation.powerlessnessAnswerCount)} freiwillig beantwortet ·{" "}
@@ -1070,20 +1307,14 @@ export default async function InternalStatsPage({ searchParams }: InternalStatsP
             </article>
           </div>
 
-          <div className="mt-10 border-t border-warmgrau/10 pt-8">
-            <h3 className="font-typewriter text-sm font-bold uppercase tracking-[0.12em] text-waldgruen-dark">
+          <div className="mt-8 border-t border-warmgrau/10 pt-6">
+            <SubHeading detail="Nur Reviews mit Antworten auf beide Fragen. „Kann ich noch nicht sagen“ bleibt sichtbar, zählt aber nicht in die positive Quote.">
               Positive Selbstauskunft nach berichteter Ohnmachtsfrequenz
-            </h3>
-            <p className="mt-2 font-body text-sm leading-relaxed text-warmgrau/65">
-              Nur Reviews mit Antworten auf beide Fragen. „Kann ich noch nicht sagen“ bleibt sichtbar, zählt aber
-              nicht in die positive Quote.
-            </p>
+            </SubHeading>
             {!hasActivationCrossData ? (
-              <div className="mt-5">
-                <EmptyState>Noch keine gemeinsam auswertbaren Antworten.</EmptyState>
-              </div>
+              <EmptyState>Noch keine gemeinsam auswertbaren Antworten.</EmptyState>
             ) : (
-              <div className="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+              <div className="grid gap-3 min-[420px]:grid-cols-2 lg:grid-cols-4">
                 {POLITICAL_POWERLESSNESS_FREQUENCY_VALUES.map((frequency) => {
                   const item = activation.efficacyByPowerlessness[frequency];
                   return (
@@ -1112,9 +1343,9 @@ export default async function InternalStatsPage({ searchParams }: InternalStatsP
               </div>
             )}
           </div>
-        </section>
+        </Section>
 
-        <section className="mt-10 rounded-2xl border border-warmgrau/10 bg-white/75 p-5 shadow-[0_16px_36px_rgba(27,67,50,0.06)] sm:p-8">
+        <Section id="definitionen">
           <SectionHeading
             eyebrow="Datenqualität & Definitionen"
             title="Worauf sich die Zahlen beziehen"
@@ -1126,12 +1357,16 @@ export default async function InternalStatsPage({ searchParams }: InternalStatsP
               body={`${formatDate(stats.oldestReviewAt)} bis ${formatDate(stats.newestReviewAt)} · ${rangeLabel} · ${sourceLabel}. Abruf: ${formatDateTime(stats.fetchedAt)}.`}
             />
             <Definition
+              title="Brief-Erstellungen im Verlauf"
+              body={`Jeder freigegebene Themenbeitrag speichert seit dem ${counterSinceLabel ?? "Start der Briefnummer"} die laufende Briefnummer. Die Differenz der höchsten Nummern zweier Abschnitte ergibt das Volumen aller Briefe dazwischen. Abschnitte ohne Beitrag fallen weg und werden dem nächsten zugeschlagen.`}
+            />
+            <Definition
               title="„Ja, geht raus“"
               body="Umfasst bereits verschickte und unmittelbar geplante Briefe. Es ist eine Selbstauskunft, kein physischer Versandnachweis."
             />
             <Definition
               title="Themensignale"
-              body={`${formatNumber(stats.letterSignals.signalCount)} freigegebene Signale nach freiwilliger Einwilligung · Mehrfachzuordnungen möglich, Summe der Anteile kann über 100 % liegen.`}
+              body={`${formatNumber(stats.letterSignals.signalCount)} freigegebene Signale nach freiwilliger Einwilligung · bis zu drei Oberkategorien und drei Unterthemen je Brief · Unterthemen werden der ersten Oberkategorie zugeordnet.`}
             />
             <Definition
               title="Quellen"
@@ -1146,9 +1381,9 @@ export default async function InternalStatsPage({ searchParams }: InternalStatsP
               body="Nur Aggregate · keine Brieftexte · keine E-Mail-Adressen · keine Einzelzeilen · keine vollständigen PLZ. Seite ist passwortgeschützt und für Suchmaschinen gesperrt (noindex)."
             />
           </div>
-        </section>
+        </Section>
 
-        <footer className="mt-10 grid gap-3 border-t border-warmgrau/10 pt-6 font-typewriter text-xs leading-relaxed text-warmgrau/55 sm:grid-cols-2">
+        <footer className="mt-8 grid gap-3 border-t border-warmgrau/10 pt-6 font-typewriter text-xs leading-relaxed text-warmgrau/55 sm:grid-cols-2">
           <p>
             Erhebungszeitraum: {formatDate(stats.oldestReviewAt)} bis {formatDate(stats.newestReviewAt)} ·{" "}
             {rangeLabel} · {sourceLabel}
@@ -1159,6 +1394,16 @@ export default async function InternalStatsPage({ searchParams }: InternalStatsP
         </footer>
       </div>
     </main>
+  );
+}
+
+function MiniStat({ label, value, detail }: { label: string; value: string; detail?: string }) {
+  return (
+    <div className="rounded-lg border border-warmgrau/10 bg-creme/60 px-4 py-3">
+      <p className="font-typewriter text-[11px] font-bold uppercase tracking-[0.12em] text-warmgrau/55">{label}</p>
+      <p className="mt-1 font-typewriter text-xl font-bold tabular-nums text-waldgruen-dark">{value}</p>
+      {detail && <p className="mt-0.5 font-body text-xs text-warmgrau/55">{detail}</p>}
+    </div>
   );
 }
 

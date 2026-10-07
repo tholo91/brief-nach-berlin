@@ -1,5 +1,9 @@
 import { formatDecimal, formatNumber } from "@/lib/formatNumber";
-import type { StatsFilter, TimeRange } from "@/lib/internalStats/aggregate";
+import type {
+  LetterCounterDayRange,
+  StatsFilter,
+  TimeRange,
+} from "@/lib/internalStats/aggregate";
 
 export type ViewMode = "prozentual" | "absolut";
 export type TimelineGranularity = "day" | "week" | "month";
@@ -83,8 +87,10 @@ export function isoWeekKey(day: string): string {
   const jan4 = new Date(Date.UTC(weekYear, 0, 4));
   const jan4Day = jan4.getUTCDay() || 7;
   const weekStart = new Date(jan4.getTime() - (jan4Day - 1) * 86400000);
+  // Donnerstag liegt auf 12:00 UTC, Wochenstart auf 00:00 UTC: floor statt
+  // round, sonst rutscht jede Woche um eins nach oben (Jan 1 → „KW 2“).
   const week =
-    Math.round((thursday.getTime() - weekStart.getTime()) / 86400000 / 7) + 1;
+    Math.floor((thursday.getTime() - weekStart.getTime()) / 86400000 / 7) + 1;
   return `${weekYear}-${String(week).padStart(2, "0")}`;
 }
 
@@ -121,10 +127,176 @@ function bucketLabel(key: string, granularity: TimelineGranularity): string {
   return `KW ${Number(week)} · ${String(year).slice(2)}`;
 }
 
+/**
+ * 30 Tage → Tage, 90 Tage → Wochen, Gesamt → Monate. Umfasst der
+ * Gesamtzeitraum höchstens ein halbes Jahr, zeigen Wochen die Wellen besser.
+ */
 export function granularityForTimeRange(
   timeRange: TimeRange,
+  spanDays?: number,
 ): TimelineGranularity {
-  return timeRange === 30 ? "day" : timeRange === 90 ? "week" : "month";
+  if (timeRange === 30) return "day";
+  if (timeRange === 90) return "week";
+  if (spanDays !== undefined && spanDays <= 182) return "week";
+  return "month";
+}
+
+export function daySpan(from: string | null, to: string | null): number | undefined {
+  if (!from || !to) return undefined;
+  const start = Date.parse(from);
+  const end = Date.parse(to);
+  if (Number.isNaN(start) || Number.isNaN(end)) return undefined;
+  return Math.max(0, Math.round((end - start) / 86400000));
+}
+
+export function timeRangeFromDay(fetchedAt: string, timeRange: TimeRange): string | null {
+  if (timeRange === "all") return null;
+  const cutoff = new Date(Date.parse(fetchedAt) - timeRange * 86400000);
+  return cutoff.toISOString().slice(0, 10);
+}
+
+const DAY_KEY = /^\d{4}-\d{2}-\d{2}$/;
+
+export function bucketKeyFor(day: string, granularity: TimelineGranularity): string {
+  return granularity === "day"
+    ? day
+    : granularity === "month"
+      ? day.slice(0, 7)
+      : isoWeekKey(day);
+}
+
+export type CounterPoint = {
+  key: string;
+  label: string;
+  /** Briefe, die der globale Zähler in diesem Abschnitt gezählt hat. */
+  count: number;
+  /** Zählerstand am Ende des Abschnitts. */
+  counterEnd: number;
+  /** Erster Abschnitt ohne Vorwert: Untergrenze aus kleinster und größter Nummer. */
+  partial: boolean;
+};
+
+/**
+ * Leitet aus den je Tag beobachteten Briefnummern das Briefvolumen je
+ * Zeitabschnitt ab. Der Zähler ist monoton, deshalb genügt die Differenz der
+ * laufenden Maxima. Abschnitte ohne beobachtete Nummer fallen weg; ihr Volumen
+ * wird dem nächsten Abschnitt mit Beobachtung zugeschlagen.
+ */
+export function bucketCounterTimeline(
+  dayRange: LetterCounterDayRange,
+  granularity: TimelineGranularity,
+  fromDay: string | null = null,
+): CounterPoint[] {
+  const days = Object.keys(dayRange).filter((day) => DAY_KEY.test(day)).sort();
+  if (!days.length) return [];
+
+  const order: string[] = [];
+  const bucketEnd = new Map<string, number>();
+  const bucketMin = new Map<string, number>();
+  let running = 0;
+  for (const day of days) {
+    const { min, max } = dayRange[day];
+    running = Math.max(running, max);
+    const key = bucketKeyFor(day, granularity);
+    if (!bucketEnd.has(key)) {
+      order.push(key);
+      bucketMin.set(key, min);
+    } else {
+      bucketMin.set(key, Math.min(bucketMin.get(key) ?? min, min));
+    }
+    bucketEnd.set(key, running);
+  }
+
+  const fromKey = fromDay ? bucketKeyFor(fromDay, granularity) : null;
+  const points: CounterPoint[] = [];
+  let previousEnd: number | null = null;
+  for (const key of order) {
+    const end = bucketEnd.get(key) ?? 0;
+    if (fromKey === null || key >= fromKey) {
+      const count =
+        previousEnd === null
+          ? Math.max(0, end - (bucketMin.get(key) ?? end) + 1)
+          : Math.max(0, end - previousEnd);
+      points.push({
+        key,
+        label: bucketLabel(key, granularity),
+        count,
+        counterEnd: end,
+        partial: previousEnd === null,
+      });
+    }
+    previousEnd = end;
+  }
+  return points;
+}
+
+export type HeatmapColumn = { key: string; label: string };
+export type HeatmapRow = { key: string; counts: number[]; total: number };
+export type HeatmapData = { columns: HeatmapColumn[]; rows: HeatmapRow[]; max: number };
+
+/** Oberkategorie × Zeitabschnitt, Zeilen nach Gesamtzahl absteigend. */
+export function bucketCategoryTimeline(
+  categoryDayCounts: Record<string, Record<string, number>>,
+  granularity: TimelineGranularity,
+  rowLimit = 13,
+): HeatmapData {
+  const columnKeys = new Set<string>();
+  const cells = new Map<string, Map<string, number>>();
+  for (const [day, categories] of Object.entries(categoryDayCounts)) {
+    if (!DAY_KEY.test(day)) continue;
+    const column = bucketKeyFor(day, granularity);
+    columnKeys.add(column);
+    for (const [category, count] of Object.entries(categories)) {
+      const row = cells.get(category) ?? new Map<string, number>();
+      row.set(column, (row.get(column) ?? 0) + count);
+      cells.set(category, row);
+    }
+  }
+  const columns = [...columnKeys]
+    .sort()
+    .map((key) => ({ key, label: bucketLabel(key, granularity) }));
+  let max = 0;
+  const rows: HeatmapRow[] = [...cells.entries()]
+    .map(([key, row]) => {
+      const counts = columns.map((column) => row.get(column.key) ?? 0);
+      for (const count of counts) max = Math.max(max, count);
+      return { key, counts, total: counts.reduce((sum, count) => sum + count, 0) };
+    })
+    .filter((row) => row.total > 0)
+    .sort((a, b) => b.total - a.total || (a.key < b.key ? -1 : 1))
+    .slice(0, rowLimit);
+  return { columns, rows, max };
+}
+
+export type SubtopicCluster = {
+  category: string;
+  total: number;
+  labels: { label: string; count: number }[];
+};
+
+/** Unterthemen je Oberkategorie, Kategorien nach Signalzahl absteigend. */
+export function topLabelsByCategory(
+  labelsByCategory: Record<string, Record<string, number>>,
+  categoryCounts: Record<string, number>,
+  perCategory = 4,
+): SubtopicCluster[] {
+  return Object.entries(labelsByCategory)
+    .map(([category, labels]) => ({
+      category,
+      total: categoryCounts[category] ?? 0,
+      labels: Object.entries(labels)
+        .sort((a, b) => b[1] - a[1] || (a[0] < b[0] ? -1 : 1))
+        .slice(0, perCategory)
+        .map(([label, count]) => ({ label, count })),
+    }))
+    .filter((cluster) => cluster.labels.length > 0)
+    .sort((a, b) => b.total - a.total || (a.category < b.category ? -1 : 1));
+}
+
+export function peakPoint<T extends { count: number }>(points: T[]): T | null {
+  let best: T | null = null;
+  for (const point of points) if (!best || point.count > best.count) best = point;
+  return best;
 }
 
 export function isSmallBasis(value: number, threshold = 10): boolean {

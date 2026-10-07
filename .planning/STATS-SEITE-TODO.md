@@ -74,7 +74,8 @@ Ziel: Zahlen schneller einordnen können, ohne aus Selbstauskünften oder kleine
   - Brief später tatsächlich verschickt: `Ja | Nein | keine Angabe`
   - Antwort aus dem politischen Büro erhalten: `Ja | Nein | noch offen`
 - [ ] Diese späteren Angaben niemals mit der heutigen Versandabsicht vermischen.
-- [ ] Für einen echten 30-/90-Tage-Verlauf der Brief-Erstellungen eine datensparsame tägliche Aggregation konzipieren; der aktuelle Gesamtzähler besitzt keine Ereignishistorie.
+- [x] Für einen echten 30-/90-Tage-Verlauf der Brief-Erstellungen eine datensparsame tägliche Aggregation konzipieren; der aktuelle Gesamtzähler besitzt keine Ereignishistorie.
+  - Umgesetzt über die Briefnummer am freigegebenen Themenbeitrag (Migration 024): Differenz der höchsten Nummern je Abschnitt = Volumen aller Briefe. Füllt sich seit 2026-10-07; Abschnitte ohne Beitrag werden dem nächsten zugeschlagen.
 
 ## Akzeptanzkriterien
 

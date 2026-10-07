@@ -32,6 +32,7 @@ export type InternalLetterSignalRow = {
   bundesland_key: string | null;
   plz_prefix: string | null;
   campaign_slug: string | null;
+  letter_number?: number | null;
 };
 
 export type SignalReviewBreakdown = {
@@ -84,9 +85,22 @@ export type LetterSignalStats = {
   bundeslandCounts: Record<string, number>;
   plzPrefixCounts: Record<string, number>;
   signalTimelineDayCounts: Record<string, number>;
+  /** Tag → Oberkategorie → Signale (alle Kategorien einer Zeile zählen). */
+  categoryTimelineDayCounts: Record<string, Record<string, number>>;
+  /** Erste Oberkategorie einer Zeile → Unterthema → Signale. */
+  labelsByCategory: Record<string, Record<string, number>>;
+  /** Gefilterte Signale, die eine Briefnummer tragen. */
+  numberedSignalCount: number;
   reviewByCategory: Record<string, SignalReviewBreakdown>;
   sourceCounts: SourceCounts;
 };
+
+/**
+ * Niedrigste und höchste Briefnummer je Tag über alle freigegebenen Signale,
+ * unabhängig von Zeitraum- und Quellenfilter. Der globale Zähler ist monoton,
+ * deshalb lässt sich daraus das Briefvolumen zwischen zwei Tagen ableiten.
+ */
+export type LetterCounterDayRange = Record<string, { min: number; max: number }>;
 
 export type SendBreakdown = {
   sent: number;
@@ -166,6 +180,7 @@ export type InternalStats = {
   politicalActivation: PoliticalActivationStats;
   reviewSourceCounts: SourceCounts;
   reviewTimelineDayCounts: Record<string, number>;
+  letterCounterDayRange: LetterCounterDayRange;
   campaignLabels: Record<string, string>;
 };
 
@@ -192,6 +207,9 @@ function emptySignalStats(): LetterSignalStats {
     bundeslandCounts: {},
     plzPrefixCounts: {},
     signalTimelineDayCounts: {},
+    categoryTimelineDayCounts: {},
+    labelsByCategory: {},
+    numberedSignalCount: 0,
     reviewByCategory: {},
     sourceCounts: emptySourceCounts(),
   };
@@ -211,6 +229,34 @@ function addTimelineDay(
 ): void {
   const day = createdAt?.slice(0, 10);
   if (day && DAY_KEY_PATTERN.test(day)) addCount(timeline, day);
+}
+
+function dayKey(value: string | null): string | null {
+  const day = value?.slice(0, 10);
+  return day && DAY_KEY_PATTERN.test(day) ? day : null;
+}
+
+function isLetterNumber(value: unknown): value is number {
+  return typeof value === "number" && Number.isInteger(value) && value > 0;
+}
+
+export function collectLetterCounterDayRange(
+  rows: InternalLetterSignalRow[],
+): LetterCounterDayRange {
+  const range: LetterCounterDayRange = {};
+  for (const row of rows) {
+    if (!isLetterNumber(row.letter_number)) continue;
+    const day = dayKey(row.generated_at ?? row.created_at);
+    if (!day) continue;
+    const current = range[day];
+    if (!current) {
+      range[day] = { min: row.letter_number, max: row.letter_number };
+    } else {
+      current.min = Math.min(current.min, row.letter_number);
+      current.max = Math.max(current.max, row.letter_number);
+    }
+  }
+  return range;
 }
 
 function classifyReviewSource(
@@ -295,13 +341,24 @@ function aggregateLetterSignals(
   for (const row of rows) {
     result.signalCount += 1;
     addTimelineDay(result.signalTimelineDayCounts, row.created_at);
+    if (isLetterNumber(row.letter_number)) result.numberedSignalCount += 1;
+    const signalDay = dayKey(row.created_at);
+    const categories = [...new Set(row.topic_categories ?? [])];
+    const primaryCategory = categories[0];
+    if (primaryCategory) {
+      const labels = result.labelsByCategory[primaryCategory] ??= {};
+      for (const label of new Set(row.topic_labels ?? [])) addCount(labels, label);
+    }
     if (row.campaign_slug) {
       addCount(result.sourceCounts.campaign, row.campaign_slug);
     } else {
       result.sourceCounts.free += 1;
     }
-    for (const category of new Set(row.topic_categories ?? [])) {
+    for (const category of categories) {
       result.categoryCounts[category] = (result.categoryCounts[category] ?? 0) + 1;
+      if (signalDay) {
+        addCount(result.categoryTimelineDayCounts[signalDay] ??= {}, category);
+      }
       const review = reviewByLetter.get(row.letter_id);
       if (review) {
         const breakdown = result.reviewByCategory[category] ??= {
@@ -629,6 +686,7 @@ export function aggregateInternalStats(
     politicalActivation,
     reviewSourceCounts,
     reviewTimelineDayCounts,
+    letterCounterDayRange: collectLetterCounterDayRange(letterSignalRows),
     campaignLabels,
   };
 }

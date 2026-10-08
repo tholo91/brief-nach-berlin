@@ -8,7 +8,7 @@ const expectedCopy = {
     steps: ["Anliegen schildern", "Angaben ergänzen", "Abschreiben und abschicken"],
     stepLabel: "Schritt 1",
     exampleLink: "Ganzen Beispielbrief lesen",
-    storyTab: "Erste Erfolge",
+    storyTab: "So fing alles an",
     impactTitle: "Meine Mutter schreibt den 1. Brief nach Berlin",
     impactPoint3: "Mama ist jetzt Demokratie-Fan Nr. 1 in Duisburg",
     projectTitle: "Kostenlos, gemeinnützig, offen",

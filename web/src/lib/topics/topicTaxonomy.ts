@@ -35,6 +35,11 @@ export const TOPIC_JSON_SCHEMA_PROPERTIES = {
   },
 } as const;
 
+export const TOPIC_PROMPT_RULES = [
+  "- topic_categories: 1 bis 3 Codes, nach Gewicht geordnet. Der erste Code ist das Hauptthema des Anliegens.",
+  "- topic_labels: 1 bis 3 konkrete Stichworte aus dem Anliegen, je höchstens zwei Wörter, als Substantive und so spezifisch wie der Text, z.B. 'Erziehermangel', 'Radverkehr', 'Bundesverfassungsgericht'. Keine Personen, Adressen, Firmen oder Parteien, keine Platzhalter wie 'Anliegen' oder 'Politik'.",
+] as const;
+
 export const TopicCategoryCodeSchema = z.enum(TOPIC_CATEGORY_CODES);
 export const TopicSourceSchema = z.enum([
   "routing",

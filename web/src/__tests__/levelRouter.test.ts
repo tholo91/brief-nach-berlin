@@ -82,6 +82,8 @@ describe("routeToLevel", () => {
     expect(request.messages[0].content).toContain(
       "Nenne die Zuständigkeit statt die Einordnung nur zu wiederholen"
     );
+    expect(request.messages[0].content).toContain("Der erste Code ist das Hauptthema des Anliegens");
+    expect(request.messages[0].content).toContain("Keine Personen, Adressen, Firmen oder Parteien");
     expect(request.messages[1].content).toBe("<anliegen>Asylpolitik</anliegen>");
   });
 

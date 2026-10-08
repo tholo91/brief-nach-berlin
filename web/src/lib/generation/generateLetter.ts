@@ -7,6 +7,7 @@ import { LETTER_LENGTHS, DEFAULT_LETTER_LENGTH } from "@/lib/config";
 import {
   buildTopicSignal,
   TOPIC_JSON_SCHEMA_PROPERTIES,
+  TOPIC_PROMPT_RULES,
   type TopicSignal,
 } from "@/lib/topics/topicTaxonomy";
 
@@ -376,7 +377,7 @@ export function buildSystemPrompt(input: GenerateLetterInput): string {
       "__RESPONSE_FORMAT__",
       input.preclassifiedTopic
         ? '{\n  "selected_politician_id": <number>,\n  "letter": "<vollständiger Brieftext>"\n}'
-        : '{\n  "selected_politician_id": <number>,\n  "letter": "<vollständiger Brieftext>",\n  "topic_categories": ["<1 bis 3 passende Codes aus der Taxonomie>"],\n  "topic_labels": ["<1 bis 3 kurze, neutrale Unterthemen>"]\n}',
+        : `{\n  "selected_politician_id": <number>,\n  "letter": "<vollständiger Brieftext>",\n  "topic_categories": ["<1 bis 3 passende Codes aus der Taxonomie, Hauptthema zuerst>"],\n  "topic_labels": ["<1 bis 3 konkrete Stichworte aus dem Anliegen>"]\n}\n\nRegeln für die Themenfelder:\n${TOPIC_PROMPT_RULES.join("\n")}`,
     );
   const level: RecipientLevel = input.level ?? "Bund";
 

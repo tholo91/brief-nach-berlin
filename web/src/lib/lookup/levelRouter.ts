@@ -5,6 +5,7 @@ import {
   TopicSignalWithMetadataSchema,
   buildTopicSignal,
   TOPIC_JSON_SCHEMA_PROPERTIES,
+  TOPIC_PROMPT_RULES,
   type TopicSignal,
 } from "@/lib/topics/topicTaxonomy";
 import taxonomy from "../../../data/zustaendigkeit-taxonomie.json";
@@ -79,12 +80,13 @@ function buildSystemPrompt(): string {
     ...taxonomy.kommune.exclusive.map((t: string) => `- ${t}`),
     "",
     "Antworte ausschließlich als JSON mit dieser Struktur:",
-    '{"primary":{"level":"Bund|Land|Kommune","confidence":"high|medium|low"},"reasoning":"kurze Begründung auf Deutsch","topic_categories":["1 bis 3 passende Codes"],"topic_labels":["1 bis 3 kurze, neutrale Unterthemen"]}',
+    '{"primary":{"level":"Bund|Land|Kommune","confidence":"high|medium|low"},"reasoning":"kurze Begründung auf Deutsch","topic_categories":["Hauptthema zuerst, 1 bis 3 Codes"],"topic_labels":["1 bis 3 konkrete Stichworte aus dem Anliegen"]}',
     "",
     "Regeln:",
     "- primary = die EINE konkret handlungsfähige Ebene. Der User soll sich nicht entscheiden müssen.",
     "- confidence='low' nur wenn das Anliegen keiner Ebene klar zuordenbar ist.",
     "- reasoning: ein kurzer, konkreter deutscher Satz, der erklärt, warum die gewählte Ebene handeln kann (Substantive groß, max 15 Wörter, max 200 Zeichen). Nenne die Zuständigkeit statt die Einordnung nur zu wiederholen. Wird dem User direkt angezeigt. Beginne natürlich, z.B. 'Bildungspolitik ist Ländersache.' oder 'Asylrecht ist ausschließliche Bundeskompetenz.' KEINE URLs, KEINE Klammern mit Sonderzeichen, KEIN Markup.",
+    ...TOPIC_PROMPT_RULES,
   ].join("\n");
 }
 

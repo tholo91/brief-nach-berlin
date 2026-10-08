@@ -80,6 +80,9 @@ describe("buildUserPrompt", () => {
     expect(prompt).not.toContain("THEMEN-SIGNAL");
     expect(prompt).toContain("topic_categories");
     expect(prompt).toContain("topic_labels");
+    expect(prompt).toContain("Der erste Code ist das Hauptthema des Anliegens");
+    expect(prompt).toContain("Keine Personen, Adressen, Firmen oder Parteien");
+    expect(prompt).toContain("konkrete Stichworte aus dem Anliegen");
   });
 
   it("spart Themen-Output, wenn eine Kampagne bereits klassifiziert ist", () => {
@@ -96,6 +99,8 @@ describe("buildUserPrompt", () => {
 
     expect(prompt).not.toContain("topic_categories");
     expect(prompt).not.toContain("topic_labels");
+    expect(prompt).not.toContain("Hauptthema");
+    expect(prompt).not.toContain("Stichworte");
   });
 
   it("accepts English or Turkish input while requiring a German final letter", () => {

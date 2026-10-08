@@ -10,7 +10,7 @@ import {
 describe("parseStatsFilter", () => {
   it("returns safe defaults for empty params", () => {
     expect(parseStatsFilter({})).toEqual({
-      filter: { timeRange: "all", source: { kind: "all" } },
+      filter: { timeRange: "all", source: { kind: "all" }, bundesland: null },
       mode: "prozentual",
     });
   });
@@ -26,6 +26,7 @@ describe("parseStatsFilter", () => {
       filter: {
         timeRange: 90,
         source: { kind: "campaign", campaignSlug: "sichere-schulwege" },
+        bundesland: null,
       },
       mode: "absolut",
     });
@@ -33,14 +34,14 @@ describe("parseStatsFilter", () => {
 
   it("falls back to the generic campaign source when the slug is invalid", () => {
     expect(parseStatsFilter({ quelle: "campaign", kampagne: "../../etc" })).toEqual({
-      filter: { timeRange: "all", source: { kind: "campaign" } },
+      filter: { timeRange: "all", source: { kind: "campaign" }, bundesland: null },
       mode: "prozentual",
     });
   });
 
   it("ignores unknown values and arrays take the first entry", () => {
     expect(parseStatsFilter({ zeitraum: "45", quelle: "x", ansicht: ["absolut", "prozentual"] })).toEqual({
-      filter: { timeRange: "all", source: { kind: "all" } },
+      filter: { timeRange: "all", source: { kind: "all" }, bundesland: null },
       mode: "absolut",
     });
   });
@@ -64,12 +65,19 @@ describe("shareParts", () => {
 
 describe("isoWeekKey", () => {
   it("groups adjacent days into the same ISO week", () => {
-    expect(isoWeekKey("2026-07-31")).toBe("2026-32");
-    expect(isoWeekKey("2026-08-01")).toBe("2026-32");
+    expect(isoWeekKey("2026-07-31")).toBe("2026-31");
+    expect(isoWeekKey("2026-08-01")).toBe("2026-31");
   });
 
   it("handles week boundaries", () => {
-    expect(isoWeekKey("2026-08-03")).toBe("2026-33");
+    expect(isoWeekKey("2026-08-03")).toBe("2026-32");
+  });
+
+  it("matches the ISO 8601 calendar at year edges", () => {
+    expect(isoWeekKey("2026-01-01")).toBe("2026-01");
+    expect(isoWeekKey("2025-12-29")).toBe("2026-01");
+    expect(isoWeekKey("2026-12-31")).toBe("2026-53");
+    expect(isoWeekKey("2027-01-04")).toBe("2027-01");
   });
 });
 
@@ -85,8 +93,8 @@ describe("bucketTimeline", () => {
   it("buckets by ISO week with a KW label", () => {
     const buckets = bucketTimeline({ "2026-07-31": 3, "2026-08-01": 4, "2026-08-03": 1 }, "week");
     expect(buckets).toEqual([
-      { key: "2026-32", label: "KW 32 · 26", count: 7 },
-      { key: "2026-33", label: "KW 33 · 26", count: 1 },
+      { key: "2026-31", label: "KW 31 · 26", count: 7 },
+      { key: "2026-32", label: "KW 32 · 26", count: 1 },
     ]);
   });
 

@@ -2,16 +2,61 @@ import "server-only";
 import { getServiceRoleClient } from "@/lib/supabase/server";
 import {
   aggregateInternalStats,
+  baselineFilter,
   DEFAULT_STATS_FILTER,
+  isNarrowingFilter,
   type InternalLetterSignalRow,
   type InternalReviewRow,
   type InternalStats,
   type StatsFilter,
 } from "./aggregate";
 
+type InternalStatsRows = {
+  reviews: InternalReviewRow[];
+  signals: InternalLetterSignalRow[];
+  letterCount: number;
+  campaignLabels: Record<string, string>;
+};
+
 export async function getInternalStats(
   filter: StatsFilter = DEFAULT_STATS_FILTER,
 ): Promise<InternalStats> {
+  const rows = await fetchInternalStatsRows();
+  return aggregateRows(rows, filter, new Date().toISOString());
+}
+
+/**
+ * Gefilterte Statistik plus Vergleichsbasis (gleicher Zeitraum, alle Quellen,
+ * alle Bundesländer), wenn der Filter die Datenbasis einschränkt.
+ */
+export async function getInternalStatsWithBaseline(
+  filter: StatsFilter = DEFAULT_STATS_FILTER,
+): Promise<{ stats: InternalStats; baseline: InternalStats | null }> {
+  const rows = await fetchInternalStatsRows();
+  const fetchedAt = new Date().toISOString();
+  const stats = aggregateRows(rows, filter, fetchedAt);
+  const baseline = isNarrowingFilter(filter)
+    ? aggregateRows(rows, baselineFilter(filter), fetchedAt)
+    : null;
+  return { stats, baseline };
+}
+
+function aggregateRows(
+  rows: InternalStatsRows,
+  filter: StatsFilter,
+  fetchedAt: string,
+): InternalStats {
+  return aggregateInternalStats(
+    rows.reviews,
+    rows.letterCount,
+    fetchedAt,
+    rows.signals,
+    filter,
+    rows.campaignLabels,
+  );
+}
+
+async function fetchInternalStatsRows(): Promise<InternalStatsRows> {
   const client = getServiceRoleClient();
   const [reviewsResult, signalsResult, counterResult, campaignsResult] =
     await Promise.all([
@@ -23,7 +68,7 @@ export async function getInternalStats(
       client
         .from("letter_signals")
         .select(
-          "created_at,consented_at,generated_at,campaign_slug,topic_categories,topic_labels,political_level,bundesland_key,plz_prefix,letter_id",
+          "created_at,consented_at,generated_at,campaign_slug,topic_categories,topic_labels,political_level,bundesland_key,plz_prefix,letter_id,letter_number",
         )
         .eq("status", "contributed"),
       client
@@ -60,12 +105,10 @@ export async function getInternalStats(
     }
   }
 
-  return aggregateInternalStats(
-    (reviewsResult.data ?? []) as InternalReviewRow[],
-    counterResult.data?.value ?? 0,
-    new Date().toISOString(),
-    (signalsResult.data ?? []) as InternalLetterSignalRow[],
-    filter,
+  return {
+    reviews: (reviewsResult.data ?? []) as InternalReviewRow[],
+    signals: (signalsResult.data ?? []) as InternalLetterSignalRow[],
+    letterCount: counterResult.data?.value ?? 0,
     campaignLabels,
-  );
+  };
 }

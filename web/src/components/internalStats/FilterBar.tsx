@@ -1,41 +1,23 @@
 "use client";
 
-import { usePathname, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
+import { BUNDESLAND_KEYS, BUNDESLAND_NAMES } from "@/lib/campaigns/schema";
+import { buildStatsHref, type StatsQuery } from "@/lib/internalStats/view";
 
 type FilterBarProps = {
-  zeitraum: string;
-  quelle: string;
-  kampagne: string | null;
+  query: StatsQuery;
   campaignOptions: { slug: string; label: string }[];
 };
 
-export function FilterBar({
-  zeitraum,
-  quelle,
-  kampagne,
-  campaignOptions,
-}: FilterBarProps) {
+export function FilterBar({ query, campaignOptions }: FilterBarProps) {
   const router = useRouter();
-  const pathname = usePathname();
 
-  const apply = (patch: Record<string, string | null>) => {
-    const params = new URLSearchParams();
-    const base: Record<string, string | null> = {
-      zeitraum: zeitraum === "all" ? null : zeitraum,
-      quelle: quelle === "all" ? null : quelle,
-      kampagne: quelle === "campaign" && kampagne ? kampagne : null,
-    };
-    const merged = { ...base, ...patch };
-    for (const [key, value] of Object.entries(merged)) {
-      if (value) params.set(key, value);
-      else params.delete(key);
-    }
-    const qs = params.toString();
-    router.replace(pathname + (qs ? `?${qs}` : ""));
+  const apply = (patch: Partial<StatsQuery>) => {
+    router.replace(buildStatsHref(query, patch));
   };
 
   const controlClass =
-    "rounded-md border border-warmgrau/20 bg-white px-2.5 py-1.5 font-body text-sm text-warmgrau outline-none focus:border-waldgruen focus:ring-2 focus:ring-waldgruen/20";
+    "max-w-full rounded-md border border-warmgrau/20 bg-white px-2.5 py-1.5 font-body text-sm text-warmgrau outline-none focus:border-waldgruen focus:ring-2 focus:ring-waldgruen/20";
   const labelClass =
     "font-typewriter text-[11px] font-bold uppercase tracking-[0.14em] text-warmgrau/55";
 
@@ -45,8 +27,10 @@ export function FilterBar({
         <span className={labelClass}>Zeitraum</span>
         <select
           className={controlClass}
-          value={zeitraum}
-          onChange={(event) => apply({ zeitraum: event.target.value })}
+          value={query.zeitraum ?? "all"}
+          onChange={(event) =>
+            apply({ zeitraum: event.target.value === "all" ? null : event.target.value })
+          }
         >
           <option value="all">Gesamt</option>
           <option value="30">30 Tage</option>
@@ -58,9 +42,12 @@ export function FilterBar({
         <span className={labelClass}>Quelle</span>
         <select
           className={controlClass}
-          value={quelle}
+          value={query.quelle ?? "all"}
           onChange={(event) =>
-            apply({ quelle: event.target.value, kampagne: null })
+            apply({
+              quelle: event.target.value === "all" ? null : event.target.value,
+              kampagne: null,
+            })
           }
         >
           <option value="all">Alle</option>
@@ -69,13 +56,13 @@ export function FilterBar({
         </select>
       </label>
 
-      {quelle === "campaign" && (
+      {query.quelle === "campaign" && (
         <label className="grid gap-1">
           <span className={labelClass}>Kampagne</span>
           <select
             className={controlClass}
-            value={kampagne ?? ""}
-            onChange={(event) => apply({ kampagne: event.target.value })}
+            value={query.kampagne ?? ""}
+            onChange={(event) => apply({ kampagne: event.target.value || null })}
           >
             <option value="">Alle Kampagnen</option>
             {campaignOptions.map((campaign) => (
@@ -87,10 +74,25 @@ export function FilterBar({
         </label>
       )}
 
+      <label className="grid gap-1">
+        <span className={labelClass}>Bundesland</span>
+        <select
+          className={controlClass}
+          value={query.bundesland ?? ""}
+          onChange={(event) => apply({ bundesland: event.target.value || null })}
+        >
+          <option value="">Alle</option>
+          {BUNDESLAND_KEYS.map((key) => (
+            <option key={key} value={key}>
+              {BUNDESLAND_NAMES[key]}
+            </option>
+          ))}
+        </select>
+      </label>
+
       <p className="max-w-prose font-body text-xs leading-relaxed text-warmgrau/50">
-        Der Filter steuert die Datenbasis der Abschnitte. Der Brief-Zähler und
-        die Durchschnittsbewertung bleiben unverändert, weil ihnen kein
-        Ereignisverlauf zugrunde liegt.
+        Filter wirken auf alle Abschnitte, nur der Brief-Zähler bleibt. Klick auf
+        ein Bundesland oder eine Kampagne in den Balken setzt den Filter ebenfalls.
       </p>
     </div>
   );

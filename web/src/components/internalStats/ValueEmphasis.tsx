@@ -6,6 +6,8 @@ type ValueEmphasisProps = {
   total: number;
   unit?: string;
   smallSuffix?: string;
+  /** "dark" für dunkle Kartenhintergründe (helle Schrift). */
+  tone?: "light" | "dark";
 };
 
 /**
@@ -19,8 +21,15 @@ export function ValueEmphasis({
   total,
   unit,
   smallSuffix,
+  tone = "light",
 }: ValueEmphasisProps) {
   const parts = shareParts(value, total);
+  const valueClass = `font-typewriter text-4xl font-bold tabular-nums sm:text-5xl ${
+    tone === "dark" ? "text-creme" : "text-waldgruen-dark"
+  }`;
+  const baseClass = `font-body text-xs leading-relaxed ${
+    tone === "dark" ? "text-creme/75" : "text-warmgrau/55"
+  }`;
   const unitText = unit ? ` ${unit}` : "";
   const countText = `${parts.count}${unitText}`;
   const shareText = `${parts.shareText} %`;
@@ -29,10 +38,10 @@ export function ValueEmphasis({
   if (mode === "prozentual") {
     return (
       <span className="inline-flex flex-col items-start gap-0.5">
-        <span className="font-typewriter text-4xl font-bold tabular-nums text-waldgruen-dark sm:text-5xl">
+        <span className={valueClass}>
           {shareText}
         </span>
-        <span className="font-body text-xs leading-relaxed text-warmgrau/55">
+        <span className={baseClass}>
           {baseText}
           {total === 0 && " · keine Basis"}
           {smallSuffix ? ` · ${smallSuffix}` : ""}
@@ -43,10 +52,10 @@ export function ValueEmphasis({
 
   return (
     <span className="inline-flex flex-col items-start gap-0.5">
-      <span className="font-typewriter text-4xl font-bold tabular-nums text-waldgruen-dark sm:text-5xl">
+      <span className={valueClass}>
         {countText}
       </span>
-      <span className="font-body text-xs leading-relaxed text-warmgrau/55">
+      <span className={baseClass}>
         ({shareText} · von {parts.totalText})
         {total === 0 && " · keine Basis"}
         {smallSuffix ? ` · ${smallSuffix}` : ""}

@@ -348,4 +348,21 @@ describe("campaign rollout safety", () => {
     });
     expect(getBundestagPoliticiansByIds).toHaveBeenCalledWith([campaignPolitician.id, 999999]);
   });
+
+  it("continues as a normal letter when the campaign has ended", async () => {
+    process.env.LANDTAG_ROUTING_ENABLED = "false";
+    jest.mocked(getActiveCampaignBySlug).mockResolvedValue({
+      ...campaign("Land", "NW"),
+      endsAt: "2026-01-01T22:59:59.000Z",
+    });
+
+    const result = await submitWizardAction({
+      ...baseData,
+      campaign: { slug: "sichere-schulwege", title: "Sichere Schulwege" },
+    });
+
+    expect(result).toMatchObject({ disambiguationNeeded: true, campaignEnded: true });
+    expect(result).not.toHaveProperty("campaignTargetLevel");
+    expect(result).not.toHaveProperty("campaignRestricted");
+  });
 });

@@ -27,6 +27,7 @@ import {
   type MistralStage,
 } from "@/lib/mistral";
 import { incrementLetterCounters } from "@/lib/counter";
+import { runningCampaign } from "@/lib/campaigns/endDate";
 import { getActiveCampaignBySlug } from "@/lib/campaigns/repository";
 import { buildLetterSignalContext, doesLetterSignalContextMatch } from "@/lib/letterSignals/context";
 import { createGenerationProof, verifyLetterSignalContext } from "@/lib/letterSignals/token";
@@ -155,12 +156,13 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const campaign = data.campaign?.slug
+    const activeCampaign = data.campaign?.slug
       ? await getActiveCampaignBySlug(data.campaign.slug)
       : null;
-    if (data.campaign?.slug && !campaign) {
+    if (data.campaign?.slug && !activeCampaign) {
       return NextResponse.json({ error: "Diese Kampagne ist aktuell nicht aktiv." }, { status: 400 });
     }
+    const campaign = runningCampaign(activeCampaign, new Date());
     const allowedPoliticianIds = campaign?.targetPoliticianIds ?? [];
     const campaignFixedRecipient = campaign
       ? getCampaignFixedRecipient(campaign)
@@ -292,7 +294,7 @@ export async function POST(req: NextRequest) {
     // would fan out ISR rewrites across every route that renders the shared footer.
     let letterNumber: number | undefined;
     try {
-      letterNumber = await incrementLetterCounters(data.campaign?.slug);
+      letterNumber = await incrementLetterCounters(campaign?.slug);
     } catch (error) {
       console.error("[brief-nach-berlin][counter] increment failed", error);
     }
@@ -338,7 +340,7 @@ export async function POST(req: NextRequest) {
         letterText: result.letter,
         issueText: data.issueText,
         debug: debugPayload,
-        campaign: data.campaign,
+        campaign: campaign ? data.campaign : undefined,
         letterNumber,
         letterId,
       });

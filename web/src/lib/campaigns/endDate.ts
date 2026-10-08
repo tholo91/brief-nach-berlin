@@ -3,6 +3,9 @@ export const CAMPAIGN_TIME_ZONE = "Europe/Berlin";
 export const CAMPAIGN_END_CHOICES = ["none", "2w", "1m", "3m", "custom"] as const;
 export type CampaignEndChoice = (typeof CAMPAIGN_END_CHOICES)[number];
 
+export const CAMPAIGN_ENDED_MESSAGE =
+  "Diese Kampagne ist beendet und kann nicht mehr geändert werden.";
+
 type EndsAtCarrier = { endsAt?: string | null };
 
 function tzOffsetMinutes(utc: Date, timeZone: string): number {

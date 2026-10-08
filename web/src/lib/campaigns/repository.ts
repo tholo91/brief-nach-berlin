@@ -2,6 +2,7 @@ import "server-only";
 
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { getServiceRoleClient } from "@/lib/supabase/server";
+import { isCampaignEnded } from "./endDate";
 import {
   createCampaignSchema,
   compactCampaignSlug,
@@ -93,6 +94,7 @@ type CampaignUpdate = Partial<{
   topic_taxonomy_version: string | null;
   topic_model: string | null;
   topic_classified_at: string | null;
+  ends_at: string | null;
   email_verified_at: string;
   activated_at: string;
   paused_at: string;
@@ -232,6 +234,22 @@ function assertStatus(
   }
 }
 
+function assertNotEnded(campaign: Campaign, action: string): void {
+  if (isCampaignEnded(campaign, new Date())) {
+    throw new CampaignRepositoryError(
+      `${action} is not allowed after the campaign ended`
+    );
+  }
+}
+
+const END_ALLOWED_STATUSES: CampaignStatus[] = [
+  "draft",
+  "awaiting_email_verification",
+  "awaiting_approval",
+  "active",
+  "paused",
+];
+
 function assertPubliclyPublishable(campaign: Campaign, action: string): void {
   if (campaign.moderationStatus !== "approved") {
     throw new CampaignRepositoryError(
@@ -281,6 +299,7 @@ export async function createCampaign(
       target_state: parsed.targetLevel === "Land" ? parsed.targetState : null,
       target_recipient: parsed.targetRecipient,
       target_politician_ids: parsed.targetPoliticianIds,
+      ...(parsed.endsAt ? { ends_at: parsed.endsAt } : {}),
     })
     .select("*")
     .single();
@@ -463,6 +482,7 @@ export async function updateCampaignPublicFields(
 ): Promise<Campaign> {
   const campaign = await requireCampaign(campaignId, db);
   assertStatus(campaign, ["draft", "awaiting_email_verification", "awaiting_approval", "active", "paused"], "edit");
+  assertNotEnded(campaign, "edit");
   const parsed = updateCampaignPublicFieldsSchema.parse(input);
   const validated = validateCampaignUpdate(campaign, parsed);
   const nextTarget = {
@@ -503,6 +523,7 @@ export async function saveAwaitingApprovalCampaignEdits(
 ): Promise<Campaign> {
   const campaign = await requireCampaign(campaignId, db);
   assertStatus(campaign, ["awaiting_approval"], "edit");
+  assertNotEnded(campaign, "edit");
   const parsed = updateCampaignPublicFieldsSchema.parse(input);
   validateCampaignUpdate(campaign, parsed);
   const patch: CampaignUpdate = {
@@ -610,6 +631,7 @@ export async function publishCampaignEdits(
 ): Promise<Campaign> {
   const campaign = await requireCampaign(campaignId, db);
   assertStatus(campaign, ["draft", "awaiting_email_verification", "active", "paused"], "edit");
+  assertNotEnded(campaign, "edit");
   const parsed = updateCampaignPublicFieldsSchema.parse(input);
   const next = {
     title: parsed.title ?? campaign.title,
@@ -777,6 +799,7 @@ export async function activateVerifiedCampaign(
   db?: RepositoryClient
 ): Promise<Campaign> {
   assertStatus(campaign, ["awaiting_approval", "paused"], "activate");
+  assertNotEnded(campaign, "activate");
   assertPubliclyPublishable(campaign, "activate");
   if (!campaign.emailVerifiedAt) {
     throw new CampaignRepositoryError("activate requires verified creator email");
@@ -800,6 +823,7 @@ export async function pauseCampaign(
 ): Promise<Campaign> {
   const campaign = await requireCampaign(campaignId, db);
   assertStatus(campaign, ["active"], "pause");
+  assertNotEnded(campaign, "pause");
   return updateCampaignRow(
     campaignId,
     { status: "paused", paused_at: new Date().toISOString() },
@@ -816,6 +840,37 @@ export async function archiveCampaign(
   return updateCampaignRow(
     campaignId,
     { status: "archived", archived_at: new Date().toISOString() },
+    db
+  );
+}
+
+export async function setCampaignEndsAt(
+  campaignId: string,
+  endsAt: string | null,
+  db?: RepositoryClient
+): Promise<Campaign> {
+  const campaign = await requireCampaign(campaignId, db);
+  assertStatus(campaign, END_ALLOWED_STATUSES, "set end date");
+  assertNotEnded(campaign, "set end date");
+  if (endsAt !== null && Date.parse(endsAt) <= Date.now()) {
+    throw new CampaignRepositoryError("End date must be in the future");
+  }
+  return updateCampaignRow(campaignId, { ends_at: endsAt }, db);
+}
+
+export async function endCampaignNow(
+  campaignId: string,
+  db?: RepositoryClient
+): Promise<Campaign> {
+  const campaign = await requireCampaign(campaignId, db);
+  assertStatus(campaign, END_ALLOWED_STATUSES, "end");
+  assertNotEnded(campaign, "end");
+  return updateCampaignRow(
+    campaignId,
+    {
+      ends_at: new Date().toISOString(),
+      ...(campaign.status === "paused" ? { status: "active" as const } : {}),
+    },
     db
   );
 }

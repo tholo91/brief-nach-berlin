@@ -24,6 +24,7 @@ jest.mock("@/lib/rateLimit", () => ({
   },
 }));
 jest.mock("@/lib/counter", () => ({ incrementLetterCounters: jest.fn() }));
+jest.mock("@/lib/campaigns/repository", () => ({ getActiveCampaignBySlug: jest.fn() }));
 jest.mock("@/lib/mistral", () => ({
   MistralProviderUnavailableError: class extends Error {},
   MistralStageError: class extends Error {
@@ -47,6 +48,8 @@ import { generateLetter } from "@/lib/generation/generateLetter";
 import { resolveRecipientSelection } from "@/lib/lookup/resolveRecipient";
 import { moderateText } from "@/lib/moderation/moderateText";
 import { checkRateLimit, hashIdentifier } from "@/lib/rateLimit";
+import { getActiveCampaignBySlug } from "@/lib/campaigns/repository";
+import { incrementLetterCounters } from "@/lib/counter";
 import { MistralStageError } from "@/lib/mistral";
 
 function requestWith(body: unknown) {
@@ -120,6 +123,71 @@ describe("generate-letter RecipientSelection hardening", () => {
       letterText: "Sachlich umformulierter persönlicher Brief.",
     });
     expect(moderateText).not.toHaveBeenCalled();
+  });
+
+  it("behandelt eine beendete Kampagne wie einen freien Brief ohne Kampagnenzähler", async () => {
+    const recipient = {
+      kind: "rathaus" as const,
+      level: "Kommune" as const,
+      recipientKind: "buergermeisteramt" as const,
+      gemeindeName: "Musterstadt",
+      plz: "28203",
+      label: "Bürgermeisteramt Musterstadt",
+      postalAddress: "Musterstraße 1",
+      address: { source: "fallback" as const },
+    };
+    jest.mocked(checkRateLimit).mockReturnValue({ allowed: true });
+    jest.mocked(hashIdentifier).mockReturnValue("hashed");
+    jest.mocked(getActiveCampaignBySlug).mockResolvedValue({
+      slug: "alte-kampagne",
+      targetLevel: "Bund",
+      targetState: null,
+      targetRecipient: null,
+      targetPoliticianIds: [],
+      topic: null,
+      endsAt: "2026-01-01T22:59:59.000Z",
+    } as never);
+    jest.mocked(resolveRecipientSelection).mockReturnValue({
+      ok: true,
+      availableCount: 1,
+      relation: "institutional",
+      recipient,
+    });
+    jest.mocked(generateLetter).mockResolvedValue({
+      letter: "Ein normaler Brief.",
+      topic: null,
+      selectedRecipient: recipient,
+      selectedPolitician: null,
+      politicalLevel: "Kommune",
+      wordCount: 4,
+      wordCountInRange: false,
+      fallbackUsed: false,
+      mdbContextUsed: false,
+      retried: false,
+      model: "test-model",
+      temperature: 0,
+      generationMs: 1,
+    });
+
+    const response = await POST(requestWith({
+      wizardData: {
+        plz: "28203",
+        email: "test@example.org",
+        issueText: "Ein ausreichend langes Anliegen für den Test.",
+        letterLength: "1.5",
+        toneLevel: 3,
+        campaign: { slug: "alte-kampagne", title: "Alte Kampagne" },
+      },
+      selection: { kind: "rathaus" },
+    }));
+
+    expect(response.status).toBe(200);
+    expect(incrementLetterCounters).toHaveBeenCalledWith(undefined);
+    expect(resolveRecipientSelection).toHaveBeenCalledWith(
+      "28203",
+      { kind: "rathaus" },
+      expect.objectContaining({ campaignSlug: null, campaignFixedRecipient: null }),
+    );
   });
 
   it.each([

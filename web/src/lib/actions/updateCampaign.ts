@@ -10,6 +10,7 @@ import {
   saveAwaitingApprovalCampaignEdits,
 } from "@/lib/campaigns/repository";
 import { CAMPAIGN_LOGO_BUCKET } from "@/lib/campaigns/logo";
+import { CAMPAIGN_ENDED_MESSAGE, isCampaignEnded } from "@/lib/campaigns/endDate";
 import {
   campaignExternalUrlSchema,
   campaignFixedRecipientSchema,
@@ -183,15 +184,6 @@ export async function updateCampaignAction(
     };
   }
 
-  const moderation = await moderatePublicText(input.issueText, input.description);
-  if (moderation.flagged) {
-    return {
-      ok: false,
-      message:
-        "Diese Änderung wurde nicht veröffentlicht. Der bisherige öffentliche Text bleibt aktiv. Bitte überarbeite den Text und versuch es erneut.",
-    };
-  }
-
   let campaign: Awaited<ReturnType<typeof getCampaignById>>;
   try {
     campaign = await getCampaignById(input.campaignId);
@@ -215,6 +207,19 @@ export async function updateCampaignAction(
     return {
       ok: false,
       message: "Dieser Verwaltungslink ist nicht mehr gültig.",
+    };
+  }
+
+  if (isCampaignEnded(campaign, new Date())) {
+    return { ok: false, message: CAMPAIGN_ENDED_MESSAGE };
+  }
+
+  const moderation = await moderatePublicText(input.issueText, input.description);
+  if (moderation.flagged) {
+    return {
+      ok: false,
+      message:
+        "Diese Änderung wurde nicht veröffentlicht. Der bisherige öffentliche Text bleibt aktiv. Bitte überarbeite den Text und versuch es erneut.",
     };
   }
 

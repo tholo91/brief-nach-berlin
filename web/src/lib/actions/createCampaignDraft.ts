@@ -8,6 +8,7 @@ import {
   deleteCampaign,
   markPaid,
 } from "@/lib/campaigns/repository";
+import { parseCampaignEndDateInput } from "@/lib/campaigns/endDate";
 import { createCampaignToken } from "@/lib/campaigns/tokens";
 import {
   campaignExternalUrlSchema,
@@ -277,6 +278,14 @@ export async function createCampaignDraftAction(
   }
 
   const input = parsed.data;
+  const endDate = parseCampaignEndDateInput(value(formData, "endDate"), new Date());
+  if (!endDate.ok) {
+    return {
+      ok: false,
+      message: "Bitte prüfe die markierten Felder.",
+      fieldErrors: { endDate: endDate.message },
+    };
+  }
   if (
     input.targetPoliticianIds.length > 0 &&
     getBundestagPoliticiansByIds(input.targetPoliticianIds).length !== input.targetPoliticianIds.length
@@ -310,6 +319,7 @@ export async function createCampaignDraftAction(
   try {
     const campaign = await createCampaign({
       ...input,
+      endsAt: endDate.endsAt,
       logoPath: uploadedLogo.logoPath,
       moderationStatus: "pending",
       moderationCategories: moderation.categories,

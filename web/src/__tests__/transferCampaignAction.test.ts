@@ -80,4 +80,16 @@ describe("transferCampaignAction", () => {
       expect(createCampaignTransferToken).not.toHaveBeenCalled();
     }
   );
+
+  it("rejects an ended campaign", async () => {
+    jest.mocked(getCampaignById).mockResolvedValue({
+      ...campaign,
+      endsAt: "2026-01-01T22:59:59.000Z",
+    } as never);
+
+    const result = await transferCampaignAction(form("ngo@example.org"));
+
+    expect(result).toMatchObject({ ok: false });
+    expect(createCampaignTransferToken).not.toHaveBeenCalled();
+  });
 });

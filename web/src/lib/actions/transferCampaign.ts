@@ -2,6 +2,7 @@
 
 import { z } from "zod";
 import { getCampaignById } from "@/lib/campaigns/repository";
+import { isCampaignEnded } from "@/lib/campaigns/endDate";
 import { getCampaignManagementSession } from "@/lib/campaigns/session";
 import {
   createCampaignTransferToken,
@@ -65,7 +66,10 @@ export async function transferCampaignAction(
     };
   }
 
-  if (!["awaiting_approval", "active", "paused"].includes(campaign.status)) {
+  if (
+    !["awaiting_approval", "active", "paused"].includes(campaign.status) ||
+    isCampaignEnded(campaign, new Date())
+  ) {
     return {
       ok: false,
       message: "Eine beendete oder noch nicht bestätigte Kampagne kann nicht übertragen werden.",

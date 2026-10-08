@@ -403,7 +403,13 @@ export function WizardShell() {
         if ("disambiguationNeeded" in result && result.disambiguationNeeded) {
           setPoliticians(result.politicians);
           setActionResult(result);
-          if (wizardData.campaign) {
+          // Beendete Kampagne: wie ein freier Brief weiterlaufen, ohne Kampagnenkontext.
+          const campaignEnded = "campaignEnded" in result && result.campaignEnded === true;
+          if (campaignEnded) {
+            setWizardData((prev) => ({ ...prev, campaign: undefined }));
+          }
+          const activeCampaignContext = campaignEnded ? undefined : wizardData.campaign;
+          if (activeCampaignContext) {
             // Kampagne: die Ebene hat der Creator festgelegt. Den Ebene-Step
             // überspringen und den Empfänger an das serverseitig neu geladene
             // Kampagnenziel binden. Session-Werte sind nur Darstellungskontext.

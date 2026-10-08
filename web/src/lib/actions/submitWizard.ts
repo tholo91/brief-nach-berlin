@@ -26,6 +26,7 @@ import {
   verifyRoutingToken,
 } from "@/lib/lookup/routingToken";
 import { checkRateLimit, getClientIp, hashIdentifier, LIMITS } from "@/lib/rateLimit";
+import { isCampaignEnded } from "@/lib/campaigns/endDate";
 import { getActiveCampaignBySlug } from "@/lib/campaigns/repository";
 import {
   BUNDESLAND_NAMES,
@@ -51,6 +52,7 @@ const ROUTING_TIMEOUT_MS = 3500;
 type SubmitWizardResult = WizardActionResult & {
   routingToken?: string;
   campaignTargetLevel?: CampaignTargetLevel;
+  campaignEnded?: true;
 };
 
 /**
@@ -146,6 +148,7 @@ export async function submitWizardAction(
         }
       | null = null;
     let featuredRecipient: BundeskanzlerRecipient | null = null;
+    let campaignEnded = false;
     if (data.campaign?.slug) {
       const campaign = await getActiveCampaignBySlug(data.campaign.slug);
       if (!campaign) {
@@ -154,13 +157,17 @@ export async function submitWizardAction(
           message: "Diese Kampagne ist aktuell nicht aktiv. Du kannst stattdessen einen freien Brief schreiben.",
         };
       }
-      campaignTarget = {
-        targetLevel: campaign.targetLevel,
-        targetState: campaign.targetState,
-        targetRecipient: campaign.targetRecipient,
-        targetPoliticianIds: campaign.targetPoliticianIds,
-      };
-      if (isBundeskanzlerCampaignSlug(campaign.slug)) {
+      if (isCampaignEnded(campaign, new Date())) {
+        campaignEnded = true;
+      } else {
+        campaignTarget = {
+          targetLevel: campaign.targetLevel,
+          targetState: campaign.targetState,
+          targetRecipient: campaign.targetRecipient,
+          targetPoliticianIds: campaign.targetPoliticianIds,
+        };
+      }
+      if (!campaignEnded && isBundeskanzlerCampaignSlug(campaign.slug)) {
         if (!isBundeskanzlerCampaignTarget(campaign)) {
           return {
             error: "server_error",
@@ -342,6 +349,7 @@ export async function submitWizardAction(
       ...(resolvedRoutingToken ? { routingToken: resolvedRoutingToken } : {}),
       ...(campaignTarget ? { campaignTargetLevel: campaignTarget.targetLevel } : {}),
       ...(featuredRecipient ? { featuredRecipient } : {}),
+      ...(campaignEnded ? { campaignEnded: true as const } : {}),
     };
   } catch (error) {
     const err = error as Error & { status?: number; code?: string };

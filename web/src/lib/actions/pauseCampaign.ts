@@ -6,6 +6,7 @@ import {
   getCampaignById,
   pauseCampaign,
 } from "@/lib/campaigns/repository";
+import { CAMPAIGN_ENDED_MESSAGE, isCampaignEnded } from "@/lib/campaigns/endDate";
 import { getCampaignManagementSession } from "@/lib/campaigns/session";
 
 export type PauseCampaignResult =
@@ -29,6 +30,10 @@ export async function pauseCampaignAction(
   const currentCampaign = await getCampaignById(campaignId);
   if (!currentCampaign || currentCampaign.creatorEmail.toLowerCase() !== session.creatorEmail.toLowerCase()) {
     return { ok: false, message: "Dieser Verwaltungslink ist nicht mehr gültig." };
+  }
+
+  if (isCampaignEnded(currentCampaign, new Date())) {
+    return { ok: false, message: CAMPAIGN_ENDED_MESSAGE };
   }
 
   try {

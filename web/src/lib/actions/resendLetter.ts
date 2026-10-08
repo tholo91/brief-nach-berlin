@@ -16,6 +16,7 @@ import { buildResendDebugPayload } from "@/lib/email/buildDebugPayload";
 import { DEFAULT_LETTER_LENGTH } from "@/lib/config";
 import { doesGenerationProofMatch, verifyGenerationProof } from "@/lib/letterSignals/token";
 import { checkRateLimit, getClientIp, hashIdentifier, LIMITS } from "@/lib/rateLimit";
+import { runningCampaign } from "@/lib/campaigns/endDate";
 import { getActiveCampaignBySlug } from "@/lib/campaigns/repository";
 import { isBundeskanzlerCampaignTarget } from "@/lib/lookup/bundeskanzlerRecipient";
 import { getCampaignFixedRecipient } from "@/lib/lookup/campaignFixedRecipient";
@@ -84,12 +85,13 @@ export async function resendLetterAction(
       return { error: "validation", message: "Ungültige Eingabe." };
     }
 
-    const campaign = data.campaign?.slug
+    const activeCampaign = data.campaign?.slug
       ? await getActiveCampaignBySlug(data.campaign.slug)
       : null;
-    if (data.campaign?.slug && !campaign) {
+    if (data.campaign?.slug && !activeCampaign) {
       return { error: "validation", message: "Diese Kampagne ist aktuell nicht aktiv." };
     }
+    const campaign = runningCampaign(activeCampaign, new Date());
     const allowedPoliticianIds = campaign?.targetPoliticianIds ?? [];
     const campaignFixedRecipient = campaign
       ? getCampaignFixedRecipient(campaign)
@@ -177,7 +179,7 @@ export async function resendLetterAction(
       letterText: cachedLetterText,
       issueText: data.issueText,
       debug: debugPayload,
-      campaign: data.campaign,
+      campaign: campaign ? data.campaign : undefined,
       letterId,
     });
 

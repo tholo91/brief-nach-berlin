@@ -11,6 +11,7 @@ import {
   step2Schema,
 } from "@/lib/validation/wizardSchemas";
 import { resolveRecipientSelection } from "@/lib/lookup/resolveRecipient";
+import { runningCampaign } from "@/lib/campaigns/endDate";
 import { getActiveCampaignBySlug } from "@/lib/campaigns/repository";
 import { DEFAULT_LETTER_LENGTH } from "@/lib/config";
 import { deriveRoutingLetterId, verifyRoutingTokenEnvelope } from "@/lib/lookup/routingToken";
@@ -62,15 +63,16 @@ export async function selectPoliticianAction(
       return { error: "server_error", message: "Ungültige Eingabe." };
     }
     const normalizedSelection: RecipientSelection = parsedSelection.data;
-    const campaign = data.campaign?.slug
+    const activeCampaign = data.campaign?.slug
       ? await getActiveCampaignBySlug(data.campaign.slug)
       : null;
-    if (data.campaign?.slug && !campaign) {
+    if (data.campaign?.slug && !activeCampaign) {
       return {
         error: "server_error",
         message: "Diese Kampagne ist aktuell nicht aktiv.",
       };
     }
+    const campaign = runningCampaign(activeCampaign, new Date());
     const allowedPoliticianIds = campaign?.targetPoliticianIds ?? [];
     const campaignFixedRecipient = campaign
       ? getCampaignFixedRecipient(campaign)

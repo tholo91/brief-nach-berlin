@@ -388,6 +388,57 @@ describe("RecipientSelection server hardening", () => {
     expect(mockedResolveRecipientSelection).toHaveBeenCalledWith("50667", { kind: "rathaus" });
   });
 
+  it("behandelt eine beendete Kampagne beim Pre-Check wie einen freien Brief", async () => {
+    mockedGetActiveCampaignBySlug.mockResolvedValue({
+      ...fixedRecipientCampaign,
+      endsAt: "2026-01-01T22:59:59.000Z",
+    } as never);
+
+    await expect(selectPoliticianAction(
+      {
+        ...data,
+        campaign: {
+          slug: "unterschrift-ist-kein-dienstvergehen",
+          title: "Unterschrift ist kein Dienstvergehen",
+        },
+      },
+      { kind: "mdb", selectedPoliticianId: 1 }
+    )).resolves.toMatchObject({ preCheckOk: true });
+
+    expect(mockedResolveRecipientSelection).toHaveBeenCalledWith(
+      "50667",
+      { kind: "mdb", selectedPoliticianId: 1 }
+    );
+  });
+
+  it("sendet beim Resend einer beendeten Kampagne ohne Kampagnenkontext", async () => {
+    mockedGetActiveCampaignBySlug.mockResolvedValue({
+      ...fixedRecipientCampaign,
+      endsAt: "2026-01-01T22:59:59.000Z",
+    } as never);
+    mockedBuildResendDebugPayload.mockReturnValue({} as never);
+    mockedPrepareLetterEmail.mockReturnValue({ feedbackToken: "token", params: {} as never });
+    mockedSendLetterEmail.mockResolvedValue({ success: true, messageId: "id" });
+
+    await expect(
+      resendLetterAction(
+        {
+          ...data,
+          campaign: {
+            slug: "unterschrift-ist-kein-dienstvergehen",
+            title: "Unterschrift ist kein Dienstvergehen",
+          },
+        },
+        { kind: "mdb", selectedPoliticianId: 1 },
+        "Ein persönlicher Brieftext"
+      )
+    ).resolves.toEqual({ success: true });
+
+    expect(mockedPrepareLetterEmail).toHaveBeenCalledWith(
+      expect.objectContaining({ campaign: undefined })
+    );
+  });
+
   it("sendet einen persönlichen Brief erneut, ohne moderateText aufzurufen", async () => {
     mockedModerateText.mockResolvedValue({
       flagged: true,

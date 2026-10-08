@@ -163,6 +163,7 @@ Recent decisions affecting current work:
 | 261008-n3g | Kampagnen S2: Ablaufdatum und Beendet-Ansichten | 2026-10-08 | 57aa3c4 | [261008-n3g-kampagnen-s2-ablaufdatum-und-beendet-ans](./quick/261008-n3g-kampagnen-s2-ablaufdatum-und-beendet-ans/) |
 | 261008-s1m | Topic-Labels: Whitelist durch Blocklist ersetzen (STORY 261007-topic-labels-blocklist) | 2026-10-08 | 56a9583 | [261008-s1m-topic-labels-whitelist-durch-blocklist-e](./quick/261008-s1m-topic-labels-whitelist-durch-blocklist-e/) |
 | 261008-rvm | Kampagnen S3: Ersteller-Stats und Spendenkarte auf Verwalten | 2026-10-08 | 01909e0 | [261008-rvm-kampagnen-s3-ersteller-stats-und-spenden](./quick/261008-rvm-kampagnen-s3-ersteller-stats-und-spenden/) |
+| 261008-t65 | Kampagne verwalten Redesign: Bild rund im Kopf, Teilen-Karte, eingeklapptes Formular | 2026-10-08 | 1df5ebc | [261008-t65-kampagne-verwalten-redesign-bild-rund-im](./quick/261008-t65-kampagne-verwalten-redesign-bild-rund-im/) |
 
 ## Session Continuity
 

@@ -15,6 +15,7 @@ import {
   buildSocialFollowHtml,
   buildSocialFollowText,
 } from "./buildSocialFollowHtml";
+import { buildFinancingNoticeHtml } from "./financingNotice";
 
 function buildDebugUrl(d: LetterDebugPayload): string {
   // base64url-encode JSON payload so it survives URLs without padding/+/ issues
@@ -73,27 +74,6 @@ function escapeHtml(text: string): string {
 // Convert newlines to <br> for Outlook compatibility (RESEARCH.md pitfall 2 / assumption A5)
 function nlToBr(text: string): string {
   return escapeHtml(text).replace(/\n/g, "<br>");
-}
-
-function buildFinancingNoticeHtml(locale: ReturnType<typeof resolveEmailLocale>): string {
-  const supportCopy = SUPPORT_EMAIL_COPY[locale];
-  const donationUrl = SUPPORT_CONTENT.ctas.donate.href;
-  const learnMoreUrl = `${APP_URL}${SUPPORT_CONTENT.ctas.learnMore.href}?src=email`;
-  return `<div class="bnb-inner-pad" style="background-color:#FAF8F5;border:1px solid #E0DCD7;border-radius:6px;padding:18px 20px;">
-      <h2 style="margin:0 0 8px;font-family:Georgia,'Times New Roman',serif;font-size:16px;color:#2D5016;font-weight:bold;">${escapeHtml(supportCopy.heading)}</h2>
-      <p style="margin:0 0 14px;font-family:Georgia,'Times New Roman',serif;font-size:14px;color:#4A4A4A;line-height:1.6;">${escapeHtml(supportCopy.body)}</p>
-      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="width:100%;border-collapse:collapse;">
-        <tr>
-          <td class="bnb-support-action bnb-support-action-primary" width="52%" valign="top" style="width:52%;padding-right:5px;">
-            <a href="${donationUrl}" target="_blank" rel="noopener noreferrer" style="display:block;background-color:#2D5016;color:#ffffff;font-family:Georgia,'Times New Roman',serif;font-size:14px;font-weight:bold;text-decoration:none;padding:11px 10px;border:2px solid #2D5016;border-radius:4px;line-height:1.4;text-align:center;">${escapeHtml(supportCopy.button)}</a>
-          </td>
-          <td class="bnb-support-action" width="48%" valign="top" style="width:48%;padding-left:5px;">
-            <a href="${learnMoreUrl}" target="_blank" rel="noopener noreferrer" style="display:block;background-color:#ffffff;color:#2D5016;font-family:Georgia,'Times New Roman',serif;font-size:14px;font-weight:bold;text-decoration:none;padding:11px 10px;border:2px solid #2D5016;border-radius:4px;line-height:1.4;text-align:center;">${escapeHtml(supportCopy.infoButton)}</a>
-          </td>
-        </tr>
-      </table>
-      <p style="margin:12px 0 0;font-family:Georgia,'Times New Roman',serif;font-size:12px;color:#bcbcbc;line-height:1.5;">${escapeHtml(supportCopy.status)}</p>
-    </div>`;
 }
 
 export function buildLetterEmailText(data: SendLetterEmailParams): string {
@@ -686,7 +666,7 @@ export function buildEmailHtml(data: SendLetterEmailParams): string {
                 <!-- Donation CTA: shared by first letter emails and resends, before sharing. -->
                 <tr>
                   <td colspan="7" class="bnb-pad" style="padding:0 32px 16px;background-color:#ffffff;text-align:left;">
-                    ${buildFinancingNoticeHtml(locale)}
+                    ${buildFinancingNoticeHtml(SUPPORT_EMAIL_COPY[locale])}
                   </td>
                 </tr>
 

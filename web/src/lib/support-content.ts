@@ -22,6 +22,7 @@ export const SUPPORT_CONTENT = {
   founder: {
     name: FOUNDER_NAME,
     portraitPath: "/images/thomas-portrait.webp",
+    avatarPath: "/images/thomas-avatar.jpg",
     text:
       "Ich bin Thomas Lorenz und baue Brief-nach-Berlin seit Mai 2026 ehrenamtlich auf. Damit Menschen ihre Anliegen einfach und kostenlos an die zuständigen Abgeordneten richten können.",
     successText:
@@ -125,4 +126,13 @@ export const SUPPORT_EMAIL_COPY = {
     providerLabel: "WE AID üzerinden",
     infoButton: "Daha fazla bilgi",
   },
+} as const;
+
+export const SUPPORT_CAMPAIGN_CREATOR_COPY = {
+  heading: "Schön, dass du eine Briefkampagne startest 🥳",
+  body:
+    "Wenn du Hilfe brauchst, schreib mir einfach. Je mehr Briefe zu deiner Kampagne entstehen, desto mehr Aufmerksamkeit bekommt das Anliegen. Damit steigen auch die Kosten für Mailversand, Datenbank und Hosting, die ich als Soloprojekt trage. Wenn du magst und kannst, freue ich mich über jede Unterstützung.",
+  button: "Über WE AID unterstützen",
+  infoButton: "Wohin das Geld geht",
+  status: SUPPORT_CONTENT.status,
 } as const;

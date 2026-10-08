@@ -1,4 +1,10 @@
+import { existsSync, statSync } from "node:fs";
+import path from "node:path";
+
+import { APP_URL } from "@/lib/config";
+import { BRIEF_EMAIL } from "@/lib/contact";
 import { buildCampaignCreatorEmailHtml } from "@/lib/email/buildCampaignCreatorEmailHtml";
+import { SUPPORT_CAMPAIGN_CREATOR_COPY, SUPPORT_CONTENT } from "@/lib/support-content";
 
 const base = {
   campaignTitle: "Sichere Schulwege",
@@ -41,5 +47,78 @@ describe("campaign creator emails", () => {
     expect(html).toContain("token=transfer");
     expect(html).not.toContain("Kampagne teilen");
     expect(html).not.toContain(base.campaignUrl);
+  });
+
+  it.each([
+    ["management_pending", { kind: "management_pending" }],
+    ["management (active)", { kind: "management" }],
+    ["management (paused)", { kind: "management", campaignStatus: "paused" }],
+  ] as const)("shows the support box in %s mails", (_label, variant) => {
+    const html = buildCampaignCreatorEmailHtml({ ...base, ...variant });
+
+    expect(html).toContain(SUPPORT_CAMPAIGN_CREATOR_COPY.heading);
+    expect(html).toContain(SUPPORT_CONTENT.ctas.donate.href);
+    expect(html).toContain(`${APP_URL}/spenden?src=email`);
+    expect(html).toContain(SUPPORT_CAMPAIGN_CREATOR_COPY.infoButton);
+    expect(html).toContain(`${APP_URL}${SUPPORT_CONTENT.founder.avatarPath}`);
+  });
+
+  it.each([
+    ["management_pending", { kind: "management_pending" }],
+    ["management (active)", { kind: "management" }],
+    ["management (paused)", { kind: "management", campaignStatus: "paused" }],
+  ] as const)("puts the actions inside the access box above the support box in %s mails", (_label, variant) => {
+    const html = buildCampaignCreatorEmailHtml({ ...base, ...variant });
+
+    const label = html.indexOf("Verwaltungszugang");
+    const action = html.indexOf(base.actionUrl);
+    const support = html.indexOf(SUPPORT_CAMPAIGN_CREATOR_COPY.heading);
+
+    expect(label).toBeGreaterThan(-1);
+    expect(action).toBeGreaterThan(label);
+    expect(support).toBeGreaterThan(action);
+  });
+
+  it("keeps the primary action above the explanation in verify_email mails", () => {
+    const html = buildCampaignCreatorEmailHtml({ ...base, kind: "verify_email" });
+
+    expect(html.indexOf(base.actionUrl)).toBeGreaterThan(-1);
+    expect(html.indexOf(base.actionUrl)).toBeLessThan(html.indexOf(">Danach<"));
+  });
+
+  it.each(["verify_email", "management_pending", "management", "transfer"] as const)(
+    "offers a mail link instead of the feedback button and links the new pages in %s mails",
+    (kind) => {
+      const html = buildCampaignCreatorEmailHtml({ ...base, kind });
+
+      expect(html).toContain(`mailto:${BRIEF_EMAIL}`);
+      expect(html).toContain("Thomas schreiben");
+      expect(html).not.toContain("Feedback geben");
+      expect(html).toContain(`${APP_URL}/petition-starten`);
+      expect(html).toContain(`${APP_URL}/kampagne-starten`);
+    },
+  );
+
+  it.each(["verify_email", "transfer"] as const)("omits the support box in %s mails", (kind) => {
+    const html = buildCampaignCreatorEmailHtml({ ...base, kind });
+
+    expect(html).not.toContain(SUPPORT_CONTENT.ctas.donate.href);
+    expect(html).not.toContain(SUPPORT_CAMPAIGN_CREATOR_COPY.heading);
+    expect(html).not.toContain(SUPPORT_CONTENT.founder.avatarPath);
+  });
+
+  it("ships the founder avatar as a small file", () => {
+    const file = path.join(process.cwd(), "public", SUPPORT_CONTENT.founder.avatarPath);
+
+    expect(existsSync(file)).toBe(true);
+    expect(statSync(file).size).toBeLessThan(30 * 1024);
+  });
+
+  it("keeps the creator support copy free of dashes", () => {
+    const dashes = /[\u2013\u2014]/;
+
+    for (const value of Object.values(SUPPORT_CAMPAIGN_CREATOR_COPY)) {
+      expect(value).not.toMatch(dashes);
+    }
   });
 });

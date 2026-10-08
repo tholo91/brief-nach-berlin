@@ -3,7 +3,10 @@ import {
   APP_URL,
   CAMPAIGN_CREATOR_FEEDBACK_URL,
 } from "@/lib/config";
+import { BRIEF_EMAIL } from "@/lib/contact";
 import { buildShareTarget } from "@/lib/share";
+import { SUPPORT_CAMPAIGN_CREATOR_COPY, SUPPORT_CONTENT } from "@/lib/support-content";
+import { buildFinancingNoticeHtml } from "./financingNotice";
 
 export type CampaignCreatorEmailKind =
   | "verify_email"
@@ -41,6 +44,7 @@ export function buildCampaignCreatorEmailHtml(
   const isPausedManagement = params.kind === "management" && params.campaignStatus === "paused";
   const isPublicManagement = params.kind === "management" && !isPausedManagement;
   const isTransfer = params.kind === "transfer";
+  const hasManagementLink = params.kind === "management_pending" || params.kind === "management";
   const share = isPublicManagement
     ? buildShareTarget(
         {
@@ -83,6 +87,16 @@ export function buildCampaignCreatorEmailHtml(
       : isPausedManagement
         ? "Status: pausiert"
         : "Status: aktiv und öffentlich teilbar";
+  const ctaTable = (margin: string) => `<table role="presentation" cellpadding="0" cellspacing="0" width="100%" style="margin:${margin};">
+                <tr>
+                  <td class="bnb-cta-cell" style="width:50%;padding-right:5px;" valign="top">
+                    <a href="${params.actionUrl}" target="_blank" rel="noopener noreferrer" class="bnb-cta-link" style="display:block;text-align:center;background-color:#2D6A4F;color:#ffffff;font-size:16px;font-weight:bold;text-decoration:none;padding:13px 10px;border-radius:4px;line-height:1.25;">${buttonIcon}&nbsp;${buttonText}</a>
+                  </td>
+                  <td class="bnb-cta-cell" style="width:50%;padding-left:5px;" valign="top">
+                    <a href="mailto:${BRIEF_EMAIL}" class="bnb-cta-link" style="display:block;text-align:center;background-color:#ffffff;color:#2D6A4F;font-size:16px;font-weight:bold;text-decoration:none;padding:12px 10px;border-radius:4px;border:1px solid #2D6A4F;line-height:1.25;">Thomas schreiben</a>
+                  </td>
+                </tr>
+              </table>`;
   const managementHelp = isVerification
     ? `<div style="margin:0 0 22px;padding:16px 18px;background-color:#ffffff;border:1px solid #E0DCD7;border-radius:4px;">
         <p style="margin:0 0 8px;font-family:'Courier New',Courier,monospace;font-size:12px;font-weight:bold;text-transform:uppercase;color:#2D6A4F;">Danach</p>
@@ -97,6 +111,7 @@ export function buildCampaignCreatorEmailHtml(
         <p style="margin:0 0 8px;font-family:'Courier New',Courier,monospace;font-size:12px;font-weight:bold;text-transform:uppercase;color:#2D6A4F;">Verwaltungszugang</p>
         <p style="margin:0 0 8px;font-size:14px;line-height:1.6;color:#1B4332;"><strong>WICHTIG: DIESE E-MAIL AUFBEWAHREN</strong></p>
         <p style="margin:0;font-size:14px;line-height:1.6;color:#666666;">${isPendingManagement ? "Über den Link siehst du den aktuellen Status und kannst die Angaben bis zur Freigabe noch korrigieren." : "Du kannst deine Kampagne ohne Account per Klick auf &bdquo;Kampagne verwalten&ldquo; anpassen."}</p>
+        ${ctaTable("14px 0 0")}
       </div>`;
   const campaignLink = isPublicManagement
     ? `<p style="margin:10px 0 0;font-size:14px;line-height:1.5;"><a href="${params.campaignUrl}" target="_blank" rel="noopener noreferrer" style="color:#2D6A4F;text-decoration:underline;">Kampagnenseite öffnen</a></p>`
@@ -124,6 +139,12 @@ export function buildCampaignCreatorEmailHtml(
                 </table>
               </div>`
       : "";
+  const supportBlock = hasManagementLink
+    ? `<div style="margin:0 0 22px;">${buildFinancingNoticeHtml(SUPPORT_CAMPAIGN_CREATOR_COPY, {
+        src: `${APP_URL}${SUPPORT_CONTENT.founder.avatarPath}`,
+        alt: SUPPORT_CONTENT.founder.name,
+      })}</div>`
+    : "";
 
   return `<!DOCTYPE html>
 <html lang="de">
@@ -138,6 +159,9 @@ export function buildCampaignCreatorEmailHtml(
       .bnb-share-label { display: none !important; }
       .bnb-share-btn { padding: 13px 0 !important; }
       .bnb-share-icon { width: 22px !important; height: 22px !important; margin: 0 !important; }
+      .bnb-inner-pad { padding-left: 14px !important; padding-right: 14px !important; }
+      .bnb-support-action { display: block !important; width: 100% !important; padding-left: 0 !important; padding-right: 0 !important; }
+      .bnb-support-action-primary { padding-bottom: 8px !important; }
     }
   </style>
 </head>
@@ -166,16 +190,7 @@ export function buildCampaignCreatorEmailHtml(
                 <p style="margin:10px 0 0;font-size:14px;line-height:1.5;color:#666666;">${statusText}</p>
                 ${campaignLink}
               </div>
-              <table role="presentation" cellpadding="0" cellspacing="0" width="100%" style="margin:0 0 22px;">
-                <tr>
-                  <td class="bnb-cta-cell" style="width:50%;padding-right:5px;" valign="top">
-                    <a href="${params.actionUrl}" target="_blank" rel="noopener noreferrer" class="bnb-cta-link" style="display:block;text-align:center;background-color:#2D6A4F;color:#ffffff;font-size:16px;font-weight:bold;text-decoration:none;padding:13px 10px;border-radius:4px;line-height:1.25;">${buttonIcon}&nbsp;${buttonText}</a>
-                  </td>
-                  <td class="bnb-cta-cell" style="width:50%;padding-left:5px;" valign="top">
-                    <a href="${CAMPAIGN_CREATOR_FEEDBACK_URL}" target="_blank" rel="noopener noreferrer" class="bnb-cta-link" style="display:block;text-align:center;background-color:#ffffff;color:#2D6A4F;font-size:16px;font-weight:bold;text-decoration:none;padding:12px 10px;border-radius:4px;border:1px solid #2D6A4F;line-height:1.25;">Feedback geben</a>
-                  </td>
-                </tr>
-              </table>
+              ${hasManagementLink ? "" : ctaTable("0 0 22px")}
               ${
                 isVerification
                   ? `<p style="margin:0 0 18px;font-size:14px;line-height:1.6;color:#666666;">Wenn du diese Kampagne nicht angelegt hast, kannst du diese E-Mail ignorieren. Ohne Bestätigung wird die Seite nicht öffentlich.</p>`
@@ -185,6 +200,7 @@ export function buildCampaignCreatorEmailHtml(
               }
               ${managementHelp}
               ${shareBlock}
+              ${supportBlock}
             </td>
           </tr>
           <tr>
@@ -198,6 +214,7 @@ export function buildCampaignCreatorEmailHtml(
           <tr>
             <td class="bnb-pad" style="padding:0 28px 26px;background-color:#FAF8F5;text-align:center;">
               <p style="margin:0 0 6px;font-size:12px;line-height:1.5;color:#aaaaaa;">Gespeichert werden nur deine öffentlichen Kampagnentexte und deine E-Mail für diesen Zugriff. Besucherbriefe werden dadurch nicht gespeichert.</p>
+              <p style="margin:0 0 6px;font-size:12px;line-height:1.5;color:#aaaaaa;">Mehr dazu: <a href="${APP_URL}/petition-starten" target="_blank" rel="noopener noreferrer" style="color:#888888;text-decoration:underline;">Petition starten</a> · <a href="${APP_URL}/kampagne-starten" target="_blank" rel="noopener noreferrer" style="color:#888888;text-decoration:underline;">Kampagne starten</a></p>
               <p style="margin:0;font-size:12px;line-height:1.5;color:#aaaaaa;"><a href="${APP_URL}/datenschutz" target="_blank" rel="noopener noreferrer" style="color:#888888;text-decoration:underline;">Datenschutz</a> · <a href="${CAMPAIGN_CREATOR_FEEDBACK_URL}" target="_blank" rel="noopener noreferrer" style="color:#888888;text-decoration:underline;">Feedback</a></p>
             </td>
           </tr>

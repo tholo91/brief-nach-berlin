@@ -450,6 +450,30 @@ export async function getRecentActiveCampaigns(
   return (data as CampaignRow[]).map(mapCampaign);
 }
 
+/** Alle laufenden Kampagnen für die Übersicht auf /ngo-briefkampagne. */
+export async function getRunningCampaigns(
+  limit = 24,
+  db?: RepositoryClient
+): Promise<Campaign[]> {
+  const cappedLimit = Math.min(Math.max(limit, 1), 24);
+  const { data, error } = await client(db)
+    .from("campaigns")
+    .select("*")
+    .eq("status", "active")
+    .eq("moderation_status", "approved")
+    .or(runningCampaignFilter())
+    .order("activated_at", { ascending: false, nullsFirst: false })
+    .order("created_at", { ascending: false })
+    .limit(cappedLimit);
+
+  if (error) {
+    throw new CampaignRepositoryError(
+      `Running campaign lookup failed: ${error.message}`
+    );
+  }
+  return (data as CampaignRow[]).map(mapCampaign);
+}
+
 /** Von Thomas per landing_rank kuratierte Kampagnen für den Hero der Startseite. */
 export async function getLandingCampaigns(
   limit = 3,

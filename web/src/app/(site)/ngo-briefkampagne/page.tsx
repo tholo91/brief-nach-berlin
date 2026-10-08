@@ -1,10 +1,11 @@
 import Link from "next/link";
+import Image from "next/image";
 import type { Metadata } from "next";
-import { APP_URL } from "@/lib/config";
+import { APP_URL, FOUNDER_EMAIL } from "@/lib/config";
 import { FAQAccordion } from "@/components/FAQAccordion";
 import { CampaignBackground } from "@/components/campaigns/CampaignBackground";
 import { CampaignList } from "@/components/campaigns/CampaignList";
-import { getRecentActiveCampaigns } from "@/lib/campaigns/repository";
+import { getRunningCampaigns } from "@/lib/campaigns/repository";
 import { SPECIAL_CAMPAIGN_SLUG } from "@/lib/campaigns/specialCampaigns";
 
 const URL_PATH = "/ngo-briefkampagne";
@@ -94,6 +95,10 @@ const articleJsonLd = {
   inLanguage: "de-DE",
 };
 
+const CONTACT_MAILTO = `mailto:${FOUNDER_EMAIL}?subject=${encodeURIComponent(
+  "Frage zur Briefkampagne"
+)}`;
+
 const steps = [
   "Ihr legt Anliegen und Ausgangstext an.",
   "Ihr teilt den Link oder QR-Code mit eurer Community.",
@@ -119,29 +124,14 @@ const recipientOptions = [
   },
 ];
 
-function ArrowDownIcon() {
-  return (
-    <svg
-      aria-hidden="true"
-      className="h-4 w-4 shrink-0"
-      fill="none"
-      viewBox="0 0 20 20"
-    >
-      <path
-        d="M10 4.167v11.666M10 15.833l5-5M10 15.833l-5-5"
-        stroke="currentColor"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        strokeWidth="1.667"
-      />
-    </svg>
-  );
-}
-
 export default async function NgoBriefkampagnePage() {
-  const campaigns = (await getRecentActiveCampaigns(6))
-    .filter((campaign) => campaign.slug !== SPECIAL_CAMPAIGN_SLUG)
-    .slice(0, 5);
+  const campaigns = (await getRunningCampaigns()).filter(
+    (campaign) => campaign.slug !== SPECIAL_CAMPAIGN_SLUG
+  );
+  const totalLetters = campaigns.reduce(
+    (sum, campaign) => sum + campaign.letterCount,
+    0
+  );
 
   return (
     <CampaignBackground>
@@ -176,26 +166,29 @@ export default async function NgoBriefkampagnePage() {
             </span>{" "}
             machen
           </h1>
-          <p className="mt-6 max-w-2xl font-body text-lg font-medium leading-relaxed text-warmgrau/85">
-            Für alle, die eine Community haben und politisch etwas bewegen
-            wollen. Ihr legt Anliegen und Ausgangstext an. Eure Leute machen
-            daraus ihre eigenen Briefe: an Bundestagsabgeordnete, an die
-            Landesregierung oder genau an die Person, die entscheidet.
-          </p>
-          <div className="mt-8 grid w-full max-w-2xl grid-cols-1 gap-3 sm:grid-cols-2">
-            <Link
-              href="/kampagne/starten"
-              className="inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-lg bg-waldgruen px-6 py-3 font-body text-sm font-semibold text-creme transition-colors hover:bg-waldgruen-dark active:translate-y-px"
-            >
-              <span>Kampagne starten</span>
-            </Link>
-            <Link
-              href="#laufende-kampagnen"
-              className="inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-lg border border-waldgruen/18 bg-white/55 px-6 py-3 font-body text-sm font-semibold text-waldgruen-dark transition-colors hover:border-waldgruen/35 hover:bg-white/85 active:translate-y-px"
-            >
-              <span>Laufende Kampagnen ansehen</span>
-              <ArrowDownIcon />
-            </Link>
+          <div className="mt-6 grid items-center gap-6 md:grid-cols-[minmax(0,1fr)_13rem] md:gap-10">
+            <p className="font-body text-lg font-medium leading-relaxed text-warmgrau/85">
+              Für alle, die eine Community haben und politisch etwas bewegen
+              wollen. Ihr beschreibt mit euren Argumenten ein Anliegen. Euer
+              Publikum verfasst damit persönliche Briefe an MdBs, die
+              Landesregierung oder eine Adresse eurer Wahl.
+            </p>
+            <div className="flex items-center gap-4 md:flex-col md:gap-3">
+              <Image
+                src="/images/campaign-creator-icon.webp"
+                alt=""
+                width={128}
+                height={128}
+                priority
+                className="h-16 w-16 shrink-0 md:h-24 md:w-24"
+              />
+              <Link
+                href="/kampagne/starten"
+                className="inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-lg bg-waldgruen px-6 py-3 font-body text-sm font-semibold text-creme transition-colors hover:bg-waldgruen-dark active:translate-y-px"
+              >
+                <span>Kampagne anfragen</span>
+              </Link>
+            </div>
           </div>
         </section>
 
@@ -205,20 +198,40 @@ export default async function NgoBriefkampagnePage() {
               <p className="font-typewriter text-xs font-bold uppercase tracking-widest text-waldgruen/50">
                 Laufende Kampagnen
               </p>
-              <h2 className="mt-2 font-body text-xl font-bold text-waldgruen-dark">
-                Aktuell aktiv
-              </h2>
+              <div className="mt-2 flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
+                <h2 className="font-body text-xl font-bold text-waldgruen-dark">
+                  Aktuell aktiv
+                </h2>
+                {campaigns.length > 1 && (
+                  <p className="font-body text-sm font-semibold text-warmgrau/60">
+                    {campaigns.length} Kampagnen ·{" "}
+                    {totalLetters.toLocaleString("de-DE")} Briefe
+                  </p>
+                )}
+              </div>
             </div>
             <CampaignList
+              columns={2}
               campaigns={campaigns}
               emptyMessage="Noch keine öffentlichen Kampagnen. Wenn du ein Anliegen testen willst, kannst du hier die erste Kampagne starten."
             />
           </section>
 
-          <section className="mt-12 grid gap-8 border-y border-waldgruen/15 py-8 md:grid-cols-2 md:gap-10">
+          <figure className="mt-12 overflow-hidden rounded-md border border-waldgruen/12 bg-white/55 shadow-sm">
+            <Image
+              src="/images/img-ngo-briefkampagne.webp"
+              alt="Illustration eines Tisches mit handgeschriebenen Briefen, Airmail-Umschlägen und einer Wahlkreiskarte vor einem hellen Berliner Fenster"
+              width={1368}
+              height={770}
+              sizes="(min-width: 768px) 768px, calc(100vw - 40px)"
+              className="aspect-[16/6] h-auto w-full object-cover object-[50%_60%]"
+            />
+          </figure>
+
+          <section className="mt-8 grid gap-8 border-y border-waldgruen/15 py-8 md:grid-cols-2 md:gap-10">
             <div>
               <h2 className="font-body text-xl font-bold tracking-tight text-waldgruen-dark">
-                So läuft es
+                So startet ihr eine Kampagne
               </h2>
               <ol className="mt-4 flex flex-col gap-3">
                 {steps.map((step, index) => (
@@ -236,7 +249,7 @@ export default async function NgoBriefkampagnePage() {
             </div>
             <div id="empfaenger" className="scroll-mt-28">
               <h2 className="font-body text-xl font-bold tracking-tight text-waldgruen-dark">
-                Wen eure Briefe erreichen
+                An wen sich eure Kampagne richten kann
               </h2>
               <ul className="mt-4 flex flex-col gap-3">
                 {recipientOptions.map((option) => (
@@ -269,26 +282,33 @@ export default async function NgoBriefkampagnePage() {
 
           <div className="mt-10 rounded-xl bg-creme p-8 text-center ring-1 ring-waldgruen/10">
             <p className="mb-4 font-body text-lg font-bold text-waldgruen-dark">
-              Willst du eine Kampagne testen?
+              Noch Fragen vor dem Start?
             </p>
-            <p className="mx-auto mb-6 max-w-lg font-body text-sm leading-relaxed text-warmgrau/75">
-              Leg das Anliegen an und teile den Link erst mit wenigen Menschen,
-              die du wirklich kennst. Fünf gute Briefe sind für den Anfang
-              besser als ein großer Verteiler ohne Rückmeldung.
+            <p className="mx-auto mb-6 max-w-md font-body text-sm leading-relaxed text-warmgrau/75">
+              Ihr seid unsicher, ob euer Anliegen passt, oder wollt Hilfe beim
+              Ausgangstext? Schreibt mir, ich antworte persönlich.
             </p>
-            <Link
-              href="/kampagne/starten"
-              className="inline-flex items-center justify-center gap-2 rounded-lg bg-waldgruen px-8 py-3 font-body font-semibold text-creme transition-colors hover:bg-waldgruen-dark active:translate-y-px"
-            >
-              <span>Kampagne starten</span>
-            </Link>
+            <div className="flex flex-col justify-center gap-3 sm:flex-row">
+              <Link
+                href="/kampagne/starten"
+                className="inline-flex min-h-12 items-center justify-center gap-2 rounded-lg bg-waldgruen px-8 py-3 font-body font-semibold text-creme transition-colors hover:bg-waldgruen-dark active:translate-y-px"
+              >
+                <span>Kampagne anfragen</span>
+              </Link>
+              <a
+                href={CONTACT_MAILTO}
+                className="inline-flex min-h-12 items-center justify-center gap-2 rounded-lg border border-waldgruen/18 bg-white/55 px-8 py-3 font-body font-semibold text-waldgruen-dark transition-colors hover:border-waldgruen/35 hover:bg-white/85 active:translate-y-px"
+              >
+                <span>Thomas schreiben</span>
+              </a>
+            </div>
           </div>
 
           <div className="mt-10 border-t border-warmgrau/10 pt-6">
             <p className="mb-4 font-typewriter text-xs font-bold uppercase tracking-widest text-waldgruen/50">
               Mehr dazu
             </p>
-            <ul className="flex flex-col gap-2.5">
+            <ul className="grid gap-x-8 gap-y-2.5 md:grid-cols-2">
               <li>
                 <Link
                   href="/lohnt-sich-brief-an-politiker"

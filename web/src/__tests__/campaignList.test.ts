@@ -98,6 +98,16 @@ describe("CampaignList", () => {
     expect(markup).toContain("grid w-full min-w-0");
   });
 
+  it("renders two columns with wrapping titles and no Öffnen label", () => {
+    const markup = renderToStaticMarkup(
+      createElement(CampaignList, { campaigns: [campaign], columns: 2 }),
+    );
+
+    expect(markup).toContain("sm:grid-cols-2");
+    expect(markup).toContain("line-clamp-2");
+    expect(markup).not.toContain("Öffnen");
+  });
+
   it("renders the configured empty state", () => {
     const markup = renderToStaticMarkup(
       createElement(CampaignList, {

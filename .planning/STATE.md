@@ -1,17 +1,20 @@
 ---
-gsd_state_version: 1.0
+gsd_state_version: "1.0"
 milestone: v1.0
-milestone_name: milestone
+current_phase: 05
 status: verifying
 stopped_at: Completed 05-04-PLAN.md
-last_updated: "2026-07-20T00:00:00.000Z"
+last_updated: "2026-10-08T14:38:43.608Z"
 last_activity: 2026-07-20
+last_activity_desc: "Completed quick task 260710-dgq: Kampagnen-Ziel-Ebene Bund/Landtag inkl. Wizard-Bindung und Mismatch-Fallback"
+state_head: 7c4ca496727480afccdf4ad22ba5b1e0f06eafb5
 progress:
   total_phases: 33
   completed_phases: 4
   total_plans: 22
   completed_plans: 15
   percent: 68
+milestone_name: milestone
 ---
 
 # Project State
@@ -112,7 +115,7 @@ Recent decisions affecting current work:
 
 ### Pending Todos
 
-18 pending — see `.planning/todos/pending/`
+30 pending — see `.planning/todos/pending/`
 
 ### Blockers/Concerns
 
@@ -154,6 +157,7 @@ Recent decisions affecting current work:
 | 260707-vrt | No-Storage-Flow zum Anpassen bestehender Briefentwürfe | 2026-07-07 | 2e6cc60 | [260707-vrt-briefvariante-no-storage-flow](./quick/260707-vrt-briefvariante-no-storage-flow/) |
 | 260707-uhp | Improve brief variant tone adjustment debug payload and prompt | 2026-07-07 | 985c86c | [260707-uhp-improve-brief-variant-tone-adjustment-de](./quick/260707-uhp-improve-brief-variant-tone-adjustment-de/) |
 | 260710-dgq | Kampagnen-Ziel-Ebene Bund/Landtag: targetLevel+targetState, Creator-Formular, Wizard-Skip des Ebene-Steps, PLZ-Mismatch-Fallback, Landtagskampagne-Pill | 2026-07-10 | 6416a1a | [260710-dgq-kampagnen-ziel-ebene-bund-landtag-target](./quick/260710-dgq-kampagnen-ziel-ebene-bund-landtag-target/) |
+| 261008-n29 | S1 Reviews kennen ihre Kampagne (reviews.campaign_slug, Migration 025) | 2026-10-08 | 7c4ca49 | [261008-n29-s1-reviews-kennen-ihre-kampagne-reviews-](./quick/261008-n29-s1-reviews-kennen-ihre-kampagne-reviews-/) |
 
 ## Session Continuity
 

@@ -398,7 +398,7 @@ describe("CampaignDonationCard (D-05)", () => {
 
   it("renders the S6 creator copy verbatim", () => {
     for (const text of [
-      SUPPORT_CAMPAIGN_CREATOR_COPY.heading,
+      SUPPORT_CAMPAIGN_CREATOR_COPY.manageHeading,
       SUPPORT_CAMPAIGN_CREATOR_COPY.body,
       SUPPORT_CAMPAIGN_CREATOR_COPY.button,
       SUPPORT_CAMPAIGN_CREATOR_COPY.infoButton,
@@ -406,6 +406,10 @@ describe("CampaignDonationCard (D-05)", () => {
     ]) {
       expect(decoded).toContain(text);
     }
+  });
+
+  it("uses the manage heading, not the mail's launch greeting", () => {
+    expect(decoded).not.toContain(SUPPORT_CAMPAIGN_CREATOR_COPY.heading);
   });
 
   it("opens the donation provider in a new tab and links the info page", () => {

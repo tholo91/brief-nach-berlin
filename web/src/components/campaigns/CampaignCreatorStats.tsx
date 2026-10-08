@@ -20,34 +20,42 @@ type TileProps = {
 };
 
 function Tile({ value, unit, label, kpi }: TileProps) {
+  const shown = kpi.status === "shown";
   return (
-    <div className="flex flex-col rounded-md border border-warmgrau/12 bg-creme/70 px-4 py-4">
-      <dt className="order-2 mt-1 font-body text-sm leading-snug text-warmgrau/80">
-        {label}
-      </dt>
-      <dd className="order-1 m-0">
-        {kpi.status === "shown" ? (
+    <div className="grid grid-cols-[6rem_1fr] items-baseline gap-x-3 rounded-md border border-warmgrau/12 bg-creme/70 px-4 py-3 sm:flex sm:flex-col sm:py-4">
+      <dd className="m-0 sm:order-1">
+        {shown ? (
           <>
-            <span className="font-typewriter text-3xl font-bold leading-none text-waldgruen-dark">
+            <span className="font-typewriter text-2xl font-bold leading-none text-waldgruen-dark sm:text-3xl">
               {value}
             </span>
             {unit && (
-              <span className="ml-1.5 font-body text-sm font-semibold text-waldgruen-dark">
+              <span className="mt-1 block font-body text-xs font-semibold text-waldgruen-dark sm:ml-1.5 sm:mt-0 sm:inline sm:text-sm">
                 {unit}
               </span>
             )}
           </>
         ) : (
-          <span className="font-body text-base font-semibold leading-snug text-warmgrau/60">
-            Noch zu wenige Antworten
+          <span
+            aria-hidden="true"
+            className="font-typewriter text-2xl font-bold leading-none text-warmgrau/25 sm:text-3xl"
+          >
+            …
           </span>
         )}
       </dd>
-      {kpi.status === "shown" && (
-        <p className="order-3 mt-2 font-body text-xs text-warmgrau/60">
-          aus {numberFormatter.format(kpi.responses)} Rückmeldungen
+      <div className="sm:order-2 sm:mt-1">
+        <dt
+          className={`font-body text-sm leading-snug ${shown ? "text-warmgrau/80" : "text-warmgrau/55"}`}
+        >
+          {label}
+        </dt>
+        <p className="mt-1 font-body text-xs text-warmgrau/60 sm:mt-2">
+          {shown
+            ? `aus ${numberFormatter.format(kpi.responses)} Rückmeldungen`
+            : `Noch zu wenige Antworten, bisher ${numberFormatter.format(kpi.responses)}`}
         </p>
-      )}
+      </div>
     </div>
   );
 }
@@ -102,7 +110,7 @@ export function CampaignCreatorStats({
         </p>
         {stats.liveSinceLabel && (
           <p className="font-body text-sm text-warmgrau/60 sm:ml-auto">
-            Live seit {stats.liveSinceLabel}
+            {stats.ended ? "Gestartet am" : "Live seit"} {stats.liveSinceLabel}
           </p>
         )}
       </div>

@@ -14,7 +14,7 @@ export function CampaignDonationCard() {
       aria-labelledby="creator-donation-heading"
       className="rounded-md border border-waldgruen/15 bg-creme/90 p-5 shadow-sm md:p-7"
     >
-      <div className="flex items-start gap-4">
+      <div className="flex items-center gap-4 md:items-start">
         <div className="relative h-14 w-14 shrink-0 overflow-hidden rounded-full ring-1 ring-waldgruen/15">
           <Image
             src={SUPPORT_CONTENT.founder.avatarPath}
@@ -27,15 +27,18 @@ export function CampaignDonationCard() {
         <div className="min-w-0">
           <h2
             id="creator-donation-heading"
-            className="font-typewriter text-lg font-bold leading-snug text-waldgruen-dark"
+            className="text-balance font-typewriter text-lg font-bold leading-snug text-waldgruen-dark"
           >
             {copy.heading}
           </h2>
-          <p className="mt-2 max-w-2xl font-body text-sm leading-relaxed text-warmgrau/80 md:text-base">
+          <p className="mt-2 hidden max-w-2xl font-body text-base leading-relaxed text-warmgrau/80 md:block">
             {copy.body}
           </p>
         </div>
       </div>
+      <p className="mt-4 font-body text-sm leading-relaxed text-warmgrau/80 md:hidden">
+        {copy.body}
+      </p>
 
       <div className="mt-5 grid gap-2 min-[440px]:grid-cols-2 md:max-w-md">
         <a

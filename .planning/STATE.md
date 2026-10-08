@@ -4,10 +4,10 @@ milestone: v1.0
 current_phase: 05
 status: verifying
 stopped_at: Completed 05-04-PLAN.md
-last_updated: "2026-10-08T18:24:41.562Z"
+last_updated: "2026-10-08T18:29:55.377Z"
 last_activity: 2026-10-08
 last_activity_desc: "Completed quick task 260710-dgq: Kampagnen-Ziel-Ebene Bund/Landtag inkl. Wizard-Bindung und Mismatch-Fallback"
-state_head: 56a9583a9c85d56e1e99c5c9e374d32b7d36c129
+state_head: 01909e0838d0a46b4782ef4af2ba40dc03f7f179
 progress:
   total_phases: 33
   completed_phases: 4
@@ -49,7 +49,7 @@ Der level-aware E-Mail-Betreff ist dagegen bereits implementiert und getestet; d
 Phase: 05 — EXECUTING
 Plan: 4 of 4
 Status: Phase complete — ready for verification
-Last activity: 2026-10-08 - Completed quick task 261008-s1m: Topic-Labels Whitelist durch Blocklist ersetzen
+Last activity: 2026-10-08 - Completed quick task 261008-rvm: Kampagnen S3 Ersteller-Stats und Spendenkarte auf Verwalten
 
 Progress: [███████░░░] 68%
 
@@ -162,6 +162,7 @@ Recent decisions affecting current work:
 | 261008-n4c | Kampagnen S6: Spendenbox in Ersteller-Mails (persönliche Einladung mit Foto, Buttons im Verwaltungszugang, Thomas schreiben, Footer-Links) | 2026-10-08 | 10e3a71 | [261008-n4c-kampagnen-s6-spendenbox-in-verwalten-mai](./quick/261008-n4c-kampagnen-s6-spendenbox-in-verwalten-mai/) |
 | 261008-n3g | Kampagnen S2: Ablaufdatum und Beendet-Ansichten | 2026-10-08 | 57aa3c4 | [261008-n3g-kampagnen-s2-ablaufdatum-und-beendet-ans](./quick/261008-n3g-kampagnen-s2-ablaufdatum-und-beendet-ans/) |
 | 261008-s1m | Topic-Labels: Whitelist durch Blocklist ersetzen (STORY 261007-topic-labels-blocklist) | 2026-10-08 | 56a9583 | [261008-s1m-topic-labels-whitelist-durch-blocklist-e](./quick/261008-s1m-topic-labels-whitelist-durch-blocklist-e/) |
+| 261008-rvm | Kampagnen S3: Ersteller-Stats und Spendenkarte auf Verwalten | 2026-10-08 | 01909e0 | [261008-rvm-kampagnen-s3-ersteller-stats-und-spenden](./quick/261008-rvm-kampagnen-s3-ersteller-stats-und-spenden/) |
 
 ## Session Continuity
 

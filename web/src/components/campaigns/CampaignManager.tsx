@@ -45,6 +45,7 @@ import {
   pickerValueFromEndsAt,
   resolvePickerDateKey,
 } from "./CampaignEndDatePicker";
+import { CampaignLogo } from "./CampaignLogo";
 import { CampaignManagerHeader } from "./CampaignManagerHeader";
 import { CampaignShareCard } from "./CampaignShareCard";
 import { MdbCampaignSelector } from "./MdbCampaignSelector";
@@ -106,6 +107,8 @@ export function CampaignManager({
   const [isPending, startTransition] = useTransition();
   const [logoPreviewUrl, setLogoPreviewUrl] = useState<string | null>(null);
   const [logoError, setLogoError] = useState<string | null>(null);
+  const [editOpen, setEditOpen] = useState(false);
+  const logoInputRef = useRef<HTMLInputElement>(null);
   const [targetPoliticianIds, setTargetPoliticianIds] = useState<number[]>(campaign.targetPoliticianIds);
   const [hasTargetMdbSelection, setHasTargetMdbSelection] = useState(
     campaign.targetPoliticianIds.length > 0
@@ -223,10 +226,22 @@ export function CampaignManager({
       try {
         const nextResult = await updateCampaignAction(formData);
         setResult(nextResult);
+        setEditOpen(true);
         if (nextResult.ok) router.refresh();
       } finally {
         setActionPending(false);
       }
+    });
+  }
+
+  function openImageEditor() {
+    setEditOpen(true);
+    window.requestAnimationFrame(() => {
+      const input = logoInputRef.current;
+      if (!input) return;
+      const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      input.scrollIntoView({ block: "center", behavior: reduceMotion ? "auto" : "smooth" });
+      input.focus({ preventScroll: true });
     });
   }
 
@@ -286,6 +301,7 @@ export function CampaignManager({
         endedLabel={endedLabel}
         contactHref={contactHref}
         publicUrl={publicUrl}
+        onEditImage={canEdit ? openImageEditor : undefined}
       />
 
       <CampaignShareCard
@@ -298,371 +314,398 @@ export function CampaignManager({
 
       {insights}
 
-      <form
-        className="grid gap-5 rounded-md border border-warmgrau/12 bg-creme/80 p-5 shadow-sm md:p-7"
-        onSubmit={submitCampaignUpdate}
+      <details
+        open={editOpen}
+        onToggle={(event) => setEditOpen(event.currentTarget.open)}
+        className="group rounded-md border border-warmgrau/12 bg-white/75 shadow-sm"
       >
-        {canEdit && (
-          <p className="font-body text-sm leading-relaxed text-warmgrau/70">
-            Änderungen werden vor der Veröffentlichung automatisch geprüft. Wenn die Prüfung
-            scheitert, bleibt der bisherige öffentliche Text unverändert.
-          </p>
-        )}
-        <input type="hidden" name="campaignId" value={campaign.id} />
-
-        <div className="grid gap-2">
-          <label className="font-typewriter text-sm font-bold text-waldgruen-dark" htmlFor="title">
-            Kampagnentitel
-          </label>
-          <input
-            id="title"
-            name="title"
-            required
-            maxLength={120}
-            defaultValue={campaign.title}
-            disabled={!canEdit || isBusy}
-            className="rounded-md border border-warmgrau/20 bg-white px-4 py-3 font-body text-base outline-none focus:border-waldgruen disabled:opacity-60"
-          />
-          {result?.ok === false && "fieldErrors" in result && result.fieldErrors?.title && (
-            <p className="font-body text-sm text-airmail-rot">{result.fieldErrors.title}</p>
-          )}
-        </div>
-
-        <div className="grid gap-2">
-          <label className="font-typewriter text-sm font-bold text-waldgruen-dark" htmlFor="issueText">
-            Anliegen
-          </label>
-          <textarea
-            id="issueText"
-            name="issueText"
-            required
-            minLength={20}
-            maxLength={4000}
-            rows={9}
-            defaultValue={campaign.issueText}
-            disabled={!canEdit || isBusy}
-            className="rounded-md border border-warmgrau/20 bg-white px-4 py-3 font-body text-base leading-relaxed outline-none focus:border-waldgruen disabled:opacity-60"
-          />
-        </div>
-
-        <div className="grid gap-4 md:grid-cols-2">
-          <div className="grid gap-2">
-            <label className="font-typewriter text-sm font-bold text-waldgruen-dark" htmlFor="creatorName">
-              Name oder Organisation
-            </label>
-            <input
-              id="creatorName"
-              name="creatorName"
-              maxLength={120}
-              defaultValue={campaign.creatorName ?? ""}
-              disabled={!canEdit || isBusy}
-              className="rounded-md border border-warmgrau/20 bg-white px-4 py-3 font-body text-base outline-none focus:border-waldgruen disabled:opacity-60"
-            />
-          </div>
-          <div className="grid gap-2">
-            <label className="font-typewriter text-sm font-bold text-waldgruen-dark" htmlFor="externalUrl">
-              Externer Link
-            </label>
-            <input
-              id="externalUrl"
-              name="externalUrl"
-              type="url"
-              maxLength={500}
-              defaultValue={campaign.externalUrl ?? ""}
-              disabled={!canEdit || isBusy}
-              className="rounded-md border border-warmgrau/20 bg-white px-4 py-3 font-body text-base outline-none focus:border-waldgruen disabled:opacity-60"
-            />
-          </div>
-        </div>
-
-        {canEditTarget && (
-          <fieldset className="grid gap-3 rounded-md border border-warmgrau/15 bg-white/55 p-4">
-            <legend className="px-1 font-typewriter text-sm font-bold text-waldgruen-dark">
-              Wohin soll die Kampagne gehen?
-            </legend>
-            <div className="grid gap-2 sm:grid-cols-3">
-              {[
-                ["Bund", "Bundestag"],
-                ["Land", "Landesregierung"],
-                ["Fixed", "Fester Empfänger"],
-              ].map(([value, label]) => (
-                <label key={value} className={`cursor-pointer rounded-md border px-3 py-3 font-body text-sm font-semibold ${targetLevel === value ? "border-waldgruen bg-waldgruen/8 text-waldgruen-dark" : "border-warmgrau/20 bg-white text-warmgrau"}`}>
-                  <input type="radio" name="targetLevel" value={value} checked={targetLevel === value} onChange={() => selectTargetLevel(value as CampaignTargetLevel)} disabled={isBusy} className="mr-2 accent-waldgruen" />
-                  {label}
-                </label>
-              ))}
-            </div>
-          </fieldset>
-        )}
-
-        {targetLevel === "Bund" ? (
-          <div className="grid gap-4 rounded-md border border-waldgruen/20 bg-waldgruen/5 p-4">
-            <h2 className="font-typewriter text-sm font-bold text-waldgruen-dark">
-              Ziel der Bundestagskampagne
+        <summary className="flex min-h-11 cursor-pointer list-none items-center justify-between gap-4 rounded-md p-5 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-waldgruen md:p-7 [&::-webkit-details-marker]:hidden">
+          <div className="grid gap-1">
+            <h2 className="font-typewriter text-lg font-bold text-waldgruen-dark md:text-xl">
+              {canEdit ? "Kampagne bearbeiten" : "Kampagnenangaben ansehen"}
             </h2>
-            <label className="flex cursor-pointer items-start gap-3">
-              <input
-                type="checkbox"
-                checked={hasTargetMdbSelection}
-                disabled={!canEdit || isBusy}
-                onChange={(event) => setHasTargetMdbSelection(event.target.checked)}
-                className="mt-1 h-4 w-4 shrink-0 accent-waldgruen"
-              />
-              <span className="grid gap-0.5">
-                <span className="font-body text-base font-semibold text-waldgruen-dark">
-                  An eine Auswahl von Abgeordneten richten
-                </span>
-                <span className="font-body text-sm leading-relaxed text-warmgrau/65">
-                  Ohne Auswahl bleibt es eine normale Bundestagskampagne für die jeweils zuständigen MdBs.
-                </span>
-              </span>
+            <p className="font-body text-sm text-warmgrau/65">
+              {canEdit ? "Titel, Anliegen, Empfänger und Bild" : "Ändern ist nicht mehr möglich."}
+            </p>
+          </div>
+          <svg
+            width="20"
+            height="20"
+            viewBox="0 0 20 20"
+            fill="none"
+            aria-hidden="true"
+            className="shrink-0 text-waldgruen-dark motion-safe:transition-transform motion-safe:duration-200 group-open:rotate-180"
+          >
+            <path
+              d="M5 8l5 5 5-5"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+          </svg>
+        </summary>
+        <form
+          className="grid gap-5 border-t border-warmgrau/12 px-5 pb-5 pt-5 md:px-7 md:pb-7"
+          onSubmit={submitCampaignUpdate}
+        >
+          {canEdit && (
+            <p className="font-body text-sm leading-relaxed text-warmgrau/70">
+              Änderungen werden vor der Veröffentlichung automatisch geprüft. Wenn die Prüfung
+              scheitert, bleibt der bisherige öffentliche Text unverändert.
+            </p>
+          )}
+          <input type="hidden" name="campaignId" value={campaign.id} />
+
+          <div className="grid gap-2">
+            <label className="font-typewriter text-sm font-bold text-waldgruen-dark" htmlFor="title">
+              Kampagnentitel
             </label>
-            {hasTargetMdbSelection && (
-              <div className="border-t border-waldgruen/15 pt-4">
-                <MdbCampaignSelector
-                  selectedIds={targetPoliticianIds}
-                  onChange={setTargetPoliticianIds}
+            <input
+              id="title"
+              name="title"
+              required
+              maxLength={120}
+              defaultValue={campaign.title}
+              disabled={!canEdit || isBusy}
+              className="rounded-md border border-warmgrau/20 bg-white px-4 py-3 font-body text-base outline-none focus:border-waldgruen disabled:opacity-60"
+            />
+            {result?.ok === false && "fieldErrors" in result && result.fieldErrors?.title && (
+              <p className="font-body text-sm text-airmail-rot">{result.fieldErrors.title}</p>
+            )}
+          </div>
+
+          <div className="grid gap-2">
+            <label className="font-typewriter text-sm font-bold text-waldgruen-dark" htmlFor="issueText">
+              Anliegen
+            </label>
+            <textarea
+              id="issueText"
+              name="issueText"
+              required
+              minLength={20}
+              maxLength={4000}
+              rows={9}
+              defaultValue={campaign.issueText}
+              disabled={!canEdit || isBusy}
+              className="rounded-md border border-warmgrau/20 bg-white px-4 py-3 font-body text-base leading-relaxed outline-none focus:border-waldgruen disabled:opacity-60"
+            />
+          </div>
+
+          <div className="grid gap-4 md:grid-cols-2">
+            <div className="grid gap-2">
+              <label className="font-typewriter text-sm font-bold text-waldgruen-dark" htmlFor="creatorName">
+                Name oder Organisation
+              </label>
+              <input
+                id="creatorName"
+                name="creatorName"
+                maxLength={120}
+                defaultValue={campaign.creatorName ?? ""}
+                disabled={!canEdit || isBusy}
+                className="rounded-md border border-warmgrau/20 bg-white px-4 py-3 font-body text-base outline-none focus:border-waldgruen disabled:opacity-60"
+              />
+            </div>
+            <div className="grid gap-2">
+              <label className="font-typewriter text-sm font-bold text-waldgruen-dark" htmlFor="externalUrl">
+                Externer Link
+              </label>
+              <input
+                id="externalUrl"
+                name="externalUrl"
+                type="url"
+                maxLength={500}
+                defaultValue={campaign.externalUrl ?? ""}
+                disabled={!canEdit || isBusy}
+                className="rounded-md border border-warmgrau/20 bg-white px-4 py-3 font-body text-base outline-none focus:border-waldgruen disabled:opacity-60"
+              />
+            </div>
+          </div>
+
+          {canEditTarget && (
+            <fieldset className="grid gap-3 rounded-md border border-warmgrau/15 bg-white/55 p-4">
+              <legend className="px-1 font-typewriter text-sm font-bold text-waldgruen-dark">
+                Wohin soll die Kampagne gehen?
+              </legend>
+              <div className="grid gap-2 sm:grid-cols-3">
+                {[
+                  ["Bund", "Bundestag"],
+                  ["Land", "Landesregierung"],
+                  ["Fixed", "Fester Empfänger"],
+                ].map(([value, label]) => (
+                  <label key={value} className={`cursor-pointer rounded-md border px-3 py-3 font-body text-sm font-semibold ${targetLevel === value ? "border-waldgruen bg-waldgruen/8 text-waldgruen-dark" : "border-warmgrau/20 bg-white text-warmgrau"}`}>
+                    <input type="radio" name="targetLevel" value={value} checked={targetLevel === value} onChange={() => selectTargetLevel(value as CampaignTargetLevel)} disabled={isBusy} className="mr-2 accent-waldgruen" />
+                    {label}
+                  </label>
+                ))}
+              </div>
+            </fieldset>
+          )}
+
+          {targetLevel === "Bund" ? (
+            <div className="grid gap-4 rounded-md border border-waldgruen/20 bg-waldgruen/5 p-4">
+              <h2 className="font-typewriter text-sm font-bold text-waldgruen-dark">
+                Ziel der Bundestagskampagne
+              </h2>
+              <label className="flex cursor-pointer items-start gap-3">
+                <input
+                  type="checkbox"
+                  checked={hasTargetMdbSelection}
                   disabled={!canEdit || isBusy}
+                  onChange={(event) => setHasTargetMdbSelection(event.target.checked)}
+                  className="mt-1 h-4 w-4 shrink-0 accent-waldgruen"
                 />
-                {result?.ok === false && "fieldErrors" in result && result.fieldErrors?.targetPoliticianIds && (
-                  <p className="mt-2 font-body text-sm text-airmail-rot">
-                    {result.fieldErrors.targetPoliticianIds}
+                <span className="grid gap-0.5">
+                  <span className="font-body text-base font-semibold text-waldgruen-dark">
+                    An eine Auswahl von Abgeordneten richten
+                  </span>
+                  <span className="font-body text-sm leading-relaxed text-warmgrau/65">
+                    Ohne Auswahl bleibt es eine normale Bundestagskampagne für die jeweils zuständigen MdBs.
+                  </span>
+                </span>
+              </label>
+              {hasTargetMdbSelection && (
+                <div className="border-t border-waldgruen/15 pt-4">
+                  <MdbCampaignSelector
+                    selectedIds={targetPoliticianIds}
+                    onChange={setTargetPoliticianIds}
+                    disabled={!canEdit || isBusy}
+                  />
+                  {result?.ok === false && "fieldErrors" in result && result.fieldErrors?.targetPoliticianIds && (
+                    <p className="mt-2 font-body text-sm text-airmail-rot">
+                      {result.fieldErrors.targetPoliticianIds}
+                    </p>
+                  )}
+                </div>
+              )}
+            </div>
+          ) : targetLevel === "Land" ? (
+            canEditTarget ? (
+              <div className="grid gap-2 rounded-md border border-waldgruen/20 bg-waldgruen/5 p-4">
+                <label className="font-typewriter text-sm font-bold text-waldgruen-dark" htmlFor="managerTargetState">Bundesland</label>
+                <select id="managerTargetState" name="targetState" value={targetState} onChange={(event) => setTargetState(event.target.value)} disabled={isBusy} className="rounded-md border border-warmgrau/20 bg-white px-4 py-3 font-body text-base outline-none focus:border-waldgruen">
+                  <option value="">Alle Bundesländer</option>
+                  {Object.entries(BUNDESLAND_NAMES).map(([key, name]) => <option key={key} value={key}>{name}</option>)}
+                </select>
+              </div>
+            ) : (
+            <p className="rounded-md border border-warmgrau/15 bg-white/55 px-4 py-3 font-body text-sm leading-relaxed text-warmgrau/70">
+              Diese Landeskampagne richtet sich weiterhin an die institutionelle Landesregierung. Eine konkrete MdB-Auswahl ist hier nicht aktiv.
+            </p>
+            )
+          ) : canEditTarget ? (
+            <div className="grid gap-4 rounded-md border border-waldgruen/20 bg-waldgruen/5 p-4">
+              <div className="grid gap-3 sm:grid-cols-2">
+                <label className="grid gap-2 font-typewriter text-sm font-bold text-waldgruen-dark">Organisation <span className="font-body font-normal text-warmgrau/55">optional</span><input name="fixedOrganizationName" maxLength={200} value={fixedRecipient.organizationName} onChange={(event) => setFixedRecipient((current) => ({ ...current, organizationName: event.target.value }))} className="rounded-md border border-warmgrau/20 bg-white px-4 py-3 font-body text-base font-normal outline-none focus:border-waldgruen" /></label>
+                <label className="grid gap-2 font-typewriter text-sm font-bold text-waldgruen-dark">Person <span className="font-body font-normal text-warmgrau/55">optional</span><input name="fixedPersonName" maxLength={200} value={fixedRecipient.personName} onChange={(event) => setFixedRecipient((current) => ({ ...current, personName: event.target.value }))} className="rounded-md border border-warmgrau/20 bg-white px-4 py-3 font-body text-base font-normal outline-none focus:border-waldgruen" /></label>
+              </div>
+              <label className="grid gap-2 font-typewriter text-sm font-bold text-waldgruen-dark">Briefanrede<input name="fixedSalutation" required maxLength={200} value={fixedRecipient.salutation} onChange={(event) => setFixedRecipient((current) => ({ ...current, salutation: event.target.value }))} className="rounded-md border border-warmgrau/20 bg-white px-4 py-3 font-body text-base font-normal outline-none focus:border-waldgruen" /></label>
+              <div className="grid gap-3 sm:grid-cols-[minmax(0,1fr)_120px]">
+                <label className="grid gap-2 font-typewriter text-sm font-bold text-waldgruen-dark">Straße<input name="fixedStreet" required maxLength={120} value={fixedRecipient.street} onChange={(event) => setFixedRecipient((current) => ({ ...current, street: event.target.value }))} className="rounded-md border border-warmgrau/20 bg-white px-4 py-3 font-body text-base font-normal outline-none focus:border-waldgruen" /></label>
+                <label className="grid gap-2 font-typewriter text-sm font-bold text-waldgruen-dark">Hausnummer<input name="fixedHouseNumber" required maxLength={20} value={fixedRecipient.houseNumber} onChange={(event) => setFixedRecipient((current) => ({ ...current, houseNumber: event.target.value }))} className="rounded-md border border-warmgrau/20 bg-white px-4 py-3 font-body text-base font-normal outline-none focus:border-waldgruen" /></label>
+              </div>
+              <div className="grid gap-3 sm:grid-cols-[140px_minmax(0,1fr)_180px]">
+                <label className="grid gap-2 font-typewriter text-sm font-bold text-waldgruen-dark">Postleitzahl<input name="fixedPostalCode" required inputMode="numeric" pattern="[0-9]{5}" maxLength={5} value={fixedRecipient.postalCode} onChange={(event) => setFixedRecipient((current) => ({ ...current, postalCode: event.target.value.replace(/\D/g, "").slice(0, 5) }))} className="rounded-md border border-warmgrau/20 bg-white px-4 py-3 font-body text-base font-normal outline-none focus:border-waldgruen" /></label>
+                <label className="grid gap-2 font-typewriter text-sm font-bold text-waldgruen-dark">Ort<input name="fixedCity" required maxLength={120} value={fixedRecipient.city} onChange={(event) => setFixedRecipient((current) => ({ ...current, city: event.target.value }))} className="rounded-md border border-warmgrau/20 bg-white px-4 py-3 font-body text-base font-normal outline-none focus:border-waldgruen" /></label>
+                <div className="grid gap-2"><span className="font-typewriter text-sm font-bold text-waldgruen-dark">Land</span><div className="rounded-md border border-warmgrau/15 bg-creme/70 px-4 py-3 font-body text-base text-warmgrau/70">Deutschland</div></div>
+              </div>
+              <label className="flex items-start gap-3 rounded-md border border-airmail-rot/20 bg-airmail-rot/5 p-3 font-body text-sm leading-relaxed text-warmgrau/80"><input name="fixedAddressAccepted" type="checkbox" required className="mt-1 h-4 w-4 shrink-0 accent-waldgruen" /><span>Ich bestätige, dass dies eine öffentlich erreichbare Dienst-, Büro- oder Organisationsadresse und keine private Wohnadresse ist. Ich bin für die Richtigkeit und zulässige Nutzung der Angaben verantwortlich.</span></label>
+              {(targetFieldErrors?.targetRecipient || targetFieldErrors?.fixedAddressAccepted) && <p className="font-body text-sm text-airmail-rot">{targetFieldErrors.targetRecipient ?? targetFieldErrors.fixedAddressAccepted}</p>}
+            </div>
+          ) : (
+            <div className="rounded-md border border-warmgrau/15 bg-white/55 px-4 py-4 font-body text-sm leading-relaxed text-warmgrau/75">
+              <p className="font-semibold text-waldgruen-dark">Fester Empfänger · nach Aktivierung gesperrt</p>
+              {campaign.targetRecipient?.organizationName && <p className="mt-2">{campaign.targetRecipient.organizationName}</p>}
+              {campaign.targetRecipient?.personName && <p>{campaign.targetRecipient.personName}</p>}
+              {campaign.targetRecipient && <p>{campaign.targetRecipient.street} {campaign.targetRecipient.houseNumber}<br />{campaign.targetRecipient.postalCode} {campaign.targetRecipient.city}</p>}
+              <p className="mt-2 text-xs text-warmgrau/60">Anrede: {campaign.targetRecipient?.salutation}</p>
+            </div>
+          )}
+
+          <div className="grid gap-2">
+            <label className="font-typewriter text-sm font-bold text-waldgruen-dark" htmlFor="logo">
+              Logo oder Bild
+            </label>
+            <div className="grid gap-4 rounded-md border border-warmgrau/15 bg-white/45 p-4 sm:grid-cols-[auto_1fr] sm:items-center">
+              <div className="grid justify-items-center gap-2 text-center">
+                <CampaignLogo
+                  logoPath={campaign.logoPath}
+                  src={logoPreviewUrl}
+                  name={campaign.title}
+                  size="lg"
+                />
+                <p className="max-w-[10rem] font-body text-xs text-warmgrau/60">
+                  So erscheint dein Bild auf der Kampagnenseite
+                </p>
+              </div>
+              <div className="grid gap-2">
+                <input
+                  ref={logoInputRef}
+                  id="logo"
+                  name="logo"
+                  type="file"
+                  accept="image/png,image/jpeg,image/webp"
+                  disabled={!canEdit || isBusy}
+                  onChange={updateLogo}
+                  aria-invalid={Boolean(logoError || logoServerError)}
+                  aria-describedby={logoError || logoServerError ? "logo-error" : "logo-help"}
+                  className={`font-body text-sm text-warmgrau file:mr-3 file:rounded-md file:border-0 file:px-3 file:py-2 file:font-body file:text-sm file:font-semibold disabled:opacity-60 ${logoFileButtonClass}`}
+                />
+                <p id="logo-help" className="font-body text-sm text-warmgrau/60">
+                  PNG, JPG oder WebP. Quadratische Logos oder Bilder wirken am besten.
+                </p>
+                {(logoError || logoServerError) && (
+                  <p id="logo-error" className="font-body text-sm text-airmail-rot">
+                    {logoError ?? logoServerError}
                   </p>
                 )}
               </div>
-            )}
-          </div>
-        ) : targetLevel === "Land" ? (
-          canEditTarget ? (
-            <div className="grid gap-2 rounded-md border border-waldgruen/20 bg-waldgruen/5 p-4">
-              <label className="font-typewriter text-sm font-bold text-waldgruen-dark" htmlFor="managerTargetState">Bundesland</label>
-              <select id="managerTargetState" name="targetState" value={targetState} onChange={(event) => setTargetState(event.target.value)} disabled={isBusy} className="rounded-md border border-warmgrau/20 bg-white px-4 py-3 font-body text-base outline-none focus:border-waldgruen">
-                <option value="">Alle Bundesländer</option>
-                {Object.entries(BUNDESLAND_NAMES).map(([key, name]) => <option key={key} value={key}>{name}</option>)}
-              </select>
             </div>
-          ) : (
-          <p className="rounded-md border border-warmgrau/15 bg-white/55 px-4 py-3 font-body text-sm leading-relaxed text-warmgrau/70">
-            Diese Landeskampagne richtet sich weiterhin an die institutionelle Landesregierung. Eine konkrete MdB-Auswahl ist hier nicht aktiv.
+          </div>
+
+          <div className="grid gap-2">
+            <label className="font-typewriter text-sm font-bold text-waldgruen-dark" htmlFor="description">
+              Kurze Beschreibung
+            </label>
+            <textarea
+              id="description"
+              name="description"
+              maxLength={400}
+              rows={3}
+              defaultValue={campaign.description ?? ""}
+              disabled={!canEdit || isBusy}
+              className="rounded-md border border-warmgrau/20 bg-white px-4 py-3 font-body text-base leading-relaxed outline-none focus:border-waldgruen disabled:opacity-60"
+            />
+          </div>
+
+          {result && (
+            <div
+              className={`rounded-md border px-4 py-3 font-body text-sm ${
+                result.ok
+                  ? "border-waldgruen/20 bg-waldgruen/8 text-waldgruen-dark"
+                  : "border-airmail-rot/25 bg-airmail-rot/5 text-airmail-rot"
+              }`}
+            >
+              {result.message}
+            </div>
+          )}
+
+          {!ended && (
+            <button
+              type="submit"
+              disabled={!canEdit || isBusy}
+              className="rounded-md bg-waldgruen px-5 py-3 font-body text-base font-semibold text-creme transition-colors hover:bg-waldgruen-dark disabled:cursor-not-allowed disabled:opacity-60"
+            >
+              {isBusy ? "Wird geprüft..." : "Änderungen veröffentlichen"}
+            </button>
+          )}
+        </form>
+      </details>
+
+      {!ended && (
+        <div className="grid gap-3">
+          <p className="font-typewriter text-sm font-bold uppercase tracking-widest text-waldgruen/60">
+            Einstellungen
           </p>
-          )
-        ) : canEditTarget ? (
-          <div className="grid gap-4 rounded-md border border-waldgruen/20 bg-waldgruen/5 p-4">
-            <div className="grid gap-3 sm:grid-cols-2">
-              <label className="grid gap-2 font-typewriter text-sm font-bold text-waldgruen-dark">Organisation <span className="font-body font-normal text-warmgrau/55">optional</span><input name="fixedOrganizationName" maxLength={200} value={fixedRecipient.organizationName} onChange={(event) => setFixedRecipient((current) => ({ ...current, organizationName: event.target.value }))} className="rounded-md border border-warmgrau/20 bg-white px-4 py-3 font-body text-base font-normal outline-none focus:border-waldgruen" /></label>
-              <label className="grid gap-2 font-typewriter text-sm font-bold text-waldgruen-dark">Person <span className="font-body font-normal text-warmgrau/55">optional</span><input name="fixedPersonName" maxLength={200} value={fixedRecipient.personName} onChange={(event) => setFixedRecipient((current) => ({ ...current, personName: event.target.value }))} className="rounded-md border border-warmgrau/20 bg-white px-4 py-3 font-body text-base font-normal outline-none focus:border-waldgruen" /></label>
-            </div>
-            <label className="grid gap-2 font-typewriter text-sm font-bold text-waldgruen-dark">Briefanrede<input name="fixedSalutation" required maxLength={200} value={fixedRecipient.salutation} onChange={(event) => setFixedRecipient((current) => ({ ...current, salutation: event.target.value }))} className="rounded-md border border-warmgrau/20 bg-white px-4 py-3 font-body text-base font-normal outline-none focus:border-waldgruen" /></label>
-            <div className="grid gap-3 sm:grid-cols-[minmax(0,1fr)_120px]">
-              <label className="grid gap-2 font-typewriter text-sm font-bold text-waldgruen-dark">Straße<input name="fixedStreet" required maxLength={120} value={fixedRecipient.street} onChange={(event) => setFixedRecipient((current) => ({ ...current, street: event.target.value }))} className="rounded-md border border-warmgrau/20 bg-white px-4 py-3 font-body text-base font-normal outline-none focus:border-waldgruen" /></label>
-              <label className="grid gap-2 font-typewriter text-sm font-bold text-waldgruen-dark">Hausnummer<input name="fixedHouseNumber" required maxLength={20} value={fixedRecipient.houseNumber} onChange={(event) => setFixedRecipient((current) => ({ ...current, houseNumber: event.target.value }))} className="rounded-md border border-warmgrau/20 bg-white px-4 py-3 font-body text-base font-normal outline-none focus:border-waldgruen" /></label>
-            </div>
-            <div className="grid gap-3 sm:grid-cols-[140px_minmax(0,1fr)_180px]">
-              <label className="grid gap-2 font-typewriter text-sm font-bold text-waldgruen-dark">Postleitzahl<input name="fixedPostalCode" required inputMode="numeric" pattern="[0-9]{5}" maxLength={5} value={fixedRecipient.postalCode} onChange={(event) => setFixedRecipient((current) => ({ ...current, postalCode: event.target.value.replace(/\D/g, "").slice(0, 5) }))} className="rounded-md border border-warmgrau/20 bg-white px-4 py-3 font-body text-base font-normal outline-none focus:border-waldgruen" /></label>
-              <label className="grid gap-2 font-typewriter text-sm font-bold text-waldgruen-dark">Ort<input name="fixedCity" required maxLength={120} value={fixedRecipient.city} onChange={(event) => setFixedRecipient((current) => ({ ...current, city: event.target.value }))} className="rounded-md border border-warmgrau/20 bg-white px-4 py-3 font-body text-base font-normal outline-none focus:border-waldgruen" /></label>
-              <div className="grid gap-2"><span className="font-typewriter text-sm font-bold text-waldgruen-dark">Land</span><div className="rounded-md border border-warmgrau/15 bg-creme/70 px-4 py-3 font-body text-base text-warmgrau/70">Deutschland</div></div>
-            </div>
-            <label className="flex items-start gap-3 rounded-md border border-airmail-rot/20 bg-airmail-rot/5 p-3 font-body text-sm leading-relaxed text-warmgrau/80"><input name="fixedAddressAccepted" type="checkbox" required className="mt-1 h-4 w-4 shrink-0 accent-waldgruen" /><span>Ich bestätige, dass dies eine öffentlich erreichbare Dienst-, Büro- oder Organisationsadresse und keine private Wohnadresse ist. Ich bin für die Richtigkeit und zulässige Nutzung der Angaben verantwortlich.</span></label>
-            {(targetFieldErrors?.targetRecipient || targetFieldErrors?.fixedAddressAccepted) && <p className="font-body text-sm text-airmail-rot">{targetFieldErrors.targetRecipient ?? targetFieldErrors.fixedAddressAccepted}</p>}
-          </div>
-        ) : (
-          <div className="rounded-md border border-warmgrau/15 bg-white/55 px-4 py-4 font-body text-sm leading-relaxed text-warmgrau/75">
-            <p className="font-semibold text-waldgruen-dark">Fester Empfänger · nach Aktivierung gesperrt</p>
-            {campaign.targetRecipient?.organizationName && <p className="mt-2">{campaign.targetRecipient.organizationName}</p>}
-            {campaign.targetRecipient?.personName && <p>{campaign.targetRecipient.personName}</p>}
-            {campaign.targetRecipient && <p>{campaign.targetRecipient.street} {campaign.targetRecipient.houseNumber}<br />{campaign.targetRecipient.postalCode} {campaign.targetRecipient.city}</p>}
-            <p className="mt-2 text-xs text-warmgrau/60">Anrede: {campaign.targetRecipient?.salutation}</p>
-          </div>
-        )}
-
-        <div className="grid gap-2">
-          <label className="font-typewriter text-sm font-bold text-waldgruen-dark" htmlFor="logo">
-            Logo oder Bild
-          </label>
-          <div className="grid gap-3 rounded-md border border-warmgrau/15 bg-white/45 p-4 sm:grid-cols-[72px_1fr] sm:items-center">
-            <div className="flex h-[72px] w-[72px] items-center justify-center overflow-hidden rounded-md border border-warmgrau/18 bg-white">
-              {shownLogoUrl ? (
-                <div
-                  aria-hidden="true"
-                  className="h-full w-full p-1.5"
-                  style={{
-                    backgroundImage: `url(${shownLogoUrl})`,
-                    backgroundClip: "content-box",
-                    backgroundOrigin: "content-box",
-                    backgroundPosition: "center",
-                    backgroundRepeat: "no-repeat",
-                    backgroundSize: "contain",
-                  }}
-                />
-              ) : (
-                <span className="font-typewriter text-xs font-bold uppercase tracking-widest text-warmgrau/35">
-                  Bild
-                </span>
-              )}
-            </div>
-            <div className="grid gap-2">
-              <input
-                id="logo"
-                name="logo"
-                type="file"
-                accept="image/png,image/jpeg,image/webp"
-                disabled={!canEdit || isBusy}
-                onChange={updateLogo}
-                aria-invalid={Boolean(logoError || logoServerError)}
-                aria-describedby={logoError || logoServerError ? "logo-error" : "logo-help"}
-                className={`font-body text-sm text-warmgrau file:mr-3 file:rounded-md file:border-0 file:px-3 file:py-2 file:font-body file:text-sm file:font-semibold disabled:opacity-60 ${logoFileButtonClass}`}
-              />
-              <p id="logo-help" className="font-body text-sm text-warmgrau/60">
-                PNG, JPG oder WebP. Quadratische Logos oder Bilder wirken am besten.
-              </p>
-              {(logoError || logoServerError) && (
-                <p id="logo-error" className="font-body text-sm text-airmail-rot">
-                  {logoError ?? logoServerError}
-                </p>
-              )}
-            </div>
-          </div>
-        </div>
-
-        <div className="grid gap-2">
-          <label className="font-typewriter text-sm font-bold text-waldgruen-dark" htmlFor="description">
-            Kurze Beschreibung
-          </label>
-          <textarea
-            id="description"
-            name="description"
-            maxLength={400}
-            rows={3}
-            defaultValue={campaign.description ?? ""}
-            disabled={!canEdit || isBusy}
-            className="rounded-md border border-warmgrau/20 bg-white px-4 py-3 font-body text-base leading-relaxed outline-none focus:border-waldgruen disabled:opacity-60"
-          />
-        </div>
-
-        {result && (
-          <div
-            className={`rounded-md border px-4 py-3 font-body text-sm ${
-              result.ok
-                ? "border-waldgruen/20 bg-waldgruen/8 text-waldgruen-dark"
-                : "border-airmail-rot/25 bg-airmail-rot/5 text-airmail-rot"
-            }`}
-          >
-            {result.message}
-          </div>
-        )}
-
-        {!ended && (
-          <button
-            type="submit"
-            disabled={!canEdit || isBusy}
-            className="rounded-md bg-waldgruen px-5 py-3 font-body text-base font-semibold text-creme transition-colors hover:bg-waldgruen-dark disabled:cursor-not-allowed disabled:opacity-60"
-          >
-            {isBusy ? "Wird geprüft..." : "Änderungen veröffentlichen"}
-          </button>
-        )}
-      </form>
-
-      <div className="grid gap-4">
-        {!ended && (
-          <section className="grid gap-6 rounded-md border border-warmgrau/12 bg-white/75 p-5 shadow-sm md:p-7">
-            <div>
-              <h2 className="font-typewriter text-xl font-bold text-waldgruen-dark">
-                Laufzeit und Status
-              </h2>
-              <p className="mt-2 font-body text-sm leading-relaxed text-warmgrau/70">
-                Mit einem Enddatum läuft die Kampagne von selbst aus. Pausieren blendet die
-                öffentliche Seite vorübergehend aus. Beenden schließt die Kampagne für immer,
-                die Seite zeigt danach den Endstand.
-              </p>
-            </div>
-            <div className="grid gap-3">
-              <CampaignEndDatePicker
-                value={endPicker}
-                onChange={setEndPicker}
-                idPrefix="manage-end"
-                disabled={isBusy}
-              />
+            <section className="grid gap-6 rounded-md border border-warmgrau/15 bg-white/40 p-5 md:p-7">
               <div>
-                <button
-                  type="button"
-                  disabled={!endDateChanged || endDateIncomplete || isBusy}
-                  onClick={() =>
-                    runEndAction(
-                      () => updateCampaignEndDateAction(campaign.id, pickedEndDateKey),
-                      () =>
-                        setEndPicker(
-                          pickedEndDateKey
-                            ? { choice: "custom", customDate: pickedEndDateKey }
-                            : { choice: "none", customDate: "" }
-                        )
-                    )
-                  }
-                  className="min-h-11 w-full rounded-md bg-waldgruen px-5 py-3 font-body text-base font-semibold text-creme transition-colors hover:bg-waldgruen-dark focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-waldgruen disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto"
-                >
-                  Enddatum speichern
-                </button>
+                <h2 className="font-typewriter text-xl font-bold text-waldgruen-dark">
+                  Laufzeit und Status
+                </h2>
+                <p className="mt-2 font-body text-sm leading-relaxed text-warmgrau/70">
+                  Mit einem Enddatum läuft die Kampagne von selbst aus. Pausieren blendet die
+                  öffentliche Seite vorübergehend aus. Beenden schließt die Kampagne für immer,
+                  die Seite zeigt danach den Endstand.
+                </p>
               </div>
-            </div>
-            <div className="grid gap-3 border-t border-warmgrau/12 pt-5">
-              <div className="flex flex-col gap-3 sm:flex-row">
-                <button
-                  type="button"
-                  disabled={!canPause || isBusy}
-                  onClick={() => {
-                    setRuntimeResult(null);
-                    setActionPending(true);
-                    startTransition(async () => {
-                      try {
-                        const nextResult = await pauseCampaignAction(campaign.id);
-                        setRuntimeResult(nextResult);
-                        if (nextResult.ok) router.refresh();
-                      } finally {
-                        setActionPending(false);
-                      }
-                    });
-                  }}
-                  className="min-h-11 rounded-md border border-waldgruen/25 px-5 py-3 font-body text-base font-semibold text-waldgruen-dark transition-colors hover:border-waldgruen focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-waldgruen disabled:cursor-not-allowed disabled:opacity-50"
-                >
-                  Kampagne pausieren
-                </button>
-                <button
-                  type="button"
-                  disabled={!canEnd || isBusy}
-                  onClick={() => endDialogRef.current?.showModal()}
-                  className="min-h-11 rounded-md border border-airmail-rot/30 px-5 py-3 font-body text-base font-semibold text-airmail-rot transition-colors hover:border-airmail-rot focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-airmail-rot disabled:cursor-not-allowed disabled:opacity-50"
-                >
-                  Kampagne jetzt beenden
-                </button>
-              </div>
-              {runtimeResult && (
-                <div
-                  role="status"
-                  className={`rounded-md border px-4 py-3 font-body text-sm ${
-                    runtimeResult.ok
-                      ? "border-waldgruen/20 bg-white/60 text-waldgruen-dark"
-                      : "border-airmail-rot/25 bg-airmail-rot/5 text-airmail-rot"
-                  }`}
-                >
-                  {runtimeResult.message}
-                </div>
-              )}
-              {canTransfer && (
-                <p className="border-t border-warmgrau/12 pt-4 font-body text-sm text-warmgrau/70">
-                  Soll jemand anderes die Kampagne betreuen?{" "}
+              <div className="grid gap-3">
+                <CampaignEndDatePicker
+                  value={endPicker}
+                  onChange={setEndPicker}
+                  idPrefix="manage-end"
+                  disabled={isBusy}
+                />
+                <div>
                   <button
                     type="button"
-                    disabled={isBusy}
-                    onClick={openTransferDialog}
-                    className="font-semibold text-waldgruen-dark underline underline-offset-4 transition-colors hover:text-waldgruen disabled:cursor-not-allowed disabled:opacity-50"
+                    disabled={!endDateChanged || endDateIncomplete || isBusy}
+                    onClick={() =>
+                      runEndAction(
+                        () => updateCampaignEndDateAction(campaign.id, pickedEndDateKey),
+                        () =>
+                          setEndPicker(
+                            pickedEndDateKey
+                              ? { choice: "custom", customDate: pickedEndDateKey }
+                              : { choice: "none", customDate: "" }
+                          )
+                      )
+                    }
+                    className="min-h-11 w-full rounded-md bg-waldgruen px-5 py-3 font-body text-base font-semibold text-creme transition-colors hover:bg-waldgruen-dark focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-waldgruen disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto"
                   >
-                    Verwaltung übertragen
+                    Enddatum speichern
                   </button>
-                </p>
-              )}
-            </div>
-          </section>
-        )}
-      </div>
+                </div>
+              </div>
+              <div className="grid gap-3 border-t border-warmgrau/12 pt-5">
+                <div className="flex flex-col gap-3 sm:flex-row">
+                  <button
+                    type="button"
+                    disabled={!canPause || isBusy}
+                    onClick={() => {
+                      setRuntimeResult(null);
+                      setActionPending(true);
+                      startTransition(async () => {
+                        try {
+                          const nextResult = await pauseCampaignAction(campaign.id);
+                          setRuntimeResult(nextResult);
+                          if (nextResult.ok) router.refresh();
+                        } finally {
+                          setActionPending(false);
+                        }
+                      });
+                    }}
+                    className="min-h-11 rounded-md border border-waldgruen/25 px-5 py-3 font-body text-base font-semibold text-waldgruen-dark transition-colors hover:border-waldgruen focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-waldgruen disabled:cursor-not-allowed disabled:opacity-50"
+                  >
+                    Kampagne pausieren
+                  </button>
+                  <button
+                    type="button"
+                    disabled={!canEnd || isBusy}
+                    onClick={() => endDialogRef.current?.showModal()}
+                    className="min-h-11 rounded-md border border-airmail-rot/30 px-5 py-3 font-body text-base font-semibold text-airmail-rot transition-colors hover:border-airmail-rot focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-airmail-rot disabled:cursor-not-allowed disabled:opacity-50"
+                  >
+                    Kampagne jetzt beenden
+                  </button>
+                </div>
+                {runtimeResult && (
+                  <div
+                    role="status"
+                    className={`rounded-md border px-4 py-3 font-body text-sm ${
+                      runtimeResult.ok
+                        ? "border-waldgruen/20 bg-white/60 text-waldgruen-dark"
+                        : "border-airmail-rot/25 bg-airmail-rot/5 text-airmail-rot"
+                    }`}
+                  >
+                    {runtimeResult.message}
+                  </div>
+                )}
+                {canTransfer && (
+                  <p className="border-t border-warmgrau/12 pt-4 font-body text-sm text-warmgrau/70">
+                    Soll jemand anderes die Kampagne betreuen?{" "}
+                    <button
+                      type="button"
+                      disabled={isBusy}
+                      onClick={openTransferDialog}
+                      className="font-semibold text-waldgruen-dark underline underline-offset-4 transition-colors hover:text-waldgruen disabled:cursor-not-allowed disabled:opacity-50"
+                    >
+                      Verwaltung übertragen
+                    </button>
+                  </p>
+                )}
+              </div>
+            </section>
+        </div>
+      )}
 
       {canEnd && (
         <ManagerDialog dialogRef={endDialogRef} title="Kampagne jetzt beenden?">

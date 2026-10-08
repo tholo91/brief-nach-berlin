@@ -1,6 +1,19 @@
 import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 
+jest.mock("next/navigation", () => ({
+  useRouter: () => ({ refresh: jest.fn() }),
+}));
+jest.mock("@/lib/actions/updateCampaign", () => ({ updateCampaignAction: jest.fn() }));
+jest.mock("@/lib/actions/pauseCampaign", () => ({ pauseCampaignAction: jest.fn() }));
+jest.mock("@/lib/actions/campaignEnd", () => ({
+  endCampaignAction: jest.fn(),
+  updateCampaignEndDateAction: jest.fn(),
+}));
+jest.mock("@/lib/actions/transferCampaign", () => ({ transferCampaignAction: jest.fn() }));
+
+import { CampaignManager } from "@/components/campaigns/CampaignManager";
+
 import { CampaignLogo } from "@/components/campaigns/CampaignLogo";
 import { CampaignShareCard } from "@/components/campaigns/CampaignShareCard";
 import { CampaignUrlCopyField } from "@/components/campaigns/CampaignUrlCopyField";
@@ -208,5 +221,92 @@ describe("CampaignShareCard", () => {
     );
 
     expect(markup).toContain('aria-label="Kampagnenlink kopieren"');
+  });
+});
+
+describe("CampaignManager layout", () => {
+  const baseCampaign: Campaign = {
+    id: "campaign-1",
+    slug: "duisburg-retten",
+    creatorEmail: "initiative@example.org",
+    title: "Duisburg retten",
+    issueText: "Duisburg braucht jetzt mehr sichere und bezahlbare öffentliche Räume.",
+    description: null,
+    creatorName: null,
+    externalUrl: null,
+    logoPath: "initiative/logo.png",
+    status: "active",
+    moderationStatus: "approved",
+    moderationCategories: [],
+    targetLevel: "Bund",
+    targetState: null,
+    targetRecipient: null,
+    targetPoliticianIds: [],
+    emailVerifiedAt: null,
+    activatedAt: "2026-08-25T00:00:00.000Z",
+    pausedAt: null,
+    archivedAt: null,
+    lastPublishedRevisionId: null,
+    letterCount: 0,
+    createdAt: "2026-08-25T00:00:00.000Z",
+    updatedAt: "2026-08-25T00:00:00.000Z",
+  };
+
+  function renderManager(campaign: Campaign, ended = false) {
+    return renderToStaticMarkup(
+      createElement(CampaignManager, {
+        campaign,
+        ended,
+        insights: createElement("div", { "data-testid": "insights-slot" }),
+      })
+    );
+  }
+
+  it("orders the sections: header, share, insights, edit, settings", () => {
+    const markup = renderManager(baseCampaign);
+    const positions = [
+      markup.indexOf("<h1"),
+      markup.indexOf("Kampagne teilen"),
+      markup.indexOf('data-testid="insights-slot"'),
+      markup.indexOf("Kampagne bearbeiten"),
+      markup.indexOf("Laufzeit und Status"),
+    ];
+
+    expect(positions.every((position) => position >= 0)).toBe(true);
+    expect([...positions].sort((a, b) => a - b)).toEqual(positions);
+  });
+
+  it("renders the edit form closed but with all inputs in the markup", () => {
+    const markup = renderManager(baseCampaign);
+    const detailsTag = markup.match(/<details[^>]*>/)?.[0] ?? "";
+
+    expect(detailsTag).not.toBe("");
+    expect(detailsTag).not.toMatch(/\sopen(=|\s|>)/);
+    expect(markup).toContain('name="title"');
+    expect(markup).toContain('name="issueText"');
+    expect(markup).toContain('name="logo"');
+    expect(markup).toContain("So erscheint dein Bild auf der Kampagnenseite");
+    expect(markup).toContain("Bild ändern");
+  });
+
+  it("integrates the ended banner and drops edit and settings for ended campaigns", () => {
+    const markup = renderManager(
+      { ...baseCampaign, endsAt: "2026-01-15T22:59:59.000Z" },
+      true
+    );
+
+    expect(markup.indexOf("Beendet am")).toBeGreaterThan(-1);
+    expect(markup.indexOf("Beendet am")).toBeLessThan(markup.indexOf("Kampagne teilen"));
+    expect(markup).not.toContain("Laufzeit und Status");
+    expect(markup).toContain("Kampagnenangaben ansehen");
+    expect(markup).not.toContain("Bild ändern");
+    expect(markup).not.toContain("Bild hinzufügen");
+  });
+
+  it("shows the amber dot and settings for paused campaigns", () => {
+    const markup = renderManager({ ...baseCampaign, status: "paused" });
+
+    expect(markup).toContain("bg-bernstein");
+    expect(markup).toContain("Laufzeit und Status");
   });
 });

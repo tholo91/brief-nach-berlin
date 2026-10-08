@@ -661,11 +661,11 @@ export function CreatorCampaignForm() {
                   }}
                   className="mt-1 h-4 w-4 shrink-0 border-warmgrau/30 text-waldgruen accent-waldgruen"
                 />
-                <span className="grid gap-0.5">
-                  <span className="font-body text-base font-semibold text-waldgruen-dark">
+                <span className="grid min-w-0 flex-1 gap-0.5">
+                  <span className="font-body text-base font-semibold text-waldgruen-dark text-pretty">
                     {option.title}
                   </span>
-                  <span className="font-body text-sm leading-relaxed text-warmgrau/65">
+                  <span className="font-body text-xs leading-relaxed text-warmgrau/65 text-pretty">
                     {option.text}
                   </span>
                 </span>

@@ -81,7 +81,10 @@ export default async function CampaignOpenGraphImage({
           alt=""
           style={{
             position: "absolute",
-            inset: 0,
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
             width: "100%",
             height: "100%",
             objectFit: "cover",
@@ -91,7 +94,10 @@ export default async function CampaignOpenGraphImage({
         <div
           style={{
             position: "absolute",
-            inset: 0,
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
             display: "flex",
             background:
               "linear-gradient(90deg, rgba(250,248,242,0.84) 0%, rgba(250,248,242,0.76) 52%, rgba(250,248,242,0.58) 100%)",

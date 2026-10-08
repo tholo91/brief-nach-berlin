@@ -2,7 +2,12 @@ import Link from "next/link";
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { CampaignBackground } from "@/components/campaigns/CampaignBackground";
+import { CampaignCreatorStats } from "@/components/campaigns/CampaignCreatorStats";
 import { CampaignManager } from "@/components/campaigns/CampaignManager";
+import {
+  getCampaignCreatorStats,
+  shouldShowCreatorInsights,
+} from "@/lib/campaigns/creatorStats";
 import { isCampaignEnded } from "@/lib/campaigns/endDate";
 import { getCampaignById } from "@/lib/campaigns/repository";
 import { getCampaignManagementSession } from "@/lib/campaigns/session";
@@ -93,6 +98,10 @@ export default async function ManageCampaignPage({
       : null;
 
   const ended = authorizedCampaign ? isCampaignEnded(authorizedCampaign, new Date()) : false;
+  const creatorStats =
+    authorizedCampaign && shouldShowCreatorInsights(authorizedCampaign, ended)
+      ? await getCampaignCreatorStats(authorizedCampaign, ended)
+      : null;
 
   return (
     <CampaignBackground>
@@ -109,7 +118,13 @@ export default async function ManageCampaignPage({
             <PendingApprovalNotice campaign={authorizedCampaign} />
           ) : (
             <section className="relative mx-auto max-w-4xl px-6 py-14 md:py-20">
-              <CampaignManager campaign={authorizedCampaign} ended={ended} />
+              <CampaignManager
+                campaign={authorizedCampaign}
+                ended={ended}
+                insights={
+                  creatorStats ? <CampaignCreatorStats stats={creatorStats} /> : undefined
+                }
+              />
             </section>
           )}
         </>

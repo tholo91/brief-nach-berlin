@@ -65,12 +65,6 @@ const statusLabels: Record<Campaign["status"], string> = {
 const maxClientLogoBytes = 4 * 1024 * 1024;
 const maxLogoDisplaySize = 512;
 const acceptedLogoTypes = new Set(["image/png", "image/jpeg", "image/webp"]);
-const dateFormatter = new Intl.DateTimeFormat("de-DE", {
-  day: "2-digit",
-  month: "2-digit",
-  year: "numeric",
-});
-const numberFormatter = new Intl.NumberFormat("de-DE");
 
 async function resizeLogoFile(file: File): Promise<File> {
   if (!acceptedLogoTypes.has(file.type) || file.size <= 380_000) return file;
@@ -109,9 +103,11 @@ async function resizeLogoFile(file: File): Promise<File> {
 export function CampaignManager({
   campaign,
   ended,
+  insights,
 }: {
   campaign: Campaign;
   ended: boolean;
+  insights?: ReactNode;
 }) {
   const router = useRouter();
   const [result, setResult] = useState<ActionResult>(null);
@@ -168,11 +164,6 @@ export function CampaignManager({
   const compactSlug = compactCampaignSlug(campaign.slug);
   const hasCompactUrl = compactSlug !== campaign.slug;
   const compactUrl = campaignPublicUrl(compactSlug);
-  const formattedLetterCount = numberFormatter.format(campaign.letterCount);
-  const letterCountLabel = campaign.letterCount === 1 ? "Brief erstellt" : "Briefe erstellt";
-  const liveSinceLabel = campaign.activatedAt
-    ? dateFormatter.format(new Date(campaign.activatedAt))
-    : "noch nicht live";
   const logoServerError =
     result?.ok === false && "fieldErrors" in result ? result.fieldErrors?.logo : undefined;
   const targetFieldErrors =
@@ -363,31 +354,9 @@ export function CampaignManager({
                 : "Änderungen werden vor der Veröffentlichung automatisch geprüft. Wenn die Prüfung scheitert, bleibt der bisherige öffentliche Text unverändert."}
           </p>
         )}
-        <div className="mt-6 grid gap-4 border-y border-warmgrau/12 py-4 sm:grid-cols-2">
-          <div>
-            <p className="font-typewriter text-xs font-bold uppercase tracking-widest text-warmgrau/50">
-              Briefe über diese Kampagne
-            </p>
-            <p className="mt-1 font-body text-2xl font-bold text-waldgruen-dark">
-              {formattedLetterCount}
-            </p>
-            <p className="font-body text-sm text-warmgrau/60">
-              {letterCountLabel}
-            </p>
-          </div>
-          <div>
-            <p className="font-typewriter text-xs font-bold uppercase tracking-widest text-warmgrau/50">
-              Live seit
-            </p>
-            <p className="mt-1 font-body text-2xl font-bold text-waldgruen-dark">
-              {liveSinceLabel}
-            </p>
-            <p className="font-body text-sm text-warmgrau/60">
-              Öffentliche Kampagnenseite
-            </p>
-          </div>
-        </div>
       </section>
+
+      {insights}
 
       <form
         className="grid gap-5 rounded-md border border-warmgrau/12 bg-creme/80 p-5 shadow-sm md:p-7"

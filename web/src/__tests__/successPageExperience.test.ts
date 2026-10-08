@@ -70,10 +70,9 @@ describe("success page experience", () => {
   it("treats a lost generation response as a possible email success", () => {
     expect(successSource).toContain("setGenerationMayHaveSucceeded(true)");
     expect(successSource).toContain("setGenerationMayHaveSucceeded(false)");
-    expect(successSource).toContain("Wir konnten die Erstellung nicht bestätigen");
-    expect(successSource).toContain("Bitte prüfe zuerst dein Postfach und den Spam-Ordner");
-    expect(successSource).toContain("Um einen doppelten Versand zu vermeiden");
-    expect(successSource).toContain("Bitte prüfe jetzt dein Postfach und den Spam-Ordner");
+    expect(successSource).toContain("Die Verbindung ist abgebrochen");
+    expect(successSource).toContain("Dein Brief ist sehr wahrscheinlich trotzdem fertig geworden");
+    expect(successSource).toContain("Schau jetzt in dein Postfach und in den Spam-Ordner");
     expect(successSource).not.toContain("Nach zwei Minuten noch keine E-Mail? Nochmal versuchen");
     expect(successSource).not.toContain("Wenn nach zwei Minuten nichts angekommen ist");
     expect(successSource).toContain("const retryIsSafe = res.status < 500 || errBody?.retrySafe === true");

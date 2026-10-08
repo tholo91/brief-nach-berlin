@@ -88,7 +88,7 @@ export function CampaignCreatorStats({
     >
       <h2
         id="creator-stats-heading"
-        className="font-typewriter text-xl font-bold text-waldgruen-dark md:text-2xl"
+        className="text-balance font-typewriter text-lg font-bold text-waldgruen-dark md:text-2xl"
       >
         {heading}
       </h2>

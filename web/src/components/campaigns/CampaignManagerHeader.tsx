@@ -48,7 +48,7 @@ export function CampaignManagerHeader({
 
   return (
     <section className="rounded-md border border-warmgrau/12 bg-white/75 p-5 shadow-sm md:p-7">
-      <div className="flex items-start gap-4 md:gap-6">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-start md:gap-6">
         <CampaignLogo logoPath={logoPath} name={title} size="lg" />
         <div className="min-w-0 flex-1">
           <p className="font-typewriter text-sm font-bold uppercase tracking-widest text-waldgruen/60">

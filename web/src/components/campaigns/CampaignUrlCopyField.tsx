@@ -123,8 +123,8 @@ export function CampaignUrlCopyField({
               : "border-warmgrau/16 bg-white/55 text-warmgrau/70 hover:border-waldgruen/35 hover:bg-white/80 focus:border-waldgruen"
           }`}
         >
-          <span className="min-w-0 truncate">
-            <span>{parts.prefix}</span>
+          <span className="min-w-0 [overflow-wrap:anywhere]">
+            <span className="block sm:inline">{parts.prefix}</span>
             <span className="font-semibold text-waldgruen-dark">{parts.slug}</span>
           </span>
           <span

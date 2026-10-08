@@ -1,10 +1,13 @@
 import type { Metadata } from "next";
 import { notFound, permanentRedirect } from "next/navigation";
+import { CampaignEndedView } from "@/components/campaigns/CampaignEndedView";
 import { CampaignHero } from "@/components/campaigns/CampaignHero";
 import {
   getActiveCampaignByCompactSlug,
   getActiveCampaignBySlug,
+  getRecentActiveCampaigns,
 } from "@/lib/campaigns/repository";
+import { isCampaignEnded } from "@/lib/campaigns/endDate";
 import { campaignSlugSchema } from "@/lib/campaigns/schema";
 import {
   getSpecialCampaignBySlug,
@@ -86,5 +89,17 @@ export default async function CampaignPage({ params }: CampaignPageProps) {
     permanentRedirect(`/kampagne/${resolved.campaign.slug}`);
   }
 
-  return <CampaignHero campaign={resolved.campaign} />;
+  const { campaign } = resolved;
+  const ended = isCampaignEnded(campaign, new Date());
+  if (ended && campaign.endsAt) {
+    const otherCampaigns = await getRecentActiveCampaigns(3).catch(() => []);
+    return (
+      <CampaignEndedView
+        campaign={{ ...campaign, endsAt: campaign.endsAt }}
+        otherCampaigns={otherCampaigns}
+      />
+    );
+  }
+
+  return <CampaignHero campaign={campaign} />;
 }

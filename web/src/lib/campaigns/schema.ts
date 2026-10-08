@@ -216,6 +216,7 @@ export const createCampaignSchema = campaignPublicFieldsSchema
     targetState: campaignTargetStateSchema.nullable().default(null),
     targetRecipient: campaignFixedRecipientSchema.nullable().default(null),
     targetPoliticianIds: campaignTargetPoliticianIdsSchema,
+    endsAt: z.string().datetime().nullable().default(null),
   })
   .superRefine((value, ctx) => {
     if (value.targetLevel !== "Land" && value.targetState !== null) {
@@ -285,6 +286,8 @@ export type Campaign = {
   targetPoliticianIds: number[];
   /** Internes, beim Speichern der Kampagne ermitteltes Statistik-Signal. */
   topic?: TopicSignal | null;
+  /** Optionales Kampagnenende (ISO). Fehlt oder null: läuft ohne festes Ende. */
+  endsAt?: string | null;
   emailVerifiedAt: string | null;
   activatedAt: string | null;
   pausedAt: string | null;

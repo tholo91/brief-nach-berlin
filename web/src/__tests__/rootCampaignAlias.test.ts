@@ -73,6 +73,17 @@ describe("root campaign aliases", () => {
     expect(getActiveCampaignByCompactSlug).not.toHaveBeenCalled();
   });
 
+  it("still redirects an ended campaign to its canonical page", async () => {
+    jest.mocked(getActiveCampaignBySlug).mockResolvedValue({
+      ...campaign,
+      endsAt: "2026-01-15T22:59:59.000Z",
+    });
+
+    await expect(
+      RootSlugPage({ params: Promise.resolve({ slug: campaign.slug }) }),
+    ).rejects.toThrow("redirect:/kampagne/afd-vor-gericht");
+  });
+
   it("does not guess when no campaign matches", async () => {
     await expect(
       RootSlugPage({ params: Promise.resolve({ slug: "afdvorgerich" }) }),

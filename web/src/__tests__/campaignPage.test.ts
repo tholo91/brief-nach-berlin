@@ -15,7 +15,11 @@ jest.mock("next/link", () => ({
     createElement("a", { href }, children),
 }));
 jest.mock("@/components/campaigns/CampaignHero", () => ({
-  CampaignHero: () => null,
+  CampaignHero: () => createElement("div", { "data-testid": "campaign-hero" }),
+}));
+jest.mock("@/components/campaigns/CampaignBackground", () => ({
+  CampaignBackground: ({ children }: { children: React.ReactNode }) =>
+    createElement("section", null, children),
 }));
 jest.mock("@/lib/campaigns/repository", () => ({
   getActiveCampaignBySlug: jest.fn(),
@@ -94,6 +98,84 @@ describe("campaign page resolution", () => {
     ).rejects.toThrow("not found");
 
     expect(permanentRedirect).not.toHaveBeenCalled();
+  });
+});
+
+describe("campaign page end state", () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+    jest.mocked(getActiveCampaignBySlug).mockResolvedValue(null);
+    jest.mocked(getRecentActiveCampaigns).mockResolvedValue([]);
+  });
+
+  it("renders the ended view with count, other campaigns and the app CTA", async () => {
+    jest.mocked(getActiveCampaignBySlug).mockResolvedValue({
+      ...campaign,
+      letterCount: 1234,
+      endsAt: "2026-01-15T22:59:59.000Z",
+    });
+    jest.mocked(getRecentActiveCampaigns).mockResolvedValue([
+      { ...campaign, slug: "andere-kampagne", title: "Andere Kampagne" },
+    ]);
+
+    const markup = renderToStaticMarkup(
+      await CampaignPage({ params: Promise.resolve({ slug: campaign.slug }) }),
+    );
+
+    expect(markup).toContain("Diese Kampagne ist seit 15. Januar 2026 beendet.");
+    expect(markup).toContain("1.234 Briefe wurden über diese Kampagne formuliert.");
+    expect(markup).toContain('href="/app"');
+    expect(markup).toContain('href="/kampagne/andere-kampagne"');
+    expect(markup).not.toContain("campaign-hero");
+    expect(getRecentActiveCampaigns).toHaveBeenCalledWith(3);
+  });
+
+  it("uses the singular and omits the count line for zero letters", async () => {
+    const ended = { ...campaign, endsAt: "2026-01-15T22:59:59.000Z" };
+    jest.mocked(getActiveCampaignBySlug).mockResolvedValue({ ...ended, letterCount: 1 });
+    const single = renderToStaticMarkup(
+      await CampaignPage({ params: Promise.resolve({ slug: campaign.slug }) }),
+    );
+    expect(single).toContain("1 Brief wurde über diese Kampagne formuliert.");
+
+    jest.mocked(getActiveCampaignBySlug).mockResolvedValue({ ...ended, letterCount: 0 });
+    const none = renderToStaticMarkup(
+      await CampaignPage({ params: Promise.resolve({ slug: campaign.slug }) }),
+    );
+    expect(none).not.toContain("über diese Kampagne formuliert");
+  });
+
+  it("still renders when loading other campaigns fails", async () => {
+    jest.mocked(getActiveCampaignBySlug).mockResolvedValue({
+      ...campaign,
+      endsAt: "2026-01-15T22:59:59.000Z",
+    });
+    jest.mocked(getRecentActiveCampaigns).mockRejectedValue(new Error("db down"));
+
+    const markup = renderToStaticMarkup(
+      await CampaignPage({ params: Promise.resolve({ slug: campaign.slug }) }),
+    );
+
+    expect(markup).toContain("beendet.");
+    expect(markup).not.toContain("Diese Kampagnen laufen noch");
+  });
+
+  it("keeps rendering the hero for running campaigns", async () => {
+    jest.mocked(getActiveCampaignBySlug).mockResolvedValue({
+      ...campaign,
+      endsAt: "2999-01-01T22:59:59.000Z",
+    });
+    const future = renderToStaticMarkup(
+      await CampaignPage({ params: Promise.resolve({ slug: campaign.slug }) }),
+    );
+    expect(future).toContain("campaign-hero");
+
+    jest.mocked(getActiveCampaignBySlug).mockResolvedValue(campaign);
+    const open = renderToStaticMarkup(
+      await CampaignPage({ params: Promise.resolve({ slug: campaign.slug }) }),
+    );
+    expect(open).toContain("campaign-hero");
+    expect(getRecentActiveCampaigns).not.toHaveBeenCalled();
   });
 });
 

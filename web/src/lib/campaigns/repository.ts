@@ -45,6 +45,7 @@ type CampaignRow = {
   topic_labels?: string[] | null;
   topic_taxonomy_version?: string | null;
   topic_model?: string | null;
+  ends_at?: string | null;
   email_verified_at: string | null;
   activated_at: string | null;
   paused_at: string | null;
@@ -121,6 +122,10 @@ export class CampaignRepositoryError extends Error {
   }
 }
 
+function runningCampaignFilter(): string {
+  return `ends_at.is.null,ends_at.gt.${new Date().toISOString()}`;
+}
+
 function client(db?: RepositoryClient): RepositoryClient {
   return db ?? getServiceRoleClient();
 }
@@ -142,6 +147,7 @@ function mapCampaign(row: CampaignRow): Campaign {
     ...resolveCampaignTarget(row),
     targetPoliticianIds: row.target_politician_ids ?? [],
     topic: parseCampaignTopic(row),
+    endsAt: row.ends_at ?? null,
     emailVerifiedAt: row.email_verified_at,
     activatedAt: row.activated_at,
     pausedAt: row.paused_at,
@@ -412,6 +418,7 @@ export async function getRecentActiveCampaigns(
     .select("*")
     .eq("status", "active")
     .eq("moderation_status", "approved")
+    .or(runningCampaignFilter())
     .order("activated_at", { ascending: false, nullsFirst: false })
     .order("created_at", { ascending: false })
     .limit(cappedLimit);
@@ -435,6 +442,7 @@ export async function getLandingCampaigns(
     .select(LANDING_CAMPAIGN_COLUMNS)
     .eq("status", "active")
     .eq("moderation_status", "approved")
+    .or(runningCampaignFilter())
     .not("landing_rank", "is", null)
     .order("landing_rank", { ascending: true })
     .order("activated_at", { ascending: false, nullsFirst: false })

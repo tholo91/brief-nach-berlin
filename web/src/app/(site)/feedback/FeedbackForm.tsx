@@ -383,7 +383,7 @@ export function FeedbackForm({
       <fieldset>
         <legend className="block font-body text-sm font-semibold text-warmgrau mb-3">
           Wie oft kennst du das: Du liest, siehst oder hörst etwas Politisches,
-          das dich beschäftigt – aber weißt nicht, was du konkret tun kannst?{" "}
+          das dich beschäftigt, aber weißt nicht, was du konkret tun kannst?{" "}
           <span className="font-normal text-warmgrau/60">(optional)</span>
         </legend>
         <div

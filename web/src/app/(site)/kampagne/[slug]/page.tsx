@@ -5,9 +5,10 @@ import { CampaignHero } from "@/components/campaigns/CampaignHero";
 import {
   getActiveCampaignByCompactSlug,
   getActiveCampaignBySlug,
+  getCampaignBySlug,
   getRecentActiveCampaigns,
 } from "@/lib/campaigns/repository";
-import { isCampaignEnded } from "@/lib/campaigns/endDate";
+import { isCampaignEnded, isEndedWhilePaused } from "@/lib/campaigns/endDate";
 import { campaignSlugSchema } from "@/lib/campaigns/schema";
 import {
   getSpecialCampaignBySlug,
@@ -26,6 +27,13 @@ async function resolveCampaign(rawSlug: string) {
       return {
         campaign: exactCampaign,
         shouldRedirect: rawSlug !== exactCampaign.slug,
+      };
+    }
+    const pausedCampaign = await getCampaignBySlug(parsedSlug.data);
+    if (pausedCampaign && isEndedWhilePaused(pausedCampaign, new Date())) {
+      return {
+        campaign: pausedCampaign,
+        shouldRedirect: rawSlug !== pausedCampaign.slug,
       };
     }
   }

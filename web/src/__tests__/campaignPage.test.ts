@@ -24,6 +24,7 @@ jest.mock("@/components/campaigns/CampaignBackground", () => ({
 jest.mock("@/lib/campaigns/repository", () => ({
   getActiveCampaignBySlug: jest.fn(),
   getActiveCampaignByCompactSlug: jest.fn(),
+  getCampaignBySlug: jest.fn(),
   getRecentActiveCampaigns: jest.fn(),
 }));
 
@@ -32,6 +33,7 @@ import CampaignNotFound from "@/app/(site)/kampagne/[slug]/not-found";
 import {
   getActiveCampaignByCompactSlug,
   getActiveCampaignBySlug,
+  getCampaignBySlug,
   getRecentActiveCampaigns,
 } from "@/lib/campaigns/repository";
 import type { Campaign } from "@/lib/campaigns/schema";
@@ -68,6 +70,7 @@ describe("campaign page resolution", () => {
     jest.clearAllMocks();
     jest.mocked(getActiveCampaignBySlug).mockResolvedValue(null);
     jest.mocked(getActiveCampaignByCompactSlug).mockResolvedValue(null);
+    jest.mocked(getCampaignBySlug).mockResolvedValue(null);
   });
 
   it("prefers an exact canonical slug over its compact alias", async () => {
@@ -105,7 +108,36 @@ describe("campaign page end state", () => {
   beforeEach(() => {
     jest.clearAllMocks();
     jest.mocked(getActiveCampaignBySlug).mockResolvedValue(null);
+    jest.mocked(getActiveCampaignByCompactSlug).mockResolvedValue(null);
+    jest.mocked(getCampaignBySlug).mockResolvedValue(null);
     jest.mocked(getRecentActiveCampaigns).mockResolvedValue([]);
+  });
+
+  it("renders the ended view for a campaign that ran out while paused", async () => {
+    jest.mocked(getCampaignBySlug).mockResolvedValue({
+      ...campaign,
+      status: "paused",
+      endsAt: "2026-01-15T22:59:59.000Z",
+    });
+
+    const markup = renderToStaticMarkup(
+      await CampaignPage({ params: Promise.resolve({ slug: campaign.slug }) }),
+    );
+
+    expect(markup).toContain("Diese Kampagne ist seit 15. Januar 2026 beendet.");
+    expect(markup).not.toContain("campaign-hero");
+  });
+
+  it("keeps a paused campaign without a past end date on the not-found page", async () => {
+    jest.mocked(getCampaignBySlug).mockResolvedValue({
+      ...campaign,
+      status: "paused",
+      endsAt: "2999-01-01T22:59:59.000Z",
+    });
+
+    await expect(
+      CampaignPage({ params: Promise.resolve({ slug: campaign.slug }) }),
+    ).rejects.toThrow("not found");
   });
 
   it("renders the ended view with count, other campaigns and the app CTA", async () => {

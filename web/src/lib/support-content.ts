@@ -133,7 +133,7 @@ export const SUPPORT_CAMPAIGN_CREATOR_COPY = {
   manageHeading: "Danke, dass du diese Kampagne angestoßen hast",
   body:
     "Wenn du Hilfe brauchst, schreib mir einfach. Je mehr Briefe zu deiner Kampagne entstehen, desto mehr Aufmerksamkeit bekommt das Anliegen. Damit steigen auch die Kosten für Mailversand, Datenbank und Hosting, die ich als Soloprojekt trage. Wenn du magst und kannst, freue ich mich über jede Unterstützung.",
-  button: "Über WE AID unterstützen",
-  infoButton: "Wohin das Geld geht",
+  button: "Brief-nach-Berlin unterstützen",
+  infoButton: "Was dein Beitrag bringt",
   status: SUPPORT_CONTENT.status,
 } as const;

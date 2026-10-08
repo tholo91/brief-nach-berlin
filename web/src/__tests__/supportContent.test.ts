@@ -32,8 +32,7 @@ describe("support content", () => {
     expect(SUPPORT_CONTENT.founder.portraitPath).toBe("/images/thomas-portrait.webp");
     expect(SUPPORT_CONTENT.founder.text).toContain("Mai 2026");
     expect(SUPPORT_CONTENT.founder.text).toContain("ehrenamtlich");
-    expect(SUPPORT_CONTENT.founder.text).toContain("Zeit");
-    expect(SUPPORT_CONTENT.costIntro).toContain("derzeit selbst");
+    expect(SUPPORT_CONTENT.costIntro).toContain("trage ich selbst");
     expect(SUPPORT_CONTENT.costNote).toContain("schwanken");
     expect(SUPPORT_CONTENT.fundingNote).toContain("privaten Kasse");
     expect(SUPPORT_CONTENT.costCategories).toEqual([
@@ -45,7 +44,7 @@ describe("support content", () => {
       {
         title: "Technische Betreuung",
         description:
-          "KI-Abos und Software für Entwicklung, Fehleranalyse und Pflege — zusätzlich zu meiner ehrenamtlichen Zeit.",
+          "KI-Abos und Software für Entwicklung, Fehleranalyse und Pflege, zusätzlich zu meiner ehrenamtlichen Zeit.",
       },
       {
         title: "Reichweite & Vernetzung",

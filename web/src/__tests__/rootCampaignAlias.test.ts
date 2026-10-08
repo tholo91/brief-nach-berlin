@@ -9,12 +9,14 @@ jest.mock("next/navigation", () => ({ notFound, permanentRedirect }));
 jest.mock("@/lib/campaigns/repository", () => ({
   getActiveCampaignByCompactSlug: jest.fn(),
   getActiveCampaignBySlug: jest.fn(),
+  getCampaignBySlug: jest.fn(),
 }));
 
 import RootSlugPage from "@/app/(site)/[slug]/page";
 import {
   getActiveCampaignByCompactSlug,
   getActiveCampaignBySlug,
+  getCampaignBySlug,
 } from "@/lib/campaigns/repository";
 import type { Campaign } from "@/lib/campaigns/schema";
 
@@ -50,6 +52,27 @@ describe("root campaign aliases", () => {
     jest.clearAllMocks();
     jest.mocked(getActiveCampaignBySlug).mockResolvedValue(null);
     jest.mocked(getActiveCampaignByCompactSlug).mockResolvedValue(null);
+    jest.mocked(getCampaignBySlug).mockResolvedValue(null);
+  });
+
+  it("redirects a campaign that ran out while paused to its ended page", async () => {
+    jest.mocked(getCampaignBySlug).mockResolvedValue({
+      ...campaign,
+      status: "paused",
+      endsAt: "2026-01-15T22:59:59.000Z",
+    });
+
+    await expect(
+      RootSlugPage({ params: Promise.resolve({ slug: campaign.slug }) }),
+    ).rejects.toThrow("redirect:/kampagne/afd-vor-gericht");
+  });
+
+  it("does not redirect a paused campaign that has not ended", async () => {
+    jest.mocked(getCampaignBySlug).mockResolvedValue({ ...campaign, status: "paused" });
+
+    await expect(
+      RootSlugPage({ params: Promise.resolve({ slug: campaign.slug }) }),
+    ).rejects.toThrow("not found");
   });
 
   it("redirects a unique bindestrich-free alias to the canonical campaign URL", async () => {

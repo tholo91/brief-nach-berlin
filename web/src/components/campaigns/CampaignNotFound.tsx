@@ -13,10 +13,10 @@ export default async function CampaignNotFound() {
           Kampagnenlink
         </p>
         <h1 className="mt-3 font-typewriter text-3xl font-bold leading-tight text-waldgruen-dark md:text-4xl">
-          Diese Kampagne wurde nicht gefunden.
+          Diese Kampagne ist gerade nicht online.
         </h1>
         <p className="mt-5 max-w-2xl font-body text-base leading-relaxed text-warmgrau/75 md:text-lg">
-          Vielleicht hat sich beim Vorlesen oder Eintippen ein kleiner Fehler eingeschlichen. Hier findest du aktuelle öffentliche Kampagnen.
+          Hier findest du aktuelle Kampagnen.
         </p>
 
         {campaigns.length > 0 && (

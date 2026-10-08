@@ -109,6 +109,18 @@ export function runningCampaign<T extends EndsAtCarrier>(
   return isCampaignEnded(campaign, now) ? null : campaign;
 }
 
+/** Pausiert und Enddatum abgelaufen: öffentlich nur noch als Beendet-Ansicht. */
+export function isEndedWhilePaused(
+  campaign: EndsAtCarrier & { status: string; moderationStatus: string },
+  now: Date,
+): boolean {
+  return (
+    campaign.status === "paused" &&
+    campaign.moderationStatus === "approved" &&
+    isCampaignEnded(campaign, now)
+  );
+}
+
 export type CampaignEndDateParseResult =
   | { ok: true; endsAt: string | null }
   | { ok: false; message: string };

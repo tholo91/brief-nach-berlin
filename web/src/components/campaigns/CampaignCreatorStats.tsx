@@ -10,7 +10,7 @@ const ratingFormatter = new Intl.NumberFormat("de-DE", {
 });
 
 const SOURCE_SENTENCE =
-  "Woher die Zahlen kommen: Wer über deine Kampagne einen Brief schreibt, bekommt ein paar Tage später eine kurze Frage von uns per Mail.";
+  "Woher die Zahlen kommen: Wer über deine Kampagne einen Brief schreibt, bekommt ein paar Tage später eine kurze Frage von mir per Mail.";
 
 type TileProps = {
   value: string;
@@ -180,7 +180,7 @@ export function CampaignCreatorStats({
                   : ""
               }
               unit="von 5 Sternen"
-              label="So zufrieden sind Schreibende mit ihrem Brief"
+              label="Zufriedenheit mit dem fertigen Brief"
             />
             <Tile
               kpi={feedback.selfEfficacy}
@@ -196,7 +196,7 @@ export function CampaignCreatorStats({
           {feedback.comments.length > 0 && (
             <div className="mt-6">
               <h3 className="font-typewriter text-base font-bold text-waldgruen-dark">
-                Was Schreibende dazu sagen
+                Stimmen zur Kampagne
               </h3>
               <ul className="m-0 mt-3 grid list-none gap-3 p-0">
                 {feedback.comments.map((comment, index) => (

@@ -1176,7 +1176,7 @@ export function CreatorCampaignForm() {
                 <dd className="mt-1 grid gap-2 font-body text-sm font-semibold text-waldgruen-dark">
                   <div>
                     <span className="block text-xs font-normal text-warmgrau/60">
-                      Mit Bindestrichen – empfohlen zum Teilen
+                      Mit Bindestrichen, empfohlen zum Teilen
                     </span>
                     <span className="block break-all">
                       brief-nach-berlin.de/kampagne/{normalizedSlug || "..."}
@@ -1185,7 +1185,7 @@ export function CreatorCampaignForm() {
                   {hasCompactSlug ? (
                     <div>
                       <span className="block text-xs font-normal text-warmgrau/60">
-                        Ohne Bindestriche – für Radio, Podcast oder Fernsehen
+                        Ohne Bindestriche, für Radio, Podcast oder Fernsehen
                       </span>
                       <span className="block break-all">
                         brief-nach-berlin.de/kampagne/{normalizedCompactSlug || "..."}

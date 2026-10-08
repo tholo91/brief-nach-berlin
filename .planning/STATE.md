@@ -4,10 +4,10 @@ milestone: v1.0
 current_phase: 05
 status: verifying
 stopped_at: Completed 05-04-PLAN.md
-last_updated: "2026-10-08T18:29:55.377Z"
+last_updated: "2026-10-08T21:12:28.163Z"
 last_activity: 2026-10-08
 last_activity_desc: "Completed quick task 260710-dgq: Kampagnen-Ziel-Ebene Bund/Landtag inkl. Wizard-Bindung und Mismatch-Fallback"
-state_head: 01909e0838d0a46b4782ef4af2ba40dc03f7f179
+state_head: b3c819d4d8ed6414b25fd3316a073944751e7a8a
 progress:
   total_phases: 33
   completed_phases: 4
@@ -49,7 +49,7 @@ Der level-aware E-Mail-Betreff ist dagegen bereits implementiert und getestet; d
 Phase: 05 — EXECUTING
 Plan: 4 of 4
 Status: Phase complete — ready for verification
-Last activity: 2026-10-08 - Completed quick task 261008-ngo2: NGO-Seite alle laufenden Kampagnen zweispaltig
+Last activity: 2026-10-08 - Completed quick task 261008-vx5: Kampagne verwalten Herkunft nach Bundesland, Verlauf, Creator-Stats
 
 Progress: [███████░░░] 68%
 
@@ -166,6 +166,7 @@ Recent decisions affecting current work:
 | 261008-t65 | Kampagne verwalten Redesign: Bild rund im Kopf, Teilen-Karte, eingeklapptes Formular | 2026-10-08 | 1df5ebc | [261008-t65-kampagne-verwalten-redesign-bild-rund-im](./quick/261008-t65-kampagne-verwalten-redesign-bild-rund-im/) |
 | 261008-ngo2 | NGO-Seite: alle laufenden Kampagnen, Liste zweispaltig | 2026-10-08 | (pending) | [261008-ngo-liste-zweispaltig](./quick/261008-ngo-liste-zweispaltig/) |
 | 261008-vqh | Kampagne verwalten: Einstellungen im Aufklapper, Kurzlinks, Moin-Header, Herz-Button | 2026-10-08 | (this commit) | [261008-vqh-kampagne-verwalten-feinschliff-moin-kurz](./quick/261008-vqh-kampagne-verwalten-feinschliff-moin-kurz/) |
+| 261008-vx5 | Kampagne verwalten: Herkunft nach Bundesland, Verlauf, weitere Creator-Stats | 2026-10-08 | b3c819d | [261008-vx5-kampagne-verwalten-herkunft-nach-bundesl](./quick/261008-vx5-kampagne-verwalten-herkunft-nach-bundesl/) |
 
 ## Session Continuity
 

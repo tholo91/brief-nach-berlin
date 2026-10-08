@@ -2,10 +2,14 @@
 
 import {
   useEffect,
+  useId,
+  useRef,
   useState,
   useTransition,
   type ChangeEvent,
   type FormEvent,
+  type ReactNode,
+  type RefObject,
 } from "react";
 import { useRouter } from "next/navigation";
 import {
@@ -120,6 +124,10 @@ export function CampaignManager({ campaign }: { campaign: Campaign }) {
     city: campaign.targetRecipient?.city ?? "",
   });
   const [transferResult, setTransferResult] = useState<TransferCampaignResult | null>(null);
+  const transferDialogRef = useRef<HTMLDialogElement>(null);
+  const transferFormRef = useRef<HTMLFormElement>(null);
+  const transferEmailRef = useRef<HTMLInputElement>(null);
+  const archiveDialogRef = useRef<HTMLDialogElement>(null);
   const isBusy = isPending || actionPending;
   const canEdit = campaign.status !== "archived" && campaign.status !== "blocked";
   const canEditTarget = canEdit && !isCampaignTargetLocked(campaign);
@@ -216,6 +224,28 @@ export function CampaignManager({ campaign }: { campaign: Campaign }) {
     });
   }
 
+  function openTransferDialog() {
+    setTransferResult(null);
+    transferFormRef.current?.reset();
+    transferDialogRef.current?.showModal();
+    transferEmailRef.current?.focus();
+  }
+
+  function archiveCampaign() {
+    archiveDialogRef.current?.close();
+    setResult(null);
+    setActionPending(true);
+    startTransition(async () => {
+      try {
+        const nextResult = await archiveCampaignAction(campaign.id);
+        setResult(nextResult);
+        if (nextResult.ok) router.refresh();
+      } finally {
+        setActionPending(false);
+      }
+    });
+  }
+
   async function submitTransfer(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     if (!event.currentTarget.reportValidity()) return;
@@ -300,52 +330,6 @@ export function CampaignManager({ campaign }: { campaign: Campaign }) {
           </div>
         </div>
       </section>
-
-      {canTransfer && (
-        <section className="grid gap-4 rounded-md border border-waldgruen/18 bg-waldgruen/5 p-5 shadow-sm md:p-7">
-          <div>
-            <h2 className="font-typewriter text-xl font-bold text-waldgruen-dark">
-              Kampagne übertragen
-            </h2>
-            <p className="mt-2 max-w-2xl font-body text-sm leading-relaxed text-warmgrau/70">
-              Gib die E-Mail-Adresse der Organisation ein, die diese Kampagne künftig verwalten soll. Die neue Inhaberin bekommt einen einmaligen Bestätigungslink. Bis dahin bleibt dein Zugang bestehen.
-            </p>
-          </div>
-          <form className="grid gap-3 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-end" onSubmit={submitTransfer}>
-            <div className="grid gap-2">
-              <label className="font-typewriter text-sm font-bold text-waldgruen-dark" htmlFor="recipientEmail">
-                Neue E-Mail-Adresse
-              </label>
-              <input
-                id="recipientEmail"
-                name="recipientEmail"
-                type="email"
-                required
-                maxLength={200}
-                placeholder="verein@beispiel.de"
-                disabled={isBusy}
-                className="rounded-md border border-warmgrau/20 bg-white px-4 py-3 font-body text-base outline-none focus:border-waldgruen disabled:opacity-60"
-              />
-              <input type="hidden" name="campaignId" value={campaign.id} />
-              {transferResult?.ok === false && transferResult.fieldErrors?.recipientEmail && (
-                <p className="font-body text-sm text-airmail-rot">{transferResult.fieldErrors.recipientEmail}</p>
-              )}
-            </div>
-            <button
-              type="submit"
-              disabled={isBusy}
-              className="rounded-md bg-waldgruen px-5 py-3 font-body text-base font-semibold text-creme transition-colors hover:bg-waldgruen-dark disabled:cursor-not-allowed disabled:opacity-60"
-            >
-              {isBusy ? "Wird verschickt..." : "Übergabe starten"}
-            </button>
-          </form>
-          {transferResult && (
-            <div className={`rounded-md border px-4 py-3 font-body text-sm ${transferResult.ok ? "border-waldgruen/20 bg-white/60 text-waldgruen-dark" : "border-airmail-rot/25 bg-airmail-rot/5 text-airmail-rot"}`}>
-              {transferResult.message}
-            </div>
-          )}
-        </section>
-      )}
 
       <form
         className="grid gap-5 rounded-md border border-warmgrau/12 bg-creme/80 p-5 shadow-sm md:p-7"
@@ -638,24 +622,25 @@ export function CampaignManager({ campaign }: { campaign: Campaign }) {
             <button
               type="button"
               disabled={!canArchive || isBusy}
-              onClick={() => {
-                setResult(null);
-                setActionPending(true);
-                startTransition(async () => {
-                  try {
-                    const nextResult = await archiveCampaignAction(campaign.id);
-                    setResult(nextResult);
-                    if (nextResult.ok) router.refresh();
-                  } finally {
-                    setActionPending(false);
-                  }
-                });
-              }}
+              onClick={() => archiveDialogRef.current?.showModal()}
               className="rounded-md border border-airmail-rot/30 px-5 py-3 font-body text-base font-semibold text-airmail-rot transition-colors hover:border-airmail-rot disabled:cursor-not-allowed disabled:opacity-50"
             >
               Kampagne archivieren
             </button>
           </div>
+          {canTransfer && (
+            <p className="border-t border-warmgrau/12 pt-4 font-body text-sm text-warmgrau/70">
+              Soll jemand anderes die Kampagne betreuen?{" "}
+              <button
+                type="button"
+                disabled={isBusy}
+                onClick={openTransferDialog}
+                className="font-semibold text-waldgruen-dark underline underline-offset-4 transition-colors hover:text-waldgruen disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                Verwaltung übertragen
+              </button>
+            </p>
+          )}
         </section>
         <CampaignQrDownload
           url={publicUrl}
@@ -663,6 +648,146 @@ export function CampaignManager({ campaign }: { campaign: Campaign }) {
           logoUrl={shownLogoUrl}
         />
       </div>
+
+      <ManagerDialog dialogRef={archiveDialogRef} title="Kampagne archivieren?">
+        <p className="font-body text-sm leading-relaxed text-warmgrau/80">
+          Die öffentliche Seite geht offline und es entstehen keine neuen Briefe mehr. Die
+          gespeicherte Historie bleibt erhalten.
+        </p>
+        <p className="rounded-md border border-airmail-rot/25 bg-airmail-rot/5 px-4 py-3 font-body text-sm text-airmail-rot">
+          Archivieren ist endgültig. Du kannst die Kampagne danach nicht wieder aktivieren.
+        </p>
+        <div className="flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
+          <button
+            type="button"
+            onClick={() => archiveDialogRef.current?.close()}
+            className="rounded-md border border-warmgrau/20 px-5 py-3 font-body text-base font-semibold text-warmgrau transition-colors hover:border-warmgrau/40"
+          >
+            Abbrechen
+          </button>
+          <button
+            type="button"
+            disabled={isBusy}
+            onClick={archiveCampaign}
+            className="rounded-md bg-airmail-rot px-5 py-3 font-body text-base font-semibold text-creme transition-colors hover:bg-airmail-rot/90 disabled:cursor-not-allowed disabled:opacity-60"
+          >
+            Kampagne archivieren
+          </button>
+        </div>
+      </ManagerDialog>
+
+      {canTransfer && (
+        <ManagerDialog dialogRef={transferDialogRef} title="Verwaltung übertragen?">
+          <ul className="grid list-disc gap-2 pl-5 font-body text-sm leading-relaxed text-warmgrau/80">
+            <li>
+              Die neue Adresse bekommt einen einmaligen Bestätigungslink. Bis sie bestätigt,
+              bleibt dein Zugang bestehen.
+            </li>
+            <li>
+              Danach verwaltet die neue Adresse die Kampagne und bekommt eine eigene
+              Verwaltungs-Mail.
+            </li>
+          </ul>
+          <p className="rounded-md border border-airmail-rot/25 bg-airmail-rot/5 px-4 py-3 font-body text-sm text-airmail-rot">
+            Deine bisherigen Verwaltungs-Links funktionieren dann nicht mehr. Du kannst die
+            Übergabe nicht selbst rückgängig machen.
+          </p>
+          {transferResult?.ok && (
+            <>
+              <div className="rounded-md border border-waldgruen/20 bg-white/60 px-4 py-3 font-body text-sm text-waldgruen-dark">
+                {transferResult.message}
+              </div>
+              <div className="flex justify-end">
+                <button
+                  type="button"
+                  onClick={() => transferDialogRef.current?.close()}
+                  className="rounded-md bg-waldgruen px-5 py-3 font-body text-base font-semibold text-creme transition-colors hover:bg-waldgruen-dark"
+                >
+                  Schließen
+                </button>
+              </div>
+            </>
+          )}
+          <form
+            ref={transferFormRef}
+            hidden={transferResult?.ok === true}
+            className="grid gap-4"
+            onSubmit={submitTransfer}
+          >
+            <div className="grid gap-2">
+              <label className="font-typewriter text-sm font-bold text-waldgruen-dark" htmlFor="recipientEmail">
+                Neue E-Mail-Adresse
+              </label>
+              <input
+                ref={transferEmailRef}
+                id="recipientEmail"
+                name="recipientEmail"
+                type="email"
+                required
+                maxLength={200}
+                placeholder="verein@beispiel.de"
+                disabled={isBusy}
+                className="rounded-md border border-warmgrau/20 bg-white px-4 py-3 font-body text-base outline-none focus:border-waldgruen disabled:opacity-60"
+              />
+              <input type="hidden" name="campaignId" value={campaign.id} />
+              {transferResult?.ok === false && transferResult.fieldErrors?.recipientEmail && (
+                <p className="font-body text-sm text-airmail-rot">{transferResult.fieldErrors.recipientEmail}</p>
+              )}
+            </div>
+            {transferResult?.ok === false && (
+              <div className="rounded-md border border-airmail-rot/25 bg-airmail-rot/5 px-4 py-3 font-body text-sm text-airmail-rot">
+                {transferResult.message}
+              </div>
+            )}
+            <div className="flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
+              <button
+                type="button"
+                onClick={() => transferDialogRef.current?.close()}
+                className="rounded-md border border-warmgrau/20 px-5 py-3 font-body text-base font-semibold text-warmgrau transition-colors hover:border-warmgrau/40"
+              >
+                Abbrechen
+              </button>
+              <button
+                type="submit"
+                disabled={isBusy}
+                className="rounded-md bg-waldgruen px-5 py-3 font-body text-base font-semibold text-creme transition-colors hover:bg-waldgruen-dark disabled:cursor-not-allowed disabled:opacity-60"
+              >
+                {isBusy ? "Wird verschickt..." : "Übergabe starten"}
+              </button>
+            </div>
+          </form>
+        </ManagerDialog>
+      )}
     </div>
+  );
+}
+
+function ManagerDialog({
+  dialogRef,
+  title,
+  children,
+}: {
+  dialogRef: RefObject<HTMLDialogElement | null>;
+  title: string;
+  children: ReactNode;
+}) {
+  const titleId = useId();
+
+  return (
+    <dialog
+      ref={dialogRef}
+      aria-labelledby={titleId}
+      onClick={(event) => {
+        if (event.target === event.currentTarget) event.currentTarget.close();
+      }}
+      className="m-auto w-[calc(100%-2rem)] max-w-md rounded-md border border-warmgrau/12 bg-creme p-0 text-warmgrau shadow-xl backdrop:bg-black/40"
+    >
+      <div className="grid gap-4 p-5 md:p-6">
+        <h2 id={titleId} className="font-typewriter text-xl font-bold text-waldgruen-dark">
+          {title}
+        </h2>
+        {children}
+      </div>
+    </dialog>
   );
 }

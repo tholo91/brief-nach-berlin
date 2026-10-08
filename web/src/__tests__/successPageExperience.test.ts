@@ -49,7 +49,7 @@ describe("success page experience", () => {
     expect(mapSource).toContain("Zeig, woher dein Brief kommt");
     expect(mapSource).toContain("von wo aus Menschen ihre Briefe nach Berlin schreiben");
     expect(mapSource).toContain("Mein Anliegen auf die Karte setzen");
-    expect(mapSource).toContain("PLZ, E-Mail-Adresse, Zeitpunkt und ein grobes Thema");
+    expect(mapSource).toContain("PLZ, E-Mail-Adresse, Zeitpunkt, Thema und bis zu drei Stichworte deines Anliegens");
     expect(mapSource).toContain("Dein Brief wird nicht gespeichert");
     expect(mapSource).not.toContain("bg-white/45");
     expect(mapSource).toContain("Datenschutz");

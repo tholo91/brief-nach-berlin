@@ -17,7 +17,7 @@ type SignalActionResult =
   | { success: true; mapPoint?: { x: number; y: number }; created?: boolean }
   | { error: "invalid_context" | "rate_limited" | "server_error" };
 
-const LETTER_SIGNAL_CONSENT_VERSION = "letter-signals-2026-09-v2-clear-email-exact-map";
+const LETTER_SIGNAL_CONSENT_VERSION = "letter-signals-2026-10-v3-topic-keywords";
 
 export async function createLetterSignalAction(input: unknown): Promise<SignalActionResult> {
   const parsedInput = letterSignalInputSchema.safeParse(input);

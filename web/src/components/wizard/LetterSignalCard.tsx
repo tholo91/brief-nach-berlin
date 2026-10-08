@@ -156,7 +156,7 @@ export function LetterSignalCard({
       </div>
 
       <p className="mt-3 font-body text-xs leading-relaxed text-warmgrau/60">
-        Mit dem Klick PLZ, E-Mail-Adresse, Zeitpunkt und ein grobes Thema bis zum Widerruf speichern. Öffentlich erscheint nur ein Punkt bei deiner ungefähren PLZ. Dein Brief wird nicht gespeichert.{" "}
+        Mit dem Klick PLZ, E-Mail-Adresse, Zeitpunkt, Thema und bis zu drei Stichworte deines Anliegens bis zum Widerruf speichern. Öffentlich erscheint nur ein Punkt bei deiner ungefähren PLZ. Dein Brief wird nicht gespeichert.{" "}
         <Link href="/datenschutz#freiwillige-themensignale" className="underline underline-offset-2 hover:text-warmgrau">
           Datenschutz
         </Link>

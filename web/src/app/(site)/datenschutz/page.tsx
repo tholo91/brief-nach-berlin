@@ -219,8 +219,8 @@ export default function Datenschutz() {
               im Anschluss generierte Brieftext. Empfänger: Mistral AI (siehe
               Abschnitt 9). Speicherdauer: keine Speicherung auf meinem Server
               für die Brief-Erstellung. Bei freiwilligem Opt-in werden nur
-              Themenkategorien, kurze Themenlabels, PLZ-/Regiondaten und
-              Metadaten gespeichert; Brief- und Anliegen-Volltext werden nicht
+              Themenkategorien, kurze Themen-Stichworte (z. B. Radverkehr, Erziehermangel),
+              PLZ-/Regiondaten und Metadaten gespeichert; Brief- und Anliegen-Volltext werden nicht
               gespeichert.
               Rechtsgrundlage: Art. 6 Abs. 1 lit. b DSGVO; soweit besondere
               Kategorien personenbezogener Daten betroffen sind (z. B. politische
@@ -673,7 +673,7 @@ export default function Datenschutz() {
               Gespeichert werden die normalisierte E-Mail-Adresse, die
               fünfstellige PLZ, daraus abgeleitet Bundesland und Kartenposition,
               die tatsächlich gewählte Ebene Bund/Land/Kommune, ein bis drei erlaubte
-              Oberkategorien, ein bis drei minimierte Unterthemen, Zeitpunkt,
+              Oberkategorien, ein bis drei kurze Themen-Stichworte aus dem Anliegen, Zeitpunkt,
               optionaler Kampagnen-Slug, eine zufällige Brief-ID, ein HMAC der
               normalisierten E-Mail-Adresse und die Version der Einwilligung.
               Nicht gespeichert werden Anliegen- oder Brief-Volltext,
@@ -806,7 +806,7 @@ export default function Datenschutz() {
             </p>
           </div>
 
-          <p className="text-sm text-warmgrau/50">Stand: 10. September 2026</p>
+          <p className="text-sm text-warmgrau/50">Stand: 8. Oktober 2026</p>
         </div>
       </div>
     </div>

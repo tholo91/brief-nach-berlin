@@ -92,6 +92,7 @@ describe("letter signal lifecycle actions", () => {
         email_normalized: TEST_EMAIL,
         email_lookup_hash: context.emailLookupHash,
         generated_at: null,
+        consent_version: "letter-signals-2026-10-v3-topic-keywords",
       }),
       { onConflict: "letter_id", ignoreDuplicates: true },
     );
@@ -153,7 +154,13 @@ describe("letter signal lifecycle actions", () => {
       letterId: context.letterId,
       issueText: "Mehr Geld für Schulen",
       plz: context.plz,
-      recipient: { kind: "rathaus", label: "Rathaus" } as never,
+      recipient: {
+        kind: "rathaus",
+        label: "Rathaus",
+        gemeindeName: "Bremen",
+        plz: "28203",
+        address: { source: "destatis", ags: "04011000" },
+      } as never,
       letterText: "Sehr geehrte Damen und Herren, ...",
       campaignSlug: null,
       letterNumber: 3027,

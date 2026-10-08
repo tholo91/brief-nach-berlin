@@ -12,6 +12,7 @@ import {
 import { isCampaignEnded } from "@/lib/campaigns/endDate";
 import { getCampaignById } from "@/lib/campaigns/repository";
 import { getCampaignManagementSession } from "@/lib/campaigns/session";
+import { BRIEF_EMAIL } from "@/lib/contact";
 
 function PendingApprovalNotice({ campaign }: { campaign: NonNullable<Awaited<ReturnType<typeof getCampaignById>>> }) {
   return (
@@ -41,6 +42,12 @@ export const metadata: Metadata = {
   alternates: { canonical: "/kampagne/verwalten" },
 };
 
+const LOST_LINK_MAILTO = `mailto:${BRIEF_EMAIL}?subject=${encodeURIComponent(
+  "Kampagnenlink verloren"
+)}&body=${encodeURIComponent(
+  "Hallo Thomas,\n\nich habe den Verwaltungslink meiner Kampagne verlegt. Bitte schick mir einen neuen.\n\nName der Kampagne:\nE-Mail-Adresse, mit der ich die Kampagne erstellt habe:\n\nDanke!"
+)}`;
+
 function AccessNotice({ message }: { message: string }) {
   return (
     <section className="mx-auto max-w-2xl px-6 py-16 md:py-24">
@@ -54,12 +61,20 @@ function AccessNotice({ message }: { message: string }) {
         <p className="mt-5 font-body text-base leading-relaxed text-warmgrau/75">
           {message}
         </p>
-        <Link
-          href="/kampagne/starten"
-          className="mt-6 inline-block rounded-md border border-waldgruen/25 px-5 py-3 font-body text-base font-semibold text-waldgruen-dark transition-colors hover:border-waldgruen"
-        >
-          Zur Kampagnenseite
-        </Link>
+        <div className="mt-6 flex flex-wrap gap-3">
+          <Link
+            href="/kampagne/starten"
+            className="inline-block rounded-md border border-waldgruen/25 px-5 py-3 font-body text-base font-semibold text-waldgruen-dark transition-colors hover:border-waldgruen"
+          >
+            Zur Kampagnenseite
+          </Link>
+          <a
+            href={LOST_LINK_MAILTO}
+            className="inline-block rounded-md border border-waldgruen/25 px-5 py-3 font-body text-base font-semibold text-waldgruen-dark transition-colors hover:border-waldgruen"
+          >
+            Link verlegt? Kontaktiere mich
+          </a>
+        </div>
       </div>
     </section>
   );

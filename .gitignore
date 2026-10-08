@@ -25,9 +25,11 @@ Briefmarke Ghibli/
 
 # LinkedIn post drafts (local marketing, not for the public repo)
 linkedin/
+.codex/
 
 # Personal podcast speaking notes (German, local reference only)
 TECHNIK-SPICKER.md
+KRITIK-BRIEFFLUT.md
 
 # Local editor / launch config
 .claude/launch.json

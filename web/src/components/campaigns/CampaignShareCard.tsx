@@ -1,5 +1,6 @@
 import { CampaignQrDownload } from "./CampaignQrDownload";
 import { CampaignUrlCopyField } from "./CampaignUrlCopyField";
+import { ExternalLinkIcon } from "./ExternalLinkIcon";
 
 type CampaignShareCardProps = {
   publicUrl: string;
@@ -21,12 +22,26 @@ export function CampaignShareCard({
       aria-labelledby="campaign-share-heading"
       className="rounded-md border border-warmgrau/12 bg-white/75 p-5 shadow-sm md:p-7"
     >
-      <h2
-        id="campaign-share-heading"
-        className="font-typewriter text-lg font-bold text-waldgruen-dark md:text-2xl"
-      >
-        Kampagne teilen
-      </h2>
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <h2
+          id="campaign-share-heading"
+          className="font-typewriter text-lg font-bold text-waldgruen-dark md:text-2xl"
+        >
+          Kampagne teilen
+        </h2>
+        {!linkInactive && (
+          <a
+            href={publicUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex min-h-11 items-center gap-2 rounded-md border border-waldgruen/25 px-4 font-body text-sm font-semibold text-waldgruen-dark transition-colors hover:border-waldgruen focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-waldgruen"
+          >
+            Kampagnenseite ansehen
+            <ExternalLinkIcon />
+            <span className="sr-only">(öffnet in neuem Tab)</span>
+          </a>
+        )}
+      </div>
       <div className="mt-4 grid max-w-xl gap-3">
         <CampaignUrlCopyField url={publicUrl} variant="compact" />
         {compactUrl && (

@@ -2,6 +2,7 @@
 
 import type { Campaign } from "@/lib/campaigns/schema";
 import { CampaignLogo } from "./CampaignLogo";
+import { ExternalLinkIcon } from "./ExternalLinkIcon";
 
 const statusLabels: Record<Campaign["status"], string> = {
   draft: "Entwurf",
@@ -47,20 +48,6 @@ function PencilIcon() {
   );
 }
 
-function ExternalLinkIcon() {
-  return (
-    <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-      <path
-        d="M9.5 2.5h4v4M13.5 2.5 7.5 8.5M12 9.5v3.5a.5.5 0 0 1-.5.5h-8.5a.5.5 0 0 1-.5-.5V4.5a.5.5 0 0 1 .5-.5H6.5"
-        stroke="currentColor"
-        strokeWidth="1.5"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </svg>
-  );
-}
-
 export function CampaignManagerHeader({
   title,
   logoPath,
@@ -72,11 +59,15 @@ export function CampaignManagerHeader({
   onEditImage,
 }: CampaignManagerHeaderProps) {
   const showPublicLink = ended || status === "active";
+  // Keeps the trailing icon glued to the last word so it never wraps alone.
+  const lastSpace = title.lastIndexOf(" ");
+  const titleHead = lastSpace === -1 ? "" : title.slice(0, lastSpace + 1);
+  const titleTail = title.slice(lastSpace + 1);
 
   return (
     <section className="rounded-md border border-warmgrau/12 bg-white/75 p-5 shadow-sm md:p-7">
       <div className="grid grid-cols-[auto_minmax(0,1fr)] items-center gap-x-4 gap-y-4 sm:items-start md:gap-x-6">
-        <div className="flex sm:row-span-3">
+        <div className="flex sm:row-span-2">
           {onEditImage ? (
             <button
               type="button"
@@ -102,11 +93,11 @@ export function CampaignManagerHeader({
             <CampaignLogo logoPath={logoPath} name={title} size="lg" />
           )}
         </div>
-        <div className="min-w-0">
-          <p className="font-typewriter text-sm font-bold uppercase tracking-widest text-waldgruen/60">
+        <div className="flex min-w-0 flex-wrap items-center justify-between gap-x-3 gap-y-2">
+          <p className="whitespace-nowrap font-typewriter text-xs font-bold uppercase tracking-wider text-waldgruen/60 sm:text-sm sm:tracking-widest">
             Deine Kampagne
           </p>
-          <span className="mt-2 inline-flex items-center gap-2 rounded-full border border-warmgrau/15 bg-creme px-3 py-1 font-body text-sm font-semibold text-waldgruen-dark">
+          <span className="inline-flex shrink-0 items-center gap-2 rounded-full border border-warmgrau/15 bg-creme px-3 py-1 font-body text-sm font-semibold text-waldgruen-dark">
             <span
               aria-hidden="true"
               className={`h-2 w-2 rounded-full ${statusDotClass(status, ended)}`}
@@ -115,22 +106,24 @@ export function CampaignManagerHeader({
           </span>
         </div>
         <h1 className="col-span-2 break-words text-balance font-body text-2xl font-bold leading-tight tracking-tight text-waldgruen-dark sm:col-span-1 sm:col-start-2 md:text-4xl">
-          {title}
-        </h1>
-        {showPublicLink && (
-          <div className="col-span-2 sm:col-span-1 sm:col-start-2">
+          {showPublicLink ? (
             <a
               href={publicUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className={`inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-md border border-waldgruen/25 px-4 font-body text-sm font-semibold text-waldgruen-dark transition-colors hover:border-waldgruen sm:w-auto ${focusRing}`}
+              className={`group rounded-sm decoration-waldgruen/40 decoration-2 underline-offset-4 transition-colors hover:underline ${focusRing}`}
             >
-              Kampagnenseite ansehen
-              <ExternalLinkIcon />
-              <span className="sr-only">(öffnet in neuem Tab)</span>
+              {titleHead}
+              <span className="whitespace-nowrap">
+                {titleTail}
+                <ExternalLinkIcon className="ml-2 inline-block h-[0.6em] w-[0.6em] align-baseline text-waldgruen/45 transition-colors group-hover:text-waldgruen" />
+              </span>
+              <span className="sr-only"> (Kampagnenseite, öffnet in neuem Tab)</span>
             </a>
-          </div>
-        )}
+          ) : (
+            title
+          )}
+        </h1>
       </div>
 
       {ended && endedLabel && (

@@ -102,26 +102,26 @@ describe("CampaignLogo lg", () => {
 });
 
 describe("CampaignManagerHeader", () => {
-  it("renders an active campaign with title, dot pill and public link", () => {
+  it("renders an active campaign with a linked title and dot pill", () => {
     const markup = renderHeader();
 
     expect(markup.match(/<h1/g)).toHaveLength(1);
-    expect(markup).toMatch(/<h1[^>]*font-body[^>]*>Duisburg retten<\/h1>/);
+    expect(markup).toMatch(/<h1[^>]*font-body[^>]*><a [^>]*>Duisburg <span[^>]*>retten<svg/);
     expect(markup).toContain("aktiv");
     expect(markup).toContain("bg-waldgruen");
-    expect(markup).toContain("Kampagnenseite ansehen");
+    expect(markup).toContain("öffnet in neuem Tab");
     expect(markup).toContain(`href="${publicUrl}"`);
     expect(markup).toContain('target="_blank"');
     expect(markup).toMatch(/rel="[^"]*noopener/);
     expect(markup).not.toContain("Beendet am");
   });
 
-  it("renders a paused campaign with an amber dot and no public link", () => {
+  it("renders a paused campaign with an amber dot and an unlinked title", () => {
     const markup = renderHeader({ status: "paused" });
 
     expect(markup).toContain("pausiert");
     expect(markup).toContain("bg-bernstein");
-    expect(markup).not.toContain("Kampagnenseite ansehen");
+    expect(markup).not.toContain(`href="${publicUrl}"`);
   });
 
   it("renders awaiting_approval with a grey dot", () => {
@@ -141,7 +141,7 @@ describe("CampaignManagerHeader", () => {
     expect(markup).toContain("Die Kampagnenseite bleibt online und zeigt den Endstand.");
     expect(markup).toContain("Kontakt aufnehmen");
     expect(markup).toContain(`href="${contactHref}"`);
-    expect(markup).toContain("Kampagnenseite ansehen");
+    expect(markup).toContain(`href="${publicUrl}"`);
   });
 
   it("explains archived and blocked campaigns", () => {

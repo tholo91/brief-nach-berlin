@@ -1,11 +1,14 @@
 import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import {
+  bucketRegions,
   buildCampaignCreatorStats,
   CREATOR_STATS_REVIEW_COLUMNS,
+  CREATOR_STATS_SIGNAL_COLUMNS,
   getCampaignCreatorStats,
   shouldShowCreatorInsights,
   type CampaignFeedbackRow,
+  type CampaignSignalRow,
 } from "@/lib/campaigns/creatorStats";
 import { CampaignCreatorStats } from "@/components/campaigns/CampaignCreatorStats";
 import { CampaignDonationCard } from "@/components/campaigns/CampaignDonationCard";
@@ -45,13 +48,33 @@ function rows(count: number, overrides: Partial<CampaignFeedbackRow> = {}) {
   return Array.from({ length: count }, () => row(overrides));
 }
 
+function signal(overrides: Partial<CampaignSignalRow> = {}): CampaignSignalRow {
+  return {
+    bundesland_key: "BY",
+    recipient_kind: "mdb",
+    generated_at: "2026-09-10T10:00:00Z",
+    created_at: "2026-09-10T09:59:00Z",
+    ...overrides,
+  };
+}
+
+function signals(count: number, overrides: Partial<CampaignSignalRow> = {}) {
+  return Array.from({ length: count }, () => signal(overrides));
+}
+
 const baseInput = {
   letterCount: 37,
   ended: false,
+  signalRows: [] as CampaignSignalRow[] | null,
+  now: new Date("2026-10-08T10:00:00Z"),
 };
 
 function build(feedbackRows: CampaignFeedbackRow[] | null) {
   return buildCampaignCreatorStats({ ...baseInput, rows: feedbackRows });
+}
+
+function buildWithSignals(signalRows: CampaignSignalRow[] | null) {
+  return buildCampaignCreatorStats({ ...baseInput, rows: [], signalRows });
 }
 
 describe("buildCampaignCreatorStats threshold (D-01)", () => {
@@ -219,6 +242,68 @@ describe("buildCampaignCreatorStats comments (D-04)", () => {
   });
 });
 
+describe("bucketRegions and the signal gate (D-01)", () => {
+  it("merges buckets below 5 and unknown keys into Weitere Bundesländer, last", () => {
+    const buckets = bucketRegions([
+      ...signals(6, { bundesland_key: "BY" }),
+      ...signals(5, { bundesland_key: "NW" }),
+      ...signals(4, { bundesland_key: "HB" }),
+      ...signals(1, { bundesland_key: "SH" }),
+      ...signals(1, { bundesland_key: "XX" }),
+    ]);
+    expect(buckets).toEqual([
+      { label: "Bayern", count: 6, other: false },
+      { label: "Nordrhein-Westfalen", count: 5, other: false },
+      { label: "Weitere Bundesländer", count: 6, other: true },
+    ]);
+  });
+
+  it("sorts equal counts by German name and omits an empty other bucket", () => {
+    const buckets = bucketRegions([
+      ...signals(5, { bundesland_key: "NW" }),
+      ...signals(5, { bundesland_key: "BY" }),
+      ...signals(5, { bundesland_key: "BW" }),
+    ]);
+    expect(buckets.map((bucket) => bucket.label)).toEqual([
+      "Baden-Württemberg",
+      "Bayern",
+      "Nordrhein-Westfalen",
+    ]);
+  });
+
+  it("treats null and prototype keys as unknown", () => {
+    const buckets = bucketRegions([
+      ...signals(5, { bundesland_key: null }),
+      ...signals(5, { bundesland_key: "constructor" }),
+    ]);
+    expect(buckets).toEqual([{ label: "Weitere Bundesländer", count: 10, other: true }]);
+  });
+
+  it("gates at 10 signals", () => {
+    expect(buildWithSignals(signals(9)).signals).toEqual({
+      status: "collecting",
+      signals: 9,
+      remaining: 1,
+      threshold: 10,
+    });
+    expect(buildWithSignals([]).signals).toMatchObject({ status: "collecting", remaining: 10 });
+    expect(buildWithSignals(null).signals).toEqual({ status: "unavailable" });
+    expect(buildWithSignals(signals(10)).signals.status).toBe("ready");
+  });
+
+  it("never exposes small states in the ready view", () => {
+    const view = buildWithSignals([
+      ...signals(8, { bundesland_key: "BY" }),
+      ...signals(1, { bundesland_key: "HB" }),
+      ...signals(1, { bundesland_key: "SH" }),
+    ]);
+    const json = JSON.stringify(view);
+    expect(json).not.toContain("Bremen");
+    expect(json).not.toContain("Schleswig-Holstein");
+    expect(json).toContain("Weitere Bundesländer");
+  });
+});
+
 describe("buildCampaignCreatorStats meta", () => {
   it("passes the ended flag through", () => {
     expect(buildCampaignCreatorStats({ ...baseInput, ended: true, rows: [] }).ended).toBe(true);
@@ -245,24 +330,30 @@ describe("shouldShowCreatorInsights (D-03)", () => {
 describe("getCampaignCreatorStats", () => {
   afterEach(() => jest.clearAllMocks());
 
-  function mockQuery(result: { data: unknown; error: unknown }) {
-    const query = {
-      select: jest.fn(),
-      eq: jest.fn(),
-      order: jest.fn(),
-    };
-    query.select.mockReturnValue(query);
-    query.eq.mockReturnValue(query);
-    query.order.mockResolvedValue(result);
-    const from = jest.fn(() => query);
+  type QueryResult = { data: unknown; error: unknown };
+
+  function mockTables(results: { reviews?: QueryResult; letter_signals?: QueryResult }) {
+    const queries: Record<
+      string,
+      { select: jest.Mock; eq: jest.Mock; order: jest.Mock }
+    > = {};
+    for (const table of ["reviews", "letter_signals"] as const) {
+      const query = { select: jest.fn(), eq: jest.fn(), order: jest.fn() };
+      query.select.mockReturnValue(query);
+      query.eq.mockReturnValue(query);
+      query.order.mockResolvedValue(results[table] ?? { data: [], error: null });
+      queries[table] = query;
+    }
+    const from = jest.fn((table: string) => queries[table]);
     mockedGetServiceRoleClient.mockReturnValue({ from } as never);
-    return { query, from };
+    return { queries, from };
   }
 
   const campaign = { slug: "duisburg-retten", letterCount: 37, activatedAt: "2026-08-11T23:30:00Z" };
 
   it("queries reviews for this campaign only with a PII-free column list", async () => {
-    const { query, from } = mockQuery({ data: rows(3), error: null });
+    const { queries, from } = mockTables({ reviews: { data: rows(3), error: null } });
+    const query = queries.reviews;
 
     const view = await getCampaignCreatorStats(campaign, false);
 
@@ -278,7 +369,9 @@ describe("getCampaignCreatorStats", () => {
 
   it("returns unavailable for a Supabase error without throwing", async () => {
     const errorSpy = jest.spyOn(console, "error").mockImplementation(() => undefined);
-    mockQuery({ data: null, error: { message: 'column "campaign_slug" does not exist' } });
+    mockTables({
+      reviews: { data: null, error: { message: 'column "campaign_slug" does not exist' } },
+    });
 
     const view = await getCampaignCreatorStats(campaign, false);
 
@@ -304,13 +397,92 @@ describe("getCampaignCreatorStats", () => {
   });
 
   it("feeds the stats block end to end", async () => {
-    mockQuery({ data: rows(3), error: null });
+    mockTables({
+      reviews: { data: rows(3), error: null },
+      letter_signals: {
+        data: [...signals(7, { bundesland_key: "BY" }), ...signals(5, { bundesland_key: "NW" })],
+        error: null,
+      },
+    });
     const view = await getCampaignCreatorStats(campaign, false);
     const markup = renderToStaticMarkup(createElement(CampaignCreatorStats, { stats: view }));
 
     expect(markup).toContain("Briefe geschrieben");
     expect(markup).toContain("37");
     expect(markup).toContain("Noch 7 Rückmeldungen bis dahin");
+    expect(markup).toContain("Woher geschrieben wird");
+    expect(markup).toContain("Bayern");
+    expect(markup).toContain("Basiert auf 12 von 37 Briefen");
+    expect(markup).toContain("Mein Anliegen auf die Karte setzen");
+  });
+
+  it("queries letter_signals for this campaign only with a PII-free column list", async () => {
+    const { queries, from } = mockTables({ letter_signals: { data: signals(3), error: null } });
+    const query = queries.letter_signals;
+
+    const view = await getCampaignCreatorStats(campaign, false);
+
+    expect(from).toHaveBeenCalledWith("letter_signals");
+    expect(query.eq).toHaveBeenCalledWith("campaign_slug", "duisburg-retten");
+    expect(query.order).toHaveBeenCalledWith("created_at", { ascending: false });
+    const selected = query.select.mock.calls[0][0] as string;
+    expect(selected).toBe(CREATOR_STATS_SIGNAL_COLUMNS);
+    expect(selected).toBe("bundesland_key,recipient_kind,generated_at,created_at");
+    for (const forbidden of ["plz", "email", "letter_id", "topic", "consent", "hash"]) {
+      expect(selected).not.toContain(forbidden);
+    }
+    expect(view.signals).toEqual({ status: "collecting", signals: 3, remaining: 7, threshold: 10 });
+  });
+
+  it("keeps reviews when the letter_signals query errors, without logging the slug", async () => {
+    const errorSpy = jest.spyOn(console, "error").mockImplementation(() => undefined);
+    mockTables({
+      reviews: { data: rows(12), error: null },
+      letter_signals: { data: null, error: { message: "relation does not exist" } },
+    });
+
+    const view = await getCampaignCreatorStats(campaign, false);
+
+    expect(view.signals).toEqual({ status: "unavailable" });
+    expect(view.feedback.status).toBe("ready");
+    expect(errorSpy).toHaveBeenCalled();
+    expect(JSON.stringify(errorSpy.mock.calls)).not.toContain("duisburg-retten");
+    errorSpy.mockRestore();
+  });
+
+  it("keeps signals when the reviews query errors", async () => {
+    const errorSpy = jest.spyOn(console, "error").mockImplementation(() => undefined);
+    mockTables({
+      reviews: { data: null, error: { message: "boom" } },
+      letter_signals: { data: signals(12), error: null },
+    });
+
+    const view = await getCampaignCreatorStats(campaign, false);
+
+    expect(view.feedback).toEqual({ status: "unavailable" });
+    expect(view.signals.status).toBe("ready");
+    expect(JSON.stringify(errorSpy.mock.calls)).not.toContain("duisburg-retten");
+    errorSpy.mockRestore();
+  });
+
+  it("isolates a throwing letter_signals read from the reviews read", async () => {
+    const errorSpy = jest.spyOn(console, "error").mockImplementation(() => undefined);
+    const reviewsQuery = { select: jest.fn(), eq: jest.fn(), order: jest.fn() };
+    reviewsQuery.select.mockReturnValue(reviewsQuery);
+    reviewsQuery.eq.mockReturnValue(reviewsQuery);
+    reviewsQuery.order.mockResolvedValue({ data: rows(10), error: null });
+    mockedGetServiceRoleClient.mockReturnValue({
+      from: (table: string) => {
+        if (table === "letter_signals") throw new Error("signals down");
+        return reviewsQuery;
+      },
+    } as never);
+
+    const view = await getCampaignCreatorStats(campaign, false);
+
+    expect(view.signals).toEqual({ status: "unavailable" });
+    expect(view.feedback.status).toBe("ready");
+    errorSpy.mockRestore();
   });
 });
 
@@ -322,6 +494,45 @@ describe("CampaignCreatorStats rendering", () => {
       }),
     );
   }
+
+  function renderSignals(signalRows: CampaignSignalRow[] | null) {
+    return renderToStaticMarkup(
+      createElement(CampaignCreatorStats, { stats: buildWithSignals(signalRows) }),
+    );
+  }
+
+  it("renders the signals placeholder with progress and no Bundesland while collecting", () => {
+    const markup = renderSignals(signals(3));
+    expect(markup).toContain("Noch 7 Briefe mit Kartenfreigabe bis dahin.");
+    expect(markup).toContain("3 von 10");
+    expect(markup).toContain('role="progressbar"');
+    expect(markup).not.toContain("Bayern");
+  });
+
+  it("uses the singular for one remaining signal", () => {
+    expect(renderSignals(signals(9))).toContain("Noch 1 Brief mit Kartenfreigabe bis dahin.");
+  });
+
+  it("says the origin cannot be loaded and keeps the letter count", () => {
+    const markup = renderSignals(null);
+    expect(markup).toContain("lässt sich gerade nicht laden");
+    expect(markup).toContain("Briefe geschrieben");
+  });
+
+  it("drops the von Y form when signals exceed the letter count", () => {
+    const markup = renderToStaticMarkup(
+      createElement(CampaignCreatorStats, {
+        stats: buildCampaignCreatorStats({
+          ...baseInput,
+          letterCount: 8,
+          rows: [],
+          signalRows: signals(12),
+        }),
+      }),
+    );
+    expect(markup).toContain("Basiert auf 12 Briefen.");
+    expect(markup).not.toContain("von 8 Briefen");
+  });
 
   it("uses the singular for one remaining response", () => {
     expect(render(rows(9))).toContain("Noch 1 Rückmeldung bis dahin");

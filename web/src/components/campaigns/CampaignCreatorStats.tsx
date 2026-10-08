@@ -9,6 +9,9 @@ const ratingFormatter = new Intl.NumberFormat("de-DE", {
   maximumFractionDigits: 1,
 });
 
+const OPT_IN_NOTE =
+  "Mitgezählt wird nur, wer beim Schreiben „Mein Anliegen auf die Karte setzen“ gewählt hat.";
+
 const SOURCE_SENTENCE =
   "Woher die Zahlen kommen: Wer über deine Kampagne einen Brief schreibt, bekommt ein paar Tage später eine kurze Frage von mir per Mail.";
 
@@ -56,6 +59,116 @@ function Tile({ value, unit, label, kpi }: TileProps) {
             : `Noch zu wenige Antworten, bisher ${numberFormatter.format(kpi.responses)}`}
         </p>
       </div>
+    </div>
+  );
+}
+
+type SignalsView = CampaignCreatorStatsView["signals"];
+
+function OriginSection({
+  signals,
+  letterCount,
+}: {
+  signals: SignalsView;
+  letterCount: number;
+}) {
+  if (signals.status === "unavailable") {
+    return (
+      <p className="mt-5 border-t border-warmgrau/12 pt-4 font-body text-sm leading-relaxed text-warmgrau/70">
+        Woher die Briefe kommen, lässt sich gerade nicht laden. Schau später
+        noch einmal vorbei.
+      </p>
+    );
+  }
+
+  if (signals.status === "collecting") {
+    return (
+      <div className="mt-5 border-t border-warmgrau/12 pt-4">
+        <h3 className="font-typewriter text-base font-bold text-waldgruen-dark">
+          Woher geschrieben wird
+        </h3>
+        <p className="mt-2 max-w-xl font-body text-base leading-relaxed text-warmgrau/85">
+          Ab {signals.threshold} Briefen mit Kartenfreigabe siehst du hier, aus
+          welchen Bundesländern geschrieben wird und in welchen Wochen am meisten
+          los war.
+        </p>
+        <div className="mt-4 max-w-xl">
+          <p className="font-body text-sm font-semibold text-waldgruen-dark">
+            {signals.remaining === 1
+              ? "Noch 1 Brief mit Kartenfreigabe bis dahin."
+              : `Noch ${signals.remaining} Briefe mit Kartenfreigabe bis dahin.`}
+          </p>
+          <div
+            role="progressbar"
+            aria-label="Briefe mit Kartenfreigabe bis zur Anzeige"
+            aria-valuemin={0}
+            aria-valuemax={signals.threshold}
+            aria-valuenow={signals.signals}
+            aria-valuetext={`${signals.signals} von ${signals.threshold} Briefen`}
+            className="mt-2 h-1.5 overflow-hidden rounded-full bg-warmgrau/10"
+          >
+            <div
+              className="h-full rounded-full bg-waldgruen"
+              style={{
+                width: `${Math.round((signals.signals / signals.threshold) * 100)}%`,
+              }}
+            />
+          </div>
+          <p className="mt-1.5 font-body text-xs text-warmgrau/60">
+            {signals.signals} von {signals.threshold}
+          </p>
+        </div>
+        <p className="mt-4 font-body text-xs leading-relaxed text-warmgrau/60">
+          {OPT_IN_NOTE}
+        </p>
+      </div>
+    );
+  }
+
+  const largest = Math.max(...signals.regions.map((region) => region.count), 1);
+  const basis =
+    signals.signals > letterCount
+      ? `Basiert auf ${numberFormatter.format(signals.signals)} Briefen.`
+      : `Basiert auf ${numberFormatter.format(signals.signals)} von ${numberFormatter.format(letterCount)} Briefen.`;
+
+  return (
+    <div className="mt-5 border-t border-warmgrau/12 pt-4">
+      <div className="grid gap-6 md:grid-cols-2 md:gap-8">
+        <div>
+          <h3 className="font-typewriter text-base font-bold text-waldgruen-dark">
+            Woher geschrieben wird
+          </h3>
+          <ul className="m-0 mt-3 grid list-none gap-2.5 p-0">
+            {signals.regions.map((region) => (
+              <li key={region.label}>
+                <div className="flex items-baseline justify-between gap-3">
+                  <span
+                    className={`font-body text-sm ${region.other ? "text-warmgrau/60" : "text-warmgrau/85"}`}
+                  >
+                    {region.label}
+                  </span>
+                  <span className="font-typewriter font-bold tabular-nums text-waldgruen-dark">
+                    {numberFormatter.format(region.count)}
+                  </span>
+                </div>
+                <div
+                  aria-hidden="true"
+                  className="mt-1 h-1.5 overflow-hidden rounded-full bg-warmgrau/10"
+                >
+                  <div
+                    className={`h-full rounded-full ${region.other ? "bg-warmgrau/30" : "bg-waldgruen"}`}
+                    style={{ width: `${Math.round((region.count / largest) * 100)}%` }}
+                  />
+                </div>
+              </li>
+            ))}
+          </ul>
+        </div>
+        <div />
+      </div>
+      <p className="mt-4 font-body text-xs leading-relaxed text-warmgrau/60">
+        {basis} {OPT_IN_NOTE}
+      </p>
     </div>
   );
 }
@@ -109,6 +222,8 @@ export function CampaignCreatorStats({
           {letterLabel}
         </p>
       </div>
+
+      <OriginSection signals={stats.signals} letterCount={stats.letterCount} />
 
       {feedback.status === "unavailable" && (
         <p className="mt-5 border-t border-warmgrau/12 pt-4 font-body text-sm leading-relaxed text-warmgrau/70">

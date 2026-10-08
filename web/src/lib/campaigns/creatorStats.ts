@@ -7,13 +7,31 @@ import {
 import type { PoliticalSelfEfficacy } from "@/lib/feedback/politicalActivation";
 import { getServiceRoleClient } from "@/lib/supabase/server";
 import { CAMPAIGN_TIME_ZONE } from "./endDate";
-import type { Campaign } from "./schema";
+import { BUNDESLAND_NAMES, type Campaign } from "./schema";
 
 export const CREATOR_STATS_MIN_RESPONSES = 10;
 export const CREATOR_COMMENT_LIMIT = 5;
 export const CREATOR_COMMENT_MIN_LENGTH = 10;
 export const CREATOR_STATS_REVIEW_COLUMNS =
   "created_at,rating,letter_sent,political_self_efficacy,body,consent";
+export const CREATOR_SIGNALS_MIN_TOTAL = 10;
+export const CREATOR_REGION_MIN_BUCKET = 5;
+export const CREATOR_STATS_SIGNAL_COLUMNS =
+  "bundesland_key,recipient_kind,generated_at,created_at";
+const OTHER_REGIONS_LABEL = "Weitere Bundesländer";
+
+export type CampaignSignalRow = {
+  bundesland_key: string | null;
+  recipient_kind: string | null;
+  generated_at: string | null;
+  created_at: string | null;
+};
+
+export type CreatorRegionBucket = {
+  label: string;
+  count: number;
+  other: boolean;
+};
 
 export type CampaignFeedbackRow = {
   created_at: string | null;
@@ -37,6 +55,19 @@ export type CreatorStatsComment = {
 export type CampaignCreatorStatsView = {
   letterCount: number;
   ended: boolean;
+  signals:
+    | { status: "unavailable" }
+    | {
+        status: "collecting";
+        signals: number;
+        remaining: number;
+        threshold: number;
+      }
+    | {
+        status: "ready";
+        signals: number;
+        regions: CreatorRegionBucket[];
+      };
   feedback:
     | { status: "unavailable" }
     | {
@@ -110,16 +141,66 @@ function pickComments(rows: CampaignFeedbackRow[]): CreatorStatsComment[] {
     .map((entry) => entry.comment);
 }
 
+export function bucketRegions(rows: CampaignSignalRow[]): CreatorRegionBucket[] {
+  const counts = new Map<string, number>();
+  let other = 0;
+  for (const row of rows) {
+    const key = row.bundesland_key;
+    if (key && Object.prototype.hasOwnProperty.call(BUNDESLAND_NAMES, key)) {
+      counts.set(key, (counts.get(key) ?? 0) + 1);
+    } else {
+      other += 1;
+    }
+  }
+
+  const named: CreatorRegionBucket[] = [];
+  for (const [key, count] of counts) {
+    if (count < CREATOR_REGION_MIN_BUCKET) {
+      other += count;
+    } else {
+      named.push({
+        label: BUNDESLAND_NAMES[key as keyof typeof BUNDESLAND_NAMES],
+        count,
+        other: false,
+      });
+    }
+  }
+  named.sort((a, b) => b.count - a.count || a.label.localeCompare(b.label, "de"));
+  if (other > 0) {
+    named.push({ label: OTHER_REGIONS_LABEL, count: other, other: true });
+  }
+  return named;
+}
+
+function buildSignals(
+  signalRows: CampaignSignalRow[] | null,
+): CampaignCreatorStatsView["signals"] {
+  if (signalRows === null) return { status: "unavailable" };
+  const signals = signalRows.length;
+  if (signals < CREATOR_SIGNALS_MIN_TOTAL) {
+    return {
+      status: "collecting",
+      signals,
+      remaining: CREATOR_SIGNALS_MIN_TOTAL - signals,
+      threshold: CREATOR_SIGNALS_MIN_TOTAL,
+    };
+  }
+  return { status: "ready", signals, regions: bucketRegions(signalRows) };
+}
+
 export function buildCampaignCreatorStats({
   rows,
+  signalRows,
   letterCount,
   ended,
 }: {
   rows: CampaignFeedbackRow[] | null;
+  signalRows: CampaignSignalRow[] | null;
+  now: Date;
   letterCount: number;
   ended: boolean;
 }): CampaignCreatorStatsView {
-  const base = { letterCount, ended };
+  const base = { letterCount, ended, signals: buildSignals(signalRows) };
 
   if (rows === null) {
     return { ...base, feedback: { status: "unavailable" } };
@@ -182,39 +263,69 @@ export function shouldShowCreatorInsights(
   return true;
 }
 
-/**
- * Reads only this campaign's reviews. PostgREST caps one response at 1000 rows
- * by default; larger campaigns are an accepted limit for now.
- */
-export async function getCampaignCreatorStats(
-  campaign: Pick<Campaign, "slug" | "letterCount">,
-  ended: boolean,
-): Promise<CampaignCreatorStatsView> {
-  const base = {
-    letterCount: campaign.letterCount,
-    ended,
-  };
-
+async function loadReviewRows(slug: string): Promise<CampaignFeedbackRow[] | null> {
   try {
     const { data, error } = await getServiceRoleClient()
       .from("reviews")
       .select(CREATOR_STATS_REVIEW_COLUMNS)
-      .eq("campaign_slug", campaign.slug)
+      .eq("campaign_slug", slug)
       .order("created_at", { ascending: false });
 
     if (error) {
       console.error("[creatorStats] reviews query failed:", error.message);
-      return buildCampaignCreatorStats({ ...base, rows: null });
+      return null;
     }
-    return buildCampaignCreatorStats({
-      ...base,
-      rows: (data ?? []) as CampaignFeedbackRow[],
-    });
+    return (data ?? []) as CampaignFeedbackRow[];
   } catch (error) {
     console.error(
       "[creatorStats] reviews query threw:",
       error instanceof Error ? error.message : "unknown error",
     );
-    return buildCampaignCreatorStats({ ...base, rows: null });
+    return null;
   }
+}
+
+async function loadSignalRows(slug: string): Promise<CampaignSignalRow[] | null> {
+  try {
+    const { data, error } = await getServiceRoleClient()
+      .from("letter_signals")
+      .select(CREATOR_STATS_SIGNAL_COLUMNS)
+      .eq("campaign_slug", slug)
+      .order("created_at", { ascending: false });
+
+    if (error) {
+      console.error("[creatorStats] letter_signals query failed:", error.message);
+      return null;
+    }
+    return (data ?? []) as CampaignSignalRow[];
+  } catch (error) {
+    console.error(
+      "[creatorStats] letter_signals query threw:",
+      error instanceof Error ? error.message : "unknown error",
+    );
+    return null;
+  }
+}
+
+/**
+ * Reads only this campaign's reviews and letter signals, each with a fixed
+ * column list. Both reads share the PostgREST 1000-row cap per response;
+ * larger campaigns are an accepted limit for now.
+ */
+export async function getCampaignCreatorStats(
+  campaign: Pick<Campaign, "slug" | "letterCount">,
+  ended: boolean,
+  now: Date = new Date(),
+): Promise<CampaignCreatorStatsView> {
+  const [rows, signalRows] = await Promise.all([
+    loadReviewRows(campaign.slug),
+    loadSignalRows(campaign.slug),
+  ]);
+  return buildCampaignCreatorStats({
+    rows,
+    signalRows,
+    now,
+    letterCount: campaign.letterCount,
+    ended,
+  });
 }

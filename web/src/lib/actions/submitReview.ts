@@ -154,6 +154,7 @@ export async function submitReviewAction(
         payload.politicianId != null ? String(payload.politicianId) : null,
       plz: payload.plz ?? null,
       letter_id: payload.letterId ?? null,
+      campaign_slug: payload.campaignSlug ?? null,
       debug_payload: data.mailSeq != null
         ? { ...payload, mail_seq: data.mailSeq }
         : payload,

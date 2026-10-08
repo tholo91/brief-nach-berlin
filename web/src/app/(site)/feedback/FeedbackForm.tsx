@@ -482,7 +482,7 @@ export function FeedbackForm({
                 />
                 <span className="font-body text-sm text-warmgrau leading-relaxed">
                   Meine Bewertung darf später anonymisiert auf brief-nach-berlin.de
-                  gezeigt werden. Deine E-Mail-Adresse wird niemals öffentlich gezeigt.
+                  gezeigt werden, auch der Initiative hinter einer Kampagne. Deine E-Mail-Adresse wird niemals öffentlich gezeigt.
                 </span>
               </label>
             </div>

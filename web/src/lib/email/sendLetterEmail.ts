@@ -53,6 +53,8 @@ export interface LetterDebugPayload {
   politicianId?: number;
   plz?: string;
   letterId?: string;
+  // Slug der Kampagne, aus der der Brief stammt. Landet beim Review in reviews.campaign_slug.
+  campaignSlug?: string;
   // True für Resends: es gab keinen neuen Generierungslauf, daher sind die
   // generierungs-spezifischen Felder (model/temperature/generationMs/…) Platzhalter.
   // /debug zeigt das als Hinweis an, damit man die Werte nicht fehlinterpretiert.
@@ -156,7 +158,10 @@ export function prepareLetterEmail(args: {
   const debug = letterId ? { ...initialDebug, letterId } : initialDebug;
   // Der Anliegen-Auszug gehört nur in den Debug-Link, nicht in den signierten
   // Feedback-Token, der später als Review-Metadaten gespeichert werden kann.
-  const feedbackPayload = { ...debug };
+  const feedbackPayload = {
+    ...debug,
+    ...(campaign?.slug ? { campaignSlug: campaign.slug } : {}),
+  };
   delete feedbackPayload.issueTextPreview;
   const feedbackToken = signFeedbackToken(feedbackPayload);
 

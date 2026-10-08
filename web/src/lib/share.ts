@@ -23,6 +23,10 @@ export function campaignPublicUrl(slug: string): string {
   return `${APP_URL}/kampagne/${encodeURIComponent(slug)}`;
 }
 
+export function campaignShortUrl(slug: string): string {
+  return `${APP_URL}/${encodeURIComponent(slug)}`;
+}
+
 export function buildShareTarget(
   campaign?: CampaignShareInput | null,
   context: CampaignShareContext = "participant",

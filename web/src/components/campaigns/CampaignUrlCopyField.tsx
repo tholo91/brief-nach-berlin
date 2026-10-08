@@ -8,12 +8,13 @@ type CampaignUrlCopyFieldProps = {
   variant?: "card" | "compact";
 };
 
-function displayParts(url: string): { prefix: string; slug: string } {
+function displayParts(url: string, short: boolean): { prefix: string; slug: string } {
   try {
     const parsed = new URL(url);
     const parts = parsed.pathname.split("/").filter(Boolean);
     const slug = decodeURIComponent(parts.at(-1) ?? "");
-    const prefix = `${parsed.hostname}/${parts.slice(0, -1).join("/")}/`;
+    const host = short ? parsed.hostname.replace(/^www\./, "") : parsed.hostname;
+    const prefix = [host, ...parts.slice(0, -1), ""].join("/");
     return { prefix, slug };
   } catch {
     return { prefix: "", slug: url };
@@ -90,7 +91,7 @@ export function CampaignUrlCopyField({
   variant = "card",
 }: CampaignUrlCopyFieldProps) {
   const [copied, setCopied] = useState(false);
-  const parts = displayParts(url);
+  const parts = displayParts(url, variant === "compact");
 
   async function copyUrl() {
     try {

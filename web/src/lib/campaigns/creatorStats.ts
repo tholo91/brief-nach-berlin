@@ -36,7 +36,6 @@ export type CreatorStatsComment = {
 
 export type CampaignCreatorStatsView = {
   letterCount: number;
-  liveSinceLabel: string | null;
   ended: boolean;
   feedback:
     | { status: "unavailable" }
@@ -58,13 +57,6 @@ export type CampaignCreatorStatsView = {
 
 const monthFormatter = new Intl.DateTimeFormat("de-DE", {
   month: "long",
-  year: "numeric",
-  timeZone: CAMPAIGN_TIME_ZONE,
-});
-
-const dateFormatter = new Intl.DateTimeFormat("de-DE", {
-  day: "2-digit",
-  month: "2-digit",
   year: "numeric",
   timeZone: CAMPAIGN_TIME_ZONE,
 });
@@ -121,18 +113,13 @@ function pickComments(rows: CampaignFeedbackRow[]): CreatorStatsComment[] {
 export function buildCampaignCreatorStats({
   rows,
   letterCount,
-  activatedAt,
   ended,
 }: {
   rows: CampaignFeedbackRow[] | null;
   letterCount: number;
-  activatedAt: string | null;
   ended: boolean;
 }): CampaignCreatorStatsView {
-  const liveSinceLabel = activatedAt
-    ? dateFormatter.format(new Date(activatedAt))
-    : null;
-  const base = { letterCount, liveSinceLabel, ended };
+  const base = { letterCount, ended };
 
   if (rows === null) {
     return { ...base, feedback: { status: "unavailable" } };
@@ -200,12 +187,11 @@ export function shouldShowCreatorInsights(
  * by default; larger campaigns are an accepted limit for now.
  */
 export async function getCampaignCreatorStats(
-  campaign: Pick<Campaign, "slug" | "letterCount" | "activatedAt">,
+  campaign: Pick<Campaign, "slug" | "letterCount">,
   ended: boolean,
 ): Promise<CampaignCreatorStatsView> {
   const base = {
     letterCount: campaign.letterCount,
-    activatedAt: campaign.activatedAt,
     ended,
   };
 

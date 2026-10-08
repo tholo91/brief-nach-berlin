@@ -148,3 +148,12 @@ export function formatCampaignEndDate(endsAt: string): string {
     timeZone: CAMPAIGN_TIME_ZONE,
   }).format(new Date(endsAt));
 }
+
+export function formatCampaignLiveSince(activatedAt: string): string {
+  return new Intl.DateTimeFormat("de-DE", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+    timeZone: CAMPAIGN_TIME_ZONE,
+  }).format(new Date(activatedAt));
+}

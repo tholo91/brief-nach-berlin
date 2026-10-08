@@ -47,7 +47,6 @@ function rows(count: number, overrides: Partial<CampaignFeedbackRow> = {}) {
 
 const baseInput = {
   letterCount: 37,
-  activatedAt: "2026-08-11T23:30:00Z",
   ended: false,
 };
 
@@ -86,11 +85,10 @@ describe("buildCampaignCreatorStats threshold (D-01)", () => {
     expect(view.letterCount).toBe(37);
   });
 
-  it("reports null rows as unavailable and keeps letter count and live date", () => {
+  it("reports null rows as unavailable and keeps the letter count", () => {
     const view = build(null);
     expect(view.feedback).toEqual({ status: "unavailable" });
     expect(view.letterCount).toBe(37);
-    expect(view.liveSinceLabel).toBe("12.08.2026");
   });
 });
 
@@ -222,13 +220,6 @@ describe("buildCampaignCreatorStats comments (D-04)", () => {
 });
 
 describe("buildCampaignCreatorStats meta", () => {
-  it("formats the live-since date in Europe/Berlin and handles null", () => {
-    expect(build([]).liveSinceLabel).toBe("12.08.2026");
-    expect(
-      buildCampaignCreatorStats({ ...baseInput, activatedAt: null, rows: [] }).liveSinceLabel,
-    ).toBeNull();
-  });
-
   it("passes the ended flag through", () => {
     expect(buildCampaignCreatorStats({ ...baseInput, ended: true, rows: [] }).ended).toBe(true);
   });

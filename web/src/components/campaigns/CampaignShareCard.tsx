@@ -4,6 +4,7 @@ import { ExternalLinkIcon } from "./ExternalLinkIcon";
 
 type CampaignShareCardProps = {
   publicUrl: string;
+  shareUrl: string;
   compactUrl: string | null;
   slug: string;
   logoUrl: string | null;
@@ -12,6 +13,7 @@ type CampaignShareCardProps = {
 
 export function CampaignShareCard({
   publicUrl,
+  shareUrl,
   compactUrl,
   slug,
   logoUrl,
@@ -43,7 +45,7 @@ export function CampaignShareCard({
         )}
       </div>
       <div className="mt-4 grid max-w-xl gap-3">
-        <CampaignUrlCopyField url={publicUrl} variant="compact" />
+        <CampaignUrlCopyField url={shareUrl} variant="compact" />
         {compactUrl && (
           <CampaignUrlCopyField
             url={compactUrl}

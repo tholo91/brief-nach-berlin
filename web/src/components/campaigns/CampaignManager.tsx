@@ -30,7 +30,11 @@ import {
   type TransferCampaignResult,
 } from "@/lib/actions/transferCampaign";
 import { BRIEF_EMAIL } from "@/lib/contact";
-import { berlinDateKey, formatCampaignEndDate } from "@/lib/campaigns/endDate";
+import {
+  berlinDateKey,
+  formatCampaignEndDate,
+  formatCampaignLiveSince,
+} from "@/lib/campaigns/endDate";
 import { campaignLogoPublicUrl } from "@/lib/campaigns/logo";
 import {
   BUNDESLAND_NAMES,
@@ -39,7 +43,7 @@ import {
   type Campaign,
   type CampaignTargetLevel,
 } from "@/lib/campaigns/schema";
-import { campaignPublicUrl } from "@/lib/share";
+import { campaignPublicUrl, campaignShortUrl } from "@/lib/share";
 import {
   CampaignEndDatePicker,
   pickerValueFromEndsAt,
@@ -154,9 +158,13 @@ export function CampaignManager({
     ? "file:bg-warmgrau/18 file:text-waldgruen-dark hover:file:bg-warmgrau/25"
     : "file:bg-waldgruen file:text-creme hover:file:bg-waldgruen-dark";
   const publicUrl = campaignPublicUrl(campaign.slug);
+  // Root-level short links only resolve while the campaign is active.
+  const shareUrlFor = campaign.status === "active" ? campaignShortUrl : campaignPublicUrl;
   const compactSlug = compactCampaignSlug(campaign.slug);
   const hasCompactUrl = compactSlug !== campaign.slug;
-  const compactUrl = campaignPublicUrl(compactSlug);
+  const liveSinceLabel = campaign.activatedAt
+    ? formatCampaignLiveSince(campaign.activatedAt)
+    : null;
   const logoServerError =
     result?.ok === false && "fieldErrors" in result ? result.fieldErrors?.logo : undefined;
   const targetFieldErrors =
@@ -295,6 +303,8 @@ export function CampaignManager({
     <div className="grid gap-8">
       <CampaignManagerHeader
         title={campaign.title}
+        creatorName={campaign.creatorName}
+        liveSinceLabel={liveSinceLabel}
         logoPath={campaign.logoPath}
         status={campaign.status}
         ended={ended}
@@ -306,7 +316,8 @@ export function CampaignManager({
 
       <CampaignShareCard
         publicUrl={publicUrl}
-        compactUrl={hasCompactUrl ? compactUrl : null}
+        shareUrl={shareUrlFor(campaign.slug)}
+        compactUrl={hasCompactUrl ? shareUrlFor(compactSlug) : null}
         slug={campaign.slug}
         logoUrl={shownLogoUrl}
         linkInactive={!ended && campaign.status !== "active"}
@@ -325,7 +336,9 @@ export function CampaignManager({
               {canEdit ? "Kampagne bearbeiten" : "Kampagnenangaben ansehen"}
             </h2>
             <p className="font-body text-sm text-warmgrau/65">
-              {canEdit ? "Titel, Anliegen, Empfänger und Bild" : "Ändern ist nicht mehr möglich."}
+              {canEdit
+                ? "Titel, Anliegen, Empfänger, Bild, Laufzeit und Status"
+                : "Ändern ist nicht mehr möglich."}
             </p>
           </div>
           <svg
@@ -600,112 +613,106 @@ export function CampaignManager({
             </button>
           )}
         </form>
-      </details>
-
-      {!ended && (
-        <div className="grid gap-3">
-          <p className="font-typewriter text-sm font-bold uppercase tracking-widest text-waldgruen/60">
-            Einstellungen
-          </p>
-            <section className="grid gap-6 rounded-md border border-warmgrau/15 bg-white/40 p-5 md:p-7">
+        {!ended && (
+          <section className="grid gap-6 border-t border-warmgrau/12 px-5 pb-5 pt-5 md:px-7 md:pb-7">
+            <div>
+              <h3 className="font-typewriter text-lg font-bold text-waldgruen-dark">
+                Laufzeit und Status
+              </h3>
+              <p className="mt-2 font-body text-sm leading-relaxed text-warmgrau/70">
+                Mit einem Enddatum läuft die Kampagne von selbst aus. Pausieren blendet die
+                öffentliche Seite vorübergehend aus. Beenden schließt die Kampagne für immer,
+                die Seite zeigt danach den Endstand.
+              </p>
+            </div>
+            <div className="grid gap-3">
+              <CampaignEndDatePicker
+                value={endPicker}
+                onChange={setEndPicker}
+                idPrefix="manage-end"
+                disabled={isBusy}
+              />
               <div>
-                <h2 className="font-typewriter text-xl font-bold text-waldgruen-dark">
-                  Laufzeit und Status
-                </h2>
-                <p className="mt-2 font-body text-sm leading-relaxed text-warmgrau/70">
-                  Mit einem Enddatum läuft die Kampagne von selbst aus. Pausieren blendet die
-                  öffentliche Seite vorübergehend aus. Beenden schließt die Kampagne für immer,
-                  die Seite zeigt danach den Endstand.
+                <button
+                  type="button"
+                  disabled={!endDateChanged || endDateIncomplete || isBusy}
+                  onClick={() =>
+                    runEndAction(
+                      () => updateCampaignEndDateAction(campaign.id, pickedEndDateKey),
+                      () =>
+                        setEndPicker(
+                          pickedEndDateKey
+                            ? { choice: "custom", customDate: pickedEndDateKey }
+                            : { choice: "none", customDate: "" }
+                        )
+                    )
+                  }
+                  className="min-h-11 w-full rounded-md bg-waldgruen px-5 py-3 font-body text-base font-semibold text-creme transition-colors hover:bg-waldgruen-dark focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-waldgruen disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto"
+                >
+                  Enddatum speichern
+                </button>
+              </div>
+            </div>
+            <div className="grid gap-3 border-t border-warmgrau/12 pt-5">
+              <div className="flex flex-col gap-3 sm:flex-row">
+                <button
+                  type="button"
+                  disabled={!canPause || isBusy}
+                  onClick={() => {
+                    setRuntimeResult(null);
+                    setActionPending(true);
+                    startTransition(async () => {
+                      try {
+                        const nextResult = await pauseCampaignAction(campaign.id);
+                        setRuntimeResult(nextResult);
+                        if (nextResult.ok) router.refresh();
+                      } finally {
+                        setActionPending(false);
+                      }
+                    });
+                  }}
+                  className="min-h-11 rounded-md border border-waldgruen/25 px-5 py-3 font-body text-base font-semibold text-waldgruen-dark transition-colors hover:border-waldgruen focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-waldgruen disabled:cursor-not-allowed disabled:opacity-50"
+                >
+                  Kampagne pausieren
+                </button>
+                <button
+                  type="button"
+                  disabled={!canEnd || isBusy}
+                  onClick={() => endDialogRef.current?.showModal()}
+                  className="min-h-11 rounded-md border border-airmail-rot/30 px-5 py-3 font-body text-base font-semibold text-airmail-rot transition-colors hover:border-airmail-rot focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-airmail-rot disabled:cursor-not-allowed disabled:opacity-50"
+                >
+                  Kampagne jetzt beenden
+                </button>
+              </div>
+              {runtimeResult && (
+                <div
+                  role="status"
+                  className={`rounded-md border px-4 py-3 font-body text-sm ${
+                    runtimeResult.ok
+                      ? "border-waldgruen/20 bg-white/60 text-waldgruen-dark"
+                      : "border-airmail-rot/25 bg-airmail-rot/5 text-airmail-rot"
+                  }`}
+                >
+                  {runtimeResult.message}
+                </div>
+              )}
+              {canTransfer && (
+                <p className="border-t border-warmgrau/12 pt-4 font-body text-sm text-warmgrau/70">
+                  Soll jemand anderes die Kampagne betreuen?{" "}
+                  <button
+                    type="button"
+                    disabled={isBusy}
+                    onClick={openTransferDialog}
+                    className="font-semibold text-waldgruen-dark underline underline-offset-4 transition-colors hover:text-waldgruen disabled:cursor-not-allowed disabled:opacity-50"
+                  >
+                    Verwaltung übertragen
+                  </button>
                 </p>
-              </div>
-              <div className="grid gap-3">
-                <CampaignEndDatePicker
-                  value={endPicker}
-                  onChange={setEndPicker}
-                  idPrefix="manage-end"
-                  disabled={isBusy}
-                />
-                <div>
-                  <button
-                    type="button"
-                    disabled={!endDateChanged || endDateIncomplete || isBusy}
-                    onClick={() =>
-                      runEndAction(
-                        () => updateCampaignEndDateAction(campaign.id, pickedEndDateKey),
-                        () =>
-                          setEndPicker(
-                            pickedEndDateKey
-                              ? { choice: "custom", customDate: pickedEndDateKey }
-                              : { choice: "none", customDate: "" }
-                          )
-                      )
-                    }
-                    className="min-h-11 w-full rounded-md bg-waldgruen px-5 py-3 font-body text-base font-semibold text-creme transition-colors hover:bg-waldgruen-dark focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-waldgruen disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto"
-                  >
-                    Enddatum speichern
-                  </button>
-                </div>
-              </div>
-              <div className="grid gap-3 border-t border-warmgrau/12 pt-5">
-                <div className="flex flex-col gap-3 sm:flex-row">
-                  <button
-                    type="button"
-                    disabled={!canPause || isBusy}
-                    onClick={() => {
-                      setRuntimeResult(null);
-                      setActionPending(true);
-                      startTransition(async () => {
-                        try {
-                          const nextResult = await pauseCampaignAction(campaign.id);
-                          setRuntimeResult(nextResult);
-                          if (nextResult.ok) router.refresh();
-                        } finally {
-                          setActionPending(false);
-                        }
-                      });
-                    }}
-                    className="min-h-11 rounded-md border border-waldgruen/25 px-5 py-3 font-body text-base font-semibold text-waldgruen-dark transition-colors hover:border-waldgruen focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-waldgruen disabled:cursor-not-allowed disabled:opacity-50"
-                  >
-                    Kampagne pausieren
-                  </button>
-                  <button
-                    type="button"
-                    disabled={!canEnd || isBusy}
-                    onClick={() => endDialogRef.current?.showModal()}
-                    className="min-h-11 rounded-md border border-airmail-rot/30 px-5 py-3 font-body text-base font-semibold text-airmail-rot transition-colors hover:border-airmail-rot focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-airmail-rot disabled:cursor-not-allowed disabled:opacity-50"
-                  >
-                    Kampagne jetzt beenden
-                  </button>
-                </div>
-                {runtimeResult && (
-                  <div
-                    role="status"
-                    className={`rounded-md border px-4 py-3 font-body text-sm ${
-                      runtimeResult.ok
-                        ? "border-waldgruen/20 bg-white/60 text-waldgruen-dark"
-                        : "border-airmail-rot/25 bg-airmail-rot/5 text-airmail-rot"
-                    }`}
-                  >
-                    {runtimeResult.message}
-                  </div>
-                )}
-                {canTransfer && (
-                  <p className="border-t border-warmgrau/12 pt-4 font-body text-sm text-warmgrau/70">
-                    Soll jemand anderes die Kampagne betreuen?{" "}
-                    <button
-                      type="button"
-                      disabled={isBusy}
-                      onClick={openTransferDialog}
-                      className="font-semibold text-waldgruen-dark underline underline-offset-4 transition-colors hover:text-waldgruen disabled:cursor-not-allowed disabled:opacity-50"
-                    >
-                      Verwaltung übertragen
-                    </button>
-                  </p>
-                )}
-              </div>
-            </section>
-        </div>
-      )}
+              )}
+            </div>
+          </section>
+        )}
+      </details>
 
       {canEnd && (
         <ManagerDialog dialogRef={endDialogRef} title="Kampagne jetzt beenden?">

@@ -30,6 +30,8 @@ beforeEach(() => {
 function renderHeader(
   overrides: Partial<{
     title: string;
+    creatorName: string | null;
+    liveSinceLabel: string | null;
     logoPath: string | null;
     status: Campaign["status"];
     ended: boolean;
@@ -40,6 +42,8 @@ function renderHeader(
   return renderToStaticMarkup(
     createElement(CampaignManagerHeader, {
       title: "Duisburg retten",
+      creatorName: null,
+      liveSinceLabel: null,
       logoPath: "initiative/logo.png",
       status: "active",
       ended: false,
@@ -144,6 +148,24 @@ describe("CampaignManagerHeader", () => {
     expect(markup).toContain(`href="${publicUrl}"`);
   });
 
+  it("greets the creator by name and falls back to a plain Moin", () => {
+    expect(renderHeader({ creatorName: "Anna" })).toContain("Moin Anna");
+    const anonymous = renderHeader();
+    expect(anonymous).toContain("Moin");
+    expect(anonymous).not.toContain("Moin Anna");
+    expect(anonymous).not.toContain("Deine Kampagne");
+  });
+
+  it("shows the live-since date in the pill only for active campaigns", () => {
+    expect(renderHeader({ liveSinceLabel: "14.08.2026" })).toContain("seit 14.08.2026");
+    expect(renderHeader({ liveSinceLabel: "14.08.2026", status: "paused" })).not.toContain(
+      "seit 14.08.2026"
+    );
+    expect(
+      renderHeader({ liveSinceLabel: "14.08.2026", ended: true, endedLabel: "15. Januar 2026" })
+    ).not.toContain("seit 14.08.2026");
+  });
+
   it("explains archived and blocked campaigns", () => {
     expect(renderHeader({ status: "archived" })).toContain(
       "Diese Kampagne ist beendet und kann nicht mehr verändert werden."
@@ -166,7 +188,8 @@ describe("CampaignManagerHeader", () => {
 });
 
 describe("CampaignShareCard", () => {
-  const compactUrl = "https://brief-nach-berlin.de/kampagne/duisburgretten";
+  const shareUrl = "https://www.brief-nach-berlin.de/duisburg-retten";
+  const compactUrl = "https://www.brief-nach-berlin.de/duisburgretten";
 
   function renderShare(
     overrides: Partial<{ compactUrl: string | null; linkInactive: boolean }> = {}
@@ -174,6 +197,7 @@ describe("CampaignShareCard", () => {
     return renderToStaticMarkup(
       createElement(CampaignShareCard, {
         publicUrl,
+        shareUrl,
         compactUrl,
         slug: "duisburg-retten",
         logoUrl: null,
@@ -190,6 +214,14 @@ describe("CampaignShareCard", () => {
     expect(markup).toContain("Kampagnenlink");
     expect(markup).toContain("duisburg-retten");
     expect(markup).toContain("QR-Code herunterladen");
+  });
+
+  it("shows the short links without https, www or /kampagne/", () => {
+    const markup = renderShare();
+
+    expect(markup).toContain(">brief-nach-berlin.de/<");
+    expect(markup).not.toContain(">www.");
+    expect(markup).not.toContain("https://www.brief-nach-berlin.de/duisburg-retten<");
   });
 
   it("renders the Kurzlink row with its own copy label", () => {
@@ -262,7 +294,13 @@ describe("CampaignManager layout", () => {
     );
   }
 
-  it("orders the sections: header, share, insights, edit, settings", () => {
+  it("uses root short links only while the campaign is active", () => {
+    expect(renderManager(baseCampaign)).toContain("brief-nach-berlin.de/<");
+    const paused = renderManager({ ...baseCampaign, status: "paused" });
+    expect(paused).toContain("brief-nach-berlin.de/kampagne/<");
+  });
+
+  it("orders the sections: header, share, insights, edit with settings inside", () => {
     const markup = renderManager(baseCampaign);
     const positions = [
       markup.indexOf("<h1"),
@@ -274,6 +312,8 @@ describe("CampaignManager layout", () => {
 
     expect(positions.every((position) => position >= 0)).toBe(true);
     expect([...positions].sort((a, b) => a - b)).toEqual(positions);
+    expect(markup.indexOf("Laufzeit und Status")).toBeLessThan(markup.indexOf("</details>"));
+    expect(markup).not.toContain("Einstellungen");
   });
 
   it("renders the edit form closed but with all inputs in the markup", () => {

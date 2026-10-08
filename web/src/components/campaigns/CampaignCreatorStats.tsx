@@ -108,11 +108,6 @@ export function CampaignCreatorStats({
         <p className="font-body text-base font-semibold text-waldgruen-dark">
           {letterLabel}
         </p>
-        {stats.liveSinceLabel && (
-          <p className="font-body text-sm text-warmgrau/60 sm:ml-auto">
-            {stats.ended ? "Gestartet am" : "Live seit"} {stats.liveSinceLabel}
-          </p>
-        )}
       </div>
 
       {feedback.status === "unavailable" && (
@@ -154,7 +149,7 @@ export function CampaignCreatorStats({
               {feedback.responses} von {feedback.threshold}
             </p>
           </div>
-          <p className="mt-4 max-w-xl font-body text-sm leading-relaxed text-warmgrau/65">
+          <p className="mt-4 font-body text-xs leading-relaxed text-warmgrau/60">
             {SOURCE_SENTENCE}
           </p>
         </div>
@@ -217,7 +212,7 @@ export function CampaignCreatorStats({
             </div>
           )}
 
-          <p className="mt-5 max-w-xl font-body text-xs leading-relaxed text-warmgrau/60">
+          <p className="mt-5 font-body text-xs leading-relaxed text-warmgrau/60">
             {SOURCE_SENTENCE}
           </p>
         </div>

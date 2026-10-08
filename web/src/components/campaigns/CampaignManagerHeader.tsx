@@ -19,6 +19,8 @@ const focusRing =
 
 type CampaignManagerHeaderProps = {
   title: string;
+  creatorName: string | null;
+  liveSinceLabel: string | null;
   logoPath: string | null;
   status: Campaign["status"];
   ended: boolean;
@@ -50,6 +52,8 @@ function PencilIcon() {
 
 export function CampaignManagerHeader({
   title,
+  creatorName,
+  liveSinceLabel,
   logoPath,
   status,
   ended,
@@ -94,8 +98,8 @@ export function CampaignManagerHeader({
           )}
         </div>
         <div className="flex min-w-0 flex-wrap items-center justify-between gap-x-3 gap-y-2">
-          <p className="whitespace-nowrap font-typewriter text-xs font-bold uppercase tracking-wider text-waldgruen/60 sm:text-sm sm:tracking-widest">
-            Deine Kampagne
+          <p className="min-w-0 truncate font-body text-base font-semibold text-waldgruen-dark sm:text-lg">
+            Moin{creatorName ? ` ${creatorName}` : ""} <span aria-hidden="true">👋</span>
           </p>
           <span className="inline-flex shrink-0 items-center gap-2 rounded-full border border-warmgrau/15 bg-creme px-3 py-1 font-body text-sm font-semibold text-waldgruen-dark">
             <span
@@ -103,6 +107,9 @@ export function CampaignManagerHeader({
               className={`h-2 w-2 rounded-full ${statusDotClass(status, ended)}`}
             />
             {ended ? "beendet" : statusLabels[status]}
+            {!ended && status === "active" && liveSinceLabel && (
+              <span className="font-normal text-warmgrau/70">seit {liveSinceLabel}</span>
+            )}
           </span>
         </div>
         <h1 className="col-span-2 break-words text-balance font-body text-2xl font-bold leading-tight tracking-tight text-waldgruen-dark sm:col-span-1 sm:col-start-2 md:text-4xl">

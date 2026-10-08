@@ -3,6 +3,7 @@ import {
   campaignEndsAtFromDate,
   endDateForChoice,
   formatCampaignEndDate,
+  formatCampaignLiveSince,
   isCampaignEnded,
   parseCampaignEndDateInput,
   runningCampaign,
@@ -105,5 +106,11 @@ describe("parseCampaignEndDateInput", () => {
 describe("formatCampaignEndDate", () => {
   it("formats the Berlin day in long German form", () => {
     expect(formatCampaignEndDate("2026-10-22T21:59:59.000Z")).toBe("22. Oktober 2026");
+  });
+});
+
+describe("formatCampaignLiveSince", () => {
+  it("formats the Berlin day as dd.mm.yyyy", () => {
+    expect(formatCampaignLiveSince("2026-08-11T23:30:00Z")).toBe("12.08.2026");
   });
 });

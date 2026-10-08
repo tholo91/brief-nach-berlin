@@ -625,6 +625,14 @@ export default function Datenschutz() {
               entfernen.
             </p>
             <p className="mb-3">
+              Gehört Ihre Bewertung zu einer Kampagne, sieht der Creator dieser
+              Kampagne nur zusammengefasste Werte (Versandquote,
+              Sterne-Durchschnitt, Anteile bei den politischen Fragen und
+              häufige Stichworte), und zwar erst ab 10 Rückmeldungen. Kommentare
+              sehen Creator nur, wenn Sie der öffentlichen Anzeige zugestimmt
+              haben, und ohne Name, PLZ und E-Mail-Adresse.
+            </p>
+            <p className="mb-3">
               <strong>Rechtsgrundlage:</strong> Art. 6 Abs. 1 lit. a DSGVO
               (Einwilligung) für die öffentliche Anzeige; Art. 6 Abs. 1 lit. f
               DSGVO (berechtigtes Interesse: Produktverbesserung) für die
@@ -672,7 +680,8 @@ export default function Datenschutz() {
             <p className="mb-3">
               Gespeichert werden die normalisierte E-Mail-Adresse, die
               fünfstellige PLZ, daraus abgeleitet Bundesland und Kartenposition,
-              die tatsächlich gewählte Ebene Bund/Land/Kommune, ein bis drei erlaubte
+              die tatsächlich gewählte Ebene Bund/Land/Kommune, die Empfängerart
+              (zum Beispiel Bundestagsabgeordnete, Landesregierung oder Rathaus), ein bis drei erlaubte
               Oberkategorien, ein bis drei kurze Themen-Stichworte aus dem Anliegen, Zeitpunkt,
               optionaler Kampagnen-Slug, eine zufällige Brief-ID, ein HMAC der
               normalisierten E-Mail-Adresse und die Version der Einwilligung.
@@ -797,6 +806,16 @@ export default function Datenschutz() {
               einer Kampagnenseite schreiben weiterhin eigene Briefe im normalen
               Brief-Flow; deren angepasste Anliegen und generierte Briefe werden
               durch den Kampagnenmodus nicht dauerhaft gespeichert.
+            </p>
+            <p className="mb-3">
+              Auf der Verwaltungsseite sehen Creator, wie ihre Kampagne
+              ankommt. Aus den freiwilligen Themensignalen (siehe Abschnitt 18)
+              erhalten sie nur Summen: Briefe pro Bundesland, Briefe pro Woche
+              und, falls es mehrere gibt, die Art der Empfänger. Diese Zahlen
+              erscheinen erst ab 10 geteilten Briefen; Bundesländer mit weniger
+              als 5 Briefen werden zu „Weitere Bundesländer“ zusammengefasst.
+              PLZ, E-Mail-Adresse, Brief-ID, Themen und genaue Zeitpunkte sehen
+              Creator nicht.
             </p>
             <p>
               Rechtsgrundlage: Art. 6 Abs. 1 lit. b DSGVO für Erstellung,

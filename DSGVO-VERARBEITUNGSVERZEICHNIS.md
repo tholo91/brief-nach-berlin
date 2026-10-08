@@ -3,7 +3,7 @@
 **Verantwortlicher:** Thomas Lorenz, Zur Plangemühle 5, 47198 Duisburg, Deutschland
 **Kontakt:** Brief-nach-Berlin@posteo.de
 **Dienst:** Brief-nach-Berlin (brief-nach-berlin.de)
-**Stand:** 2026-09-02
+**Stand:** 2026-10-08
 
 Es ist kein Datenschutzbeauftragter bestellt (keine Pflicht nach § 38 BDSG, da unter 20 Personen mit der automatisierten Verarbeitung beschäftigt; keine Kerntätigkeit i.S.v. Art. 37 DSGVO).
 
@@ -77,7 +77,7 @@ Es ist kein Datenschutzbeauftragter bestellt (keine Pflicht nach § 38 BDSG, da 
 | Betroffene Personen | Nutzer, die nach Brief-Versand freiwillig auf den Sterne-Link in der Mail klicken und das Bewertungs-Formular absenden. |
 | Datenkategorien | Sterne-Bewertung (1-5), optional Kommentar, optional Name/Pseudonym, Consent-Flag, E-Mail-Adresse (aus signiertem Link), Politiker-ID + PLZ + technische Brief-Metadaten (intern), pseudonymisierter IP-Hash, Zeitstempel. |
 | Rechtsgrundlage | Art. 6 Abs. 1 lit. a DSGVO (Einwilligung) für die öffentliche Anzeige; Art. 6 Abs. 1 lit. f DSGVO (berechtigtes Interesse: Produktverbesserung) für die interne Auswertung. |
-| Empfänger | Supabase Inc. (Auftragsverarbeiter), Server-Region Frankfurt (eu-central-1). |
+| Empfänger | Supabase Inc. (Auftragsverarbeiter), Server-Region Frankfurt (eu-central-1). Kampagnen-Creator der jeweiligen Kampagne sehen auf der token-geschützten Verwaltungsseite nur aggregierte Kennzahlen (Versandquote, Sterne-Durchschnitt, Anteil politische Selbstwirksamkeit, Anteil politische Ohnmacht, häufige Feedback-Stichworte), erst ab 10 Rückmeldungen. Kommentare erscheinen nur mit Einwilligung zur öffentlichen Anzeige und ohne Name, PLZ und E-Mail-Adresse. |
 | Drittlandtransfer | Keiner (Server in EU/DE). Supabase Inc. ist in den USA ansässig; Datenverarbeitung erfolgt in der EU-Region. |
 | Technische Sicherheit | Schreibzugriff nur server-seitig mit Service-Role-Key; RLS-Policy schränkt Lesezugriff via anon-Key auf consented Rows ein. Bewertungs-Link ist HMAC-signiert, ungültige Tokens werden ohne DB-Schreibvorgang abgewiesen. IP wird per HMAC-SHA256 (Salt: `REVIEW_IP_SALT`) pseudonymisiert. |
 | Speicherfrist | Maximal 24 Monate. Löschung auf Anfrage jederzeit per E-Mail an Brief-nach-Berlin@posteo.de. |
@@ -90,16 +90,17 @@ Es ist kein Datenschutzbeauftragter bestellt (keine Pflicht nach § 38 BDSG, da 
 |---|---|
 | Zweck | Interne Auswertung freiwillig geteilter Themen und politischer Ebenen sowie unmittelbare Anzeige des zugehörigen PLZ-Kartenpunkts. Keine Werbung, kein Verkauf und kein individuelles politisches Profiling. |
 | Betroffene Personen | Nutzer, die auf der Successpage ausdrücklich und freiwillig zustimmen. Die Brief-Erstellung funktioniert auch ohne Zustimmung. |
-| Datenkategorien | Normalisierte Klartext-E-Mail, fünfstellige PLZ, daraus abgeleitete Kartenposition und Bundesland, gewählte politische Ebene, 1-3 erlaubte Oberkategorien, 1-3 minimierte Unterthemen, Zeitpunkt, optionaler Kampagnen-Slug, zufällige `letter_id`, HMAC der normalisierten E-Mail und versionierter Einwilligungsnachweis. |
+| Datenkategorien | Normalisierte Klartext-E-Mail, fünfstellige PLZ, daraus abgeleitete Kartenposition und Bundesland, gewählte politische Ebene, Empfängerart (zum Beispiel MdB, Landesregierung, Rathaus), 1-3 erlaubte Oberkategorien, 1-3 minimierte Unterthemen, Zeitpunkt, optionaler Kampagnen-Slug, zufällige `letter_id`, HMAC der normalisierten E-Mail und versionierter Einwilligungsnachweis. |
 | Nicht gespeicherte Daten | Kein Brieftext, kein Anliegen-Volltext, kein Name, keine Empfängerperson und keine IP-Adresse. |
 | Besondere Kategorien (Art. 9) | Das Themensignal kann politische Meinungen oder andere besondere Kategorien mittelbar erkennen lassen. Die Daten sind pseudonymisiert, nicht anonym. |
 | Rechtsgrundlage | Art. 6 Abs. 1 lit. a DSGVO und, soweit besondere Kategorien betroffen sind, Art. 9 Abs. 2 lit. a DSGVO (ausdrückliche Einwilligung). |
-| Empfänger / Auftragsverarbeiter | Supabase Inc. (Speicherung in der EU-Region); Mistral AI SAS (Ableitung des minimierten Themensignals im ohnehin erforderlichen Routing-/Generierungsaufruf). |
+| Empfänger / Auftragsverarbeiter | Supabase Inc. (Speicherung in der EU-Region); Mistral AI SAS (Ableitung des minimierten Themensignals im ohnehin erforderlichen Routing-/Generierungsaufruf). Kampagnen-Creator der jeweiligen Kampagne erhalten nur aggregierte Zahlen (siehe Zeile Anzeige für Kampagnen-Creator). |
 | Drittlandtransfer | Gemäß den jeweils aktuellen AVV, Subprozessoren und verifizierten Account-/Regionseinstellungen. Vor Livegang gesondert zu dokumentieren. |
 | Speicherfrist | Bis zum Widerruf, Ende des dokumentierten Analysezwecks oder Projektende. Eine fehlgeschlagene Briefgenerierung löscht den freiwilligen Kartenbeitrag nicht. |
 | Betroffenenrechte | Widerruf und Löschung über den Link „Meine gespeicherten Daten löschen“ in der Feedback-Mail. Die vorbefüllte E-Mail muss von der betroffenen Person abgesendet werden. Die Wartungsroutine zeigt zuerst einen Dry-Run und löscht erst nach gesonderter Bestätigung Reviews und Themensignale. |
 | Technische Sicherheit | Zufällige `letter_id`; HMAC-Verknüpfung zur E-Mail; kurzlebige signierte Kontexte; serverseitige Prüfung der beim Opt-in übermittelten Klartext-E-Mail; Service-Role-Zugriff; `ENABLE/FORCE RLS`; vollständige Revokes für `anon`, `authenticated` und `PUBLIC`; keine öffentliche Rohdaten-View. |
 | Öffentliche Nutzung | Ab dem ersten freiwilligen Beitrag erscheint ein projizierter Punkt am ungefähren Mittelpunkt der fünfstelligen PLZ. Die API gibt nur Koordinaten, aggregierte Anzahl und Summen aus, aber keine PLZ, E-Mail, Themen, `letter_id` oder Einzelzeitpunkte. Die Position kann die ungefähre PLZ-Region erkennen lassen. |
+| Anzeige für Kampagnen-Creator | Kampagnen-Creator sehen auf der token-geschützten Seite /kampagne/verwalten für ihre eigene Kampagne nur Anzahlen pro Bundesland, Briefe pro Kalenderwoche und, wenn gemischt, die Verteilung der Empfängerart. Unter 10 Signalen für die Kampagne wird nichts angezeigt. Bundesländer und Empfängerarten mit weniger als 5 Signalen werden zu „Weitere Bundesländer“ bzw. „Andere Empfänger“ zusammengefasst. PLZ, PLZ-Präfix, E-Mail, `letter_id`, Themen und Einzelzeitpunkte werden weder abgefragt noch angezeigt; die Server-Abfrage nutzt eine feste Spaltenliste (`bundesland_key`, `recipient_kind`, `generated_at`, `created_at`). |
 
 ---
 

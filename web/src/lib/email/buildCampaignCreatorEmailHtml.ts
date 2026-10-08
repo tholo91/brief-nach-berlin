@@ -100,7 +100,7 @@ export function buildCampaignCreatorEmailHtml(
   const managementHelp = isVerification
     ? `<div style="margin:0 0 22px;padding:16px 18px;background-color:#ffffff;border:1px solid #E0DCD7;border-radius:4px;">
         <p style="margin:0 0 8px;font-family:'Courier New',Courier,monospace;font-size:12px;font-weight:bold;text-transform:uppercase;color:#2D6A4F;">Danach</p>
-        <p style="margin:0;font-size:14px;line-height:1.6;color:#666666;">Du bekommst eine zweite E-Mail mit deinem Verwaltungslink. Darüber kannst du Inhalte ändern, die Kampagne pausieren oder archivieren.</p>
+        <p style="margin:0;font-size:14px;line-height:1.6;color:#666666;">Du bekommst eine zweite E-Mail mit deinem Verwaltungslink. Darüber kannst du Inhalte ändern, die Kampagne pausieren oder beenden.</p>
       </div>`
     : isTransfer
       ? `<div style="margin:0 0 22px;padding:16px 18px;background-color:#ffffff;border:1px solid #E0DCD7;border-radius:4px;">

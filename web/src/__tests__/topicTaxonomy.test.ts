@@ -50,23 +50,39 @@ describe("topic taxonomy v1", () => {
     }
   });
 
-  it("rejects ambiguous labels that look like a person, organization, or place", () => {
+  it("keeps concrete keywords from the citizen's concern", () => {
     for (const label of [
-      "Thomas Kündigung",
-      "Siemens Streik",
-      "Berlin Wohnung",
-      "Soziale Anna",
-      "Pflegebedürftig",
-      "Lehrerin",
-      "Mieterin",
-      "Demokratin",
-      "Thomasreform",
-      "Soziale Anna Pflege",
-      "Öffentliche Siemens Arbeit",
-      "Sichere Berlin Straße",
-      "Meyersteuerhilfe",
-      "Berlinmietkosten",
-      "Siemensarbeitshilfe",
+      "Bundesverfassungsgericht",
+      "Racial Profiling",
+      "Erziehermangel",
+      "Mietendeckel",
+      "Kita-Platzvergabe",
+      "Grünflächen",
+      "Linksabbieger",
+    ]) {
+      const parsed = TopicSignalSchema.parse({
+        topicCategories: ["sonstiges"],
+        topicLabels: [label],
+      });
+      expect(parsed.topicLabels).toEqual([label]);
+    }
+  });
+
+  it("drops party names, hyphen compounds and personal data", () => {
+    for (const label of [
+      "AfD",
+      "AfD-Verbot",
+      "afd",
+      "CDU/CSU",
+      "SPD-Fraktion",
+      "Bündnis 90",
+      "Freie Wähler",
+      "Linkspartei",
+      "Werteunion",
+      "Herr Müller",
+      "Hauptstraße 12",
+      "28195",
+      "thomas@example.de",
     ]) {
       expect(() => TopicSignalSchema.parse({
         topicCategories: ["sonstiges"],
@@ -81,15 +97,27 @@ describe("topic taxonomy v1", () => {
     expect(TOPIC_CATEGORY_CODES).toContain("sonstiges");
   });
 
-  it("keeps valid categories with a safe generic label when free labels are unsafe or unsupported", () => {
+  it("keeps concrete labels in model order and drops blocked ones", () => {
     const signal = buildTopicSignal({
-      topic_categories: ["digitales_verwaltung"],
-      topic_labels: ["Bürokratieabbau bei Siemens"],
+      topic_categories: ["demokratie_staat", "sicherheit_justiz"],
+      topic_labels: ["Bundesverfassungsgericht", "Richterwahl", "AfD"],
     }, "routing", "mistral-small-latest");
 
     expect(signal).toMatchObject({
-      topicCategories: ["digitales_verwaltung"],
-      topicLabels: ["Digitalisierung"],
+      topicCategories: ["demokratie_staat", "sicherheit_justiz"],
+      topicLabels: ["Bundesverfassungsgericht", "Richterwahl"],
+    });
+  });
+
+  it("falls back to the category label when every label is blocked", () => {
+    const signal = buildTopicSignal({
+      topic_categories: ["demokratie_staat"],
+      topic_labels: ["AfD-Verbot", "Herr Müller"],
+    }, "routing", "mistral-small-latest");
+
+    expect(signal).toMatchObject({
+      topicCategories: ["demokratie_staat"],
+      topicLabels: ["Demokratie"],
     });
   });
 });

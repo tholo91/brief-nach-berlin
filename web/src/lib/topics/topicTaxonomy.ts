@@ -45,19 +45,17 @@ export const TopicSourceSchema = z.enum([
 export type TopicSource = z.infer<typeof TopicSourceSchema>;
 
 const TOPIC_LABEL_REGEX = /^[\p{L}\p{N}][\p{L}\p{N} &'/-]{0,59}$/u;
-const SAFE_GENERIC_TOPICS = new Set([
-  "arbeit", "bildung", "demokratie", "digitalisierung", "energie", "gesundheit",
-  "integration", "justiz", "klima", "kultur", "migration", "mobilität", "pflege",
-  "rente", "sicherheit", "soziales", "sport", "umwelt", "verkehr", "verwaltung",
-  "wohnen", "wohnraum", "schlaglöcher", "schulwege",
-]);
-const SAFE_MULTIWORD_TOPICS = new Set([
-  "allgemeines anliegen", "bezahlbarer wohnraum", "berufliche bildung",
-  "digitale verwaltung", "erneuerbare energien", "kommunale finanzen",
-  "öffentliche sicherheit", "öffentlicher nahverkehr", "sichere straßen",
-  "soziale pflege", "sozialer wohnungsbau",
-]);
-const SAFE_COMPOUND_TOPIC_REGEX = /^(?:arbeits|bildungs|demokratie|digitalisierungs|energie|familien|gesundheits|infrastruktur|integrations|justiz|kita|klima|krankenhaus|kultur|lehrer|miet|migrations|mobilitäts|nahverkehrs|pflege|renten|schul|sicherheits|sozial|sport|steuer|straßen|umwelt|verkehrs|verwaltungs|wahl|wirtschafts|wohnungs)(?:arbeit|ausbau|bildung|finanzierung|förderung|gesetz|hilfe|infrastruktur|kosten|mangel|mobilität|pflege|plätze|politik|recht|reform|sanierung|schutz|sicherheit|teilhabe|verkehr|verwaltung|versorgung)$/u;
+const PARTY_NAME_REGEX = new RegExp(
+  "(?<![\\p{L}\\p{N}])(?:" +
+    [
+      "afd", "cdu", "csu", "spd", "fdp", "grüne", "grünen", "gruene", "gruenen",
+      "bündnis\\s*90", "buendnis\\s*90", "linke", "linken", "linkspartei", "bsw", "volt",
+      "freie\\s+wähler", "freie\\s+waehler", "npd", "die\\s+partei", "werteunion",
+      "piraten", "piratenpartei", "tierschutzpartei",
+    ].join("|") +
+    ")(?![\\p{L}\\p{N}])",
+  "iu",
+);
 
 export const TopicLabelSchema = z
   .string()
@@ -74,12 +72,7 @@ export const TopicLabelSchema = z
       !/(?:\p{L}+)?(?:straße|strasse|weg|allee|gasse|platz)\s+\d/iu.test(label),
     "Unterthema enthält möglicherweise persönliche oder institutionelle Angaben",
   )
-  .refine((label) => {
-    const normalized = label.toLocaleLowerCase("de-DE");
-    return SAFE_GENERIC_TOPICS.has(normalized) ||
-      SAFE_MULTIWORD_TOPICS.has(normalized) ||
-      SAFE_COMPOUND_TOPIC_REGEX.test(normalized);
-  }, "Unterthema liegt außerhalb der minimierten Themenliste");
+  .refine((label) => !PARTY_NAME_REGEX.test(label), "Unterthema nennt eine Partei");
 
 function unique<T>(values: T[]): boolean {
   return new Set(values).size === values.length;

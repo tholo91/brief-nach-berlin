@@ -137,6 +137,22 @@ describe("routeToLevel", () => {
     expect(result.topic).toBeNull();
   });
 
+  it("behält konkrete Stichworte in Mistral-Reihenfolge und verwirft Parteinamen", async () => {
+    mockResponse({
+      primary: { level: "Bund", confidence: "high" },
+      reasoning: "Die Wahl der Richter ist Bundessache.",
+      topic_categories: ["demokratie_staat", "sicherheit_justiz"],
+      topic_labels: ["Bundesverfassungsgericht", "Richterwahl", "AfD"],
+    });
+    const result = await routeToLevel("Bundesverfassungsgericht vor Sperrminorität schützen");
+    expect(result.topic).toMatchObject({
+      topicLabels: ["Bundesverfassungsgericht", "Richterwahl"],
+      topicSource: "routing",
+      topicTaxonomyVersion: "v1",
+    });
+    expect(result.topic?.topicCategories[0]).toBe("demokratie_staat");
+  });
+
   it("sanitized Reasoning mit URL auf leeren String", async () => {
     mockResponse({
       primary: { level: "Bund", confidence: "high" },

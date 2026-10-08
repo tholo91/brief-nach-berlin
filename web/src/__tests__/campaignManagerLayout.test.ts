@@ -52,12 +52,12 @@ function renderHeader(
 }
 
 describe("CampaignLogo lg", () => {
-  it("renders a round 80px image with the public URL", () => {
+  it("renders a round 64px (80px from sm) image with the public URL", () => {
     const markup = renderToStaticMarkup(
       createElement(CampaignLogo, { logoPath: "initiative/logo.png", name: "Initiative", size: "lg" })
     );
 
-    expect(markup).toContain("h-20 w-20");
+    expect(markup).toContain("h-16 w-16 sm:h-20 sm:w-20");
     expect(markup).toContain("rounded-full");
     expect(markup).toContain("background-size:105%");
     expect(markup).toContain("https://example.supabase.co");

@@ -42,8 +42,8 @@ const sizeClasses = {
     backgroundSize: "105%",
   },
   lg: {
-    container: "h-20 w-20",
-    fallback: "text-3xl",
+    container: "h-16 w-16 sm:h-20 sm:w-20",
+    fallback: "text-2xl sm:text-3xl",
     image: roundImage,
     fallbackShape: roundFallback,
     backgroundSize: "105%",

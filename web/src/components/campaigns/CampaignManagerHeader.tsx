@@ -34,6 +34,33 @@ function statusDotClass(status: Campaign["status"], ended: boolean): string {
   return "bg-warmgrau/50";
 }
 
+function PencilIcon() {
+  return (
+    <svg width="13" height="13" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+      <path
+        d="M11.2 2.3a1.6 1.6 0 0 1 2.3 2.3L5.4 12.7l-3.1.8.8-3.1 8.1-8.1Z"
+        stroke="currentColor"
+        strokeWidth="1.6"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
+function ExternalLinkIcon() {
+  return (
+    <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+      <path
+        d="M9.5 2.5h4v4M13.5 2.5 7.5 8.5M12 9.5v3.5a.5.5 0 0 1-.5.5h-8.5a.5.5 0 0 1-.5-.5V4.5a.5.5 0 0 1 .5-.5H6.5"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
 export function CampaignManagerHeader({
   title,
   logoPath,
@@ -48,44 +75,62 @@ export function CampaignManagerHeader({
 
   return (
     <section className="rounded-md border border-warmgrau/12 bg-white/75 p-5 shadow-sm md:p-7">
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-start md:gap-6">
-        <CampaignLogo logoPath={logoPath} name={title} size="lg" />
-        <div className="min-w-0 flex-1">
+      <div className="grid grid-cols-[auto_minmax(0,1fr)] items-center gap-x-4 gap-y-4 sm:items-start md:gap-x-6">
+        <div className="flex sm:row-span-3">
+          {onEditImage ? (
+            <button
+              type="button"
+              onClick={onEditImage}
+              aria-label={logoPath ? "Bild ändern" : "Bild hinzufügen"}
+              className={`group relative flex rounded-full ${focusRing}`}
+            >
+              <CampaignLogo logoPath={logoPath} name={title} size="lg" />
+              <span
+                aria-hidden="true"
+                className="absolute inset-0 grid place-items-center rounded-full bg-waldgruen-dark/60 font-body text-xs font-semibold text-creme opacity-0 transition-opacity duration-200 group-hover:opacity-100 group-focus-visible:opacity-100 motion-reduce:transition-none"
+              >
+                {logoPath ? "Ändern" : "Hinzufügen"}
+              </span>
+              <span
+                aria-hidden="true"
+                className="absolute -bottom-0.5 -right-0.5 grid h-7 w-7 place-items-center rounded-full border-2 border-white bg-waldgruen text-creme shadow-sm"
+              >
+                <PencilIcon />
+              </span>
+            </button>
+          ) : (
+            <CampaignLogo logoPath={logoPath} name={title} size="lg" />
+          )}
+        </div>
+        <div className="min-w-0">
           <p className="font-typewriter text-sm font-bold uppercase tracking-widest text-waldgruen/60">
             Deine Kampagne
           </p>
-          <h1 className="mt-1 break-words text-balance font-body text-2xl font-bold leading-tight tracking-tight text-waldgruen-dark md:text-4xl">
-            {title}
-          </h1>
-          <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-2">
-            <span className="inline-flex items-center gap-2 rounded-full border border-warmgrau/15 bg-creme px-3 py-1 font-body text-sm font-semibold text-waldgruen-dark">
-              <span
-                aria-hidden="true"
-                className={`h-2 w-2 rounded-full ${statusDotClass(status, ended)}`}
-              />
-              {ended ? "beendet" : statusLabels[status]}
-            </span>
-            {showPublicLink && (
-              <a
-                href={publicUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className={`inline-flex min-h-11 items-center justify-center rounded-md border border-waldgruen/25 px-4 font-body text-sm font-semibold text-waldgruen-dark transition-colors hover:border-waldgruen ${focusRing}`}
-              >
-                Kampagnenseite ansehen
-              </a>
-            )}
-            {onEditImage && (
-              <button
-                type="button"
-                onClick={onEditImage}
-                className={`inline-flex min-h-11 items-center font-body text-sm font-semibold text-waldgruen-dark underline underline-offset-4 transition-colors hover:text-waldgruen ${focusRing}`}
-              >
-                {logoPath ? "Bild ändern" : "Bild hinzufügen"}
-              </button>
-            )}
-          </div>
+          <span className="mt-2 inline-flex items-center gap-2 rounded-full border border-warmgrau/15 bg-creme px-3 py-1 font-body text-sm font-semibold text-waldgruen-dark">
+            <span
+              aria-hidden="true"
+              className={`h-2 w-2 rounded-full ${statusDotClass(status, ended)}`}
+            />
+            {ended ? "beendet" : statusLabels[status]}
+          </span>
         </div>
+        <h1 className="col-span-2 break-words text-balance font-body text-2xl font-bold leading-tight tracking-tight text-waldgruen-dark sm:col-span-1 sm:col-start-2 md:text-4xl">
+          {title}
+        </h1>
+        {showPublicLink && (
+          <div className="col-span-2 sm:col-span-1 sm:col-start-2">
+            <a
+              href={publicUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className={`inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-md border border-waldgruen/25 px-4 font-body text-sm font-semibold text-waldgruen-dark transition-colors hover:border-waldgruen sm:w-auto ${focusRing}`}
+            >
+              Kampagnenseite ansehen
+              <ExternalLinkIcon />
+              <span className="sr-only">(öffnet in neuem Tab)</span>
+            </a>
+          </div>
+        )}
       </div>
 
       {ended && endedLabel && (

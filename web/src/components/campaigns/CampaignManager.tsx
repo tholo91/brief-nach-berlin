@@ -46,8 +46,7 @@ import {
   resolvePickerDateKey,
 } from "./CampaignEndDatePicker";
 import { CampaignManagerHeader } from "./CampaignManagerHeader";
-import { CampaignQrDownload } from "./CampaignQrDownload";
-import { CampaignUrlCopyField } from "./CampaignUrlCopyField";
+import { CampaignShareCard } from "./CampaignShareCard";
 import { MdbCampaignSelector } from "./MdbCampaignSelector";
 
 type ActionResult = UpdateCampaignResult | null;
@@ -289,27 +288,13 @@ export function CampaignManager({
         publicUrl={publicUrl}
       />
 
-      <section className="rounded-md border border-warmgrau/12 bg-white/75 p-5 shadow-sm md:p-7">
-        <div className="max-w-xl">
-          <CampaignUrlCopyField url={publicUrl} variant="compact" />
-          {hasCompactUrl ? (
-            <div className="mt-2 rounded-md border border-waldgruen/12 bg-waldgruen/5 px-3 py-3">
-              <p className="font-body text-xs leading-relaxed text-warmgrau/70">
-                Diese Kampagne ist unter zwei Adressen erreichbar. Der Link ohne
-                Bindestriche eignet sich besonders für Radio, Podcast oder Fernsehen:
-              </p>
-              <p className="mt-1 break-all font-body text-sm font-semibold text-waldgruen-dark">
-                {compactUrl}
-              </p>
-            </div>
-          ) : (
-            <p className="mt-2 font-body text-xs leading-relaxed text-warmgrau/65">
-              Diese Kampagne hat nur eine Adresse, weil ihre Kurzadresse keine
-              Bindestriche enthält.
-            </p>
-          )}
-        </div>
-      </section>
+      <CampaignShareCard
+        publicUrl={publicUrl}
+        compactUrl={hasCompactUrl ? compactUrl : null}
+        slug={campaign.slug}
+        logoUrl={shownLogoUrl}
+        linkInactive={!ended && campaign.status !== "active"}
+      />
 
       {insights}
 
@@ -577,7 +562,7 @@ export function CampaignManager({
         )}
       </form>
 
-      <div className={ended ? "grid gap-4 lg:max-w-sm" : "grid gap-4 lg:grid-cols-[minmax(0,1fr)_minmax(280px,360px)]"}>
+      <div className="grid gap-4">
         {!ended && (
           <section className="grid gap-6 rounded-md border border-warmgrau/12 bg-white/75 p-5 shadow-sm md:p-7">
             <div>
@@ -677,11 +662,6 @@ export function CampaignManager({
             </div>
           </section>
         )}
-        <CampaignQrDownload
-          url={publicUrl}
-          slug={campaign.slug}
-          logoUrl={shownLogoUrl}
-        />
       </div>
 
       {canEnd && (

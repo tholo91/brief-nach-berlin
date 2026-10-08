@@ -166,18 +166,18 @@ export function CampaignQrDownload({ url, slug, logoUrl }: CampaignQrDownloadPro
   }
 
   return (
-    <div className="grid gap-4 rounded-md border border-warmgrau/12 bg-white/65 p-4 sm:grid-cols-[132px_1fr] sm:items-center">
+    <div className="grid grid-cols-[96px_1fr] items-center gap-4 sm:grid-cols-[112px_1fr]">
       <canvas
         ref={canvasRef}
         aria-label="QR-Code zum Kampagnenlink"
-        className="h-[132px] w-[132px] rounded-md border border-warmgrau/12 bg-white"
+        className="h-24 w-24 rounded-md border border-warmgrau/12 bg-white sm:h-28 sm:w-28"
       />
       <div className="grid gap-3">
         <div>
-          <h2 className="font-typewriter text-xl font-bold text-waldgruen-dark">
-            QR Code
-          </h2>
-          <p className="mt-2 font-body text-sm leading-relaxed text-warmgrau/70">
+          <h3 className="font-typewriter text-base font-bold text-waldgruen-dark">
+            QR-Code
+          </h3>
+          <p className="mt-1 font-body text-sm leading-relaxed text-warmgrau/70">
             Zum Ausdrucken, Teilen oder Aushängen, damit Menschen direkt zur
             öffentlichen Kampagnenseite gelangen.
           </p>
@@ -188,7 +188,7 @@ export function CampaignQrDownload({ url, slug, logoUrl }: CampaignQrDownloadPro
         <button
           type="button"
           onClick={downloadQr}
-          className="inline-flex w-full items-center justify-center rounded-md bg-waldgruen px-4 py-2.5 font-body text-sm font-semibold text-creme transition-colors hover:bg-waldgruen-dark sm:w-fit"
+          className="inline-flex min-h-11 w-full items-center justify-center rounded-md bg-waldgruen px-4 py-2.5 font-body text-sm font-semibold text-creme transition-colors hover:bg-waldgruen-dark focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-waldgruen sm:w-fit"
         >
           QR-Code herunterladen
         </button>

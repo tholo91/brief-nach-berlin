@@ -2,6 +2,8 @@ import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 
 import { CampaignLogo } from "@/components/campaigns/CampaignLogo";
+import { CampaignShareCard } from "@/components/campaigns/CampaignShareCard";
+import { CampaignUrlCopyField } from "@/components/campaigns/CampaignUrlCopyField";
 import { CampaignManagerHeader } from "@/components/campaigns/CampaignManagerHeader";
 import type { Campaign } from "@/lib/campaigns/schema";
 
@@ -147,5 +149,64 @@ describe("CampaignManagerHeader", () => {
     expect(withoutImage).toContain("Bild hinzufügen");
     expect(readOnly).not.toContain("Bild ändern");
     expect(readOnly).not.toContain("Bild hinzufügen");
+  });
+});
+
+describe("CampaignShareCard", () => {
+  const compactUrl = "https://brief-nach-berlin.de/kampagne/duisburgretten";
+
+  function renderShare(
+    overrides: Partial<{ compactUrl: string | null; linkInactive: boolean }> = {}
+  ) {
+    return renderToStaticMarkup(
+      createElement(CampaignShareCard, {
+        publicUrl,
+        compactUrl,
+        slug: "duisburg-retten",
+        logoUrl: null,
+        linkInactive: false,
+        ...overrides,
+      })
+    );
+  }
+
+  it("renders heading, Kampagnenlink and QR download", () => {
+    const markup = renderShare();
+
+    expect(markup).toMatch(/<h2[^>]*>Kampagne teilen<\/h2>/);
+    expect(markup).toContain("Kampagnenlink");
+    expect(markup).toContain("duisburg-retten");
+    expect(markup).toContain("QR-Code herunterladen");
+  });
+
+  it("renders the Kurzlink row with its own copy label", () => {
+    const markup = renderShare();
+
+    expect(markup).toContain("Kurzlink für Radio und Podcast");
+    expect(markup).toContain("duisburgretten");
+    expect(markup).toContain('aria-label="Kurzlink für Radio und Podcast kopieren"');
+  });
+
+  it("drops the Kurzlink row and the two-address text without a compact url", () => {
+    const markup = renderShare({ compactUrl: null });
+
+    expect(markup).not.toContain("Kurzlink");
+    expect(markup).not.toContain("zwei Adressen");
+    expect(markup).not.toContain("nur eine Adresse");
+  });
+
+  it("shows the inactive note only when the link is inactive", () => {
+    const note = "Die Seite ist nur erreichbar, solange die Kampagne aktiv ist.";
+
+    expect(renderShare({ linkInactive: true })).toContain(note);
+    expect(renderShare({ linkInactive: false })).not.toContain(note);
+  });
+
+  it("keeps the default compact aria-label for the verification page", () => {
+    const markup = renderToStaticMarkup(
+      createElement(CampaignUrlCopyField, { url: publicUrl, variant: "compact" })
+    );
+
+    expect(markup).toContain('aria-label="Kampagnenlink kopieren"');
   });
 });

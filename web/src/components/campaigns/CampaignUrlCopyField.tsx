@@ -116,7 +116,7 @@ export function CampaignUrlCopyField({
         <button
           type="button"
           onClick={copyUrl}
-          aria-label={copied ? "Kampagnenlink kopiert" : "Kampagnenlink kopieren"}
+          aria-label={copied ? `${label} kopiert` : `${label} kopieren`}
           className={`group inline-grid min-w-0 max-w-full grid-cols-[1fr_auto] items-center gap-2 rounded-md border px-3 py-2 text-left font-body text-sm outline-none transition-all duration-200 ${
             copied
               ? "border-waldgruen/40 bg-waldgruen/8 text-waldgruen-dark"

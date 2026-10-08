@@ -41,15 +41,16 @@ describe("privacy email contact", () => {
       expect(followup.html).not.toContain("datenschutz@brief-nach-berlin.de");
       expect(followup.html).not.toContain("thomas_lorenz@posteo.de");
       expect(getEmailCopy(locale).followup.oneOff).toMatch(/Newsletter|newsletter|bülten/);
+      expect(followup.html).toContain(getEmailCopy(locale).followup.oneOff);
     },
   );
 
-  it("keeps the three-message explanation in the letter email", () => {
+  it("announces only the rating follow-up in the letter email", () => {
     const html = buildEmailHtml(params);
     const text = buildLetterEmailText(params);
 
-    expect(html).toContain("höchstens drei automatische E-Mails");
-    expect(text).toContain("höchstens drei automatische E-Mails");
+    expect(html).toContain("Dein Brief und dein Anliegen werden nicht gespeichert");
+    expect(text).toContain("In 2-3 Tagen kommt nur noch eine Mail");
     expect(html).toContain("Kein Newsletter");
     expect(text).toContain("Kein Newsletter");
   });

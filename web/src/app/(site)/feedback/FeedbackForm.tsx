@@ -743,6 +743,10 @@ function ThankYouCard({
           Das hilft mir wirklich. Briefe wirken am stärksten, wenn mehrere
           Stimmen zum selben Thema zusammenkommen.
         </p>
+        <p className="font-body text-sm text-warmgrau/70 max-w-sm mx-auto mb-6 leading-relaxed">
+          In ein paar Monaten frage ich dich vielleicht noch einmal, was aus
+          deinem Brief geworden ist. Danach ist Schluss, versprochen.
+        </p>
         {showRecoveryCard ? (
           <div
             className="rounded-lg border border-waldgruen/25 bg-waldgruen/5 px-4 py-4 text-left max-w-sm mx-auto mb-8 animate-feedback-in"

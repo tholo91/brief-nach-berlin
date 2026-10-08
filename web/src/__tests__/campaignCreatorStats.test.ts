@@ -8,12 +8,24 @@ import {
   type CampaignFeedbackRow,
 } from "@/lib/campaigns/creatorStats";
 import { CampaignCreatorStats } from "@/components/campaigns/CampaignCreatorStats";
+import { CampaignDonationCard } from "@/components/campaigns/CampaignDonationCard";
+import { DONATION_PATH, DONATION_PROVIDER_URL } from "@/lib/config";
+import { SUPPORT_CAMPAIGN_CREATOR_COPY, SUPPORT_CONTENT } from "@/lib/support-content";
 import { getServiceRoleClient } from "@/lib/supabase/server";
 import type { PoliticalSelfEfficacy } from "@/lib/feedback/politicalActivation";
 
 jest.mock("@/lib/supabase/server", () => ({
   getServiceRoleClient: jest.fn(),
 }));
+
+jest.mock("next/image", () => {
+  const React = jest.requireActual<typeof import("react")>("react");
+  return {
+    __esModule: true,
+    default: ({ src, alt }: { src: string; alt: string }) =>
+      React.createElement("img", { src, alt }),
+  };
+});
 
 const mockedGetServiceRoleClient = jest.mocked(getServiceRoleClient);
 
@@ -377,5 +389,37 @@ describe("CampaignCreatorStats rendering", () => {
       row({ body: "Ein ausreichend langer Kommentar", consent: true }),
     ]);
     expect(markup).not.toMatch(/[–—]/);
+  });
+});
+
+describe("CampaignDonationCard (D-05)", () => {
+  const markup = renderToStaticMarkup(createElement(CampaignDonationCard));
+  const decoded = markup.replace(/&#x27;/g, "'").replace(/&quot;/g, '"');
+
+  it("renders the S6 creator copy verbatim", () => {
+    for (const text of [
+      SUPPORT_CAMPAIGN_CREATOR_COPY.heading,
+      SUPPORT_CAMPAIGN_CREATOR_COPY.body,
+      SUPPORT_CAMPAIGN_CREATOR_COPY.button,
+      SUPPORT_CAMPAIGN_CREATOR_COPY.infoButton,
+      SUPPORT_CAMPAIGN_CREATOR_COPY.status,
+    ]) {
+      expect(decoded).toContain(text);
+    }
+  });
+
+  it("opens the donation provider in a new tab and links the info page", () => {
+    const donate = new RegExp(
+      `<a[^>]*href="${DONATION_PROVIDER_URL}"[^>]*>`,
+    ).exec(markup)?.[0];
+    expect(donate).toBeDefined();
+    expect(donate).toContain('target="_blank"');
+    expect(donate).toMatch(/rel="[^"]*noopener/);
+    expect(markup).toContain(`href="${DONATION_PATH}"`);
+  });
+
+  it("shows the founder avatar", () => {
+    expect(markup).toContain(`src="${SUPPORT_CONTENT.founder.avatarPath}"`);
+    expect(markup).toContain(`alt="${SUPPORT_CONTENT.founder.name}"`);
   });
 });

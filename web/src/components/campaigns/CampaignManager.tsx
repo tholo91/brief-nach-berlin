@@ -45,22 +45,13 @@ import {
   pickerValueFromEndsAt,
   resolvePickerDateKey,
 } from "./CampaignEndDatePicker";
+import { CampaignManagerHeader } from "./CampaignManagerHeader";
 import { CampaignQrDownload } from "./CampaignQrDownload";
 import { CampaignUrlCopyField } from "./CampaignUrlCopyField";
 import { MdbCampaignSelector } from "./MdbCampaignSelector";
 
 type ActionResult = UpdateCampaignResult | null;
 type RuntimeResult = PauseCampaignResult | CampaignEndResult | null;
-
-const statusLabels: Record<Campaign["status"], string> = {
-  draft: "Entwurf",
-  awaiting_email_verification: "wartet auf E-Mail-Bestätigung",
-  awaiting_approval: "wartet auf Freigabe",
-  active: "aktiv",
-  paused: "pausiert",
-  archived: "beendet / archiviert",
-  blocked: "blockiert",
-};
 
 const maxClientLogoBytes = 4 * 1024 * 1024;
 const maxLogoDisplaySize = 512;
@@ -288,72 +279,36 @@ export function CampaignManager({
 
   return (
     <div className="grid gap-8">
-      {endedLabel && (
-        <section
-          aria-labelledby="campaign-ended-banner"
-          className="rounded-md border border-waldgruen/15 border-l-4 border-l-waldgruen bg-white/75 p-5 shadow-sm md:p-7"
-        >
-          <h2
-            id="campaign-ended-banner"
-            className="font-typewriter text-xl font-bold text-waldgruen-dark md:text-2xl"
-          >
-            Beendet am {endedLabel}
-          </h2>
-          <p className="mt-2 max-w-2xl font-body text-sm leading-relaxed text-warmgrau/75 md:text-base">
-            Die Kampagnenseite bleibt online und zeigt den Endstand. Ändern lässt sich nichts mehr.
-            Wenn du die Kampagne neu starten willst oder Fragen hast, schreib uns.
-          </p>
-          <a
-            href={contactHref}
-            className="mt-4 inline-flex min-h-11 w-full items-center justify-center rounded-md bg-waldgruen px-5 py-3 font-body text-base font-semibold text-creme transition-colors hover:bg-waldgruen-dark focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-waldgruen sm:w-auto"
-          >
-            Kontakt aufnehmen
-          </a>
-        </section>
-      )}
+      <CampaignManagerHeader
+        title={campaign.title}
+        logoPath={campaign.logoPath}
+        status={campaign.status}
+        ended={ended}
+        endedLabel={endedLabel}
+        contactHref={contactHref}
+        publicUrl={publicUrl}
+      />
 
       <section className="rounded-md border border-warmgrau/12 bg-white/75 p-5 shadow-sm md:p-7">
-        <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
-          <div>
-            <p className="font-typewriter text-sm font-bold uppercase tracking-widest text-waldgruen/60">
-              Deine Kampagne
-            </p>
-            <h1 className="mt-2 font-typewriter text-3xl font-bold leading-tight text-waldgruen-dark md:text-4xl">
-              {campaign.title}
-            </h1>
-            <div className="mt-3 max-w-xl">
-              <CampaignUrlCopyField url={publicUrl} variant="compact" />
-              {hasCompactUrl ? (
-                <div className="mt-2 rounded-md border border-waldgruen/12 bg-waldgruen/5 px-3 py-3">
-                  <p className="font-body text-xs leading-relaxed text-warmgrau/70">
-                    Diese Kampagne ist unter zwei Adressen erreichbar. Der Link ohne
-                    Bindestriche eignet sich besonders für Radio, Podcast oder Fernsehen:
-                  </p>
-                  <p className="mt-1 break-all font-body text-sm font-semibold text-waldgruen-dark">
-                    {compactUrl}
-                  </p>
-                </div>
-              ) : (
-                <p className="mt-2 font-body text-xs leading-relaxed text-warmgrau/65">
-                  Diese Kampagne hat nur eine Adresse, weil ihre Kurzadresse keine
-                  Bindestriche enthält.
-                </p>
-              )}
+        <div className="max-w-xl">
+          <CampaignUrlCopyField url={publicUrl} variant="compact" />
+          {hasCompactUrl ? (
+            <div className="mt-2 rounded-md border border-waldgruen/12 bg-waldgruen/5 px-3 py-3">
+              <p className="font-body text-xs leading-relaxed text-warmgrau/70">
+                Diese Kampagne ist unter zwei Adressen erreichbar. Der Link ohne
+                Bindestriche eignet sich besonders für Radio, Podcast oder Fernsehen:
+              </p>
+              <p className="mt-1 break-all font-body text-sm font-semibold text-waldgruen-dark">
+                {compactUrl}
+              </p>
             </div>
-          </div>
-          <div className="rounded-md border border-waldgruen/15 bg-creme px-4 py-3 font-body text-sm font-semibold text-waldgruen-dark">
-            {ended ? "beendet" : statusLabels[campaign.status]}
-          </div>
+          ) : (
+            <p className="mt-2 font-body text-xs leading-relaxed text-warmgrau/65">
+              Diese Kampagne hat nur eine Adresse, weil ihre Kurzadresse keine
+              Bindestriche enthält.
+            </p>
+          )}
         </div>
-        {!ended && (
-          <p className="mt-5 font-body text-sm leading-relaxed text-warmgrau/70">
-            {campaign.status === "archived"
-              ? "Diese Kampagne ist beendet und kann nicht mehr verändert werden."
-              : campaign.status === "blocked"
-                ? "Diese Kampagne ist blockiert und kann nicht mehr verändert werden."
-                : "Änderungen werden vor der Veröffentlichung automatisch geprüft. Wenn die Prüfung scheitert, bleibt der bisherige öffentliche Text unverändert."}
-          </p>
-        )}
       </section>
 
       {insights}
@@ -362,6 +317,12 @@ export function CampaignManager({
         className="grid gap-5 rounded-md border border-warmgrau/12 bg-creme/80 p-5 shadow-sm md:p-7"
         onSubmit={submitCampaignUpdate}
       >
+        {canEdit && (
+          <p className="font-body text-sm leading-relaxed text-warmgrau/70">
+            Änderungen werden vor der Veröffentlichung automatisch geprüft. Wenn die Prüfung
+            scheitert, bleibt der bisherige öffentliche Text unverändert.
+          </p>
+        )}
         <input type="hidden" name="campaignId" value={campaign.id} />
 
         <div className="grid gap-2">

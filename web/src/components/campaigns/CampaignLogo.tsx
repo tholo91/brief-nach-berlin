@@ -3,7 +3,8 @@ import { campaignLogoPublicUrl } from "@/lib/campaigns/logo";
 type CampaignLogoProps = {
   logoPath: string | null;
   name: string;
-  size?: "xs" | "chip" | "sm" | "md";
+  size?: "xs" | "chip" | "sm" | "md" | "lg";
+  src?: string | null;
 };
 
 const roundImage = "rounded-full border border-warmgrau/15 shadow-sm";
@@ -40,14 +41,22 @@ const sizeClasses = {
     fallbackShape: roundFallback,
     backgroundSize: "105%",
   },
+  lg: {
+    container: "h-20 w-20",
+    fallback: "text-3xl",
+    image: roundImage,
+    fallbackShape: roundFallback,
+    backgroundSize: "105%",
+  },
 } as const;
 
 export function CampaignLogo({
   logoPath,
   name,
   size = "sm",
+  src,
 }: CampaignLogoProps) {
-  const logoUrl = campaignLogoPublicUrl(logoPath);
+  const logoUrl = src || campaignLogoPublicUrl(logoPath);
   const classes = sizeClasses[size];
   const displayName = name.trim() || "Kampagne";
 

@@ -1,5 +1,6 @@
 ---
 created: 2026-10-08T13:36:32.000Z
+completed: 2026-10-08T00:00:00.000Z
 title: "Kampagnen S3: Ersteller-Stats und Spendenkarte auf Verwalten-Seite"
 area: ui
 severity: major

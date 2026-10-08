@@ -1,5 +1,6 @@
 ---
 created: 2026-10-08T13:36:32.000Z
+completed: 2026-10-08T00:00:00.000Z
 title: "Kampagnen S2: Ablaufdatum und Beendet-Ansichten"
 area: ui
 severity: major

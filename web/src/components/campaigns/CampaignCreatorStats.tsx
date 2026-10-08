@@ -9,6 +9,24 @@ const ratingFormatter = new Intl.NumberFormat("de-DE", {
   maximumFractionDigits: 1,
 });
 
+const weekFormatter = new Intl.DateTimeFormat("de-DE", {
+  day: "numeric",
+  month: "short",
+  timeZone: "UTC",
+});
+
+function weekLabel(weekStart: string) {
+  return weekFormatter.format(new Date(`${weekStart}T00:00:00Z`));
+}
+
+function lettersLabel(count: number) {
+  return count === 1 ? "1 Brief" : `${numberFormatter.format(count)} Briefe`;
+}
+
+function lettersLabelDative(count: number) {
+  return count === 1 ? "1 Brief" : `${numberFormatter.format(count)} Briefen`;
+}
+
 const OPT_IN_NOTE =
   "Mitgezählt wird nur, wer beim Schreiben „Mein Anliegen auf die Karte setzen“ gewählt hat.";
 
@@ -64,6 +82,68 @@ function Tile({ value, unit, label, kpi }: TileProps) {
 }
 
 type SignalsView = CampaignCreatorStatsView["signals"];
+type ReadySignals = Extract<SignalsView, { status: "ready" }>;
+
+function Timeline({ signals }: { signals: ReadySignals }) {
+  const { weeks, peakWeek } = signals;
+  if (!peakWeek || weeks.length === 0) {
+    return (
+      <div>
+        <h3 className="font-typewriter text-base font-bold text-waldgruen-dark">
+          Verlauf
+        </h3>
+        <p className="mt-3 font-body text-sm leading-relaxed text-warmgrau/70">
+          Zu diesen Briefen gibt es noch keine Wochenzahlen.
+        </p>
+      </div>
+    );
+  }
+
+  const summary = `Stärkste Woche: ab ${weekLabel(peakWeek.weekStart)} mit ${lettersLabelDative(peakWeek.count)}`;
+  const firstWeek = weeks[0];
+  const lastWeek = weeks[weeks.length - 1];
+
+  return (
+    <div>
+      <h3 className="font-typewriter text-base font-bold text-waldgruen-dark">
+        Verlauf
+      </h3>
+      <div
+        role="img"
+        aria-label={`Briefe pro Woche von ${weekLabel(firstWeek.weekStart)} bis ${weekLabel(lastWeek.weekStart)} ${summary}`}
+        className="mt-3 flex h-24 items-end justify-end gap-0.5"
+      >
+        {weeks.map((week) => {
+          const isPeak = week.weekStart === peakWeek.weekStart;
+          return week.count === 0 ? (
+            <div
+              key={week.weekStart}
+              title={`Woche ab ${weekLabel(week.weekStart)}: 0 Briefe`}
+              className="h-px max-w-6 flex-1 bg-warmgrau/15"
+            />
+          ) : (
+            <div
+              key={week.weekStart}
+              title={`Woche ab ${weekLabel(week.weekStart)}: ${lettersLabel(week.count)}`}
+              className={`max-w-6 flex-1 rounded-t-sm ${isPeak ? "bg-waldgruen" : "bg-waldgruen/35"}`}
+              style={{ height: `${Math.max(4, Math.round((week.count / peakWeek.count) * 100))}%` }}
+            />
+          );
+        })}
+      </div>
+      {weeks.length > 1 && (
+        <div
+          aria-hidden="true"
+          className="mt-1.5 flex justify-between font-body text-xs text-warmgrau/60"
+        >
+          <span>{weekLabel(firstWeek.weekStart)}</span>
+          <span>{weekLabel(lastWeek.weekStart)}</span>
+        </div>
+      )}
+      <p className="mt-2 font-body text-sm text-warmgrau/85">{summary}</p>
+    </div>
+  );
+}
 
 function OriginSection({
   signals,
@@ -163,8 +243,16 @@ function OriginSection({
               </li>
             ))}
           </ul>
+          {signals.recipients && (
+            <p className="mt-3 font-body text-xs leading-relaxed text-warmgrau/70">
+              Geschrieben an:{" "}
+              {signals.recipients
+                .map((bucket) => `${bucket.label} ${numberFormatter.format(bucket.count)}`)
+                .join(", ")}
+            </p>
+          )}
         </div>
-        <div />
+        <Timeline signals={signals} />
       </div>
       <p className="mt-4 font-body text-xs leading-relaxed text-warmgrau/60">
         {basis} {OPT_IN_NOTE}
@@ -272,7 +360,7 @@ export function CampaignCreatorStats({
 
       {feedback.status === "ready" && (
         <div className="mt-5 border-t border-warmgrau/12 pt-4">
-          <dl className="m-0 grid gap-3 sm:grid-cols-3">
+          <dl className="m-0 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
             <Tile
               kpi={feedback.sendRate}
               value={
@@ -301,7 +389,37 @@ export function CampaignCreatorStats({
               }
               label="fühlen sich danach eher in der Lage, sich politisch einzubringen"
             />
+            <Tile
+              kpi={feedback.powerlessness}
+              value={
+                feedback.powerlessness.status === "shown"
+                  ? `${feedback.powerlessness.value} %`
+                  : ""
+              }
+              label="wissen oft oder manchmal nicht, was sie politisch konkret tun können"
+            />
           </dl>
+
+          {feedback.tags.length > 0 && (
+            <div className="mt-6">
+              <h3 className="font-typewriter text-base font-bold text-waldgruen-dark">
+                Was über die Briefe gesagt wird
+              </h3>
+              <ul className="m-0 mt-3 flex list-none flex-wrap gap-2 p-0">
+                {feedback.tags.map((tag) => (
+                  <li
+                    key={tag.label}
+                    className="rounded-full border border-warmgrau/15 bg-creme/70 px-3 py-1 font-body text-xs text-warmgrau/85"
+                  >
+                    {tag.label}{" "}
+                    <span className="font-semibold text-waldgruen-dark">
+                      {numberFormatter.format(tag.count)}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
 
           {feedback.comments.length > 0 && (
             <div className="mt-6">

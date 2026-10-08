@@ -1,8 +1,10 @@
 import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import {
+  bucketRecipients,
   bucketRegions,
   buildCampaignCreatorStats,
+  buildWeeklySeries,
   CREATOR_STATS_REVIEW_COLUMNS,
   CREATOR_STATS_SIGNAL_COLUMNS,
   getCampaignCreatorStats,
@@ -15,7 +17,10 @@ import { CampaignDonationCard } from "@/components/campaigns/CampaignDonationCar
 import { DONATION_PATH, DONATION_PROVIDER_URL } from "@/lib/config";
 import { SUPPORT_CAMPAIGN_CREATOR_COPY, SUPPORT_CONTENT } from "@/lib/support-content";
 import { getServiceRoleClient } from "@/lib/supabase/server";
-import type { PoliticalSelfEfficacy } from "@/lib/feedback/politicalActivation";
+import type {
+  PoliticalPowerlessnessFrequency,
+  PoliticalSelfEfficacy,
+} from "@/lib/feedback/politicalActivation";
 
 jest.mock("@/lib/supabase/server", () => ({
   getServiceRoleClient: jest.fn(),
@@ -40,6 +45,8 @@ function row(overrides: Partial<CampaignFeedbackRow> = {}): CampaignFeedbackRow 
     political_self_efficacy: "rather_yes",
     body: null,
     consent: null,
+    political_powerlessness_frequency: null,
+    feedback_tags: null,
     ...overrides,
   };
 }
@@ -301,6 +308,159 @@ describe("bucketRegions and the signal gate (D-01)", () => {
     expect(json).not.toContain("Bremen");
     expect(json).not.toContain("Schleswig-Holstein");
     expect(json).toContain("Weitere Bundesländer");
+  });
+});
+
+describe("buildWeeklySeries (D-02b)", () => {
+  const seriesRows = [
+    ...signals(3, { generated_at: "2026-09-16T10:00:00Z" }),
+    ...signals(4, { generated_at: "2026-09-30T10:00:00Z" }),
+    signal({ generated_at: null, created_at: "2026-09-29T08:00:00Z" }),
+    signal({ generated_at: "2026-10-04T22:30:00Z" }),
+    signal({ generated_at: "2026-10-06T09:00:00Z" }),
+  ];
+  const now = new Date("2026-10-08T10:00:00Z");
+
+  it("buckets by Berlin Monday, fills gaps, falls back to created_at and picks the peak", () => {
+    const { weeks, peakWeek } = buildWeeklySeries(seriesRows, { now, ended: false });
+    expect(weeks).toEqual([
+      { weekStart: "2026-09-14", count: 3 },
+      { weekStart: "2026-09-21", count: 0 },
+      { weekStart: "2026-09-28", count: 5 },
+      { weekStart: "2026-10-05", count: 2 },
+    ]);
+    expect(peakWeek).toEqual({ weekStart: "2026-09-28", count: 5 });
+  });
+
+  it("stops at the last data week for ended campaigns and runs to now otherwise", () => {
+    const later = new Date("2026-12-01T10:00:00Z");
+    const ended = buildWeeklySeries(seriesRows, { now: later, ended: true });
+    expect(ended.weeks[ended.weeks.length - 1].weekStart).toBe("2026-10-05");
+
+    const running = buildWeeklySeries(seriesRows, { now: later, ended: false });
+    expect(running.weeks[running.weeks.length - 1]).toEqual({ weekStart: "2026-11-30", count: 0 });
+    expect(running.weeks.slice(-8, -1).every((week) => week.count === 0)).toBe(true);
+  });
+
+  it("resolves equal peaks to the most recent week", () => {
+    const { peakWeek } = buildWeeklySeries(
+      [
+        ...signals(2, { generated_at: "2026-09-16T10:00:00Z" }),
+        ...signals(2, { generated_at: "2026-09-30T10:00:00Z" }),
+      ],
+      { now, ended: true },
+    );
+    expect(peakWeek).toEqual({ weekStart: "2026-09-28", count: 2 });
+  });
+
+  it("keeps only the newest 52 weeks", () => {
+    const { weeks } = buildWeeklySeries(
+      [signal({ generated_at: "2025-01-08T10:00:00Z" }), signal({ generated_at: "2026-10-06T10:00:00Z" })],
+      { now, ended: true },
+    );
+    expect(weeks).toHaveLength(52);
+    expect(weeks[weeks.length - 1].weekStart).toBe("2026-10-05");
+  });
+
+  it("skips unparseable timestamps in the series but not in the signal total", () => {
+    const unparseable = signals(2, { generated_at: null, created_at: "kaputt" });
+    const { weeks } = buildWeeklySeries([...unparseable, signal({ generated_at: "2026-10-06T10:00:00Z" })], {
+      now,
+      ended: true,
+    });
+    expect(weeks).toEqual([{ weekStart: "2026-10-05", count: 1 }]);
+
+    const view = buildWithSignals([...signals(9, { generated_at: null, created_at: "kaputt" }), signal()]);
+    expect(view.signals).toMatchObject({ status: "ready", signals: 10 });
+  });
+});
+
+describe("bucketRecipients (D-02d)", () => {
+  it("returns null for one group, treating mdb and mdb_later as the same", () => {
+    expect(
+      bucketRecipients([...signals(8, { recipient_kind: "mdb" }), ...signals(2, { recipient_kind: "mdb_later" })]),
+    ).toBeNull();
+  });
+
+  it("lists two groups of at least 5 sorted by count", () => {
+    expect(
+      bucketRecipients([
+        ...signals(7, { recipient_kind: "mdb" }),
+        ...signals(5, { recipient_kind: "landesregierung" }),
+      ]),
+    ).toEqual([
+      { label: "Bundestag-Abgeordnete", count: 7 },
+      { label: "Landesregierung", count: 5 },
+    ]);
+  });
+
+  it("merges small groups into Andere Empfänger, last", () => {
+    expect(
+      bucketRecipients([...signals(10, { recipient_kind: "mdb" }), ...signals(2, { recipient_kind: "rathaus" })]),
+    ).toEqual([
+      { label: "Bundestag-Abgeordnete", count: 10 },
+      { label: "Andere Empfänger", count: 2 },
+    ]);
+  });
+
+  it("returns null when only the merged bucket remains", () => {
+    expect(
+      bucketRecipients([
+        ...signals(4, { recipient_kind: "mdl" }),
+        ...signals(4, { recipient_kind: "rathaus" }),
+        ...signals(4, { recipient_kind: "landesregierung" }),
+      ]),
+    ).toBeNull();
+  });
+});
+
+describe("powerlessness KPI and feedback tags (D-02c)", () => {
+  function readyFeedback(feedbackRows: CampaignFeedbackRow[]) {
+    const view = build(feedbackRows);
+    if (view.feedback.status !== "ready") throw new Error("expected ready");
+    return view.feedback;
+  }
+  const freq = (value: PoliticalPowerlessnessFrequency, count: number) =>
+    rows(count, { political_powerlessness_frequency: value });
+
+  it("counts often and sometimes among all answers", () => {
+    const feedback = readyFeedback([
+      ...freq("often", 6),
+      ...freq("sometimes", 2),
+      ...freq("rarely", 2),
+    ]);
+    expect(feedback.powerlessness).toEqual({ status: "shown", value: 80, responses: 10 });
+  });
+
+  it("is too_few below 10 answers", () => {
+    const feedback = readyFeedback([...freq("often", 9), ...rows(3)]);
+    expect(feedback.powerlessness).toEqual({ status: "too_few", responses: 9 });
+  });
+
+  it("shows known tags from 5 uses with German labels and hides the rest", () => {
+    const feedback = readyFeedback([
+      ...rows(5, { feedback_tags: ["zu_lang"] }),
+      ...rows(4, { feedback_tags: ["zu_kurz"] }),
+      ...rows(10, { feedback_tags: ["backlog_campaign"] }),
+    ]);
+    expect(feedback.tags).toEqual([{ label: "Zu lang", count: 5 }]);
+  });
+
+  it("limits to 6 chips sorted by count then label", () => {
+    const slugs = ["zu_lang", "zu_kurz", "falscher_ton", "zu_generisch", "wiederholt_sich", "tonfall_passt", "top_formuliert"];
+    const feedback = readyFeedback([
+      ...rows(8, { feedback_tags: ["top_formuliert"] }),
+      ...slugs.slice(0, 6).flatMap((slug) => rows(5, { feedback_tags: [slug] })),
+    ]);
+    expect(feedback.tags).toHaveLength(6);
+    expect(feedback.tags[0]).toEqual({ label: "Top formuliert", count: 8 });
+    expect(feedback.tags.slice(1).map((tag) => tag.label)).toEqual([
+      "Falscher Ton",
+      "Tonfall passt",
+      "Wiederholt sich",
+      "Zu generisch",
+      "Zu kurz",
+    ]);
   });
 });
 
@@ -585,12 +745,50 @@ describe("CampaignCreatorStats rendering", () => {
     expect(render([], false)).toContain("So kommt deine Kampagne an");
   });
 
+  const fullSignals = [
+    ...signals(18, { bundesland_key: "NW", recipient_kind: "mdb", generated_at: "2026-09-30T10:00:00Z" }),
+    ...signals(6, { bundesland_key: "BY", recipient_kind: "landesregierung", generated_at: "2026-09-16T10:00:00Z" }),
+    ...signals(2, { bundesland_key: "HB", recipient_kind: "rathaus", generated_at: "2026-09-17T10:00:00Z" }),
+  ];
+  const fullReviews = [
+    ...rows(12, { political_powerlessness_frequency: "often", feedback_tags: ["zu_lang"] }),
+    row({ body: "Ein ausreichend langer Kommentar", consent: true }),
+  ];
+
+  function renderFull(signalRows: CampaignSignalRow[] = fullSignals) {
+    return renderToStaticMarkup(
+      createElement(CampaignCreatorStats, {
+        stats: buildCampaignCreatorStats({
+          ...baseInput,
+          rows: fullReviews,
+          signalRows,
+        }),
+      }),
+    );
+  }
+
+  it("renders Verlauf, strongest week, recipients, 4th tile and tag chips", () => {
+    const markup = renderFull();
+    expect(markup).toContain("Verlauf");
+    expect(markup).toContain("Stärkste Woche: ab 28. Sept. mit 18 Briefen");
+    expect(markup).toContain("Geschrieben an: Bundestag-Abgeordnete 18, Landesregierung 6, Andere Empfänger 2");
+    expect(markup).toContain("wissen oft oder manchmal nicht");
+    expect(markup).toContain("Was über die Briefe gesagt wird");
+    expect(markup).toContain("Zu lang");
+  });
+
+  it("omits the recipient line when all letters go to one group", () => {
+    const markup = renderFull(signals(12, { recipient_kind: "mdb" }));
+    expect(markup).not.toContain("Geschrieben an:");
+  });
+
   it("contains no em or en dash characters", () => {
-    const markup = render([
+    const markup = renderFull();
+    expect(markup).not.toMatch(/[–—]/);
+    expect(render([
       ...rows(12),
       row({ body: "Ein ausreichend langer Kommentar", consent: true }),
-    ]);
-    expect(markup).not.toMatch(/[–—]/);
+    ])).not.toMatch(/[–—]/);
   });
 });
 

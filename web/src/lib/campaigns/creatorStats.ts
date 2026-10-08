@@ -4,7 +4,15 @@ import {
   DEFAULT_STATS_FILTER,
   type InternalReviewRow,
 } from "@/lib/internalStats/aggregate";
-import type { PoliticalSelfEfficacy } from "@/lib/feedback/politicalActivation";
+import {
+  FACT_CHECK_FEEDBACK_TAGS,
+  NEGATIVE_FEEDBACK_TAGS,
+  POSITIVE_FEEDBACK_TAGS,
+} from "@/lib/feedback/feedbackTags";
+import type {
+  PoliticalPowerlessnessFrequency,
+  PoliticalSelfEfficacy,
+} from "@/lib/feedback/politicalActivation";
 import { getServiceRoleClient } from "@/lib/supabase/server";
 import { CAMPAIGN_TIME_ZONE } from "./endDate";
 import { BUNDESLAND_NAMES, type Campaign } from "./schema";
@@ -13,12 +21,34 @@ export const CREATOR_STATS_MIN_RESPONSES = 10;
 export const CREATOR_COMMENT_LIMIT = 5;
 export const CREATOR_COMMENT_MIN_LENGTH = 10;
 export const CREATOR_STATS_REVIEW_COLUMNS =
-  "created_at,rating,letter_sent,political_self_efficacy,body,consent";
+  "created_at,rating,letter_sent,political_self_efficacy,body,consent,political_powerlessness_frequency,feedback_tags";
 export const CREATOR_SIGNALS_MIN_TOTAL = 10;
 export const CREATOR_REGION_MIN_BUCKET = 5;
 export const CREATOR_STATS_SIGNAL_COLUMNS =
   "bundesland_key,recipient_kind,generated_at,created_at";
+export const CREATOR_TIMELINE_MAX_WEEKS = 52;
+export const CREATOR_TAG_MIN_COUNT = 5;
+export const CREATOR_TAG_LIMIT = 6;
 const OTHER_REGIONS_LABEL = "Weitere Bundesländer";
+const OTHER_RECIPIENTS_LABEL = "Andere Empfänger";
+
+const RECIPIENT_GROUP_LABELS: Record<string, string> = {
+  mdb: "Bundestag-Abgeordnete",
+  mdb_later: "Bundestag-Abgeordnete",
+  mdl: "Landtag-Abgeordnete",
+  landesregierung: "Landesregierung",
+  bundeskanzler: "Bundeskanzler",
+  rathaus: "Rathaus",
+  campaign_fixed: "Fester Empfänger",
+};
+
+const FEEDBACK_TAG_LABELS: ReadonlyMap<string, string> = new Map(
+  [
+    ...NEGATIVE_FEEDBACK_TAGS,
+    ...POSITIVE_FEEDBACK_TAGS,
+    ...FACT_CHECK_FEEDBACK_TAGS,
+  ].map((tag) => [tag.slug, tag.label]),
+);
 
 export type CampaignSignalRow = {
   bundesland_key: string | null;
@@ -40,11 +70,19 @@ export type CampaignFeedbackRow = {
   political_self_efficacy: PoliticalSelfEfficacy | null;
   body: string | null;
   consent: boolean | null;
+  political_powerlessness_frequency: PoliticalPowerlessnessFrequency | null;
+  feedback_tags: string[] | null;
 };
 
 export type CreatorStatsKpi =
   | { status: "shown"; value: number; responses: number }
   | { status: "too_few"; responses: number };
+
+export type CreatorWeekBucket = { weekStart: string; count: number };
+
+export type CreatorRecipientBucket = { label: string; count: number };
+
+export type CreatorFeedbackTag = { label: string; count: number };
 
 export type CreatorStatsComment = {
   text: string;
@@ -67,6 +105,9 @@ export type CampaignCreatorStatsView = {
         status: "ready";
         signals: number;
         regions: CreatorRegionBucket[];
+        recipients: CreatorRecipientBucket[] | null;
+        weeks: CreatorWeekBucket[];
+        peakWeek: CreatorWeekBucket | null;
       };
   feedback:
     | { status: "unavailable" }
@@ -82,6 +123,8 @@ export type CampaignCreatorStatsView = {
         sendRate: CreatorStatsKpi;
         averageRating: CreatorStatsKpi;
         selfEfficacy: CreatorStatsKpi;
+        powerlessness: CreatorStatsKpi;
+        tags: CreatorFeedbackTag[];
         comments: CreatorStatsComment[];
       };
 };
@@ -98,9 +141,9 @@ function toInternalRow(row: CampaignFeedbackRow): InternalReviewRow {
     rating: row.rating,
     letter_sent: row.letter_sent,
     full_feedback_submitted: null,
-    feedback_tags: null,
+    feedback_tags: row.feedback_tags,
     political_self_efficacy: row.political_self_efficacy,
-    political_powerlessness_frequency: null,
+    political_powerlessness_frequency: row.political_powerlessness_frequency,
     debug_payload: null,
     letter_id: null,
   };
@@ -172,8 +215,104 @@ export function bucketRegions(rows: CampaignSignalRow[]): CreatorRegionBucket[] 
   return named;
 }
 
+export function bucketRecipients(
+  rows: CampaignSignalRow[],
+): CreatorRecipientBucket[] | null {
+  const counts = new Map<string, number>();
+  for (const row of rows) {
+    const label =
+      (row.recipient_kind &&
+      Object.prototype.hasOwnProperty.call(RECIPIENT_GROUP_LABELS, row.recipient_kind)
+        ? RECIPIENT_GROUP_LABELS[row.recipient_kind]
+        : null) ?? OTHER_RECIPIENTS_LABEL;
+    counts.set(label, (counts.get(label) ?? 0) + 1);
+  }
+  if (counts.size < 2) return null;
+
+  const named: CreatorRecipientBucket[] = [];
+  let other = 0;
+  for (const [label, count] of counts) {
+    if (label === OTHER_RECIPIENTS_LABEL || count < CREATOR_REGION_MIN_BUCKET) {
+      other += count;
+    } else {
+      named.push({ label, count });
+    }
+  }
+  named.sort((a, b) => b.count - a.count || a.label.localeCompare(b.label, "de"));
+  if (other > 0) named.push({ label: OTHER_RECIPIENTS_LABEL, count: other });
+  return named.length >= 2 ? named : null;
+}
+
+const DAY_MS = 24 * 60 * 60 * 1000;
+const berlinDayFormatter = new Intl.DateTimeFormat("en-CA", {
+  timeZone: CAMPAIGN_TIME_ZONE,
+  year: "numeric",
+  month: "2-digit",
+  day: "2-digit",
+});
+
+function berlinMondayMs(time: number): number {
+  const parts = berlinDayFormatter.formatToParts(new Date(time));
+  const pick = (type: string) =>
+    Number(parts.find((part) => part.type === type)?.value);
+  const day = Date.UTC(pick("year"), pick("month") - 1, pick("day"));
+  const weekday = new Date(day).getUTCDay();
+  return day - ((weekday + 6) % 7) * DAY_MS;
+}
+
+function isoDay(ms: number): string {
+  return new Date(ms).toISOString().slice(0, 10);
+}
+
+export function buildWeeklySeries(
+  rows: CampaignSignalRow[],
+  { now, ended }: { now: Date; ended: boolean },
+): { weeks: CreatorWeekBucket[]; peakWeek: CreatorWeekBucket | null } {
+  const perWeek = new Map<number, number>();
+  for (const row of rows) {
+    const time = Date.parse(row.generated_at ?? row.created_at ?? "");
+    if (!Number.isFinite(time)) continue;
+    const monday = berlinMondayMs(time);
+    perWeek.set(monday, (perWeek.get(monday) ?? 0) + 1);
+  }
+
+  const dataWeeks = [...perWeek.keys()];
+  if (!ended) dataWeeks.push(berlinMondayMs(now.getTime()));
+  if (dataWeeks.length === 0) return { weeks: [], peakWeek: null };
+
+  const first = Math.min(...dataWeeks);
+  const last = Math.max(...dataWeeks);
+  const weeks: CreatorWeekBucket[] = [];
+  for (let week = first; week <= last; week += 7 * DAY_MS) {
+    weeks.push({ weekStart: isoDay(week), count: perWeek.get(week) ?? 0 });
+  }
+  const capped = weeks.slice(-CREATOR_TIMELINE_MAX_WEEKS);
+
+  let peakWeek: CreatorWeekBucket | null = null;
+  for (const week of capped) {
+    if (week.count > 0 && (peakWeek === null || week.count >= peakWeek.count)) {
+      peakWeek = week;
+    }
+  }
+  return { weeks: capped, peakWeek };
+}
+
+function buildTags(
+  feedbackTagStats: Record<string, { total: number }>,
+): CreatorFeedbackTag[] {
+  const tags: CreatorFeedbackTag[] = [];
+  for (const [slug, label] of FEEDBACK_TAG_LABELS) {
+    const count = feedbackTagStats[slug]?.total ?? 0;
+    if (count >= CREATOR_TAG_MIN_COUNT) tags.push({ label, count });
+  }
+  return tags
+    .sort((a, b) => b.count - a.count || a.label.localeCompare(b.label, "de"))
+    .slice(0, CREATOR_TAG_LIMIT);
+}
+
 function buildSignals(
   signalRows: CampaignSignalRow[] | null,
+  { now, ended }: { now: Date; ended: boolean },
 ): CampaignCreatorStatsView["signals"] {
   if (signalRows === null) return { status: "unavailable" };
   const signals = signalRows.length;
@@ -185,12 +324,19 @@ function buildSignals(
       threshold: CREATOR_SIGNALS_MIN_TOTAL,
     };
   }
-  return { status: "ready", signals, regions: bucketRegions(signalRows) };
+  return {
+    status: "ready",
+    signals,
+    regions: bucketRegions(signalRows),
+    recipients: bucketRecipients(signalRows),
+    ...buildWeeklySeries(signalRows, { now, ended }),
+  };
 }
 
 export function buildCampaignCreatorStats({
   rows,
   signalRows,
+  now,
   letterCount,
   ended,
 }: {
@@ -200,7 +346,7 @@ export function buildCampaignCreatorStats({
   letterCount: number;
   ended: boolean;
 }): CampaignCreatorStatsView {
-  const base = { letterCount, ended, signals: buildSignals(signalRows) };
+  const base = { letterCount, ended, signals: buildSignals(signalRows, { now, ended }) };
 
   if (rows === null) {
     return { ...base, feedback: { status: "unavailable" } };
@@ -248,6 +394,15 @@ export function buildCampaignCreatorStats({
             100,
         ),
       ),
+      powerlessness: kpi(activation.powerlessnessAnswerCount, () =>
+        Math.round(
+          ((activation.powerlessnessDistribution.often +
+            activation.powerlessnessDistribution.sometimes) /
+            activation.powerlessnessAnswerCount) *
+            100,
+        ),
+      ),
+      tags: buildTags(stats.feedbackTagStats),
       comments: pickComments(rows),
     },
   };

@@ -28,10 +28,14 @@ export default function Nutzungsbedingungen() {
           <div>
             <h2 className="font-semibold text-waldgruen-dark mb-2">Wer ich bin</h2>
             <p>
-              Brief-nach-Berlin ist ein kostenloses Werkzeug von Thomas Lorenz,
-              A.d. Schleifmühle 44, 28203 Bremen. Die WE AID gGmbH ist
-              Trägerin des Projekts für Spenden und Fördermittel. Mit der
-              Nutzung des Tools akzeptierst du diese Bedingungen.
+              Brief-nach-Berlin ist ein kostenloses Werkzeug von Thomas Lorenz
+              (Anbieterangaben im{" "}
+              <Link href="/impressum" className="text-waldgruen hover:underline">
+                Impressum
+              </Link>
+              ). Die WE AID gGmbH ist Trägerin des Projekts für Spenden und
+              Fördermittel. Mit der Nutzung des Tools akzeptierst du diese
+              Bedingungen.
             </p>
           </div>
 

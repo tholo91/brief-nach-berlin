@@ -1,14 +1,20 @@
 import {
   aggregateInternalStats,
+  baselineFilter,
   collectLetterCounterDayRange,
+  isNarrowingFilter,
   type InternalLetterSignalRow,
 } from "@/lib/internalStats/aggregate";
 import {
+  activeFilterChips,
   bucketCategoryTimeline,
   bucketCounterTimeline,
+  buildStatsHref,
   daySpan,
   granularityForTimeRange,
+  parseStatsFilter,
   peakPoint,
+  statsQueryFromFilter,
   timeRangeFromDay,
   topLabelsByCategory,
 } from "@/lib/internalStats/view";
@@ -176,5 +182,89 @@ describe("granularity helpers", () => {
   it("finds the peak point", () => {
     expect(peakPoint([{ count: 2 }, { count: 9 }, { count: 9 }])).toEqual({ count: 9 });
     expect(peakPoint([])).toBeNull();
+  });
+});
+
+describe("bundesland filter and baseline", () => {
+  const rows = [
+    signal({ letter_id: "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa", bundesland_key: "HB", topic_categories: ["verkehr_mobilitaet"] }),
+    signal({ letter_id: "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb", bundesland_key: "NI", topic_categories: ["bildung"] }),
+    signal({ letter_id: "cccccccc-cccc-4ccc-8ccc-cccccccccccc", bundesland_key: "HB", topic_categories: ["bildung"], campaign_slug: "sichere-schulwege" }),
+  ];
+  const reviews = [
+    { letter_id: "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa", created_at: "2026-10-06T11:00:00Z", rating: 5, letter_sent: true, full_feedback_submitted: true, feedback_tags: null, political_self_efficacy: null, political_powerlessness_frequency: null, debug_payload: null },
+    { letter_id: "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb", created_at: "2026-10-06T11:00:00Z", rating: 2, letter_sent: false, full_feedback_submitted: true, feedback_tags: null, political_self_efficacy: null, political_powerlessness_frequency: null, debug_payload: null },
+    { letter_id: null, created_at: "2026-10-06T11:00:00Z", rating: 4, letter_sent: null, full_feedback_submitted: false, feedback_tags: null, political_self_efficacy: null, political_powerlessness_frequency: null, debug_payload: null },
+  ];
+
+  it("keeps only signals and linked reviews from the chosen Bundesland", () => {
+    const stats = aggregateInternalStats(reviews, 0, "2026-10-07T12:00:00Z", rows, {
+      timeRange: "all",
+      source: { kind: "all" },
+      bundesland: "HB",
+    });
+    expect(stats.letterSignals.signalCount).toBe(2);
+    expect(stats.letterSignals.categoryCounts).toEqual({ verkehr_mobilitaet: 1, bildung: 1 });
+    expect(stats.reviewCount).toBe(1);
+    expect(stats.averageRating).toBe(5);
+    expect(stats.letterCounterDayRange).toEqual({});
+  });
+
+  it("combines Bundesland with the source filter", () => {
+    const stats = aggregateInternalStats(reviews, 0, "2026-10-07T12:00:00Z", rows, {
+      timeRange: "all",
+      source: { kind: "free" },
+      bundesland: "HB",
+    });
+    expect(stats.letterSignals.signalCount).toBe(1);
+    expect(stats.letterSignals.categoryCounts).toEqual({ verkehr_mobilitaet: 1 });
+  });
+
+  it("describes narrowing filters and derives the baseline filter", () => {
+    expect(isNarrowingFilter({ timeRange: 30, source: { kind: "all" } })).toBe(false);
+    expect(isNarrowingFilter({ timeRange: 30, source: { kind: "all" }, bundesland: "HB" })).toBe(true);
+    expect(isNarrowingFilter({ timeRange: "all", source: { kind: "campaign" } })).toBe(true);
+    expect(baselineFilter({ timeRange: 90, source: { kind: "free" }, bundesland: "HB" })).toEqual({
+      timeRange: 90,
+      source: { kind: "all" },
+      bundesland: null,
+    });
+  });
+});
+
+describe("stats query helpers", () => {
+  it("parses and validates the Bundesland parameter", () => {
+    expect(parseStatsFilter({ bundesland: "HB" }).filter.bundesland).toBe("HB");
+    expect(parseStatsFilter({ bundesland: "XX" }).filter.bundesland).toBeNull();
+    expect(parseStatsFilter({ bundesland: "hb" }).filter.bundesland).toBeNull();
+  });
+
+  it("round-trips filter state into a stable href", () => {
+    const query = statsQueryFromFilter(
+      { timeRange: 90, source: { kind: "campaign", campaignSlug: "sichere-schulwege" }, bundesland: "HB" },
+      "absolut",
+    );
+    expect(buildStatsHref(query)).toBe(
+      "/stats?zeitraum=90&quelle=campaign&kampagne=sichere-schulwege&bundesland=HB&ansicht=absolut",
+    );
+    expect(buildStatsHref(query, { bundesland: null, ansicht: null })).toBe(
+      "/stats?zeitraum=90&quelle=campaign&kampagne=sichere-schulwege",
+    );
+    expect(buildStatsHref(query, { quelle: null })).toBe("/stats?zeitraum=90&bundesland=HB&ansicht=absolut");
+    expect(buildStatsHref(statsQueryFromFilter({ timeRange: "all", source: { kind: "all" } }, "prozentual"))).toBe("/stats");
+  });
+
+  it("lists active filters as removable chips without the view mode", () => {
+    const query = statsQueryFromFilter(
+      { timeRange: 30, source: { kind: "campaign", campaignSlug: "sichere-schulwege" }, bundesland: "NI" },
+      "absolut",
+    );
+    const chips = activeFilterChips(query, { "sichere-schulwege": "Sichere Schulwege" });
+    expect(chips.map((chip) => [chip.label, chip.href])).toEqual([
+      ["letzte 30 Tage", "/stats?quelle=campaign&kampagne=sichere-schulwege&bundesland=NI&ansicht=absolut"],
+      ["Kampagne: Sichere Schulwege", "/stats?zeitraum=30&bundesland=NI&ansicht=absolut"],
+      ["Niedersachsen", "/stats?zeitraum=30&quelle=campaign&kampagne=sichere-schulwege&ansicht=absolut"],
+    ]);
+    expect(activeFilterChips(statsQueryFromFilter({ timeRange: "all", source: { kind: "all" } }, "absolut"))).toEqual([]);
   });
 });

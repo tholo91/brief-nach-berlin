@@ -10,7 +10,7 @@ import {
 describe("parseStatsFilter", () => {
   it("returns safe defaults for empty params", () => {
     expect(parseStatsFilter({})).toEqual({
-      filter: { timeRange: "all", source: { kind: "all" } },
+      filter: { timeRange: "all", source: { kind: "all" }, bundesland: null },
       mode: "prozentual",
     });
   });
@@ -26,6 +26,7 @@ describe("parseStatsFilter", () => {
       filter: {
         timeRange: 90,
         source: { kind: "campaign", campaignSlug: "sichere-schulwege" },
+        bundesland: null,
       },
       mode: "absolut",
     });
@@ -33,14 +34,14 @@ describe("parseStatsFilter", () => {
 
   it("falls back to the generic campaign source when the slug is invalid", () => {
     expect(parseStatsFilter({ quelle: "campaign", kampagne: "../../etc" })).toEqual({
-      filter: { timeRange: "all", source: { kind: "campaign" } },
+      filter: { timeRange: "all", source: { kind: "campaign" }, bundesland: null },
       mode: "prozentual",
     });
   });
 
   it("ignores unknown values and arrays take the first entry", () => {
     expect(parseStatsFilter({ zeitraum: "45", quelle: "x", ansicht: ["absolut", "prozentual"] })).toEqual({
-      filter: { timeRange: "all", source: { kind: "all" } },
+      filter: { timeRange: "all", source: { kind: "all" }, bundesland: null },
       mode: "absolut",
     });
   });

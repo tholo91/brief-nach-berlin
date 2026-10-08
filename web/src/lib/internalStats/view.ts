@@ -4,6 +4,7 @@ import type {
   StatsFilter,
   TimeRange,
 } from "@/lib/internalStats/aggregate";
+import { BUNDESLAND_KEYS, BUNDESLAND_NAMES } from "@/lib/campaigns/schema";
 
 export type ViewMode = "prozentual" | "absolut";
 export type TimelineGranularity = "day" | "week" | "month";
@@ -42,6 +43,11 @@ export function parseStatsFilter(
   const quelle = raw("quelle");
   const kampagne = raw("kampagne");
   const ansicht = raw("ansicht");
+  const bundeslandRaw = raw("bundesland");
+  const bundesland =
+    bundeslandRaw && (BUNDESLAND_KEYS as readonly string[]).includes(bundeslandRaw)
+      ? bundeslandRaw
+      : null;
 
   let timeRange: TimeRange = "all";
   if (zeitraum === "30") timeRange = 30;
@@ -57,7 +63,84 @@ export function parseStatsFilter(
   }
 
   const mode: ViewMode = ansicht === "absolut" ? "absolut" : "prozentual";
-  return { filter: { timeRange, source }, mode };
+  return { filter: { timeRange, source, bundesland }, mode };
+}
+
+/** URL-Zustand der Seite; leere Werte stehen für den Standard und fehlen in der URL. */
+export type StatsQuery = {
+  zeitraum: string | null;
+  quelle: string | null;
+  kampagne: string | null;
+  bundesland: string | null;
+  ansicht: string | null;
+};
+
+export function statsQueryFromFilter(filter: StatsFilter, mode: ViewMode): StatsQuery {
+  return {
+    zeitraum: filter.timeRange === "all" ? null : String(filter.timeRange),
+    quelle: filter.source.kind === "all" ? null : filter.source.kind,
+    kampagne:
+      filter.source.kind === "campaign" && filter.source.campaignSlug
+        ? filter.source.campaignSlug
+        : null,
+    bundesland: filter.bundesland ?? null,
+    ansicht: mode === "absolut" ? "absolut" : null,
+  };
+}
+
+const QUERY_ORDER: (keyof StatsQuery)[] = ["zeitraum", "quelle", "kampagne", "bundesland", "ansicht"];
+
+/** Baut den /stats-Link aus dem aktuellen Zustand plus Änderungen; null entfernt einen Parameter. */
+export function buildStatsHref(query: StatsQuery, patch: Partial<StatsQuery> = {}): string {
+  const merged: StatsQuery = { ...query, ...patch };
+  if (merged.quelle !== "campaign") merged.kampagne = null;
+  const params = new URLSearchParams();
+  for (const key of QUERY_ORDER) {
+    const value = merged[key];
+    if (value) params.set(key, value);
+  }
+  const qs = params.toString();
+  return `/stats${qs ? `?${qs}` : ""}`;
+}
+
+export function bundeslandName(key: string): string {
+  return (BUNDESLAND_NAMES as Record<string, string>)[key] ?? key;
+}
+
+export type FilterChip = { key: string; label: string; href: string };
+
+/** Aktive Einschränkungen als entfernbare Chips (Ansicht zählt nicht als Filter). */
+export function activeFilterChips(
+  query: StatsQuery,
+  campaignLabels: Record<string, string> = {},
+): FilterChip[] {
+  const chips: FilterChip[] = [];
+  if (query.zeitraum) {
+    chips.push({
+      key: "zeitraum",
+      label: `letzte ${query.zeitraum} Tage`,
+      href: buildStatsHref(query, { zeitraum: null }),
+    });
+  }
+  if (query.quelle === "free") {
+    chips.push({ key: "quelle", label: "freie Anliegen", href: buildStatsHref(query, { quelle: null }) });
+  } else if (query.quelle === "campaign") {
+    chips.push({
+      key: "quelle",
+      label: query.kampagne
+        ? `Kampagne: ${campaignLabels[query.kampagne] ?? query.kampagne}`
+        : "alle Kampagnen",
+      href: buildStatsHref(query, { quelle: null, kampagne: null }),
+    });
+  }
+  if (query.bundesland) {
+    chips.push({
+      key: "bundesland",
+      label: bundeslandName(query.bundesland),
+      href: buildStatsHref(query, { bundesland: null }),
+    });
+  }
+  return chips;
 }
 
 export function shareParts(

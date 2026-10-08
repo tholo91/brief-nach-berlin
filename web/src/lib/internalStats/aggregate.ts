@@ -149,7 +149,19 @@ export type SourceFilter =
 export type StatsFilter = {
   timeRange: TimeRange;
   source: SourceFilter;
+  /** Zweistelliger Bundesland-Key; Reviews ohne verknüpftes Signal fallen dann heraus. */
+  bundesland?: string | null;
 };
+
+/** Filter, der die Datenbasis über Zeitraum hinaus einschränkt (Quelle oder Bundesland). */
+export function isNarrowingFilter(filter: StatsFilter): boolean {
+  return filter.source.kind !== "all" || Boolean(filter.bundesland);
+}
+
+/** Gleicher Zeitraum, aber ohne Quellen- und Bundesland-Einschränkung. */
+export function baselineFilter(filter: StatsFilter): StatsFilter {
+  return { timeRange: filter.timeRange, source: { kind: "all" }, bundesland: null };
+}
 
 export const DEFAULT_STATS_FILTER: StatsFilter = {
   timeRange: "all",
@@ -499,10 +511,15 @@ export function aggregateInternalStats(
   const reviewSourceCounts = emptySourceCounts();
   const reviewTimelineDayCounts: Record<string, number> = {};
 
+  const bundesland = filter.bundesland ?? null;
   for (const row of rows) {
     if (!isWithinTimeRange(row.created_at, cutoff)) continue;
     const source = classifyReviewSource(row, signalByLetter);
     if (!matchesSource(filter.source, source.kind, source.campaignSlug)) continue;
+    if (bundesland) {
+      const linked = row.letter_id ? signalByLetter.get(row.letter_id) : undefined;
+      if (linked?.bundesland_key !== bundesland) continue;
+    }
     filteredReviews.push(row);
     addSourceCount(reviewSourceCounts, source.kind, source.campaignSlug);
     addTimelineDay(reviewTimelineDayCounts, row.created_at);
@@ -510,6 +527,7 @@ export function aggregateInternalStats(
 
   for (const signal of letterSignalRows) {
     if (!isWithinTimeRange(signal.created_at, cutoff)) continue;
+    if (bundesland && signal.bundesland_key !== bundesland) continue;
     if (
       !matchesSource(
         filter.source,

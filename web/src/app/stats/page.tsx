@@ -16,7 +16,8 @@ import {
   INTERNAL_STATS_COOKIE,
   isInternalStatsCookieValid,
 } from "@/lib/internalStats/access";
-import { getInternalStats } from "@/lib/internalStats/getInternalStats";
+import { getInternalStatsWithBaseline } from "@/lib/internalStats/getInternalStats";
+import { BarTrack } from "@/components/internalStats/BarTrack";
 import {
   campaignSourceTotal,
   topCampaignSlug,
@@ -25,18 +26,23 @@ import {
   topicCategoryLabel,
 } from "@/lib/internalStats/aggregate";
 import {
+  activeFilterChips,
+  buildStatsHref,
   bucketCategoryTimeline,
   bucketCounterTimeline,
   bucketTimeline,
+  bundeslandName,
   daySpan,
   granularityForTimeRange,
   isSmallBasis,
   parseStatsFilter,
   peakPoint,
   shareParts,
+  statsQueryFromFilter,
   timeRangeFromDay,
   topLabelsByCategory,
   VIEW_MODES,
+  type StatsQuery,
   type ViewMode,
 } from "@/lib/internalStats/view";
 import { TOPIC_CATEGORY_CODES } from "@/lib/topics/topicTaxonomy";
@@ -97,11 +103,13 @@ function StatCard({
   value,
   label,
   tone = "light",
+  footer,
 }: {
   eyebrow: string;
   value: ReactNode;
   label: string;
   tone?: "light" | "green";
+  footer?: ReactNode;
 }) {
   return (
     <article
@@ -128,6 +136,7 @@ function StatCard({
       >
         {label}
       </p>
+      {footer && <div className={tone === "green" ? "[&_span]:text-creme/70 [&_span>span]:bg-creme/70" : ""}>{footer}</div>}
     </article>
   );
 }
@@ -241,28 +250,9 @@ function Collapsible({
   );
 }
 
-function ViewToggle({
-  mode,
-  zeitraum,
-  quelle,
-  kampagne,
-}: {
-  mode: ViewMode;
-  zeitraum: string;
-  quelle: string;
-  kampagne: string | null;
-}) {
-  const hrefFor = (next: ViewMode) => {
-    const params = new URLSearchParams();
-    if (zeitraum !== "all") params.set("zeitraum", zeitraum);
-    if (quelle !== "all") {
-      params.set("quelle", quelle);
-      if (quelle === "campaign" && kampagne) params.set("kampagne", kampagne);
-    }
-    if (next === "absolut") params.set("ansicht", next);
-    const qs = params.toString();
-    return `/stats${qs ? `?${qs}` : ""}`;
-  };
+function ViewToggle({ mode, query }: { mode: ViewMode; query: StatsQuery }) {
+  const hrefFor = (next: ViewMode) =>
+    buildStatsHref(query, { ansicht: next === "absolut" ? "absolut" : null });
   const base =
     "rounded-md px-3 py-1.5 font-typewriter text-xs font-bold uppercase tracking-[0.12em] transition-colors";
   return (
@@ -324,56 +314,104 @@ function RankedBars({
   total,
   mode,
   smallBasis = true,
+  baseline,
+  baselineTotal,
+  hrefFor,
+  activeKey,
 }: {
   values: Record<string, number>;
   labels?: (key: string) => string;
   total?: number;
   mode?: ViewMode;
   smallBasis?: boolean;
+  /** Gleiche Kennzahl ohne Filter; zeigt eine Vergleichsmarke je Balken. */
+  baseline?: Record<string, number>;
+  baselineTotal?: number;
+  /** Macht Zeilen klickbar (Filter setzen oder aufheben). */
+  hrefFor?: (key: string, isActive: boolean) => string;
+  activeKey?: string | null;
 }) {
   const entries = Object.entries(values).sort((a, b) => b[1] - a[1]).slice(0, 12);
-  const max = entries[0]?.[1] ?? 0;
   if (!entries.length) return <EmptyState />;
+  const shareBased = total !== undefined && total > 0;
+  const share = (value: number) => (shareBased ? (value / total) * 100 : value);
+  const baselineShare = (key: string): number | null =>
+    shareBased && baseline && baselineTotal
+      ? ((baseline[key] ?? 0) / baselineTotal) * 100
+      : null;
+  const scale = Math.max(
+    ...entries.map(([key, value]) => Math.max(share(value), baselineShare(key) ?? 0)),
+    0,
+  );
   return (
     <div className="grid gap-3">
-      {entries.map(([key, value]) => (
-        <div key={key}>
-          <div className="flex items-baseline justify-between gap-3">
-            <span className="font-body text-sm font-semibold text-waldgruen-dark">
-              {labels?.(key) ?? key}
-              {smallBasis && isSmallBasis(value) && <BasisBadge />}
-            </span>
-            {total !== undefined && mode ? (
-              <ShareStat mode={mode} value={value} total={total} />
-            ) : (
-              <span className="font-typewriter text-xs tabular-nums text-warmgrau/60">
-                {formatNumber(value)}
+      {entries.map(([key, value]) => {
+        const isActive = activeKey === key;
+        const body = (
+          <>
+            <div className="flex items-baseline justify-between gap-3">
+              <span className="font-body text-sm font-semibold text-waldgruen-dark">
+                {labels?.(key) ?? key}
+                {smallBasis && isSmallBasis(value) && <BasisBadge />}
+                {isActive && (
+                  <span className="ml-2 inline-block rounded-full bg-waldgruen-dark px-2 py-0.5 font-typewriter text-[10px] font-bold uppercase tracking-[0.1em] text-creme">
+                    Filter · ×
+                  </span>
+                )}
               </span>
-            )}
-          </div>
-          <div className="mt-1.5 h-2 overflow-hidden rounded-full bg-warmgrau/10">
-            <div
-              className="h-full rounded-full bg-airmail-rot"
-              style={{ width: `${max ? (value / max) * 100 : 0}%` }}
-            />
-          </div>
-        </div>
-      ))}
+              {total !== undefined && mode ? (
+                <ShareStat mode={mode} value={value} total={total} />
+              ) : (
+                <span className="font-typewriter text-xs tabular-nums text-warmgrau/60">
+                  {formatNumber(value)}
+                </span>
+              )}
+            </div>
+            <BarTrack value={share(value)} scale={scale} baseline={baselineShare(key)} />
+          </>
+        );
+        if (!hrefFor) return <div key={key}>{body}</div>;
+        return (
+          <Link
+            key={key}
+            href={hrefFor(key, isActive)}
+            scroll={false}
+            title={isActive ? "Filter aufheben" : `Nur ${labels?.(key) ?? key} anzeigen`}
+            className={`-mx-2 block rounded-lg px-2 py-1 transition-colors hover:bg-waldgruen/5 focus:outline-none focus:ring-2 focus:ring-waldgruen/30 ${
+              isActive ? "bg-waldgruen/10" : ""
+            }`}
+          >
+            {body}
+          </Link>
+        );
+      })}
     </div>
   );
 }
 
-function RatingBars({ stats, mode }: { stats: InternalStats; mode: ViewMode }) {
+function RatingBars({
+  stats,
+  mode,
+  baseline,
+}: {
+  stats: InternalStats;
+  mode: ViewMode;
+  baseline?: InternalStats | null;
+}) {
   return (
     <div className="grid gap-3">
       {([5, 4, 3, 2, 1] as const).map((rating) => {
         const count = stats.ratingDistribution[rating];
         const share = stats.reviewCount > 0 ? (count / stats.reviewCount) * 100 : 0;
+        const baselineShare =
+          baseline && baseline.reviewCount > 0
+            ? (baseline.ratingDistribution[rating] / baseline.reviewCount) * 100
+            : null;
         return (
           <div key={rating} className="grid grid-cols-[42px_1fr_max-content] items-center gap-3">
             <span className="font-typewriter text-sm text-warmgrau/70">{rating} ★</span>
-            <div className="h-2 overflow-hidden rounded-full bg-warmgrau/10">
-              <div className="h-full rounded-full bg-bernstein" style={{ width: `${share}%` }} />
+            <div className="-mt-1.5">
+              <BarTrack value={share} scale={100} baseline={baselineShare} colorClassName="bg-bernstein" />
             </div>
             <span className="flex min-w-28 justify-end">
               <ShareStat mode={mode} value={count} total={stats.reviewCount} />
@@ -391,18 +429,26 @@ function SurveyDistributionBars({
   total,
   color,
   mode,
+  baselineValues,
+  baselineTotal,
 }: {
   values: Record<string, number>;
   options: readonly { key: string; label: string }[];
   total: number;
   color: string;
   mode: ViewMode;
+  baselineValues?: Record<string, number>;
+  baselineTotal?: number;
 }) {
   return (
     <div className="grid gap-3">
       {options.map(({ key, label }) => {
         const count = values[key] ?? 0;
         const share = total > 0 ? (count / total) * 100 : 0;
+        const baselineShare =
+          baselineValues && baselineTotal
+            ? ((baselineValues[key] ?? 0) / baselineTotal) * 100
+            : null;
         return (
           <div key={key}>
             <div className="flex items-baseline justify-between gap-3">
@@ -412,12 +458,7 @@ function SurveyDistributionBars({
               </span>
               <ShareStat mode={mode} value={count} total={total} />
             </div>
-            <div className="mt-1.5 h-2 overflow-hidden rounded-full bg-warmgrau/10">
-              <div
-                className="h-full rounded-full"
-                style={{ backgroundColor: color, width: `${share}%` }}
-              />
-            </div>
+            <BarTrack value={share} scale={100} baseline={baselineShare} color={color} />
           </div>
         );
       })}
@@ -484,17 +525,22 @@ function SignalList({
   signals,
   color,
   mode,
+  baseline,
 }: {
   stats: InternalStats;
   signals: readonly { key: string; label: string }[];
   color: string;
   mode: ViewMode;
+  baseline?: InternalStats | null;
 }) {
   return (
     <div className="grid gap-4">
       {signals.map((signal) => {
         const values = stats.feedbackTagStats[signal.key];
         if (!values || values.total === 0) return null;
+        const baselineValues = baseline?.feedbackTagStats[signal.key];
+        const baselineRate =
+          baselineValues && baselineValues.known > 0 ? baselineValues.ratePercent : null;
         return (
           <div key={signal.key}>
             <div className="flex items-baseline justify-between gap-3">
@@ -510,15 +556,12 @@ function SignalList({
                 </span>
               )}
             </div>
-            <div className="mt-1.5 h-2 overflow-hidden rounded-full bg-warmgrau/10">
-              <div
-                className="h-full rounded-full"
-                style={{
-                  backgroundColor: color,
-                  width: `${values.known > 0 ? (values.sent / values.known) * 100 : 0}%`,
-                }}
-              />
-            </div>
+            <BarTrack
+              value={values.known > 0 ? (values.sent / values.known) * 100 : 0}
+              scale={100}
+              baseline={baselineRate}
+              color={color}
+            />
             <p className="mt-1 font-typewriter text-[11px] text-warmgrau/55">
               {values.known > 0
                 ? `${formatNumber(values.sent)} von ${formatNumber(values.known)} mit Angabe`
@@ -531,14 +574,25 @@ function SignalList({
   );
 }
 
+function BaselineLine({ children }: { children: ReactNode }) {
+  return (
+    <span className="mt-2 block font-typewriter text-[11px] tabular-nums text-warmgrau/55">
+      <span className="mr-1 inline-block h-2.5 w-[2px] translate-y-[1px] rounded-full bg-warmgrau/70" aria-hidden="true" />
+      Gesamt: {children}
+    </span>
+  );
+}
+
 function CoreValues({
   stats,
   mode,
   activation,
+  baseline,
 }: {
   stats: InternalStats;
   mode: ViewMode;
   activation: InternalStats["politicalActivation"];
+  baseline?: InternalStats | null;
 }) {
   const efficacyDirectional = activation.selfEfficacyDirectionalCount;
   const efficacyPositive = activation.selfEfficacyPositiveCount;
@@ -556,6 +610,13 @@ function CoreValues({
         eyebrow="Durchschnittliche Bewertung"
         value={`${formatDecimal(stats.averageRating)} / 5`}
         label={`${formatNumber(stats.reviewCount)} Bewertungen im gewählten Zeitraum`}
+        footer={
+          baseline ? (
+            <BaselineLine>
+              {formatDecimal(baseline.averageRating)} / 5 · {formatNumber(baseline.reviewCount)} Bewertungen
+            </BaselineLine>
+          ) : null
+        }
       />
       <StatCard
         eyebrow="Versandsignal aus dem Feedback"
@@ -570,6 +631,14 @@ function CoreValues({
           />
         }
         label={`„Ja, geht raus\" umfasst verschickt und unmittelbar geplanten Versand · fehlende Angabe: ${formatNumber(stats.noAnswerCount)}`}
+        footer={
+          baseline ? (
+            <BaselineLine>
+              {formatDecimal(baseline.sendRatePercent)} % · {formatNumber(baseline.sentCount)} von{" "}
+              {formatNumber(baseline.knownSendCount)}
+            </BaselineLine>
+          ) : null
+        }
       />
       <StatCard
         eyebrow="Wahrgenommene Handlungsfähigkeit"
@@ -583,6 +652,15 @@ function CoreValues({
         )} von ${formatNumber(efficacyDirectional)} gerichteten Antworten · ${formatNumber(
           efficacyUnsure,
         )} unsicher`}
+        footer={
+          baseline && baseline.politicalActivation.selfEfficacyDirectionalCount > 0 ? (
+            <BaselineLine>
+              {formatDecimal(baseline.politicalActivation.selfEfficacyPositiveRatePercent)} % ·{" "}
+              {formatNumber(baseline.politicalActivation.selfEfficacyPositiveCount)} von{" "}
+              {formatNumber(baseline.politicalActivation.selfEfficacyDirectionalCount)}
+            </BaselineLine>
+          ) : null
+        }
       />
     </div>
   );
@@ -730,25 +808,20 @@ export default async function InternalStatsPage({ searchParams }: InternalStatsP
 
   const params = (await searchParams) ?? {};
   const { filter, mode } = parseStatsFilter(params);
-  const zeitraumRaw = filter.timeRange === "all" ? "all" : String(filter.timeRange);
-  const quelleRaw =
-    filter.source.kind === "free"
-      ? "free"
-      : filter.source.kind === "campaign"
-        ? "campaign"
-        : "all";
-  const kampagneRaw =
-    filter.source.kind === "campaign" && filter.source.campaignSlug
-      ? filter.source.campaignSlug
-      : null;
+  const query = statsQueryFromFilter(filter, mode);
+  const kampagneRaw = query.kampagne;
 
   let stats: InternalStats;
+  let baseline: InternalStats | null;
   try {
-    stats = await getInternalStats(filter);
+    ({ stats, baseline } = await getInternalStatsWithBaseline(filter));
   } catch (error) {
     console.error("[internal-stats] read failed", error);
     return <DataError />;
   }
+  const chips = activeFilterChips(query, stats.campaignLabels);
+  const campaignSignalCounts = stats.letterSignals.sourceCounts.campaign;
+  const hasCampaignSignals = Object.keys(campaignSignalCounts).length > 0;
   const activation = stats.politicalActivation;
   const hasActivationCrossData = Object.values(
     activation.efficacyByPowerlessness,
@@ -824,12 +897,16 @@ export default async function InternalStatsPage({ searchParams }: InternalStatsP
       ? "Gesamtzeitraum"
       : `letzte ${String(filter.timeRange)} Tage`;
 
-  const sourceLabel =
+  const sourceLabel = [
     filter.source.kind === "free"
       ? "freie Anliegen"
       : filter.source.kind === "campaign"
         ? `Kampagne: ${stats.campaignLabels[kampagneRaw ?? ""] ?? kampagneRaw ?? "alle"}`
-        : "alle Quellen";
+        : "alle Quellen",
+    filter.bundesland ? bundeslandName(filter.bundesland) : null,
+  ]
+    .filter(Boolean)
+    .join(" · ");
 
   const se = activation.selfEfficacyDistribution;
   const sePositive = (se.clearly_yes ?? 0) + (se.rather_yes ?? 0);
@@ -867,7 +944,7 @@ export default async function InternalStatsPage({ searchParams }: InternalStatsP
   const quoteText = `${quoteLines.join("\n")}\n\nQuelle: Brief-nach-Berlin, interne Auswertung (${rangeLabel}, ${sourceLabel}). Selbstauskünfte, nur Aggregate.`;
 
   return (
-    <main className="min-h-screen bg-creme text-warmgrau">
+    <main id="top" className="min-h-screen bg-creme text-warmgrau">
       <AirmailStripe />
       <div className="mx-auto w-full max-w-6xl px-5 py-6 sm:px-8 sm:py-10 lg:px-10">
         <header className="flex flex-col gap-4 pb-6 sm:flex-row sm:items-end sm:justify-between sm:pb-8">
@@ -897,28 +974,53 @@ export default async function InternalStatsPage({ searchParams }: InternalStatsP
         <SectionNav links={[...SECTION_LINKS]} />
 
         <div className="mt-6 flex flex-col gap-4 rounded-2xl border border-warmgrau/10 bg-white/60 p-4 sm:flex-row sm:items-end sm:justify-between sm:p-6">
-          <FilterBar
-            zeitraum={zeitraumRaw}
-            quelle={quelleRaw}
-            kampagne={kampagneRaw}
-            campaignOptions={campaignOptions}
-          />
+          <FilterBar query={query} campaignOptions={campaignOptions} />
           <div className="sm:pb-1">
-            <ViewToggle
-              mode={mode}
-              zeitraum={zeitraumRaw}
-              quelle={quelleRaw}
-              kampagne={kampagneRaw}
-            />
+            <ViewToggle mode={mode} query={query} />
           </div>
         </div>
 
-        <p className="mt-3 font-typewriter text-xs text-warmgrau/55">
-          Ansicht: {rangeLabel} · {sourceLabel} · {mode === "prozentual" ? "prozentual" : "absolut"} · {granularityLabel}
-        </p>
+        <div className="mt-3 flex flex-wrap items-center gap-2 font-typewriter text-xs text-warmgrau/55">
+          {chips.length === 0 ? (
+            <span>Ansicht: {rangeLabel} · alle Quellen · alle Bundesländer</span>
+          ) : (
+            <>
+              <span>Aktiv:</span>
+              {chips.map((chip) => (
+                <Link
+                  key={chip.key}
+                  href={chip.href}
+                  scroll={false}
+                  className="inline-flex items-center gap-1.5 rounded-full border border-waldgruen-dark/20 bg-waldgruen-dark px-2.5 py-1 font-bold text-creme transition-colors hover:bg-waldgruen"
+                  title={`Filter „${chip.label}“ entfernen`}
+                >
+                  {chip.label}
+                  <span aria-hidden="true">×</span>
+                  <span className="sr-only">entfernen</span>
+                </Link>
+              ))}
+              <Link
+                href={buildStatsHref(query, { zeitraum: null, quelle: null, kampagne: null, bundesland: null })}
+                scroll={false}
+                className="underline underline-offset-2 hover:text-waldgruen-dark"
+              >
+                alle zurücksetzen
+              </Link>
+            </>
+          )}
+          <span className="ml-auto">
+            {mode === "prozentual" ? "prozentual" : "absolut"} · {granularityLabel}
+          </span>
+        </div>
+        {baseline && (
+          <p className="mt-2 font-body text-xs leading-relaxed text-warmgrau/60">
+            <span className="mr-1.5 inline-block h-3 w-[2px] translate-y-[2px] rounded-full bg-warmgrau/70" aria-hidden="true" />
+            Grauer Strich und „Gesamt“ zeigen denselben Wert ohne Quellen- und Bundesland-Filter im gleichen Zeitraum.
+          </p>
+        )}
 
         <div id="ueberblick" className="scroll-mt-16">
-          <CoreValues stats={stats} mode={mode} activation={activation} />
+          <CoreValues stats={stats} mode={mode} activation={activation} baseline={baseline} />
 
           <div className="mt-4 rounded-2xl border border-waldgruen/15 bg-white/75 p-5 shadow-[0_16px_36px_rgba(27,67,50,0.06)] sm:p-6">
             <div className="flex flex-wrap items-start justify-between gap-3">
@@ -1051,7 +1153,14 @@ export default async function InternalStatsPage({ searchParams }: InternalStatsP
               <div className="grid gap-8 lg:grid-cols-[minmax(0,2fr)_minmax(0,3fr)] [&>*]:min-w-0">
                 <div>
                   <SubHeading detail="Anteil an allen gefilterten Signalen.">Oberkategorien</SubHeading>
-                  <RankedBars values={stats.letterSignals.categoryCounts} labels={topicCategoryLabel} total={stats.letterSignals.signalCount} mode={mode} />
+                  <RankedBars
+                    values={stats.letterSignals.categoryCounts}
+                    labels={topicCategoryLabel}
+                    total={stats.letterSignals.signalCount}
+                    mode={mode}
+                    baseline={baseline?.letterSignals.categoryCounts}
+                    baselineTotal={baseline?.letterSignals.signalCount}
+                  />
                 </div>
                 <div>
                   <SubHeading detail="Die häufigsten neutralen Unterthemen je Oberkategorie. Zuordnung über die erste Oberkategorie eines Briefs.">
@@ -1078,19 +1187,56 @@ export default async function InternalStatsPage({ searchParams }: InternalStatsP
 
               <div className="grid gap-8 border-t border-warmgrau/10 pt-6 sm:grid-cols-2 [&>*]:min-w-0">
                 <div>
-                  <SubHeading>Politische Ebene</SubHeading>
-                  <RankedBars values={stats.letterSignals.levelCounts} total={stats.letterSignals.signalCount} mode={mode} />
+                  <SubHeading detail="Klick setzt den Bundesland-Filter für die ganze Seite.">Bundesländer</SubHeading>
+                  <RankedBars
+                    values={filter.bundesland && baseline ? baseline.letterSignals.bundeslandCounts : stats.letterSignals.bundeslandCounts}
+                    labels={bundeslandName}
+                    total={filter.bundesland && baseline ? baseline.letterSignals.signalCount : stats.letterSignals.signalCount}
+                    mode={mode}
+                    hrefFor={(key, isActive) => buildStatsHref(query, { bundesland: isActive ? null : key })}
+                    activeKey={filter.bundesland}
+                  />
                 </div>
-                <div>
-                  <SubHeading>Bundesländer</SubHeading>
-                  <RankedBars values={stats.letterSignals.bundeslandCounts} labels={bundeslandLabel} total={stats.letterSignals.signalCount} mode={mode} />
+                <div className="grid content-start gap-8">
+                  <div>
+                    <SubHeading>Politische Ebene</SubHeading>
+                    <RankedBars
+                      values={stats.letterSignals.levelCounts}
+                      total={stats.letterSignals.signalCount}
+                      mode={mode}
+                      baseline={baseline?.letterSignals.levelCounts}
+                      baselineTotal={baseline?.letterSignals.signalCount}
+                    />
+                  </div>
+                  {hasCampaignSignals && (
+                    <div>
+                      <SubHeading detail="Signale je Kampagne. Klick setzt den Kampagnen-Filter.">Kampagnen</SubHeading>
+                      <RankedBars
+                        values={campaignSignalCounts}
+                        labels={(slug) => stats.campaignLabels[slug] ?? slug}
+                        total={stats.letterSignals.signalCount}
+                        mode={mode}
+                        hrefFor={(slug, isActive) =>
+                          buildStatsHref(query, isActive ? { quelle: null, kampagne: null } : { quelle: "campaign", kampagne: slug })
+                        }
+                        activeKey={kampagneRaw}
+                      />
+                    </div>
+                  )}
                 </div>
               </div>
 
               <div className="border-t border-warmgrau/10 pt-6">
                 <Collapsible summary="PLZ-Regionen" detail="Zweistellige Postleitzahl-Regionen, höchstens zwölf.">
                   <div className="sm:max-w-md">
-                    <RankedBars values={stats.letterSignals.plzPrefixCounts} labels={(key) => `${key} · Region`} total={stats.letterSignals.signalCount} mode={mode} />
+                    <RankedBars
+                      values={stats.letterSignals.plzPrefixCounts}
+                      labels={(key) => `${key} · Region`}
+                      total={stats.letterSignals.signalCount}
+                      mode={mode}
+                      baseline={baseline?.letterSignals.plzPrefixCounts}
+                      baselineTotal={baseline?.letterSignals.signalCount}
+                    />
                   </div>
                 </Collapsible>
               </div>
@@ -1146,7 +1292,7 @@ export default async function InternalStatsPage({ searchParams }: InternalStatsP
           <div className="mt-8 grid gap-8 border-t border-warmgrau/10 pt-6 lg:grid-cols-2 lg:gap-12">
             <div>
               <SubHeading>Bewertung ({formatDecimal(stats.averageRating)} / 5)</SubHeading>
-              <RatingBars stats={stats} mode={mode} />
+              <RatingBars stats={stats} mode={mode} baseline={baseline} />
             </div>
             <div>
               <SubHeading>Versandsignal</SubHeading>
@@ -1171,6 +1317,7 @@ export default async function InternalStatsPage({ searchParams }: InternalStatsP
                 <div className="mt-4 grid gap-5">
                   {ratingBands.map((band) => {
                     const values = sumRatingBreakdowns(stats, band.ratings);
+                    const baselineValues = baseline ? sumRatingBreakdowns(baseline, band.ratings) : null;
                     return (
                       <div key={band.label}>
                         <div className="flex items-baseline justify-between gap-3">
@@ -1184,12 +1331,13 @@ export default async function InternalStatsPage({ searchParams }: InternalStatsP
                             <span className="font-typewriter text-xs tabular-nums text-warmgrau/60">—</span>
                           )}
                         </div>
-                        <div className="mt-1.5 h-3 overflow-hidden rounded-full bg-warmgrau/10">
-                          <div
-                            className="h-full rounded-full"
-                            style={{ backgroundColor: band.color, width: `${values.ratePercent}%` }}
-                          />
-                        </div>
+                        <BarTrack
+                          value={values.ratePercent}
+                          scale={100}
+                          baseline={baselineValues && baselineValues.known > 0 ? baselineValues.ratePercent : null}
+                          color={band.color}
+                          height="md"
+                        />
                         <p className="mt-1 font-typewriter text-[11px] text-warmgrau/55">
                           {values.known > 0
                             ? `${formatNumber(values.sent)} von ${formatNumber(values.known)} mit Angabe`
@@ -1207,7 +1355,7 @@ export default async function InternalStatsPage({ searchParams }: InternalStatsP
                     Das hilft beim Abschicken
                   </p>
                   <div className="mt-4">
-                    <SignalList stats={stats} signals={positiveSignals} color="#2D6A4F" mode={mode} />
+                    <SignalList stats={stats} signals={positiveSignals} color="#2D6A4F" mode={mode} baseline={baseline} />
                   </div>
                 </div>
                 <div>
@@ -1215,7 +1363,7 @@ export default async function InternalStatsPage({ searchParams }: InternalStatsP
                     Das bremst
                   </p>
                   <div className="mt-4">
-                    <SignalList stats={stats} signals={frictionSignals} color="#C1121F" mode={mode} />
+                    <SignalList stats={stats} signals={frictionSignals} color="#C1121F" mode={mode} baseline={baseline} />
                   </div>
                 </div>
               </div>
@@ -1274,6 +1422,8 @@ export default async function InternalStatsPage({ searchParams }: InternalStatsP
                       total={activation.selfEfficacyAnswerCount}
                       color="#2D6A4F"
                       mode={mode}
+                      baselineValues={baseline?.politicalActivation.selfEfficacyDistribution}
+                      baselineTotal={baseline?.politicalActivation.selfEfficacyAnswerCount}
                     />
                   </div>
                 </>
@@ -1298,6 +1448,8 @@ export default async function InternalStatsPage({ searchParams }: InternalStatsP
                   total={activation.powerlessnessAnswerCount}
                   color="#C58B18"
                   mode={mode}
+                  baselineValues={baseline?.politicalActivation.powerlessnessDistribution}
+                  baselineTotal={baseline?.politicalActivation.powerlessnessAnswerCount}
                 />
               )}
               <BasisNote>
@@ -1369,6 +1521,10 @@ export default async function InternalStatsPage({ searchParams }: InternalStatsP
               body={`${formatNumber(stats.letterSignals.signalCount)} freigegebene Signale nach freiwilliger Einwilligung · bis zu drei Oberkategorien und drei Unterthemen je Brief · Unterthemen werden der ersten Oberkategorie zugeordnet.`}
             />
             <Definition
+              title="Filter & Vergleich"
+              body="Bundesland- und Quellenfilter wirken auf Signale und auf Reviews mit verknüpftem Signal; Reviews ohne Signal fallen bei aktivem Bundesland-Filter heraus. Die Vergleichsmarke zeigt denselben Wert ohne diese Filter im gleichen Zeitraum."
+            />
+            <Definition
               title="Quellen"
               body={`In Reviews ohne verknüpfte Signal-Zeile fehlt die Kampagnen-Zuordnung (Bucket „ohne Signal“): ${formatNumber(stats.reviewSourceCounts.unknown)} Reviews.`}
             />
@@ -1416,13 +1572,3 @@ function Definition({ title, body }: { title: string; body: string }) {
   );
 }
 
-function bundeslandLabel(key: string): string {
-  const labels: Record<string, string> = {
-    BW: "Baden-Württemberg", BY: "Bayern", BE: "Berlin", BB: "Brandenburg",
-    HB: "Bremen", HH: "Hamburg", HE: "Hessen", MV: "Mecklenburg-Vorpommern",
-    NI: "Niedersachsen", NW: "Nordrhein-Westfalen", RP: "Rheinland-Pfalz",
-    SL: "Saarland", SN: "Sachsen", ST: "Sachsen-Anhalt", SH: "Schleswig-Holstein",
-    TH: "Thüringen",
-  };
-  return labels[key] ?? key;
-}

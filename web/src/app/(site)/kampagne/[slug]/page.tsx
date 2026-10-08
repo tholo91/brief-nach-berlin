@@ -92,7 +92,9 @@ export default async function CampaignPage({ params }: CampaignPageProps) {
   const { campaign } = resolved;
   const ended = isCampaignEnded(campaign, new Date());
   if (ended && campaign.endsAt) {
-    const otherCampaigns = await getRecentActiveCampaigns(3).catch(() => []);
+    const otherCampaigns = (await getRecentActiveCampaigns(3).catch(() => [])).filter(
+      (other) => other.slug !== campaign.slug
+    );
     return (
       <CampaignEndedView
         campaign={{ ...campaign, endsAt: campaign.endsAt }}

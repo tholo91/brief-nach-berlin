@@ -77,11 +77,11 @@ export function CampaignEndDatePicker({
       <legend className="font-typewriter text-sm font-bold text-waldgruen-dark">
         Enddatum
       </legend>
-      <div className="flex flex-wrap gap-2">
+      <div className="grid grid-cols-2 gap-2 sm:flex sm:flex-wrap">
         {CHOICES.map((choice) => {
           const id = `${idPrefix}-${choice}`;
           return (
-            <div key={choice} className="relative">
+            <div key={choice} className={choice === "none" ? "relative col-span-2" : "relative"}>
               <input
                 id={id}
                 type="radio"
@@ -94,7 +94,7 @@ export function CampaignEndDatePicker({
               />
               <label
                 htmlFor={id}
-                className="flex min-h-11 cursor-pointer items-center rounded-md border border-warmgrau/20 bg-white px-4 py-2 font-body text-sm font-semibold text-warmgrau/80 transition-colors hover:border-waldgruen/40 peer-checked:border-waldgruen peer-checked:bg-waldgruen/8 peer-checked:text-waldgruen-dark peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-waldgruen peer-disabled:cursor-not-allowed peer-disabled:opacity-60"
+                className="flex min-h-11 cursor-pointer items-center justify-center rounded-md border border-warmgrau/20 bg-white px-4 py-2 font-body text-sm font-semibold text-warmgrau/80 transition-colors hover:border-waldgruen/40 peer-checked:border-waldgruen peer-checked:bg-waldgruen/8 peer-checked:text-waldgruen-dark peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-waldgruen peer-disabled:cursor-not-allowed peer-disabled:opacity-60"
               >
                 {CHOICE_LABELS[choice]}
               </label>

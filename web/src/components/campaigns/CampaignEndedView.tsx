@@ -64,8 +64,8 @@ export function CampaignEndedView({
             </p>
           )}
           <p className="mt-3 max-w-xl font-body text-base leading-relaxed text-warmgrau/75">
-            Die Seite bleibt als Endstand erreichbar. Neue Briefe lassen sich über diese
-            Kampagne nicht mehr starten.
+            Über diese Kampagne lassen sich keine neuen Briefe mehr schreiben. Dein
+            eigenes Anliegen kannst du jederzeit nach Berlin schicken.
           </p>
         </section>
 

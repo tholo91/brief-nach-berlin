@@ -5,5 +5,6 @@
 | `022_campaign_topic_signals.sql` | Manually applied by Thomas on 2026-09-24 | Read-only PostgREST query for all five new `campaigns.topic_*` columns returned HTTP 200 with the app's service role on 2026-09-24. |
 | `023_campaign_fixed_recipient.sql` | Manually applied by Thomas (confirmed by Thomas on 2026-10-07) | On 2026-09-29 a read-only PostgREST query for `campaigns.target_recipient` still returned `42703`; Thomas confirmed on 2026-10-07 that fixed-recipient campaigns work in production. Not independently re-queried. |
 | `024_campaign_landing_rank.sql` | Manually applied by Thomas (confirmed by Thomas on 2026-10-07) | Confirmed by Thomas; not independently queried. |
+| `025_reviews_campaign_slug.sql` | Manually applied by Thomas (confirmed by Thomas on 2026-10-08) | Thomas ran it in the SQL Editor without errors; not independently queried. Code that writes `reviews.campaign_slug` is committed but not yet deployed. |
 
 The `letter_signals_topic_source_check` constraint was part of the SQL Thomas applied, but its definition was not independently queried. Running SQL in the Supabase Dashboard does not automatically record the file in Supabase CLI migration history; that history remains unverified because the local CLI has no access token. Check the remote migration history before any future `supabase db push`.

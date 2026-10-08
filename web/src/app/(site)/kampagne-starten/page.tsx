@@ -1,17 +1,19 @@
 import Link from "next/link";
 import type { Metadata } from "next";
-import { APP_URL } from "@/lib/config";
+import { APP_URL, DONATION_PATH } from "@/lib/config";
 import { Prose } from "@/components/editorial/Prose";
 import { FAQAccordion } from "@/components/FAQAccordion";
 import { PullQuote } from "@/components/editorial/PullQuote";
 import { FactCallout } from "@/components/editorial/FactCallout";
+import { Figure } from "@/components/editorial/Figure";
 
 const URL_PATH = "/kampagne-starten";
 const PUBLISHED = "2026-07-01";
+const MODIFIED = "2026-10-08";
 const TITLE =
-  "Kampagne starten: Alternative zu Petition und Massenmail | Brief nach Berlin";
+  "Briefkampagne starten: Alternative zur Petition | Brief nach Berlin";
 const DESCRIPTION =
-  "Briefkampagne starten ohne Massenmail: Anliegen anlegen, Link teilen, andere schreiben eigene Briefe an Abgeordnete, als Alternative zu Petition und WeAct.";
+  "Briefkampagne statt oder neben einer Petition: Anliegen anlegen, Link teilen, alle schreiben eigene Briefe an ihre Abgeordneten. Kostenlos und spendenfinanziert.";
 
 export const metadata: Metadata = {
   title: TITLE,
@@ -49,8 +51,12 @@ const faqs = [
     a: "Eine Briefkampagne eignet sich für konkrete politische Anliegen, bei denen einzelne Abgeordnete verstehen sollen, wie ein Problem im Alltag ankommt. Gute Themen haben eine klare Bitte, einen politischen Adressaten und Menschen, die persönlich betroffen sind.",
   },
   {
+    q: "Kann ich eine Petition und eine Briefkampagne gleichzeitig starten?",
+    a: "Ja. Die Petition zeigt, wie viele Menschen eine Forderung unterstützen. Die Briefkampagne bringt einzelne Geschichten zu den zuständigen Abgeordneten. Teile beide Links zusammen und bitte die Unterzeichnenden, zusätzlich einen eigenen Brief zu schreiben.",
+  },
+  {
     q: "Was kostet eine Kampagne?",
-    a: "Der Kampagnenstart ist aktuell kostenlos. Perspektivisch soll daraus ein bezahlbares Angebot für Initiativen, Vereine und Einzelpersonen werden, nicht nur für große Organisationen mit Kampagnenbudget.",
+    a: "Nichts. Kampagnen sind kostenlos, für Initiativen, Vereine und Einzelpersonen genauso wie für größere Organisationen. Brief nach Berlin ist eine gemeinnützige Initiative in Trägerschaft der WE AID gGmbH und finanziert sich über Spenden.",
   },
 ];
 
@@ -70,7 +76,7 @@ const articleJsonLd = {
   headline: TITLE,
   description: DESCRIPTION,
   datePublished: PUBLISHED,
-  dateModified: PUBLISHED,
+  dateModified: MODIFIED,
   author: { "@type": "Organization", name: "Brief nach Berlin" },
   publisher: {
     "@type": "Organization",
@@ -120,6 +126,15 @@ export default function KampagneStartenSeoPage() {
 
         <Prose>
           <h2>Wann ist eine Briefkampagne besser als eine Petition?</h2>
+          <Figure
+            src="/images/img-campaign-crowd-ghibli.webp"
+            alt="Gemalte Menschengruppe mit Briefen in der Hand vor dem Bundestag"
+            width={1376}
+            height={768}
+            side="right"
+            rotate="right"
+            caption="Ein gemeinsamer Anlass, viele eigene Briefe."
+          />
           <p>
             Eine Petition ist stark, wenn du Breite zeigen willst: viele
             Menschen, eine Forderung, ein öffentlich sichtbarer Zähler. Eine
@@ -207,6 +222,15 @@ export default function KampagneStartenSeoPage() {
           </div>
 
           <h2>Für wen ist das Kampagnen-Feature gedacht?</h2>
+          <Figure
+            src="/images/img-kiez.webp"
+            alt="Frau schreibt auf einer Parkbank in einem grünen Kiez einen Brief"
+            width={400}
+            height={400}
+            side="left"
+            rotate="left"
+            caption="Oft fängt es lokal an: Schule, Haus, Straße, Verein."
+          />
           <p>
             Das Feature ist für Menschen gedacht, die ein Anliegen nicht allein
             tragen wollen, aber auch keine klassische Petitionskampagne
@@ -215,11 +239,61 @@ export default function KampagneStartenSeoPage() {
             die schon zehn andere Betroffene kennt.
           </p>
           <p>
-            Der Kampagnenstart ist aktuell kostenlos. Perspektivisch soll daraus
-            ein bezahlbares Angebot werden, damit auch kleine Initiativen nicht
-            bei Agenturpreisen oder NGO-Infrastruktur hängen bleiben. Der Kern
-            bleibt gleich: Kampagne anlegen, Link teilen, persönliche Briefe
-            ermöglichen.
+            Eine Kampagne kostet nichts. Brief nach Berlin
+            ist eine gemeinnützige Initiative in Trägerschaft der WE AID gGmbH
+            und läuft über{" "}
+            <Link href={DONATION_PATH} className="text-waldgruen hover:underline">Spenden</Link>. Kleine Initiativen
+            sollen nicht an Agenturpreisen oder fehlender NGO-Infrastruktur
+            scheitern. Für größere Organisationen gibt es eine eigene Seite:{" "}
+            <Link href="/ngo-briefkampagne" className="text-waldgruen hover:underline">Briefkampagnen für NGOs und Vereine</Link>.
+          </p>
+
+          <h2>Wie viele Briefe kommen bei einer Briefkampagne zusammen?</h2>
+          <p>
+            Das hängt davon ab, wie viele Menschen den Link sehen und wie sehr
+            sie das Thema betrifft. Zwei Beispiele aus dem Oktober 2026: Die
+            Kampagne{" "}
+            <Link href="/kampagne/eeg-so-nicht" className="text-waldgruen hover:underline">
+              EEG so nicht!
+            </Link>{" "}
+            von Klartext mit Lilly bittet Abgeordnete, der EEG-Novelle in der
+            vorliegenden Form nicht zuzustimmen. Innerhalb von zwei Tagen haben
+            darüber fast 1.000 Menschen einen eigenen Brief erstellt.
+          </p>
+
+          <FactCallout
+            number="~1.000"
+            label="Briefe in zwei Tagen, jeder an die Abgeordnete oder den Abgeordneten im eigenen Wahlkreis."
+            source="Kampagne EEG so nicht!, Stand Oktober 2026"
+          />
+
+          <p>
+            Die Initiative{" "}
+            <Link href="/kampagne/afd-vor-gericht" className="text-waldgruen hover:underline">
+              AfD vor Gericht
+            </Link>{" "}
+            bittet Abgeordnete, beim Bundesverfassungsgericht prüfen zu lassen,
+            ob die AfD verfassungswidrig ist. Über ihre Kampagne sind fast 500 Briefe entstanden.
+            Beide Kampagnen hatten eine Gemeinschaft, die den Link geteilt hat.
+            Die Inhalte stammen von den Initiatoren, nicht von Brief nach
+            Berlin.
+          </p>
+
+          <h2>Petition und Briefkampagne kombinieren: wie geht das?</h2>
+          <p>
+            Du musst dich nicht entscheiden. Viele Anliegen brauchen beides.
+            Die Petition zeigt Breite: viele Unterschriften unter einer
+            Forderung. Die Briefkampagne sorgt
+            dafür, dass im Wahlkreisbüro einzelne Menschen mit Namen und
+            Adresse ankommen.
+          </p>
+          <p>
+            In der Praxis heißt das: Petition anlegen, Briefkampagne anlegen,
+            beide Links in denselben Aufruf schreiben. Wer unterschrieben hat,
+            bekommt als nächsten Schritt die Bitte, auch selbst zu schreiben.
+            Wie du eine Petition beim Bundestag, beim Landtag oder online
+            startest, steht in unserer{" "}
+            <Link href="/petition-starten" className="text-waldgruen hover:underline">Anleitung zum Petition starten</Link>.
           </p>
 
           <h2>Wie starte ich eine politische Kampagne ohne Budget?</h2>
@@ -242,6 +316,22 @@ export default function KampagneStartenSeoPage() {
             Mehr dazu
           </p>
           <ul className="flex flex-col gap-3">
+            <li>
+              <Link
+                href="/petition-starten"
+                className="font-body text-waldgruen hover:text-waldgruen-dark underline underline-offset-2 transition-colors"
+              >
+                Petition starten: Bundestag, Landtag oder online
+              </Link>
+            </li>
+            <li>
+              <Link
+                href="/brief-oder-petition"
+                className="font-body text-waldgruen hover:text-waldgruen-dark underline underline-offset-2 transition-colors"
+              >
+                Brief oder Petition: was wirkt mehr?
+              </Link>
+            </li>
             <li>
               <Link
                 href="/andere-tools"

@@ -471,6 +471,13 @@ export default function AndereToolsPage() {
 
         <div className="mt-12 font-body text-sm text-warmgrau/70 leading-relaxed space-y-3">
           <p>
+            Du willst selbst eine Petition starten? Unsere{" "}
+            <Link href="/petition-starten" className="text-waldgruen hover:underline">
+              Anleitung zum Petition starten
+            </Link>{" "}
+            erklärt den Weg über Bundestag, Landtag und Online-Plattformen.
+          </p>
+          <p>
             Mehr zur Geschichte und Motivation hinter dem Projekt:{" "}
             <Link href="/warum" className="text-waldgruen hover:underline">
               Warum es Brief-nach-Berlin gibt

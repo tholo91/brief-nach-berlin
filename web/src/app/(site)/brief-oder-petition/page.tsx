@@ -236,6 +236,14 @@ export default function BriefOderPetitionPage() {
           <ul className="flex flex-col gap-3">
             <li>
               <Link
+                href="/petition-starten"
+                className="font-body text-waldgruen hover:text-waldgruen-dark underline underline-offset-2 transition-colors"
+              >
+                Wie starte ich eine Petition?
+              </Link>
+            </li>
+            <li>
+              <Link
                 href="/lohnt-sich-brief-an-politiker"
                 className="font-body text-waldgruen hover:text-waldgruen-dark underline underline-offset-2 transition-colors"
               >

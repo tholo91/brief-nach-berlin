@@ -49,7 +49,7 @@ Der level-aware E-Mail-Betreff ist dagegen bereits implementiert und getestet; d
 Phase: 05 — EXECUTING
 Plan: 4 of 4
 Status: Phase complete — ready for verification
-Last activity: 2026-07-10 - Completed quick task 260710-dgq: Kampagnen-Ziel-Ebene Bund/Landtag inkl. Wizard-Bindung und Mismatch-Fallback
+Last activity: 2026-10-08 - Completed quick task 261008-n3g: Kampagnen S2 Ablaufdatum und Beendet-Ansichten
 
 Progress: [███████░░░] 68%
 
@@ -160,6 +160,7 @@ Recent decisions affecting current work:
 | 261008-n29 | S1 Reviews kennen ihre Kampagne (reviews.campaign_slug, Migration 025) | 2026-10-08 | 7c4ca49 | [261008-n29-s1-reviews-kennen-ihre-kampagne-reviews-](./quick/261008-n29-s1-reviews-kennen-ihre-kampagne-reviews-/) |
 | 261008-xfr | Kampagne übertragen als Link + Dialog, Archivieren mit Bestätigung | 2026-10-08 | (pending) | [261008-xfr-uebertragen-als-dialog](./quick/261008-xfr-uebertragen-als-dialog/) |
 | 261008-n4c | Kampagnen S6: Spendenbox in Ersteller-Mails (persönliche Einladung mit Foto, Buttons im Verwaltungszugang, Thomas schreiben, Footer-Links) | 2026-10-08 | 10e3a71 | [261008-n4c-kampagnen-s6-spendenbox-in-verwalten-mai](./quick/261008-n4c-kampagnen-s6-spendenbox-in-verwalten-mai/) |
+| 261008-n3g | Kampagnen S2: Ablaufdatum und Beendet-Ansichten | 2026-10-08 | 57aa3c4 | [261008-n3g-kampagnen-s2-ablaufdatum-und-beendet-ans](./quick/261008-n3g-kampagnen-s2-ablaufdatum-und-beendet-ans/) |
 
 ## Session Continuity
 

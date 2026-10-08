@@ -21,6 +21,16 @@ import {
 } from "@/lib/campaigns/schema";
 import { normalizeCampaignTargetDraft } from "@/lib/campaigns/targetDraft";
 import {
+  campaignEndsAtFromDate,
+  formatCampaignEndDate,
+} from "@/lib/campaigns/endDate";
+import {
+  CampaignEndDatePicker,
+  DEFAULT_END_PICKER_VALUE,
+  resolvePickerDateKey,
+  type CampaignEndPickerValue,
+} from "./CampaignEndDatePicker";
+import {
   MdbCampaignHiddenInputs,
   MdbCampaignSelector,
 } from "./MdbCampaignSelector";
@@ -196,6 +206,11 @@ export function CreatorCampaignForm() {
   const [logoFileName, setLogoFileName] = useState<string | null>(null);
   const [logoError, setLogoError] = useState<string | null>(null);
   const [fixedAddressAccepted, setFixedAddressAccepted] = useState(false);
+  const [endPicker, setEndPicker] = useState<CampaignEndPickerValue>(DEFAULT_END_PICKER_VALUE);
+  const endDateKey = resolvePickerDateKey(endPicker);
+  const endDateLabel = endDateKey
+    ? formatCampaignEndDate(campaignEndsAtFromDate(endDateKey))
+    : "Ohne Enddatum";
   const normalizedSlug = useMemo(() => slugPreview(draft.slug), [draft.slug]);
   const normalizedCompactSlug = useMemo(
     () => compactCampaignSlug(normalizedSlug),
@@ -209,6 +224,7 @@ export function CreatorCampaignForm() {
   const creatorEmailError = fieldError(result, "creatorEmail");
   const externalUrlError = fieldError(result, "externalUrl");
   const descriptionError = fieldError(result, "description");
+  const endDateError = fieldError(result, "endDate");
   const responsibilityError = fieldError(result, "responsibilityAccepted");
   const logoServerError = fieldError(result, "logo");
   const issueTextCharCount = draft.issueText.trim().length;
@@ -1053,6 +1069,18 @@ export function CreatorCampaignForm() {
         </div>
 
       <div className="grid gap-2 border-t border-warmgrau/12 pt-5">
+        <CampaignEndDatePicker
+          value={endPicker}
+          onChange={setEndPicker}
+          idPrefix="create-end"
+          error={endDateError}
+        />
+        <p className="font-body text-sm text-warmgrau/60">
+          Optional. Solange die Kampagne läuft, kannst du das Datum ändern oder verlängern.
+        </p>
+      </div>
+
+      <div className="grid gap-2 border-t border-warmgrau/12 pt-5">
         <label className="font-typewriter text-sm font-bold text-waldgruen-dark" htmlFor="creatorEmail">
           Deine E-Mail
         </label>
@@ -1185,6 +1213,14 @@ export function CreatorCampaignForm() {
                 </dt>
                 <dd className="mt-1 font-body text-sm font-semibold text-waldgruen-dark">
                   {draft.title || "..."}
+                </dd>
+              </div>
+              <div>
+                <dt className="font-body text-xs font-semibold uppercase tracking-wide text-warmgrau/50">
+                  Laufzeit
+                </dt>
+                <dd className="mt-1 font-body text-sm font-semibold text-waldgruen-dark">
+                  {endDateKey ? `Bis ${endDateLabel}` : endDateLabel}
                 </dd>
               </div>
               <div>

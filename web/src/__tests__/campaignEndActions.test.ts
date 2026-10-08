@@ -103,6 +103,7 @@ describe("campaign end actions", () => {
       expect(endCampaignNow).toHaveBeenCalledWith(CAMPAIGN_ID);
       expect(revalidatePath).toHaveBeenCalledWith("/kampagne/sichere-schulwege");
       expect(revalidatePath).toHaveBeenCalledWith("/kampagne/verwalten");
+      expect(revalidatePath).toHaveBeenCalledWith("/kampagne");
       expect(revalidatePath).toHaveBeenCalledWith("/");
     });
 

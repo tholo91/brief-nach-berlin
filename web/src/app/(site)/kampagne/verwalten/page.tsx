@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { CampaignBackground } from "@/components/campaigns/CampaignBackground";
 import { CampaignManager } from "@/components/campaigns/CampaignManager";
+import { isCampaignEnded } from "@/lib/campaigns/endDate";
 import { getCampaignById } from "@/lib/campaigns/repository";
 import { getCampaignManagementSession } from "@/lib/campaigns/session";
 
@@ -23,7 +24,7 @@ function PendingApprovalNotice({ campaign }: { campaign: NonNullable<Awaited<Ret
       </div>
     </section>
     <section className="relative mx-auto max-w-4xl px-6 pb-14 md:pb-20">
-      <CampaignManager campaign={campaign} />
+      <CampaignManager campaign={campaign} ended={false} />
     </section>
     </>
   );
@@ -91,6 +92,8 @@ export default async function ManageCampaignPage({
       ? campaign
       : null;
 
+  const ended = authorizedCampaign ? isCampaignEnded(authorizedCampaign, new Date()) : false;
+
   return (
     <CampaignBackground>
       {authorizedCampaign ? (
@@ -102,11 +105,11 @@ export default async function ManageCampaignPage({
               </div>
             </section>
           )}
-          {authorizedCampaign.status === "awaiting_approval" ? (
+          {authorizedCampaign.status === "awaiting_approval" && !ended ? (
             <PendingApprovalNotice campaign={authorizedCampaign} />
           ) : (
             <section className="relative mx-auto max-w-4xl px-6 py-14 md:py-20">
-              <CampaignManager campaign={authorizedCampaign} />
+              <CampaignManager campaign={authorizedCampaign} ended={ended} />
             </section>
           )}
         </>

@@ -21,13 +21,16 @@ import {
   type PauseCampaignResult,
 } from "@/lib/actions/pauseCampaign";
 import {
-  archiveCampaignAction,
-  type ArchiveCampaignResult,
-} from "@/lib/actions/archiveCampaign";
+  endCampaignAction,
+  updateCampaignEndDateAction,
+  type CampaignEndResult,
+} from "@/lib/actions/campaignEnd";
 import {
   transferCampaignAction,
   type TransferCampaignResult,
 } from "@/lib/actions/transferCampaign";
+import { BRIEF_EMAIL } from "@/lib/contact";
+import { berlinDateKey, formatCampaignEndDate } from "@/lib/campaigns/endDate";
 import { campaignLogoPublicUrl } from "@/lib/campaigns/logo";
 import {
   BUNDESLAND_NAMES,
@@ -37,15 +40,17 @@ import {
   type CampaignTargetLevel,
 } from "@/lib/campaigns/schema";
 import { campaignPublicUrl } from "@/lib/share";
+import {
+  CampaignEndDatePicker,
+  pickerValueFromEndsAt,
+  resolvePickerDateKey,
+} from "./CampaignEndDatePicker";
 import { CampaignQrDownload } from "./CampaignQrDownload";
 import { CampaignUrlCopyField } from "./CampaignUrlCopyField";
 import { MdbCampaignSelector } from "./MdbCampaignSelector";
 
-type ActionResult =
-  | UpdateCampaignResult
-  | PauseCampaignResult
-  | ArchiveCampaignResult
-  | null;
+type ActionResult = UpdateCampaignResult | null;
+type RuntimeResult = PauseCampaignResult | CampaignEndResult | null;
 
 const statusLabels: Record<Campaign["status"], string> = {
   draft: "Entwurf",
@@ -101,9 +106,16 @@ async function resizeLogoFile(file: File): Promise<File> {
   }
 }
 
-export function CampaignManager({ campaign }: { campaign: Campaign }) {
+export function CampaignManager({
+  campaign,
+  ended,
+}: {
+  campaign: Campaign;
+  ended: boolean;
+}) {
   const router = useRouter();
   const [result, setResult] = useState<ActionResult>(null);
+  const [runtimeResult, setRuntimeResult] = useState<RuntimeResult>(null);
   const [actionPending, setActionPending] = useState(false);
   const [isPending, startTransition] = useTransition();
   const [logoPreviewUrl, setLogoPreviewUrl] = useState<string | null>(null);
@@ -127,13 +139,26 @@ export function CampaignManager({ campaign }: { campaign: Campaign }) {
   const transferDialogRef = useRef<HTMLDialogElement>(null);
   const transferFormRef = useRef<HTMLFormElement>(null);
   const transferEmailRef = useRef<HTMLInputElement>(null);
-  const archiveDialogRef = useRef<HTMLDialogElement>(null);
+  const endDialogRef = useRef<HTMLDialogElement>(null);
+  const [endPicker, setEndPicker] = useState(() => pickerValueFromEndsAt(campaign.endsAt));
   const isBusy = isPending || actionPending;
-  const canEdit = campaign.status !== "archived" && campaign.status !== "blocked";
+  const canEdit = !ended && campaign.status !== "archived" && campaign.status !== "blocked";
   const canEditTarget = canEdit && !isCampaignTargetLocked(campaign);
-  const canPause = campaign.status === "active";
-  const canArchive = campaign.status !== "archived" && campaign.status !== "blocked";
-  const canTransfer = ["awaiting_approval", "active", "paused"].includes(campaign.status);
+  const canPause = !ended && campaign.status === "active";
+  const canEnd =
+    !ended &&
+    ["draft", "awaiting_email_verification", "awaiting_approval", "active", "paused"].includes(
+      campaign.status
+    );
+  const canTransfer =
+    !ended && ["awaiting_approval", "active", "paused"].includes(campaign.status);
+  const savedEndDateKey = campaign.endsAt ? berlinDateKey(new Date(campaign.endsAt)) : "";
+  const pickedEndDateKey = resolvePickerDateKey(endPicker);
+  const endDateChanged = pickedEndDateKey !== savedEndDateKey;
+  const endDateIncomplete = endPicker.choice === "custom" && !endPicker.customDate;
+  const endedLabel =
+    ended && campaign.endsAt ? formatCampaignEndDate(campaign.endsAt) : null;
+  const contactHref = `mailto:${BRIEF_EMAIL}?subject=${encodeURIComponent(`Kampagne ${campaign.slug}`)}`;
   const currentLogoUrl = campaignLogoPublicUrl(campaign.logoPath);
   const shownLogoUrl = logoPreviewUrl ?? currentLogoUrl;
   const logoFileButtonClass = shownLogoUrl
@@ -231,21 +256,6 @@ export function CampaignManager({ campaign }: { campaign: Campaign }) {
     transferEmailRef.current?.focus();
   }
 
-  function archiveCampaign() {
-    archiveDialogRef.current?.close();
-    setResult(null);
-    setActionPending(true);
-    startTransition(async () => {
-      try {
-        const nextResult = await archiveCampaignAction(campaign.id);
-        setResult(nextResult);
-        if (nextResult.ok) router.refresh();
-      } finally {
-        setActionPending(false);
-      }
-    });
-  }
-
   async function submitTransfer(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     if (!event.currentTarget.reportValidity()) return;
@@ -263,8 +273,54 @@ export function CampaignManager({ campaign }: { campaign: Campaign }) {
     });
   }
 
+  function runEndAction(action: () => Promise<CampaignEndResult>, onOk?: () => void) {
+    setRuntimeResult(null);
+    setActionPending(true);
+    startTransition(async () => {
+      try {
+        const nextResult = await action();
+        setRuntimeResult(nextResult);
+        if (nextResult.ok) {
+          onOk?.();
+          router.refresh();
+        }
+      } finally {
+        setActionPending(false);
+      }
+    });
+  }
+
+  function endCampaignNow() {
+    endDialogRef.current?.close();
+    runEndAction(() => endCampaignAction(campaign.id));
+  }
+
   return (
     <div className="grid gap-8">
+      {endedLabel && (
+        <section
+          aria-labelledby="campaign-ended-banner"
+          className="rounded-md border border-waldgruen/15 border-l-4 border-l-waldgruen bg-white/75 p-5 shadow-sm md:p-7"
+        >
+          <h2
+            id="campaign-ended-banner"
+            className="font-typewriter text-xl font-bold text-waldgruen-dark md:text-2xl"
+          >
+            Beendet am {endedLabel}
+          </h2>
+          <p className="mt-2 max-w-2xl font-body text-sm leading-relaxed text-warmgrau/75 md:text-base">
+            Die Kampagnenseite bleibt online und zeigt den Endstand. Ändern lässt sich nichts mehr.
+            Wenn du die Kampagne neu starten willst oder Fragen hast, schreib uns.
+          </p>
+          <a
+            href={contactHref}
+            className="mt-4 inline-flex min-h-11 w-full items-center justify-center rounded-md bg-waldgruen px-5 py-3 font-body text-base font-semibold text-creme transition-colors hover:bg-waldgruen-dark focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-waldgruen sm:w-auto"
+          >
+            Kontakt aufnehmen
+          </a>
+        </section>
+      )}
+
       <section className="rounded-md border border-warmgrau/12 bg-white/75 p-5 shadow-sm md:p-7">
         <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
           <div>
@@ -295,16 +351,18 @@ export function CampaignManager({ campaign }: { campaign: Campaign }) {
             </div>
           </div>
           <div className="rounded-md border border-waldgruen/15 bg-creme px-4 py-3 font-body text-sm font-semibold text-waldgruen-dark">
-            {statusLabels[campaign.status]}
+            {ended ? "beendet" : statusLabels[campaign.status]}
           </div>
         </div>
-        <p className="mt-5 font-body text-sm leading-relaxed text-warmgrau/70">
-          {campaign.status === "archived"
-            ? "Diese Kampagne ist beendet und kann nicht mehr verändert werden."
-            : campaign.status === "blocked"
-              ? "Diese Kampagne ist blockiert und kann nicht mehr verändert werden."
-              : "Änderungen werden vor der Veröffentlichung automatisch geprüft. Wenn die Prüfung scheitert, bleibt der bisherige öffentliche Text unverändert."}
-        </p>
+        {!ended && (
+          <p className="mt-5 font-body text-sm leading-relaxed text-warmgrau/70">
+            {campaign.status === "archived"
+              ? "Diese Kampagne ist beendet und kann nicht mehr verändert werden."
+              : campaign.status === "blocked"
+                ? "Diese Kampagne ist blockiert und kann nicht mehr verändert werden."
+                : "Änderungen werden vor der Veröffentlichung automatisch geprüft. Wenn die Prüfung scheitert, bleibt der bisherige öffentliche Text unverändert."}
+          </p>
+        )}
         <div className="mt-6 grid gap-4 border-y border-warmgrau/12 py-4 sm:grid-cols-2">
           <div>
             <p className="font-typewriter text-xs font-bold uppercase tracking-widest text-warmgrau/50">
@@ -578,70 +636,117 @@ export function CampaignManager({ campaign }: { campaign: Campaign }) {
           </div>
         )}
 
-        <button
-          type="submit"
-          disabled={!canEdit || isBusy}
-          className="rounded-md bg-waldgruen px-5 py-3 font-body text-base font-semibold text-creme transition-colors hover:bg-waldgruen-dark disabled:cursor-not-allowed disabled:opacity-60"
-        >
-          {isBusy ? "Wird geprüft..." : "Änderungen veröffentlichen"}
-        </button>
+        {!ended && (
+          <button
+            type="submit"
+            disabled={!canEdit || isBusy}
+            className="rounded-md bg-waldgruen px-5 py-3 font-body text-base font-semibold text-creme transition-colors hover:bg-waldgruen-dark disabled:cursor-not-allowed disabled:opacity-60"
+          >
+            {isBusy ? "Wird geprüft..." : "Änderungen veröffentlichen"}
+          </button>
+        )}
       </form>
 
-      <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_minmax(280px,360px)]">
-        <section className="grid gap-4 rounded-md border border-warmgrau/12 bg-white/75 p-5 shadow-sm md:p-7">
-          <div>
-            <h2 className="font-typewriter text-xl font-bold text-waldgruen-dark">
-              Kampagne umstellen
-            </h2>
-            <p className="mt-2 font-body text-sm leading-relaxed text-warmgrau/70">
-              Pausieren blendet die öffentliche Seite aus. Archivieren beendet die
-              Kampagne dauerhaft, ohne die gespeicherte Historie zu löschen.
-            </p>
-          </div>
-          <div className="flex flex-col gap-3 sm:flex-row">
-            <button
-              type="button"
-              disabled={!canPause || isBusy}
-              onClick={() => {
-                setResult(null);
-                setActionPending(true);
-                startTransition(async () => {
-                  try {
-                    const nextResult = await pauseCampaignAction(campaign.id);
-                    setResult(nextResult);
-                    if (nextResult.ok) router.refresh();
-                  } finally {
-                    setActionPending(false);
-                  }
-                });
-              }}
-              className="rounded-md border border-waldgruen/25 px-5 py-3 font-body text-base font-semibold text-waldgruen-dark transition-colors hover:border-waldgruen disabled:cursor-not-allowed disabled:opacity-50"
-            >
-              Kampagne pausieren
-            </button>
-            <button
-              type="button"
-              disabled={!canArchive || isBusy}
-              onClick={() => archiveDialogRef.current?.showModal()}
-              className="rounded-md border border-airmail-rot/30 px-5 py-3 font-body text-base font-semibold text-airmail-rot transition-colors hover:border-airmail-rot disabled:cursor-not-allowed disabled:opacity-50"
-            >
-              Kampagne archivieren
-            </button>
-          </div>
-          {canTransfer && (
-            <p className="border-t border-warmgrau/12 pt-4 font-body text-sm text-warmgrau/70">
-              Soll jemand anderes die Kampagne betreuen?{" "}
-              <button
-                type="button"
+      <div className={ended ? "grid gap-4 lg:max-w-sm" : "grid gap-4 lg:grid-cols-[minmax(0,1fr)_minmax(280px,360px)]"}>
+        {!ended && (
+          <section className="grid gap-6 rounded-md border border-warmgrau/12 bg-white/75 p-5 shadow-sm md:p-7">
+            <div>
+              <h2 className="font-typewriter text-xl font-bold text-waldgruen-dark">
+                Laufzeit und Status
+              </h2>
+              <p className="mt-2 font-body text-sm leading-relaxed text-warmgrau/70">
+                Mit einem Enddatum läuft die Kampagne von selbst aus. Pausieren blendet die
+                öffentliche Seite vorübergehend aus. Beenden schließt die Kampagne für immer,
+                die Seite zeigt danach den Endstand.
+              </p>
+            </div>
+            <div className="grid gap-3">
+              <CampaignEndDatePicker
+                value={endPicker}
+                onChange={setEndPicker}
+                idPrefix="manage-end"
                 disabled={isBusy}
-                onClick={openTransferDialog}
-                className="font-semibold text-waldgruen-dark underline underline-offset-4 transition-colors hover:text-waldgruen disabled:cursor-not-allowed disabled:opacity-50"
-              >
-                Verwaltung übertragen
-              </button>
-            </p>
-          )}
-        </section>
+              />
+              <div>
+                <button
+                  type="button"
+                  disabled={!endDateChanged || endDateIncomplete || isBusy}
+                  onClick={() =>
+                    runEndAction(
+                      () => updateCampaignEndDateAction(campaign.id, pickedEndDateKey),
+                      () =>
+                        setEndPicker(
+                          pickedEndDateKey
+                            ? { choice: "custom", customDate: pickedEndDateKey }
+                            : { choice: "none", customDate: "" }
+                        )
+                    )
+                  }
+                  className="min-h-11 w-full rounded-md bg-waldgruen px-5 py-3 font-body text-base font-semibold text-creme transition-colors hover:bg-waldgruen-dark focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-waldgruen disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto"
+                >
+                  Enddatum speichern
+                </button>
+              </div>
+            </div>
+            <div className="grid gap-3 border-t border-warmgrau/12 pt-5">
+              <div className="flex flex-col gap-3 sm:flex-row">
+                <button
+                  type="button"
+                  disabled={!canPause || isBusy}
+                  onClick={() => {
+                    setRuntimeResult(null);
+                    setActionPending(true);
+                    startTransition(async () => {
+                      try {
+                        const nextResult = await pauseCampaignAction(campaign.id);
+                        setRuntimeResult(nextResult);
+                        if (nextResult.ok) router.refresh();
+                      } finally {
+                        setActionPending(false);
+                      }
+                    });
+                  }}
+                  className="min-h-11 rounded-md border border-waldgruen/25 px-5 py-3 font-body text-base font-semibold text-waldgruen-dark transition-colors hover:border-waldgruen focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-waldgruen disabled:cursor-not-allowed disabled:opacity-50"
+                >
+                  Kampagne pausieren
+                </button>
+                <button
+                  type="button"
+                  disabled={!canEnd || isBusy}
+                  onClick={() => endDialogRef.current?.showModal()}
+                  className="min-h-11 rounded-md border border-airmail-rot/30 px-5 py-3 font-body text-base font-semibold text-airmail-rot transition-colors hover:border-airmail-rot focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-airmail-rot disabled:cursor-not-allowed disabled:opacity-50"
+                >
+                  Kampagne jetzt beenden
+                </button>
+              </div>
+              {runtimeResult && (
+                <div
+                  role="status"
+                  className={`rounded-md border px-4 py-3 font-body text-sm ${
+                    runtimeResult.ok
+                      ? "border-waldgruen/20 bg-white/60 text-waldgruen-dark"
+                      : "border-airmail-rot/25 bg-airmail-rot/5 text-airmail-rot"
+                  }`}
+                >
+                  {runtimeResult.message}
+                </div>
+              )}
+              {canTransfer && (
+                <p className="border-t border-warmgrau/12 pt-4 font-body text-sm text-warmgrau/70">
+                  Soll jemand anderes die Kampagne betreuen?{" "}
+                  <button
+                    type="button"
+                    disabled={isBusy}
+                    onClick={openTransferDialog}
+                    className="font-semibold text-waldgruen-dark underline underline-offset-4 transition-colors hover:text-waldgruen disabled:cursor-not-allowed disabled:opacity-50"
+                  >
+                    Verwaltung übertragen
+                  </button>
+                </p>
+              )}
+            </div>
+          </section>
+        )}
         <CampaignQrDownload
           url={publicUrl}
           slug={campaign.slug}
@@ -649,32 +754,34 @@ export function CampaignManager({ campaign }: { campaign: Campaign }) {
         />
       </div>
 
-      <ManagerDialog dialogRef={archiveDialogRef} title="Kampagne archivieren?">
-        <p className="font-body text-sm leading-relaxed text-warmgrau/80">
-          Die öffentliche Seite geht offline und es entstehen keine neuen Briefe mehr. Die
-          gespeicherte Historie bleibt erhalten.
-        </p>
-        <p className="rounded-md border border-airmail-rot/25 bg-airmail-rot/5 px-4 py-3 font-body text-sm text-airmail-rot">
-          Archivieren ist endgültig. Du kannst die Kampagne danach nicht wieder aktivieren.
-        </p>
-        <div className="flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
-          <button
-            type="button"
-            onClick={() => archiveDialogRef.current?.close()}
-            className="rounded-md border border-warmgrau/20 px-5 py-3 font-body text-base font-semibold text-warmgrau transition-colors hover:border-warmgrau/40"
-          >
-            Abbrechen
-          </button>
-          <button
-            type="button"
-            disabled={isBusy}
-            onClick={archiveCampaign}
-            className="rounded-md bg-airmail-rot px-5 py-3 font-body text-base font-semibold text-creme transition-colors hover:bg-airmail-rot/90 disabled:cursor-not-allowed disabled:opacity-60"
-          >
-            Kampagne archivieren
-          </button>
-        </div>
-      </ManagerDialog>
+      {canEnd && (
+        <ManagerDialog dialogRef={endDialogRef} title="Kampagne jetzt beenden?">
+          <p className="font-body text-sm leading-relaxed text-warmgrau/80">
+            Der Link bleibt erreichbar und zeigt den Endstand. Über die Kampagne kann niemand
+            mehr einen Brief starten.
+          </p>
+          <p className="rounded-md border border-airmail-rot/25 bg-airmail-rot/5 px-4 py-3 font-body text-sm text-airmail-rot">
+            Beenden ist endgültig. Du kannst die Kampagne danach nicht wieder starten.
+          </p>
+          <div className="flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
+            <button
+              type="button"
+              onClick={() => endDialogRef.current?.close()}
+              className="rounded-md border border-warmgrau/20 px-5 py-3 font-body text-base font-semibold text-warmgrau transition-colors hover:border-warmgrau/40"
+            >
+              Abbrechen
+            </button>
+            <button
+              type="button"
+              disabled={isBusy}
+              onClick={endCampaignNow}
+              className="rounded-md bg-airmail-rot px-5 py-3 font-body text-base font-semibold text-creme transition-colors hover:bg-airmail-rot/90 disabled:cursor-not-allowed disabled:opacity-60"
+            >
+              Ja, jetzt beenden
+            </button>
+          </div>
+        </ManagerDialog>
+      )}
 
       {canTransfer && (
         <ManagerDialog dialogRef={transferDialogRef} title="Verwaltung übertragen?">

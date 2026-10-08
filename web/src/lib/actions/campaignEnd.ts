@@ -49,6 +49,7 @@ async function loadOwnedCampaign(campaignId: string): Promise<OwnedCampaign> {
 function revalidateCampaign(slug: string): void {
   revalidatePath(`/kampagne/${slug}`);
   revalidatePath("/kampagne/verwalten");
+  revalidatePath("/kampagne");
   revalidatePath("/");
 }
 

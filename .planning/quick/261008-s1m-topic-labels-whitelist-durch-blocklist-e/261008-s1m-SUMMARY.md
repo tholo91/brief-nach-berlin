@@ -66,7 +66,7 @@ None - plan executed as written. Einzige Anpassung: die Datenschutz-Phrase "Them
 ## Hinweise
 
 - Laufende Kampagnen behalten ihre alten, flachen Labels, bis der Kampagnentext einmal neu gespeichert wird (STORY "Bekannte Grenzen").
-- Akzeptierter Trade-off: eigenstaendige Woerter "Gruene", "Linke", "Volt" werden als Partei geblockt (z. B. "Gruene Welle"); geschlossene Komposita ohne Bindestrich werden nicht erkannt.
+- Nachtrag 2026-10-08: Partei-Blocklist auf Thomas' Entscheidung wieder entfernt. Labels sind intern (Thomas, ggf. Medien als Aggregat), Parteibezug wie "AfD-Verbot" ist fuer die Auswertung das staerkste Signal; Art.-9-Einwilligung deckt es. Stattdessen Prompt-Regel: Partei nur, wenn das Anliegen sie zum Thema macht, nie die Partei des Empfaengers (Fallback-Prompt sieht `parteimitgliedschaft`) oder der schreibenden Person. Live-Check: AfD-Fall liefert "AfD", SPD-Empfaenger und Gruenen-Mitglied liefern keine Parteilabels. "Gruene Welle" geht wieder durch.
 - Alte `letter_signals`-Zeilen bleiben flach; Schnitt fuer Auswertungen ist `consent_version` bzw. `created_at`.
 
 ## Known Stubs

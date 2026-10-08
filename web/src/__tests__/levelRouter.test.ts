@@ -83,7 +83,8 @@ describe("routeToLevel", () => {
       "Nenne die Zuständigkeit statt die Einordnung nur zu wiederholen"
     );
     expect(request.messages[0].content).toContain("Der erste Code ist das Hauptthema des Anliegens");
-    expect(request.messages[0].content).toContain("Keine Personen, Adressen, Firmen oder Parteien");
+    expect(request.messages[0].content).toContain("Keine Personen, Adressen oder Firmen");
+    expect(request.messages[0].content).toContain("nie die Partei des Empfängers oder der schreibenden Person");
     expect(request.messages[1].content).toBe("<anliegen>Asylpolitik</anliegen>");
   });
 
@@ -139,16 +140,16 @@ describe("routeToLevel", () => {
     expect(result.topic).toBeNull();
   });
 
-  it("behält konkrete Stichworte in Mistral-Reihenfolge und verwirft Parteinamen", async () => {
+  it("behält konkrete Stichworte inklusive Parteibezug in Mistral-Reihenfolge", async () => {
     mockResponse({
       primary: { level: "Bund", confidence: "high" },
       reasoning: "Die Wahl der Richter ist Bundessache.",
       topic_categories: ["demokratie_staat", "sicherheit_justiz"],
-      topic_labels: ["Bundesverfassungsgericht", "Richterwahl", "AfD"],
+      topic_labels: ["Bundesverfassungsgericht", "Richterwahl", "AfD-Verbot"],
     });
     const result = await routeToLevel("Bundesverfassungsgericht vor Sperrminorität schützen");
     expect(result.topic).toMatchObject({
-      topicLabels: ["Bundesverfassungsgericht", "Richterwahl"],
+      topicLabels: ["Bundesverfassungsgericht", "Richterwahl", "AfD-Verbot"],
       topicSource: "routing",
       topicTaxonomyVersion: "v1",
     });

@@ -37,7 +37,7 @@ export const TOPIC_JSON_SCHEMA_PROPERTIES = {
 
 export const TOPIC_PROMPT_RULES = [
   "- topic_categories: 1 bis 3 Codes, nach Gewicht geordnet. Der erste Code ist das Hauptthema des Anliegens.",
-  "- topic_labels: 1 bis 3 konkrete Stichworte aus dem Anliegen, je höchstens zwei Wörter, als Substantive und so spezifisch wie der Text, z.B. 'Erziehermangel', 'Radverkehr', 'Bundesverfassungsgericht'. Keine Personen, Adressen, Firmen oder Parteien, keine Platzhalter wie 'Anliegen' oder 'Politik'.",
+  "- topic_labels: 1 bis 3 konkrete Stichworte aus dem Anliegen, je höchstens zwei Wörter, als Substantive und so spezifisch wie der Text, z.B. 'Erziehermangel', 'Radverkehr', 'Bundesverfassungsgericht'. Keine Personen, Adressen oder Firmen. Eine Partei nur, wenn das Anliegen selbst sie zum Thema macht (z.B. 'AfD-Verbot'), nie die Partei des Empfängers oder der schreibenden Person. Keine Platzhalter wie 'Anliegen' oder 'Politik'.",
 ] as const;
 
 export const TopicCategoryCodeSchema = z.enum(TOPIC_CATEGORY_CODES);
@@ -50,18 +50,6 @@ export const TopicSourceSchema = z.enum([
 export type TopicSource = z.infer<typeof TopicSourceSchema>;
 
 const TOPIC_LABEL_REGEX = /^[\p{L}\p{N}][\p{L}\p{N} &'/-]{0,59}$/u;
-const PARTY_NAME_REGEX = new RegExp(
-  "(?<![\\p{L}\\p{N}])(?:" +
-    [
-      "afd", "cdu", "csu", "spd", "fdp", "grüne", "grünen", "gruene", "gruenen",
-      "bündnis\\s*90", "buendnis\\s*90", "linke", "linken", "linkspartei", "bsw", "volt",
-      "freie\\s+wähler", "freie\\s+waehler", "npd", "die\\s+partei", "werteunion",
-      "piraten", "piratenpartei", "tierschutzpartei",
-    ].join("|") +
-    ")(?![\\p{L}\\p{N}])",
-  "iu",
-);
-
 export const TopicLabelSchema = z
   .string()
   .trim()
@@ -76,8 +64,7 @@ export const TopicLabelSchema = z
       !/\b(?:gmbh|ag|kg|e\.?\s*v\.?|verein|partei)\b/iu.test(label) &&
       !/(?:\p{L}+)?(?:straße|strasse|weg|allee|gasse|platz)\s+\d/iu.test(label),
     "Unterthema enthält möglicherweise persönliche oder institutionelle Angaben",
-  )
-  .refine((label) => !PARTY_NAME_REGEX.test(label), "Unterthema nennt eine Partei");
+  );
 
 function unique<T>(values: T[]): boolean {
   return new Set(values).size === values.length;

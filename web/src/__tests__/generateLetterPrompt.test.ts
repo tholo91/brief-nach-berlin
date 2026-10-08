@@ -81,7 +81,8 @@ describe("buildUserPrompt", () => {
     expect(prompt).toContain("topic_categories");
     expect(prompt).toContain("topic_labels");
     expect(prompt).toContain("Der erste Code ist das Hauptthema des Anliegens");
-    expect(prompt).toContain("Keine Personen, Adressen, Firmen oder Parteien");
+    expect(prompt).toContain("Keine Personen, Adressen oder Firmen");
+    expect(prompt).toContain("nie die Partei des Empfängers oder der schreibenden Person");
     expect(prompt).toContain("konkrete Stichworte aus dem Anliegen");
   });
 

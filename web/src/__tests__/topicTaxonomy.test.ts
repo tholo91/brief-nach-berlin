@@ -59,6 +59,11 @@ describe("topic taxonomy v1", () => {
       "Kita-Platzvergabe",
       "Grünflächen",
       "Linksabbieger",
+      "AfD",
+      "AfD-Verbot",
+      "CDU/CSU",
+      "Freie Wähler",
+      "Grüne Welle",
     ]) {
       const parsed = TopicSignalSchema.parse({
         topicCategories: ["sonstiges"],
@@ -68,17 +73,8 @@ describe("topic taxonomy v1", () => {
     }
   });
 
-  it("drops party names, hyphen compounds and personal data", () => {
+  it("drops personal data", () => {
     for (const label of [
-      "AfD",
-      "AfD-Verbot",
-      "afd",
-      "CDU/CSU",
-      "SPD-Fraktion",
-      "Bündnis 90",
-      "Freie Wähler",
-      "Linkspartei",
-      "Werteunion",
       "Herr Müller",
       "Hauptstraße 12",
       "28195",
@@ -100,19 +96,19 @@ describe("topic taxonomy v1", () => {
   it("keeps concrete labels in model order and drops blocked ones", () => {
     const signal = buildTopicSignal({
       topic_categories: ["demokratie_staat", "sicherheit_justiz"],
-      topic_labels: ["Bundesverfassungsgericht", "Richterwahl", "AfD"],
+      topic_labels: ["Bundesverfassungsgericht", "AfD-Verbot", "Herr Müller"],
     }, "routing", "mistral-small-latest");
 
     expect(signal).toMatchObject({
       topicCategories: ["demokratie_staat", "sicherheit_justiz"],
-      topicLabels: ["Bundesverfassungsgericht", "Richterwahl"],
+      topicLabels: ["Bundesverfassungsgericht", "AfD-Verbot"],
     });
   });
 
   it("falls back to the category label when every label is blocked", () => {
     const signal = buildTopicSignal({
       topic_categories: ["demokratie_staat"],
-      topic_labels: ["AfD-Verbot", "Herr Müller"],
+      topic_labels: ["Herr Müller", "Hauptstraße 12"],
     }, "routing", "mistral-small-latest");
 
     expect(signal).toMatchObject({

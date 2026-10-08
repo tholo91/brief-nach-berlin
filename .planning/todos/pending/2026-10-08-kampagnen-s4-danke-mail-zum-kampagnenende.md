@@ -9,6 +9,8 @@ files:
   - web/vercel.json
 ---
 
+> **Zurückgestellt am 2026-10-08** zugunsten der Meilenstein-Mails (`2026-10-08-kampagnen-meilenstein-mails.md`). Hinweise: S3 ist noch nicht gemerged (`creatorStats.ts` fehlt). Der `letter_signals`-Purge läuft per Supabase-`pg_cron`, nicht als Vercel-Cron. Verwalten-Tokens sind gehasht, der Versand muss pro Mail einen neuen `manage`-Token erzeugen.
+
 ## Problem
 
 Teil von "Kampagnen 2.0" (S4 von 5, bewusst später). Braucht S2 (`ends_at`) und S3 (`getCampaignCreatorStats`). Wenn eine Kampagne endet, bekommt der Ersteller heute nichts. Ein Danke mit Endstand schließt die Kampagne gut ab und ist ein natürlicher Moment für den freiwilligen Spendenhinweis.

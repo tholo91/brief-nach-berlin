@@ -3,6 +3,7 @@
 import { z } from "zod";
 import { checkRateLimit, getClientIp, hashIdentifier, LIMITS } from "@/lib/rateLimit";
 import { sendErrorReportEmail } from "@/lib/email/sendErrorReportEmail";
+import { CLIENT_ERROR_KINDS } from "@/lib/clientErrorKind";
 
 // Server-Action für den "Fehler melden"-Button auf der Success-Page.
 // Validiert den clientseitig gesammelten Kontext, throttlet per IP und
@@ -32,7 +33,23 @@ const reportSchema = z.object({
   }),
   userAgent: z.string().max(500).nullable().default(null),
   pageUrl: z.string().max(500).nullable().default(null),
+  // Feste Kategorien und Zahlen zum Abbruch-Kontext. Ungültige Werte werden
+  // einzeln verworfen, der Report geht trotzdem raus.
+  clientErrorKind: z.enum(CLIENT_ERROR_KINDS).optional().catch(undefined),
+  elapsedMs: z.number().int().min(0).max(600_000).optional().catch(undefined),
+  wasHidden: z.boolean().optional().catch(undefined),
+  campaignSlug: z.string().regex(/^[a-z0-9-]{1,80}$/).optional().catch(undefined),
+  letterLength: z.enum(["1", "1.5", "2"]).optional().catch(undefined),
 });
+
+function detectInAppBrowser(userAgent: string | null): string | null {
+  if (!userAgent) return null;
+  if (/Instagram/i.test(userAgent)) return "Instagram";
+  if (/FBAN|FBAV/.test(userAgent)) return "Facebook";
+  if (/TikTok|musical_ly|BytedanceWebview/i.test(userAgent)) return "TikTok";
+  if (/LinkedInApp/i.test(userAgent)) return "LinkedIn";
+  return null;
+}
 
 const mistralStageSchema = z.enum(["routing", "generation"]);
 
@@ -59,7 +76,7 @@ export async function reportErrorAction(
       : null;
     const detailName = typeof detailRecord?.name === "string" && /^[A-Za-z][A-Za-z0-9_.-]{0,63}$/.test(detailRecord.name)
       ? detailRecord.name
-      : "GenerationError";
+      : parsed.data.httpStatus === null ? "ClientNetworkError" : "GenerationError";
     const detailStatus = typeof detailRecord?.status === "number" && Number.isInteger(detailRecord.status)
       ? detailRecord.status
       : undefined;
@@ -84,6 +101,7 @@ export async function reportErrorAction(
         ...(detailStage.success ? { stage: detailStage.data } : {}),
       },
       pageUrl: safePageUrl,
+      inAppBrowser: detectInAppBrowser(parsed.data.userAgent),
     });
   } catch (err) {
     console.error("[reportError] unexpected error:", err);

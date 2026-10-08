@@ -94,6 +94,7 @@ function extractErrorDetail(error: unknown): ErrorDetail {
 }
 
 export async function POST(req: NextRequest) {
+  const startedAt = Date.now();
   try {
     const body = await req.json() as {
       wizardData?: WizardData;
@@ -377,6 +378,12 @@ export async function POST(req: NextRequest) {
           }
         }
       }
+    });
+
+    console.log("[generate-letter] done", {
+      durationMs: Date.now() - startedAt,
+      lengthKey: data.letterLength,
+      campaignSlug: campaign?.slug ?? null,
     });
 
     return NextResponse.json({

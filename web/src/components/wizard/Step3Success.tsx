@@ -18,6 +18,7 @@ import type { CampaignFixedRecipientRecipient } from "@/lib/lookup/campaignFixed
 import { selectPoliticianAction } from "@/lib/actions/selectPolitician";
 import { resendLetterAction } from "@/lib/actions/resendLetter";
 import { reportErrorAction } from "@/lib/actions/reportError";
+import { classifyClientError, type ClientErrorKind } from "@/lib/clientErrorKind";
 import { WEBMAIL_PROVIDERS } from "@/lib/email/emailProviders";
 import { installClientLogBuffer, getClientLogs } from "@/lib/clientLogBuffer";
 import { formatPartyShort } from "@/lib/formatParty";
@@ -258,6 +259,9 @@ export function Step3Success({
     errorId: string | null;
     detail?: unknown;
     clientError: string | null;
+    clientErrorKind?: ClientErrorKind;
+    elapsedMs?: number;
+    wasHidden?: boolean;
   } | null>(null);
   // Verhindert gleichzeitige Requests an /api/generate-letter. Ohne diesen Guard
   // kann ein Re-render mit neuer wizardData-Referenz oder ein vorzeitiger Abort
@@ -563,6 +567,12 @@ export function Step3Success({
     fetchInFlightRef.current = true;
 
     const controller = new AbortController();
+    const startedAt = Date.now();
+    let wasHidden = document.visibilityState === "hidden";
+    const onVisibilityChange = () => {
+      if (document.visibilityState === "hidden") wasHidden = true;
+    };
+    document.addEventListener("visibilitychange", onVisibilityChange);
     fetch("/api/generate-letter", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -603,6 +613,8 @@ export function Step3Success({
             errorId,
             detail,
             clientError: null,
+            elapsedMs: Date.now() - startedAt,
+            wasHidden,
           };
           throw new Error(`HTTP ${res.status}`);
         }
@@ -624,6 +636,9 @@ export function Step3Success({
           throw new Error("No letterText");
         }
       })
+      .finally(() => {
+        document.removeEventListener("visibilitychange", onVisibilityChange);
+      })
       .catch((err: Error) => {
         // Ref freigeben, damit ein Retry nach einem eindeutig fehlgeschlagenen
         // Server-Request einen neuen Request starten darf.
@@ -637,6 +652,9 @@ export function Step3Success({
             errorId: null,
             detail: undefined,
             clientError: err.message,
+            clientErrorKind: classifyClientError(err),
+            elapsedMs: Date.now() - startedAt,
+            wasHidden,
           };
           setGenerationMayHaveSucceeded(true);
         }
@@ -646,6 +664,7 @@ export function Step3Success({
       });
 
     return () => {
+      document.removeEventListener("visibilitychange", onVisibilityChange);
       controller.abort();
     };
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -675,6 +694,11 @@ export function Step3Success({
       },
       userAgent: typeof navigator !== "undefined" ? navigator.userAgent : null,
       pageUrl: typeof window !== "undefined" ? window.location.href : null,
+      clientErrorKind: e?.clientErrorKind,
+      elapsedMs: e?.elapsedMs,
+      wasHidden: e?.wasHidden,
+      campaignSlug: wizardData.campaign?.slug,
+      letterLength: wizardData.letterLength,
     }).catch(() => ({ success: false }));
     setReportState(result.success ? "sent" : "failed");
   }, [wizardData, generatedSelection, retryCount]);
@@ -794,6 +818,11 @@ export function Step3Success({
             <>
               Brief und nächste Schritte kommen per E-Mail zu dir
               <span aria-hidden="true">{loadingDots}</span>
+              {!generationFetchError && (
+                <span className="block mt-1 text-sm">
+                  Bitte lass diese Seite offen. Lange Briefe können bis zu einer Minute dauern.
+                </span>
+              )}
             </>
           )}
         </p>
@@ -955,7 +984,7 @@ export function Step3Success({
               </p>
               <p className="text-waldgruen/80">
                 {generationMayHaveSucceeded
-                  ? "Danke, ich habe die technischen Daten bekommen. Bitte prüfe jetzt dein Postfach und den Spam-Ordner – dein Brief könnte bereits angekommen sein."
+                  ? "Danke, ich habe die technischen Daten bekommen. Schau jetzt in dein Postfach und in den Spam-Ordner, dort ist dein Brief sehr wahrscheinlich schon."
                   : "Danke, ich habe die technischen Daten bekommen und schaue mir den Fehler an."}
               </p>
             </div>
@@ -966,12 +995,12 @@ export function Step3Success({
             >
               <p className="font-semibold text-airmail-rot mb-1">
                 {generationMayHaveSucceeded
-                  ? "Wir konnten die Erstellung nicht bestätigen"
+                  ? "Die Verbindung ist abgebrochen"
                   : "Brief konnte nicht erstellt werden"}
               </p>
               <p className="text-airmail-rot/80 mb-3">
                 {generationMayHaveSucceeded
-                  ? "Dein Brief wurde möglicherweise trotzdem erstellt und per E-Mail verschickt. Bitte prüfe zuerst dein Postfach und den Spam-Ordner. Um einen doppelten Versand zu vermeiden, starten wir die Erstellung nicht erneut."
+                  ? "Dein Brief ist sehr wahrscheinlich trotzdem fertig geworden und per Mail an dich unterwegs. Schau in dein Postfach und in den Spam-Ordner. Wenn du kurz auf „Fehler melden“ klickst, hilfst du mir sehr, das zu verbessern."
                   : generationFetchError}
               </p>
               <div className="flex flex-wrap items-center gap-3">

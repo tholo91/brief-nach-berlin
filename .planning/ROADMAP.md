@@ -539,6 +539,11 @@ Plans:
 
 **Quellen:** d-office, Barbara Spelger, Anne aus Uelzen, Florian Ennepetal — alle Reviews mit `wordCountInRange: false`.
 
+**Notiz 2026-10-08 (zurückgestellt):**
+- Test am 07.10.2026: Mistral ignoriert die Wahl "1,5 Seiten" bzw. "2 Seiten" im ersten Versuch fast vollständig (Median etwa 180 Wörter). Mehr Absätze bringen 30-60 Wörter mehr, aber auch mehr erfundene Details.
+- Reviews: 497 insgesamt, 85 % mit 4-5★, zu_kurz 2×, zu_lang 2×.
+- Empfehlung: Phase zurückstellen, Prompt und Retry nicht ändern.
+
 **Requirements:** TBD
 **Plans:** 0 plans
 

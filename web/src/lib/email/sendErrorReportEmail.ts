@@ -27,6 +27,12 @@ export interface ErrorReportInput {
   };
   userAgent: string | null;
   pageUrl: string | null;
+  clientErrorKind?: string;
+  elapsedMs?: number;
+  wasHidden?: boolean;
+  campaignSlug?: string;
+  letterLength?: string;
+  inAppBrowser?: string | null;
 }
 
 function esc(value: unknown): string {
@@ -68,6 +74,12 @@ function buildHtml(input: ErrorReportInput): string {
     ${row("Error-ID", input.errorId ?? "-")}
     ${row("User-Meldung", input.serverMessage ?? "-")}
     ${row("Client-Fehler", input.clientError ?? "-")}
+    ${row("Fehlertyp", input.clientErrorKind ?? "-")}
+    ${row("Wartezeit (s)", input.elapsedMs === undefined ? "-" : (input.elapsedMs / 1000).toFixed(1))}
+    ${row("Seite im Hintergrund", input.wasHidden === undefined ? "-" : input.wasHidden ? "ja" : "nein")}
+    ${row("Kampagne", input.campaignSlug ?? "-")}
+    ${row("Brieflänge (Seiten)", input.letterLength ?? "-")}
+    ${row("In-App-Browser", input.inAppBrowser ?? "-")}
     ${row("PLZ", context.plz ?? "-")}
     ${row("E-Mail (User)", context.email ?? "-")}
     ${row("Politiker-ID", context.politicianId ?? "-")}

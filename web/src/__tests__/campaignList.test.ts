@@ -42,7 +42,7 @@ describe("CampaignList", () => {
     expect(markup).toContain("background-size:105%");
     expect(markup).toContain("Logo oder Bild von Initiative Bremen");
     expect(markup).toContain("whitespace-nowrap");
-    expect(markup).not.toContain("20+ Briefe");
+    expect(markup).not.toMatch(/\d Briefe/);
   });
 
   it("keeps the initial fallback when no image exists", () => {
@@ -57,16 +57,26 @@ describe("CampaignList", () => {
     expect(markup).toContain("25.08.2026");
   });
 
-  it("shows the 20-plus letter signal after the title", () => {
+  it("shows the exact letter count after the title once it exceeds 20", () => {
     const markup = renderToStaticMarkup(
       createElement(CampaignList, {
-        campaigns: [{ ...campaign, title: "AfD vor Gericht", letterCount: 21 }],
+        campaigns: [{ ...campaign, title: "AfD vor Gericht", letterCount: 1234 }],
       }),
     );
 
     expect(markup).toContain("AfD vor Gericht");
-    expect(markup).toContain("20+ Briefe");
+    expect(markup).toContain("1.234 Briefe");
     expect(markup).toContain("text-warmgrau/55");
+  });
+
+  it("hides the letter count up to 20 letters", () => {
+    const markup = renderToStaticMarkup(
+      createElement(CampaignList, {
+        campaigns: [{ ...campaign, letterCount: 20 }],
+      }),
+    );
+
+    expect(markup).not.toContain("20 Briefe");
   });
 
   it("keeps long titles and creator names on controlled single lines", () => {

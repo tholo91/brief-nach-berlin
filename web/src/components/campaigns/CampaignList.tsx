@@ -60,7 +60,7 @@ export function CampaignList({
                   <span className="min-w-0 truncate">{campaign.title}</span>
                   {campaign.letterCount > 20 && (
                     <span className="ml-1 shrink-0 font-body text-xs font-semibold text-warmgrau/55">
-                      20+ Briefe
+                      {campaign.letterCount.toLocaleString("de-DE")} Briefe
                     </span>
                   )}
                 </p>

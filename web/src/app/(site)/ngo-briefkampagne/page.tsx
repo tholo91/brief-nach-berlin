@@ -1,5 +1,4 @@
 import Link from "next/link";
-import Image from "next/image";
 import type { Metadata } from "next";
 import { APP_URL } from "@/lib/config";
 import { FAQAccordion } from "@/components/FAQAccordion";
@@ -10,11 +9,11 @@ import { SPECIAL_CAMPAIGN_SLUG } from "@/lib/campaigns/specialCampaigns";
 
 const URL_PATH = "/ngo-briefkampagne";
 const PUBLISHED = "2026-07-06";
-const MODIFIED = "2026-09-13";
+const MODIFIED = "2026-10-08";
 const TITLE =
   "NGO-Briefkampagne: aus eurem Anliegen viele persönliche Briefe machen | Brief-nach-Berlin";
 const DESCRIPTION =
-  "Eine NGO-Briefkampagne macht aus eurem Anliegen viele persönliche Briefe aus echten Wahlkreisen. So nutzt du Brief-nach-Berlin ohne Massenmailing und ohne Account.";
+  "Eine NGO-Briefkampagne macht aus eurem Anliegen viele persönliche Briefe: an Bundestagsabgeordnete, die Landesregierung oder einen festen Empfänger. Ohne Massenmailing und ohne Account.";
 
 export const metadata: Metadata = {
   title: TITLE,
@@ -42,6 +41,10 @@ const faqs = [
     a: "Sie macht aus einem gemeinsamen Anliegen viele persönliche Briefe. Jede Person schreibt aus dem eigenen Wahlkreis, ergänzt eigene Gründe und entscheidet selbst, ob sie den Brief abschickt.",
   },
   {
+    q: "An wen können die Briefe gehen?",
+    a: "An das Mitglied des Bundestags aus dem eigenen Wahlkreis, an eine Auswahl von Bundestagsabgeordneten, an die Landesregierung oder an einen festen Empfänger mit Adresse in Deutschland, etwa ein Ministerium oder ein Rathaus.",
+  },
+  {
     q: "Ist das besser als eine Petition?",
     a: "Es ist anders. Eine Petition zeigt Breite. Eine Briefkampagne bringt das Anliegen direkt in Wahlkreis- und Abgeordnetenbüros. Beides kann zusammenpassen.",
   },
@@ -56,6 +59,10 @@ const faqs = [
   {
     q: "Wird daraus eine KI-Briefflut?",
     a: "Nein. Brief-nach-Berlin verschickt nichts automatisch. Menschen lesen, ändern und verwenden den Text selbst. Genau diese Reibung schützt vor künstlicher Beteiligung.",
+  },
+  {
+    q: "Was kostet das und was sehen wir danach?",
+    a: "Der Start ist aktuell kostenlos und ohne Account. Ihr seht, wie viele Briefe über eure Kampagne entstanden sind. Namen, Adressen und Brieftexte eurer Unterstützer:innen seht ihr nicht.",
   },
 ];
 
@@ -87,18 +94,28 @@ const articleJsonLd = {
   inLanguage: "de-DE",
 };
 
-const shortPoints = [
+const steps = [
+  "Ihr legt Anliegen und Ausgangstext an.",
+  "Ihr teilt den Link oder QR-Code mit eurer Community.",
+  "Jede Person macht daraus ihren eigenen Brief und schickt ihn selbst ab.",
+];
+
+const recipientOptions = [
   {
-    title: "Ihr gestaltet den Inhalt",
-    text: "Ihr beschreibt euer Anliegen und erstellt einen Ausgangstext für den Brief. Er gibt die Richtung vor; eure Zielgruppe kann eigene Gründe ergänzen und den Text anpassen.",
+    title: "Das eigene MdB",
+    text: "Die PLZ entscheidet, wer im Wahlkreis zuständig ist.",
   },
   {
-    title: "Eure Zielgruppe macht mit",
-    text: "Teilt den Kampagnenlink mit eurem Publikum. Wer mitmachen will, gibt die PLZ ein, findet die zuständigen Abgeordneten und macht den Entwurf zum eigenen Brief.",
+    title: "Ausgewählte MdBs",
+    text: "Zum Beispiel die Mitglieder eines Ausschusses.",
   },
   {
-    title: "Klare Grenze",
-    text: "Brief-nach-Berlin verschickt nichts automatisch. Keine Fake-Beteiligung und keine hundert Varianten aus der Maschine: Wer mitmacht, prüft den Text selbst und schickt den Brief eigenständig ab.",
+    title: "Die Landesregierung",
+    text: "In Berlin, Hamburg und Bremen der Senat.",
+  },
+  {
+    title: "Ein fester Empfänger",
+    text: "Ministerium, Rathaus, Behörde oder Unternehmen.",
   },
 ];
 
@@ -150,7 +167,7 @@ export default async function NgoBriefkampagnePage() {
           className="mx-auto mt-10 max-w-3xl scroll-mt-28"
         >
           <p className="font-typewriter text-xs font-bold uppercase tracking-widest text-waldgruen/60 sm:text-sm">
-            Für NGOs und Vereine
+            Für NGOs, Vereine, Initiativen und Creator
           </p>
           <h1 className="mt-3 text-balance font-body text-4xl font-bold leading-tight tracking-tight text-waldgruen-dark sm:text-5xl">
             Aus eurem Anliegen{" "}
@@ -160,10 +177,10 @@ export default async function NgoBriefkampagnePage() {
             machen
           </h1>
           <p className="mt-6 max-w-2xl font-body text-lg font-medium leading-relaxed text-warmgrau/85">
-            Für Entscheider:innen aus NGOs und Engagierte in Vereinen, die
-            konkrete politische Unterstützung mobilisieren wollen. Ihr bietet
-            den Schnellstart. Alle, die die Kampagne unterstützen, machen daraus
-            ihre persönlichen Briefe an Abgeordnete in ihrem Wahlkreis.
+            Für alle, die eine Community haben und politisch etwas bewegen
+            wollen. Ihr legt Anliegen und Ausgangstext an. Eure Leute machen
+            daraus ihre eigenen Briefe: an Bundestagsabgeordnete, an die
+            Landesregierung oder genau an die Person, die entscheidet.
           </p>
           <div className="mt-8 grid w-full max-w-2xl grid-cols-1 gap-3 sm:grid-cols-2">
             <Link
@@ -176,65 +193,14 @@ export default async function NgoBriefkampagnePage() {
               href="#laufende-kampagnen"
               className="inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-lg border border-waldgruen/18 bg-white/55 px-6 py-3 font-body text-sm font-semibold text-waldgruen-dark transition-colors hover:border-waldgruen/35 hover:bg-white/85 active:translate-y-px"
             >
-              <span>Beispielkampagne ansehen</span>
+              <span>Laufende Kampagnen ansehen</span>
               <ArrowDownIcon />
             </Link>
           </div>
         </section>
 
         <section className="mx-auto mt-12 max-w-3xl md:mt-14">
-          <div className="divide-y divide-waldgruen/15 border-y border-waldgruen/15">
-            {shortPoints.map((point) => (
-              <section
-                key={point.title}
-                className="grid gap-3 py-6 md:grid-cols-[0.42fr_0.58fr] md:gap-8"
-              >
-                <h2 className="font-body text-xl font-bold tracking-tight text-waldgruen-dark">
-                  {point.title}
-                </h2>
-                <p className="font-body text-base font-medium leading-relaxed text-warmgrau/85">
-                  {point.text}
-                </p>
-              </section>
-            ))}
-          </div>
-
-          <figure className="mx-auto mt-10 max-w-2xl overflow-hidden rounded-md border border-waldgruen/12 bg-white/55 shadow-sm">
-            <Image
-              src="/images/img-ngo-briefkampagne.webp"
-              alt="Illustration eines NGO-Tisches mit handgeschriebenen Briefen, Airmail-Umschlägen und einer Wahlkreiskarte vor einem hellen Berliner Fenster"
-              width={1368}
-              height={770}
-              sizes="(min-width: 768px) 672px, calc(100vw - 40px)"
-              className="h-auto w-full"
-            />
-          </figure>
-
-          <section className="mt-10 rounded-xl border border-waldgruen/12 bg-white/45 p-6 sm:p-8">
-            <p className="font-typewriter text-xs font-bold uppercase tracking-widest text-waldgruen/50">
-              Was Forschung zu Kampagnentexten sagt
-            </p>
-            <p className="mt-3 font-body text-sm leading-relaxed text-warmgrau/80">
-              Ein Onlineexperiment verglich persönliche Geschichten,
-              Sachinformationen und keine Botschaft. Geschichten führten
-              häufiger als gar keine Botschaft zu einem einfachen
-              Unterstützungsklick. Gegenüber Sachinformationen war der
-              Unterschied nicht belastbar. Die Studie untersuchte keine Briefe
-              oder politischen Büros. Für uns ist sie ein Hinweis, Raum für den
-              eigenen Grund zu geben – kein Wirkungsversprechen. Siehe{" "}
-              <a
-                href="https://doi.org/10.1017/S0003055415000295"
-                className="text-waldgruen underline decoration-waldgruen/30 underline-offset-2 hover:text-waldgruen-dark"
-                target="_blank"
-                rel="noreferrer"
-              >
-                McEntire, Leiby und Krain (2015)
-              </a>
-              .
-            </p>
-          </section>
-
-          <section id="laufende-kampagnen" className="mt-10 scroll-mt-28">
+          <section id="laufende-kampagnen" className="scroll-mt-28">
             <div className="mb-4">
               <p className="font-typewriter text-xs font-bold uppercase tracking-widest text-waldgruen/50">
                 Laufende Kampagnen
@@ -242,15 +208,57 @@ export default async function NgoBriefkampagnePage() {
               <h2 className="mt-2 font-body text-xl font-bold text-waldgruen-dark">
                 Aktuell aktiv
               </h2>
-              <p className="mt-2 font-body text-sm leading-relaxed text-warmgrau/70">
-                Folgende Kampagnen laufen bereits, schau sie dir gerne an:
-              </p>
             </div>
             <CampaignList
               campaigns={campaigns}
               emptyMessage="Noch keine öffentlichen Kampagnen. Wenn du ein Anliegen testen willst, kannst du hier die erste Kampagne starten."
             />
           </section>
+
+          <section className="mt-12 grid gap-8 border-y border-waldgruen/15 py-8 md:grid-cols-2 md:gap-10">
+            <div>
+              <h2 className="font-body text-xl font-bold tracking-tight text-waldgruen-dark">
+                So läuft es
+              </h2>
+              <ol className="mt-4 flex flex-col gap-3">
+                {steps.map((step, index) => (
+                  <li
+                    key={step}
+                    className="flex gap-3 font-body text-base font-medium leading-relaxed text-warmgrau/85"
+                  >
+                    <span className="font-typewriter text-sm font-bold leading-relaxed text-waldgruen/50">
+                      {index + 1}
+                    </span>
+                    <span>{step}</span>
+                  </li>
+                ))}
+              </ol>
+            </div>
+            <div id="empfaenger" className="scroll-mt-28">
+              <h2 className="font-body text-xl font-bold tracking-tight text-waldgruen-dark">
+                Wen eure Briefe erreichen
+              </h2>
+              <ul className="mt-4 flex flex-col gap-3">
+                {recipientOptions.map((option) => (
+                  <li
+                    key={option.title}
+                    className="font-body text-base leading-relaxed text-warmgrau/85"
+                  >
+                    <span className="font-bold text-waldgruen-dark">
+                      {option.title}:
+                    </span>{" "}
+                    {option.text}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </section>
+
+          <p className="mt-6 font-body text-sm leading-relaxed text-warmgrau/75">
+            Kostenlos und ohne Account. Ihr bekommt eine Kampagnenseite mit
+            Logo, Link, QR-Code und Briefzähler. Namen, Adressen und Brieftexte
+            eurer Unterstützer:innen seht ihr nicht.
+          </p>
 
           <div id="faq" className="mt-10 scroll-mt-28">
             <h2 className="mb-6 font-body text-xl font-bold text-waldgruen-dark">

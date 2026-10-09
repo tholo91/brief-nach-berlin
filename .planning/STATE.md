@@ -4,10 +4,10 @@ milestone: v1.0
 current_phase: 05
 status: verifying
 stopped_at: Completed 05-04-PLAN.md
-last_updated: "2026-10-09T19:21:36.940Z"
+last_updated: "2026-10-09T19:42:02.099Z"
 last_activity: 2026-10-09
 last_activity_desc: "Completed quick task 260710-dgq: Kampagnen-Ziel-Ebene Bund/Landtag inkl. Wizard-Bindung und Mismatch-Fallback"
-state_head: eeedc4b874e50c6b247b905da911c9470af76dfc
+state_head: 21f8507bbdf7cd6a79c265defa9a273e4ce71353
 progress:
   total_phases: 33
   completed_phases: 4
@@ -182,6 +182,7 @@ Recent decisions affecting current work:
 | 261009-r0z | Feedback-Formular für Kampagnen-Ersteller:innen (Formular, Migration 029 lokal, Verwalten-Karte, Datenschutz) | 2026-10-09 | f6ce471 | [261009-r0z-feedback-formular-fuer-kampagnen-erstell](./quick/261009-r0z-feedback-formular-fuer-kampagnen-erstell/) |
 | 261009-ryw | Landing So-einfach-gehts: Header in linke Spalte, Countdown auch auf Desktop | 2026-10-09 | 4a0b78d | [261009-ryw-landing-so-einfach-gehts-header-in-linke](./quick/261009-ryw-landing-so-einfach-gehts-header-in-linke/) |
 | 261009-sdc | Politiker-Daten aktualisieren: Junge-Zschau, Landtag ST, RP-MP Schnieder, Fetch-Guards | 2026-10-09 | eeedc4b | [261009-sdc-politiker-daten-aktualisieren-junge-zsch](./quick/261009-sdc-politiker-daten-aktualisieren-junge-zsch/) |
+| 57 | Wahlkreisbüro-Scraper an neues bundestag.de-Format angepasst, Guard, Daten neu (Zschau) | 2026-10-09 | 21f8507 | — |
 
 ## Session Continuity
 

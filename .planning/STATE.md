@@ -4,10 +4,10 @@ milestone: v1.0
 current_phase: 05
 status: verifying
 stopped_at: Completed 05-04-PLAN.md
-last_updated: "2026-10-09T13:40:10.018Z"
+last_updated: "2026-10-09T14:02:29.966Z"
 last_activity: 2026-10-09
 last_activity_desc: "Completed quick task 260710-dgq: Kampagnen-Ziel-Ebene Bund/Landtag inkl. Wizard-Bindung und Mismatch-Fallback"
-state_head: 2cb17b2577ad25ed2110d64ef1334195c266efc7
+state_head: 25fc8879478a7af2f01deefbd8d975abfa4a6c2d
 progress:
   total_phases: 33
   completed_phases: 4
@@ -175,6 +175,7 @@ Recent decisions affecting current work:
 | 261009-jrt | Kampagnen: Stimmt-was-nicht-Meldung + Verantwortungs-Text | 2026-10-09 | 45183ac | [261009-jrt-kampagnen-stimmt-was-nicht-meldung-und-v](./quick/261009-jrt-kampagnen-stimmt-was-nicht-meldung-und-v/) |
 | 261009-kn2 | Kampagne verwalten: Sprunglinks + Kontakt in Navbar, Zahlen-Refresh | 2026-10-09 | fc1f971 | [261009-kn2-kampagne-verwalten-navbar-sprunglinks-ko](./quick/261009-kn2-kampagne-verwalten-navbar-sprunglinks-ko/) |
 | 261009-lms | Kampagnen-Zahlen schaerfen (Teilsterne, Ohnmacht als Kontext) und Empfehlungskarte + Meilenstein-Mail-Zeile | 2026-10-09 | 2cb17b2 | [261009-lms-kampagnen-zahlen-schaerfen-und-empfehlun](./quick/261009-lms-kampagnen-zahlen-schaerfen-und-empfehlun/) |
+| 50 | Vorher-Kachel zurueck, Icons, Hover-Datum/KW im Verlauf, Taube statt Herz | 2026-10-09 | 25fc887 | — |
 
 ## Session Continuity
 

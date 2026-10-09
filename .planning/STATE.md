@@ -4,10 +4,10 @@ milestone: v1.0
 current_phase: 05
 status: verifying
 stopped_at: Completed 05-04-PLAN.md
-last_updated: "2026-10-09T12:51:32.048Z"
+last_updated: "2026-10-09T12:59:23.608Z"
 last_activity: 2026-10-09
 last_activity_desc: "Completed quick task 260710-dgq: Kampagnen-Ziel-Ebene Bund/Landtag inkl. Wizard-Bindung und Mismatch-Fallback"
-state_head: 45183acd29ae6c9f8dc0f8fbdaa903430678f142
+state_head: fc1f971bdc86831fb4fea5d009a527afaebb05b6
 progress:
   total_phases: 33
   completed_phases: 4
@@ -49,7 +49,7 @@ Der level-aware E-Mail-Betreff ist dagegen bereits implementiert und getestet; d
 Phase: 05 — EXECUTING
 Plan: 4 of 4
 Status: Phase complete — ready for verification
-Last activity: 2026-10-09 - Completed quick task 261009-jrt: Kampagnen Stimmt-was-nicht-Meldung + Verantwortungs-Text
+Last activity: 2026-10-09 - Completed quick task 261009-kn2: Kampagne verwalten Sprunglinks + Kontakt in Navbar, Zahlen-Refresh
 
 Progress: [███████░░░] 68%
 
@@ -173,6 +173,7 @@ Recent decisions affecting current work:
 | 261009-j9j | Kampagnen: Meilenstein-Mails an Ersteller (Migration 027 nur Datei) | 2026-10-09 | 76d9fcf | [261009-j9j-kampagnen-meilenstein-mails-an-ersteller](./quick/261009-j9j-kampagnen-meilenstein-mails-an-ersteller/) |
 | 46 | Neues Avatar-Foto von Thomas (Spendenbox Mails + Kampagnenseite), 160px, ohne EXIF/GPS | 2026-10-09 | 7b32e32 | — |
 | 261009-jrt | Kampagnen: Stimmt-was-nicht-Meldung + Verantwortungs-Text | 2026-10-09 | 45183ac | [261009-jrt-kampagnen-stimmt-was-nicht-meldung-und-v](./quick/261009-jrt-kampagnen-stimmt-was-nicht-meldung-und-v/) |
+| 261009-kn2 | Kampagne verwalten: Sprunglinks + Kontakt in Navbar, Zahlen-Refresh | 2026-10-09 | fc1f971 | [261009-kn2-kampagne-verwalten-navbar-sprunglinks-ko](./quick/261009-kn2-kampagne-verwalten-navbar-sprunglinks-ko/) |
 
 ## Session Continuity
 

@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
+import { createPortal } from "react-dom";
 
 export type SectionLink = { id: string; label: string };
 
@@ -9,22 +10,40 @@ export type SectionLink = { id: string; label: string };
  * Der sichtbare Abschnitt wird hervorgehoben; ohne JavaScript bleiben es
  * normale Ankerlinks.
  *
- * `variant="header"` ist die zweite Kopfzeile unter dem AppHeader: Sie klebt
- * unter dem per `stickyBelow` (CSS-Selektor) gefundenen Element und passt
- * ihre Position an dessen Höhe an. Zeigt ein Link auf ein <details>, wird es
- * beim Klick geöffnet.
+ * `variant="header"` gehört zum AppHeader: Ab md stehen die Links (per Portal)
+ * mittig in dessen Zeile, `actions` rechts daneben. Auf dem Handy bleibt eine
+ * zweite Zeile, die unter dem per `stickyBelow` (CSS-Selektor) gefundenen
+ * Element klebt. Zeigt ein Link auf ein <details>, wird es beim Klick geöffnet.
  */
 export function SectionNav({
   links,
   variant = "page",
   stickyBelow,
+  actions,
 }: {
   links: SectionLink[];
   variant?: "page" | "header";
   stickyBelow?: string;
+  actions?: ReactNode;
 }) {
   const [active, setActive] = useState<string | null>(null);
   const [top, setTop] = useState<number | null>(null);
+  const [slots, setSlots] = useState<{ center: Element | null; actions: Element | null } | null>(
+    null,
+  );
+  const listRef = useRef<HTMLUListElement>(null);
+
+  useEffect(() => {
+    if (variant !== "header") return;
+    // Next frame: after a client navigation the AppHeader slots are committed by then.
+    const frame = requestAnimationFrame(() =>
+      setSlots({
+        center: document.querySelector("[data-app-header-center]"),
+        actions: document.querySelector("[data-app-header-actions]"),
+      }),
+    );
+    return () => cancelAnimationFrame(frame);
+  }, [variant]);
 
   useEffect(() => {
     if (!stickyBelow) return;
@@ -69,8 +88,8 @@ export function SectionNav({
 
   useEffect(() => {
     if (!active) return;
-    document
-      .querySelector<HTMLElement>(`[data-section-link="${active}"]`)
+    listRef.current
+      ?.querySelector<HTMLElement>(`[data-section-link="${active}"]`)
       ?.scrollIntoView({ block: "nearest", inline: "center", behavior: "auto" });
   }, [active]);
 
@@ -81,40 +100,71 @@ export function SectionNav({
 
   if (variant === "header") {
     return (
-      <nav
-        aria-label="Abschnitte"
-        style={top === null ? undefined : { top }}
-        className="sticky top-[4.25rem] z-40 border-b border-warmgrau/8 bg-creme/95 backdrop-blur-sm"
-      >
-        <div className="relative mx-auto max-w-5xl">
-          <ul className="m-0 flex list-none gap-1 overflow-x-auto px-3 [scrollbar-width:none] sm:gap-3 sm:px-5 [&::-webkit-scrollbar]:hidden">
-            {links.map((link) => {
-              const isActive = active === link.id;
-              return (
-                <li key={link.id} className="shrink-0">
-                  <a
-                    href={`#${link.id}`}
-                    data-section-link={link.id}
-                    aria-current={isActive ? "location" : undefined}
-                    onClick={() => openTargetDetails(link.id)}
-                    className={`flex min-h-11 items-center border-b-2 px-3 font-body text-sm transition-colors focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-waldgruen ${
-                      isActive
-                        ? "border-waldgruen font-semibold text-waldgruen-dark"
-                        : "border-transparent text-warmgrau/65 hover:text-waldgruen-dark"
-                    }`}
-                  >
-                    {link.label}
-                  </a>
-                </li>
-              );
-            })}
-          </ul>
-          <div
-            aria-hidden="true"
-            className="pointer-events-none absolute inset-y-0 right-0 w-8 bg-gradient-to-l from-creme/95 to-transparent sm:hidden"
-          />
-        </div>
-      </nav>
+      <>
+        {slots?.center &&
+          createPortal(
+            <ul className="m-0 flex list-none items-center gap-1 p-0 lg:gap-3">
+              {links.map((link) => {
+                const isActive = active === link.id;
+                return (
+                  <li key={link.id}>
+                    <a
+                      href={`#${link.id}`}
+                      aria-current={isActive ? "location" : undefined}
+                      onClick={() => openTargetDetails(link.id)}
+                      className={`rounded-sm px-2.5 py-1 font-body text-sm decoration-waldgruen decoration-2 underline-offset-[6px] transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-waldgruen ${
+                        isActive
+                          ? "font-semibold text-waldgruen-dark underline"
+                          : "text-warmgrau/65 hover:text-waldgruen-dark"
+                      }`}
+                    >
+                      {link.label}
+                    </a>
+                  </li>
+                );
+              })}
+            </ul>,
+            slots.center,
+          )}
+        {actions && slots?.actions && createPortal(actions, slots.actions)}
+        <nav
+          aria-label="Abschnitte"
+          style={top === null ? undefined : { top }}
+          className="sticky top-[4.25rem] z-40 border-b border-warmgrau/8 bg-creme/95 backdrop-blur-sm md:hidden"
+        >
+          <div className="relative mx-auto max-w-5xl">
+            <ul
+              ref={listRef}
+              className="m-0 flex list-none gap-1 overflow-x-auto px-3 [scrollbar-width:none] sm:gap-3 sm:px-5 [&::-webkit-scrollbar]:hidden"
+            >
+              {links.map((link) => {
+                const isActive = active === link.id;
+                return (
+                  <li key={link.id} className="shrink-0">
+                    <a
+                      href={`#${link.id}`}
+                      data-section-link={link.id}
+                      aria-current={isActive ? "location" : undefined}
+                      onClick={() => openTargetDetails(link.id)}
+                      className={`flex min-h-11 items-center border-b-2 px-3 font-body text-sm transition-colors focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-waldgruen ${
+                        isActive
+                          ? "border-waldgruen font-semibold text-waldgruen-dark"
+                          : "border-transparent text-warmgrau/65 hover:text-waldgruen-dark"
+                      }`}
+                    >
+                      {link.label}
+                    </a>
+                  </li>
+                );
+              })}
+            </ul>
+            <div
+              aria-hidden="true"
+              className="pointer-events-none absolute inset-y-0 right-0 w-8 bg-gradient-to-l from-creme/95 to-transparent sm:hidden"
+            />
+          </div>
+        </nav>
+      </>
     );
   }
 
@@ -124,7 +174,7 @@ export function SectionNav({
       className="sticky top-0 z-30 -mx-5 border-b border-warmgrau/10 bg-creme/90 backdrop-blur sm:-mx-8 lg:-mx-10"
     >
       <div className="relative">
-        <ul className="flex gap-1 overflow-x-auto px-5 py-2 [scrollbar-width:none] sm:px-8 lg:px-10 [&::-webkit-scrollbar]:hidden">
+        <ul ref={listRef} className="flex gap-1 overflow-x-auto px-5 py-2 [scrollbar-width:none] sm:px-8 lg:px-10 [&::-webkit-scrollbar]:hidden">
           {links.map((link) => {
             const isActive = active === link.id;
             return (

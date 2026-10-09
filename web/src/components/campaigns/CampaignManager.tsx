@@ -33,7 +33,7 @@ import {
   transferCampaignAction,
   type TransferCampaignResult,
 } from "@/lib/actions/transferCampaign";
-import { BRIEF_EMAIL } from "@/lib/contact";
+import { campaignContactHref } from "@/lib/contact";
 import {
   berlinDateKey,
   formatCampaignEndDate,
@@ -163,7 +163,7 @@ export function CampaignManager({
   const endDateIncomplete = endPicker.choice === "custom" && !endPicker.customDate;
   const endedLabel =
     ended && campaign.endsAt ? formatCampaignEndDate(campaign.endsAt) : null;
-  const contactHref = `mailto:${BRIEF_EMAIL}?subject=${encodeURIComponent(`Kampagne ${campaign.slug}`)}`;
+  const contactHref = campaignContactHref(campaign.slug);
   const currentLogoUrl = campaignLogoPublicUrl(campaign.logoPath);
   const shownLogoUrl = logoPreviewUrl ?? currentLogoUrl;
   const logoFileButtonClass = shownLogoUrl

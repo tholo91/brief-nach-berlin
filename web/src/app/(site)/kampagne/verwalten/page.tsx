@@ -13,7 +13,23 @@ import {
 import { isCampaignEnded } from "@/lib/campaigns/endDate";
 import { getCampaignById } from "@/lib/campaigns/repository";
 import { getCampaignManagementSession } from "@/lib/campaigns/session";
-import { BRIEF_EMAIL } from "@/lib/contact";
+import { BRIEF_EMAIL, campaignContactHref } from "@/lib/contact";
+
+function ContactButton({ href }: { href: string }) {
+  return (
+    <a
+      href={href}
+      className="-my-2 inline-flex min-h-10 items-center gap-1.5 rounded-lg border border-waldgruen/25 px-3 font-body text-sm font-semibold text-waldgruen-dark transition-colors hover:border-waldgruen/50 hover:bg-waldgruen/5 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-waldgruen"
+    >
+      <svg width="16" height="16" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+        <rect x="2.5" y="4.5" width="15" height="11" rx="1.5" stroke="currentColor" strokeWidth="1.6" />
+        <path d="m3 5.5 7 5.5 7-5.5" stroke="currentColor" strokeWidth="1.6" strokeLinejoin="round" />
+      </svg>
+      Kontakt
+      <span className="sr-only"> per E-Mail</span>
+    </a>
+  );
+}
 
 function PendingApprovalNotice({ campaign }: { campaign: NonNullable<Awaited<ReturnType<typeof getCampaignById>>> }) {
   return (
@@ -128,16 +144,21 @@ export default async function ManageCampaignPage({
     ...(creatorStats
       ? [
           { id: "creator-stats", label: "Zahlen" },
-          { id: "creator-donation", label: "Spenden" },
+          { id: "creator-feedback", label: "Feedback" },
         ]
       : []),
-    { id: "campaign-settings", label: "Einstellungen" },
+    { id: "campaign-settings", label: "Bearbeiten" },
   ];
 
   return (
     <>
     {showSectionNav && (
-      <SectionNav links={sectionLinks} variant="header" stickyBelow="[data-app-header]" />
+      <SectionNav
+        links={sectionLinks}
+        variant="header"
+        stickyBelow="[data-app-header]"
+        actions={<ContactButton href={campaignContactHref(authorizedCampaign.slug)} />}
+      />
     )}
     <CampaignBackground>
       {authorizedCampaign ? (

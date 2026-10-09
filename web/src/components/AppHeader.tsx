@@ -13,6 +13,8 @@ const NGO_NAV_LINKS = [
 export default function AppHeader({ showLanguageSwitcher = false }: { showLanguageSwitcher?: boolean }) {
   const pathname = usePathname();
   const showCampaignCta = pathname === "/ngo-briefkampagne";
+  // Kampagne verwalten portals its section links and contact button into these slots.
+  const showManagerSlots = pathname === "/kampagne/verwalten";
 
   return (
     <>
@@ -42,6 +44,10 @@ export default function AppHeader({ showLanguageSwitcher = false }: { showLangua
             Brief-nach-Berlin
           </Link>
 
+          {showManagerSlots && (
+            <div data-app-header-center className="hidden min-w-0 flex-1 justify-center md:flex" />
+          )}
+
           {showCampaignCta && (
             <div className="hidden items-center gap-5 md:flex">
               {NGO_NAV_LINKS.map((link) => (
@@ -59,6 +65,7 @@ export default function AppHeader({ showLanguageSwitcher = false }: { showLangua
           <div className="flex items-center gap-2">
           {showLanguageSwitcher && <LanguageSwitcher />}
           {showLanguageSwitcher && <LanguageSwitcher mobile />}
+          {showManagerSlots && <span data-app-header-actions className="contents" />}
           {showCampaignCta && (
             <Link
               href="/kampagne/starten"

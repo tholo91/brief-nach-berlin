@@ -1,4 +1,5 @@
 import { BundeslandMap } from "@/components/campaigns/BundeslandMap";
+import { CreatorStatsRefresh } from "@/components/campaigns/CreatorStatsRefresh";
 import type {
   CampaignCreatorStatsView,
   CreatorStatsKpi,
@@ -259,7 +260,9 @@ export function CampaignCreatorStats({
     ? "Endstand deiner Kampagne"
     : "So kommt deine Kampagne an";
   const letterLabel =
-    stats.letterCount === 1 ? "Brief geschrieben" : "Briefe geschrieben";
+    stats.letterCount === 1
+      ? "Brief nach Berlin geschrieben"
+      : "Briefe nach Berlin geschrieben";
 
   const footnotes: string[] = [];
   if (stats.signals.status === "ready") {
@@ -297,140 +300,143 @@ export function CampaignCreatorStats({
         <p className="font-body text-base font-semibold text-waldgruen-dark">
           {letterLabel}
         </p>
+        {!stats.ended && <CreatorStatsRefresh />}
       </div>
 
       <OriginSection signals={stats.signals} />
 
-      {feedback.status === "unavailable" && (
-        <p className="mt-5 border-t border-warmgrau/12 pt-4 font-body text-sm leading-relaxed text-warmgrau/70">
-          Die Rückmeldungen lassen sich gerade nicht laden. Schau später noch
-          einmal vorbei.
-        </p>
-      )}
-
-      {feedback.status === "collecting" && (
-        <div className="mt-5 border-t border-warmgrau/12 pt-4">
-          <p className="max-w-xl font-body text-base leading-relaxed text-warmgrau/85">
-            Hier siehst du bald, wie viele ihren Brief abschicken und wie
-            zufrieden sie sind.
+      <div id="creator-feedback" className="scroll-mt-32">
+        {feedback.status === "unavailable" && (
+          <p className="mt-5 border-t border-warmgrau/12 pt-4 font-body text-sm leading-relaxed text-warmgrau/70">
+            Die Rückmeldungen lassen sich gerade nicht laden. Schau später noch
+            einmal vorbei.
           </p>
-          <div className="mt-4 max-w-xl">
-            <p className="font-body text-sm font-semibold text-waldgruen-dark">
-              {feedback.remaining === 1
-                ? "Noch 1 Rückmeldung bis dahin."
-                : `Noch ${feedback.remaining} Rückmeldungen bis dahin.`}
+        )}
+
+        {feedback.status === "collecting" && (
+          <div className="mt-5 border-t border-warmgrau/12 pt-4">
+            <p className="max-w-xl font-body text-base leading-relaxed text-warmgrau/85">
+              Hier siehst du bald, wie viele ihren Brief abschicken und wie
+              zufrieden sie sind.
             </p>
-            <div
-              role="progressbar"
-              aria-label="Rückmeldungen bis zur Anzeige"
-              aria-valuemin={0}
-              aria-valuemax={feedback.threshold}
-              aria-valuenow={feedback.responses}
-              aria-valuetext={`${feedback.responses} von ${feedback.threshold} Rückmeldungen`}
-              className="mt-2 h-1.5 overflow-hidden rounded-full bg-warmgrau/10"
-            >
+            <div className="mt-4 max-w-xl">
+              <p className="font-body text-sm font-semibold text-waldgruen-dark">
+                {feedback.remaining === 1
+                  ? "Noch 1 Rückmeldung bis dahin."
+                  : `Noch ${feedback.remaining} Rückmeldungen bis dahin.`}
+              </p>
               <div
-                className="h-full rounded-full bg-waldgruen"
-                style={{
-                  width: `${Math.round((feedback.responses / feedback.threshold) * 100)}%`,
-                }}
-              />
+                role="progressbar"
+                aria-label="Rückmeldungen bis zur Anzeige"
+                aria-valuemin={0}
+                aria-valuemax={feedback.threshold}
+                aria-valuenow={feedback.responses}
+                aria-valuetext={`${feedback.responses} von ${feedback.threshold} Rückmeldungen`}
+                className="mt-2 h-1.5 overflow-hidden rounded-full bg-warmgrau/10"
+              >
+                <div
+                  className="h-full rounded-full bg-waldgruen"
+                  style={{
+                    width: `${Math.round((feedback.responses / feedback.threshold) * 100)}%`,
+                  }}
+                />
+              </div>
+              <p className="mt-1.5 font-body text-xs text-warmgrau/60">
+                {feedback.responses} von {feedback.threshold}
+              </p>
             </div>
-            <p className="mt-1.5 font-body text-xs text-warmgrau/60">
-              {feedback.responses} von {feedback.threshold}
-            </p>
           </div>
-        </div>
-      )}
+        )}
 
-      {feedback.status === "ready" && (
-        <div className="mt-5 border-t border-warmgrau/12 pt-4">
-          <dl className="m-0 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-            <Tile
-              kpi={feedback.sendRate}
-              value={
-                feedback.sendRate.status === "shown"
-                  ? `${feedback.sendRate.value} %`
-                  : ""
-              }
-              label="schicken ihren Brief ab"
-            />
-            <Tile
-              kpi={feedback.averageRating}
-              value={
-                feedback.averageRating.status === "shown"
-                  ? ratingFormatter.format(feedback.averageRating.value)
-                  : ""
-              }
-              unit="von 5 Sternen"
-              label="Zufriedenheit mit dem fertigen Brief"
-            />
-            <Tile
-              kpi={feedback.selfEfficacy}
-              value={
-                feedback.selfEfficacy.status === "shown"
-                  ? `${feedback.selfEfficacy.value} %`
-                  : ""
-              }
-              label="fühlen sich danach eher in der Lage, sich politisch einzubringen"
-            />
-            <Tile
-              kpi={feedback.powerlessness}
-              value={
-                feedback.powerlessness.status === "shown"
-                  ? `${feedback.powerlessness.value} %`
-                  : ""
-              }
-              label="wissen oft oder manchmal nicht, was sie politisch konkret tun können"
-            />
-          </dl>
+        {feedback.status === "ready" && (
+          <div className="mt-5 border-t border-warmgrau/12 pt-4">
+            <dl className="m-0 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+              <Tile
+                kpi={feedback.sendRate}
+                value={
+                  feedback.sendRate.status === "shown"
+                    ? `${feedback.sendRate.value} %`
+                    : ""
+                }
+                label="schicken ihren Brief ab"
+              />
+              <Tile
+                kpi={feedback.averageRating}
+                value={
+                  feedback.averageRating.status === "shown"
+                    ? ratingFormatter.format(feedback.averageRating.value)
+                    : ""
+                }
+                unit="von 5 Sternen"
+                label="Zufriedenheit mit dem fertigen Brief"
+              />
+              <Tile
+                kpi={feedback.selfEfficacy}
+                value={
+                  feedback.selfEfficacy.status === "shown"
+                    ? `${feedback.selfEfficacy.value} %`
+                    : ""
+                }
+                label="fühlen sich danach eher in der Lage, sich politisch einzubringen"
+              />
+              <Tile
+                kpi={feedback.powerlessness}
+                value={
+                  feedback.powerlessness.status === "shown"
+                    ? `${feedback.powerlessness.value} %`
+                    : ""
+                }
+                label="wissen oft oder manchmal nicht, was sie politisch konkret tun können"
+              />
+            </dl>
 
-          {feedback.tags.length > 0 && (
-            <div className="mt-6">
-              <h3 className="font-typewriter text-base font-bold text-waldgruen-dark">
-                Was über die Briefe gesagt wird
-              </h3>
-              <ul className="m-0 mt-3 flex list-none flex-wrap gap-2 p-0">
-                {feedback.tags.map((tag) => (
-                  <li
-                    key={tag.label}
-                    className="rounded-full border border-warmgrau/15 bg-creme/70 px-3 py-1 font-body text-xs text-warmgrau/85"
-                  >
-                    {tag.label}{" "}
-                    <span className="font-semibold text-waldgruen-dark">
-                      {numberFormatter.format(tag.count)}
-                    </span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )}
+            {feedback.tags.length > 0 && (
+              <div className="mt-6">
+                <h3 className="font-typewriter text-base font-bold text-waldgruen-dark">
+                  Was über die Briefe gesagt wird
+                </h3>
+                <ul className="m-0 mt-3 flex list-none flex-wrap gap-2 p-0">
+                  {feedback.tags.map((tag) => (
+                    <li
+                      key={tag.label}
+                      className="rounded-full border border-warmgrau/15 bg-creme/70 px-3 py-1 font-body text-xs text-warmgrau/85"
+                    >
+                      {tag.label}{" "}
+                      <span className="font-semibold text-waldgruen-dark">
+                        {numberFormatter.format(tag.count)}
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
 
-          {feedback.comments.length > 0 && (
-            <div className="mt-6">
-              <h3 className="font-typewriter text-base font-bold text-waldgruen-dark">
-                Stimmen zur Kampagne
-              </h3>
-              <ul className="m-0 mt-3 grid list-none gap-3 p-0">
-                {feedback.comments.map((comment, index) => (
-                  <li
-                    key={`${comment.monthLabel}-${index}`}
-                    className="border-l-2 border-waldgruen/30 pl-4"
-                  >
-                    <p className="font-body text-base leading-relaxed text-warmgrau/90">
-                      „{comment.text}“
-                    </p>
-                    <p className="mt-1 flex flex-wrap items-center gap-x-3 font-body text-xs text-warmgrau/60">
-                      <Stars rating={comment.rating} />
-                      <span>{comment.monthLabel}</span>
-                    </p>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )}
-        </div>
-      )}
+            {feedback.comments.length > 0 && (
+              <div className="mt-6">
+                <h3 className="font-typewriter text-base font-bold text-waldgruen-dark">
+                  Stimmen zur Kampagne
+                </h3>
+                <ul className="m-0 mt-3 grid list-none gap-3 p-0">
+                  {feedback.comments.map((comment, index) => (
+                    <li
+                      key={`${comment.monthLabel}-${index}`}
+                      className="border-l-2 border-waldgruen/30 pl-4"
+                    >
+                      <p className="font-body text-base leading-relaxed text-warmgrau/90">
+                        „{comment.text}“
+                      </p>
+                      <p className="mt-1 flex flex-wrap items-center gap-x-3 font-body text-xs text-warmgrau/60">
+                        <Stars rating={comment.rating} />
+                        <span>{comment.monthLabel}</span>
+                      </p>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+          </div>
+        )}
+      </div>
 
       {footnotes.length > 0 && (
         <footer className="mt-5 grid gap-1 border-t border-warmgrau/12 pt-4">

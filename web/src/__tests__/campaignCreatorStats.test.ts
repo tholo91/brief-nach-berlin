@@ -26,6 +26,10 @@ jest.mock("@/lib/supabase/server", () => ({
   getServiceRoleClient: jest.fn(),
 }));
 
+jest.mock("next/navigation", () => ({
+  useRouter: () => ({ refresh: jest.fn() }),
+}));
+
 jest.mock("next/image", () => {
   const React = jest.requireActual<typeof import("react")>("react");
   return {
@@ -647,7 +651,10 @@ describe("getCampaignCreatorStats", () => {
     const view = await getCampaignCreatorStats(campaign, false);
     const markup = renderToStaticMarkup(createElement(CampaignCreatorStats, { stats: view }));
 
-    expect(markup).toContain("Briefe geschrieben");
+    expect(markup).toContain("Briefe nach Berlin geschrieben");
+    expect(markup).toContain('id="creator-feedback"');
+    expect(markup).toContain('aria-label="Zahlen aktualisieren"');
+    expect(markup).toContain("gerade aktualisiert");
     expect(markup).toContain("37");
     expect(markup).toContain("Noch 7 Rückmeldungen bis dahin");
     expect(markup).toContain("Woher geschrieben wird");
@@ -756,7 +763,7 @@ describe("CampaignCreatorStats rendering", () => {
   it("says the origin cannot be loaded and keeps the letter count", () => {
     const markup = renderSignals(null);
     expect(markup).toContain("lässt sich gerade nicht laden");
-    expect(markup).toContain("Briefe geschrieben");
+    expect(markup).toContain("Briefe nach Berlin geschrieben");
   });
 
   it("drops the von Y form when signals exceed the letter count", () => {
@@ -816,7 +823,7 @@ describe("CampaignCreatorStats rendering", () => {
   it("keeps the letter count visible when unavailable", () => {
     const markup = render(null);
     expect(markup).toContain("37");
-    expect(markup).toContain("Briefe geschrieben");
+    expect(markup).toContain("Briefe nach Berlin geschrieben");
     expect(markup).toContain("nicht laden");
   });
 

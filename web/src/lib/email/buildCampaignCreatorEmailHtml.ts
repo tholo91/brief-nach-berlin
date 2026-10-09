@@ -9,7 +9,7 @@ import {
   formatMilestoneList,
 } from "@/lib/campaigns/milestones";
 import { BRIEF_EMAIL } from "@/lib/contact";
-import { buildShareTarget } from "@/lib/share";
+import { buildShareTarget, campaignStartUrl } from "@/lib/share";
 import { SUPPORT_CAMPAIGN_CREATOR_COPY, SUPPORT_CONTENT } from "@/lib/support-content";
 import { buildSocialFollowHtml } from "./buildSocialFollowHtml";
 import { buildFinancingNoticeHtml } from "./financingNotice";
@@ -171,6 +171,8 @@ function buildMilestoneEmailHtml(
                   { icon: "email", label: "E-Mail", href: shareTarget.emailUrl, external: false },
                 ])}
               </div>`;
+  const referralLinkStyle = "color:#2D6A4F;text-decoration:underline;";
+  const referralLine = `<p style="margin:0 0 22px;font-size:14px;line-height:1.6;color:#666666;">Kennst du andere, die eine Kampagne starten wollen? <a href="${campaignStartUrl()}" target="_blank" rel="noopener noreferrer" style="${referralLinkStyle}">Schick ihnen den Link</a> oder <a href="mailto:${BRIEF_EMAIL}?subject=${encodeURIComponent("Vorstellung: Kampagne")}" style="${referralLinkStyle}">stell mich vor</a>.</p>`;
   const footerLink = (href: string, label: string) =>
     `<a href="${href}" target="_blank" rel="noopener noreferrer" style="color:#888888;text-decoration:underline;">${label}</a>`;
 
@@ -198,6 +200,7 @@ function buildMilestoneEmailHtml(
               <p style="margin:0 0 16px;font-size:16px;line-height:1.65;">${count} Briefe und kein Ende in Sicht. So viele Menschen haben die Argumente deiner Kampagne aufgegriffen und daraus ihren eigenen, persönlichen Brief geschrieben.</p>
               <p style="margin:0 0 22px;font-size:16px;line-height:1.65;">Wenn du magst, teil deinen Fortschritt auf Instagram, LinkedIn oder WhatsApp. Das Bild dafür ist schon fertig.</p>
               ${shareBox}
+              ${referralLine}
               ${supportBlock}
               <table role="presentation" cellpadding="0" cellspacing="0" width="100%" style="margin:0 0 26px;">
                 <tr>

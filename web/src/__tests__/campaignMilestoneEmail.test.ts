@@ -129,6 +129,22 @@ describe("milestone creator email", () => {
     expect(html).toContain("Bild speichern");
   });
 
+  it("asks for referrals below the share box with a start link and an intro mailto", () => {
+    for (const count of [50, 500]) {
+      const html = build(count);
+      const box = html.indexOf("Fortschritt teilen");
+      const line = html.indexOf("Kennst du andere, die eine Kampagne starten wollen?");
+      const support = html.indexOf(SUPPORT_CAMPAIGN_CREATOR_COPY.milestoneHeading);
+
+      expect(line).toBeGreaterThan(box);
+      if (support > -1) expect(support).toBeGreaterThan(line);
+      expect(html).toContain(`href="${APP_URL}/kampagne/starten"`);
+      expect(html).toMatch(
+        /href="mailto:[^"?]+\?subject=Vorstellung%3A%20Kampagne"[^>]*>stell mich vor<\/a>/,
+      );
+    }
+  });
+
   it("lists WhatsApp, Telegram, LinkedIn, E-Mail with the encoded milestone text", () => {
     const html = build(500);
     const target = buildShareTarget(

@@ -20,7 +20,13 @@ export const TONE_LABELS: Record<number, string> = {
   5: "konfrontativ-aber-respektvoll",
 };
 
-export const ISSUE_TEXT_PREVIEW_MAX = 600;
+export const ISSUE_TEXT_PREVIEW_MAX = 2000;
+
+// Kurzer Commit-SHA des laufenden Deployments, damit /debug zeigt, mit welchem
+// Code ein Brief entstanden ist. Lokal/ohne Vercel: "unbekannt".
+export function getCodeVersion(): string {
+  return process.env.VERCEL_GIT_COMMIT_SHA?.slice(0, 7) || "unbekannt";
+}
 
 export function buildDebugPayload(
   data: WizardData,
@@ -98,6 +104,7 @@ export function buildDebugPayload(
     politicianId: p?.id,
     plz: data.plz,
     letterId,
+    codeVersion: getCodeVersion(),
     ...(routing
       ? {
           routedPrimaryLevel: routing.routedPrimaryLevel,
@@ -192,6 +199,7 @@ export function buildResendDebugPayload(
     politicianId: politician?.id,
     plz: data.plz,
     letterId,
+    codeVersion: getCodeVersion(),
     resent: true,
   };
 }

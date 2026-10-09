@@ -53,6 +53,8 @@ export interface LetterDebugPayload {
   politicianId?: number;
   plz?: string;
   letterId?: string;
+  // Kurzer Commit-SHA des Deployments (nur Diagnose, optional für alte Payloads).
+  codeVersion?: string;
   // Slug der Kampagne, aus der der Brief stammt. Landet beim Review in reviews.campaign_slug.
   campaignSlug?: string;
   // True für Resends: es gab keinen neuen Generierungslauf, daher sind die

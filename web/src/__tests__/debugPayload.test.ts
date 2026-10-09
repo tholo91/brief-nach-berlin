@@ -1,5 +1,6 @@
 import {
   buildDebugPayload,
+  getCodeVersion,
   buildResendDebugPayload,
   ISSUE_TEXT_PREVIEW_MAX,
 } from "@/lib/email/buildDebugPayload";
@@ -20,7 +21,7 @@ const recipient = {
   abgeordnetenwatchUrl: null,
 };
 
-const issueText = "Anliegen ".repeat(100);
+const issueText = "Anliegen ".repeat(300);
 
 const wizardData = {
   issueText,
@@ -70,5 +71,36 @@ describe("Debug-Payload", () => {
     expect(payload.issueTextLength).toBe(issueText.length);
     expect(payload.issueTextPreview).toBe(issueText.slice(0, ISSUE_TEXT_PREVIEW_MAX));
     expect(payload.issueTextPreview?.length).toBeLessThanOrEqual(ISSUE_TEXT_PREVIEW_MAX);
+  });
+
+  it("caps the issue text preview at 2000 characters", () => {
+    const payload = buildDebugPayload(wizardData, generationResult, 6);
+
+    expect(ISSUE_TEXT_PREVIEW_MAX).toBe(2000);
+    expect(issueText.length).toBeGreaterThan(ISSUE_TEXT_PREVIEW_MAX);
+    expect(payload.issueTextPreview).toHaveLength(2000);
+  });
+
+  describe("codeVersion", () => {
+    const original = process.env.VERCEL_GIT_COMMIT_SHA;
+    afterEach(() => {
+      if (original === undefined) delete process.env.VERCEL_GIT_COMMIT_SHA;
+      else process.env.VERCEL_GIT_COMMIT_SHA = original;
+    });
+
+    it("uses the first 7 chars of VERCEL_GIT_COMMIT_SHA", () => {
+      process.env.VERCEL_GIT_COMMIT_SHA = "290b27e1234567890abcdef";
+      expect(getCodeVersion()).toBe("290b27e");
+      expect(buildDebugPayload(wizardData, generationResult, 6).codeVersion).toBe("290b27e");
+      expect(
+        buildResendDebugPayload(wizardData, recipient, 6, "Cached letter text").codeVersion,
+      ).toBe("290b27e");
+    });
+
+    it("falls back to 'unbekannt' without a commit SHA", () => {
+      delete process.env.VERCEL_GIT_COMMIT_SHA;
+      expect(getCodeVersion()).toBe("unbekannt");
+      expect(buildDebugPayload(wizardData, generationResult, 6).codeVersion).toBe("unbekannt");
+    });
   });
 });

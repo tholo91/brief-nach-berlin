@@ -1,5 +1,5 @@
 import type { GenerateLetterVariantInput, GenerateLetterVariantResult } from "@/lib/generation/generateLetterVariant";
-import { TONE_LABELS } from "./buildDebugPayload";
+import { TONE_LABELS, getCodeVersion } from "./buildDebugPayload";
 
 const PREVIEW_MAX = 1200;
 
@@ -24,6 +24,7 @@ export interface LetterVariantDebugPayload {
   generationMs: number;
   lengthRetried: boolean;
   preservationCheck?: string;
+  codeVersion?: string;
 }
 
 function countWords(text: string): number {
@@ -63,5 +64,6 @@ export function buildVariantDebugPayload(
     generationMs: result.generationMs,
     lengthRetried: result.lengthRetried,
     preservationCheck: result.preservationCheck,
+    codeVersion: getCodeVersion(),
   };
 }

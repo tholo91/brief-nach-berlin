@@ -82,6 +82,16 @@ describe("success page experience", () => {
     expect(successSource).not.toContain("Ich beeile mich und melde mich");
   });
 
+  it("shows a lost connection as the success state with a calm green note, not an error", () => {
+    expect(successSource).toContain("setConnectionLost(true);\n            return;");
+    expect(successSource).toContain("isNetworkError && (wasHidden || elapsedMs >= 3000)");
+    expect(successSource).toContain("letterReady || connectionLost ? (");
+    expect(successSource).toContain('letterReady || connectionLost ? "block" : "hidden"');
+    expect(successSource).toContain("Die Verbindung war kurz weg");
+    expect(successSource).toContain("Nach zehn Minuten noch nichts da?");
+    expect(successSource).toContain("{letterReady && (\n              <button");
+  });
+
   it("keeps the postbox action available across breakpoints and moves personalization into the accordion", () => {
     expect(successSource).toContain("Postfach öffnen");
     expect(successSource).not.toContain("E-Mail-App öffnen");

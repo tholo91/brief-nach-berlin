@@ -249,6 +249,9 @@ export function Step3Success({
   });
   const [generationFetchError, setGenerationFetchError] = useState<string | null>(null);
   const [generationMayHaveSucceeded, setGenerationMayHaveSucceeded] = useState(false);
+  // Antwort von /api/generate-letter ging unterwegs verloren (kein HTTP-Status).
+  // Die Mail ist dann so gut wie immer unterwegs, die Seite zeigt den Erfolgsfall.
+  const [connectionLost, setConnectionLost] = useState(false);
   const [retryCount, setRetryCount] = useState(0);
   // "Fehler melden"-Frühwarnsystem: Kontext des letzten Generierungsfehlers
   // (HTTP-Status, Server-Detail, Client-Fehler) wird hier festgehalten und beim
@@ -543,12 +546,12 @@ export function Step3Success({
 
   // Animate ". .. ..." while letter is still being generated.
   useEffect(() => {
-    if (letterReady) return;
+    if (letterReady || connectionLost) return;
     const interval = setInterval(() => {
       setLoadingDots((d) => (d.length >= 3 ? "." : d + "."));
     }, 500);
     return () => clearInterval(interval);
-  }, [letterReady]);
+  }, [letterReady, connectionLost]);
 
   // Fetch the generated letter from the server once pre-checks pass.
   // Ein manueller Retry bleibt nach einem eindeutig fehlgeschlagenen Server-Request möglich.
@@ -646,16 +649,30 @@ export function Step3Success({
         if (err.name === "AbortError") return;
         // Client-/Netzwerkfehler (kein HTTP-Status erfasst) festhalten.
         if (!err.message.startsWith("HTTP ")) {
+          const clientErrorKind = classifyClientError(err);
+          const elapsedMs = Date.now() - startedAt;
           lastErrorRef.current = {
             httpStatus: null,
             serverMessage: null,
             errorId: null,
             detail: undefined,
             clientError: err.message,
-            clientErrorKind: classifyClientError(err),
-            elapsedMs: Date.now() - startedAt,
+            clientErrorKind,
+            elapsedMs,
             wasHidden,
           };
+          // Meist hat iOS den Fetch im Hintergrund gekappt, der Server läuft
+          // weiter und verschickt die Mail. Kein Fehler, nur keine Bestätigung.
+          // Ein schneller Netzfehler bei sichtbarer Seite (offline, Adblocker)
+          // hat den Server dagegen wohl nie erreicht und bleibt ein Fehler.
+          const isNetworkError =
+            clientErrorKind === "load_failed" ||
+            clientErrorKind === "failed_to_fetch" ||
+            clientErrorKind === "network_error";
+          if (isNetworkError && (wasHidden || elapsedMs >= 3000)) {
+            setConnectionLost(true);
+            return;
+          }
           setGenerationMayHaveSucceeded(true);
         }
         setGenerationFetchError(
@@ -812,7 +829,7 @@ export function Step3Success({
           </h1>
         </div>
         <p className="font-body text-base text-warmgrau leading-relaxed mt-3">
-          {letterReady ? (
+          {letterReady || connectionLost ? (
             <>Dein Entwurf und alle nächsten Schritte sind an <strong>{maskEmail(wizardData.email)}</strong> unterwegs.</>
           ) : (
             <>
@@ -829,7 +846,21 @@ export function Step3Success({
 
         {/* Recognized providers get a direct inbox link on every device;
             unknown domains keep the neutral manual instruction. */}
-        <div className={letterReady ? "block" : "hidden"}>
+        <div className={letterReady || connectionLost ? "block" : "hidden"}>
+          {connectionLost && (
+            <div
+              role="status"
+              className="mt-5 bg-waldgruen/10 border-l-4 border-waldgruen p-4 rounded-r-lg font-body text-sm text-waldgruen/80"
+            >
+              <p>
+                Die Verbindung war kurz weg, zum Beispiel weil du die App gewechselt hast. Deshalb konnte diese Seite den Versand nicht mehr bestätigen. Dein Brief kommt trotzdem per Mail, schau auch im Spam-Ordner nach.
+              </p>
+              <p className="mt-2">
+                Nach zehn Minuten noch nichts da? Schreib mir an{" "}
+                <a href={`mailto:${FOUNDER_EMAIL}`} className="underline">{FOUNDER_EMAIL}</a>.
+              </p>
+            </div>
+          )}
           <div className="mt-5">
             {mailAppHref ? (
               <a
@@ -847,17 +878,20 @@ export function Step3Success({
             )}
           </div>
           <div className="mt-3 flex items-center justify-center divide-x divide-warmgrau/20">
-            <button
-              type="button"
-              onClick={() => {
-                setResendOpen((open) => !open);
-                setStepsOpen(false);
-              }}
-              aria-expanded={resendOpen}
-              className="cursor-pointer px-3 font-body text-sm text-warmgrau/55 underline underline-offset-2 transition-colors hover:text-warmgrau/75"
-            >
-              Keine E-Mail erhalten?
-            </button>
+            {/* Erneut senden braucht den Brieftext, den es nur mit letterReady gibt. */}
+            {letterReady && (
+              <button
+                type="button"
+                onClick={() => {
+                  setResendOpen((open) => !open);
+                  setStepsOpen(false);
+                }}
+                aria-expanded={resendOpen}
+                className="cursor-pointer px-3 font-body text-sm text-warmgrau/55 underline underline-offset-2 transition-colors hover:text-warmgrau/75"
+              >
+                Keine E-Mail erhalten?
+              </button>
+            )}
             <button
               type="button"
               onClick={() => {

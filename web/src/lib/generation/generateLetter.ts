@@ -2,6 +2,7 @@ import { mistral, MistralStageError, withMistralRetry, MISTRAL_MODELS } from "@/
 import type { GenerateLetterInput, GenerateLetterResult, MdbContext, RecipientLevel } from "@/lib/types/wizard";
 import type { PoliticalLevel } from "@/lib/types/politician";
 import type { Recipient } from "@/lib/lookup/rathausRecipient";
+import { lowercaseAfterSalutation } from "@/lib/generation/lowercaseAfterSalutation";
 import { extractJsonObject } from "@/lib/mistral-json";
 import { LETTER_LENGTHS, DEFAULT_LETTER_LENGTH } from "@/lib/config";
 import {
@@ -733,6 +734,8 @@ export async function generateLetter(
     parsed.letter = ensureGovernmentHeadSalutation(parsed.letter, salutation);
     wordCount = countWords(parsed.letter);
   }
+
+  parsed.letter = lowercaseAfterSalutation(parsed.letter);
 
   const wordCountInRange = wordCount >= minWords && wordCount <= maxWords;
   if (!wordCountInRange) {

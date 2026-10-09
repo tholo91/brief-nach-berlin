@@ -1,4 +1,5 @@
 import { mistral, withMistralRetry, MISTRAL_MODELS } from "@/lib/mistral";
+import { lowercaseAfterSalutation } from "@/lib/generation/lowercaseAfterSalutation";
 import { tonalityBlock } from "@/lib/generation/generateLetter";
 import { LETTER_LENGTHS, letterLengthFromWordCount, type LetterLength } from "@/lib/config";
 
@@ -210,6 +211,7 @@ export async function generateLetterVariant(
     wordCount = countWords(letter);
   }
 
+  letter = lowercaseAfterSalutation(letter);
   wordCount = assertCompleteVariant(letter);
   const wordCountInRange = wordCount >= minWords && wordCount <= maxWords;
 

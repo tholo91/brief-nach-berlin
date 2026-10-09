@@ -35,7 +35,7 @@ it("clears a published campaign's old topic with the issue edit", async () => {
     updated_at: "2026-09-02T10:00:00.000Z",
   };
   const patches: Record<string, unknown>[] = [];
-  const campaigns = {
+  const campaigns: Record<string, jest.Mock> = {
     select: jest.fn(() => campaigns),
     eq: jest.fn(() => campaigns),
     maybeSingle: jest.fn(async () => ({ data: row, error: null })),
@@ -46,7 +46,7 @@ it("clears a published campaign's old topic with the issue edit", async () => {
     }),
     single: jest.fn(async () => ({ data: row, error: null })),
   };
-  const revisions = {
+  const revisions: Record<string, jest.Mock> = {
     insert: jest.fn(() => revisions),
     select: jest.fn(() => revisions),
     single: jest.fn(async () => ({

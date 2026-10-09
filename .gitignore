@@ -42,8 +42,6 @@ press/
 prompts/ngo-briefkampagne/
 web/claude-fable-chat.md
 web/data/constituency-offices.csv
-web/data/constituency-offices.json
-web/scripts/fetch-constituency-offices.ts
 
 # Lokale Quick-Task-Screenshots
 .planning/quick/*/screenshots/

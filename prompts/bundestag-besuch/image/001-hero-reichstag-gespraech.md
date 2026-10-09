@@ -1,7 +1,7 @@
 # 001 — Gruppe im Gespräch mit einer Abgeordneten vor dem Reichstag
 
 - **Type:** Image
-- **Status:** ready to generate
+- **Status:** approved
 - **Iteration:** 1
 - **Target tool:** Google Nano Banana Pro (or Midjourney v6 / Flux)
 - **Aspect ratio:** 16:9 landscape

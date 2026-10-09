@@ -1,7 +1,7 @@
 # 002 — OG-Bild: Gruppe im Gespräch vor dem Reichstag
 
 - **Type:** Image
-- **Status:** ready to generate
+- **Status:** approved
 - **Iteration:** 1
 - **Target tool:** Google Nano Banana Pro (or Midjourney v6 / Flux)
 - **Aspect ratio:** 1.91:1 landscape (1200 x 630)

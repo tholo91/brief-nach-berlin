@@ -31,9 +31,22 @@ describe("BundeslandMap", () => {
     expect(markup).toContain("Bayern");
     expect(markup).toContain("43 %");
     expect(markup).toContain("+ 2 weitere");
+    expect(markup).toContain('aria-expanded="false"');
     expect(markup).toContain("15 %");
     expect(markup).not.toContain("grau = unter 5 Briefe");
     expect(markup).not.toMatch(/[–—]/);
+  });
+
+  it("shows merged small states as a grey row without a toggle when nothing else is left", () => {
+    const markup = renderToStaticMarkup(
+      createElement(BundeslandMap, {
+        regions: [...regions.slice(0, 3), { key: null, label: "Weitere Bundesländer", count: 4 }],
+        total: 65,
+        hideSmallStates: true,
+      }),
+    );
+    expect(markup).toContain("Länder unter 5 Briefen");
+    expect(markup).not.toContain("aria-expanded");
   });
 
   it("renders filter links as anchors in the internal mode and drops the sr-only list", () => {

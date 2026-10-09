@@ -85,6 +85,7 @@ export function BundeslandMap({
   hideSmallStates = false,
 }: Props) {
   const [hovered, setHovered] = useState<BundeslandKey | null>(null);
+  const [expanded, setExpanded] = useState(false);
   const interactive = Boolean(hrefs);
   const selectedKey = BUNDESLAND_KEYS.find((key) => key === selected) ?? null;
 
@@ -100,11 +101,11 @@ export function BundeslandMap({
   const top = ranked.slice(0, 3);
   const rest = ranked.slice(3);
   const restCount = rest.reduce((sum, region) => sum + region.count, 0) + (other?.count ?? 0);
-  const restLabel = other
-    ? "Alle anderen"
-    : rest.length > 0
-      ? `+ ${rest.length} weitere`
-      : null;
+  const otherLabel = hideSmallStates ? "Länder unter 5 Briefen" : "Alle anderen";
+  const canExpand = rest.length > 0;
+  const open = canExpand && expanded;
+  const listed = open ? ranked : top;
+  const otherListed = Boolean(other) && (open || !canExpand);
 
   const focusKey = hovered ?? selectedKey;
   const focused = focusKey ? (byKey.get(focusKey) ?? null) : null;
@@ -186,7 +187,7 @@ export function BundeslandMap({
         <div className="min-w-0 flex-1">
           {top.length > 0 && (
             <ul aria-hidden="true" className="m-0 grid list-none gap-1.5 p-0">
-              {top.map((region) => (
+              {listed.map((region) => (
                 <li
                   key={region.key}
                   className="flex items-center gap-2 font-body text-sm text-warmgrau/85"
@@ -203,17 +204,47 @@ export function BundeslandMap({
                   </span>
                 </li>
               ))}
-              {restLabel && (
-                <li className="flex items-center gap-2 pl-5 font-body text-sm text-warmgrau/60">
-                  <span className="min-w-0 flex-1">{restLabel}</span>
+              {other && otherListed && (
+                <li className="flex items-center gap-2 font-body text-sm text-warmgrau/60">
+                  <span className="size-3 shrink-0 rounded-sm bg-warmgrau/12" />
+                  <span className="min-w-0 flex-1">{otherLabel}</span>
                   <span className="font-typewriter tabular-nums">
-                    {percentLabel(restCount, total)}
+                    {percentLabel(other.count, total)}
                   </span>
                 </li>
               )}
             </ul>
           )}
-          {hideSmallStates && (
+          {canExpand && (
+            <button
+              type="button"
+              aria-expanded={open}
+              onClick={() => setExpanded(!open)}
+              className="mt-1.5 flex w-full items-center gap-2 rounded-sm pl-5 text-left font-body text-sm text-warmgrau/60 transition-colors hover:text-waldgruen-dark focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-waldgruen motion-reduce:transition-none"
+            >
+              <span className="flex min-w-0 flex-1 items-center gap-1">
+                {open ? "weniger anzeigen" : `+ ${rest.length} weitere`}
+                <svg
+                  aria-hidden="true"
+                  viewBox="0 0 12 12"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="1.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  className={`size-3 transition-transform motion-reduce:transition-none ${open ? "rotate-180" : ""}`}
+                >
+                  <path d="m3 4.5 3 3 3-3" />
+                </svg>
+              </span>
+              {!open && (
+                <span className="font-typewriter tabular-nums">
+                  {percentLabel(restCount, total)}
+                </span>
+              )}
+            </button>
+          )}
+          {hideSmallStates && !otherListed && (
             <p aria-hidden="true" className="mt-3 flex items-center gap-2 font-body text-xs text-warmgrau/60">
               <span className="size-3 shrink-0 rounded-sm bg-warmgrau/12" />
               grau = unter 5 Briefe

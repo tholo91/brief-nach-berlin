@@ -4,6 +4,7 @@ import { CreatorStatsRefresh } from "@/components/campaigns/CreatorStatsRefresh"
 import { StarBar } from "@/components/reviews/RatingStat";
 import type {
   CampaignCreatorStatsView,
+  CreatorSendBreakdown,
   CreatorStatsKpi,
   CreatorTimeline,
 } from "@/lib/campaigns/creatorStats";
@@ -44,14 +45,17 @@ const OPT_IN_NOTE =
   "Mitgezählt wird nur, wer beim Schreiben „Mein Anliegen auf die Karte setzen“ gewählt hat.";
 
 const SOURCE_SENTENCE =
-  "Woher die Zahlen kommen: Wer über deine Kampagne einen Brief schreibt, bekommt ein paar Tage später eine kurze Frage von mir per Mail.";
+  "Wer über deine Kampagne schreibt, bekommt mit dem Brief eine kurze Umfrage per Mail. Nur diese Rückmeldungen siehst du hier.";
 
 type TileProps = {
   value: string;
   label: ReactNode;
   kpi: CreatorStatsKpi;
   watermark: ReactNode;
+  /** Ersetzt das Wasserzeichen, sobald die Kachel einen Wert zeigt. */
+  visual?: ReactNode;
   extra?: ReactNode;
+  note?: ReactNode;
   tone?: "outcome" | "baseline" | "highlight";
 };
 
@@ -61,20 +65,36 @@ const TILE_TONE_CLASS = {
   highlight: "border-waldgruen/35 bg-waldgruen/[0.07]",
 } as const;
 
-function Tile({ value, label, kpi, watermark, extra, tone = "outcome" }: TileProps) {
+function Tile({
+  value,
+  label,
+  kpi,
+  watermark,
+  visual,
+  extra,
+  note,
+  tone = "outcome",
+}: TileProps) {
   const shown = kpi.status === "shown";
+  const showVisual = shown && Boolean(visual);
   return (
     <div
-      className={`relative grid grid-cols-[6rem_1fr] items-baseline gap-x-3 overflow-clip rounded-md border px-4 py-3 sm:flex sm:flex-col sm:py-4 ${TILE_TONE_CLASS[tone]}`}
+      className={`relative grid grid-cols-[6rem_1fr] items-baseline gap-x-3 rounded-md border px-4 py-3 sm:flex sm:flex-col sm:py-4 ${
+        showVisual ? "pr-16 sm:pr-4" : "overflow-clip"
+      } ${TILE_TONE_CLASS[tone]}`}
     >
-      <div
-        aria-hidden="true"
-        className={`pointer-events-none absolute -bottom-5 -right-5 h-20 w-20 sm:h-24 sm:w-24 ${
-          tone === "baseline" ? "text-warmgrau/[0.09]" : "text-waldgruen/[0.11]"
-        }`}
-      >
-        {watermark}
-      </div>
+      {showVisual ? (
+        <div className="absolute right-4 top-3 z-10 sm:top-4">{visual}</div>
+      ) : (
+        <div
+          aria-hidden="true"
+          className={`pointer-events-none absolute -bottom-5 -right-5 h-20 w-20 sm:h-24 sm:w-24 ${
+            tone === "baseline" ? "text-warmgrau/[0.09]" : "text-waldgruen/[0.11]"
+          }`}
+        >
+          {watermark}
+        </div>
+      )}
       <dd className="relative m-0 sm:order-1">
         {shown ? (
           <span
@@ -105,6 +125,9 @@ function Tile({ value, label, kpi, watermark, extra, tone = "outcome" }: TilePro
             ? `aus ${numberFormatter.format(kpi.responses)} Rückmeldungen`
             : `Noch zu wenige Antworten, bisher ${numberFormatter.format(kpi.responses)}`}
         </p>
+        {shown && note && (
+          <p className="mt-0.5 font-body text-xs text-warmgrau/60">{note}</p>
+        )}
       </div>
     </div>
   );
@@ -154,6 +177,78 @@ const sproutIcon = (
     <path d="M12 14.5c0-3 2.2-5.5 6.5-5.5 0 3-2.2 5.5-6.5 5.5Z" />
   </TileIcon>
 );
+
+const RING_GAP = 2;
+
+function SendRing({ breakdown }: { breakdown: CreatorSendBreakdown }) {
+  const { sent, notSent, noAnswer } = breakdown;
+  const sentLength = (sent / (sent + notSent)) * 100;
+  const gap = sent > 0 && notSent > 0 ? RING_GAP : 0;
+  const segments = [
+    { key: "sent", start: 0, length: sentLength, className: "stroke-waldgruen" },
+    { key: "notSent", start: sentLength, length: 100 - sentLength, className: "stroke-warmgrau/25" },
+  ].filter((segment) => segment.length > 0);
+  const rows = [
+    { label: "Ja, geht raus", count: sent, swatch: "bg-waldgruen" },
+    { label: "Eher nicht", count: notSent, swatch: "bg-warmgrau/25" },
+    ...(noAnswer > 0
+      ? [{ label: "Nur Sterne vergeben", count: noAnswer, swatch: null }]
+      : []),
+  ];
+
+  return (
+    <div
+      role="img"
+      tabIndex={0}
+      aria-label={rows
+        .map((row) => `${row.label}: ${numberFormatter.format(row.count)}`)
+        .join(", ")}
+      className="group relative block size-9 rounded-full outline-none focus-visible:ring-2 focus-visible:ring-waldgruen/40"
+    >
+      <svg aria-hidden="true" viewBox="0 0 36 36" className="size-full -rotate-90">
+        {segments.map((segment) => {
+          const drawn = Math.max(segment.length - gap, 1);
+          return (
+            <circle
+              key={segment.key}
+              cx="18"
+              cy="18"
+              r="15.9155"
+              fill="none"
+              strokeWidth="4"
+              className={segment.className}
+              strokeDasharray={`${drawn} ${100 - drawn}`}
+              strokeDashoffset={-(segment.start + gap / 2)}
+            />
+          );
+        })}
+      </svg>
+      <span
+        aria-hidden="true"
+        className="pointer-events-none absolute right-0 top-full mt-1.5 grid grid-cols-[auto_1fr_auto] items-center gap-x-2 gap-y-1 whitespace-nowrap rounded border border-warmgrau/15 bg-white px-2.5 py-2 font-body text-xs leading-tight text-warmgrau/85 opacity-0 shadow-sm transition-opacity duration-100 group-hover:opacity-100 group-focus:opacity-100 motion-reduce:transition-none"
+      >
+        {rows.map((row) => (
+          <span key={row.label} className="contents">
+            <span
+              className={`size-2 rounded-sm ${row.swatch ?? "border border-dashed border-warmgrau/40"}`}
+            />
+            <span className={row.swatch ? "" : "text-warmgrau/60"}>{row.label}</span>
+            <span className="text-right font-semibold tabular-nums text-waldgruen-dark">
+              {numberFormatter.format(row.count)}
+            </span>
+          </span>
+        ))}
+      </span>
+    </div>
+  );
+}
+
+function noAnswerNote(count: number) {
+  if (count === 0) return null;
+  return count === 1
+    ? "1 weitere Person hat nur Sterne vergeben"
+    : `${numberFormatter.format(count)} weitere haben nur Sterne vergeben`;
+}
 
 type SignalsView = CampaignCreatorStatsView["signals"];
 
@@ -361,9 +456,7 @@ export function CampaignCreatorStats({
   if (stats.signals.status === "ready" || stats.signals.status === "collecting") {
     footnotes.push(OPT_IN_NOTE);
   }
-  if (feedback.status === "collecting" || feedback.status === "ready") {
-    footnotes.push(SOURCE_SENTENCE);
-  }
+  const showSource = feedback.status === "collecting" || feedback.status === "ready";
 
   return (
     <section
@@ -377,6 +470,11 @@ export function CampaignCreatorStats({
       >
         {heading}
       </h2>
+      {showSource && (
+        <p className="mt-1.5 max-w-2xl font-body text-sm leading-relaxed text-warmgrau/70">
+          {SOURCE_SENTENCE}
+        </p>
+      )}
 
       <div className="mt-4 flex flex-wrap items-baseline gap-x-3 gap-y-1">
         <p className="font-typewriter text-4xl font-bold leading-none text-waldgruen-dark">
@@ -438,6 +536,7 @@ export function CampaignCreatorStats({
             <dl className="m-0 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
               <Tile
                 watermark={envelopeIcon}
+                visual={<SendRing breakdown={feedback.sendBreakdown} />}
                 kpi={feedback.sendRate}
                 value={
                   feedback.sendRate.status === "shown"
@@ -445,6 +544,7 @@ export function CampaignCreatorStats({
                     : ""
                 }
                 label="schicken ihren Brief ab"
+                note={noAnswerNote(feedback.sendBreakdown.noAnswer)}
               />
               <Tile
                 watermark={starIcon}

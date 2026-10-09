@@ -140,6 +140,7 @@ describe("buildCampaignCreatorStats KPIs (D-01)", () => {
 
     expect(view.feedback.responses).toBe(12);
     expect(view.feedback.sendRate).toEqual({ status: "shown", value: 83, responses: 12 });
+    expect(view.feedback.sendBreakdown).toEqual({ sent: 10, notSent: 2, noAnswer: 0 });
     expect(view.feedback.averageRating).toEqual({ status: "shown", value: 4.5, responses: 12 });
     expect(view.feedback.selfEfficacy).toEqual({ status: "shown", value: 80, responses: 10 });
   });
@@ -152,6 +153,7 @@ describe("buildCampaignCreatorStats KPIs (D-01)", () => {
     const view = build(fixture);
     if (view.feedback.status !== "ready") throw new Error("expected ready");
     expect(view.feedback.sendRate).toEqual({ status: "too_few", responses: 8 });
+    expect(view.feedback.sendBreakdown).toEqual({ sent: 8, notSent: 0, noAnswer: 4 });
     expect(view.feedback.averageRating.status).toBe("shown");
   });
 
@@ -792,7 +794,7 @@ describe("CampaignCreatorStats rendering", () => {
     expect(markup).not.toMatch(/\d\u00a0%/);
     expect(markup).not.toContain("Sterne");
     expect(markup).not.toContain("zustimmender Kommentar");
-    expect(markup).toContain("kurze Frage");
+    expect(markup).toContain("kurze Umfrage per Mail");
   });
 
   it("renders own N per tile and the quiet fallback for a too_few tile", () => {
@@ -929,9 +931,38 @@ describe("CampaignCreatorStats rendering", () => {
     expect(markup).toContain("Karte der Bundesländer");
     expect(markup).toContain("Bayern: 8 Briefe, 67\u00a0%");
     expect(markup).toContain("Weitere Bundesländer: 4 Briefe, 33\u00a0%");
-    expect(markup).toContain("grau = unter 5 Briefe");
+    expect(markup).toContain("Länder unter 5 Briefen");
+    expect(markup).not.toContain("grau = unter 5 Briefe");
     expect(markup).not.toContain("Bremen");
     expect(markup).not.toContain("Schleswig-Holstein");
+  });
+
+  it("shows the send ring with all three groups and the stars-only note", () => {
+    const markup = render([
+      ...rows(10, { letter_sent: true }),
+      ...rows(2, { letter_sent: false }),
+      ...rows(5, { letter_sent: null }),
+    ]);
+    expect(markup).toContain("83 %");
+    expect(markup).toContain('aria-label="Ja, geht raus: 10, Eher nicht: 2, Nur Sterne vergeben: 5"');
+    expect(markup).toContain("5 weitere haben nur Sterne vergeben");
+  });
+
+  it("keeps the envelope and drops the ring while the send rate has too few answers", () => {
+    const markup = render([
+      ...rows(8, { letter_sent: true }),
+      ...rows(4, { letter_sent: null }),
+    ]);
+    expect(markup).not.toContain("Ja, geht raus");
+    expect(markup).not.toContain("nur Sterne vergeben");
+  });
+
+  it("explains the survey right under the heading, not in the footer", () => {
+    const markup = render(rows(12));
+    const sentence = "Nur diese Rückmeldungen siehst du hier.";
+    expect(markup.indexOf(sentence)).toBeGreaterThan(markup.indexOf("</h2>"));
+    expect(markup.indexOf(sentence)).toBeLessThan(markup.indexOf("nach Berlin geschrieben"));
+    expect(render(null)).not.toContain(sentence);
   });
 
   it("bundles the footnotes into one footer at the end of the section", () => {
@@ -949,9 +980,8 @@ describe("CampaignCreatorStats rendering", () => {
     const footer = markup.slice(footerStart);
     expect(footer).toContain("Basiert auf 12 von 37 Briefen.");
     expect(footer).toContain("Mein Anliegen auf die Karte setzen");
-    expect(footer).toContain("Woher die Zahlen kommen");
+    expect(footer).not.toContain("kurze Umfrage");
     expect(markup.slice(0, footerStart)).not.toContain("Basiert auf");
-    expect(markup.slice(0, footerStart)).not.toContain("Woher die Zahlen kommen");
   });
 
   it("contains no em or en dash characters", () => {

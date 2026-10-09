@@ -97,6 +97,8 @@ export type CreatorRecipientBucket = { label: string; count: number };
 
 export type CreatorFeedbackTag = { label: string; count: number };
 
+export type CreatorSendBreakdown = { sent: number; notSent: number; noAnswer: number };
+
 export type CreatorStatsComment = {
   text: string;
   rating: number;
@@ -133,6 +135,7 @@ export type CampaignCreatorStatsView = {
         status: "ready";
         responses: number;
         sendRate: CreatorStatsKpi;
+        sendBreakdown: CreatorSendBreakdown;
         averageRating: CreatorStatsKpi;
         selfEfficacy: CreatorStatsKpi;
         powerlessness: CreatorStatsKpi;
@@ -417,6 +420,11 @@ export function buildCampaignCreatorStats({
       sendRate: kpi(stats.knownSendCount, () =>
         Math.round((stats.sentCount / stats.knownSendCount) * 100),
       ),
+      sendBreakdown: {
+        sent: stats.sentCount,
+        notSent: stats.notSentCount,
+        noAnswer: stats.noAnswerCount,
+      },
       averageRating: kpi(ratingResponses, () => stats.averageRating),
       selfEfficacy: kpi(activation.selfEfficacyDirectionalCount, () =>
         Math.round(

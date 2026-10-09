@@ -41,8 +41,21 @@ describe("Alternativ-Picker und Server-Auflösung", () => {
         { kind: "mdb", selectedPoliticianId: other.id },
         { campaignSlug }
       ).ok;
-      expect(allowsAlternativeRecipients(campaignSlug)).toBe(accepted);
+      expect(allowsAlternativeRecipients(campaignSlug, localIds.size)).toBe(accepted);
     }
     expect(lookupPLZWithLevel(plz).bundeslandKey).toBe("HH");
+  });
+
+  it("erlaubt in offenen Kampagnen freie Auswahl, wenn im Wahlkreis niemand zugeordnet ist", () => {
+    const orphanPlz = "29216";
+    expect(lookupPLZ(orphanPlz).politicians).toEqual([]);
+    const other = searchAlternativeRecipients({ level: "Bund", plz: orphanPlz, query: "an" }).items[0];
+    const result = resolveRecipientSelection(
+      orphanPlz,
+      { kind: "mdb", selectedPoliticianId: other.id },
+      { campaignSlug: "irgendeine-kampagne" }
+    );
+    expect(allowsAlternativeRecipients("irgendeine-kampagne", 0)).toBe(true);
+    expect(result.ok).toBe(true);
   });
 });

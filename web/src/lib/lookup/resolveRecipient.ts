@@ -79,7 +79,9 @@ export function resolveRecipientSelection(
         ? localPoliticians.filter((politician) => allowedIds.includes(politician.id)).length > 0
           ? localPoliticians.filter((politician) => allowedIds.includes(politician.id))
           : getBundestagPoliticiansByIds(allowedIds)
-        : localPoliticians
+        : localPoliticians.length > 0
+          ? localPoliticians
+          : getAllBundestagPoliticians()
       : getAllBundestagPoliticians();
     const match = politicians.find((p) => p.id === selection.selectedPoliticianId);
     if (!match) return { ok: false, reason: "not_found" };
@@ -117,7 +119,7 @@ export function resolveRecipientSelection(
   if (selection.kind === "mdl") {
     const result = lookupPLZWithLevel(plz);
     const localPoliticians = result.optionalByLevel.Land;
-    const politicians = options.campaignSlug
+    const politicians = options.campaignSlug && localPoliticians.length > 0
       ? localPoliticians
       : result.bundeslandKey
         ? getLandtagPoliticiansForBundesland(result.bundeslandKey)

@@ -171,7 +171,15 @@ export function Step3Success({
   const isAmbiguousKommune =
     selectedLevel === "Kommune" &&
     rathaus?.ambiguous === true;
-  const alternativePickerAllowed = allowsAlternativeRecipients(wizardData.campaign?.slug);
+  const campaignSlug = wizardData.campaign?.slug;
+  const bundAlternativeAllowed = allowsAlternativeRecipients(
+    campaignSlug,
+    recipients.filter((recipient) => recipient.kind === "mdb").length
+  );
+  const landAlternativeAllowed = allowsAlternativeRecipients(
+    campaignSlug,
+    optionalLandRecipients.length
+  );
   const campaignRestricted = Boolean(
     result &&
       "disambiguationNeeded" in result &&
@@ -1815,7 +1823,7 @@ export function Step3Success({
         )}
 
         {!campaignRestricted &&
-          alternativePickerAllowed &&
+          bundAlternativeAllowed &&
           !bundeskanzler &&
           selectedLevel === "Bund" && (
             <div className={politicians.length > 0 ? "mt-5" : "mt-6"}>
@@ -1837,7 +1845,7 @@ export function Step3Success({
                   onSelect={handleAlternativeSelect}
                 />
               )}
-              {hasNoLocalMdb && (
+              {hasNoLocalMdb && !campaignSlug && (
                 <button
                   type="button"
                   onClick={() => {
@@ -1864,7 +1872,7 @@ export function Step3Success({
             </div>
           )}
 
-        {!campaignRestricted && alternativePickerAllowed && isLand && showLandPersonPicker && (
+        {!campaignRestricted && landAlternativeAllowed && isLand && showLandPersonPicker && (
           <div className="mt-5">
             {optionalLandRecipients.length > 0 && (
               <button

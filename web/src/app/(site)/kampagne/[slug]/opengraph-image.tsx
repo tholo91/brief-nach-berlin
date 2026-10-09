@@ -1,6 +1,6 @@
 import { ImageResponse } from "next/og";
 import { notFound } from "next/navigation";
-import { campaignLogoPublicUrl } from "@/lib/campaigns/logo";
+import { loadCampaignLogoPng } from "@/lib/campaigns/logoImage";
 import { getActiveCampaignBySlug } from "@/lib/campaigns/repository";
 import { campaignSlugSchema } from "@/lib/campaigns/schema";
 import { APP_URL } from "@/lib/config";
@@ -33,11 +33,6 @@ function titleSize(title: string): number {
   return 76;
 }
 
-function campaignLogoForOpenGraph(path: string | null): string | null {
-  if (!path || !/\.(?:png|jpe?g)$/i.test(path)) return null;
-  return campaignLogoPublicUrl(path);
-}
-
 export default async function CampaignOpenGraphImage({
   params,
 }: CampaignOpenGraphImageProps) {
@@ -53,7 +48,7 @@ export default async function CampaignOpenGraphImage({
     ? compactText(campaign.creatorName, 46)
     : null;
   const imageUrl =
-    campaignLogoForOpenGraph(campaign.logoPath) ??
+    (await loadCampaignLogoPng(campaign.logoPath, { size: 488, fit: "inside" })) ??
     `${APP_URL}/images/campaign-creator-icon.png`;
   const backgroundImageUrl = `${APP_URL}/images/img-campaign-crowd-ghibli.png`;
   const fontSize = titleSize(title);

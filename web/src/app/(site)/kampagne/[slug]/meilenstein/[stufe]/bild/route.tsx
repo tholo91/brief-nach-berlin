@@ -2,6 +2,7 @@ import { readFile } from "node:fs/promises";
 import { join } from "node:path";
 import { ImageResponse } from "next/og";
 import { formatLetterCount } from "@/lib/campaigns/milestones";
+import { loadCampaignLogoPng } from "@/lib/campaigns/logoImage";
 import { getCampaignBySlug } from "@/lib/campaigns/repository";
 import { campaignSlugSchema } from "@/lib/campaigns/schema";
 
@@ -9,6 +10,7 @@ const WIDTH = 1200;
 const HEIGHT = 805;
 const STUFE_PATTERN = /^[1-9]\d{0,6}$/;
 const DEV_PREVIEW_MAX_LENGTH = 120;
+const PILL_LOGO = 48;
 
 const CACHE_HEADERS = {
   "Cache-Control": "public, max-age=3600, stale-while-revalidate=86400",
@@ -73,6 +75,7 @@ export async function GET(request: Request, { params }: RouteContext) {
       : null;
 
   let rawTitle: string;
+  let logoPath: string | null = null;
   if (devTitle) {
     rawTitle = devTitle;
   } else {
@@ -87,6 +90,7 @@ export async function GET(request: Request, { params }: RouteContext) {
         return notFound();
       }
       rawTitle = campaign.title;
+      logoPath = campaign.logoPath;
     } catch (error) {
       console.error(
         "[brief-nach-berlin][milestone-image] campaign lookup failed",
@@ -101,7 +105,10 @@ export async function GET(request: Request, { params }: RouteContext) {
   const longTitle = compactTitle.length > 32;
   const title = longTitle ? compactText(compactTitle, 42) : compactTitle;
   const titleSize = longTitle ? 42 : 50;
-  const loaded = await loadAssets();
+  const [loaded, logo] = await Promise.all([
+    loadAssets(),
+    download ? loadCampaignLogoPng(logoPath, { size: PILL_LOGO * 2, fit: "cover" }) : null,
+  ]);
 
   const headers: Record<string, string> = { ...CACHE_HEADERS };
   if (download) {
@@ -140,6 +147,18 @@ export async function GET(request: Request, { params }: RouteContext) {
             display: "flex",
             background:
               "radial-gradient(ellipse at 50% 38%, rgba(255,255,255,0.88) 0%, rgba(255,255,255,0.6) 42%, rgba(255,255,255,0) 72%)",
+          }}
+        />
+        <div
+          style={{
+            position: "absolute",
+            top: 0,
+            left: 0,
+            width: WIDTH,
+            height: HEIGHT,
+            display: "flex",
+            background:
+              "linear-gradient(180deg, rgba(250,248,245,0) 38%, rgba(250,248,245,0.55) 68%, rgba(250,248,245,0.8) 100%)",
           }}
         />
         <div
@@ -207,7 +226,9 @@ export async function GET(request: Request, { params }: RouteContext) {
             <div
               style={{
                 display: "flex",
-                padding: "10px 30px",
+                alignItems: "center",
+                gap: 16,
+                padding: logo ? "8px 30px 8px 8px" : "10px 30px",
                 borderRadius: 999,
                 background: "rgba(255,255,255,0.85)",
                 fontFamily: "Courier Prime",
@@ -216,6 +237,16 @@ export async function GET(request: Request, { params }: RouteContext) {
                 color: "#1B4332",
               }}
             >
+              {logo ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img
+                  src={logo}
+                  alt=""
+                  width={PILL_LOGO}
+                  height={PILL_LOGO}
+                  style={{ width: PILL_LOGO, height: PILL_LOGO, borderRadius: 999 }}
+                />
+              ) : null}
               {`brief-nach-berlin.de/kampagne/${slug}`}
             </div>
           </div>

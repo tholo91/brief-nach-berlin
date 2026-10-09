@@ -7,8 +7,12 @@ jest.mock("next/og", () => ({
 jest.mock("@/lib/campaigns/repository", () => ({
   getCampaignBySlug: jest.fn(),
 }));
+jest.mock("@/lib/campaigns/logoImage", () => ({
+  loadCampaignLogoPng: jest.fn(),
+}));
 
 import { GET } from "@/app/(site)/kampagne/[slug]/meilenstein/[stufe]/bild/route";
+import { loadCampaignLogoPng } from "@/lib/campaigns/logoImage";
 import { getCampaignBySlug } from "@/lib/campaigns/repository";
 import type { Campaign } from "@/lib/campaigns/schema";
 
@@ -70,6 +74,7 @@ describe("campaign milestone image route", () => {
   beforeEach(() => {
     jest.clearAllMocks();
     jest.mocked(getCampaignBySlug).mockResolvedValue(campaign);
+    jest.mocked(loadCampaignLogoPng).mockResolvedValue(null);
   });
 
   afterEach(() => {
@@ -189,5 +194,23 @@ describe("campaign milestone image route", () => {
     expect(getCampaignBySlug).not.toHaveBeenCalled();
     expect(markup).toContain(">50<");
     expect(markup).toContain("Briefe für „Mehr Busse für Bremen-Nord“");
+  });
+
+  it("puts the campaign logo into the download caption only", async () => {
+    jest
+      .mocked(getCampaignBySlug)
+      .mockResolvedValue({ ...campaign, logoPath: "mehr-busse/logo.webp" });
+    jest.mocked(loadCampaignLogoPng).mockResolvedValue("data:image/png;base64,TE9HTw==");
+
+    const inline = await render("mehr-busse", "500");
+    expect(loadCampaignLogoPng).not.toHaveBeenCalled();
+    expect(inline.markup).not.toContain("data:image/png;base64,TE9HTw==");
+
+    const download = await render("mehr-busse", "500", "?download=1");
+    expect(loadCampaignLogoPng).toHaveBeenCalledWith("mehr-busse/logo.webp", {
+      size: 96,
+      fit: "cover",
+    });
+    expect(download.markup).toContain("data:image/png;base64,TE9HTw==");
   });
 });

@@ -276,11 +276,7 @@ function buildCampaignEndedEmailHtml(
   const creatorName = params.creatorName?.trim();
   const greeting = creatorName ? `Moin ${escapeHtml(creatorName)},` : "Moin,";
   const count = formatLetterCount(ended.count);
-  const buttons = [
-    outlineButton(params.actionUrl, "&#9998;&nbsp;Verwalten", true),
-    outlineButton(DONATION_PROVIDER_URL, "&#9829;&nbsp;Unterstützen", true),
-    outlineButton(`mailto:${BRIEF_EMAIL}`, "Thomas schreiben", false),
-  ];
+  const buttons = [outlineButton(DONATION_PROVIDER_URL, "&#9829;&nbsp;Unterstützen", true)];
   const shareTarget = buildShareTarget(
     { slug: params.slug, title: params.campaignTitle, letterCount: ended.count },
     "milestone"
@@ -317,7 +313,7 @@ function buildCampaignEndedEmailHtml(
               ${feedbackBox}
               <p style="margin:0 0 6px;font-size:16px;line-height:1.65;">Allerbeste Grüße aus Bremen und danke für dein Engagement</p>
               <p style="margin:0 0 22px;font-family:'Caveat','Brush Script MT','Lucida Handwriting',cursive;font-size:32px;color:#1D3557;line-height:1.1;">Thomas</p>
-              ${buildButtonRow(buttons, "33.33%")}`,
+              ${buildButtonRow(buttons, "100%")}`,
   });
 }
 

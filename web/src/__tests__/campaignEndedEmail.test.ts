@@ -6,7 +6,6 @@ jest.mock("@getbrevo/brevo", () => ({
 }));
 
 import { APP_URL, DONATION_PROVIDER_URL, FOUNDER_EMAIL } from "@/lib/config";
-import { BRIEF_EMAIL } from "@/lib/contact";
 import { buildCampaignCreatorEmailHtml } from "@/lib/email/buildCampaignCreatorEmailHtml";
 
 const base = {
@@ -62,13 +61,13 @@ describe("campaign ended creator email", () => {
     expect(html).not.toContain("/ngo-briefkampagne");
   });
 
-  it("keeps the donation hint small: three buttons, no financing box", () => {
+  it("keeps the donation hint small: only the support button, no manage or mail button", () => {
     const html = build();
 
     expect(html).toContain(`href="${DONATION_PROVIDER_URL}"`);
     expect(html).toContain("&nbsp;Unterstützen</a>");
-    expect(html).toContain("&nbsp;Verwalten</a>");
-    expect(html).toContain(`href="mailto:${BRIEF_EMAIL}"`);
+    expect(html).not.toContain("&nbsp;Verwalten</a>");
+    expect(html).not.toContain("Thomas schreiben");
     expect(html).toContain("Allerbeste Grüße aus Bremen und danke für dein Engagement");
     expect(html).toContain("family=Caveat");
     expect(html).toMatch(/font-family:'Caveat'[^>]*>Thomas<\/p>/);

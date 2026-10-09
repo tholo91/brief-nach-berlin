@@ -11,9 +11,13 @@ jest.mock("next/og", () => ({
 jest.mock("@/lib/campaigns/repository", () => ({
   getActiveCampaignBySlug: jest.fn(),
 }));
+jest.mock("@/lib/campaigns/logoImage", () => ({
+  loadCampaignLogoPng: jest.fn(),
+}));
 
 import CampaignOpenGraphImage from
   "@/app/(site)/kampagne/[slug]/opengraph-image";
+import { loadCampaignLogoPng } from "@/lib/campaigns/logoImage";
 import { getActiveCampaignBySlug } from "@/lib/campaigns/repository";
 import type { Campaign } from "@/lib/campaigns/schema";
 
@@ -48,6 +52,27 @@ describe("campaign Open Graph image", () => {
   beforeEach(() => {
     jest.clearAllMocks();
     jest.mocked(getActiveCampaignBySlug).mockResolvedValue(campaign);
+    jest.mocked(loadCampaignLogoPng).mockResolvedValue(null);
+  });
+
+  async function renderMarkup(): Promise<string> {
+    const result = (await CampaignOpenGraphImage({
+      params: Promise.resolve({ slug: campaign.slug }),
+    })) as unknown as { element: React.ReactElement };
+    return renderToStaticMarkup(result.element);
+  }
+
+  it("shows the campaign logo as a PNG data URI when it can be loaded", async () => {
+    jest.mocked(loadCampaignLogoPng).mockResolvedValue("data:image/png;base64,TE9HTw==");
+
+    const markup = await renderMarkup();
+
+    expect(loadCampaignLogoPng).toHaveBeenCalledWith("duisburg-retten/logo.webp", {
+      size: 488,
+      fit: "inside",
+    });
+    expect(markup).toContain("data:image/png;base64,TE9HTw==");
+    expect(markup).not.toContain("campaign-creator-icon.png");
   });
 
   it("uses renderer-compatible PNG assets in its 1200x630 render tree", async () => {

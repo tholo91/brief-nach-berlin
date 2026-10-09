@@ -2,6 +2,10 @@ import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { CampaignHero } from "@/components/campaigns/CampaignHero";
 
+jest.mock("@/lib/actions/reportCampaign", () => ({
+  reportCampaignAction: jest.fn(),
+}));
+
 jest.mock("@/components/campaigns/CampaignBackground", () => {
   const React = jest.requireActual<typeof import("react")>("react");
   return {

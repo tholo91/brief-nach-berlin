@@ -2,6 +2,10 @@ import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { CampaignHero } from "@/components/campaigns/CampaignHero";
 
+jest.mock("@/lib/actions/reportCampaign", () => ({
+  reportCampaignAction: jest.fn(),
+}));
+
 jest.mock("@/components/campaigns/CampaignBackground", () => {
   const React = jest.requireActual<typeof import("react")>("react");
   return {
@@ -43,6 +47,22 @@ describe("campaign hero", () => {
     expect(markup).toContain("Ohne Account");
     expect(markup).toContain("Vorbefüllt");
     expect(markup).toContain("flex-nowrap");
+  });
+
+  it("zeigt die Meldezeile ganz unten und das Meldeformular, ohne den Hero zu ändern", () => {
+    const markup = renderToStaticMarkup(
+      createElement(CampaignHero, { campaign })
+    );
+
+    expect(markup).toContain("Stimmt was nicht?");
+    expect(markup.indexOf("Stimmt was nicht?")).toBeGreaterThan(
+      markup.indexOf("Weniger Klick, mehr Gewicht")
+    );
+    expect(markup).toContain("Die Kampagne nutzt die Infrastruktur von Brief-nach-Berlin.");
+    expect(markup).toContain("Was stimmt nicht?");
+    expect(markup).toContain("Ich bin");
+    expect(markup).toContain("Bild- oder Logorechte verletzt");
+    expect(markup).not.toContain("@");
   });
 
   it("zeigt den festen Empfänger kompakt mit Adresse und Teilnahmehinweis im Dialog", () => {
@@ -95,7 +115,7 @@ describe("campaign hero", () => {
 
     expect(markup).toContain("dein Mitglied des Bundestags");
     expect(markup).not.toContain("Fester Empfänger");
-    expect(markup).not.toContain("<dialog");
+    expect(markup.split("Warum Briefkampagne?")[0]).not.toContain("<dialog");
     expect(selectedMarkup).toContain("ein ausgewähltes Mitglied des Bundestags");
     expect(selectedMarkup).toContain("Kampagne mit ausgewählten MdBs");
   });
@@ -107,9 +127,11 @@ describe("campaign hero", () => {
       })
     );
 
+    const heroMarkup = markup.split("Warum Briefkampagne?")[0];
+
     expect(markup).toContain("Fester Empfänger</span>");
-    expect(markup).not.toContain('aria-haspopup="dialog"');
-    expect(markup).not.toContain("<dialog");
+    expect(heroMarkup).not.toContain('aria-haspopup="dialog"');
+    expect(heroMarkup).not.toContain("<dialog");
   });
 
   it("does not create a broken description link when no description exists", () => {

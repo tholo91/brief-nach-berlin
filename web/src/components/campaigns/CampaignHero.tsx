@@ -5,6 +5,7 @@ import { CampaignLogo } from "./CampaignLogo";
 import { getLandesregierungRecipient } from "@/lib/lookup/landesregierungRecipient";
 import { getCampaignFixedRecipient } from "@/lib/lookup/campaignFixedRecipient";
 import { CampaignFixedRecipientBadge } from "./CampaignFixedRecipientBadge";
+import { CampaignReportDialog } from "./CampaignReportDialog";
 
 type PublicCampaign = Pick<
   Campaign,
@@ -280,6 +281,7 @@ export function CampaignHero({ campaign }: { campaign: PublicCampaign }) {
             </details>
           ))}
         </div>
+        <CampaignReportDialog slug={campaign.slug} />
       </section>
     </CampaignBackground>
   );

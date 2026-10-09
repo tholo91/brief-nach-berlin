@@ -4,10 +4,11 @@ import type { Campaign } from "@/lib/campaigns/schema";
 import { CampaignBackground } from "./CampaignBackground";
 import { CampaignList, type CampaignListItem } from "./CampaignList";
 import { CampaignLogo } from "./CampaignLogo";
+import { CampaignReportDialog } from "./CampaignReportDialog";
 
 type EndedCampaign = Pick<
   Campaign,
-  "slug" | "title" | "creatorName" | "logoPath" | "letterCount"
+  "slug" | "title" | "creatorName" | "logoPath" | "letterCount" | "status"
 > & { endsAt: string };
 
 type CampaignEndedViewProps = {
@@ -89,6 +90,8 @@ export function CampaignEndedView({
         >
           Schreib deinen eigenen Brief nach Berlin
         </Link>
+
+        {campaign.status === "active" && <CampaignReportDialog slug={campaign.slug} />}
       </div>
     </CampaignBackground>
   );

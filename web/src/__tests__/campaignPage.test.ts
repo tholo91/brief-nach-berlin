@@ -14,6 +14,10 @@ jest.mock("next/link", () => ({
   default: ({ children, href }: { children: React.ReactNode; href: string }) =>
     createElement("a", { href }, children),
 }));
+jest.mock("@/lib/actions/reportCampaign", () => ({
+  reportCampaignAction: jest.fn(),
+}));
+
 jest.mock("@/components/campaigns/CampaignHero", () => ({
   CampaignHero: () => createElement("div", { "data-testid": "campaign-hero" }),
 }));
@@ -126,6 +130,7 @@ describe("campaign page end state", () => {
 
     expect(markup).toContain("Diese Kampagne ist seit 15. Januar 2026 beendet.");
     expect(markup).not.toContain("campaign-hero");
+    expect(markup).not.toContain("Stimmt was nicht?");
   });
 
   it("keeps a paused campaign without a past end date on the not-found page", async () => {
@@ -157,6 +162,7 @@ describe("campaign page end state", () => {
     expect(markup).toContain("Diese Kampagne ist seit 15. Januar 2026 beendet.");
     expect(markup).toContain("1.234 Briefe wurden über diese Kampagne formuliert.");
     expect(markup).toContain('href="/app"');
+    expect(markup).toContain("Stimmt was nicht?");
     expect(markup).toContain('href="/kampagne/andere-kampagne"');
     expect(markup).not.toContain("campaign-hero");
     expect(getRecentActiveCampaigns).toHaveBeenCalledWith(3);

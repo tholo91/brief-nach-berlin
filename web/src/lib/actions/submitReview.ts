@@ -13,6 +13,7 @@ import {
   POLITICAL_SELF_EFFICACY_VALUES,
   validatePoliticalReviewAnswers,
 } from "@/lib/feedback/politicalActivation";
+import { AGE_GROUP_VALUES } from "@/lib/feedback/ageGroup";
 import { checkRateLimit, getClientIp, hashIdentifier, LIMITS } from "@/lib/rateLimit";
 import type { LetterDebugPayload } from "@/lib/email/sendLetterEmail";
 
@@ -45,6 +46,7 @@ const reviewSchema = z.object({
     .enum(POLITICAL_POWERLESSNESS_FREQUENCY_VALUES)
     .nullable()
     .default(null),
+  ageGroup: z.enum(AGE_GROUP_VALUES).nullable().default(null),
   // Quick-Tap-Chips: multi-select, server-side allowlist via z.enum.
   // Max accommodates 7 negative + 3 fact-check + headroom.
   feedbackTags: z.array(feedbackTagSchema).max(12).optional(),
@@ -201,6 +203,7 @@ export async function submitReviewAction(
         political_self_efficacy: data.politicalSelfEfficacy,
         political_powerlessness_frequency:
           data.politicalPowerlessnessFrequency,
+        age_group: data.ageGroup,
         full_feedback_submitted: true,
         // Empty array → null so the row doesn't show "{}" in the DB for "no chips".
         feedback_tags: tagsForInsert.length ? tagsForInsert : null,

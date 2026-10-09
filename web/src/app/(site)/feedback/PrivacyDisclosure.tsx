@@ -48,6 +48,7 @@ export function PrivacyDisclosure() {
                 Deine Antworten zur politischen Handlungsfähigkeit und,
                 freiwillig, zu politischer Ohnmacht
               </li>
+              <li>Deine Altersgruppe, falls du sie angibst</li>
               <li>Deine E-Mail-Adresse (aus dem Link in der Mail)</li>
               <li>Eine technische Verknüpfung zum erstellten Brief</li>
               <li>

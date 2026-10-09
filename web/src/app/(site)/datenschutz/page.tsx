@@ -600,6 +600,7 @@ export default function Datenschutz() {
                 Optional: Ihre Angabe, wie häufig Sie politische Ohnmacht ohne
                 konkrete Handlungsmöglichkeit erleben
               </li>
+              <li>Optional: Ihre Altersgruppe (z. B. „45 bis 59“)</li>
               <li>
                 Verknüpfung zum erstellten Brief (intern: Politiker-ID, PLZ,
                 technische Brief-Metadaten zur Produktverbesserung)

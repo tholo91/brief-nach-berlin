@@ -28,6 +28,11 @@ import {
   type PoliticalPowerlessnessFrequency,
   type PoliticalSelfEfficacy,
 } from "@/lib/feedback/politicalActivation";
+import {
+  AGE_GROUP_LABELS,
+  AGE_GROUP_VALUES,
+  type AgeGroup,
+} from "@/lib/feedback/ageGroup";
 
 interface FeedbackFormProps {
   initialRating: number;
@@ -96,6 +101,7 @@ export function FeedbackForm({
     useState<PoliticalSelfEfficacy | null>(null);
   const [politicalPowerlessnessFrequency, setPoliticalPowerlessnessFrequency] =
     useState<PoliticalPowerlessnessFrequency | null>(null);
+  const [ageGroup, setAgeGroup] = useState<AgeGroup | null>(null);
   const [feedbackTags, setFeedbackTags] = useState<FeedbackTagSlug[]>([]);
   // Optional fields collapsed by default to keep the page lean.
   const [moreOpen, setMoreOpen] = useState(false);
@@ -215,6 +221,7 @@ export function FeedbackForm({
         letterSent,
         politicalSelfEfficacy,
         politicalPowerlessnessFrequency,
+        ageGroup,
         feedbackTags: feedbackTags.length ? feedbackTags : undefined,
         token,
         bypassRateLimit,
@@ -397,6 +404,31 @@ export function FeedbackForm({
               checked={politicalPowerlessnessFrequency === value}
               onSelect={() => setPoliticalPowerlessnessFrequency(value)}
               label={POLITICAL_POWERLESSNESS_FREQUENCY_LABELS[value]}
+            />
+          ))}
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend className="block font-body text-sm font-semibold text-warmgrau mb-1">
+          Wie alt bist du?{" "}
+          <span className="font-normal text-warmgrau/60">(optional)</span>
+        </legend>
+        <p className="font-body text-xs text-warmgrau/60 mb-3">
+          Hilft mir zu verstehen, wer Brief nach Berlin nutzt und wen ich noch nicht erreiche.
+        </p>
+        <div
+          role="radiogroup"
+          aria-label="Altersgruppe"
+          className="grid grid-cols-2 gap-2"
+        >
+          {AGE_GROUP_VALUES.map((value, index) => (
+            <SurveyChoice
+              key={value}
+              checked={ageGroup === value}
+              onSelect={() => setAgeGroup(value)}
+              label={AGE_GROUP_LABELS[value]}
+              wide={index === AGE_GROUP_VALUES.length - 1}
             />
           ))}
         </div>

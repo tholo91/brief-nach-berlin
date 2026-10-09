@@ -34,6 +34,18 @@ describe("email localization", () => {
   });
 
   it.each([
+    ["de", "Briefmarke drauf (0,95 EUR, ", "online kaufen</a>) + ab in den Briefkasten!"],
+    ["en", "Add a stamp (€0.95, ", "buy online</a>) + into the postbox!"],
+    ["tr", "Pul yapıştırın (0,95 €, ", "online satın al</a>) + posta kutusuna atın!"],
+  ] as const)("links the stamp purchase in step 3 for %s", (locale, lead, linkTail) => {
+    const html = buildEmailHtml(params(locale));
+
+    expect(html).toContain(lead);
+    expect(html).toContain(linkTail);
+    expect(html).toContain("deutschepost.de/de/m/mobile-briefmarke.html");
+  });
+
+  it.each([
     ["en", "How did you find your letter?", "<html lang=\"en\">", "Privacy policy (in German)"],
     ["tr", "Mektubunuzu nasıl buldunuz?", "<html lang=\"tr\">", "Gizlilik politikası (Almanca)"],
   ] as const)("marks German follow-up links in %s", (locale, subject, lang, germanLabel) => {

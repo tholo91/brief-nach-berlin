@@ -178,6 +178,7 @@ Recent decisions affecting current work:
 | 50 | Vorher-Kachel zurueck, Icons, Hover-Datum/KW im Verlauf, Taube statt Herz | 2026-10-09 | 25fc887 | — |
 | 261009-mxa | Unterseite /bundestag-besuch-kostenlos, PLZ-MdB-Karte, Treppe-Stufe 7 | 2026-10-09 | 654517f | [261009-mxa-unterseite-bundestag-besuch-kostenlos-mi](./quick/261009-mxa-unterseite-bundestag-besuch-kostenlos-mi/) |
 | 261009-pro | Karte zeigt alle PLZ (Pagination + 1h-Cache), neuer Text, Waben-Story | 2026-10-09 | 21e6857 | [261009-pro-karte-zeigt-alle-plz-pagination-1h-cache](./quick/261009-pro-karte-zeigt-alle-plz-pagination-1h-cache/) |
+| 261009-psc | Briefmarken-Link in Brief-Mail (online kaufen) + optionale Altersgruppe im Review | 2026-10-09 | uncommitted | [261009-psc-briefmarken-link-schaerfen-und-altersgru](./quick/261009-psc-briefmarken-link-schaerfen-und-altersgru/) |
 
 ## Session Continuity
 

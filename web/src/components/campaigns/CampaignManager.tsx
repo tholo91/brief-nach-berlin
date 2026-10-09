@@ -43,7 +43,7 @@ import {
   type Campaign,
   type CampaignTargetLevel,
 } from "@/lib/campaigns/schema";
-import { campaignPublicUrl, campaignShortUrl } from "@/lib/share";
+import { campaignCompactShortUrl, campaignPublicUrl, campaignShortUrl } from "@/lib/share";
 import {
   CampaignEndDatePicker,
   pickerValueFromEndsAt,
@@ -160,6 +160,7 @@ export function CampaignManager({
   const publicUrl = campaignPublicUrl(campaign.slug);
   // Root-level short links only resolve while the campaign is active.
   const shareUrlFor = campaign.status === "active" ? campaignShortUrl : campaignPublicUrl;
+  const compactUrlFor = campaign.status === "active" ? campaignCompactShortUrl : campaignPublicUrl;
   const compactSlug = compactCampaignSlug(campaign.slug);
   const hasCompactUrl = compactSlug !== campaign.slug;
   const liveSinceLabel = campaign.activatedAt
@@ -317,7 +318,7 @@ export function CampaignManager({
       <CampaignShareCard
         publicUrl={publicUrl}
         shareUrl={shareUrlFor(campaign.slug)}
-        compactUrl={hasCompactUrl ? shareUrlFor(compactSlug) : null}
+        compactUrl={hasCompactUrl ? compactUrlFor(compactSlug) : null}
         slug={campaign.slug}
         logoUrl={shownLogoUrl}
         linkInactive={!ended && campaign.status !== "active"}

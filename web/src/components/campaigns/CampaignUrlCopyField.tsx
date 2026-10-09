@@ -1,25 +1,13 @@
 "use client";
 
 import { useState } from "react";
+import { campaignLinkParts, campaignLinkText } from "@/lib/share";
 
 type CampaignUrlCopyFieldProps = {
   url: string;
   label?: string;
   variant?: "card" | "compact";
 };
-
-function displayParts(url: string, short: boolean): { prefix: string; slug: string } {
-  try {
-    const parsed = new URL(url);
-    const parts = parsed.pathname.split("/").filter(Boolean);
-    const slug = decodeURIComponent(parts.at(-1) ?? "");
-    const host = short ? parsed.hostname.replace(/^www\./, "") : parsed.hostname;
-    const prefix = [host, ...parts.slice(0, -1), ""].join("/");
-    return { prefix, slug };
-  } catch {
-    return { prefix: "", slug: url };
-  }
-}
 
 function copyTextWithFallback(text: string): boolean {
   const textarea = document.createElement("textarea");
@@ -91,19 +79,20 @@ export function CampaignUrlCopyField({
   variant = "card",
 }: CampaignUrlCopyFieldProps) {
   const [copied, setCopied] = useState(false);
-  const parts = displayParts(url, variant === "compact");
+  const parts = campaignLinkParts(url);
+  const copyText = variant === "compact" ? campaignLinkText(url) : url;
 
   async function copyUrl() {
     try {
       if (navigator.clipboard?.writeText) {
-        await navigator.clipboard.writeText(url);
-      } else if (!copyTextWithFallback(url)) {
+        await navigator.clipboard.writeText(copyText);
+      } else if (!copyTextWithFallback(copyText)) {
         throw new Error("Copy failed");
       }
       setCopied(true);
       window.setTimeout(() => setCopied(false), 2200);
     } catch {
-      setCopied(copyTextWithFallback(url));
+      setCopied(copyTextWithFallback(copyText));
       window.setTimeout(() => setCopied(false), 2200);
     }
   }

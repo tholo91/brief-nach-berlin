@@ -1,4 +1,4 @@
-import { APP_URL, SHARE_TEXT_CAUSE } from "@/lib/config";
+import { APP_URL, COMPACT_APP_URL, SHARE_TEXT_CAUSE } from "@/lib/config";
 import type { PoliticalLevel } from "@/lib/types/politician";
 
 type CampaignShareInput = {
@@ -25,6 +25,27 @@ export function campaignPublicUrl(slug: string): string {
 
 export function campaignShortUrl(slug: string): string {
   return `${APP_URL}/${encodeURIComponent(slug)}`;
+}
+
+export function campaignCompactShortUrl(slug: string): string {
+  return `${COMPACT_APP_URL}/${encodeURIComponent(slug)}`;
+}
+
+export function campaignLinkParts(url: string): { prefix: string; slug: string } {
+  try {
+    const parsed = new URL(url);
+    const parts = parsed.pathname.split("/").filter(Boolean);
+    const slug = decodeURIComponent(parts.at(-1) ?? "");
+    const prefix = [parsed.hostname, ...parts.slice(0, -1), ""].join("/");
+    return { prefix, slug };
+  } catch {
+    return { prefix: "", slug: url };
+  }
+}
+
+export function campaignLinkText(url: string): string {
+  const { prefix, slug } = campaignLinkParts(url);
+  return prefix + slug;
 }
 
 export function buildShareTarget(

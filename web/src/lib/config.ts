@@ -3,6 +3,7 @@ import { BRIEF_EMAIL } from "@/lib/contact";
 
 export const APP_NAME = "Brief-nach-Berlin" as const;
 export const APP_URL = "https://www.brief-nach-berlin.de" as const;
+export const COMPACT_APP_URL = "https://www.briefnachberlin.de" as const;
 export const APP_TAGLINE = "Deine Stimme zählt." as const;
 
 // Email

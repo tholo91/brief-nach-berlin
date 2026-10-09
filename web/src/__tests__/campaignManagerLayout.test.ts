@@ -19,6 +19,11 @@ import { CampaignShareCard } from "@/components/campaigns/CampaignShareCard";
 import { CampaignUrlCopyField } from "@/components/campaigns/CampaignUrlCopyField";
 import { CampaignManagerHeader } from "@/components/campaigns/CampaignManagerHeader";
 import type { Campaign } from "@/lib/campaigns/schema";
+import {
+  campaignCompactShortUrl,
+  campaignLinkParts,
+  campaignLinkText,
+} from "@/lib/share";
 
 const publicUrl = "https://brief-nach-berlin.de/kampagne/duisburg-retten";
 const contactHref = "mailto:kontakt@example.org?subject=Kampagne%20duisburg-retten";
@@ -187,9 +192,35 @@ describe("CampaignManagerHeader", () => {
   });
 });
 
+describe("campaign link helpers", () => {
+  it("shows the host with www and without protocol", () => {
+    expect(campaignLinkText("https://www.brief-nach-berlin.de/duisburg-retten")).toBe(
+      "www.brief-nach-berlin.de/duisburg-retten"
+    );
+    expect(campaignLinkText("https://www.brief-nach-berlin.de/kampagne/duisburg-retten")).toBe(
+      "www.brief-nach-berlin.de/kampagne/duisburg-retten"
+    );
+  });
+
+  it("builds the hyphen-free radio link on the second domain", () => {
+    expect(campaignCompactShortUrl("eegsonicht")).toBe("https://www.briefnachberlin.de/eegsonicht");
+    expect(campaignLinkText(campaignCompactShortUrl("eegsonicht"))).toBe(
+      "www.briefnachberlin.de/eegsonicht"
+    );
+  });
+
+  it("splits prefix and slug and falls back for invalid urls", () => {
+    expect(campaignLinkParts("https://www.briefnachberlin.de/eegsonicht")).toEqual({
+      prefix: "www.briefnachberlin.de/",
+      slug: "eegsonicht",
+    });
+    expect(campaignLinkText("kein link")).toBe("kein link");
+  });
+});
+
 describe("CampaignShareCard", () => {
   const shareUrl = "https://www.brief-nach-berlin.de/duisburg-retten";
-  const compactUrl = "https://www.brief-nach-berlin.de/duisburgretten";
+  const compactUrl = "https://www.briefnachberlin.de/duisburgretten";
 
   function renderShare(
     overrides: Partial<{ compactUrl: string | null; linkInactive: boolean }> = {}
@@ -216,11 +247,12 @@ describe("CampaignShareCard", () => {
     expect(markup).toContain("QR-Code herunterladen");
   });
 
-  it("shows the short links without https, www or /kampagne/", () => {
+  it("shows the short links with www and without https", () => {
     const markup = renderShare();
 
-    expect(markup).toContain(">brief-nach-berlin.de/<");
-    expect(markup).not.toContain(">www.");
+    expect(markup).toContain(">www.brief-nach-berlin.de/<");
+    expect(markup).toContain(">www.briefnachberlin.de/<");
+    expect(markup).not.toContain(">https://");
     expect(markup).not.toContain("https://www.brief-nach-berlin.de/duisburg-retten<");
   });
 
@@ -295,9 +327,12 @@ describe("CampaignManager layout", () => {
   }
 
   it("uses root short links only while the campaign is active", () => {
-    expect(renderManager(baseCampaign)).toContain("brief-nach-berlin.de/<");
+    const active = renderManager(baseCampaign);
+    expect(active).toContain(">www.brief-nach-berlin.de/<");
+    expect(active).toContain(">www.briefnachberlin.de/<");
     const paused = renderManager({ ...baseCampaign, status: "paused" });
-    expect(paused).toContain("brief-nach-berlin.de/kampagne/<");
+    expect(paused).toContain("www.brief-nach-berlin.de/kampagne/<");
+    expect(paused).not.toContain("briefnachberlin.de");
   });
 
   it("orders the sections: header, share, insights, edit with settings inside", () => {

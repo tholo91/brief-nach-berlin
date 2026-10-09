@@ -313,10 +313,6 @@ export async function POST(req: NextRequest) {
 
     // Send email and follow-up after the response
     after(async () => {
-      if (campaign && letterNumber !== undefined) {
-        await claimAndSendCampaignMilestone(campaign.slug);
-      }
-
       // Generation is optional metadata. The voluntary map contribution was
       // already accepted independently and remains valid if mail delivery fails.
       const finalized = await markLetterSignalGeneratedAction({ generationProof });
@@ -354,7 +350,6 @@ export async function POST(req: NextRequest) {
       const letterResult = await sendLetterEmail(params);
       if (!letterResult.success) {
         console.error("[brief-nach-berlin][after][letter] returned success=false");
-        return;
       }
 
       // Ziel: 9:45 Berlin-Zeit an Tag+3 (Frühstücks-Inbox statt nachts).
@@ -363,7 +358,7 @@ export async function POST(req: NextRequest) {
       // cross-instance-sicher, aber gut genug gegen ehrliche Mehrfach-Submissions.
       // Alle Empfänger-Ebenen bekommen den Followup (999.34): ohne ihn sind
       // Land-/Kommune-Reviews systematisch unterbewertet (2,3★ vs. Bund 3,3★).
-      if (process.env.BREVO_FOLLOWUP_ENABLED === "true") {
+      if (letterResult.success && process.env.BREVO_FOLLOWUP_ENABLED === "true") {
         const followupDedup = checkRateLimit(
           `followup:${hashIdentifier(data.email.toLowerCase())}`,
           1,
@@ -382,6 +377,11 @@ export async function POST(req: NextRequest) {
             console.error("[brief-nach-berlin][after][followup] returned success=false");
           }
         }
+      }
+
+      // Meilenstein zuletzt: ein Hänger bei Supabase oder Brevo soll die Brief-Mail nicht verzögern.
+      if (campaign && letterNumber !== undefined) {
+        await claimAndSendCampaignMilestone(campaign.slug);
       }
     });
 

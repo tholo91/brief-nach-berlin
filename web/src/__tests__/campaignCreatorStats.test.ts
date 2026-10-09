@@ -854,16 +854,26 @@ describe("CampaignCreatorStats rendering", () => {
     );
   }
 
-  it("renders Verlauf, strongest day, recipients, 4th tile and tag chips", () => {
+  it("renders Verlauf, strongest day, recipients, powerlessness context line and tag chips", () => {
     const markup = renderFull();
     expect(markup).toContain("Verlauf");
     expect(markup).toContain("Stärkster Tag: 30. Sept. mit 18 Briefen");
     expect(markup).toContain('title="30. Sept.: 18 Briefe"');
     expect(markup).toContain("Briefe pro Tag von 16. Sept. bis 8. Okt.");
     expect(markup).toContain("Geschrieben an: Bundestag-Abgeordnete 18, Landesregierung 6, Andere Empfänger 2");
-    expect(markup).toContain("wissen oft oder manchmal nicht");
+    expect(markup).toContain("Vorher wussten 100 % oft oder manchmal nicht");
+    expect(markup).not.toContain("wissen oft oder manchmal nicht");
+    expect(markup).toContain("lg:grid-cols-3");
     expect(markup).toContain("Was über die Briefe gesagt wird");
     expect(markup).toContain("Zu lang");
+  });
+
+  it("shows the rating as x,y/5 with a partially filled star bar", () => {
+    const markup = renderFull();
+    expect(markup).toMatch(/\d,\d\/5/);
+    expect(markup).toMatch(/aria-label="\d,\d von 5 Sternen"/);
+    expect(markup).toContain("text-lg");
+    expect(markup).toMatch(/style="width:\d+(\.\d+)?%"/);
   });
 
   it("keeps the weekly wording for spans over 28 days", () => {

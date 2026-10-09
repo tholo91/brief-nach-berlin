@@ -7,13 +7,23 @@ interface RatingStatProps {
   showDistribution?: boolean;
 }
 
-function StarBar({ rating, max = 5 }: { rating: number; max?: number }) {
+const STAR_SIZE_CLASS = { sm: "text-lg", lg: "text-3xl" } as const;
+
+export function StarBar({
+  rating,
+  max = 5,
+  size = "lg",
+}: {
+  rating: number;
+  max?: number;
+  size?: keyof typeof STAR_SIZE_CLASS;
+}) {
   return (
     <div className="flex gap-1">
       {Array.from({ length: max }, (_, i) => {
         const fill = Math.min(1, Math.max(0, rating - i));
         return (
-          <span key={i} className="relative inline-block text-3xl leading-none select-none">
+          <span key={i} className={`relative inline-block ${STAR_SIZE_CLASS[size]} leading-none select-none`}>
             <span className="text-warmgrau/20">★</span>
             {fill > 0 && (
               <span

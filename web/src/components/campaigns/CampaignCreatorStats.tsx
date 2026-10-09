@@ -1,5 +1,7 @@
+import type { ReactNode } from "react";
 import { BundeslandMap } from "@/components/campaigns/BundeslandMap";
 import { CreatorStatsRefresh } from "@/components/campaigns/CreatorStatsRefresh";
+import { StarBar } from "@/components/reviews/RatingStat";
 import type {
   CampaignCreatorStatsView,
   CreatorStatsKpi,
@@ -38,27 +40,20 @@ const SOURCE_SENTENCE =
 
 type TileProps = {
   value: string;
-  unit?: string;
   label: string;
   kpi: CreatorStatsKpi;
+  extra?: ReactNode;
 };
 
-function Tile({ value, unit, label, kpi }: TileProps) {
+function Tile({ value, label, kpi, extra }: TileProps) {
   const shown = kpi.status === "shown";
   return (
     <div className="grid grid-cols-[6rem_1fr] items-baseline gap-x-3 rounded-md border border-warmgrau/12 bg-creme/70 px-4 py-3 sm:flex sm:flex-col sm:py-4">
       <dd className="m-0 sm:order-1">
         {shown ? (
-          <>
-            <span className="font-typewriter text-2xl font-bold leading-none text-waldgruen-dark sm:text-3xl">
-              {value}
-            </span>
-            {unit && (
-              <span className="mt-1 block font-body text-xs font-semibold text-waldgruen-dark sm:ml-1.5 sm:mt-0 sm:inline sm:text-sm">
-                {unit}
-              </span>
-            )}
-          </>
+          <span className="font-typewriter text-2xl font-bold leading-none text-waldgruen-dark sm:text-3xl">
+            {value}
+          </span>
         ) : (
           <span
             aria-hidden="true"
@@ -69,6 +64,7 @@ function Tile({ value, unit, label, kpi }: TileProps) {
         )}
       </dd>
       <div className="sm:order-2 sm:mt-1">
+        {shown && extra}
         <dt
           className={`font-body text-sm leading-snug ${shown ? "text-warmgrau/80" : "text-warmgrau/55"}`}
         >
@@ -350,7 +346,13 @@ export function CampaignCreatorStats({
 
         {feedback.status === "ready" && (
           <div className="mt-5 border-t border-warmgrau/12 pt-4">
-            <dl className="m-0 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+            {feedback.powerlessness.status === "shown" && (
+              <p className="mb-3 max-w-xl font-body text-sm leading-relaxed text-warmgrau/80">
+                Vorher wussten {feedback.powerlessness.value} % oft oder
+                manchmal nicht, was sie politisch konkret tun können. Danach:
+              </p>
+            )}
+            <dl className="m-0 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
               <Tile
                 kpi={feedback.sendRate}
                 value={
@@ -364,11 +366,23 @@ export function CampaignCreatorStats({
                 kpi={feedback.averageRating}
                 value={
                   feedback.averageRating.status === "shown"
-                    ? ratingFormatter.format(feedback.averageRating.value)
+                    ? `${ratingFormatter.format(feedback.averageRating.value)}/5`
                     : ""
                 }
-                unit="von 5 Sternen"
                 label="Zufriedenheit mit dem fertigen Brief"
+                extra={
+                  feedback.averageRating.status === "shown" && (
+                    <span
+                      role="img"
+                      aria-label={`${ratingFormatter.format(feedback.averageRating.value)} von 5 Sternen`}
+                      className="mb-1.5 block sm:mb-2"
+                    >
+                      <span aria-hidden="true" className="block">
+                        <StarBar rating={feedback.averageRating.value} size="sm" />
+                      </span>
+                    </span>
+                  )
+                }
               />
               <Tile
                 kpi={feedback.selfEfficacy}
@@ -378,15 +392,6 @@ export function CampaignCreatorStats({
                     : ""
                 }
                 label="fühlen sich danach eher in der Lage, sich politisch einzubringen"
-              />
-              <Tile
-                kpi={feedback.powerlessness}
-                value={
-                  feedback.powerlessness.status === "shown"
-                    ? `${feedback.powerlessness.value} %`
-                    : ""
-                }
-                label="wissen oft oder manchmal nicht, was sie politisch konkret tun können"
               />
             </dl>
 

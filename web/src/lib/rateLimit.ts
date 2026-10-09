@@ -104,6 +104,8 @@ export const LIMITS = {
   // Error reports per IP: 5 per 10 minutes. A user clicking "Fehler melden" a
   // few times during one broken session is legitimate; more is noise.
   REPORT_ERROR_PER_IP: { max: 5, windowMs: 10 * 60_000 },
+  // Campaign reports per IP: 3 per hour. Each report mails a real creator.
+  REPORT_CAMPAIGN_PER_IP: { max: 3, windowMs: 60 * 60_000 },
 } as const;
 
 export async function getClientIp(): Promise<string> {

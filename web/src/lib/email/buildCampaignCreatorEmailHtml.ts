@@ -19,7 +19,14 @@ export type CampaignCreatorEmailKind =
   | "management_pending"
   | "management"
   | "transfer"
-  | "milestone";
+  | "milestone"
+  | "report";
+
+export interface CampaignReportEmailParams {
+  reasonLabel: string;
+  roleLabel: string;
+  message: string;
+}
 
 export interface CampaignMilestoneEmailParams {
   count: number;
@@ -37,6 +44,7 @@ export interface BuildCampaignCreatorEmailHtmlParams {
   creatorName?: string | null;
   campaignStatus?: "awaiting_approval" | "active" | "paused";
   milestone?: CampaignMilestoneEmailParams;
+  report?: CampaignReportEmailParams;
 }
 
 function escapeHtml(text: string): string {
@@ -215,6 +223,64 @@ function buildMilestoneEmailHtml(
 </html>`;
 }
 
+function buildCampaignReportEmailHtml(
+  params: BuildCampaignCreatorEmailHtmlParams,
+  report: CampaignReportEmailParams
+): string {
+  const title = escapeHtml(params.campaignTitle);
+  const creatorName = params.creatorName?.trim();
+  const greeting = creatorName ? `Moin ${escapeHtml(creatorName)},` : "Moin,";
+  const message = escapeHtml(report.message).replace(/\r?\n/g, "<br>");
+  const row = (label: string, value: string) =>
+    `<p style="margin:0 0 4px;font-family:'Courier New',Courier,monospace;font-size:12px;font-weight:bold;text-transform:uppercase;color:#2D6A4F;">${label}</p>
+                <p style="margin:0 0 14px;font-size:15px;line-height:1.6;color:#1B4332;">${value}</p>`;
+
+  return `<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  ${HEAD_STYLE}
+</head>
+<body style="margin:0;padding:0;background-color:#FAF8F5;font-family:Georgia,'Times New Roman',serif;color:#3D3D3D;">
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color:#FAF8F5;">
+    <tr>
+      <td align="center" style="padding:24px 12px;">
+        <table role="presentation" width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;background-color:#ffffff;border-collapse:collapse;">
+          ${STRIPE_ROW}
+          <tr>
+            <td class="bnb-pad" style="padding:28px 28px 8px;text-align:center;">
+              <p style="margin:0 0 8px;font-family:'Courier New',Courier,monospace;font-size:13px;font-weight:bold;letter-spacing:1px;text-transform:uppercase;color:#2D6A4F;">${APP_NAME}</p>
+              <h1 style="margin:0;font-size:24px;line-height:1.25;color:#1B4332;">Hinweis zu deiner Kampagne</h1>
+            </td>
+          </tr>
+          <tr>
+            <td class="bnb-pad" style="padding:18px 28px 0;">
+              <p style="margin:0 0 16px;font-size:16px;line-height:1.65;">${greeting}</p>
+              <p style="margin:0 0 18px;font-size:16px;line-height:1.65;">Jemand hat auf der Kampagnenseite von <a href="${params.campaignUrl}" target="_blank" rel="noopener noreferrer" style="color:#2D6A4F;text-decoration:underline;">${title}</a> auf &bdquo;Stimmt was nicht?&ldquo; geklickt und Folgendes geschrieben:</p>
+              <div style="margin:0 0 22px;padding:16px 18px;background-color:#FAF8F5;border:1px solid #E0DCD7;border-radius:4px;">
+                ${row("Was stimmt nicht", escapeHtml(report.reasonLabel))}
+                ${row("Meldet als", escapeHtml(report.roleLabel))}
+                ${row("Nachricht", message)}
+              </div>
+              <p style="margin:0 0 26px;font-size:16px;line-height:1.65;">Ich melde mich, falls etwas zu tun ist.</p>
+            </td>
+          </tr>
+          ${STRIPE_ROW}
+          <tr>
+            <td class="bnb-pad" style="padding:22px 28px 26px;background-color:#FAF8F5;text-align:center;">
+              <p style="margin:0 0 6px;font-size:12px;line-height:1.5;color:#999999;"><a href="${APP_URL}" target="_blank" rel="noopener noreferrer" style="color:#2D6A4F;text-decoration:none;">Brief-nach-Berlin</a> · Kampagnenzugang</p>
+              <p style="margin:0;font-size:12px;line-height:1.5;color:#aaaaaa;"><a href="${APP_URL}/impressum" target="_blank" rel="noopener noreferrer" style="color:#888888;text-decoration:underline;">Impressum</a> · <a href="${APP_URL}/datenschutz" target="_blank" rel="noopener noreferrer" style="color:#888888;text-decoration:underline;">Datenschutz</a> · <a href="${CAMPAIGN_CREATOR_FEEDBACK_URL}" target="_blank" rel="noopener noreferrer" style="color:#888888;text-decoration:underline;">Feedback</a></p>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>`;
+}
+
 export function buildCampaignCreatorEmailHtml(
   params: BuildCampaignCreatorEmailHtmlParams
 ): string {
@@ -223,6 +289,12 @@ export function buildCampaignCreatorEmailHtml(
       throw new Error("milestone params are required for kind milestone");
     }
     return buildMilestoneEmailHtml(params, params.milestone);
+  }
+  if (params.kind === "report") {
+    if (!params.report) {
+      throw new Error("report params are required for kind report");
+    }
+    return buildCampaignReportEmailHtml(params, params.report);
   }
   const title = escapeHtml(params.campaignTitle);
   const creatorName = params.creatorName?.trim();

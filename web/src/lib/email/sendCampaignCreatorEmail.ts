@@ -1,9 +1,10 @@
 import { BrevoClient } from "@getbrevo/brevo";
-import { APP_NAME, APP_URL, EMAIL_SENDER_NAME } from "@/lib/config";
+import { APP_NAME, APP_URL, EMAIL_SENDER_NAME, FOUNDER_EMAIL } from "@/lib/config";
 import { formatLetterCount } from "@/lib/campaigns/milestones";
 import {
   buildCampaignCreatorEmailHtml,
   type CampaignCreatorEmailKind,
+  type CampaignReportEmailParams,
 } from "./buildCampaignCreatorEmailHtml";
 
 const apiKey = process.env.BREVO_API_KEY;
@@ -12,23 +13,33 @@ if (!apiKey) {
 }
 const brevo = new BrevoClient({ apiKey });
 
-export interface SendCampaignCreatorEmailParams {
-  kind: CampaignCreatorEmailKind;
+interface SendCampaignCreatorEmailBase {
   recipientEmail: string;
   campaignTitle: string;
   slug: string;
-  token: string;
   creatorName?: string | null;
   adminCopy?: boolean;
   campaignStatus?: "awaiting_approval" | "active" | "paused";
   milestone?: { count: number; milestones: number[] };
 }
 
+export type SendCampaignCreatorEmailParams =
+  | (SendCampaignCreatorEmailBase & {
+      kind: Exclude<CampaignCreatorEmailKind, "report">;
+      token: string;
+    })
+  | (SendCampaignCreatorEmailBase & {
+      kind: "report";
+      report: CampaignReportEmailParams;
+    });
+
 function campaignUrl(slug: string): string {
   return `${APP_URL}/kampagne/${slug}`;
 }
 
-function actionUrl(kind: CampaignCreatorEmailKind, token: string): string {
+function actionUrl(params: SendCampaignCreatorEmailParams): string {
+  if (params.kind === "report") return campaignUrl(params.slug);
+  const { kind, token } = params;
   if (kind === "verify_email") {
     return `${APP_URL}/kampagne/verifizieren?token=${encodeURIComponent(token)}`;
   }
@@ -57,18 +68,21 @@ export async function sendCampaignCreatorEmail(
           ? `${APP_NAME}: Kampagne bestätigen`
           : params.kind === "management_pending"
             ? `${APP_NAME}: Kampagne wartet auf Freigabe`
-            : params.kind === "milestone" && params.milestone
-              ? `${formatLetterCount(params.milestone.count)} Briefe für „${params.campaignTitle}“`
-              : `${APP_NAME}: Kampagne verwalten`,
+            : params.kind === "report"
+              ? `${APP_NAME}: Hinweis zu deiner Kampagne`
+              : params.kind === "milestone" && params.milestone
+                ? `${formatLetterCount(params.milestone.count)} Briefe für „${params.campaignTitle}“`
+                : `${APP_NAME}: Kampagne verwalten`,
       htmlContent: buildCampaignCreatorEmailHtml({
         kind: params.kind,
         campaignTitle: params.campaignTitle,
         slug: params.slug,
         campaignUrl: campaignUrl(params.slug),
-        actionUrl: actionUrl(params.kind, params.token),
+        actionUrl: actionUrl(params),
         creatorName: params.creatorName,
         campaignStatus: params.campaignStatus,
         milestone,
+        report: params.kind === "report" ? params.report : undefined,
       }),
       sender: {
         name: EMAIL_SENDER_NAME,
@@ -79,6 +93,7 @@ export async function sendCampaignCreatorEmail(
         params.adminCopy && process.env.THOMAS_MAIL
           ? [{ email: process.env.THOMAS_MAIL }]
           : undefined,
+      replyTo: params.kind === "report" ? { email: FOUNDER_EMAIL } : undefined,
       tags: [`campaign-${params.kind}`],
     });
     return { success: true, messageId: result.messageId };

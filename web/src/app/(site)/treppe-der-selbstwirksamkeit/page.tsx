@@ -8,10 +8,10 @@ import { FactCallout } from "@/components/editorial/FactCallout";
 
 const TITLE = "Die Treppe der politischen Selbstwirksamkeit";
 const DESCRIPTION =
-  "Wählen alle vier Jahre ist die unterste Stufe. Hier sind zehn konkrete Wege, wie du als Bürgerin oder Bürger in Deutschland politisch wirklich etwas bewegst, sortiert nach Aufwand. Vom 1-Klick-Mitzeichnen einer Petition bis zum Gründen einer eigenen Bürgerinitiative.";
+  "Wählen alle vier Jahre ist die unterste Stufe. Hier sind elf konkrete Wege, wie du als Bürgerin oder Bürger in Deutschland politisch wirklich etwas bewegst, sortiert nach Aufwand. Vom 1-Klick-Mitzeichnen einer Petition bis zum Gründen einer eigenen Bürgerinitiative.";
 const URL_PATH = "/treppe-der-selbstwirksamkeit";
 const PUBLISHED = "2026-05-20";
-const MODIFIED = "2026-09-09";
+const MODIFIED = "2026-10-09";
 
 export const metadata: Metadata = {
   title: `${TITLE} | Brief-nach-Berlin`,
@@ -36,7 +36,7 @@ export const metadata: Metadata = {
 const faqs = [
   {
     q: "Was kann ich politisch tun, außer wählen?",
-    a: "Zehn Stufen, sortiert nach Aufwand: 1) Wählen, 2) Petition mitzeichnen, 3) Brief an Abgeordnete schreiben, 4) Leserbrief schreiben, 5) Demonstration besuchen, 6) Bürgersprechstunde besuchen, 7) In Verein oder Initiative mitwirken, 8) Parteimitglied werden, 9) Eigene Bürgerinitiative gründen, 10) Selbst kandidieren.",
+    a: "Elf Stufen, sortiert nach Aufwand: 1) Wählen, 2) Petition mitzeichnen, 3) Brief an Abgeordnete schreiben, 4) Eigene Petition starten, 5) Leserbrief schreiben, 6) Bürgersprechstunde besuchen, 7) Dich vom Abgeordneten nach Berlin einladen lassen, 8) Landtagsabgeordnete anrufen, 9) In Verein oder Initiative mitmachen, 10) Kommunal kandidieren, 11) Eigene Bürgerinitiative gründen.",
   },
   {
     q: "Was ist politische Selbstwirksamkeit?",
@@ -210,6 +210,27 @@ const steps: Step[] = [
   },
   {
     n: 7,
+    title: "Dich von deinem Abgeordneten nach Berlin einladen lassen",
+    effort: "ein Anruf, dann Warteliste",
+    body: (
+      <p>
+        Dein Bundestagsabgeordneter kann dich zu einer Informationsfahrt des
+        Bundespresseamts einladen. Fahrt, Hotel und ein Teil der Verpflegung
+        sind bezahlt, du siehst den Bundestag von innen und sprichst mit der
+        Politik, die dort Gesetze macht. Es gibt keinen Anspruch, deshalb
+        lohnt es sich, früh im Wahlkreisbüro nachzufragen.{" "}
+        <Link
+          href="/bundestag-besuch-kostenlos"
+          className="text-waldgruen hover:underline font-semibold"
+        >
+          So fragst du an
+        </Link>
+        .
+      </p>
+    ),
+  },
+  {
+    n: 8,
     title: "Bei deiner Landtagsabgeordneten anrufen oder vorbeigehen",
     effort: "20 Minuten",
     body: (
@@ -230,7 +251,7 @@ const steps: Step[] = [
     ),
   },
   {
-    n: 8,
+    n: 9,
     title:
       "In einem Verein, einer Bürgerinitiative oder einem Ortsverband mitmachen",
     effort: "ein bis zwei Abende im Monat",
@@ -247,7 +268,7 @@ const steps: Step[] = [
     ),
   },
   {
-    n: 9,
+    n: 10,
     title: "Selbst auf kommunaler Ebene kandidieren",
     effort: "einige Wochen Vorbereitung, ein Wahlkampf",
     body: (
@@ -263,7 +284,7 @@ const steps: Step[] = [
     ),
   },
   {
-    n: 10,
+    n: 11,
     title:
       "Eine eigene Bürgerinitiative, einen Verein oder eine Bewegung gründen",
     effort: "Monate bis Jahre",
@@ -302,7 +323,7 @@ export default function TreppePage() {
         </Link>
 
           <p className="font-typewriter text-sm font-bold tracking-widest uppercase text-waldgruen/60 mb-3">
-            10 Stufen
+            11 Stufen
           </p>
           <h1 className="font-body text-3xl md:text-5xl font-bold text-waldgruen-dark tracking-tight mb-6 text-balance">
             Die Treppe der politischen Selbstwirksamkeit
@@ -310,7 +331,7 @@ export default function TreppePage() {
 
           <p className="font-handwriting text-xl md:text-2xl text-warmgrau leading-relaxed mb-2 text-pretty">
             Wählen alle vier Jahre ist nicht das Ende der Geschichte, sondern der
-            Anfang. Hier sind zehn konkrete Wege, wie du als Bürgerin oder Bürger
+            Anfang. Hier sind elf konkrete Wege, wie du als Bürgerin oder Bürger
             in Deutschland politisch wirklich etwas bewegst, sortiert nach Aufwand.
           </p>
 

@@ -810,8 +810,9 @@ export default function Datenschutz() {
             <p className="mb-3">
               Auf der Verwaltungsseite sehen Creator, wie ihre Kampagne
               ankommt. Aus den freiwilligen Themensignalen (siehe Abschnitt 18)
-              erhalten sie nur Summen: Briefe pro Bundesland, Briefe pro Woche
-              und, falls es mehrere gibt, die Art der Empfänger. Diese Zahlen
+              erhalten sie nur Summen: Briefe pro Bundesland,
+              Briefe pro Tag (nach den ersten vier Wochen pro Woche) und, falls
+              es mehrere gibt, die Art der Empfänger. Diese Zahlen
               erscheinen erst ab 10 geteilten Briefen; Bundesländer mit weniger
               als 5 Briefen werden zu „Weitere Bundesländer“ zusammengefasst.
               PLZ, E-Mail-Adresse, Brief-ID, Themen und genaue Zeitpunkte sehen
@@ -825,7 +826,7 @@ export default function Datenschutz() {
             </p>
           </div>
 
-          <p className="text-sm text-warmgrau/50">Stand: 8. Oktober 2026</p>
+          <p className="text-sm text-warmgrau/50">Stand: 9. Oktober 2026</p>
         </div>
       </div>
     </div>

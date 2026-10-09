@@ -3,7 +3,7 @@
 **Verantwortlicher:** Thomas Lorenz, Zur Plangemühle 5, 47198 Duisburg, Deutschland
 **Kontakt:** Brief-nach-Berlin@posteo.de
 **Dienst:** Brief-nach-Berlin (brief-nach-berlin.de)
-**Stand:** 2026-10-08
+**Stand:** 2026-10-09
 
 Es ist kein Datenschutzbeauftragter bestellt (keine Pflicht nach § 38 BDSG, da unter 20 Personen mit der automatisierten Verarbeitung beschäftigt; keine Kerntätigkeit i.S.v. Art. 37 DSGVO).
 
@@ -100,7 +100,7 @@ Es ist kein Datenschutzbeauftragter bestellt (keine Pflicht nach § 38 BDSG, da 
 | Betroffenenrechte | Widerruf und Löschung über den Link „Meine gespeicherten Daten löschen“ in der Feedback-Mail. Die vorbefüllte E-Mail muss von der betroffenen Person abgesendet werden. Die Wartungsroutine zeigt zuerst einen Dry-Run und löscht erst nach gesonderter Bestätigung Reviews und Themensignale. |
 | Technische Sicherheit | Zufällige `letter_id`; HMAC-Verknüpfung zur E-Mail; kurzlebige signierte Kontexte; serverseitige Prüfung der beim Opt-in übermittelten Klartext-E-Mail; Service-Role-Zugriff; `ENABLE/FORCE RLS`; vollständige Revokes für `anon`, `authenticated` und `PUBLIC`; keine öffentliche Rohdaten-View. |
 | Öffentliche Nutzung | Ab dem ersten freiwilligen Beitrag erscheint ein projizierter Punkt am ungefähren Mittelpunkt der fünfstelligen PLZ. Die API gibt nur Koordinaten, aggregierte Anzahl und Summen aus, aber keine PLZ, E-Mail, Themen, `letter_id` oder Einzelzeitpunkte. Die Position kann die ungefähre PLZ-Region erkennen lassen. |
-| Anzeige für Kampagnen-Creator | Kampagnen-Creator sehen auf der token-geschützten Seite /kampagne/verwalten für ihre eigene Kampagne nur Anzahlen pro Bundesland, Briefe pro Kalenderwoche und, wenn gemischt, die Verteilung der Empfängerart. Unter 10 Signalen für die Kampagne wird nichts angezeigt. Bundesländer und Empfängerarten mit weniger als 5 Signalen werden zu „Weitere Bundesländer“ bzw. „Andere Empfänger“ zusammengefasst. PLZ, PLZ-Präfix, E-Mail, `letter_id`, Themen und Einzelzeitpunkte werden weder abgefragt noch angezeigt; die Server-Abfrage nutzt eine feste Spaltenliste (`bundesland_key`, `recipient_kind`, `generated_at`, `created_at`). |
+| Anzeige für Kampagnen-Creator | Kampagnen-Creator sehen auf der token-geschützten Seite /kampagne/verwalten für ihre eigene Kampagne nur Anzahlen pro Bundesland, Briefe pro Kalendertag (solange seit dem ersten Brief höchstens 28 Tage vergangen sind, danach pro Kalenderwoche) und, wenn gemischt, die Verteilung der Empfängerart. Unter 10 Signalen für die Kampagne wird nichts angezeigt. Bundesländer und Empfängerarten mit weniger als 5 Signalen werden zu „Weitere Bundesländer“ bzw. „Andere Empfänger“ zusammengefasst. PLZ, PLZ-Präfix, E-Mail, `letter_id`, Themen und Einzelzeitpunkte werden weder abgefragt noch angezeigt; die Server-Abfrage nutzt eine feste Spaltenliste (`bundesland_key`, `recipient_kind`, `generated_at`, `created_at`). |
 
 ---
 

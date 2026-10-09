@@ -2,6 +2,7 @@ import { BundeslandMap } from "@/components/campaigns/BundeslandMap";
 import type {
   CampaignCreatorStatsView,
   CreatorStatsKpi,
+  CreatorTimeline,
 } from "@/lib/campaigns/creatorStats";
 
 const numberFormatter = new Intl.NumberFormat("de-DE");
@@ -10,14 +11,14 @@ const ratingFormatter = new Intl.NumberFormat("de-DE", {
   maximumFractionDigits: 1,
 });
 
-const weekFormatter = new Intl.DateTimeFormat("de-DE", {
+const dateFormatter = new Intl.DateTimeFormat("de-DE", {
   day: "numeric",
   month: "short",
   timeZone: "UTC",
 });
 
-function weekLabel(weekStart: string) {
-  return weekFormatter.format(new Date(`${weekStart}T00:00:00Z`));
+function dateLabel(isoDate: string) {
+  return dateFormatter.format(new Date(`${isoDate}T00:00:00Z`));
 }
 
 function lettersLabel(count: number) {
@@ -83,26 +84,33 @@ function Tile({ value, unit, label, kpi }: TileProps) {
 }
 
 type SignalsView = CampaignCreatorStatsView["signals"];
-type ReadySignals = Extract<SignalsView, { status: "ready" }>;
 
-function Timeline({ signals }: { signals: ReadySignals }) {
-  const { weeks, peakWeek } = signals;
-  if (!peakWeek || weeks.length === 0) {
+function Timeline({ timeline }: { timeline: CreatorTimeline }) {
+  if (timeline.status !== "ready") {
     return (
       <div>
         <h3 className="font-typewriter text-base font-bold text-waldgruen-dark">
           Verlauf
         </h3>
         <p className="mt-3 font-body text-sm leading-relaxed text-warmgrau/70">
-          Zu diesen Briefen gibt es noch keine Wochenzahlen.
+          {timeline.status === "pending"
+            ? "Der Verlauf erscheint ab dem dritten Tag."
+            : "Zu diesen Briefen gibt es noch keine Zahlen für den Verlauf."}
         </p>
       </div>
     );
   }
 
-  const summary = `Stärkste Woche: ab ${weekLabel(peakWeek.weekStart)} mit ${lettersLabelDative(peakWeek.count)}`;
-  const firstWeek = weeks[0];
-  const lastWeek = weeks[weeks.length - 1];
+  const { granularity, buckets, peak } = timeline;
+  const daily = granularity === "day";
+  const summary = daily
+    ? `Stärkster Tag: ${dateLabel(peak.start)} mit ${lettersLabelDative(peak.count)}`
+    : `Stärkste Woche: ab ${dateLabel(peak.start)} mit ${lettersLabelDative(peak.count)}`;
+  const first = buckets[0];
+  const last = buckets[buckets.length - 1];
+  const unitLabel = daily ? "Briefe pro Tag" : "Briefe pro Woche";
+  const bucketLabel = (start: string) =>
+    daily ? dateLabel(start) : `Woche ab ${dateLabel(start)}`;
 
   return (
     <div className="flex h-full flex-col">
@@ -111,34 +119,34 @@ function Timeline({ signals }: { signals: ReadySignals }) {
       </h3>
       <div
         role="img"
-        aria-label={`Briefe pro Woche von ${weekLabel(firstWeek.weekStart)} bis ${weekLabel(lastWeek.weekStart)} ${summary}`}
+        aria-label={`${unitLabel} von ${dateLabel(first.start)} bis ${dateLabel(last.start)} ${summary}`}
         className="mt-3 flex min-h-24 flex-1 items-end justify-end gap-0.5"
       >
-        {weeks.map((week) => {
-          const isPeak = week.weekStart === peakWeek.weekStart;
-          return week.count === 0 ? (
+        {buckets.map((bucket) => {
+          const isPeak = bucket.start === peak.start;
+          return bucket.count === 0 ? (
             <div
-              key={week.weekStart}
-              title={`Woche ab ${weekLabel(week.weekStart)}: 0 Briefe`}
+              key={bucket.start}
+              title={`${bucketLabel(bucket.start)}: 0 Briefe`}
               className="h-px max-w-6 flex-1 bg-warmgrau/15"
             />
           ) : (
             <div
-              key={week.weekStart}
-              title={`Woche ab ${weekLabel(week.weekStart)}: ${lettersLabel(week.count)}`}
+              key={bucket.start}
+              title={`${bucketLabel(bucket.start)}: ${lettersLabel(bucket.count)}`}
               className={`max-w-6 flex-1 rounded-t-sm ${isPeak ? "bg-waldgruen" : "bg-waldgruen/35"}`}
-              style={{ height: `${Math.max(4, Math.round((week.count / peakWeek.count) * 100))}%` }}
+              style={{ height: `${Math.max(4, Math.round((bucket.count / peak.count) * 100))}%` }}
             />
           );
         })}
       </div>
-      {weeks.length > 1 && (
+      {buckets.length > 1 && (
         <div
           aria-hidden="true"
           className="mt-1.5 flex justify-between font-body text-xs text-warmgrau/60"
         >
-          <span>{weekLabel(firstWeek.weekStart)}</span>
-          <span>{weekLabel(lastWeek.weekStart)}</span>
+          <span>{dateLabel(first.start)}</span>
+          <span>{dateLabel(last.start)}</span>
         </div>
       )}
       <p className="mt-2 font-body text-sm text-warmgrau/85">{summary}</p>
@@ -164,8 +172,7 @@ function OriginSection({ signals }: { signals: SignalsView }) {
         </h3>
         <p className="mt-2 max-w-xl font-body text-base leading-relaxed text-warmgrau/85">
           Ab {signals.threshold} Briefen mit Kartenfreigabe siehst du hier, aus
-          welchen Bundesländern geschrieben wird und in welchen Wochen am meisten
-          los war.
+          welchen Bundesländern geschrieben wird und wann am meisten los war.
         </p>
         <div className="mt-4 max-w-xl">
           <p className="font-body text-sm font-semibold text-waldgruen-dark">
@@ -220,7 +227,7 @@ function OriginSection({ signals }: { signals: SignalsView }) {
             </p>
           )}
         </div>
-        <Timeline signals={signals} />
+        <Timeline timeline={signals.timeline} />
       </div>
     </div>
   );

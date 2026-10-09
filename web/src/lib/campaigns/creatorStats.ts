@@ -27,6 +27,8 @@ export const CREATOR_REGION_MIN_BUCKET = 5;
 export const CREATOR_STATS_SIGNAL_COLUMNS =
   "bundesland_key,recipient_kind,generated_at,created_at";
 export const CREATOR_TIMELINE_MAX_WEEKS = 52;
+export const CREATOR_TIMELINE_DAILY_MAX_DAYS = 28;
+export const CREATOR_TIMELINE_MIN_DAYS = 3;
 export const CREATOR_TAG_MIN_COUNT = 5;
 export const CREATOR_TAG_LIMIT = 6;
 const OTHER_REGIONS_LABEL = "Weitere Bundesländer";
@@ -79,7 +81,17 @@ export type CreatorStatsKpi =
   | { status: "shown"; value: number; responses: number }
   | { status: "too_few"; responses: number };
 
-export type CreatorWeekBucket = { weekStart: string; count: number };
+export type CreatorTimelineBucket = { start: string; count: number };
+
+export type CreatorTimeline =
+  | { status: "pending" }
+  | { status: "empty" }
+  | {
+      status: "ready";
+      granularity: "day" | "week";
+      buckets: CreatorTimelineBucket[];
+      peak: CreatorTimelineBucket;
+    };
 
 export type CreatorRecipientBucket = { label: string; count: number };
 
@@ -107,8 +119,7 @@ export type CampaignCreatorStatsView = {
         signals: number;
         regions: CreatorRegionBucket[];
         recipients: CreatorRecipientBucket[] | null;
-        weeks: CreatorWeekBucket[];
-        peakWeek: CreatorWeekBucket | null;
+        timeline: CreatorTimeline;
       };
   feedback:
     | { status: "unavailable" }
@@ -253,50 +264,68 @@ const berlinDayFormatter = new Intl.DateTimeFormat("en-CA", {
   day: "2-digit",
 });
 
-function berlinMondayMs(time: number): number {
+function berlinDayMs(time: number): number {
   const parts = berlinDayFormatter.formatToParts(new Date(time));
   const pick = (type: string) =>
     Number(parts.find((part) => part.type === type)?.value);
-  const day = Date.UTC(pick("year"), pick("month") - 1, pick("day"));
-  const weekday = new Date(day).getUTCDay();
-  return day - ((weekday + 6) % 7) * DAY_MS;
+  return Date.UTC(pick("year"), pick("month") - 1, pick("day"));
+}
+
+function mondayOf(dayMs: number): number {
+  return dayMs - ((new Date(dayMs).getUTCDay() + 6) % 7) * DAY_MS;
 }
 
 function isoDay(ms: number): string {
   return new Date(ms).toISOString().slice(0, 10);
 }
 
-export function buildWeeklySeries(
+export function buildTimeline(
   rows: CampaignSignalRow[],
   { now, ended }: { now: Date; ended: boolean },
-): { weeks: CreatorWeekBucket[]; peakWeek: CreatorWeekBucket | null } {
-  const perWeek = new Map<number, number>();
+): CreatorTimeline {
+  const perDay = new Map<number, number>();
   for (const row of rows) {
     const time = Date.parse(row.generated_at ?? row.created_at ?? "");
     if (!Number.isFinite(time)) continue;
-    const monday = berlinMondayMs(time);
-    perWeek.set(monday, (perWeek.get(monday) ?? 0) + 1);
+    const day = berlinDayMs(time);
+    perDay.set(day, (perDay.get(day) ?? 0) + 1);
+  }
+  if (perDay.size === 0) return { status: "empty" };
+
+  const dataDays = [...perDay.keys()];
+  const firstDay = Math.min(...dataDays);
+  const lastDay = Math.max(...dataDays, ...(ended ? [] : [berlinDayMs(now.getTime())]));
+  const spanDays = Math.round((lastDay - firstDay) / DAY_MS) + 1;
+  if (!ended && spanDays < CREATOR_TIMELINE_MIN_DAYS) return { status: "pending" };
+
+  let granularity: "day" | "week";
+  let buckets: CreatorTimelineBucket[] = [];
+  if (spanDays <= CREATOR_TIMELINE_DAILY_MAX_DAYS) {
+    granularity = "day";
+    for (let day = firstDay; day <= lastDay; day += DAY_MS) {
+      buckets.push({ start: isoDay(day), count: perDay.get(day) ?? 0 });
+    }
+  } else {
+    granularity = "week";
+    const perWeek = new Map<number, number>();
+    for (const [day, count] of perDay) {
+      const monday = mondayOf(day);
+      perWeek.set(monday, (perWeek.get(monday) ?? 0) + count);
+    }
+    for (let week = mondayOf(firstDay); week <= mondayOf(lastDay); week += 7 * DAY_MS) {
+      buckets.push({ start: isoDay(week), count: perWeek.get(week) ?? 0 });
+    }
+    buckets = buckets.slice(-CREATOR_TIMELINE_MAX_WEEKS);
   }
 
-  const dataWeeks = [...perWeek.keys()];
-  if (!ended) dataWeeks.push(berlinMondayMs(now.getTime()));
-  if (dataWeeks.length === 0) return { weeks: [], peakWeek: null };
-
-  const first = Math.min(...dataWeeks);
-  const last = Math.max(...dataWeeks);
-  const weeks: CreatorWeekBucket[] = [];
-  for (let week = first; week <= last; week += 7 * DAY_MS) {
-    weeks.push({ weekStart: isoDay(week), count: perWeek.get(week) ?? 0 });
-  }
-  const capped = weeks.slice(-CREATOR_TIMELINE_MAX_WEEKS);
-
-  let peakWeek: CreatorWeekBucket | null = null;
-  for (const week of capped) {
-    if (week.count > 0 && (peakWeek === null || week.count >= peakWeek.count)) {
-      peakWeek = week;
+  let peak: CreatorTimelineBucket | null = null;
+  for (const bucket of buckets) {
+    if (bucket.count > 0 && (peak === null || bucket.count >= peak.count)) {
+      peak = bucket;
     }
   }
-  return { weeks: capped, peakWeek };
+  if (peak === null) return { status: "empty" };
+  return { status: "ready", granularity, buckets, peak };
 }
 
 function buildTags(
@@ -331,7 +360,7 @@ function buildSignals(
     signals,
     regions: bucketRegions(signalRows),
     recipients: bucketRecipients(signalRows),
-    ...buildWeeklySeries(signalRows, { now, ended }),
+    timeline: buildTimeline(signalRows, { now, ended }),
   };
 }
 

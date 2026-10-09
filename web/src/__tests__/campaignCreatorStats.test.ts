@@ -4,7 +4,7 @@ import {
   bucketRecipients,
   bucketRegions,
   buildCampaignCreatorStats,
-  buildWeeklySeries,
+  buildTimeline,
   CREATOR_STATS_REVIEW_COLUMNS,
   CREATOR_STATS_SIGNAL_COLUMNS,
   getCampaignCreatorStats,
@@ -314,7 +314,7 @@ describe("bucketRegions and the signal gate (D-01)", () => {
   });
 });
 
-describe("buildWeeklySeries (D-02b)", () => {
+describe("buildTimeline (D-02b)", () => {
   const seriesRows = [
     ...signals(3, { generated_at: "2026-09-16T10:00:00Z" }),
     ...signals(4, { generated_at: "2026-09-30T10:00:00Z" }),
@@ -324,54 +324,131 @@ describe("buildWeeklySeries (D-02b)", () => {
   ];
   const now = new Date("2026-10-08T10:00:00Z");
 
-  it("buckets by Berlin Monday, fills gaps, falls back to created_at and picks the peak", () => {
-    const { weeks, peakWeek } = buildWeeklySeries(seriesRows, { now, ended: false });
-    expect(weeks).toEqual([
-      { weekStart: "2026-09-14", count: 3 },
-      { weekStart: "2026-09-21", count: 0 },
-      { weekStart: "2026-09-28", count: 5 },
-      { weekStart: "2026-10-05", count: 2 },
-    ]);
-    expect(peakWeek).toEqual({ weekStart: "2026-09-28", count: 5 });
+  function ready(timeline: ReturnType<typeof buildTimeline>) {
+    if (timeline.status !== "ready") throw new Error(`expected ready, got ${timeline.status}`);
+    return timeline;
+  }
+
+  it("buckets spans up to 28 days per Berlin day, fills gaps and falls back to created_at", () => {
+    const timeline = ready(buildTimeline(seriesRows, { now, ended: false }));
+    expect(timeline.granularity).toBe("day");
+    expect(timeline.buckets).toHaveLength(23);
+    expect(timeline.buckets[0]).toEqual({ start: "2026-09-16", count: 3 });
+    const byStart = new Map(timeline.buckets.map((bucket) => [bucket.start, bucket.count]));
+    expect(byStart.get("2026-09-29")).toBe(1);
+    expect(byStart.get("2026-09-30")).toBe(4);
+    expect(byStart.get("2026-10-04")).toBe(0);
+    expect(byStart.get("2026-10-05")).toBe(1);
+    expect(timeline.buckets[timeline.buckets.length - 1]).toEqual({ start: "2026-10-08", count: 0 });
+    expect(timeline.peak).toEqual({ start: "2026-09-30", count: 4 });
   });
 
-  it("stops at the last data week for ended campaigns and runs to now otherwise", () => {
-    const later = new Date("2026-12-01T10:00:00Z");
-    const ended = buildWeeklySeries(seriesRows, { now: later, ended: true });
-    expect(ended.weeks[ended.weeks.length - 1].weekStart).toBe("2026-10-05");
-
-    const running = buildWeeklySeries(seriesRows, { now: later, ended: false });
-    expect(running.weeks[running.weeks.length - 1]).toEqual({ weekStart: "2026-11-30", count: 0 });
-    expect(running.weeks.slice(-8, -1).every((week) => week.count === 0)).toBe(true);
-  });
-
-  it("resolves equal peaks to the most recent week", () => {
-    const { peakWeek } = buildWeeklySeries(
-      [
-        ...signals(2, { generated_at: "2026-09-16T10:00:00Z" }),
-        ...signals(2, { generated_at: "2026-09-30T10:00:00Z" }),
-      ],
-      { now, ended: true },
+  it("switches from days to weeks at a 28 day span", () => {
+    const day = ready(
+      buildTimeline([signal({ generated_at: "2026-09-11T10:00:00Z" })], { now, ended: false }),
     );
-    expect(peakWeek).toEqual({ weekStart: "2026-09-28", count: 2 });
+    expect(day.granularity).toBe("day");
+    expect(day.buckets).toHaveLength(28);
+
+    const week = ready(
+      buildTimeline([signal({ generated_at: "2026-09-10T10:00:00Z" })], { now, ended: false }),
+    );
+    expect(week.granularity).toBe("week");
+    expect(week.buckets.map((bucket) => bucket.start)).toEqual([
+      "2026-09-07",
+      "2026-09-14",
+      "2026-09-21",
+      "2026-09-28",
+      "2026-10-05",
+    ]);
+  });
+
+  it("buckets longer spans by Berlin Monday and runs to now for running campaigns", () => {
+    const later = new Date("2026-10-20T10:00:00Z");
+    const timeline = ready(buildTimeline(seriesRows, { now: later, ended: false }));
+    expect(timeline.granularity).toBe("week");
+    expect(timeline.buckets).toEqual([
+      { start: "2026-09-14", count: 3 },
+      { start: "2026-09-21", count: 0 },
+      { start: "2026-09-28", count: 5 },
+      { start: "2026-10-05", count: 2 },
+      { start: "2026-10-12", count: 0 },
+      { start: "2026-10-19", count: 0 },
+    ]);
+    expect(timeline.peak).toEqual({ start: "2026-09-28", count: 5 });
+
+    const december = ready(
+      buildTimeline(seriesRows, { now: new Date("2026-12-01T10:00:00Z"), ended: false }),
+    );
+    expect(december.buckets[december.buckets.length - 1]).toEqual({ start: "2026-11-30", count: 0 });
+  });
+
+  it("waits for the third day while a campaign is running", () => {
+    expect(
+      buildTimeline([signal({ generated_at: "2026-10-07T10:00:00Z" })], { now, ended: false }),
+    ).toEqual({ status: "pending" });
+
+    const third = ready(
+      buildTimeline([signal({ generated_at: "2026-10-06T10:00:00Z" })], { now, ended: false }),
+    );
+    expect(third.granularity).toBe("day");
+    expect(third.buckets.map((bucket) => bucket.start)).toEqual([
+      "2026-10-06",
+      "2026-10-07",
+      "2026-10-08",
+    ]);
+  });
+
+  it("always shows bars for ended campaigns", () => {
+    const oneDay = ready(
+      buildTimeline(signals(4, { generated_at: "2026-10-07T10:00:00Z" }), { now, ended: true }),
+    );
+    expect(oneDay.granularity).toBe("day");
+    expect(oneDay.buckets).toEqual([{ start: "2026-10-07", count: 4 }]);
+
+    const later = ready(
+      buildTimeline(seriesRows, { now: new Date("2026-12-01T10:00:00Z"), ended: true }),
+    );
+    expect(later.granularity).toBe("day");
+    expect(later.buckets[later.buckets.length - 1].start).toBe("2026-10-06");
+  });
+
+  it("resolves equal peaks to the most recent bucket", () => {
+    const timeline = ready(
+      buildTimeline(
+        [
+          ...signals(2, { generated_at: "2026-09-16T10:00:00Z" }),
+          ...signals(2, { generated_at: "2026-09-30T10:00:00Z" }),
+        ],
+        { now, ended: true },
+      ),
+    );
+    expect(timeline.peak).toEqual({ start: "2026-09-30", count: 2 });
   });
 
   it("keeps only the newest 52 weeks", () => {
-    const { weeks } = buildWeeklySeries(
-      [signal({ generated_at: "2025-01-08T10:00:00Z" }), signal({ generated_at: "2026-10-06T10:00:00Z" })],
-      { now, ended: true },
+    const timeline = ready(
+      buildTimeline(
+        [signal({ generated_at: "2025-01-08T10:00:00Z" }), signal({ generated_at: "2026-10-06T10:00:00Z" })],
+        { now, ended: true },
+      ),
     );
-    expect(weeks).toHaveLength(52);
-    expect(weeks[weeks.length - 1].weekStart).toBe("2026-10-05");
+    expect(timeline.granularity).toBe("week");
+    expect(timeline.buckets).toHaveLength(52);
+    expect(timeline.buckets[timeline.buckets.length - 1].start).toBe("2026-10-05");
   });
 
   it("skips unparseable timestamps in the series but not in the signal total", () => {
     const unparseable = signals(2, { generated_at: null, created_at: "kaputt" });
-    const { weeks } = buildWeeklySeries([...unparseable, signal({ generated_at: "2026-10-06T10:00:00Z" })], {
-      now,
-      ended: true,
-    });
-    expect(weeks).toEqual([{ weekStart: "2026-10-05", count: 1 }]);
+    const timeline = ready(
+      buildTimeline([...unparseable, signal({ generated_at: "2026-10-06T10:00:00Z" })], {
+        now,
+        ended: true,
+      }),
+    );
+    expect(timeline.buckets).toEqual([{ start: "2026-10-06", count: 1 }]);
+
+    expect(buildTimeline(unparseable, { now, ended: true })).toEqual({ status: "empty" });
 
     const view = buildWithSignals([...signals(9, { generated_at: null, created_at: "kaputt" }), signal()]);
     expect(view.signals).toMatchObject({ status: "ready", signals: 10 });
@@ -770,14 +847,44 @@ describe("CampaignCreatorStats rendering", () => {
     );
   }
 
-  it("renders Verlauf, strongest week, recipients, 4th tile and tag chips", () => {
+  it("renders Verlauf, strongest day, recipients, 4th tile and tag chips", () => {
     const markup = renderFull();
     expect(markup).toContain("Verlauf");
-    expect(markup).toContain("Stärkste Woche: ab 28. Sept. mit 18 Briefen");
+    expect(markup).toContain("Stärkster Tag: 30. Sept. mit 18 Briefen");
+    expect(markup).toContain('title="30. Sept.: 18 Briefe"');
+    expect(markup).toContain("Briefe pro Tag von 16. Sept. bis 8. Okt.");
     expect(markup).toContain("Geschrieben an: Bundestag-Abgeordnete 18, Landesregierung 6, Andere Empfänger 2");
     expect(markup).toContain("wissen oft oder manchmal nicht");
     expect(markup).toContain("Was über die Briefe gesagt wird");
     expect(markup).toContain("Zu lang");
+  });
+
+  it("keeps the weekly wording for spans over 28 days", () => {
+    const markup = renderFull(signals(12));
+    expect(markup).toContain("Stärkste Woche: ab 7. Sept. mit 12 Briefen");
+    expect(markup).toContain("Briefe pro Woche von 7. Sept. bis 5. Okt.");
+    expect(markup).toContain("Woche ab 7. Sept.: 12 Briefe");
+  });
+
+  it("shows only a hint while a running campaign is younger than three days", () => {
+    const young = signals(10, { generated_at: "2026-10-07T10:00:00Z" });
+    const markup = renderFull(young);
+    expect(markup).toContain("Der Verlauf erscheint ab dem dritten Tag.");
+    expect(markup).not.toContain("Stärkst");
+
+    const ended = renderToStaticMarkup(
+      createElement(CampaignCreatorStats, {
+        stats: buildCampaignCreatorStats({ ...baseInput, ended: true, rows: [], signalRows: young }),
+      }),
+    );
+    expect(ended).toContain("Stärkster Tag: 7. Okt. mit 10 Briefen");
+    expect(ended).not.toContain("Der Verlauf erscheint ab dem dritten Tag.");
+  });
+
+  it("describes the collecting teaser without weeks", () => {
+    const markup = renderSignals(signals(3));
+    expect(markup).toContain("und wann am meisten los war");
+    expect(markup).not.toContain("in welchen Wochen");
   });
 
   it("omits the recipient line when all letters go to one group", () => {

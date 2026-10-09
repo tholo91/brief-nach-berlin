@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { CampaignBackground } from "@/components/campaigns/CampaignBackground";
 import { CampaignCreatorStats } from "@/components/campaigns/CampaignCreatorStats";
-import { CampaignDonationCard } from "@/components/campaigns/CampaignDonationCard";
+import { CampaignReferralCard } from "@/components/campaigns/CampaignReferralCard";
 import { CampaignManager } from "@/components/campaigns/CampaignManager";
 import { SectionNav } from "@/components/internalStats/SectionNav";
 import {
@@ -181,7 +181,7 @@ export default async function ManageCampaignPage({
                   creatorStats ? (
                     <>
                       <CampaignCreatorStats stats={creatorStats} />
-                      <CampaignDonationCard />
+                      <CampaignReferralCard />
                     </>
                   ) : undefined
                 }

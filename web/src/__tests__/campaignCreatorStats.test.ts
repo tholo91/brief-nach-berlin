@@ -13,9 +13,11 @@ import {
   type CampaignSignalRow,
 } from "@/lib/campaigns/creatorStats";
 import { CampaignCreatorStats } from "@/components/campaigns/CampaignCreatorStats";
-import { CampaignDonationCard } from "@/components/campaigns/CampaignDonationCard";
-import { DONATION_PATH, DONATION_PROVIDER_URL } from "@/lib/config";
-import { SUPPORT_CAMPAIGN_CREATOR_COPY, SUPPORT_CONTENT } from "@/lib/support-content";
+import { CampaignReferralCard } from "@/components/campaigns/CampaignReferralCard";
+import { APP_URL, DONATION_PROVIDER_URL } from "@/lib/config";
+import { BRIEF_EMAIL } from "@/lib/contact";
+import { buildCampaignStartShare } from "@/lib/share";
+import { SUPPORT_CONTENT } from "@/lib/support-content";
 import { getServiceRoleClient } from "@/lib/supabase/server";
 import type {
   PoliticalPowerlessnessFrequency,
@@ -954,34 +956,43 @@ describe("CampaignCreatorStats rendering", () => {
   });
 });
 
-describe("CampaignDonationCard (D-05)", () => {
-  const markup = renderToStaticMarkup(createElement(CampaignDonationCard));
+describe("CampaignReferralCard", () => {
+  const markup = renderToStaticMarkup(createElement(CampaignReferralCard));
   const decoded = markup.replace(/&#x27;/g, "'").replace(/&quot;/g, '"');
 
-  it("renders the S6 creator copy verbatim", () => {
+  it("renders the referral copy and both buttons", () => {
     for (const text of [
-      SUPPORT_CAMPAIGN_CREATOR_COPY.manageHeading,
-      SUPPORT_CAMPAIGN_CREATOR_COPY.body,
-      SUPPORT_CAMPAIGN_CREATOR_COPY.button,
-      SUPPORT_CAMPAIGN_CREATOR_COPY.infoButton,
-      SUPPORT_CAMPAIGN_CREATOR_COPY.status,
+      "Kennst du jemanden, der auch was bewegen will?",
+      "Weiterempfehlen",
+      "Thomas vorstellen",
+      "Du willst Brief nach Berlin unterstützen?",
+      "Hier geht's zur Spende.",
     ]) {
       expect(decoded).toContain(text);
     }
+    expect(decoded).not.toMatch(/[–—]/);
   });
 
-  it("uses the manage heading, not the mail's launch greeting", () => {
-    expect(decoded).not.toContain(SUPPORT_CAMPAIGN_CREATOR_COPY.heading);
+  it("shares a mail fallback that links the campaign start page", () => {
+    const share = buildCampaignStartShare();
+    expect(share.url).toBe(`${APP_URL}/kampagne/starten`);
+    expect(share.text).toContain(share.url);
+    expect(markup).toContain(`href="${share.emailUrl.replace(/&/g, "&amp;")}"`);
   });
 
-  it("opens the donation provider in a new tab and links the info page", () => {
+  it("introduces Thomas by mail with the campaign subject", () => {
+    expect(markup).toContain(
+      `href="mailto:${BRIEF_EMAIL}?subject=Vorstellung%3A%20Kampagne"`,
+    );
+  });
+
+  it("links the donation provider in a new tab as a small line", () => {
     const donate = new RegExp(
       `<a[^>]*href="${DONATION_PROVIDER_URL}"[^>]*>`,
     ).exec(markup)?.[0];
     expect(donate).toBeDefined();
     expect(donate).toContain('target="_blank"');
     expect(donate).toMatch(/rel="[^"]*noopener/);
-    expect(markup).toContain(`href="${DONATION_PATH}"`);
   });
 
   it("shows the founder avatar", () => {

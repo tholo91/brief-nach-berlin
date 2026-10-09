@@ -86,3 +86,21 @@ export function buildShareTarget(
     emailUrl: `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(text)}`,
   };
 }
+
+export const CAMPAIGN_START_PATH = "/kampagne/starten" as const;
+
+export function campaignStartUrl(): string {
+  return `${APP_URL}${CAMPAIGN_START_PATH}`;
+}
+
+export function buildCampaignStartShare(): Pick<ShareTarget, "url" | "text" | "subject" | "emailUrl"> {
+  const url = campaignStartUrl();
+  const subject = "Eine Briefkampagne starten mit Brief nach Berlin";
+  const text = `Ich führe eine Briefkampagne bei Brief nach Berlin. Damit schreiben Menschen persönliche Briefe an ihre Abgeordneten, kostenlos und ohne Account. Wäre das was für dich? ${url}`;
+  return {
+    url,
+    text,
+    subject,
+    emailUrl: `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(text)}`,
+  };
+}

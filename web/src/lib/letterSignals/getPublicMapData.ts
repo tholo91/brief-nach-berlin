@@ -1,5 +1,6 @@
 import "server-only";
 
+import { unstable_cache } from "next/cache";
 import { z } from "zod";
 import { getServiceRoleClient } from "@/lib/supabase/server";
 import { getPlzMapPoint } from "./plzMapPoint";
@@ -10,13 +11,26 @@ const postcodeRowSchema = z.object({
   contribution_count: z.coerce.number().int().positive(),
 });
 
-export async function getPublicLetterMapData(): Promise<LetterMapData> {
-  const { data, error } = await getServiceRoleClient().rpc(
-    "get_letter_signal_postcode_counts",
-  );
-  if (error) throw error;
+const PAGE_SIZE = 1000;
+const LETTER_MAP_TAG = "letter-map";
 
-  const postcodePoints: LetterMapPoint[] = (data ?? []).flatMap(
+async function readPostcodeCounts(): Promise<unknown[]> {
+  const rows: unknown[] = [];
+  for (let from = 0; ; from += PAGE_SIZE) {
+    const { data, error } = await getServiceRoleClient()
+      .rpc("get_letter_signal_postcode_counts")
+      .range(from, from + PAGE_SIZE - 1);
+    if (error) throw error;
+    const page = data ?? [];
+    rows.push(...page);
+    if (page.length < PAGE_SIZE) return rows;
+  }
+}
+
+async function buildPublicLetterMapData(): Promise<LetterMapData> {
+  const rows = await readPostcodeCounts();
+
+  const postcodePoints: LetterMapPoint[] = rows.flatMap(
     (value: unknown): LetterMapPoint[] => {
       const row = postcodeRowSchema.safeParse(value);
       if (!row.success) return [];
@@ -49,3 +63,9 @@ export async function getPublicLetterMapData(): Promise<LetterMapData> {
     postcodeAreas: postcodePoints.length,
   };
 }
+
+export const getPublicLetterMapData = unstable_cache(
+  buildPublicLetterMapData,
+  [LETTER_MAP_TAG],
+  { revalidate: 3600, tags: [LETTER_MAP_TAG] },
+);

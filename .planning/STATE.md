@@ -4,10 +4,10 @@ milestone: v1.0
 current_phase: 05
 status: verifying
 stopped_at: Completed 05-04-PLAN.md
-last_updated: "2026-10-09T17:46:13.228Z"
+last_updated: "2026-10-09T18:10:38.343Z"
 last_activity: 2026-10-09
 last_activity_desc: "Completed quick task 260710-dgq: Kampagnen-Ziel-Ebene Bund/Landtag inkl. Wizard-Bindung und Mismatch-Fallback"
-state_head: f6ce471a24f96987c67deca00b059ba3d85b1c7f
+state_head: 4a0b78d154b6939af837a4fe4c26225064886f30
 progress:
   total_phases: 33
   completed_phases: 4
@@ -49,7 +49,7 @@ Der level-aware E-Mail-Betreff ist dagegen bereits implementiert und getestet; d
 Phase: 05 — EXECUTING
 Plan: 4 of 4
 Status: Phase complete — ready for verification
-Last activity: 2026-10-09 - Completed quick task 261009-r0z: Feedback-Formular für Kampagnen-Ersteller:innen (Migration 029 noch nicht angewendet)
+Last activity: 2026-10-09 - Completed quick task 261009-ryw: Landing So-einfach-gehts: Header in linke Spalte, Countdown auch auf Desktop
 
 Progress: [███████░░░] 68%
 
@@ -180,6 +180,7 @@ Recent decisions affecting current work:
 | 261009-pro | Karte zeigt alle PLZ (Pagination + 1h-Cache), neuer Text, Waben-Story | 2026-10-09 | 21e6857 | [261009-pro-karte-zeigt-alle-plz-pagination-1h-cache](./quick/261009-pro-karte-zeigt-alle-plz-pagination-1h-cache/) |
 | 261009-psc | Briefmarken-Link in Brief-Mail (online kaufen) + optionale Altersgruppe im Review | 2026-10-09 | uncommitted | [261009-psc-briefmarken-link-schaerfen-und-altersgru](./quick/261009-psc-briefmarken-link-schaerfen-und-altersgru/) |
 | 261009-r0z | Feedback-Formular für Kampagnen-Ersteller:innen (Formular, Migration 029 lokal, Verwalten-Karte, Datenschutz) | 2026-10-09 | f6ce471 | [261009-r0z-feedback-formular-fuer-kampagnen-erstell](./quick/261009-r0z-feedback-formular-fuer-kampagnen-erstell/) |
+| 261009-ryw | Landing So-einfach-gehts: Header in linke Spalte, Countdown auch auf Desktop | 2026-10-09 | 4a0b78d | [261009-ryw-landing-so-einfach-gehts-header-in-linke](./quick/261009-ryw-landing-so-einfach-gehts-header-in-linke/) |
 
 ## Session Continuity
 

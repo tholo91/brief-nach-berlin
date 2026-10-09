@@ -100,14 +100,11 @@ export function BundeslandMap({
   const top = ranked.slice(0, 3);
   const rest = ranked.slice(3);
   const restCount = rest.reduce((sum, region) => sum + region.count, 0) + (other?.count ?? 0);
-  const restLabel =
-    rest.length > 0
-      ? other
-        ? `+ ${rest.length} weitere und kleinere Länder`
-        : `+ ${rest.length} weitere`
-      : other
-        ? "Weitere Bundesländer"
-        : null;
+  const restLabel = other
+    ? "Alle anderen"
+    : rest.length > 0
+      ? `+ ${rest.length} weitere`
+      : null;
 
   const focusKey = hovered ?? selectedKey;
   const focused = focusKey ? (byKey.get(focusKey) ?? null) : null;
@@ -235,7 +232,7 @@ export function BundeslandMap({
             {lettersLabel(focused.count)} · {percentLabel(focused.count, total)}
           </>
         ) : (
-          <span className="text-warmgrau/55">Bundesland berühren für die Zahl.</span>
+          <span className="text-warmgrau/55">Für die genaue Zahl auf ein Land zeigen.</span>
         )}
       </p>
 

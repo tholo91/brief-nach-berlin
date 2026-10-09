@@ -35,6 +35,7 @@ import {
 } from "@/lib/campaign-recipient-picker";
 import { WizardForwardIcon } from "./WizardForwardIcon";
 import { LetterSignalCard } from "./LetterSignalCard";
+import { allowsAlternativeRecipients } from "@/lib/lookup/alternativeRecipients";
 import { AlternativeRecipientPicker } from "./AlternativeRecipientPicker";
 import type { RecipientSearchCard } from "@/lib/lookup/recipientSearch";
 
@@ -170,6 +171,7 @@ export function Step3Success({
   const isAmbiguousKommune =
     selectedLevel === "Kommune" &&
     rathaus?.ambiguous === true;
+  const alternativePickerAllowed = allowsAlternativeRecipients(wizardData.campaign?.slug);
   const campaignRestricted = Boolean(
     result &&
       "disambiguationNeeded" in result &&
@@ -1813,6 +1815,7 @@ export function Step3Success({
         )}
 
         {!campaignRestricted &&
+          alternativePickerAllowed &&
           !bundeskanzler &&
           selectedLevel === "Bund" && (
             <div className={politicians.length > 0 ? "mt-5" : "mt-6"}>
@@ -1861,7 +1864,7 @@ export function Step3Success({
             </div>
           )}
 
-        {!campaignRestricted && isLand && showLandPersonPicker && (
+        {!campaignRestricted && alternativePickerAllowed && isLand && showLandPersonPicker && (
           <div className="mt-5">
             {optionalLandRecipients.length > 0 && (
               <button

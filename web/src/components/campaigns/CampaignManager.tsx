@@ -326,9 +326,10 @@ export function CampaignManager({
       {insights}
 
       <details
+        id="campaign-settings"
         open={editOpen}
         onToggle={(event) => setEditOpen(event.currentTarget.open)}
-        className="group rounded-md border border-warmgrau/12 bg-white/75 shadow-sm"
+        className="group scroll-mt-32 rounded-md border border-warmgrau/12 bg-white/75 shadow-sm"
       >
         <summary className="flex min-h-11 cursor-pointer list-none items-center justify-between gap-4 rounded-md p-5 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-waldgruen md:p-7 [&::-webkit-details-marker]:hidden">
           <div className="grid gap-1">

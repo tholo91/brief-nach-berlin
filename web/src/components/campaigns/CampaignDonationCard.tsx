@@ -30,8 +30,9 @@ export function CampaignDonationCard() {
 
   return (
     <section
+      id="creator-donation"
       aria-labelledby="creator-donation-heading"
-      className="grid grid-cols-[1fr_auto] overflow-hidden rounded-md border border-waldgruen/15 bg-creme/90 shadow-sm"
+      className="scroll-mt-32 grid grid-cols-[1fr_auto] overflow-hidden rounded-md border border-waldgruen/15 bg-creme/90 shadow-sm"
     >
       <div className="col-span-2 px-5 pt-5 md:col-span-1 md:pl-7 md:pr-4 md:pt-7">
         <h2

@@ -5,6 +5,7 @@ import { CampaignBackground } from "@/components/campaigns/CampaignBackground";
 import { CampaignCreatorStats } from "@/components/campaigns/CampaignCreatorStats";
 import { CampaignDonationCard } from "@/components/campaigns/CampaignDonationCard";
 import { CampaignManager } from "@/components/campaigns/CampaignManager";
+import { SectionNav } from "@/components/internalStats/SectionNav";
 import {
   getCampaignCreatorStats,
   shouldShowCreatorInsights,
@@ -119,7 +120,25 @@ export default async function ManageCampaignPage({
       ? await getCampaignCreatorStats(authorizedCampaign, ended)
       : null;
 
+  const showSectionNav =
+    authorizedCampaign !== null &&
+    !(authorizedCampaign.status === "awaiting_approval" && !ended);
+  const sectionLinks = [
+    { id: "campaign-share", label: "Teilen" },
+    ...(creatorStats
+      ? [
+          { id: "creator-stats", label: "Zahlen" },
+          { id: "creator-donation", label: "Spenden" },
+        ]
+      : []),
+    { id: "campaign-settings", label: "Einstellungen" },
+  ];
+
   return (
+    <>
+    {showSectionNav && (
+      <SectionNav links={sectionLinks} variant="header" stickyBelow="[data-app-header]" />
+    )}
     <CampaignBackground>
       {authorizedCampaign ? (
         <>
@@ -153,5 +172,6 @@ export default async function ManageCampaignPage({
         <AccessNotice message="Bitte öffne den aktuellen Verwaltungslink aus deiner Kampagnen-E-Mail. Es gibt keine Nutzerkonten und keinen Login-Bereich." />
       )}
     </CampaignBackground>
+    </>
   );
 }

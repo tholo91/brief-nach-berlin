@@ -274,7 +274,7 @@ export function CampaignCreatorStats({
     <section
       id="creator-stats"
       aria-labelledby="creator-stats-heading"
-      className="rounded-md border border-warmgrau/12 bg-white/75 p-5 shadow-sm md:p-7"
+      className="scroll-mt-32 rounded-md border border-warmgrau/12 bg-white/75 p-5 shadow-sm md:p-7"
     >
       <h2
         id="creator-stats-heading"

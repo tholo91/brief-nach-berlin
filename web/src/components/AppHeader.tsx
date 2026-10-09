@@ -33,7 +33,7 @@ export default function AppHeader({ showLanguageSwitcher = false }: { showLangua
           )`,
         }}
       />
-      <header className="sticky top-0 z-50 bg-creme/95 backdrop-blur-sm border-b border-warmgrau/8">
+      <header data-app-header className="sticky top-0 z-50 bg-creme/95 backdrop-blur-sm border-b border-warmgrau/8">
         <nav className="max-w-5xl mx-auto px-6 py-4 flex items-center justify-between">
           <Link
             href="/"

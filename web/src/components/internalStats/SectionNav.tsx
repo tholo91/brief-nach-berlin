@@ -8,9 +8,35 @@ export type SectionLink = { id: string; label: string };
  * Sprungleiste, bleibt oben kleben und scrollt auf dem Handy horizontal.
  * Der sichtbare Abschnitt wird hervorgehoben; ohne JavaScript bleiben es
  * normale Ankerlinks.
+ *
+ * `variant="header"` ist die zweite Kopfzeile unter dem AppHeader: Sie klebt
+ * unter dem per `stickyBelow` (CSS-Selektor) gefundenen Element und passt
+ * ihre Position an dessen Höhe an. Zeigt ein Link auf ein <details>, wird es
+ * beim Klick geöffnet.
  */
-export function SectionNav({ links }: { links: SectionLink[] }) {
+export function SectionNav({
+  links,
+  variant = "page",
+  stickyBelow,
+}: {
+  links: SectionLink[];
+  variant?: "page" | "header";
+  stickyBelow?: string;
+}) {
   const [active, setActive] = useState<string | null>(null);
+  const [top, setTop] = useState<number | null>(null);
+
+  useEffect(() => {
+    if (!stickyBelow) return;
+    const anchor = document.querySelector<HTMLElement>(stickyBelow);
+    if (!anchor) return;
+    const update = () => setTop(Math.round(anchor.getBoundingClientRect().height));
+    update();
+    if (typeof ResizeObserver === "undefined") return;
+    const observer = new ResizeObserver(update);
+    observer.observe(anchor);
+    return () => observer.disconnect();
+  }, [stickyBelow]);
 
   useEffect(() => {
     const sections = links
@@ -47,6 +73,50 @@ export function SectionNav({ links }: { links: SectionLink[] }) {
       .querySelector<HTMLElement>(`[data-section-link="${active}"]`)
       ?.scrollIntoView({ block: "nearest", inline: "center", behavior: "auto" });
   }, [active]);
+
+  function openTargetDetails(id: string) {
+    const target = document.getElementById(id);
+    if (target instanceof HTMLDetailsElement) target.open = true;
+  }
+
+  if (variant === "header") {
+    return (
+      <nav
+        aria-label="Abschnitte"
+        style={top === null ? undefined : { top }}
+        className="sticky top-[4.25rem] z-40 border-b border-warmgrau/8 bg-creme/95 backdrop-blur-sm"
+      >
+        <div className="relative mx-auto max-w-5xl">
+          <ul className="m-0 flex list-none gap-1 overflow-x-auto px-3 [scrollbar-width:none] sm:gap-3 sm:px-5 [&::-webkit-scrollbar]:hidden">
+            {links.map((link) => {
+              const isActive = active === link.id;
+              return (
+                <li key={link.id} className="shrink-0">
+                  <a
+                    href={`#${link.id}`}
+                    data-section-link={link.id}
+                    aria-current={isActive ? "location" : undefined}
+                    onClick={() => openTargetDetails(link.id)}
+                    className={`flex min-h-11 items-center border-b-2 px-3 font-body text-sm transition-colors focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-waldgruen ${
+                      isActive
+                        ? "border-waldgruen font-semibold text-waldgruen-dark"
+                        : "border-transparent text-warmgrau/65 hover:text-waldgruen-dark"
+                    }`}
+                  >
+                    {link.label}
+                  </a>
+                </li>
+              );
+            })}
+          </ul>
+          <div
+            aria-hidden="true"
+            className="pointer-events-none absolute inset-y-0 right-0 w-8 bg-gradient-to-l from-creme/95 to-transparent sm:hidden"
+          />
+        </div>
+      </nav>
+    );
+  }
 
   return (
     <nav

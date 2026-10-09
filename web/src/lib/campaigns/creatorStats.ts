@@ -15,7 +15,7 @@ import type {
 } from "@/lib/feedback/politicalActivation";
 import { getServiceRoleClient } from "@/lib/supabase/server";
 import { CAMPAIGN_TIME_ZONE } from "./endDate";
-import { BUNDESLAND_NAMES, type Campaign } from "./schema";
+import { BUNDESLAND_NAMES, type BundeslandKey, type Campaign } from "./schema";
 
 export const CREATOR_STATS_MIN_RESPONSES = 10;
 export const CREATOR_COMMENT_LIMIT = 5;
@@ -58,6 +58,7 @@ export type CampaignSignalRow = {
 };
 
 export type CreatorRegionBucket = {
+  key: BundeslandKey | null;
   label: string;
   count: number;
   other: boolean;
@@ -202,7 +203,8 @@ export function bucketRegions(rows: CampaignSignalRow[]): CreatorRegionBucket[] 
       other += count;
     } else {
       named.push({
-        label: BUNDESLAND_NAMES[key as keyof typeof BUNDESLAND_NAMES],
+        key: key as BundeslandKey,
+        label: BUNDESLAND_NAMES[key as BundeslandKey],
         count,
         other: false,
       });
@@ -210,7 +212,7 @@ export function bucketRegions(rows: CampaignSignalRow[]): CreatorRegionBucket[] 
   }
   named.sort((a, b) => b.count - a.count || a.label.localeCompare(b.label, "de"));
   if (other > 0) {
-    named.push({ label: OTHER_REGIONS_LABEL, count: other, other: true });
+    named.push({ key: null, label: OTHER_REGIONS_LABEL, count: other, other: true });
   }
   return named;
 }

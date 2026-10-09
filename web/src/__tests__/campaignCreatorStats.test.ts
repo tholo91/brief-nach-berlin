@@ -259,9 +259,9 @@ describe("bucketRegions and the signal gate (D-01)", () => {
       ...signals(1, { bundesland_key: "XX" }),
     ]);
     expect(buckets).toEqual([
-      { label: "Bayern", count: 6, other: false },
-      { label: "Nordrhein-Westfalen", count: 5, other: false },
-      { label: "Weitere Bundesländer", count: 6, other: true },
+      { key: "BY", label: "Bayern", count: 6, other: false },
+      { key: "NW", label: "Nordrhein-Westfalen", count: 5, other: false },
+      { key: null, label: "Weitere Bundesländer", count: 6, other: true },
     ]);
   });
 
@@ -276,6 +276,7 @@ describe("bucketRegions and the signal gate (D-01)", () => {
       "Bayern",
       "Nordrhein-Westfalen",
     ]);
+    expect(buckets.map((bucket) => bucket.key)).toEqual(["BW", "BY", "NW"]);
   });
 
   it("treats null and prototype keys as unknown", () => {
@@ -283,7 +284,9 @@ describe("bucketRegions and the signal gate (D-01)", () => {
       ...signals(5, { bundesland_key: null }),
       ...signals(5, { bundesland_key: "constructor" }),
     ]);
-    expect(buckets).toEqual([{ label: "Weitere Bundesländer", count: 10, other: true }]);
+    expect(buckets).toEqual([
+      { key: null, label: "Weitere Bundesländer", count: 10, other: true },
+    ]);
   });
 
   it("gates at 10 signals", () => {

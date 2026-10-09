@@ -27,7 +27,6 @@ export default function HowItWorksWithExample({ letterCount }: { letterCount: nu
   const [recipientIndex, setRecipientIndex] = useState(0);
   const [activePanel, setActivePanel] = useState<Panel>("letter");
   const [rotationCycle, setRotationCycle] = useState(0);
-  const [isMobile, setIsMobile] = useState(false);
   const [isPanelVisible, setIsPanelVisible] = useState(false);
   const [isPanelInteractionActive, setIsPanelInteractionActive] = useState(false);
   const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
@@ -42,20 +41,12 @@ export default function HowItWorksWithExample({ letterCount }: { letterCount: nu
   }, [recipients.length]);
 
   useEffect(() => {
-    const mobileQuery = window.matchMedia("(max-width: 767px)");
     const reducedMotionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
-    const syncPreferences = () => {
-      setIsMobile(mobileQuery.matches);
-      setPrefersReducedMotion(reducedMotionQuery.matches);
-    };
+    const syncReducedMotion = () => setPrefersReducedMotion(reducedMotionQuery.matches);
 
-    syncPreferences();
-    mobileQuery.addEventListener("change", syncPreferences);
-    reducedMotionQuery.addEventListener("change", syncPreferences);
-    return () => {
-      mobileQuery.removeEventListener("change", syncPreferences);
-      reducedMotionQuery.removeEventListener("change", syncPreferences);
-    };
+    syncReducedMotion();
+    reducedMotionQuery.addEventListener("change", syncReducedMotion);
+    return () => reducedMotionQuery.removeEventListener("change", syncReducedMotion);
   }, []);
 
   useEffect(() => {
@@ -92,8 +83,7 @@ export default function HowItWorksWithExample({ letterCount }: { letterCount: nu
     selectPanel(panel);
   };
 
-  const shouldAutoRotatePanels = isMobile
-    && isPanelVisible
+  const shouldAutoRotatePanels = isPanelVisible
     && isPageVisible
     && !isPanelInteractionActive
     && !prefersReducedMotion;
@@ -138,14 +128,14 @@ export default function HowItWorksWithExample({ letterCount }: { letterCount: nu
   return (
     <section id="so-funktionierts" className="scroll-mt-20 px-6 py-16 md:py-20">
       <div className="mx-auto max-w-6xl">
-        <div className="mb-12 text-center md:mb-14">
-          <p className="mb-3 font-typewriter text-sm font-bold uppercase tracking-widest text-waldgruen/50">{copy.howItWorks.eyebrow}</p>
-          <h2 className="font-body text-3xl font-bold tracking-tight text-waldgruen-dark md:text-4xl">{copy.howItWorks.title}</h2>
-          <p className="mx-auto mt-3 max-w-2xl text-balance font-body text-base leading-relaxed text-warmgrau/80">{copy.howItWorks.intro}</p>
-        </div>
-
         <div className="grid items-start gap-12 md:grid-cols-2 md:gap-16">
           <div>
+            <div className="mb-12 text-center md:mb-12 md:text-left">
+              <p className="mb-3 font-typewriter text-sm font-bold uppercase tracking-widest text-waldgruen/50">{copy.howItWorks.eyebrow}</p>
+              <h2 className="font-body text-3xl font-bold tracking-tight text-waldgruen-dark md:text-4xl">{copy.howItWorks.title}</h2>
+              <p className="mx-auto mt-3 max-w-2xl text-balance font-body text-base leading-relaxed text-warmgrau/80 md:mx-0 md:max-w-[34rem]">{copy.howItWorks.intro}</p>
+            </div>
+
             <ol className="flex flex-col">
               {steps.map((step, index) => (
                 <li key={step.number} className="grid grid-cols-[3.5rem_minmax(0,1fr)] gap-5 pb-10 last:pb-0 md:grid-cols-[4rem_minmax(0,1fr)] md:gap-6 md:pb-12">
@@ -163,19 +153,23 @@ export default function HowItWorksWithExample({ letterCount }: { letterCount: nu
 
           </div>
 
-          <div ref={exampleRef} id="beispiel" className="min-w-0 scroll-mt-20 md:sticky md:top-24 md:pt-6">
+          <div
+            ref={exampleRef}
+            id="beispiel"
+            className="min-w-0 scroll-mt-20 md:sticky md:top-24"
+            onFocusCapture={() => setIsPanelInteractionActive(true)}
+            onBlurCapture={() => setIsPanelInteractionActive(false)}
+            onPointerEnter={(event) => {
+              if (event.pointerType !== "touch") setIsPanelInteractionActive(true);
+            }}
+            onPointerLeave={(event) => {
+              if (event.pointerType !== "touch") setIsPanelInteractionActive(false);
+            }}
+          >
             <div
               className="mb-5 grid grid-cols-3 divide-x divide-waldgruen/10 overflow-hidden rounded-2xl border border-waldgruen/15 bg-waldgruen/8 shadow-[0_8px_18px_-14px_rgba(27,67,50,0.35)] md:flex md:flex-wrap md:items-center md:justify-center md:gap-2 md:divide-x-0 md:overflow-visible md:rounded-none md:border-0 md:bg-transparent md:shadow-none"
               role="tablist"
               aria-label={copy.howItWorks.panelAriaLabel}
-              onFocusCapture={() => setIsPanelInteractionActive(true)}
-              onBlurCapture={() => setIsPanelInteractionActive(false)}
-              onPointerEnter={(event) => {
-                if (event.pointerType !== "touch") setIsPanelInteractionActive(true);
-              }}
-              onPointerLeave={(event) => {
-                if (event.pointerType !== "touch") setIsPanelInteractionActive(false);
-              }}
             >
               <button
                 id="letter-panel-tab"
@@ -189,7 +183,7 @@ export default function HowItWorksWithExample({ letterCount }: { letterCount: nu
                 className={`relative min-w-0 px-2 py-2.5 font-body text-[11px] font-semibold leading-tight tracking-tight transition-colors focus-visible:z-10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-waldgruen focus-visible:ring-inset md:rounded-full md:px-4 md:py-2 md:text-sm md:tracking-normal md:focus-visible:ring-offset-2 md:focus-visible:ring-offset-creme ${activePanel === "letter" ? "bg-waldgruen text-creme md:shadow-none" : "text-waldgruen/75 hover:bg-waldgruen/8 md:bg-waldgruen/8 md:text-waldgruen md:hover:bg-waldgruen/14"}`}
               >
                 {copy.howItWorks.letterTab}
-                {activePanel === "letter" && shouldAutoRotatePanels && <span key={`letter-${rotationCycle}`} aria-hidden="true" className="absolute inset-x-3 bottom-1 h-0.5 origin-left rounded-full bg-creme/75 animate-panel-tab-progress md:hidden" />}
+                {activePanel === "letter" && shouldAutoRotatePanels && <span key={`letter-${rotationCycle}`} aria-hidden="true" className="absolute inset-x-3 bottom-1 h-0.5 origin-left rounded-full bg-creme/75 animate-panel-tab-progress md:inset-x-5 md:bottom-1" />}
               </button>
               <button
                 id="map-panel-tab"
@@ -203,7 +197,7 @@ export default function HowItWorksWithExample({ letterCount }: { letterCount: nu
                 className={`relative min-w-0 px-2 py-2.5 font-body text-[11px] font-semibold leading-tight tracking-tight transition-colors focus-visible:z-10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-waldgruen focus-visible:ring-inset md:rounded-full md:px-4 md:py-2 md:text-sm md:tracking-normal md:focus-visible:ring-offset-2 md:focus-visible:ring-offset-creme ${activePanel === "map" ? "bg-waldgruen text-creme md:shadow-none" : "text-waldgruen/75 hover:bg-waldgruen/8 md:bg-waldgruen/8 md:text-waldgruen md:hover:bg-waldgruen/14"}`}
               >
                 {copy.howItWorks.mapTab}
-                {activePanel === "map" && shouldAutoRotatePanels && <span key={`map-${rotationCycle}`} aria-hidden="true" className="absolute inset-x-3 bottom-1 h-0.5 origin-left rounded-full bg-creme/75 animate-panel-tab-progress md:hidden" />}
+                {activePanel === "map" && shouldAutoRotatePanels && <span key={`map-${rotationCycle}`} aria-hidden="true" className="absolute inset-x-3 bottom-1 h-0.5 origin-left rounded-full bg-creme/75 animate-panel-tab-progress md:inset-x-5 md:bottom-1" />}
               </button>
               <button
                 id="story-panel-tab"
@@ -217,7 +211,7 @@ export default function HowItWorksWithExample({ letterCount }: { letterCount: nu
                 className={`relative min-w-0 px-2 py-2.5 font-body text-[11px] font-semibold leading-tight tracking-tight transition-colors focus-visible:z-10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-waldgruen focus-visible:ring-inset md:rounded-full md:px-4 md:py-2 md:text-sm md:tracking-normal md:focus-visible:ring-offset-2 md:focus-visible:ring-offset-creme ${activePanel === "story" ? "bg-waldgruen text-creme md:shadow-none" : "text-waldgruen/75 hover:bg-waldgruen/8 md:bg-waldgruen/8 md:text-waldgruen md:hover:bg-waldgruen/14"}`}
               >
                 {copy.howItWorks.storyTab}
-                {activePanel === "story" && shouldAutoRotatePanels && <span key={`story-${rotationCycle}`} aria-hidden="true" className="absolute inset-x-3 bottom-1 h-0.5 origin-left rounded-full bg-creme/75 animate-panel-tab-progress md:hidden" />}
+                {activePanel === "story" && shouldAutoRotatePanels && <span key={`story-${rotationCycle}`} aria-hidden="true" className="absolute inset-x-3 bottom-1 h-0.5 origin-left rounded-full bg-creme/75 animate-panel-tab-progress md:inset-x-5 md:bottom-1" />}
               </button>
             </div>
 

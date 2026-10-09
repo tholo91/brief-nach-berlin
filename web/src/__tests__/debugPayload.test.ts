@@ -1,3 +1,14 @@
+jest.mock("server-only", () => ({}), { virtual: true });
+jest.mock("@getbrevo/brevo", () => ({
+  BrevoClient: jest.fn().mockImplementation(() => ({
+    transactionalEmails: { sendTransacEmail: jest.fn() },
+  })),
+}));
+jest.mock("@/lib/feedback/token", () => ({
+  signFeedbackToken: jest.fn(() => "signed-feedback-token"),
+}));
+
+import { signFeedbackToken } from "@/lib/feedback/token";
 import {
   buildDebugPayload,
   getCodeVersion,
@@ -102,5 +113,30 @@ describe("Debug-Payload", () => {
       expect(getCodeVersion()).toBe("unbekannt");
       expect(buildDebugPayload(wizardData, generationResult, 6).codeVersion).toBe("unbekannt");
     });
+  });
+
+  it("keeps issueTextPreview out of the signed feedback token", async () => {
+    const originalBrevoKey = process.env.BREVO_API_KEY;
+    process.env.BREVO_API_KEY = "test-key";
+    const { prepareLetterEmail } = await import("@/lib/email/sendLetterEmail");
+    if (originalBrevoKey === undefined) delete process.env.BREVO_API_KEY;
+    else process.env.BREVO_API_KEY = originalBrevoKey;
+    const debug = buildDebugPayload(wizardData, generationResult, 6);
+    expect(debug.issueTextPreview).toBeTruthy();
+
+    prepareLetterEmail({
+      recipientEmail: "test@example.org",
+      recipient,
+      letterText: "Sehr geehrter Herr Yüksel,\n\nTest.",
+      issueText,
+      debug,
+    });
+
+    const signed = (signFeedbackToken as jest.Mock).mock.calls.at(-1)?.[0];
+    expect(signed).toBeDefined();
+    expect(signed).not.toHaveProperty("issueTextPreview");
+    expect(signed).toHaveProperty("issueTextLength", issueText.length);
+    // Das Original-Debug-Objekt (Debug-Link) behält den Auszug.
+    expect(debug.issueTextPreview).toHaveLength(2000);
   });
 });

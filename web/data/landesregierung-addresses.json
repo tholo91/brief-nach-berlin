@@ -1,7 +1,7 @@
 {
   "_meta": {
     "schemaVersion": 1,
-    "verifiedAt": "2026-09-24",
+    "verifiedAt": "2026-10-09",
     "description": "Amtlich verifizierte institutionelle Postempfänger und amtierende Regierungschefinnen und Regierungschefs der 16 Länder."
   },
   "recipients": {
@@ -253,14 +253,14 @@
       "institutionKind": "landesregierung",
       "addressLines": ["Peter-Altmeier-Allee 1", "55116 Mainz"],
       "headOfGovernment": {
-        "name": "Alexander Schweitzer",
+        "name": "Gordon Schnieder",
         "title": "Ministerpräsident des Landes Rheinland-Pfalz",
-        "salutation": "Sehr geehrter Herr Ministerpräsident Schweitzer,",
-        "addressLines": ["Ministerpräsident Alexander Schweitzer", "Staatskanzlei Rheinland-Pfalz", "Postfach 3880", "55028 Mainz"],
+        "salutation": "Sehr geehrter Herr Ministerpräsident Schnieder,",
+        "addressLines": ["Ministerpräsident Gordon Schnieder", "Staatskanzlei Rheinland-Pfalz", "Postfach 3880", "55028 Mainz"],
         "source": {
-          "title": "Staatskanzlei Rheinland-Pfalz: Organisationsplan vom 1. Januar 2026",
-          "url": "https://landesvertretung.rlp.de/fileadmin/02/Regierung/Staatskanzlei/Orga_Stk.pdf",
-          "verifiedAt": "2026-09-24"
+          "title": "Staatskanzlei Rheinland-Pfalz: Ministerpräsident Gordon Schnieder",
+          "url": "https://www.rlp.de/regierung/staatskanzlei",
+          "verifiedAt": "2026-10-09"
         }
       },
       "source": {

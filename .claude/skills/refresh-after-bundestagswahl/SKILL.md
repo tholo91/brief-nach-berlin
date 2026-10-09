@@ -165,3 +165,11 @@ C  Join-Check → tsc → ein gemeinsamer Commit
 - **Period-ID vergessen** = Script lädt die alte Legislatur erneut (Anzahl wirkt plausibel, Daten sind aber veraltet). Immer A1 zuerst.
 - **Abgeordnetenwatch 429** = `COMMITTEE_DELAY_MS` hoch, nicht abbrechen. Die Daten sind CC0, aber die API ist klein — fair bleiben.
 - **Stadtstaat-Nummern** in `parse-plz-mapping.ts` sind hart kodiert; bei Neueinteilung mitziehen, sonst kippen Berlin/HH/HB.
+
+## Nach Landtagswahlen
+
+Landtage, Wahlkreisbüros und Regierungschefs haben eigene Daten und werden getrennt von der Bundestagswahl aktualisiert.
+
+1. **Reihenfolge:** `cd web && npm run fetch:politicians`, dann `npm run fetch:landtag`, dann `npx tsx scripts/fetch-constituency-offices.ts` (Wahlkreisbüros). `fetch:politicians` lässt `landtag[]` unverändert, `fetch:landtag` behält die bisherigen MdL eines Landes, wenn Abgeordnetenwatch 0 Mandate liefert.
+2. **Landtag erst nach der konstituierenden Sitzung UND sobald Abgeordnetenwatch die neue Legislatur mit Mandaten hat neu laden.** Vorher bleibt die alte Periode aktiv, das ist korrekt. Im `fetch:landtag`-Log prüfen, dass die Periode des Landes die neue ist (Anzahl Mandate plausibel, keine `[WARN]`-Zeile).
+3. **Regierungschef in `web/data/landesregierung-addresses.json` erst tauschen, nachdem die neue Ministerpräsidentin bzw. der neue Ministerpräsident (oder Regierende Bürgermeister:in) gewählt ist.** Bis dahin ist die alte Person geschäftsführend korrekt. Beim Tausch auch `verifiedAt` (pro Eintrag und in `_meta`) aktualisieren.

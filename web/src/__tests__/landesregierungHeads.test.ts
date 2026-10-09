@@ -27,7 +27,7 @@ describe("Landeskampagne — 16 Regierungschef:innen", () => {
       expect(head.addressLines.at(-1)).toMatch(/^\d{5} /);
       expect(head.source.url).toMatch(/^https:\/\//);
       expect(head.source.title).toBeTruthy();
-      expect(head.source.verifiedAt).toBe("2026-09-24");
+      expect(head.source.verifiedAt).toBe(key === "RP" ? "2026-10-09" : "2026-09-24");
 
       const recipient = getLandesregierungRecipient(key, "head");
       expect(recipient).toMatchObject({

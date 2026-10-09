@@ -24,6 +24,14 @@ function dateLabel(isoDate: string) {
   return dateFormatter.format(new Date(`${isoDate}T00:00:00Z`));
 }
 
+function isoWeekNumber(isoDate: string) {
+  const date = new Date(`${isoDate}T00:00:00Z`);
+  const thursday = new Date(date);
+  thursday.setUTCDate(date.getUTCDate() + 3 - ((date.getUTCDay() + 6) % 7));
+  const yearStart = Date.UTC(thursday.getUTCFullYear(), 0, 1);
+  return Math.ceil(((thursday.getTime() - yearStart) / 86_400_000 + 1) / 7);
+}
+
 function lettersLabel(count: number) {
   return count === 1 ? "1 Brief" : `${numberFormatter.format(count)} Briefe`;
 }
@@ -42,16 +50,35 @@ type TileProps = {
   value: string;
   label: string;
   kpi: CreatorStatsKpi;
-  extra?: ReactNode;
+  icon: ReactNode;
+  tone?: "outcome" | "baseline";
 };
 
-function Tile({ value, label, kpi, extra }: TileProps) {
+function Tile({ value, label, kpi, icon, tone = "outcome" }: TileProps) {
   const shown = kpi.status === "shown";
+  const baseline = tone === "baseline";
   return (
-    <div className="grid grid-cols-[6rem_1fr] items-baseline gap-x-3 rounded-md border border-warmgrau/12 bg-creme/70 px-4 py-3 sm:flex sm:flex-col sm:py-4">
-      <dd className="m-0 sm:order-1">
+    <div
+      className={`grid grid-cols-[6rem_1fr] items-start gap-x-3 gap-y-1 rounded-md border px-4 py-3 sm:flex sm:flex-col sm:py-4 ${
+        baseline
+          ? "border-dashed border-warmgrau/25 bg-transparent"
+          : "border-warmgrau/12 bg-creme/70"
+      }`}
+    >
+      <div
+        className={`col-start-2 row-start-1 flex h-5 items-center sm:order-1 sm:mb-2 ${
+          baseline ? "text-warmgrau/55" : "text-waldgruen/80"
+        }`}
+      >
+        {icon}
+      </div>
+      <dd className="col-start-1 row-span-2 row-start-1 m-0 self-center sm:order-2 sm:self-start">
         {shown ? (
-          <span className="font-typewriter text-2xl font-bold leading-none text-waldgruen-dark sm:text-3xl">
+          <span
+            className={`font-typewriter text-2xl font-bold leading-none sm:text-3xl ${
+              baseline ? "text-warmgrau/75" : "text-waldgruen-dark"
+            }`}
+          >
             {value}
           </span>
         ) : (
@@ -63,8 +90,7 @@ function Tile({ value, label, kpi, extra }: TileProps) {
           </span>
         )}
       </dd>
-      <div className="sm:order-2 sm:mt-1">
-        {shown && extra}
+      <div className="col-start-2 row-start-2 sm:order-3 sm:mt-1">
         <dt
           className={`font-body text-sm leading-snug ${shown ? "text-warmgrau/80" : "text-warmgrau/55"}`}
         >
@@ -79,6 +105,46 @@ function Tile({ value, label, kpi, extra }: TileProps) {
     </div>
   );
 }
+
+function TileIcon({ children }: { children: ReactNode }) {
+  return (
+    <svg
+      aria-hidden="true"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.6"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className="h-5 w-5"
+    >
+      {children}
+    </svg>
+  );
+}
+
+const unsureIcon = (
+  <TileIcon>
+    <circle cx="12" cy="12" r="9" />
+    <path d="M9.6 9.3a2.5 2.5 0 0 1 4.8.9c0 1.7-2.4 2.2-2.4 3.6" />
+    <path d="M12 17h.01" />
+  </TileIcon>
+);
+
+const envelopeIcon = (
+  <TileIcon>
+    <rect x="3" y="5.5" width="18" height="13" rx="1.5" />
+    <path d="m3.5 6.5 8.5 6.5 8.5-6.5" />
+  </TileIcon>
+);
+
+const sproutIcon = (
+  <TileIcon>
+    <path d="M12 20v-8" />
+    <path d="M12 12c0-3.5-2.5-6-6.5-6 0 3.5 2.5 6 6.5 6Z" />
+    <path d="M12 14.5c0-3 2.2-5.5 6.5-5.5 0 3-2.2 5.5-6.5 5.5Z" />
+  </TileIcon>
+);
 
 type SignalsView = CampaignCreatorStatsView["signals"];
 
@@ -107,7 +173,7 @@ function Timeline({ timeline }: { timeline: CreatorTimeline }) {
   const last = buckets[buckets.length - 1];
   const unitLabel = daily ? "Briefe pro Tag" : "Briefe pro Woche";
   const bucketLabel = (start: string) =>
-    daily ? dateLabel(start) : `Woche ab ${dateLabel(start)}`;
+    daily ? dateLabel(start) : `KW ${isoWeekNumber(start)}, ab ${dateLabel(start)}`;
 
   return (
     <div className="flex h-full flex-col">
@@ -121,19 +187,33 @@ function Timeline({ timeline }: { timeline: CreatorTimeline }) {
       >
         {buckets.map((bucket) => {
           const isPeak = bucket.start === peak.start;
-          return bucket.count === 0 ? (
+          return (
             <div
               key={bucket.start}
-              title={`${bucketLabel(bucket.start)}: 0 Briefe`}
-              className="h-px max-w-6 flex-1 bg-warmgrau/15"
-            />
-          ) : (
-            <div
-              key={bucket.start}
-              title={`${bucketLabel(bucket.start)}: ${lettersLabel(bucket.count)}`}
-              className={`max-w-6 flex-1 rounded-t-sm ${isPeak ? "bg-waldgruen" : "bg-waldgruen/35"}`}
-              style={{ height: `${Math.max(4, Math.round((bucket.count / peak.count) * 100))}%` }}
-            />
+              className="group relative flex h-full max-w-6 flex-1 flex-col justify-end"
+            >
+              <span
+                aria-hidden="true"
+                className="pointer-events-none absolute bottom-full left-1/2 z-10 mb-1 -translate-x-1/2 whitespace-nowrap rounded border border-warmgrau/15 bg-white px-2 py-1 text-center font-body text-xs leading-tight text-warmgrau/85 opacity-0 shadow-sm transition-opacity duration-100 group-hover:opacity-100 motion-reduce:transition-none"
+              >
+                <span className="block font-semibold text-waldgruen-dark">
+                  {bucketLabel(bucket.start)}
+                </span>
+                {lettersLabel(bucket.count)}
+              </span>
+              {bucket.count === 0 ? (
+                <div className="h-px bg-warmgrau/15" />
+              ) : (
+                <div
+                  className={`rounded-t-sm transition-colors ${
+                    isPeak
+                      ? "bg-waldgruen"
+                      : "bg-waldgruen/35 group-hover:bg-waldgruen/60"
+                  }`}
+                  style={{ height: `${Math.max(4, Math.round((bucket.count / peak.count) * 100))}%` }}
+                />
+              )}
+            </div>
           );
         })}
       </div>
@@ -346,23 +426,45 @@ export function CampaignCreatorStats({
 
         {feedback.status === "ready" && (
           <div className="mt-5 border-t border-warmgrau/12 pt-4">
-            {feedback.powerlessness.status === "shown" && (
-              <p className="mb-3 max-w-xl font-body text-sm leading-relaxed text-warmgrau/80">
-                Vorher wussten {feedback.powerlessness.value} % oft oder
-                manchmal nicht, was sie politisch konkret tun können. Danach:
-              </p>
-            )}
-            <dl className="m-0 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+            <dl className="m-0 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
               <Tile
+                tone="baseline"
+                icon={unsureIcon}
+                kpi={feedback.powerlessness}
+                value={
+                  feedback.powerlessness.status === "shown"
+                    ? `${feedback.powerlessness.value} %`
+                    : ""
+                }
+                label="wussten vorher oft oder manchmal nicht, was sie politisch konkret tun können"
+              />
+              <Tile
+                icon={envelopeIcon}
                 kpi={feedback.sendRate}
                 value={
                   feedback.sendRate.status === "shown"
-                    ? `${feedback.sendRate.value} %`
+                    ? `${feedback.sendRate.value} %`
                     : ""
                 }
                 label="schicken ihren Brief ab"
               />
               <Tile
+                icon={
+                  feedback.averageRating.status === "shown" ? (
+                    <span
+                      role="img"
+                      aria-label={`${ratingFormatter.format(feedback.averageRating.value)} von 5 Sternen`}
+                    >
+                      <span aria-hidden="true" className="block">
+                        <StarBar rating={feedback.averageRating.value} size="sm" />
+                      </span>
+                    </span>
+                  ) : (
+                    <span aria-hidden="true" className="block">
+                      <StarBar rating={0} size="sm" />
+                    </span>
+                  )
+                }
                 kpi={feedback.averageRating}
                 value={
                   feedback.averageRating.status === "shown"
@@ -370,25 +472,13 @@ export function CampaignCreatorStats({
                     : ""
                 }
                 label="Zufriedenheit mit dem fertigen Brief"
-                extra={
-                  feedback.averageRating.status === "shown" && (
-                    <span
-                      role="img"
-                      aria-label={`${ratingFormatter.format(feedback.averageRating.value)} von 5 Sternen`}
-                      className="mb-1.5 block sm:mb-2"
-                    >
-                      <span aria-hidden="true" className="block">
-                        <StarBar rating={feedback.averageRating.value} size="sm" />
-                      </span>
-                    </span>
-                  )
-                }
               />
               <Tile
+                icon={sproutIcon}
                 kpi={feedback.selfEfficacy}
                 value={
                   feedback.selfEfficacy.status === "shown"
-                    ? `${feedback.selfEfficacy.value} %`
+                    ? `${feedback.selfEfficacy.value} %`
                     : ""
                 }
                 label="fühlen sich danach eher in der Lage, sich politisch einzubringen"

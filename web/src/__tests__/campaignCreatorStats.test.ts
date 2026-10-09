@@ -856,16 +856,19 @@ describe("CampaignCreatorStats rendering", () => {
     );
   }
 
-  it("renders Verlauf, strongest day, recipients, powerlessness context line and tag chips", () => {
+  it("renders Verlauf, strongest day, recipients, powerlessness tile first and tag chips", () => {
     const markup = renderFull();
     expect(markup).toContain("Verlauf");
     expect(markup).toContain("Stärkster Tag: 30. Sept. mit 18 Briefen");
-    expect(markup).toContain('title="30. Sept.: 18 Briefe"');
+    expect(markup).toMatch(/30\. Sept\.<\/span>18 Briefe/);
     expect(markup).toContain("Briefe pro Tag von 16. Sept. bis 8. Okt.");
     expect(markup).toContain("Geschrieben an: Bundestag-Abgeordnete 18, Landesregierung 6, Andere Empfänger 2");
-    expect(markup).toContain("Vorher wussten 100 % oft oder manchmal nicht");
-    expect(markup).not.toContain("wissen oft oder manchmal nicht");
-    expect(markup).toContain("lg:grid-cols-3");
+    expect(markup).toContain("wussten vorher oft oder manchmal nicht");
+    expect(markup.indexOf("wussten vorher")).toBeLessThan(markup.indexOf("schicken ihren Brief ab"));
+    expect(markup.indexOf("Zufriedenheit mit dem fertigen Brief")).toBeLessThan(
+      markup.indexOf("fühlen sich danach eher in der Lage"),
+    );
+    expect(markup).toContain("lg:grid-cols-4");
     expect(markup).toContain("Was über die Briefe gesagt wird");
     expect(markup).toContain("Zu lang");
   });
@@ -882,7 +885,7 @@ describe("CampaignCreatorStats rendering", () => {
     const markup = renderFull(signals(12));
     expect(markup).toContain("Stärkste Woche: ab 7. Sept. mit 12 Briefen");
     expect(markup).toContain("Briefe pro Woche von 7. Sept. bis 5. Okt.");
-    expect(markup).toContain("Woche ab 7. Sept.: 12 Briefe");
+    expect(markup).toContain("KW 37, ab 7. Sept.</span>12 Briefe");
   });
 
   it("shows only a hint while a running campaign is younger than three days", () => {

@@ -7,7 +7,7 @@ import { SUPPORT_CONTENT } from "@/lib/support-content";
 
 const AVATAR_EMOJIS = [
   { emoji: "💌", className: "left-0 top-6 -rotate-12 text-2xl" },
-  { emoji: "❤️", className: "right-3 top-2 rotate-12 text-xl" },
+  { emoji: "🕊️", className: "right-3 top-2 rotate-12 text-xl" },
   { emoji: "🙏", className: "-left-3 top-[45%] -rotate-6 text-xl" },
   { emoji: "✉️", className: "right-0 top-[38%] rotate-6 text-lg" },
   { emoji: "🌱", className: "left-6 top-0 rotate-3 text-lg" },

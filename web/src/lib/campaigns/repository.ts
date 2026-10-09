@@ -3,6 +3,7 @@ import "server-only";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { getServiceRoleClient } from "@/lib/supabase/server";
 import { isCampaignEnded } from "./endDate";
+import { DEFAULT_CAMPAIGN_MILESTONES, normalizeMilestones } from "./milestones";
 import {
   createCampaignSchema,
   compactCampaignSlug,
@@ -47,6 +48,9 @@ type CampaignRow = {
   topic_taxonomy_version?: string | null;
   topic_model?: string | null;
   ends_at?: string | null;
+  milestones?: number[] | null;
+  milestone_notified?: number | null;
+  milestone_mails_enabled?: boolean | null;
   email_verified_at: string | null;
   activated_at: string | null;
   paused_at: string | null;
@@ -150,6 +154,11 @@ function mapCampaign(row: CampaignRow): Campaign {
     targetPoliticianIds: row.target_politician_ids ?? [],
     topic: parseCampaignTopic(row),
     endsAt: row.ends_at ?? null,
+    milestones:
+      row.milestones == null
+        ? [...DEFAULT_CAMPAIGN_MILESTONES]
+        : normalizeMilestones(row.milestones),
+    milestoneMailsEnabled: row.milestone_mails_enabled ?? true,
     emailVerifiedAt: row.email_verified_at,
     activatedAt: row.activated_at,
     pausedAt: row.paused_at,

@@ -1,5 +1,6 @@
 import { BrevoClient } from "@getbrevo/brevo";
 import { APP_NAME, APP_URL, EMAIL_SENDER_NAME } from "@/lib/config";
+import { formatLetterCount } from "@/lib/campaigns/milestones";
 import {
   buildCampaignCreatorEmailHtml,
   type CampaignCreatorEmailKind,
@@ -20,6 +21,7 @@ export interface SendCampaignCreatorEmailParams {
   creatorName?: string | null;
   adminCopy?: boolean;
   campaignStatus?: "awaiting_approval" | "active" | "paused";
+  milestone?: { count: number; milestones: number[] };
 }
 
 function campaignUrl(slug: string): string {
@@ -33,17 +35,31 @@ function actionUrl(kind: CampaignCreatorEmailKind, token: string): string {
   return `${APP_URL}/kampagne/verwalten?token=${encodeURIComponent(token)}`;
 }
 
+function milestoneImageUrl(slug: string, count: number): string {
+  return `${APP_URL}/kampagne/${encodeURIComponent(slug)}/meilenstein/${count}/bild`;
+}
+
 export async function sendCampaignCreatorEmail(
   params: SendCampaignCreatorEmailParams
 ): Promise<{ success: boolean; messageId?: string }> {
   try {
+    const milestone =
+      params.kind === "milestone" && params.milestone
+        ? {
+            ...params.milestone,
+            imageUrl: milestoneImageUrl(params.slug, params.milestone.count),
+            downloadUrl: `${milestoneImageUrl(params.slug, params.milestone.count)}?download=1`,
+          }
+        : undefined;
     const result = await brevo.transactionalEmails.sendTransacEmail({
       subject:
         params.kind === "verify_email"
           ? `${APP_NAME}: Kampagne bestätigen`
           : params.kind === "management_pending"
             ? `${APP_NAME}: Kampagne wartet auf Freigabe`
-          : `${APP_NAME}: Kampagne verwalten`,
+            : params.kind === "milestone" && params.milestone
+              ? `${formatLetterCount(params.milestone.count)} Briefe für „${params.campaignTitle}“`
+              : `${APP_NAME}: Kampagne verwalten`,
       htmlContent: buildCampaignCreatorEmailHtml({
         kind: params.kind,
         campaignTitle: params.campaignTitle,
@@ -52,6 +68,7 @@ export async function sendCampaignCreatorEmail(
         actionUrl: actionUrl(params.kind, params.token),
         creatorName: params.creatorName,
         campaignStatus: params.campaignStatus,
+        milestone,
       }),
       sender: {
         name: EMAIL_SENDER_NAME,

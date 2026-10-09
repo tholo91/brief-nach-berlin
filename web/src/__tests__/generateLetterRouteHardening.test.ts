@@ -25,6 +25,12 @@ jest.mock("@/lib/rateLimit", () => ({
 }));
 jest.mock("@/lib/counter", () => ({ incrementLetterCounters: jest.fn() }));
 jest.mock("@/lib/campaigns/repository", () => ({ getActiveCampaignBySlug: jest.fn() }));
+jest.mock("@/lib/campaigns/milestoneNotification", () => ({
+  claimAndSendCampaignMilestone: jest.fn(),
+}));
+jest.mock("@/lib/actions/letterSignals", () => ({
+  markLetterSignalGeneratedAction: jest.fn(async () => ({ ok: true })),
+}));
 jest.mock("@/lib/mistral", () => ({
   MistralProviderUnavailableError: class extends Error {},
   MistralStageError: class extends Error {
@@ -43,7 +49,10 @@ jest.mock("@/lib/mistral", () => ({
   },
 }));
 
+import { after } from "next/server";
 import { POST } from "@/app/api/generate-letter/route";
+import { claimAndSendCampaignMilestone } from "@/lib/campaigns/milestoneNotification";
+import { sendLetterEmail, prepareLetterEmail } from "@/lib/email/sendLetterEmail";
 import { generateLetter } from "@/lib/generation/generateLetter";
 import { resolveRecipientSelection } from "@/lib/lookup/resolveRecipient";
 import { moderateText } from "@/lib/moderation/moderateText";
@@ -242,6 +251,129 @@ describe("generate-letter RecipientSelection hardening", () => {
       errorId: expect.any(String),
       detail: { name: "MistralStageError", status: 400, stage: "generation" },
       retrySafe: true,
+    });
+  });
+
+  describe("Meilenstein-Mail im after()-Block", () => {
+    beforeEach(() => {
+      jest.spyOn(console, "error").mockImplementation(() => undefined);
+      jest.spyOn(console, "log").mockImplementation(() => undefined);
+    });
+
+    afterEach(() => {
+      jest.restoreAllMocks();
+    });
+
+    const recipient = {
+      kind: "rathaus" as const,
+      level: "Kommune" as const,
+      recipientKind: "buergermeisteramt" as const,
+      gemeindeName: "Musterstadt",
+      plz: "28203",
+      label: "Bürgermeisteramt Musterstadt",
+      postalAddress: "Musterstraße 1",
+      address: { source: "fallback" as const },
+    };
+
+    function arrange(campaign: unknown, letterNumber: number) {
+      jest.mocked(checkRateLimit).mockReturnValue({ allowed: true });
+      jest.mocked(hashIdentifier).mockReturnValue("hashed");
+      jest.mocked(getActiveCampaignBySlug).mockResolvedValue(campaign as never);
+      jest.mocked(incrementLetterCounters).mockResolvedValue(letterNumber);
+      jest.mocked(resolveRecipientSelection).mockReturnValue({
+        ok: true,
+        availableCount: 1,
+        relation: "institutional",
+        recipient,
+      });
+      jest.mocked(generateLetter).mockResolvedValue({
+        letter: "Ein normaler Brief.",
+        topic: null,
+        selectedRecipient: recipient,
+        selectedPolitician: null,
+        politicalLevel: "Kommune",
+        wordCount: 4,
+        wordCountInRange: false,
+        fallbackUsed: false,
+        mdbContextUsed: false,
+        retried: false,
+        model: "test-model",
+        temperature: 0,
+        generationMs: 1,
+      });
+      jest.mocked(prepareLetterEmail).mockReturnValue({ params: {}, feedbackToken: "t" } as never);
+      jest.mocked(sendLetterEmail).mockResolvedValue({ success: false });
+    }
+
+    function postLetter(campaign?: { slug: string; title: string }) {
+      return POST(requestWith({
+        wizardData: {
+          plz: "28203",
+          email: "test@example.org",
+          issueText: "Ein ausreichend langes Anliegen für den Test.",
+          letterLength: "1.5",
+          toneLevel: 3,
+          ...(campaign ? { campaign } : {}),
+        },
+        selection: { kind: "rathaus" },
+      }));
+    }
+
+    async function runAfter() {
+      expect(after).toHaveBeenCalledTimes(1);
+      await (jest.mocked(after).mock.calls[0]![0] as () => Promise<void>)();
+    }
+
+    it("löst den Claim einmal für die laufende Kampagne aus", async () => {
+      arrange(
+        {
+          slug: "laufende-kampagne",
+          targetLevel: "Bund",
+          targetState: null,
+          targetRecipient: null,
+          targetPoliticianIds: [],
+          topic: null,
+          endsAt: null,
+        },
+        1234,
+      );
+
+      const response = await postLetter({ slug: "laufende-kampagne", title: "Laufende Kampagne" });
+      await runAfter();
+
+      expect(response.status).toBe(200);
+      expect(incrementLetterCounters).toHaveBeenCalledWith("laufende-kampagne");
+      expect(claimAndSendCampaignMilestone).toHaveBeenCalledTimes(1);
+      expect(claimAndSendCampaignMilestone).toHaveBeenCalledWith("laufende-kampagne");
+    });
+
+    it("löst keinen Claim für einen Brief ohne Kampagne aus", async () => {
+      arrange(null, 1234);
+
+      await postLetter();
+      await runAfter();
+
+      expect(claimAndSendCampaignMilestone).not.toHaveBeenCalled();
+    });
+
+    it("löst keinen Claim für eine beendete Kampagne aus", async () => {
+      arrange(
+        {
+          slug: "alte-kampagne",
+          targetLevel: "Bund",
+          targetState: null,
+          targetRecipient: null,
+          targetPoliticianIds: [],
+          topic: null,
+          endsAt: "2026-01-01T22:59:59.000Z",
+        },
+        1234,
+      );
+
+      await postLetter({ slug: "alte-kampagne", title: "Alte Kampagne" });
+      await runAfter();
+
+      expect(claimAndSendCampaignMilestone).not.toHaveBeenCalled();
     });
   });
 });

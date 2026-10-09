@@ -288,6 +288,10 @@ export type Campaign = {
   topic?: TopicSignal | null;
   /** Optionales Kampagnenende (ISO). Fehlt oder null: läuft ohne festes Ende. */
   endsAt?: string | null;
+  /** Briefstufen für Meilenstein-Mails an den Ersteller. Fehlt: Standardstufen. */
+  milestones?: number[];
+  /** Schalter des Erstellers für Meilenstein-Mails. Fehlt: an. */
+  milestoneMailsEnabled?: boolean;
   emailVerifiedAt: string | null;
   activatedAt: string | null;
   pausedAt: string | null;

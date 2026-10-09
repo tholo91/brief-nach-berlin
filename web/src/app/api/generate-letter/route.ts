@@ -28,6 +28,7 @@ import {
 } from "@/lib/mistral";
 import { incrementLetterCounters } from "@/lib/counter";
 import { runningCampaign } from "@/lib/campaigns/endDate";
+import { claimAndSendCampaignMilestone } from "@/lib/campaigns/milestoneNotification";
 import { getActiveCampaignBySlug } from "@/lib/campaigns/repository";
 import { buildLetterSignalContext, doesLetterSignalContextMatch } from "@/lib/letterSignals/context";
 import { createGenerationProof, verifyLetterSignalContext } from "@/lib/letterSignals/token";
@@ -312,6 +313,10 @@ export async function POST(req: NextRequest) {
 
     // Send email and follow-up after the response
     after(async () => {
+      if (campaign && letterNumber !== undefined) {
+        await claimAndSendCampaignMilestone(campaign.slug);
+      }
+
       // Generation is optional metadata. The voluntary map contribution was
       // already accepted independently and remains valid if mail delivery fails.
       const finalized = await markLetterSignalGeneratedAction({ generationProof });

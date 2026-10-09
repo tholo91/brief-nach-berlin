@@ -2,17 +2,31 @@ import {
   APP_NAME,
   APP_URL,
   CAMPAIGN_CREATOR_FEEDBACK_URL,
+  DONATION_PROVIDER_URL,
 } from "@/lib/config";
+import {
+  formatLetterCount,
+  formatMilestoneList,
+} from "@/lib/campaigns/milestones";
 import { BRIEF_EMAIL } from "@/lib/contact";
 import { buildShareTarget } from "@/lib/share";
 import { SUPPORT_CAMPAIGN_CREATOR_COPY, SUPPORT_CONTENT } from "@/lib/support-content";
+import { buildSocialFollowHtml } from "./buildSocialFollowHtml";
 import { buildFinancingNoticeHtml } from "./financingNotice";
 
 export type CampaignCreatorEmailKind =
   | "verify_email"
   | "management_pending"
   | "management"
-  | "transfer";
+  | "transfer"
+  | "milestone";
+
+export interface CampaignMilestoneEmailParams {
+  count: number;
+  milestones: number[];
+  imageUrl: string;
+  downloadUrl: string;
+}
 
 export interface BuildCampaignCreatorEmailHtmlParams {
   kind: CampaignCreatorEmailKind;
@@ -22,6 +36,7 @@ export interface BuildCampaignCreatorEmailHtmlParams {
   actionUrl: string;
   creatorName?: string | null;
   campaignStatus?: "awaiting_approval" | "active" | "paused";
+  milestone?: CampaignMilestoneEmailParams;
 }
 
 function escapeHtml(text: string): string {
@@ -33,9 +48,129 @@ function escapeHtml(text: string): string {
     .replace(/'/g, "&#39;");
 }
 
+const HEAD_STYLE = `<style>
+    @media only screen and (max-width: 600px) {
+      .bnb-pad { padding-left: 18px !important; padding-right: 18px !important; }
+      .bnb-cta-cell { display: block !important; width: 100% !important; padding: 0 0 10px 0 !important; }
+      .bnb-cta-link { padding: 14px 10px !important; }
+      .bnb-share-label { display: none !important; }
+      .bnb-share-btn { padding: 13px 0 !important; }
+      .bnb-share-icon { width: 22px !important; height: 22px !important; margin: 0 !important; }
+      .bnb-inner-pad { padding-left: 14px !important; padding-right: 14px !important; }
+      .bnb-support-action { display: block !important; width: 100% !important; padding-left: 0 !important; padding-right: 0 !important; }
+      .bnb-support-action-primary { padding-bottom: 8px !important; }
+    }
+  </style>`;
+
+const STRIPE_ROW = `<tr>
+            <td style="height:4px;font-size:0;line-height:0;background:repeating-linear-gradient(-45deg,#C1121F,#C1121F 8px,#FAF8F5 8px,#FAF8F5 12px,#1D3557 12px,#1D3557 20px,#FAF8F5 20px,#FAF8F5 24px);">&nbsp;</td>
+          </tr>`;
+
+function buildMilestoneEmailHtml(
+  params: BuildCampaignCreatorEmailHtmlParams,
+  milestone: CampaignMilestoneEmailParams
+): string {
+  const title = escapeHtml(params.campaignTitle);
+  const creatorName = params.creatorName?.trim();
+  const greeting = creatorName ? `Moin ${escapeHtml(creatorName)},` : "Moin,";
+  const count = formatLetterCount(milestone.count);
+  const showSupport = milestone.count >= 500;
+  const outlineButton = (href: string, label: string, external: boolean) =>
+    `<a href="${href}"${external ? ' target="_blank" rel="noopener noreferrer"' : ""} class="bnb-cta-link" style="display:block;text-align:center;background-color:#ffffff;color:#2D6A4F;font-size:15px;font-weight:bold;text-decoration:none;padding:12px 8px;border-radius:4px;border:1px solid #2D6A4F;line-height:1.25;">${label}</a>`;
+  const buttons = showSupport
+    ? [
+        outlineButton(params.actionUrl, "&#9998;&nbsp;Kampagne verwalten", true),
+        outlineButton(`mailto:${BRIEF_EMAIL}`, "Thomas schreiben", false),
+      ]
+    : [
+        outlineButton(params.actionUrl, "&#9998;&nbsp;Verwalten", true),
+        outlineButton(DONATION_PROVIDER_URL, "&#9829;&nbsp;Unterstützen", true),
+        outlineButton(`mailto:${BRIEF_EMAIL}`, "Thomas schreiben", false),
+      ];
+  const cellWidth = showSupport ? "50%" : "33.33%";
+  const buttonCells = buttons
+    .map((button, index) => {
+      const padding =
+        index === 0
+          ? "padding-right:5px;"
+          : index === buttons.length - 1
+            ? "padding-left:5px;"
+            : "padding:0 5px;";
+      return `<td class="bnb-cta-cell" style="width:${cellWidth};${padding}" valign="top">${button}</td>`;
+    })
+    .join("\n                  ");
+  const supportBlock = showSupport
+    ? `<div style="margin:0 0 22px;">${buildFinancingNoticeHtml(
+        {
+          ...SUPPORT_CAMPAIGN_CREATOR_COPY,
+          heading: SUPPORT_CAMPAIGN_CREATOR_COPY.milestoneHeading,
+        },
+        {
+          src: `${APP_URL}${SUPPORT_CONTENT.founder.avatarPath}`,
+          alt: SUPPORT_CONTENT.founder.name,
+        },
+      )}</div>`
+    : "";
+  const footerLink = (href: string, label: string) =>
+    `<a href="${href}" target="_blank" rel="noopener noreferrer" style="color:#888888;text-decoration:underline;">${label}</a>`;
+
+  return `<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  ${HEAD_STYLE}
+</head>
+<body style="margin:0;padding:0;background-color:#FAF8F5;font-family:Georgia,'Times New Roman',serif;color:#3D3D3D;">
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color:#FAF8F5;">
+    <tr>
+      <td align="center" style="padding:24px 12px;">
+        <table role="presentation" width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;background-color:#ffffff;border-collapse:collapse;">
+          ${STRIPE_ROW}
+          <tr>
+            <td style="padding:0;font-size:0;line-height:0;">
+              <img src="${escapeHtml(milestone.imageUrl)}" width="600" alt="${count} Briefe für „${title}“" style="display:block;width:100%;max-width:600px;height:auto;border:0;">
+            </td>
+          </tr>
+          <tr>
+            <td class="bnb-pad" style="padding:22px 28px 0;">
+              <p style="margin:0 0 16px;font-size:16px;line-height:1.65;">${greeting}</p>
+              <p style="margin:0 0 16px;font-size:16px;line-height:1.65;">${count} Briefe und kein Ende in Sicht. So viele Menschen haben die Argumente deiner Kampagne aufgegriffen und daraus ihren eigenen, persönlichen Brief geschrieben.</p>
+              <p style="margin:0 0 22px;font-size:16px;line-height:1.65;">Wenn du magst, teil deinen Fortschritt auf Instagram, LinkedIn oder WhatsApp. Das Bild dafür ist schon fertig.</p>
+              ${supportBlock}
+              <table role="presentation" cellpadding="0" cellspacing="0" width="100%" style="margin:0 0 26px;">
+                <tr>
+                  ${buttonCells}
+                </tr>
+              </table>
+            </td>
+          </tr>
+          ${STRIPE_ROW}
+          <tr>
+            <td class="bnb-pad" style="padding:22px 28px 26px;background-color:#FAF8F5;text-align:center;">
+              <p style="margin:0 0 6px;font-size:12px;line-height:1.5;color:#999999;"><a href="${APP_URL}" target="_blank" rel="noopener noreferrer" style="color:#2D6A4F;text-decoration:none;">Brief-nach-Berlin</a> · Meilenstein-Mail</p>
+              <p style="margin:0 0 6px;font-size:12px;line-height:1.5;color:#aaaaaa;">Du bekommst diese Mail bei ${formatMilestoneList(milestone.milestones)} Briefen. <a href="${params.actionUrl}#meilenstein-mails" target="_blank" rel="noopener noreferrer" style="color:#888888;text-decoration:underline;">Diese Mails abbestellen</a></p>
+              <p style="margin:0;font-size:12px;line-height:1.5;color:#aaaaaa;">${footerLink(params.campaignUrl, "Kampagnenseite")} · ${footerLink(`${APP_URL}/impressum`, "Impressum")} · ${footerLink(`${APP_URL}/datenschutz`, "Datenschutz")} · ${footerLink(CAMPAIGN_CREATOR_FEEDBACK_URL, "Feedback")}</p>
+              ${buildSocialFollowHtml({ marginTop: 14 })}
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>`;
+}
+
 export function buildCampaignCreatorEmailHtml(
   params: BuildCampaignCreatorEmailHtmlParams
 ): string {
+  if (params.kind === "milestone") {
+    if (!params.milestone) {
+      throw new Error("milestone params are required for kind milestone");
+    }
+    return buildMilestoneEmailHtml(params, params.milestone);
+  }
   const title = escapeHtml(params.campaignTitle);
   const creatorName = params.creatorName?.trim();
   const greeting = creatorName ? `Moin ${escapeHtml(creatorName)},` : "Moin,";
@@ -151,28 +286,14 @@ export function buildCampaignCreatorEmailHtml(
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <style>
-    @media only screen and (max-width: 600px) {
-      .bnb-pad { padding-left: 18px !important; padding-right: 18px !important; }
-      .bnb-cta-cell { display: block !important; width: 100% !important; padding: 0 0 10px 0 !important; }
-      .bnb-cta-link { padding: 14px 10px !important; }
-      .bnb-share-label { display: none !important; }
-      .bnb-share-btn { padding: 13px 0 !important; }
-      .bnb-share-icon { width: 22px !important; height: 22px !important; margin: 0 !important; }
-      .bnb-inner-pad { padding-left: 14px !important; padding-right: 14px !important; }
-      .bnb-support-action { display: block !important; width: 100% !important; padding-left: 0 !important; padding-right: 0 !important; }
-      .bnb-support-action-primary { padding-bottom: 8px !important; }
-    }
-  </style>
+  ${HEAD_STYLE}
 </head>
 <body style="margin:0;padding:0;background-color:#FAF8F5;font-family:Georgia,'Times New Roman',serif;color:#3D3D3D;">
   <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color:#FAF8F5;">
     <tr>
       <td align="center" style="padding:24px 12px;">
         <table role="presentation" width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;background-color:#ffffff;border-collapse:collapse;">
-          <tr>
-            <td style="height:4px;font-size:0;line-height:0;background:repeating-linear-gradient(-45deg,#C1121F,#C1121F 8px,#FAF8F5 8px,#FAF8F5 12px,#1D3557 12px,#1D3557 20px,#FAF8F5 20px,#FAF8F5 24px);">&nbsp;</td>
-          </tr>
+          ${STRIPE_ROW}
           <tr>
             <td class="bnb-pad" style="padding:28px 28px 8px;text-align:center;">
               <img src="${APP_URL}/images/campaign-creator-icon.webp" width="58" height="58" alt="" style="display:block;width:58px;height:58px;margin:0 auto 12px;border:0;outline:none;text-decoration:none;">
@@ -203,9 +324,7 @@ export function buildCampaignCreatorEmailHtml(
               ${supportBlock}
             </td>
           </tr>
-          <tr>
-            <td style="height:4px;font-size:0;line-height:0;background:repeating-linear-gradient(-45deg,#C1121F,#C1121F 8px,#FAF8F5 8px,#FAF8F5 12px,#1D3557 12px,#1D3557 20px,#FAF8F5 20px,#FAF8F5 24px);">&nbsp;</td>
-          </tr>
+          ${STRIPE_ROW}
           <tr>
             <td class="bnb-pad" style="padding:22px 28px 12px;background-color:#FAF8F5;text-align:center;">
               <p style="margin:0;font-size:12px;line-height:1.5;color:#999999;"><a href="${APP_URL}" target="_blank" rel="noopener noreferrer" style="color:#2D6A4F;text-decoration:none;">Brief-nach-Berlin</a> · Kampagnenzugang</p>

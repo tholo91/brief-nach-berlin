@@ -1,4 +1,4 @@
-# Brand Identity — Brief nach Berlin
+# Brand Identity — Brief-nach-Berlin
 
 > Stand: 25. März 2026 | Status: v1 — Grundlage für Landing Page
 
@@ -6,7 +6,7 @@
 
 ## 1. Markenkern
 
-**Name:** Brief nach Berlin
+**Name:** Brief-nach-Berlin
 **Claim:** Demokratie braucht deine Stimme — wir machen es dir leicht.
 **Elevator Pitch:** Du sagst uns, was dich stört — in deinem Viertel, deiner Stadt oder in der großen Politik. Wir finden den richtigen Abgeordneten, formulieren deinen Brief und du schreibst ihn ab. In fünf Minuten. Handgeschrieben wirkt.
 
@@ -41,7 +41,7 @@
 
 **Nutzer-Frage (im Onboarding möglich):** „Bist du Mitglied einer Partei?" — ermöglicht personalisierte Delegation und Argumentation.
 
-**Was sie eint:** Sie *wollen* etwas tun, aber die Hürde ist zu hoch. Brief nach Berlin senkt diese Hürde auf fünf Minuten.
+**Was sie eint:** Sie *wollen* etwas tun, aber die Hürde ist zu hoch. Brief-nach-Berlin senkt diese Hürde auf fünf Minuten.
 
 ---
 
@@ -127,6 +127,42 @@ Der Nutzer durchläuft auf der Landing Page und im Produkt vier Phasen:
 **Signature Animation:**
 - Wenn die KI den Brief fertig generiert hat: Ein Briefumschlag schließt sich, wird versiegelt und fliegt aus dem Frame
 - Zentrales Markenerlebnis — das ist der „Aha-Moment"
+
+### 6.4a Bildstil für generierte Bilder (Prompts)
+
+Gilt für alle KI-generierten Illustrationen. Fertige Prompts liegen in `prompts/<bereich>/image/`; neue Prompts dort ablegen und von einem bestehenden ableiten, damit der Stil konsistent bleibt.
+
+**Stil:**
+- Studio-Ghibli-Hintergrundkunst (Kazuo Oga): handgemalt, sichtbare Pinselstriche, Aquarell für Himmel und Ferne, Gouache für Mittelgrund
+- Ein idealisiertes, grünes Berlin: Reichstag-Kuppel, Fernsehturm, Windräder, Altbau mit Dachbegrünung und Solarpanels, Fahrräder statt Autos
+- Solarpunk nur als Hauch: Der Ghibli-Look trägt das Bild, Solarpunk ist Beiwerk (junge Linden, Efeu an der Mauer, ein Fahrrad, eine dünne Reihe Solarpanels in der Ferne). Bei Szenen mit Menschen im Vordergrund (z. B. `prompts/bundestag-besuch/`) keine Windräder, keine begrünten Hochhäuser, nichts Futuristisches
+- Warm, hoffnungsvoll, lebendig, nie kitschig oder niedlich
+- Europäische Architektur mit japanischer Animationssensibilität (Kiki, Howl), geerdet in echtem Berliner Altbau
+
+**Farben:**
+- Dominant gestaffelte Grüntöne (Waldgrün #2D6A4F, Salbei, Oliv, Moos)
+- Creme #FAF8F5 und Sandstein für Gebäude und Papier
+- Goldenes Licht wie Honig, nicht Orange; blaugrüne Schatten, nie Schwarz
+- Akzente sparsam: gedämpftes Airmail-Rot (#C1121F) und Airmail-Blau (#1D3557), z. B. Briefkasten, Briefumschlag
+- Keine Parteifarben, kein Logo einer Partei
+
+**Motive:**
+- Der Brief und der Briefumschlag als roter Faden (Airmail-Rand, Briefmarke)
+- Menschen klein und freundlich im Bild, keine Menschenmassen, keine erkennbaren Politiker:innen
+- Handschrift und Papier statt Technik (kein Laptop, kein Handy im Bild)
+
+**Ausschlüsse:**
+- Kein Text, keine UI-Elemente, keine lesbare Schrift auf Briefen
+- Kein Stock-Foto-Look, kein „AI Glow", keine Glossy-3D-Optik
+
+**Ränder und Seitenverhältnis:**
+- Standard: sauberes Rechteck bis zum Rand, das Ausblenden in Creme macht das CSS
+- Ausnahme Hero (`prompts/cta-background/`): weicher Verlauf in Creme #FAF8F5, leicht abgedunkelt (70–80 %) wegen Text darüber
+- Seitenverhältnis je Container angeben (16:9, 4:3, 3:2, 1:1)
+
+**Workflow:**
+- Erst ein Referenzbild festlegen (Komposition, Farbe, Stil), dann Video daraus ableiten
+- Video: statische Kamera, nur dezente Bewegung (Blätter, Vögel, ein Fahrrad, Windräder), nahtlose Schleife; der Video-Prompt beschreibt nur, was sich bewegt
 
 ### 6.5 Ikonisches Element
 

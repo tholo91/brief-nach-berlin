@@ -78,6 +78,123 @@ Plans:
 
 ## Backlog
 
+### Phase 999.37: Kampagnen: persönlicher Aufhänger im Wizard (BACKLOG)
+
+**Goal:** Kampagnenbriefe sollen eine persönliche Note bekommen. Viele
+Besucher:innen schicken die Vorlage unverändert ab (Annahme, das Tracking in
+diesem Item prüft das). Ein optionales Feld mit kampagnenspezifischen
+Aufhängern macht es leicht, in ein paar Wörtern zu sagen, wie man selbst
+betroffen ist. Zusammen mit 999.38 sollen viele Briefe einer Kampagne dasselbe
+Thema tragen, ohne dass ein Abgeordnetenbüro eine Vorlage erkennt.
+
+**Scope:**
+- Wizard-Schritt 2b (`StepPreferences`), nur im Kampagnenmodus: optionales Feld
+  "Möchtest du noch etwas Persönliches hinzufügen?". Es erscheint nur, wenn das
+  Anliegen gegenüber der Kampagnenvorlage unverändert ist.
+- Wechselnder Placeholder im Textfeld (z. B. "Letzten Winter habe ich …").
+  Diktieren per Sprache über die bestehende Transkription.
+- Aufhänger-Chips: Bei Erstellung und bei jeder Änderung von `issue_text`
+  erzeugt Mistral 5–6 kampagnenspezifische Aufhänger. Das läuft im bestehenden
+  `after()`-Hook der Themen-Klassifizierung
+  (`web/src/lib/actions/createCampaignDraft.ts:353`, `updateCampaign.ts:334`)
+  mit demselben Schutz `.eq("issue_text", …)`. Gespeichert in einer neuen
+  Spalte in `campaigns` (Migration), das sind Daten des Creators. Der Browser
+  würfelt pro Aufruf 3 davon. Ein Klick fügt einen Chip ins Feld ein, ein Klick
+  auf einen anderen ersetzt ihn, es ist immer nur einer aktiv.
+- Aufhänger sind offene Satzanfänge, die man selbst zu Ende schreibt, keine
+  fertigen Behauptungen. Sonst klicken Leute Fakten an, die nicht stimmen, und
+  dieselben Sätze tauchen in vielen Briefen auf.
+- Eigenes optionales Request-Feld `personalNote`: `WizardData`
+  (`web/src/lib/types/wizard.ts`), `wizardSchemas.ts`, Wizard-State,
+  `/api/generate-letter`, Prompt. Im Prompt ein eigener Block mit Vorrang: Der
+  Satz trägt den Brief.
+- Prompt-Regel: Persönliche Details kommen nur aus `personalNote`, dem Anliegen
+  und PLZ/Ort, nichts wird erfunden. Weder das Wort "Kampagne" noch der Name des
+  Creators stehen im Brief.
+- Tracking nur im Debug-Payload (`web/src/lib/email/buildDebugPayload.ts`):
+  `hasPersonalNote` und `campaignTextEdited`. Den zweiten Wert berechnet der
+  Server per Vergleich mit `campaign.issueText` aus der DB (die Route lädt die
+  Kampagne schon, `route.ts:160`). Kein neues Feld in `letter_signals`.
+
+**Entscheidungen (Grill-Session 2026-10-09):** Creator sehen die Aufhänger
+nicht. Der persönliche Satz bekommt ein eigenes Feld und wird nicht an
+`issueText` angehängt. Nichts aus Nutzerdaten wird gespeichert, auch keine
+Liste in Supabase. Nur Kampagnenbriefe, normale Briefe bleiben unverändert.
+
+**Nicht-Ziel:** Pflichtfeld; Variation der Argumente (das ist 999.38).
+
+**Offene Fragen:** Datenschutz prüfen, ob `personalNote` durch die bestehenden
+Formulierungen zum Anliegen abgedeckt ist (keine Speicherung). Verwandt mit
+999.10 (zweites Eingabefeld "Zielvorstellung"), 999.2 (persönlicher Kontext)
+und 999.3 (Wirksamkeit persönlicher Infos): ähnliches Muster, anderer Zweck.
+
+**Verweist auf:** 999.38 nutzt denselben Extraktions-Aufruf bei der Erstellung
+und erweitert ihn um Hauptanliegen und Argumente.
+
+**Requirements:** TBD
+**Plans:** 0 plans
+
+Plans:
+- [ ] Extraktion der Aufhänger bei Erstellung + Migration
+- [ ] Feld, Chips, Placeholder und Diktat in Schritt 2b
+- [ ] `personalNote` in Request, Prompt und Debug-Payload
+
+### Phase 999.38: Kampagnen: Argument-Variation pro Brief (BACKLOG)
+
+**Goal:** Briefe einer Kampagne sollen nicht alle dieselben Argumente in
+derselben Reihenfolge bringen. Jeder Brief enthält das Hauptanliegen und eine
+zufällige Auswahl der Argumente. Ein Büro erkennt so dasselbe Thema, aber nicht
+dieselbe Vorlage.
+
+**Hintergrund:** Vier Briefe der EEG-Kampagne (Okt. 2026) hatten dasselbe
+Gerüst (Termin, Redispatch-Vorbehalt, fossile Importe, Bundesrat, Forderung)
+und eine fast wörtlich gleiche Forderung. Kampagnen haben heute keine eigene
+Prompt-Logik, `issue_text` geht als Anliegen in den normalen Generator
+(`generateLetter.ts:565`). Recherche: Wählt die KI selbst aus, greift sie zu
+den ersten bzw. stärksten Argumenten. Zufall aus dem Code macht die Texte
+vielfältiger (https://arxiv.org/pdf/2502.19965,
+https://arxiv.org/pdf/2402.01740, https://arxiv.org/pdf/2505.17390v2).
+
+**Scope:**
+- Den Extraktions-Aufruf aus 999.37 erweitern: Mistral liefert das Hauptanliegen
+  (inkl. Kernforderung) und 1–3 Argumente, nur solche, die im Text stehen.
+  Gespeichert als Array in `campaigns` (Migration).
+- Creator sehen und bearbeiten Hauptanliegen und Argumente auf der
+  Verwalten-Seite im Aufklapper "Kampagne bearbeiten"
+  (`web/src/components/campaigns/CampaignManager.tsx:394`).
+- Pro Brief würfelt der Code: Hauptanliegen + n-1 Argumente (mindestens 1), in
+  zufälliger Reihenfolge. Hat der User die Vorlage bearbeitet
+  (Server-Vergleich wie in 999.37), bekommt der Prompt den vollen User-Text wie
+  bisher.
+- Prompt: Forderung inhaltlich gleich, aber in eigenen Worten. Keinen Satz aus
+  der Vorlage wörtlich übernehmen. Optional würfelt der Code den Einstiegstyp
+  (Termin, Betroffenheit, Frage, Zahl).
+- Nachbearbeitung für alle Briefe: " – " / " — " durch ", " ersetzen, mit
+  Unit-Test. Heute verbietet das nur der Prompt (`generateLetter.ts:109`).
+- Prüfung: Lokales Skript erzeugt 10 Briefe einer Kampagne, vorher und nachher.
+  Kriterien: kein Satzteil ab 8 Wörtern identisch in zwei Briefen,
+  Argument-Kombinationen verteilt, nichts Persönliches erfunden, keine
+  Gedankenstriche.
+
+**Entscheidungen (Grill-Session 2026-10-09):** Die Auswahl würfelt der Code,
+nicht die KI. Der Creator füllt keine zusätzlichen Argument-Felder aus. Bei
+weniger als 3 Argumenten wird nichts ergänzt, jeder Brief bekommt eins weniger,
+als es gibt. Nichts aus Nutzerdaten wird gespeichert.
+
+**Hängt ab von:** 999.37 (Extraktions-Aufruf und Migration bei der Erstellung).
+
+**Offene Fragen:** Sollen Änderungen des Creators an den Argumenten
+überschrieben werden, wenn er danach `issue_text` ändert? Vorschlag: neu
+extrahieren und einen Hinweis zeigen.
+
+**Requirements:** TBD
+**Plans:** 0 plans
+
+Plans:
+- [ ] Extraktion um Hauptanliegen und Argumente erweitern + Bearbeitung auf der Verwalten-Seite
+- [ ] Würfel im Code, Prompt-Block für Kampagnen, Dash-Nachbearbeitung
+- [ ] Vergleichsskript vorher/nachher
+
 ### Successpage: Häufige E-Mail-Tippfehler erkennen (BACKLOG)
 
 **Goal:** Auf der Successpage erkennen, wenn die eingegebene Domain sehr wahrscheinlich ein Tippfehler bei einem gängigen Anbieter ist, zum Beispiel `gmail.vom` statt `gmail.com`.

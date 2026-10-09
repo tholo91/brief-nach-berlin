@@ -17,6 +17,15 @@ files:
 - Offen ist nur noch der automatische Auslöser: direkt in `endCampaignAction`, kein Cron, weil es noch keinen Vercel-Cron gibt. Dazu die Spalte `ended_notified_at`.
 - Die Feedback-Bitte läuft per Antwort auf die Mail (`replyTo` auf `FOUNDER_EMAIL`).
 - Testimonials von NGOs pflegt Thomas später von Hand (`creatorTestimonials.ts` und ein Block auf `/ngo-briefkampagne`), sobald die erste Zitat-Freigabe da ist. Eine eigene Bewertungsseite ist bewusst nicht geplant.
+- Erster Versand von Hand am 2026-10-09 an die NRV-Kampagne `unterschrift-ist-kein-dienstvergehen` (90 Briefe). Anrede mit Vorname über `--name`, weil `creator_name` oft der volle Name ist.
+
+### Für die schönere Version (Thomas will die Mail noch ausbauen)
+- Den Empfehlungsteil wieder aufnehmen, für den ersten Versand bewusst rausgenommen: „Darf ich dich gegenüber anderen NGOs zitieren?“ und die Bitte, Initiativen auf `/ngo-briefkampagne` hinzuweisen.
+- Kopfbild: Die Bild-Route `kampagne/[slug]/meilenstein/[stufe]/bild` schreibt fest „Meilenstein“ ins Bild. Eine eigene Variante „Abschluss“ prüfen.
+- Anrede: Für den Vornamen entweder ein Feld `creator_first_name` oder eine Heuristik (erstes Wort von `creator_name`). Bei Organisationsnamen keine Heuristik.
+- Zahlen in die Mail selbst holen (ab Schwelle 10): Abschickquote, Sterne-Schnitt, Top-Bundesländer aus `getCampaignCreatorStats`, damit die NGO sie direkt zitieren kann, ohne die Verwaltungsseite zu öffnen.
+- Grußformel und handschriftliche Signatur (Caveat) wie beim ersten Versand beibehalten.
+- Buttons am Ende: kein „Verwalten“ und kein „Thomas schreiben“ (seit 2026-10-09 entfernt). Zur Verwaltungsseite kommt man über „Statistiken ansehen“, Kontakt läuft über die Antwort auf die Mail. Perspektivisch genau zwei Buttons: „♥ Unterstützen“ (Spende) und „Feedback geben“. Für „Feedback geben“ klären: Antwort auf die Mail (`mailto:` mit Betreff), `CAMPAIGN_CREATOR_FEEDBACK_URL` (heyspeak) oder später ein eigenes Formular für Ersteller:innen. Dann kann die Feedback-Box im Text kürzer werden.
 
 ## Problem
 

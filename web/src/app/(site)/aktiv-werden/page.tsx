@@ -112,34 +112,18 @@ const cards: ActionCard[] = [
     cta: "Mehr zu Stufe 6",
   },
   {
-    kicker: "Mitzeichnen, 60 Sekunden",
-    title: "Unterstütze die Petition Bremen Rauchfrei",
-    body: (
-      <p>
-        Eine Petition für mehr rauchfreie Außenbereiche in Bremen, von einem
-        Bremer Bürger gestartet. Mitzeichnen kostet eine Minute und ist eines
-        der niedrigschwelligsten politischen Werkzeuge überhaupt: bei 30.000
-        Mitzeichnungen wird eine Bundestags-Petition öffentlich angehört, bei
-        Landes- und Kommunalpetitionen ist die Hürde noch niedriger.
-      </p>
-    ),
-    href: "https://bremen-rauchfrei.de",
-    cta: "Zur Petition",
-    external: true,
-  },
-  {
     kicker: "Der ganze Überblick",
     title: "Die Treppe der politischen Selbstwirksamkeit",
     body: (
       <p>
-        Zehn Stufen, sortiert nach Aufwand: von &bdquo;Wählen gehen&ldquo; über
+        Elf Stufen, sortiert nach Aufwand: von &bdquo;Wählen gehen&ldquo; über
         &bdquo;Leserbrief schreiben&ldquo; bis &bdquo;eigene Bürgerinitiative gründen&ldquo;. Such dir
         die nächste Stufe, die du dir zutraust, und nimm sie. Wer auf Stufe 3
         steht (Brief schreiben), ist schon weiter als 95 % der Bevölkerung.
       </p>
     ),
     href: "/treppe-der-selbstwirksamkeit",
-    cta: "Alle 10 Stufen ansehen",
+    cta: "Alle 11 Stufen ansehen",
   },
 ];
 

@@ -96,7 +96,7 @@ coastlines and the Alps silhouette.
 - **Reichstag prominence**: Slightly larger than strict scale would allow, on the right where Berlin is. It should read clearly as "the destination" without dominating the frame.
 - **Voices, not text**: Soft glowing dots / firefly motes, NOT speech bubbles with words. Lets the viewer project their own voice.
 - **Letters in flight**: One or two, not a swarm. Hand-folded paper feel, curved trajectories toward Berlin.
-- **Even regional spread**: The voice-glows should appear across north, south, east, west — Brief nach Berlin is not just a Berlin thing.
+- **Even regional spread**: The voice-glows should appear across north, south, east, west — Brief-nach-Berlin is not just a Berlin thing.
 
 ## Layout Use
 

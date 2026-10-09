@@ -1,4 +1,6 @@
-# CTA Background Prompts — Brief nach Berlin
+# CTA Background Prompts — Brief-nach-Berlin
+
+Overall image style for all prompts: see `.planning/brand-identity.md`, section 6.4a. Brand name is always written "Brief-nach-Berlin" (with hyphens).
 
 Prompts for generating the landing page hero/CTA section background (image + video).
 

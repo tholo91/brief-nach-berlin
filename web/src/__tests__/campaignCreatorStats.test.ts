@@ -794,7 +794,7 @@ describe("CampaignCreatorStats rendering", () => {
     expect(markup).not.toMatch(/\d\u00a0%/);
     expect(markup).not.toContain("Sterne");
     expect(markup).not.toContain("zustimmender Kommentar");
-    expect(markup).toContain("kurze Umfrage per Mail");
+    expect(markup).toContain("Feedbacks zu deiner Briefkampagne");
   });
 
   it("renders own N per tile and the quiet fallback for a too_few tile", () => {
@@ -959,7 +959,7 @@ describe("CampaignCreatorStats rendering", () => {
 
   it("explains the survey right under the heading, not in the footer", () => {
     const markup = render(rows(12));
-    const sentence = "Nur diese Rückmeldungen siehst du hier.";
+    const sentence = "Diese Rückmeldungen kommen aus den Feedbacks zu deiner Briefkampagne.";
     expect(markup.indexOf(sentence)).toBeGreaterThan(markup.indexOf("</h2>"));
     expect(markup.indexOf(sentence)).toBeLessThan(markup.indexOf("nach Berlin geschrieben"));
     expect(render(null)).not.toContain(sentence);
@@ -980,7 +980,7 @@ describe("CampaignCreatorStats rendering", () => {
     const footer = markup.slice(footerStart);
     expect(footer).toContain("Basiert auf 12 von 37 Briefen.");
     expect(footer).toContain("Mein Anliegen auf die Karte setzen");
-    expect(footer).not.toContain("kurze Umfrage");
+    expect(footer).not.toContain("Briefkampagne");
     expect(markup.slice(0, footerStart)).not.toContain("Basiert auf");
   });
 

@@ -45,7 +45,7 @@ const OPT_IN_NOTE =
   "Mitgezählt wird nur, wer beim Schreiben „Mein Anliegen auf die Karte setzen“ gewählt hat.";
 
 const SOURCE_SENTENCE =
-  "Wer über deine Kampagne schreibt, bekommt mit dem Brief eine kurze Umfrage per Mail. Nur diese Rückmeldungen siehst du hier.";
+  "Diese Rückmeldungen kommen aus den Feedbacks zu deiner Briefkampagne.";
 
 type TileProps = {
   value: string;
@@ -280,21 +280,21 @@ function Timeline({ timeline }: { timeline: CreatorTimeline }) {
     daily ? dateLabel(start) : `KW ${isoWeekNumber(start)}, ab ${dateLabel(start)}`;
 
   return (
-    <div className="flex h-full flex-col">
+    <div>
       <h3 className="font-typewriter text-base font-bold text-waldgruen-dark">
         Verlauf
       </h3>
       <div
         role="img"
         aria-label={`${unitLabel} von ${dateLabel(first.start)} bis ${dateLabel(last.start)} ${summary}`}
-        className="mt-3 flex min-h-24 flex-1 items-end justify-end gap-0.5"
+        className="mt-3 flex h-28 items-end justify-end gap-1 md:h-32"
       >
         {buckets.map((bucket) => {
           const isPeak = bucket.start === peak.start;
           return (
             <div
               key={bucket.start}
-              className="group relative flex h-full max-w-6 flex-1 flex-col justify-end"
+              className="group relative flex h-full max-w-4 flex-1 flex-col justify-end"
             >
               <span
                 aria-hidden="true"
@@ -387,7 +387,7 @@ function OriginSection({ signals }: { signals: SignalsView }) {
 
   return (
     <div className="mt-5 border-t border-warmgrau/12 pt-4">
-      <div className="grid gap-6 md:grid-cols-2 md:gap-8">
+      <div className="grid gap-6 md:grid-cols-2 md:items-start md:gap-8">
         <div>
           <h3 className="font-typewriter text-base font-bold text-waldgruen-dark">
             Woher geschrieben wird
@@ -471,7 +471,7 @@ export function CampaignCreatorStats({
         {heading}
       </h2>
       {showSource && (
-        <p className="mt-1.5 max-w-2xl font-body text-sm leading-relaxed text-warmgrau/70">
+        <p className="mt-1.5 font-body text-sm leading-relaxed text-warmgrau/70">
           {SOURCE_SENTENCE}
         </p>
       )}

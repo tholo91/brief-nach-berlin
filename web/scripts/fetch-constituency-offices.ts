@@ -88,11 +88,6 @@ function stripTagsToLines(html: string): string[] {
     .filter(Boolean);
 }
 
-function extractAttr(tag: string, name: string): string | null {
-  const match = tag.match(new RegExp(`${name}="([^"]+)"`));
-  return match ? decodeHtml(match[1]) : null;
-}
-
 function extractText(html: string, pattern: RegExp): string | null {
   const match = html.match(pattern);
   if (!match) return null;
@@ -101,13 +96,13 @@ function extractText(html: string, pattern: RegExp): string | null {
 
 function extractListEntries(html: string): ListEntry[] {
   const entries: ListEntry[] = [];
-  const cardPattern = /<a\b[^>]*href="https:\/\/www\.bundestag\.de\/abgeordnete\/biografien\/[^"]+"[\s\S]*?<\/a>/g;
+  const cardPattern = /<article\b[^>]*class="e-teaserCardProfile[\s\S]*?<\/article>/g;
   for (const match of html.matchAll(cardPattern)) {
     const card = match[0];
-    const profileUrl = extractAttr(card, "href");
-    const bundestagId = extractAttr(card, "data-id");
-    const title = extractAttr(card, "title");
-    const party = extractText(card, /<p class="bt-person-fraktion">\s*([\s\S]*?)<\/p>/);
+    const profileUrl = card.match(/href="(https:\/\/www\.bundestag\.de\/abgeordnete\/biografien\/[^"]+)"/)?.[1] ?? null;
+    const bundestagId = profileUrl?.match(/-(\d+)$/)?.[1] ?? null;
+    const title = extractText(card, /class="e-teaserCardProfile__title"[^>]*>([\s\S]*?)<\/div>/);
+    const party = extractText(card, /class="e-teaserCardProfile__text"[^>]*>([\s\S]*?)<\/div>/);
     if (!profileUrl || !bundestagId || !title || !party) continue;
     entries.push({
       bundestagId,
@@ -119,31 +114,19 @@ function extractListEntries(html: string): ListEntry[] {
   return entries;
 }
 
-function parseMeta(html: string) {
-  const hits = html.match(/data-hits="(\d+)"/);
-  const nextOffset = html.match(/data-nextoffset="(\d+)"/);
-  return {
-    hits: hits ? Number(hits[1]) : null,
-    nextOffset: nextOffset ? Number(nextOffset[1]) : null,
-  };
-}
-
 async function fetchAllListEntries(limit: number | null): Promise<ListEntry[]> {
   const seen = new Map<string, ListEntry>();
   let offset = 0;
-  let total: number | null = null;
 
-  while (total == null || offset < total) {
+  while (true) {
     const html = await fetchText(`${LIST_URL}?limit=12&offset=${offset}&noFilterSet=true`);
-    const meta = parseMeta(html);
-    total = meta.hits;
     const entries = extractListEntries(html);
     for (const entry of entries) seen.set(entry.bundestagId, entry);
-    console.log(`  list offset ${offset}: ${entries.length} entries (${seen.size}/${total ?? "?"})`);
+    console.log(`  list offset ${offset}: ${entries.length} entries (${seen.size})`);
 
     if (limit != null && seen.size >= limit) break;
-    if (!meta.nextOffset || meta.nextOffset <= offset || entries.length === 0) break;
-    offset = meta.nextOffset;
+    if (entries.length === 0) break;
+    offset += entries.length;
     await sleep(REQUEST_DELAY_MS);
   }
 
@@ -311,6 +294,17 @@ async function main() {
     },
     records,
   };
+
+  if (!dryRun && limit == null && fs.existsSync(OUT_JSON)) {
+    const previous = JSON.parse(fs.readFileSync(OUT_JSON, "utf-8")) as { records?: unknown[] };
+    const previousCount = previous.records?.length ?? 0;
+    if (records.length < previousCount * 0.8) {
+      console.error(
+        `\n[ABBRUCH] Nur ${records.length} Profile gefunden (bisher ${previousCount}). Parser prüfen, nichts geschrieben.`
+      );
+      process.exit(1);
+    }
+  }
 
   if (!dryRun) {
     fs.writeFileSync(OUT_JSON, JSON.stringify(payload, null, 2), "utf-8");

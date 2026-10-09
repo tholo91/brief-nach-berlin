@@ -4,10 +4,10 @@ milestone: v1.0
 current_phase: 05
 status: verifying
 stopped_at: Completed 05-04-PLAN.md
-last_updated: "2026-10-09T07:59:27.465Z"
-last_activity: 2026-10-08
+last_updated: "2026-10-09T12:05:33.336Z"
+last_activity: 2026-10-09
 last_activity_desc: "Completed quick task 260710-dgq: Kampagnen-Ziel-Ebene Bund/Landtag inkl. Wizard-Bindung und Mismatch-Fallback"
-state_head: 634c338c525a976bda34b4e8331094dcc593b62c
+state_head: 5efd543cbe7a9a089ab068526ee69c54a88b3afc
 progress:
   total_phases: 33
   completed_phases: 4
@@ -49,7 +49,7 @@ Der level-aware E-Mail-Betreff ist dagegen bereits implementiert und getestet; d
 Phase: 05 — EXECUTING
 Plan: 4 of 4
 Status: Phase complete — ready for verification
-Last activity: 2026-10-09 - Completed quick task 261009-dl0: Kampagne verwalten Bundesländer-Karte, Sprungleiste, Fußnoten, Karte auf /stats
+Last activity: 2026-10-09 - Completed quick task 261009-jb1: Verlauf Tage statt Wochen ab Tag 3 und kuerzere Kampagnenlinks
 
 Progress: [███████░░░] 68%
 
@@ -168,6 +168,7 @@ Recent decisions affecting current work:
 | 261008-vqh | Kampagne verwalten: Einstellungen im Aufklapper, Kurzlinks, Moin-Header, Herz-Button | 2026-10-08 | (this commit) | [261008-vqh-kampagne-verwalten-feinschliff-moin-kurz](./quick/261008-vqh-kampagne-verwalten-feinschliff-moin-kurz/) |
 | 261008-vx5 | Kampagne verwalten: Herkunft nach Bundesland, Verlauf, weitere Creator-Stats | 2026-10-08 | b3c819d | [261008-vx5-kampagne-verwalten-herkunft-nach-bundesl](./quick/261008-vx5-kampagne-verwalten-herkunft-nach-bundesl/) |
 | 261009-dl0 | Kampagne verwalten: Bundesländer-Karte, Sprungleiste, Fußnoten gebündelt, Karte auf /stats | 2026-10-09 | 634c338 | [261009-dl0-kampagne-verwalten-bundeslaender-karte-s](./quick/261009-dl0-kampagne-verwalten-bundeslaender-karte-s/) |
+| 261009-jb1 | Verlauf Tage statt Wochen ab Tag 3 und kuerzere Kampagnenlinks | 2026-10-09 | 5efd543 | [261009-jb1-verlauf-tage-statt-wochen-ab-tag-3-und-k](./quick/261009-jb1-verlauf-tage-statt-wochen-ab-tag-3-und-k/) |
 
 ## Session Continuity
 

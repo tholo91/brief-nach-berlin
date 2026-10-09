@@ -21,6 +21,7 @@ interface SendCampaignCreatorEmailBase {
   adminCopy?: boolean;
   campaignStatus?: "awaiting_approval" | "active" | "paused";
   milestone?: { count: number; milestones: number[] };
+  ended?: { count: number };
 }
 
 export type SendCampaignCreatorEmailParams =
@@ -62,6 +63,13 @@ export async function sendCampaignCreatorEmail(
             downloadUrl: `${milestoneImageUrl(params.slug, params.milestone.count)}?download=1`,
           }
         : undefined;
+    const ended = params.kind === "ended" && params.ended
+      ? {
+          count: params.ended.count,
+          imageUrl: milestoneImageUrl(params.slug, params.ended.count),
+          downloadUrl: `${milestoneImageUrl(params.slug, params.ended.count)}?download=1`,
+        }
+      : undefined;
     const result = await brevo.transactionalEmails.sendTransacEmail({
       subject:
         params.kind === "verify_email"
@@ -72,7 +80,9 @@ export async function sendCampaignCreatorEmail(
               ? `${APP_NAME}: Hinweis zu deiner Kampagne`
               : params.kind === "milestone" && params.milestone
                 ? `${formatLetterCount(params.milestone.count)} Briefe für „${params.campaignTitle}“`
-                : `${APP_NAME}: Kampagne verwalten`,
+                : params.kind === "ended" && params.ended
+                  ? `Danke für ${formatLetterCount(params.ended.count)} Briefe zu „${params.campaignTitle}“`
+                  : `${APP_NAME}: Kampagne verwalten`,
       htmlContent: buildCampaignCreatorEmailHtml({
         kind: params.kind,
         campaignTitle: params.campaignTitle,
@@ -82,6 +92,7 @@ export async function sendCampaignCreatorEmail(
         creatorName: params.creatorName,
         campaignStatus: params.campaignStatus,
         milestone,
+        ended,
         report: params.kind === "report" ? params.report : undefined,
       }),
       sender: {
@@ -93,7 +104,10 @@ export async function sendCampaignCreatorEmail(
         params.adminCopy && process.env.THOMAS_MAIL
           ? [{ email: process.env.THOMAS_MAIL }]
           : undefined,
-      replyTo: params.kind === "report" ? { email: FOUNDER_EMAIL } : undefined,
+      replyTo:
+        params.kind === "report" || params.kind === "ended"
+          ? { email: FOUNDER_EMAIL }
+          : undefined,
       tags: [`campaign-${params.kind}`],
     });
     return { success: true, messageId: result.messageId };

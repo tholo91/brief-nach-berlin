@@ -11,6 +11,13 @@ files:
 
 > **Zurückgestellt am 2026-10-08** zugunsten der Meilenstein-Mails (`2026-10-08-kampagnen-meilenstein-mails.md`). Hinweise: S3 ist noch nicht gemerged (`creatorStats.ts` fehlt). Der `letter_signals`-Purge läuft per Supabase-`pg_cron`, nicht als Vercel-Cron. Verwalten-Tokens sind gehasht, der Versand muss pro Mail einen neuen `manage`-Token erzeugen.
 
+## Stand 2026-10-09
+
+- Template `ended` (`buildCampaignCreatorEmailHtml.ts`, `sendCampaignCreatorEmail.ts`) und das Einmal-Skript `web/scripts/send-campaign-ended-mail.ts` gibt es (quick-261009-luq). Das Skript zeigt ohne `--send` nur eine Vorschau.
+- Offen ist nur noch der automatische Auslöser: direkt in `endCampaignAction`, kein Cron, weil es noch keinen Vercel-Cron gibt. Dazu die Spalte `ended_notified_at`.
+- Die Feedback-Bitte läuft per Antwort auf die Mail (`replyTo` auf `FOUNDER_EMAIL`).
+- Testimonials von NGOs pflegt Thomas später von Hand (`creatorTestimonials.ts` und ein Block auf `/ngo-briefkampagne`), sobald die erste Zitat-Freigabe da ist. Eine eigene Bewertungsseite ist bewusst nicht geplant.
+
 ## Problem
 
 Teil von "Kampagnen 2.0" (S4 von 5, bewusst später). Braucht S2 (`ends_at`) und S3 (`getCampaignCreatorStats`). Wenn eine Kampagne endet, bekommt der Ersteller heute nichts. Ein Danke mit Endstand schließt die Kampagne gut ab und ist ein natürlicher Moment für den freiwilligen Spendenhinweis.

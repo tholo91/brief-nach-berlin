@@ -20,6 +20,7 @@ export type CampaignCreatorEmailKind =
   | "management"
   | "transfer"
   | "milestone"
+  | "ended"
   | "report";
 
 export interface CampaignReportEmailParams {
@@ -35,6 +36,12 @@ export interface CampaignMilestoneEmailParams {
   downloadUrl: string;
 }
 
+export interface CampaignEndedEmailParams {
+  count: number;
+  imageUrl: string;
+  downloadUrl: string;
+}
+
 export interface BuildCampaignCreatorEmailHtmlParams {
   kind: CampaignCreatorEmailKind;
   campaignTitle: string;
@@ -44,6 +51,7 @@ export interface BuildCampaignCreatorEmailHtmlParams {
   creatorName?: string | null;
   campaignStatus?: "awaiting_approval" | "active" | "paused";
   milestone?: CampaignMilestoneEmailParams;
+  ended?: CampaignEndedEmailParams;
   report?: CampaignReportEmailParams;
 }
 
@@ -112,28 +120,11 @@ function buildShareButtonsTable(buttons: ShareButton[]): string {
                 </table>`;
 }
 
-function buildMilestoneEmailHtml(
-  params: BuildCampaignCreatorEmailHtmlParams,
-  milestone: CampaignMilestoneEmailParams
-): string {
-  const title = escapeHtml(params.campaignTitle);
-  const creatorName = params.creatorName?.trim();
-  const greeting = creatorName ? `Moin ${escapeHtml(creatorName)},` : "Moin,";
-  const count = formatLetterCount(milestone.count);
-  const showSupport = milestone.count >= 500;
-  const outlineButton = (href: string, label: string, external: boolean) =>
-    `<a href="${href}"${external ? ' target="_blank" rel="noopener noreferrer"' : ""} class="bnb-cta-link" style="display:block;text-align:center;background-color:#ffffff;color:#2D6A4F;font-size:15px;font-weight:bold;text-decoration:none;padding:12px 8px;border-radius:4px;border:1px solid #2D6A4F;line-height:1.25;">${label}</a>`;
-  const buttons = showSupport
-    ? [
-        outlineButton(params.actionUrl, "&#9998;&nbsp;Kampagne verwalten", true),
-        outlineButton(`mailto:${BRIEF_EMAIL}`, "Thomas schreiben", false),
-      ]
-    : [
-        outlineButton(params.actionUrl, "&#9998;&nbsp;Verwalten", true),
-        outlineButton(DONATION_PROVIDER_URL, "&#9829;&nbsp;Unterstützen", true),
-        outlineButton(`mailto:${BRIEF_EMAIL}`, "Thomas schreiben", false),
-      ];
-  const cellWidth = showSupport ? "50%" : "33.33%";
+function outlineButton(href: string, label: string, external: boolean): string {
+  return `<a href="${href}"${external ? ' target="_blank" rel="noopener noreferrer"' : ""} class="bnb-cta-link" style="display:block;text-align:center;background-color:#ffffff;color:#2D6A4F;font-size:15px;font-weight:bold;text-decoration:none;padding:12px 8px;border-radius:4px;border:1px solid #2D6A4F;line-height:1.25;">${label}</a>`;
+}
+
+function buildButtonRow(buttons: string[], cellWidth: string): string {
   const buttonCells = buttons
     .map((button, index) => {
       const padding =
@@ -145,6 +136,103 @@ function buildMilestoneEmailHtml(
       return `<td class="bnb-cta-cell" style="width:${cellWidth};${padding}" valign="top">${button}</td>`;
     })
     .join("\n                  ");
+  return `<table role="presentation" cellpadding="0" cellspacing="0" width="100%" style="margin:0 0 26px;">
+                <tr>
+                  ${buttonCells}
+                </tr>
+              </table>`;
+}
+
+function buildShareBox(
+  label: string,
+  downloadUrl: string,
+  shareTarget: ReturnType<typeof buildShareTarget>
+): string {
+  return `<div style="margin:0 0 22px;padding:16px 18px;background-color:#FAF8F5;border:1px solid #E0DCD7;border-radius:4px;">
+                <p style="margin:0 0 10px;font-family:'Courier New',Courier,monospace;font-size:12px;font-weight:bold;text-transform:uppercase;color:#2D6A4F;">${label}</p>
+                <a href="${escapeHtml(downloadUrl)}" target="_blank" rel="noopener noreferrer" class="bnb-cta-link" style="display:block;text-align:center;background-color:#2D6A4F;color:#ffffff;font-size:16px;font-weight:bold;text-decoration:none;padding:13px 10px;border-radius:4px;line-height:1.25;margin:0 0 10px;"><img src="${APP_URL}/images/icon-download.png" width="16" height="16" alt="" style="width:16px;height:16px;vertical-align:middle;border:0;margin-right:8px;">Bild speichern</a>
+                ${buildShareButtonsTable([
+                  { icon: "whatsapp", label: "WhatsApp", href: shareTarget.whatsappUrl, external: true },
+                  { icon: "telegram", label: "Telegram", href: shareTarget.telegramUrl, external: true },
+                  { icon: "linkedin", label: "LinkedIn", href: shareTarget.linkedinUrl, external: true },
+                  { icon: "email", label: "E-Mail", href: shareTarget.emailUrl, external: false },
+                ])}
+              </div>`;
+}
+
+function buildCampaignImageEmailShell(
+  params: BuildCampaignCreatorEmailHtmlParams,
+  shell: {
+    imageUrl: string;
+    imageAlt: string;
+    contentHtml: string;
+    footerLabel: string;
+    footerNoteHtml: string;
+    headHtml?: string;
+  }
+): string {
+  const footerLink = (href: string, label: string) =>
+    `<a href="${href}" target="_blank" rel="noopener noreferrer" style="color:#888888;text-decoration:underline;">${label}</a>`;
+
+  return `<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  ${HEAD_STYLE}${shell.headHtml ?? ""}
+</head>
+<body style="margin:0;padding:0;background-color:#FAF8F5;font-family:Georgia,'Times New Roman',serif;color:#3D3D3D;">
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color:#FAF8F5;">
+    <tr>
+      <td align="center" style="padding:24px 12px;">
+        <table role="presentation" width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;background-color:#ffffff;border-collapse:collapse;">
+          ${STRIPE_ROW}
+          <tr>
+            <td style="padding:0;font-size:0;line-height:0;">
+              <img src="${escapeHtml(shell.imageUrl)}" width="600" alt="${shell.imageAlt}" style="display:block;width:100%;max-width:600px;height:auto;border:0;">
+            </td>
+          </tr>
+          <tr>
+            <td class="bnb-pad" style="padding:22px 28px 0;">
+              ${shell.contentHtml}
+            </td>
+          </tr>
+          ${STRIPE_ROW}
+          <tr>
+            <td class="bnb-pad" style="padding:22px 28px 26px;background-color:#FAF8F5;text-align:center;">
+              <p style="margin:0 0 6px;font-size:12px;line-height:1.5;color:#999999;"><a href="${APP_URL}" target="_blank" rel="noopener noreferrer" style="color:#2D6A4F;text-decoration:none;">Brief-nach-Berlin</a> · ${shell.footerLabel}</p>
+              <p style="margin:0 0 6px;font-size:12px;line-height:1.5;color:#aaaaaa;">${shell.footerNoteHtml}</p>
+              <p style="margin:0;font-size:12px;line-height:1.5;color:#aaaaaa;">${footerLink(params.campaignUrl, "Kampagnenseite")} · ${footerLink(`${APP_URL}/impressum`, "Impressum")} · ${footerLink(`${APP_URL}/datenschutz`, "Datenschutz")} · ${footerLink(CAMPAIGN_CREATOR_FEEDBACK_URL, "Feedback")}</p>
+              ${buildSocialFollowHtml({ marginTop: 14 })}
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>`;
+}
+
+function buildMilestoneEmailHtml(
+  params: BuildCampaignCreatorEmailHtmlParams,
+  milestone: CampaignMilestoneEmailParams
+): string {
+  const title = escapeHtml(params.campaignTitle);
+  const creatorName = params.creatorName?.trim();
+  const greeting = creatorName ? `Moin ${escapeHtml(creatorName)},` : "Moin,";
+  const count = formatLetterCount(milestone.count);
+  const showSupport = milestone.count >= 500;
+  const buttons = showSupport
+    ? [
+        outlineButton(params.actionUrl, "&#9998;&nbsp;Kampagne verwalten", true),
+        outlineButton(`mailto:${BRIEF_EMAIL}`, "Thomas schreiben", false),
+      ]
+    : [
+        outlineButton(params.actionUrl, "&#9998;&nbsp;Verwalten", true),
+        outlineButton(DONATION_PROVIDER_URL, "&#9829;&nbsp;Unterstützen", true),
+        outlineButton(`mailto:${BRIEF_EMAIL}`, "Thomas schreiben", false),
+      ];
   const supportBlock = showSupport
     ? `<div style="margin:0 0 22px;">${buildFinancingNoticeHtml(
         {
@@ -161,69 +249,76 @@ function buildMilestoneEmailHtml(
     { slug: params.slug, title: params.campaignTitle, letterCount: milestone.count },
     "milestone"
   );
-  const shareBox = `<div style="margin:0 0 22px;padding:16px 18px;background-color:#FAF8F5;border:1px solid #E0DCD7;border-radius:4px;">
-                <p style="margin:0 0 10px;font-family:'Courier New',Courier,monospace;font-size:12px;font-weight:bold;text-transform:uppercase;color:#2D6A4F;">Fortschritt teilen</p>
-                <a href="${escapeHtml(milestone.downloadUrl)}" target="_blank" rel="noopener noreferrer" class="bnb-cta-link" style="display:block;text-align:center;background-color:#2D6A4F;color:#ffffff;font-size:16px;font-weight:bold;text-decoration:none;padding:13px 10px;border-radius:4px;line-height:1.25;margin:0 0 10px;"><img src="${APP_URL}/images/icon-download.png" width="16" height="16" alt="" style="width:16px;height:16px;vertical-align:middle;border:0;margin-right:8px;">Bild speichern</a>
-                ${buildShareButtonsTable([
-                  { icon: "whatsapp", label: "WhatsApp", href: shareTarget.whatsappUrl, external: true },
-                  { icon: "telegram", label: "Telegram", href: shareTarget.telegramUrl, external: true },
-                  { icon: "linkedin", label: "LinkedIn", href: shareTarget.linkedinUrl, external: true },
-                  { icon: "email", label: "E-Mail", href: shareTarget.emailUrl, external: false },
-                ])}
-              </div>`;
+  const shareBox = buildShareBox("Fortschritt teilen", milestone.downloadUrl, shareTarget);
   const referralLinkStyle = "color:#2D6A4F;text-decoration:underline;";
   const referralLine = `<p style="margin:0 0 22px;font-size:14px;line-height:1.6;color:#666666;">Kennst du andere, die eine Kampagne starten wollen? <a href="${campaignStartUrl()}" target="_blank" rel="noopener noreferrer" style="${referralLinkStyle}">Schick ihnen den Link</a> oder <a href="mailto:${BRIEF_EMAIL}?subject=${encodeURIComponent("Vorstellung: Kampagne")}" style="${referralLinkStyle}">stell mich vor</a>.</p>`;
-  const footerLink = (href: string, label: string) =>
-    `<a href="${href}" target="_blank" rel="noopener noreferrer" style="color:#888888;text-decoration:underline;">${label}</a>`;
 
-  return `<!DOCTYPE html>
-<html lang="de">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  ${HEAD_STYLE}
-</head>
-<body style="margin:0;padding:0;background-color:#FAF8F5;font-family:Georgia,'Times New Roman',serif;color:#3D3D3D;">
-  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color:#FAF8F5;">
-    <tr>
-      <td align="center" style="padding:24px 12px;">
-        <table role="presentation" width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;background-color:#ffffff;border-collapse:collapse;">
-          ${STRIPE_ROW}
-          <tr>
-            <td style="padding:0;font-size:0;line-height:0;">
-              <img src="${escapeHtml(milestone.imageUrl)}" width="600" alt="${count} Briefe für „${title}“" style="display:block;width:100%;max-width:600px;height:auto;border:0;">
-            </td>
-          </tr>
-          <tr>
-            <td class="bnb-pad" style="padding:22px 28px 0;">
-              <p style="margin:0 0 16px;font-size:16px;line-height:1.65;">${greeting}</p>
+  return buildCampaignImageEmailShell(params, {
+    imageUrl: milestone.imageUrl,
+    imageAlt: `${count} Briefe für „${title}“`,
+    footerLabel: "Meilenstein-Mail",
+    footerNoteHtml: `Du bekommst diese Mail bei ${formatMilestoneList(milestone.milestones)} Briefen. <a href="${params.actionUrl}#meilenstein-mails" target="_blank" rel="noopener noreferrer" style="color:#888888;text-decoration:underline;">Diese Mails abbestellen</a>`,
+    contentHtml: `<p style="margin:0 0 16px;font-size:16px;line-height:1.65;">${greeting}</p>
               <p style="margin:0 0 16px;font-size:16px;line-height:1.65;">${count} Briefe und kein Ende in Sicht. So viele Menschen haben die Argumente deiner Kampagne aufgegriffen und daraus ihren eigenen, persönlichen Brief geschrieben.</p>
               <p style="margin:0 0 22px;font-size:16px;line-height:1.65;">Wenn du magst, teil deinen Fortschritt auf Instagram, LinkedIn oder WhatsApp. Das Bild dafür ist schon fertig.</p>
               ${shareBox}
               ${referralLine}
               ${supportBlock}
-              <table role="presentation" cellpadding="0" cellspacing="0" width="100%" style="margin:0 0 26px;">
-                <tr>
-                  ${buttonCells}
-                </tr>
-              </table>
-            </td>
-          </tr>
-          ${STRIPE_ROW}
-          <tr>
-            <td class="bnb-pad" style="padding:22px 28px 26px;background-color:#FAF8F5;text-align:center;">
-              <p style="margin:0 0 6px;font-size:12px;line-height:1.5;color:#999999;"><a href="${APP_URL}" target="_blank" rel="noopener noreferrer" style="color:#2D6A4F;text-decoration:none;">Brief-nach-Berlin</a> · Meilenstein-Mail</p>
-              <p style="margin:0 0 6px;font-size:12px;line-height:1.5;color:#aaaaaa;">Du bekommst diese Mail bei ${formatMilestoneList(milestone.milestones)} Briefen. <a href="${params.actionUrl}#meilenstein-mails" target="_blank" rel="noopener noreferrer" style="color:#888888;text-decoration:underline;">Diese Mails abbestellen</a></p>
-              <p style="margin:0;font-size:12px;line-height:1.5;color:#aaaaaa;">${footerLink(params.campaignUrl, "Kampagnenseite")} · ${footerLink(`${APP_URL}/impressum`, "Impressum")} · ${footerLink(`${APP_URL}/datenschutz`, "Datenschutz")} · ${footerLink(CAMPAIGN_CREATOR_FEEDBACK_URL, "Feedback")}</p>
-              ${buildSocialFollowHtml({ marginTop: 14 })}
-            </td>
-          </tr>
-        </table>
-      </td>
-    </tr>
-  </table>
-</body>
-</html>`;
+              ${buildButtonRow(buttons, showSupport ? "50%" : "33.33%")}`,
+  });
+}
+
+function buildCampaignEndedEmailHtml(
+  params: BuildCampaignCreatorEmailHtmlParams,
+  ended: CampaignEndedEmailParams
+): string {
+  const title = escapeHtml(params.campaignTitle);
+  const creatorName = params.creatorName?.trim();
+  const greeting = creatorName ? `Moin ${escapeHtml(creatorName)},` : "Moin,";
+  const count = formatLetterCount(ended.count);
+  const buttons = [
+    outlineButton(params.actionUrl, "&#9998;&nbsp;Verwalten", true),
+    outlineButton(DONATION_PROVIDER_URL, "&#9829;&nbsp;Unterstützen", true),
+    outlineButton(`mailto:${BRIEF_EMAIL}`, "Thomas schreiben", false),
+  ];
+  const shareTarget = buildShareTarget(
+    { slug: params.slug, title: params.campaignTitle, letterCount: ended.count },
+    "milestone"
+  );
+  const shareBox = buildShareBox("Erfolg auf den Socials teilen", ended.downloadUrl, shareTarget);
+  const boxStyle =
+    "margin:0 0 22px;padding:16px 18px;background-color:#FAF8F5;border:1px solid #E0DCD7;border-radius:4px;";
+  const boxLabel = (label: string) =>
+    `<p style="margin:0 0 10px;font-family:'Courier New',Courier,monospace;font-size:12px;font-weight:bold;text-transform:uppercase;color:#2D6A4F;">${label}</p>`;
+  const boxText = (text: string, margin = "0 0 12px") =>
+    `<p style="margin:${margin};font-size:14px;line-height:1.6;color:#666666;">${text}</p>`;
+  const statsBox = `<div style="${boxStyle}">
+                ${boxLabel("Neu: Statistiken zu deiner Kampagne")}
+                ${boxText("Auf deiner Verwaltungsseite siehst du jetzt, aus welchen Bundesländern geschrieben wurde, wie viele ihren Brief abgeschickt haben und wie die Schreibenden ihren Brief bewertet haben.")}
+                <a href="${params.actionUrl}#creator-stats" target="_blank" rel="noopener noreferrer" class="bnb-cta-link" style="display:block;text-align:center;background-color:#2D6A4F;color:#ffffff;font-size:16px;font-weight:bold;text-decoration:none;padding:13px 10px;border-radius:4px;line-height:1.25;">Statistiken ansehen</a>
+              </div>`;
+  const feedbackBox = `<div style="${boxStyle}">
+                ${boxLabel("Wie war es für dich?")}
+                ${boxText("Ich baue Brief nach Berlin allein und lerne am meisten von Leuten wie dir. Antworte einfach auf diese Mail: Was hat gut funktioniert, was hat dir gefehlt?", "0")}
+              </div>`;
+
+  return buildCampaignImageEmailShell(params, {
+    imageUrl: ended.imageUrl,
+    imageAlt: `${count} Briefe für „${title}“`,
+    footerLabel: "Kampagnen-Abschluss",
+    footerNoteHtml: "Du bekommst diese Mail einmalig, weil deine Kampagne beendet ist.",
+    headHtml: `
+  <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500&display=swap" rel="stylesheet">`,
+    contentHtml: `<p style="margin:0 0 16px;font-size:16px;line-height:1.65;">${greeting}</p>
+              <p style="margin:0 0 16px;font-size:16px;line-height:1.65;">deine Kampagne ist beendet. ${count} Briefe sind darüber entstanden: So viele Menschen haben deine Argumente aufgegriffen und daraus ihren eigenen, persönlichen Brief geschrieben. Danke, dass du das angestoßen hast.</p>
+              <p style="margin:0 0 22px;font-size:16px;line-height:1.65;">Wenn du magst, teil deinen Erfolg auf Instagram, LinkedIn oder WhatsApp. Das Bild dafür ist schon fertig.</p>
+              ${shareBox}
+              ${statsBox}
+              ${feedbackBox}
+              <p style="margin:0 0 6px;font-size:16px;line-height:1.65;">Allerbeste Grüße aus Bremen und danke für dein Engagement</p>
+              <p style="margin:0 0 22px;font-family:'Caveat','Brush Script MT','Lucida Handwriting',cursive;font-size:32px;color:#1D3557;line-height:1.1;">Thomas</p>
+              ${buildButtonRow(buttons, "33.33%")}`,
+  });
 }
 
 function buildCampaignReportEmailHtml(
@@ -292,6 +387,12 @@ export function buildCampaignCreatorEmailHtml(
       throw new Error("milestone params are required for kind milestone");
     }
     return buildMilestoneEmailHtml(params, params.milestone);
+  }
+  if (params.kind === "ended") {
+    if (!params.ended) {
+      throw new Error("ended params are required for kind ended");
+    }
+    return buildCampaignEndedEmailHtml(params, params.ended);
   }
   if (params.kind === "report") {
     if (!params.report) {

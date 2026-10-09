@@ -48,35 +48,38 @@ const SOURCE_SENTENCE =
 
 type TileProps = {
   value: string;
-  label: string;
+  label: ReactNode;
   kpi: CreatorStatsKpi;
-  icon: ReactNode;
-  tone?: "outcome" | "baseline";
+  watermark: ReactNode;
+  extra?: ReactNode;
+  tone?: "outcome" | "baseline" | "highlight";
 };
 
-function Tile({ value, label, kpi, icon, tone = "outcome" }: TileProps) {
+const TILE_TONE_CLASS = {
+  outcome: "border-warmgrau/12 bg-creme/70",
+  baseline: "border-dashed border-warmgrau/25 bg-transparent",
+  highlight: "border-waldgruen/35 bg-waldgruen/[0.07]",
+} as const;
+
+function Tile({ value, label, kpi, watermark, extra, tone = "outcome" }: TileProps) {
   const shown = kpi.status === "shown";
-  const baseline = tone === "baseline";
   return (
     <div
-      className={`grid grid-cols-[6rem_1fr] items-start gap-x-3 gap-y-1 rounded-md border px-4 py-3 sm:flex sm:flex-col sm:py-4 ${
-        baseline
-          ? "border-dashed border-warmgrau/25 bg-transparent"
-          : "border-warmgrau/12 bg-creme/70"
-      }`}
+      className={`relative grid grid-cols-[6rem_1fr] items-baseline gap-x-3 overflow-clip rounded-md border px-4 py-3 sm:flex sm:flex-col sm:py-4 ${TILE_TONE_CLASS[tone]}`}
     >
       <div
-        className={`col-start-2 row-start-1 flex h-5 items-center sm:order-1 sm:mb-2 ${
-          baseline ? "text-warmgrau/55" : "text-waldgruen/80"
+        aria-hidden="true"
+        className={`pointer-events-none absolute -bottom-5 -right-5 h-20 w-20 sm:h-24 sm:w-24 ${
+          tone === "baseline" ? "text-warmgrau/[0.09]" : "text-waldgruen/[0.11]"
         }`}
       >
-        {icon}
+        {watermark}
       </div>
-      <dd className="col-start-1 row-span-2 row-start-1 m-0 self-center sm:order-2 sm:self-start">
+      <dd className="relative m-0 sm:order-1">
         {shown ? (
           <span
             className={`font-typewriter text-2xl font-bold leading-none sm:text-3xl ${
-              baseline ? "text-warmgrau/75" : "text-waldgruen-dark"
+              tone === "baseline" ? "text-warmgrau/75" : "text-waldgruen-dark"
             }`}
           >
             {value}
@@ -90,7 +93,8 @@ function Tile({ value, label, kpi, icon, tone = "outcome" }: TileProps) {
           </span>
         )}
       </dd>
-      <div className="col-start-2 row-start-2 sm:order-3 sm:mt-1">
+      <div className="relative sm:order-2 sm:mt-1">
+        {shown && extra}
         <dt
           className={`font-body text-sm leading-snug ${shown ? "text-warmgrau/80" : "text-warmgrau/55"}`}
         >
@@ -109,19 +113,24 @@ function Tile({ value, label, kpi, icon, tone = "outcome" }: TileProps) {
 function TileIcon({ children }: { children: ReactNode }) {
   return (
     <svg
-      aria-hidden="true"
       viewBox="0 0 24 24"
       fill="none"
       stroke="currentColor"
-      strokeWidth="1.6"
+      strokeWidth="1.4"
       strokeLinecap="round"
       strokeLinejoin="round"
-      className="h-5 w-5"
+      className="h-full w-full"
     >
       {children}
     </svg>
   );
 }
+
+const starIcon = (
+  <TileIcon>
+    <path d="m12 3.5 2.6 5.3 5.9.9-4.3 4.1 1 5.8-5.2-2.7-5.2 2.7 1-5.8-4.3-4.1 5.9-.9Z" />
+  </TileIcon>
+);
 
 const unsureIcon = (
   <TileIcon>
@@ -428,18 +437,7 @@ export function CampaignCreatorStats({
           <div className="mt-5 border-t border-warmgrau/12 pt-4">
             <dl className="m-0 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
               <Tile
-                tone="baseline"
-                icon={unsureIcon}
-                kpi={feedback.powerlessness}
-                value={
-                  feedback.powerlessness.status === "shown"
-                    ? `${feedback.powerlessness.value} %`
-                    : ""
-                }
-                label="wussten vorher oft oder manchmal nicht, was sie politisch konkret tun können"
-              />
-              <Tile
-                icon={envelopeIcon}
+                watermark={envelopeIcon}
                 kpi={feedback.sendRate}
                 value={
                   feedback.sendRate.status === "shown"
@@ -449,22 +447,7 @@ export function CampaignCreatorStats({
                 label="schicken ihren Brief ab"
               />
               <Tile
-                icon={
-                  feedback.averageRating.status === "shown" ? (
-                    <span
-                      role="img"
-                      aria-label={`${ratingFormatter.format(feedback.averageRating.value)} von 5 Sternen`}
-                    >
-                      <span aria-hidden="true" className="block">
-                        <StarBar rating={feedback.averageRating.value} size="sm" />
-                      </span>
-                    </span>
-                  ) : (
-                    <span aria-hidden="true" className="block">
-                      <StarBar rating={0} size="sm" />
-                    </span>
-                  )
-                }
+                watermark={starIcon}
                 kpi={feedback.averageRating}
                 value={
                   feedback.averageRating.status === "shown"
@@ -472,16 +455,52 @@ export function CampaignCreatorStats({
                     : ""
                 }
                 label="Zufriedenheit mit dem fertigen Brief"
+                extra={
+                  feedback.averageRating.status === "shown" && (
+                    <span
+                      role="img"
+                      aria-label={`${ratingFormatter.format(feedback.averageRating.value)} von 5 Sternen`}
+                      className="mb-1.5 block sm:mb-2"
+                    >
+                      <span aria-hidden="true" className="block">
+                        <StarBar rating={feedback.averageRating.value} size="sm" />
+                      </span>
+                    </span>
+                  )
+                }
               />
               <Tile
-                icon={sproutIcon}
+                tone="baseline"
+                watermark={unsureIcon}
+                kpi={feedback.powerlessness}
+                value={
+                  feedback.powerlessness.status === "shown"
+                    ? `${feedback.powerlessness.value} %`
+                    : ""
+                }
+                label={
+                  <>
+                    wussten <strong className="font-semibold text-warmgrau">vorher</strong> oft
+                    oder manchmal nicht, was sie politisch konkret tun können
+                  </>
+                }
+              />
+              <Tile
+                tone="highlight"
+                watermark={sproutIcon}
                 kpi={feedback.selfEfficacy}
                 value={
                   feedback.selfEfficacy.status === "shown"
                     ? `${feedback.selfEfficacy.value} %`
                     : ""
                 }
-                label="fühlen sich danach eher in der Lage, sich politisch einzubringen"
+                label={
+                  <>
+                    fühlen sich{" "}
+                    <strong className="font-semibold text-waldgruen-dark">danach</strong> eher
+                    in der Lage, sich politisch einzubringen
+                  </>
+                }
               />
             </dl>
 

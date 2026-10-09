@@ -856,18 +856,23 @@ describe("CampaignCreatorStats rendering", () => {
     );
   }
 
-  it("renders Verlauf, strongest day, recipients, powerlessness tile first and tag chips", () => {
+  it("renders Verlauf, strongest day, recipients, before/after tiles in order and tag chips", () => {
     const markup = renderFull();
     expect(markup).toContain("Verlauf");
     expect(markup).toContain("Stärkster Tag: 30. Sept. mit 18 Briefen");
     expect(markup).toMatch(/30\. Sept\.<\/span>18 Briefe/);
     expect(markup).toContain("Briefe pro Tag von 16. Sept. bis 8. Okt.");
     expect(markup).toContain("Geschrieben an: Bundestag-Abgeordnete 18, Landesregierung 6, Andere Empfänger 2");
-    expect(markup).toContain("wussten vorher oft oder manchmal nicht");
-    expect(markup.indexOf("wussten vorher")).toBeLessThan(markup.indexOf("schicken ihren Brief ab"));
-    expect(markup.indexOf("Zufriedenheit mit dem fertigen Brief")).toBeLessThan(
-      markup.indexOf("fühlen sich danach eher in der Lage"),
-    );
+    const order = [
+      "schicken ihren Brief ab",
+      "Zufriedenheit mit dem fertigen Brief",
+      "oder manchmal nicht, was sie politisch konkret tun können",
+      "in der Lage, sich politisch einzubringen",
+    ].map((label) => markup.indexOf(label));
+    expect(order.every((index) => index > -1)).toBe(true);
+    expect([...order].sort((a, b) => a - b)).toEqual(order);
+    expect(markup).toMatch(/<strong[^>]*>vorher<\/strong>/);
+    expect(markup).toMatch(/<strong[^>]*>danach<\/strong>/);
     expect(markup).toContain("lg:grid-cols-4");
     expect(markup).toContain("Was über die Briefe gesagt wird");
     expect(markup).toContain("Zu lang");

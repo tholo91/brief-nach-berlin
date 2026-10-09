@@ -1,6 +1,20 @@
 {
   "bundestag": [
     {
+      "id": 70826,
+      "politicianId": 175453,
+      "firstName": "Katrin",
+      "lastName": "Zschau",
+      "title": null,
+      "party": "SPD",
+      "wahlkreisId": 14,
+      "wahlkreisName": "Rostock – Landkreis Rostock II",
+      "level": "Bund",
+      "postalAddress": "Platz der Republik 1, 11011 Berlin",
+      "isDirect": false,
+      "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/katrin-zschau"
+    },
+    {
       "id": 70563,
       "politicianId": 145873,
       "firstName": "Michael",
@@ -12,7 +26,11 @@
       "level": "Bund",
       "postalAddress": "Platz der Republik 1, 11011 Berlin",
       "isDirect": false,
-      "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/michael-breilmann"
+      "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/michael-breilmann",
+      "committees": [
+        "Ausschuss für Recht und Verbraucherschutz",
+        "Ausschuss für Bildung, Familie, Senioren, Frauen und Jugend"
+      ]
     },
     {
       "id": 70562,
@@ -26,7 +44,13 @@
       "level": "Bund",
       "postalAddress": "Platz der Republik 1, 11011 Berlin",
       "isDirect": false,
-      "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/christoph-naser"
+      "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/christoph-naser",
+      "committees": [
+        "Ausschuss für Arbeit und Soziales",
+        "Ausschuss für Gesundheit",
+        "Ausschuss für wirtschaftliche Zusammenarbeit und Entwicklung",
+        "Ausschuss für Bildung, Familie, Senioren, Frauen und Jugend"
+      ]
     },
     {
       "id": 70561,
@@ -40,7 +64,12 @@
       "level": "Bund",
       "postalAddress": "Platz der Republik 1, 11011 Berlin",
       "isDirect": false,
-      "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/stefan-glaser"
+      "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/stefan-glaser",
+      "committees": [
+        "Ausschuss für Forschung, Technologie, Raumfahrt und Technikfolgenabschätzung",
+        "Ausschuss für Digitales und Staatsmodernisierung",
+        "Ausschuss für Umwelt, Klimaschutz, Naturschutz und nukleare Sicherheit"
+      ]
     },
     {
       "id": 70129,
@@ -143,7 +172,9 @@
       "isDirect": true,
       "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/aydan-oezoguz",
       "committees": [
-        "Unterausschuss Internationale Ordnung, Vereinte Nationen und internationale Organisationen"
+        "Unterausschuss Internationale Ordnung, Vereinte Nationen und internationale Organisationen",
+        "Ausschuss für Sport und Ehrenamt",
+        "Auswärtiger Ausschuss"
       ]
     },
     {
@@ -160,7 +191,11 @@
       "isDirect": true,
       "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/mahmut-oezdemir",
       "committees": [
-        "Unterausschuss Europarecht"
+        "Gremium gemäß Artikel 13 Absatz 6 des Grundgesetzes",
+        "Unterausschuss Europarecht",
+        "Ausschuss für Wirtschaft und Energie",
+        "Ausschuss für Recht und Verbraucherschutz",
+        "Ausschuss für Wahlprüfung, Immunität und Geschäftsordnung"
       ]
     },
     {
@@ -197,6 +232,7 @@
       "isDirect": false,
       "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/ulrich-von-zons",
       "committees": [
+        "Gremium gemäß Artikel 13 Absatz 6 des Grundgesetzes",
         "Verkehrsausschuss",
         "Ausschuss für Recht und Verbraucherschutz"
       ]
@@ -254,7 +290,9 @@
       "isDirect": true,
       "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/nicolas-zippelius",
       "committees": [
-        "Unterausschuss Rüstungs- und Proliferationskontrolle, Nichtverbreitung und internationale Abrüstung"
+        "Unterausschuss Rüstungs- und Proliferationskontrolle, Nichtverbreitung und internationale Abrüstung",
+        "Ausschuss für wirtschaftliche Zusammenarbeit und Entwicklung",
+        "Auswärtiger Ausschuss"
       ]
     },
     {
@@ -289,7 +327,9 @@
       "isDirect": false,
       "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/stefan-zierke",
       "committees": [
-        "Parlamentarischer Beirat für nachhaltige Entwicklung und Zukunftsfragen"
+        "Parlamentarischer Beirat für nachhaltige Entwicklung und Zukunftsfragen",
+        "Verkehrsausschuss",
+        "Ausschuss für Tourismus"
       ]
     },
     {
@@ -325,7 +365,10 @@
       "isDirect": true,
       "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/kay-uwe-ziegler",
       "committees": [
-        "Enquete-Kommission „Aufarbeitung der Corona-Pandemie und Lehren für zukünftige pandemische Ereignisse“"
+        "Enquete-Kommission „Aufarbeitung der Corona-Pandemie und Lehren für zukünftige pandemische Ereignisse“",
+        "Ausschuss für Wirtschaft und Energie",
+        "Ausschuss für Gesundheit",
+        "Verteidigungsausschuss"
       ]
     },
     {
@@ -342,7 +385,11 @@
       "isDirect": true,
       "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/emmi-zeulner",
       "committees": [
-        "Kinderkommission - Kommission zur Wahrnehmung der Belange der Kinder"
+        "Kinderkommission - Kommission zur Wahrnehmung der Belange der Kinder",
+        "Ausschuss für Wohnen, Stadtentwicklung, Bauwesen und Kommunen",
+        "Ausschuss für Bildung, Familie, Senioren, Frauen und Jugend",
+        "Ausschuss für Gesundheit",
+        "Verteidigungsausschuss"
       ]
     },
     {
@@ -377,7 +424,9 @@
       "isDirect": false,
       "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/daniel-zerbin",
       "committees": [
-        "Unterausschuss Internationale Ordnung, Vereinte Nationen und internationale Organisationen"
+        "Unterausschuss Internationale Ordnung, Vereinte Nationen und internationale Organisationen",
+        "Verteidigungsausschuss",
+        "Innenausschuss"
       ]
     },
     {
@@ -412,7 +461,11 @@
       "isDirect": true,
       "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/serdar-yueksel",
       "committees": [
-        "Unterausschuss Krisenprävention, strategische Vorausschau, Stabilisierung und Friedensförderung"
+        "Unterausschuss Krisenprävention, strategische Vorausschau, Stabilisierung und Friedensförderung",
+        "Ausschuss für die Angelegenheiten der Europäischen Union",
+        "Ausschuss für wirtschaftliche Zusammenarbeit und Entwicklung",
+        "Ausschuss für Gesundheit",
+        "Petitionsausschuss"
       ]
     },
     {
@@ -443,7 +496,9 @@
       "isDirect": false,
       "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/alexander-wolf-0",
       "committees": [
-        "Unterausschuss Auswärtige Kultur- und Bildungspolitik"
+        "Unterausschuss Auswärtige Kultur- und Bildungspolitik",
+        "Ausschuss für wirtschaftliche Zusammenarbeit und Entwicklung",
+        "Auswärtiger Ausschuss"
       ]
     },
     {
@@ -460,7 +515,9 @@
       "isDirect": false,
       "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/janine-wissler",
       "committees": [
-        "Unterausschuss Rüstungs- und Proliferationskontrolle, Nichtverbreitung und internationale Abrüstung"
+        "Unterausschuss Rüstungs- und Proliferationskontrolle, Nichtverbreitung und internationale Abrüstung",
+        "Ausschuss für Wirtschaft und Energie",
+        "Finanzausschuss"
       ]
     },
     {
@@ -477,9 +534,12 @@
       "isDirect": true,
       "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/mechthilde-wittmann",
       "committees": [
+        "Gremium gemäß § 80 des Zollfahndungsdienstgesetzes",
         "Gremium nach § 28a des Geldwäschegesetzes",
         "Enquete-Kommission „Aufarbeitung der Corona-Pandemie und Lehren für zukünftige pandemische Ereignisse“",
-        "Unterausschuss zu Fragen der Europäischen Union"
+        "Unterausschuss zu Fragen der Europäischen Union",
+        "Haushaltsausschuss",
+        "Finanzausschuss"
       ]
     },
     {
@@ -516,7 +576,9 @@
       "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/tobias-winkler",
       "committees": [
         "Unterausschuss Internationale Ordnung, Vereinte Nationen und internationale Organisationen",
-        "Ausschuss für Forschung, Technologie, Raumfahrt und Technikfolgenabschätzung"
+        "Ausschuss für die Angelegenheiten der Europäischen Union",
+        "Ausschuss für Forschung, Technologie, Raumfahrt und Technikfolgenabschätzung",
+        "Auswärtiger Ausschuss"
       ]
     },
     {
@@ -534,7 +596,11 @@
       "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/elisabeth-winkelmeier-becker",
       "committees": [
         "Parlamentarischer Beirat für nachhaltige Entwicklung und Zukunftsfragen",
-        "Ausschuss für Umwelt, Klimaschutz, Naturschutz und nukleare Sicherheit"
+        "Wahlausschuss",
+        "Ausschuss für Menschenrechte und humanitäre Hilfe",
+        "Ausschuss für Wirtschaft und Energie",
+        "Ausschuss für Umwelt, Klimaschutz, Naturschutz und nukleare Sicherheit",
+        "Ausschuss für Recht und Verbraucherschutz"
       ]
     },
     {
@@ -570,7 +636,9 @@
       "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/klaus-peter-willsch",
       "committees": [
         "Vertrauensgremium",
-        "Ausschuss für Forschung, Technologie, Raumfahrt und Technikfolgenabschätzung"
+        "Ausschuss für Bildung, Familie, Senioren, Frauen und Jugend",
+        "Ausschuss für Forschung, Technologie, Raumfahrt und Technikfolgenabschätzung",
+        "Haushaltsausschuss"
       ]
     },
     {
@@ -587,7 +655,11 @@
       "isDirect": false,
       "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/christin-willnat",
       "committees": [
-        "Unterausschuss Europarecht"
+        "Unterausschuss Europarecht",
+        "Wahlausschuss",
+        "Ausschuss für die Angelegenheiten der Europäischen Union",
+        "Ausschuss für Landwirtschaft, Ernährung und Heimat",
+        "Ausschuss für Recht und Verbraucherschutz"
       ]
     },
     {
@@ -696,7 +768,9 @@
       "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/sven-wendorf",
       "committees": [
         "Unterausschuss Internationale Ordnung, Vereinte Nationen und internationale Organisationen",
-        "Ausschuss für Forschung, Technologie, Raumfahrt und Technikfolgenabschätzung"
+        "Ausschuss für Kultur und Medien",
+        "Ausschuss für Forschung, Technologie, Raumfahrt und Technikfolgenabschätzung",
+        "Verteidigungsausschuss"
       ]
     },
     {
@@ -714,7 +788,9 @@
       "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/maria-lena-weiss",
       "committees": [
         "Parlamentarischer Beirat für nachhaltige Entwicklung und Zukunftsfragen",
-        "Ausschuss für Umwelt, Klimaschutz, Naturschutz und nukleare Sicherheit"
+        "Ausschuss für Wirtschaft und Energie",
+        "Ausschuss für Umwelt, Klimaschutz, Naturschutz und nukleare Sicherheit",
+        "Ausschuss für Gesundheit"
       ]
     },
     {
@@ -731,7 +807,10 @@
       "isDirect": true,
       "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/claudia-weiss",
       "committees": [
-        "Enquete-Kommission „Aufarbeitung der Corona-Pandemie und Lehren für zukünftige pandemische Ereignisse“"
+        "Enquete-Kommission „Aufarbeitung der Corona-Pandemie und Lehren für zukünftige pandemische Ereignisse“",
+        "Ausschuss für Bildung, Familie, Senioren, Frauen und Jugend",
+        "Ausschuss für Gesundheit",
+        "Finanzausschuss"
       ]
     },
     {
@@ -748,6 +827,8 @@
       "isDirect": true,
       "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/anja-weisgerber",
       "committees": [
+        "Ausschuss für Bildung, Familie, Senioren, Frauen und Jugend",
+        "Ausschuss für Kultur und Medien",
         "Ausschuss für Umwelt, Klimaschutz, Naturschutz und nukleare Sicherheit"
       ]
     },
@@ -765,6 +846,7 @@
       "isDirect": true,
       "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/mathias-weiser",
       "committees": [
+        "Ausschuss für Wirtschaft und Energie",
         "Ausschuss für Umwelt, Klimaschutz, Naturschutz und nukleare Sicherheit"
       ]
     },
@@ -796,7 +878,11 @@
       "isDirect": false,
       "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/carmen-wegge",
       "committees": [
-        "Unterausschuss Europarecht"
+        "Unterausschuss Europarecht",
+        "Wahlausschuss",
+        "Ausschuss für Recht und Verbraucherschutz",
+        "Innenausschuss",
+        "Ausschuss für Wahlprüfung, Immunität und Geschäftsordnung"
       ]
     },
     {
@@ -847,7 +933,10 @@
       "isDirect": false,
       "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/maja-wallstein",
       "committees": [
-        "Ausschuss für Forschung, Technologie, Raumfahrt und Technikfolgenabschätzung"
+        "Ausschuss für Digitales und Staatsmodernisierung",
+        "Ausschuss für Forschung, Technologie, Raumfahrt und Technikfolgenabschätzung",
+        "Innenausschuss",
+        "Petitionsausschuss"
       ]
     },
     {
@@ -864,7 +953,11 @@
       "isDirect": true,
       "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/siegfried-walch",
       "committees": [
-        "Unterausschuss Internationale Ordnung, Vereinte Nationen und internationale Organisationen"
+        "Unterausschuss Internationale Ordnung, Vereinte Nationen und internationale Organisationen",
+        "Ausschuss für Gesundheit",
+        "Innenausschuss",
+        "Auswärtiger Ausschuss",
+        "Ausschuss für Arbeit und Soziales"
       ]
     },
     {
@@ -881,7 +974,9 @@
       "isDirect": false,
       "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/sascha-wagner-0",
       "committees": [
-        "Rechnungsprüfungsausschuss"
+        "Rechnungsprüfungsausschuss",
+        "Ausschuss für Landwirtschaft, Ernährung und Heimat",
+        "Haushaltsausschuss"
       ]
     },
     {
@@ -898,7 +993,10 @@
       "isDirect": false,
       "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/johannes-wagner",
       "committees": [
-        "Parlamentarischer Beirat für nachhaltige Entwicklung und Zukunftsfragen"
+        "Parlamentarischer Beirat für nachhaltige Entwicklung und Zukunftsfragen",
+        "Ausschuss für Wirtschaft und Energie",
+        "Ausschuss für Gesundheit",
+        "Ausschuss für Landwirtschaft, Ernährung und Heimat"
       ]
     },
     {
@@ -915,7 +1013,10 @@
       "isDirect": false,
       "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/carolin-wagner",
       "committees": [
-        "Ausschuss für Forschung, Technologie, Raumfahrt und Technikfolgenabschätzung"
+        "Ausschuss für Digitales und Staatsmodernisierung",
+        "Ausschuss für Bildung, Familie, Senioren, Frauen und Jugend",
+        "Ausschuss für Forschung, Technologie, Raumfahrt und Technikfolgenabschätzung",
+        "Petitionsausschuss"
       ]
     },
     {
@@ -1002,7 +1103,8 @@
       "isDirect": true,
       "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/marja-liisa-voellers",
       "committees": [
-        "Unterausschuss Rüstungs- und Proliferationskontrolle, Nichtverbreitung und internationale Abrüstung"
+        "Unterausschuss Rüstungs- und Proliferationskontrolle, Nichtverbreitung und internationale Abrüstung",
+        "Verteidigungsausschuss"
       ]
     },
     {
@@ -1052,7 +1154,10 @@
       "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/johannes-volkmann-0",
       "committees": [
         "Unterausschuss Krisenprävention, strategische Vorausschau, Stabilisierung und Friedensförderung",
-        "Unterausschuss Auswärtige Kultur- und Bildungspolitik"
+        "Unterausschuss Auswärtige Kultur- und Bildungspolitik",
+        "Ausschuss für wirtschaftliche Zusammenarbeit und Entwicklung",
+        "Ausschuss für Kultur und Medien",
+        "Auswärtiger Ausschuss"
       ]
     },
     {
@@ -1070,7 +1175,9 @@
       "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/donata-vogtschmidt",
       "committees": [
         "Enquete-Kommission „Aufarbeitung der Corona-Pandemie und Lehren für zukünftige pandemische Ereignisse“",
-        "Ausschuss für Forschung, Technologie, Raumfahrt und Technikfolgenabschätzung"
+        "Ausschuss für Digitales und Staatsmodernisierung",
+        "Ausschuss für Forschung, Technologie, Raumfahrt und Technikfolgenabschätzung",
+        "Verteidigungsausschuss"
       ]
     },
     {
@@ -1087,7 +1194,9 @@
       "isDirect": true,
       "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/oliver-vogt",
       "committees": [
-        "Rechnungsprüfungsausschuss"
+        "Rechnungsprüfungsausschuss",
+        "Verteidigungsausschuss",
+        "Haushaltsausschuss"
       ]
     },
     {
@@ -1104,7 +1213,12 @@
       "isDirect": true,
       "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/ingo-vogel",
       "committees": [
-        "Gremium nach § 28a des Geldwäschegesetzes"
+        "Gremium gemäß § 80 des Zollfahndungsdienstgesetzes",
+        "Gremium nach § 28a des Geldwäschegesetzes",
+        "Ausschuss für Wohnen, Stadtentwicklung, Bauwesen und Kommunen",
+        "Finanzausschuss",
+        "Innenausschuss",
+        "Ausschuss für Arbeit und Soziales"
       ]
     },
     {
@@ -1157,7 +1271,10 @@
       "isDirect": false,
       "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/isabelle-vandre",
       "committees": [
-        "Gremium nach § 28a des Geldwäschegesetzes"
+        "Gremium nach § 28a des Geldwäschegesetzes",
+        "Ausschuss für Wohnen, Stadtentwicklung, Bauwesen und Kommunen",
+        "Haushaltsausschuss",
+        "Finanzausschuss"
       ]
     },
     {
@@ -1194,6 +1311,7 @@
       "isDirect": false,
       "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/martina-uhr",
       "committees": [
+        "Ausschuss für wirtschaftliche Zusammenarbeit und Entwicklung",
         "Ausschuss für Umwelt, Klimaschutz, Naturschutz und nukleare Sicherheit"
       ]
     },
@@ -1211,7 +1329,9 @@
       "isDirect": false,
       "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/katrin-uhlig",
       "committees": [
-        "Unterausschuss zu Fragen der Europäischen Union"
+        "Unterausschuss zu Fragen der Europäischen Union",
+        "Ausschuss für Wirtschaft und Energie",
+        "Haushaltsausschuss"
       ]
     },
     {
@@ -1228,7 +1348,9 @@
       "isDirect": false,
       "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/derya-tuerk-nachbaur",
       "committees": [
-        "Unterausschuss Auswärtige Kultur- und Bildungspolitik"
+        "Unterausschuss Auswärtige Kultur- und Bildungspolitik",
+        "Ausschuss für Menschenrechte und humanitäre Hilfe",
+        "Auswärtiger Ausschuss"
       ]
     },
     {
@@ -1263,7 +1385,10 @@
       "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/anja-troff-schaffarzyk",
       "committees": [
         "Unterausschuss Krisenprävention, strategische Vorausschau, Stabilisierung und Friedensförderung",
-        "Ausschuss für Forschung, Technologie, Raumfahrt und Technikfolgenabschätzung"
+        "Ausschuss für Digitales und Staatsmodernisierung",
+        "Verkehrsausschuss",
+        "Ausschuss für Forschung, Technologie, Raumfahrt und Technikfolgenabschätzung",
+        "Ausschuss für Landwirtschaft, Ernährung und Heimat"
       ]
     },
     {
@@ -1331,7 +1456,8 @@
       "isDirect": true,
       "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/alexander-throm",
       "committees": [
-        "Parlamentarisches Kontrollgremium (PKGr)"
+        "Parlamentarisches Kontrollgremium (PKGr)",
+        "Innenausschuss"
       ]
     },
     {
@@ -1366,7 +1492,11 @@
       "isDirect": true,
       "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/michael-thews",
       "committees": [
-        "Ausschuss für Umwelt, Klimaschutz, Naturschutz und nukleare Sicherheit"
+        "Gremium gemäß § 80 des Zollfahndungsdienstgesetzes",
+        "Ausschuss für Wirtschaft und Energie",
+        "Ausschuss für Tourismus",
+        "Ausschuss für Umwelt, Klimaschutz, Naturschutz und nukleare Sicherheit",
+        "Finanzausschuss"
       ]
     },
     {
@@ -1383,7 +1513,9 @@
       "isDirect": true,
       "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/hans-theiss",
       "committees": [
-        "Ausschuss für Forschung, Technologie, Raumfahrt und Technikfolgenabschätzung"
+        "Ausschuss für Forschung, Technologie, Raumfahrt und Technikfolgenabschätzung",
+        "Ausschuss für Gesundheit",
+        "Petitionsausschuss"
       ]
     },
     {
@@ -1400,7 +1532,11 @@
       "isDirect": true,
       "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/roland-theis",
       "committees": [
-        "Unterausschuss Internationale Ordnung, Vereinte Nationen und internationale Organisationen"
+        "Unterausschuss Internationale Ordnung, Vereinte Nationen und internationale Organisationen",
+        "Ausschuss für die Angelegenheiten der Europäischen Union",
+        "Verteidigungsausschuss",
+        "Auswärtiger Ausschuss",
+        "Petitionsausschuss"
       ]
     },
     {
@@ -1435,7 +1571,11 @@
       "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/awet-tesfaiesus",
       "committees": [
         "Unterausschuss Europarecht",
-        "Unterausschuss Auswärtige Kultur- und Bildungspolitik"
+        "Unterausschuss Auswärtige Kultur- und Bildungspolitik",
+        "Wahlausschuss",
+        "Ausschuss für Kultur und Medien",
+        "Ausschuss für Recht und Verbraucherschutz",
+        "Auswärtiger Ausschuss"
       ]
     },
     {
@@ -1452,7 +1592,9 @@
       "isDirect": false,
       "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/tobias-teich",
       "committees": [
-        "Petitionsausschuss"
+        "Petitionsausschuss",
+        "Ausschuss für die Angelegenheiten der Europäischen Union",
+        "Ausschuss für Kultur und Medien"
       ]
     },
     {
@@ -1489,7 +1631,8 @@
       "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/ruppert-stuewe",
       "committees": [
         "Petitionsausschuss",
-        "Rechnungsprüfungsausschuss"
+        "Rechnungsprüfungsausschuss",
+        "Haushaltsausschuss"
       ]
     },
     {
@@ -1525,7 +1668,8 @@
       "isDirect": true,
       "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/hendrik-streeck",
       "committees": [
-        "Ausschuss für Forschung, Technologie, Raumfahrt und Technikfolgenabschätzung"
+        "Ausschuss für Forschung, Technologie, Raumfahrt und Technikfolgenabschätzung",
+        "Ausschuss für Gesundheit"
       ]
     },
     {
@@ -1542,7 +1686,9 @@
       "isDirect": true,
       "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/katja-strauss-koester",
       "committees": [
-        "Enquete-Kommission „Aufarbeitung der Corona-Pandemie und Lehren für zukünftige pandemische Ereignisse“"
+        "Enquete-Kommission „Aufarbeitung der Corona-Pandemie und Lehren für zukünftige pandemische Ereignisse“",
+        "Ausschuss für Wohnen, Stadtentwicklung, Bauwesen und Kommunen",
+        "Innenausschuss"
       ]
     },
     {
@@ -1622,20 +1768,21 @@
       ]
     },
     {
-      "id": 68916,
-      "politicianId": 175972,
-      "firstName": "Thomas",
-      "lastName": "Stephan",
+      "id": 68915,
+      "politicianId": 164996,
+      "firstName": "Hanna",
+      "lastName": "Steinmüller",
       "title": null,
-      "party": "AfD",
-      "wahlkreisId": 207,
-      "wahlkreisName": "Neustadt – Speyer",
+      "party": "BÜNDNIS 90/­DIE GRÜNEN",
+      "wahlkreisId": 74,
+      "wahlkreisName": "Berlin-Mitte",
       "level": "Bund",
       "postalAddress": "Platz der Republik 1, 11011 Berlin",
-      "isDirect": false,
-      "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/thomas-stephan",
+      "isDirect": true,
+      "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/hanna-steinmueller",
       "committees": [
-        "Ausschuss für Umwelt, Klimaschutz, Naturschutz und nukleare Sicherheit"
+        "Ausschuss für Wohnen, Stadtentwicklung, Bauwesen und Kommunen",
+        "Ausschuss für Recht und Verbraucherschutz"
       ]
     },
     {
@@ -1672,7 +1819,10 @@
       "isDirect": false,
       "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/sebastian-steineke",
       "committees": [
-        "Unterausschuss Europarecht"
+        "Unterausschuss Europarecht",
+        "Wahlausschuss",
+        "Verkehrsausschuss",
+        "Ausschuss für Recht und Verbraucherschutz"
       ]
     },
     {
@@ -1708,7 +1858,10 @@
       "isDirect": false,
       "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/ralf-stegner",
       "committees": [
-        "Unterausschuss Rüstungs- und Proliferationskontrolle, Nichtverbreitung und internationale Abrüstung"
+        "Unterausschuss Rüstungs- und Proliferationskontrolle, Nichtverbreitung und internationale Abrüstung",
+        "Ausschuss für Menschenrechte und humanitäre Hilfe",
+        "Innenausschuss",
+        "Auswärtiger Ausschuss"
       ]
     },
     {
@@ -1743,7 +1896,9 @@
       "isDirect": true,
       "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/wolfgang-stefinger",
       "committees": [
-        "Parlamentarischer Beirat für nachhaltige Entwicklung und Zukunftsfragen"
+        "Parlamentarischer Beirat für nachhaltige Entwicklung und Zukunftsfragen",
+        "Ausschuss für wirtschaftliche Zusammenarbeit und Entwicklung",
+        "Haushaltsausschuss"
       ]
     },
     {
@@ -1814,7 +1969,8 @@
       "isDirect": false,
       "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/svenja-stadler",
       "committees": [
-        "Rechnungsprüfungsausschuss"
+        "Rechnungsprüfungsausschuss",
+        "Haushaltsausschuss"
       ]
     },
     {
@@ -1878,7 +2034,9 @@
       "isDirect": false,
       "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/nyke-slawik",
       "committees": [
-        "Kinderkommission - Kommission zur Wahrnehmung der Belange der Kinder"
+        "Kinderkommission - Kommission zur Wahrnehmung der Belange der Kinder",
+        "Verkehrsausschuss",
+        "Ausschuss für Bildung, Familie, Senioren, Frauen und Jugend"
       ]
     },
     {
@@ -1895,7 +2053,9 @@
       "isDirect": true,
       "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/bjoern-simon",
       "committees": [
-        "Ausschuss für Umwelt, Klimaschutz, Naturschutz und nukleare Sicherheit"
+        "Verkehrsausschuss",
+        "Ausschuss für Umwelt, Klimaschutz, Naturschutz und nukleare Sicherheit",
+        "Petitionsausschuss"
       ]
     },
     {
@@ -1912,7 +2072,14 @@
       "isDirect": true,
       "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/thomas-silberhorn",
       "committees": [
-        "Unterausschuss Krisenprävention, strategische Vorausschau, Stabilisierung und Friedensförderung"
+        "Unterausschuss Krisenprävention, strategische Vorausschau, Stabilisierung und Friedensförderung",
+        "Wahlausschuss",
+        "Ausschuss für die Angelegenheiten der Europäischen Union",
+        "Verteidigungsausschuss",
+        "Ausschuss für Recht und Verbraucherschutz",
+        "Innenausschuss",
+        "Auswärtiger Ausschuss",
+        "Ausschuss für Wahlprüfung, Immunität und Geschäftsordnung"
       ]
     },
     {
@@ -1948,7 +2115,10 @@
       "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/lina-seitzl",
       "committees": [
         "Enquete-Kommission „Aufarbeitung der Corona-Pandemie und Lehren für zukünftige pandemische Ereignisse“",
-        "Ausschuss für Forschung, Technologie, Raumfahrt und Technikfolgenabschätzung"
+        "Ausschuss für Bildung, Familie, Senioren, Frauen und Jugend",
+        "Ausschuss für Forschung, Technologie, Raumfahrt und Technikfolgenabschätzung",
+        "Ausschuss für Gesundheit",
+        "Haushaltsausschuss"
       ]
     },
     {
@@ -2052,7 +2222,9 @@
       "isDirect": false,
       "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/marlene-schoenberger",
       "committees": [
-        "Ausschuss für Forschung, Technologie, Raumfahrt und Technikfolgenabschätzung"
+        "Ausschuss für Kultur und Medien",
+        "Ausschuss für Forschung, Technologie, Raumfahrt und Technikfolgenabschätzung",
+        "Innenausschuss"
       ]
     },
     {
@@ -2087,7 +2259,10 @@
       "isDirect": false,
       "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/sebastian-schaefer-0",
       "committees": [
-        "Vertrauensgremium"
+        "Vertrauensgremium",
+        "Verteidigungsausschuss",
+        "Haushaltsausschuss",
+        "Finanzausschuss"
       ]
     },
     {
@@ -2105,7 +2280,10 @@
       "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/jamila-anna-schaefer",
       "committees": [
         "Vertrauensgremium",
-        "Bundesfinanzierungsgremium"
+        "Bundesfinanzierungsgremium",
+        "Haushaltsausschuss",
+        "Finanzausschuss",
+        "Auswärtiger Ausschuss"
       ]
     },
     {
@@ -2155,7 +2333,9 @@
       "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/andreas-schwarz",
       "committees": [
         "Verteidigungsausschuss",
-        "Vertrauensgremium"
+        "Vertrauensgremium",
+        "Ausschuss für Landwirtschaft, Ernährung und Heimat",
+        "Haushaltsausschuss"
       ]
     },
     {
@@ -2172,7 +2352,9 @@
       "isDirect": false,
       "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/stefan-schwartze",
       "committees": [
-        "Petitionsausschuss"
+        "Petitionsausschuss",
+        "Verkehrsausschuss",
+        "Ausschuss für Gesundheit"
       ]
     },
     {
@@ -2206,7 +2388,8 @@
         "Unterausschuss zu Fragen der Europäischen Union",
         "Vertrauensgremium",
         "Ausschuss für Forschung, Technologie, Raumfahrt und Technikfolgenabschätzung",
-        "Ausschuss für Umwelt, Klimaschutz, Naturschutz und nukleare Sicherheit"
+        "Ausschuss für Umwelt, Klimaschutz, Naturschutz und nukleare Sicherheit",
+        "Haushaltsausschuss"
       ]
     },
     {
@@ -2259,7 +2442,8 @@
       "isDirect": true,
       "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/stefan-schroeder",
       "committees": [
-        "Ausschuss für Forschung, Technologie, Raumfahrt und Technikfolgenabschätzung"
+        "Ausschuss für Forschung, Technologie, Raumfahrt und Technikfolgenabschätzung",
+        "Ausschuss für Landwirtschaft, Ernährung und Heimat"
       ]
     },
     {
@@ -2276,7 +2460,9 @@
       "isDirect": false,
       "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/georg-schroeter",
       "committees": [
-        "Rechnungsprüfungsausschuss"
+        "Rechnungsprüfungsausschuss",
+        "Ausschuss für Wirtschaft und Energie",
+        "Haushaltsausschuss"
       ]
     },
     {
@@ -2307,7 +2493,8 @@
       "isDirect": true,
       "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/felix-schreiner",
       "committees": [
-        "Parlamentarischer Beirat für nachhaltige Entwicklung und Zukunftsfragen"
+        "Parlamentarischer Beirat für nachhaltige Entwicklung und Zukunftsfragen",
+        "Ausschuss für Bildung, Familie, Senioren, Frauen und Jugend"
       ]
     },
     {
@@ -2370,7 +2557,9 @@
       "isDirect": true,
       "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/julia-schneider",
       "committees": [
-        "Ausschuss für Umwelt, Klimaschutz, Naturschutz und nukleare Sicherheit"
+        "Ausschuss für Wohnen, Stadtentwicklung, Bauwesen und Kommunen",
+        "Ausschuss für Umwelt, Klimaschutz, Naturschutz und nukleare Sicherheit",
+        "Haushaltsausschuss"
       ]
     },
     {
@@ -2387,7 +2576,8 @@
       "isDirect": true,
       "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/uwe-schmidt-1",
       "committees": [
-        "Bundesfinanzierungsgremium"
+        "Bundesfinanzierungsgremium",
+        "Haushaltsausschuss"
       ]
     },
     {
@@ -2442,7 +2632,9 @@
       "isDirect": false,
       "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/julian-schmidt",
       "committees": [
-        "Rechnungsprüfungsausschuss"
+        "Rechnungsprüfungsausschuss",
+        "Ausschuss für Landwirtschaft, Ernährung und Heimat",
+        "Haushaltsausschuss"
       ]
     },
     {
@@ -2459,7 +2651,9 @@
       "isDirect": true,
       "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/jan-wenzel-schmidt",
       "committees": [
-        "Unterausschuss Auswärtige Kultur- und Bildungspolitik"
+        "Unterausschuss Auswärtige Kultur- und Bildungspolitik",
+        "Finanzausschuss",
+        "Auswärtiger Ausschuss"
       ]
     },
     {
@@ -2528,9 +2722,7 @@
       "isDirect": false,
       "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/christoph-schmid-0",
       "committees": [
-        "Ausschuss für wirtschaftliche Zusammenarbeit und Entwicklung",
-        "Ausschuss für Tourismus",
-        "Verteidigungsausschuss"
+        "Haushaltsausschuss"
       ]
     },
     {
@@ -2548,6 +2740,8 @@
       "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/david-schliesing",
       "committees": [
         "Unterausschuss Auswärtige Kultur- und Bildungspolitik",
+        "Verkehrsausschuss",
+        "Ausschuss für Kultur und Medien",
         "Ausschuss für Forschung, Technologie, Raumfahrt und Technikfolgenabschätzung"
       ]
     },
@@ -2621,7 +2815,10 @@
       "isDirect": true,
       "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/ulrike-schielke-ziesing",
       "committees": [
-        "Rechnungsprüfungsausschuss"
+        "Rechnungsprüfungsausschuss",
+        "Haushaltsausschuss",
+        "Petitionsausschuss",
+        "Ausschuss für Arbeit und Soziales"
       ]
     },
     {
@@ -2670,6 +2867,8 @@
       "isDirect": false,
       "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/raimond-scheirich",
       "committees": [
+        "Ausschuss für die Angelegenheiten der Europäischen Union",
+        "Ausschuss für Wirtschaft und Energie",
         "Ausschuss für Umwelt, Klimaschutz, Naturschutz und nukleare Sicherheit"
       ]
     },
@@ -2687,7 +2886,11 @@
       "isDirect": false,
       "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/nina-scheer",
       "committees": [
-        "Ausschuss für Umwelt, Klimaschutz, Naturschutz und nukleare Sicherheit"
+        "Wahlausschuss",
+        "Ausschuss für wirtschaftliche Zusammenarbeit und Entwicklung",
+        "Ausschuss für Wirtschaft und Energie",
+        "Ausschuss für Umwelt, Klimaschutz, Naturschutz und nukleare Sicherheit",
+        "Ausschuss für Recht und Verbraucherschutz"
       ]
     },
     {
@@ -2740,7 +2943,13 @@
       "isDirect": true,
       "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/carl-philipp-sassenrath",
       "committees": [
-        "Unterausschuss Europarecht"
+        "Gremium gemäß § 80 des Zollfahndungsdienstgesetzes",
+        "Unterausschuss Europarecht",
+        "Ausschuss für die Angelegenheiten der Europäischen Union",
+        "Ausschuss für wirtschaftliche Zusammenarbeit und Entwicklung",
+        "Verkehrsausschuss",
+        "Haushaltsausschuss",
+        "Ausschuss für Recht und Verbraucherschutz"
       ]
     },
     {
@@ -2848,7 +3057,8 @@
       "isDirect": false,
       "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/thomas-roewekamp",
       "committees": [
-        "Ausschuss für Forschung, Technologie, Raumfahrt und Technikfolgenabschätzung"
+        "Ausschuss für Forschung, Technologie, Raumfahrt und Technikfolgenabschätzung",
+        "Verteidigungsausschuss"
       ]
     },
     {
@@ -2921,7 +3131,10 @@
       "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/daniela-rump",
       "committees": [
         "Kinderkommission - Kommission zur Wahrnehmung der Belange der Kinder",
-        "Enquete-Kommission „Aufarbeitung der Corona-Pandemie und Lehren für zukünftige pandemische Ereignisse“"
+        "Enquete-Kommission „Aufarbeitung der Corona-Pandemie und Lehren für zukünftige pandemische Ereignisse“",
+        "Ausschuss für Bildung, Familie, Senioren, Frauen und Jugend",
+        "Petitionsausschuss",
+        "Ausschuss für Arbeit und Soziales"
       ]
     },
     {
@@ -2938,7 +3151,9 @@
       "isDirect": false,
       "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/angela-rudzka",
       "committees": [
-        "Kinderkommission - Kommission zur Wahrnehmung der Belange der Kinder"
+        "Kinderkommission - Kommission zur Wahrnehmung der Belange der Kinder",
+        "Finanzausschuss",
+        "Petitionsausschuss"
       ]
     },
     {
@@ -2955,7 +3170,8 @@
       "isDirect": false,
       "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/thorsten-rudolph",
       "committees": [
-        "Vertrauensgremium"
+        "Vertrauensgremium",
+        "Haushaltsausschuss"
       ]
     },
     {
@@ -3005,7 +3221,9 @@
       "isDirect": false,
       "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/rainer-rothfuss",
       "committees": [
-        "Unterausschuss Krisenprävention, strategische Vorausschau, Stabilisierung und Friedensförderung"
+        "Unterausschuss Krisenprävention, strategische Vorausschau, Stabilisierung und Friedensförderung",
+        "Ausschuss für Menschenrechte und humanitäre Hilfe",
+        "Auswärtiger Ausschuss"
       ]
     },
     {
@@ -3042,7 +3260,9 @@
       "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/claudia-roth",
       "committees": [
         "Unterausschuss Auswärtige Kultur- und Bildungspolitik",
-        "Parlamentarischer Beirat für nachhaltige Entwicklung und Zukunftsfragen"
+        "Parlamentarischer Beirat für nachhaltige Entwicklung und Zukunftsfragen",
+        "Ausschuss für wirtschaftliche Zusammenarbeit und Entwicklung",
+        "Auswärtiger Ausschuss"
       ]
     },
     {
@@ -3079,7 +3299,11 @@
       "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/lars-rohwer",
       "committees": [
         "Enquete-Kommission „Aufarbeitung der Corona-Pandemie und Lehren für zukünftige pandemische Ereignisse“",
-        "Ausschuss für Forschung, Technologie, Raumfahrt und Technikfolgenabschätzung"
+        "Ausschuss für Wohnen, Stadtentwicklung, Bauwesen und Kommunen",
+        "Ausschuss für Bildung, Familie, Senioren, Frauen und Jugend",
+        "Ausschuss für Wirtschaft und Energie",
+        "Ausschuss für Forschung, Technologie, Raumfahrt und Technikfolgenabschätzung",
+        "Finanzausschuss"
       ]
     },
     {
@@ -3110,7 +3334,9 @@
       "isDirect": false,
       "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/daniel-rinkert",
       "committees": [
-        "Enquete-Kommission „Aufarbeitung der Corona-Pandemie und Lehren für zukünftige pandemische Ereignisse“"
+        "Enquete-Kommission „Aufarbeitung der Corona-Pandemie und Lehren für zukünftige pandemische Ereignisse“",
+        "Ausschuss für Umwelt, Klimaschutz, Naturschutz und nukleare Sicherheit",
+        "Ausschuss für Recht und Verbraucherschutz"
       ]
     },
     {
@@ -3146,7 +3372,8 @@
       "isDirect": true,
       "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/matthias-rentzsch",
       "committees": [
-        "Parlamentarischer Beirat für nachhaltige Entwicklung und Zukunftsfragen"
+        "Parlamentarischer Beirat für nachhaltige Entwicklung und Zukunftsfragen",
+        "Ausschuss für wirtschaftliche Zusammenarbeit und Entwicklung"
       ]
     },
     {
@@ -3180,7 +3407,9 @@
       "isDirect": false,
       "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/lea-reisner",
       "committees": [
-        "Unterausschuss Internationale Ordnung, Vereinte Nationen und internationale Organisationen"
+        "Unterausschuss Internationale Ordnung, Vereinte Nationen und internationale Organisationen",
+        "Ausschuss für die Angelegenheiten der Europäischen Union",
+        "Auswärtiger Ausschuss"
       ]
     },
     {
@@ -3197,6 +3426,8 @@
       "isDirect": false,
       "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/anja-reinalter",
       "committees": [
+        "Ausschuss für Wohnen, Stadtentwicklung, Bauwesen und Kommunen",
+        "Ausschuss für Bildung, Familie, Senioren, Frauen und Jugend",
         "Ausschuss für Forschung, Technologie, Raumfahrt und Technikfolgenabschätzung"
       ]
     },
@@ -3253,7 +3484,10 @@
       "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/truels-reichardt",
       "committees": [
         "Enquete-Kommission „Aufarbeitung der Corona-Pandemie und Lehren für zukünftige pandemische Ereignisse“",
-        "Kinderkommission - Kommission zur Wahrnehmung der Belange der Kinder"
+        "Kinderkommission - Kommission zur Wahrnehmung der Belange der Kinder",
+        "Verkehrsausschuss",
+        "Ausschuss für Bildung, Familie, Senioren, Frauen und Jugend",
+        "Ausschuss für Arbeit und Soziales"
       ]
     },
     {
@@ -3270,7 +3504,10 @@
       "isDirect": true,
       "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/martin-reichardt",
       "committees": [
-        "Ausschuss für Forschung, Technologie, Raumfahrt und Technikfolgenabschätzung"
+        "Ausschuss für Bildung, Familie, Senioren, Frauen und Jugend",
+        "Ausschuss für Forschung, Technologie, Raumfahrt und Technikfolgenabschätzung",
+        "Finanzausschuss",
+        "Ausschuss für Arbeit und Soziales"
       ]
     },
     {
@@ -3342,7 +3579,10 @@
       "isDirect": true,
       "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/christian-reck",
       "committees": [
-        "Parlamentarischer Beirat für nachhaltige Entwicklung und Zukunftsfragen"
+        "Parlamentarischer Beirat für nachhaltige Entwicklung und Zukunftsfragen",
+        "Ausschuss für Wirtschaft und Energie",
+        "Ausschuss für Landwirtschaft, Ernährung und Heimat",
+        "Finanzausschuss"
       ]
     },
     {
@@ -3411,7 +3651,10 @@
       "isDirect": true,
       "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/alexander-radwan",
       "committees": [
-        "Unterausschuss Auswärtige Kultur- und Bildungspolitik"
+        "Unterausschuss Auswärtige Kultur- und Bildungspolitik",
+        "Ausschuss für die Angelegenheiten der Europäischen Union",
+        "Finanzausschuss",
+        "Auswärtiger Ausschuss"
       ]
     },
     {
@@ -3429,7 +3672,8 @@
       "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/kerstin-radomski",
       "committees": [
         "Rechnungsprüfungsausschuss",
-        "Ausschuss für Forschung, Technologie, Raumfahrt und Technikfolgenabschätzung"
+        "Ausschuss für Forschung, Technologie, Raumfahrt und Technikfolgenabschätzung",
+        "Haushaltsausschuss"
       ]
     },
     {
@@ -3465,6 +3709,8 @@
       "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/martin-rabanus",
       "committees": [
         "Unterausschuss Auswärtige Kultur- und Bildungspolitik",
+        "Ausschuss für Bildung, Familie, Senioren, Frauen und Jugend",
+        "Ausschuss für Kultur und Medien",
         "Ausschuss für Forschung, Technologie, Raumfahrt und Technikfolgenabschätzung"
       ]
     },
@@ -3540,7 +3786,8 @@
       "isDirect": false,
       "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/stephan-protschka",
       "committees": [
-        "Petitionsausschuss"
+        "Petitionsausschuss",
+        "Ausschuss für Landwirtschaft, Ernährung und Heimat"
       ]
     },
     {
@@ -3557,7 +3804,10 @@
       "isDirect": true,
       "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/david-preisendanz",
       "committees": [
-        "Unterausschuss Europarecht"
+        "Unterausschuss Europarecht",
+        "Ausschuss für die Angelegenheiten der Europäischen Union",
+        "Ausschuss für Recht und Verbraucherschutz",
+        "Innenausschuss"
       ]
     },
     {
@@ -3699,7 +3949,10 @@
       "committees": [
         "Enquete-Kommission „Aufarbeitung der Corona-Pandemie und Lehren für zukünftige pandemische Ereignisse“",
         "Bundesfinanzierungsgremium",
-        "Rechnungsprüfungsausschuss"
+        "Rechnungsprüfungsausschuss",
+        "Ausschuss für Gesundheit",
+        "Verteidigungsausschuss",
+        "Haushaltsausschuss"
       ]
     },
     {
@@ -3716,7 +3969,11 @@
       "isDirect": false,
       "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/tobias-matthias-peterka",
       "committees": [
-        "Unterausschuss Europarecht"
+        "Gremium gemäß Artikel 13 Absatz 6 des Grundgesetzes",
+        "Unterausschuss Europarecht",
+        "Wahlausschuss",
+        "Ausschuss für die Angelegenheiten der Europäischen Union",
+        "Ausschuss für Recht und Verbraucherschutz"
       ]
     },
     {
@@ -3751,7 +4008,11 @@
       "isDirect": true,
       "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/jens-peick",
       "committees": [
-        "Enquete-Kommission „Aufarbeitung der Corona-Pandemie und Lehren für zukünftige pandemische Ereignisse“"
+        "Enquete-Kommission „Aufarbeitung der Corona-Pandemie und Lehren für zukünftige pandemische Ereignisse“",
+        "Ausschuss für Wirtschaft und Energie",
+        "Ausschuss für Gesundheit",
+        "Innenausschuss",
+        "Ausschuss für Arbeit und Soziales"
       ]
     },
     {
@@ -3782,7 +4043,9 @@
       "isDirect": false,
       "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/lisa-paus",
       "committees": [
-        "Unterausschuss zu Fragen der Europäischen Union"
+        "Unterausschuss zu Fragen der Europäischen Union",
+        "Haushaltsausschuss",
+        "Ausschuss für Arbeit und Soziales"
       ]
     },
     {
@@ -3876,7 +4139,11 @@
       "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/florian-ossner",
       "committees": [
         "Vertrauensgremium",
-        "Bundesfinanzierungsgremium"
+        "Bundesfinanzierungsgremium",
+        "Ausschuss für Wohnen, Stadtentwicklung, Bauwesen und Kommunen",
+        "Verkehrsausschuss",
+        "Haushaltsausschuss",
+        "Finanzausschuss"
       ]
     },
     {
@@ -3893,7 +4160,9 @@
       "isDirect": false,
       "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/gerold-otten",
       "committees": [
-        "Unterausschuss Rüstungs- und Proliferationskontrolle, Nichtverbreitung und internationale Abrüstung"
+        "Unterausschuss Rüstungs- und Proliferationskontrolle, Nichtverbreitung und internationale Abrüstung",
+        "Verteidigungsausschuss",
+        "Auswärtiger Ausschuss"
       ]
     },
     {
@@ -3982,7 +4251,9 @@
       "isDirect": false,
       "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/florian-oest",
       "committees": [
-        "Ausschuss für Forschung, Technologie, Raumfahrt und Technikfolgenabschätzung"
+        "Verkehrsausschuss",
+        "Ausschuss für Forschung, Technologie, Raumfahrt und Technikfolgenabschätzung",
+        "Innenausschuss"
       ]
     },
     {
@@ -4034,7 +4305,10 @@
       "isDirect": false,
       "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/konstantin-von-notz",
       "committees": [
-        "Parlamentarisches Kontrollgremium (PKGr)"
+        "Parlamentarisches Kontrollgremium (PKGr)",
+        "Wahlausschuss",
+        "Ausschuss für Recht und Verbraucherschutz",
+        "Innenausschuss"
       ]
     },
     {
@@ -4069,7 +4343,9 @@
       "isDirect": false,
       "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/iris-nieland",
       "committees": [
-        "Rechnungsprüfungsausschuss"
+        "Rechnungsprüfungsausschuss",
+        "Haushaltsausschuss",
+        "Finanzausschuss"
       ]
     },
     {
@@ -4105,7 +4381,9 @@
       "isDirect": false,
       "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/charlotte-neuhaeuser",
       "committees": [
-        "Unterausschuss Krisenprävention, strategische Vorausschau, Stabilisierung und Friedensförderung"
+        "Unterausschuss Krisenprävention, strategische Vorausschau, Stabilisierung und Friedensförderung",
+        "Ausschuss für wirtschaftliche Zusammenarbeit und Entwicklung",
+        "Auswärtiger Ausschuss"
       ]
     },
     {
@@ -4158,7 +4436,8 @@
       "isDirect": false,
       "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/sara-nanni",
       "committees": [
-        "Unterausschuss Rüstungs- und Proliferationskontrolle, Nichtverbreitung und internationale Abrüstung"
+        "Unterausschuss Rüstungs- und Proliferationskontrolle, Nichtverbreitung und internationale Abrüstung",
+        "Verteidigungsausschuss"
       ]
     },
     {
@@ -4267,7 +4546,8 @@
       "isDirect": true,
       "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/florian-mueller-0",
       "committees": [
-        "Ausschuss für Forschung, Technologie, Raumfahrt und Technikfolgenabschätzung"
+        "Ausschuss für Forschung, Technologie, Raumfahrt und Technikfolgenabschätzung",
+        "Ausschuss für Sport und Ehrenamt"
       ]
     },
     {
@@ -4284,7 +4564,9 @@
       "isDirect": false,
       "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/claudia-mueller",
       "committees": [
-        "Ausschuss für Forschung, Technologie, Raumfahrt und Technikfolgenabschätzung"
+        "Verkehrsausschuss",
+        "Ausschuss für Forschung, Technologie, Raumfahrt und Technikfolgenabschätzung",
+        "Haushaltsausschuss"
       ]
     },
     {
@@ -4301,7 +4583,13 @@
       "isDirect": false,
       "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/carsten-mueller",
       "committees": [
-        "Enquete-Kommission „Aufarbeitung der Corona-Pandemie und Lehren für zukünftige pandemische Ereignisse“"
+        "Gremium gemäß Artikel 13 Absatz 6 des Grundgesetzes",
+        "Enquete-Kommission „Aufarbeitung der Corona-Pandemie und Lehren für zukünftige pandemische Ereignisse“",
+        "Wahlausschuss",
+        "Ausschuss für Wirtschaft und Energie",
+        "Finanzausschuss",
+        "Ausschuss für Recht und Verbraucherschutz",
+        "Ausschuss für Wahlprüfung, Immunität und Geschäftsordnung"
       ]
     },
     {
@@ -4318,7 +4606,10 @@
       "isDirect": true,
       "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/axel-mueller",
       "committees": [
-        "Enquete-Kommission „Aufarbeitung der Corona-Pandemie und Lehren für zukünftige pandemische Ereignisse“"
+        "Gremium gemäß Artikel 13 Absatz 6 des Grundgesetzes",
+        "Enquete-Kommission „Aufarbeitung der Corona-Pandemie und Lehren für zukünftige pandemische Ereignisse“",
+        "Ausschuss für Gesundheit",
+        "Ausschuss für Recht und Verbraucherschutz"
       ]
     },
     {
@@ -4374,7 +4665,10 @@
       "isDirect": true,
       "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/christian-moser",
       "committees": [
-        "Unterausschuss Europarecht"
+        "Unterausschuss Europarecht",
+        "Ausschuss für Wirtschaft und Energie",
+        "Ausschuss für Umwelt, Klimaschutz, Naturschutz und nukleare Sicherheit",
+        "Ausschuss für Recht und Verbraucherschutz"
       ]
     },
     {
@@ -4461,7 +4755,8 @@
       "isDirect": false,
       "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/sergej-minich",
       "committees": [
-        "Ausschuss für Forschung, Technologie, Raumfahrt und Technikfolgenabschätzung"
+        "Ausschuss für Forschung, Technologie, Raumfahrt und Technikfolgenabschätzung",
+        "Haushaltsausschuss"
       ]
     },
     {
@@ -4478,7 +4773,10 @@
       "isDirect": false,
       "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/boris-mijatovic",
       "committees": [
-        "Unterausschuss Internationale Ordnung, Vereinte Nationen und internationale Organisationen"
+        "Unterausschuss Internationale Ordnung, Vereinte Nationen und internationale Organisationen",
+        "Ausschuss für die Angelegenheiten der Europäischen Union",
+        "Ausschuss für Menschenrechte und humanitäre Hilfe",
+        "Auswärtiger Ausschuss"
       ]
     },
     {
@@ -4568,7 +4866,8 @@
       "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/kathrin-michel",
       "committees": [
         "Parlamentarischer Beirat für nachhaltige Entwicklung und Zukunftsfragen",
-        "Bundesfinanzierungsgremium"
+        "Bundesfinanzierungsgremium",
+        "Haushaltsausschuss"
       ]
     },
     {
@@ -4622,7 +4921,11 @@
       "isDirect": true,
       "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/jan-metzler",
       "committees": [
-        "Rechnungsprüfungsausschuss"
+        "Rechnungsprüfungsausschuss",
+        "Ausschuss für die Angelegenheiten der Europäischen Union",
+        "Ausschuss für Wirtschaft und Energie",
+        "Haushaltsausschuss",
+        "Auswärtiger Ausschuss"
       ]
     },
     {
@@ -4722,7 +5025,9 @@
       "isDirect": false,
       "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/tamara-mazzi",
       "committees": [
-        "Rechnungsprüfungsausschuss"
+        "Rechnungsprüfungsausschuss",
+        "Haushaltsausschuss",
+        "Innenausschuss"
       ]
     },
     {
@@ -4739,7 +5044,11 @@
       "isDirect": true,
       "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/volker-mayer-lay",
       "committees": [
-        "Parlamentarischer Beirat für nachhaltige Entwicklung und Zukunftsfragen"
+        "Parlamentarischer Beirat für nachhaltige Entwicklung und Zukunftsfragen",
+        "Verkehrsausschuss",
+        "Ausschuss für Umwelt, Klimaschutz, Naturschutz und nukleare Sicherheit",
+        "Verteidigungsausschuss",
+        "Auswärtiger Ausschuss"
       ]
     },
     {
@@ -4756,7 +5065,8 @@
       "isDirect": true,
       "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/zoe-mayer",
       "committees": [
-        "Ausschuss für Forschung, Technologie, Raumfahrt und Technikfolgenabschätzung"
+        "Ausschuss für Forschung, Technologie, Raumfahrt und Technikfolgenabschätzung",
+        "Ausschuss für Landwirtschaft, Ernährung und Heimat"
       ]
     },
     {
@@ -4773,7 +5083,11 @@
       "isDirect": true,
       "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/stephan-mayer",
       "committees": [
-        "Unterausschuss Auswärtige Kultur- und Bildungspolitik"
+        "Unterausschuss Auswärtige Kultur- und Bildungspolitik",
+        "Ausschuss für Wirtschaft und Energie",
+        "Ausschuss für Sport und Ehrenamt",
+        "Innenausschuss",
+        "Auswärtiger Ausschuss"
       ]
     },
     {
@@ -4790,7 +5104,10 @@
       "isDirect": false,
       "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/andreas-mayer-0",
       "committees": [
-        "Ausschuss für Forschung, Technologie, Raumfahrt und Technikfolgenabschätzung"
+        "Verkehrsausschuss",
+        "Ausschuss für Wirtschaft und Energie",
+        "Ausschuss für Forschung, Technologie, Raumfahrt und Technikfolgenabschätzung",
+        "Finanzausschuss"
       ]
     },
     {
@@ -4808,7 +5125,10 @@
       "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/andreas-mattfeldt",
       "committees": [
         "Vertrauensgremium",
-        "Bundesfinanzierungsgremium"
+        "Bundesfinanzierungsgremium",
+        "Verteidigungsausschuss",
+        "Haushaltsausschuss",
+        "Petitionsausschuss"
       ]
     },
     {
@@ -4860,7 +5180,10 @@
       "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/johann-martel",
       "committees": [
         "Unterausschuss Krisenprävention, strategische Vorausschau, Stabilisierung und Friedensförderung",
-        "Parlamentarischer Beirat für nachhaltige Entwicklung und Zukunftsfragen"
+        "Parlamentarischer Beirat für nachhaltige Entwicklung und Zukunftsfragen",
+        "Ausschuss für wirtschaftliche Zusammenarbeit und Entwicklung",
+        "Ausschuss für Bildung, Familie, Senioren, Frauen und Jugend",
+        "Ausschuss für Arbeit und Soziales"
       ]
     },
     {
@@ -4877,7 +5200,11 @@
       "isDirect": false,
       "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/holger-mann",
       "committees": [
-        "Ausschuss für Forschung, Technologie, Raumfahrt und Technikfolgenabschätzung"
+        "Ausschuss für Digitales und Staatsmodernisierung",
+        "Ausschuss für Wirtschaft und Energie",
+        "Ausschuss für Kultur und Medien",
+        "Ausschuss für Forschung, Technologie, Raumfahrt und Technikfolgenabschätzung",
+        "Ausschuss für Umwelt, Klimaschutz, Naturschutz und nukleare Sicherheit"
       ]
     },
     {
@@ -4913,7 +5240,10 @@
       "isDirect": true,
       "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/klaus-mack",
       "committees": [
-        "Parlamentarischer Beirat für nachhaltige Entwicklung und Zukunftsfragen"
+        "Parlamentarischer Beirat für nachhaltige Entwicklung und Zukunftsfragen",
+        "Ausschuss für Wohnen, Stadtentwicklung, Bauwesen und Kommunen",
+        "Ausschuss für Umwelt, Klimaschutz, Naturschutz und nukleare Sicherheit",
+        "Innenausschuss"
       ]
     },
     {
@@ -4930,7 +5260,10 @@
       "isDirect": false,
       "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/tanja-machalet",
       "committees": [
-        "Enquete-Kommission „Aufarbeitung der Corona-Pandemie und Lehren für zukünftige pandemische Ereignisse“"
+        "Enquete-Kommission „Aufarbeitung der Corona-Pandemie und Lehren für zukünftige pandemische Ereignisse“",
+        "Ausschuss für Gesundheit",
+        "Finanzausschuss",
+        "Ausschuss für Arbeit und Soziales"
       ]
     },
     {
@@ -4984,7 +5317,11 @@
       "isDirect": false,
       "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/bettina-lugk",
       "committees": [
-        "Unterausschuss Rüstungs- und Proliferationskontrolle, Nichtverbreitung und internationale Abrüstung"
+        "Unterausschuss Rüstungs- und Proliferationskontrolle, Nichtverbreitung und internationale Abrüstung",
+        "Verteidigungsausschuss",
+        "Ausschuss für Landwirtschaft, Ernährung und Heimat",
+        "Ausschuss für Sport und Ehrenamt",
+        "Auswärtiger Ausschuss"
       ]
     },
     {
@@ -5054,7 +5391,11 @@
       "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/max-lucks",
       "committees": [
         "Gremium nach § 28a des Geldwäschegesetzes",
-        "Unterausschuss Krisenprävention, strategische Vorausschau, Stabilisierung und Friedensförderung"
+        "Unterausschuss Krisenprävention, strategische Vorausschau, Stabilisierung und Friedensförderung",
+        "Ausschuss für Menschenrechte und humanitäre Hilfe",
+        "Finanzausschuss",
+        "Auswärtiger Ausschuss",
+        "Petitionsausschuss"
       ]
     },
     {
@@ -5160,7 +5501,11 @@
       "isDirect": true,
       "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/helge-lindh",
       "committees": [
-        "Unterausschuss Europarecht"
+        "Unterausschuss Europarecht",
+        "Ausschuss für Kultur und Medien",
+        "Ausschuss für Recht und Verbraucherschutz",
+        "Innenausschuss",
+        "Ausschuss für Arbeit und Soziales"
       ]
     },
     {
@@ -5217,7 +5562,10 @@
       "isDirect": true,
       "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/andreas-lenz",
       "committees": [
-        "Parlamentarischer Beirat für nachhaltige Entwicklung und Zukunftsfragen"
+        "Parlamentarischer Beirat für nachhaltige Entwicklung und Zukunftsfragen",
+        "Ausschuss für die Angelegenheiten der Europäischen Union",
+        "Ausschuss für Wirtschaft und Energie",
+        "Ausschuss für Arbeit und Soziales"
       ]
     },
     {
@@ -5289,6 +5637,7 @@
       "isDirect": false,
       "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/sonja-lemke",
       "committees": [
+        "Ausschuss für Digitales und Staatsmodernisierung",
         "Ausschuss für Forschung, Technologie, Raumfahrt und Technikfolgenabschätzung"
       ]
     },
@@ -5361,6 +5710,7 @@
       "isDirect": true,
       "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/karl-lauterbach",
       "committees": [
+        "Ausschuss für wirtschaftliche Zusammenarbeit und Entwicklung",
         "Ausschuss für Forschung, Technologie, Raumfahrt und Technikfolgenabschätzung"
       ]
     },
@@ -5443,7 +5793,9 @@
       "isDirect": false,
       "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/ricarda-lang",
       "committees": [
-        "Petitionsausschuss"
+        "Petitionsausschuss",
+        "Haushaltsausschuss",
+        "Ausschuss für Arbeit und Soziales"
       ]
     },
     {
@@ -5460,7 +5812,8 @@
       "isDirect": false,
       "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/pierre-lamely",
       "committees": [
-        "Enquete-Kommission „Aufarbeitung der Corona-Pandemie und Lehren für zukünftige pandemische Ereignisse“"
+        "Enquete-Kommission „Aufarbeitung der Corona-Pandemie und Lehren für zukünftige pandemische Ereignisse“",
+        "Ausschuss für die Angelegenheiten der Europäischen Union"
       ]
     },
     {
@@ -5477,7 +5830,10 @@
       "isDirect": true,
       "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/thomas-ladzinski",
       "committees": [
-        "Unterausschuss Rüstungs- und Proliferationskontrolle, Nichtverbreitung und internationale Abrüstung"
+        "Unterausschuss Rüstungs- und Proliferationskontrolle, Nichtverbreitung und internationale Abrüstung",
+        "Ausschuss für Digitales und Staatsmodernisierung",
+        "Verteidigungsausschuss",
+        "Haushaltsausschuss"
       ]
     },
     {
@@ -5495,14 +5851,16 @@
       "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/anna-leonore-labitzke-rathert",
       "committees": [
         "Unterausschuss Auswärtige Kultur- und Bildungspolitik",
-        "Kinderkommission - Kommission zur Wahrnehmung der Belange der Kinder"
+        "Kinderkommission - Kommission zur Wahrnehmung der Belange der Kinder",
+        "Ausschuss für Bildung, Familie, Senioren, Frauen und Jugend",
+        "Auswärtiger Ausschuss"
       ]
     },
     {
       "id": 68686,
       "politicianId": 178656,
       "firstName": "Jan",
-      "lastName": "Köstering",
+      "lastName": "Krampe",
       "title": null,
       "party": "Die Linke",
       "wahlkreisId": 98,
@@ -5510,7 +5868,7 @@
       "level": "Bund",
       "postalAddress": "Platz der Republik 1, 11011 Berlin",
       "isDirect": false,
-      "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/jan-koestering",
+      "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/jan-krampe",
       "committees": [
         "Verteidigungsausschuss",
         "Innenausschuss"
@@ -5530,7 +5888,10 @@
       "isDirect": true,
       "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/konrad-koerner",
       "committees": [
-        "Unterausschuss Europarecht"
+        "Unterausschuss Europarecht",
+        "Ausschuss für Digitales und Staatsmodernisierung",
+        "Ausschuss für Bildung, Familie, Senioren, Frauen und Jugend",
+        "Ausschuss für Recht und Verbraucherschutz"
       ]
     },
     {
@@ -5583,7 +5944,10 @@
       "isDirect": true,
       "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/anne-koenig",
       "committees": [
-        "Unterausschuss Auswärtige Kultur- und Bildungspolitik"
+        "Unterausschuss Auswärtige Kultur- und Bildungspolitik",
+        "Ausschuss für Wohnen, Stadtentwicklung, Bauwesen und Kommunen",
+        "Ausschuss für Bildung, Familie, Senioren, Frauen und Jugend",
+        "Ausschuss für Wirtschaft und Energie"
       ]
     },
     {
@@ -5619,7 +5983,9 @@
       "isDirect": false,
       "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/cansin-koektuerk",
       "committees": [
-        "Kinderkommission - Kommission zur Wahrnehmung der Belange der Kinder"
+        "Kinderkommission - Kommission zur Wahrnehmung der Belange der Kinder",
+        "Ausschuss für Bildung, Familie, Senioren, Frauen und Jugend",
+        "Ausschuss für Arbeit und Soziales"
       ]
     },
     {
@@ -5654,7 +6020,9 @@
       "isDirect": false,
       "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/juergen-koegel",
       "committees": [
-        "Unterausschuss zu Fragen der Europäischen Union"
+        "Unterausschuss zu Fragen der Europäischen Union",
+        "Haushaltsausschuss",
+        "Auswärtiger Ausschuss"
       ]
     },
     {
@@ -5765,7 +6133,10 @@
       "isDirect": true,
       "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/dunja-kreiser",
       "committees": [
-        "Parlamentarischer Beirat für nachhaltige Entwicklung und Zukunftsfragen"
+        "Parlamentarischer Beirat für nachhaltige Entwicklung und Zukunftsfragen",
+        "Verkehrsausschuss",
+        "Ausschuss für Wirtschaft und Energie",
+        "Ausschuss für Umwelt, Klimaschutz, Naturschutz und nukleare Sicherheit"
       ]
     },
     {
@@ -5868,7 +6239,10 @@
       "isDirect": true,
       "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/stefan-korbach",
       "committees": [
-        "Gremium nach § 28a des Geldwäschegesetzes"
+        "Gremium nach § 28a des Geldwäschegesetzes",
+        "Wahlausschuss",
+        "Finanzausschuss",
+        "Ausschuss für Arbeit und Soziales"
       ]
     },
     {
@@ -5885,6 +6259,7 @@
       "isDirect": true,
       "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/chantal-kopf",
       "committees": [
+        "Ausschuss für die Angelegenheiten der Europäischen Union",
         "Ausschuss für Forschung, Technologie, Raumfahrt und Technikfolgenabschätzung"
       ]
     },
@@ -5902,7 +6277,9 @@
       "isDirect": true,
       "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/markus-koob",
       "committees": [
-        "Unterausschuss Internationale Ordnung, Vereinte Nationen und internationale Organisationen"
+        "Unterausschuss Internationale Ordnung, Vereinte Nationen und internationale Organisationen",
+        "Ausschuss für Bildung, Familie, Senioren, Frauen und Jugend",
+        "Auswärtiger Ausschuss"
       ]
     },
     {
@@ -5971,7 +6348,9 @@
       "isDirect": false,
       "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/heinrich-koch",
       "committees": [
-        "Unterausschuss Krisenprävention, strategische Vorausschau, Stabilisierung und Friedensförderung"
+        "Unterausschuss Krisenprävention, strategische Vorausschau, Stabilisierung und Friedensförderung",
+        "Verteidigungsausschuss",
+        "Auswärtiger Ausschuss"
       ]
     },
     {
@@ -6007,6 +6386,7 @@
       "isDirect": false,
       "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/maximilian-kneller",
       "committees": [
+        "Verkehrsausschuss",
         "Ausschuss für Forschung, Technologie, Raumfahrt und Technikfolgenabschätzung"
       ]
     },
@@ -6125,7 +6505,9 @@
       "isDirect": true,
       "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/helmut-kleebank",
       "committees": [
-        "Parlamentarischer Beirat für nachhaltige Entwicklung und Zukunftsfragen"
+        "Parlamentarischer Beirat für nachhaltige Entwicklung und Zukunftsfragen",
+        "Ausschuss für Wirtschaft und Energie",
+        "Ausschuss für Umwelt, Klimaschutz, Naturschutz und nukleare Sicherheit"
       ]
     },
     {
@@ -6175,7 +6557,8 @@
       "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/roderich-kiesewetter",
       "committees": [
         "Unterausschuss Krisenprävention, strategische Vorausschau, Stabilisierung und Friedensförderung",
-        "Unterausschuss Rüstungs- und Proliferationskontrolle, Nichtverbreitung und internationale Abrüstung"
+        "Unterausschuss Rüstungs- und Proliferationskontrolle, Nichtverbreitung und internationale Abrüstung",
+        "Auswärtiger Ausschuss"
       ]
     },
     {
@@ -6228,7 +6611,8 @@
       "isDirect": false,
       "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/stefan-keuter",
       "committees": [
-        "Unterausschuss Internationale Ordnung, Vereinte Nationen und internationale Organisationen"
+        "Unterausschuss Internationale Ordnung, Vereinte Nationen und internationale Organisationen",
+        "Auswärtiger Ausschuss"
       ]
     },
     {
@@ -6265,7 +6649,10 @@
       "isDirect": false,
       "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/martina-kempf",
       "committees": [
-        "Unterausschuss Europarecht"
+        "Unterausschuss Europarecht",
+        "Ausschuss für Bildung, Familie, Senioren, Frauen und Jugend",
+        "Ausschuss für Gesundheit",
+        "Ausschuss für Recht und Verbraucherschutz"
       ]
     },
     {
@@ -6300,7 +6687,9 @@
       "isDirect": true,
       "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/michael-kaufmann",
       "committees": [
-        "Ausschuss für Forschung, Technologie, Raumfahrt und Technikfolgenabschätzung"
+        "Ausschuss für Digitales und Staatsmodernisierung",
+        "Ausschuss für Forschung, Technologie, Raumfahrt und Technikfolgenabschätzung",
+        "Haushaltsausschuss"
       ]
     },
     {
@@ -6335,6 +6724,7 @@
       "isDirect": true,
       "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/anja-karliczek",
       "committees": [
+        "Gremium gemäß § 80 des Zollfahndungsdienstgesetzes",
         "Ausschuss für Tourismus",
         "Ausschuss für Umwelt, Klimaschutz, Naturschutz und nukleare Sicherheit",
         "Finanzausschuss"
@@ -6412,7 +6802,9 @@
       "isDirect": false,
       "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/maren-kaminski",
       "committees": [
-        "Unterausschuss Auswärtige Kultur- und Bildungspolitik"
+        "Unterausschuss Auswärtige Kultur- und Bildungspolitik",
+        "Ausschuss für wirtschaftliche Zusammenarbeit und Entwicklung",
+        "Ausschuss für Bildung, Familie, Senioren, Frauen und Jugend"
       ]
     },
     {
@@ -6461,6 +6853,7 @@
       "isDirect": true,
       "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/oliver-kaczmarek",
       "committees": [
+        "Ausschuss für Bildung, Familie, Senioren, Frauen und Jugend",
         "Ausschuss für Forschung, Technologie, Raumfahrt und Technikfolgenabschätzung"
       ]
     },
@@ -6478,24 +6871,8 @@
       "isDirect": false,
       "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/robin-juenger",
       "committees": [
+        "Ausschuss für Digitales und Staatsmodernisierung",
         "Ausschuss für Forschung, Technologie, Raumfahrt und Technikfolgenabschätzung"
-      ]
-    },
-    {
-      "id": 68626,
-      "politicianId": 79268,
-      "firstName": "Frank",
-      "lastName": "Junge",
-      "title": null,
-      "party": "SPD",
-      "wahlkreisId": 13,
-      "wahlkreisName": "Ludwigslust-Parchim II – Nordwestmecklenburg II – Landkreis Rostock I",
-      "level": "Bund",
-      "postalAddress": "Platz der Republik 1, 11011 Berlin",
-      "isDirect": false,
-      "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/frank-junge",
-      "committees": [
-        "Unterausschuss zu Fragen der Europäischen Union"
       ]
     },
     {
@@ -6531,7 +6908,9 @@
       "isDirect": true,
       "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/alexander-jordan",
       "committees": [
-        "Ausschuss für Forschung, Technologie, Raumfahrt und Technikfolgenabschätzung"
+        "Verkehrsausschuss",
+        "Ausschuss für Forschung, Technologie, Raumfahrt und Technikfolgenabschätzung",
+        "Ausschuss für Landwirtschaft, Ernährung und Heimat"
       ]
     },
     {
@@ -6600,7 +6979,11 @@
       "isDirect": false,
       "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/fabian-jacobi",
       "committees": [
-        "Unterausschuss Europarecht"
+        "Unterausschuss Europarecht",
+        "Wahlausschuss",
+        "Ausschuss für die Angelegenheiten der Europäischen Union",
+        "Ausschuss für Recht und Verbraucherschutz",
+        "Ausschuss für Wahlprüfung, Immunität und Geschäftsordnung"
       ]
     },
     {
@@ -6636,7 +7019,9 @@
       "isDirect": false,
       "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/nicole-hoechst",
       "committees": [
-        "Ausschuss für Forschung, Technologie, Raumfahrt und Technikfolgenabschätzung"
+        "Ausschuss für Bildung, Familie, Senioren, Frauen und Jugend",
+        "Ausschuss für Forschung, Technologie, Raumfahrt und Technikfolgenabschätzung",
+        "Auswärtiger Ausschuss"
       ]
     },
     {
@@ -6724,7 +7109,11 @@
       "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/michael-hose",
       "committees": [
         "Enquete-Kommission „Aufarbeitung der Corona-Pandemie und Lehren für zukünftige pandemische Ereignisse“",
-        "Kinderkommission - Kommission zur Wahrnehmung der Belange der Kinder"
+        "Kinderkommission - Kommission zur Wahrnehmung der Belange der Kinder",
+        "Ausschuss für Bildung, Familie, Senioren, Frauen und Jugend",
+        "Ausschuss für Kultur und Medien",
+        "Haushaltsausschuss",
+        "Petitionsausschuss"
       ]
     },
     {
@@ -6742,7 +7131,9 @@
       "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/franziska-hoppermann",
       "committees": [
         "Enquete-Kommission „Aufarbeitung der Corona-Pandemie und Lehren für zukünftige pandemische Ereignisse“",
-        "Unterausschuss zu Fragen der Europäischen Union"
+        "Unterausschuss zu Fragen der Europäischen Union",
+        "Ausschuss für Digitales und Staatsmodernisierung",
+        "Haushaltsausschuss"
       ]
     },
     {
@@ -6813,7 +7204,10 @@
       "isDirect": true,
       "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/philip-hoffmann",
       "committees": [
-        "Gremium nach § 28a des Geldwäschegesetzes"
+        "Gremium nach § 28a des Geldwäschegesetzes",
+        "Ausschuss für wirtschaftliche Zusammenarbeit und Entwicklung",
+        "Haushaltsausschuss",
+        "Finanzausschuss"
       ]
     },
     {
@@ -6861,7 +7255,8 @@
       "isDirect": true,
       "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/karsten-hilse",
       "committees": [
-        "Parlamentarischer Beirat für nachhaltige Entwicklung und Zukunftsfragen"
+        "Parlamentarischer Beirat für nachhaltige Entwicklung und Zukunftsfragen",
+        "Ausschuss für Umwelt, Klimaschutz, Naturschutz und nukleare Sicherheit"
       ]
     },
     {
@@ -6970,7 +7365,11 @@
       "isDirect": false,
       "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/nadine-heselhaus",
       "committees": [
-        "Unterausschuss Europarecht"
+        "Unterausschuss Europarecht",
+        "Ausschuss für Umwelt, Klimaschutz, Naturschutz und nukleare Sicherheit",
+        "Ausschuss für Landwirtschaft, Ernährung und Heimat",
+        "Finanzausschuss",
+        "Ausschuss für Recht und Verbraucherschutz"
       ]
     },
     {
@@ -6988,7 +7387,9 @@
       "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/mareike-hermeier",
       "committees": [
         "Parlamentarischer Beirat für nachhaltige Entwicklung und Zukunftsfragen",
-        "Kinderkommission - Kommission zur Wahrnehmung der Belange der Kinder"
+        "Kinderkommission - Kommission zur Wahrnehmung der Belange der Kinder",
+        "Ausschuss für Bildung, Familie, Senioren, Frauen und Jugend",
+        "Ausschuss für Umwelt, Klimaschutz, Naturschutz und nukleare Sicherheit"
       ]
     },
     {
@@ -7005,7 +7406,11 @@
       "isDirect": false,
       "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/diana-herbstreuth",
       "committees": [
-        "Unterausschuss Rüstungs- und Proliferationskontrolle, Nichtverbreitung und internationale Abrüstung"
+        "Unterausschuss Rüstungs- und Proliferationskontrolle, Nichtverbreitung und internationale Abrüstung",
+        "Ausschuss für wirtschaftliche Zusammenarbeit und Entwicklung",
+        "Ausschuss für Menschenrechte und humanitäre Hilfe",
+        "Verteidigungsausschuss",
+        "Auswärtiger Ausschuss"
       ]
     },
     {
@@ -7041,7 +7446,9 @@
       "isDirect": true,
       "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/marc-henrichmann",
       "committees": [
-        "Parlamentarisches Kontrollgremium (PKGr)"
+        "Parlamentarisches Kontrollgremium (PKGr)",
+        "Ausschuss für Digitales und Staatsmodernisierung",
+        "Innenausschuss"
       ]
     },
     {
@@ -7059,7 +7466,10 @@
       "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/udo-hemmelgarn",
       "committees": [
         "Unterausschuss Internationale Ordnung, Vereinte Nationen und internationale Organisationen",
-        "Unterausschuss Auswärtige Kultur- und Bildungspolitik"
+        "Unterausschuss Auswärtige Kultur- und Bildungspolitik",
+        "Ausschuss für Wohnen, Stadtentwicklung, Bauwesen und Kommunen",
+        "Ausschuss für Umwelt, Klimaschutz, Naturschutz und nukleare Sicherheit",
+        "Auswärtiger Ausschuss"
       ]
     },
     {
@@ -7112,7 +7522,10 @@
       "isDirect": true,
       "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/linda-heitmann",
       "committees": [
-        "Enquete-Kommission „Aufarbeitung der Corona-Pandemie und Lehren für zukünftige pandemische Ereignisse“"
+        "Enquete-Kommission „Aufarbeitung der Corona-Pandemie und Lehren für zukünftige pandemische Ereignisse“",
+        "Ausschuss für Umwelt, Klimaschutz, Naturschutz und nukleare Sicherheit",
+        "Ausschuss für Gesundheit",
+        "Ausschuss für Wahlprüfung, Immunität und Geschäftsordnung"
       ]
     },
     {
@@ -7129,7 +7542,10 @@
       "isDirect": false,
       "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/gabriela-heinrich",
       "committees": [
-        "Unterausschuss Krisenprävention, strategische Vorausschau, Stabilisierung und Friedensförderung"
+        "Unterausschuss Krisenprävention, strategische Vorausschau, Stabilisierung und Friedensförderung",
+        "Ausschuss für die Angelegenheiten der Europäischen Union",
+        "Ausschuss für Menschenrechte und humanitäre Hilfe",
+        "Auswärtiger Ausschuss"
       ]
     },
     {
@@ -7146,7 +7562,9 @@
       "isDirect": true,
       "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/frauke-heiligenstadt",
       "committees": [
-        "Ausschuss für Forschung, Technologie, Raumfahrt und Technikfolgenabschätzung"
+        "Ausschuss für Wohnen, Stadtentwicklung, Bauwesen und Kommunen",
+        "Ausschuss für Forschung, Technologie, Raumfahrt und Technikfolgenabschätzung",
+        "Finanzausschuss"
       ]
     },
     {
@@ -7163,7 +7581,8 @@
       "isDirect": true,
       "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/hubertus-heil",
       "committees": [
-        "Unterausschuss Krisenprävention, strategische Vorausschau, Stabilisierung und Friedensförderung"
+        "Unterausschuss Krisenprävention, strategische Vorausschau, Stabilisierung und Friedensförderung",
+        "Auswärtiger Ausschuss"
       ]
     },
     {
@@ -7267,7 +7686,9 @@
       "isDirect": true,
       "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/juergen-hardt",
       "committees": [
-        "Unterausschuss Auswärtige Kultur- und Bildungspolitik"
+        "Unterausschuss Auswärtige Kultur- und Bildungspolitik",
+        "Ausschuss für die Angelegenheiten der Europäischen Union",
+        "Auswärtiger Ausschuss"
       ]
     },
     {
@@ -7284,7 +7705,9 @@
       "isDirect": false,
       "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/mirco-hanker",
       "committees": [
-        "Unterausschuss zu Fragen der Europäischen Union"
+        "Unterausschuss zu Fragen der Europäischen Union",
+        "Verteidigungsausschuss",
+        "Haushaltsausschuss"
       ]
     },
     {
@@ -7340,7 +7763,11 @@
       "isDirect": true,
       "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/heiko-hain",
       "committees": [
-        "Parlamentarisches Kontrollgremium (PKGr)"
+        "Gremium gemäß Artikel 13 Absatz 6 des Grundgesetzes",
+        "Parlamentarisches Kontrollgremium (PKGr)",
+        "Finanzausschuss",
+        "Innenausschuss",
+        "Petitionsausschuss"
       ]
     },
     {
@@ -7357,7 +7784,9 @@
       "isDirect": false,
       "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/ingo-hahn",
       "committees": [
-        "Ausschuss für Forschung, Technologie, Raumfahrt und Technikfolgenabschätzung"
+        "Ausschuss für die Angelegenheiten der Europäischen Union",
+        "Ausschuss für Forschung, Technologie, Raumfahrt und Technikfolgenabschätzung",
+        "Ausschuss für Umwelt, Klimaschutz, Naturschutz und nukleare Sicherheit"
       ]
     },
     {
@@ -7388,7 +7817,9 @@
       "isDirect": false,
       "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/bettina-hagedorn",
       "committees": [
-        "Rechnungsprüfungsausschuss"
+        "Rechnungsprüfungsausschuss",
+        "Wahlausschuss",
+        "Haushaltsausschuss"
       ]
     },
     {
@@ -7406,7 +7837,8 @@
       "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/christian-haase",
       "committees": [
         "Vertrauensgremium",
-        "Bundesfinanzierungsgremium"
+        "Bundesfinanzierungsgremium",
+        "Haushaltsausschuss"
       ]
     },
     {
@@ -7423,7 +7855,9 @@
       "isDirect": false,
       "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/ates-guerpinar",
       "committees": [
-        "Enquete-Kommission „Aufarbeitung der Corona-Pandemie und Lehren für zukünftige pandemische Ereignisse“"
+        "Enquete-Kommission „Aufarbeitung der Corona-Pandemie und Lehren für zukünftige pandemische Ereignisse“",
+        "Ausschuss für Gesundheit",
+        "Verteidigungsausschuss"
       ]
     },
     {
@@ -7570,8 +8004,13 @@
       "isDirect": false,
       "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/lena-gumnior",
       "committees": [
+        "Gremium gemäß Artikel 13 Absatz 6 des Grundgesetzes",
         "Enquete-Kommission „Aufarbeitung der Corona-Pandemie und Lehren für zukünftige pandemische Ereignisse“",
-        "Unterausschuss Europarecht"
+        "Unterausschuss Europarecht",
+        "Wahlausschuss",
+        "Ausschuss für Recht und Verbraucherschutz",
+        "Innenausschuss",
+        "Ausschuss für Arbeit und Soziales"
       ]
     },
     {
@@ -7589,7 +8028,8 @@
       "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/inge-graessle",
       "committees": [
         "Rechnungsprüfungsausschuss",
-        "Ausschuss für Forschung, Technologie, Raumfahrt und Technikfolgenabschätzung"
+        "Ausschuss für Forschung, Technologie, Raumfahrt und Technikfolgenabschätzung",
+        "Haushaltsausschuss"
       ]
     },
     {
@@ -7606,7 +8046,9 @@
       "isDirect": true,
       "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/christoph-grimm",
       "committees": [
-        "Unterausschuss Europarecht"
+        "Unterausschuss Europarecht",
+        "Ausschuss für die Angelegenheiten der Europäischen Union",
+        "Ausschuss für Recht und Verbraucherschutz"
       ]
     },
     {
@@ -7677,7 +8119,10 @@
       "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/adrian-grasse",
       "committees": [
         "Enquete-Kommission „Aufarbeitung der Corona-Pandemie und Lehren für zukünftige pandemische Ereignisse“",
-        "Ausschuss für Forschung, Technologie, Raumfahrt und Technikfolgenabschätzung"
+        "Verkehrsausschuss",
+        "Ausschuss für Bildung, Familie, Senioren, Frauen und Jugend",
+        "Ausschuss für Forschung, Technologie, Raumfahrt und Technikfolgenabschätzung",
+        "Ausschuss für Gesundheit"
       ]
     },
     {
@@ -7694,6 +8139,7 @@
       "isDirect": true,
       "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/fabian-gramling",
       "committees": [
+        "Ausschuss für Wirtschaft und Energie",
         "Ausschuss für Forschung, Technologie, Raumfahrt und Technikfolgenabschätzung"
       ]
     },
@@ -7731,6 +8177,7 @@
       "isDirect": false,
       "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/kay-gottschalk",
       "committees": [
+        "Gremium gemäß § 80 des Zollfahndungsdienstgesetzes",
         "Finanzausschuss"
       ]
     },
@@ -7748,6 +8195,7 @@
       "isDirect": false,
       "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/nicole-gohlke",
       "committees": [
+        "Ausschuss für Bildung, Familie, Senioren, Frauen und Jugend",
         "Ausschuss für Forschung, Technologie, Raumfahrt und Technikfolgenabschätzung"
       ]
     },
@@ -7822,7 +8270,10 @@
       "isDirect": false,
       "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/vinzenz-glaser",
       "committees": [
-        "Unterausschuss Internationale Ordnung, Vereinte Nationen und internationale Organisationen"
+        "Unterausschuss Internationale Ordnung, Vereinte Nationen und internationale Organisationen",
+        "Ausschuss für Menschenrechte und humanitäre Hilfe",
+        "Verteidigungsausschuss",
+        "Auswärtiger Ausschuss"
       ]
     },
     {
@@ -7857,7 +8308,8 @@
       "isDirect": false,
       "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/martin-gerster",
       "committees": [
-        "Rechnungsprüfungsausschuss"
+        "Rechnungsprüfungsausschuss",
+        "Haushaltsausschuss"
       ]
     },
     {
@@ -8165,7 +8617,10 @@
       "isDirect": true,
       "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/simone-fischer",
       "committees": [
-        "Kinderkommission - Kommission zur Wahrnehmung der Belange der Kinder"
+        "Kinderkommission - Kommission zur Wahrnehmung der Belange der Kinder",
+        "Ausschuss für Bildung, Familie, Senioren, Frauen und Jugend",
+        "Ausschuss für Gesundheit",
+        "Petitionsausschuss"
       ]
     },
     {
@@ -8182,6 +8637,7 @@
       "isDirect": false,
       "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/hauke-finger",
       "committees": [
+        "Gremium gemäß § 80 des Zollfahndungsdienstgesetzes",
         "Haushaltsausschuss",
         "Finanzausschuss"
       ]
@@ -8200,7 +8656,10 @@
       "isDirect": true,
       "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/sebastian-fiedler",
       "committees": [
-        "Gremium nach § 28a des Geldwäschegesetzes"
+        "Gremium gemäß Artikel 13 Absatz 6 des Grundgesetzes",
+        "Gremium nach § 28a des Geldwäschegesetzes",
+        "Finanzausschuss",
+        "Innenausschuss"
       ]
     },
     {
@@ -8217,6 +8676,7 @@
       "isDirect": false,
       "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/katrin-fey",
       "committees": [
+        "Gremium gemäß § 80 des Zollfahndungsdienstgesetzes",
         "Ausschuss für Menschenrechte und humanitäre Hilfe",
         "Ausschuss für Gesundheit",
         "Innenausschuss"
@@ -8330,7 +8790,9 @@
       "isDirect": false,
       "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/fabian-fahl",
       "committees": [
-        "Parlamentarischer Beirat für nachhaltige Entwicklung und Zukunftsfragen"
+        "Parlamentarischer Beirat für nachhaltige Entwicklung und Zukunftsfragen",
+        "Ausschuss für Wirtschaft und Energie",
+        "Ausschuss für Umwelt, Klimaschutz, Naturschutz und nukleare Sicherheit"
       ]
     },
     {
@@ -8347,7 +8809,11 @@
       "isDirect": false,
       "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/nancy-faeser",
       "committees": [
-        "Unterausschuss Auswärtige Kultur- und Bildungspolitik"
+        "Unterausschuss Auswärtige Kultur- und Bildungspolitik",
+        "Ausschuss für Kultur und Medien",
+        "Finanzausschuss",
+        "Ausschuss für Recht und Verbraucherschutz",
+        "Auswärtiger Ausschuss"
       ]
     },
     {
@@ -8398,7 +8864,10 @@
       "isDirect": true,
       "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/wiebke-esdar",
       "committees": [
-        "Ausschuss für Forschung, Technologie, Raumfahrt und Technikfolgenabschätzung"
+        "Ausschuss für Kultur und Medien",
+        "Ausschuss für Forschung, Technologie, Raumfahrt und Technikfolgenabschätzung",
+        "Haushaltsausschuss",
+        "Finanzausschuss"
       ]
     },
     {
@@ -8415,7 +8884,9 @@
       "isDirect": true,
       "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/bastian-alfons-ernst",
       "committees": [
-        "Unterausschuss Rüstungs- und Proliferationskontrolle, Nichtverbreitung und internationale Abrüstung"
+        "Unterausschuss Rüstungs- und Proliferationskontrolle, Nichtverbreitung und internationale Abrüstung",
+        "Ausschuss für Digitales und Staatsmodernisierung",
+        "Verteidigungsausschuss"
       ]
     },
     {
@@ -8432,7 +8903,9 @@
       "isDirect": true,
       "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/thomas-erndl",
       "committees": [
-        "Unterausschuss Krisenprävention, strategische Vorausschau, Stabilisierung und Friedensförderung"
+        "Unterausschuss Krisenprävention, strategische Vorausschau, Stabilisierung und Friedensförderung",
+        "Ausschuss für Menschenrechte und humanitäre Hilfe",
+        "Verteidigungsausschuss"
       ]
     },
     {
@@ -8517,7 +8990,13 @@
       "isDirect": false,
       "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/sonja-eichwede",
       "committees": [
-        "Parlamentarisches Kontrollgremium (PKGr)"
+        "Parlamentarisches Kontrollgremium (PKGr)",
+        "Wahlausschuss",
+        "Ausschuss für Sport und Ehrenamt",
+        "Ausschuss für Recht und Verbraucherschutz",
+        "Innenausschuss",
+        "Ausschuss für Wahlprüfung, Immunität und Geschäftsordnung",
+        "Petitionsausschuss"
       ]
     },
     {
@@ -8534,7 +9013,10 @@
       "isDirect": true,
       "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/lars-ehm",
       "committees": [
-        "Enquete-Kommission „Aufarbeitung der Corona-Pandemie und Lehren für zukünftige pandemische Ereignisse“"
+        "Enquete-Kommission „Aufarbeitung der Corona-Pandemie und Lehren für zukünftige pandemische Ereignisse“",
+        "Ausschuss für Bildung, Familie, Senioren, Frauen und Jugend",
+        "Ausschuss für Gesundheit",
+        "Ausschuss für Arbeit und Soziales"
       ]
     },
     {
@@ -8588,7 +9070,10 @@
       "isDirect": false,
       "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/leon-eckert",
       "committees": [
-        "Rechnungsprüfungsausschuss"
+        "Rechnungsprüfungsausschuss",
+        "Verkehrsausschuss",
+        "Haushaltsausschuss",
+        "Innenausschuss"
       ]
     },
     {
@@ -8623,7 +9108,9 @@
       "isDirect": true,
       "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/joachim-ebmeyer",
       "committees": [
-        "Ausschuss für Forschung, Technologie, Raumfahrt und Technikfolgenabschätzung"
+        "Ausschuss für Digitales und Staatsmodernisierung",
+        "Ausschuss für Forschung, Technologie, Raumfahrt und Technikfolgenabschätzung",
+        "Ausschuss für Landwirtschaft, Ernährung und Heimat"
       ]
     },
     {
@@ -8677,7 +9164,10 @@
       "isDirect": true,
       "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/huelya-dueber",
       "committees": [
-        "Petitionsausschuss"
+        "Petitionsausschuss",
+        "Ausschuss für Bildung, Familie, Senioren, Frauen und Jugend",
+        "Innenausschuss",
+        "Ausschuss für Arbeit und Soziales"
       ]
     },
     {
@@ -8694,7 +9184,9 @@
       "isDirect": false,
       "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/felix-doering",
       "committees": [
-        "Unterausschuss zu Fragen der Europäischen Union"
+        "Unterausschuss zu Fragen der Europäischen Union",
+        "Ausschuss für Bildung, Familie, Senioren, Frauen und Jugend",
+        "Haushaltsausschuss"
       ]
     },
     {
@@ -8731,6 +9223,7 @@
       "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/hansjoerg-durz",
       "committees": [
         "Enquete-Kommission „Aufarbeitung der Corona-Pandemie und Lehren für zukünftige pandemische Ereignisse“",
+        "Ausschuss für Digitales und Staatsmodernisierung",
         "Ausschuss für Forschung, Technologie, Raumfahrt und Technikfolgenabschätzung"
       ]
     },
@@ -8779,7 +9272,9 @@
       "isDirect": true,
       "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/falko-drossmann",
       "committees": [
-        "Unterausschuss Rüstungs- und Proliferationskontrolle, Nichtverbreitung und internationale Abrüstung"
+        "Unterausschuss Rüstungs- und Proliferationskontrolle, Nichtverbreitung und internationale Abrüstung",
+        "Ausschuss für Menschenrechte und humanitäre Hilfe",
+        "Verteidigungsausschuss"
       ]
     },
     {
@@ -8815,7 +9310,11 @@
       "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/florian-dorn",
       "committees": [
         "Unterausschuss Rüstungs- und Proliferationskontrolle, Nichtverbreitung und internationale Abrüstung",
-        "Ausschuss für Forschung, Technologie, Raumfahrt und Technikfolgenabschätzung"
+        "Ausschuss für Digitales und Staatsmodernisierung",
+        "Ausschuss für Forschung, Technologie, Raumfahrt und Technikfolgenabschätzung",
+        "Verteidigungsausschuss",
+        "Finanzausschuss",
+        "Ausschuss für Arbeit und Soziales"
       ]
     },
     {
@@ -8883,7 +9382,10 @@
       "isDirect": false,
       "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/jeanne-dillschneider",
       "committees": [
-        "Unterausschuss Rüstungs- und Proliferationskontrolle, Nichtverbreitung und internationale Abrüstung"
+        "Unterausschuss Rüstungs- und Proliferationskontrolle, Nichtverbreitung und internationale Abrüstung",
+        "Ausschuss für Digitales und Staatsmodernisierung",
+        "Ausschuss für die Angelegenheiten der Europäischen Union",
+        "Verteidigungsausschuss"
       ]
     },
     {
@@ -8901,7 +9403,10 @@
       "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/esther-dilcher",
       "committees": [
         "Petitionsausschuss",
-        "Bundesfinanzierungsgremium"
+        "Bundesfinanzierungsgremium",
+        "Wahlausschuss",
+        "Ausschuss für Landwirtschaft, Ernährung und Heimat",
+        "Haushaltsausschuss"
       ]
     },
     {
@@ -8918,7 +9423,10 @@
       "isDirect": true,
       "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/thomas-dietz",
       "committees": [
-        "Enquete-Kommission „Aufarbeitung der Corona-Pandemie und Lehren für zukünftige pandemische Ereignisse“"
+        "Enquete-Kommission „Aufarbeitung der Corona-Pandemie und Lehren für zukünftige pandemische Ereignisse“",
+        "Ausschuss für Menschenrechte und humanitäre Hilfe",
+        "Ausschuss für Umwelt, Klimaschutz, Naturschutz und nukleare Sicherheit",
+        "Ausschuss für Gesundheit"
       ]
     },
     {
@@ -8973,7 +9481,11 @@
       "isDirect": true,
       "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/ellen-demuth",
       "committees": [
-        "Unterausschuss Auswärtige Kultur- und Bildungspolitik"
+        "Unterausschuss Auswärtige Kultur- und Bildungspolitik",
+        "Ausschuss für Bildung, Familie, Senioren, Frauen und Jugend",
+        "Ausschuss für Kultur und Medien",
+        "Ausschuss für Gesundheit",
+        "Auswärtiger Ausschuss"
       ]
     },
     {
@@ -9063,7 +9575,10 @@
       "isDirect": false,
       "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/juergen-cosse",
       "committees": [
-        "Unterausschuss Auswärtige Kultur- und Bildungspolitik"
+        "Unterausschuss Auswärtige Kultur- und Bildungspolitik",
+        "Ausschuss für Wohnen, Stadtentwicklung, Bauwesen und Kommunen",
+        "Ausschuss für die Angelegenheiten der Europäischen Union",
+        "Auswärtiger Ausschuss"
       ]
     },
     {
@@ -9144,7 +9659,10 @@
       "isDirect": false,
       "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/lars-castellucci",
       "committees": [
-        "Unterausschuss Internationale Ordnung, Vereinte Nationen und internationale Organisationen"
+        "Unterausschuss Internationale Ordnung, Vereinte Nationen und internationale Organisationen",
+        "Ausschuss für wirtschaftliche Zusammenarbeit und Entwicklung",
+        "Ausschuss für Menschenrechte und humanitäre Hilfe",
+        "Innenausschuss"
       ]
     },
     {
@@ -9180,7 +9698,9 @@
       "isDirect": false,
       "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/isabel-cademartori",
       "committees": [
-        "Unterausschuss Internationale Ordnung, Vereinte Nationen und internationale Organisationen"
+        "Unterausschuss Internationale Ordnung, Vereinte Nationen und internationale Organisationen",
+        "Verkehrsausschuss",
+        "Auswärtiger Ausschuss"
       ]
     },
     {
@@ -9197,6 +9717,7 @@
       "isDirect": false,
       "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/clara-buenger",
       "committees": [
+        "Gremium gemäß Artikel 13 Absatz 6 des Grundgesetzes",
         "Wahlausschuss",
         "Ausschuss für Digitales und Staatsmodernisierung",
         "Ausschuss für Recht und Verbraucherschutz",
@@ -9255,7 +9776,9 @@
       "isDirect": false,
       "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/janina-boettger",
       "committees": [
-        "Unterausschuss zu Fragen der Europäischen Union"
+        "Unterausschuss zu Fragen der Europäischen Union",
+        "Ausschuss für die Angelegenheiten der Europäischen Union",
+        "Ausschuss für Wirtschaft und Energie"
       ]
     },
     {
@@ -9272,7 +9795,10 @@
       "isDirect": false,
       "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/karl-baer",
       "committees": [
-        "Ausschuss für Forschung, Technologie, Raumfahrt und Technikfolgenabschätzung"
+        "Ausschuss für Digitales und Staatsmodernisierung",
+        "Ausschuss für Forschung, Technologie, Raumfahrt und Technikfolgenabschätzung",
+        "Ausschuss für Umwelt, Klimaschutz, Naturschutz und nukleare Sicherheit",
+        "Ausschuss für Landwirtschaft, Ernährung und Heimat"
       ]
     },
     {
@@ -9305,7 +9831,9 @@
       "committees": [
         "Unterausschuss zu Fragen der Europäischen Union",
         "Vertrauensgremium",
-        "Bundesfinanzierungsgremium"
+        "Bundesfinanzierungsgremium",
+        "Haushaltsausschuss",
+        "Finanzausschuss"
       ]
     },
     {
@@ -9361,7 +9889,9 @@
       "isDirect": false,
       "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/agnieszka-brugger",
       "committees": [
-        "Unterausschuss Krisenprävention, strategische Vorausschau, Stabilisierung und Friedensförderung"
+        "Unterausschuss Krisenprävention, strategische Vorausschau, Stabilisierung und Friedensförderung",
+        "Verteidigungsausschuss",
+        "Auswärtiger Ausschuss"
       ]
     },
     {
@@ -9415,7 +9945,11 @@
       "isDirect": true,
       "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/carsten-brodesser",
       "committees": [
-        "Unterausschuss Internationale Ordnung, Vereinte Nationen und internationale Organisationen"
+        "Unterausschuss Internationale Ordnung, Vereinte Nationen und internationale Organisationen",
+        "Ausschuss für wirtschaftliche Zusammenarbeit und Entwicklung",
+        "Ausschuss für Menschenrechte und humanitäre Hilfe",
+        "Ausschuss für Bildung, Familie, Senioren, Frauen und Jugend",
+        "Finanzausschuss"
       ]
     },
     {
@@ -9451,7 +9985,9 @@
       "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/ralph-brinkhaus",
       "committees": [
         "Unterausschuss Krisenprävention, strategische Vorausschau, Stabilisierung und Friedensförderung",
-        "Parlamentarischer Beirat für nachhaltige Entwicklung und Zukunftsfragen"
+        "Parlamentarischer Beirat für nachhaltige Entwicklung und Zukunftsfragen",
+        "Ausschuss für Digitales und Staatsmodernisierung",
+        "Finanzausschuss"
       ]
     },
     {
@@ -9468,7 +10004,10 @@
       "isDirect": false,
       "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/anne-mieke-bremer",
       "committees": [
-        "Ausschuss für Forschung, Technologie, Raumfahrt und Technikfolgenabschätzung"
+        "Ausschuss für Digitales und Staatsmodernisierung",
+        "Ausschuss für Forschung, Technologie, Raumfahrt und Technikfolgenabschätzung",
+        "Haushaltsausschuss",
+        "Petitionsausschuss"
       ]
     },
     {
@@ -9587,7 +10126,9 @@
       "isDirect": true,
       "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/frederik-bouffier",
       "committees": [
-        "Ausschuss für Forschung, Technologie, Raumfahrt und Technikfolgenabschätzung"
+        "Ausschuss für Forschung, Technologie, Raumfahrt und Technikfolgenabschätzung",
+        "Ausschuss für Recht und Verbraucherschutz",
+        "Innenausschuss"
       ]
     },
     {
@@ -9604,7 +10145,10 @@
       "isDirect": true,
       "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/caroline-bosbach",
       "committees": [
-        "Parlamentarischer Beirat für nachhaltige Entwicklung und Zukunftsfragen"
+        "Parlamentarischer Beirat für nachhaltige Entwicklung und Zukunftsfragen",
+        "Ausschuss für Landwirtschaft, Ernährung und Heimat",
+        "Innenausschuss",
+        "Ausschuss für Arbeit und Soziales"
       ]
     },
     {
@@ -9641,7 +10185,8 @@
       "isDirect": true,
       "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/hendrik-bollmann",
       "committees": [
-        "Parlamentarischer Beirat für nachhaltige Entwicklung und Zukunftsfragen"
+        "Parlamentarischer Beirat für nachhaltige Entwicklung und Zukunftsfragen",
+        "Ausschuss für Wohnen, Stadtentwicklung, Bauwesen und Kommunen"
       ]
     },
     {
@@ -9679,7 +10224,9 @@
       "isDirect": false,
       "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/peter-boehringer",
       "committees": [
-        "Unterausschuss zu Fragen der Europäischen Union"
+        "Unterausschuss zu Fragen der Europäischen Union",
+        "Ausschuss für die Angelegenheiten der Europäischen Union",
+        "Haushaltsausschuss"
       ]
     },
     {
@@ -9715,7 +10262,11 @@
       "isDirect": false,
       "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/violetta-bock",
       "committees": [
-        "Parlamentarischer Beirat für nachhaltige Entwicklung und Zukunftsfragen"
+        "Parlamentarischer Beirat für nachhaltige Entwicklung und Zukunftsfragen",
+        "Ausschuss für Wohnen, Stadtentwicklung, Bauwesen und Kommunen",
+        "Ausschuss für Umwelt, Klimaschutz, Naturschutz und nukleare Sicherheit",
+        "Innenausschuss",
+        "Auswärtiger Ausschuss"
       ]
     },
     {
@@ -9732,6 +10283,8 @@
       "isDirect": true,
       "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/rene-bochmann",
       "committees": [
+        "Ausschuss für Wohnen, Stadtentwicklung, Bauwesen und Kommunen",
+        "Verkehrsausschuss",
         "Ausschuss für Forschung, Technologie, Raumfahrt und Technikfolgenabschätzung"
       ]
     },
@@ -9821,7 +10374,9 @@
       "isDirect": false,
       "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/christoph-birghan",
       "committees": [
-        "Ausschuss für Forschung, Technologie, Raumfahrt und Technikfolgenabschätzung"
+        "Ausschuss für Forschung, Technologie, Raumfahrt und Technikfolgenabschätzung",
+        "Ausschuss für Gesundheit",
+        "Ausschuss für Recht und Verbraucherschutz"
       ]
     },
     {
@@ -9838,7 +10393,10 @@
       "isDirect": true,
       "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/florian-bilic",
       "committees": [
-        "Parlamentarischer Beirat für nachhaltige Entwicklung und Zukunftsfragen"
+        "Parlamentarischer Beirat für nachhaltige Entwicklung und Zukunftsfragen",
+        "Ausschuss für Bildung, Familie, Senioren, Frauen und Jugend",
+        "Ausschuss für Umwelt, Klimaschutz, Naturschutz und nukleare Sicherheit",
+        "Ausschuss für Arbeit und Soziales"
       ]
     },
     {
@@ -9890,7 +10448,9 @@
       "isDirect": true,
       "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/peter-beyer",
       "committees": [
-        "Unterausschuss Krisenprävention, strategische Vorausschau, Stabilisierung und Friedensförderung"
+        "Unterausschuss Krisenprävention, strategische Vorausschau, Stabilisierung und Friedensförderung",
+        "Ausschuss für die Angelegenheiten der Europäischen Union",
+        "Auswärtiger Ausschuss"
       ]
     },
     {
@@ -9948,7 +10508,10 @@
       "isDirect": true,
       "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/birgit-bessin",
       "committees": [
-        "Enquete-Kommission „Aufarbeitung der Corona-Pandemie und Lehren für zukünftige pandemische Ereignisse“"
+        "Enquete-Kommission „Aufarbeitung der Corona-Pandemie und Lehren für zukünftige pandemische Ereignisse“",
+        "Ausschuss für Bildung, Familie, Senioren, Frauen und Jugend",
+        "Ausschuss für Gesundheit",
+        "Ausschuss für Arbeit und Soziales"
       ]
     },
     {
@@ -9965,7 +10528,10 @@
       "isDirect": true,
       "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/melanie-bernstein",
       "committees": [
-        "Rechnungsprüfungsausschuss"
+        "Rechnungsprüfungsausschuss",
+        "Ausschuss für Kultur und Medien",
+        "Verteidigungsausschuss",
+        "Haushaltsausschuss"
       ]
     },
     {
@@ -10000,6 +10566,7 @@
       "isDirect": false,
       "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/lukas-benner",
       "committees": [
+        "Gremium gemäß § 80 des Zollfahndungsdienstgesetzes",
         "Wahlausschuss",
         "Ausschuss für Recht und Verbraucherschutz",
         "Innenausschuss"
@@ -10039,7 +10606,10 @@
       "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/sascha-van-beek",
       "committees": [
         "Parlamentarischer Beirat für nachhaltige Entwicklung und Zukunftsfragen",
-        "Ausschuss für Umwelt, Klimaschutz, Naturschutz und nukleare Sicherheit"
+        "Ausschuss für Menschenrechte und humanitäre Hilfe",
+        "Ausschuss für Wirtschaft und Energie",
+        "Ausschuss für Umwelt, Klimaschutz, Naturschutz und nukleare Sicherheit",
+        "Ausschuss für Gesundheit"
       ]
     },
     {
@@ -10057,7 +10627,9 @@
       "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/desiree-becker",
       "committees": [
         "Unterausschuss Rüstungs- und Proliferationskontrolle, Nichtverbreitung und internationale Abrüstung",
-        "Ausschuss für Forschung, Technologie, Raumfahrt und Technikfolgenabschätzung"
+        "Ausschuss für Forschung, Technologie, Raumfahrt und Technikfolgenabschätzung",
+        "Verteidigungsausschuss",
+        "Ausschuss für Arbeit und Soziales"
       ]
     },
     {
@@ -10149,7 +10721,8 @@
       "isDirect": true,
       "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/christina-baum",
       "committees": [
-        "Enquete-Kommission „Aufarbeitung der Corona-Pandemie und Lehren für zukünftige pandemische Ereignisse“"
+        "Enquete-Kommission „Aufarbeitung der Corona-Pandemie und Lehren für zukünftige pandemische Ereignisse“",
+        "Ausschuss für Gesundheit"
       ]
     },
     {
@@ -10198,7 +10771,8 @@
       "isDirect": false,
       "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/dietmar-bartsch",
       "committees": [
-        "Vertrauensgremium"
+        "Vertrauensgremium",
+        "Haushaltsausschuss"
       ]
     },
     {
@@ -10230,7 +10804,8 @@
       "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/thomas-bareiss",
       "committees": [
         "Unterausschuss zu Fragen der Europäischen Union",
-        "Bundesfinanzierungsgremium"
+        "Bundesfinanzierungsgremium",
+        "Ausschuss für Wirtschaft und Energie"
       ]
     },
     {
@@ -10265,6 +10840,7 @@
       "isDirect": false,
       "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/adam-balten",
       "committees": [
+        "Ausschuss für Wirtschaft und Energie",
         "Ausschuss für Forschung, Technologie, Raumfahrt und Technikfolgenabschätzung"
       ]
     },
@@ -10282,7 +10858,10 @@
       "isDirect": false,
       "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/daniel-baldy",
       "committees": [
-        "Parlamentarisches Kontrollgremium (PKGr)"
+        "Parlamentarisches Kontrollgremium (PKGr)",
+        "Ausschuss für Bildung, Familie, Senioren, Frauen und Jugend",
+        "Verteidigungsausschuss",
+        "Innenausschuss"
       ]
     },
     {
@@ -10355,7 +10934,9 @@
       "isDirect": true,
       "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/peter-aumer",
       "committees": [
-        "Rechnungsprüfungsausschuss"
+        "Rechnungsprüfungsausschuss",
+        "Haushaltsausschuss",
+        "Ausschuss für Arbeit und Soziales"
       ]
     },
     {
@@ -10372,7 +10953,11 @@
       "isDirect": true,
       "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/artur-auernhammer",
       "committees": [
-        "Unterausschuss Rüstungs- und Proliferationskontrolle, Nichtverbreitung und internationale Abrüstung"
+        "Unterausschuss Rüstungs- und Proliferationskontrolle, Nichtverbreitung und internationale Abrüstung",
+        "Ausschuss für Umwelt, Klimaschutz, Naturschutz und nukleare Sicherheit",
+        "Ausschuss für Landwirtschaft, Ernährung und Heimat",
+        "Ausschuss für Sport und Ehrenamt",
+        "Auswärtiger Ausschuss"
       ]
     },
     {
@@ -10407,7 +10992,12 @@
       "isDirect": true,
       "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/tijen-ataoglu",
       "committees": [
-        "Unterausschuss Europarecht"
+        "Unterausschuss Europarecht",
+        "Wahlausschuss",
+        "Ausschuss für Recht und Verbraucherschutz",
+        "Innenausschuss",
+        "Auswärtiger Ausschuss",
+        "Ausschuss für Wahlprüfung, Immunität und Geschäftsordnung"
       ]
     },
     {
@@ -10424,6 +11014,7 @@
       "isDirect": false,
       "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/ayse-asar",
       "committees": [
+        "Ausschuss für die Angelegenheiten der Europäischen Union",
         "Ausschuss für Forschung, Technologie, Raumfahrt und Technikfolgenabschätzung"
       ]
     },
@@ -10477,7 +11068,9 @@
       "isDirect": true,
       "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/luise-amtsberg",
       "committees": [
-        "Unterausschuss Internationale Ordnung, Vereinte Nationen und internationale Organisationen"
+        "Unterausschuss Internationale Ordnung, Vereinte Nationen und internationale Organisationen",
+        "Verteidigungsausschuss",
+        "Auswärtiger Ausschuss"
       ]
     },
     {
@@ -10546,7 +11139,9 @@
       "isDirect": false,
       "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/stephan-albani",
       "committees": [
-        "Ausschuss für Forschung, Technologie, Raumfahrt und Technikfolgenabschätzung"
+        "Ausschuss für Bildung, Familie, Senioren, Frauen und Jugend",
+        "Ausschuss für Forschung, Technologie, Raumfahrt und Technikfolgenabschätzung",
+        "Ausschuss für Gesundheit"
       ]
     },
     {
@@ -10633,7 +11228,10 @@
       "isDirect": false,
       "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/anna-aeikens",
       "committees": [
-        "Parlamentarischer Beirat für nachhaltige Entwicklung und Zukunftsfragen"
+        "Parlamentarischer Beirat für nachhaltige Entwicklung und Zukunftsfragen",
+        "Ausschuss für Wohnen, Stadtentwicklung, Bauwesen und Kommunen",
+        "Ausschuss für Umwelt, Klimaschutz, Naturschutz und nukleare Sicherheit",
+        "Ausschuss für Landwirtschaft, Ernährung und Heimat"
       ]
     },
     {
@@ -10668,7 +11266,10 @@
       "isDirect": false,
       "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/knut-abraham",
       "committees": [
-        "Unterausschuss Internationale Ordnung, Vereinte Nationen und internationale Organisationen"
+        "Unterausschuss Internationale Ordnung, Vereinte Nationen und internationale Organisationen",
+        "Ausschuss für die Angelegenheiten der Europäischen Union",
+        "Ausschuss für Menschenrechte und humanitäre Hilfe",
+        "Auswärtiger Ausschuss"
       ]
     },
     {
@@ -10685,7 +11286,8 @@
       "isDirect": true,
       "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/sanae-abdi",
       "committees": [
-        "Parlamentarischer Beirat für nachhaltige Entwicklung und Zukunftsfragen"
+        "Parlamentarischer Beirat für nachhaltige Entwicklung und Zukunftsfragen",
+        "Ausschuss für wirtschaftliche Zusammenarbeit und Entwicklung"
       ]
     }
   ],
@@ -14336,6 +14938,21 @@
       "bundeslandKey": "BB"
     },
     {
+      "id": 71845,
+      "politicianId": 181917,
+      "firstName": "Maximilian",
+      "lastName": "Schröter",
+      "title": null,
+      "party": "SPD",
+      "wahlkreisId": 1,
+      "wahlkreisName": "Eichsfeld I",
+      "level": "Land",
+      "postalAddress": "Thüringer Landtag, Jürgen-Fuchs-Straße 1, 99096 Erfurt",
+      "isDirect": false,
+      "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/maximilian-schroeter",
+      "bundeslandKey": "TH"
+    },
+    {
       "id": 69009,
       "politicianId": 139573,
       "firstName": "Sascha",
@@ -14606,21 +15223,6 @@
       "bundeslandKey": "TH"
     },
     {
-      "id": 63531,
-      "politicianId": 31520,
-      "firstName": "Cornelia",
-      "lastName": "Urban",
-      "title": null,
-      "party": "SPD",
-      "wahlkreisId": 27,
-      "wahlkreisName": "Erfurt IV",
-      "level": "Land",
-      "postalAddress": "Thüringer Landtag, Jürgen-Fuchs-Straße 1, 99096 Erfurt",
-      "isDirect": false,
-      "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/cornelia-urban",
-      "bundeslandKey": "TH"
-    },
-    {
       "id": 63530,
       "politicianId": 181907,
       "firstName": "Wolfgang",
@@ -14746,7 +15348,7 @@
       "firstName": "Katja",
       "lastName": "Wolf",
       "title": null,
-      "party": "BSW",
+      "party": "Thüringen.Gerecht",
       "wahlkreisId": 6,
       "wahlkreisName": "Wartburgkreis II",
       "level": "Land",
@@ -15416,6 +16018,21 @@
       "bundeslandKey": "TH"
     },
     {
+      "id": 71931,
+      "politicianId": 185726,
+      "firstName": "Nadine",
+      "lastName": "Backes",
+      "title": null,
+      "party": "CDU",
+      "wahlkreisId": 3,
+      "wahlkreisName": "Neunkirchen",
+      "level": "Land",
+      "postalAddress": "Landtag des Saarlandes, Franz-Josef-Röder-Straße 7, 66119 Saarbrücken",
+      "isDirect": false,
+      "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/nadine-backes",
+      "bundeslandKey": "SL"
+    },
+    {
       "id": 70124,
       "politicianId": 184934,
       "firstName": "Timo P.",
@@ -15473,21 +16090,6 @@
       "postalAddress": "Landtag des Saarlandes, Franz-Josef-Röder-Straße 7, 66119 Saarbrücken",
       "isDirect": false,
       "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/sandra-johann",
-      "bundeslandKey": "SL"
-    },
-    {
-      "id": 57042,
-      "politicianId": 179561,
-      "firstName": "Jonas",
-      "lastName": "Reiter",
-      "title": null,
-      "party": "CDU",
-      "wahlkreisId": 3,
-      "wahlkreisName": "Neunkirchen",
-      "level": "Land",
-      "postalAddress": "Landtag des Saarlandes, Franz-Josef-Röder-Straße 7, 66119 Saarbrücken",
-      "isDirect": false,
-      "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/jonas-reiter",
       "bundeslandKey": "SL"
     },
     {
@@ -16059,6 +16661,21 @@
       "isDirect": false,
       "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/anja-wagner-scheid",
       "bundeslandKey": "SL"
+    },
+    {
+      "id": 71930,
+      "politicianId": 132543,
+      "firstName": "Ludwig",
+      "lastName": "Spaenle",
+      "title": null,
+      "party": "CSU",
+      "wahlkreisId": 108,
+      "wahlkreisName": "München-Schwabing",
+      "level": "Land",
+      "postalAddress": "Bayerischer Landtag, Max-Planck-Straße 1, 81675 München",
+      "isDirect": false,
+      "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/ludwig-spaenle",
+      "bundeslandKey": "BY"
     },
     {
       "id": 70560,
@@ -17516,18 +18133,18 @@
       "bundeslandKey": "BY"
     },
     {
-      "id": 60382,
-      "politicianId": 158588,
-      "firstName": "Oskar",
-      "lastName": "Lipp",
+      "id": 60381,
+      "politicianId": 132531,
+      "firstName": "Doris",
+      "lastName": "Rauscher",
       "title": null,
-      "party": "AfD",
-      "wahlkreisId": 115,
-      "wahlkreisName": "Eichstätt",
+      "party": "SPD",
+      "wahlkreisId": 114,
+      "wahlkreisName": "Ebersberg",
       "level": "Land",
       "postalAddress": "Bayerischer Landtag, Max-Planck-Straße 1, 81675 München",
       "isDirect": false,
-      "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/oskar-lipp",
+      "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/doris-rauscher",
       "bundeslandKey": "BY"
     },
     {
@@ -19001,21 +19618,6 @@
       "bundeslandKey": "BY"
     },
     {
-      "id": 60279,
-      "politicianId": 180077,
-      "firstName": "Alexander",
-      "lastName": "Dietrich",
-      "title": null,
-      "party": "CSU",
-      "wahlkreisId": 105,
-      "wahlkreisName": "München-Moosach",
-      "level": "Land",
-      "postalAddress": "Bayerischer Landtag, Max-Planck-Straße 1, 81675 München",
-      "isDirect": true,
-      "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/alexander-dietrich",
-      "bundeslandKey": "BY"
-    },
-    {
       "id": 60278,
       "politicianId": 133657,
       "firstName": "Katharina",
@@ -19471,7 +20073,7 @@
       "firstName": "Stefan",
       "lastName": "Marzischewski-Drewes",
       "title": null,
-      "party": "AfD",
+      "party": "fraktionslos",
       "wahlkreisId": 5,
       "wahlkreisName": "Gifhorn-Nord/Wolfsburg",
       "level": "Land",
@@ -21206,6 +21808,36 @@
       "bundeslandKey": "NI"
     },
     {
+      "id": 71843,
+      "politicianId": 179816,
+      "firstName": "Alexander",
+      "lastName": "Grotov",
+      "title": null,
+      "party": "CDU",
+      "wahlkreisId": 3,
+      "wahlkreisName": "Kassel-Stadt I",
+      "level": "Land",
+      "postalAddress": "Hessischer Landtag, Schlossplatz 1-3, 65183 Wiesbaden",
+      "isDirect": false,
+      "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/alexander-grotov",
+      "bundeslandKey": "HE"
+    },
+    {
+      "id": 71777,
+      "politicianId": 185681,
+      "firstName": "Martin",
+      "lastName": "Schörner",
+      "title": null,
+      "party": "CDU",
+      "wahlkreisId": 10,
+      "wahlkreisName": "Rotenburg",
+      "level": "Land",
+      "postalAddress": "Hessischer Landtag, Schlossplatz 1-3, 65183 Wiesbaden",
+      "isDirect": false,
+      "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/martin-schoerner",
+      "bundeslandKey": "HE"
+    },
+    {
       "id": 69066,
       "politicianId": 184335,
       "firstName": "Ina",
@@ -22556,21 +23188,6 @@
       "bundeslandKey": "HE"
     },
     {
-      "id": 60517,
-      "politicianId": 118684,
-      "firstName": "Heiko",
-      "lastName": "Kasseckert",
-      "title": null,
-      "party": "CDU",
-      "wahlkreisId": 41,
-      "wahlkreisName": "Main-Kinzig II",
-      "level": "Land",
-      "postalAddress": "Hessischer Landtag, Schlossplatz 1-3, 65183 Wiesbaden",
-      "isDirect": true,
-      "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/heiko-kasseckert",
-      "bundeslandKey": "HE"
-    },
-    {
       "id": 60516,
       "politicianId": 159599,
       "firstName": "Max",
@@ -22586,6 +23203,21 @@
       "bundeslandKey": "HE"
     },
     {
+      "id": 60515,
+      "politicianId": 135173,
+      "firstName": "Boris",
+      "lastName": "Rhein",
+      "title": null,
+      "party": "CDU",
+      "wahlkreisId": 39,
+      "wahlkreisName": "Frankfurt am Main VI",
+      "level": "Land",
+      "postalAddress": "Hessischer Landtag, Schlossplatz 1-3, 65183 Wiesbaden",
+      "isDirect": true,
+      "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/boris-rhein",
+      "bundeslandKey": "HE"
+    },
+    {
       "id": 60514,
       "politicianId": 135357,
       "firstName": "Marcus",
@@ -22598,21 +23230,6 @@
       "postalAddress": "Hessischer Landtag, Schlossplatz 1-3, 65183 Wiesbaden",
       "isDirect": true,
       "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/marcus-bocklet",
-      "bundeslandKey": "HE"
-    },
-    {
-      "id": 60513,
-      "politicianId": 135381,
-      "firstName": "Michael",
-      "lastName": "Boddenberg",
-      "title": null,
-      "party": "CDU",
-      "wahlkreisId": 37,
-      "wahlkreisName": "Frankfurt am Main IV",
-      "level": "Land",
-      "postalAddress": "Hessischer Landtag, Schlossplatz 1-3, 65183 Wiesbaden",
-      "isDirect": true,
-      "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/michael-boddenberg",
       "bundeslandKey": "HE"
     },
     {
@@ -22958,21 +23575,6 @@
       "postalAddress": "Hessischer Landtag, Schlossplatz 1-3, 65183 Wiesbaden",
       "isDirect": true,
       "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/stefanie-klee",
-      "bundeslandKey": "HE"
-    },
-    {
-      "id": 60487,
-      "politicianId": 135342,
-      "firstName": "Lena",
-      "lastName": "Arnoldt",
-      "title": null,
-      "party": "CDU",
-      "wahlkreisId": 10,
-      "wahlkreisName": "Rotenburg",
-      "level": "Land",
-      "postalAddress": "Hessischer Landtag, Schlossplatz 1-3, 65183 Wiesbaden",
-      "isDirect": true,
-      "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/lena-arnoldt",
       "bundeslandKey": "HE"
     },
     {
@@ -23536,7 +24138,7 @@
       "firstName": "Sascha",
       "lastName": "Schuster",
       "title": null,
-      "party": "fraktionslos",
+      "party": "Gruppe Bürgerallianz Bremen/Bremerhaven",
       "wahlkreisId": 2,
       "wahlkreisName": "Bremerhaven",
       "level": "Land",
@@ -23671,7 +24273,7 @@
       "firstName": "Meltem",
       "lastName": "Sağiroğlu",
       "title": null,
-      "party": "fraktionslos",
+      "party": "Gruppe Bürgerallianz Bremen/Bremerhaven",
       "wahlkreisId": 1,
       "wahlkreisName": "Bremen",
       "level": "Land",
@@ -24151,7 +24753,7 @@
       "firstName": "Holger",
       "lastName": "Fricke",
       "title": null,
-      "party": "fraktionslos",
+      "party": "Gruppe Bürgerallianz Bremen/Bremerhaven",
       "wahlkreisId": 1,
       "wahlkreisName": "Bremen",
       "level": "Land",
@@ -24386,6 +24988,21 @@
       "bundeslandKey": "HB"
     },
     {
+      "id": 70567,
+      "politicianId": 176927,
+      "firstName": "Christian",
+      "lastName": "Geier",
+      "title": null,
+      "party": "CDU",
+      "wahlkreisId": 19,
+      "wahlkreisName": "Ludwigslust-Parchim III",
+      "level": "Land",
+      "postalAddress": "Landtag Mecklenburg-Vorpommern, Lennéstraße 1, 19053 Schwerin",
+      "isDirect": false,
+      "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/christian-geier",
+      "bundeslandKey": "MV"
+    },
+    {
       "id": 70128,
       "politicianId": 176945,
       "firstName": "Noah",
@@ -24451,7 +25068,7 @@
       "firstName": "Thomas",
       "lastName": "Diener",
       "title": null,
-      "party": "fraktionslos",
+      "party": "AfD",
       "wahlkreisId": 22,
       "wahlkreisName": "Mecklenburgische Seenplatte V",
       "level": "Land",
@@ -24938,21 +25555,6 @@
       "postalAddress": "Landtag Mecklenburg-Vorpommern, Lennéstraße 1, 19053 Schwerin",
       "isDirect": false,
       "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/petra-federau",
-      "bundeslandKey": "MV"
-    },
-    {
-      "id": 54331,
-      "politicianId": 122605,
-      "firstName": "Sebastian",
-      "lastName": "Ehlers",
-      "title": null,
-      "party": "CDU",
-      "wahlkreisId": 8,
-      "wahlkreisName": "Schwerin I",
-      "level": "Land",
-      "postalAddress": "Landtag Mecklenburg-Vorpommern, Lennéstraße 1, 19053 Schwerin",
-      "isDirect": false,
-      "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/sebastian-ehlers",
       "bundeslandKey": "MV"
     },
     {
@@ -25511,202 +26113,442 @@
       "bundeslandKey": "MV"
     },
     {
-      "id": 70125,
-      "politicianId": 175117,
-      "firstName": "Marco",
-      "lastName": "Heide",
+      "id": 71928,
+      "politicianId": 185043,
+      "firstName": "Dennis",
+      "lastName": "Helmich",
       "title": null,
-      "party": "DIE LINKE",
-      "wahlkreisId": 1,
-      "wahlkreisName": "Salzwedel",
+      "party": "BÜNDNIS 90/­DIE GRÜNEN",
+      "wahlkreisId": 33,
+      "wahlkreisName": "Merseburg",
       "level": "Land",
       "postalAddress": "Landtag von Sachsen-Anhalt, Domplatz 6-9, 39104 Magdeburg",
       "isDirect": false,
-      "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/marco-heide",
+      "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/dennis-helmich",
       "bundeslandKey": "ST"
     },
     {
-      "id": 70122,
-      "politicianId": 175087,
-      "firstName": "Oliver",
-      "lastName": "Stegert",
+      "id": 71927,
+      "politicianId": 185035,
+      "firstName": "Bea",
+      "lastName": "Lindhorst",
       "title": null,
-      "party": "SPD",
-      "wahlkreisId": 2,
-      "wahlkreisName": "Gardelegen-Klötze",
-      "level": "Land",
-      "postalAddress": "Landtag von Sachsen-Anhalt, Domplatz 6-9, 39104 Magdeburg",
-      "isDirect": false,
-      "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/oliver-stegert",
-      "bundeslandKey": "ST"
-    },
-    {
-      "id": 60128,
-      "politicianId": 175058,
-      "firstName": "Maximilian",
-      "lastName": "Gludau",
-      "title": null,
-      "party": "FDP",
-      "wahlkreisId": 39,
-      "wahlkreisName": "Weißenfels",
-      "level": "Land",
-      "postalAddress": "Landtag von Sachsen-Anhalt, Domplatz 6-9, 39104 Magdeburg",
-      "isDirect": false,
-      "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/maximilian-gludau",
-      "bundeslandKey": "ST"
-    },
-    {
-      "id": 60127,
-      "politicianId": 152786,
-      "firstName": "Kristin",
-      "lastName": "Heiß",
-      "title": null,
-      "party": "DIE LINKE",
-      "wahlkreisId": 8,
-      "wahlkreisName": "Wolmirstedt",
-      "level": "Land",
-      "postalAddress": "Landtag von Sachsen-Anhalt, Domplatz 6-9, 39104 Magdeburg",
-      "isDirect": false,
-      "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/kristin-heiss",
-      "bundeslandKey": "ST"
-    },
-    {
-      "id": 54376,
-      "politicianId": 138899,
-      "firstName": "Holger",
-      "lastName": "Hövelmann",
-      "title": null,
-      "party": "SPD",
-      "wahlkreisId": 27,
-      "wahlkreisName": "Dessau-Roßlau-Wittenberg",
-      "level": "Land",
-      "postalAddress": "Landtag von Sachsen-Anhalt, Domplatz 6-9, 39104 Magdeburg",
-      "isDirect": false,
-      "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/holger-hoevelmann",
-      "bundeslandKey": "ST"
-    },
-    {
-      "id": 54375,
-      "politicianId": 175091,
-      "firstName": "Elrid",
-      "lastName": "Pasbrig",
-      "title": null,
-      "party": "SPD",
-      "wahlkreisId": 6,
-      "wahlkreisName": "Burg",
-      "level": "Land",
-      "postalAddress": "Landtag von Sachsen-Anhalt, Domplatz 6-9, 39104 Magdeburg",
-      "isDirect": false,
-      "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/elrid-pasbrig",
-      "bundeslandKey": "ST"
-    },
-    {
-      "id": 52027,
-      "politicianId": 124307,
-      "firstName": "Siegfried",
-      "lastName": "Borgwardt",
-      "title": null,
-      "party": "CDU",
-      "wahlkreisId": 25,
-      "wahlkreisName": "Jessen",
-      "level": "Land",
-      "postalAddress": "Landtag von Sachsen-Anhalt, Domplatz 6-9, 39104 Magdeburg",
-      "isDirect": true,
-      "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/siegfried-borgwardt",
-      "bundeslandKey": "ST"
-    },
-    {
-      "id": 52018,
-      "politicianId": 175212,
-      "firstName": "Elke",
-      "lastName": "Simon-Kuch",
-      "title": null,
-      "party": "CDU",
-      "wahlkreisId": 39,
-      "wahlkreisName": "Weißenfels",
-      "level": "Land",
-      "postalAddress": "Landtag von Sachsen-Anhalt, Domplatz 6-9, 39104 Magdeburg",
-      "isDirect": true,
-      "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/elke-simon-kuch",
-      "bundeslandKey": "ST"
-    },
-    {
-      "id": 52017,
-      "politicianId": 124134,
-      "firstName": "Frank",
-      "lastName": "Bommersbach",
-      "title": null,
-      "party": "CDU",
-      "wahlkreisId": 34,
-      "wahlkreisName": "Bad Dürrenberg-Saalekreis",
-      "level": "Land",
-      "postalAddress": "Landtag von Sachsen-Anhalt, Domplatz 6-9, 39104 Magdeburg",
-      "isDirect": true,
-      "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/frank-bommersbach",
-      "bundeslandKey": "ST"
-    },
-    {
-      "id": 52016,
-      "politicianId": 175208,
-      "firstName": "Michael",
-      "lastName": "Scheffler",
-      "title": null,
-      "party": "CDU",
-      "wahlkreisId": 29,
-      "wahlkreisName": "Saalekreis",
-      "level": "Land",
-      "postalAddress": "Landtag von Sachsen-Anhalt, Domplatz 6-9, 39104 Magdeburg",
-      "isDirect": true,
-      "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/michael-scheffler-0",
-      "bundeslandKey": "ST"
-    },
-    {
-      "id": 52015,
-      "politicianId": 138873,
-      "firstName": "Reiner",
-      "lastName": "Haseloff",
-      "title": null,
-      "party": "CDU",
+      "party": "BÜNDNIS 90/­DIE GRÜNEN",
       "wahlkreisId": 24,
       "wahlkreisName": "Wittenberg",
       "level": "Land",
       "postalAddress": "Landtag von Sachsen-Anhalt, Domplatz 6-9, 39104 Magdeburg",
-      "isDirect": true,
-      "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/reiner-haseloff",
+      "isDirect": false,
+      "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/bea-lindhorst",
       "bundeslandKey": "ST"
     },
     {
-      "id": 52014,
-      "politicianId": 124193,
-      "firstName": "Holger",
-      "lastName": "Stahlknecht",
+      "id": 71926,
+      "politicianId": 152775,
+      "firstName": "Wolfgang",
+      "lastName": "Aldag",
       "title": null,
-      "party": "CDU",
+      "party": "BÜNDNIS 90/­DIE GRÜNEN",
+      "wahlkreisId": 37,
+      "wahlkreisName": "Halle III",
+      "level": "Land",
+      "postalAddress": "Landtag von Sachsen-Anhalt, Domplatz 6-9, 39104 Magdeburg",
+      "isDirect": false,
+      "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/wolfgang-aldag",
+      "bundeslandKey": "ST"
+    },
+    {
+      "id": 71925,
+      "politicianId": 185037,
+      "firstName": "Leonie",
+      "lastName": "Bronkalla",
+      "title": null,
+      "party": "BÜNDNIS 90/­DIE GRÜNEN",
+      "wahlkreisId": 26,
+      "wahlkreisName": "Dessau-Roßlau",
+      "level": "Land",
+      "postalAddress": "Landtag von Sachsen-Anhalt, Domplatz 6-9, 39104 Magdeburg",
+      "isDirect": false,
+      "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/leonie-bronkalla",
+      "bundeslandKey": "ST"
+    },
+    {
+      "id": 71924,
+      "politicianId": 185046,
+      "firstName": "Mamad",
+      "lastName": "Mohamad",
+      "title": null,
+      "party": "BÜNDNIS 90/­DIE GRÜNEN",
+      "wahlkreisId": 36,
+      "wahlkreisName": "Halle II",
+      "level": "Land",
+      "postalAddress": "Landtag von Sachsen-Anhalt, Domplatz 6-9, 39104 Magdeburg",
+      "isDirect": false,
+      "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/mamad-mohamad",
+      "bundeslandKey": "ST"
+    },
+    {
+      "id": 71923,
+      "politicianId": 175064,
+      "firstName": "Madeleine",
+      "lastName": "Linke",
+      "title": null,
+      "party": "BÜNDNIS 90/­DIE GRÜNEN",
+      "wahlkreisId": 11,
+      "wahlkreisName": "Magdeburg II",
+      "level": "Land",
+      "postalAddress": "Landtag von Sachsen-Anhalt, Domplatz 6-9, 39104 Magdeburg",
+      "isDirect": false,
+      "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/madeleine-linke",
+      "bundeslandKey": "ST"
+    },
+    {
+      "id": 71922,
+      "politicianId": 152757,
+      "firstName": "Olaf",
+      "lastName": "Meister",
+      "title": null,
+      "party": "BÜNDNIS 90/­DIE GRÜNEN",
+      "wahlkreisId": 13,
+      "wahlkreisName": "Magdeburg IV",
+      "level": "Land",
+      "postalAddress": "Landtag von Sachsen-Anhalt, Domplatz 6-9, 39104 Magdeburg",
+      "isDirect": false,
+      "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/olaf-meister",
+      "bundeslandKey": "ST"
+    },
+    {
+      "id": 71921,
+      "politicianId": 145935,
+      "firstName": "Susan",
+      "lastName": "Sziborra-Seidlitz",
+      "title": null,
+      "party": "BÜNDNIS 90/­DIE GRÜNEN",
+      "wahlkreisId": 17,
+      "wahlkreisName": "Quedlinburg",
+      "level": "Land",
+      "postalAddress": "Landtag von Sachsen-Anhalt, Domplatz 6-9, 39104 Magdeburg",
+      "isDirect": false,
+      "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/susan-sziborra-seidlitz",
+      "bundeslandKey": "ST"
+    },
+    {
+      "id": 71920,
+      "politicianId": 185090,
+      "firstName": "John Lucas",
+      "lastName": "Dittrich",
+      "title": null,
+      "party": "BSW",
+      "wahlkreisId": 11,
+      "wahlkreisName": "Magdeburg II",
+      "level": "Land",
+      "postalAddress": "Landtag von Sachsen-Anhalt, Domplatz 6-9, 39104 Magdeburg",
+      "isDirect": false,
+      "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/john-lucas-dittrich",
+      "bundeslandKey": "ST"
+    },
+    {
+      "id": 71919,
+      "politicianId": 185095,
+      "firstName": "Michael",
+      "lastName": "Reim",
+      "title": null,
+      "party": "BSW",
+      "wahlkreisId": 17,
+      "wahlkreisName": "Quedlinburg",
+      "level": "Land",
+      "postalAddress": "Landtag von Sachsen-Anhalt, Domplatz 6-9, 39104 Magdeburg",
+      "isDirect": false,
+      "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/michael-reim",
+      "bundeslandKey": "ST"
+    },
+    {
+      "id": 71918,
+      "politicianId": 185105,
+      "firstName": "Claudia",
+      "lastName": "Wittig",
+      "title": null,
+      "party": "BSW",
+      "wahlkreisId": 37,
+      "wahlkreisName": "Halle III",
+      "level": "Land",
+      "postalAddress": "Landtag von Sachsen-Anhalt, Domplatz 6-9, 39104 Magdeburg",
+      "isDirect": false,
+      "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/claudia-wittig",
+      "bundeslandKey": "ST"
+    },
+    {
+      "id": 71917,
+      "politicianId": 185085,
+      "firstName": "Thomas",
+      "lastName": "Schulze",
+      "title": null,
+      "party": "BSW",
+      "wahlkreisId": 5,
+      "wahlkreisName": "Genthin",
+      "level": "Land",
+      "postalAddress": "Landtag von Sachsen-Anhalt, Domplatz 6-9, 39104 Magdeburg",
+      "isDirect": false,
+      "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/thomas-schulze-0",
+      "bundeslandKey": "ST"
+    },
+    {
+      "id": 71916,
+      "politicianId": 185006,
+      "firstName": "Katharina",
+      "lastName": "Kohl",
+      "title": null,
+      "party": "SPD",
+      "wahlkreisId": 28,
+      "wahlkreisName": "Bitterfeld-Wolfen",
+      "level": "Land",
+      "postalAddress": "Landtag von Sachsen-Anhalt, Domplatz 6-9, 39104 Magdeburg",
+      "isDirect": false,
+      "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/katharina-kohl",
+      "bundeslandKey": "ST"
+    },
+    {
+      "id": 71915,
+      "politicianId": 175098,
+      "firstName": "Florian",
+      "lastName": "Fahrtmann",
+      "title": null,
+      "party": "SPD",
+      "wahlkreisId": 15,
+      "wahlkreisName": "Blankenburg",
+      "level": "Land",
+      "postalAddress": "Landtag von Sachsen-Anhalt, Domplatz 6-9, 39104 Magdeburg",
+      "isDirect": false,
+      "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/florian-fahrtmann",
+      "bundeslandKey": "ST"
+    },
+    {
+      "id": 71914,
+      "politicianId": 175093,
+      "firstName": "Katrin",
+      "lastName": "Gensecke",
+      "title": null,
+      "party": "SPD",
       "wahlkreisId": 8,
       "wahlkreisName": "Wolmirstedt",
       "level": "Land",
       "postalAddress": "Landtag von Sachsen-Anhalt, Domplatz 6-9, 39104 Magdeburg",
-      "isDirect": true,
-      "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/holger-stahlknecht",
+      "isDirect": false,
+      "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/katrin-gensecke",
       "bundeslandKey": "ST"
     },
     {
-      "id": 52013,
-      "politicianId": 175214,
-      "firstName": "Xenia Sabrina",
-      "lastName": "Kühn",
+      "id": 71913,
+      "politicianId": 152754,
+      "firstName": "Falko",
+      "lastName": "Grube",
       "title": null,
-      "party": "CDU",
+      "party": "SPD",
+      "wahlkreisId": 11,
+      "wahlkreisName": "Magdeburg II",
+      "level": "Land",
+      "postalAddress": "Landtag von Sachsen-Anhalt, Domplatz 6-9, 39104 Magdeburg",
+      "isDirect": false,
+      "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/falko-grube",
+      "bundeslandKey": "ST"
+    },
+    {
+      "id": 71912,
+      "politicianId": 175089,
+      "firstName": "Juliane",
+      "lastName": "Kleemann",
+      "title": null,
+      "party": "SPD",
       "wahlkreisId": 4,
       "wahlkreisName": "Stendal",
       "level": "Land",
       "postalAddress": "Landtag von Sachsen-Anhalt, Domplatz 6-9, 39104 Magdeburg",
-      "isDirect": true,
-      "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/xenia-sabrina-kuehn",
+      "isDirect": false,
+      "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/juliane-kleemann",
       "bundeslandKey": "ST"
     },
     {
-      "id": 51971,
+      "id": 71911,
+      "politicianId": 121089,
+      "firstName": "Andreas",
+      "lastName": "Schmidt",
+      "title": null,
+      "party": "SPD",
+      "wahlkreisId": 33,
+      "wahlkreisName": "Merseburg",
+      "level": "Land",
+      "postalAddress": "Landtag von Sachsen-Anhalt, Domplatz 6-9, 39104 Magdeburg",
+      "isDirect": false,
+      "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/andreas-schmidt-0",
+      "bundeslandKey": "ST"
+    },
+    {
+      "id": 71910,
+      "politicianId": 138867,
+      "firstName": "Katja",
+      "lastName": "Pähle",
+      "title": null,
+      "party": "SPD",
+      "wahlkreisId": 36,
+      "wahlkreisName": "Halle II",
+      "level": "Land",
+      "postalAddress": "Landtag von Sachsen-Anhalt, Domplatz 6-9, 39104 Magdeburg",
+      "isDirect": false,
+      "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/katja-paehle",
+      "bundeslandKey": "ST"
+    },
+    {
+      "id": 71909,
+      "politicianId": 175142,
+      "firstName": "Armin",
+      "lastName": "Willingmann",
+      "title": null,
+      "party": "SPD",
+      "wahlkreisId": 16,
+      "wahlkreisName": "Wernigerode",
+      "level": "Land",
+      "postalAddress": "Landtag von Sachsen-Anhalt, Domplatz 6-9, 39104 Magdeburg",
+      "isDirect": false,
+      "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/armin-willingmann",
+      "bundeslandKey": "ST"
+    },
+    {
+      "id": 71908,
+      "politicianId": 175130,
+      "firstName": "Henriette",
+      "lastName": "Krebs",
+      "title": null,
+      "party": "Die Linke",
+      "wahlkreisId": 21,
+      "wahlkreisName": "Bernburg",
+      "level": "Land",
+      "postalAddress": "Landtag von Sachsen-Anhalt, Domplatz 6-9, 39104 Magdeburg",
+      "isDirect": false,
+      "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/henriette-krebs",
+      "bundeslandKey": "ST"
+    },
+    {
+      "id": 71907,
+      "politicianId": 124190,
+      "firstName": "Hendrik",
+      "lastName": "Lange",
+      "title": null,
+      "party": "Die Linke",
+      "wahlkreisId": 35,
+      "wahlkreisName": "Halle I",
+      "level": "Land",
+      "postalAddress": "Landtag von Sachsen-Anhalt, Domplatz 6-9, 39104 Magdeburg",
+      "isDirect": false,
+      "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/hendrik-lange",
+      "bundeslandKey": "ST"
+    },
+    {
+      "id": 71906,
+      "politicianId": 184978,
+      "firstName": "Antonia",
+      "lastName": "Kaloff",
+      "title": null,
+      "party": "Die Linke",
+      "wahlkreisId": 28,
+      "wahlkreisName": "Bitterfeld-Wolfen",
+      "level": "Land",
+      "postalAddress": "Landtag von Sachsen-Anhalt, Domplatz 6-9, 39104 Magdeburg",
+      "isDirect": false,
+      "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/antonia-kaloff",
+      "bundeslandKey": "ST"
+    },
+    {
+      "id": 71905,
+      "politicianId": 175233,
+      "firstName": "Eric",
+      "lastName": "Stehr",
+      "title": null,
+      "party": "Die Linke",
+      "wahlkreisId": 39,
+      "wahlkreisName": "Weißenfels",
+      "level": "Land",
+      "postalAddress": "Landtag von Sachsen-Anhalt, Domplatz 6-9, 39104 Magdeburg",
+      "isDirect": false,
+      "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/eric-stehr",
+      "bundeslandKey": "ST"
+    },
+    {
+      "id": 71904,
+      "politicianId": 124132,
+      "firstName": "Eva von",
+      "lastName": "Angern",
+      "title": null,
+      "party": "Die Linke",
+      "wahlkreisId": 12,
+      "wahlkreisName": "Magdeburg III",
+      "level": "Land",
+      "postalAddress": "Landtag von Sachsen-Anhalt, Domplatz 6-9, 39104 Magdeburg",
+      "isDirect": false,
+      "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/eva-von-angern",
+      "bundeslandKey": "ST"
+    },
+    {
+      "id": 71903,
+      "politicianId": 184985,
+      "firstName": "Jannik",
+      "lastName": "Balint",
+      "title": null,
+      "party": "Die Linke",
+      "wahlkreisId": 37,
+      "wahlkreisName": "Halle III",
+      "level": "Land",
+      "postalAddress": "Landtag von Sachsen-Anhalt, Domplatz 6-9, 39104 Magdeburg",
+      "isDirect": true,
+      "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/jannik-balint",
+      "bundeslandKey": "ST"
+    },
+    {
+      "id": 71902,
+      "politicianId": 184984,
+      "firstName": "Gitta Susann",
+      "lastName": "Hartenstein-Wiermann",
+      "title": null,
+      "party": "Die Linke",
+      "wahlkreisId": 36,
+      "wahlkreisName": "Halle II",
+      "level": "Land",
+      "postalAddress": "Landtag von Sachsen-Anhalt, Domplatz 6-9, 39104 Magdeburg",
+      "isDirect": true,
+      "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/gitta-susann-hartenstein-wiermann",
+      "bundeslandKey": "ST"
+    },
+    {
+      "id": 71901,
+      "politicianId": 184967,
+      "firstName": "Mustafa",
+      "lastName": "Groener",
+      "title": null,
+      "party": "Die Linke",
+      "wahlkreisId": 11,
+      "wahlkreisName": "Magdeburg II",
+      "level": "Land",
+      "postalAddress": "Landtag von Sachsen-Anhalt, Domplatz 6-9, 39104 Magdeburg",
+      "isDirect": true,
+      "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/mustafa-groener",
+      "bundeslandKey": "ST"
+    },
+    {
+      "id": 71900,
+      "politicianId": 152752,
+      "firstName": "Hagen",
+      "lastName": "Kohl",
+      "title": null,
+      "party": "AfD",
+      "wahlkreisId": 11,
+      "wahlkreisName": "Magdeburg II",
+      "level": "Land",
+      "postalAddress": "Landtag von Sachsen-Anhalt, Domplatz 6-9, 39104 Magdeburg",
+      "isDirect": false,
+      "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/hagen-kohl",
+      "bundeslandKey": "ST"
+    },
+    {
+      "id": 71899,
       "politicianId": 175026,
       "firstName": "Lothar",
       "lastName": "Waehler",
@@ -25721,412 +26563,562 @@
       "bundeslandKey": "ST"
     },
     {
-      "id": 51970,
-      "politicianId": 124093,
-      "firstName": "Daniel",
-      "lastName": "Sturm",
+      "id": 71898,
+      "politicianId": 185115,
+      "firstName": "Juliane",
+      "lastName": "Waehler",
       "title": null,
-      "party": "CDU",
+      "party": "AfD",
       "wahlkreisId": 40,
       "wahlkreisName": "Naumburg",
       "level": "Land",
       "postalAddress": "Landtag von Sachsen-Anhalt, Domplatz 6-9, 39104 Magdeburg",
       "isDirect": true,
-      "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/daniel-sturm",
+      "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/juliane-waehler",
       "bundeslandKey": "ST"
     },
     {
-      "id": 51969,
-      "politicianId": 138975,
-      "firstName": "Thomas",
-      "lastName": "Keindorf",
+      "id": 71897,
+      "politicianId": 185673,
+      "firstName": "Dirk",
+      "lastName": "Jonas",
       "title": null,
-      "party": "CDU",
+      "party": "AfD",
+      "wahlkreisId": 39,
+      "wahlkreisName": "Weißenfels",
+      "level": "Land",
+      "postalAddress": "Landtag von Sachsen-Anhalt, Domplatz 6-9, 39104 Magdeburg",
+      "isDirect": true,
+      "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/dirk-jonas",
+      "bundeslandKey": "ST"
+    },
+    {
+      "id": 71896,
+      "politicianId": 185494,
+      "firstName": "Paul",
+      "lastName": "Backmund",
+      "title": null,
+      "party": "AfD",
       "wahlkreisId": 38,
       "wahlkreisName": "Halle IV",
       "level": "Land",
       "postalAddress": "Landtag von Sachsen-Anhalt, Domplatz 6-9, 39104 Magdeburg",
       "isDirect": true,
-      "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/thomas-keindorf",
+      "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/paul-backmund",
       "bundeslandKey": "ST"
     },
     {
-      "id": 51968,
-      "politicianId": 165100,
-      "firstName": "Kerstin",
-      "lastName": "Godenrath",
+      "id": 71895,
+      "politicianId": 152774,
+      "firstName": "Alexander",
+      "lastName": "Raue",
       "title": null,
-      "party": "CDU",
-      "wahlkreisId": 37,
-      "wahlkreisName": "Halle III",
-      "level": "Land",
-      "postalAddress": "Landtag von Sachsen-Anhalt, Domplatz 6-9, 39104 Magdeburg",
-      "isDirect": true,
-      "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/kerstin-godenrath",
-      "bundeslandKey": "ST"
-    },
-    {
-      "id": 51967,
-      "politicianId": 124241,
-      "firstName": "Marco",
-      "lastName": "Tullner",
-      "title": null,
-      "party": "CDU",
-      "wahlkreisId": 36,
-      "wahlkreisName": "Halle II",
-      "level": "Land",
-      "postalAddress": "Landtag von Sachsen-Anhalt, Domplatz 6-9, 39104 Magdeburg",
-      "isDirect": true,
-      "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/marco-tullner",
-      "bundeslandKey": "ST"
-    },
-    {
-      "id": 51966,
-      "politicianId": 175224,
-      "firstName": "Christian",
-      "lastName": "Albrecht",
-      "title": null,
-      "party": "CDU",
+      "party": "AfD",
       "wahlkreisId": 35,
       "wahlkreisName": "Halle I",
       "level": "Land",
       "postalAddress": "Landtag von Sachsen-Anhalt, Domplatz 6-9, 39104 Magdeburg",
       "isDirect": true,
-      "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/christian-albrecht",
+      "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/alexander-raue",
       "bundeslandKey": "ST"
     },
     {
-      "id": 51965,
-      "politicianId": 175211,
-      "firstName": "Sven",
-      "lastName": "Czekalla",
+      "id": 71894,
+      "politicianId": 175016,
+      "firstName": "Gordon",
+      "lastName": "Köhler",
       "title": null,
-      "party": "CDU",
+      "party": "AfD",
+      "wahlkreisId": 34,
+      "wahlkreisName": "Bad Dürrenberg-Saalekreis",
+      "level": "Land",
+      "postalAddress": "Landtag von Sachsen-Anhalt, Domplatz 6-9, 39104 Magdeburg",
+      "isDirect": true,
+      "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/gordon-koehler",
+      "bundeslandKey": "ST"
+    },
+    {
+      "id": 71893,
+      "politicianId": 155492,
+      "firstName": "Daniel",
+      "lastName": "Wald",
+      "title": null,
+      "party": "AfD",
       "wahlkreisId": 33,
       "wahlkreisName": "Merseburg",
       "level": "Land",
       "postalAddress": "Landtag von Sachsen-Anhalt, Domplatz 6-9, 39104 Magdeburg",
       "isDirect": true,
-      "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/sven-czekalla",
+      "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/daniel-wald",
       "bundeslandKey": "ST"
     },
     {
-      "id": 51964,
-      "politicianId": 124130,
-      "firstName": "Eva",
-      "lastName": "Feußner",
+      "id": 71892,
+      "politicianId": 152773,
+      "firstName": "Hans-Thomas",
+      "lastName": "Tillschneider",
       "title": null,
-      "party": "CDU",
+      "party": "AfD",
       "wahlkreisId": 32,
       "wahlkreisName": "Querfurt",
       "level": "Land",
       "postalAddress": "Landtag von Sachsen-Anhalt, Domplatz 6-9, 39104 Magdeburg",
       "isDirect": true,
-      "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/eva-feussner",
+      "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/hans-thomas-tillschneider",
       "bundeslandKey": "ST"
     },
     {
-      "id": 51963,
-      "politicianId": 175210,
-      "firstName": "Matthias",
-      "lastName": "Redlich",
+      "id": 71891,
+      "politicianId": 152769,
+      "firstName": "Andreas",
+      "lastName": "Gehlmann",
       "title": null,
-      "party": "CDU",
+      "party": "AfD",
       "wahlkreisId": 31,
       "wahlkreisName": "Sangerhausen",
       "level": "Land",
       "postalAddress": "Landtag von Sachsen-Anhalt, Domplatz 6-9, 39104 Magdeburg",
       "isDirect": true,
-      "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/matthias-redlich",
+      "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/andreas-gehlmann",
       "bundeslandKey": "ST"
     },
     {
-      "id": 51962,
-      "politicianId": 175209,
-      "firstName": "René",
-      "lastName": "Barthel",
+      "id": 71890,
+      "politicianId": 175021,
+      "firstName": "Reiner",
+      "lastName": "Kretschmann",
       "title": null,
-      "party": "CDU",
+      "party": "AfD",
       "wahlkreisId": 30,
       "wahlkreisName": "Eisleben",
       "level": "Land",
       "postalAddress": "Landtag von Sachsen-Anhalt, Domplatz 6-9, 39104 Magdeburg",
       "isDirect": true,
-      "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/rene-barthel",
+      "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/reiner-kretschmann",
       "bundeslandKey": "ST"
     },
     {
-      "id": 51961,
-      "politicianId": 124230,
-      "firstName": "Lars-Jörn",
-      "lastName": "Zimmer",
+      "id": 71889,
+      "politicianId": 175020,
+      "firstName": "Florian",
+      "lastName": "Schröder",
       "title": null,
-      "party": "CDU",
+      "party": "AfD",
+      "wahlkreisId": 29,
+      "wahlkreisName": "Saalekreis",
+      "level": "Land",
+      "postalAddress": "Landtag von Sachsen-Anhalt, Domplatz 6-9, 39104 Magdeburg",
+      "isDirect": true,
+      "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/florian-schroeder",
+      "bundeslandKey": "ST"
+    },
+    {
+      "id": 71888,
+      "politicianId": 121039,
+      "firstName": "Daniel",
+      "lastName": "Roi",
+      "title": null,
+      "party": "AfD",
       "wahlkreisId": 28,
       "wahlkreisName": "Bitterfeld-Wolfen",
       "level": "Land",
       "postalAddress": "Landtag von Sachsen-Anhalt, Domplatz 6-9, 39104 Magdeburg",
       "isDirect": true,
-      "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/lars-joern-zimmer",
+      "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/daniel-roi",
       "bundeslandKey": "ST"
     },
     {
-      "id": 51960,
-      "politicianId": 175213,
-      "firstName": "Karin",
-      "lastName": "Tschernich-Weiske",
+      "id": 71887,
+      "politicianId": 175018,
+      "firstName": "Nadine",
+      "lastName": "Koppehel",
       "title": null,
-      "party": "CDU",
+      "party": "AfD",
       "wahlkreisId": 27,
       "wahlkreisName": "Dessau-Roßlau-Wittenberg",
       "level": "Land",
       "postalAddress": "Landtag von Sachsen-Anhalt, Domplatz 6-9, 39104 Magdeburg",
       "isDirect": true,
-      "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/karin-tschernich-weiske",
+      "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/nadine-koppehel",
       "bundeslandKey": "ST"
     },
     {
-      "id": 51959,
-      "politicianId": 175207,
-      "firstName": "Anja",
-      "lastName": "Schneider",
+      "id": 71886,
+      "politicianId": 185114,
+      "firstName": "Burkhardt",
+      "lastName": "Ratzmann",
       "title": null,
-      "party": "CDU",
+      "party": "AfD",
       "wahlkreisId": 26,
       "wahlkreisName": "Dessau-Roßlau",
       "level": "Land",
       "postalAddress": "Landtag von Sachsen-Anhalt, Domplatz 6-9, 39104 Magdeburg",
       "isDirect": true,
-      "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/anja-schneider",
+      "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/burkhardt-ratzmann",
       "bundeslandKey": "ST"
     },
     {
-      "id": 51958,
-      "politicianId": 138856,
-      "firstName": "Dietmar",
-      "lastName": "Krause",
+      "id": 71885,
+      "politicianId": 152765,
+      "firstName": "Matthias",
+      "lastName": "Lieschke",
       "title": null,
-      "party": "CDU",
+      "party": "AfD",
+      "wahlkreisId": 25,
+      "wahlkreisName": "Jessen",
+      "level": "Land",
+      "postalAddress": "Landtag von Sachsen-Anhalt, Domplatz 6-9, 39104 Magdeburg",
+      "isDirect": true,
+      "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/matthias-lieschke",
+      "bundeslandKey": "ST"
+    },
+    {
+      "id": 71884,
+      "politicianId": 185518,
+      "firstName": "Andreas",
+      "lastName": "Best",
+      "title": null,
+      "party": "AfD",
+      "wahlkreisId": 24,
+      "wahlkreisName": "Wittenberg",
+      "level": "Land",
+      "postalAddress": "Landtag von Sachsen-Anhalt, Domplatz 6-9, 39104 Magdeburg",
+      "isDirect": true,
+      "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/andreas-best",
+      "bundeslandKey": "ST"
+    },
+    {
+      "id": 71883,
+      "politicianId": 185505,
+      "firstName": "Phillipp-Anders",
+      "lastName": "Rau",
+      "title": null,
+      "party": "AfD",
       "wahlkreisId": 23,
       "wahlkreisName": "Zerbst",
       "level": "Land",
       "postalAddress": "Landtag von Sachsen-Anhalt, Domplatz 6-9, 39104 Magdeburg",
       "isDirect": true,
-      "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/dietmar-krause",
+      "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/phillipp-anders-rau",
       "bundeslandKey": "ST"
     },
     {
-      "id": 51957,
-      "politicianId": 175206,
-      "firstName": "Olaf",
-      "lastName": "Feuerborn",
+      "id": 71882,
+      "politicianId": 152767,
+      "firstName": "Volker",
+      "lastName": "Olenicak",
       "title": null,
-      "party": "CDU",
+      "party": "AfD",
       "wahlkreisId": 22,
       "wahlkreisName": "Köthen",
       "level": "Land",
       "postalAddress": "Landtag von Sachsen-Anhalt, Domplatz 6-9, 39104 Magdeburg",
       "isDirect": true,
-      "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/olaf-feuerborn",
+      "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/volker-olenicak",
       "bundeslandKey": "ST"
     },
     {
-      "id": 51956,
-      "politicianId": 175205,
-      "firstName": "Stefan",
-      "lastName": "Ruland",
+      "id": 71881,
+      "politicianId": 175010,
+      "firstName": "Jan",
+      "lastName": "Moldenhauer",
       "title": null,
-      "party": "CDU",
+      "party": "AfD",
       "wahlkreisId": 21,
       "wahlkreisName": "Bernburg",
       "level": "Land",
       "postalAddress": "Landtag von Sachsen-Anhalt, Domplatz 6-9, 39104 Magdeburg",
       "isDirect": true,
-      "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/stefan-ruland",
+      "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/jan-moldenhauer",
       "bundeslandKey": "ST"
     },
     {
-      "id": 51955,
-      "politicianId": 124109,
-      "firstName": "Gunnar",
-      "lastName": "Schellenberger",
+      "id": 71880,
+      "politicianId": 152760,
+      "firstName": "Tobias",
+      "lastName": "Rausch",
       "title": null,
-      "party": "CDU",
+      "party": "AfD",
       "wahlkreisId": 20,
       "wahlkreisName": "Schönebeck",
       "level": "Land",
       "postalAddress": "Landtag von Sachsen-Anhalt, Domplatz 6-9, 39104 Magdeburg",
       "isDirect": true,
-      "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/gunnar-schellenberger",
+      "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/tobias-rausch",
       "bundeslandKey": "ST"
     },
     {
-      "id": 51954,
-      "politicianId": 175204,
-      "firstName": "Sven",
-      "lastName": "Rosomkiewicz",
+      "id": 71879,
+      "politicianId": 152792,
+      "firstName": "Matthias",
+      "lastName": "Büttner",
       "title": null,
-      "party": "CDU",
+      "party": "AfD",
       "wahlkreisId": 19,
       "wahlkreisName": "Staßfurt",
       "level": "Land",
       "postalAddress": "Landtag von Sachsen-Anhalt, Domplatz 6-9, 39104 Magdeburg",
       "isDirect": true,
-      "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/sven-rosomkiewicz",
+      "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/matthias-buettner-0",
       "bundeslandKey": "ST"
     },
     {
-      "id": 51953,
-      "politicianId": 124096,
-      "firstName": "Detlef",
-      "lastName": "Gürth",
+      "id": 71878,
+      "politicianId": 152785,
+      "firstName": "Daniel",
+      "lastName": "Rausch",
       "title": null,
-      "party": "CDU",
+      "party": "AfD",
       "wahlkreisId": 18,
       "wahlkreisName": "Aschersleben",
       "level": "Land",
       "postalAddress": "Landtag von Sachsen-Anhalt, Domplatz 6-9, 39104 Magdeburg",
       "isDirect": true,
-      "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/detlef-guerth",
+      "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/daniel-rausch",
       "bundeslandKey": "ST"
     },
     {
-      "id": 51952,
-      "politicianId": 124331,
-      "firstName": "Ulrich",
-      "lastName": "Thomas",
+      "id": 71877,
+      "politicianId": 175014,
+      "firstName": "Dennis",
+      "lastName": "Möhring",
       "title": null,
-      "party": "CDU",
+      "party": "AfD",
       "wahlkreisId": 17,
       "wahlkreisName": "Quedlinburg",
       "level": "Land",
       "postalAddress": "Landtag von Sachsen-Anhalt, Domplatz 6-9, 39104 Magdeburg",
       "isDirect": true,
-      "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/ulrich-thomas",
+      "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/dennis-moehring",
       "bundeslandKey": "ST"
     },
     {
-      "id": 51951,
-      "politicianId": 124059,
-      "firstName": "Angela",
-      "lastName": "Gorr",
+      "id": 71876,
+      "politicianId": 145729,
+      "firstName": "Ronald",
+      "lastName": "Bischoff",
       "title": null,
-      "party": "CDU",
+      "party": "AfD",
       "wahlkreisId": 16,
       "wahlkreisName": "Wernigerode",
       "level": "Land",
       "postalAddress": "Landtag von Sachsen-Anhalt, Domplatz 6-9, 39104 Magdeburg",
       "isDirect": true,
-      "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/angela-gorr",
+      "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/ronald-bischoff",
       "bundeslandKey": "ST"
     },
     {
-      "id": 51950,
-      "politicianId": 175203,
-      "firstName": "Alexander",
-      "lastName": "Räuscher",
+      "id": 71875,
+      "politicianId": 185504,
+      "firstName": "Armin",
+      "lastName": "Friese",
       "title": null,
-      "party": "CDU",
+      "party": "AfD",
       "wahlkreisId": 15,
       "wahlkreisName": "Blankenburg",
       "level": "Land",
       "postalAddress": "Landtag von Sachsen-Anhalt, Domplatz 6-9, 39104 Magdeburg",
       "isDirect": true,
-      "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/alexander-raeuscher",
+      "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/armin-friese",
       "bundeslandKey": "ST"
     },
     {
-      "id": 51949,
-      "politicianId": 175202,
-      "firstName": "Thomas",
-      "lastName": "Krüger",
+      "id": 71874,
+      "politicianId": 175011,
+      "firstName": "Christian",
+      "lastName": "Hecht",
       "title": null,
-      "party": "CDU",
+      "party": "AfD",
       "wahlkreisId": 14,
       "wahlkreisName": "Halberstadt",
       "level": "Land",
       "postalAddress": "Landtag von Sachsen-Anhalt, Domplatz 6-9, 39104 Magdeburg",
       "isDirect": true,
-      "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/thomas-krueger-0",
+      "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/christian-hecht",
       "bundeslandKey": "ST"
     },
     {
-      "id": 51948,
-      "politicianId": 118110,
-      "firstName": "Andreas",
-      "lastName": "Schumann",
+      "id": 71873,
+      "politicianId": 185680,
+      "firstName": "Ronny",
+      "lastName": "Kumpf",
       "title": null,
-      "party": "CDU",
+      "party": "AfD",
       "wahlkreisId": 13,
       "wahlkreisName": "Magdeburg IV",
       "level": "Land",
       "postalAddress": "Landtag von Sachsen-Anhalt, Domplatz 6-9, 39104 Magdeburg",
       "isDirect": true,
-      "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/andreas-schumann",
+      "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/ronny-kumpf",
       "bundeslandKey": "ST"
     },
     {
-      "id": 51947,
-      "politicianId": 175201,
-      "firstName": "Anne-Marie",
-      "lastName": "Keding",
+      "id": 71872,
+      "politicianId": 175009,
+      "firstName": "Christian",
+      "lastName": "Mertens",
       "title": null,
-      "party": "CDU",
+      "party": "AfD",
       "wahlkreisId": 12,
       "wahlkreisName": "Magdeburg III",
       "level": "Land",
       "postalAddress": "Landtag von Sachsen-Anhalt, Domplatz 6-9, 39104 Magdeburg",
       "isDirect": true,
-      "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/anne-marie-keding",
+      "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/christian-mertens",
       "bundeslandKey": "ST"
     },
     {
-      "id": 51946,
-      "politicianId": 152753,
-      "firstName": "Tobias",
-      "lastName": "Krull",
+      "id": 71871,
+      "politicianId": 152751,
+      "firstName": "Oliver",
+      "lastName": "Kirchner",
       "title": null,
-      "party": "CDU",
-      "wahlkreisId": 11,
-      "wahlkreisName": "Magdeburg II",
-      "level": "Land",
-      "postalAddress": "Landtag von Sachsen-Anhalt, Domplatz 6-9, 39104 Magdeburg",
-      "isDirect": true,
-      "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/tobias-krull",
-      "bundeslandKey": "ST"
-    },
-    {
-      "id": 51945,
-      "politicianId": 175200,
-      "firstName": "Stephen Gerhard",
-      "lastName": "Stehli",
-      "title": null,
-      "party": "CDU",
+      "party": "AfD",
       "wahlkreisId": 10,
       "wahlkreisName": "Magdeburg I",
       "level": "Land",
       "postalAddress": "Landtag von Sachsen-Anhalt, Domplatz 6-9, 39104 Magdeburg",
       "isDirect": true,
-      "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/stephen-gerhard-stehli",
+      "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/oliver-kirchner",
       "bundeslandKey": "ST"
     },
     {
-      "id": 51944,
-      "politicianId": 152761,
-      "firstName": "Guido",
-      "lastName": "Heuer",
+      "id": 71870,
+      "politicianId": 185513,
+      "firstName": "Thomas",
+      "lastName": "Schmirander",
       "title": null,
-      "party": "CDU",
+      "party": "AfD",
       "wahlkreisId": 9,
       "wahlkreisName": "Oschersleben-Wanzleben",
       "level": "Land",
       "postalAddress": "Landtag von Sachsen-Anhalt, Domplatz 6-9, 39104 Magdeburg",
       "isDirect": true,
-      "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/guido-heuer",
+      "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/thomas-schmirander",
       "bundeslandKey": "ST"
     },
     {
-      "id": 51943,
+      "id": 71869,
+      "politicianId": 175007,
+      "firstName": "Felix",
+      "lastName": "Zietmann",
+      "title": null,
+      "party": "AfD",
+      "wahlkreisId": 8,
+      "wahlkreisName": "Wolmirstedt",
+      "level": "Land",
+      "postalAddress": "Landtag von Sachsen-Anhalt, Domplatz 6-9, 39104 Magdeburg",
+      "isDirect": true,
+      "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/felix-zietmann",
+      "bundeslandKey": "ST"
+    },
+    {
+      "id": 71868,
+      "politicianId": 185510,
+      "firstName": "Dirk",
+      "lastName": "Lassowski",
+      "title": null,
+      "party": "AfD",
+      "wahlkreisId": 7,
+      "wahlkreisName": "Haldensleben",
+      "level": "Land",
+      "postalAddress": "Landtag von Sachsen-Anhalt, Domplatz 6-9, 39104 Magdeburg",
+      "isDirect": true,
+      "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/dirk-lassowski",
+      "bundeslandKey": "ST"
+    },
+    {
+      "id": 71867,
+      "politicianId": 175005,
+      "firstName": "Jan",
+      "lastName": "Scharfenort",
+      "title": null,
+      "party": "AfD",
+      "wahlkreisId": 6,
+      "wahlkreisName": "Burg",
+      "level": "Land",
+      "postalAddress": "Landtag von Sachsen-Anhalt, Domplatz 6-9, 39104 Magdeburg",
+      "isDirect": true,
+      "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/jan-scharfenort",
+      "bundeslandKey": "ST"
+    },
+    {
+      "id": 71866,
+      "politicianId": 152749,
+      "firstName": "Ulrich",
+      "lastName": "Siegmund",
+      "title": null,
+      "party": "AfD",
+      "wahlkreisId": 5,
+      "wahlkreisName": "Genthin",
+      "level": "Land",
+      "postalAddress": "Landtag von Sachsen-Anhalt, Domplatz 6-9, 39104 Magdeburg",
+      "isDirect": true,
+      "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/ulrich-siegmund",
+      "bundeslandKey": "ST"
+    },
+    {
+      "id": 71865,
+      "politicianId": 145727,
+      "firstName": "Matthias",
+      "lastName": "Büttner",
+      "title": null,
+      "party": "AfD",
+      "wahlkreisId": 4,
+      "wahlkreisName": "Stendal",
+      "level": "Land",
+      "postalAddress": "Landtag von Sachsen-Anhalt, Domplatz 6-9, 39104 Magdeburg",
+      "isDirect": true,
+      "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/matthias-buettner",
+      "bundeslandKey": "ST"
+    },
+    {
+      "id": 71864,
+      "politicianId": 185500,
+      "firstName": "Sebastian",
+      "lastName": "Killinger",
+      "title": null,
+      "party": "AfD",
+      "wahlkreisId": 3,
+      "wahlkreisName": "Havelberg-Osterburg",
+      "level": "Land",
+      "postalAddress": "Landtag von Sachsen-Anhalt, Domplatz 6-9, 39104 Magdeburg",
+      "isDirect": true,
+      "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/sebastian-killinger",
+      "bundeslandKey": "ST"
+    },
+    {
+      "id": 71863,
+      "politicianId": 185497,
+      "firstName": "Sebastian",
+      "lastName": "Koch",
+      "title": null,
+      "party": "AfD",
+      "wahlkreisId": 2,
+      "wahlkreisName": "Gardelegen-Klötze",
+      "level": "Land",
+      "postalAddress": "Landtag von Sachsen-Anhalt, Domplatz 6-9, 39104 Magdeburg",
+      "isDirect": true,
+      "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/sebastian-koch-0",
+      "bundeslandKey": "ST"
+    },
+    {
+      "id": 71862,
+      "politicianId": 185495,
+      "firstName": "Simon",
+      "lastName": "Lansmann",
+      "title": null,
+      "party": "AfD",
+      "wahlkreisId": 1,
+      "wahlkreisName": "Salzwedel",
+      "level": "Land",
+      "postalAddress": "Landtag von Sachsen-Anhalt, Domplatz 6-9, 39104 Magdeburg",
+      "isDirect": true,
+      "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/simon-lansmann",
+      "bundeslandKey": "ST"
+    },
+    {
+      "id": 71861,
       "politicianId": 175199,
       "firstName": "Tim",
       "lastName": "Teßmann",
@@ -26136,72 +27128,12 @@
       "wahlkreisName": "Haldensleben",
       "level": "Land",
       "postalAddress": "Landtag von Sachsen-Anhalt, Domplatz 6-9, 39104 Magdeburg",
-      "isDirect": true,
+      "isDirect": false,
       "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/tim-tessmann",
       "bundeslandKey": "ST"
     },
     {
-      "id": 51942,
-      "politicianId": 124245,
-      "firstName": "Markus",
-      "lastName": "Kurze",
-      "title": null,
-      "party": "CDU",
-      "wahlkreisId": 6,
-      "wahlkreisName": "Burg",
-      "level": "Land",
-      "postalAddress": "Landtag von Sachsen-Anhalt, Domplatz 6-9, 39104 Magdeburg",
-      "isDirect": true,
-      "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/markus-kurze",
-      "bundeslandKey": "ST"
-    },
-    {
-      "id": 51941,
-      "politicianId": 175198,
-      "firstName": "Thomas",
-      "lastName": "Staudt",
-      "title": null,
-      "party": "CDU",
-      "wahlkreisId": 5,
-      "wahlkreisName": "Genthin",
-      "level": "Land",
-      "postalAddress": "Landtag von Sachsen-Anhalt, Domplatz 6-9, 39104 Magdeburg",
-      "isDirect": true,
-      "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/thomas-staudt",
-      "bundeslandKey": "ST"
-    },
-    {
-      "id": 51940,
-      "politicianId": 152748,
-      "firstName": "Chris",
-      "lastName": "Schulenburg",
-      "title": null,
-      "party": "CDU",
-      "wahlkreisId": 3,
-      "wahlkreisName": "Havelberg-Osterburg",
-      "level": "Land",
-      "postalAddress": "Landtag von Sachsen-Anhalt, Domplatz 6-9, 39104 Magdeburg",
-      "isDirect": true,
-      "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/chris-schulenburg",
-      "bundeslandKey": "ST"
-    },
-    {
-      "id": 51939,
-      "politicianId": 175197,
-      "firstName": "Sandra",
-      "lastName": "Hietel-Heuer",
-      "title": null,
-      "party": "CDU",
-      "wahlkreisId": 2,
-      "wahlkreisName": "Gardelegen-Klötze",
-      "level": "Land",
-      "postalAddress": "Landtag von Sachsen-Anhalt, Domplatz 6-9, 39104 Magdeburg",
-      "isDirect": true,
-      "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/sandra-hietel-heuer",
-      "bundeslandKey": "ST"
-    },
-    {
-      "id": 51938,
+      "id": 71860,
       "politicianId": 152746,
       "firstName": "Carsten",
       "lastName": "Borchert",
@@ -26211,9 +27143,234 @@
       "wahlkreisName": "Salzwedel",
       "level": "Land",
       "postalAddress": "Landtag von Sachsen-Anhalt, Domplatz 6-9, 39104 Magdeburg",
-      "isDirect": true,
+      "isDirect": false,
       "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/carsten-borchert",
       "bundeslandKey": "ST"
+    },
+    {
+      "id": 71859,
+      "politicianId": 124134,
+      "firstName": "Frank",
+      "lastName": "Bommersbach",
+      "title": null,
+      "party": "CDU",
+      "wahlkreisId": 34,
+      "wahlkreisName": "Bad Dürrenberg-Saalekreis",
+      "level": "Land",
+      "postalAddress": "Landtag von Sachsen-Anhalt, Domplatz 6-9, 39104 Magdeburg",
+      "isDirect": false,
+      "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/frank-bommersbach",
+      "bundeslandKey": "ST"
+    },
+    {
+      "id": 71858,
+      "politicianId": 175209,
+      "firstName": "René",
+      "lastName": "Barthel",
+      "title": null,
+      "party": "CDU",
+      "wahlkreisId": 30,
+      "wahlkreisName": "Eisleben",
+      "level": "Land",
+      "postalAddress": "Landtag von Sachsen-Anhalt, Domplatz 6-9, 39104 Magdeburg",
+      "isDirect": false,
+      "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/rene-barthel",
+      "bundeslandKey": "ST"
+    },
+    {
+      "id": 71857,
+      "politicianId": 124241,
+      "firstName": "Marco",
+      "lastName": "Tullner",
+      "title": null,
+      "party": "CDU",
+      "wahlkreisId": 36,
+      "wahlkreisName": "Halle II",
+      "level": "Land",
+      "postalAddress": "Landtag von Sachsen-Anhalt, Domplatz 6-9, 39104 Magdeburg",
+      "isDirect": false,
+      "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/marco-tullner",
+      "bundeslandKey": "ST"
+    },
+    {
+      "id": 71856,
+      "politicianId": 175213,
+      "firstName": "Karin",
+      "lastName": "Tschernich-Weiske",
+      "title": null,
+      "party": "CDU",
+      "wahlkreisId": 27,
+      "wahlkreisName": "Dessau-Roßlau-Wittenberg",
+      "level": "Land",
+      "postalAddress": "Landtag von Sachsen-Anhalt, Domplatz 6-9, 39104 Magdeburg",
+      "isDirect": false,
+      "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/karin-tschernich-weiske",
+      "bundeslandKey": "ST"
+    },
+    {
+      "id": 71855,
+      "politicianId": 175205,
+      "firstName": "Stefan",
+      "lastName": "Ruland",
+      "title": null,
+      "party": "CDU",
+      "wahlkreisId": 21,
+      "wahlkreisName": "Bernburg",
+      "level": "Land",
+      "postalAddress": "Landtag von Sachsen-Anhalt, Domplatz 6-9, 39104 Magdeburg",
+      "isDirect": false,
+      "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/stefan-ruland",
+      "bundeslandKey": "ST"
+    },
+    {
+      "id": 71854,
+      "politicianId": 175197,
+      "firstName": "Sandra",
+      "lastName": "Hietel-Heuer",
+      "title": null,
+      "party": "CDU",
+      "wahlkreisId": 2,
+      "wahlkreisName": "Gardelegen-Klötze",
+      "level": "Land",
+      "postalAddress": "Landtag von Sachsen-Anhalt, Domplatz 6-9, 39104 Magdeburg",
+      "isDirect": false,
+      "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/sandra-hietel-heuer",
+      "bundeslandKey": "ST"
+    },
+    {
+      "id": 71853,
+      "politicianId": 124093,
+      "firstName": "Daniel",
+      "lastName": "Sturm",
+      "title": null,
+      "party": "CDU",
+      "wahlkreisId": 40,
+      "wahlkreisName": "Naumburg",
+      "level": "Land",
+      "postalAddress": "Landtag von Sachsen-Anhalt, Domplatz 6-9, 39104 Magdeburg",
+      "isDirect": false,
+      "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/daniel-sturm",
+      "bundeslandKey": "ST"
+    },
+    {
+      "id": 71852,
+      "politicianId": 124331,
+      "firstName": "Ulrich",
+      "lastName": "Thomas",
+      "title": null,
+      "party": "CDU",
+      "wahlkreisId": 17,
+      "wahlkreisName": "Quedlinburg",
+      "level": "Land",
+      "postalAddress": "Landtag von Sachsen-Anhalt, Domplatz 6-9, 39104 Magdeburg",
+      "isDirect": false,
+      "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/ulrich-thomas",
+      "bundeslandKey": "ST"
+    },
+    {
+      "id": 71851,
+      "politicianId": 152753,
+      "firstName": "Tobias",
+      "lastName": "Krull",
+      "title": null,
+      "party": "CDU",
+      "wahlkreisId": 11,
+      "wahlkreisName": "Magdeburg II",
+      "level": "Land",
+      "postalAddress": "Landtag von Sachsen-Anhalt, Domplatz 6-9, 39104 Magdeburg",
+      "isDirect": false,
+      "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/tobias-krull",
+      "bundeslandKey": "ST"
+    },
+    {
+      "id": 71850,
+      "politicianId": 124230,
+      "firstName": "Lars-Jörn",
+      "lastName": "Zimmer",
+      "title": null,
+      "party": "CDU",
+      "wahlkreisId": 28,
+      "wahlkreisName": "Bitterfeld-Wolfen",
+      "level": "Land",
+      "postalAddress": "Landtag von Sachsen-Anhalt, Domplatz 6-9, 39104 Magdeburg",
+      "isDirect": false,
+      "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/lars-joern-zimmer",
+      "bundeslandKey": "ST"
+    },
+    {
+      "id": 71849,
+      "politicianId": 152761,
+      "firstName": "Guido",
+      "lastName": "Heuer",
+      "title": null,
+      "party": "CDU",
+      "wahlkreisId": 9,
+      "wahlkreisName": "Oschersleben-Wanzleben",
+      "level": "Land",
+      "postalAddress": "Landtag von Sachsen-Anhalt, Domplatz 6-9, 39104 Magdeburg",
+      "isDirect": false,
+      "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/guido-heuer",
+      "bundeslandKey": "ST"
+    },
+    {
+      "id": 71848,
+      "politicianId": 152748,
+      "firstName": "Chris",
+      "lastName": "Schulenburg",
+      "title": null,
+      "party": "CDU",
+      "wahlkreisId": 3,
+      "wahlkreisName": "Havelberg-Osterburg",
+      "level": "Land",
+      "postalAddress": "Landtag von Sachsen-Anhalt, Domplatz 6-9, 39104 Magdeburg",
+      "isDirect": false,
+      "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/chris-schulenburg",
+      "bundeslandKey": "ST"
+    },
+    {
+      "id": 71847,
+      "politicianId": 29484,
+      "firstName": "Sven",
+      "lastName": "Schulze",
+      "title": null,
+      "party": "CDU",
+      "wahlkreisId": 12,
+      "wahlkreisName": "Magdeburg III",
+      "level": "Land",
+      "postalAddress": "Landtag von Sachsen-Anhalt, Domplatz 6-9, 39104 Magdeburg",
+      "isDirect": false,
+      "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/sven-schulze",
+      "bundeslandKey": "ST"
+    },
+    {
+      "id": 71844,
+      "politicianId": 185724,
+      "firstName": "Thomas",
+      "lastName": "Mockenhaupt",
+      "title": null,
+      "party": "SPD",
+      "wahlkreisId": 5,
+      "wahlkreisName": "Bad Marienberg",
+      "level": "Land",
+      "postalAddress": "Landtag Rheinland-Pfalz, Platz der Mainzer Republik 1, 55116 Mainz",
+      "isDirect": false,
+      "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/thomas-mockenhaupt",
+      "bundeslandKey": "RP"
+    },
+    {
+      "id": 71453,
+      "politicianId": 185493,
+      "firstName": "Ralf",
+      "lastName": "Kretner",
+      "title": null,
+      "party": "CDU",
+      "wahlkreisId": 45,
+      "wahlkreisName": "Kaiserslautern II",
+      "level": "Land",
+      "postalAddress": "Landtag Rheinland-Pfalz, Platz der Mainzer Republik 1, 55116 Mainz",
+      "isDirect": false,
+      "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/ralf-kretner",
+      "bundeslandKey": "RP"
     },
     {
       "id": 70564,
@@ -27311,36 +28468,6 @@
       "bundeslandKey": "RP"
     },
     {
-      "id": 70479,
-      "politicianId": 110021,
-      "firstName": "Hendrik",
-      "lastName": "Hering",
-      "title": null,
-      "party": "SPD",
-      "wahlkreisId": 5,
-      "wahlkreisName": "Bad Marienberg",
-      "level": "Land",
-      "postalAddress": "Landtag Rheinland-Pfalz, Platz der Mainzer Republik 1, 55116 Mainz",
-      "isDirect": false,
-      "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/hendrik-hering",
-      "bundeslandKey": "RP"
-    },
-    {
-      "id": 70478,
-      "politicianId": 29046,
-      "firstName": "Norbert",
-      "lastName": "Herhammer",
-      "title": null,
-      "party": "CDU",
-      "wahlkreisId": 45,
-      "wahlkreisName": "Kaiserslautern II",
-      "level": "Land",
-      "postalAddress": "Landtag Rheinland-Pfalz, Platz der Mainzer Republik 1, 55116 Mainz",
-      "isDirect": true,
-      "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/norbert-herhammer",
-      "bundeslandKey": "RP"
-    },
-    {
       "id": 70476,
       "politicianId": 174728,
       "firstName": "Lea",
@@ -27361,7 +28488,7 @@
       "firstName": "Benjamin",
       "lastName": "Haupt",
       "title": null,
-      "party": "AfD",
+      "party": "fraktionslos",
       "wahlkreisId": 39,
       "wahlkreisName": "Speyer",
       "level": "Land",
@@ -29981,6 +31108,36 @@
       "bundeslandKey": "BW"
     },
     {
+      "id": 70827,
+      "politicianId": 178794,
+      "firstName": "Alexander",
+      "lastName": "Steffen",
+      "title": null,
+      "party": "FDP",
+      "wahlkreisId": 39,
+      "wahlkreisName": "Mettmann III - Mülheim II",
+      "level": "Land",
+      "postalAddress": "Landtag Nordrhein-Westfalen, Platz des Landtags 1, 40221 Düsseldorf",
+      "isDirect": false,
+      "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/alexander-steffen",
+      "bundeslandKey": "NW"
+    },
+    {
+      "id": 70568,
+      "politicianId": 178517,
+      "firstName": "Katrin",
+      "lastName": "Lögering",
+      "title": null,
+      "party": "BÜNDNIS 90/­DIE GRÜNEN",
+      "wahlkreisId": 112,
+      "wahlkreisName": "Dortmund II",
+      "level": "Land",
+      "postalAddress": "Landtag Nordrhein-Westfalen, Platz des Landtags 1, 40221 Düsseldorf",
+      "isDirect": false,
+      "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/katrin-loegering",
+      "bundeslandKey": "NW"
+    },
+    {
       "id": 69062,
       "politicianId": 130282,
       "firstName": "Wilhelm",
@@ -30866,21 +32023,6 @@
       "bundeslandKey": "NW"
     },
     {
-      "id": 56348,
-      "politicianId": 118319,
-      "firstName": "Dirk",
-      "lastName": "Wedel",
-      "title": null,
-      "party": "FDP",
-      "wahlkreisId": 38,
-      "wahlkreisName": "Mettmann II",
-      "level": "Land",
-      "postalAddress": "Landtag Nordrhein-Westfalen, Platz des Landtags 1, 40221 Düsseldorf",
-      "isDirect": false,
-      "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/dirk-wedel",
-      "bundeslandKey": "NW"
-    },
-    {
       "id": 56346,
       "politicianId": 130107,
       "firstName": "Hartmut",
@@ -31073,21 +32215,6 @@
       "postalAddress": "Landtag Nordrhein-Westfalen, Platz des Landtags 1, 40221 Düsseldorf",
       "isDirect": false,
       "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/antje-grothus",
-      "bundeslandKey": "NW"
-    },
-    {
-      "id": 56331,
-      "politicianId": 130331,
-      "firstName": "Anja von",
-      "lastName": "Marenholtz-Diemer",
-      "title": null,
-      "party": "BÜNDNIS 90/­DIE GRÜNEN",
-      "wahlkreisId": 5,
-      "wahlkreisName": "Rhein-Erft-Kreis I",
-      "level": "Land",
-      "postalAddress": "Landtag Nordrhein-Westfalen, Platz des Landtags 1, 40221 Düsseldorf",
-      "isDirect": false,
-      "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/anja-von-marenholtz-diemer",
       "bundeslandKey": "NW"
     },
     {
@@ -34214,7 +35341,7 @@
       "id": 68256,
       "politicianId": 67104,
       "firstName": "Julia",
-      "lastName": "Barth-Dworzynski",
+      "lastName": "Dworzynski",
       "title": null,
       "party": "SPD",
       "wahlkreisId": 1,
@@ -34222,7 +35349,7 @@
       "level": "Land",
       "postalAddress": "Hamburgische Bürgerschaft, Rathausmarkt 1, 20095 Hamburg",
       "isDirect": true,
-      "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/julia-barth-dworzynski",
+      "abgeordnetenwatchUrl": "https://www.abgeordnetenwatch.de/profile/julia-dworzynski",
       "bundeslandKey": "HH"
     },
     {
@@ -36522,5 +37649,5 @@
     }
   ],
   "kommune": [],
-  "lastUpdated": "2026-07-07T20:24:13.638Z"
+  "lastUpdated": "2026-10-09T19:19:20.350Z"
 }

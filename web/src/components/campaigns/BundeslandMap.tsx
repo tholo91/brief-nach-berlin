@@ -1,11 +1,12 @@
 "use client";
 
-import { useState, type KeyboardEvent } from "react";
+import { useState, type ReactNode } from "react";
+import { useRouter } from "next/navigation";
 import {
   BUNDESLAND_MAP_PATHS,
   BUNDESLAND_MAP_VIEWBOX,
 } from "@/lib/campaigns/bundeslandMapGeometry.generated";
-import { BUNDESLAND_KEYS, type BundeslandKey } from "@/lib/campaigns/schema";
+import { BUNDESLAND_KEYS, BUNDESLAND_NAMES, type BundeslandKey } from "@/lib/campaigns/schema";
 
 export type BundeslandMapRegion = {
   key: BundeslandKey | null;
@@ -16,9 +17,9 @@ export type BundeslandMapRegion = {
 type Props = {
   regions: BundeslandMapRegion[];
   total: number;
-  /** Nur für die interne Statistik: Klick auf ein Land setzt den Filter. */
-  onSelect?: (key: BundeslandKey) => void;
-  selected?: BundeslandKey | null;
+  /** Nur für die interne Statistik: Klick auf ein Land öffnet denselben Filterlink wie die Liste. */
+  hrefs?: Partial<Record<BundeslandKey, string>>;
+  selected?: string | null;
   /** Creator-Ansicht: Länder unter der Mindestzahl bleiben grau und werden erklärt. */
   hideSmallStates?: boolean;
 };
@@ -41,15 +42,51 @@ function shade(count: number, largest: number) {
   return `rgb(${r} ${g} ${b})`;
 }
 
+function MapLink({
+  href,
+  label,
+  current,
+  onFocus,
+  onBlur,
+  children,
+}: {
+  href: string;
+  label: string;
+  current: boolean;
+  onFocus: () => void;
+  onBlur: () => void;
+  children: ReactNode;
+}) {
+  const router = useRouter();
+  return (
+    <a
+      href={href}
+      aria-label={label}
+      aria-current={current ? "true" : undefined}
+      className="outline-none"
+      onFocus={onFocus}
+      onBlur={onBlur}
+      onClick={(event) => {
+        if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+        event.preventDefault();
+        router.push(href);
+      }}
+    >
+      {children}
+    </a>
+  );
+}
+
 export function BundeslandMap({
   regions,
   total,
-  onSelect,
+  hrefs,
   selected = null,
   hideSmallStates = false,
 }: Props) {
   const [hovered, setHovered] = useState<BundeslandKey | null>(null);
-  const interactive = typeof onSelect === "function";
+  const interactive = Boolean(hrefs);
+  const selectedKey = BUNDESLAND_KEYS.find((key) => key === selected) ?? null;
 
   const named = regions.filter(
     (region): region is BundeslandMapRegion & { key: BundeslandKey } => region.key !== null,
@@ -72,7 +109,7 @@ export function BundeslandMap({
         ? "Weitere Bundesländer"
         : null;
 
-  const focusKey = hovered ?? selected;
+  const focusKey = hovered ?? selectedKey;
   const focused = focusKey ? (byKey.get(focusKey) ?? null) : null;
   const summary = top.length
     ? `Karte der Bundesländer, eingefärbt nach Anteil der Briefe. Am meisten: ${top
@@ -94,51 +131,45 @@ export function BundeslandMap({
         >
           {BUNDESLAND_KEYS.map((key) => {
             const region = byKey.get(key);
+            const href = hrefs?.[key];
             const isOn = focusKey === key;
             const dimmed = focusKey !== null && !isOn;
             const canPoint = Boolean(region);
-            return (
+            const path = (
               <path
-                key={key}
                 d={BUNDESLAND_MAP_PATHS[key]}
                 fill={region ? shade(region.count, largest) : undefined}
                 className={`stroke-creme transition-opacity duration-150 motion-reduce:transition-none ${
                   region ? "" : "fill-warmgrau/12"
-                } ${canPoint ? "cursor-pointer" : ""} ${interactive ? "focus:outline-none" : ""}`}
+                } ${canPoint ? "cursor-pointer" : ""}`}
                 strokeWidth={1}
                 vectorEffect="non-scaling-stroke"
                 strokeLinejoin="round"
                 style={{ opacity: dimmed ? 0.4 : 1 }}
                 aria-hidden={interactive ? undefined : true}
-                {...(interactive
-                  ? {
-                      role: "button",
-                      tabIndex: 0,
-                      "aria-pressed": selected === key,
-                      "aria-label": region
-                        ? `${region.label}: ${lettersLabel(region.count)}`
-                        : key,
-                      onKeyDown: (event: KeyboardEvent) => {
-                        if (event.key === "Enter" || event.key === " ") {
-                          event.preventDefault();
-                          onSelect?.(key);
-                        }
-                      },
-                      onFocus: () => setHovered(key),
-                      onBlur: () => setHovered(null),
-                    }
-                  : {})}
                 onMouseEnter={canPoint ? () => setHovered(key) : undefined}
                 onMouseLeave={canPoint ? () => setHovered(null) : undefined}
-                onClick={() => {
-                  if (!canPoint) {
-                    setHovered(null);
-                    return;
-                  }
-                  setHovered(key);
-                  onSelect?.(key);
-                }}
+                onClick={
+                  interactive
+                    ? undefined
+                    : () => setHovered(canPoint ? key : null)
+                }
               />
+            );
+            if (!href) return <g key={key}>{path}</g>;
+            return (
+              <MapLink
+                key={key}
+                href={href}
+                label={
+                  region ? `${region.label}: ${lettersLabel(region.count)}` : BUNDESLAND_NAMES[key]
+                }
+                current={selectedKey === key}
+                onFocus={() => setHovered(key)}
+                onBlur={() => setHovered(null)}
+              >
+                {path}
+              </MapLink>
             );
           })}
           {focusKey && (

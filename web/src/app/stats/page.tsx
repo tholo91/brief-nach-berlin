@@ -10,6 +10,8 @@ import { TopicHeatmap } from "@/components/internalStats/TopicHeatmap";
 import { SubtopicClusters } from "@/components/internalStats/SubtopicClusters";
 import { CopyButton } from "@/components/internalStats/CopyButton";
 import { SectionNav } from "@/components/internalStats/SectionNav";
+import { BundeslandMap } from "@/components/campaigns/BundeslandMap";
+import { BUNDESLAND_KEYS, BUNDESLAND_NAMES, type BundeslandKey } from "@/lib/campaigns/schema";
 import { formatDecimal, formatNumber } from "@/lib/formatNumber";
 import { lockInternalStats, unlockInternalStats } from "@/lib/internalStats/actions";
 import {
@@ -306,6 +308,31 @@ function ShareStat({
       </span>
     </span>
   );
+}
+
+function BundeslandMapPanel({
+  counts,
+  total,
+  query,
+  activeKey,
+}: {
+  counts: Record<string, number>;
+  total: number;
+  query: StatsQuery;
+  activeKey?: string | null;
+}) {
+  const regions = BUNDESLAND_KEYS.filter((key) => (counts[key] ?? 0) > 0).map((key) => ({
+    key,
+    label: BUNDESLAND_NAMES[key],
+    count: counts[key],
+  }));
+  const hrefs = Object.fromEntries(
+    BUNDESLAND_KEYS.map((key) => [
+      key,
+      buildStatsHref(query, { bundesland: activeKey === key ? null : key }),
+    ]),
+  ) as Record<BundeslandKey, string>;
+  return <BundeslandMap regions={regions} total={total} hrefs={hrefs} selected={activeKey ?? null} />;
 }
 
 function RankedBars({
@@ -1188,6 +1215,14 @@ export default async function InternalStatsPage({ searchParams }: InternalStatsP
               <div className="grid gap-8 border-t border-warmgrau/10 pt-6 sm:grid-cols-2 [&>*]:min-w-0">
                 <div>
                   <SubHeading detail="Klick setzt den Bundesland-Filter für die ganze Seite.">Bundesländer</SubHeading>
+                  <div className="mb-5">
+                    <BundeslandMapPanel
+                      counts={filter.bundesland && baseline ? baseline.letterSignals.bundeslandCounts : stats.letterSignals.bundeslandCounts}
+                      total={filter.bundesland && baseline ? baseline.letterSignals.signalCount : stats.letterSignals.signalCount}
+                      query={query}
+                      activeKey={filter.bundesland}
+                    />
+                  </div>
                   <RankedBars
                     values={filter.bundesland && baseline ? baseline.letterSignals.bundeslandCounts : stats.letterSignals.bundeslandCounts}
                     labels={bundeslandName}

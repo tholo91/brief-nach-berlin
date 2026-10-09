@@ -46,7 +46,8 @@ export function LetterActivityCard({ letterCount }: { letterCount: number }) {
         {mapState === "loading" && <div className="h-4 w-48 animate-pulse rounded bg-waldgruen/10" aria-label="Kartenbeiträge werden geladen" />}
         {mapState === "ready" && mapData.totalContributions > 0 && (
           <p className="font-body text-sm font-semibold text-waldgruen-dark">
-            {letterCount.toLocaleString("de-DE")} Briefe aus {mapData.postcodeAreas.toLocaleString("de-DE")}+ Orten
+            {letterCount.toLocaleString("de-DE")} Briefe <span className="sm:hidden">aus ganz Deutschland</span>
+            <span className="hidden sm:inline">aus Städten, Dörfern und Gemeinden</span>
           </p>
         )}
         {mapState === "ready" && mapData.totalContributions === 0 && <p className="font-body text-sm text-warmgrau/65">Die ersten freiwilligen Punkte erscheinen hier in Kürze.</p>}

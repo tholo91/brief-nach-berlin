@@ -83,7 +83,8 @@ describe("landing page content", () => {
     const voicesSource = readFileSync(join(process.cwd(), "src/app/(site)/stimmen/page.tsx"), "utf8");
 
     expect(pageSource).not.toContain("LetterActivitySection");
-    expect(mapSource).toContain('{letterCount.toLocaleString("de-DE")} Briefe aus {mapData.postcodeAreas.toLocaleString("de-DE")}+ Orten');
+    expect(mapSource).toContain('<span className="sm:hidden">aus ganz Deutschland</span>');
+    expect(mapSource).toContain('<span className="hidden sm:inline">aus Städten, Dörfern und Gemeinden</span>');
     expect(mapSource).toContain("SHORT_MAP_ATTRIBUTION");
     expect(mapSource).toContain("whitespace-nowrap");
     expect(voicesSource).toContain('import { LetterActivityCard } from "@/components/letter-signals/LetterActivityCard";');

@@ -236,9 +236,14 @@ async function main() {
   const withCommittees = bundestag.filter((p) => p.committees && p.committees.length > 0).length;
   console.log(`  Committees attached:         ${withCommittees}/${bundestag.length}`);
 
+  // landtag[] gehört fetch-landtag-data.ts, hier unverändert übernehmen
+  const existingLandtag = fs.existsSync(OUT_FILE)
+    ? (JSON.parse(fs.readFileSync(OUT_FILE, "utf8")) as PoliticiansCache).landtag ?? []
+    : [];
+
   const cache: PoliticiansCache = {
     bundestag,
-    landtag: [],
+    landtag: existingLandtag,
     kommune: [],
     lastUpdated: new Date().toISOString(),
   };

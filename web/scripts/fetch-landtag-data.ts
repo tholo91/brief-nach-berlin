@@ -357,8 +357,16 @@ async function main() {
     label: string;
   }>;
 
+  const previousLandtag = (JSON.parse(fs.readFileSync(CACHE_FILE, "utf8")) as PoliticiansCache)
+    .landtag;
   const landtag: Politician[] = [];
   let skippedNoConstituency = 0;
+
+  const keepPrevious = (iso: string, reason: string) => {
+    const prev = previousLandtag.filter((p) => p.bundeslandKey === iso);
+    console.warn(`  [WARN] ${reason} für ${iso}: behalte ${prev.length} MdL aus dem bisherigen Cache`);
+    landtag.push(...prev);
+  };
 
   for (const parliament of parliaments) {
     const iso = PARLIAMENT_LABEL_TO_ISO[parliament.label];
@@ -376,7 +384,7 @@ async function main() {
     )) as { data?: Array<{ id: number; label: string }> };
     const period = periods?.data?.[0];
     if (!period) {
-      console.warn(`  [WARN] Keine Legislatur für ${parliament.label} gefunden`);
+      keepPrevious(iso, `Keine Legislatur für ${parliament.label} gefunden`);
       continue;
     }
 
@@ -386,6 +394,11 @@ async function main() {
     const mandates = await fetchAllPages(
       `candidacies-mandates?parliament_period=${period.id}&type=mandate&current_on=now`
     );
+
+    if (mandates.length === 0) {
+      keepPrevious(iso, `0 Mandate in Periode ${period.id}`);
+      continue;
+    }
 
     let landCount = 0;
     for (const m of mandates) {

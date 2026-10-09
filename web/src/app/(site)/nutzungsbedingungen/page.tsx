@@ -8,6 +8,8 @@ export const metadata = {
 // PRÜFEN (Anwalt): Anbieter Thomas persönlich oder WE AID gGmbH? Haftungsklausel bei
 // unentgeltlicher Nutzung ohne Account? Mail als Meldeweg nach DSA Art. 16 ausreichend?
 // Verbotsliste gleichwertig zu Mistral Commercial Terms Ziff. 2.2?
+// Deckt die Satzung der WE AID gGmbH ab, dass sie als Anbieter auftritt? Welche DSGVO-Pflichten gelten für personenbezogene
+// Daten in Kampagnentexten nach EuGH C-492/23?
 
 export default function Nutzungsbedingungen() {
   return (
@@ -113,8 +115,10 @@ export default function Nutzungsbedingungen() {
             <p>
               Die KI ist angewiesen, keine Beleidigungen oder Unterstellungen
               zu formulieren. Öffentliche Kampagnentexte prüft zusätzlich ein
-              automatischer Filter von Mistral, und jede neue Kampagne gebe ich
-              selbst frei. Filter machen Fehler. Wenn du glaubst, dass etwas zu
+              automatischer Filter von Mistral. Bevor eine neue Kampagne online
+              geht, schaue ich sie kurz durch. Das ist eine grobe Prüfung auf
+              offensichtliche Verstöße und Spam, keine inhaltliche Prüfung.
+              Filter machen Fehler. Wenn du glaubst, dass etwas zu
               Unrecht geblockt wurde, schreib mir.
             </p>
           </div>
@@ -148,7 +152,9 @@ export default function Nutzungsbedingungen() {
               <strong className="text-waldgruen-dark">
                 Rechtswidrige Inhalte melden:
               </strong>{" "}
-              Schreib eine Mail an{" "}
+              Auf jeder Kampagnenseite findest du ganz unten den Link
+              „Stimmt was nicht?“. Deine Meldung geht an die Person hinter der
+              Kampagne und an mich. Alternativ schreib eine Mail an{" "}
               <a
                 href={`mailto:${CONTACT.email}?subject=${encodeURIComponent("Kampagne melden")}`}
                 className="text-waldgruen hover:underline"
@@ -156,8 +162,9 @@ export default function Nutzungsbedingungen() {
                 {CONTACT.email}
               </a>
               . Nenn die Kampagne, das Problem und warum du den Inhalt für
-              rechtswidrig hältst. Ich bestätige den Eingang und prüfe die
-              Meldung zügig.
+              rechtswidrig hältst. Wenn du deine E-Mail-Adresse angibst oder mir
+              schreibst, bestätige ich den Eingang und prüfe die Meldung
+              zügig.
             </p>
           </div>
 
@@ -212,7 +219,7 @@ export default function Nutzungsbedingungen() {
             </p>
           </div>
 
-          <p className="text-sm text-warmgrau/50">Stand: 7. Oktober 2026</p>
+          <p className="text-sm text-warmgrau/50">Stand: 9. Oktober 2026</p>
         </div>
       </div>
     </div>

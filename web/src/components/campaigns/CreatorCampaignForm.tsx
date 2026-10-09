@@ -1136,7 +1136,7 @@ export function CreatorCampaignForm() {
           Verantwortung
         </p>
         <p className="mt-2 font-body text-sm leading-relaxed text-warmgrau/75">
-          Die Kampagne erscheint mit deinem Anliegen öffentlich. Brief-nach-Berlin stellt nur die Infrastruktur bereit. Für Titel, Beschreibung, Logo/Bild, externe Links und den vorbereiteten Kampagnentext bist du als Privatperson oder Organisation verantwortlich.
+          Rein rechtlich liegen Inhalt und Verantwortung für deine Kampagne bei dir: Titel, Beschreibung, Bild, Links und der vorbereitete Brieftext. Ich schaue vor der Freischaltung nur, dass das Gröbste passt, damit du dich nicht aufs Glatteis begibst.
         </p>
         <label className="mt-3 flex items-start gap-3 font-body text-sm leading-relaxed text-warmgrau/80">
           <input

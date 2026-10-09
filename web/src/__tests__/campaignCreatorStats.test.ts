@@ -785,6 +785,41 @@ describe("CampaignCreatorStats rendering", () => {
     expect(markup).not.toContain("Geschrieben an:");
   });
 
+  it("renders the Bundesland map with legend and an sr-only list, small states stay merged", () => {
+    const markup = renderSignals([
+      ...signals(8, { bundesland_key: "BY" }),
+      ...signals(3, { bundesland_key: "HB" }),
+      ...signals(1, { bundesland_key: "SH" }),
+    ]);
+    expect(markup).toContain('role="img"');
+    expect(markup).toContain("Karte der Bundesländer");
+    expect(markup).toContain("Bayern: 8 Briefe, 67\u00a0%");
+    expect(markup).toContain("Weitere Bundesländer: 4 Briefe, 33\u00a0%");
+    expect(markup).toContain("grau = unter 5 Briefe");
+    expect(markup).not.toContain("Bremen");
+    expect(markup).not.toContain("Schleswig-Holstein");
+  });
+
+  it("bundles the footnotes into one footer at the end of the section", () => {
+    const markup = renderToStaticMarkup(
+      createElement(CampaignCreatorStats, {
+        stats: buildCampaignCreatorStats({
+          ...baseInput,
+          rows: rows(3),
+          signalRows: signals(12),
+        }),
+      }),
+    );
+    const footerStart = markup.indexOf("<footer");
+    expect(footerStart).toBeGreaterThan(-1);
+    const footer = markup.slice(footerStart);
+    expect(footer).toContain("Basiert auf 12 von 37 Briefen.");
+    expect(footer).toContain("Mein Anliegen auf die Karte setzen");
+    expect(footer).toContain("Woher die Zahlen kommen");
+    expect(markup.slice(0, footerStart)).not.toContain("Basiert auf");
+    expect(markup.slice(0, footerStart)).not.toContain("Woher die Zahlen kommen");
+  });
+
   it("contains no em or en dash characters", () => {
     const markup = renderFull();
     expect(markup).not.toMatch(/[–—]/);

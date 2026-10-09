@@ -1,3 +1,4 @@
+import { BundeslandMap } from "@/components/campaigns/BundeslandMap";
 import type {
   CampaignCreatorStatsView,
   CreatorStatsKpi,
@@ -104,14 +105,14 @@ function Timeline({ signals }: { signals: ReadySignals }) {
   const lastWeek = weeks[weeks.length - 1];
 
   return (
-    <div>
+    <div className="flex h-full flex-col">
       <h3 className="font-typewriter text-base font-bold text-waldgruen-dark">
         Verlauf
       </h3>
       <div
         role="img"
         aria-label={`Briefe pro Woche von ${weekLabel(firstWeek.weekStart)} bis ${weekLabel(lastWeek.weekStart)} ${summary}`}
-        className="mt-3 flex h-24 items-end justify-end gap-0.5"
+        className="mt-3 flex min-h-24 flex-1 items-end justify-end gap-0.5"
       >
         {weeks.map((week) => {
           const isPeak = week.weekStart === peakWeek.weekStart;
@@ -145,13 +146,7 @@ function Timeline({ signals }: { signals: ReadySignals }) {
   );
 }
 
-function OriginSection({
-  signals,
-  letterCount,
-}: {
-  signals: SignalsView;
-  letterCount: number;
-}) {
+function OriginSection({ signals }: { signals: SignalsView }) {
   if (signals.status === "unavailable") {
     return (
       <p className="mt-5 border-t border-warmgrau/12 pt-4 font-body text-sm leading-relaxed text-warmgrau/70">
@@ -198,18 +193,9 @@ function OriginSection({
             {signals.signals} von {signals.threshold}
           </p>
         </div>
-        <p className="mt-4 font-body text-xs leading-relaxed text-warmgrau/60">
-          {OPT_IN_NOTE}
-        </p>
       </div>
     );
   }
-
-  const largest = Math.max(...signals.regions.map((region) => region.count), 1);
-  const basis =
-    signals.signals > letterCount
-      ? `Basiert auf ${numberFormatter.format(signals.signals)} Briefen.`
-      : `Basiert auf ${numberFormatter.format(signals.signals)} von ${numberFormatter.format(letterCount)} Briefen.`;
 
   return (
     <div className="mt-5 border-t border-warmgrau/12 pt-4">
@@ -218,31 +204,13 @@ function OriginSection({
           <h3 className="font-typewriter text-base font-bold text-waldgruen-dark">
             Woher geschrieben wird
           </h3>
-          <ul className="m-0 mt-3 grid list-none gap-2.5 p-0">
-            {signals.regions.map((region) => (
-              <li key={region.label}>
-                <div className="flex items-baseline justify-between gap-3">
-                  <span
-                    className={`font-body text-sm ${region.other ? "text-warmgrau/60" : "text-warmgrau/85"}`}
-                  >
-                    {region.label}
-                  </span>
-                  <span className="font-typewriter font-bold tabular-nums text-waldgruen-dark">
-                    {numberFormatter.format(region.count)}
-                  </span>
-                </div>
-                <div
-                  aria-hidden="true"
-                  className="mt-1 h-1.5 overflow-hidden rounded-full bg-warmgrau/10"
-                >
-                  <div
-                    className={`h-full rounded-full ${region.other ? "bg-warmgrau/30" : "bg-waldgruen"}`}
-                    style={{ width: `${Math.round((region.count / largest) * 100)}%` }}
-                  />
-                </div>
-              </li>
-            ))}
-          </ul>
+          <div className="mt-3">
+            <BundeslandMap
+              regions={signals.regions}
+              total={signals.signals}
+              hideSmallStates
+            />
+          </div>
           {signals.recipients && (
             <p className="mt-3 font-body text-xs leading-relaxed text-warmgrau/70">
               Geschrieben an:{" "}
@@ -254,9 +222,6 @@ function OriginSection({
         </div>
         <Timeline signals={signals} />
       </div>
-      <p className="mt-4 font-body text-xs leading-relaxed text-warmgrau/60">
-        {basis} {OPT_IN_NOTE}
-      </p>
     </div>
   );
 }
@@ -289,6 +254,22 @@ export function CampaignCreatorStats({
   const letterLabel =
     stats.letterCount === 1 ? "Brief geschrieben" : "Briefe geschrieben";
 
+  const footnotes: string[] = [];
+  if (stats.signals.status === "ready") {
+    const { signals } = stats.signals;
+    footnotes.push(
+      signals > stats.letterCount
+        ? `Basiert auf ${numberFormatter.format(signals)} Briefen.`
+        : `Basiert auf ${numberFormatter.format(signals)} von ${numberFormatter.format(stats.letterCount)} Briefen.`,
+    );
+  }
+  if (stats.signals.status === "ready" || stats.signals.status === "collecting") {
+    footnotes.push(OPT_IN_NOTE);
+  }
+  if (feedback.status === "collecting" || feedback.status === "ready") {
+    footnotes.push(SOURCE_SENTENCE);
+  }
+
   return (
     <section
       id="creator-stats"
@@ -311,7 +292,7 @@ export function CampaignCreatorStats({
         </p>
       </div>
 
-      <OriginSection signals={stats.signals} letterCount={stats.letterCount} />
+      <OriginSection signals={stats.signals} />
 
       {feedback.status === "unavailable" && (
         <p className="mt-5 border-t border-warmgrau/12 pt-4 font-body text-sm leading-relaxed text-warmgrau/70">
@@ -352,9 +333,6 @@ export function CampaignCreatorStats({
               {feedback.responses} von {feedback.threshold}
             </p>
           </div>
-          <p className="mt-4 font-body text-xs leading-relaxed text-warmgrau/60">
-            {SOURCE_SENTENCE}
-          </p>
         </div>
       )}
 
@@ -444,11 +422,20 @@ export function CampaignCreatorStats({
               </ul>
             </div>
           )}
-
-          <p className="mt-5 font-body text-xs leading-relaxed text-warmgrau/60">
-            {SOURCE_SENTENCE}
-          </p>
         </div>
+      )}
+
+      {footnotes.length > 0 && (
+        <footer className="mt-5 grid gap-1 border-t border-warmgrau/12 pt-4">
+          {footnotes.map((note) => (
+            <p
+              key={note}
+              className="font-body text-xs leading-relaxed text-warmgrau/60"
+            >
+              {note}
+            </p>
+          ))}
+        </footer>
       )}
     </section>
   );

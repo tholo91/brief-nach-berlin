@@ -13,6 +13,7 @@ import {
   publishCampaignEdits,
   saveAwaitingApprovalCampaignEdits,
   setCampaignEndsAt,
+  setCampaignMilestoneMailsEnabled,
   updateCampaignPublicFields,
 } from "@/lib/campaigns/repository";
 
@@ -221,5 +222,47 @@ describe("campaign end writes", () => {
     const withDate = writeDb(baseRow());
     await createCampaign({ ...input, endsAt: "2026-12-01T22:59:59.000Z" }, withDate.db);
     expect(withDate.inserts[0]).toMatchObject({ ends_at: "2026-12-01T22:59:59.000Z" });
+  });
+
+  it("mentions milestone_mails_enabled on create only when the creator switched it off", async () => {
+    const input = {
+      slug: "neue-kampagne",
+      creatorEmail: "creator@example.org",
+      title: "Neue Kampagne",
+      issueText: "Ein ausreichend langer Text für die neue Kampagne.",
+    };
+
+    const defaultOn = writeDb(baseRow());
+    await createCampaign(input, defaultOn.db);
+    expect(defaultOn.inserts[0]).not.toHaveProperty("milestone_mails_enabled");
+
+    const explicitOn = writeDb(baseRow());
+    await createCampaign({ ...input, milestoneMailsEnabled: true }, explicitOn.db);
+    expect(explicitOn.inserts[0]).not.toHaveProperty("milestone_mails_enabled");
+
+    const off = writeDb(baseRow());
+    await createCampaign({ ...input, milestoneMailsEnabled: false }, off.db);
+    expect(off.inserts[0]).toMatchObject({ milestone_mails_enabled: false });
+  });
+
+  it("maps the milestone columns and defaults them when the migration is missing", async () => {
+    const without = writeDb(baseRow());
+    const mappedDefault = await setCampaignMilestoneMailsEnabled("campaign-1", true, without.db);
+    expect(mappedDefault.milestones).toEqual([50, 100, 500, 1000, 2000, 5000]);
+
+    const own = writeDb(
+      baseRow({ milestones: [5000, 1000, 0], milestone_mails_enabled: false }),
+    );
+    const mapped = await setCampaignMilestoneMailsEnabled("campaign-1", false, own.db);
+    expect(mapped.milestones).toEqual([1000, 5000]);
+    expect(mapped.milestoneMailsEnabled).toBe(false);
+  });
+
+  it("switches milestone mails through updateCampaignRow", async () => {
+    const { db, patches } = writeDb(baseRow());
+
+    await setCampaignMilestoneMailsEnabled("campaign-1", false, db);
+
+    expect(patches[0]).toMatchObject({ milestone_mails_enabled: false });
   });
 });

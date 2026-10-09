@@ -11,6 +11,7 @@ jest.mock("@/lib/actions/campaignEnd", () => ({
   updateCampaignEndDateAction: jest.fn(),
 }));
 jest.mock("@/lib/actions/transferCampaign", () => ({ transferCampaignAction: jest.fn() }));
+jest.mock("@/lib/actions/setMilestoneMails", () => ({ setMilestoneMailsAction: jest.fn() }));
 
 import { CampaignManager } from "@/components/campaigns/CampaignManager";
 
@@ -383,5 +384,56 @@ describe("CampaignManager layout", () => {
 
     expect(markup).toContain("bg-bernstein");
     expect(markup).toContain("Laufzeit und Status");
+  });
+
+  describe("Meilenstein-Mails card", () => {
+    function milestoneSection(markup: string): string {
+      const start = markup.indexOf('id="meilenstein-mails"');
+      return markup.slice(start, markup.indexOf("</section>", start));
+    }
+
+    it("sits after the insights slot and before the edit section, outside the details", () => {
+      const markup = renderManager(baseCampaign);
+      const insights = markup.indexOf('data-testid="insights-slot"');
+      const card = markup.indexOf('id="meilenstein-mails"');
+      const edit = markup.indexOf("Kampagne bearbeiten");
+      const detailsOpen = markup.indexOf("<details");
+
+      expect(card).toBeGreaterThan(insights);
+      expect(card).toBeLessThan(edit);
+      expect(card).toBeLessThan(detailsOpen);
+    });
+
+    it("shows heading, stufen text and an on switch by default", () => {
+      const section = milestoneSection(renderManager(baseCampaign));
+
+      expect(section).toContain("Meilenstein-Mails");
+      expect(section).toContain("Benachrichtige mich bei 50, 100, 500, 1.000, 2.000 und 5.000 Briefen");
+      expect(section).toContain('role="switch"');
+      expect(section).toContain('aria-checked="true"');
+    });
+
+    it("uses the campaign's own stufen and reflects an off switch", () => {
+      const section = milestoneSection(
+        renderManager({
+          ...baseCampaign,
+          milestones: [1000, 5000],
+          milestoneMailsEnabled: false,
+        }),
+      );
+
+      expect(section).toContain("Benachrichtige mich bei 1.000 und 5.000 Briefen");
+      expect(section).toContain('aria-checked="false"');
+    });
+
+    it.each([
+      ["ended", { endsAt: "2026-01-15T22:59:59.000Z" }, true],
+      ["archived", { status: "archived" as const }, false],
+      ["blocked", { status: "blocked" as const }, false],
+    ])("is not rendered for %s campaigns", (_label, overrides, ended) => {
+      const markup = renderManager({ ...baseCampaign, ...overrides }, ended);
+
+      expect(markup).not.toContain('id="meilenstein-mails"');
+    });
   });
 });

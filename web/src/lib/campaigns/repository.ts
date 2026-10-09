@@ -99,6 +99,7 @@ type CampaignUpdate = Partial<{
   topic_model: string | null;
   topic_classified_at: string | null;
   ends_at: string | null;
+  milestone_mails_enabled: boolean;
   email_verified_at: string;
   activated_at: string;
   paused_at: string;
@@ -309,6 +310,7 @@ export async function createCampaign(
       target_recipient: parsed.targetRecipient,
       target_politician_ids: parsed.targetPoliticianIds,
       ...(parsed.endsAt ? { ends_at: parsed.endsAt } : {}),
+      ...(parsed.milestoneMailsEnabled ? {} : { milestone_mails_enabled: false }),
     })
     .select("*")
     .single();
@@ -889,6 +891,14 @@ export async function setCampaignEndsAt(
     throw new CampaignRepositoryError("End date must be in the future");
   }
   return updateCampaignRow(campaignId, { ends_at: endsAt }, db);
+}
+
+export async function setCampaignMilestoneMailsEnabled(
+  campaignId: string,
+  enabled: boolean,
+  db?: RepositoryClient
+): Promise<Campaign> {
+  return updateCampaignRow(campaignId, { milestone_mails_enabled: enabled }, db);
 }
 
 export async function endCampaignNow(

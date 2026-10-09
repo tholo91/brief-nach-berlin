@@ -320,6 +320,7 @@ export async function createCampaignDraftAction(
     const campaign = await createCampaign({
       ...input,
       endsAt: endDate.endsAt,
+      milestoneMailsEnabled: value(formData, "milestoneMails") !== "off",
       logoPath: uploadedLogo.logoPath,
       moderationStatus: "pending",
       moderationCategories: moderation.categories,

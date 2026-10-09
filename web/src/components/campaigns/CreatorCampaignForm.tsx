@@ -34,6 +34,7 @@ import {
   MdbCampaignHiddenInputs,
   MdbCampaignSelector,
 } from "./MdbCampaignSelector";
+import { MilestoneMailsSwitch } from "./MilestoneMailsSwitch";
 
 const initialResult: CreateCampaignDraftResult | null = null;
 const draftStorageKey = "bnb_creator_campaign_draft";
@@ -207,6 +208,7 @@ export function CreatorCampaignForm() {
   const [logoError, setLogoError] = useState<string | null>(null);
   const [fixedAddressAccepted, setFixedAddressAccepted] = useState(false);
   const [endPicker, setEndPicker] = useState<CampaignEndPickerValue>(DEFAULT_END_PICKER_VALUE);
+  const [milestoneMails, setMilestoneMails] = useState(true);
   const endDateKey = resolvePickerDateKey(endPicker);
   const endDateLabel = endDateKey
     ? formatCampaignEndDate(campaignEndsAtFromDate(endDateKey))
@@ -1104,6 +1106,29 @@ export function CreatorCampaignForm() {
             {creatorEmailError}
           </p>
         )}
+      </div>
+
+      <div className="grid gap-2 border-t border-warmgrau/12 pt-5">
+        <div className="flex items-center justify-between gap-4">
+          <div className="grid gap-1">
+            <span
+              id="milestone-mails-label"
+              className="font-typewriter text-sm font-bold text-waldgruen-dark"
+            >
+              Meilenstein-Mails
+            </span>
+            <p id="milestone-mails-help" className="font-body text-sm text-warmgrau/60">
+              Benachrichtige mich bei 50, 100, 500 … Briefen
+            </p>
+          </div>
+          <MilestoneMailsSwitch
+            checked={milestoneMails}
+            onChange={setMilestoneMails}
+            labelId="milestone-mails-label"
+            descriptionId="milestone-mails-help"
+          />
+        </div>
+        <input type="hidden" name="milestoneMails" value={milestoneMails ? "on" : "off"} />
       </div>
 
       <div className="rounded-md border border-airmail-rot/20 bg-airmail-rot/5 px-4 py-4">

@@ -121,4 +121,38 @@ describe("public campaign moderation", () => {
       },
     }));
   });
+
+  describe("Meilenstein-Mails Schalter", () => {
+    function arrangeSuccess() {
+      jest.mocked(moderateText).mockResolvedValue({ flagged: false, categories: [] });
+      const campaign = {
+        id: "11111111-1111-4111-8111-111111111111",
+        slug: "oeffentliche-testkampagne",
+        creatorEmail: "creator@example.org",
+        title: "Eine öffentliche Testkampagne",
+        issueText: "A".repeat(120),
+        creatorName: "Test Initiative",
+      };
+      jest.mocked(createCampaign).mockResolvedValue(campaign as never);
+      jest.mocked(markPaid).mockResolvedValue(campaign as never);
+      jest.mocked(createCampaignToken).mockResolvedValue({ token: "token" } as never);
+      jest.mocked(sendCampaignCreatorEmail).mockResolvedValue({ success: true } as never);
+    }
+
+    it.each([
+      ["off", false],
+      ["on", true],
+      [undefined, true],
+    ])("milestoneMails=%s -> milestoneMailsEnabled %s", async (formValue, expected) => {
+      arrangeSuccess();
+      const formData = fixedCampaignFormData();
+      formData.set("fixedAddressAccepted", "on");
+      if (formValue !== undefined) formData.set("milestoneMails", formValue);
+
+      await expect(createCampaignDraftAction(formData)).resolves.toMatchObject({ ok: true });
+      expect(createCampaign).toHaveBeenCalledWith(
+        expect.objectContaining({ milestoneMailsEnabled: expected }),
+      );
+    });
+  });
 });

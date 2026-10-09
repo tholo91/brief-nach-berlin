@@ -217,6 +217,7 @@ export const createCampaignSchema = campaignPublicFieldsSchema
     targetRecipient: campaignFixedRecipientSchema.nullable().default(null),
     targetPoliticianIds: campaignTargetPoliticianIdsSchema,
     endsAt: z.string().datetime().nullable().default(null),
+    milestoneMailsEnabled: z.boolean().default(true),
   })
   .superRefine((value, ctx) => {
     if (value.targetLevel !== "Land" && value.targetState !== null) {

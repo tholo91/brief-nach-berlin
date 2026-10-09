@@ -26,6 +26,10 @@ import {
   type CampaignEndResult,
 } from "@/lib/actions/campaignEnd";
 import {
+  setMilestoneMailsAction,
+  type SetMilestoneMailsResult,
+} from "@/lib/actions/setMilestoneMails";
+import {
   transferCampaignAction,
   type TransferCampaignResult,
 } from "@/lib/actions/transferCampaign";
@@ -36,6 +40,10 @@ import {
   formatCampaignLiveSince,
 } from "@/lib/campaigns/endDate";
 import { campaignLogoPublicUrl } from "@/lib/campaigns/logo";
+import {
+  DEFAULT_CAMPAIGN_MILESTONES,
+  formatMilestoneList,
+} from "@/lib/campaigns/milestones";
 import {
   BUNDESLAND_NAMES,
   compactCampaignSlug,
@@ -53,6 +61,7 @@ import { CampaignLogo } from "./CampaignLogo";
 import { CampaignManagerHeader } from "./CampaignManagerHeader";
 import { CampaignShareCard } from "./CampaignShareCard";
 import { MdbCampaignSelector } from "./MdbCampaignSelector";
+import { MilestoneMailsSwitch } from "./MilestoneMailsSwitch";
 
 type ActionResult = UpdateCampaignResult | null;
 type RuntimeResult = PauseCampaignResult | CampaignEndResult | null;
@@ -112,6 +121,9 @@ export function CampaignManager({
   const [logoPreviewUrl, setLogoPreviewUrl] = useState<string | null>(null);
   const [logoError, setLogoError] = useState<string | null>(null);
   const [editOpen, setEditOpen] = useState(false);
+  const [milestoneMailsOn, setMilestoneMailsOn] = useState(campaign.milestoneMailsEnabled ?? true);
+  const [milestoneResult, setMilestoneResult] = useState<SetMilestoneMailsResult | null>(null);
+  const [milestonePending, startMilestoneTransition] = useTransition();
   const logoInputRef = useRef<HTMLInputElement>(null);
   const [targetPoliticianIds, setTargetPoliticianIds] = useState<number[]>(campaign.targetPoliticianIds);
   const [hasTargetMdbSelection, setHasTargetMdbSelection] = useState(
@@ -170,6 +182,17 @@ export function CampaignManager({
     result?.ok === false && "fieldErrors" in result ? result.fieldErrors?.logo : undefined;
   const targetFieldErrors =
     result?.ok === false && "fieldErrors" in result ? result.fieldErrors : undefined;
+
+  function toggleMilestoneMails(next: boolean) {
+    const previous = milestoneMailsOn;
+    setMilestoneMailsOn(next);
+    setMilestoneResult(null);
+    startMilestoneTransition(async () => {
+      const nextResult = await setMilestoneMailsAction(campaign.id, next);
+      setMilestoneResult(nextResult);
+      if (!nextResult.ok) setMilestoneMailsOn(previous);
+    });
+  }
 
   function selectTargetLevel(nextLevel: CampaignTargetLevel) {
     setTargetLevel(nextLevel);
@@ -325,6 +348,48 @@ export function CampaignManager({
       />
 
       {insights}
+
+      {canEdit && (
+        <section
+          id="meilenstein-mails"
+          aria-labelledby="meilenstein-mails-label"
+          className="scroll-mt-32 rounded-md border border-warmgrau/12 bg-white/75 p-5 shadow-sm md:p-7"
+        >
+          <div className="flex items-center justify-between gap-4">
+            <div className="grid gap-1">
+              <h2
+                id="meilenstein-mails-label"
+                className="font-typewriter text-lg font-bold text-waldgruen-dark md:text-xl"
+              >
+                Meilenstein-Mails
+              </h2>
+              <p id="meilenstein-mails-help" className="font-body text-sm text-warmgrau/65">
+                Benachrichtige mich bei{" "}
+                {formatMilestoneList(campaign.milestones ?? DEFAULT_CAMPAIGN_MILESTONES)} Briefen
+              </p>
+            </div>
+            <MilestoneMailsSwitch
+              checked={milestoneMailsOn}
+              onChange={toggleMilestoneMails}
+              disabled={milestonePending}
+              labelId="meilenstein-mails-label"
+              descriptionId="meilenstein-mails-help"
+            />
+          </div>
+          {milestoneResult && (
+            <div
+              role="status"
+              className={`mt-4 rounded-md border px-4 py-3 font-body text-sm ${
+                milestoneResult.ok
+                  ? "border-waldgruen/20 bg-white/60 text-waldgruen-dark"
+                  : "border-airmail-rot/25 bg-airmail-rot/5 text-airmail-rot"
+              }`}
+            >
+              {milestoneResult.message}
+            </div>
+          )}
+        </section>
+      )}
 
       <details
         id="campaign-settings"

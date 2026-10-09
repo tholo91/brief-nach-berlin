@@ -16,8 +16,9 @@ files:
 - Template `ended` (`buildCampaignCreatorEmailHtml.ts`, `sendCampaignCreatorEmail.ts`) und das Einmal-Skript `web/scripts/send-campaign-ended-mail.ts` gibt es (quick-261009-luq). Das Skript zeigt ohne `--send` nur eine Vorschau.
 - Offen ist nur noch der automatische Auslöser: direkt in `endCampaignAction`, kein Cron, weil es noch keinen Vercel-Cron gibt. Dazu die Spalte `ended_notified_at`.
 - Die Feedback-Bitte läuft per Antwort auf die Mail (`replyTo` auf `FOUNDER_EMAIL`).
-- Testimonials von NGOs pflegt Thomas später von Hand (`creatorTestimonials.ts` und ein Block auf `/ngo-briefkampagne`), sobald die erste Zitat-Freigabe da ist. Eine eigene Bewertungsseite ist bewusst nicht geplant.
+- Testimonials von NGOs pflegt Thomas später von Hand (`creatorTestimonials.ts` und ein Block auf `/ngo-briefkampagne`), sobald die erste Zitat-Freigabe da ist. Eine eigene Bewertungsseite ist bewusst nicht geplant. (überholt, siehe unten)
 - Erster Versand von Hand am 2026-10-09 an die NRV-Kampagne `unterschrift-ist-kein-dienstvergehen` (90 Briefe). Anrede mit Vorname über `--name`, weil `creator_name` oft der volle Name ist.
+- Das Feedback-Formular für Ersteller:innen gibt es jetzt (quick-261009-r0z): Seite `/kampagne/verwalten/feedback`, Tabelle `campaign_creator_surveys`, Migration 029 ist noch nicht angewendet (bis dahin bleibt alles unsichtbar). Der Button „Feedback geben“ in der Abschluss-Mail und der Feedback-Block in der 500er-Mail kommen in einem Folge-Quick-Task (Task 2 des freigegebenen Plans).
 
 ### Für die schönere Version (Thomas will die Mail noch ausbauen)
 - Den Empfehlungsteil wieder aufnehmen, für den ersten Versand bewusst rausgenommen: „Darf ich dich gegenüber anderen NGOs zitieren?“ und die Bitte, Initiativen auf `/ngo-briefkampagne` hinzuweisen.

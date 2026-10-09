@@ -819,11 +819,27 @@ export default function Datenschutz() {
               PLZ, E-Mail-Adresse, Brief-ID, Themen und genaue Zeitpunkte sehen
               Creator nicht.
             </p>
+            <p className="mb-3">
+              Ab einer bestimmten Größe Ihrer Kampagne bitte ich um freiwilliges
+              Feedback. Gespeichert werden die angekreuzten Antworten, ein
+              optionaler Satz an andere Initiativen, angekreuzte Hilfsangebote
+              und Ihre Freigaben mit Zeitpunkt. Die Antworten gehören zur
+              Kampagne, werden mit ihr gelöscht und gehen bei einer Übergabe an
+              die neue Inhaberin oder den neuen Inhaber mit über. Ich bekomme
+              die Antworten zusätzlich per E-Mail über Brevo (siehe Abschnitt
+              11), um mich bei Ihnen melden zu können. Ihren Satz zeige ich mit
+              Logo und Namen der Kampagne nur nach Ihrer ausdrücklichen
+              Freigabe. Anonymisierte Zahlen nutze ich nur mit Ihrer Freigabe.
+              Beide Freigaben können Sie jederzeit über die Verwaltungsseite
+              oder per E-Mail widerrufen.
+            </p>
             <p>
               Rechtsgrundlage: Art. 6 Abs. 1 lit. b DSGVO für Erstellung,
               Bestätigung und Verwaltung der Kampagne; Art. 6 Abs. 1 lit. f
-              DSGVO für Moderation, Missbrauchsschutz, Revisionen und sichere
-              Verwaltungslinks.
+              DSGVO für Moderation, Missbrauchsschutz, Revisionen, sichere
+              Verwaltungslinks und das Speichern des freiwilligen Feedbacks, um
+              den Dienst zu verbessern; Art. 6 Abs. 1 lit. a DSGVO für die
+              Veröffentlichung von Zitat und Logo sowie die anonyme Auswertung.
             </p>
           </div>
 

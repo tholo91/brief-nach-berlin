@@ -54,8 +54,9 @@ const HEAD_STYLE = `<style>
       .bnb-cta-cell { display: block !important; width: 100% !important; padding: 0 0 10px 0 !important; }
       .bnb-cta-link { padding: 14px 10px !important; }
       .bnb-share-label { display: none !important; }
-      .bnb-share-btn { padding: 13px 0 !important; }
-      .bnb-share-icon { width: 22px !important; height: 22px !important; margin: 0 !important; }
+      .bnb-share-btn { padding: 0 !important; height: 48px !important; line-height: 46px !important; box-sizing: border-box !important; }
+      .bnb-share-icon { width: 22px !important; height: 22px !important; margin: 0 !important; vertical-align: middle !important; }
+      .bnb-share-badge { line-height: 22px !important; font-size: 14px !important; }
       .bnb-inner-pad { padding-left: 14px !important; padding-right: 14px !important; }
       .bnb-support-action { display: block !important; width: 100% !important; padding-left: 0 !important; padding-right: 0 !important; }
       .bnb-support-action-primary { padding-bottom: 8px !important; }
@@ -65,6 +66,43 @@ const HEAD_STYLE = `<style>
 const STRIPE_ROW = `<tr>
             <td style="height:4px;font-size:0;line-height:0;background:repeating-linear-gradient(-45deg,#C1121F,#C1121F 8px,#FAF8F5 8px,#FAF8F5 12px,#1D3557 12px,#1D3557 20px,#FAF8F5 20px,#FAF8F5 24px);">&nbsp;</td>
           </tr>`;
+
+type ShareButton = {
+  icon: "whatsapp" | "telegram" | "email" | "linkedin";
+  label: string;
+  href: string;
+  external: boolean;
+};
+
+function shareIconHtml(icon: ShareButton["icon"]): string {
+  if (icon === "linkedin") {
+    return `<span class="bnb-share-icon bnb-share-badge" style="display:inline-block;width:16px;height:16px;line-height:16px;vertical-align:middle;margin-right:6px;border-radius:2px;background-color:#2D6A4F;color:#ffffff;font-family:Arial,sans-serif;font-size:11px;font-weight:bold;">in</span>`;
+  }
+  return `<img src="${APP_URL}/images/icon-${icon}.png" alt="" width="16" height="16" class="bnb-share-icon" style="width:16px;height:16px;vertical-align:middle;border:0;margin-right:6px;">`;
+}
+
+function buildShareButtonsTable(buttons: ShareButton[]): string {
+  const width = Math.floor(100 / buttons.length);
+  const cells = buttons
+    .map((button, index) => {
+      const padding =
+        index === 0
+          ? "padding-right:4px;"
+          : index === buttons.length - 1
+            ? "padding-left:4px;"
+            : "padding:0 2px;";
+      const target = button.external ? ' target="_blank" rel="noopener noreferrer"' : "";
+      return `<td style="${padding}width:${width}%;" valign="top">
+                      <a href="${button.href}"${target} class="bnb-share-btn" style="display:block;text-align:center;background-color:#ffffff;color:#2D6A4F;font-size:13px;font-weight:bold;text-decoration:none;padding:10px 4px;border-radius:4px;border:1px solid #2D6A4F;line-height:1;white-space:nowrap;">${shareIconHtml(button.icon)}<span class="bnb-share-label">${button.label}</span></a>
+                    </td>`;
+    })
+    .join("\n                    ");
+  return `<table role="presentation" cellpadding="0" cellspacing="0" width="100%">
+                  <tr>
+                    ${cells}
+                  </tr>
+                </table>`;
+}
 
 function buildMilestoneEmailHtml(
   params: BuildCampaignCreatorEmailHtmlParams,
@@ -111,6 +149,20 @@ function buildMilestoneEmailHtml(
         },
       )}</div>`
     : "";
+  const shareTarget = buildShareTarget(
+    { slug: params.slug, title: params.campaignTitle, letterCount: milestone.count },
+    "milestone"
+  );
+  const shareBox = `<div style="margin:0 0 22px;padding:16px 18px;background-color:#FAF8F5;border:1px solid #E0DCD7;border-radius:4px;">
+                <p style="margin:0 0 10px;font-family:'Courier New',Courier,monospace;font-size:12px;font-weight:bold;text-transform:uppercase;color:#2D6A4F;">Fortschritt teilen</p>
+                <a href="${escapeHtml(milestone.downloadUrl)}" target="_blank" rel="noopener noreferrer" class="bnb-cta-link" style="display:block;text-align:center;background-color:#2D6A4F;color:#ffffff;font-size:16px;font-weight:bold;text-decoration:none;padding:13px 10px;border-radius:4px;line-height:1.25;margin:0 0 10px;"><img src="${APP_URL}/images/icon-download.png" width="16" height="16" alt="" style="width:16px;height:16px;vertical-align:middle;border:0;margin-right:8px;">Bild speichern</a>
+                ${buildShareButtonsTable([
+                  { icon: "whatsapp", label: "WhatsApp", href: shareTarget.whatsappUrl, external: true },
+                  { icon: "telegram", label: "Telegram", href: shareTarget.telegramUrl, external: true },
+                  { icon: "linkedin", label: "LinkedIn", href: shareTarget.linkedinUrl, external: true },
+                  { icon: "email", label: "E-Mail", href: shareTarget.emailUrl, external: false },
+                ])}
+              </div>`;
   const footerLink = (href: string, label: string) =>
     `<a href="${href}" target="_blank" rel="noopener noreferrer" style="color:#888888;text-decoration:underline;">${label}</a>`;
 
@@ -137,6 +189,7 @@ function buildMilestoneEmailHtml(
               <p style="margin:0 0 16px;font-size:16px;line-height:1.65;">${greeting}</p>
               <p style="margin:0 0 16px;font-size:16px;line-height:1.65;">${count} Briefe und kein Ende in Sicht. So viele Menschen haben die Argumente deiner Kampagne aufgegriffen und daraus ihren eigenen, persönlichen Brief geschrieben.</p>
               <p style="margin:0 0 22px;font-size:16px;line-height:1.65;">Wenn du magst, teil deinen Fortschritt auf Instagram, LinkedIn oder WhatsApp. Das Bild dafür ist schon fertig.</p>
+              ${shareBox}
               ${supportBlock}
               <table role="presentation" cellpadding="0" cellspacing="0" width="100%" style="margin:0 0 26px;">
                 <tr>
@@ -256,22 +309,12 @@ export function buildCampaignCreatorEmailHtml(
       ? `<div style="margin:0 0 22px;padding:16px 18px;background-color:#FAF8F5;border:1px solid #E0DCD7;border-radius:4px;">
                 <p style="margin:0 0 8px;font-family:'Courier New',Courier,monospace;font-size:12px;font-weight:bold;text-transform:uppercase;color:#2D6A4F;">Kampagne teilen</p>
                 <p style="margin:0 0 12px;font-size:14px;line-height:1.6;color:#666666;">Lade andere ein, einen eigenen Brief mit ihren Worten zu schreiben.</p>
-                <table role="presentation" cellpadding="0" cellspacing="0" width="100%">
-                  <tr>
-                    <td style="padding-right:4px;width:25%;" valign="top">
-                      <a href="${share.whatsappUrl}" target="_blank" rel="noopener noreferrer" class="bnb-share-btn" style="display:block;text-align:center;background-color:#ffffff;color:#2D6A4F;font-size:13px;font-weight:bold;text-decoration:none;padding:10px 4px;border-radius:4px;border:1px solid #2D6A4F;line-height:1;white-space:nowrap;"><img src="${APP_URL}/images/icon-whatsapp.png" alt="" width="16" height="16" class="bnb-share-icon" style="width:16px;height:16px;vertical-align:middle;border:0;margin-right:6px;"><span class="bnb-share-label">WhatsApp</span></a>
-                    </td>
-                    <td style="padding:0 2px;width:25%;" valign="top">
-                      <a href="${share.telegramUrl}" target="_blank" rel="noopener noreferrer" class="bnb-share-btn" style="display:block;text-align:center;background-color:#ffffff;color:#2D6A4F;font-size:13px;font-weight:bold;text-decoration:none;padding:10px 4px;border-radius:4px;border:1px solid #2D6A4F;line-height:1;white-space:nowrap;"><img src="${APP_URL}/images/icon-telegram.png" alt="" width="16" height="16" class="bnb-share-icon" style="width:16px;height:16px;vertical-align:middle;border:0;margin-right:6px;"><span class="bnb-share-label">Telegram</span></a>
-                    </td>
-                    <td style="padding:0 2px;width:25%;" valign="top">
-                      <a href="${share.emailUrl}" class="bnb-share-btn" style="display:block;text-align:center;background-color:#ffffff;color:#2D6A4F;font-size:13px;font-weight:bold;text-decoration:none;padding:10px 4px;border-radius:4px;border:1px solid #2D6A4F;line-height:1;white-space:nowrap;"><img src="${APP_URL}/images/icon-email.png" alt="" width="16" height="16" class="bnb-share-icon" style="width:16px;height:16px;vertical-align:middle;border:0;margin-right:6px;"><span class="bnb-share-label">E-Mail</span></a>
-                    </td>
-                    <td style="padding-left:4px;width:25%;" valign="top">
-                      <a href="${share.linkedinUrl}" target="_blank" rel="noopener noreferrer" class="bnb-share-btn" style="display:block;text-align:center;background-color:#ffffff;color:#2D6A4F;font-size:13px;font-weight:bold;text-decoration:none;padding:10px 4px;border-radius:4px;border:1px solid #2D6A4F;line-height:1;white-space:nowrap;"><span style="display:inline-block;width:16px;height:16px;line-height:16px;vertical-align:middle;margin-right:6px;border-radius:2px;background-color:#2D6A4F;color:#ffffff;font-family:Arial,sans-serif;font-size:11px;font-weight:bold;">in</span><span class="bnb-share-label">LinkedIn</span></a>
-                    </td>
-                  </tr>
-                </table>
+                ${buildShareButtonsTable([
+                  { icon: "whatsapp", label: "WhatsApp", href: share.whatsappUrl, external: true },
+                  { icon: "telegram", label: "Telegram", href: share.telegramUrl, external: true },
+                  { icon: "email", label: "E-Mail", href: share.emailUrl, external: false },
+                  { icon: "linkedin", label: "LinkedIn", href: share.linkedinUrl, external: true },
+                ])}
               </div>`
       : "";
   const supportBlock = hasManagementLink

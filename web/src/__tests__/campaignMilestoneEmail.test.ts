@@ -1,6 +1,7 @@
 import { APP_URL, CAMPAIGN_CREATOR_FEEDBACK_URL, DONATION_PROVIDER_URL, FOUNDER_INSTAGRAM } from "@/lib/config";
 import { BRIEF_EMAIL } from "@/lib/contact";
 import { DEFAULT_CAMPAIGN_MILESTONES } from "@/lib/campaigns/milestones";
+import { buildShareTarget } from "@/lib/share";
 import { buildCampaignCreatorEmailHtml } from "@/lib/email/buildCampaignCreatorEmailHtml";
 import { SUPPORT_CAMPAIGN_CREATOR_COPY } from "@/lib/support-content";
 
@@ -111,5 +112,64 @@ describe("milestone creator email", () => {
 
   it("requires milestone params", () => {
     expect(() => buildCampaignCreatorEmailHtml({ ...base })).toThrow();
+  });
+
+  it("puts the share box between the text and the support box with download first", () => {
+    const html = build(500);
+
+    const paragraph = html.indexOf("Das Bild dafür ist schon fertig.");
+    const box = html.indexOf("Fortschritt teilen");
+    const download = html.indexOf(`href="${milestone(500).downloadUrl}"`);
+    const support = html.indexOf(SUPPORT_CAMPAIGN_CREATOR_COPY.milestoneHeading);
+
+    expect(box).toBeGreaterThan(paragraph);
+    expect(download).toBeGreaterThan(box);
+    expect(support).toBeGreaterThan(download);
+    expect(html).toContain(`${APP_URL}/images/icon-download.png`);
+    expect(html).toContain("Bild speichern");
+  });
+
+  it("lists WhatsApp, Telegram, LinkedIn, E-Mail with the encoded milestone text", () => {
+    const html = build(500);
+    const target = buildShareTarget(
+      { slug: base.slug, title: base.campaignTitle, letterCount: 500 },
+      "milestone",
+    );
+
+    const order = ["WhatsApp", "Telegram", "LinkedIn", "E-Mail"].map((label) =>
+      html.indexOf(`class="bnb-share-label">${label}<`),
+    );
+    expect([...order].sort((a, b) => a - b)).toEqual(order);
+    expect(order[0]).toBeGreaterThan(-1);
+    expect(html).toContain(`href="${target.whatsappUrl}"`);
+    expect(html).toContain(`href="${target.telegramUrl}"`);
+    expect(html).toContain(`href="${target.emailUrl}"`);
+    expect(decodeURIComponent(target.whatsappUrl)).toContain(
+      "Schon 500 Briefe für „Mehr Busse für Bremen-Nord“. Schreibst du auch einen?",
+    );
+  });
+
+  it("gives the LinkedIn badge the icon class and a fixed button height on phones", () => {
+    const html = build(50);
+
+    expect(html).toContain('class="bnb-share-icon bnb-share-badge"');
+    expect(html).toMatch(/\.bnb-share-btn \{[^}]*height: 48px !important/);
+  });
+});
+
+describe("milestone share text", () => {
+  it("keeps participant and creator texts and adds the milestone variant", () => {
+    const campaign = { slug: "mehr-busse", title: "Mehr Busse", letterCount: 500 };
+
+    expect(buildShareTarget(campaign, "milestone").text).toBe(
+      `Schon 500 Briefe für „Mehr Busse“. Schreibst du auch einen? ${APP_URL}/kampagne/mehr-busse`,
+    );
+    expect(buildShareTarget(campaign, "creator").text).toContain("Ich habe die Briefkampagne");
+    expect(buildShareTarget(campaign, "participant").text).toContain(
+      "Ich habe gerade bei der Kampagne",
+    );
+    expect(buildShareTarget({ ...campaign, letterCount: 1000 }, "milestone").text).toContain(
+      "Schon 1.000 Briefe",
+    );
   });
 });

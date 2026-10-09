@@ -121,4 +121,14 @@ describe("campaign creator emails", () => {
       expect(value).not.toMatch(dashes);
     }
   });
+
+  it("keeps the share buttons the same height on phones, including the LinkedIn badge", () => {
+    const html = buildCampaignCreatorEmailHtml({ ...base, kind: "management" });
+
+    expect(html).toContain('class="bnb-share-icon bnb-share-badge"');
+    expect(html).toMatch(/\.bnb-share-btn \{[^}]*height: 48px !important/);
+    expect(html.indexOf("WhatsApp</span>")).toBeLessThan(html.indexOf("Telegram</span>"));
+    expect(html.indexOf("Telegram</span>")).toBeLessThan(html.indexOf("E-Mail</span>"));
+    expect(html.indexOf("E-Mail</span>")).toBeLessThan(html.indexOf("LinkedIn</span>"));
+  });
 });

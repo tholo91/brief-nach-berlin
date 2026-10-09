@@ -1,13 +1,15 @@
 import { APP_URL, COMPACT_APP_URL, SHARE_TEXT_CAUSE } from "@/lib/config";
+import { formatLetterCount } from "@/lib/campaigns/milestones";
 import type { PoliticalLevel } from "@/lib/types/politician";
 
 type CampaignShareInput = {
   slug?: string | null;
   title?: string | null;
   creatorName?: string | null;
+  letterCount?: number | null;
 };
 
-type CampaignShareContext = "participant" | "creator";
+type CampaignShareContext = "participant" | "creator" | "milestone";
 
 export type ShareTarget = {
   url: string;
@@ -60,8 +62,11 @@ export function buildShareTarget(
   const subject = title
     ? `Machst du bei "${title}" mit?`
     : "Schreibst du auch einen Brief-nach-Berlin?";
+  const letterCount = campaign?.letterCount;
   const text =
-    slug && title && context === "creator"
+    slug && title && context === "milestone" && letterCount
+      ? `Schon ${formatLetterCount(letterCount)} Briefe für „${title}“. Schreibst du auch einen? ${url}`
+      : slug && title && context === "creator"
       ? `Ich habe die Briefkampagne "${title}" gestartet. Schreibst du auch einen eigenen Brief mit deinen Worten? ${url}`
       : slug && title
       ? `Ich habe gerade bei der Kampagne "${title}" einen Brief an die Politik vorbereitet. Machst du auch mit? ${url}`

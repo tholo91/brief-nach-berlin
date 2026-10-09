@@ -7,8 +7,8 @@
 ## 1. Markenkern
 
 **Name:** Brief-nach-Berlin
-**Claim:** Demokratie braucht deine Stimme — wir machen es dir leicht.
-**Elevator Pitch:** Du sagst uns, was dich stört — in deinem Viertel, deiner Stadt oder in der großen Politik. Wir finden den richtigen Abgeordneten, formulieren deinen Brief und du schreibst ihn ab. In fünf Minuten. Handgeschrieben wirkt.
+**Claim:** Demokratie braucht deine Stimme. Ich mache es dir leicht.
+**Elevator Pitch:** Du sagst, was dich stört: in deinem Viertel, deiner Stadt oder in der großen Politik. Brief-nach-Berlin findet den richtigen Abgeordneten, formuliert deinen Brief und du schreibst ihn ab. In fünf Minuten. Handgeschrieben wirkt.
 
 **Gründer:** Thomas, Bremen — [LinkedIn-Profil folgt]
 **Rechtsform/Stil:** NGO-Charakter (ob eingetragener Verein oder nicht — die Marke kommuniziert wie eine progressive, bodenständige Bürgerinitiative)
@@ -17,12 +17,12 @@
 
 ## 2. Positionierung
 
-### Was wir sind
+### Was Brief-nach-Berlin ist
 - Ein digitales Werkzeug, das die Schwelle zur politischen Teilhabe radikal senkt
 - Eine Brücke zwischen Alltagsfrust und wirksamer demokratischer Aktion
 - Ein Ermöglicher — kein Aktivist, kein Parteiorgan
 
-### Was wir nicht sind
+### Was Brief-nach-Berlin nicht ist
 - Keine Online-Petition (handgeschriebene Briefe wirken 10x stärker)
 - Keine Partei-Plattform (überparteilich im progressiven Spektrum)
 - Kein aggressiver Protest-Kanal
@@ -53,10 +53,11 @@
 | **Register** | Du (durchgängig auf der Website und im Produkt) |
 | **Ton** | Sachlich, positiv, ermutigend |
 | **Haltung** | Auf Augenhöhe, bodenständig, kompetent |
-| **Humor** | Nein — wir sind freundlich, aber nicht lustig |
+| **Humor** | Nein: freundlich, aber nicht lustig |
 | **Emotion** | Ermutigung, nicht Empörung |
 
 ### Sprachregeln
+- Ich-Form: Brief-nach-Berlin ist ein Soloprojekt von Thomas. Nie „wir“, „uns“ oder „unser Team“, sondern „ich“, „mein Tool“ oder „Brief-nach-Berlin“. Die Leute sollen sehen, dass eine Person das allein macht.
 - Duzen — immer, überall auf der Plattform
 - In den generierten Briefen an Politiker:innen: Siezen (formal korrekt)
 - Klartext statt Behördendeutsch
@@ -194,7 +195,7 @@ Gilt für alle KI-generierten Illustrationen. Fertige Prompts liegen in `prompts
 
 Websites, die in Teilen die richtige Anmutung treffen:
 
-| Referenz | Was wir mitnehmen |
+| Referenz | Was ich mitnehme |
 |---|---|
 | **Campact** (campact.de) | Zugänglich, illustrationsbasiert, klare Hierarchie |
 | **Abgeordnetenwatch** (abgeordnetenwatch.de) | Minimalistisch, Vertrauen durch Transparenz, scan-bar |
@@ -207,10 +208,10 @@ Websites, die in Teilen die richtige Anmutung treffen:
 
 **Kernaussage (Entwurf):**
 
-> **Sag uns, was dich stört.**
+> **Sag mir, was dich stört.**
 > In deinem Viertel, deiner Stadt oder in der großen Politik.
-> Wir finden den richtigen Abgeordneten, formulieren deinen Brief —
-> und du schreibst ihn ab. In fünf Minuten.
+> Mein Tool findet den richtigen Abgeordneten und formuliert deinen Brief,
+> du schreibst ihn ab. In fünf Minuten.
 
 **CTA:** Wird noch getestet (Kandidaten: „Brief schreiben", „Jetzt Brief erstellen", „Los geht's")
 

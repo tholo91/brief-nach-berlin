@@ -32,12 +32,12 @@ export const CREATOR_SURVEY_STATEMENTS = [
   {
     key: "einfacherEinstieg",
     column: "statement_einfacher_einstieg",
-    label: "Brief nach Berlin ist eine einfache Möglichkeit, politisch aktiv zu werden.",
+    label: "Unsere Community hatte eine einfache Möglichkeit, politisch aktiv zu werden.",
   },
   {
     key: "handschriftWirkt",
     column: "statement_handschrift_wirkt",
-    label: "Die Handschrift hat bei den Leuten etwas bewegt.",
+    label: "Das Schreiben per Hand hat bei den Leuten etwas bewegt.",
   },
   {
     key: "schnellEingerichtet",

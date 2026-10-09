@@ -8,6 +8,7 @@ import {
   getUsableCampaignTransferToken,
 } from "@/lib/campaigns/tokens";
 import { getCampaignById } from "@/lib/campaigns/repository";
+import { resolveManageJumpPath } from "@/lib/campaigns/creatorSurvey";
 
 const SESSION_TTL_SECONDS = 60 * 60 * 2;
 
@@ -45,6 +46,10 @@ export async function GET(request: NextRequest) {
         path: "/kampagne",
         maxAge: SESSION_TTL_SECONDS,
       });
+      response.headers.set(
+        "Location",
+        resolveManageJumpPath(request.nextUrl.searchParams.get("ziel"))
+      );
     }
   }
 

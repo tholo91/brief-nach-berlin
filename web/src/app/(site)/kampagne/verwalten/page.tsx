@@ -4,12 +4,18 @@ import { redirect } from "next/navigation";
 import { CampaignBackground } from "@/components/campaigns/CampaignBackground";
 import { CampaignCreatorStats } from "@/components/campaigns/CampaignCreatorStats";
 import { CampaignReferralCard } from "@/components/campaigns/CampaignReferralCard";
+import { CreatorSurveyCard } from "@/components/campaigns/CreatorSurveyCard";
 import { CampaignManager } from "@/components/campaigns/CampaignManager";
 import { SectionNav } from "@/components/internalStats/SectionNav";
 import {
   getCampaignCreatorStats,
   shouldShowCreatorInsights,
 } from "@/lib/campaigns/creatorStats";
+import {
+  isCreatorSurveyEligible,
+  isManageJumpTarget,
+} from "@/lib/campaigns/creatorSurvey";
+import { getCreatorSurveyStatus } from "@/lib/campaigns/creatorSurveyRepository";
 import { isCampaignEnded } from "@/lib/campaigns/endDate";
 import { getCampaignById } from "@/lib/campaigns/repository";
 import { getCampaignManagementSession } from "@/lib/campaigns/session";
@@ -100,12 +106,13 @@ function AccessNotice({ message }: { message: string }) {
 export default async function ManageCampaignPage({
   searchParams,
 }: {
-  searchParams: Promise<{ token?: string; transfer?: string }>;
+  searchParams: Promise<{ token?: string; transfer?: string; ziel?: string }>;
 }) {
   const params = await searchParams;
   if (params.token) {
+    const jump = isManageJumpTarget(params.ziel) ? `&ziel=${params.ziel}` : "";
     redirect(
-      `/kampagne/verwalten/zugang?token=${encodeURIComponent(params.token)}`
+      `/kampagne/verwalten/zugang?token=${encodeURIComponent(params.token)}${jump}`
     );
   }
 
@@ -136,6 +143,14 @@ export default async function ManageCampaignPage({
       ? await getCampaignCreatorStats(authorizedCampaign, ended)
       : null;
 
+  const surveyStatus =
+    authorizedCampaign && isCreatorSurveyEligible(authorizedCampaign, new Date())
+      ? await getCreatorSurveyStatus(authorizedCampaign.id)
+      : null;
+  const cardStatus =
+    surveyStatus === "open" || surveyStatus === "submitted" ? surveyStatus : null;
+  const showSurvey = cardStatus !== null;
+
   const showSectionNav =
     authorizedCampaign !== null &&
     !(authorizedCampaign.status === "awaiting_approval" && !ended);
@@ -144,9 +159,10 @@ export default async function ManageCampaignPage({
     ...(creatorStats
       ? [
           { id: "creator-stats", label: "Zahlen" },
-          { id: "creator-feedback", label: "Feedback" },
+          { id: "creator-feedback", label: "Bewertungen" },
         ]
       : []),
+    ...(showSurvey ? [{ id: "creator-survey", label: "Dein Feedback" }] : []),
     { id: "campaign-settings", label: "Bearbeiten" },
   ];
 
@@ -178,10 +194,11 @@ export default async function ManageCampaignPage({
                 campaign={authorizedCampaign}
                 ended={ended}
                 insights={
-                  creatorStats ? (
+                  creatorStats || showSurvey ? (
                     <>
-                      <CampaignCreatorStats stats={creatorStats} />
-                      <CampaignReferralCard />
+                      {creatorStats && <CampaignCreatorStats stats={creatorStats} />}
+                      {cardStatus && <CreatorSurveyCard status={cardStatus} />}
+                      {creatorStats && <CampaignReferralCard />}
                     </>
                   ) : undefined
                 }

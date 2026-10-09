@@ -11,7 +11,7 @@
 **Elevator Pitch:** Du sagst, was dich stört: in deinem Viertel, deiner Stadt oder in der großen Politik. Brief-nach-Berlin findet den richtigen Abgeordneten, formuliert deinen Brief und du schreibst ihn ab. In fünf Minuten. Handgeschrieben wirkt.
 
 **Gründer:** Thomas, Bremen — [LinkedIn-Profil folgt]
-**Rechtsform/Stil:** NGO-Charakter (ob eingetragener Verein oder nicht — die Marke kommuniziert wie eine progressive, bodenständige Bürgerinitiative)
+**Rechtsform/Stil:** Soloprojekt + Bürgerinitiative. Thomas macht Brief-nach-Berlin allein, die Marke tritt auf wie eine progressive, bodenständige Bürgerinitiative.
 
 ---
 

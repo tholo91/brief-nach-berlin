@@ -72,16 +72,15 @@ async function fetchWithRetry(url: string, retries = MAX_RETRIES): Promise<unkno
   }
 }
 
-/** Cursor-Paginierung über range_start/range_end (D21: kein page=). */
+/** Cursor-Paginierung (D21: kein page=). range_end ist die Seitengröße, kein Endindex. */
 async function fetchAllPages(endpoint: string): Promise<unknown[]> {
   const pageSize = 100;
   const seen = new Map<number, unknown>();
   let total = Infinity;
   let start = 0;
-  let lastCount = -1;
 
   while (start < total) {
-    const url = `${API_BASE}/${endpoint}&range_start=${start}&range_end=${start + pageSize - 1}`;
+    const url = `${API_BASE}/${endpoint}&sort_by=id&sort_direction=asc&range_start=${start}&range_end=${pageSize}`;
     console.log(`  GET ${url}`);
     const data = (await fetchWithRetry(url)) as {
       data?: Array<{ id: number }>;
@@ -96,12 +95,14 @@ async function fetchAllPages(endpoint: string): Promise<unknown[]> {
     for (const item of items) {
       if (item?.id != null) seen.set(item.id, item);
     }
-    if (items.length === 0 || items.length === lastCount) break;
-    lastCount = items.length;
+    if (items.length === 0) break;
     start += pageSize;
     await sleep(REQUEST_DELAY_MS);
   }
 
+  if (seen.size !== total) {
+    throw new Error(`Unvollständige Paginierung für ${endpoint}: ${seen.size} von ${total}`);
+  }
   return [...seen.values()];
 }
 
@@ -137,6 +138,14 @@ function extractParty(mandate: Record<string, unknown>): string {
     .replace(/\s*\(.*\)\s*$/, "")
     .replace(/\s+(seit|bis)\s+.+$/, "")
     .trim() || "parteilos";
+}
+
+/** Ohne Fraktionsmitgliedschaft im Mandat: Partei aus dem Personenprofil statt pauschal "parteilos". */
+async function fetchPoliticianParty(politicianId: number): Promise<string | null> {
+  const data = (await fetchWithRetry(`${API_BASE}/politicians/${politicianId}`)) as {
+    data?: { party?: { label?: string } | null };
+  };
+  return data?.data?.party?.label?.trim() || null;
 }
 
 interface LandtagAddress {
@@ -313,7 +322,11 @@ function buildPlzMapping(landtag: Politician[]): Record<string, number[]> {
             berlinBezirke[enrichment.ortsname.replace(/^berlin /i, "")] ?? ""
           )
         : "",
-    ].filter(Boolean);
+    ]
+      .filter(Boolean)
+      // Hamburg: Gemeinde und Kreis heißen bei jeder PLZ "Hamburg" und passten
+      // so immer auf den Wahlkreis "Hamburg-Mitte". Dort zählen nur Stadtteile.
+      .filter((name) => !(enrichment.bundeslandKey === "HH" && name === "hamburg"));
 
     const matches: number[] = [];
     for (const [nr, stems] of landMap) {
@@ -411,6 +424,12 @@ async function main() {
       }
     }
     console.log(`  ${landCount} MdL übernommen (${mandates.length} Mandate gesamt)`);
+  }
+
+  for (const p of landtag) {
+    if (p.party !== "parteilos") continue;
+    await sleep(REQUEST_DELAY_MS);
+    p.party = (await fetchPoliticianParty(p.politicianId)) ?? p.party;
   }
 
   // Cache aktualisieren: bundestag[] bleibt unangetastet

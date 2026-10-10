@@ -64,6 +64,11 @@ describe("lookupPLZWithLevel", () => {
     expect(r.byLevel.Land[0].institutionKind).toBe("senat");
   });
 
+  it("Hamburg-PLZ landen nicht pauschal im Wahlkreis Hamburg-Mitte", () => {
+    expect(lookupPLZWithLevel("22047").coverage.landWahlkreisIds).toEqual([11]);
+    expect(lookupPLZWithLevel("22523").optionalByLevel.Land).toHaveLength(0);
+  });
+
   it("Berlin (10245): mehrere Bezirke werden ehrlich als mehrdeutig behandelt", () => {
     const r = lookupPLZWithLevel("10245");
     expect(r.bundeslandKey).toBe("BE");

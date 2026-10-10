@@ -54,16 +54,15 @@ async function fetchWithRetry(url: string, retries = MAX_RETRIES): Promise<unkno
 }
 
 async function fetchAllPages(endpoint: string): Promise<unknown[]> {
-  // Abgeordnetenwatch v2: range_start moves the cursor, but pages overlap
-  // in odd ways. Dedupe by mandate.id after collection. Hard cap 100 per request.
+  // Abgeordnetenwatch v2: range_start is the offset, range_end is the page size
+  // (not an end index). Stable sort by id so pages don't shift between requests.
   const pageSize = 100;
   const seen = new Map<number, unknown>();
   let total = Infinity;
   let start = 0;
-  let lastCount = -1;
 
   while (start < total) {
-    const url = `${API_BASE}/${endpoint}&range_start=${start}&range_end=${start + pageSize - 1}`;
+    const url = `${API_BASE}/${endpoint}&sort_by=id&sort_direction=asc&range_start=${start}&range_end=${pageSize}`;
     console.log(`  GET ${url}`);
     const data = (await fetchWithRetry(url)) as {
       data?: Array<{ id: number }>;
@@ -74,14 +73,15 @@ async function fetchAllPages(endpoint: string): Promise<unknown[]> {
     for (const item of items) {
       if (item?.id != null) seen.set(item.id, item);
     }
-    // Stop if API stops returning new rows (protects against loops)
-    if (items.length === 0 || items.length === lastCount) break;
-    lastCount = items.length;
+    if (items.length === 0) break;
     start += pageSize;
     await sleep(REQUEST_DELAY_MS);
   }
 
   console.log(`  Collected ${seen.size} unique mandates (total reported: ${total})`);
+  if (seen.size !== total) {
+    throw new Error(`Incomplete pagination for ${endpoint}: ${seen.size} of ${total} mandates`);
+  }
   return [...seen.values()];
 }
 
@@ -125,6 +125,14 @@ function extractParty(mandate: Record<string, unknown>): string {
     .replace(/\s*\(.*\)\s*$/, "")
     .replace(/\s+(seit|bis)\s+.+$/, "")
     .trim() || "parteilos";
+}
+
+/** Mandates without a fraction membership: use the person's party instead of a blanket "parteilos". */
+async function fetchPoliticianParty(politicianId: number): Promise<string | null> {
+  const data = (await fetchWithRetry(`${API_BASE}/politicians/${politicianId}`)) as {
+    data?: { party?: { label?: string } | null };
+  };
+  return data?.data?.party?.label?.trim() || null;
 }
 
 function toPolitician(mandate: Record<string, unknown>): Politician | null {
@@ -213,7 +221,7 @@ async function main() {
   console.log(`\nFetching Bundestag mandates (parliament_period=${BUNDESTAG_PERIOD})...\n`);
 
   const mandates = await fetchAllPages(
-    `candidacies-mandates?parliament_period=${BUNDESTAG_PERIOD}&type=mandate`
+    `candidacies-mandates?parliament_period=${BUNDESTAG_PERIOD}&type=mandate&current_on=now`
   );
 
   const bundestag: Politician[] = [];
@@ -222,6 +230,12 @@ async function main() {
     const p = toPolitician(m as Record<string, unknown>);
     if (p) bundestag.push(p);
     else skippedNoConstituency++;
+  }
+
+  for (const p of bundestag) {
+    if (p.party !== "parteilos") continue;
+    await sleep(REQUEST_DELAY_MS);
+    p.party = (await fetchPoliticianParty(p.politicianId)) ?? p.party;
   }
 
   console.log(`\nFetching committee memberships for ${bundestag.length} mandates...`);

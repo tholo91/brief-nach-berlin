@@ -1278,7 +1278,9 @@ export function Step3Success({
               ? "Die passende Person ist bereits vorausgewählt."
               : "Wähle eine der passenden Personen aus."
         : hasNoLocalMdb
-          ? `Für die PLZ ${wizardData.plz} wurde kein lokales MdB gefunden. Suche bundesweit nach einer Person oder erstelle einen neutralen Entwurf, den du später adressierst.`
+          ? campaignSlug
+            ? `Für die PLZ ${wizardData.plz} wurde kein lokales MdB gefunden. Suche bundesweit nach der Person, an die dein Brief gehen soll.`
+            : `Für die PLZ ${wizardData.plz} wurde kein lokales MdB gefunden. Suche bundesweit nach einer Person oder erstelle einen neutralen Entwurf, den du später adressierst.`
           : wahlkreisGroups.length === 1
             ? "Dein Wahlkreis wird von folgenden MdBs vertreten. Das MdB mit Direktmandat ist vorausgewählt, du kannst aber auch jemand anderen wählen."
             : "Deine PLZ liegt an einer Wahlkreis-Grenze. Wähle das MdB, das deinen Wahlkreis vertritt. Das Direktmandat ist je Wahlkreis vorausgewählt.";

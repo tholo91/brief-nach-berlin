@@ -344,7 +344,7 @@ export async function POST(req: NextRequest) {
         debug: debugPayload,
         campaign: campaign ? data.campaign : undefined,
         // Kampagne wurde vor dem Hochzählen geladen, +1 schließt diesen Brief ein.
-        campaignLetterCount: campaign ? campaign.letterCount + 1 : undefined,
+        campaignLetterCount: campaign && letterNumber !== undefined ? campaign.letterCount + 1 : undefined,
         letterNumber,
         letterId,
       });

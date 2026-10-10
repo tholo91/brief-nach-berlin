@@ -84,7 +84,7 @@ describe("landing page content", () => {
 
     expect(pageSource).not.toContain("LetterActivitySection");
     expect(mapSource).toContain('<span className="sm:hidden">aus ganz Deutschland</span>');
-    expect(mapSource).toContain('<span className="hidden sm:inline">aus Städten, Dörfern und Gemeinden</span>');
+    expect(mapSource).toContain('<span className="hidden sm:inline">aus {mapData.postcodeAreas.toLocaleString("de-DE")}+ Städten, Dörfern und Gemeinden</span>');
     expect(mapSource).toContain("SHORT_MAP_ATTRIBUTION");
     expect(mapSource).toContain("whitespace-nowrap");
     expect(voicesSource).toContain('import { LetterActivityCard } from "@/components/letter-signals/LetterActivityCard";');

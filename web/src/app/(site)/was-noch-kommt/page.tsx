@@ -126,7 +126,7 @@ const articleJsonLd = {
   headline: "Welche politischen Ebenen unterstützt Brief-nach-Berlin?",
   description: DESCRIPTION,
   datePublished: PUBLISHED,
-  dateModified: "2026-08-11",
+  dateModified: "2026-10-10",
   author: { "@type": "Organization", name: "Brief-nach-Berlin" },
   publisher: {
     "@type": "Organization",
@@ -165,7 +165,7 @@ export default function WasNochKommtPage() {
         </h1>
         <p className="font-handwriting text-xl md:text-2xl text-warmgrau leading-relaxed mb-10 text-pretty">
           Ich baue offen. Hier steht, welche politische Ebene heute für dein
-          Anliegen erreichbar ist — und was ich bewusst noch nicht verspreche.
+          Anliegen erreichbar ist, und was ich bewusst noch nicht verspreche.
         </p>
 
         <figure className="mb-12 -mx-2 sm:mx-0">
@@ -204,6 +204,20 @@ export default function WasNochKommtPage() {
             korrigieren.
           </p>
         </div>
+
+        {/* Verweis auf Fortschritts-Log und Ausblick */}
+        <Link
+          href="/was-bisher-geschah#als-naechstes"
+          className="group mb-14 flex items-center justify-between gap-4 rounded-2xl border border-waldgruen/15 bg-white/60 px-5 py-4 transition-colors hover:border-waldgruen hover:bg-white"
+        >
+          <span className="font-body text-sm text-waldgruen-dark leading-snug">
+            <span className="font-bold">Was als Nächstes kommt</span> und was
+            bisher passiert ist, steht Monat für Monat im Fortschritts-Log.
+          </span>
+          <span className="font-typewriter text-sm font-bold text-waldgruen whitespace-nowrap transition-transform group-hover:translate-x-1">
+            Zum Log &rarr;
+          </span>
+        </Link>
 
         {/* Die politischen Ebenen */}
         <h2 className="font-body text-2xl md:text-3xl font-bold text-waldgruen-dark pt-4 mb-8">
@@ -380,13 +394,12 @@ export default function WasNochKommtPage() {
         {/* Final CTA */}
         <div className="mt-16 p-8 border-2 border-waldgruen/20 bg-creme/50 rounded-sm">
           <p className="font-typewriter text-sm font-bold tracking-widest uppercase text-waldgruen/60 mb-3">
-            Solange schreibst du schon mal
+            Jetzt schreiben
           </p>
           <p className="font-body text-lg text-waldgruen-dark mb-6">
-            Wenn dein Anliegen Bundesthema ist, kannst du heute schon
-            loslegen. Beschreib es in ein paar Sätzen, gib deine Postleitzahl
-            ein, und du bekommst einen Briefentwurf an deine
-            Bundestagsabgeordnete oder deinen Bundestagsabgeordneten.
+            Beschreib dein Anliegen in ein paar Sätzen, gib deine Postleitzahl
+            ein, und du bekommst einen Briefentwurf an die Stelle, die
+            zuständig ist: im Bund, im Land oder in deiner Kommune.
           </p>
           <Link
             href="/"

@@ -1,7 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import type { Metadata } from "next";
-import { APP_URL } from "@/lib/config";
+import { APP_URL, FOUNDER_INSTAGRAM } from "@/lib/config";
 import { getLetterCount } from "@/lib/counter";
 import { formatNumber } from "@/lib/formatNumber";
 
@@ -9,14 +9,14 @@ const URL_PATH = "/was-bisher-geschah";
 const PUBLISHED = "2026-05-28";
 const TITLE = "Was bisher geschah: Der Fortschritt von Brief-nach-Berlin";
 const DESCRIPTION =
-  "Ein offenes Fortschritts-Log, das zeigt, was ich seit dem Start an Brief-nach-Berlin gebaut, verbessert und gelernt habe.";
+  "Ein offenes Fortschritts-Log: was ich seit dem Start an Brief-nach-Berlin gebaut, verbessert und gelernt habe, und was ich als Nächstes vorhabe.";
 
 export const metadata: Metadata = {
   title: TITLE,
   description: DESCRIPTION,
   alternates: { canonical: `${APP_URL}${URL_PATH}` },
   openGraph: {
-    title: "Was bisher geschah: Der Fortschritt von Brief-nach-Berlin",
+    title: TITLE,
     description: DESCRIPTION,
     type: "article",
     locale: "de_DE",
@@ -24,7 +24,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Was bisher geschah: Der Fortschritt von Brief-nach-Berlin",
+    title: TITLE,
     description: DESCRIPTION,
   },
 };
@@ -37,7 +37,62 @@ interface Monat {
   entries: string[];
 }
 
+interface Vorhaben {
+  key: string;
+  title: string;
+  text: string;
+  link?: { href: string; label: string; external?: boolean };
+}
+
+/** Ausblick: noch nicht abgestempelt, deshalb ohne Datum. */
+const vorhaben: Vorhaben[] = [
+  {
+    key: "instagram",
+    title: "Eine größere Instagram-Kampagne",
+    text: "Viele wissen nicht, dass ein handgeschriebener Brief im Abgeordnetenbüro mehr auffällt als jede Mail. Auf Instagram zeige ich, wie schnell so ein Brief entsteht und was er bewirken kann.",
+    link: { href: FOUNDER_INSTAGRAM, label: "Auf Instagram folgen", external: true },
+  },
+  {
+    key: "kooperationen",
+    title: "Mehr Kooperationen mit Kampagnen",
+    text: "Ich suche Initiativen, Vereine und NGOs, die die Demokratie stärken wollen. Sie bringen ein Anliegen mit, Brief-nach-Berlin macht daraus viele persönliche Briefe an die zuständigen Abgeordneten.",
+    link: { href: "/ngo-briefkampagne", label: "Infos für Initiativen" },
+  },
+  {
+    key: "persoenlicher",
+    title: "Kampagnenbriefe, die noch persönlicher klingen",
+    text: "Bei Kampagnen soll jeder Brief einen eigenen Aufhänger bekommen, damit im Abgeordnetenbüro keine zwei Briefe gleich klingen.",
+  },
+];
+
 const monate: Monat[] = [
+  {
+    key: "oktober-2026",
+    badge: "Oktober 2026",
+    note: "Kampagnen bekommen Überblick, Enddatum und Meilensteine",
+    entries: [
+      "Wer eine Kampagne startet, sieht jetzt, aus welchen Bundesländern die Briefe kommen, wie viele es pro Tag werden und wie sie bewertet wurden.",
+      "Kampagnen können ein Enddatum bekommen. Danach zeigt die Seite einen Abschluss, und wer die Kampagne gestartet hat, bekommt eine Abschluss-Mail.",
+      "Bei wichtigen Meilensteinen kommt eine kurze Mail mit Bild zum Teilen. Wer das nicht möchte, schaltet es beim Erstellen oder Verwalten ab.",
+      "Unten auf jeder Kampagnenseite gibt es jetzt „Stimmt was nicht?“, um Fehler oder Probleme direkt an mich zu melden.",
+      "Die Seite für Vereine und NGOs zeigt alle laufenden Kampagnen, und eine neue Seite erklärt, wie du eine Petition startest und sie mit einem persönlichen Brief stärker machst.",
+      "Die Karte auf der Startseite zeigt jetzt, aus wie vielen Orten Menschen freiwillig einen Punkt gesetzt haben: über 1.200 Postleitzahlen, Stand Anfang Oktober.",
+      "Neue Seite: So kommst du kostenlos nach Berlin und in den Bundestag.",
+      "Die Daten der Landtage und Landesregierungen sind aktualisiert, unter anderem für Sachsen-Anhalt und Rheinland-Pfalz.",
+    ],
+  },
+  {
+    key: "september-2026",
+    badge: "September 2026",
+    note: "Schreib Merz, freiere Empfängerwahl und die erste Karte",
+    entries: [
+      "Neu: Schreib Merz. Du beschreibst dein Anliegen in eigenen Worten und bekommst einen Brief an den Bundeskanzler oder an deine Bundestagsabgeordneten.",
+      "Du kannst freier wählen, an wen dein Brief geht, bei Landesthemen auch an die Regierungschefin oder den Regierungschef deines Landes.",
+      "Wer möchte, setzt nach dem Brief einen anonymen Punkt auf eine Deutschlandkarte. Der Brieftext wird dabei nicht gespeichert.",
+      "Der Versand ist robuster: Ein Brief kommt nicht mehr doppelt an, und Tippfehler in der E-Mail-Adresse fallen vorher auf.",
+      "Kampagnen haben jetzt kurze Links, die sich leichter weitergeben lassen.",
+    ],
+  },
   {
     key: "august-2026",
     badge: "August 2026",
@@ -47,7 +102,6 @@ const monate: Monat[] = [
       "Landes- und Kommunalbriefe nutzen offizielle Adressen und eigene Anreden, statt Empfänger oder Zuständigkeit zu erraten.",
       "Die Erklärung zur Wirkung handschriftlicher Briefe wurde mit Forschung eingeordnet und trennt direkte Evidenz von plausiblen Übertragungen.",
       "Der Briefprozess prüft die maximale Länge des Anliegens jetzt bereits in der Oberfläche und zeigt verständliche Validierungsfehler.",
-      "Neue Roadmap-Anmeldungen werden nicht mehr gesammelt: Es gibt aktuell keine weitere politische Ebene, für die ich eine Benachrichtigung verspreche.",
     ],
   },
   {
@@ -74,13 +128,13 @@ const monate: Monat[] = [
       "PLZ-Eingabe zeigt jetzt sofort den zugehörigen Ort oder Ortsteil, als schnelle Bestätigung, dass die Postleitzahl stimmt.",
       "Mobile Navigation überarbeitet: Handy-Menü, scroll-sensitiver CTA und Bewertungs-Marquee auf dem Desktop für mehr Glaubwürdigkeit.",
       "Briefe wiederholen sich weniger: Der Prompt wurde überarbeitet, damit keine Formulierung doppelt auftaucht.",
-      "Das Mikrofon sitzt jetzt direkt im Textfeld – kein separater Button mehr. Diktat lässt sich beliebig oft wiederholen, und die Aufnahme stoppt automatisch sauber nach drei Minuten.",
+      "Das Mikrofon sitzt jetzt direkt im Textfeld, ohne separaten Button. Diktat lässt sich beliebig oft wiederholen, und die Aufnahme stoppt automatisch sauber nach drei Minuten.",
       "Alle Abgeordneten-Daten wurden auf den 21. Bundestag aktualisiert, inklusive Ausschuss-Mitgliedschaften. Damit landet dein Brief beim richtigen Ansprechpartner der neuen Legislaturperiode.",
-      "Neue Unterseite erklärt, wohin der Brief eigentlich gehört: ins Wahlkreisbüro oder nach Berlin? Die Antwort hängt vom Thema ab – jetzt gibt es eine kurze Erklärung dazu.",
-      "Die Fehlerseite bei unbekannter PLZ führt jetzt direkt zurück zum Feld, damit du die Postleitzahl sofort korrigieren kannst – kein umständlicher Neustart mehr.",
-      "Feedback-Option umbenannt: 'Klingt nicht nach mir' heißt jetzt 'Klingt zu sehr nach KI' – das trifft den eigentlichen Grund präziser.",
+      "Neue Unterseite erklärt, wohin der Brief eigentlich gehört: ins Wahlkreisbüro oder nach Berlin? Die Antwort hängt vom Thema ab, jetzt gibt es eine kurze Erklärung dazu.",
+      "Die Fehlerseite bei unbekannter PLZ führt jetzt direkt zurück zum Feld, damit du die Postleitzahl sofort korrigieren kannst, ohne umständlichen Neustart.",
+      "Feedback-Option umbenannt: 'Klingt nicht nach mir' heißt jetzt 'Klingt zu sehr nach KI', das trifft den eigentlichen Grund präziser.",
       "Sterne-Anzeige auf der Bewertungsseite war bei halben Sternen (z.B. 4,5) kaputt. Das ist behoben, alle Bewertungen werden jetzt korrekt dargestellt.",
-      "Die Seite nach dem Briefversand ist aufgeräumter – ein überflüssiges Element wurde entfernt, damit Bewertung und nächste Schritte sofort ins Auge fallen.",
+      "Die Seite nach dem Briefversand ist aufgeräumter: Ein überflüssiges Element wurde entfernt, damit Bewertung und nächste Schritte sofort ins Auge fallen.",
     ],
   },
   {
@@ -107,7 +161,7 @@ const monate: Monat[] = [
       "Firefox-Kompatibilität gefixt: Das Hero-Video auf der Startseite lief in Firefox nicht, jetzt schon.",
       "Mistral-API mit automatischem Retry bei kurzfristigen Serverfehlern abgesichert, damit kein Brief stillschweigend verloren geht.",
       "E-Mail-Footer verfeinert: klarerer Hinweis auf den handschriftlichen Charakter und warum das zählt.",
-      "Datenschutz-Grundlage gelegt: keine Datenbank, kein Account, keine persistente Speicherung von Briefen.",
+      "Datenschutz-Grundlage gelegt: kein Account, und dein Brieftext wird nicht gespeichert.",
     ],
   },
   {
@@ -128,10 +182,10 @@ const monate: Monat[] = [
 const articleJsonLd = {
   "@context": "https://schema.org",
   "@type": "Article",
-  headline: "Was bisher geschah: Der Fortschritt von Brief-nach-Berlin",
+  headline: TITLE,
   description: DESCRIPTION,
   datePublished: PUBLISHED,
-  dateModified: "2026-08-11",
+  dateModified: "2026-10-10",
   author: { "@type": "Organization", name: "Brief-nach-Berlin" },
   publisher: {
     "@type": "Organization",
@@ -155,6 +209,19 @@ function timelineStripe() {
       var(--color-airmail-blau) 18px,
       transparent 18px,
       transparent 24px
+    )`,
+  };
+}
+
+/** Luftpost-Kante für die Ausblick-Umschläge. */
+function airmailEdge() {
+  return {
+    background: `repeating-linear-gradient(
+      -45deg,
+      var(--color-airmail-rot) 0 7px,
+      var(--color-creme) 7px 10px,
+      var(--color-airmail-blau) 10px 17px,
+      var(--color-creme) 17px 20px
     )`,
   };
 }
@@ -194,7 +261,7 @@ export default async function WasBisherGeschahPage() {
         </h1>
         <p className="font-handwriting text-xl md:text-2xl text-warmgrau leading-relaxed mb-10 text-pretty">
           Ich baue offen. Hier steht, was ich bisher gebaut, verbessert und
-          gelernt habe, Monat für Monat.
+          gelernt habe, Monat für Monat, und was als Nächstes kommt.
         </p>
 
         <figure className="mb-12 -mx-2 sm:mx-0">
@@ -232,17 +299,94 @@ export default async function WasBisherGeschahPage() {
         {/* Verweis auf den aktuellen Ebenen-Stand */}
         <Link
           href="/was-noch-kommt"
-          className="group mb-16 flex items-center justify-between gap-4 rounded-2xl border border-waldgruen/15 bg-white/60 px-5 py-4 transition-colors hover:border-waldgruen hover:bg-white"
+          className="group mb-14 flex items-center justify-between gap-4 rounded-2xl border border-waldgruen/15 bg-white/60 px-5 py-4 transition-colors hover:border-waldgruen hover:bg-white"
         >
           <span className="font-body text-sm text-waldgruen-dark leading-snug">
-            <span className="font-bold">Wie es weitergeht</span> steht auf
-            der Ebenen-Seite: Bund, Land und Kommune, mit ihren aktuellen
-            Zuständigkeiten und Grenzen.
+            <span className="font-bold">Welche Ebenen heute funktionieren:</span>{" "}
+            Bund, Land und Kommune, mit ihren Zuständigkeiten und Grenzen.
           </span>
           <span className="font-typewriter text-sm font-bold text-waldgruen whitespace-nowrap transition-transform group-hover:translate-x-1">
             Ebenen ansehen &rarr;
           </span>
         </Link>
+
+        {/* Ausblick: Briefmarken, die noch nicht abgestempelt sind */}
+        <section
+          id="als-naechstes"
+          className="relative mb-12 scroll-mt-24 pl-12"
+          aria-labelledby="als-naechstes-titel"
+        >
+          {/* Noch nicht gereister Faden bis zum ersten Poststempel */}
+          <div
+            className="absolute left-[11px] top-3 -bottom-12 border-l-[3px] border-dotted border-airmail-blau/30"
+            aria-hidden="true"
+          />
+          <div className="absolute left-0 top-0.5" aria-hidden="true">
+            <span className="block h-6 w-6 rounded-[3px] border-2 border-dashed border-airmail-blau/60 bg-creme" />
+          </div>
+
+          <header className="mb-5">
+            <h2
+              id="als-naechstes-titel"
+              className="font-typewriter text-lg font-bold uppercase tracking-widest text-airmail-blau"
+            >
+              Als Nächstes
+            </h2>
+            <p className="font-handwriting text-lg text-warmgrau/90 leading-snug mt-1">
+              Noch nicht abgestempelt, aber schon unterwegs
+            </p>
+          </header>
+
+          <ul className="space-y-4">
+            {vorhaben.map((v) => (
+              <li
+                key={v.key}
+                className="relative overflow-hidden rounded-xl border border-airmail-blau/15 bg-white/70 py-4 pl-6 pr-4 sm:pr-24"
+              >
+                <span
+                  className="absolute inset-y-0 left-0 w-1.5"
+                  style={airmailEdge()}
+                  aria-hidden="true"
+                />
+                {/* Leeres Markenfeld: kommt erst noch */}
+                <span
+                  className="absolute right-5 top-4 hidden h-14 w-11 rotate-3 rounded-[2px] border-2 border-dashed border-airmail-rot/30 sm:block"
+                  aria-hidden="true"
+                />
+                <h3 className="font-body text-base md:text-lg font-bold text-waldgruen-dark leading-snug">
+                  {v.title}
+                </h3>
+                <p className="font-body text-base text-warmgrau leading-relaxed mt-1.5">
+                  {v.text}
+                </p>
+                {v.link &&
+                  (v.link.external ? (
+                    <a
+                      href={v.link.href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="group mt-2 inline-flex items-center gap-1 font-typewriter text-sm font-bold text-waldgruen hover:text-waldgruen-dark transition-colors"
+                    >
+                      {v.link.label}
+                      <span className="transition-transform group-hover:translate-x-1">
+                        &rarr;
+                      </span>
+                    </a>
+                  ) : (
+                    <Link
+                      href={v.link.href}
+                      className="group mt-2 inline-flex items-center gap-1 font-typewriter text-sm font-bold text-waldgruen hover:text-waldgruen-dark transition-colors"
+                    >
+                      {v.link.label}
+                      <span className="transition-transform group-hover:translate-x-1">
+                        &rarr;
+                      </span>
+                    </Link>
+                  ))}
+              </li>
+            ))}
+          </ul>
+        </section>
 
         {/* Timeline */}
         <div className="relative">
@@ -342,8 +486,8 @@ export default async function WasBisherGeschahPage() {
           </p>
           <p className="font-body text-lg text-waldgruen-dark mb-6">
             Beschreib dein Anliegen in ein paar Sätzen, gib deine Postleitzahl
-            ein, und du bekommst einen Briefentwurf an deine
-            Bundestagsabgeordnete oder deinen Bundestagsabgeordneten.
+            ein, und du bekommst einen Briefentwurf an die Stelle, die
+            zuständig ist: im Bund, im Land oder in deiner Kommune.
           </p>
           <Link
             href="/"

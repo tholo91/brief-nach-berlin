@@ -5,21 +5,32 @@ import { CampaignLogo } from "./CampaignLogo";
 type HeroCampaignPillsProps = {
   campaigns: LandingCampaign[];
   className?: string;
+  /** "scroll" keeps the pills on one swipeable row (mobile). */
+  layout?: "wrap" | "scroll";
 };
 
-export function HeroCampaignPills({ campaigns, className }: HeroCampaignPillsProps) {
+export function HeroCampaignPills({
+  campaigns,
+  className,
+  layout = "wrap",
+}: HeroCampaignPillsProps) {
   if (campaigns.length === 0) return null;
+  const isScroll = layout === "scroll";
 
   return (
-    <div className={className}>
+    <div className={`${isScroll ? "relative" : ""} ${className ?? ""}`}>
       <ul
         aria-label="Laufende Briefkampagnen"
-        className="flex flex-wrap items-center justify-center gap-2.5"
+        className={
+          isScroll
+            ? "flex snap-x snap-mandatory scroll-px-6 items-center gap-2.5 overflow-x-auto px-6 py-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+            : "flex flex-wrap items-center justify-center gap-2.5"
+        }
       >
         {campaigns.slice(0, 3).map((campaign) => {
           const sender = campaign.creatorName ? ` von ${campaign.creatorName}` : "";
           return (
-            <li key={campaign.slug}>
+            <li key={campaign.slug} className={isScroll ? "shrink-0 snap-start" : undefined}>
               <Link
                 href={campaign.href}
                 prefetch={false}
@@ -60,6 +71,12 @@ export function HeroCampaignPills({ campaigns, className }: HeroCampaignPillsPro
           );
         })}
       </ul>
+      {isScroll && (
+        <span
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-y-0 right-0 w-8 bg-gradient-to-l from-creme to-transparent"
+        />
+      )}
     </div>
   );
 }

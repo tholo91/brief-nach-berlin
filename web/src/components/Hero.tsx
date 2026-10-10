@@ -11,6 +11,9 @@ import { useLocale, useUiCopy } from "@/components/i18n/LocaleProvider";
 import { HeroCampaignPills } from "@/components/campaigns/HeroCampaignPills";
 import type { LandingCampaign } from "@/lib/campaigns/landing";
 
+// NGO sticky note is parked for now; flip to true to bring it back.
+const SHOW_NGO_BADGE = false;
+
 export default function Hero({ campaigns = [] }: { campaigns?: LandingCampaign[] }) {
   const { locale } = useLocale();
   const copy = useUiCopy();
@@ -185,7 +188,7 @@ export default function Hero({ campaigns = [] }: { campaigns?: LandingCampaign[]
             {copy.hero.titleStart}{" "}
             <span className="block text-waldgruen">{copy.hero.titleEmphasis}</span>
           </h1>
-          {locale === "de" && (
+          {locale === "de" && SHOW_NGO_BADGE && (
             <NgoCampaignBadge className="hidden sm:inline-flex absolute left-1/2 -top-5 z-20 ml-[9.75rem] rotate-[7deg]" />
           )}
         </div>
@@ -236,15 +239,21 @@ export default function Hero({ campaigns = [] }: { campaigns?: LandingCampaign[]
         {/* Curated campaigns (landing_rank in Supabase) — tablet and up only,
             so the mobile hero stays focused on the Anliegen field. */}
         {showCampaigns && (
-          <HeroCampaignPills
-            campaigns={campaigns}
-            className="hidden md:block mt-8"
-          />
+          <div className="hidden md:block mt-8">
+            <div className="mx-auto mb-4 flex max-w-md items-center gap-3">
+              <span className="h-px flex-1 bg-waldgruen/15" />
+              <span className="font-typewriter text-sm text-warmgrau/70">
+                oder wähle ein fertiges Anliegen
+              </span>
+              <span className="h-px flex-1 bg-waldgruen/15" />
+            </div>
+            <HeroCampaignPills campaigns={campaigns} />
+          </div>
         )}
 
       </div>
 
-      {locale === "de" && (
+      {locale === "de" && SHOW_NGO_BADGE && (
         <NgoCampaignBadge className="inline-flex sm:hidden absolute top-6 right-3 z-20 rotate-[6deg]" />
       )}
 

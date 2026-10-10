@@ -10,6 +10,7 @@ import CallToAction from "@/components/CallToAction";
 import Footer from "@/components/Footer";
 import { ReviewMarquee } from "@/components/reviews/ReviewMarquee";
 import { PressMarquee } from "@/components/PressMarquee";
+import { MobileCampaignStrip } from "@/components/campaigns/MobileCampaignStrip";
 import { getHeroReviews } from "@/lib/reviews/getHeroReviews";
 import { getLetterCount } from "@/lib/counter";
 import { getLandingCampaigns } from "@/lib/campaigns/repository";
@@ -41,6 +42,7 @@ export default async function Home() {
         {/* Press logos + review strip below hero */}
         <section className="relative z-20 -mt-12 md:-mt-12 lg:-mt-24 pb-2">
           <PressMarquee />
+          <MobileCampaignStrip campaigns={landingCampaigns} />
           <p className="mt-4 md:mt-8 text-center font-typewriter text-xs sm:text-sm tracking-widest uppercase text-warmgrau/50 mb-1 px-6">
             Schon <span className="font-bold text-waldgruen">{formattedLetterCount}</span> Briefe geschrieben
           </p>

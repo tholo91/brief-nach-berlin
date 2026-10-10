@@ -101,7 +101,9 @@ export function ReviewMarquee({
       `}</style>
       <div
         ref={containerRef}
-        className={`marquee-container marquee-fade w-full py-6 overflow-x-hidden ${
+        className={`marquee-container marquee-fade w-full ${
+          variant === "compact" ? "py-4 md:py-6" : "py-6"
+        } overflow-x-hidden ${
           isPaused ? "is-paused" : ""
         }`}
         data-variant={variant}
@@ -138,7 +140,7 @@ export function ReviewMarquee({
                 }
                 className="marquee-snap-item flex text-left rounded-3xl focus:outline-none focus-visible:ring-2 focus-visible:ring-waldgruen focus-visible:ring-offset-2 focus-visible:ring-offset-creme cursor-pointer"
               >
-                <ReviewCard review={review} isExpanded={isThis} />
+                <ReviewCard review={review} isExpanded={isThis} compact={variant === "compact"} />
               </button>
             );
           })}

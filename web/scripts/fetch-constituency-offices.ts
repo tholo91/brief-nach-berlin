@@ -74,7 +74,7 @@ function decodeHtml(input: string): string {
     .replace(/&#x([0-9a-f]+);/gi, (_, code) => String.fromCharCode(parseInt(code, 16)));
 }
 
-function stripTagsToLines(html: string): string[] {
+export function stripTagsToLines(html: string): string[] {
   return decodeHtml(
     html
       .replace(/<script[\s\S]*?<\/script>/gi, "")
@@ -94,10 +94,15 @@ function extractText(html: string, pattern: RegExp): string | null {
   return stripTagsToLines(match[1]).join(" ").trim() || null;
 }
 
-function extractListEntries(html: string): ListEntry[] {
+const CARD_PATTERN = /<article\b[^>]*class="e-teaserCardProfile[\s\S]*?<\/article>/g;
+
+function countListCards(html: string): number {
+  return [...html.matchAll(CARD_PATTERN)].length;
+}
+
+export function extractListEntries(html: string): ListEntry[] {
   const entries: ListEntry[] = [];
-  const cardPattern = /<article\b[^>]*class="e-teaserCardProfile[\s\S]*?<\/article>/g;
-  for (const match of html.matchAll(cardPattern)) {
+  for (const match of html.matchAll(CARD_PATTERN)) {
     const card = match[0];
     const profileUrl = card.match(/href="(https:\/\/www\.bundestag\.de\/abgeordnete\/biografien\/[^"]+)"/)?.[1] ?? null;
     const bundestagId = profileUrl?.match(/-(\d+)$/)?.[1] ?? null;
@@ -121,12 +126,17 @@ async function fetchAllListEntries(limit: number | null): Promise<ListEntry[]> {
   while (true) {
     const html = await fetchText(`${LIST_URL}?limit=12&offset=${offset}&noFilterSet=true`);
     const entries = extractListEntries(html);
+    const cardCount = countListCards(html);
+    const sizeBefore = seen.size;
     for (const entry of entries) seen.set(entry.bundestagId, entry);
-    console.log(`  list offset ${offset}: ${entries.length} entries (${seen.size})`);
+    console.log(`  list offset ${offset}: ${entries.length}/${cardCount} entries (${seen.size})`);
+    if (entries.length < cardCount) {
+      console.warn(`  [WARN] ${cardCount - entries.length} Karte(n) bei offset ${offset} nicht lesbar`);
+    }
 
     if (limit != null && seen.size >= limit) break;
-    if (entries.length === 0) break;
-    offset += entries.length;
+    if (cardCount === 0 || seen.size === sizeBefore) break;
+    offset += cardCount;
     await sleep(REQUEST_DELAY_MS);
   }
 
@@ -134,7 +144,7 @@ async function fetchAllListEntries(limit: number | null): Promise<ListEntry[]> {
   return limit == null ? all : all.slice(0, limit);
 }
 
-function isStopLine(line: string) {
+export function isStopLine(line: string) {
   return [
     "Profile im Internet",
     "alles öffnen alles schließen",
@@ -145,6 +155,10 @@ function isStopLine(line: string) {
     "Mandat",
     "Veröffentlichungspflichtige Angaben",
     "Abgeordnetenbüro",
+    "Startseite",
+    "Barrierefreiheit",
+    "Stand:",
+    "Ausdruck aus dem Internet-Angebot",
   ].some((stop) => line === stop || line.startsWith(`${stop} `));
 }
 
@@ -154,7 +168,7 @@ function normalizeOfficeLines(lines: string[]) {
     .filter((line) => line && line !== "Kontakt (E-Mail)");
 }
 
-function parseOffice(lines: string[]): Office | null {
+export function parseOffice(lines: string[]): Office | null {
   const normalized = normalizeOfficeLines(lines);
   if (normalized.length === 0) return null;
   const postLine = normalized.find((line) => /^\d{5}\s+\S/.test(line));
@@ -186,25 +200,31 @@ function dedupeOffices(offices: Office[]) {
   return [...byAddress.values()];
 }
 
-function splitOfficeBlocks(lines: string[]) {
+const POSTAL_LINE = /^\d{5}\s+\S/;
+const CONTINUATION_LINE = /^(Postfach|Telefon|Tel\.|Fax|Mobil|E-Mail|Öffnungszeiten)/i;
+
+export function splitOfficeBlocks(lines: string[]) {
   const blocks: string[][] = [];
   let current: string[] = [];
+  let lastWasContinuation = false;
 
   for (const line of lines) {
-    const startsNamedOffice = /^(Wahlkreisbüro|Bürgerbüro)\b/.test(line);
-    const currentHasPostalCode = current.some((item) => /^\d{5}\s+\S/.test(item));
-    if (startsNamedOffice && current.length > 0 && currentHasPostalCode) {
+    const closed = current.some((item) => POSTAL_LINE.test(item));
+    const isContinuation = CONTINUATION_LINE.test(line);
+    const continues = closed && (isContinuation || (lastWasContinuation && POSTAL_LINE.test(line)));
+    if (closed && !continues) {
       blocks.push(current);
       current = [];
     }
     current.push(line);
+    lastWasContinuation = isContinuation;
   }
 
-  if (current.length > 0) blocks.push(current);
+  if (current.some((item) => POSTAL_LINE.test(item))) blocks.push(current);
   return blocks;
 }
 
-function extractConstituencyOffices(profileHtml: string): Office[] {
+export function extractConstituencyOffices(profileHtml: string): Office[] {
   const lines = stripTagsToLines(profileHtml);
   const offices = new Map<string, Office>();
 
@@ -269,6 +289,10 @@ function toCsv(records: OfficeRecord[]) {
 
 async function main() {
   const { dryRun, limit } = parseArgs();
+  if (limit != null && !dryRun) {
+    console.error("[ABBRUCH] --limit ist nur mit --dry-run erlaubt (würde sonst die echte Datei überschreiben).");
+    process.exit(1);
+  }
   console.log("\nFetching Bundestag constituency offices...\n");
 
   const entries = await fetchAllListEntries(limit);
@@ -296,11 +320,22 @@ async function main() {
   };
 
   if (!dryRun && limit == null && fs.existsSync(OUT_JSON)) {
-    const previous = JSON.parse(fs.readFileSync(OUT_JSON, "utf-8")) as { records?: unknown[] };
+    const previous = JSON.parse(fs.readFileSync(OUT_JSON, "utf-8")) as {
+      records?: unknown[];
+      summary?: { withConstituencyOffice?: number };
+    };
     const previousCount = previous.records?.length ?? 0;
     if (records.length < previousCount * 0.8) {
       console.error(
         `\n[ABBRUCH] Nur ${records.length} Profile gefunden (bisher ${previousCount}). Parser prüfen, nichts geschrieben.`
+      );
+      process.exit(1);
+    }
+    const previousWithOffice = previous.summary?.withConstituencyOffice ?? 0;
+    const withAddress = records.filter((record) => record.constituencyOffice?.postalCode).length;
+    if (withAddress < previousWithOffice * 0.8) {
+      console.error(
+        `\n[ABBRUCH] Nur ${withAddress} Büros mit Adresse (bisher ${previousWithOffice}). Parser prüfen, nichts geschrieben.`
       );
       process.exit(1);
     }
@@ -320,7 +355,9 @@ async function main() {
   }
 }
 
-main().catch((err) => {
-  console.error(err);
-  process.exit(1);
-});
+if (require.main === module) {
+  main().catch((err) => {
+    console.error(err);
+    process.exit(1);
+  });
+}

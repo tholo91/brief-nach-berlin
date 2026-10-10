@@ -343,6 +343,8 @@ export async function POST(req: NextRequest) {
         issueText: data.issueText,
         debug: debugPayload,
         campaign: campaign ? data.campaign : undefined,
+        // Kampagne wurde vor dem Hochzählen geladen, +1 schließt diesen Brief ein.
+        campaignLetterCount: campaign ? campaign.letterCount + 1 : undefined,
         letterNumber,
         letterId,
       });

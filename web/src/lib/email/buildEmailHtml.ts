@@ -105,19 +105,24 @@ export function buildLetterEmailText(data: SendLetterEmailParams): string {
   return parts.join("\n\n");
 }
 
+// Unter dieser Schwelle wirkt eine Zahl eher entmutigend, dann bleibt nur der Kampagnen-Satz.
+const CAMPAIGN_COUNT_MIN = 25;
+
 function buildCampaignAttributionHtml(
   campaign: SendLetterEmailParams["campaign"],
   locale?: SendLetterEmailParams["locale"],
+  letterCount?: number,
 ): string {
   if (!campaign?.slug) return "";
 
   const copy = getEmailCopy(locale);
   const campaignUrl = `${APP_URL}/kampagne/${encodeURIComponent(campaign.slug)}`;
   const creator = campaign.creatorName?.trim();
+  const countText = letterCount && letterCount >= CAMPAIGN_COUNT_MIN ? ` ${copy.campaignCount(letterCount)}` : "";
   return `
     <div class="bnb-inner-pad" style="margin:0 0 16px;background-color:#FAF8F5;border:1px solid #E0DCD7;border-radius:4px;padding:14px 18px;">
       <p style="margin:0;font-family:Georgia,'Times New Roman',serif;font-size:13px;color:#4A4A4A;line-height:1.6;">
-        ${copy.campaignBy(creator ? escapeHtml(creator) : undefined)}
+        ${copy.campaignBy(creator ? escapeHtml(creator) : undefined)}${countText}
         <a href="${campaignUrl}" target="_blank" rel="noopener noreferrer" style="color:#2D5016;text-decoration:underline;">${copy.campaignLink}</a>
       </p>
     </div>`;
@@ -676,7 +681,7 @@ export function buildEmailHtml(data: SendLetterEmailParams): string {
                 ${data.campaign?.slug ? `
                 <tr>
                   <td colspan="7" class="bnb-pad" style="padding:0 32px 8px;background-color:#ffffff;">
-                    ${buildCampaignAttributionHtml(data.campaign, locale)}
+                    ${buildCampaignAttributionHtml(data.campaign, locale, data.campaignLetterCount)}
                   </td>
                 </tr>` : ""}
 

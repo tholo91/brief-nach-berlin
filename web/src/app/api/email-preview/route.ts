@@ -152,6 +152,7 @@ Eine Bürgerin aus Ihrem Wahlkreis`;
           externalUrl: "https://example.com",
         }
       : undefined,
+    campaignLetterCount: includeCampaign ? 63 : undefined,
     letterNumber: 662,
   } as const;
 

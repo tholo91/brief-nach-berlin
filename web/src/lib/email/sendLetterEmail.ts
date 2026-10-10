@@ -126,6 +126,7 @@ export interface SendLetterEmailParams {
   feedbackToken?: string;
   campaign?: WizardData["campaign"];
   letterNumber?: number;
+  campaignLetterCount?: number;
   letterId?: string;
 }
 
@@ -144,6 +145,7 @@ export function prepareLetterEmail(args: {
   debug: LetterDebugPayload;
   campaign?: WizardData["campaign"];
   letterNumber?: number;
+  campaignLetterCount?: number;
   letterId?: string;
 }): { params: SendLetterEmailParams; feedbackToken: string } {
   const {
@@ -155,6 +157,7 @@ export function prepareLetterEmail(args: {
     debug: initialDebug,
     campaign,
     letterNumber,
+    campaignLetterCount,
     letterId,
   } = args;
   const debug = letterId ? { ...initialDebug, letterId } : initialDebug;
@@ -195,6 +198,7 @@ export function prepareLetterEmail(args: {
         feedbackToken,
         campaign,
         letterNumber,
+        campaignLetterCount,
       },
     };
   }
@@ -231,6 +235,7 @@ export function prepareLetterEmail(args: {
         feedbackToken,
         campaign,
         letterNumber,
+        campaignLetterCount,
       },
     };
   }
@@ -266,6 +271,7 @@ export function prepareLetterEmail(args: {
         feedbackToken,
         campaign,
         letterNumber,
+        campaignLetterCount,
       },
     };
   }
@@ -295,6 +301,7 @@ export function prepareLetterEmail(args: {
         feedbackToken,
         campaign,
         letterNumber,
+        campaignLetterCount,
       },
     };
   }
@@ -319,6 +326,7 @@ export function prepareLetterEmail(args: {
         feedbackToken,
         campaign,
         letterNumber,
+        campaignLetterCount,
       },
     };
   }
@@ -344,6 +352,7 @@ export function prepareLetterEmail(args: {
       feedbackToken,
       campaign,
       letterNumber,
+      campaignLetterCount,
     },
   };
 }

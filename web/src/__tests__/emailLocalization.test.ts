@@ -45,6 +45,23 @@ describe("email localization", () => {
     expect(html).toContain("deutschepost.de/de/m/mobile-briefmarke.html");
   });
 
+  it.each([
+    [25, true],
+    [1234, true],
+    [24, false],
+    [undefined, false],
+  ] as const)("shows the campaign letter count %s: %s", (campaignLetterCount, shown) => {
+    const html = buildEmailHtml({
+      ...params("de"),
+      campaign: { slug: "afd-vor-gericht", title: "AfD vor Gericht", creatorName: "AfD vor Gericht" },
+      campaignLetterCount,
+    });
+
+    expect(html).toContain("Diese Kampagne wurde von <strong>AfD vor Gericht</strong> gestartet.");
+    expect(html.includes("Mit deinem Engagement sind es schon")).toBe(shown);
+    if (campaignLetterCount === 1234) expect(html).toContain("<strong>1.234 Briefe</strong>");
+  });
+
   it("uses the short step copy on mobile", () => {
     const html = buildEmailHtml(params("de"));
 

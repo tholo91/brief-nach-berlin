@@ -512,7 +512,9 @@ export function buildEmailHtml(data: SendLetterEmailParams): string {
         "Brief prüfen, abschreiben und erst dann versenden",
       ]
     : copy.steps;
-  const stampBuyLink = `<a href="https://www.deutschepost.de/de/m/mobile-briefmarke.html" target="_blank" rel="noopener noreferrer" style="color:#2D5016;text-decoration:underline;">${copy.stampBuy}</a>`;
+  const stampLink = (text: string) =>
+    `<a href="https://www.deutschepost.de/de/m/mobile-briefmarke.html" target="_blank" rel="noopener noreferrer" style="color:#2D5016;text-decoration:underline;">${text}</a>`;
+  const mobileSteps = copy.mobileSteps;
 
   return `<!DOCTYPE html>
 <html lang="${locale}">
@@ -632,13 +634,13 @@ export function buildEmailHtml(data: SendLetterEmailParams): string {
                       <tr>
                         <td style="padding:6px 0;font-family:Georgia,'Times New Roman',serif;font-size:14px;color:#4A4A4A;line-height:1.5;">
                           <span style="display:inline-block;width:24px;height:24px;background-color:#2D5016;color:#ffffff;border-radius:50%;text-align:center;line-height:24px;font-size:12px;font-weight:bold;margin-right:10px;vertical-align:middle;">2</span>
-                          <span class="bnb-desk">${nextSteps[1]}</span><span class="bnb-mob" style="display:none;">${nextSteps[1]}</span>
+                          <span class="bnb-desk">${nextSteps[1]}</span><span class="bnb-mob" style="display:none;">${isMdbLater ? nextSteps[1] : mobileSteps.address}</span>
                         </td>
                       </tr>
                       <tr>
                         <td style="padding:6px 0;font-family:Georgia,'Times New Roman',serif;font-size:14px;color:#4A4A4A;line-height:1.5;">
                           <span style="display:inline-block;width:24px;height:24px;background-color:#2D5016;color:#ffffff;border-radius:50%;text-align:center;line-height:24px;font-size:12px;font-weight:bold;margin-right:10px;vertical-align:middle;">3</span>
-                          <span class="bnb-desk">${isMdbLater ? nextSteps[2] : `${nextSteps[2]} (${copy.stampPrice}, ${stampBuyLink}) ${copy.stampTail}`}</span><span class="bnb-mob" style="display:none;">${isMdbLater ? nextSteps[2] : `${nextSteps[2]} (${stampBuyLink}) ${copy.stampTail}`}</span>
+                          <span class="bnb-desk">${isMdbLater ? nextSteps[2] : `${nextSteps[2]} (${copy.stampPrice}, ${stampLink(copy.stampBuy)}) ${copy.stampTail}`}</span><span class="bnb-mob" style="display:none;">${isMdbLater ? nextSteps[2] : `${mobileSteps.stamp} (${stampLink(mobileSteps.stampBuy)}) ${mobileSteps.stampTail}`}</span>
                         </td>
                       </tr>
                     </table>

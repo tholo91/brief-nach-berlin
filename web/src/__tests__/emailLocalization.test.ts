@@ -45,6 +45,14 @@ describe("email localization", () => {
     expect(html).toContain("deutschepost.de/de/m/mobile-briefmarke.html");
   });
 
+  it("uses the short step copy on mobile", () => {
+    const html = buildEmailHtml(params("de"));
+
+    expect(html).toContain("Adressen auf den Umschlag");
+    expect(html).toContain("Briefmarke (<a");
+    expect(html).toContain("hier kaufen</a>) + ab die Post");
+  });
+
   it.each([
     ["en", "How did you find your letter?", "<html lang=\"en\">", "Privacy policy (in German)"],
     ["tr", "Mektubunuzu nasıl buldunuz?", "<html lang=\"tr\">", "Gizlilik politikası (Almanca)"],

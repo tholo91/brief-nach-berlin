@@ -6,7 +6,7 @@ date: 2026-10-09
 # 261009-psc: Briefmarken-Link schaerfen + Altersgruppe im Review
 
 ## Changes
-- Letter mail step 3 (DE/EN/TR): "Briefmarke drauf (0,95 EUR, online kaufen) + ab in den Briefkasten!"; mobile drops the price. Link target unchanged (Deutsche Post mobile Briefmarke). `web/src/lib/email/mailLocale.ts`, `web/src/lib/email/buildEmailHtml.ts`.
+- Letter mail steps (DE/EN/TR): desktop step 3 "Briefmarke drauf (0,95 EUR, online kaufen) + ab in den Briefkasten!"; mobile (<600px) step 2 "Adressen auf den Umschlag", step 3 "Briefmarke (hier kaufen) + ab die Post". Link target unchanged (Deutsche Post mobile Briefmarke). `web/src/lib/email/mailLocale.ts`, `web/src/lib/email/buildEmailHtml.ts`.
 - Optional age group in feedback form ("Wie alt bist du?", 5 groups, helper text on why). `web/src/lib/feedback/ageGroup.ts`, `FeedbackForm.tsx`, `submitReview.ts` (writes `reviews.age_group` in full mode).
 - Migration `web/supabase/migrations/028_reviews_age_group.sql` (nullable text + check constraint, SELECT revoked from anon/authenticated). Listed as not applied in `MIGRATION_STATUS.md`.
 - Privacy copy: `PrivacyDisclosure.tsx` and `/datenschutz` list the age group.

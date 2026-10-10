@@ -44,6 +44,7 @@ export const emailCopy = {
     stampPrice: "0,95 EUR",
     stampBuy: "online kaufen",
     stampTail: "+ ab in den Briefkasten!",
+    mobileSteps: { address: "Adressen auf den Umschlag", stamp: "Briefmarke", stampBuy: "hier kaufen", stampTail: "+ ab die Post" },
     impact: {
       mdb: "Handgeschriebene Briefe fallen in Bundestagsbüros auf. Inmitten unpersönlicher Drucksachen signalisieren sie echtes Engagement.",
       mdl: "Handgeschriebene Briefe fallen in Abgeordnetenbüros auf. Inmitten unpersönlicher Drucksachen signalisieren sie echtes Engagement.",
@@ -129,6 +130,7 @@ export const emailCopy = {
     stampPrice: "€0.95",
     stampBuy: "buy online",
     stampTail: "+ into the postbox!",
+    mobileSteps: { address: "Addresses on the envelope", stamp: "Stamp", stampBuy: "buy here", stampTail: "+ off it goes" },
     impact: {
       mdb: "Handwritten letters stand out in parliamentary offices. Among impersonal documents, they signal genuine commitment.",
       mdl: "Handwritten letters stand out in parliamentary offices. Among impersonal documents, they signal genuine commitment.",
@@ -214,6 +216,7 @@ export const emailCopy = {
     stampPrice: "0,95 €",
     stampBuy: "online satın al",
     stampTail: "+ posta kutusuna atın!",
+    mobileSteps: { address: "Adresleri zarfa yazın", stamp: "Pul", stampBuy: "buradan satın al", stampTail: "+ postaya verin" },
     impact: {
       mdb: "El yazısıyla yazılan mektuplar parlamento ofislerinde öne çıkar. Kişisel olmayan belgeler arasında gerçek bir bağlılık gösterirler.",
       mdl: "El yazısıyla yazılan mektuplar parlamento ofislerinde öne çıkar. Kişisel olmayan belgeler arasında gerçek bir bağlılık gösterirler.",

@@ -3,6 +3,7 @@ import {
   GERMANY_MAP_VIEWBOX,
 } from "@/lib/letterSignals/germanyMapGeometry.generated";
 import type { LetterMapPoint } from "@/lib/letterSignals/mapTypes";
+import { contributionPointRadius, scaledPointRadius } from "@/lib/letterSignals/mapViewport";
 
 export type OwnPointState = "idle" | "flying" | "contributed";
 
@@ -12,29 +13,37 @@ export function GermanyContributionMap({
   ownPointState = "idle",
   reducedMotion = false,
   variant = "compact",
+  viewBox = GERMANY_MAP_VIEWBOX,
+  zoom = 1,
   label,
 }: {
   points: LetterMapPoint[];
   ownPoint?: { x: number; y: number } | null;
   ownPointState?: OwnPointState;
   reducedMotion?: boolean;
-  variant?: "compact" | "landing";
+  variant?: "compact" | "landing" | "expanded";
+  viewBox?: string;
+  zoom?: number;
   label: string;
 }) {
   const ownVisible = Boolean(ownPoint && ownPointState === "contributed");
+  const expanded = variant === "expanded";
+  const ownRadius = scaledPointRadius(3.2, zoom);
   const flightPath = ownPoint
     ? `M 12 168 Q 64 154 ${ownPoint.x} ${ownPoint.y}`
     : "";
 
   return (
     <svg
-      viewBox={GERMANY_MAP_VIEWBOX}
+      viewBox={viewBox}
       role="img"
       aria-label={label}
       className={
-        variant === "landing"
-          ? "mx-auto h-auto w-full max-w-[18rem] md:max-w-[29rem]"
-          : "mx-auto h-auto w-full max-w-[13rem]"
+        expanded
+          ? "block h-full w-full"
+          : variant === "landing"
+            ? "mx-auto h-auto w-full max-w-[18rem] md:max-w-[29rem]"
+            : "mx-auto h-auto w-full max-w-[13rem]"
       }
     >
       <path
@@ -51,8 +60,9 @@ export function GermanyContributionMap({
           key={`${point.x}-${point.y}-${index}`}
           cx={point.x}
           cy={point.y}
-          r={Math.min(2.5, 0.75 + Math.log2(point.count + 1) * 0.32)}
-          className="fill-waldgruen/60"
+          r={scaledPointRadius(contributionPointRadius(point.count), zoom)}
+          className={expanded ? "fill-waldgruen/70 stroke-creme" : "fill-waldgruen/60"}
+          {...(expanded ? { strokeWidth: 0.75, vectorEffect: "non-scaling-stroke" as const } : {})}
         />
       ))}
 
@@ -66,15 +76,26 @@ export function GermanyContributionMap({
 
       {ownVisible && ownPoint && (
         <g>
-          <circle cx={ownPoint.x} cy={ownPoint.y} r="3.4" className="fill-airmail-rot/20">
+          <circle cx={ownPoint.x} cy={ownPoint.y} r={scaledPointRadius(3.4, zoom)} className="fill-airmail-rot/20">
             {!reducedMotion && (
               <>
-                <animate attributeName="r" values="3.4;11;3.4" dur="900ms" repeatCount="1" />
+                <animate
+                  attributeName="r"
+                  values={`${scaledPointRadius(3.4, zoom)};${scaledPointRadius(11, zoom)};${scaledPointRadius(3.4, zoom)}`}
+                  dur="900ms"
+                  repeatCount="1"
+                />
                 <animate attributeName="opacity" values="0.8;0;0" dur="900ms" repeatCount="1" />
               </>
             )}
           </circle>
-          <circle cx={ownPoint.x} cy={ownPoint.y} r="3.2" className="fill-airmail-rot" />
+          <circle
+            cx={ownPoint.x}
+            cy={ownPoint.y}
+            r={ownRadius}
+            className="fill-airmail-rot"
+            {...(expanded ? { stroke: "white", strokeWidth: 2, vectorEffect: "non-scaling-stroke" as const } : {})}
+          />
         </g>
       )}
     </svg>

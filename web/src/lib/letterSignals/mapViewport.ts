@@ -122,3 +122,48 @@ export function formatMapCounts(total: number, areas: number): string {
   if (total === 0) return "Noch keine Punkte auf der Karte";
   return `${numberFormat.format(total)} ${total === 1 ? "Brief" : "Briefe"} aus ${numberFormat.format(areas)} ${areas === 1 ? "PLZ-Gebiet" : "PLZ-Gebieten"}`;
 }
+
+export const DOUBLE_TAP_ZOOM = 2;
+export const DOUBLE_TAP_MAX_DELAY_MS = 320;
+export const DOUBLE_TAP_MAX_DISTANCE_PX = 28;
+export const TAP_MAX_MOVE_PX = 8;
+export const SHEET_DISMISS_DISTANCE_PX = 110;
+export const SHEET_DISMISS_MIN_DISTANCE_PX = 32;
+export const SHEET_DISMISS_VELOCITY = 0.5;
+
+export function pinchStep(
+  prevA: MapPoint2D,
+  prevB: MapPoint2D,
+  nextA: MapPoint2D,
+  nextB: MapPoint2D,
+): { factor: number; prevMidpoint: MapPoint2D; nextMidpoint: MapPoint2D } {
+  const prevDistance = Math.hypot(prevB.x - prevA.x, prevB.y - prevA.y);
+  const nextDistance = Math.hypot(nextB.x - nextA.x, nextB.y - nextA.y);
+  return {
+    factor: prevDistance === 0 ? 1 : nextDistance / prevDistance,
+    prevMidpoint: { x: (prevA.x + prevB.x) / 2, y: (prevA.y + prevB.y) / 2 },
+    nextMidpoint: { x: (nextA.x + nextB.x) / 2, y: (nextA.y + nextB.y) / 2 },
+  };
+}
+
+type TapRecord = { time: number; x: number; y: number };
+
+export function isDoubleTap(previous: TapRecord | null, current: TapRecord): boolean {
+  if (!previous) return false;
+  return (
+    current.time - previous.time <= DOUBLE_TAP_MAX_DELAY_MS &&
+    Math.hypot(current.x - previous.x, current.y - previous.y) <= DOUBLE_TAP_MAX_DISTANCE_PX
+  );
+}
+
+export function shouldDismissSheet(dragDistancePx: number, velocityPxPerMs: number): boolean {
+  return (
+    dragDistancePx >= SHEET_DISMISS_DISTANCE_PX ||
+    (dragDistancePx >= SHEET_DISMISS_MIN_DISTANCE_PX && velocityPxPerMs >= SHEET_DISMISS_VELOCITY)
+  );
+}
+
+export function wheelZoomFactor(deltaY: number, deltaMode: number, ctrlKey: boolean): number {
+  const k = ctrlKey ? 0.01 : deltaMode === 1 ? 0.06 : 0.0025;
+  return clamp(Math.exp(-deltaY * k), 0.5, 2);
+}

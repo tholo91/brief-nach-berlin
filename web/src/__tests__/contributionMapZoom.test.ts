@@ -10,11 +10,15 @@ import {
   contributionPointRadius,
   formatMapCounts,
   initialViewport,
+  isDoubleTap,
   panBy,
+  pinchStep,
   parseViewBox,
   scaledPointRadius,
+  shouldDismissSheet,
   viewBoxString,
   viewportWindow,
+  wheelZoomFactor,
   zoomAt,
 } from "@/lib/letterSignals/mapViewport";
 import { GermanyContributionMap } from "@/components/letter-signals/GermanyContributionMap";
@@ -89,6 +93,39 @@ describe("mapViewport helpers", () => {
     expect(formatMapCounts(0, 0)).toBe("Noch keine Punkte auf der Karte");
     expect(formatMapCounts(1, 1)).toBe("1 Brief aus 1 PLZ-Gebiet");
     expect(formatMapCounts(1234, 56)).toBe("1.234 Briefe aus 56 PLZ-Gebieten");
+  });
+});
+
+describe("gesture helpers", () => {
+  it("computes pinch factor and midpoints", () => {
+    const step = pinchStep({ x: 0, y: 0 }, { x: 100, y: 0 }, { x: -50, y: 0 }, { x: 150, y: 0 });
+    expect(step.factor).toBe(2);
+    expect(step.prevMidpoint).toEqual({ x: 50, y: 0 });
+    expect(step.nextMidpoint).toEqual({ x: 50, y: 0 });
+    expect(pinchStep({ x: 5, y: 5 }, { x: 5, y: 5 }, { x: 0, y: 0 }, { x: 40, y: 0 }).factor).toBe(1);
+  });
+
+  it("detects double taps by time and distance", () => {
+    const first = { time: 1000, x: 100, y: 100 };
+    expect(isDoubleTap(null, first)).toBe(false);
+    expect(isDoubleTap(first, { time: 1200, x: 106, y: 108 })).toBe(true);
+    expect(isDoubleTap(first, { time: 1400, x: 100, y: 100 })).toBe(false);
+    expect(isDoubleTap(first, { time: 1200, x: 140, y: 100 })).toBe(false);
+  });
+
+  it("decides sheet dismissal by distance and velocity", () => {
+    expect(shouldDismissSheet(120, 0)).toBe(true);
+    expect(shouldDismissSheet(40, 0.8)).toBe(true);
+    expect(shouldDismissSheet(40, 0.2)).toBe(false);
+    expect(shouldDismissSheet(20, 2)).toBe(false);
+  });
+
+  it("maps wheel deltas to a clamped zoom factor", () => {
+    expect(wheelZoomFactor(-100, 0, false)).toBeGreaterThan(1);
+    expect(wheelZoomFactor(100, 0, false)).toBeLessThan(1);
+    expect(wheelZoomFactor(-10, 0, true)).toBeGreaterThan(wheelZoomFactor(-10, 0, false));
+    expect(wheelZoomFactor(-100000, 0, true)).toBe(2);
+    expect(wheelZoomFactor(100000, 1, false)).toBe(0.5);
   });
 });
 
@@ -172,10 +209,39 @@ describe("map dialog sources", () => {
   });
 
   it("keeps copy free of em dashes and first-person plural", () => {
-    const emDash = "—";
+    const emDash = String.fromCharCode(0x2014);
     expect(dialogSource).not.toContain(emDash);
     expect(cardSource).not.toContain(emDash);
     const plural = new RegExp("\\b(" + ["w", "ir"].join("") + "|" + ["u", "ns"].join("") + "|" + ["un", "ser\\w*"].join("") + ")\\b", "i");
     expect(dialogSource).not.toMatch(plural);
+  });
+
+  it("implements gesture, wheel, sheet and animation hooks", () => {
+    for (const token of [
+      "setPointerCapture",
+      "passive: false",
+      "gesturestart",
+      "requestAnimationFrame",
+      "data-state",
+      "onCancel",
+      "(max-width: 767.98px)",
+    ]) {
+      expect(dialogSource).toContain(token);
+    }
+  });
+
+  it("lists every map dialog animation class in the reduced-motion block", () => {
+    const css = readFileSync(join(process.cwd(), "src/app/globals.css"), "utf8");
+    const start = css.indexOf("@media (prefers-reduced-motion: reduce)");
+    const end = css.indexOf("animation: none !important", start);
+    const region = css.slice(start, end);
+    for (const name of [
+      ".map-dialog-sheet",
+      ".map-dialog-panel",
+      ".map-dialog-backdrop",
+    ]) {
+      expect(css).toContain(name);
+      expect(region).toContain(name);
+    }
   });
 });

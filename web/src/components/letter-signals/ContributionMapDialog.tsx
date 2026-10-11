@@ -2,7 +2,6 @@
 
 import { useCallback, useEffect, useId, useMemo, useRef, useState, type RefObject } from "react";
 import { GermanyContributionMap } from "@/components/letter-signals/GermanyContributionMap";
-import { GERMANY_MAP_VIEWBOX } from "@/lib/letterSignals/germanyMapGeometry.generated";
 import type { LetterMapPoint } from "@/lib/letterSignals/mapTypes";
 import {
   DOUBLE_TAP_ZOOM,
@@ -27,7 +26,7 @@ import {
   type MapViewport,
 } from "@/lib/letterSignals/mapViewport";
 
-const BOUNDS = parseViewBox(GERMANY_MAP_VIEWBOX);
+const BOUNDS = parseViewBox("30 10 120 160");
 const CLOSE_ANIMATION_MS = 220;
 const SWIPE_CLOSE_MS = 200;
 const ZOOM_ANIMATION_MS = 180;

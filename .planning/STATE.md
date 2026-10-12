@@ -189,6 +189,7 @@ Recent decisions affecting current work:
 | 261012-oj1 | Kampagnenseiten: Zähler ab 21, Disclaimer, pausiert per Link, "Weitere Kampagnen" | 2026-10-12 | 6b20dd3 | [261012-oj1-kampagnenseiten-zaehler-disclaimer-pausi](./quick/261012-oj1-kampagnenseiten-zaehler-disclaimer-pausi/) |
 | 261012-pnq | Karten-Vergrößerung von Success-Seite auf Landing Page verschoben | 2026-10-12 | 01282e8 | [261012-pnq-karten-vergroesserung-von-success-seite-](./quick/261012-pnq-karten-vergroesserung-von-success-seite-/) |
 | 261012-o70 | Self-Service-Datenlöschung /datenloeschen: erst prüfen, dann löschen; Löschlink in Rückfrage- und Last-Call-Mail | 2026-10-12 | 083a576 | [261012-o70-datenloeschen-seite-self-service](./quick/261012-o70-datenloeschen-seite-self-service/) |
+| fast-261012 | Briefmail: Karten-Ausnahme im Datenschutz-Satz + persönlicher /datenloeschen-Link (de/en/tr) | 2026-10-12 | f5a435a | - |
 
 ## Session Continuity
 

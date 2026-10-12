@@ -23,7 +23,7 @@ export interface FinancingNoticePortrait {
   alt: string;
 }
 
-export function buildDonationButtonLabelHtml(label: string, baseUrl = APP_URL): string {
+export function buildDonationButtonLabelHtml(label: string, baseUrl: string = APP_URL): string {
   return `<img src="${escapeHtml(baseUrl)}/images/icon-heart-white.png" alt="" aria-hidden="true" width="16" height="16" style="width:16px;height:16px;vertical-align:middle;border:0;margin-right:6px;">${escapeHtml(label)}`;
 }
 

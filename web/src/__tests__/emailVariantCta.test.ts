@@ -89,7 +89,7 @@ describe("letter email variant CTA", () => {
 
     expect(button).toContain("icon-heart-white.png");
     expect(button).toContain(label);
-    expect(button?.indexOf("icon-heart-white.png")).toBeLessThan(button?.indexOf(label));
+    expect(button?.indexOf("icon-heart-white.png") ?? -1).toBeLessThan(button?.indexOf(label) ?? -1);
     expect(html).toContain(providerLabel);
   });
 

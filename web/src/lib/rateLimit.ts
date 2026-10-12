@@ -106,6 +106,12 @@ export const LIMITS = {
   REPORT_ERROR_PER_IP: { max: 5, windowMs: 10 * 60_000 },
   // Campaign reports per IP: 3 per hour. Each report mails a real creator.
   REPORT_CAMPAIGN_PER_IP: { max: 3, windowMs: 60 * 60_000 },
+  // Data deletion per IP: 10 per hour. A reader may retry after an error or
+  // open the link on a shared connection; scripted probing stops here.
+  DATA_DELETION_PER_IP: { max: 10, windowMs: 60 * 60_000 },
+  // Data deletion per email: 3 per 24 hours. One click deletes everything,
+  // so a handful of retries is plenty.
+  DATA_DELETION_PER_EMAIL: { max: 3, windowMs: 24 * 60 * 60_000 },
 } as const;
 
 export async function getClientIp(): Promise<string> {

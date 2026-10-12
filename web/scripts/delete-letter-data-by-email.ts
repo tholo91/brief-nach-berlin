@@ -1,4 +1,4 @@
-// Deletes all reviews and voluntary letter signals for one email address.
+// Deletes all reviews, voluntary letter signals and old roadmap_signups rows for one email address.
 // Default is dry-run. A deletion only happens with --confirm.
 //
 // Run:
@@ -8,7 +8,7 @@
 import { existsSync, readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { createClient } from "@supabase/supabase-js";
-import { createLetterSignalEmailHash } from "../src/lib/letterSignals/emailHash";
+import { deleteUserDataByEmail, lookupUserDataByEmail } from "../src/lib/dataDeletion/userData";
 
 type Args = { email: string; confirm: boolean };
 
@@ -53,47 +53,21 @@ async function main() {
   if (!url || !key || !secret) throw new Error("Missing Supabase credentials or letter-signal email hash secret.");
 
   const client = createClient(url, key, { auth: { persistSession: false } });
-  const lookupHash = createLetterSignalEmailHash(args.email, secret);
-  const [reviewsResult, hashSignalsResult, emailSignalsResult] = await Promise.all([
-    client.from("reviews").select("id, created_at, rating, letter_id").eq("email", args.email),
-    client.from("letter_signals").select("id, created_at, status").eq("email_lookup_hash", lookupHash),
-    client.from("letter_signals").select("id, created_at, status").eq("email_normalized", args.email),
-  ]);
-  if (reviewsResult.error) throw reviewsResult.error;
-  if (hashSignalsResult.error) throw hashSignalsResult.error;
-  if (emailSignalsResult.error) throw emailSignalsResult.error;
-
-  const reviews = reviewsResult.data ?? [];
-  const linkedLetterIds = Array.from(new Set(
-    reviews.map((review) => review.letter_id).filter((value): value is string => typeof value === "string"),
-  ));
-  const linkedSignalsResult = linkedLetterIds.length > 0
-    ? await client.from("letter_signals").select("id, created_at, status").in("letter_id", linkedLetterIds)
-    : { data: [], error: null };
-  if (linkedSignalsResult.error) throw linkedSignalsResult.error;
-  const signals = Array.from(new Map(
-    [...(hashSignalsResult.data ?? []), ...(emailSignalsResult.data ?? []), ...(linkedSignalsResult.data ?? [])]
-      .map((signal) => [signal.id, signal]),
-  ).values());
   console.log(`Dry run for ${args.email}:`);
-  console.log(`- ${reviews.length} review(s)`);
-  console.log(`- ${signals.length} voluntary letter signal(s)`);
+  const found = await lookupUserDataByEmail(client, args.email);
+  console.log(`- ${found.reviews.length} review(s)`);
+  console.log(`- ${found.mapEntries.length} voluntary letter signal(s)`);
+  console.log(`- ${found.waitlist.length} roadmap signup(s)`);
 
   if (!args.confirm) {
     console.log("No data was deleted. Re-run with --confirm to permanently delete these rows.");
     return;
   }
 
-  const signalIds = signals.map((signal) => signal.id);
-  const [reviewDelete, signalDelete] = await Promise.all([
-    client.from("reviews").delete({ count: "exact" }).eq("email", args.email),
-    signalIds.length > 0
-      ? client.from("letter_signals").delete({ count: "exact" }).in("id", signalIds)
-      : Promise.resolve({ count: 0, error: null }),
-  ]);
-  if (reviewDelete.error) throw reviewDelete.error;
-  if (signalDelete.error) throw signalDelete.error;
-  console.log(`Deleted ${reviewDelete.count ?? reviews.length} review(s) and ${signalDelete.count ?? signals.length} signal(s).`);
+  const deleted = await deleteUserDataByEmail(client, args.email);
+  console.log(
+    `Deleted ${deleted.reviews} review(s), ${deleted.mapEntries} signal(s) and ${deleted.waitlist} roadmap signup(s).`,
+  );
 }
 
 main().catch((error) => {

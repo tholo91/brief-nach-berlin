@@ -1,7 +1,7 @@
 jest.mock("@/lib/lookup/resolveRecipient", () => ({
   resolveRecipientSelection: jest.fn(),
 }));
-jest.mock("@/lib/campaigns/repository", () => ({ getActiveCampaignBySlug: jest.fn() }));
+jest.mock("@/lib/campaigns/repository", () => ({ getPublicCampaignBySlug: jest.fn() }));
 jest.mock("@/lib/lookup/routingToken", () => ({
   verifyRoutingToken: jest.fn(),
   verifyRoutingTokenEnvelope: jest.fn(() => null),
@@ -32,7 +32,7 @@ import { moderateText } from "@/lib/moderation/moderateText";
 import { prepareLetterEmail, sendLetterEmail } from "@/lib/email/sendLetterEmail";
 import { buildResendDebugPayload } from "@/lib/email/buildDebugPayload";
 import { buildLetterSignalContext } from "@/lib/letterSignals/context";
-import { getActiveCampaignBySlug } from "@/lib/campaigns/repository";
+import { getPublicCampaignBySlug } from "@/lib/campaigns/repository";
 import type { WizardData } from "@/lib/types/wizard";
 import type { RecipientSelection } from "@/lib/lookup/rathausRecipient";
 import { createGenerationProof } from "@/lib/letterSignals/token";
@@ -46,7 +46,7 @@ const mockedPrepareLetterEmail = jest.mocked(prepareLetterEmail);
 const mockedSendLetterEmail = jest.mocked(sendLetterEmail);
 const mockedBuildResendDebugPayload = jest.mocked(buildResendDebugPayload);
 const mockedBuildLetterSignalContext = jest.mocked(buildLetterSignalContext);
-const mockedGetActiveCampaignBySlug = jest.mocked(getActiveCampaignBySlug);
+const mockedGetPublicCampaignBySlug = jest.mocked(getPublicCampaignBySlug);
 
 const data: WizardData = {
   plz: "50667",
@@ -101,7 +101,7 @@ describe("RecipientSelection server hardening", () => {
     process.env.LETTER_PROMPT_LEVEL_AWARE = "true";
     process.env.LETTER_SIGNAL_TOKEN_SECRET = "recipient-selection-test-secret";
     mockedCheckRateLimit.mockReturnValue({ allowed: true });
-    mockedGetActiveCampaignBySlug.mockResolvedValue(null);
+    mockedGetPublicCampaignBySlug.mockResolvedValue(null);
     mockedResolveRecipientSelection.mockReturnValue({
       ok: true,
       recipient: mdbRecipient,
@@ -140,7 +140,7 @@ describe("RecipientSelection server hardening", () => {
   });
 
   it("übergibt den festen Kampagnenempfänger aus der serverseitig geladenen Kampagne", async () => {
-    mockedGetActiveCampaignBySlug.mockResolvedValue(fixedRecipientCampaign as never);
+    mockedGetPublicCampaignBySlug.mockResolvedValue(fixedRecipientCampaign as never);
 
     await expect(selectPoliticianAction(
       {
@@ -169,7 +169,7 @@ describe("RecipientSelection server hardening", () => {
   });
 
   it("lehnt bei festem Kampagnenempfänger jede andere Empfänger-Art ab", async () => {
-    mockedGetActiveCampaignBySlug.mockResolvedValue(fixedRecipientCampaign as never);
+    mockedGetPublicCampaignBySlug.mockResolvedValue(fixedRecipientCampaign as never);
 
     await expect(selectPoliticianAction(
       {
@@ -189,7 +189,7 @@ describe("RecipientSelection server hardening", () => {
   });
 
   it("lehnt eine am Client ergänzte Adresse für campaign_fixed vor der Auflösung ab", async () => {
-    mockedGetActiveCampaignBySlug.mockResolvedValue(fixedRecipientCampaign as never);
+    mockedGetPublicCampaignBySlug.mockResolvedValue(fixedRecipientCampaign as never);
     const manipulated = {
       kind: "campaign_fixed",
       postalAddress: "Private Straße 1, 12345 Beispielstadt",
@@ -212,7 +212,7 @@ describe("RecipientSelection server hardening", () => {
   });
 
   it("lehnt dieselbe Manipulation auch beim erneuten Versand ab", async () => {
-    mockedGetActiveCampaignBySlug.mockResolvedValue(fixedRecipientCampaign as never);
+    mockedGetPublicCampaignBySlug.mockResolvedValue(fixedRecipientCampaign as never);
 
     await expect(resendLetterAction(
       {
@@ -315,7 +315,7 @@ describe("RecipientSelection server hardening", () => {
       topicSource: "campaign" as const,
       topicModel: "mistral-small-latest",
     };
-    mockedGetActiveCampaignBySlug.mockResolvedValue({
+    mockedGetPublicCampaignBySlug.mockResolvedValue({
       slug: "sichere-schulwege",
       targetPoliticianIds: [],
       topic: campaignTopic,
@@ -389,7 +389,7 @@ describe("RecipientSelection server hardening", () => {
   });
 
   it("behandelt eine beendete Kampagne beim Pre-Check wie einen freien Brief", async () => {
-    mockedGetActiveCampaignBySlug.mockResolvedValue({
+    mockedGetPublicCampaignBySlug.mockResolvedValue({
       ...fixedRecipientCampaign,
       endsAt: "2026-01-01T22:59:59.000Z",
     } as never);
@@ -412,7 +412,7 @@ describe("RecipientSelection server hardening", () => {
   });
 
   it("sendet beim Resend einer beendeten Kampagne ohne Kampagnenkontext", async () => {
-    mockedGetActiveCampaignBySlug.mockResolvedValue({
+    mockedGetPublicCampaignBySlug.mockResolvedValue({
       ...fixedRecipientCampaign,
       endsAt: "2026-01-01T22:59:59.000Z",
     } as never);
@@ -512,7 +512,7 @@ describe("RecipientSelection server hardening", () => {
   it("Resend lädt den festen Empfänger erneut aus der Kampagne", async () => {
     const recipient = buildCampaignFixedRecipient(fixedRecipientCampaign.targetRecipient);
     const letterText = `${recipient.salutation}\n\nEin fertiger Brief.`;
-    mockedGetActiveCampaignBySlug.mockResolvedValue(fixedRecipientCampaign as never);
+    mockedGetPublicCampaignBySlug.mockResolvedValue(fixedRecipientCampaign as never);
     mockedResolveRecipientSelection.mockReturnValue({
       ok: true,
       recipient,

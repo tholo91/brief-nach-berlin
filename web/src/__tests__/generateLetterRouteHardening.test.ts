@@ -24,7 +24,7 @@ jest.mock("@/lib/rateLimit", () => ({
   },
 }));
 jest.mock("@/lib/counter", () => ({ incrementLetterCounters: jest.fn() }));
-jest.mock("@/lib/campaigns/repository", () => ({ getActiveCampaignBySlug: jest.fn() }));
+jest.mock("@/lib/campaigns/repository", () => ({ getPublicCampaignBySlug: jest.fn() }));
 jest.mock("@/lib/campaigns/milestoneNotification", () => ({
   claimAndSendCampaignMilestone: jest.fn(),
 }));
@@ -57,7 +57,7 @@ import { generateLetter } from "@/lib/generation/generateLetter";
 import { resolveRecipientSelection } from "@/lib/lookup/resolveRecipient";
 import { moderateText } from "@/lib/moderation/moderateText";
 import { checkRateLimit, hashIdentifier } from "@/lib/rateLimit";
-import { getActiveCampaignBySlug } from "@/lib/campaigns/repository";
+import { getPublicCampaignBySlug } from "@/lib/campaigns/repository";
 import { incrementLetterCounters } from "@/lib/counter";
 import { MistralStageError } from "@/lib/mistral";
 
@@ -147,7 +147,7 @@ describe("generate-letter RecipientSelection hardening", () => {
     };
     jest.mocked(checkRateLimit).mockReturnValue({ allowed: true });
     jest.mocked(hashIdentifier).mockReturnValue("hashed");
-    jest.mocked(getActiveCampaignBySlug).mockResolvedValue({
+    jest.mocked(getPublicCampaignBySlug).mockResolvedValue({
       slug: "alte-kampagne",
       targetLevel: "Bund",
       targetState: null,
@@ -278,7 +278,7 @@ describe("generate-letter RecipientSelection hardening", () => {
     function arrange(campaign: unknown, letterNumber: number) {
       jest.mocked(checkRateLimit).mockReturnValue({ allowed: true });
       jest.mocked(hashIdentifier).mockReturnValue("hashed");
-      jest.mocked(getActiveCampaignBySlug).mockResolvedValue(campaign as never);
+      jest.mocked(getPublicCampaignBySlug).mockResolvedValue(campaign as never);
       jest.mocked(incrementLetterCounters).mockResolvedValue(letterNumber);
       jest.mocked(resolveRecipientSelection).mockReturnValue({
         ok: true,

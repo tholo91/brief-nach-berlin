@@ -4,11 +4,10 @@ import { CampaignEndedView } from "@/components/campaigns/CampaignEndedView";
 import { CampaignHero } from "@/components/campaigns/CampaignHero";
 import {
   getActiveCampaignByCompactSlug,
-  getActiveCampaignBySlug,
-  getCampaignBySlug,
+  getPublicCampaignBySlug,
   getRecentActiveCampaigns,
 } from "@/lib/campaigns/repository";
-import { isCampaignEnded, isEndedWhilePaused } from "@/lib/campaigns/endDate";
+import { isCampaignEnded } from "@/lib/campaigns/endDate";
 import { campaignSlugSchema } from "@/lib/campaigns/schema";
 import {
   getSpecialCampaignBySlug,
@@ -22,18 +21,11 @@ type CampaignPageProps = {
 async function resolveCampaign(rawSlug: string) {
   const parsedSlug = campaignSlugSchema.safeParse(rawSlug);
   if (parsedSlug.success) {
-    const exactCampaign = await getActiveCampaignBySlug(parsedSlug.data);
+    const exactCampaign = await getPublicCampaignBySlug(parsedSlug.data);
     if (exactCampaign) {
       return {
         campaign: exactCampaign,
         shouldRedirect: rawSlug !== exactCampaign.slug,
-      };
-    }
-    const pausedCampaign = await getCampaignBySlug(parsedSlug.data);
-    if (pausedCampaign && isEndedWhilePaused(pausedCampaign, new Date())) {
-      return {
-        campaign: pausedCampaign,
-        shouldRedirect: rawSlug !== pausedCampaign.slug,
       };
     }
   }
@@ -68,6 +60,7 @@ export async function generateMetadata({
       campaign.description ??
       "Eine öffentliche Kampagne mit editierbarem Anliegen für deinen Brief an die Politik.",
     alternates: { canonical: `/kampagne/${campaign.slug}` },
+    ...(campaign.status === "paused" && { robots: { index: false, follow: false } }),
     openGraph: {
       title: campaign.title,
       description:

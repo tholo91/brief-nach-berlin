@@ -1,7 +1,7 @@
 import { ImageResponse } from "next/og";
 import { notFound } from "next/navigation";
 import { loadCampaignLogoPng } from "@/lib/campaigns/logoImage";
-import { getActiveCampaignBySlug } from "@/lib/campaigns/repository";
+import { getPublicCampaignBySlug } from "@/lib/campaigns/repository";
 import { campaignSlugSchema } from "@/lib/campaigns/schema";
 import { APP_URL } from "@/lib/config";
 
@@ -40,7 +40,7 @@ export default async function CampaignOpenGraphImage({
   const parsedSlug = campaignSlugSchema.safeParse(rawSlug);
   if (!parsedSlug.success) notFound();
 
-  const campaign = await getActiveCampaignBySlug(parsedSlug.data);
+  const campaign = await getPublicCampaignBySlug(parsedSlug.data);
   if (!campaign) notFound();
 
   const title = compactText(campaign.title, 92);

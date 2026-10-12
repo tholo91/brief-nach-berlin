@@ -26,18 +26,16 @@ jest.mock("@/components/campaigns/CampaignBackground", () => ({
     createElement("section", null, children),
 }));
 jest.mock("@/lib/campaigns/repository", () => ({
-  getActiveCampaignBySlug: jest.fn(),
+  getPublicCampaignBySlug: jest.fn(),
   getActiveCampaignByCompactSlug: jest.fn(),
-  getCampaignBySlug: jest.fn(),
   getRecentActiveCampaigns: jest.fn(),
 }));
 
-import CampaignPage from "@/app/(site)/kampagne/[slug]/page";
+import CampaignPage, { generateMetadata } from "@/app/(site)/kampagne/[slug]/page";
 import CampaignNotFound from "@/app/(site)/kampagne/[slug]/not-found";
 import {
   getActiveCampaignByCompactSlug,
-  getActiveCampaignBySlug,
-  getCampaignBySlug,
+  getPublicCampaignBySlug,
   getRecentActiveCampaigns,
 } from "@/lib/campaigns/repository";
 import type { Campaign } from "@/lib/campaigns/schema";
@@ -72,17 +70,16 @@ const campaign: Campaign = {
 describe("campaign page resolution", () => {
   beforeEach(() => {
     jest.clearAllMocks();
-    jest.mocked(getActiveCampaignBySlug).mockResolvedValue(null);
+    jest.mocked(getPublicCampaignBySlug).mockResolvedValue(null);
     jest.mocked(getActiveCampaignByCompactSlug).mockResolvedValue(null);
-    jest.mocked(getCampaignBySlug).mockResolvedValue(null);
   });
 
   it("prefers an exact canonical slug over its compact alias", async () => {
-    jest.mocked(getActiveCampaignBySlug).mockResolvedValue(campaign);
+    jest.mocked(getPublicCampaignBySlug).mockResolvedValue(campaign);
 
     await CampaignPage({ params: Promise.resolve({ slug: campaign.slug }) });
 
-    expect(getActiveCampaignBySlug).toHaveBeenCalledWith(campaign.slug);
+    expect(getPublicCampaignBySlug).toHaveBeenCalledWith(campaign.slug);
     expect(getActiveCampaignByCompactSlug).not.toHaveBeenCalled();
     expect(permanentRedirect).not.toHaveBeenCalled();
   });
@@ -95,7 +92,7 @@ describe("campaign page resolution", () => {
       "redirect:/kampagne/a-b"
     );
 
-    expect(getActiveCampaignBySlug).not.toHaveBeenCalled();
+    expect(getPublicCampaignBySlug).not.toHaveBeenCalled();
     expect(getActiveCampaignByCompactSlug).toHaveBeenCalledWith("ab");
   });
 
@@ -111,14 +108,13 @@ describe("campaign page resolution", () => {
 describe("campaign page end state", () => {
   beforeEach(() => {
     jest.clearAllMocks();
-    jest.mocked(getActiveCampaignBySlug).mockResolvedValue(null);
+    jest.mocked(getPublicCampaignBySlug).mockResolvedValue(null);
     jest.mocked(getActiveCampaignByCompactSlug).mockResolvedValue(null);
-    jest.mocked(getCampaignBySlug).mockResolvedValue(null);
     jest.mocked(getRecentActiveCampaigns).mockResolvedValue([]);
   });
 
   it("renders the ended view for a campaign that ran out while paused", async () => {
-    jest.mocked(getCampaignBySlug).mockResolvedValue({
+    jest.mocked(getPublicCampaignBySlug).mockResolvedValue({
       ...campaign,
       status: "paused",
       endsAt: "2026-01-15T22:59:59.000Z",
@@ -133,20 +129,35 @@ describe("campaign page end state", () => {
     expect(markup).not.toContain("Stimmt was nicht?");
   });
 
-  it("keeps a paused campaign without a past end date on the not-found page", async () => {
-    jest.mocked(getCampaignBySlug).mockResolvedValue({
-      ...campaign,
-      status: "paused",
-      endsAt: "2999-01-01T22:59:59.000Z",
-    });
+  it("keeps a paused campaign reachable by direct link, but out of search engines", async () => {
+    const paused = { ...campaign, status: "paused" as const, endsAt: "2999-01-01T22:59:59.000Z" };
+    jest.mocked(getPublicCampaignBySlug).mockResolvedValue(paused);
 
+    const markup = renderToStaticMarkup(
+      await CampaignPage({ params: Promise.resolve({ slug: campaign.slug }) }),
+    );
+    const metadata = await generateMetadata({ params: Promise.resolve({ slug: campaign.slug }) });
+
+    expect(markup).toContain("campaign-hero");
+    expect(metadata.robots).toEqual({ index: false, follow: false });
+  });
+
+  it("keeps active campaigns indexable", async () => {
+    jest.mocked(getPublicCampaignBySlug).mockResolvedValue(campaign);
+
+    const metadata = await generateMetadata({ params: Promise.resolve({ slug: campaign.slug }) });
+
+    expect(metadata.robots).toBeUndefined();
+  });
+
+  it("shows archived campaigns as not found", async () => {
     await expect(
       CampaignPage({ params: Promise.resolve({ slug: campaign.slug }) }),
     ).rejects.toThrow("not found");
   });
 
   it("renders the ended view with count, other campaigns and the app CTA", async () => {
-    jest.mocked(getActiveCampaignBySlug).mockResolvedValue({
+    jest.mocked(getPublicCampaignBySlug).mockResolvedValue({
       ...campaign,
       letterCount: 1234,
       endsAt: "2026-01-15T22:59:59.000Z",
@@ -168,23 +179,23 @@ describe("campaign page end state", () => {
     expect(getRecentActiveCampaigns).toHaveBeenCalledWith(3);
   });
 
-  it("uses the singular and omits the count line for zero letters", async () => {
+  it("omits the count line up to 20 letters", async () => {
     const ended = { ...campaign, endsAt: "2026-01-15T22:59:59.000Z" };
-    jest.mocked(getActiveCampaignBySlug).mockResolvedValue({ ...ended, letterCount: 1 });
-    const single = renderToStaticMarkup(
+    jest.mocked(getPublicCampaignBySlug).mockResolvedValue({ ...ended, letterCount: 20 });
+    const few = renderToStaticMarkup(
       await CampaignPage({ params: Promise.resolve({ slug: campaign.slug }) }),
     );
-    expect(single).toContain("1 Brief wurde über diese Kampagne formuliert.");
+    expect(few).not.toContain("über diese Kampagne formuliert");
 
-    jest.mocked(getActiveCampaignBySlug).mockResolvedValue({ ...ended, letterCount: 0 });
-    const none = renderToStaticMarkup(
+    jest.mocked(getPublicCampaignBySlug).mockResolvedValue({ ...ended, letterCount: 21 });
+    const enough = renderToStaticMarkup(
       await CampaignPage({ params: Promise.resolve({ slug: campaign.slug }) }),
     );
-    expect(none).not.toContain("über diese Kampagne formuliert");
+    expect(enough).toContain("21 Briefe wurden über diese Kampagne formuliert.");
   });
 
   it("still renders when loading other campaigns fails", async () => {
-    jest.mocked(getActiveCampaignBySlug).mockResolvedValue({
+    jest.mocked(getPublicCampaignBySlug).mockResolvedValue({
       ...campaign,
       endsAt: "2026-01-15T22:59:59.000Z",
     });
@@ -199,7 +210,7 @@ describe("campaign page end state", () => {
   });
 
   it("keeps rendering the hero for running campaigns", async () => {
-    jest.mocked(getActiveCampaignBySlug).mockResolvedValue({
+    jest.mocked(getPublicCampaignBySlug).mockResolvedValue({
       ...campaign,
       endsAt: "2999-01-01T22:59:59.000Z",
     });
@@ -208,7 +219,7 @@ describe("campaign page end state", () => {
     );
     expect(future).toContain("campaign-hero");
 
-    jest.mocked(getActiveCampaignBySlug).mockResolvedValue(campaign);
+    jest.mocked(getPublicCampaignBySlug).mockResolvedValue(campaign);
     const open = renderToStaticMarkup(
       await CampaignPage({ params: Promise.resolve({ slug: campaign.slug }) }),
     );

@@ -1,5 +1,5 @@
 jest.mock("@/lib/campaigns/repository", () => ({
-  getActiveCampaignBySlug: jest.fn(),
+  getPublicCampaignBySlug: jest.fn(),
 }));
 jest.mock("@/lib/lookup/routingToken", () => ({
   verifyRoutingTokenEnvelope: jest.fn(() => null),
@@ -10,11 +10,11 @@ jest.mock("@/lib/letterSignals/context", () => ({
 }));
 
 import { selectPoliticianAction } from "@/lib/actions/selectPolitician";
-import { getActiveCampaignBySlug } from "@/lib/campaigns/repository";
+import { getPublicCampaignBySlug } from "@/lib/campaigns/repository";
 import type { RecipientSelection } from "@/lib/lookup/rathausRecipient";
 import type { WizardData } from "@/lib/types/wizard";
 
-const mockedGetActiveCampaignBySlug = jest.mocked(getActiveCampaignBySlug);
+const mockedGetPublicCampaignBySlug = jest.mocked(getPublicCampaignBySlug);
 
 const campaignData: WizardData = {
   plz: "50667",
@@ -43,7 +43,7 @@ describe("Schreib-Merz server action", () => {
   });
 
   it("accepts the ID-free chancellor selection for the active campaign", async () => {
-    mockedGetActiveCampaignBySlug.mockResolvedValue(activeCampaign());
+    mockedGetPublicCampaignBySlug.mockResolvedValue(activeCampaign());
 
     await expect(
       selectPoliticianAction(campaignData, { kind: "bundeskanzler" }),
@@ -54,11 +54,11 @@ describe("Schreib-Merz server action", () => {
         label: "Bundeskanzler Friedrich Merz",
       },
     });
-    expect(mockedGetActiveCampaignBySlug).toHaveBeenCalledWith("schreib-merz");
+    expect(mockedGetPublicCampaignBySlug).toHaveBeenCalledWith("schreib-merz");
   });
 
   it("rejects the chancellor when the campaign is not active", async () => {
-    mockedGetActiveCampaignBySlug.mockResolvedValue(null);
+    mockedGetPublicCampaignBySlug.mockResolvedValue(null);
 
     await expect(
       selectPoliticianAction(campaignData, { kind: "bundeskanzler" }),
@@ -69,7 +69,7 @@ describe("Schreib-Merz server action", () => {
   });
 
   it("rejects the chancellor for every other active campaign slug", async () => {
-    mockedGetActiveCampaignBySlug.mockResolvedValue(activeCampaign("andere-kampagne"));
+    mockedGetPublicCampaignBySlug.mockResolvedValue(activeCampaign("andere-kampagne"));
 
     await expect(
       selectPoliticianAction(
@@ -86,7 +86,7 @@ describe("Schreib-Merz server action", () => {
   });
 
   it("rejects client-supplied chancellor identity and address fields", async () => {
-    mockedGetActiveCampaignBySlug.mockResolvedValue(activeCampaign());
+    mockedGetPublicCampaignBySlug.mockResolvedValue(activeCampaign());
     const manipulated = {
       kind: "bundeskanzler",
       label: "Manipulierter Name",

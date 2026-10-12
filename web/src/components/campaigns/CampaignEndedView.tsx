@@ -3,6 +3,7 @@ import { formatCampaignEndDate } from "@/lib/campaigns/endDate";
 import type { Campaign } from "@/lib/campaigns/schema";
 import { CampaignBackground } from "./CampaignBackground";
 import { CampaignList, type CampaignListItem } from "./CampaignList";
+import { PUBLIC_LETTER_COUNT_MIN } from "@/lib/campaigns/display";
 import { CampaignLogo } from "./CampaignLogo";
 import { CampaignReportDialog } from "./CampaignReportDialog";
 
@@ -17,8 +18,7 @@ type CampaignEndedViewProps = {
 };
 
 function letterCountSentence(count: number): string | null {
-  if (count <= 0) return null;
-  if (count === 1) return "1 Brief wurde über diese Kampagne formuliert.";
+  if (count <= PUBLIC_LETTER_COUNT_MIN) return null;
   return `${new Intl.NumberFormat("de-DE").format(count)} Briefe wurden über diese Kampagne formuliert.`;
 }
 

@@ -3,7 +3,7 @@ import type { WizardData } from "@/lib/types/wizard";
 
 jest.mock("server-only", () => ({}), { virtual: true });
 jest.mock("@/lib/campaigns/repository", () => ({
-  getActiveCampaignBySlug: jest.fn(),
+  getPublicCampaignBySlug: jest.fn(),
 }));
 jest.mock("@/lib/lookup/plzLookup", () => ({
   lookupPLZ: jest.fn(),
@@ -32,7 +32,7 @@ jest.mock("@/lib/rateLimit", () => ({
   },
 }));
 
-import { getActiveCampaignBySlug } from "@/lib/campaigns/repository";
+import { getPublicCampaignBySlug } from "@/lib/campaigns/repository";
 import { getBundestagPoliticiansByIds, lookupPLZ, lookupPLZWithLevel } from "@/lib/lookup/plzLookup";
 import { routeToLevel } from "@/lib/lookup/levelRouter";
 import { signRoutingToken } from "@/lib/lookup/routingToken";
@@ -146,7 +146,7 @@ describe("campaign rollout safety", () => {
 
   it("uses the server campaign target and never falls back from Land to Bund when routing is off", async () => {
     process.env.LANDTAG_ROUTING_ENABLED = "false";
-    jest.mocked(getActiveCampaignBySlug).mockResolvedValue(campaign("Land", null));
+    jest.mocked(getPublicCampaignBySlug).mockResolvedValue(campaign("Land", null));
 
     const result = await submitWizardAction({
       ...baseData,
@@ -157,13 +157,13 @@ describe("campaign rollout safety", () => {
       },
     });
 
-    expect(getActiveCampaignBySlug).toHaveBeenCalledWith("sichere-schulwege");
+    expect(getPublicCampaignBySlug).toHaveBeenCalledWith("sichere-schulwege");
     expect(result).toMatchObject({ error: "level_data_missing", level: "Land" });
   });
 
   it("returns a recoverable error when the server-bound Land campaign has no coverage", async () => {
     process.env.LANDTAG_ROUTING_ENABLED = "true";
-    jest.mocked(getActiveCampaignBySlug).mockResolvedValue(campaign("Land", "NW"));
+    jest.mocked(getPublicCampaignBySlug).mockResolvedValue(campaign("Land", "NW"));
 
     const result = await submitWizardAction({
       ...baseData,
@@ -184,7 +184,7 @@ describe("campaign rollout safety", () => {
 
   it("nennt bei fester Berlin-Kampagne im Zielstaatsschutz den Senat", async () => {
     process.env.LANDTAG_ROUTING_ENABLED = "true";
-    jest.mocked(getActiveCampaignBySlug).mockResolvedValue(campaign("Land", "BE"));
+    jest.mocked(getPublicCampaignBySlug).mockResolvedValue(campaign("Land", "BE"));
 
     const result = await submitWizardAction({
       ...baseData,
@@ -199,7 +199,7 @@ describe("campaign rollout safety", () => {
   });
 
   it("uses a fixed campaign address independently of the visitor state", async () => {
-    jest.mocked(getActiveCampaignBySlug).mockResolvedValue(campaign(
+    jest.mocked(getPublicCampaignBySlug).mockResolvedValue(campaign(
       "Fixed",
       null,
       [],
@@ -243,13 +243,13 @@ describe("campaign rollout safety", () => {
     });
 
     expect(result).toEqual({ error: "server_error", message: "Ungültige Eingabe." });
-    expect(getActiveCampaignBySlug).not.toHaveBeenCalled();
+    expect(getPublicCampaignBySlug).not.toHaveBeenCalled();
     expect(routeToLevel).not.toHaveBeenCalled();
   });
 
   it("starts a Land campaign with the institutional default even without an MdL match", async () => {
     process.env.LANDTAG_ROUTING_ENABLED = "true";
-    jest.mocked(getActiveCampaignBySlug).mockResolvedValue(campaign("Land", "NW"));
+    jest.mocked(getPublicCampaignBySlug).mockResolvedValue(campaign("Land", "NW"));
     jest.mocked(lookupPLZWithLevel).mockReturnValue(coveredLandLookup);
 
     const result = await submitWizardAction({
@@ -274,7 +274,7 @@ describe("campaign rollout safety", () => {
 
   it("returns a newly signed token after foreground routing", async () => {
     process.env.LANDTAG_ROUTING_ENABLED = "true";
-    jest.mocked(getActiveCampaignBySlug).mockResolvedValue(campaign("Bund", null));
+    jest.mocked(getPublicCampaignBySlug).mockResolvedValue(campaign("Bund", null));
 
     const result = await submitWizardAction({
       ...baseData,
@@ -299,7 +299,7 @@ describe("campaign rollout safety", () => {
 
     const result = await submitWizardAction(baseData);
 
-    expect(getActiveCampaignBySlug).not.toHaveBeenCalled();
+    expect(getPublicCampaignBySlug).not.toHaveBeenCalled();
     expect(result).toMatchObject({
       disambiguationNeeded: true,
       politicians: [politician],
@@ -311,7 +311,7 @@ describe("campaign rollout safety", () => {
   });
 
   it("intersects a Bund campaign with the PLZ-derived MdBs", async () => {
-    jest.mocked(getActiveCampaignBySlug).mockResolvedValue(campaign("Bund", null, [politician.id]));
+    jest.mocked(getPublicCampaignBySlug).mockResolvedValue(campaign("Bund", null, [politician.id]));
     jest.mocked(getBundestagPoliticiansByIds).mockReturnValue([politician]);
 
     const result = await submitWizardAction({
@@ -329,7 +329,7 @@ describe("campaign rollout safety", () => {
 
   it("shows the unique valid campaign list when the PLZ has no local match", async () => {
     const campaignPolitician = { ...politician, id: 7, politicianId: 8 };
-    jest.mocked(getActiveCampaignBySlug).mockResolvedValue(
+    jest.mocked(getPublicCampaignBySlug).mockResolvedValue(
       campaign("Bund", null, [campaignPolitician.id, campaignPolitician.id, 999999])
     );
     jest.mocked(getBundestagPoliticiansByIds).mockReturnValue([campaignPolitician]);
@@ -351,7 +351,7 @@ describe("campaign rollout safety", () => {
 
   it("continues as a normal letter when the campaign has ended", async () => {
     process.env.LANDTAG_ROUTING_ENABLED = "false";
-    jest.mocked(getActiveCampaignBySlug).mockResolvedValue({
+    jest.mocked(getPublicCampaignBySlug).mockResolvedValue({
       ...campaign("Land", "NW"),
       endsAt: "2026-01-01T22:59:59.000Z",
     });

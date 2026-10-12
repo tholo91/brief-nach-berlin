@@ -1,5 +1,6 @@
 import Link from "next/link";
 import type { Campaign } from "@/lib/campaigns/schema";
+import { PUBLIC_LETTER_COUNT_MIN } from "@/lib/campaigns/display";
 import { CampaignLogo } from "./CampaignLogo";
 
 export type CampaignListItem = Pick<
@@ -68,7 +69,7 @@ export function CampaignList({
                   >
                     {campaign.title}
                   </span>
-                  {campaign.letterCount > 20 && (
+                  {campaign.letterCount > PUBLIC_LETTER_COUNT_MIN && (
                     <span className="ml-1 shrink-0 font-body text-xs font-semibold text-warmgrau/55">
                       {campaign.letterCount.toLocaleString("de-DE")} Briefe
                     </span>

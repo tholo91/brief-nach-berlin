@@ -1,5 +1,5 @@
 jest.mock("@/lib/campaigns/repository", () => ({
-  getActiveCampaignBySlug: jest.fn(),
+  getPublicCampaignBySlug: jest.fn(),
 }));
 jest.mock("@/lib/lookup/plzLookup", () => ({
   lookupPLZ: jest.fn(),
@@ -27,7 +27,7 @@ jest.mock("@/lib/rateLimit", () => ({
 }));
 
 import { submitWizardAction } from "@/lib/actions/submitWizard";
-import { getActiveCampaignBySlug } from "@/lib/campaigns/repository";
+import { getPublicCampaignBySlug } from "@/lib/campaigns/repository";
 import { routeToLevel } from "@/lib/lookup/levelRouter";
 import { lookupPLZ, lookupPLZWithLevel } from "@/lib/lookup/plzLookup";
 import type { Politician } from "@/lib/types/politician";
@@ -73,7 +73,7 @@ function activeCampaign(overrides: Record<string, unknown> = {}) {
 describe("Schreib-Merz recipient choice", () => {
   beforeEach(() => {
     jest.clearAllMocks();
-    jest.mocked(getActiveCampaignBySlug).mockResolvedValue(activeCampaign());
+    jest.mocked(getPublicCampaignBySlug).mockResolvedValue(activeCampaign());
     jest.mocked(lookupPLZ).mockReturnValue({
       wahlkreisIds: [3],
       politicians: [localMdb],
@@ -114,7 +114,7 @@ describe("Schreib-Merz recipient choice", () => {
   });
 
   it("refuses a special campaign configured with an MdB allowlist", async () => {
-    jest.mocked(getActiveCampaignBySlug).mockResolvedValue(
+    jest.mocked(getPublicCampaignBySlug).mockResolvedValue(
       activeCampaign({ targetPoliticianIds: [localMdb.id] }),
     );
 

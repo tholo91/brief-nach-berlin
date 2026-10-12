@@ -430,7 +430,7 @@ export function buildCampaignCreatorEmailHtml(
     : isPendingManagement
       ? "Deine E-Mail ist bestätigt. Ich prüfe deine Kampagne in der Regel innerhalb von 24 Stunden."
       : isPausedManagement
-        ? "Die Kampagnenseite ist aktuell pausiert. Du kannst sie über den Verwaltungslink prüfen und wieder aktivieren."
+        ? "Deine Kampagne ist pausiert und erscheint in keiner Übersicht mehr. Der Link funktioniert weiterhin. Über den Verwaltungslink kannst du sie wieder aktivieren."
         : "Deine Kampagnenseite ist jetzt öffentlich. Teile den Link mit Menschen, die einen eigenen Brief mit ihren Worten schreiben sollen.";
   const buttonText = isVerification
     ? "E-Mail bestätigen"

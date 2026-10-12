@@ -10,11 +10,19 @@ const NGO_NAV_LINKS = [
   { label: "FAQ", href: "/ngo-briefkampagne#faq" },
 ];
 
+const CAMPAIGN_TOOL_PATHS = new Set(["starten", "verifizieren", "verwalten"]);
+
+function isPublicCampaignPage(pathname: string | null): boolean {
+  const match = pathname?.match(/^\/kampagne\/([^/]+)$/);
+  return Boolean(match && !CAMPAIGN_TOOL_PATHS.has(match[1]));
+}
+
 export default function AppHeader({ showLanguageSwitcher = false }: { showLanguageSwitcher?: boolean }) {
   const pathname = usePathname();
   const showCampaignCta = pathname === "/ngo-briefkampagne";
   // Kampagne verwalten portals its section links and contact button into these slots.
   const showManagerSlots = pathname === "/kampagne/verwalten";
+  const showMoreCampaigns = isPublicCampaignPage(pathname);
 
   return (
     <>
@@ -66,6 +74,15 @@ export default function AppHeader({ showLanguageSwitcher = false }: { showLangua
           {showLanguageSwitcher && <LanguageSwitcher />}
           {showLanguageSwitcher && <LanguageSwitcher mobile />}
           {showManagerSlots && <span data-app-header-actions className="contents" />}
+          {showMoreCampaigns && (
+            <Link
+              href="/ngo-briefkampagne"
+              className="inline-flex items-center justify-center rounded-lg border border-waldgruen/18 bg-white/55 px-3 py-2 font-body text-sm font-semibold text-waldgruen-dark transition-colors hover:border-waldgruen/35 hover:bg-white/85 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-waldgruen active:translate-y-px sm:px-4"
+            >
+              <span className="sm:hidden">Kampagnen</span>
+              <span className="hidden sm:inline">Weitere Kampagnen</span>
+            </Link>
+          )}
           {showCampaignCta && (
             <Link
               href="/kampagne/starten"

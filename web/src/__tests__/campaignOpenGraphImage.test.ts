@@ -9,7 +9,7 @@ jest.mock("next/og", () => ({
   ImageResponse: jest.fn((element, options) => ({ element, options })),
 }));
 jest.mock("@/lib/campaigns/repository", () => ({
-  getActiveCampaignBySlug: jest.fn(),
+  getPublicCampaignBySlug: jest.fn(),
 }));
 jest.mock("@/lib/campaigns/logoImage", () => ({
   loadCampaignLogoPng: jest.fn(),
@@ -18,7 +18,7 @@ jest.mock("@/lib/campaigns/logoImage", () => ({
 import CampaignOpenGraphImage from
   "@/app/(site)/kampagne/[slug]/opengraph-image";
 import { loadCampaignLogoPng } from "@/lib/campaigns/logoImage";
-import { getActiveCampaignBySlug } from "@/lib/campaigns/repository";
+import { getPublicCampaignBySlug } from "@/lib/campaigns/repository";
 import type { Campaign } from "@/lib/campaigns/schema";
 
 const campaign: Campaign = {
@@ -51,7 +51,7 @@ const campaign: Campaign = {
 describe("campaign Open Graph image", () => {
   beforeEach(() => {
     jest.clearAllMocks();
-    jest.mocked(getActiveCampaignBySlug).mockResolvedValue(campaign);
+    jest.mocked(getPublicCampaignBySlug).mockResolvedValue(campaign);
     jest.mocked(loadCampaignLogoPng).mockResolvedValue(null);
   });
 

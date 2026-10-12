@@ -687,9 +687,9 @@ export function CampaignManager({
                 Laufzeit und Status
               </h3>
               <p className="mt-2 font-body text-sm leading-relaxed text-warmgrau/70">
-                Mit einem Enddatum läuft die Kampagne von selbst aus. Pausieren blendet die
-                öffentliche Seite vorübergehend aus. Beenden schließt die Kampagne für immer,
-                die Seite zeigt danach den Endstand.
+                Mit einem Enddatum läuft die Kampagne von selbst aus. Pausieren nimmt die
+                Kampagne aus allen Übersichten, der Link bleibt aber nutzbar. Beenden schließt
+                die Kampagne für immer, die Seite zeigt danach den Endstand.
               </p>
             </div>
             <div className="grid gap-3">

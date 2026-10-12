@@ -29,7 +29,7 @@ import {
 import { incrementLetterCounters } from "@/lib/counter";
 import { runningCampaign } from "@/lib/campaigns/endDate";
 import { claimAndSendCampaignMilestone } from "@/lib/campaigns/milestoneNotification";
-import { getActiveCampaignBySlug } from "@/lib/campaigns/repository";
+import { getPublicCampaignBySlug } from "@/lib/campaigns/repository";
 import { buildLetterSignalContext, doesLetterSignalContextMatch } from "@/lib/letterSignals/context";
 import { createGenerationProof, verifyLetterSignalContext } from "@/lib/letterSignals/token";
 import { markLetterSignalGeneratedAction } from "@/lib/actions/letterSignals";
@@ -159,7 +159,7 @@ export async function POST(req: NextRequest) {
     }
 
     const activeCampaign = data.campaign?.slug
-      ? await getActiveCampaignBySlug(data.campaign.slug)
+      ? await getPublicCampaignBySlug(data.campaign.slug)
       : null;
     if (data.campaign?.slug && !activeCampaign) {
       return NextResponse.json({ error: "Diese Kampagne ist aktuell nicht aktiv." }, { status: 400 });

@@ -27,7 +27,7 @@ import {
 } from "@/lib/lookup/routingToken";
 import { checkRateLimit, getClientIp, hashIdentifier, LIMITS } from "@/lib/rateLimit";
 import { isCampaignEnded } from "@/lib/campaigns/endDate";
-import { getActiveCampaignBySlug } from "@/lib/campaigns/repository";
+import { getPublicCampaignBySlug } from "@/lib/campaigns/repository";
 import {
   BUNDESLAND_NAMES,
   type BundeslandKey,
@@ -150,7 +150,7 @@ export async function submitWizardAction(
     let featuredRecipient: BundeskanzlerRecipient | null = null;
     let campaignEnded = false;
     if (data.campaign?.slug) {
-      const campaign = await getActiveCampaignBySlug(data.campaign.slug);
+      const campaign = await getPublicCampaignBySlug(data.campaign.slug);
       if (!campaign) {
         return {
           error: "server_error",

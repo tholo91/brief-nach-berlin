@@ -58,11 +58,26 @@ describe("campaign hero", () => {
     expect(markup.indexOf("Stimmt was nicht?")).toBeGreaterThan(
       markup.indexOf("Weniger Klick, mehr Gewicht")
     );
-    expect(markup).toContain("Die Kampagne nutzt die Infrastruktur von Brief-nach-Berlin.");
+    expect(markup).toContain(
+      "Diese Kampagne ist selbst für ihren Inhalt verantwortlich. Brief-nach-Berlin bietet dafür die Infrastruktur."
+    );
     expect(markup).toContain("Was stimmt nicht?");
     expect(markup).toContain("Ich bin");
     expect(markup).toContain("Bild- oder Logorechte verletzt");
     expect(markup).not.toContain("@");
+  });
+
+  it("zeigt die Briefzahl erst ab 21 Briefen", () => {
+    const few = renderToStaticMarkup(
+      createElement(CampaignHero, { campaign: { ...campaign, letterCount: 20 } })
+    );
+    const enough = renderToStaticMarkup(
+      createElement(CampaignHero, { campaign: { ...campaign, letterCount: 1234 } })
+    );
+
+    expect(few).not.toContain("bisher geschrieben");
+    expect(enough).toContain("1.234 Briefe");
+    expect(enough).toContain("bisher geschrieben");
   });
 
   it("zeigt den festen Empfänger kompakt mit Adresse und Teilnahmehinweis im Dialog", () => {

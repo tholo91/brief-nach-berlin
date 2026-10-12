@@ -7,7 +7,7 @@ jest.mock("@getbrevo/brevo", () => ({
   })),
 }));
 jest.mock("@/lib/campaigns/repository", () => ({
-  getActiveCampaignBySlug: jest.fn(),
+  getPublicCampaignBySlug: jest.fn(),
 }));
 
 let mockClientIp = "203.0.113.1";
@@ -16,7 +16,7 @@ jest.mock("@/lib/rateLimit", () => ({
   getClientIp: async () => mockClientIp,
 }));
 
-import { getActiveCampaignBySlug } from "@/lib/campaigns/repository";
+import { getPublicCampaignBySlug } from "@/lib/campaigns/repository";
 import { FOUNDER_EMAIL } from "@/lib/config";
 
 type ReportAction = typeof import("@/lib/actions/reportCampaign").reportCampaignAction;
@@ -65,7 +65,7 @@ describe("reportCampaignAction", () => {
     ipCounter += 1;
     mockClientIp = `198.51.100.${ipCounter}`;
     mockSendTransacEmail.mockResolvedValue({ messageId: "m1" });
-    (getActiveCampaignBySlug as jest.Mock).mockResolvedValue(campaign);
+    (getPublicCampaignBySlug as jest.Mock).mockResolvedValue(campaign);
   });
 
   it("mails the creator with BCC to Thomas and replyTo the founder address", async () => {
@@ -144,13 +144,13 @@ describe("reportCampaignAction", () => {
   });
 
   it("fails without sending when the campaign is unknown or inactive", async () => {
-    (getActiveCampaignBySlug as jest.Mock).mockResolvedValue(null);
+    (getPublicCampaignBySlug as jest.Mock).mockResolvedValue(null);
     expect(await reportCampaignAction(validInput)).toEqual({ success: false });
     expect(mockSendTransacEmail).not.toHaveBeenCalled();
   });
 
   it("fails without sending when the repository throws", async () => {
-    (getActiveCampaignBySlug as jest.Mock).mockRejectedValue(new Error("db down"));
+    (getPublicCampaignBySlug as jest.Mock).mockRejectedValue(new Error("db down"));
     const errorSpy = jest.spyOn(console, "error").mockImplementation(() => undefined);
     expect(await reportCampaignAction(validInput)).toEqual({ success: false });
     expect(mockSendTransacEmail).not.toHaveBeenCalled();

@@ -1,6 +1,7 @@
 import { BUNDESLAND_NAMES, type Campaign } from "@/lib/campaigns/schema";
 import { CampaignBackground } from "./CampaignBackground";
 import { CampaignIssueStarter } from "./CampaignIssueStarter";
+import { PUBLIC_LETTER_COUNT_MIN } from "@/lib/campaigns/display";
 import { CampaignLogo } from "./CampaignLogo";
 import { getLandesregierungRecipient } from "@/lib/lookup/landesregierungRecipient";
 import { getCampaignFixedRecipient } from "@/lib/lookup/campaignFixedRecipient";
@@ -95,7 +96,6 @@ export function CampaignHero({ campaign }: { campaign: PublicCampaign }) {
   const formattedLetterCount = new Intl.NumberFormat("de-DE").format(
     campaign.letterCount
   );
-  const letterCountLabel = campaign.letterCount === 1 ? "Brief" : "Briefe";
   const sourceName = attribution || "Kampagnenersteller:in";
   const sourceHostname = formatHostname(campaign.externalUrl);
   const isLandCampaign = campaign.targetLevel === "Land";
@@ -248,13 +248,18 @@ export function CampaignHero({ campaign }: { campaign: PublicCampaign }) {
             </p>
           )}
           <div className="mt-4 grid gap-1 border-t border-warmgrau/10 pt-3 font-body text-sm leading-relaxed text-warmgrau/60">
+            {campaign.letterCount > PUBLIC_LETTER_COUNT_MIN && (
+              <p>
+                <span className="font-semibold text-waldgruen-dark">
+                  {formattedLetterCount} Briefe
+                </span>{" "}
+                bisher geschrieben
+              </p>
+            )}
             <p>
-              <span className="font-semibold text-waldgruen-dark">
-                {formattedLetterCount} {letterCountLabel}
-              </span>{" "}
-              bisher geschrieben
+              Diese Kampagne ist selbst für ihren Inhalt verantwortlich. Brief-nach-Berlin bietet
+              dafür die Infrastruktur.
             </p>
-            <p>Die Kampagne nutzt die Infrastruktur von Brief-nach-Berlin.</p>
           </div>
         </div>
       </div>

@@ -1,5 +1,5 @@
 jest.mock("@/lib/campaigns/repository", () => ({
-  getActiveCampaignBySlug: jest.fn(),
+  getPublicCampaignBySlug: jest.fn(),
 }));
 jest.mock("@/lib/rateLimit", () => ({
   checkRateLimit: jest.fn(() => ({ allowed: true })),
@@ -19,14 +19,14 @@ jest.mock("@/lib/email/sendLetterEmail", () => ({
 }));
 
 import { resendLetterAction } from "@/lib/actions/resendLetter";
-import { getActiveCampaignBySlug } from "@/lib/campaigns/repository";
+import { getPublicCampaignBySlug } from "@/lib/campaigns/repository";
 import {
   prepareLetterEmail,
   sendLetterEmail,
 } from "@/lib/email/sendLetterEmail";
 import type { WizardData } from "@/lib/types/wizard";
 
-const mockedGetActiveCampaignBySlug = jest.mocked(getActiveCampaignBySlug);
+const mockedGetPublicCampaignBySlug = jest.mocked(getPublicCampaignBySlug);
 const mockedPrepareLetterEmail = jest.mocked(prepareLetterEmail);
 const mockedSendLetterEmail = jest.mocked(sendLetterEmail);
 
@@ -49,7 +49,7 @@ function activeCampaign(slug = "schreib-merz") {
 describe("Schreib-Merz resend", () => {
   beforeEach(() => {
     jest.clearAllMocks();
-    mockedGetActiveCampaignBySlug.mockResolvedValue(activeCampaign());
+    mockedGetPublicCampaignBySlug.mockResolvedValue(activeCampaign());
     mockedPrepareLetterEmail.mockReturnValue({
       params: { recipientKind: "bundeskanzler" } as never,
       feedbackToken: "feedback-token",
@@ -84,7 +84,7 @@ describe("Schreib-Merz resend", () => {
   });
 
   it("does not resend when the campaign is inactive", async () => {
-    mockedGetActiveCampaignBySlug.mockResolvedValue(null);
+    mockedGetPublicCampaignBySlug.mockResolvedValue(null);
 
     await expect(
       resendLetterAction(data, { kind: "bundeskanzler" }, "Brieftext"),
@@ -97,7 +97,7 @@ describe("Schreib-Merz resend", () => {
   });
 
   it("does not reuse the chancellor selection for another campaign", async () => {
-    mockedGetActiveCampaignBySlug.mockResolvedValue(
+    mockedGetPublicCampaignBySlug.mockResolvedValue(
       activeCampaign("andere-kampagne"),
     );
 

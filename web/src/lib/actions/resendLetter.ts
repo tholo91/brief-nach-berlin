@@ -17,7 +17,7 @@ import { DEFAULT_LETTER_LENGTH } from "@/lib/config";
 import { doesGenerationProofMatch, verifyGenerationProof } from "@/lib/letterSignals/token";
 import { checkRateLimit, getClientIp, hashIdentifier, LIMITS } from "@/lib/rateLimit";
 import { runningCampaign } from "@/lib/campaigns/endDate";
-import { getActiveCampaignBySlug } from "@/lib/campaigns/repository";
+import { getPublicCampaignBySlug } from "@/lib/campaigns/repository";
 import { isBundeskanzlerCampaignTarget } from "@/lib/lookup/bundeskanzlerRecipient";
 import { getCampaignFixedRecipient } from "@/lib/lookup/campaignFixedRecipient";
 
@@ -86,7 +86,7 @@ export async function resendLetterAction(
     }
 
     const activeCampaign = data.campaign?.slug
-      ? await getActiveCampaignBySlug(data.campaign.slug)
+      ? await getPublicCampaignBySlug(data.campaign.slug)
       : null;
     if (data.campaign?.slug && !activeCampaign) {
       return { error: "validation", message: "Diese Kampagne ist aktuell nicht aktiv." };

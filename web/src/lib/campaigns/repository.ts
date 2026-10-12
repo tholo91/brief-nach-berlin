@@ -398,7 +398,8 @@ export async function getCampaignBySlug(
   return data ? mapCampaign(data as CampaignRow) : null;
 }
 
-export async function getActiveCampaignBySlug(
+/** Aktive und pausierte Kampagnen: per Direktlink nutzbar, pausierte erscheinen aber in keiner Liste. */
+export async function getPublicCampaignBySlug(
   slug: string,
   db?: RepositoryClient
 ): Promise<Campaign | null> {
@@ -406,12 +407,12 @@ export async function getActiveCampaignBySlug(
     .from("campaigns")
     .select("*")
     .eq("slug", slug)
-    .eq("status", "active")
+    .in("status", ["active", "paused"])
     .eq("moderation_status", "approved")
     .maybeSingle();
 
   if (error) {
-    throw new CampaignRepositoryError(`Active campaign lookup failed: ${error.message}`);
+    throw new CampaignRepositoryError(`Public campaign lookup failed: ${error.message}`);
   }
   return data ? mapCampaign(data as CampaignRow) : null;
 }

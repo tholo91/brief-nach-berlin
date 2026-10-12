@@ -1,7 +1,7 @@
 "use server";
 
 import { z } from "zod";
-import { getActiveCampaignBySlug } from "@/lib/campaigns/repository";
+import { getPublicCampaignBySlug } from "@/lib/campaigns/repository";
 import {
   CAMPAIGN_REPORT_MESSAGE_MAX,
   CAMPAIGN_REPORT_MESSAGE_MIN,
@@ -57,7 +57,7 @@ export async function reportCampaignAction(
   const { slug, reason, role, message, reporterEmail } = parsed.data;
 
   try {
-    const campaign = await getActiveCampaignBySlug(slug);
+    const campaign = await getPublicCampaignBySlug(slug);
     if (!campaign) return { success: false };
 
     const reasonLabel = CAMPAIGN_REPORT_REASON_LABELS[reason];

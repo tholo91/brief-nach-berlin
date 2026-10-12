@@ -12,7 +12,7 @@ import {
 } from "@/lib/validation/wizardSchemas";
 import { resolveRecipientSelection } from "@/lib/lookup/resolveRecipient";
 import { runningCampaign } from "@/lib/campaigns/endDate";
-import { getActiveCampaignBySlug } from "@/lib/campaigns/repository";
+import { getPublicCampaignBySlug } from "@/lib/campaigns/repository";
 import { DEFAULT_LETTER_LENGTH } from "@/lib/config";
 import { deriveRoutingLetterId, verifyRoutingTokenEnvelope } from "@/lib/lookup/routingToken";
 import { buildLetterSignalContext } from "@/lib/letterSignals/context";
@@ -64,7 +64,7 @@ export async function selectPoliticianAction(
     }
     const normalizedSelection: RecipientSelection = parsedSelection.data;
     const activeCampaign = data.campaign?.slug
-      ? await getActiveCampaignBySlug(data.campaign.slug)
+      ? await getPublicCampaignBySlug(data.campaign.slug)
       : null;
     if (data.campaign?.slug && !activeCampaign) {
       return {

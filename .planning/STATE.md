@@ -49,7 +49,7 @@ Der level-aware E-Mail-Betreff ist dagegen bereits implementiert und getestet; d
 Phase: 05 — EXECUTING
 Plan: 4 of 4
 Status: Phase complete — ready for verification
-Last activity: 2026-10-12 - Completed quick task 261012-pnq: Karten-Vergrößerung von Success-Seite auf Landing Page verschoben
+Last activity: 2026-10-12 - Completed quick task 261012-o70: Self-Service-Datenlöschung /datenloeschen
 
 Progress: [███████░░░] 68%
 
@@ -188,6 +188,7 @@ Recent decisions affecting current work:
 | 261011-lgc | Ending-Page Deutschlandkarte: Tipp öffnet Vollbild-Zoom | 2026-10-11 | 2f170fd | [261011-lgc-ending-page-deutschlandkarte-tipp-ffnet-](./quick/261011-lgc-ending-page-deutschlandkarte-tipp-ffnet-/) |
 | 261012-oj1 | Kampagnenseiten: Zähler ab 21, Disclaimer, pausiert per Link, "Weitere Kampagnen" | 2026-10-12 | 6b20dd3 | [261012-oj1-kampagnenseiten-zaehler-disclaimer-pausi](./quick/261012-oj1-kampagnenseiten-zaehler-disclaimer-pausi/) |
 | 261012-pnq | Karten-Vergrößerung von Success-Seite auf Landing Page verschoben | 2026-10-12 | 01282e8 | [261012-pnq-karten-vergroesserung-von-success-seite-](./quick/261012-pnq-karten-vergroesserung-von-success-seite-/) |
+| 261012-o70 | Self-Service-Datenlöschung /datenloeschen: erst prüfen, dann löschen; Löschlink in Rückfrage- und Last-Call-Mail | 2026-10-12 | 083a576 | [261012-o70-datenloeschen-seite-self-service](./quick/261012-o70-datenloeschen-seite-self-service/) |
 
 ## Session Continuity
 

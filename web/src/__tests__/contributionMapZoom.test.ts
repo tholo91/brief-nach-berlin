@@ -220,6 +220,21 @@ describe("map dialog sources", () => {
     "utf8",
   );
 
+  const successCardSource = readFileSync(
+    join(process.cwd(), "src/components/wizard/LetterSignalCard.tsx"),
+    "utf8",
+  );
+
+  it("keeps the success card map non-interactive", () => {
+    expect(successCardSource).not.toContain("ContributionMapDialog");
+    expect(successCardSource).not.toContain("cursor-zoom-in");
+    expect(successCardSource).not.toContain("Karte vergrößern");
+    expect(successCardSource).not.toContain('aria-haspopup="dialog"');
+    expect(successCardSource).toContain("GermanyContributionMap");
+    expect(successCardSource).toContain("ownPointState");
+    expect(successCardSource).toContain("Mein Anliegen auf die Karte setzen");
+  });
+
   it("wires the landing card trigger to the dialog", () => {
     expect(landingCardSource).toContain("ContributionMapDialog");
     expect(landingCardSource).toContain('aria-haspopup="dialog"');
@@ -233,6 +248,7 @@ describe("map dialog sources", () => {
     const emDash = String.fromCharCode(0x2014);
     expect(dialogSource).not.toContain(emDash);
     expect(landingCardSource).not.toContain(emDash);
+    expect(successCardSource).not.toContain(emDash);
     const plural = new RegExp("\\b(" + ["w", "ir"].join("") + "|" + ["u", "ns"].join("") + "|" + ["un", "ser\\w*"].join("") + ")\\b", "i");
     expect(dialogSource).not.toMatch(plural);
   });

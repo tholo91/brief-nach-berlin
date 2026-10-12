@@ -1,8 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useCallback, useEffect, useRef, useState } from "react";
-import { ContributionMapDialog } from "@/components/letter-signals/ContributionMapDialog";
+import { useCallback, useEffect, useState } from "react";
 import { GermanyContributionMap } from "@/components/letter-signals/GermanyContributionMap";
 import { loadPublicLetterMapData } from "@/lib/letterSignals/publicMapClient";
 import { createLetterSignalAction } from "@/lib/actions/letterSignals";
@@ -31,8 +30,6 @@ export function LetterSignalCard({
   const [state, setState] = useState<ContributionState>("idle");
   const [ownPoint, setOwnPoint] = useState<{ x: number; y: number } | null>(null);
   const [reducedMotion, setReducedMotion] = useState(false);
-  const [mapOpen, setMapOpen] = useState(false);
-  const triggerRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
     let active = true;
@@ -120,34 +117,13 @@ export function LetterSignalCard({
         </div>
 
         <div className={mapState === "loading" ? "animate-pulse opacity-55" : "opacity-100"}>
-          <button
-            ref={triggerRef}
-            type="button"
-            aria-haspopup="dialog"
-            aria-label="Karte vergrößern"
-            onClick={() => setMapOpen(true)}
-            className="group block w-full cursor-zoom-in rounded-xl border border-transparent p-1 transition-[border-color,transform] hover:-translate-y-0.5 hover:border-waldgruen/25 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-waldgruen"
-          >
-            <span className="relative mx-auto block w-full max-w-[13rem]">
-              <GermanyContributionMap
-                points={mapData.points}
-                ownPoint={ownPoint}
-                ownPointState={state === "flying" ? "flying" : state === "contributed" ? "contributed" : "idle"}
-                reducedMotion={reducedMotion}
-                label={`Deutschlandkarte mit ${mapData.totalContributions} freiwilligen Kartenbeiträgen${state === "contributed" ? "; dein Anliegen ist dabei" : ""}`}
-              />
-              <span
-                aria-hidden="true"
-                className="absolute bottom-0 right-0 inline-flex items-center gap-1 rounded-full border border-waldgruen/20 bg-creme px-2 py-1 font-body text-[11px] font-semibold leading-none text-waldgruen shadow-sm transition-colors group-hover:border-waldgruen/40"
-              >
-                <svg viewBox="0 0 24 24" className="h-3.5 w-3.5" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-                  <circle cx="10.5" cy="10.5" r="6.5" />
-                  <path d="m15.5 15.5 5 5M10.5 8v5M8 10.5h5" />
-                </svg>
-                Vergrößern
-              </span>
-            </span>
-          </button>
+          <GermanyContributionMap
+            points={mapData.points}
+            ownPoint={ownPoint}
+            ownPointState={state === "flying" ? "flying" : state === "contributed" ? "contributed" : "idle"}
+            reducedMotion={reducedMotion}
+            label={`Deutschlandkarte mit ${mapData.totalContributions} freiwilligen Kartenbeiträgen${state === "contributed" ? "; dein Anliegen ist dabei" : ""}`}
+          />
         </div>
       </div>
 
@@ -185,19 +161,6 @@ export function LetterSignalCard({
           Datenschutz
         </Link>
       </p>
-      <ContributionMapDialog
-        open={mapOpen}
-        onClose={() => {
-          setMapOpen(false);
-          triggerRef.current?.focus();
-        }}
-        points={mapData.points}
-        ownPoint={ownPoint}
-        ownVisible={state === "flying" || state === "contributed"}
-        totalContributions={mapData.totalContributions}
-        postcodeAreas={mapData.postcodeAreas}
-        reducedMotion={reducedMotion}
-      />
     </section>
   );
 }

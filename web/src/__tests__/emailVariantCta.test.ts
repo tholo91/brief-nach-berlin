@@ -1,6 +1,7 @@
 import { buildEmailHtml, buildLetterEmailText } from "@/lib/email/buildEmailHtml";
 import { buildFollowupHtml } from "@/lib/email/buildFollowupHtml";
 import type { SendLetterEmailParams } from "@/lib/email/sendLetterEmail";
+import { SUPPORT_CONTENT } from "@/lib/support-content";
 
 function makeParams(
   letterText = "Sehr geehrte Frau Mustermann,\n\nbitte setzen Sie sich für sichere Radwege ein.\n\nMit freundlichen Grüßen,\nMax"
@@ -61,16 +62,35 @@ describe("letter email variant CTA", () => {
     expect(text.match(new RegExp(donationUrl.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), "g"))).toHaveLength(1);
     expect(html.match(new RegExp(learnMoreUrl.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), "g"))).toHaveLength(1);
     expect(text.match(new RegExp(learnMoreUrl.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), "g"))).toHaveLength(1);
-    expect(html).toContain("Brief-nach-Berlin unterstützen");
-    expect(html).toContain("Brief-nach-Berlin unterstützen ❤️");
+    expect(html).toContain("Mein Soloprojekt erhalten");
+    expect(html).toContain('margin-right:6px;">Jetzt spenden');
     expect(html).toContain(
       "Ich baue Brief-nach-Berlin allein und ehrenamtlich in meiner Freizeit und trage die laufenden Kosten bisher selbst.",
     );
-    expect(html).toContain("Jetzt über WE AID spenden");
+    expect(html).toContain("über WE AID unterstützen");
+    expect(text).toContain("Mein Soloprojekt erhalten");
+    expect(text).toContain("Jetzt spenden");
+    expect(text).toContain("über WE AID unterstützen");
+    expect(SUPPORT_CONTENT.ctas.donate.label).toBe("Jetzt über WE AID spenden");
+    expect(html).not.toContain(SUPPORT_CONTENT.ctas.donate.label);
     expect(html).toContain("Mehr Informationen");
     expect(html).toContain("gemeinnützige Initiative in Trägerschaft der WE AID gGmbH");
     expect(text).toContain("Hinweis zur Finanzierung: Brief-nach-Berlin ist eine gemeinnützige Initiative in Trägerschaft der WE AID gGmbH.");
     expect(text.indexOf("Thomas")).toBeLessThan(text.indexOf("Hinweis zur Finanzierung"));
+  });
+
+  it.each([
+    ["en", "Donate now", "Support via WE AID"],
+    ["tr", "Şimdi bağış yap", "WE AID üzerinden destekle"],
+  ] as const)("uses the compact button copy for %s letter email while keeping the heart decorative", (locale, label, providerLabel) => {
+    const html = buildEmailHtml({ ...makeParams(), locale });
+    const donationUrl = "https://spende.we-aid.org/Brief-nach-Berlin";
+    const button = html.match(new RegExp(`<a href="${donationUrl}"[\\s\\S]*?</a>`))?.[0];
+
+    expect(button).toContain("icon-heart-white.png");
+    expect(button).toContain(label);
+    expect(button?.indexOf("icon-heart-white.png")).toBeLessThan(button?.indexOf(label));
+    expect(html).toContain(providerLabel);
   });
 
   it("adds the financing notice to resent letter emails but not follow-up emails", () => {

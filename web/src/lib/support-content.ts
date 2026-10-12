@@ -87,43 +87,43 @@ export type SupportContent = typeof SUPPORT_CONTENT;
 export const SUPPORT_EMAIL_COPY = {
   de: {
     prefix: "Hinweis zur Finanzierung:",
-    heading: "Brief-nach-Berlin unterstützen ❤️",
-    compactHeading: "Mein unabhängiges Soloprojekt",
+    heading: "Mein Soloprojekt erhalten",
+    compactHeading: "Mein Soloprojekt erhalten",
     body:
       "Ich baue Brief-nach-Berlin allein und ehrenamtlich in meiner Freizeit und trage die laufenden Kosten bisher selbst. Deine Spende hilft, das Projekt kostenlos und unabhängig weiterzubetreiben.",
     status: SUPPORT_CONTENT.status,
     learnMore: SUPPORT_CONTENT.ctas.learnMore.label,
-    button: SUPPORT_CONTENT.ctas.donate.label,
+    button: "Jetzt spenden",
     compactButton: "Jetzt spenden",
-    providerLabel: "ehrenamtlich · über WE AID",
+    providerLabel: "über WE AID unterstützen",
     infoButton: "Mehr Informationen",
   },
   en: {
     prefix: "Funding note:",
-    heading: "Support Brief-nach-Berlin ❤️",
+    heading: "Support Brief-nach-Berlin",
     compactHeading: "Support Brief-nach-Berlin",
     body:
       "Brief-nach-Berlin should remain free and independent for everyone. Your donation helps keep the project running.",
     status:
       "Brief-nach-Berlin is a non-profit initiative fiscally sponsored by WE AID gGmbH.",
     learnMore: "How Brief-nach-Berlin is funded (in German)",
-    button: "Donate via WE AID",
+    button: "Donate now",
     compactButton: "Donate now",
-    providerLabel: "via WE AID",
+    providerLabel: "Support via WE AID",
     infoButton: "More information",
   },
   tr: {
     prefix: "Finansman bilgisi:",
-    heading: "Brief-nach-Berlin'i destekle ❤️",
+    heading: "Brief-nach-Berlin'i destekle",
     compactHeading: "Brief-nach-Berlin'i destekle",
     body:
       "Brief-nach-Berlin herkes için ücretsiz ve bağımsız kalmalı. Bağışın projenin devam etmesine yardımcı olur.",
     status:
       "Brief-nach-Berlin, WE AID gGmbH çatısı altında faaliyet gösteren kâr amacı gütmeyen bir girişimdir.",
     learnMore: "Brief-nach-Berlin nasıl finanse ediliyor? (Almanca)",
-    button: "WE AID üzerinden bağış yap",
+    button: "Şimdi bağış yap",
     compactButton: "Şimdi bağış yap",
-    providerLabel: "WE AID üzerinden",
+    providerLabel: "WE AID üzerinden destekle",
     infoButton: "Daha fazla bilgi",
   },
 } as const;

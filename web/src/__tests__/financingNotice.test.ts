@@ -1,6 +1,9 @@
 import { APP_URL } from "@/lib/config";
 import { buildEmailHtml } from "@/lib/email/buildEmailHtml";
-import { buildFinancingNoticeHtml } from "@/lib/email/financingNotice";
+import {
+  buildDonationButtonLabelHtml,
+  buildFinancingNoticeHtml,
+} from "@/lib/email/financingNotice";
 import type { SendLetterEmailParams } from "@/lib/email/sendLetterEmail";
 import { SUPPORT_CONTENT, SUPPORT_EMAIL_COPY } from "@/lib/support-content";
 
@@ -50,6 +53,37 @@ describe("financing notice", () => {
     expect(html).not.toContain("<em>");
   });
 
+  it("adds a white decorative heart before an escaped donation label when requested", () => {
+    const html = buildFinancingNoticeHtml(
+      { ...SUPPORT_EMAIL_COPY.de, button: `<b>Jetzt spenden</b>` },
+      undefined,
+      { showHeart: true, providerLabel: "über WE AID unterstützen" },
+    );
+
+    expect(html).toContain(buildDonationButtonLabelHtml(`<b>Jetzt spenden</b>`));
+    expect(html.indexOf("icon-heart-white.png")).toBeLessThan(html.indexOf("&lt;b&gt;Jetzt spenden"));
+    expect(html).toContain("über WE AID unterstützen");
+    expect(html).toContain(SUPPORT_CONTENT.ctas.donate.href);
+  });
+
+  it("escapes a standalone donation button label", () => {
+    const html = buildDonationButtonLabelHtml(`<b>Tom & Co</b>`);
+    expect(html).toContain("icon-heart-white.png");
+    expect(html).toContain("&lt;b&gt;Tom &amp; Co&lt;/b&gt;");
+    expect(html).not.toContain("<b>");
+    expect(html).toContain('alt="" aria-hidden="true" width="16" height="16"');
+    expect(html).not.toContain("&#9825;");
+    expect(buildDonationButtonLabelHtml("Jetzt spenden", "http://localhost:3011")).toContain('src="http://localhost:3011/images/icon-heart-white.png"');
+  });
+
+  it("keeps the default renderer free of a decorative heart and provider override", () => {
+    const html = buildFinancingNoticeHtml(SUPPORT_EMAIL_COPY.de);
+
+    expect(html).not.toContain("icon-heart-white.png");
+    expect(html).toContain(SUPPORT_EMAIL_COPY.de.status);
+    expect(html).not.toContain("über WE AID unterstützen");
+  });
+
   it("renders the portrait in the heading row, escaped", () => {
     const copy = SUPPORT_EMAIL_COPY.de;
     const html = buildFinancingNoticeHtml(copy, {
@@ -69,6 +103,12 @@ describe("financing notice", () => {
   });
 
   it.each(["de", "en", "tr"] as const)("is embedded unchanged in the %s letter email", (locale) => {
-    expect(buildEmailHtml(params(locale))).toContain(buildFinancingNoticeHtml(SUPPORT_EMAIL_COPY[locale]));
+    const options = {
+      showHeart: true,
+      providerLabel: SUPPORT_EMAIL_COPY[locale].providerLabel,
+    };
+    expect(buildEmailHtml(params(locale))).toContain(
+      buildFinancingNoticeHtml(SUPPORT_EMAIL_COPY[locale], undefined, options),
+    );
   });
 });

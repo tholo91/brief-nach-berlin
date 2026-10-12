@@ -95,7 +95,7 @@ export function buildLetterEmailText(data: SendLetterEmailParams): string {
     );
   }
   parts.push(
-    `${supportCopy.prefix} ${supportCopy.status}\n${supportCopy.button}: ${SUPPORT_CONTENT.ctas.donate.href}\n${supportCopy.learnMore}: ${APP_URL}${SUPPORT_CONTENT.ctas.learnMore.href}?src=email`,
+    `${supportCopy.heading}\n${supportCopy.prefix} ${supportCopy.status}\n${supportCopy.button}: ${SUPPORT_CONTENT.ctas.donate.href}\n${supportCopy.providerLabel}\n${supportCopy.learnMore}: ${APP_URL}${SUPPORT_CONTENT.ctas.learnMore.href}?src=email`,
   );
   parts.push(
     `${copy.notice} ${copy.noticeText}${copy.noticeTextAfter ? `, ${copy.noticeTextAfter}` : ""}. ${copy.responsibility} ${copy.terms(copy.termsLabel)} ${APP_URL}/nutzungsbedingungen`,
@@ -674,7 +674,10 @@ export function buildEmailHtml(data: SendLetterEmailParams): string {
                 <!-- Donation CTA: shared by first letter emails and resends, before sharing. -->
                 <tr>
                   <td colspan="7" class="bnb-pad" style="padding:0 32px 16px;background-color:#ffffff;text-align:left;">
-                    ${buildFinancingNoticeHtml(SUPPORT_EMAIL_COPY[locale])}
+                    ${buildFinancingNoticeHtml(SUPPORT_EMAIL_COPY[locale], undefined, {
+                      showHeart: true,
+                      providerLabel: SUPPORT_EMAIL_COPY[locale].providerLabel,
+                    })}
                   </td>
                 </tr>
 

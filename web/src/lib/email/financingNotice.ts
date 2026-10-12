@@ -23,9 +23,14 @@ export interface FinancingNoticePortrait {
   alt: string;
 }
 
+export function buildDonationButtonLabelHtml(label: string, baseUrl = APP_URL): string {
+  return `<img src="${escapeHtml(baseUrl)}/images/icon-heart-white.png" alt="" aria-hidden="true" width="16" height="16" style="width:16px;height:16px;vertical-align:middle;border:0;margin-right:6px;">${escapeHtml(label)}`;
+}
+
 export function buildFinancingNoticeHtml(
   copy: FinancingNoticeCopy,
   portrait?: FinancingNoticePortrait,
+  options: { showHeart?: boolean; providerLabel?: string } = {},
 ): string {
   const donationUrl = SUPPORT_CONTENT.ctas.donate.href;
   const learnMoreUrl = `${APP_URL}${SUPPORT_CONTENT.ctas.learnMore.href}?src=email`;
@@ -49,7 +54,8 @@ export function buildFinancingNoticeHtml(
       <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="width:100%;border-collapse:collapse;">
         <tr>
           <td class="bnb-support-action bnb-support-action-primary" width="52%" valign="top" style="width:52%;padding-right:5px;">
-            <a href="${donationUrl}" target="_blank" rel="noopener noreferrer" style="display:block;background-color:#2D5016;color:#ffffff;font-family:Georgia,'Times New Roman',serif;font-size:14px;font-weight:bold;text-decoration:none;padding:11px 10px;border:2px solid #2D5016;border-radius:4px;line-height:1.4;text-align:center;">${escapeHtml(copy.button)}</a>
+            <a href="${donationUrl}" target="_blank" rel="noopener noreferrer" style="display:block;background-color:#2D5016;color:#ffffff;font-family:Georgia,'Times New Roman',serif;font-size:14px;font-weight:bold;text-decoration:none;padding:11px 10px;border:2px solid #2D5016;border-radius:4px;line-height:1.4;text-align:center;">${options.showHeart ? buildDonationButtonLabelHtml(copy.button) : escapeHtml(copy.button)}</a>
+            ${options.providerLabel ? `<p style="margin:8px 0 0;font-family:Georgia,'Times New Roman',serif;font-size:12px;color:#b0b0b0;line-height:1.4;text-align:center;">${escapeHtml(options.providerLabel)}</p>` : ""}
           </td>
           <td class="bnb-support-action" width="48%" valign="top" style="width:48%;padding-left:5px;">
             <a href="${learnMoreUrl}" target="_blank" rel="noopener noreferrer" style="display:block;background-color:#ffffff;color:#2D5016;font-family:Georgia,'Times New Roman',serif;font-size:14px;font-weight:bold;text-decoration:none;padding:11px 10px;border:2px solid #2D5016;border-radius:4px;line-height:1.4;text-align:center;">${escapeHtml(copy.infoButton)}</a>

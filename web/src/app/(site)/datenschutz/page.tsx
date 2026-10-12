@@ -654,15 +654,24 @@ export default function Datenschutz() {
             </p>
             <p>
               <strong>Aufbewahrung:</strong> Maximal 24 Monate. Sie können
-              Ihre Bewertung jederzeit löschen lassen. Öffnen Sie dafür die
-              vorbefüllte{" "}
+              Ihre Bewertung jederzeit selbst löschen. Der persönliche Link
+              „Meine gespeicherten Daten löschen“ in der Rückfrage-Mail führt
+              auf die Seite{" "}
+              <Link
+                href="/datenloeschen"
+                className="text-waldgruen hover:underline"
+              >
+                Gespeicherte Daten löschen
+              </Link>
+              . Sie zeigt, was zu Ihrer Adresse gespeichert ist, und löscht es
+              mit einem Klick. Ohne diesen Link können Sie die vorbefüllte{" "}
               <a
                 href={buildDataDeletionMailto("de")}
                 className="text-waldgruen hover:underline"
               >
                 Löschmail
               </a>{" "}
-              an {CONTACT.email} und senden Sie sie selbst ab. Geben Sie dafür
+              an {CONTACT.email} öffnen und selbst absenden. Geben Sie dafür
               die E-Mail-Adresse an, mit der Sie den Brief versendet haben.
             </p>
           </div>
@@ -709,10 +718,24 @@ export default function Datenschutz() {
             <p>
               Ein Kartenbeitrag bleibt unabhängig vom Erfolg der Briefgenerierung
               bis zu Ihrem Widerruf, dem Wegfall des Analysezwecks oder dem
-              Projektende gespeichert. Über
-              den Link „Meine gespeicherten Daten löschen“ in der Feedback-Mail
-              können Sie eine vorbefüllte E-Mail öffnen; die Löschanfrage wird
-              erst übermittelt, wenn Sie diese E-Mail selbst absenden.
+              Projektende gespeichert. Über den Link „Meine gespeicherten Daten
+              löschen“ in der Rückfrage-Mail gelangen Sie auf die Seite{" "}
+              <Link
+                href="/datenloeschen"
+                className="text-waldgruen hover:underline"
+              >
+                Gespeicherte Daten löschen
+              </Link>
+              , die Ihre Daten anzeigt und mit einem Klick löscht. Alternativ
+              können Sie eine vorbefüllte{" "}
+              <a
+                href={buildDataDeletionMailto("de")}
+                className="text-waldgruen hover:underline"
+              >
+                Löschmail
+              </a>{" "}
+              öffnen; die Löschanfrage wird erst übermittelt, wenn Sie diese
+              E-Mail selbst absenden.
             </p>
           </div>
 

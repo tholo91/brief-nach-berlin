@@ -154,7 +154,7 @@ export function DatenloeschenClient({ view }: { view: DatenloeschenView }) {
           </Heading>
           <div className="font-body text-sm text-warmgrau leading-relaxed space-y-3 mb-6">
             <p>
-              Deinen Brief und dein Anliegen speichere ich nicht. Etwas liegt nur bei mir, wenn du deinen Brief
+              Deinen Brief speichere ich nicht. Etwas liegt nur bei mir, wenn du deinen Brief
               bewertet oder dein Anliegen auf die Karte gesetzt hast.
             </p>
             <p>Zum Löschen brauchst du den persönlichen Link aus meiner Rückfrage-Mail. Er gilt 90 Tage.</p>

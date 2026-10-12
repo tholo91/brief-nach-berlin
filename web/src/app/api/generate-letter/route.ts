@@ -29,6 +29,7 @@ import {
 import { incrementLetterCounters } from "@/lib/counter";
 import { runningCampaign } from "@/lib/campaigns/endDate";
 import { claimAndSendCampaignMilestone } from "@/lib/campaigns/milestoneNotification";
+import { claimAndSendGlobalLetterMilestone } from "@/lib/campaigns/globalLetterMilestoneNotification";
 import { getPublicCampaignBySlug } from "@/lib/campaigns/repository";
 import { buildLetterSignalContext, doesLetterSignalContextMatch } from "@/lib/letterSignals/context";
 import { createGenerationProof, verifyLetterSignalContext } from "@/lib/letterSignals/token";
@@ -381,10 +382,15 @@ export async function POST(req: NextRequest) {
         }
       }
 
-      // Meilenstein zuletzt: ein Hänger bei Supabase oder Brevo soll die Brief-Mail nicht verzögern.
-      if (campaign && letterNumber !== undefined) {
-        await claimAndSendCampaignMilestone(campaign.slug);
-      }
+      // Meilensteine zuletzt: ein Hänger bei Supabase oder Brevo soll die Brief-Mail nicht verzögern.
+      await Promise.all([
+        ...(campaign && letterNumber !== undefined
+          ? [claimAndSendCampaignMilestone(campaign.slug)]
+          : []),
+        ...(letterNumber !== undefined
+          ? [claimAndSendGlobalLetterMilestone(letterNumber)]
+          : []),
+      ]);
     });
 
     console.log("[generate-letter] done", {

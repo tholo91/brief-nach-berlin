@@ -28,6 +28,9 @@ jest.mock("@/lib/campaigns/repository", () => ({ getPublicCampaignBySlug: jest.f
 jest.mock("@/lib/campaigns/milestoneNotification", () => ({
   claimAndSendCampaignMilestone: jest.fn(),
 }));
+jest.mock("@/lib/campaigns/globalLetterMilestoneNotification", () => ({
+  claimAndSendGlobalLetterMilestone: jest.fn(),
+}));
 jest.mock("@/lib/actions/letterSignals", () => ({
   markLetterSignalGeneratedAction: jest.fn(async () => ({ ok: true })),
 }));
@@ -52,6 +55,7 @@ jest.mock("@/lib/mistral", () => ({
 import { after } from "next/server";
 import { POST } from "@/app/api/generate-letter/route";
 import { claimAndSendCampaignMilestone } from "@/lib/campaigns/milestoneNotification";
+import { claimAndSendGlobalLetterMilestone } from "@/lib/campaigns/globalLetterMilestoneNotification";
 import { sendLetterEmail, prepareLetterEmail } from "@/lib/email/sendLetterEmail";
 import { generateLetter } from "@/lib/generation/generateLetter";
 import { resolveRecipientSelection } from "@/lib/lookup/resolveRecipient";
@@ -346,6 +350,20 @@ describe("generate-letter RecipientSelection hardening", () => {
       expect(claimAndSendCampaignMilestone).toHaveBeenCalledTimes(1);
       expect(claimAndSendCampaignMilestone).toHaveBeenCalledWith("laufende-kampagne");
     });
+
+    it.each([999, 1000, 1001, 2000])(
+      "übergibt den globalen Zählerstand %i an den Meilenstein-Claim",
+      async (letterNumber) => {
+        arrange(null, letterNumber);
+
+        const response = await postLetter();
+        await runAfter();
+
+        expect(response.status).toBe(200);
+        expect(claimAndSendGlobalLetterMilestone).toHaveBeenCalledTimes(1);
+        expect(claimAndSendGlobalLetterMilestone).toHaveBeenCalledWith(letterNumber);
+      },
+    );
 
     it("löst keinen Claim für einen Brief ohne Kampagne aus", async () => {
       arrange(null, 1234);

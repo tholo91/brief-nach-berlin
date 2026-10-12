@@ -29,7 +29,7 @@ async function render(searchParams: { t?: string }): Promise<string> {
 const mailto = buildDataDeletionMailto("de").replace(/&/g, "&amp;");
 // next/image rewrites the src to /_next/image?url=... in the jest env (no next.config).
 const AVATAR = /(\/|%2F)images(\/|%2F)thomas-avatar\.jpg/;
-const EMPTY = { reviews: [], mapEntries: [], waitlist: [] };
+const EMPTY = { reviews: [], mapEntries: [] };
 
 describe("/datenloeschen page", () => {
   const originalSecret = process.env.FEEDBACK_TOKEN_SECRET;
@@ -82,13 +82,11 @@ describe("/datenloeschen page", () => {
     mockedLookup.mockResolvedValue({
       reviews: [{ createdAt: "2026-09-01T10:00:00Z", rating: 4, isPublic: true }],
       mapEntries: [{ createdAt: "2026-09-02T10:00:00Z", plzPrefix: "28" }],
-      waitlist: [{ createdAt: "2026-03-01T10:00:00Z", ebene: "land" }],
     });
     const markup = await render({ t: createDataDeletionToken("person@example.org") });
     expect(markup).toContain("4 von 5");
     expect(markup).toContain("/stimmen");
     expect(markup).toContain("PLZ-Bereich 28");
-    expect(markup).toContain("Landtag");
     expect(markup).toContain("1. September 2026");
     expect(markup).toContain("Alles löschen");
     expect(markup).toContain('href="/kampagne/verwalten"');
@@ -101,7 +99,6 @@ describe("/datenloeschen page", () => {
     mockedLookup.mockResolvedValue({
       reviews: [{ createdAt: "2026-09-01T10:00:00Z", rating: 2, isPublic: false }],
       mapEntries: [],
-      waitlist: [],
     });
     const markup = await render({ t: createDataDeletionToken("person@example.org") });
     expect(markup).toContain("2 von 5");

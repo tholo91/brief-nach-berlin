@@ -10,13 +10,6 @@ export const metadata = {
   referrer: "no-referrer" as const,
 };
 
-const EBENE_LABELS: Record<string, string> = {
-  land: "Landtag",
-  kommune: "Kommune",
-  eu: "EU",
-  alle: "alle Ebenen",
-};
-
 function formatDate(iso: string): string {
   return new Date(iso).toLocaleDateString("de-DE", {
     day: "numeric",
@@ -40,13 +33,6 @@ function buildRows(data: StoredUserData): StoredRow[] {
       id: `map-${index}`,
       title: `Anliegen auf der Karte: PLZ-Bereich ${entry.plzPrefix}`,
       detail: `eingetragen am ${formatDate(entry.createdAt)}`,
-    });
-  });
-  data.waitlist.forEach((entry, index) => {
-    rows.push({
-      id: `waitlist-${index}`,
-      title: `Alter Eintrag auf der Warteliste (${EBENE_LABELS[entry.ebene] ?? entry.ebene})`,
-      detail: `vom ${formatDate(entry.createdAt)}`,
     });
   });
   return rows;

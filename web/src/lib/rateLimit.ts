@@ -97,10 +97,6 @@ export const LIMITS = {
   // Reviews per IP: 1 per 10 minutes. Real users rate a given letter once;
   // anything more is noise or abuse.
   REVIEW_PER_IP: { max: 1, windowMs: 10 * 60_000 },
-  // Roadmap signups per IP: 3 per 10 minutes. Same person may legitimately
-  // sign up for multiple levels (land + kommune); more than 3 in 10 min is
-  // almost always a script.
-  ROADMAP_SIGNUP_PER_IP: { max: 3, windowMs: 10 * 60_000 },
   // Error reports per IP: 5 per 10 minutes. A user clicking "Fehler melden" a
   // few times during one broken session is legitimate; more is noise.
   REPORT_ERROR_PER_IP: { max: 5, windowMs: 10 * 60_000 },

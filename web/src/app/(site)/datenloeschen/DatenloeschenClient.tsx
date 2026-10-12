@@ -23,13 +23,10 @@ function plural(count: number, one: string, many: string): string {
   return `${count} ${count === 1 ? one : many}`;
 }
 
-function formatDeleted(deleted: { reviews: number; mapEntries: number; waitlist: number }): string {
+function formatDeleted(deleted: { reviews: number; mapEntries: number }): string {
   const parts: string[] = [];
   if (deleted.reviews > 0) parts.push(plural(deleted.reviews, "Bewertung", "Bewertungen"));
   if (deleted.mapEntries > 0) parts.push(plural(deleted.mapEntries, "Kartenpunkt", "Kartenpunkte"));
-  if (deleted.waitlist > 0) {
-    parts.push(plural(deleted.waitlist, "Eintrag auf der Warteliste", "Einträge auf der Warteliste"));
-  }
   if (parts.length === 0) return "Es war nichts mehr gespeichert.";
   const text = parts.length === 1 ? parts[0] : `${parts.slice(0, -1).join(", ")} und ${parts[parts.length - 1]}`;
   return `Gelöscht: ${text}.`;

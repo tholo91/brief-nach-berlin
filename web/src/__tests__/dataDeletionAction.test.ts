@@ -33,10 +33,6 @@ function seed(): Record<string, FakeRow[]> {
       { id: "s2", email_lookup_hash: "x", email_normalized: null, letter_id: LETTER_ID, plz_prefix: "10", created_at: "2026-09-03T10:00:00Z" },
       { id: "s-other", email_lookup_hash: "o", email_normalized: "other@example.org", letter_id: "lo", plz_prefix: "80", created_at: "2026-09-03T10:00:00Z" },
     ],
-    roadmap_signups: [
-      { id: "w1", email: EMAIL, ebene: "land", created_at: "2026-03-01T10:00:00Z" },
-      { id: "w-other", email: "other@example.org", ebene: "eu", created_at: "2026-03-01T10:00:00Z" },
-    ],
   };
 }
 
@@ -72,18 +68,17 @@ describe("deleteDataAction", () => {
 
     await expect(deleteDataAction({ token })).resolves.toEqual({
       ok: true,
-      deleted: { reviews: 1, mapEntries: 2, waitlist: 1 },
+      deleted: { reviews: 1, mapEntries: 2 },
     });
 
     const deletes = fake.calls.filter((c) => c.op === "delete");
-    expect(deletes).toHaveLength(3);
+    expect(deletes).toHaveLength(2);
     for (const call of deletes) {
       if (call.column === "email") expect(call.value).toBe(EMAIL);
       else expect((call.value as string[]).sort()).toEqual(["s1", "s2"]);
     }
     expect(fake.tables.reviews.map((r) => r.id)).toEqual(["r-other"]);
     expect(fake.tables.letter_signals.map((r) => r.id)).toEqual(["s-other"]);
-    expect(fake.tables.roadmap_signups.map((r) => r.id)).toEqual(["w-other"]);
   });
 
   it("rejects an extra email field without touching Supabase", async () => {

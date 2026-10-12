@@ -6,15 +6,13 @@ import { MIN_PUBLIC_REVIEW_DATE } from "@/lib/reviews/types";
 
 export type StoredReview = { createdAt: string; rating: number; isPublic: boolean };
 export type StoredMapEntry = { createdAt: string; plzPrefix: string };
-export type StoredWaitlistEntry = { createdAt: string; ebene: string };
 
 export type StoredUserData = {
   reviews: StoredReview[];
   mapEntries: StoredMapEntry[];
-  waitlist: StoredWaitlistEntry[];
 };
 
-export type DeletedCounts = { reviews: number; mapEntries: number; waitlist: number };
+export type DeletedCounts = { reviews: number; mapEntries: number };
 
 type ReviewRow = {
   id: string;
@@ -25,13 +23,11 @@ type ReviewRow = {
   body: string | null;
 };
 type SignalRow = { id: string; created_at: string; plz_prefix: string };
-type WaitlistRow = { id: string; created_at: string; ebene: string };
 
 type Collected = {
   email: string;
   reviews: ReviewRow[];
   signals: SignalRow[];
-  waitlist: WaitlistRow[];
 };
 
 type DbError = { code?: string | null } | null;
@@ -65,16 +61,14 @@ async function collect(client: SupabaseClient, rawEmail: string): Promise<Collec
   if (!hashSecret) throw new Error("LETTER_SIGNAL_EMAIL_HASH_SECRET is not set");
   const lookupHash = createLetterSignalEmailHash(email, hashSecret);
 
-  const [reviewsResult, hashSignalsResult, emailSignalsResult, waitlistResult] = await Promise.all([
+  const [reviewsResult, hashSignalsResult, emailSignalsResult] = await Promise.all([
     client.from("reviews").select("id, created_at, rating, letter_id, consent, body").eq("email", email),
     client.from("letter_signals").select("id, created_at, plz_prefix").eq("email_lookup_hash", lookupHash),
     client.from("letter_signals").select("id, created_at, plz_prefix").eq("email_normalized", email),
-    client.from("roadmap_signups").select("id, created_at, ebene").eq("email", email),
   ]);
   assertNoError(reviewsResult.error, "reviews", "select");
   assertNoError(hashSignalsResult.error, "letter_signals", "select by hash");
   assertNoError(emailSignalsResult.error, "letter_signals", "select by email");
-  assertNoError(waitlistResult.error, "roadmap_signups", "select");
 
   const reviews = (reviewsResult.data ?? []) as ReviewRow[];
   const linkedLetterIds = Array.from(
@@ -97,7 +91,7 @@ async function collect(client: SupabaseClient, rawEmail: string): Promise<Collec
     ).values(),
   );
 
-  return { email, reviews, signals, waitlist: (waitlistResult.data ?? []) as WaitlistRow[] };
+  return { email, reviews, signals };
 }
 
 export async function lookupUserDataByEmail(client: SupabaseClient, email: string): Promise<StoredUserData> {
@@ -112,7 +106,6 @@ export async function lookupUserDataByEmail(client: SupabaseClient, email: strin
       createdAt: signal.created_at,
       plzPrefix: signal.plz_prefix,
     })),
-    waitlist: collected.waitlist.map((entry) => ({ createdAt: entry.created_at, ebene: entry.ebene })),
   };
 }
 
@@ -121,20 +114,17 @@ export async function deleteUserDataByEmail(client: SupabaseClient, email: strin
   const collected = await collect(client, email);
   const signalIds = collected.signals.map((signal) => signal.id);
 
-  const [reviewDelete, signalDelete, waitlistDelete] = await Promise.all([
+  const [reviewDelete, signalDelete] = await Promise.all([
     client.from("reviews").delete({ count: "exact" }).eq("email", collected.email),
     signalIds.length > 0
       ? client.from("letter_signals").delete({ count: "exact" }).in("id", signalIds)
       : Promise.resolve({ count: 0, error: null as DbError }),
-    client.from("roadmap_signups").delete({ count: "exact" }).eq("email", collected.email),
   ]);
   assertNoError(reviewDelete.error, "reviews", "delete");
   assertNoError(signalDelete.error, "letter_signals", "delete");
-  assertNoError(waitlistDelete.error, "roadmap_signups", "delete");
 
   return {
     reviews: reviewDelete.count ?? collected.reviews.length,
     mapEntries: signalDelete.count ?? signalIds.length,
-    waitlist: waitlistDelete.count ?? collected.waitlist.length,
   };
 }

@@ -28,10 +28,6 @@ function seed(): Record<string, FakeRow[]> {
       { id: "s-linked", email_lookup_hash: "zzz", email_normalized: null, letter_id: LETTER_ID, plz_prefix: "20", created_at: "2026-09-04T10:00:00Z" },
       { id: "s-other", email_lookup_hash: "other", email_normalized: "other@example.org", letter_id: "l-other", plz_prefix: "80", created_at: "2026-09-05T10:00:00Z" },
     ],
-    roadmap_signups: [
-      { id: "w1", email: EMAIL, ebene: "land", created_at: "2026-03-01T10:00:00Z" },
-      { id: "w-other", email: "other@example.org", ebene: "eu", created_at: "2026-03-01T10:00:00Z" },
-    ],
     campaigns: [{ id: "c1", creator_email: EMAIL }],
   };
 }
@@ -74,18 +70,17 @@ describe("data deletion userData", () => {
         "letter_signals|select|email_lookup_hash",
         "letter_signals|select|email_normalized",
         "letter_signals|select|letter_id",
-        "roadmap_signups|select|email",
       ]));
       expect(fake.calls.find((c) => c.table === "reviews")?.value).toBe(EMAIL);
       expect(fake.calls.find((c) => c.column === "email_lookup_hash")?.value).toBe(HASH);
       expect(fake.calls.find((c) => c.column === "email_normalized")?.value).toBe(EMAIL);
       expect(fake.calls.find((c) => c.column === "letter_id")?.value).toEqual([LETTER_ID]);
-      expect(fake.calls.find((c) => c.table === "roadmap_signups")?.value).toBe(EMAIL);
+      expect(fake.calls.some((c) => c.table === "roadmap_signups")).toBe(false);
       expect(fake.calls.some((c) => c.table === "campaigns")).toBe(false);
     });
 
     it("skips the linked-letter query when there are no review letter ids", async () => {
-      const fake = createFakeSupabase({ reviews: [], letter_signals: [], roadmap_signups: [] });
+      const fake = createFakeSupabase({ reviews: [], letter_signals: [] });
       await lookupUserDataByEmail(fake.client as unknown as SupabaseClient, EMAIL);
       expect(fake.calls.some((c) => c.column === "letter_id")).toBe(false);
     });
@@ -95,7 +90,6 @@ describe("data deletion userData", () => {
       const result = await lookupUserDataByEmail(fake.client as unknown as SupabaseClient, EMAIL);
       expect(result.mapEntries.map((m) => m.plzPrefix).sort()).toEqual(["10", "20", "28"]);
       expect(result.reviews).toEqual([{ createdAt: "2026-09-01T10:00:00Z", rating: 4, isPublic: true }]);
-      expect(result.waitlist).toEqual([{ createdAt: "2026-03-01T10:00:00Z", ebene: "land" }]);
       const json = JSON.stringify(result);
       expect(json).not.toContain(EMAIL);
       expect(json).not.toContain("Hat geholfen");
@@ -114,17 +108,16 @@ describe("data deletion userData", () => {
     it("deletes only this address's rows and returns the counts", async () => {
       const fake = createFakeSupabase(seed());
       const counts = await deleteUserDataByEmail(fake.client as unknown as SupabaseClient, "Person@Example.org");
-      expect(counts).toEqual({ reviews: 1, mapEntries: 3, waitlist: 1 });
+      expect(counts).toEqual({ reviews: 1, mapEntries: 3 });
       expect(fake.tables.reviews.map((r) => r.id)).toEqual(["r-other"]);
       expect(fake.tables.letter_signals.map((r) => r.id)).toEqual(["s-other"]);
-      expect(fake.tables.roadmap_signups.map((r) => r.id)).toEqual(["w-other"]);
       expect(fake.tables.campaigns).toHaveLength(1);
       const deletes = fake.calls.filter((c) => c.op === "delete");
       expect(deletes).toEqual(expect.arrayContaining([
         { table: "reviews", op: "delete", column: "email", value: EMAIL },
-        { table: "roadmap_signups", op: "delete", column: "email", value: EMAIL },
       ]));
       const signalDelete = deletes.find((c) => c.table === "letter_signals");
+      expect(fake.calls.some((c) => c.table === "roadmap_signups")).toBe(false);
       expect(signalDelete?.column).toBe("id");
       expect((signalDelete?.value as string[]).sort()).toEqual(["s-both", "s-hash", "s-linked"]);
     });
@@ -133,15 +126,14 @@ describe("data deletion userData", () => {
       const fake = createFakeSupabase({
         reviews: [{ id: "r1", email: EMAIL, created_at: "2026-09-01T10:00:00Z", rating: 5, letter_id: null, consent: false, body: null }],
         letter_signals: [],
-        roadmap_signups: [],
       });
       const counts = await deleteUserDataByEmail(fake.client as unknown as SupabaseClient, EMAIL);
-      expect(counts).toEqual({ reviews: 1, mapEntries: 0, waitlist: 0 });
+      expect(counts).toEqual({ reviews: 1, mapEntries: 0 });
       expect(fake.calls.some((c) => c.table === "letter_signals" && c.op === "delete")).toBe(false);
     });
 
     it("throws a message without the email or the Supabase text on any error", async () => {
-      for (const table of ["reviews", "letter_signals", "roadmap_signups"]) {
+      for (const table of ["reviews", "letter_signals"]) {
         const fake = createFakeSupabase(seed());
         fake.failTables.add(table);
         const error = await deleteUserDataByEmail(fake.client as unknown as SupabaseClient, EMAIL).then(

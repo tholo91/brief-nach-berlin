@@ -186,6 +186,7 @@ Recent decisions affecting current work:
 | 261009-u31 | Creator-Statistik: Versandring, Erklärzeile, aufklappbare Länder-Legende | 2026-10-09 | 8d4fd79 | [261009-u31-creator-statistik-versandring-erklaerzei](./quick/261009-u31-creator-statistik-versandring-erklaerzei/) |
 | 261010-rhx | Landing: Kampagnen-Pills erklaert (oder-Trennlinie), mobil als wischbare Reihe, Reviews mobil kompakter, NGO-Notizzettel geparkt | 2026-10-10 | 8399f29 | [261010-rhx-landing-kampagnen-pills-erklaeren-notizz](./quick/261010-rhx-landing-kampagnen-pills-erklaeren-notizz/) |
 | 261011-lgc | Ending-Page Deutschlandkarte: Tipp öffnet Vollbild-Zoom | 2026-10-11 | 2f170fd | [261011-lgc-ending-page-deutschlandkarte-tipp-ffnet-](./quick/261011-lgc-ending-page-deutschlandkarte-tipp-ffnet-/) |
+| 261012-oj1 | Kampagnenseiten: Zähler ab 21, Disclaimer, pausiert per Link, "Weitere Kampagnen" | 2026-10-12 | 6b20dd3 | [261012-oj1-kampagnenseiten-zaehler-disclaimer-pausi](./quick/261012-oj1-kampagnenseiten-zaehler-disclaimer-pausi/) |
 
 ## Session Continuity
 

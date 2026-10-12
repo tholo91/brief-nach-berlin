@@ -9,6 +9,7 @@ import {
 import { buildStarBarHtml } from "./buildEmailHtml";
 import { buildDataDeletionMailto, getEmailCopy, resolveEmailLocale } from "./mailLocale";
 import type { Locale } from "@/lib/i18n/locale";
+import { buildDonationButtonLabelHtml } from "./financingNotice";
 import { SUPPORT_CONTENT, SUPPORT_EMAIL_COPY } from "@/lib/support-content";
 import {
   buildSocialFollowHtml,
@@ -63,6 +64,7 @@ export function buildFollowupHtml(params: BuildFollowupParams): FollowupRender {
   const shareEmailUrl = shareText
     ? `mailto:?subject=${encodeURIComponent(isTurkish ? "Sen de Brief-nach-Berlin ile bir mektup yazar mısın?" : "Would you also write a letter with Brief-nach-Berlin?")}&body=${encodeURIComponent(shareText)}`
     : SHARE_URL_EMAIL;
+  const instagramUrl = `${base}/weitersagen#insta`;
   const deleteUrl = buildDataDeletionMailto(locale);
 
   const text = [
@@ -78,7 +80,9 @@ export function buildFollowupHtml(params: BuildFollowupParams): FollowupRender {
     `4 Sterne: ${base}/feedback?r=4&t=${token}&s=2`,
     `5 Sterne: ${base}/feedback?r=5&t=${token}&s=2`,
     ``,
-    `${supportCopy.button}: ${SUPPORT_CONTENT.ctas.donate.href}`,
+    supportCopy.compactHeading,
+    `${supportCopy.compactButton}: ${SUPPORT_CONTENT.ctas.donate.href}`,
+    supportCopy.providerLabel,
     ``,
     copy.ignore,
     copy.thanks,
@@ -90,6 +94,7 @@ export function buildFollowupHtml(params: BuildFollowupParams): FollowupRender {
     `${copy.shareHeading}: ${copy.share}: ${base}/weitersagen`,
     `WhatsApp: ${shareWhatsappUrl}`,
     `Telegram: ${shareTelegramUrl}`,
+    `Instagram: ${instagramUrl}`,
     `E-Mail:   ${shareEmailUrl}`,
     ``,
     `--`,
@@ -107,6 +112,13 @@ export function buildFollowupHtml(params: BuildFollowupParams): FollowupRender {
   <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500&display=swap" rel="stylesheet">
   <title>${subject}</title>
   <style>
+    @media only screen and (max-width: 600px) {
+      .bnb-share-pad { padding-left: 16px !important; padding-right: 16px !important; }
+      .bnb-share-inner-pad { padding-left: 14px !important; padding-right: 14px !important; }
+      .bnb-share-label { display: none !important; }
+      .bnb-share-btn { padding: 14px 0 !important; }
+      .bnb-share-icon { width: 24px !important; height: 24px !important; margin: 0 !important; }
+    }
     /* Mobile: ausreichend schmale Viewports lassen das absolut platzierte
        Envelope-Bild mit dem zentrierten Titel kollidieren. Bei <= 480px
        wird es deshalb ausgeblendet — der Header bleibt sauber zentriert.
@@ -119,8 +131,6 @@ export function buildFollowupHtml(params: BuildFollowupParams): FollowupRender {
       .followup-action-gap { display: block !important; width: 100% !important; height: 12px !important; line-height: 12px !important; }
       .bnb-feedback-break { display: inline !important; }
       .bnb-feedback-space { display: none !important; }
-      /* Footer: Tagline "Deine Stimme zählt." auf Mobile ausblenden. */
-      .bnb-footer-tagline { display: none !important; }
     }
   </style>
 </head>
@@ -193,7 +203,7 @@ export function buildFollowupHtml(params: BuildFollowupParams): FollowupRender {
                     <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="width:100%;border-collapse:collapse;">
                       <tr>
                         <td bgcolor="#2D5016" style="border-radius:4px;text-align:center;">
-                          <a href="${SUPPORT_CONTENT.ctas.donate.href}" target="_blank" rel="noopener noreferrer" style="display:block;background-color:#2D5016;color:#ffffff;font-family:Georgia,'Times New Roman',serif;font-size:12px;font-weight:bold;text-decoration:none;padding:10px 8px;border-radius:4px;line-height:1.4;text-align:center;">${escapeHtml(supportCopy.compactButton)}</a>
+                          <a href="${SUPPORT_CONTENT.ctas.donate.href}" target="_blank" rel="noopener noreferrer" style="display:block;background-color:#2D5016;color:#ffffff;font-family:Georgia,'Times New Roman',serif;font-size:12px;font-weight:bold;text-decoration:none;padding:10px 8px;border-radius:4px;line-height:1.4;text-align:center;">${buildDonationButtonLabelHtml(supportCopy.compactButton, base)}</a>
                         </td>
                       </tr>
                     </table>
@@ -222,22 +232,25 @@ export function buildFollowupHtml(params: BuildFollowupParams): FollowupRender {
 
           <!-- Share container -->
           <tr>
-            <td style="padding:8px 32px 24px;background-color:#ffffff;">
-              <div style="background-color:#FAF8F5;border:1px solid #E0DCD7;border-radius:6px;padding:20px 22px;">
+            <td class="bnb-share-pad" style="padding:8px 32px 24px;background-color:#ffffff;">
+              <div class="bnb-share-inner-pad" style="background-color:#FAF8F5;border:1px solid #E0DCD7;border-radius:6px;padding:20px 22px;">
                 <h2 style="margin:0 0 8px;font-family:Georgia,'Times New Roman',serif;font-size:16px;color:#2D5016;font-weight:bold;">${copy.shareHeading}</h2>
                 <p style="margin:0 0 14px;font-family:Georgia,'Times New Roman',serif;font-size:14px;color:#4A4A4A;line-height:1.6;">
                   ${copy.share} (<a href="${base}/weitersagen" style="color:#2D5016;text-decoration:underline;">${copy.moreInfo}</a>).
                 </p>
                 <table role="presentation" cellpadding="0" cellspacing="0" width="100%">
                   <tr>
-                    <td style="padding-right:6px;width:34%;" valign="top">
-                      <a href="${shareWhatsappUrl}" style="display:block;text-align:center;background-color:#ffffff;color:#2D5016;font-family:Georgia,'Times New Roman',serif;font-size:14px;font-weight:bold;text-decoration:none;padding:10px 8px;border-radius:6px;border:2px solid #2D5016;">WhatsApp</a>
+                    <td style="padding-right:4px;width:25%;" valign="top">
+                      <a href="${shareWhatsappUrl}" class="bnb-share-btn" aria-label="WhatsApp" style="display:block;text-align:center;background-color:#ffffff;color:#2D5016;font-family:Georgia,'Times New Roman',serif;font-size:14px;font-weight:bold;text-decoration:none;padding:10px 4px;border-radius:6px;border:2px solid #2D5016;line-height:1;white-space:nowrap;"><img src="${base}/images/icon-whatsapp.png" alt="" width="18" height="18" class="bnb-share-icon" style="width:18px;height:18px;vertical-align:middle;border:0;margin-right:6px;"><span class="bnb-share-label">WhatsApp</span></a>
                     </td>
-                    <td style="padding:0 3px;width:33%;" valign="top">
-                      <a href="${shareTelegramUrl}" style="display:block;text-align:center;background-color:#ffffff;color:#2D5016;font-family:Georgia,'Times New Roman',serif;font-size:14px;font-weight:bold;text-decoration:none;padding:10px 8px;border-radius:6px;border:2px solid #2D5016;">Telegram</a>
+                    <td style="padding:0 2px;width:25%;" valign="top">
+                      <a href="${shareTelegramUrl}" class="bnb-share-btn" aria-label="Telegram" style="display:block;text-align:center;background-color:#ffffff;color:#2D5016;font-family:Georgia,'Times New Roman',serif;font-size:14px;font-weight:bold;text-decoration:none;padding:10px 4px;border-radius:6px;border:2px solid #2D5016;line-height:1;white-space:nowrap;"><img src="${base}/images/icon-telegram.png" alt="" width="18" height="18" class="bnb-share-icon" style="width:18px;height:18px;vertical-align:middle;border:0;margin-right:6px;"><span class="bnb-share-label">Telegram</span></a>
                     </td>
-                    <td style="padding-left:6px;width:33%;" valign="top">
-                      <a href="${shareEmailUrl}" style="display:block;text-align:center;background-color:#ffffff;color:#2D5016;font-family:Georgia,'Times New Roman',serif;font-size:14px;font-weight:bold;text-decoration:none;padding:10px 8px;border-radius:6px;border:2px solid #2D5016;">E-Mail</a>
+                    <td style="padding:0 2px;width:25%;" valign="top">
+                      <a href="${instagramUrl}" class="bnb-share-btn" aria-label="Instagram" style="display:block;text-align:center;background-color:#ffffff;color:#2D5016;font-family:Georgia,'Times New Roman',serif;font-size:14px;font-weight:bold;text-decoration:none;padding:10px 4px;border-radius:6px;border:2px solid #2D5016;line-height:1;white-space:nowrap;"><img src="${base}/images/icon-instagram.png" alt="" width="18" height="18" class="bnb-share-icon" style="width:18px;height:18px;vertical-align:middle;border:0;margin-right:6px;"><span class="bnb-share-label">Instagram</span></a>
+                    </td>
+                    <td style="padding-left:4px;width:25%;" valign="top">
+                      <a href="${shareEmailUrl}" class="bnb-share-btn" aria-label="E-Mail" style="display:block;text-align:center;background-color:#ffffff;color:#2D5016;font-family:Georgia,'Times New Roman',serif;font-size:14px;font-weight:bold;text-decoration:none;padding:10px 4px;border-radius:6px;border:2px solid #2D5016;line-height:1;white-space:nowrap;"><img src="${base}/images/icon-email.png" alt="" width="18" height="18" class="bnb-share-icon" style="width:18px;height:18px;vertical-align:middle;border:0;margin-right:6px;"><span class="bnb-share-label">E-Mail</span></a>
                     </td>
                   </tr>
                 </table>
@@ -253,9 +266,6 @@ export function buildFollowupHtml(params: BuildFollowupParams): FollowupRender {
           <!-- Footer -->
           <tr>
             <td style="padding:20px 32px 24px;background-color:#FAF8F5;text-align:center;">
-              <p style="margin:0;font-family:Georgia,'Times New Roman',serif;font-size:12px;color:#999999;">
-                <a href="${APP_URL}" style="color:#999999;text-decoration:none;">Brief-nach-Berlin</a><span class="bnb-footer-tagline"> · ${getEmailCopy(locale).voiceCounts}</span>
-              </p>
               ${buildSocialFollowHtml({ locale, baseUrl: base })}
               <p style="margin:8px 0 0;font-family:Georgia,'Times New Roman',serif;font-size:12px;color:#aaaaaa;line-height:1.5;">
                 ${copy.oneOff} <a href="${APP_URL}/datenschutz" style="color:#888888;">${copy.privacy}</a> · <a href="${deleteUrl}" style="color:#888888;">${copy.delete}</a> · <a href="${APP_URL}/was-noch-kommt" style="color:#888888;">${copy.roadmap}</a> · <a href="${APP_URL}/wer-darf-mdb-schreiben" style="color:#888888;">${copy.write}</a>

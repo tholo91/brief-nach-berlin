@@ -10,13 +10,19 @@ describe("follow-up donation CTA", () => {
     expect(followup.html).toContain("followup-rating-column");
     expect(followup.html.match(/width="48\.5%"/g)).toHaveLength(2);
     expect(followup.html).toContain(`href="${DONATION_PROVIDER_URL}"`);
-    expect(followup.html).toContain("Mein unabhängiges Soloprojekt");
+    expect(followup.html).toContain("Mein Soloprojekt erhalten");
     expect(followup.html).toContain("Jetzt spenden");
-    expect(followup.html).toContain("ehrenamtlich · über WE AID");
+    expect(followup.html).toContain("icon-heart-white.png");
+    expect(buildFollowupHtml({ token: "preview", baseUrl: "http://localhost:3011" }).html).toContain('src="http://localhost:3011/images/icon-heart-white.png"');
+    expect(followup.html).toContain("über WE AID unterstützen");
+    expect(followup.html).toContain('alt="" aria-hidden="true"');
+    expect(followup.html).toContain('margin-right:6px;">Jetzt spenden');
     expect(followup.html.match(/background-color:#FAF8F5/g)).not.toBeNull();
     expect(followup.text).toContain(
       `${SUPPORT_EMAIL_COPY.de.button}: ${DONATION_PROVIDER_URL}`,
     );
+    expect(followup.text).toContain("Mein Soloprojekt erhalten");
+    expect(followup.text).toContain("über WE AID unterstützen");
     expect(followup.html).not.toContain(
       'href="https://www.brief-nach-berlin.de/spenden',
     );
@@ -33,7 +39,10 @@ describe("follow-up donation CTA", () => {
       expect(followup.html).toContain(
         SUPPORT_EMAIL_COPY[locale].compactButton.replace(/&/g, "&amp;"),
       );
+      expect(followup.html).toContain(SUPPORT_EMAIL_COPY[locale].providerLabel);
       expect(followup.text).toContain(SUPPORT_EMAIL_COPY[locale].button);
+      expect(followup.text).toContain(SUPPORT_EMAIL_COPY[locale].compactHeading);
+      expect(followup.text).toContain(SUPPORT_EMAIL_COPY[locale].providerLabel);
     },
   );
 });

@@ -40,20 +40,34 @@ export function FilterBar({ query, campaignOptions }: FilterBarProps) {
 
       <label className="grid gap-1">
         <span className={labelClass}>Quelle</span>
-        <select
-          className={controlClass}
-          value={query.quelle ?? "all"}
-          onChange={(event) =>
-            apply({
-              quelle: event.target.value === "all" ? null : event.target.value,
-              kampagne: null,
-            })
-          }
-        >
-          <option value="all">Alle</option>
-          <option value="free">Freie Anliegen</option>
-          <option value="campaign">Kampagnen</option>
-        </select>
+        <span className="inline-flex min-h-9 items-center gap-2">
+          <input
+            className="peer sr-only"
+            type="checkbox"
+            role="switch"
+            aria-label="Kampagnen ausblenden"
+            checked={query.quelle === "free"}
+            onChange={(event) =>
+              apply({
+                quelle: event.target.checked ? "free" : null,
+                kampagne: null,
+              })
+            }
+          />
+          <span
+            aria-hidden="true"
+            className={`relative inline-flex h-6 w-11 shrink-0 items-center rounded-full transition-colors peer-focus-visible:ring-2 peer-focus-visible:ring-waldgruen/40 peer-focus-visible:ring-offset-2 ${
+              query.quelle === "free" ? "bg-waldgruen" : "bg-warmgrau/25"
+            }`}
+          >
+            <span
+              className={`absolute left-0.5 h-5 w-5 rounded-full bg-white shadow-sm transition-transform ${
+                query.quelle === "free" ? "translate-x-5" : "translate-x-0"
+              }`}
+            />
+          </span>
+          <span className="font-body text-sm text-warmgrau">Ohne Kampagnen</span>
+        </span>
       </label>
 
       {query.quelle === "campaign" && (
@@ -91,8 +105,9 @@ export function FilterBar({ query, campaignOptions }: FilterBarProps) {
       </label>
 
       <p className="max-w-prose font-body text-xs leading-relaxed text-warmgrau/50">
-        Filter wirken auf alle Abschnitte, nur der Brief-Zähler bleibt. Klick auf
-        ein Bundesland oder eine Kampagne in den Balken setzt den Filter ebenfalls.
+        Der Schalter filtert alle Abschnitte; nur der globale Brief-Zähler bleibt
+        ungefiltert. Klick auf ein Bundesland oder eine Kampagne in den Balken setzt
+        den Filter ebenfalls.
       </p>
     </div>
   );

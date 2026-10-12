@@ -23,6 +23,7 @@ import {
 } from "@/lib/letterSignals/mapViewport";
 import { GermanyContributionMap } from "@/components/letter-signals/GermanyContributionMap";
 import { ContributionMapDialog } from "@/components/letter-signals/ContributionMapDialog";
+import { LetterActivityCard } from "@/components/letter-signals/LetterActivityCard";
 
 const bounds = parseViewBox("0 0 180 180");
 
@@ -190,28 +191,48 @@ describe("ContributionMapDialog rendering", () => {
   });
 });
 
+describe("LetterActivityCard expand trigger", () => {
+  it("renders trigger, badge and a closed dialog when expandable", () => {
+    const html = renderToStaticMarkup(createElement(LetterActivityCard, { letterCount: 10, expandable: true }));
+    expect(html).toContain('aria-label="Karte vergrößern"');
+    expect(html).toContain('aria-haspopup="dialog"');
+    expect(html).toContain("cursor-zoom-in");
+    expect(html).toContain("Vergrößern");
+    expect(html).toContain("<dialog");
+  });
+
+  it("stays a plain display without the expandable prop", () => {
+    const html = renderToStaticMarkup(createElement(LetterActivityCard, { letterCount: 10 }));
+    expect(html).toContain("max-w-[18rem]");
+    expect(html).not.toContain("Karte vergrößern");
+    expect(html).not.toContain("cursor-zoom-in");
+    expect(html).not.toContain("<dialog");
+  });
+});
+
 describe("map dialog sources", () => {
   const dialogSource = readFileSync(
     join(process.cwd(), "src/components/letter-signals/ContributionMapDialog.tsx"),
     "utf8",
   );
-  const cardSource = readFileSync(
-    join(process.cwd(), "src/components/wizard/LetterSignalCard.tsx"),
+  const landingCardSource = readFileSync(
+    join(process.cwd(), "src/components/letter-signals/LetterActivityCard.tsx"),
     "utf8",
   );
 
-  it("wires the card trigger to the dialog", () => {
-    expect(cardSource).toContain("ContributionMapDialog");
-    expect(cardSource).toContain('aria-haspopup="dialog"');
-    expect(cardSource).toContain("Karte vergrößern");
-    expect(cardSource).toContain("cursor-zoom-in");
-    expect(cardSource).toContain("Vergrößern");
+  it("wires the landing card trigger to the dialog", () => {
+    expect(landingCardSource).toContain("ContributionMapDialog");
+    expect(landingCardSource).toContain('aria-haspopup="dialog"');
+    expect(landingCardSource).toContain("Karte vergrößern");
+    expect(landingCardSource).toContain("cursor-zoom-in");
+    expect(landingCardSource).toContain("Vergrößern");
+    expect(landingCardSource).toContain("expandable");
   });
 
   it("keeps copy free of em dashes and first-person plural", () => {
     const emDash = String.fromCharCode(0x2014);
     expect(dialogSource).not.toContain(emDash);
-    expect(cardSource).not.toContain(emDash);
+    expect(landingCardSource).not.toContain(emDash);
     const plural = new RegExp("\\b(" + ["w", "ir"].join("") + "|" + ["u", "ns"].join("") + "|" + ["un", "ser\\w*"].join("") + ")\\b", "i");
     expect(dialogSource).not.toMatch(plural);
   });

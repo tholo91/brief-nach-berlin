@@ -65,7 +65,7 @@ export default function FAQ({ letterCount }: { letterCount: number }) {
           </div>
         </div>
         <div className="lg:pb-1">
-          <LetterActivityCard letterCount={letterCount} />
+          <LetterActivityCard letterCount={letterCount} expandable />
         </div>
       </div>
     </section>

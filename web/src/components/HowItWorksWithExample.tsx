@@ -229,7 +229,7 @@ export default function HowItWorksWithExample({ letterCount }: { letterCount: nu
               </div>
 
               <div id="map-panel" role="tabpanel" aria-labelledby="map-panel-tab" className="min-w-full snap-start px-1 py-6">
-                <LetterActivityCard letterCount={letterCount} />
+                <LetterActivityCard letterCount={letterCount} expandable />
               </div>
 
               <div id="story-panel" role="tabpanel" aria-labelledby="story-panel-tab" className="min-w-full snap-start px-1 py-6">

@@ -72,7 +72,7 @@ export const emailCopy = {
     termsLabel: "Nutzungsbedingungen",
     terms: (link: string) => `Es gelten die ${link}.`,
     privacy: "Datenschutz",
-    dataPolicy: "Dein Brief und dein Anliegen werden nicht gespeichert. Kein Newsletter: In 2-3 Tagen kommt nur noch eine Mail mit der Bitte um eine Bewertung.",
+    dataPolicy: "Dein Brief und dein Anliegen werden nicht gespeichert. Nur wenn du dein Anliegen freiwillig auf die Karte setzt, speichere ich ein kurzes Themensignal. Kein Newsletter: In 2-3 Tagen kommt nur noch eine Mail mit der Bitte um eine Bewertung.",
     guideMdb: "Wer darf MdBs schreiben?",
     guide: "Mehr zum Briefeschreiben",
     followup: {
@@ -159,7 +159,7 @@ export const emailCopy = {
     termsLabel: "terms of use (in German)",
     terms: (link: string) => `Our ${link} apply.`,
     privacy: "Privacy policy (in German)",
-    dataPolicy: "Your letter and your request are not stored. No newsletter: in 2-3 days you will receive just one more email asking you to rate your letter.",
+    dataPolicy: "Your letter and your request are not stored. Only if you voluntarily add your request to the map do I store a short topic signal. No newsletter: in 2-3 days you will receive just one more email asking you to rate your letter.",
     guideMdb: "Who may write to MPs? (in German)",
     guide: "More about writing letters (in German)",
     followup: {
@@ -246,7 +246,7 @@ export const emailCopy = {
     termsLabel: "Kullanım koşulları (Almanca)",
     terms: (link: string) => `${link} geçerlidir.`,
     privacy: "Gizlilik politikası (Almanca)",
-    dataPolicy: "Mektubunuz ve talebiniz saklanmaz. Bülten yok: 2-3 gün içinde yalnızca mektubunuzu değerlendirmenizi rica eden bir e-posta daha gelir.",
+    dataPolicy: "Mektubunuz ve talebiniz saklanmaz. Yalnızca talebinizi gönüllü olarak haritaya eklerseniz kısa bir konu sinyali saklarım. Bülten yok: 2-3 gün içinde yalnızca mektubunuzu değerlendirmenizi rica eden bir e-posta daha gelir.",
     guideMdb: "Milletvekillerine kim yazabilir? (Almanca)",
     guide: "Mektup yazma hakkında daha fazlası (Almanca)",
     followup: {

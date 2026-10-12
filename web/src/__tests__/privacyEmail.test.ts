@@ -127,8 +127,48 @@ describe("privacy email contact", () => {
     expect(lastcall.html).toContain("dritte und letzte automatische Mail");
   });
 
-  it("leaves the letter mail without a deletion link", () => {
-    expect(buildEmailHtml(params)).not.toContain("/datenloeschen");
-    expect(buildLetterEmailText(params)).not.toContain("/datenloeschen");
+  it("links the tokenless deletion page in the letter mail by default", () => {
+    expect(buildEmailHtml(params)).toContain(`href="${APP_URL}/datenloeschen"`);
+    expect(buildLetterEmailText(params)).toContain(`Meine gespeicherten Daten löschen: ${APP_URL}/datenloeschen`);
+  });
+
+  it("puts a given personal deletion link into the letter mail HTML and text", () => {
+    const deleteUrl = `${APP_URL}/datenloeschen?t=abc.def`;
+
+    expect(buildEmailHtml({ ...params, deleteUrl })).toContain(`href="${deleteUrl}"`);
+    expect(buildLetterEmailText({ ...params, deleteUrl })).toContain(`Meine gespeicherten Daten löschen: ${deleteUrl}`);
+  });
+
+  describe("sendLetterEmail", () => {
+    const originalBrevoKey = process.env.BREVO_API_KEY;
+    const originalSecret = process.env.FEEDBACK_TOKEN_SECRET;
+    let send: typeof import("@/lib/email/sendLetterEmail").sendLetterEmail;
+
+    beforeAll(async () => {
+      process.env.BREVO_API_KEY = "test-key";
+      process.env.FEEDBACK_TOKEN_SECRET = "test-feedback-secret";
+      ({ sendLetterEmail: send } = await import("@/lib/email/sendLetterEmail"));
+    });
+
+    afterAll(() => {
+      if (originalBrevoKey === undefined) delete process.env.BREVO_API_KEY;
+      else process.env.BREVO_API_KEY = originalBrevoKey;
+      if (originalSecret === undefined) delete process.env.FEEDBACK_TOKEN_SECRET;
+      else process.env.FEEDBACK_TOKEN_SECRET = originalSecret;
+    });
+
+    it("mints a personal deletion token for the recipient", async () => {
+      mockSendTransacEmail.mockReset();
+      mockSendTransacEmail.mockResolvedValue({ messageId: "m1" });
+
+      await send({ ...params, recipientEmail: "Person@Example.org" });
+
+      const payload = mockSendTransacEmail.mock.calls[0][0] as { htmlContent: string; textContent: string };
+      for (const content of [payload.htmlContent, payload.textContent]) {
+        expect(content).toContain(`${APP_URL}/datenloeschen?t=`);
+      }
+      const token = /datenloeschen\?t=([A-Za-z0-9_.-]+)/.exec(payload.textContent)?.[1] ?? "";
+      expect(verifyDataDeletionToken(token)).toEqual({ email: "person@example.org" });
+    });
   });
 });

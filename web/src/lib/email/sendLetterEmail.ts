@@ -4,7 +4,8 @@ import { AI_CONTENT_EMAIL_HEADERS } from "./aiContentMarking";
 import { signFeedbackToken } from "@/lib/feedback/token";
 import type { Politician } from "@/lib/types/politician";
 import type { RathausRecipient, Recipient } from "@/lib/lookup/rathausRecipient";
-import { EMAIL_SENDER_NAME } from "@/lib/config";
+import { APP_URL, EMAIL_SENDER_NAME } from "@/lib/config";
+import { createDataDeletionToken } from "@/lib/dataDeletion/token";
 import type { WizardData } from "@/lib/types/wizard";
 import { DEFAULT_LOCALE, type Locale } from "@/lib/i18n/locale";
 
@@ -77,6 +78,9 @@ export interface SendLetterEmailParams {
   // itself remains German, but all delivery guidance uses this locale.
   locale?: Locale;
   recipientEmail: string;
+  // Persönlicher /datenloeschen?t=-Link, pro Empfänger erzeugt. Default für
+  // Vorschau und Tests: die Seite ohne Token.
+  deleteUrl?: string;
   politicianName: string;
   politicianFirstName: string;
   politicianLastName: string;
@@ -367,10 +371,14 @@ export async function sendLetterEmail(
       ...(params.campaign?.slug ? [`brief-${params.campaign.slug}`] : []),
     ];
 
+    const rendered = {
+      ...params,
+      deleteUrl: params.deleteUrl ?? `${APP_URL}/datenloeschen?t=${createDataDeletionToken(params.recipientEmail)}`,
+    };
     const result = await brevo.transactionalEmails.sendTransacEmail({
-      subject: buildLetterEmailSubject(params),
-      htmlContent: buildEmailHtml(params),
-      textContent: buildLetterEmailText(params),
+      subject: buildLetterEmailSubject(rendered),
+      htmlContent: buildEmailHtml(rendered),
+      textContent: buildLetterEmailText(rendered),
       headers: { ...AI_CONTENT_EMAIL_HEADERS },
       // params.feedbackToken is read by buildEmailHtml to render the star bar
       // in place of the static "Profil auf abgeordnetenwatch" button.

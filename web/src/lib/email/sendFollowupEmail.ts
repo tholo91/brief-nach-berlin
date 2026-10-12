@@ -1,6 +1,7 @@
 import { BrevoClient } from "@getbrevo/brevo";
 import { buildFollowupHtml } from "./buildFollowupHtml";
-import { EMAIL_SENDER_NAME, FOUNDER_EMAIL } from "@/lib/config";
+import { APP_URL, EMAIL_SENDER_NAME, FOUNDER_EMAIL } from "@/lib/config";
+import { createDataDeletionToken } from "@/lib/dataDeletion/token";
 import { DEFAULT_LOCALE, type Locale } from "@/lib/i18n/locale";
 
 const apiKey = process.env.BREVO_API_KEY;
@@ -34,6 +35,7 @@ export async function sendFollowupEmail(
       token: params.feedbackToken,
       politicianName: params.politicianName,
       locale: params.locale ?? DEFAULT_LOCALE,
+      deleteUrl: `${APP_URL}/datenloeschen?t=${createDataDeletionToken(params.recipientEmail)}`,
     });
     const scheduledAt =
       params.scheduledAt instanceof Date

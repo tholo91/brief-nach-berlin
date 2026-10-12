@@ -80,7 +80,7 @@ Es ist kein Datenschutzbeauftragter bestellt (keine Pflicht nach § 38 BDSG, da 
 | Empfänger | Supabase Inc. (Auftragsverarbeiter), Server-Region Frankfurt (eu-central-1). Kampagnen-Creator der jeweiligen Kampagne sehen auf der token-geschützten Verwaltungsseite nur aggregierte Kennzahlen (Versandquote, Sterne-Durchschnitt, Anteil politische Selbstwirksamkeit, Anteil politische Ohnmacht, häufige Feedback-Stichworte), erst ab 10 Rückmeldungen. Kommentare erscheinen nur mit Einwilligung zur öffentlichen Anzeige und ohne Name, PLZ und E-Mail-Adresse. |
 | Drittlandtransfer | Keiner (Server in EU/DE). Supabase Inc. ist in den USA ansässig; Datenverarbeitung erfolgt in der EU-Region. |
 | Technische Sicherheit | Schreibzugriff nur server-seitig mit Service-Role-Key; RLS-Policy schränkt Lesezugriff via anon-Key auf consented Rows ein. Bewertungs-Link ist HMAC-signiert, ungültige Tokens werden ohne DB-Schreibvorgang abgewiesen. IP wird per HMAC-SHA256 (Salt: `REVIEW_IP_SALT`) pseudonymisiert. |
-| Speicherfrist | Maximal 24 Monate. Löschung auf Anfrage jederzeit per E-Mail an Brief-nach-Berlin@posteo.de. |
+| Speicherfrist | Maximal 24 Monate. Löschung jederzeit selbst über die Seite /datenloeschen (persönlicher Link in der Rückfrage-Mail, siehe VT-7); Fallback: Löschwunsch per E-Mail an Brief-nach-Berlin@posteo.de. |
 
 ---
 
@@ -97,10 +97,25 @@ Es ist kein Datenschutzbeauftragter bestellt (keine Pflicht nach § 38 BDSG, da 
 | Empfänger / Auftragsverarbeiter | Supabase Inc. (Speicherung in der EU-Region); Mistral AI SAS (Ableitung des minimierten Themensignals im ohnehin erforderlichen Routing-/Generierungsaufruf). Kampagnen-Creator der jeweiligen Kampagne erhalten nur aggregierte Zahlen (siehe Zeile Anzeige für Kampagnen-Creator). |
 | Drittlandtransfer | Gemäß den jeweils aktuellen AVV, Subprozessoren und verifizierten Account-/Regionseinstellungen. Vor Livegang gesondert zu dokumentieren. |
 | Speicherfrist | Bis zum Widerruf, Ende des dokumentierten Analysezwecks oder Projektende. Eine fehlgeschlagene Briefgenerierung löscht den freiwilligen Kartenbeitrag nicht. |
-| Betroffenenrechte | Widerruf und Löschung über den Link „Meine gespeicherten Daten löschen“ in der Feedback-Mail. Die vorbefüllte E-Mail muss von der betroffenen Person abgesendet werden. Die Wartungsroutine zeigt zuerst einen Dry-Run und löscht erst nach gesonderter Bestätigung Reviews und Themensignale. |
+| Betroffenenrechte | Widerruf und Löschung primär über den Link „Meine gespeicherten Daten löschen“ in der Rückfrage-Mail, der auf /datenloeschen führt (siehe VT-7). Fallback für andere Adressen: vorbefüllte E-Mail, die von der betroffenen Person abgesendet werden muss. Die Wartungsroutine zeigt zuerst einen Dry-Run und löscht erst nach gesonderter Bestätigung Reviews, Themensignale und alte Wartelisten-Einträge. |
 | Technische Sicherheit | Zufällige `letter_id`; HMAC-Verknüpfung zur E-Mail; kurzlebige signierte Kontexte; serverseitige Prüfung der beim Opt-in übermittelten Klartext-E-Mail; Service-Role-Zugriff; `ENABLE/FORCE RLS`; vollständige Revokes für `anon`, `authenticated` und `PUBLIC`; keine öffentliche Rohdaten-View. |
 | Öffentliche Nutzung | Ab dem ersten freiwilligen Beitrag erscheint ein projizierter Punkt am ungefähren Mittelpunkt der fünfstelligen PLZ. Die API gibt nur Koordinaten, aggregierte Anzahl und Summen aus, aber keine PLZ, E-Mail, Themen, `letter_id` oder Einzelzeitpunkte. Die Position kann die ungefähre PLZ-Region erkennen lassen. |
 | Anzeige für Kampagnen-Creator | Kampagnen-Creator sehen auf der token-geschützten Seite /kampagne/verwalten für ihre eigene Kampagne nur Anzahlen pro Bundesland, Briefe pro Kalendertag (solange seit dem ersten Brief höchstens 28 Tage vergangen sind, danach pro Kalenderwoche) und, wenn gemischt, die Verteilung der Empfängerart. Unter 10 Signalen für die Kampagne wird nichts angezeigt. Bundesländer und Empfängerarten mit weniger als 5 Signalen werden zu „Weitere Bundesländer“ bzw. „Andere Empfänger“ zusammengefasst. PLZ, PLZ-Präfix, E-Mail, `letter_id`, Themen und Einzelzeitpunkte werden weder abgefragt noch angezeigt; die Server-Abfrage nutzt eine feste Spaltenliste (`bundesland_key`, `recipient_kind`, `generated_at`, `created_at`). |
+
+---
+
+## VT-7 - Selbstbedienungs-Löschung über /datenloeschen
+
+| Punkt | Inhalt |
+|---|---|
+| Zweck | Unterstützung von Art. 15 und Art. 17 DSGVO: Die Seite zeigt, was zu einer Adresse gespeichert ist, und löscht es auf Klick. |
+| Betroffene Personen | Empfänger der Rückfrage-Mail oder der Last-Call-Mail. |
+| Datenkategorien | E-Mail-Adresse aus dem signierten Link. Gelesen werden die Zeilen dieser Adresse aus `reviews`, `letter_signals` und `roadmap_signups`. Angezeigt werden nur Datum, Sterne, Kennzeichen „öffentlich“, PLZ-Präfix (zwei Stellen) und Ebene. Kein Kommentartext, keine volle PLZ, keine Themen. |
+| Rechtsgrundlage | Art. 6 Abs. 1 lit. c DSGVO i.V.m. Art. 17 DSGVO. |
+| Empfänger | Supabase (Datenbank), Vercel (Hosting). |
+| Speicherung | Keine neue. Der Link trägt einen zustandslosen HMAC-Token (90 Tage gültig), es wird nichts gespeichert. |
+| Technische Sicherheit | GET liest nur; gelöscht wird ausschließlich über den Button (POST), damit Mail-Scanner, die Links vorab öffnen, nichts löschen. `noindex` und `no-referrer`, kein Sitemap-Eintrag. Die gelöschte Adresse stammt immer aus dem verifizierten Token, nie aus Nutzereingaben. Rate-Limits im Arbeitsspeicher auf den IP-Hash und den E-Mail-Hash. Keine Logs mit E-Mail-Adressen. |
+| Abgrenzung | `campaigns.creator_email` ist nicht abgedeckt; Kampagnen werden über /kampagne/verwalten verwaltet. |
 
 ---
 

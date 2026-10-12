@@ -1,5 +1,6 @@
 ---
 created: 2026-08-11T00:00:00.000Z
+completed: 2026-10-12T00:00:00.000Z
 title: "Adresse-löschen-Link in Follow-up-Mails hinterfragen (Liste gibt es nicht)"
 area: email
 files:
@@ -38,3 +39,7 @@ Mittelweg denkbar: Textlink behalten, aber neutral formulieren („Keine weitere
 ## Trigger
 
 Immer wieder relevant: Menschen schreiben diese Mails. Kein zeitlicher Druck, aber die Folgearbeit pro Antwort ist manuell — ein Grund, den Flow perspektivisch zu entschärfen.
+
+## Erledigt (2026-10-12)
+
+Gelöst als Selbstbedienungs-Seite /datenloeschen mit persönlichem Token-Link in der Rückfrage-Mail und in der Last-Call-Mail. Das ist eine Variante von Vorschlag B ohne gespeicherte „don't contact"-Markierung: Die Seite zeigt, was zur Adresse gespeichert ist (oder dass es keinen Newsletter und keine Liste gibt), und löscht auf Klick. Das mailto bleibt nur als Fallback für andere Adressen. Quick 261012-o70.

@@ -6,7 +6,6 @@ import {
   SHARE_URL_TELEGRAM,
   SHARE_URL_EMAIL,
 } from "@/lib/config";
-import { buildDataDeletionMailto } from "./mailLocale";
 import {
   buildSocialFollowHtml,
   buildSocialFollowText,
@@ -20,6 +19,8 @@ import {
 //
 // Anders als buildFollowupHtml.ts braucht diese Mail KEINEN Feedback-Token:
 // die CTAs sind ein heyspeak-Link und ein mailto, keine /feedback-Sterne.
+// Der Fußzeilen-Link zu /datenloeschen trägt dagegen einen persönlichen
+// Löschtoken (deleteUrl), den das Versandskript pro Empfänger erzeugt.
 
 const STORY_VOICE_URL = "https://www.heyspeak.io/l/_AkL8g0mlosEDTMU6vDxuA";
 const STORY_REPLY_MAILTO =
@@ -32,6 +33,9 @@ export interface BuildLastcallParams {
   // baseUrl: "http://localhost:3000" durchreichen, damit die Icon-Bilder aus
   // public/images/ statt aus prod gezogen werden.
   baseUrl?: string;
+  // Persönlicher /datenloeschen?t=-Link, pro Empfänger erzeugt. Default für
+  // Vorschau und Tests: die Seite ohne Token.
+  deleteUrl?: string;
 }
 
 export interface LastcallRender {
@@ -46,7 +50,7 @@ export function buildLastcallHtml(
   const base = params.baseUrl ?? APP_URL;
 
   const subject = "Brief aus Berlin?";
-  const deleteUrl = buildDataDeletionMailto("de");
+  const deleteUrl = params.deleteUrl ?? `${base}/datenloeschen`;
 
   const instagramUrl = `${base}/weitersagen#insta`;
 
@@ -80,7 +84,7 @@ export function buildLastcallHtml(
     `--`,
     `Das ist die dritte und letzte automatische Mail an dich. Kein Newsletter, keine weitere Nachricht.`,
     buildSocialFollowText(),
-    `Dein Brief und dein Anliegen werden nicht in meiner Datenbank gespeichert. Falls du freiwillig ein Themensignal freigegeben oder eine Bewertung abgegeben hast, kannst du beides löschen lassen.`,
+    `Dein Brief und dein Anliegen werden nicht in meiner Datenbank gespeichert. Falls du deinen Brief bewertet oder dein Anliegen auf die Karte gesetzt hast, kannst du das über den Link unten selbst ansehen und löschen.`,
     `Datenschutz: ${base}/datenschutz · Gespeicherte Daten löschen: ${deleteUrl}`,
   ].join("\n");
 
@@ -241,7 +245,7 @@ export function buildLastcallHtml(
               </p>
               ${buildSocialFollowHtml({ baseUrl: base })}
               <p style="margin:8px 0 10px;font-family:Georgia,'Times New Roman',serif;font-size:12px;color:#999999;line-height:1.6;">
-                Dein Brief und dein Anliegen werden nicht in meiner Datenbank gespeichert. Falls du freiwillig ein Themensignal freigegeben oder eine Bewertung abgegeben hast, kannst du beides löschen lassen.
+                Dein Brief und dein Anliegen werden nicht in meiner Datenbank gespeichert. Falls du deinen Brief bewertet oder dein Anliegen auf die Karte gesetzt hast, kannst du das über den Link unten selbst ansehen und löschen.
               </p>
               <p style="margin:0;font-family:Georgia,'Times New Roman',serif;font-size:12px;color:#aaaaaa;line-height:1.5;">
                 <a href="${base}/datenschutz" style="color:#888888;">Datenschutz</a> · <a href="${deleteUrl}" style="color:#888888;">Gespeicherte Daten löschen</a>

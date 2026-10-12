@@ -1,4 +1,13 @@
+const mockSendTransacEmail = jest.fn();
+jest.mock("@getbrevo/brevo", () => ({
+  BrevoClient: jest.fn().mockImplementation(() => ({
+    transactionalEmails: { sendTransacEmail: (...args: unknown[]) => mockSendTransacEmail(...args) },
+  })),
+}));
+
+import { APP_URL } from "@/lib/config";
 import { BRIEF_EMAIL } from "@/lib/contact";
+import { verifyDataDeletionToken } from "@/lib/dataDeletion/token";
 import { buildEmailHtml, buildLetterEmailText } from "@/lib/email/buildEmailHtml";
 import { buildFollowupHtml } from "@/lib/email/buildFollowupHtml";
 import { buildLastcallHtml } from "@/lib/email/buildLastcallHtml";
@@ -32,18 +41,61 @@ describe("privacy email contact", () => {
   });
 
   it.each(["de", "en", "tr"] as const)(
-    "uses the same deletion target in the %s follow-up mail",
+    "links the tokenless deletion page in the %s follow-up mail by default",
     (locale) => {
       const mailto = buildDataDeletionMailto(locale);
       const followup = buildFollowupHtml({ token: "signed-token", locale });
 
-      expect(followup.html).toContain(`href="${mailto}"`);
+      expect(followup.html).toContain(`href="${APP_URL}/datenloeschen"`);
+      expect(followup.text).toContain(`${APP_URL}/datenloeschen`);
+      expect(followup.html).not.toContain(mailto);
+      expect(followup.text).not.toContain(mailto);
       expect(followup.html).not.toContain("datenschutz@brief-nach-berlin.de");
       expect(followup.html).not.toContain("thomas_lorenz@posteo.de");
       expect(getEmailCopy(locale).followup.oneOff).toMatch(/Newsletter|newsletter|bülten/);
       expect(followup.html).toContain(getEmailCopy(locale).followup.oneOff);
     },
   );
+
+  it("puts a given personal deletion link into the follow-up HTML and text footers", () => {
+    const deleteUrl = `${APP_URL}/datenloeschen?t=abc.def`;
+    const followup = buildFollowupHtml({ token: "signed-token", locale: "de", deleteUrl });
+
+    expect(followup.html).toContain(`href="${deleteUrl}"`);
+    expect(followup.text).toContain(`Meine gespeicherten Daten löschen: ${deleteUrl}`);
+  });
+
+  describe("sendFollowupEmail", () => {
+    const originalBrevoKey = process.env.BREVO_API_KEY;
+    const originalSecret = process.env.FEEDBACK_TOKEN_SECRET;
+    let send: typeof import("@/lib/email/sendFollowupEmail").sendFollowupEmail;
+
+    beforeAll(async () => {
+      process.env.BREVO_API_KEY = "test-key";
+      process.env.FEEDBACK_TOKEN_SECRET = "test-feedback-secret";
+      ({ sendFollowupEmail: send } = await import("@/lib/email/sendFollowupEmail"));
+    });
+
+    afterAll(() => {
+      if (originalBrevoKey === undefined) delete process.env.BREVO_API_KEY;
+      else process.env.BREVO_API_KEY = originalBrevoKey;
+      if (originalSecret === undefined) delete process.env.FEEDBACK_TOKEN_SECRET;
+      else process.env.FEEDBACK_TOKEN_SECRET = originalSecret;
+    });
+
+    it("mints a personal deletion token for the recipient", async () => {
+      mockSendTransacEmail.mockResolvedValue({ messageId: "m1" });
+
+      await send({ recipientEmail: "Person@Example.org", feedbackToken: "t", scheduledAt: new Date() });
+
+      const payload = mockSendTransacEmail.mock.calls[0][0] as { htmlContent: string; textContent: string };
+      for (const content of [payload.htmlContent, payload.textContent]) {
+        expect(content).toContain(`${APP_URL}/datenloeschen?t=`);
+      }
+      const token = /datenloeschen\?t=([A-Za-z0-9_.-]+)/.exec(payload.textContent)?.[1] ?? "";
+      expect(verifyDataDeletionToken(token)).toEqual({ email: "person@example.org" });
+    });
+  });
 
   it("announces only the rating follow-up in the letter email", () => {
     const html = buildEmailHtml(params);
@@ -55,12 +107,28 @@ describe("privacy email contact", () => {
     expect(text).toContain("Kein Newsletter");
   });
 
-  it("uses the same deletion mailto in the last-call mail", () => {
+  it("links the tokenless deletion page in the last-call mail by default", () => {
     const lastcall = buildLastcallHtml();
     const mailto = buildDataDeletionMailto("de");
 
-    expect(lastcall.html).toContain(`href="${mailto}"`);
-    expect(lastcall.text).toContain(mailto);
+    expect(lastcall.html).toContain(`href="${APP_URL}/datenloeschen"`);
+    expect(lastcall.text).toContain(`${APP_URL}/datenloeschen`);
+    expect(lastcall.html).not.toContain(mailto);
+    expect(lastcall.text).not.toContain(mailto);
     expect(lastcall.html).toContain("dritte und letzte automatische Mail");
+  });
+
+  it("puts a given personal deletion link into the last-call HTML and text", () => {
+    const deleteUrl = `${APP_URL}/datenloeschen?t=abc.def`;
+    const lastcall = buildLastcallHtml({ deleteUrl });
+
+    expect(lastcall.html).toContain(`href="${deleteUrl}"`);
+    expect(lastcall.text).toContain(deleteUrl);
+    expect(lastcall.html).toContain("dritte und letzte automatische Mail");
+  });
+
+  it("leaves the letter mail without a deletion link", () => {
+    expect(buildEmailHtml(params)).not.toContain("/datenloeschen");
+    expect(buildLetterEmailText(params)).not.toContain("/datenloeschen");
   });
 });

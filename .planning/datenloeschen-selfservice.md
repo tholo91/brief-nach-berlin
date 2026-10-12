@@ -1,6 +1,6 @@
 # Plan: Self-Service-Datenlöschung (`/datenloeschen`)
 
-Stand: 2026-09-21 · Status: freigegeben zur Umsetzung · Ort: `.planning/datenloeschen-selfservice.md`
+Stand: 2026-10-12 · Status: umgesetzt (Quick 261012-o70) · Ort: `.planning/datenloeschen-selfservice.md`
 
 ## Ziel
 
@@ -31,8 +31,8 @@ Nutzer:innen, die von uns eine E-Mail erhalten, sollen ihre in Supabase gespeich
 | Route | `/datenloeschen` unter `(site)`, `noindex`, kein Sitemap-Eintrag |
 | Einstieg | Persönlicher signierter HMAC-Token im Mail-Link, Muster `feedback/token.ts` |
 | Token-Inhalt | `purpose: "data_deletion"` + normalisierte E-Mail + `iat`, TTL 90 Tage |
-| E-Mail-Feld | Vorausgefüllt aus Token und editierbar; gelöscht wird die eingereichte Adresse |
-| Umfang | Nur `reviews` + `letter_signals`, exakt die heutige Skript-Logik |
+| E-Mail-Feld | Fest aus dem Token, nur lesbar angezeigt; gelöscht wird nur die Adresse aus dem Token, Action-Input ist `{ token }`. Andere Adresse: mailto-Fallback (Entscheidung Thomas, 2026-10-12) |
+| Umfang | `reviews`, `letter_signals` und `roadmap_signups` (alte Wartelisten-Zeilen); `campaigns.creator_email` bleibt draußen, statischer Hinweis auf `/kampagne/verwalten` |
 | Ohne Token | Nur Text + mailto-Fallback (keine manuelle Fremd-Löschung) |
 | Brevo-Schedule | Nicht canceln in v1; kurzer Disclaimer auf der Seite |
 | Sprache | Deutsch, v1 (en/tr als Folge-TODO) |
@@ -202,4 +202,22 @@ Aktualisieren:
 
 - Canceln geplanter Brevo-Sends (followup-3d/followup-3m) bei Löschung per `deleteScheduledEmailById`.
 - en/tr-Lokalisierung der Seite.
-- Einbezug `roadmap_signups` und `campaigns.creator_email` in die Selbstbedienung.
+- Einbezug `campaigns.creator_email` in die Selbstbedienung (`roadmap_signups` ist inzwischen drin).
+
+## Abweichungen in der Umsetzung (2026-10-12)
+
+- D-01: Mit gültigem Token zeigt die Seite zuerst, was gespeichert ist (Bewertung mit Datum, Sterne und Kennzeichen öffentlich auf /stimmen; Kartenpunkt mit PLZ-Bereich; alte Warteliste). GET liest nur, gelöscht wird erst per Button über die Server Action.
+- D-02: Leer-Zustand mit Erklärung: nichts gespeichert, kein Newsletter, keine Liste, Brief wird nicht gespeichert, höchstens noch eine Rückfrage-Mail.
+- D-03: E-Mail fest aus dem Token, kein Eingabefeld. Die Action nimmt strikt nur `{ token }`. Andere Adresse: mailto-Fallback über `buildDataDeletionMailto("de")`.
+- D-04: `roadmap_signups` ist in Lookup und Delete, `campaigns.creator_email` nicht; statischer Hinweis auf `/kampagne/verwalten`.
+- D-05: Kein `letter_sent`, keine Frage, ob der Brief abgeschickt wurde. Der Erfolgs-Zustand hat nur einen allgemeinen Dank.
+- D-06: Token-Link nur in der Rückfrage-Mail und in der Last-Call-Mail, TTL 90 Tage. Die Brief-Mail (`buildEmailHtml.ts`) bleibt unverändert.
+- D-07: Das vorhandene `thomas-avatar.jpg` klein neben einer Ich-Zeile in jedem Zustand, kein neues Bild.
+
+Umsetzungsnotizen:
+
+- `deleteByEmail.ts` wurde zu `web/src/lib/dataDeletion/userData.ts` mit injiziertem Supabase-Client (Lookup und Delete).
+- `token.ts` und `userData.ts` importieren das Next.js-Server-Guard-Paket nicht, weil die tsx-Skripte (`send-lastcall-followup.ts`, `delete-letter-data-by-email.ts`) sie nutzen.
+- Der HMAC nutzt das Domain-Trennungs-Präfix `data-deletion-v1.`, damit ein Löschtoken nie als Feedback-Token gilt (`verifyFeedbackToken` akzeptiert jedes Payload mit `iat`) und umgekehrt.
+- `roadmap_signups` ist jetzt enthalten (Lookup und Delete per `email`).
+- Das Canceln geplanter Brevo-Sends und die en/tr-Lokalisierung der Seite bleiben außerhalb des Umfangs.

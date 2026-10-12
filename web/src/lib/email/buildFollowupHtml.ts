@@ -1,13 +1,12 @@
 import {
   APP_URL,
-  FOUNDER_EMAIL,
   FOUNDER_HOMEPAGE,
   SHARE_URL_WHATSAPP,
   SHARE_URL_TELEGRAM,
   SHARE_URL_EMAIL,
 } from "@/lib/config";
 import { buildStarBarHtml } from "./buildEmailHtml";
-import { buildDataDeletionMailto, getEmailCopy, resolveEmailLocale } from "./mailLocale";
+import { getEmailCopy, resolveEmailLocale } from "./mailLocale";
 import type { Locale } from "@/lib/i18n/locale";
 import { buildDonationButtonLabelHtml } from "./financingNotice";
 import { SUPPORT_CONTENT, SUPPORT_EMAIL_COPY } from "@/lib/support-content";
@@ -25,6 +24,9 @@ export interface BuildFollowupParams {
   // baseUrl: "http://localhost:3000" durchreichen, damit das Envelope-Bild
   // aus public/images/ statt aus prod gezogen wird.
   baseUrl?: string;
+  // Persönlicher /datenloeschen?t=-Link, pro Empfänger erzeugt. Default für
+  // Vorschau und Tests: die Seite ohne Token.
+  deleteUrl?: string;
 }
 
 export interface FollowupRender {
@@ -65,7 +67,7 @@ export function buildFollowupHtml(params: BuildFollowupParams): FollowupRender {
     ? `mailto:?subject=${encodeURIComponent(isTurkish ? "Sen de Brief-nach-Berlin ile bir mektup yazar mısın?" : "Would you also write a letter with Brief-nach-Berlin?")}&body=${encodeURIComponent(shareText)}`
     : SHARE_URL_EMAIL;
   const instagramUrl = `${base}/weitersagen#insta`;
-  const deleteUrl = buildDataDeletionMailto(locale);
+  const deleteUrl = params.deleteUrl ?? `${base}/datenloeschen`;
 
   const text = [
     copy.greeting,
@@ -101,7 +103,7 @@ export function buildFollowupHtml(params: BuildFollowupParams): FollowupRender {
     copy.oneOff,
     buildSocialFollowText(locale),
     `${copy.write} ${base}/wer-darf-mdb-schreiben`,
-    `${copy.privacy}: ${base}/datenschutz · ${copy.delete}: ${FOUNDER_EMAIL} · ${copy.roadmap}: ${base}/was-noch-kommt`,
+    `${copy.privacy}: ${base}/datenschutz · ${copy.delete}: ${deleteUrl} · ${copy.roadmap}: ${base}/was-noch-kommt`,
   ].join("\n");
 
   const html = `<!DOCTYPE html>

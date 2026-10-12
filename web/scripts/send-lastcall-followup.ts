@@ -8,8 +8,9 @@
 //
 // Anders als send-backlog-followup.ts:
 //   - KEINE Feedback-Token: die Last-Call-Mail nutzt einen heyspeak-Link und
-//     eine Mail-Antwort als CTAs, keine /feedback-Sterne. HTML/Text/Subject
-//     werden deshalb genau EINMAL gerendert und für alle gleich verschickt.
+//     eine Mail-Antwort als CTAs, keine /feedback-Sterne. Dafür trägt die
+//     Fußzeile einen persönlichen Löschlink (/datenloeschen?t=<token>, 90 Tage
+//     gültig). HTML/Text werden deshalb pro Empfänger:in gerendert.
 //   - Dedup läuft NICHT über Supabase reviews, sondern über eine Ausschluss-CSV
 //     (--exclude). Der Brevo-Tag "followup-3m" ist das Gedächtnis: vor dem
 //     nächsten Lauf exportierst du die getaggten Adressen und reichst sie als
@@ -26,7 +27,8 @@
 //   --reply-to=EMAIL Reply-To überschreiben (default: Brief-nach-Berlin@posteo.de)
 //
 // Voraussetzungen:
-//   1. web/.env.local enthält BREVO_API_KEY, BREVO_SENDER_EMAIL
+//   1. web/.env.local enthält BREVO_API_KEY, BREVO_SENDER_EMAIL und
+//      FEEDBACK_TOKEN_SECRET (signiert die persönlichen Löschlinks)
 //   2. CSV: eine Spalte oder ein Header `email`; eine Adresse pro Zeile.
 
 import { readFileSync, existsSync } from "node:fs";
@@ -35,6 +37,8 @@ import { createInterface } from "node:readline/promises";
 import { stdin as input, stdout as output } from "node:process";
 import { parse } from "csv-parse/sync";
 import { buildLastcallHtml } from "../src/lib/email/buildLastcallHtml";
+import { APP_URL } from "../src/lib/config";
+import { createDataDeletionToken } from "../src/lib/dataDeletion/token";
 
 loadEnvLocal();
 
@@ -88,8 +92,16 @@ async function main() {
     );
   }
 
-  // Subject/HTML/Text sind für alle identisch (kein Token) — einmal rendern.
-  const { subject, html, text } = buildLastcallHtml();
+  // Vorschau nur für den Betreff. Der Aufruf ist zugleich ein Fail-fast-Test:
+  // ohne FEEDBACK_TOKEN_SECRET lassen sich keine Löschlinks signieren, und das
+  // soll vor Prompt und Versand auffallen, nicht erst beim ersten Empfänger.
+  let subject: string;
+  try {
+    const deleteUrl = `${APP_URL}/datenloeschen?t=${createDataDeletionToken(TEST_RECIPIENT)}`;
+    subject = buildLastcallHtml({ deleteUrl }).subject;
+  } catch {
+    fail("FEEDBACK_TOKEN_SECRET fehlt in web/.env.local");
+  }
 
   console.log("");
   console.log("=== Last-Call Follow-up Versand (followup-3m) ===");
@@ -104,6 +116,7 @@ async function main() {
   }
   console.log(`Effektiv senden:   ${toSend.length}`);
   console.log(`Subject:           ${subject}`);
+  console.log("HTML/Text:         pro Empfänger:in gerendert, mit persönlichem Löschlink");
   console.log(`Sender:            ${sender}`);
   console.log(`Reply-To:          ${args.replyTo}`);
   console.log(`Throttle:          ${THROTTLE_MS} ms zwischen Sendungen`);
@@ -134,6 +147,8 @@ async function main() {
 
   for (let i = 0; i < targets.length; i++) {
     const to = targets[i];
+    const deleteUrl = `${APP_URL}/datenloeschen?t=${createDataDeletionToken(to)}`;
+    const { html, text } = buildLastcallHtml({ deleteUrl });
     const res = await sendOne({
       to,
       subject,

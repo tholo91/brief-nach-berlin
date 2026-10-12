@@ -7,10 +7,11 @@ import {
 import { buildFollowupHtml } from "@/lib/email/buildFollowupHtml";
 import { buildVariantEmailHtml } from "@/lib/email/buildVariantEmailHtml";
 import { APP_URL } from "@/lib/config";
+import { createDataDeletionToken } from "@/lib/dataDeletion/token";
 
 // Dev-only preview of the transactional emails with dummy data.
 // - /api/email-preview                         → Letter mail
-// - /api/email-preview?type=followup           → Backlog Follow-up Mail
+// - /api/email-preview?type=followup           → Backlog Follow-up Mail (Löschlink mit Token für vorschau@example.org)
 // - /api/email-preview?type=variant            → Angepasster Brief
 // - /api/email-preview?type=campaign-creator   → Kampagnen-Bestätigungs-Mail
 // - /api/email-preview?type=campaign-management → Kampagnen-Verwaltungs-Mail
@@ -34,9 +35,17 @@ export async function GET(request: Request) {
   if (type === "followup") {
     const dummyToken =
       "eyJzb3VyY2UiOiJiYWNrbG9nXzIwMjZfMDUiLCJpYXQiOjE3Nzk0MDAwMDB9.preview";
+    // Without FEEDBACK_TOKEN_SECRET locally, the preview falls back to the tokenless link.
+    let deleteUrl: string | undefined;
+    try {
+      deleteUrl = `${origin}/datenloeschen?t=${createDataDeletionToken("vorschau@example.org")}`;
+    } catch {
+      deleteUrl = undefined;
+    }
     const { html, text, subject } = buildFollowupHtml({
       token: dummyToken,
       baseUrl: origin,
+      deleteUrl,
     });
     return new NextResponse(wantText ? text : html, {
       status: 200,

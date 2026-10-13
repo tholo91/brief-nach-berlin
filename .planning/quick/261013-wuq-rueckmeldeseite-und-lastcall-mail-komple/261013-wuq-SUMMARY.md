@@ -38,13 +38,13 @@ Die komplette lokale Umsetzung ist fertig. Migration, Deploy, echte Handy-/Mail-
 
 Die fünf Schritte mit Befehlen und SQL-Prüfung stehen in `docs/lastcall-release-2026-10-14.md`:
 
-1. Migration 033 ist laut Thomas im SQL Editor ausgeführt. Tabelle, Unique, Rechte, RPC und Cron noch schreibgeschützt prüfen; die gemeldete Cron-Zahl `2` weicht von der erwarteten genau einmaligen Ausführung ab.
+1. Migration 033 ist laut Thomas im SQL Editor ausgeführt. Tabelle, Unique, Rechte, RPC und Cron noch schreibgeschützt prüfen; `schedule: 2` ist die zurückgegebene Job-ID, keine Anzahl vorhandener Jobs.
 2. Taskänderungen prüfen und von main deployen. Bestehende weitere Änderungen separat bewerten; kein pauschales `git add .`.
 3. Offline-Testmailvorschau erstellen und alle drei Links auf dem echten Handy prüfen.
 4. Cohort exportieren, tatsächliche Empfängerzahl prüfen, eine echte Testmail an Brief-nach-Berlin@posteo.de senden und prüfen.
 5. Heute 14.10.2026 um 09:30 Europe/Berlin: Brevo-Kontingent prüfen und Batch bewusst manuell starten.
 
-Offen/unverifiziert: Die Migration-Ausführung ist von Thomas bestätigt, aber Tabellen-/Rechte-/RPC-Prüfungen und Migration-History sind nicht unabhängig geprüft; laut aktuellem Migrationsstatus wurden zwei Cron-Jobs gemeldet. Kein Deploy, keine tatsächliche Zustellung, kein automatischer Versand oder Zeitplan. Das Todo bleibt bis zur manuellen Freigabe im Pending-Ordner.
+Offen/unverifiziert: Die Migration-Ausführung ist von Thomas bestätigt, aber Tabellen-/Rechte-/RPC-Prüfungen, Existenz genau eines Cron-Jobs und Migration-History sind nicht unabhängig geprüft. Kein Deploy, keine tatsächliche Zustellung, kein automatischer Versand oder Zeitplan. Das Todo bleibt bis zur manuellen Freigabe im Pending-Ordner.
 
 ## Git
 

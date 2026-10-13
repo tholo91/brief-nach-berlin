@@ -133,7 +133,7 @@ describe("privacy email contact", () => {
     expect(lastcall.text).toContain(`${APP_URL}/datenloeschen`);
     expect(lastcall.html).not.toContain(mailto);
     expect(lastcall.text).not.toContain(mailto);
-    expect(lastcall.html).toContain("Das ist meine letzte automatische Mail an dich.");
+    expect(lastcall.html).toContain("Das ist meine letzte automatische Mail an dich, kein Newsletter.");
   });
 
   it("puts a given personal deletion link into the last-call HTML and text", () => {
@@ -142,7 +142,7 @@ describe("privacy email contact", () => {
 
     expect(lastcall.html).toContain(`href="${deleteUrl}"`);
     expect(lastcall.text).toContain(deleteUrl);
-    expect(lastcall.html).toContain("Das ist meine letzte automatische Mail an dich.");
+    expect(lastcall.html).toContain("Das ist meine letzte automatische Mail an dich, kein Newsletter.");
   });
 
   it("links the tokenless deletion page in the letter mail by default", () => {

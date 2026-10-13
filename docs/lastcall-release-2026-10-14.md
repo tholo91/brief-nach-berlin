@@ -2,31 +2,41 @@
 
 Arbeite die fünf Schritte der Reihe nach ab. Keine automatische Planung oder automatische Sendung.
 
-## 1. Migration 033 im Supabase SQL Editor ausführen und prüfen
+## 1. Migration 033 im Supabase SQL Editor schreibgeschützt prüfen
 
-Führe das vollständige `web/supabase/migrations/033_letter_outcomes.sql` im SQL Editor aus. Prüfe danach schreibgeschützt:
+Thomas hat Migration 033 laut eigener Rückmeldung bereits im SQL Editor ausgeführt und `schedule: 2` erhalten. Das bestätigt noch nicht sämtliche Datenbankobjekte und Rechte. Prüfe zuerst schreibgeschützt; führe die Migration nicht allein wegen der ausstehenden Prüfung erneut aus:
 
 ```sql
 select c.relrowsecurity, c.relforcerowsecurity
 from pg_class c join pg_namespace n on n.oid = c.relnamespace
 where n.nspname = 'public' and c.relname = 'letter_outcomes';
 
-select conname from pg_constraint
-where conrelid = 'public.letter_outcomes'::regclass and contype = 'u';
+select conname, pg_get_constraintdef(oid) as definition from pg_constraint
+where conrelid = 'public.letter_outcomes'::regclass and contype in ('u', 'c');
+
+select pg_get_functiondef(
+  'public.submit_letter_outcome(text,text,text,text,jsonb,boolean,text,text,boolean,text,boolean,text)'::regprocedure
+);
 
 select has_function_privilege('service_role',
-  'public.submit_letter_outcome(text,text,text,text,jsonb,boolean,text,text,boolean,text,boolean,text)', 'EXECUTE') as service_role_can_submit;
+  'public.submit_letter_outcome(text,text,text,text,jsonb,boolean,text,text,boolean,text,boolean,text)', 'EXECUTE') as service_role_can_submit,
+  has_function_privilege('anon',
+  'public.submit_letter_outcome(text,text,text,text,jsonb,boolean,text,text,boolean,text,boolean,text)', 'EXECUTE') as anon_can_submit,
+  has_function_privilege('authenticated',
+  'public.submit_letter_outcome(text,text,text,text,jsonb,boolean,text,text,boolean,text,boolean,text)', 'EXECUTE') as authenticated_can_submit;
 
 select grantee, privilege_type from information_schema.role_table_grants
 where table_schema = 'public' and table_name = 'letter_outcomes'
 order by grantee, privilege_type;
 
-select jobname, schedule from cron.job where jobname = 'cleanup-letter-outcomes';
+select jobname, schedule, active, command from cron.job where jobname = 'cleanup-letter-outcomes';
 ```
 
-`relrowsecurity` und `relforcerowsecurity` müssen `true` sein; der Unique-Constraint deckt `(email, cohort)` ab, das RPC-Recht ist `true`, `service_role` hat Tabellenrechte, `anon` und `authenticated` haben keine Tabellenrechte. Der Cron-Job muss genau einmal vorkommen.
+`relrowsecurity` und `relforcerowsecurity` müssen `true` sein; der Unique-Constraint deckt `(email, cohort)` ab, das RPC-Recht für `service_role` ist `true`, für `anon` und `authenticated` jeweils `false`, `service_role` hat Tabellenrechte, `anon` und `authenticated` haben keine Tabellenrechte. Vergleiche CHECK-Constraints und Funktionsdefinition mit Migration 033, einschließlich der Sperre gegen verspätete Progress-Aufrufe. Der Cron-Job muss genau einmal vorkommen, aktiv sein und die Aufbewahrung auf knapp unter 24 Monate begrenzen.
 
 ## 2. Geprüften Stand auf `main` bringen und deployen
+
+Die Implementierung liegt im lokalen Commit `3c49b89`, gefolgt von den Review-Korrekturen. `3c49b89` enthält auch vorher vorhandene Änderungen. Aktualisiere vor Push/Deploy den Remote-Stand mit `git fetch --quiet` und prüfe die gesamte Reihe mit `git log --oneline origin/main..main`.
 
 Prüfe `git status --short`, stage nur die geprüften Taskdateien und verwende kein `git add .`, weil der Worktree weitere Änderungen enthält. Committe und deploye den geprüften Stand auf `main` erst, wenn Schritt 1 erfolgreich war. Die Produktionsumgebung braucht `FEEDBACK_TOKEN_SECRET` und `REVIEW_IP_SALT`; beide müssen auch lokal in `web/.env.local` vorhanden sein und denselben Wert haben. `FEEDBACK_TOKEN_SECRET` muss übereinstimmen, damit lokale Preview-Links in Produktion geprüft werden können. Secret-Werte nicht in Logs oder Chat kopieren.
 
@@ -87,4 +97,4 @@ Nach geprüftem Versand und abgeschlossener Klärung lösche `.lastcall-cohort.c
 
 ## Voraussetzungen
 
-`web/.env.local` benötigt `NEXT_PUBLIC_SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`, `BREVO_API_KEY`, `BREVO_SENDER_EMAIL`, `FEEDBACK_TOKEN_SECRET` und `REVIEW_IP_SALT`. Keine dieser Variablen in Logs oder Tickets kopieren.
+`web/.env.local` benötigt `NEXT_PUBLIC_SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`, `BREVO_API_KEY`, `BREVO_SENDER_EMAIL`, `FEEDBACK_TOKEN_SECRET` und `REVIEW_IP_SALT`. Für die Löschseite und das manuelle Löschscript ist außerdem `LETTER_SIGNAL_EMAIL_HASH_SECRET` erforderlich, auch bei reinen Mail-Klicks ohne Kartenbeitrag. Prüfe dessen Vorhandensein in Produktion und lokal vor dem Löschtest; verwende das bestehende Secret und rotiere es nicht, da sonst bestehende Hash-Zuordnungen verloren gehen. Keine dieser Variablen in Logs oder Tickets kopieren.

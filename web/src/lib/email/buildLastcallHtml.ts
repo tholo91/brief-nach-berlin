@@ -234,11 +234,11 @@ export function buildLastcallHtml(
                 <strong style="color:#2D5016;">Das ist meine letzte automatische Mail an dich.</strong> Kein Newsletter, keine weitere Nachricht.
               </p>
               ${buildSocialFollowHtml({ baseUrl: base })}
-              <p style="margin:8px 0 10px;font-family:Georgia,'Times New Roman',serif;font-size:12px;color:#999999;line-height:1.6;">
+              <p style="margin:8px 0 10px;font-family:Georgia,'Times New Roman',serif;font-size:12px;color:#666666;line-height:1.6;">
                 Dein Brief und dein Anliegen werden nicht in meiner Datenbank gespeichert. Deine freiwillige Rückmeldung kannst du über den Link unten löschen.
               </p>
-              <p style="margin:0;font-family:Georgia,'Times New Roman',serif;font-size:12px;color:#aaaaaa;line-height:1.5;">
-                <a href="${base}/datenschutz" style="color:#888888;">Datenschutz</a> · <a href="${deleteUrl}" style="color:#888888;">Gespeicherte Daten löschen</a>
+              <p style="margin:0;font-family:Georgia,'Times New Roman',serif;font-size:12px;color:#666666;line-height:1.5;">
+                <a href="${base}/datenschutz" style="color:#666666;">Datenschutz</a> · <a href="${deleteUrl}" style="color:#666666;">Gespeicherte Daten löschen</a>
               </p>
             </td>
           </tr>

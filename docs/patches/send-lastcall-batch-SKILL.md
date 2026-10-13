@@ -9,7 +9,7 @@ Manueller Versand der dritten und letzten Follow-up-Mail an Briefschreiber:innen
 
 ## Voraussetzungen und Freigabereihenfolge
 
-1. Migration 033 manuell im Supabase SQL Editor ausführen und `letter_outcomes` sowie den Unique-Schlüssel `(email, cohort)` read-only verifizieren.
+1. Migration 033 wurde laut Thomas bereits im SQL Editor ausgeführt. Verifiziere Datenbankobjekte und Rechte zuerst read-only anhand von `docs/lastcall-release-2026-10-14.md`; `schedule: 2` allein genügt nicht als Nachweis.
 2. `git status --short` prüfen, nur die freigegebenen Taskdateien stage (kein `git add .`) und den geprüften Stand auf `main` deployen.
 3. Die Rückmeldeseite auf dem Handy durchklicken.
 4. Brevo-Kontingent unmittelbar vor Versand prüfen.
@@ -51,4 +51,4 @@ npm exec -- tsx scripts/send-lastcall-followup.ts .lastcall-cohort.csv --confirm
 
 ## Konfiguration
 
-`web/.env.local` benötigt `NEXT_PUBLIC_SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`, `BREVO_API_KEY`, `BREVO_SENDER_EMAIL`, `FEEDBACK_TOKEN_SECRET` und `REVIEW_IP_SALT`. Beide Geheimnisse müssen lokal und in der Produktionsumgebung vorhanden sein; `FEEDBACK_TOKEN_SECRET` muss übereinstimmen, damit Preview-Links dort gültig sind. Cohort-CSV nach geprüftem Versand löschen, Journal höchstens 24 Monate behalten. CSV, Journal und Preview-Dateien sind private Daten und gehören nicht in Logs oder Tickets.
+`web/.env.local` benötigt `NEXT_PUBLIC_SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`, `BREVO_API_KEY`, `BREVO_SENDER_EMAIL`, `FEEDBACK_TOKEN_SECRET` und `REVIEW_IP_SALT`. Beide Geheimnisse müssen lokal und in der Produktionsumgebung vorhanden sein; `FEEDBACK_TOKEN_SECRET` muss übereinstimmen, damit Preview-Links dort gültig sind. Für Anzeige und Löschung gespeicherter Daten ist außerdem das bestehende `LETTER_SIGNAL_EMAIL_HASH_SECRET` lokal und in Produktion erforderlich, auch für reine Mail-Klicks. Nicht für diesen Release rotieren. Cohort-CSV nach geprüftem Versand löschen, Journal höchstens 24 Monate behalten. CSV, Journal und Preview-Dateien sind private Daten und gehören nicht in Logs oder Tickets.

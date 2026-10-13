@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState, type ReactNode } from "react";
+import { useCallback, useEffect, useRef, useState, type ReactNode } from "react";
 import Link from "next/link";
 import { SurveyChoice } from "@/components/feedback/SurveyChoice";
 import { submitOutcomeAction } from "@/lib/actions/submitOutcome";
@@ -36,18 +36,31 @@ export function RueckmeldungForm({ token, entryChoice }: { token: string; entryC
   const [submitted, setSubmitted] = useState(false);
   const [pending, setPending] = useState(false);
   const [saveStatus, setSaveStatus] = useState("");
+  const [initialStatus, setInitialStatus] = useState<"saving" | "saved" | "error">("saving");
   const [error, setError] = useState("");
   const queue = useRef<Promise<unknown>>(Promise.resolve());
   const initialSent = useRef(false);
   const thanksRef = useRef<HTMLDivElement>(null);
 
+  const saveInitial = useCallback(async () => {
+    try {
+      const result = await submitOutcomeAction({ mode: "initial", token, entryChoice });
+      setInitialStatus("success" in result ? "saved" : "error");
+    } catch {
+      setInitialStatus("error");
+    }
+  }, [entryChoice, token]);
+
   useEffect(() => {
     if (initialSent.current) return;
     initialSent.current = true;
-    queue.current = submitOutcomeAction({ mode: "initial", token, entryChoice }).then((result) => {
-      if ("error" in result) setSaveStatus("Dein Einstieg konnte noch nicht gespeichert werden. Du kannst das Formular trotzdem ausfüllen.");
-    }).catch(() => { setSaveStatus("Dein Einstieg konnte noch nicht gespeichert werden. Du kannst das Formular trotzdem ausfüllen."); });
-  }, [entryChoice, token]);
+    queue.current = saveInitial();
+  }, [saveInitial]);
+
+  function retryInitial() {
+    setInitialStatus("saving");
+    queue.current = queue.current.catch(() => undefined).then(saveInitial);
+  }
 
   useEffect(() => {
     if (submitted) {
@@ -71,6 +84,7 @@ export function RueckmeldungForm({ token, entryChoice }: { token: string; entryC
     queue.current = queue.current.catch(() => undefined).then(async () => {
       try {
         const result = await submitOutcomeAction({ mode: "progress", token, entryChoice, answers: next, lastStep, processingConsent: true });
+        if ("success" in result) setInitialStatus("saved");
         setSaveStatus("success" in result ? "Auswahl gespeichert." : "Zwischenspeichern hat nicht geklappt. Mit Absenden versuchst du es erneut.");
       } catch {
         setSaveStatus("Zwischenspeichern hat nicht geklappt. Mit Absenden versuchst du es erneut.");
@@ -139,6 +153,11 @@ export function RueckmeldungForm({ token, entryChoice }: { token: string; entryC
         <p className="mt-4 text-sm leading-relaxed text-warmgrau/80">Dein Klick aus der Mail wird mit deiner E-Mail-Adresse gespeichert. Weitere Antworten sind freiwillig. Deine Auswahl wird nach jedem Klick gespeichert. Freitext und Häkchen erst mit „Rückmeldung absenden“.</p>
       </header>
       <form onSubmit={onSubmit} className="px-6 pb-8 sm:px-9">
+        {initialStatus === "saving" && <p role="status" className="mb-4 text-sm">Dein Klick wird gespeichert…</p>}
+        {initialStatus === "error" && <div className="mb-6 rounded-xl border border-airmail-rot/30 bg-airmail-rot/5 p-4">
+          <p role="alert" className="text-sm leading-relaxed">Dein Klick konnte noch nicht gespeichert werden. Du kannst es erneut versuchen oder das Formular trotzdem ausfüllen.</p>
+          <button type="button" onClick={retryInitial} disabled={pending} className="mt-3 min-h-11 rounded-lg border border-waldgruen px-4 py-2 text-sm font-semibold text-waldgruen focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-waldgruen">Klick erneut speichern</button>
+        </div>}
         <label className="flex cursor-pointer items-start gap-3 rounded-xl bg-creme p-4 text-sm leading-relaxed">
           <input type="checkbox" checked={processingConsent} disabled={pending} onChange={(event) => setProcessingConsent(event.target.checked)} className="mt-1 h-5 w-5 shrink-0 accent-waldgruen" />
           <span>Ich willige ausdrücklich ein, dass Thomas meine Umfrageantworten, auch mögliche Angaben zu politischen Meinungen, zusammen mit meiner E-Mail-Adresse auswertet. Ich kann meine Einwilligung jederzeit widerrufen und meine Daten löschen lassen. <Link href="/datenschutz#rueckmeldungen" className="text-waldgruen underline">Mehr zum Datenschutz</Link></span>

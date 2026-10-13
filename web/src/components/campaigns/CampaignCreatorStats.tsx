@@ -8,6 +8,10 @@ import type {
   CreatorStatsKpi,
   CreatorTimeline,
 } from "@/lib/campaigns/creatorStats";
+import {
+  DUPLICATE_LETTER_NOTE,
+  estimateLettersWithoutDuplicates,
+} from "@/lib/duplicateLetters";
 
 const numberFormatter = new Intl.NumberFormat("de-DE");
 const ratingFormatter = new Intl.NumberFormat("de-DE", {
@@ -444,7 +448,13 @@ export function CampaignCreatorStats({
       ? "Brief nach Berlin geschrieben"
       : "Briefe nach Berlin geschrieben";
 
+  const lettersWithoutDuplicates = estimateLettersWithoutDuplicates(stats.letterCount);
+  const showDuplicateEstimate = lettersWithoutDuplicates < stats.letterCount;
+
   const footnotes: string[] = [];
+  if (showDuplicateEstimate) {
+    footnotes.push(DUPLICATE_LETTER_NOTE);
+  }
   if (stats.signals.status === "ready") {
     const { signals } = stats.signals;
     footnotes.push(
@@ -485,6 +495,11 @@ export function CampaignCreatorStats({
         </p>
         {!stats.ended && <CreatorStatsRefresh />}
       </div>
+      {showDuplicateEstimate && (
+        <p className="mt-1.5 font-body text-xs text-warmgrau/60">
+          ca. {numberFormatter.format(lettersWithoutDuplicates)} ohne Doppelte
+        </p>
+      )}
 
       <OriginSection signals={stats.signals} />
 

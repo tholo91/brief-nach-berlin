@@ -241,12 +241,44 @@ im Browser bleiben; ob Lehrkräfte einen Klassenmodus oder Material zur
 Vorbereitung brauchen; wie stark sich der Schulmodus vom normalen Wizard
 visuell und sprachlich unterscheiden soll.
 
+**Vorlage: DigitalSchoolStory „Dialograum Brief“ (Offenbach-Pilot):**
+Gemeinsam mit DigitalSchoolStory (DSS) gibt es bereits einen Schul-Ableger
+auf Basis des BnB-Wizards. Lokal: `../brief-nach-offebach`, Remote:
+`Digital-School-Story/dss-dialograum-brief`. Empfänger ist dort fest eine
+Lokalredaktion (Offenbach Post), nicht die Politik. Pilot mit einer ersten
+Klasse frühestens Ende Oktober 2026, Stand laut `Pilotkonzept Offenbach.md`.
+Was sich übernehmen lässt:
+- Klassenstufe 5–13 statt Altersangabe, per Klassenlink `/?klasse=<n>`
+  vorbelegbar (`web/src/lib/worksheet/model.ts`, `parseGradeParameter`).
+- Arbeitsblatt statt Brief: Kernaussage, Argumentationsbausteine (Gedanke,
+  Begründung, Prüffrage), drei Tonvarianten (sachlich, einladend, bestimmt)
+  mit kurzer Wirkungsbegründung, Schreibanfänge für Einleitung, Beispiel/
+  Begründung und Bitte, Reflexionsfragen. Ausgabe als PDF
+  (`web/src/lib/worksheet/`).
+- Lehrkräfte-Seite `/lehrkraefte`: selbst ausprobieren, Beispiel-PDF,
+  Klassenlink plus QR-Code teilen, Ablauf für eine Doppelstunde (90 Min.)
+  unter `/lehrkraefte/ablauf`, Feedback-Formular.
+- Leitplanken: keine Schüler:innenkonten oder E-Mail-Adressen, keine
+  dauerhafte Speicherung von Anliegen oder Briefen, kein automatischer
+  Versand. Läuft auf Schul-iPads. Demo-Modus ohne KI-Aufruf für
+  Vorführungen.
+- Unterschied für `/schule`: BnB ergänzt die Zuständigkeitssuche per PLZ und
+  die politische Adresse als zentralen Output, das Arbeitsblatt ersetzt den
+  fertigen Briefentwurf.
+
+**Reihenfolge:** Erst Feedback aus dem DSS-Pilot abwarten (PDF-Aufbau,
+Zahl der Varianten, Reflexionsfragen sind dort noch offen), dann das
+Arbeitsblatt-Modul übernehmen statt neu zu bauen. Keine zwei parallel
+gepflegten Arbeitsblatt-Varianten ohne Praxistest.
+
 **Requirements:** TBD
 **Plans:** 0 plans
 
 Plans:
 - [ ] Konzept mit mindestens einem schulischen Nutzungsszenario und einem
   Beispiel-Flow konkretisieren
+- [ ] Learnings aus dem DSS-Pilot Offenbach einsammeln, bevor der Code
+  übernommen wird
 
 ### Phase 999.10: Accessibility-Kernflow (BACKLOG)
 
@@ -559,6 +591,8 @@ Plans:
 - [ ] TBD (promote with /gsd:review-backlog when ready)
 
 ### Phase 999.16: Follow-up-Email — Wirksamkeit zeigen & Stories sammeln (BACKLOG)
+
+> **Zusammengeführt am 2026-10-13** in [To-do Rückmeldeseite + Last-Call-Mail](todos/pending/2026-10-13-rueckmeldeseite-lastcall-mail.md). Nicht separat planen.
 
 **Goal:** In die zweite Follow-up-Email (Feedback-Mail) einen zusätzlichen Block einbauen: "Melde dich gerne, wenn sich in deinem Anliegen etwas getan hat oder jemand auf deinen Brief reagiert hat — wir würden deine Geschichte mit deiner Erlaubnis gerne veröffentlichen." Verlinkt einen HeySpeak-Link, über den die Person sich melden kann (Voice oder Call). Ziele: (1) Wirksamkeit des Tools sichtbar machen, (2) Social Proof für mehr Nutzer:innen generieren, (3) Stories für Marketing/Lage-der-Nation/LinkedIn gewinnen.
 
@@ -909,6 +943,8 @@ Plans:
 - [ ] TBD (promote with /gsd-review-backlog when ready)
 
 ### Phase 999.31: Email #3 "Hat dein:e Politiker:in geantwortet?" + Auto-Unsubscribe bei Rating-Klick (BACKLOG)
+
+> **Zusammengeführt am 2026-10-13** in [To-do Rückmeldeseite + Last-Call-Mail](todos/pending/2026-10-13-rueckmeldeseite-lastcall-mail.md). Nicht separat planen.
 
 **Goal:** Dritte Follow-up-Mail ~14 Tage nach Brief-Versand mit neuer inhaltlicher Frage ("Hat dein:e MdB schon geantwortet?"). Zweck: (1) Send-Rate-KPI sauber tracken — aktuell 24% der Reviews sind "keine Angabe" bei `letter_sent`, (2) qualitative Daten über tatsächliche MdB-Antwort-Quote sammeln (neue KPI).
 

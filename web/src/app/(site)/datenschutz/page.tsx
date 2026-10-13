@@ -77,7 +77,7 @@ export default function Datenschutz() {
               dabei werden kein Brieftext und kein Anliegen-Volltext gespeichert.
               Ausnahmen: optionale Bewertungen nach dem Versand (siehe
               Abschnitt 17) und creator-seitig angelegte Kampagnen (siehe
-              Abschnitt 20). Für Kampagnen-Verwaltungslinks wird ein technisch
+              Abschnitt 21). Für Kampagnen-Verwaltungslinks wird ein technisch
               notwendiges, kurzlebiges HttpOnly-Cookie gesetzt. Die eingesetzten
               Dienstleister Mistral AI
               (Abschnitt 9) und Brevo (Abschnitt 11) speichern Daten im Rahmen
@@ -360,8 +360,9 @@ export default function Datenschutz() {
               zugestellt werden: die erste Transaktionsmail, eine
               Bewertungsnachfrage nach einigen Tagen und, falls vorgesehen,
               einige Monate später eine letzte Frage nach einer Reaktion. Die
-              Bewertungsnachfrage enthält einen signierten Link zur freiwilligen
-              Bewertung; keine dieser Nachrichten ist ein Newsletterversand.
+              Bewertungsnachfrage und letzte Rückfrage enthalten jeweils einen
+              signierten Link zur freiwilligen Rückmeldung; keine dieser
+              Nachrichten ist ein Newsletterversand.
               Brevo kann Versandereignisse
               und – abhängig von der Account-Einstellung – E-Mail-Previews
               speichern. Der Anbieter sieht standardmäßig eine unbegrenzte
@@ -677,8 +678,58 @@ export default function Datenschutz() {
           </div>
 
           <div>
+            <h2 id="rueckmeldungen" className="font-semibold text-waldgruen-dark mb-2 scroll-mt-24">
+              18. Rückmeldung zur letzten E-Mail
+            </h2>
+            <p className="mb-3">
+              Wenn Sie auf den Ja-, Nein- oder „nicht abgeschickt“-Link in der
+              letzten Rückfrage-Mail klicken, speichere ich zunächst Ihre
+              E-Mail-Adresse, den Versandjahrgang und Ihre Auswahl. So kann ich
+              die Zahl der Rückmeldungen und den Abbruch an dieser Stelle
+              nachvollziehen. Wenn Sie auf der Rückmeldeseite weitermachen,
+              speichere ich Ihre Antworten zu Versandart, Reaktion,
+              Anliegen, Erwartungen und persönlichem Erleben sowie den
+              Bearbeitungsstand. Beim vollständigen Absenden kommen Ihr
+              optionaler Freitext, Ihre optionale Namensangabe, Ihre optionale
+              Gesprächsbereitschaft und Ihre Auswahl zur möglichen
+              anonymisierten Veröffentlichung hinzu. Die E-Mail-Adresse wird
+              für die Zuordnung und Löschung benötigt. Ein Hash der IP-Adresse
+              dient dem Missbrauchsschutz. Die Rückmeldedaten werden bei
+              Supabase gespeichert (Details siehe Abschnitt 17). Ich speichere
+              außerdem, dass Sie in die Verarbeitung eingewilligt haben, sowie
+              den Zeitpunkt Ihrer Einwilligung.
+            </p>
+            <p className="mb-3">
+              Die erste Auswahl speichere ich auf Grundlage meines berechtigten
+              Interesses an der Auswertung der einmaligen Rückfrage
+              (Art. 6 Abs. 1 lit. f DSGVO). Bevor Sie weitere Fragen beantworten,
+              bitte ich Sie um eine gesonderte ausdrückliche Einwilligung in die
+              Verarbeitung Ihrer Antworten. Diese Antworten können politische
+              Meinungen erkennen lassen. Soweit sie besondere Kategorien
+              personenbezogener Daten offenbaren, verarbeite ich sie auf Grundlage
+              Ihrer ausdrücklichen Einwilligung nach Art. 6 Abs. 1 lit. a und
+              Art. 9 Abs. 2 lit. a DSGVO. Die optionale Freigabe zur
+              Veröffentlichung ist davon getrennt und kann leer bleiben.
+              Eine erteilte Einwilligung können Sie jederzeit für die Zukunft
+              widerrufen.
+            </p>
+            <p className="mb-3">
+              Ich speichere die Rückmeldung höchstens 24 Monate. Eine tägliche
+              automatische Löschung entfernt sie kurz vor Ablauf dieser Frist. Sie können alle zu
+              Ihrer E-Mail-Adresse gehörenden
+              Rückmeldedaten über den persönlichen Link „Meine gespeicherten
+              Daten löschen“ in der E-Mail löschen oder Ihren Widerruf an
+              {" "}<a href={"mailto:" + CONTACT.email} className="text-waldgruen hover:underline">{CONTACT.email}</a>
+              {" "}richten. Eine Veröffentlichung erfolgt nur, wenn Sie die
+              dafür vorgesehene freiwillige Auswahl bestätigen. Ihre Antworten
+              werden nicht an den in der Mail verlinkten Sprachnachrichten-Dienst
+              weitergegeben, sofern Sie dort nicht selbst Angaben machen.
+            </p>
+          </div>
+
+          <div>
             <h2 id="freiwillige-themensignale" className="font-semibold text-waldgruen-dark mb-2 scroll-mt-24">
-              18. Freiwillige Themensignale
+              19. Freiwillige Themensignale
             </h2>
             <p className="mb-3">
               Auf der Successpage können Sie freiwillig zustimmen, ein
@@ -741,7 +792,7 @@ export default function Datenschutz() {
 
           <div>
             <h2 className="font-semibold text-waldgruen-dark mb-2">
-              19. KI-generierte Inhalte und Disclaimer
+              20. KI-generierte Inhalte und Disclaimer
             </h2>
             <p className="mb-3">
               Brief-nach-Berlin nutzt künstliche Intelligenz, um Ihr Anliegen
@@ -789,7 +840,7 @@ export default function Datenschutz() {
 
           <div>
             <h2 className="font-semibold text-waldgruen-dark mb-2">
-              20. Kampagnen von Creatorinnen und Creatorn
+              21. Kampagnen von Creatorinnen und Creatorn
             </h2>
             <p className="mb-3">
               Wenn Sie eine Kampagne starten, speichere ich die von Ihnen
@@ -833,7 +884,7 @@ export default function Datenschutz() {
             </p>
             <p className="mb-3">
               Auf der Verwaltungsseite sehen Creator, wie ihre Kampagne
-              ankommt. Aus den freiwilligen Themensignalen (siehe Abschnitt 18)
+              ankommt. Aus den freiwilligen Themensignalen (siehe Abschnitt 19)
               erhalten sie nur Summen: Briefe pro Bundesland,
               Briefe pro Tag (nach den ersten vier Wochen pro Woche) und, falls
               es mehrere gibt, die Art der Empfänger. Diese Zahlen
@@ -866,7 +917,7 @@ export default function Datenschutz() {
             </p>
           </div>
 
-          <p className="text-sm text-warmgrau/50">Stand: 9. Oktober 2026</p>
+          <p className="text-sm text-warmgrau/50">Stand: 14. Oktober 2026</p>
         </div>
       </div>
     </div>

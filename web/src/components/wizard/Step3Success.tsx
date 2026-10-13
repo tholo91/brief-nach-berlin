@@ -840,7 +840,7 @@ export function Step3Success({
         </div>
         <p className="font-body text-base text-warmgrau leading-relaxed mt-3">
           {letterReady || connectionLost ? (
-            <>Dein Entwurf und alle nächsten Schritte sind an <strong>{maskEmail(wizardData.email)}</strong> unterwegs.</>
+            <>Dein Entwurf kommt an <strong>{maskEmail(wizardData.email)}</strong>. Den Brief schickst du anschließend selbst per Post ab.</>
           ) : (
             <>
               Brief und nächste Schritte kommen per E-Mail zu dir

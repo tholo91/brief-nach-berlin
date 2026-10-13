@@ -6,13 +6,15 @@ import { MIN_PUBLIC_REVIEW_DATE } from "@/lib/reviews/types";
 
 export type StoredReview = { createdAt: string; rating: number; isPublic: boolean };
 export type StoredMapEntry = { createdAt: string; plzPrefix: string };
+export type StoredOutcome = { createdAt: string; completed: boolean; lastStep: string | null };
 
 export type StoredUserData = {
   reviews: StoredReview[];
   mapEntries: StoredMapEntry[];
+  outcomes: StoredOutcome[];
 };
 
-export type DeletedCounts = { reviews: number; mapEntries: number };
+export type DeletedCounts = { reviews: number; mapEntries: number; outcomes: number };
 
 type ReviewRow = {
   id: string;
@@ -23,11 +25,13 @@ type ReviewRow = {
   body: string | null;
 };
 type SignalRow = { id: string; created_at: string; plz_prefix: string };
+type OutcomeRow = { id: string; created_at: string; completed: boolean; last_step: string | null };
 
 type Collected = {
   email: string;
   reviews: ReviewRow[];
   signals: SignalRow[];
+  outcomes: OutcomeRow[];
 };
 
 type DbError = { code?: string | null } | null;
@@ -61,14 +65,16 @@ async function collect(client: SupabaseClient, rawEmail: string): Promise<Collec
   if (!hashSecret) throw new Error("LETTER_SIGNAL_EMAIL_HASH_SECRET is not set");
   const lookupHash = createLetterSignalEmailHash(email, hashSecret);
 
-  const [reviewsResult, hashSignalsResult, emailSignalsResult] = await Promise.all([
+  const [reviewsResult, hashSignalsResult, emailSignalsResult, outcomesResult] = await Promise.all([
     client.from("reviews").select("id, created_at, rating, letter_id, consent, body").eq("email", email),
     client.from("letter_signals").select("id, created_at, plz_prefix").eq("email_lookup_hash", lookupHash),
     client.from("letter_signals").select("id, created_at, plz_prefix").eq("email_normalized", email),
+    client.from("letter_outcomes").select("id, created_at, completed, last_step").eq("email", email),
   ]);
   assertNoError(reviewsResult.error, "reviews", "select");
   assertNoError(hashSignalsResult.error, "letter_signals", "select by hash");
   assertNoError(emailSignalsResult.error, "letter_signals", "select by email");
+  assertNoError(outcomesResult.error, "letter_outcomes", "select");
 
   const reviews = (reviewsResult.data ?? []) as ReviewRow[];
   const linkedLetterIds = Array.from(
@@ -91,7 +97,7 @@ async function collect(client: SupabaseClient, rawEmail: string): Promise<Collec
     ).values(),
   );
 
-  return { email, reviews, signals };
+  return { email, reviews, signals, outcomes: (outcomesResult.data ?? []) as OutcomeRow[] };
 }
 
 export async function lookupUserDataByEmail(client: SupabaseClient, email: string): Promise<StoredUserData> {
@@ -106,6 +112,11 @@ export async function lookupUserDataByEmail(client: SupabaseClient, email: strin
       createdAt: signal.created_at,
       plzPrefix: signal.plz_prefix,
     })),
+    outcomes: collected.outcomes.map((outcome) => ({
+      createdAt: outcome.created_at,
+      completed: outcome.completed,
+      lastStep: outcome.last_step,
+    })),
   };
 }
 
@@ -114,17 +125,20 @@ export async function deleteUserDataByEmail(client: SupabaseClient, email: strin
   const collected = await collect(client, email);
   const signalIds = collected.signals.map((signal) => signal.id);
 
-  const [reviewDelete, signalDelete] = await Promise.all([
+  const [reviewDelete, signalDelete, outcomeDelete] = await Promise.all([
     client.from("reviews").delete({ count: "exact" }).eq("email", collected.email),
     signalIds.length > 0
       ? client.from("letter_signals").delete({ count: "exact" }).in("id", signalIds)
       : Promise.resolve({ count: 0, error: null as DbError }),
+    client.from("letter_outcomes").delete({ count: "exact" }).eq("email", collected.email),
   ]);
   assertNoError(reviewDelete.error, "reviews", "delete");
   assertNoError(signalDelete.error, "letter_signals", "delete");
+  assertNoError(outcomeDelete.error, "letter_outcomes", "delete");
 
   return {
     reviews: reviewDelete.count ?? collected.reviews.length,
     mapEntries: signalDelete.count ?? signalIds.length,
+    outcomes: outcomeDelete.count ?? collected.outcomes.length,
   };
 }

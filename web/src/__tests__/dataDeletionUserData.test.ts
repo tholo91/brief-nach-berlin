@@ -28,6 +28,10 @@ function seed(): Record<string, FakeRow[]> {
       { id: "s-linked", email_lookup_hash: "zzz", email_normalized: null, letter_id: LETTER_ID, plz_prefix: "20", created_at: "2026-09-04T10:00:00Z" },
       { id: "s-other", email_lookup_hash: "other", email_normalized: "other@example.org", letter_id: "l-other", plz_prefix: "80", created_at: "2026-09-05T10:00:00Z" },
     ],
+    letter_outcomes: [
+      { id: "o-person", email: EMAIL, created_at: "2026-10-14T09:00:00Z", completed: false, last_step: "reply_channels", body: "private text" },
+      { id: "o-other", email: "other@example.org", created_at: "2026-10-14T09:00:00Z", completed: true, last_step: "full" },
+    ],
     campaigns: [{ id: "c1", creator_email: EMAIL }],
   };
 }
@@ -69,6 +73,7 @@ describe("data deletion userData", () => {
         "reviews|select|email",
         "letter_signals|select|email_lookup_hash",
         "letter_signals|select|email_normalized",
+        "letter_outcomes|select|email",
         "letter_signals|select|letter_id",
       ]));
       expect(fake.calls.find((c) => c.table === "reviews")?.value).toBe(EMAIL);
@@ -90,11 +95,13 @@ describe("data deletion userData", () => {
       const result = await lookupUserDataByEmail(fake.client as unknown as SupabaseClient, EMAIL);
       expect(result.mapEntries.map((m) => m.plzPrefix).sort()).toEqual(["10", "20", "28"]);
       expect(result.reviews).toEqual([{ createdAt: "2026-09-01T10:00:00Z", rating: 4, isPublic: true }]);
+      expect(result.outcomes).toEqual([{ createdAt: "2026-10-14T09:00:00Z", completed: false, lastStep: "reply_channels" }]);
       const json = JSON.stringify(result);
       expect(json).not.toContain(EMAIL);
       expect(json).not.toContain("Hat geholfen");
       expect(json).not.toContain("do-not-leak");
       expect(json).not.toContain("r1");
+      expect(json).not.toContain("private text");
     });
 
     it("throws without a hash secret", async () => {
@@ -108,13 +115,15 @@ describe("data deletion userData", () => {
     it("deletes only this address's rows and returns the counts", async () => {
       const fake = createFakeSupabase(seed());
       const counts = await deleteUserDataByEmail(fake.client as unknown as SupabaseClient, "Person@Example.org");
-      expect(counts).toEqual({ reviews: 1, mapEntries: 3 });
+      expect(counts).toEqual({ reviews: 1, mapEntries: 3, outcomes: 1 });
       expect(fake.tables.reviews.map((r) => r.id)).toEqual(["r-other"]);
       expect(fake.tables.letter_signals.map((r) => r.id)).toEqual(["s-other"]);
       expect(fake.tables.campaigns).toHaveLength(1);
+      expect(fake.tables.letter_outcomes.map((r) => r.id)).toEqual(["o-other"]);
       const deletes = fake.calls.filter((c) => c.op === "delete");
       expect(deletes).toEqual(expect.arrayContaining([
         { table: "reviews", op: "delete", column: "email", value: EMAIL },
+        { table: "letter_outcomes", op: "delete", column: "email", value: EMAIL },
       ]));
       const signalDelete = deletes.find((c) => c.table === "letter_signals");
       expect(fake.calls.some((c) => c.table === "roadmap_signups")).toBe(false);
@@ -128,12 +137,27 @@ describe("data deletion userData", () => {
         letter_signals: [],
       });
       const counts = await deleteUserDataByEmail(fake.client as unknown as SupabaseClient, EMAIL);
-      expect(counts).toEqual({ reviews: 1, mapEntries: 0 });
+      expect(counts).toEqual({ reviews: 1, mapEntries: 0, outcomes: 0 });
       expect(fake.calls.some((c) => c.table === "letter_signals" && c.op === "delete")).toBe(false);
     });
 
+    it("finds and deletes a person whose only stored data is a partial outcome", async () => {
+      const fake = createFakeSupabase({
+        reviews: [],
+        letter_signals: [],
+        letter_outcomes: [{ id: "o1", email: EMAIL, created_at: "2026-10-14T09:00:00Z", completed: false, last_step: "initial" }],
+      });
+      const found = await lookupUserDataByEmail(fake.client as unknown as SupabaseClient, EMAIL);
+      expect(found.outcomes).toEqual([{ createdAt: "2026-10-14T09:00:00Z", completed: false, lastStep: "initial" }]);
+      expect(found.reviews).toEqual([]);
+      expect(found.mapEntries).toEqual([]);
+      const counts = await deleteUserDataByEmail(fake.client as unknown as SupabaseClient, EMAIL);
+      expect(counts).toEqual({ reviews: 0, mapEntries: 0, outcomes: 1 });
+      expect(fake.tables.letter_outcomes).toEqual([]);
+    });
+
     it("throws a message without the email or the Supabase text on any error", async () => {
-      for (const table of ["reviews", "letter_signals"]) {
+      for (const table of ["reviews", "letter_signals", "letter_outcomes"]) {
         const fake = createFakeSupabase(seed());
         fake.failTables.add(table);
         const error = await deleteUserDataByEmail(fake.client as unknown as SupabaseClient, EMAIL).then(

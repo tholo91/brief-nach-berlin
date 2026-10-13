@@ -5,6 +5,8 @@ jest.mock("@getbrevo/brevo", () => ({
   })),
 }));
 
+import { readFileSync } from "node:fs";
+import { join } from "node:path";
 import { APP_URL } from "@/lib/config";
 import { BRIEF_EMAIL } from "@/lib/contact";
 import { verifyDataDeletionToken } from "@/lib/dataDeletion/token";
@@ -30,6 +32,22 @@ const params: SendLetterEmailParams = {
 };
 
 describe("privacy email contact", () => {
+  it("documents outcome feedback data, separate explicit consent, retention, and deletion", () => {
+    const policy = readFileSync(join(process.cwd(), "src/app/(site)/datenschutz/page.tsx"), "utf8");
+
+    expect(policy).toContain('id="rueckmeldungen"');
+    expect(policy).toContain("18. Rückmeldung zur letzten E-Mail");
+    expect(policy).toContain("E-Mail-Adresse, den Versandjahrgang und Ihre Auswahl");
+    expect(policy).toContain("Hash der IP-Adresse");
+    expect(policy).toContain("gesonderte ausdrückliche Einwilligung");
+    expect(policy).toContain("Zeitpunkt Ihrer Einwilligung");
+    expect(policy).toContain("Supabase gespeichert (Details siehe Abschnitt 17)");
+    expect(policy).toContain("Art. 9 Abs. 2 lit. a DSGVO");
+    expect(policy).toContain("höchstens 24 Monate. Eine tägliche");
+    expect(policy).toContain("Rückmeldedaten über den persönlichen Link");
+    expect(policy).toContain("Stand: 14. Oktober 2026");
+  });
+
   it("builds a prefilled deletion email for the project mailbox", () => {
     const mailto = buildDataDeletionMailto("de");
 
@@ -115,7 +133,7 @@ describe("privacy email contact", () => {
     expect(lastcall.text).toContain(`${APP_URL}/datenloeschen`);
     expect(lastcall.html).not.toContain(mailto);
     expect(lastcall.text).not.toContain(mailto);
-    expect(lastcall.html).toContain("dritte und letzte automatische Mail");
+    expect(lastcall.html).toContain("Das ist meine letzte automatische Mail an dich.");
   });
 
   it("puts a given personal deletion link into the last-call HTML and text", () => {
@@ -124,7 +142,7 @@ describe("privacy email contact", () => {
 
     expect(lastcall.html).toContain(`href="${deleteUrl}"`);
     expect(lastcall.text).toContain(deleteUrl);
-    expect(lastcall.html).toContain("dritte und letzte automatische Mail");
+    expect(lastcall.html).toContain("Das ist meine letzte automatische Mail an dich.");
   });
 
   it("links the tokenless deletion page in the letter mail by default", () => {

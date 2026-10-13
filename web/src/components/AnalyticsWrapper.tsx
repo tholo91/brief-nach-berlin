@@ -11,7 +11,7 @@ export function AnalyticsWrapper() {
       beforeSend={(event) => {
         try {
           const url = new URL(event.url);
-          if (url.pathname.startsWith("/feedback")) return null;
+          if (["/feedback", "/rueckmeldung"].some((path) => url.pathname.startsWith(path))) return null;
         } catch {
           // If the URL can't be parsed, fall through and send the event.
         }

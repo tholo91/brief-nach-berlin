@@ -35,6 +35,13 @@ function buildRows(data: StoredUserData): StoredRow[] {
       detail: `eingetragen am ${formatDate(entry.createdAt)}`,
     });
   });
+  data.outcomes.forEach((outcome, index) => {
+    rows.push({
+      id: `outcome-${index}`,
+      title: `Rückmeldung vom ${formatDate(outcome.createdAt)}`,
+      detail: outcome.completed ? "vollständig abgesendet" : "begonnen, noch nicht vollständig abgesendet",
+    });
+  });
   return rows;
 }
 

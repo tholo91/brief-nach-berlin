@@ -4,6 +4,13 @@
 **Auditor-Perspektiven:** Datenschutzbeauftragter (DSB), IT-Security, Rechtsanwalt (IT-Recht), Produktverantwortlicher
 **Geltungsbereich:** Web-App unter brief-nach-berlin.de, Codebasis im Repo
 
+> Historischer Audit vom 27.04.2026, kein aktueller Betriebs- oder Compliance-Nachweis.
+> Aussagen zu Datenbank, Cookies, Analytics, Modellen, Moderation und
+> Sicherheits-Headern beschreiben den damaligen Stand und sind teilweise überholt.
+> Die Code- und Betriebsprüfung vom 12.10.2026 steht in
+> [docs/reviews/2026-10-12-code-review.md](docs/reviews/2026-10-12-code-review.md).
+> Die ursprüngliche Bewertung und die damaligen Empfehlungen bleiben als Historie erhalten.
+
 ---
 
 ## TL;DR (Executive Summary)

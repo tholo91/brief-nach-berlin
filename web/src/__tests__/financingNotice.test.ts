@@ -103,12 +103,15 @@ describe("financing notice", () => {
   });
 
   it.each(["de", "en", "tr"] as const)("is embedded unchanged in the %s letter email", (locale) => {
+    const portrait = {
+      src: `${APP_URL}${SUPPORT_CONTENT.founder.avatarPath}`,
+      alt: SUPPORT_CONTENT.founder.name,
+    };
     const options = {
       showHeart: true,
-      providerLabel: SUPPORT_EMAIL_COPY[locale].providerLabel,
     };
     expect(buildEmailHtml(params(locale))).toContain(
-      buildFinancingNoticeHtml(SUPPORT_EMAIL_COPY[locale], undefined, options),
+      buildFinancingNoticeHtml(SUPPORT_EMAIL_COPY[locale], portrait, options),
     );
   });
 });

@@ -54,3 +54,8 @@ next-env.d.ts
 # per BTW cycle). Committed so build:plz works on a fresh checkout.
 !/data/raw/btw25-stadtstaaten-polygons.json
 !/data/raw/plz-polygons-stadtstaaten.geojson
+
+# Last-call personal cohort and send journal
+.lastcall-cohort.csv*
+.lastcall-send-journal.json*
+.lastcall-preview.*

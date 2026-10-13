@@ -23,10 +23,11 @@ function plural(count: number, one: string, many: string): string {
   return `${count} ${count === 1 ? one : many}`;
 }
 
-function formatDeleted(deleted: { reviews: number; mapEntries: number }): string {
+function formatDeleted(deleted: { reviews: number; mapEntries: number; outcomes: number }): string {
   const parts: string[] = [];
   if (deleted.reviews > 0) parts.push(plural(deleted.reviews, "Bewertung", "Bewertungen"));
   if (deleted.mapEntries > 0) parts.push(plural(deleted.mapEntries, "Kartenpunkt", "Kartenpunkte"));
+  if (deleted.outcomes > 0) parts.push(plural(deleted.outcomes, "Rückmeldung", "Rückmeldungen"));
   if (parts.length === 0) return "Es war nichts mehr gespeichert.";
   const text = parts.length === 1 ? parts[0] : `${parts.slice(0, -1).join(", ")} und ${parts[parts.length - 1]}`;
   return `Gelöscht: ${text}.`;
@@ -152,7 +153,7 @@ export function DatenloeschenClient({ view }: { view: DatenloeschenView }) {
           <div className="font-body text-sm text-warmgrau leading-relaxed space-y-3 mb-6">
             <p>
               Deinen Brief speichere ich nicht. Etwas liegt nur bei mir, wenn du deinen Brief
-              bewertet oder dein Anliegen auf die Karte gesetzt hast.
+              bewertet, eine Rückmeldung abgegeben oder dein Anliegen auf die Karte gesetzt hast.
             </p>
             <p>Zum Löschen brauchst du den persönlichen Link aus meiner Rückfrage-Mail. Er gilt 90 Tage.</p>
             <p>Findest du die Mail nicht mehr? Schreib mir kurz, dann lösche ich es von Hand.</p>
@@ -190,7 +191,7 @@ export function DatenloeschenClient({ view }: { view: DatenloeschenView }) {
             </p>
             <p>
               Es gibt keinen Newsletter und keine Liste, auf der du stehst. Deinen Brief speichere ich nicht. Etwas
-              liegt nur bei mir, wenn du deinen Brief bewertest oder dein Anliegen auf die Karte setzt.
+              liegt nur bei mir, wenn du deinen Brief bewertest, eine Rückmeldung abgibst oder dein Anliegen auf die Karte setzt.
             </p>
             <p>Höchstens kommt noch eine Rückfrage-Mail von mir. Danach ist Schluss.</p>
           </div>

@@ -18,6 +18,10 @@ const securityHeaders = [
 
 const nextConfig: NextConfig = {
   images: { unoptimized: true },
+  logging: {
+    serverFunctions: false,
+    incomingRequests: { ignore: [/\/rueckmeldung(?:[/?]|$)/] },
+  },
   async headers() {
     return [
       {

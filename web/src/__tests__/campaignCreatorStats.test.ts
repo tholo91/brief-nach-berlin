@@ -785,6 +785,25 @@ describe("CampaignCreatorStats rendering", () => {
     expect(markup).not.toContain("von 8 Briefen");
   });
 
+  it("shows the letter count without duplicates and explains it in the footer", () => {
+    const markup = renderToStaticMarkup(
+      createElement(CampaignCreatorStats, {
+        stats: buildCampaignCreatorStats({ ...baseInput, letterCount: 3017, rows: [] }),
+      }),
+    );
+    expect(markup).toContain("ca. 2.896 ohne Doppelte");
+    expect(markup.slice(markup.indexOf("<footer"))).toContain("Etwa 3 bis 5 % der Briefe entstehen doppelt");
+  });
+
+  it("hides the duplicate estimate when it would not change the count", () => {
+    const markup = renderToStaticMarkup(
+      createElement(CampaignCreatorStats, {
+        stats: buildCampaignCreatorStats({ ...baseInput, letterCount: 3, rows: [] }),
+      }),
+    );
+    expect(markup).not.toContain("ohne Doppelte");
+  });
+
   it("uses the singular for one remaining response", () => {
     expect(render(rows(9))).toContain("Noch 1 Rückmeldung bis dahin");
   });

@@ -114,7 +114,7 @@ describe("Step3Success — institutioneller Land-Default", () => {
     );
 
     expect(html).toContain("Dein Brief ist fertig");
-    expect(html).toContain("Dein Entwurf und alle nächsten Schritte sind an");
+    expect(html).toContain("Dein Entwurf kommt an");
     expect(html).toContain("Öffne jetzt dein E-Mail-Postfach");
     expect(html).toContain("So geht es weiter");
     expect(html).toContain("Jetzt spenden");

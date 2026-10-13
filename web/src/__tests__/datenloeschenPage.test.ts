@@ -29,7 +29,7 @@ async function render(searchParams: { t?: string }): Promise<string> {
 const mailto = buildDataDeletionMailto("de").replace(/&/g, "&amp;");
 // next/image rewrites the src to /_next/image?url=... in the jest env (no next.config).
 const AVATAR = /(\/|%2F)images(\/|%2F)thomas-avatar\.jpg/;
-const EMPTY = { reviews: [], mapEntries: [] };
+const EMPTY = { reviews: [], mapEntries: [], outcomes: [] };
 
 describe("/datenloeschen page", () => {
   const originalSecret = process.env.FEEDBACK_TOKEN_SECRET;
@@ -82,6 +82,7 @@ describe("/datenloeschen page", () => {
     mockedLookup.mockResolvedValue({
       reviews: [{ createdAt: "2026-09-01T10:00:00Z", rating: 4, isPublic: true }],
       mapEntries: [{ createdAt: "2026-09-02T10:00:00Z", plzPrefix: "28" }],
+      outcomes: [],
     });
     const markup = await render({ t: createDataDeletionToken("person@example.org") });
     expect(markup).toContain("4 von 5");
@@ -99,10 +100,23 @@ describe("/datenloeschen page", () => {
     mockedLookup.mockResolvedValue({
       reviews: [{ createdAt: "2026-09-01T10:00:00Z", rating: 2, isPublic: false }],
       mapEntries: [],
+      outcomes: [],
     });
     const markup = await render({ t: createDataDeletionToken("person@example.org") });
     expect(markup).toContain("2 von 5");
     expect(markup).toContain("nicht öffentlich");
+  });
+
+  it("lists an outcome-only record and offers deletion", async () => {
+    mockedLookup.mockResolvedValue({
+      reviews: [],
+      mapEntries: [],
+      outcomes: [{ createdAt: "2026-10-14T09:00:00Z", completed: false, lastStep: "reply_channels" }],
+    });
+    const markup = await render({ t: createDataDeletionToken("person@example.org") });
+    expect(markup).toContain("Rückmeldung vom 14. Oktober 2026");
+    expect(markup).toContain("begonnen, noch nicht vollständig abgesendet");
+    expect(markup).toContain("Alles löschen");
   });
 
   it("shows the lookup-failed state with the mailto when the lookup throws", async () => {

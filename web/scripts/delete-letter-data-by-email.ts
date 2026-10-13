@@ -1,4 +1,4 @@
-// Deletes all reviews and voluntary letter signals for one email address.
+// Deletes all reviews, voluntary letter signals, and outcome feedback for one email address.
 // Default is dry-run. A deletion only happens with --confirm.
 //
 // Run:
@@ -57,6 +57,7 @@ async function main() {
   const found = await lookupUserDataByEmail(client, args.email);
   console.log(`- ${found.reviews.length} review(s)`);
   console.log(`- ${found.mapEntries.length} voluntary letter signal(s)`);
+  console.log(`- ${found.outcomes.length} outcome response(s)`);
 
   if (!args.confirm) {
     console.log("No data was deleted. Re-run with --confirm to permanently delete these rows.");
@@ -64,7 +65,9 @@ async function main() {
   }
 
   const deleted = await deleteUserDataByEmail(client, args.email);
-  console.log(`Deleted ${deleted.reviews} review(s) and ${deleted.mapEntries} signal(s).`);
+  console.log(
+    `Deleted ${deleted.reviews} review(s), ${deleted.mapEntries} signal(s), and ${deleted.outcomes} outcome response(s).`,
+  );
 }
 
 main().catch((error) => {

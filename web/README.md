@@ -1,36 +1,71 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Brief-nach-Berlin: Web-App
 
-## Getting Started
+Die aktive Anwendung liegt in diesem Verzeichnis. Produkt, Datenfluss und Lizenz
+stehen in der [Projekt-README](../README.md).
 
-First, run the development server:
+## Lokal starten
+
+Vom Repository-Root aus:
 
 ```bash
+cd web
+npm ci
+cp .env.example .env.local
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Die App läuft unter [localhost:3000](http://localhost:3000). Vercel verwendet
+derzeit Node.js 24.x; dieselbe Hauptversion ist auch lokal sinnvoll.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Vor dem Start die benötigten Werte in `.env.local` setzen. Die Startseite liest
+Supabase-Daten; ein leeres Environment reicht deshalb nicht für den vollständigen
+App-Start. Eigene Entwicklungszugänge verwenden und Schlüssel nicht einchecken.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+| Funktion | Benötigte Variablen |
+| --- | --- |
+| Datenzugriff, Zähler und Kampagnen | `NEXT_PUBLIC_SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY` |
+| Briefgenerierung und Transkription | `MISTRAL_API_KEY` |
+| Brief-Mail und signierte Feedback-/Löschlinks | `BREVO_API_KEY`, `FEEDBACK_TOKEN_SECRET`; optional `BREVO_SENDER_EMAIL` |
+| Bewertungen speichern | zusätzlich `REVIEW_IP_SALT` |
+| Freiwillige Kartensignale | `LETTER_SIGNAL_EMAIL_HASH_SECRET`; Token-Secret gemäß `.env.example` |
+| Persönliche Datenübersicht und Löschung | `FEEDBACK_TOKEN_SECRET`, `LETTER_SIGNAL_EMAIL_HASH_SECRET` |
+| Kampagnenverwaltung | optional separates `CAMPAIGN_SESSION_SECRET`; sonst Service-Role-Key als Fallback |
+| Interne Statistik und Meilenstein-Mail | `INTERNAL_STATS_PASSWORD`; für die Mail zusätzlich `THOMAS_MAIL` |
 
-## Learn More
+Feature-Flags, weitere optionale Variablen und Datenschutzhinweise stehen in
+[`.env.example`](.env.example). Ein Development-Server ist kein Sandbox-Modus für
+externe Dienste: Generierung, Transkription und Mailversand verwenden die
+konfigurierten Anbieterzugänge.
 
-To learn more about Next.js, take a look at the following resources:
+## Prüfen
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Alle Befehle in `web/` ausführen:
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```bash
+npm test -- --runInBand
+npm run lint
+npm run build
+```
 
-## Deploy on Vercel
+Die Jest-Tests verwenden Mocks und benötigen keine echten Anbieterzugänge.
+Einzelne Tests lassen sich etwa mit
+`npm test -- --runInBand src/__tests__/campaignFixedRecipient.test.ts` ausführen.
+Der Build lädt Environment-Dateien, führt serverseitigen Seitencode aus und
+lädt die in `src/app/layout.tsx` konfigurierten Google Fonts. Er benötigt deshalb
+passende Entwicklungswerte und Netzwerkzugriff; ein bestandener Testlauf beweist
+keinen bestandenen Build oder funktionierenden Produktivversand.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Orientierung
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+| Pfad | Inhalt |
+| --- | --- |
+| `src/app/` | Seiten, Server-Routen und Layout; Startseite: `src/app/page.tsx` |
+| `src/components/` | Oberfläche und Wizard |
+| `src/lib/` | Zuständigkeit, Generierung, Versand und weitere Fachlogik |
+| `src/__tests__/` | Jest-Tests und Anbieter-Mocks |
+| `data/`, `scripts/` | Politische Daten und deren Build-/Importskripte |
+| `supabase/` | SQL-Migrationen und dokumentierter Produktionsstatus |
+
+[Migrationsstatus](supabase/MIGRATION_STATUS.md) und ausgeführte SQL-Änderungen
+sind getrennt von einem Git-Push oder Vercel-Deployment zu prüfen.
+Import-, Versand- und Löschskripte nicht als Start- oder Smoke-Test verwenden.

@@ -35,7 +35,7 @@ describe("buildEmailHtml — Empfänger-Arten", () => {
     const html = buildEmailHtml(params);
     expect(buildLetterEmailSubject(params)).toBe("Dein Brief nach Berlin ist fertig");
     expect(html).toContain("Brief-nach-Berlin</h1>");
-    expect(html).toContain("Dein Briefentwurf ist fertig zum Absenden.");
+    expect(html).toContain("Dein Briefentwurf ist fertig. Jetzt schnell zu Papier bringen und abschicken.");
     expect(html).toContain("Deutscher Bundestag<br>");
     expect(html).toContain(", MdB (SPD)");
     expect(html).toContain("abgeordnetenwatch.de/profile/anna-mueller");
@@ -78,7 +78,7 @@ describe("buildEmailHtml — Empfänger-Arten", () => {
     const html = buildEmailHtml(params);
     expect(buildLetterEmailSubject(params)).toBe("Dein Brief nach Düsseldorf ist fertig");
     expect(html).toContain("Brief-nach-Berlin</h1>");
-    expect(html).toContain("Dein Brief nach Düsseldorf ist fertig zum Absenden.");
+    expect(html).toContain("Dein Brief nach Düsseldorf ist fertig. Jetzt schnell zu Papier bringen und abschicken.");
     expect(html).not.toContain("Deutscher Bundestag<br>");
     expect(html).toContain("Landtag Nordrhein-Westfalen<br>");
     expect(html).toContain(", MdL (CDU)");
@@ -99,7 +99,7 @@ describe("buildEmailHtml — Empfänger-Arten", () => {
     });
     expect(buildLetterEmailSubject(params)).toBe("Dein Brief nach Wiesbaden ist fertig");
     expect(buildEmailHtml(params)).toContain(
-      "Dein Brief nach Wiesbaden ist fertig zum Absenden."
+      "Dein Brief nach Wiesbaden ist fertig. Jetzt schnell zu Papier bringen und abschicken."
     );
   });
 
@@ -185,7 +185,7 @@ describe("buildEmailHtml — Empfänger-Arten", () => {
       "Dein Brief nach Düsseldorf ist fertig"
     );
     expect(html).toContain(
-      "Dein Brief nach Düsseldorf ist fertig zum Absenden."
+      "Dein Brief nach Düsseldorf ist fertig. Jetzt schnell zu Papier bringen und abschicken."
     );
     expect(html).toContain("<strong>Staatskanzlei NRW</strong><br>");
     expect(html).toContain("Horionplatz 1<br>40190 Düsseldorf");
@@ -220,7 +220,7 @@ describe("buildEmailHtml — Empfänger-Arten", () => {
     });
     expect(buildLetterEmailSubject(params)).toBe("Dein Brief nach Berlin ist fertig");
     expect(buildEmailHtml(params)).toContain(
-      "Dein Brief nach Berlin ist fertig zum Absenden."
+      "Dein Brief nach Berlin ist fertig. Jetzt schnell zu Papier bringen und abschicken."
     );
   });
 
@@ -288,7 +288,7 @@ describe("buildEmailHtml — Empfänger-Arten", () => {
     const html = buildEmailHtml(params);
     expect(buildLetterEmailSubject(params)).toBe("Dein Brief ans Rathaus in Köln ist fertig");
     expect(html).toContain("Brief-nach-Berlin</h1>");
-    expect(html).toContain("Dein Brief ans Rathaus in Köln ist fertig zum Absenden.");
+    expect(html).toContain("Dein Brief ans Rathaus in Köln ist fertig. Jetzt schnell zu Papier bringen und abschicken.");
     expect(html).not.toContain("Deutscher Bundestag<br>");
     // ", MdB (" / ", MdL (" sind die Mandats-Labels der Adresszeile; das
     // statische Template erwähnt "MdB" an anderer Stelle (Footer-Link) legitim.

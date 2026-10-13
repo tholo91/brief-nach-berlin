@@ -13,6 +13,7 @@ import { SectionNav } from "@/components/internalStats/SectionNav";
 import { BundeslandMap } from "@/components/campaigns/BundeslandMap";
 import { BUNDESLAND_KEYS, BUNDESLAND_NAMES, type BundeslandKey } from "@/lib/campaigns/schema";
 import { formatDecimal, formatNumber } from "@/lib/formatNumber";
+import { DUPLICATE_LETTER_NOTE, estimateLettersWithoutDuplicates } from "@/lib/duplicateLetters";
 import { lockInternalStats, unlockInternalStats } from "@/lib/internalStats/actions";
 import {
   INTERNAL_STATS_COOKIE,
@@ -632,6 +633,11 @@ function CoreValues({
         eyebrow="Brief-Erstellungen"
         value={formatNumber(stats.letterCount)}
         label="gezählte Briefe seit Produktstart · Verlauf seit Einführung der Briefnummer unter „Verlauf“"
+        footer={
+          <span className="mt-2 block font-typewriter text-[11px] tabular-nums text-warmgrau/55">
+            ca. {formatNumber(estimateLettersWithoutDuplicates(stats.letterCount))} ohne Doppelte
+          </span>
+        }
       />
       <StatCard
         eyebrow="Durchschnittliche Bewertung"
@@ -1547,6 +1553,7 @@ export default async function InternalStatsPage({ searchParams }: InternalStatsP
               title="Brief-Erstellungen im Verlauf"
               body={`Jeder freigegebene Themenbeitrag speichert seit dem ${counterSinceLabel ?? "Start der Briefnummer"} die laufende Briefnummer. Die Differenz der höchsten Nummern zweier Abschnitte ergibt das Volumen aller Briefe dazwischen. Abschnitte ohne Beitrag fallen weg und werden dem nächsten zugeschlagen.`}
             />
+            <Definition title="Doppelte Briefe" body={DUPLICATE_LETTER_NOTE} />
             <Definition
               title="„Ja, geht raus“"
               body="Umfasst bereits verschickte und unmittelbar geplante Briefe. Es ist eine Selbstauskunft, kein physischer Versandnachweis."

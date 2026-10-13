@@ -67,10 +67,10 @@ describe("letter email variant CTA", () => {
     expect(html).toContain(
       "Ich baue Brief-nach-Berlin allein und ehrenamtlich in meiner Freizeit und trage die laufenden Kosten bisher selbst.",
     );
-    expect(html).toContain("über WE AID unterstützen");
+    expect(html).not.toContain("über WE AID unterstützen");
     expect(text).toContain("Mein Soloprojekt erhalten");
     expect(text).toContain("Jetzt spenden");
-    expect(text).toContain("über WE AID unterstützen");
+    expect(text).not.toContain("über WE AID unterstützen");
     expect(SUPPORT_CONTENT.ctas.donate.label).toBe("Jetzt über WE AID spenden");
     expect(html).not.toContain(SUPPORT_CONTENT.ctas.donate.label);
     expect(html).toContain("Mehr Informationen");
@@ -90,7 +90,8 @@ describe("letter email variant CTA", () => {
     expect(button).toContain("icon-heart-white.png");
     expect(button).toContain(label);
     expect(button?.indexOf("icon-heart-white.png") ?? -1).toBeLessThan(button?.indexOf(label) ?? -1);
-    expect(html).toContain(providerLabel);
+    expect(html).not.toContain(providerLabel);
+    expect(buildLetterEmailText({ ...makeParams(), locale })).not.toContain(providerLabel);
   });
 
   it("adds the financing notice to resent letter emails but not follow-up emails", () => {

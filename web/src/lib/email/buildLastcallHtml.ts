@@ -11,16 +11,7 @@ import {
   buildSocialFollowText,
 } from "./buildSocialFollowHtml";
 
-// Dritte und letzte Follow-up-Mail ("Last-Call"), ~2-3 Monate nach dem
-// Briefversand. Reine Neugier-Mail: Hat sich das MdB gemeldet? Mag die
-// Person ihre Geschichte teilen? Zwei CTAs (heyspeak-Sprachnachricht +
-// Mail-Antwort), Share-Reihe wie in der Letter-Mail, prominenter
-// Abschluss-Hinweis (allerletzte Mail, kein Newsletter, nichts gespeichert).
-//
-// Anders als buildFollowupHtml.ts braucht diese Mail KEINEN Feedback-Token:
-// die CTAs sind ein heyspeak-Link und ein mailto, keine /feedback-Sterne.
-// Der Fußzeilen-Link zu /datenloeschen trägt dagegen einen persönlichen
-// Löschtoken (deleteUrl), den das Versandskript pro Empfänger erzeugt.
+// Dritte und letzte Follow-up-Mail mit vorausgefüllten Rückmelde-Links.
 
 const STORY_VOICE_URL = "https://www.heyspeak.io/l/_AkL8g0mlosEDTMU6vDxuA";
 const STORY_REPLY_MAILTO =
@@ -36,6 +27,8 @@ export interface BuildLastcallParams {
   // Persönlicher /datenloeschen?t=-Link, pro Empfänger erzeugt. Default für
   // Vorschau und Tests: die Seite ohne Token.
   deleteUrl?: string;
+  // Persönliche URL zu /rueckmeldung?t=..., signiert pro Empfänger.
+  answerBaseUrl?: string;
 }
 
 export interface LastcallRender {
@@ -51,23 +44,28 @@ export function buildLastcallHtml(
 
   const subject = "Brief aus Berlin?";
   const deleteUrl = params.deleteUrl ?? `${base}/datenloeschen`;
+  const answerBaseUrl = params.answerBaseUrl ?? `${base}/rueckmeldung`;
+  const answerUrl = (choice: "ja" | "nein" | "nicht") =>
+    `${answerBaseUrl}${answerBaseUrl.includes("?") ? "&" : "?"}a=${choice}`;
 
   const instagramUrl = `${base}/weitersagen#insta`;
 
   const text = [
     `Moin 👋`,
     ``,
-    `Vor einer Weile hast du deinen Brief nach Berlin (${base}) geschrieben. Das hier ist meine letzte Mail an dich, aus reiner Neugier: Hast du auf deinen Brief eine Reaktion bekommen?`,
+    `Vor einer Weile hast du deinen Brief mit Brief-nach-Berlin (${base}) geschrieben. Ich bin neugierig: Hat sich jemand auf deinen Brief gemeldet?`,
     ``,
-    `Ich kenne inzwischen ein paar Geschichten, in denen Abgeordnete tatsächlich reagiert haben, per Mail, per Brief oder sogar direkt am Telefon. Solche Momente zeigen, dass sich das Schreiben lohnt, und ich würde sie gern sammeln.`,
-    ``,
-    `Hat sich dein MdB bei dir gemeldet? Und wie ging es dir mit dem Brief überhaupt? Auch ein ehrliches "nie was gehört" oder "doch nicht abgeschickt" hilft mir weiter.`,
+    `Auch wenn nichts zurückkam oder du den Brief nicht abgeschickt hast, hilft mir deine Rückmeldung.`,
+    `Ja, es kam etwas: ${answerUrl("ja")}`,
+    `Nein, noch nichts: ${answerUrl("nein")}`,
+    `Ich habe den Brief nicht abgeschickt: ${answerUrl("nicht")}`,
+    `Dein Klick wird mit deiner E-Mail-Adresse gespeichert. Auf der nächsten Seite kannst du freiwillig mehr erzählen. Datenschutz: ${base}/datenschutz`,
     ``,
     `Sprachnachricht schicken: ${STORY_VOICE_URL}`,
     `Per Mail antworten:       ${FOUNDER_EMAIL}`,
-    `(Foto vom Brief oder einer Antwort? Häng es gerne an.)`,
+    `Ein Foto vom Antwortbrief kannst du an Brief-nach-Berlin@posteo.de schicken.`,
     ``,
-    `Ich würde mich mega freuen, wenn du dich kurz meldest. Und falls deine Geschichte anderen Mut macht, magst du sie vielleicht weitertragen und andere damit anstecken.`,
+    `Ich freue mich, von dir zu hören. Auch wenn dein Brief ohne Antwort geblieben ist.`,
     ``,
     `Weitersagen:`,
     `WhatsApp:  ${SHARE_URL_WHATSAPP}`,
@@ -75,16 +73,16 @@ export function buildLastcallHtml(
     `Instagram: ${instagramUrl}`,
     `E-Mail:    ${SHARE_URL_EMAIL}`,
     ``,
-    `Tausend Dank, dass du dir die Zeit nimmst, für deinen Brief und vielleicht für deine Geschichte.`,
+    `Danke, dass du dir die Zeit nimmst.`,
     `Beste Grüße aus Bremen`,
     ``,
     `Thomas`,
     `Eine Initiative von ${FOUNDER_HOMEPAGE}`,
     ``,
     `--`,
-    `Das ist die dritte und letzte automatische Mail an dich. Kein Newsletter, keine weitere Nachricht.`,
+    `Das ist meine letzte automatische Mail an dich. Kein Newsletter, keine weitere Nachricht.`,
     buildSocialFollowText(),
-    `Dein Brief und dein Anliegen werden nicht in meiner Datenbank gespeichert. Falls du deinen Brief bewertet oder dein Anliegen auf die Karte gesetzt hast, kannst du das über den Link unten selbst ansehen und löschen.`,
+    `Dein Brief und dein Anliegen werden nicht in meiner Datenbank gespeichert. Deine freiwillige Rückmeldung kannst du über den Link unten löschen.`,
     `Datenschutz: ${base}/datenschutz · Gespeicherte Daten löschen: ${deleteUrl}`,
   ].join("\n");
 
@@ -154,35 +152,27 @@ export function buildLastcallHtml(
             <td style="padding:8px 32px 8px;background-color:#ffffff;">
               <p style="margin:0 0 14px;font-family:Georgia,'Times New Roman',serif;font-size:15px;color:#4A4A4A;line-height:1.75;">Moin 👋</p>
               <p style="margin:0 0 14px;font-family:Georgia,'Times New Roman',serif;font-size:15px;color:#4A4A4A;line-height:1.75;">
-                Vor einer Weile hast du deinen <a href="${base}" style="color:#2D5016;text-decoration:underline;">Brief-nach-Berlin</a> geschrieben. Das hier ist meine letzte Mail an dich, aus reiner Neugier: Hast du auf deinen Brief eine Reaktion bekommen?
+                Vor einer Weile hast du deinen <a href="${base}" style="color:#2D5016;text-decoration:underline;">Brief-nach-Berlin</a> geschrieben. Das hier ist meine letzte Mail an dich. Ich bin neugierig, wie es damit gelaufen ist.
               </p>
-              <p style="margin:0 0 14px;font-family:Georgia,'Times New Roman',serif;font-size:15px;color:#4A4A4A;line-height:1.75;">
-                Ich kenne inzwischen ein paar Geschichten, in denen Abgeordnete tatsächlich reagiert haben, per Mail, per Brief oder sogar direkt am Telefon. Solche Momente zeigen, dass sich das Schreiben lohnt, und ich würde sie gern sammeln.
-              </p>
-              <p style="margin:0 0 6px;font-family:Georgia,'Times New Roman',serif;font-size:15px;color:#4A4A4A;line-height:1.75;">
-                Hat sich <strong style="font-weight:700;color:#2D5016;">dein MdB</strong> bei dir gemeldet? Und wie ging es dir mit dem Brief überhaupt? Auch ein ehrliches "nie was gehört" oder "doch nicht abgeschickt" hilft mir weiter.
-              </p>
+              <p style="margin:0 0 14px;font-family:Georgia,'Times New Roman',serif;font-size:15px;color:#4A4A4A;line-height:1.75;">Auch wenn nichts zurückkam oder du den Brief nicht abgeschickt hast, hilft mir deine Rückmeldung.</p>
+              <p style="margin:0 0 6px;font-family:Georgia,'Times New Roman',serif;font-size:15px;color:#4A4A4A;line-height:1.75;">Hat sich jemand auf deinen Brief gemeldet?</p>
             </td>
           </tr>
 
-          <!-- Zwei CTA-Buttons: Sprachnachricht + Mail-Antwort -->
+          <!-- Antwort mit einem Klick -->
+          <tr><td style="padding:8px 32px;background-color:#ffffff;text-align:center;">
+            <table role="presentation" cellpadding="0" cellspacing="0" align="center"><tr>
+              <td class="lc-cta-cell" style="padding:0 6px 8px 0;"><a href="${answerUrl("ja")}" style="display:inline-block;background:#2D5016;color:#fff;font-family:Georgia,'Times New Roman',serif;font-size:15px;font-weight:bold;text-decoration:none;padding:14px 18px;border-radius:6px;">😊 Ja, es kam etwas</a></td>
+              <td class="lc-cta-cell" style="padding:0 0 8px 6px;"><a href="${answerUrl("nein")}" style="display:inline-block;background:#fff;color:#2D5016;font-family:Georgia,'Times New Roman',serif;font-size:15px;font-weight:bold;text-decoration:none;padding:14px 18px;border-radius:6px;border:2px solid #2D5016;">😕 Nein, noch nichts</a></td>
+            </tr></table>
+            <p style="margin:4px 0 0;font-family:Georgia,'Times New Roman',serif;font-size:13px;"><a href="${answerUrl("nicht")}" style="color:#666;">Ich habe meinen Brief nicht abgeschickt</a></p>
+            <p style="margin:10px 0 0;font-family:Georgia,'Times New Roman',serif;font-size:12px;color:#777;line-height:1.5;">Dein Klick wird mit deiner E-Mail-Adresse gespeichert. Auf der nächsten Seite kannst du freiwillig mehr erzählen. <a href="${base}/datenschutz" style="color:#666;">Datenschutz</a></p>
+          </td></tr>
+
           <tr>
-            <td style="padding:16px 32px 8px;background-color:#ffffff;text-align:center;">
-              <table role="presentation" cellpadding="0" cellspacing="0" align="center" style="margin:0 auto;">
-                <tr>
-                  <td class="lc-cta-cell" style="padding:0 6px 0 0;">
-                    <a href="${STORY_VOICE_URL}" target="_blank" rel="noopener noreferrer" style="display:inline-block;background-color:#2D5016;color:#ffffff;font-family:Georgia,'Times New Roman',serif;font-size:15px;font-weight:bold;text-decoration:none;padding:14px 22px;border-radius:6px;text-align:center;">🎙️ Sprachnachricht</a>
-                  </td>
-                  <td class="lc-cta-cell" style="padding:0 0 0 6px;">
-                    <a href="${STORY_REPLY_MAILTO}" style="display:inline-block;background-color:#ffffff;color:#2D5016;font-family:Georgia,'Times New Roman',serif;font-size:15px;font-weight:bold;text-decoration:none;padding:14px 22px;border-radius:6px;border:2px solid #2D5016;text-align:center;">✉️ Per Mail antworten</a>
-                  </td>
-                </tr>
-              </table>
-            </td>
-          </tr>
-          <tr>
-            <td style="padding:0 32px 16px;background-color:#ffffff;text-align:center;">
-              <p style="margin:0;font-family:Georgia,'Times New Roman',serif;font-size:13px;color:#999999;line-height:1.6;">Foto vom Brief oder einer Antwort? Häng es gerne an.</p>
+            <td style="padding:12px 32px 16px;background-color:#ffffff;text-align:center;">
+              <p style="margin:0 0 10px;font-family:Georgia,'Times New Roman',serif;font-size:13px;color:#666;line-height:1.7;">Lieber erzählen? <a href="${STORY_VOICE_URL}" target="_blank" rel="noopener noreferrer" style="color:#2D5016;">Sprachnachricht</a> oder <a href="${STORY_REPLY_MAILTO}" style="color:#2D5016;">per Mail antworten</a>.</p>
+              <p style="margin:0;font-family:Georgia,'Times New Roman',serif;font-size:13px;color:#666;line-height:1.6;">Ein Foto vom Antwortbrief kannst du an <a href="mailto:Brief-nach-Berlin@posteo.de" style="color:#2D5016;">Brief-nach-Berlin@posteo.de</a> schicken.</p>
             </td>
           </tr>
 
@@ -190,10 +180,10 @@ export function buildLastcallHtml(
           <tr>
             <td style="padding:8px 32px 24px;background-color:#ffffff;text-align:left;">
               <p style="margin:0 0 14px;font-family:Georgia,'Times New Roman',serif;font-size:15px;color:#4A4A4A;line-height:1.75;">
-                Ich würde mich mega freuen, wenn du dich kurz meldest. Und falls deine Geschichte anderen Mut macht, magst du sie vielleicht weitertragen und andere damit anstecken.
+                Ich freue mich, von dir zu hören. Auch wenn dein Brief ohne Antwort geblieben ist.
               </p>
               <p style="margin:0 0 10px;font-family:Georgia,'Times New Roman',serif;font-size:15px;color:#4A4A4A;line-height:1.75;">
-                Tausend Dank, dass du dir die Zeit nimmst, für deinen Brief und vielleicht für deine Geschichte.<br>Beste Grüße aus Bremen
+                Danke, dass du dir die Zeit nimmst.<br>Beste Grüße aus Bremen
               </p>
               <p style="margin:0;font-family:'Caveat','Brush Script MT','Lucida Handwriting',cursive;font-size:32px;color:#1D3557;line-height:1.1;">
                 Thomas
@@ -241,11 +231,11 @@ export function buildLastcallHtml(
           <tr>
             <td style="padding:20px 32px 24px;background-color:#FAF8F5;text-align:center;">
               <p style="margin:0 0 8px;font-family:Georgia,'Times New Roman',serif;font-size:13px;color:#777777;line-height:1.6;">
-                <strong style="color:#2D5016;">Das ist die dritte und letzte automatische Mail an dich.</strong> Kein Newsletter, keine weitere Nachricht.
+                <strong style="color:#2D5016;">Das ist meine letzte automatische Mail an dich.</strong> Kein Newsletter, keine weitere Nachricht.
               </p>
               ${buildSocialFollowHtml({ baseUrl: base })}
               <p style="margin:8px 0 10px;font-family:Georgia,'Times New Roman',serif;font-size:12px;color:#999999;line-height:1.6;">
-                Dein Brief und dein Anliegen werden nicht in meiner Datenbank gespeichert. Falls du deinen Brief bewertet oder dein Anliegen auf die Karte gesetzt hast, kannst du das über den Link unten selbst ansehen und löschen.
+                Dein Brief und dein Anliegen werden nicht in meiner Datenbank gespeichert. Deine freiwillige Rückmeldung kannst du über den Link unten löschen.
               </p>
               <p style="margin:0;font-family:Georgia,'Times New Roman',serif;font-size:12px;color:#aaaaaa;line-height:1.5;">
                 <a href="${base}/datenschutz" style="color:#888888;">Datenschutz</a> · <a href="${deleteUrl}" style="color:#888888;">Gespeicherte Daten löschen</a>

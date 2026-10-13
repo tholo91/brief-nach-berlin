@@ -61,7 +61,7 @@ export function buildLastcallHtml(
     `Ja, es kam etwas: ${answerUrl("ja")}`,
     `Nein, noch nichts: ${answerUrl("nein")}`,
     `Ich habe den Brief nicht abgeschickt: ${answerUrl("nicht")}`,
-    `Dein Klick wird mit deiner E-Mail-Adresse gespeichert. Auf der nächsten Seite kannst du freiwillig mehr erzählen. Datenschutz: ${base}/datenschutz`,
+    `Nach Klick auf einen Button kannst du dein Erlebnis genauer schildern. Dein Klick wird mit deiner E-Mail-Adresse gespeichert. Dein Brief bleibt aber geheim (Datenschutz: ${base}/datenschutz).`,
     ``,
     `Lieber ausführlicher erzählen? Schick mir eine Sprachnachricht (${STORY_VOICE_URL}) oder antworte einfach auf diese Mail an ${FOUNDER_EMAIL}, gern auch mit einem Foto vom Antwortbrief.`,
     ``,
@@ -167,7 +167,7 @@ export function buildLastcallHtml(
                       <td class="lc-cta-cell" width="50%" style="width:50%;padding:0 0 0 6px;"><a href="${answerUrl("nein")}" style="display:block;text-align:center;background:#fff;color:#2D5016;font-family:Georgia,'Times New Roman',serif;font-size:15px;font-weight:bold;text-decoration:none;padding:14px 18px;border-radius:6px;border:2px solid #2D5016;">😕 Nein, noch nichts</a></td>
                     </tr></table>
                     <p style="margin:14px 0 0;font-family:Georgia,'Times New Roman',serif;font-size:14px;line-height:1.5;"><a href="${answerUrl("nicht")}" style="display:inline-block;padding:6px 4px;color:#4A4A4A;text-decoration:underline;">Ich habe meinen Brief nicht abgeschickt</a></p>
-                    <p style="margin:18px 0 0;padding-top:12px;border-top:1px solid #E0DCD7;font-family:Georgia,'Times New Roman',serif;font-size:12px;color:#999999;line-height:1.5;">Dein Klick wird mit deiner E-Mail-Adresse gespeichert. Auf der nächsten Seite kannst du freiwillig mehr erzählen. <a href="${base}/datenschutz" style="color:#888888;">Datenschutz</a></p>
+                    <p style="margin:18px 0 0;padding-top:12px;border-top:1px solid #E0DCD7;font-family:Georgia,'Times New Roman',serif;font-size:12px;color:#999999;line-height:1.5;">Nach Klick auf einen Button kannst du dein Erlebnis genauer schildern. Dein Klick wird mit deiner E-Mail-Adresse gespeichert. Dein Brief bleibt aber geheim (<a href="${base}/datenschutz" style="color:#888888;">Datenschutz</a>).</p>
                   </td>
                 </tr>
               </table>

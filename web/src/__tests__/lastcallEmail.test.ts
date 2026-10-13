@@ -11,7 +11,7 @@ describe("Last-Call-Mail", () => {
       expect(message.text).toContain(`a=${choice}`);
     }
     expect(message.html).toContain("Dein Klick wird mit deiner E-Mail-Adresse gespeichert");
-    expect(message.text).toContain("freiwillig mehr erzählen");
+    expect(message.text).toContain("Dein Brief bleibt aber geheim");
   });
 
   it("keeps the requested photo address and quiet story links", () => {

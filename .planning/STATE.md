@@ -190,6 +190,7 @@ Recent decisions affecting current work:
 | 261012-pnq | Karten-Vergrößerung von Success-Seite auf Landing Page verschoben | 2026-10-12 | 01282e8 | [261012-pnq-karten-vergroesserung-von-success-seite-](./quick/261012-pnq-karten-vergroesserung-von-success-seite-/) |
 | 261012-o70 | Self-Service-Datenlöschung /datenloeschen: erst prüfen, dann löschen; Löschlink in Rückfrage- und Last-Call-Mail | 2026-10-12 | 083a576 | [261012-o70-datenloeschen-seite-self-service](./quick/261012-o70-datenloeschen-seite-self-service/) |
 | fast-261012 | Briefmail: Karten-Ausnahme im Datenschutz-Satz + persönlicher /datenloeschen-Link (de/en/tr) | 2026-10-12 | f5a435a | - |
+| 261013-vi5 | Förderunterlagen (Anträge, Wettbewerbe, Finanzierung) aus dem öffentlichen Repo genommen, lokal gitignored | 2026-10-13 | (this) | [261013-vi5-foerderunterlagen-aus-git](./quick/261013-vi5-foerderunterlagen-aus-git/) |
 
 ## Session Continuity
 

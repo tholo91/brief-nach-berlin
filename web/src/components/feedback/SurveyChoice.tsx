@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useRef, type KeyboardEvent } from "react";
+import { useCallback, useEffect, useRef, type KeyboardEvent, type ReactNode } from "react";
 
 function useRadioTabStop(checked: boolean) {
   const ref = useRef<HTMLButtonElement>(null);
@@ -108,12 +108,14 @@ export function SurveyChoice({
   label,
   wide = false,
   multiple = false,
+  icon,
 }: {
   checked: boolean;
   onSelect: () => void;
   label: string;
   wide?: boolean;
   multiple?: boolean;
+  icon?: ReactNode;
 }) {
   const { setRef, onKeyDown } = useRadioTabStop(multiple ? false : checked);
   return (
@@ -126,16 +128,32 @@ export function SurveyChoice({
       onClick={onSelect}
       onKeyDown={multiple ? undefined : onKeyDown}
       className={[
-        "min-h-[44px] rounded-lg border px-3 py-2.5 font-body text-sm transition-colors",
-        "cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-waldgruen",
+        "flex min-h-[44px] items-center gap-2.5 rounded-lg border px-3 py-2.5 text-left font-body text-sm",
+        "cursor-pointer motion-safe:transition-colors motion-safe:duration-200 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-waldgruen",
         wide ? "col-span-2" : "",
         checked
           ? "border-waldgruen bg-waldgruen text-creme font-semibold"
           : "border-warmgrau/20 bg-creme text-warmgrau hover:border-waldgruen/50 hover:text-waldgruen-dark",
       ].join(" ")}
     >
-      {label}
+      <span
+        aria-hidden="true"
+        className={[
+          "flex h-[18px] w-[18px] shrink-0 items-center justify-center border-[1.5px] motion-safe:transition-colors motion-safe:duration-200",
+          multiple ? "rounded-[5px]" : "rounded-full",
+          checked ? "border-creme bg-creme text-waldgruen" : "border-warmgrau/35 bg-white",
+        ].join(" ")}
+      >
+        {multiple ? (
+          <svg viewBox="0 0 16 16" className={`h-3 w-3 fill-none stroke-current motion-safe:transition-opacity motion-safe:duration-200 ${checked ? "opacity-100" : "opacity-0"}`} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M3.5 8.5l3 3 6-7" />
+          </svg>
+        ) : (
+          <span className={`h-2 w-2 rounded-full bg-current motion-safe:transition-transform motion-safe:duration-200 ${checked ? "scale-100" : "scale-0"}`} />
+        )}
+      </span>
+      {icon}
+      <span>{label}</span>
     </button>
   );
 }
-

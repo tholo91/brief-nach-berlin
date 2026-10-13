@@ -16,6 +16,20 @@ const EMPTY_ANSWERS: OutcomeAnswers = {
   issueScope: null, expectation: null, politicalSelfEfficacy: null, writeAgain: null,
 };
 
+const ICON_PATHS = {
+  letter: "M4 6h16v12H4z M4 7l8 6 8-6",
+  email: "M3 8l9-5 9 5v11H3z M3 8l9 6 9-6",
+  phone: "M5 4h4l2 5-2.5 1.5a11 11 0 005 5L15 13l5 2v4a2 2 0 01-2 2A15 15 0 013 6a2 2 0 012-2z",
+  callback: "M15 4h5v5 M20 4l-6 6 M5 4h4l2 5-2.5 1.5a11 11 0 005 5L15 13l5 2v4a2 2 0 01-2 2A15 15 0 013 6a2 2 0 012-2z",
+  meeting: "M4 6h16v14H4z M4 11h16 M8 3v4 M16 3v4",
+  acknowledgement: "M4 12l5 5L20 6",
+  none: "M12 3a9 9 0 100 18 9 9 0 000-18z M8 12h8",
+} as const;
+
+function ChoiceIcon({ name }: { name: keyof typeof ICON_PATHS }) {
+  return <svg aria-hidden="true" viewBox="0 0 24 24" className="h-[18px] w-[18px] shrink-0 fill-none stroke-current" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round"><path d={ICON_PATHS[name]} /></svg>;
+}
+
 export function RueckmeldungLinkCleanup() {
   useEffect(() => { window.history.replaceState(window.history.state, "", "/rueckmeldung"); }, []);
   return null;
@@ -163,34 +177,37 @@ export function RueckmeldungForm({ token, entryChoice }: { token: string; entryC
           <span>Ich willige ausdrücklich ein, dass Thomas meine Umfrageantworten, auch mögliche Angaben zu politischen Meinungen, zusammen mit meiner E-Mail-Adresse auswertet. Ich kann meine Einwilligung jederzeit widerrufen und meine Daten löschen lassen. <Link href="/datenschutz#rueckmeldungen" className="text-waldgruen underline">Mehr zum Datenschutz</Link></span>
         </label>
         {!processingConsent && <p className="mt-4 text-sm leading-relaxed text-warmgrau/80">Du entscheidest, ob du mehr erzählen möchtest. Du kannst diese Seite auch einfach schließen.</p>}
-        {processingConsent && <fieldset disabled={pending} className="mt-8 min-w-0 space-y-8 disabled:opacity-70">
+        {processingConsent && <fieldset disabled={pending} className="mt-8 min-w-0 space-y-9 disabled:opacity-70">
           <legend className="sr-only">Deine Erfahrungen mit dem Brief</legend>
-          <p className="text-sm text-warmgrau/70" role="status">{answered} von {questionCount} Fragen beantwortet</p>
+          <div>
+            <p className="mb-2 text-sm text-warmgrau/70" role="status">{answered} von {questionCount} Fragen beantwortet</p>
+            <div aria-hidden="true" className="h-1.5 overflow-hidden rounded-full bg-waldgruen/10"><div className="h-full rounded-full bg-waldgruen motion-safe:transition-[width] motion-safe:duration-500 motion-safe:ease-out" style={{ width: `${Math.min(100, (answered / questionCount) * 100)}%` }} /></div>
+          </div>
           {!showSentQuestion && <p className="flex items-center justify-between gap-4 rounded-lg bg-creme p-4 text-sm"><span>Du hast deinen Brief nicht abgeschickt.</span><button type="button" onClick={() => setShowSentQuestion(true)} className="min-h-11 font-semibold text-waldgruen underline">Ändern</button></p>}
-          {showSentQuestion && <Question title="Hast du deinen Brief abgeschickt?">
+          {showSentQuestion && <Question title="Hast du deinen Brief abgeschickt?" mark="abgeschickt">
             <Choices label="Brief abgeschickt" values={[["handwritten", "Von Hand geschrieben"], ["typed", "Getippt oder ausgedruckt"], ["not_sent", "Nein"]]} value={answers.letterSent} onSelect={(letterSent) => change({ letterSent }, "letter_sent")} />
           </Question>}
-          {notSent && <Question title="Was hat dich gebremst?">
+          {notSent && <Question title="Was hat dich gebremst?" mark="gebremst">
             <Choices label="Grund fürs Nichtabschicken" values={[["no_time", "Keine Zeit"], ["postage_or_address", "Briefmarke oder Adresse"], ["doubt", "Zweifel, ob es was bringt"], ["forgot", "Vergessen"], ["other", "Anderes"]]} value={answers.notSentReason} onSelect={(notSentReason) => change({ notSentReason }, "not_sent_reason")} />
           </Question>}
-          {answers.letterSent !== null && !notSent && <Question title="Kam eine Reaktion?" hint="Du kannst mehrere Antworten auswählen.">
+          {answers.letterSent !== null && !notSent && <Question title="Kam eine Reaktion?" mark="Reaktion" hint="Du kannst mehrere Antworten auswählen.">
             <div role="group" aria-label="Art der Reaktion" className="grid grid-cols-1 gap-2 sm:grid-cols-2">
-              {([["letter", "Brief"], ["email", "E-Mail"], ["phone", "Anruf"], ["callback", "Bitte um Rückruf"], ["meeting", "Termin oder Einladung"], ["acknowledgement", "Nur Eingangsbestätigung"], ["none", "Noch nichts"]] as const).map(([value, label]) => <SurveyChoice key={value} multiple checked={answers.replyChannels.includes(value)} label={label} onSelect={() => toggleChannel(value)} />)}
+              {([["letter", "Brief"], ["email", "E-Mail"], ["phone", "Anruf"], ["callback", "Bitte um Rückruf"], ["meeting", "Termin oder Einladung"], ["acknowledgement", "Nur Eingangsbestätigung"], ["none", "Noch nichts"]] as const).map(([value, label]) => <SurveyChoice key={value} multiple icon={<ChoiceIcon name={value} />} checked={answers.replyChannels.includes(value)} label={label} onSelect={() => toggleChannel(value)} />)}
             </div>
           </Question>}
-          {!notSent && hasReply && <Question title="Wurde auf dein Anliegen eingegangen?">
+          {!notSent && hasReply && <Question title="Wurde auf dein Anliegen eingegangen?" mark="Anliegen">
             <Choices label="Auf das Anliegen eingegangen" values={[["concrete", "Ja, konkret"], ["partly", "Teilweise"], ["generic", "Eher allgemein"]]} value={answers.replyAddressed} onSelect={(replyAddressed) => change({ replyAddressed }, "reply_addressed")} />
           </Question>}
-          {showScope && <Question title="Wie war dein Anliegen?">
+          {showScope && <Question title="Wie war dein Anliegen?" mark="Anliegen">
             <Choices label="Art des Anliegens" values={[["local", "Konkret vor Ort lösbar"], ["big", "Größeres politisches Thema"]]} value={answers.issueScope} onSelect={(issueScope) => change({ issueScope }, "issue_scope")} />
           </Question>}
-          {showExpectation && <Question title="Was hast du dir vorher erwartet?">
+          {showExpectation && <Question title="Was hast du dir vorher erwartet?" mark="erwartet">
             <Choices label="Erwartung vor dem Brief" values={[["answer", "Eine Antwort"], ["read", "Dass es gelesen wird"], ["said_it", "Es einmal gesagt zu haben"], ["nothing_specific", "Nichts Bestimmtes"]]} value={answers.expectation} onSelect={(expectation) => change({ expectation }, "expectation")} />
           </Question>}
-          {showEfficacy && <Question title="Wie fühlst du dich jetzt damit?" hint="Hast du durch den Brief eher das Gefühl, dich politisch einbringen zu können?">
+          {showEfficacy && <Question title="Wie fühlst du dich jetzt damit?" mark="fühlst" hint="Hast du durch den Brief eher das Gefühl, dich politisch einbringen zu können?">
             <Choices label="Politische Handlungsfähigkeit" values={POLITICAL_SELF_EFFICACY_VALUES.map((value) => [value, POLITICAL_SELF_EFFICACY_LABELS[value]])} value={answers.politicalSelfEfficacy} onSelect={(politicalSelfEfficacy) => change({ politicalSelfEfficacy }, "political_self_efficacy")} />
           </Question>}
-          {showAgain && <Question title="Würdest du wieder einen Brief schreiben?">
+          {showAgain && <Question title="Würdest du wieder einen Brief schreiben?" mark="wieder">
             <Choices label="Noch einen Brief schreiben" values={[["already_did", "Hab ich schon"], ["yes", "Ja, gern"], ["maybe", "Vielleicht"], ["rather_not", "Eher nicht"]]} value={answers.writeAgain} onSelect={(writeAgain) => change({ writeAgain }, "write_again")} />
           </Question>}
           {complete && <div className="space-y-6 border-t border-waldgruen/15 pt-6">
@@ -224,8 +241,9 @@ export function RueckmeldungForm({ token, entryChoice }: { token: string; entryC
   );
 }
 
-function Question({ title, hint, children }: { title: string; hint?: string; children: ReactNode }) {
-  return <div><h2 className="mb-3 font-typewriter text-lg font-bold leading-snug text-waldgruen-dark">{title}</h2>{hint && <p className="mb-3 text-sm leading-relaxed text-warmgrau/80">{hint}</p>}{children}</div>;
+function Question({ title, mark, hint, children }: { title: string; mark: string; hint?: string; children: ReactNode }) {
+  const [before, after] = title.split(mark);
+  return <div><h2 className="mb-3 font-typewriter text-lg font-bold leading-snug text-waldgruen-dark">{before}<span className="underline decoration-bernstein/70 decoration-[3px] underline-offset-[6px] [text-decoration-skip-ink:none]">{mark}</span>{after}</h2>{hint && <p className="mb-3 text-sm leading-relaxed text-warmgrau/80">{hint}</p>}{children}</div>;
 }
 
 function Choices<T extends string>({ label, values, value, onSelect }: {

@@ -53,9 +53,9 @@ export function buildLastcallHtml(
   const text = [
     `Moin 👋`,
     ``,
-    `Vor einer Weile hast du deinen Brief mit Brief-nach-Berlin (${base}) geschrieben. Ich bin neugierig, wie es damit gelaufen ist.`,
+    `Meine Mutter war die erste Userin von Brief-nach-Berlin. Nach ihrem Brief hat das MdB-Büro sie angerufen und sogar besucht, und ihr lokales Anliegen wurde behoben. Genial!`,
     ``,
-    `Auch wenn nichts zurückkam oder du den Brief nicht abgeschickt hast, hilft mir deine Rückmeldung.`,
+    `Vor einer Weile hast auch du deinen Brief-nach-Berlin (${base}) geschrieben. Ich bin neugierig, wie es damit gelaufen ist: Auch wenn nichts zurückkam oder du den Brief nicht abgeschickt hast, hilft mir deine Rückmeldung.`,
     ``,
     `Hat sich jemand auf deinen Brief gemeldet?`,
     `Ja, es kam etwas: ${answerUrl("ja")}`,
@@ -65,7 +65,7 @@ export function buildLastcallHtml(
     ``,
     `Lieber ausführlicher erzählen? Schick mir eine Sprachnachricht (${STORY_VOICE_URL}) oder antworte einfach auf diese Mail an ${FOUNDER_EMAIL}, gern auch mit einem Foto vom Antwortbrief.`,
     ``,
-    `Danke dir und beste Grüße aus Bremen`,
+    `Danke dir und beste Grüße aus Bremen ✌️`,
     ``,
     `Thomas`,
     `Eine Initiative von ${FOUNDER_HOMEPAGE}`,
@@ -99,8 +99,6 @@ export function buildLastcallHtml(
       .lc-title-cell { padding: 0 !important; }
       .lc-cta-cell { display: block !important; width: 100% !important; padding: 0 0 12px 0 !important; }
       .lc-cta-cell a { display: block !important; }
-      .lc-cta-quiet { padding: 0 !important; }
-      .lc-cta-table { width: 100% !important; }
       .lc-share-label { display: none !important; }
     }
   </style>
@@ -150,10 +148,10 @@ export function buildLastcallHtml(
           <tr>
             <td style="padding:8px 32px 8px;background-color:#ffffff;">
               <p style="margin:0 0 14px;font-family:Georgia,'Times New Roman',serif;font-size:15px;color:#4A4A4A;line-height:1.75;">Moin 👋</p>
-              <p style="margin:0 0 14px;font-family:Georgia,'Times New Roman',serif;font-size:15px;color:#4A4A4A;line-height:1.75;">
-                Vor einer Weile hast du deinen <a href="${base}" style="color:#2D5016;text-decoration:underline;">Brief-nach-Berlin</a> geschrieben. Ich bin neugierig, wie es damit gelaufen ist.
+              <p style="margin:0 0 14px;font-family:Georgia,'Times New Roman',serif;font-size:15px;color:#4A4A4A;line-height:1.75;">Meine Mutter war die erste Userin von Brief-nach-Berlin. Nach ihrem Brief hat das MdB-Büro sie angerufen und sogar besucht, und ihr lokales Anliegen wurde behoben. Genial!</p>
+              <p style="margin:0;font-family:Georgia,'Times New Roman',serif;font-size:15px;color:#4A4A4A;line-height:1.75;">
+                Vor einer Weile hast auch du deinen <a href="${base}" style="color:#2D5016;text-decoration:underline;">Brief-nach-Berlin</a> geschrieben. Ich bin neugierig, wie es damit gelaufen ist: Auch wenn nichts zurückkam oder du den Brief nicht abgeschickt hast, hilft mir deine Rückmeldung.
               </p>
-              <p style="margin:0;font-family:Georgia,'Times New Roman',serif;font-size:15px;color:#4A4A4A;line-height:1.75;">Auch wenn nichts zurückkam oder du den Brief nicht abgeschickt hast, hilft mir deine Rückmeldung.</p>
             </td>
           </tr>
 
@@ -164,13 +162,11 @@ export function buildLastcallHtml(
                 <tr>
                   <td bgcolor="#FAF8F5" style="background-color:#FAF8F5;border:1px solid #E0DCD7;border-radius:6px;padding:22px 20px 16px;text-align:center;">
                     <h2 style="margin:0 0 16px;font-family:Georgia,'Times New Roman',serif;font-size:16px;color:#2D5016;font-weight:bold;line-height:1.4;">Hat sich jemand auf deinen Brief gemeldet?</h2>
-                    <table class="lc-cta-table" role="presentation" cellpadding="0" cellspacing="0" align="center"><tr>
-                      <td class="lc-cta-cell" style="padding:0 6px 0 0;"><a href="${answerUrl("ja")}" style="display:inline-block;background:#2D5016;color:#fff;font-family:Georgia,'Times New Roman',serif;font-size:15px;font-weight:bold;text-decoration:none;padding:14px 18px;border-radius:6px;border:2px solid #2D5016;">😊 Ja, es kam etwas</a></td>
-                      <td class="lc-cta-cell" style="padding:0 0 0 6px;"><a href="${answerUrl("nein")}" style="display:inline-block;background:#fff;color:#2D5016;font-family:Georgia,'Times New Roman',serif;font-size:15px;font-weight:bold;text-decoration:none;padding:14px 18px;border-radius:6px;border:2px solid #2D5016;">😕 Nein, noch nichts</a></td>
+                    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="width:100%;"><tr>
+                      <td class="lc-cta-cell" width="50%" style="width:50%;padding:0 6px 0 0;"><a href="${answerUrl("ja")}" style="display:block;text-align:center;background:#2D5016;color:#fff;font-family:Georgia,'Times New Roman',serif;font-size:15px;font-weight:bold;text-decoration:none;padding:14px 18px;border-radius:6px;border:2px solid #2D5016;">😊 Ja, es kam etwas</a></td>
+                      <td class="lc-cta-cell" width="50%" style="width:50%;padding:0 0 0 6px;"><a href="${answerUrl("nein")}" style="display:block;text-align:center;background:#fff;color:#2D5016;font-family:Georgia,'Times New Roman',serif;font-size:15px;font-weight:bold;text-decoration:none;padding:14px 18px;border-radius:6px;border:2px solid #2D5016;">😕 Nein, noch nichts</a></td>
                     </tr></table>
-                    <table class="lc-cta-table" role="presentation" cellpadding="0" cellspacing="0" align="center" style="margin:12px auto 0;"><tr>
-                      <td class="lc-cta-cell lc-cta-quiet"><a href="${answerUrl("nicht")}" style="display:inline-block;background:#fff;color:#4A4A4A;font-family:Georgia,'Times New Roman',serif;font-size:14px;text-decoration:none;padding:10px 16px;border-radius:6px;border:1px solid #E0DCD7;">✉️ Ich habe meinen Brief nicht abgeschickt</a></td>
-                    </tr></table>
+                    <p style="margin:14px 0 0;font-family:Georgia,'Times New Roman',serif;font-size:14px;line-height:1.5;"><a href="${answerUrl("nicht")}" style="display:inline-block;padding:6px 4px;color:#4A4A4A;text-decoration:underline;">Ich habe meinen Brief nicht abgeschickt</a></p>
                     <p style="margin:18px 0 0;padding-top:12px;border-top:1px solid #E0DCD7;font-family:Georgia,'Times New Roman',serif;font-size:12px;color:#999999;line-height:1.5;">Dein Klick wird mit deiner E-Mail-Adresse gespeichert. Auf der nächsten Seite kannst du freiwillig mehr erzählen. <a href="${base}/datenschutz" style="color:#888888;">Datenschutz</a></p>
                   </td>
                 </tr>
@@ -185,7 +181,7 @@ export function buildLastcallHtml(
                 Lieber ausführlicher erzählen? Schick mir eine <a href="${STORY_VOICE_URL}" target="_blank" rel="noopener noreferrer" style="color:#2D5016;text-decoration:underline;">Sprachnachricht</a> oder <a href="${STORY_REPLY_MAILTO}" style="color:#2D5016;text-decoration:underline;">antworte einfach auf diese Mail</a>, gern auch mit einem Foto vom Antwortbrief.
               </p>
               <p style="margin:0 0 10px;font-family:Georgia,'Times New Roman',serif;font-size:15px;color:#4A4A4A;line-height:1.75;">
-                Danke dir und beste Grüße aus Bremen
+                Danke dir und beste Grüße aus Bremen ✌️
               </p>
               <p style="margin:0;font-family:'Caveat','Brush Script MT','Lucida Handwriting',cursive;font-size:32px;color:#1D3557;line-height:1.1;">
                 Thomas

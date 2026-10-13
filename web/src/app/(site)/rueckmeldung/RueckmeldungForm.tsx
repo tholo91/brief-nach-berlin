@@ -151,6 +151,11 @@ export function RueckmeldungForm({ token, entryChoice }: { token: string; entryC
       <h1 className="mb-4 font-typewriter text-xl font-bold text-waldgruen-dark">Deine Rückmeldung ist angekommen.</h1>
       <p className="mb-8 leading-relaxed">Du hilfst mir zu verstehen, was nach dem Brief passiert. Auch wenn keine Antwort kam.</p>
       {callOk && <p className="mb-8 text-sm">Du bist offen für ein Gespräch. Wenn ich dazu eine Rückfrage habe, melde ich mich per E-Mail bei dir.</p>}
+      <div className="mb-8 rounded-xl bg-creme px-5 py-6 text-sm leading-relaxed">
+        <p className="mb-2 font-typewriter text-base font-bold text-waldgruen-dark">Magst du noch mehr erzählen?</p>
+        <p className="mb-4">Schick mir eine Sprachnachricht oder ein Foto vom Antwortbrief an <a href="mailto:Brief-nach-Berlin@posteo.de" className="break-words text-waldgruen underline">Brief-nach-Berlin@posteo.de</a>. Decke persönliche Angaben bitte vorher ab.</p>
+        <a href={VOICE_URL} target="_blank" rel="noopener noreferrer" className="inline-flex min-h-11 items-center rounded-lg border border-waldgruen bg-white px-4 py-2 font-semibold text-waldgruen hover:bg-waldgruen hover:text-creme">Sprachnachricht aufnehmen</a>
+      </div>
       <Link href="/" className="inline-flex min-h-11 items-center rounded-xl bg-waldgruen px-6 py-3 font-semibold text-creme hover:bg-waldgruen-dark">Zur Startseite</Link>
       <p className="mt-6 text-sm"><Link href="/datenschutz#rueckmeldungen" className="text-waldgruen underline">Datenschutz und Löschung</Link></p>
     </div>

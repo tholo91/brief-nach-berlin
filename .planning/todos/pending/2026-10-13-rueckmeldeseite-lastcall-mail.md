@@ -94,3 +94,7 @@ Bewusst eigene Tabelle statt `reviews`: Sterne-Statistiken (`getReviewStats`, `/
 1. heyspeak-Prompt für die Story-Sprachnachricht ist laut Juni-Summary noch nicht eingerichtet: Thomas manuell.
 2. Spalte `reviews.full_feedback_submitted` hat keine Migration im Repo (vermutlich von Hand angelegt): eigener Mini-Task.
 3. Uncommittete Fremdänderungen im Worktree (Kampagnen-Varianten, Migration 032) nicht mitcommitten.
+
+## Umsetzung am 14.10.2026
+
+Lokaler Code vollständig umgesetzt. Siehe `.planning/quick/261013-wuq-rueckmeldeseite-und-lastcall-mail-komple/261013-wuq-SUMMARY.md`. Migration 033, Deploy, echter Handytest, Testmail und Versand bleiben bewusst manuell offen; Anleitung: `docs/lastcall-release-2026-10-14.md`. Kein Versand geplant oder gestartet.

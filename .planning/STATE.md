@@ -4,10 +4,10 @@ milestone: v1.0
 current_phase: 05
 status: verifying
 stopped_at: Completed 05-04-PLAN.md
-last_updated: "2026-10-12T16:37:50.129Z"
-last_activity: 2026-10-11
-last_activity_desc: "Completed quick task 260710-dgq: Kampagnen-Ziel-Ebene Bund/Landtag inkl. Wizard-Bindung und Mismatch-Fallback"
-state_head: 01282e8576ab6b3a304b1b73856498cdc89dcc1b
+last_updated: "2026-10-13T22:08:37.247Z"
+last_activity: 2026-10-14
+last_activity_desc: Quick 261013-wuq lokal implementiert und geprüft; manueller Release offen
+state_head: 3c49b897e05b5bf1b9b9ae6660f71809b0eca5f4
 progress:
   total_phases: 33
   completed_phases: 4
@@ -49,7 +49,7 @@ Der level-aware E-Mail-Betreff ist dagegen bereits implementiert und getestet; d
 Phase: 05 — EXECUTING
 Plan: 4 of 4
 Status: Phase complete — ready for verification
-Last activity: 2026-10-12 - Completed quick task 261012-o70: Self-Service-Datenlöschung /datenloeschen
+Last activity: 2026-10-14 - Quick 261013-wuq lokal implementiert und geprüft; manueller Release offen
 
 Progress: [███████░░░] 68%
 
@@ -191,6 +191,7 @@ Recent decisions affecting current work:
 | 261012-o70 | Self-Service-Datenlöschung /datenloeschen: erst prüfen, dann löschen; Löschlink in Rückfrage- und Last-Call-Mail | 2026-10-12 | 083a576 | [261012-o70-datenloeschen-seite-self-service](./quick/261012-o70-datenloeschen-seite-self-service/) |
 | fast-261012 | Briefmail: Karten-Ausnahme im Datenschutz-Satz + persönlicher /datenloeschen-Link (de/en/tr) | 2026-10-12 | f5a435a | - |
 | 261013-vi5 | Förderunterlagen (Anträge, Wettbewerbe, Finanzierung) aus dem öffentlichen Repo genommen, lokal gitignored | 2026-10-13 | (this) | [261013-vi5-foerderunterlagen-aus-git](./quick/261013-vi5-foerderunterlagen-aus-git/) |
+| 261013-wuq | Rückmeldeseite + Last-Call komplett lokal umgesetzt; Migration/Deploy/Versand manuell offen | 2026-10-14 | 3c49b89 | [261013-wuq-rueckmeldeseite-und-lastcall-mail-komple](./quick/261013-wuq-rueckmeldeseite-und-lastcall-mail-komple/) |
 
 ## Session Continuity
 

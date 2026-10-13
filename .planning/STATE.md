@@ -4,10 +4,10 @@ milestone: v1.0
 current_phase: 05
 status: verifying
 stopped_at: Completed 05-04-PLAN.md
-last_updated: "2026-10-13T22:08:37.247Z"
+last_updated: "2026-10-13T22:53:51.161Z"
 last_activity: 2026-10-14
 last_activity_desc: Quick 261013-wuq lokal implementiert und geprüft; manueller Release offen
-state_head: 3c49b897e05b5bf1b9b9ae6660f71809b0eca5f4
+state_head: 62a5e9b20ab64c99a28917636216097be46fb54c
 progress:
   total_phases: 33
   completed_phases: 4
@@ -192,6 +192,7 @@ Recent decisions affecting current work:
 | fast-261012 | Briefmail: Karten-Ausnahme im Datenschutz-Satz + persönlicher /datenloeschen-Link (de/en/tr) | 2026-10-12 | f5a435a | - |
 | 261013-vi5 | Förderunterlagen (Anträge, Wettbewerbe, Finanzierung) aus dem öffentlichen Repo genommen, lokal gitignored | 2026-10-13 | (this) | [261013-vi5-foerderunterlagen-aus-git](./quick/261013-vi5-foerderunterlagen-aus-git/) |
 | 261013-wuq | Rückmeldeseite + Last-Call komplett lokal umgesetzt; Migration/Deploy/Versand manuell offen | 2026-10-14 | 3c49b89 | [261013-wuq-rueckmeldeseite-und-lastcall-mail-komple](./quick/261013-wuq-rueckmeldeseite-und-lastcall-mail-komple/) |
+| 67 | Last-Call-Mail aufgeräumt + Rückmeldeseite poliert | 2026-10-14 | 62a5e9b | — |
 
 ## Session Continuity
 

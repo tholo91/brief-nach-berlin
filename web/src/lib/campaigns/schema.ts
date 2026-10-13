@@ -274,6 +274,8 @@ export type Campaign = {
   creatorEmail: string;
   title: string;
   issueText: string;
+  issueTextAlternatives?: string[];
+  issueTextAlternativesBase?: string | null;
   description: string | null;
   creatorName: string | null;
   externalUrl: string | null;
@@ -331,6 +333,8 @@ export type CampaignRevision = {
   snapshotReason: CampaignRevisionReason;
   title: string;
   issueText: string;
+  issueTextAlternatives?: string[];
+  issueTextAlternativesBase?: string | null;
   description: string | null;
   creatorName: string | null;
   externalUrl: string | null;

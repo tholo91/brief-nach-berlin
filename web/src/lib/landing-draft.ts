@@ -34,7 +34,35 @@ export function writeLandingDraft(text: string, campaignSlug?: string): void {
 export function clearLandingDraft(campaignSlug?: string): void {
   try {
     sessionStorage.removeItem(draftKey(campaignSlug));
+    if (campaignSlug) sessionStorage.removeItem(`${draftKey(campaignSlug)}:selection`);
   } catch {
     // ignorieren
+  }
+}
+
+export function readCampaignIssueSelection(slug: string, issueTexts: string[]): string {
+  try {
+    const raw = sessionStorage.getItem(`${draftKey(slug)}:selection`);
+    if (!raw) return "";
+    const saved = JSON.parse(raw);
+    if (
+      saved?.signature === JSON.stringify(issueTexts)
+      && typeof saved.text === "string"
+      && issueTexts.includes(saved.text)
+    ) return saved.text;
+  } catch {
+    // Wie Entwürfe ist die Auswahl nur eine Verbesserung pro Browser-Tab.
+  }
+  return "";
+}
+
+export function writeCampaignIssueSelection(slug: string, issueTexts: string[], text: string): void {
+  try {
+    sessionStorage.setItem(`${draftKey(slug)}:selection`, JSON.stringify({
+      signature: JSON.stringify(issueTexts),
+      text,
+    }));
+  } catch {
+    // Ohne Tab-Speicher bleibt die Auswahl im Komponenten-State erhalten.
   }
 }

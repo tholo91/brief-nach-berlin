@@ -80,6 +80,11 @@ Plans:
 
 ### Phase 999.37: Kampagnen: persönlicher Aufhänger im Wizard (BACKLOG)
 
+**Ergänzung (2026-10-12):** Für die unmittelbare Variation wird zuerst die
+leichteste Lösung mit 1–3 manuell kuratierten Anliegen umgesetzt. Die in dieser
+Story beschriebene persönliche Eingabe bleibt ein separates späteres Feature;
+die ursprüngliche Spezifikation bleibt als Kontext bestehen.
+
 **Goal:** Kampagnenbriefe sollen eine persönliche Note bekommen. Viele
 Besucher:innen schicken die Vorlage unverändert ab (Annahme, das Tracking in
 diesem Item prüft das). Ein optionales Feld mit kampagnenspezifischen
@@ -140,6 +145,14 @@ Plans:
 - [ ] `personalNote` in Request, Prompt und Debug-Payload
 
 ### Phase 999.38: Kampagnen: Argument-Variation pro Brief (BACKLOG)
+
+**Ergänzung (2026-10-12):** Der aktuelle Backlog-Ansatz mit KI-Extraktion und
+Argument-Auswahl pro Brief wird vorerst zurückgestellt. Zuerst kommt die
+leichteste Lösung: 1–3 manuell kuratierte vollständige Anliegen je Kampagne,
+aus denen die Laufzeit zufällig auswählt. Die ursprüngliche Spezifikation
+bleibt unverändert als späterer Kontext erhalten; für die kuratierte Lösung
+besteht keine Abhängigkeit von 999.37. Pflegehinweise stehen in
+`web/supabase/campaign-issue-alternatives.md`.
 
 **Goal:** Briefe einer Kampagne sollen nicht alle dieselben Argumente in
 derselben Reihenfolge bringen. Jeder Brief enthält das Hauptanliegen und eine

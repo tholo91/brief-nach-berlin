@@ -4,6 +4,7 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 import { getServiceRoleClient } from "@/lib/supabase/server";
 import { isCampaignEnded } from "./endDate";
 import { DEFAULT_CAMPAIGN_MILESTONES, normalizeMilestones } from "./milestones";
+import { campaignIssueAlternativesSchema } from "./issueVariants";
 import {
   createCampaignSchema,
   compactCampaignSlug,
@@ -32,6 +33,8 @@ type CampaignRow = {
   creator_email: string;
   title: string;
   issue_text: string;
+  issue_text_alternatives?: unknown;
+  issue_text_alternatives_base?: string | null;
   description: string | null;
   creator_name: string | null;
   external_url: string | null;
@@ -67,6 +70,8 @@ type CampaignRevisionRow = {
   snapshot_reason: CampaignRevisionReason;
   title: string;
   issue_text: string;
+  issue_text_alternatives?: unknown;
+  issue_text_alternatives_base?: string | null;
   description: string | null;
   creator_name: string | null;
   external_url: string | null;
@@ -138,12 +143,15 @@ function client(db?: RepositoryClient): RepositoryClient {
 }
 
 function mapCampaign(row: CampaignRow): Campaign {
+  const alternatives = campaignIssueAlternativesSchema.safeParse(row.issue_text_alternatives ?? []);
   return {
     id: row.id,
     slug: row.slug,
     creatorEmail: row.creator_email,
     title: row.title,
     issueText: row.issue_text,
+    issueTextAlternatives: alternatives.success ? alternatives.data : [],
+    issueTextAlternativesBase: row.issue_text_alternatives_base ?? null,
     description: row.description,
     creatorName: row.creator_name,
     externalUrl: row.external_url,
@@ -173,12 +181,15 @@ function mapCampaign(row: CampaignRow): Campaign {
 
 function mapRevision(row: CampaignRevisionRow): CampaignRevision {
   const target = resolveCampaignTarget(row);
+  const alternatives = campaignIssueAlternativesSchema.safeParse(row.issue_text_alternatives ?? []);
   return {
     id: row.id,
     campaignId: row.campaign_id,
     snapshotReason: row.snapshot_reason,
     title: row.title,
     issueText: row.issue_text,
+    issueTextAlternatives: alternatives.success ? alternatives.data : [],
+    issueTextAlternativesBase: row.issue_text_alternatives_base ?? null,
     description: row.description,
     creatorName: row.creator_name,
     externalUrl: row.external_url,
@@ -623,6 +634,8 @@ async function createCampaignRevisionFromCampaign(
       snapshot_reason: reason,
       title: campaign.title,
       issue_text: campaign.issueText,
+      issue_text_alternatives: campaign.issueTextAlternatives ?? [],
+      issue_text_alternatives_base: campaign.issueTextAlternativesBase ?? null,
       description: campaign.description,
       creator_name: campaign.creatorName,
       external_url: campaign.externalUrl,
@@ -729,6 +742,8 @@ export async function publishCampaignEdits(
       snapshot_reason: "edited",
       title: next.title,
       issue_text: next.issueText,
+      issue_text_alternatives: campaign.issueTextAlternatives ?? [],
+      issue_text_alternatives_base: campaign.issueTextAlternativesBase ?? null,
       description: next.description,
       creator_name: next.creatorName,
       external_url: next.externalUrl,

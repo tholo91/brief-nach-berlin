@@ -13,6 +13,8 @@ type PublicCampaign = Pick<
   | "slug"
   | "title"
   | "issueText"
+  | "issueTextAlternatives"
+  | "issueTextAlternativesBase"
   | "description"
   | "creatorName"
   | "externalUrl"
@@ -205,6 +207,8 @@ export function CampaignHero({ campaign }: { campaign: PublicCampaign }) {
             slug={campaign.slug}
             title={campaign.title}
             initialIssueText={campaign.issueText}
+            issueTextAlternatives={campaign.issueTextAlternatives}
+            issueTextAlternativesBase={campaign.issueTextAlternativesBase}
             creatorName={campaign.creatorName}
             externalUrl={campaign.externalUrl}
             logoPath={campaign.logoPath}

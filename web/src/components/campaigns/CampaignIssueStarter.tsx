@@ -3,8 +3,14 @@
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { WIZARD_PATH } from "@/lib/config";
-import { readLandingDraft, writeLandingDraft } from "@/lib/landing-draft";
+import {
+  readCampaignIssueSelection,
+  readLandingDraft,
+  writeCampaignIssueSelection,
+  writeLandingDraft,
+} from "@/lib/landing-draft";
 import { saveHandoff } from "@/lib/wizard-handoff";
+import { getCampaignIssueTexts, restoreCampaignIssueDraft } from "@/lib/campaigns/issueVariants";
 
 const MIN_CHARS = 50;
 const useIsoLayoutEffect = typeof window !== "undefined" ? useLayoutEffect : useEffect;
@@ -32,6 +38,8 @@ type CampaignIssueStarterProps = {
   slug: string;
   title: string;
   initialIssueText: string;
+  issueTextAlternatives?: string[];
+  issueTextAlternativesBase?: string | null;
   creatorName?: string | null;
   externalUrl?: string | null;
   logoPath?: string | null;
@@ -43,6 +51,8 @@ export function CampaignIssueStarter({
   slug,
   title,
   initialIssueText,
+  issueTextAlternatives,
+  issueTextAlternativesBase,
   creatorName,
   externalUrl,
   logoPath,
@@ -51,7 +61,9 @@ export function CampaignIssueStarter({
 }: CampaignIssueStarterProps) {
   const router = useRouter();
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const initializedSlug = useRef<string | null>(null);
   const [issueText, setIssueText] = useState(initialIssueText);
+  const [ready, setReady] = useState(false);
   const [showHint, setShowHint] = useState(false);
   const trimmed = issueText.trim();
   const tooShort = trimmed.length < MIN_CHARS;
@@ -61,9 +73,21 @@ export function CampaignIssueStarter({
   }, [router]);
 
   useIsoLayoutEffect(() => {
-    const saved = readLandingDraft(slug);
-    if (saved) setIssueText(saved);
-  }, [slug]);
+    if (initializedSlug.current === slug) return;
+    initializedSlug.current = slug;
+    const source = {
+      issueText: initialIssueText,
+      issueTextAlternatives,
+      issueTextAlternativesBase,
+    };
+    const texts = getCampaignIssueTexts(source);
+    const ownDraft = readLandingDraft(slug);
+    const saved = ownDraft || readCampaignIssueSelection(slug, texts);
+    const restored = restoreCampaignIssueDraft(source, saved);
+    setIssueText(restored);
+    if (!ownDraft) writeCampaignIssueSelection(slug, texts, restored);
+    setReady(true);
+  }, [initialIssueText, issueTextAlternatives, issueTextAlternativesBase, slug]);
 
   useIsoLayoutEffect(() => {
     const el = textareaRef.current;
@@ -118,6 +142,7 @@ export function CampaignIssueStarter({
         ref={textareaRef}
         id="campaign-issue"
         value={issueText}
+        readOnly={!ready}
         onChange={(event) => {
           setIssueText(event.target.value);
           writeLandingDraft(event.target.value, slug);
@@ -138,6 +163,7 @@ export function CampaignIssueStarter({
         <button
           type="button"
           onClick={continueToWizard}
+          disabled={!ready}
           className="inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-lg bg-waldgruen px-5 py-3 font-body text-base font-semibold text-creme shadow-lg shadow-waldgruen/20 transition-colors hover:bg-waldgruen-dark active:scale-[0.98] sm:w-auto sm:shrink-0"
         >
           <span>Brief in 2 Minuten erstellen</span>

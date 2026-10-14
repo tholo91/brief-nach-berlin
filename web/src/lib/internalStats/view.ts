@@ -156,6 +156,17 @@ export function shareParts(
   };
 }
 
+export const SHARE_PERCENT_MIN_BASE = 30;
+
+/** Unter 30 Antworten absolute Zahlen ("2 von 8"), ab 30 Prozent mit n. */
+export function formatShare(count: number, base: number): string {
+  if (base < SHARE_PERCENT_MIN_BASE) {
+    return `${formatNumber(count)} von ${formatNumber(base)}`;
+  }
+  const { shareText } = shareParts(count, base);
+  return `${shareText} % (n = ${formatNumber(base)})`;
+}
+
 const MONTH_SHORT = [
   "Jan", "Feb", "Mär", "Apr", "Mai", "Jun",
   "Jul", "Aug", "Sep", "Okt", "Nov", "Dez",

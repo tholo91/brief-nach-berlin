@@ -10,12 +10,20 @@ import {
   type InternalStats,
   type StatsFilter,
 } from "./aggregate";
+import {
+  aggregateOutcomes,
+  OUTCOME_ROW_COLUMNS,
+  type InternalOutcomeRow,
+  type OutcomeRoundStats,
+} from "./outcomes";
+import { OUTCOME_ROUNDS, testEmailExclusionList } from "@/lib/rueckmeldung/cohort";
 
 type InternalStatsRows = {
   reviews: InternalReviewRow[];
   signals: InternalLetterSignalRow[];
   letterCount: number;
   campaignLabels: Record<string, string>;
+  outcomes: InternalOutcomeRow[];
 };
 
 export async function getInternalStats(
@@ -31,14 +39,22 @@ export async function getInternalStats(
  */
 export async function getInternalStatsWithBaseline(
   filter: StatsFilter = DEFAULT_STATS_FILTER,
-): Promise<{ stats: InternalStats; baseline: InternalStats | null }> {
+): Promise<{
+  stats: InternalStats;
+  baseline: InternalStats | null;
+  outcomes: OutcomeRoundStats[];
+}> {
   const rows = await fetchInternalStatsRows();
   const fetchedAt = new Date().toISOString();
   const stats = aggregateRows(rows, filter, fetchedAt);
   const baseline = isNarrowingFilter(filter)
     ? aggregateRows(rows, baselineFilter(filter), fetchedAt)
     : null;
-  return { stats, baseline };
+  // Rückmeldungen sind ungefiltert: der Filter der Seite wirkt dort nicht.
+  const outcomes = OUTCOME_ROUNDS.map((round) =>
+    aggregateOutcomes(rows.outcomes, rows.reviews, round, fetchedAt),
+  );
+  return { stats, baseline, outcomes };
 }
 
 function aggregateRows(
@@ -58,8 +74,13 @@ function aggregateRows(
 
 async function fetchInternalStatsRows(): Promise<InternalStatsRows> {
   const client = getServiceRoleClient();
-  const [reviewsResult, signalsResult, counterResult, campaignsResult] =
-    await Promise.all([
+  const [
+    reviewsResult,
+    signalsResult,
+    counterResult,
+    campaignsResult,
+    outcomesResult,
+  ] = await Promise.all([
       client
         .from("reviews")
         .select(
@@ -81,6 +102,12 @@ async function fetchInternalStatsRows(): Promise<InternalStatsRows> {
         .select("slug,title")
         .eq("status", "active")
         .eq("moderation_status", "approved"),
+      // Die E-Mail-Spalte wird nur zum Ausschließen der Testadressen gefiltert, nie gelesen.
+      client
+        .from("letter_outcomes")
+        .select(OUTCOME_ROW_COLUMNS.join(","))
+        .in("cohort", OUTCOME_ROUNDS.map((round) => round.cohort))
+        .not("email", "in", testEmailExclusionList()),
     ]);
 
   if (reviewsResult.error) {
@@ -98,6 +125,10 @@ async function fetchInternalStatsRows(): Promise<InternalStatsRows> {
     );
   }
 
+  if (outcomesResult.error) {
+    throw new Error(`Internal outcome stats failed: ${outcomesResult.error.message}`);
+  }
+
   const campaignLabels: Record<string, string> = {};
   for (const campaign of campaignsResult.data ?? []) {
     if (campaign.slug && campaign.title) {
@@ -110,5 +141,6 @@ async function fetchInternalStatsRows(): Promise<InternalStatsRows> {
     signals: (signalsResult.data ?? []) as InternalLetterSignalRow[],
     letterCount: counterResult.data?.value ?? 0,
     campaignLabels,
+    outcomes: (outcomesResult.data ?? []) as unknown as InternalOutcomeRow[],
   };
 }

@@ -9,6 +9,42 @@ export const LASTCALL_TEST_EMAILS = new Set([
   "thomas_lorenz@posteo.de",
 ]);
 
+// Last-Call-Mail vom 14.10.2026, 09:07 Europe/Berlin (07:07 UTC).
+export const LASTCALL_SENT_AT = "2026-10-14T07:07:00.000Z";
+export const LASTCALL_SENT_COUNT = 335;
+// Fester Wert aus dem Brevo-Bericht, nicht aus der Datenbank gelesen.
+export const LASTCALL_DELIVERED_COUNT = 322;
+export const LASTCALL_LETTER_WINDOW_LABEL = "April bis 12.08.2026";
+
+export type OutcomeRound = {
+  cohort: string;
+  label: string;
+  sentAt: string;
+  sentCount: number;
+  deliveredCount: number;
+  letterWindowLabel: string;
+  reviewCutoffUtc: string;
+};
+
+// Eine weitere Runde (z. B. lastcall_2027_01) braucht nur einen Eintrag mehr.
+export const OUTCOME_ROUNDS: readonly OutcomeRound[] = [
+  {
+    cohort: LASTCALL_COHORT,
+    label: "Runde Oktober 2026",
+    sentAt: LASTCALL_SENT_AT,
+    sentCount: LASTCALL_SENT_COUNT,
+    deliveredCount: LASTCALL_DELIVERED_COUNT,
+    letterWindowLabel: LASTCALL_LETTER_WINDOW_LABEL,
+    reviewCutoffUtc: LASTCALL_CUTOFF_UTC,
+  },
+];
+
+/** PostgREST-In-Liste ("a","b") aller Testadressen für `.not("email", "in", ...)`. */
+export function testEmailExclusionList(): string {
+  const quoted = [...LASTCALL_TEST_EMAILS].sort().map((email) => `"${email}"`);
+  return `(${quoted.join(",")})`;
+}
+
 export function normalizeEmail(value: unknown): string | null {
   if (typeof value !== "string") return null;
   const email = value.trim().toLowerCase();

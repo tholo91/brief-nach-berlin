@@ -5,8 +5,30 @@ import { DEFAULT_CAMPAIGN_MILESTONES, normalizeMilestones } from "./milestones";
 import type { Campaign } from "./schema";
 
 // Allowlists for the creator feedback form. The server validates against these
-// (z.enum), the client renders chips from them, migration 029 mirrors the slugs.
+// (z.enum), the client renders chips from them, migrations 029 and 034 mirror the slugs.
 // Labels are drafts that Thomas signs off.
+
+export const CREATOR_SURVEY_EXPECTATIONS = [
+  { slug: "mehr", label: "Mehr als erwartet" },
+  { slug: "so_viele", label: "So viele wie erwartet" },
+  { slug: "weniger", label: "Weniger als erwartet" },
+] as const;
+
+export const CREATOR_SURVEY_OUTCOMES = [
+  { slug: "medienbericht", label: "Medienbericht" },
+  { slug: "antwort_politik", label: "Antwort aus der Politik" },
+  { slug: "politische_entscheidung", label: "Politische Entscheidung" },
+  { slug: "noch_nichts", label: "Noch nichts" },
+  { slug: "zu_frueh", label: "Noch zu früh" },
+] as const;
+
+// "Noch nichts" and "Noch zu früh" never stand next to a reported result.
+export const CREATOR_SURVEY_OUTCOMES_EXCLUSIVE = ["noch_nichts", "zu_frueh"] as const;
+
+export const CREATOR_SURVEY_QUOTE_MODES = [
+  { slug: "named", label: "Mit Logo und Name" },
+  { slug: "anonymous", label: "Anonym" },
+] as const;
 
 export const CREATOR_SURVEY_REASONS = [
   { slug: "kostenlos_ohne_account", label: "Kostenlos und ohne Account" },
@@ -38,6 +60,11 @@ export const CREATOR_SURVEY_STATEMENTS = [
     key: "handschriftWirkt",
     column: "statement_handschrift_wirkt",
     label: "Das Schreiben per Hand hat bei den Leuten etwas bewegt.",
+  },
+  {
+    key: "todoHandeln",
+    column: "statement_todo_handeln",
+    label: "Ein konkretes To-Do hat unsere Leute ins Handeln gebracht.",
   },
   {
     key: "schnellEingerichtet",
@@ -72,12 +99,19 @@ export const CREATOR_SURVEY_HELP_OFFERS = [
 ] as const;
 
 export const CREATOR_SURVEY_QUOTE_MAX = 300;
+export const CREATOR_SURVEY_OUTCOMES_NOTE_MAX = 300;
+export const CREATOR_SURVEY_ANONYMOUS_LABEL_MAX = 80;
+export const CREATOR_SURVEY_ANONYMOUS_FALLBACK = "eine Initiative";
+export const CREATOR_SURVEY_ANONYMOUS_PLACEHOLDER = "eine Umwelt-NGO aus NRW";
 export const CREATOR_SURVEY_MIN_LETTERS = 500;
 export const CREATOR_SURVEY_MIN_LETTERS_ENDED = 10;
 
 // Banner for the feedback block in the mails. Set once Thomas has a PNG/JPG.
 export const CREATOR_SURVEY_BANNER_PATH: string | null = null;
 
+export type CreatorSurveyExpectationSlug = (typeof CREATOR_SURVEY_EXPECTATIONS)[number]["slug"];
+export type CreatorSurveyOutcomeSlug = (typeof CREATOR_SURVEY_OUTCOMES)[number]["slug"];
+export type CreatorSurveyQuoteMode = (typeof CREATOR_SURVEY_QUOTE_MODES)[number]["slug"];
 export type CreatorSurveyReasonSlug = (typeof CREATOR_SURVEY_REASONS)[number]["slug"];
 export type CreatorSurveyConcernSlug = (typeof CREATOR_SURVEY_CONCERNS)[number]["slug"];
 export type CreatorSurveyStatementKey = (typeof CREATOR_SURVEY_STATEMENTS)[number]["key"];
@@ -93,6 +127,11 @@ export type CreatorSurveyAnswers = {
   consentQuote: boolean;
   consentAggregate: boolean;
   helpOffers: CreatorSurveyHelpOfferSlug[];
+  expectation: CreatorSurveyExpectationSlug | null;
+  outcomes: CreatorSurveyOutcomeSlug[];
+  outcomesNote: string | null;
+  quoteMode: CreatorSurveyQuoteMode | null;
+  anonymousLabel: string | null;
 };
 
 export type CreatorSurveyStatus = "open" | "submitted" | "unavailable";
@@ -115,6 +154,24 @@ const statementAnswerSchema = z.enum(
     ...CreatorSurveyStatementAnswer[],
   ],
 );
+const expectationSchema = z.enum(
+  CREATOR_SURVEY_EXPECTATIONS.map((option) => option.slug) as [
+    CreatorSurveyExpectationSlug,
+    ...CreatorSurveyExpectationSlug[],
+  ],
+);
+const outcomeSchema = z.enum(
+  CREATOR_SURVEY_OUTCOMES.map((option) => option.slug) as [
+    CreatorSurveyOutcomeSlug,
+    ...CreatorSurveyOutcomeSlug[],
+  ],
+);
+const quoteModeSchema = z.enum(
+  CREATOR_SURVEY_QUOTE_MODES.map((option) => option.slug) as [
+    CreatorSurveyQuoteMode,
+    ...CreatorSurveyQuoteMode[],
+  ],
+);
 const helpOfferSchema = z.enum(
   CREATOR_SURVEY_HELP_OFFERS.map((option) => option.slug) as [
     CreatorSurveyHelpOfferSlug,
@@ -130,6 +187,7 @@ export const creatorSurveyInputSchema = z
     statements: z.object({
       einfacherEinstieg: statementAnswerSchema.nullable(),
       handschriftWirkt: statementAnswerSchema.nullable(),
+      todoHandeln: statementAnswerSchema.nullable(),
       schnellEingerichtet: statementAnswerSchema.nullable(),
       wiederKampagne: statementAnswerSchema.nullable(),
     }),
@@ -137,12 +195,30 @@ export const creatorSurveyInputSchema = z
     consentQuote: z.boolean(),
     consentAggregate: z.boolean(),
     helpOffers: z.array(helpOfferSchema).max(CREATOR_SURVEY_HELP_OFFERS.length),
+    expectation: expectationSchema.nullish(),
+    outcomes: z.array(outcomeSchema).max(CREATOR_SURVEY_OUTCOMES.length),
+    outcomesNote: z.string().trim().max(CREATOR_SURVEY_OUTCOMES_NOTE_MAX).nullish(),
+    quoteMode: quoteModeSchema.nullish(),
+    anonymousLabel: z.string().trim().max(CREATOR_SURVEY_ANONYMOUS_LABEL_MAX).nullish(),
   })
   .refine(
     (value) =>
       !value.concerns.includes(CREATOR_SURVEY_NO_CONCERN) || value.concerns.length === 1,
     { message: "keine schließt andere Bedenken aus", path: ["concerns"] },
-  );
+  )
+  .refine(
+    (value) =>
+      value.outcomes.length <= 1 ||
+      !value.outcomes.some((slug) =>
+        (CREATOR_SURVEY_OUTCOMES_EXCLUSIVE as readonly string[]).includes(slug),
+      ),
+    { message: "noch nichts und noch zu früh stehen allein", path: ["outcomes"] },
+  )
+  // The scope of the quote consent is always explicit, never defaulted to named.
+  .refine((value) => !value.consentQuote || Boolean(value.quoteMode), {
+    message: "Freigabe braucht einen ausdrücklichen Modus",
+    path: ["quoteMode"],
+  });
 
 export type CreatorSurveyInput = z.infer<typeof creatorSurveyInputSchema>;
 
@@ -156,19 +232,31 @@ function inListOrder<T extends string>(
 
 export function normalizeCreatorSurvey(parsed: CreatorSurveyInput): CreatorSurveyAnswers {
   const quote = parsed.quote?.trim() ? parsed.quote.trim() : null;
+  const consentQuote = parsed.consentQuote && quote !== null;
+  const quoteMode = consentQuote ? (parsed.quoteMode ?? null) : null;
+  const anonymousLabel =
+    quoteMode === "anonymous" && parsed.anonymousLabel?.trim()
+      ? parsed.anonymousLabel.trim()
+      : null;
   return {
     reasons: inListOrder(CREATOR_SURVEY_REASONS, parsed.reasons),
     concerns: inListOrder(CREATOR_SURVEY_CONCERNS, parsed.concerns),
     statements: {
       einfacherEinstieg: parsed.statements.einfacherEinstieg,
       handschriftWirkt: parsed.statements.handschriftWirkt,
+      todoHandeln: parsed.statements.todoHandeln,
       schnellEingerichtet: parsed.statements.schnellEingerichtet,
       wiederKampagne: parsed.statements.wiederKampagne,
     },
     quote,
-    consentQuote: parsed.consentQuote && quote !== null,
+    consentQuote,
     consentAggregate: parsed.consentAggregate,
     helpOffers: inListOrder(CREATOR_SURVEY_HELP_OFFERS, parsed.helpOffers),
+    expectation: parsed.expectation ?? null,
+    outcomes: inListOrder(CREATOR_SURVEY_OUTCOMES, parsed.outcomes),
+    outcomesNote: parsed.outcomesNote?.trim() ? parsed.outcomesNote.trim() : null,
+    quoteMode,
+    anonymousLabel,
   };
 }
 
@@ -179,6 +267,29 @@ export function toggleConcern(
   if (current.includes(slug)) return current.filter((entry) => entry !== slug);
   if (slug === CREATOR_SURVEY_NO_CONCERN) return [CREATOR_SURVEY_NO_CONCERN];
   return [...current.filter((entry) => entry !== CREATOR_SURVEY_NO_CONCERN), slug];
+}
+
+// Picking "noch nichts" or "noch zu früh" replaces everything, picking a result
+// drops both of them.
+export function toggleOutcome(
+  current: readonly CreatorSurveyOutcomeSlug[],
+  slug: CreatorSurveyOutcomeSlug,
+): CreatorSurveyOutcomeSlug[] {
+  const exclusive: readonly string[] = CREATOR_SURVEY_OUTCOMES_EXCLUSIVE;
+  if (current.includes(slug)) return current.filter((entry) => entry !== slug);
+  if (exclusive.includes(slug)) return [slug];
+  return [...current.filter((entry) => !exclusive.includes(entry)), slug];
+}
+
+// Who the released quote is attributed to on the public site.
+export function creatorSurveyQuoteAttribution(
+  answers: Pick<CreatorSurveyAnswers, "quoteMode" | "anonymousLabel">,
+  displayName: string,
+): string {
+  if (answers.quoteMode === "anonymous") {
+    return answers.anonymousLabel?.trim() || CREATOR_SURVEY_ANONYMOUS_FALLBACK;
+  }
+  return displayName;
 }
 
 export function creatorSurveyAnswersChanged(
@@ -195,6 +306,11 @@ export function creatorSurveyAnswersChanged(
       value.consentQuote,
       value.consentAggregate,
       value.helpOffers,
+      value.expectation,
+      value.outcomes,
+      value.outcomesNote,
+      value.quoteMode,
+      value.anonymousLabel,
     ]);
   return pick(previous) !== pick(next);
 }
@@ -209,6 +325,8 @@ export function resolveConsentQuoteAt(
     previous &&
     previous.consentQuote &&
     previous.quote === next.quote &&
+    previous.quoteMode === next.quoteMode &&
+    previous.anonymousLabel === next.anonymousLabel &&
     previous.consentQuoteAt
   ) {
     return previous.consentQuoteAt;

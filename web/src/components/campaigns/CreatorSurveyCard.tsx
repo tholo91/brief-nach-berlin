@@ -19,11 +19,11 @@ export function CreatorSurveyCard({ status }: { status: "open" | "submitted" }) 
               id="creator-survey-heading"
               className="text-balance font-typewriter text-lg font-bold leading-snug text-waldgruen-dark md:text-xl"
             >
-              Hast du 90 Sekunden für mich?
+              Hast du 1 Minute für mich?
             </h2>
             <p className="mt-3 max-w-2xl font-body text-sm leading-relaxed text-warmgrau/80 md:text-base">
-              Erzähl mir kurz, wie eure Kampagne gelaufen ist. Deine Antworten helfen mir, Brief
-              nach Berlin besser zu machen und anderen Initiativen den Start leichter.
+              Erzähl mir kurz, wie eure Kampagne gelaufen ist. Deine Antworten helfen mir, Brief-nach-Berlin
+              besser zu machen und anderen Initiativen den Start leichter.
             </p>
           </div>
           <Link

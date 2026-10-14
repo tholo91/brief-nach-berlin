@@ -2,12 +2,18 @@ import { readFileSync } from "node:fs";
 import path from "node:path";
 import { APP_URL } from "@/lib/config";
 import {
+  CREATOR_SURVEY_ANONYMOUS_FALLBACK,
   CREATOR_SURVEY_CONCERNS,
+  CREATOR_SURVEY_EXPECTATIONS,
   CREATOR_SURVEY_HELP_OFFERS,
+  CREATOR_SURVEY_OUTCOMES,
+  CREATOR_SURVEY_QUOTE_MODES,
   CREATOR_SURVEY_REASONS,
   CREATOR_SURVEY_STATEMENT_ANSWERS,
+  CREATOR_SURVEY_STATEMENTS,
   creatorSurveyAnswersChanged,
   creatorSurveyInputSchema,
+  creatorSurveyQuoteAttribution,
   creatorSurveyUrl,
   isCreatorSurveyEligible,
   isCreatorSurveyMilestone,
@@ -16,6 +22,7 @@ import {
   resolveConsentQuoteAt,
   resolveManageJumpPath,
   toggleConcern,
+  toggleOutcome,
   type CreatorSurveyAnswers,
 } from "@/lib/campaigns/creatorSurvey";
 
@@ -39,6 +46,7 @@ const emptyStatements = {
   handschriftWirkt: null,
   schnellEingerichtet: null,
   wiederKampagne: null,
+  todoHandeln: null,
 };
 
 function answers(overrides: Partial<CreatorSurveyAnswers> = {}): CreatorSurveyAnswers {
@@ -50,6 +58,11 @@ function answers(overrides: Partial<CreatorSurveyAnswers> = {}): CreatorSurveyAn
     consentQuote: false,
     consentAggregate: false,
     helpOffers: [],
+    expectation: null,
+    outcomes: [],
+    outcomesNote: null,
+    quoteMode: null,
+    anonymousLabel: null,
     ...overrides,
   };
 }
@@ -63,6 +76,11 @@ function input(overrides: Record<string, unknown> = {}) {
     consentQuote: false,
     consentAggregate: false,
     helpOffers: [],
+    expectation: null,
+    outcomes: [],
+    outcomesNote: null,
+    quoteMode: null,
+    anonymousLabel: null,
     ...overrides,
   };
 }
@@ -148,6 +166,55 @@ describe("toggleConcern", () => {
   });
 });
 
+describe("toggleOutcome", () => {
+  it("lets noch_nichts and zu_frueh replace everything else", () => {
+    expect(toggleOutcome(["medienbericht", "antwort_politik"], "noch_nichts")).toEqual([
+      "noch_nichts",
+    ]);
+    expect(toggleOutcome(["medienbericht"], "zu_frueh")).toEqual(["zu_frueh"]);
+    expect(toggleOutcome(["noch_nichts"], "zu_frueh")).toEqual(["zu_frueh"]);
+  });
+
+  it("drops both exclusive answers when a positive outcome is picked", () => {
+    expect(toggleOutcome(["noch_nichts"], "medienbericht")).toEqual(["medienbericht"]);
+    expect(toggleOutcome(["zu_frueh"], "antwort_politik")).toEqual(["antwort_politik"]);
+  });
+
+  it("removes an already selected slug and adds next to existing ones", () => {
+    expect(toggleOutcome(["medienbericht", "antwort_politik"], "medienbericht")).toEqual([
+      "antwort_politik",
+    ]);
+    expect(toggleOutcome(["noch_nichts"], "noch_nichts")).toEqual([]);
+    expect(toggleOutcome(["medienbericht"], "antwort_politik")).toEqual([
+      "medienbericht",
+      "antwort_politik",
+    ]);
+  });
+});
+
+describe("creatorSurveyQuoteAttribution", () => {
+  it("uses the display name for named quotes", () => {
+    expect(
+      creatorSurveyQuoteAttribution({ quoteMode: "named", anonymousLabel: "egal" }, "Initiative X"),
+    ).toBe("Initiative X");
+  });
+
+  it("uses the label for anonymous quotes and falls back to eine Initiative", () => {
+    expect(
+      creatorSurveyQuoteAttribution(
+        { quoteMode: "anonymous", anonymousLabel: "eine Umwelt-NGO aus NRW" },
+        "Initiative X",
+      ),
+    ).toBe("eine Umwelt-NGO aus NRW");
+    expect(
+      creatorSurveyQuoteAttribution({ quoteMode: "anonymous", anonymousLabel: null }, "Initiative X"),
+    ).toBe(CREATOR_SURVEY_ANONYMOUS_FALLBACK);
+    expect(
+      creatorSurveyQuoteAttribution({ quoteMode: "anonymous", anonymousLabel: "  " }, "Initiative X"),
+    ).toBe("eine Initiative");
+  });
+});
+
 describe("resolveManageJumpPath", () => {
   it("resolves the whitelisted target", () => {
     expect(resolveManageJumpPath("feedback")).toBe("/kampagne/verwalten/feedback");
@@ -206,6 +273,82 @@ describe("creatorSurveyInputSchema", () => {
   });
 });
 
+describe("creatorSurveyInputSchema new fields", () => {
+  it("accepts the new answers", () => {
+    const result = creatorSurveyInputSchema.safeParse(
+      input({
+        expectation: "so_viele",
+        outcomes: ["medienbericht", "antwort_politik"],
+        outcomesNote: "Lokalzeitung hat berichtet.",
+        statements: { ...emptyStatements, todoHandeln: "stimmt" },
+        quote: "Gut.",
+        consentQuote: true,
+        quoteMode: "anonymous",
+        anonymousLabel: "eine Umwelt-NGO aus NRW",
+      }),
+    );
+    expect(result.success).toBe(true);
+  });
+
+  it("rejects unknown expectation, outcome and quote mode slugs", () => {
+    expect(creatorSurveyInputSchema.safeParse(input({ expectation: "viel" })).success).toBe(false);
+    expect(creatorSurveyInputSchema.safeParse(input({ outcomes: ["tv"] })).success).toBe(false);
+    expect(creatorSurveyInputSchema.safeParse(input({ quoteMode: "secret" })).success).toBe(false);
+  });
+
+  it("limits the outcomes note to 300 and the label to 80 characters", () => {
+    expect(creatorSurveyInputSchema.safeParse(input({ outcomesNote: "a".repeat(300) })).success).toBe(
+      true,
+    );
+    expect(creatorSurveyInputSchema.safeParse(input({ outcomesNote: "a".repeat(301) })).success).toBe(
+      false,
+    );
+    expect(creatorSurveyInputSchema.safeParse(input({ anonymousLabel: "a".repeat(80) })).success).toBe(
+      true,
+    );
+    expect(creatorSurveyInputSchema.safeParse(input({ anonymousLabel: "a".repeat(81) })).success).toBe(
+      false,
+    );
+  });
+
+  it("rejects noch_nichts or zu_frueh together with another outcome", () => {
+    expect(
+      creatorSurveyInputSchema.safeParse(input({ outcomes: ["noch_nichts", "medienbericht"] }))
+        .success,
+    ).toBe(false);
+    expect(
+      creatorSurveyInputSchema.safeParse(input({ outcomes: ["zu_frueh", "antwort_politik"] })).success,
+    ).toBe(false);
+    expect(creatorSurveyInputSchema.safeParse(input({ outcomes: ["noch_nichts"] })).success).toBe(true);
+    expect(creatorSurveyInputSchema.safeParse(input({ outcomes: ["zu_frueh"] })).success).toBe(true);
+  });
+
+  it("rejects quote consent without an explicit quote mode", () => {
+    expect(
+      creatorSurveyInputSchema.safeParse(input({ quote: "Gut.", consentQuote: true })).success,
+    ).toBe(false);
+    expect(
+      creatorSurveyInputSchema.safeParse(
+        input({ quote: "Gut.", consentQuote: true, quoteMode: "named" }),
+      ).success,
+    ).toBe(true);
+  });
+
+  it("keeps the To-Do statement on the existing four answers", () => {
+    expect(
+      CREATOR_SURVEY_STATEMENTS.find((statement) => statement.key === "todoHandeln"),
+    ).toMatchObject({
+      column: "statement_todo_handeln",
+      label: "Ein konkretes To-Do hat unsere Leute ins Handeln gebracht.",
+    });
+    expect(
+      creatorSurveyInputSchema.safeParse(
+        input({ statements: { ...emptyStatements, todoHandeln: "vielleicht" } }),
+      ).success,
+    ).toBe(false);
+  });
+});
+
 describe("normalizeCreatorSurvey", () => {
   it("dedupes and orders arrays by option-list order", () => {
     const parsed = creatorSurveyInputSchema.parse(
@@ -229,10 +372,72 @@ describe("normalizeCreatorSurvey", () => {
   });
 
   it("forces the quote consent to false without a quote", () => {
-    const parsed = creatorSurveyInputSchema.parse(input({ quote: "", consentQuote: true }));
+    const parsed = creatorSurveyInputSchema.parse(
+      input({ quote: "", consentQuote: true, quoteMode: "named" }),
+    );
     expect(normalizeCreatorSurvey(parsed).consentQuote).toBe(false);
-    const kept = creatorSurveyInputSchema.parse(input({ quote: "Gut.", consentQuote: true }));
+    const kept = creatorSurveyInputSchema.parse(
+      input({ quote: "Gut.", consentQuote: true, quoteMode: "named" }),
+    );
     expect(normalizeCreatorSurvey(kept).consentQuote).toBe(true);
+  });
+
+  it("drops the quote mode without consent and the label unless anonymous", () => {
+    const noConsent = normalizeCreatorSurvey(
+      creatorSurveyInputSchema.parse(
+        input({ quote: "Gut.", consentQuote: false, quoteMode: "anonymous", anonymousLabel: "NGO" }),
+      ),
+    );
+    expect(noConsent.quoteMode).toBeNull();
+    expect(noConsent.anonymousLabel).toBeNull();
+
+    const emptyQuote = normalizeCreatorSurvey(
+      creatorSurveyInputSchema.parse(
+        input({ quote: " ", consentQuote: true, quoteMode: "anonymous", anonymousLabel: "NGO" }),
+      ),
+    );
+    expect(emptyQuote.quoteMode).toBeNull();
+    expect(emptyQuote.anonymousLabel).toBeNull();
+
+    const named = normalizeCreatorSurvey(
+      creatorSurveyInputSchema.parse(
+        input({ quote: "Gut.", consentQuote: true, quoteMode: "named", anonymousLabel: "NGO" }),
+      ),
+    );
+    expect(named.quoteMode).toBe("named");
+    expect(named.anonymousLabel).toBeNull();
+
+    const anonymous = normalizeCreatorSurvey(
+      creatorSurveyInputSchema.parse(
+        input({
+          quote: "Gut.",
+          consentQuote: true,
+          quoteMode: "anonymous",
+          anonymousLabel: "  eine Umwelt-NGO aus NRW  ",
+        }),
+      ),
+    );
+    expect(anonymous.quoteMode).toBe("anonymous");
+    expect(anonymous.anonymousLabel).toBe("eine Umwelt-NGO aus NRW");
+  });
+
+  it("turns empty strings into null and orders outcomes by option list", () => {
+    const parsed = creatorSurveyInputSchema.parse(
+      input({
+        quote: "Gut.",
+        consentQuote: true,
+        quoteMode: "anonymous",
+        anonymousLabel: "   ",
+        outcomes: ["politische_entscheidung", "medienbericht", "medienbericht"],
+        outcomesNote: "   ",
+        expectation: "mehr",
+      }),
+    );
+    const normalized = normalizeCreatorSurvey(parsed);
+    expect(normalized.anonymousLabel).toBeNull();
+    expect(normalized.outcomesNote).toBeNull();
+    expect(normalized.outcomes).toEqual(["medienbericht", "politische_entscheidung"]);
+    expect(normalized.expectation).toBe("mehr");
   });
 });
 
@@ -261,6 +466,34 @@ describe("resolveConsentQuoteAt", () => {
       resolveConsentQuoteAt(
         { ...answers({ quote: "A", consentQuote: true }), consentQuoteAt: earlier },
         answers({ quote: "A", consentQuote: true }),
+        NOW,
+      ),
+    ).toBe(earlier);
+  });
+
+  it("re-stamps when the quote mode or the anonymous label changes", () => {
+    const previous = {
+      ...answers({ quote: "A", consentQuote: true, quoteMode: "anonymous", anonymousLabel: "NGO" }),
+      consentQuoteAt: earlier,
+    } as const;
+    expect(
+      resolveConsentQuoteAt(
+        previous,
+        answers({ quote: "A", consentQuote: true, quoteMode: "named" }),
+        NOW,
+      ),
+    ).toBe(NOW.toISOString());
+    expect(
+      resolveConsentQuoteAt(
+        previous,
+        answers({ quote: "A", consentQuote: true, quoteMode: "anonymous", anonymousLabel: "Andere NGO" }),
+        NOW,
+      ),
+    ).toBe(NOW.toISOString());
+    expect(
+      resolveConsentQuoteAt(
+        previous,
+        answers({ quote: "A", consentQuote: true, quoteMode: "anonymous", anonymousLabel: "NGO" }),
         NOW,
       ),
     ).toBe(earlier);
@@ -301,6 +534,21 @@ describe("creatorSurveyAnswersChanged", () => {
     ).toBe(true);
   });
 
+  it("sees every new field", () => {
+    const base = answers();
+    expect(creatorSurveyAnswersChanged(base, { ...base, expectation: "mehr" })).toBe(true);
+    expect(creatorSurveyAnswersChanged(base, { ...base, outcomes: ["medienbericht"] })).toBe(true);
+    expect(creatorSurveyAnswersChanged(base, { ...base, outcomesNote: "x" })).toBe(true);
+    expect(creatorSurveyAnswersChanged(base, { ...base, quoteMode: "named" })).toBe(true);
+    expect(creatorSurveyAnswersChanged(base, { ...base, anonymousLabel: "x" })).toBe(true);
+    expect(
+      creatorSurveyAnswersChanged(base, {
+        ...base,
+        statements: { ...emptyStatements, todoHandeln: "teils" },
+      }),
+    ).toBe(true);
+  });
+
   it("is true when there is no previous record", () => {
     expect(creatorSurveyAnswersChanged(null, answers())).toBe(true);
   });
@@ -334,5 +582,33 @@ describe("migration 029", () => {
     for (const slug of slugs) {
       expect(sql).toContain(`'${slug}'`);
     }
+  });
+});
+
+describe("migration 034", () => {
+  const sql = readFileSync(
+    path.join(process.cwd(), "supabase/migrations/034_campaign_end_feedback.sql"),
+    "utf8",
+  );
+
+  it("adds the campaign and survey columns", () => {
+    expect(sql).toContain("created_by_founder");
+    expect(sql).toContain("ended_notified_at");
+    expect(sql).toContain("statement_todo_handeln");
+  });
+
+  it("mirrors every new option slug as a quoted literal", () => {
+    const slugs = [
+      ...CREATOR_SURVEY_EXPECTATIONS,
+      ...CREATOR_SURVEY_OUTCOMES,
+      ...CREATOR_SURVEY_QUOTE_MODES,
+    ].map((option) => option.slug);
+    for (const slug of slugs) {
+      expect(sql).toContain(`'${slug}'`);
+    }
+  });
+
+  it("is documented as requiring 029 and is not applied by the code", () => {
+    expect(sql).toContain("AFTER migration 029");
   });
 });

@@ -13,15 +13,26 @@ import { ChipToggle } from "@/app/(site)/feedback/ChipToggle";
 import { CampaignLogo } from "@/components/campaigns/CampaignLogo";
 import { submitCreatorSurveyAction } from "@/lib/actions/submitCreatorSurvey";
 import {
+  CREATOR_SURVEY_ANONYMOUS_FALLBACK,
+  CREATOR_SURVEY_ANONYMOUS_LABEL_MAX,
+  CREATOR_SURVEY_ANONYMOUS_PLACEHOLDER,
   CREATOR_SURVEY_CONCERNS,
+  CREATOR_SURVEY_EXPECTATIONS,
   CREATOR_SURVEY_HELP_OFFERS,
+  CREATOR_SURVEY_OUTCOMES,
+  CREATOR_SURVEY_OUTCOMES_NOTE_MAX,
   CREATOR_SURVEY_QUOTE_MAX,
+  CREATOR_SURVEY_QUOTE_MODES,
   CREATOR_SURVEY_REASONS,
   CREATOR_SURVEY_STATEMENTS,
   CREATOR_SURVEY_STATEMENT_ANSWERS,
+  creatorSurveyQuoteAttribution,
   toggleConcern,
+  toggleOutcome,
   type CreatorSurveyAnswers,
+  type CreatorSurveyExpectationSlug,
   type CreatorSurveyHelpOfferSlug,
+  type CreatorSurveyQuoteMode,
   type CreatorSurveyReasonSlug,
   type CreatorSurveyStatementAnswer,
   type CreatorSurveyStatementKey,
@@ -43,6 +54,7 @@ const EMPTY_ANSWERS: CreatorSurveyAnswers = {
   statements: {
     einfacherEinstieg: null,
     handschriftWirkt: null,
+    todoHandeln: null,
     schnellEingerichtet: null,
     wiederKampagne: null,
   },
@@ -50,6 +62,11 @@ const EMPTY_ANSWERS: CreatorSurveyAnswers = {
   consentQuote: false,
   consentAggregate: false,
   helpOffers: [],
+  expectation: null,
+  outcomes: [],
+  outcomesNote: null,
+  quoteMode: null,
+  anonymousLabel: null,
 };
 
 const AIRMAIL_EDGE =
@@ -110,6 +127,11 @@ export function CreatorSurveyForm({
   const [consentQuote, setConsentQuote] = useState(start.consentQuote);
   const [consentAggregate, setConsentAggregate] = useState(start.consentAggregate);
   const [helpOffers, setHelpOffers] = useState(start.helpOffers);
+  const [expectation, setExpectation] = useState(start.expectation);
+  const [outcomes, setOutcomes] = useState(start.outcomes);
+  const [outcomesNote, setOutcomesNote] = useState(start.outcomesNote ?? "");
+  const [quoteMode, setQuoteMode] = useState<CreatorSurveyQuoteMode>(start.quoteMode ?? "named");
+  const [anonymousLabel, setAnonymousLabel] = useState(start.anonymousLabel ?? "");
   const [notice, setNotice] = useState<Notice | null>(null);
   const [done, setDone] = useState(false);
   const [pending, startTransition] = useTransition();
@@ -119,6 +141,16 @@ export function CreatorSurveyForm({
   const trimmedQuote = quote.trim();
   const hasQuote = trimmedQuote.length > 0;
   const quoteConsentGiven = consentQuote && hasQuote;
+  const trimmedOutcomesNote = outcomesNote.trim();
+  const trimmedLabel = anonymousLabel.trim();
+  const previewName = creatorSurveyQuoteAttribution(
+    { quoteMode, anonymousLabel: trimmedLabel || null },
+    displayName,
+  );
+  const previewAttribution =
+    quoteMode === "anonymous"
+      ? previewName.charAt(0).toUpperCase() + previewName.slice(1)
+      : `Anliegen von ${displayName}`;
 
   useEffect(() => {
     // Move focus to the heading when the view switches between form and thanks.
@@ -131,6 +163,10 @@ export function CreatorSurveyForm({
       ...current,
       [key]: current[key] === answer ? null : answer,
     }));
+  }
+
+  function setExpectationAnswer(answer: CreatorSurveyExpectationSlug) {
+    setExpectation((current) => (current === answer ? null : answer));
   }
 
   function handleQuoteChange(value: string) {
@@ -152,6 +188,12 @@ export function CreatorSurveyForm({
           consentQuote: quoteConsentGiven,
           consentAggregate,
           helpOffers,
+          expectation,
+          outcomes,
+          outcomesNote: trimmedOutcomesNote || null,
+          quoteMode: quoteConsentGiven ? quoteMode : null,
+          anonymousLabel:
+            quoteConsentGiven && quoteMode === "anonymous" && trimmedLabel ? trimmedLabel : null,
         });
         if (result.ok) {
           setDone(true);
@@ -216,11 +258,75 @@ export function CreatorSurveyForm({
           Wie lief eure Kampagne?
         </h1>
         <p className="mt-3 font-body text-base leading-relaxed text-warmgrau/80">
-          Ein paar kurze Fragen, etwa 90 Sekunden. Jede Angabe ist freiwillig.
+          Ein paar kurze Fragen, etwa 1 Minute. Jede Angabe ist freiwillig.
         </p>
       </header>
 
       <fieldset className="min-w-0 border-0 p-0">
+        <legend className={fieldsetLegend}>Wie viele Briefe sind es geworden?</legend>
+        <div role="radiogroup" className="clear-both flex flex-wrap gap-2">
+          {CREATOR_SURVEY_EXPECTATIONS.map((option) => (
+            <ChipToggle
+              key={option.slug}
+              role="radio"
+              label={option.label}
+              checked={expectation === option.slug}
+              onToggle={() => setExpectationAnswer(option.slug)}
+            />
+          ))}
+        </div>
+      </fieldset>
+
+      <fieldset className={fieldsetClasses}>
+        <legend className={fieldsetLegend}>Habt ihr schon von Ergebnissen gehört?</legend>
+        <div className="clear-both grid gap-4">
+          <div className="flex flex-wrap gap-2">
+            {CREATOR_SURVEY_OUTCOMES.map((option) => (
+              <ChipToggle
+                key={option.slug}
+                label={option.label}
+                checked={outcomes.includes(option.slug)}
+                onToggle={() => setOutcomes((current) => toggleOutcome(current, option.slug))}
+              />
+            ))}
+          </div>
+          <div className="grid gap-2">
+            <label
+              htmlFor="creator-survey-outcomes-note"
+              className="font-body text-base leading-relaxed text-warmgrau/90"
+            >
+              Was genau? (optional)
+            </label>
+            <textarea
+              id="creator-survey-outcomes-note"
+              value={outcomesNote}
+              onChange={(event) =>
+                setOutcomesNote(event.target.value.slice(0, CREATOR_SURVEY_OUTCOMES_NOTE_MAX))
+              }
+              maxLength={CREATOR_SURVEY_OUTCOMES_NOTE_MAX}
+              rows={3}
+              aria-describedby="creator-survey-outcomes-hint creator-survey-outcomes-count"
+              className="w-full resize-y rounded-lg border border-warmgrau/25 bg-creme px-4 py-3 font-body text-base text-warmgrau focus:border-waldgruen focus:outline-none focus:ring-2 focus:ring-waldgruen"
+            />
+            <div className="flex items-start justify-between gap-4">
+              <p
+                id="creator-survey-outcomes-hint"
+                className="font-body text-sm leading-relaxed text-warmgrau/70"
+              >
+                Kommt später noch etwas? Tragt es hier nach oder antwortet einfach auf meine Mail.
+              </p>
+              <p
+                id="creator-survey-outcomes-count"
+                className="shrink-0 font-body text-xs tabular-nums text-warmgrau/60"
+              >
+                {outcomesNote.length}/{CREATOR_SURVEY_OUTCOMES_NOTE_MAX}
+              </p>
+            </div>
+          </div>
+        </div>
+      </fieldset>
+
+      <fieldset className={fieldsetClasses}>
         <legend className={fieldsetLegend}>Was hat euch überzeugt, es zu wagen?</legend>
         <div className="clear-both flex flex-wrap gap-2">
           {CREATOR_SURVEY_REASONS.map((option) => (
@@ -324,9 +430,11 @@ export function CreatorSurveyForm({
                 So würde dein Satz auf brief-nach-berlin.de aussehen:
               </p>
               <div className="mt-3 flex items-center gap-3">
-                <CampaignLogo logoPath={logoPath} name={displayName} size="sm" />
+                {quoteMode === "named" && (
+                  <CampaignLogo logoPath={logoPath} name={displayName} size="sm" />
+                )}
                 <p className="font-typewriter text-sm font-bold leading-snug text-waldgruen-dark">
-                  Anliegen von {displayName}
+                  {previewAttribution}
                 </p>
               </div>
               <p
@@ -344,8 +452,57 @@ export function CreatorSurveyForm({
             disabled={!hasQuote}
             onChange={setConsentQuote}
           >
-            Unser Satz darf mit Logo und Name auf brief-nach-berlin.de erscheinen.
+            Unser Satz darf auf brief-nach-berlin.de erscheinen.
           </CheckRow>
+          {quoteConsentGiven && (
+            <div className="grid gap-4 border-l-2 border-waldgruen/25 pl-4">
+              <div
+                role="radiogroup"
+                aria-label="Wie soll der Satz erscheinen?"
+                className="flex flex-wrap gap-2"
+              >
+                {CREATOR_SURVEY_QUOTE_MODES.map((option) => (
+                  <ChipToggle
+                    key={option.slug}
+                    role="radio"
+                    label={option.label}
+                    checked={quoteMode === option.slug}
+                    onToggle={() => setQuoteMode(option.slug)}
+                  />
+                ))}
+              </div>
+              {quoteMode === "anonymous" && (
+                <div className="grid gap-2">
+                  <label
+                    htmlFor="creator-survey-anonymous-label"
+                    className="font-body text-base leading-relaxed text-warmgrau/90"
+                  >
+                    So darf ich euch nennen (optional)
+                  </label>
+                  <input
+                    id="creator-survey-anonymous-label"
+                    type="text"
+                    value={anonymousLabel}
+                    onChange={(event) =>
+                      setAnonymousLabel(
+                        event.target.value.slice(0, CREATOR_SURVEY_ANONYMOUS_LABEL_MAX),
+                      )
+                    }
+                    maxLength={CREATOR_SURVEY_ANONYMOUS_LABEL_MAX}
+                    placeholder={CREATOR_SURVEY_ANONYMOUS_PLACEHOLDER}
+                    aria-describedby="creator-survey-anonymous-hint"
+                    className="min-h-11 w-full rounded-lg border border-warmgrau/25 bg-creme px-4 py-2 font-body text-base text-warmgrau placeholder:text-warmgrau/40 focus:border-waldgruen focus:outline-none focus:ring-2 focus:ring-waldgruen"
+                  />
+                  <p
+                    id="creator-survey-anonymous-hint"
+                    className="font-body text-sm leading-relaxed text-warmgrau/70"
+                  >
+                    Leer gelassen steht dort „{CREATOR_SURVEY_ANONYMOUS_FALLBACK}“.
+                  </p>
+                </div>
+              )}
+            </div>
+          )}
           <CheckRow checked={consentAggregate} onChange={setConsentAggregate}>
             Unsere Antworten dürfen anonym in Zahlen einfließen.
           </CheckRow>
@@ -361,8 +518,8 @@ export function CreatorSurveyForm({
         </legend>
         <div className="clear-both grid gap-4">
           <p className="font-body text-base leading-relaxed text-warmgrau/80">
-            Mir geht es nicht darum, selbst bekannt zu werden. Je mehr Menschen über Brief nach
-            Berlin sprechen, desto mehr schreiben ihren ersten Brief und merken: Ich kann etwas
+            Mir geht es nicht darum, selbst bekannt zu werden. Je mehr Menschen über Brief-nach-Berlin
+            sprechen, desto mehr schreiben ihren ersten Brief und merken: Ich kann etwas
             bewegen. Wenn ihr Lust habt, kreuzt an, wobei ihr helfen könnt. Ich melde mich dann
             persönlich.
           </p>
@@ -382,7 +539,7 @@ export function CreatorSurveyForm({
             ))}
           </div>
           <p className="font-body text-xs leading-relaxed text-warmgrau/60">
-            Du willst Brief nach Berlin unterstützen?{" "}
+            Du willst Brief-nach-Berlin unterstützen?{" "}
             <a
               href={DONATION_PROVIDER_URL}
               target="_blank"

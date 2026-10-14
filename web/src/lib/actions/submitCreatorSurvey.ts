@@ -12,6 +12,7 @@ import {
   resolveConsentQuoteAt,
 } from "@/lib/campaigns/creatorSurvey";
 import {
+  getCampaignCreatedByFounder,
   getCreatorSurvey,
   upsertCreatorSurvey,
 } from "@/lib/campaigns/creatorSurveyRepository";
@@ -79,6 +80,7 @@ export async function submitCreatorSurveyAction(
     await upsertCreatorSurvey(campaignId, answers, consentQuoteAt);
 
     if (creatorSurveyAnswersChanged(previous, answers)) {
+      const createdByFounder = await getCampaignCreatedByFounder(campaignId);
       const mailParams = {
         campaign: {
           slug: campaign.slug,
@@ -88,6 +90,7 @@ export async function submitCreatorSurveyAction(
         },
         answers,
         isUpdate: previous !== null,
+        createdByFounder,
       };
       after(async () => {
         try {

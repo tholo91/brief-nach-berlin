@@ -50,6 +50,11 @@ export default async function CreatorSurveyPage() {
           consentQuote: record.consentQuote,
           consentAggregate: record.consentAggregate,
           helpOffers: record.helpOffers,
+          expectation: record.expectation,
+          outcomes: record.outcomes,
+          outcomesNote: record.outcomesNote,
+          quoteMode: record.quoteMode,
+          anonymousLabel: record.anonymousLabel,
         };
       }
     } catch {

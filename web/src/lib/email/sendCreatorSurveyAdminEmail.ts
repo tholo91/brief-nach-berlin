@@ -3,10 +3,13 @@ import { APP_URL, EMAIL_SENDER_NAME } from "@/lib/config";
 import { CONTACT } from "@/lib/contact";
 import {
   CREATOR_SURVEY_CONCERNS,
+  CREATOR_SURVEY_EXPECTATIONS,
   CREATOR_SURVEY_HELP_OFFERS,
+  CREATOR_SURVEY_OUTCOMES,
   CREATOR_SURVEY_REASONS,
   CREATOR_SURVEY_STATEMENTS,
   CREATOR_SURVEY_STATEMENT_ANSWERS,
+  creatorSurveyQuoteAttribution,
   type CreatorSurveyAnswers,
 } from "@/lib/campaigns/creatorSurvey";
 
@@ -51,6 +54,7 @@ export type CreatorSurveyAdminEmailParams = {
   };
   answers: CreatorSurveyAnswers;
   isUpdate: boolean;
+  createdByFounder: boolean;
 };
 
 function labelsFor<T extends string>(
@@ -71,8 +75,17 @@ function yesNo(value: boolean): string {
   return value ? "ja" : "nein";
 }
 
+function consentLine(answers: CreatorSurveyAnswers): string {
+  if (!answers.consentQuote || !answers.quoteMode) return "Zitat freigegeben: nein";
+  if (answers.quoteMode === "anonymous") {
+    const attribution = creatorSurveyQuoteAttribution(answers, "");
+    return `Zitat freigegeben: anonym als „${attribution}“`;
+  }
+  return "Zitat freigegeben: mit Logo und Name";
+}
+
 export function buildCreatorSurveyAdminEmailHtml(params: CreatorSurveyAdminEmailParams): string {
-  const { campaign, answers, isUpdate } = params;
+  const { campaign, answers, isUpdate, createdByFounder } = params;
   const url = `${APP_URL}/kampagne/${campaign.slug}`;
   const helpLabels = labelsFor(CREATOR_SURVEY_HELP_OFFERS, answers.helpOffers);
   const statementLines = CREATOR_SURVEY_STATEMENTS.map((statement) => {
@@ -92,10 +105,23 @@ export function buildCreatorSurveyAdminEmailHtml(params: CreatorSurveyAdminEmail
     ? `<p style="margin:0 0 12px;padding-left:12px;border-left:3px solid #C9C3B8;">${esc(answers.quote)}</p>`
     : `<p style="margin:0 0 12px;color:#6B6B6B;">Kein Satz geschrieben.</p>`;
 
+  const expectationLabel =
+    CREATOR_SURVEY_EXPECTATIONS.find((option) => option.slug === answers.expectation)?.label ??
+    "keine Angabe";
+  const outcomesNote = answers.outcomesNote
+    ? `<p style="margin:0 0 12px;padding-left:12px;border-left:3px solid #C9C3B8;">${esc(answers.outcomesNote)}</p>`
+    : "";
+
   return wrap(`<p style="margin:0 0 12px;"><strong>${isUpdate ? "Ersteller-Feedback geändert" : "Neues Ersteller-Feedback"}</strong></p>
     ${help}
     <p style="margin:0 0 6px;">Kampagne: <a href="${esc(url)}">${esc(campaign.title)}</a> (${esc(campaign.slug)})</p>
+    <p style="margin:0 0 6px;">Von Thomas aufgesetzt: ${yesNo(createdByFounder)}</p>
     <p style="margin:0 0 16px;">Ersteller:in: ${esc(campaign.creatorName?.trim() || "ohne Namen")}. Antworten geht direkt per Reply.</p>
+    <p style="margin:0 0 6px;"><strong>Briefe im Vergleich zur Erwartung</strong></p>
+    <p style="margin:0 0 12px;">${esc(expectationLabel)}</p>
+    <p style="margin:0 0 6px;"><strong>Ergebnisse gehört</strong></p>
+    ${list(labelsFor(CREATOR_SURVEY_OUTCOMES, answers.outcomes), "Nichts angekreuzt")}
+    ${outcomesNote}
     <p style="margin:0 0 6px;"><strong>Was hat überzeugt?</strong></p>
     ${list(labelsFor(CREATOR_SURVEY_REASONS, answers.reasons), "Nichts angekreuzt")}
     <p style="margin:0 0 6px;"><strong>Bedenken vorher</strong></p>
@@ -104,7 +130,7 @@ export function buildCreatorSurveyAdminEmailHtml(params: CreatorSurveyAdminEmail
     <ul style="margin:0 0 12px;padding-left:20px;">${statementLines}</ul>
     <p style="margin:0 0 6px;"><strong>Ein Satz an andere Initiativen</strong></p>
     ${quote}
-    <p style="margin:0 0 4px;">Zitat mit Logo/Name freigegeben: ${yesNo(answers.consentQuote)}</p>
+    <p style="margin:0 0 4px;">${esc(consentLine(answers))}</p>
     <p style="margin:0;">Anonym in Zahlen: ${yesNo(answers.consentAggregate)}</p>`);
 }
 

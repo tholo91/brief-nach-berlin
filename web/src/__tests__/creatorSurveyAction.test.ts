@@ -12,6 +12,7 @@ jest.mock("@/lib/campaigns/session", () => ({
   getCampaignManagementSession: jest.fn(),
 }));
 jest.mock("@/lib/campaigns/creatorSurveyRepository", () => ({
+  getCampaignCreatedByFounder: jest.fn(),
   getCreatorSurvey: jest.fn(),
   upsertCreatorSurvey: jest.fn(),
 }));
@@ -24,6 +25,7 @@ import { submitCreatorSurveyAction } from "@/lib/actions/submitCreatorSurvey";
 import { getCampaignById } from "@/lib/campaigns/repository";
 import { getCampaignManagementSession } from "@/lib/campaigns/session";
 import {
+  getCampaignCreatedByFounder,
   getCreatorSurvey,
   upsertCreatorSurvey,
 } from "@/lib/campaigns/creatorSurveyRepository";
@@ -49,11 +51,17 @@ const validInput = {
     handschriftWirkt: null,
     schnellEingerichtet: null,
     wiederKampagne: "teils",
+    todoHandeln: "stimmt",
   },
   quote: "Das hat uns Mut gemacht.",
   consentQuote: true,
   consentAggregate: true,
   helpOffers: ["gemeinsamer_post"],
+  expectation: "mehr",
+  outcomes: ["medienbericht"],
+  outcomesNote: "Lokalzeitung hat berichtet.",
+  quoteMode: "named",
+  anonymousLabel: null,
 };
 
 async function flush() {
@@ -71,6 +79,7 @@ describe("submitCreatorSurveyAction", () => {
     });
     jest.mocked(getCampaignById).mockResolvedValue(campaign as never);
     jest.mocked(getCreatorSurvey).mockResolvedValue(null);
+    jest.mocked(getCampaignCreatedByFounder).mockResolvedValue(false);
     jest.mocked(upsertCreatorSurvey).mockResolvedValue(undefined as never);
     jest.mocked(sendCreatorSurveyAdminEmail).mockResolvedValue({ success: true });
   });
@@ -120,6 +129,8 @@ describe("submitCreatorSurveyAction", () => {
     ["keine plus another concern", { ...validInput, concerns: ["keine", "ki_spam"] }],
     ["a 301 character quote", { ...validInput, quote: "a".repeat(301) }],
     ["not an object", "hallo"],
+    ["consent without a quote mode", { ...validInput, quoteMode: null }],
+    ["noch_nichts next to a result", { ...validInput, outcomes: ["noch_nichts", "medienbericht"] }],
   ])("rejects invalid input: %s", async (_label, payload) => {
     const result = await submitCreatorSurveyAction(CAMPAIGN_ID, payload);
 
@@ -137,6 +148,7 @@ describe("submitCreatorSurveyAction", () => {
     expect(result).toEqual({ ok: true });
     const [, answers, consentQuoteAt] = jest.mocked(upsertCreatorSurvey).mock.calls[0]!;
     expect(answers.consentQuote).toBe(false);
+    expect(answers.quoteMode).toBeNull();
     expect(answers.quote).toBeNull();
     expect(consentQuoteAt).toBeNull();
   });
@@ -152,10 +164,10 @@ describe("submitCreatorSurveyAction", () => {
     expect(revalidatePath).toHaveBeenCalledWith("/kampagne/verwalten/feedback");
   });
 
-  it("accepts an ended campaign with 50 letters", async () => {
+  it("accepts an ended campaign with 10 letters", async () => {
     jest.mocked(getCampaignById).mockResolvedValue({
       ...campaign,
-      letterCount: 50,
+      letterCount: 10,
       endsAt: "2026-01-01T00:00:00.000Z",
     } as never);
 
@@ -163,6 +175,31 @@ describe("submitCreatorSurveyAction", () => {
 
     expect(result).toEqual({ ok: true });
     expect(upsertCreatorSurvey).toHaveBeenCalledTimes(1);
+  });
+
+  it("stores the anonymous quote mode with its label", async () => {
+    await submitCreatorSurveyAction(CAMPAIGN_ID, {
+      ...validInput,
+      quoteMode: "anonymous",
+      anonymousLabel: "  eine Umwelt-NGO aus NRW ",
+    });
+
+    const [, answers] = jest.mocked(upsertCreatorSurvey).mock.calls[0]!;
+    expect(answers.quoteMode).toBe("anonymous");
+    expect(answers.anonymousLabel).toBe("eine Umwelt-NGO aus NRW");
+    expect(answers.expectation).toBe("mehr");
+    expect(answers.outcomes).toEqual(["medienbericht"]);
+  });
+
+  it("passes the founder flag into the admin mail", async () => {
+    jest.mocked(getCampaignCreatedByFounder).mockResolvedValue(true);
+    await submitCreatorSurveyAction(CAMPAIGN_ID, validInput);
+    await flush();
+
+    expect(getCampaignCreatedByFounder).toHaveBeenCalledWith(CAMPAIGN_ID);
+    expect(sendCreatorSurveyAdminEmail).toHaveBeenCalledWith(
+      expect.objectContaining({ createdByFounder: true }),
+    );
   });
 
   it("sends the admin mail once for the first submit", async () => {
@@ -173,6 +210,7 @@ describe("submitCreatorSurveyAction", () => {
     expect(sendCreatorSurveyAdminEmail).toHaveBeenCalledWith(
       expect.objectContaining({
         isUpdate: false,
+        createdByFounder: false,
         campaign: expect.objectContaining({
           slug: "sichere-schulwege",
           creatorEmail: "owner@example.org",

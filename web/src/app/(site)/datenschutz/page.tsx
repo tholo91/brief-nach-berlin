@@ -894,16 +894,23 @@ export default function Datenschutz() {
               Creator nicht.
             </p>
             <p className="mb-3">
-              Ab einer bestimmten Größe Ihrer Kampagne bitte ich um freiwilliges
-              Feedback. Gespeichert werden die angekreuzten Antworten, ein
+              Ab einer bestimmten Größe oder nach dem Ende Ihrer Kampagne bitte
+              ich um freiwilliges Feedback. Gespeichert werden die angekreuzten
+              Antworten, ob die Zahl der Briefe Ihre Erwartung getroffen hat,
+              welche Ergebnisse Sie gehört haben (Medienbericht, Antwort oder
+              Entscheidung aus der Politik) mit einem optionalen Freitext, ein
               optionaler Satz an andere Initiativen, angekreuzte Hilfsangebote
-              und Ihre Freigaben mit Zeitpunkt. Die Antworten gehören zur
+              und Ihre Freigaben mit Zeitpunkt, einschließlich der Wahl, ob
+              Ihr Satz mit Logo und Namen oder anonym erscheinen darf. Die
+              Antworten gehören zur
               Kampagne, werden mit ihr gelöscht und gehen bei einer Übergabe an
               die neue Inhaberin oder den neuen Inhaber mit über. Ich bekomme
               die Antworten zusätzlich per E-Mail über Brevo (siehe Abschnitt
-              11), um mich bei Ihnen melden zu können. Ihren Satz zeige ich mit
-              Logo und Namen der Kampagne nur nach Ihrer ausdrücklichen
-              Freigabe. Anonymisierte Zahlen nutze ich nur mit Ihrer Freigabe.
+              11), um mich bei Ihnen melden zu können. Ihren Satz zeige ich nur
+              nach Ihrer ausdrücklichen Freigabe, entweder mit Logo und Namen
+              der Kampagne oder anonym mit einer Beschreibung, die Sie selbst
+              wählen (ohne Angabe: „eine Initiative“). Anonymisierte Zahlen
+              nutze ich nur mit Ihrer Freigabe.
               Beide Freigaben können Sie jederzeit über die Verwaltungsseite
               oder per E-Mail widerrufen.
             </p>
@@ -913,7 +920,8 @@ export default function Datenschutz() {
               DSGVO für Moderation, Missbrauchsschutz, Revisionen, sichere
               Verwaltungslinks und das Speichern des freiwilligen Feedbacks, um
               den Dienst zu verbessern; Art. 6 Abs. 1 lit. a DSGVO für die
-              Veröffentlichung von Zitat und Logo sowie die anonyme Auswertung.
+              Veröffentlichung des Zitats (mit Logo und Namen oder anonym)
+              sowie die anonyme Auswertung.
             </p>
           </div>
 

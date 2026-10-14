@@ -98,3 +98,18 @@ Nach geprüftem Versand und abgeschlossener Klärung lösche `.lastcall-cohort.c
 ## Voraussetzungen
 
 `web/.env.local` benötigt `NEXT_PUBLIC_SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`, `BREVO_API_KEY`, `BREVO_SENDER_EMAIL`, `FEEDBACK_TOKEN_SECRET` und `REVIEW_IP_SALT`. Für die Löschseite und das manuelle Löschscript ist außerdem `LETTER_SIGNAL_EMAIL_HASH_SECRET` erforderlich, auch bei reinen Mail-Klicks ohne Kartenbeitrag. Prüfe dessen Vorhandensein in Produktion und lokal vor dem Löschtest; verwende das bestehende Secret und rotiere es nicht, da sonst bestehende Hash-Zuordnungen verloren gehen. Keine dieser Variablen in Logs oder Tickets kopieren.
+
+## Versandprotokoll
+
+Nach dem Versand hier eintragen, ohne Adressen: Datum, Uhrzeit, Anzahl erfolgreich, Anzahl fehlgeschlagen, ob `pendingEmail` leer ist. Wer genau angeschrieben wurde, steht nur im lokalen Journal `web/.lastcall-send-journal.json` (gitignored). Prüfe nach dem Versand, dass die Datei wirklich lokal liegt und nicht von iCloud ausgelagert wurde (`brctl download web/.lastcall-send-journal.json`).
+
+- Versand: _offen_
+
+## Nächste Runde (z. B. Januar 2027)
+
+Die Grenze dieser Runde ist fest: Reviews vor dem 13.08.2026 plus die Mai-Liste. Für die nächste Runde:
+
+1. Neuer Kohorten-Name, z. B. `lastcall_2027_01`. Migration 033 erlaubt per CHECK nur `lastcall_2026_10`, also braucht `letter_outcomes` und `submit_letter_outcome` eine kleine Migration, die den neuen Namen zulässt.
+2. `LASTCALL_CUTOFF_UTC` in `web/src/lib/rueckmeldung/cohort.ts` wird zur Untergrenze: Reviews ab `2026-08-12T22:00:00Z` bis zum neuen Stichtag. Die Mai-Liste nicht erneut einlesen.
+3. Das alte Journal als Ausschlussliste verwenden: `sentEmails` in eine CSV mit Spalte `email` schreiben und beim Versand `--exclude=<datei>` angeben. So bekommt niemand die Mail doppelt.
+4. Neues Journal für die neue Kohorte anlegen; das alte Journal bis zum Ablauf der 24 Monate behalten.

@@ -35,7 +35,7 @@ describe("campaign ended creator email", () => {
 
     expect(html).toContain("Moin Stephanie,");
     expect(html).toContain(
-      "Eure Kampagne ist beendet. 90 Briefe sind darüber entstanden: So viele Menschen haben eure Argumente aufgegriffen und daraus ihren eigenen, persönlichen Brief geschrieben. Danke, dass ihr euch das getraut habt, obwohl Brief-nach-Berlin noch so klein ist.",
+      "Eure Kampagne ist vorbei. 90 Briefe sind dabei entstanden, jeder in eigenen Worten. Ihr habt euren Leuten ein konkretes To-Do gegeben, und sie haben es gemacht. Danke, dass ihr euch das getraut habt. Brief-nach-Berlin ist noch klein, das war ein echter Vertrauensvorschuss.",
     );
     expect(html).toContain(
       "Wenn ihr mögt, teilt euren Erfolg auf Instagram, LinkedIn oder WhatsApp. Das Bild dafür ist schon fertig.",
@@ -56,7 +56,7 @@ describe("campaign ended creator email", () => {
     expect(html).not.toContain("<b>Mut</b>");
     const greeting = html.indexOf("Moin Stephanie,");
     const note = html.indexOf("Ihr habt &lt;b&gt;");
-    const thanks = html.indexOf("Eure Kampagne ist beendet.");
+    const thanks = html.indexOf("Eure Kampagne ist vorbei.");
     expect(greeting).toBeLessThan(note);
     expect(note).toBeLessThan(thanks);
     expect(html).toMatch(/font-family:'Caveat'[^>]*>Ihr habt/);
@@ -76,22 +76,22 @@ describe("campaign ended creator email", () => {
   });
 
   it("adds the founder thank-you sentence only when created_by_founder", () => {
-    const sentence = "Und danke, dass ihr mir vertraut habt, die Kampagne für euch aufzusetzen.";
+    const sentence = "Und danke, dass ich die Kampagne für euch aufsetzen durfte.";
     expect(build()).not.toContain(sentence);
     expect(build({ ended: { ...ended, createdByFounder: false } })).not.toContain(sentence);
     expect(build({ ended: { ...ended, createdByFounder: true } })).toContain(sentence);
   });
 
   it("shows the honest send-rate line only with a stat, linked to the creator stats", () => {
-    expect(build()).not.toContain("haben ihren Brief abgeschickt");
+    expect(build()).not.toContain("Brief ist abgeschickt");
     expect(build()).not.toContain("#creator-stats");
 
     const html = build({ ended: { ...ended, sendStat: { percent: 78, responses: 23 } } });
     expect(html).toContain(
-      "78 % der 23 Unterstützer:innen, die geantwortet haben, haben ihren Brief abgeschickt.",
+      "78 % der 23 Leute, die mir geantwortet haben, sagen: Brief ist abgeschickt.",
     );
     expect(html).toContain(`href="${base.actionUrl}#creator-stats"`);
-    expect(html).toContain("Alle Zahlen findet ihr auf eurer Verwaltungsseite.");
+    expect(html).toContain("Alle Zahlen stehen auf eurer Verwaltungsseite.");
     expect(html).not.toContain("Statistiken ansehen");
   });
 
@@ -99,7 +99,7 @@ describe("campaign ended creator email", () => {
     const html = build();
 
     expect(html).toContain(
-      "Kennt ihr andere Initiativen oder Creator, für die so eine Briefkampagne passt? Erzählt ihnen davon, das hilft mir am meisten.",
+      "Was mir am meisten hilft, ist Reichweite. Wenn ihr eine Initiative oder einen Creator kennt, für die so eine Briefkampagne passt: Erzählt ihnen davon.",
     );
     expect(html).toContain(`href="${APP_URL}/ngo-briefkampagne"`);
     const referral = html.indexOf("/ngo-briefkampagne");
@@ -253,8 +253,8 @@ describe("sendCampaignCreatorEmail kind ended", () => {
 
     const html = mockSendTransacEmail.mock.calls[0][0].htmlContent;
     expect(html).toContain("Danke für alles.");
-    expect(html).toContain("die Kampagne für euch aufzusetzen");
-    expect(html).toContain("64 % der 12 Unterstützer:innen");
+    expect(html).toContain("die Kampagne für euch aufsetzen durfte");
+    expect(html).toContain("64 % der 12 Leute, die mir geantwortet haben");
     expect(html).toContain("/kampagne/verwalten?token=tok#creator-stats");
     expect(mockSendTransacEmail.mock.calls[0][0].subject).not.toContain("[Vorschau]");
   });

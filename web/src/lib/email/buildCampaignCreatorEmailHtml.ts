@@ -309,19 +309,19 @@ function buildCampaignEndedEmailHtml(
       : "";
 
   const thanks = paragraph(
-    `Eure Kampagne ist beendet. ${count} Briefe sind darüber entstanden: So viele Menschen haben eure Argumente aufgegriffen und daraus ihren eigenen, persönlichen Brief geschrieben. Danke, dass ihr euch das getraut habt, obwohl Brief-nach-Berlin noch so klein ist.${
+    `Eure Kampagne ist vorbei. ${count} Briefe sind dabei entstanden, jeder in eigenen Worten. Ihr habt euren Leuten ein konkretes To-Do gegeben, und sie haben es gemacht. Danke, dass ihr euch das getraut habt. Brief-nach-Berlin ist noch klein, das war ein echter Vertrauensvorschuss.${
       ended.createdByFounder
-        ? " Und danke, dass ihr mir vertraut habt, die Kampagne für euch aufzusetzen."
+        ? " Und danke, dass ich die Kampagne für euch aufsetzen durfte."
         : ""
     }`
   );
 
   const statsLine = ended.sendStat
-    ? `<p style="margin:0 0 22px;font-size:16px;line-height:1.65;">${ended.sendStat.percent} % der ${ended.sendStat.responses} Unterstützer:innen, die geantwortet haben, haben ihren Brief abgeschickt.<br><a href="${params.actionUrl}#creator-stats" target="_blank" rel="noopener noreferrer" style="font-size:13px;${linkStyle}">Alle Zahlen findet ihr auf eurer Verwaltungsseite.</a></p>`
+    ? `<p style="margin:0 0 22px;font-size:16px;line-height:1.65;">${ended.sendStat.percent} % der ${ended.sendStat.responses} Leute, die mir geantwortet haben, sagen: Brief ist abgeschickt.<br><a href="${params.actionUrl}#creator-stats" target="_blank" rel="noopener noreferrer" style="font-size:13px;${linkStyle}">Alle Zahlen stehen auf eurer Verwaltungsseite.</a></p>`
     : "";
 
   const referral = paragraph(
-    `Kennt ihr andere Initiativen oder Creator, für die so eine Briefkampagne passt? Erzählt ihnen davon, das hilft mir am meisten. <a href="${APP_URL}/ngo-briefkampagne" target="_blank" rel="noopener noreferrer" style="${linkStyle}">Mehr dazu findet ihr hier.</a>`,
+    `Was mir am meisten hilft, ist Reichweite. Wenn ihr eine Initiative oder einen Creator kennt, für die so eine Briefkampagne passt: Erzählt ihnen davon. <a href="${APP_URL}/ngo-briefkampagne" target="_blank" rel="noopener noreferrer" style="${linkStyle}">Hier steht, wie es funktioniert.</a>`,
     "0 0 14px"
   );
 

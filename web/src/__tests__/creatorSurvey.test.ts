@@ -74,15 +74,20 @@ describe("isCreatorSurveyEligible", () => {
     expect(isCreatorSurveyEligible(campaign(499, { endsAt: FUTURE }), NOW)).toBe(false);
   });
 
-  it("needs only 50 letters once the campaign has ended", () => {
-    expect(isCreatorSurveyEligible(campaign(49, { endsAt: PAST }), NOW)).toBe(false);
-    expect(isCreatorSurveyEligible(campaign(50, { endsAt: PAST }), NOW)).toBe(true);
+  it("needs only 10 letters once the campaign has ended", () => {
+    expect(isCreatorSurveyEligible(campaign(9, { endsAt: PAST }), NOW)).toBe(false);
+    expect(isCreatorSurveyEligible(campaign(10, { endsAt: PAST }), NOW)).toBe(true);
+    expect(isCreatorSurveyEligible(campaign(10, { endsAt: FUTURE }), NOW)).toBe(false);
+    expect(isCreatorSurveyEligible(campaign(10), NOW)).toBe(false);
   });
 
   it("never opens for a blocked campaign", () => {
     expect(isCreatorSurveyEligible(campaign(5000, { status: "blocked" }), NOW)).toBe(false);
     expect(
       isCreatorSurveyEligible(campaign(5000, { status: "blocked", endsAt: PAST }), NOW),
+    ).toBe(false);
+    expect(
+      isCreatorSurveyEligible(campaign(10, { status: "blocked", endsAt: PAST }), NOW),
     ).toBe(false);
   });
 

@@ -73,7 +73,7 @@ export const CREATOR_SURVEY_HELP_OFFERS = [
 
 export const CREATOR_SURVEY_QUOTE_MAX = 300;
 export const CREATOR_SURVEY_MIN_LETTERS = 500;
-export const CREATOR_SURVEY_MIN_LETTERS_ENDED = 50;
+export const CREATOR_SURVEY_MIN_LETTERS_ENDED = 10;
 
 // Banner for the feedback block in the mails. Set once Thomas has a PNG/JPG.
 export const CREATOR_SURVEY_BANNER_PATH: string | null = null;

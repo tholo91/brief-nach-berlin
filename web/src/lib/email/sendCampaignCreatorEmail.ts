@@ -1,6 +1,7 @@
 import { BrevoClient } from "@getbrevo/brevo";
 import { APP_NAME, APP_URL, EMAIL_SENDER_NAME, FOUNDER_EMAIL } from "@/lib/config";
 import { formatLetterCount } from "@/lib/campaigns/milestones";
+import { creatorSurveyUrl } from "@/lib/campaigns/creatorSurvey";
 import {
   buildCampaignCreatorEmailHtml,
   type CampaignCreatorEmailKind,
@@ -66,6 +67,7 @@ export async function sendCampaignCreatorEmail(
     const ended = params.kind === "ended" && params.ended
       ? {
           count: params.ended.count,
+          feedbackUrl: creatorSurveyUrl(params.token),
           imageUrl: milestoneImageUrl(params.slug, params.ended.count),
           downloadUrl: `${milestoneImageUrl(params.slug, params.ended.count)}?download=1`,
         }

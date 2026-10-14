@@ -40,6 +40,7 @@ export interface CampaignEndedEmailParams {
   count: number;
   imageUrl: string;
   downloadUrl: string;
+  feedbackUrl: string;
 }
 
 export interface BuildCampaignCreatorEmailHtmlParams {
@@ -294,8 +295,8 @@ function buildCampaignEndedEmailHtml(
                 <a href="${params.actionUrl}#creator-stats" target="_blank" rel="noopener noreferrer" class="bnb-cta-link" style="display:block;text-align:center;background-color:#2D6A4F;color:#ffffff;font-size:16px;font-weight:bold;text-decoration:none;padding:13px 10px;border-radius:4px;line-height:1.25;">Statistiken ansehen</a>
               </div>`;
   const feedbackBox = `<div style="${boxStyle}">
-                ${boxLabel("Wie war es für dich?")}
-                ${boxText("Ich baue Brief nach Berlin allein und lerne am meisten von Leuten wie dir. Antworte einfach auf diese Mail: Was hat gut funktioniert, was hat dir gefehlt?", "0")}
+                <a href="${escapeHtml(ended.feedbackUrl)}" target="_blank" rel="noopener noreferrer" class="bnb-cta-link" style="display:block;text-align:center;background-color:#2D6A4F;color:#ffffff;font-size:16px;font-weight:bold;text-decoration:none;padding:13px 10px;border-radius:4px;line-height:1.25;margin:0 0 10px;">1 Minute Feedback</a>
+                ${boxText("Oder antwortet einfach auf diese Mail.", "0")}
               </div>`;
 
   return buildCampaignImageEmailShell(params, {

@@ -30,6 +30,7 @@ import { createHash, randomBytes } from "node:crypto";
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, resolve } from "node:path";
 import { createClient } from "@supabase/supabase-js";
+import { creatorSurveyUrl } from "../src/lib/campaigns/creatorSurvey";
 import { formatLetterCount } from "../src/lib/campaigns/milestones";
 import { APP_URL } from "../src/lib/config";
 import { buildCampaignCreatorEmailHtml } from "../src/lib/email/buildCampaignCreatorEmailHtml";
@@ -136,7 +137,12 @@ async function main() {
       campaignUrl: campaignPublicUrl(campaign.slug),
       actionUrl: `${APP_URL}/kampagne/verwalten?token=vorschau`,
       creatorName,
-      ended: { count, imageUrl, downloadUrl: `${imageUrl}?download=1` },
+      ended: {
+        count,
+        imageUrl,
+        downloadUrl: `${imageUrl}?download=1`,
+        feedbackUrl: creatorSurveyUrl("vorschau"),
+      },
     });
     const outPath = resolve(args.out);
     mkdirSync(dirname(outPath), { recursive: true });

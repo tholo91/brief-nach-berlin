@@ -6,6 +6,7 @@ jest.mock("@getbrevo/brevo", () => ({
 }));
 
 import { APP_URL, DONATION_PROVIDER_URL, FOUNDER_EMAIL } from "@/lib/config";
+import { creatorSurveyUrl } from "@/lib/campaigns/creatorSurvey";
 import { buildCampaignCreatorEmailHtml } from "@/lib/email/buildCampaignCreatorEmailHtml";
 
 const base = {
@@ -21,6 +22,7 @@ const ended = {
   count: 90,
   imageUrl: `${APP_URL}/kampagne/unterschrift-ist-kein-dienstvergehen/meilenstein/90/bild`,
   downloadUrl: `${APP_URL}/kampagne/unterschrift-ist-kein-dienstvergehen/meilenstein/90/bild?download=1`,
+  feedbackUrl: creatorSurveyUrl("test"),
 };
 
 function build(overrides: Record<string, unknown> = {}) {
@@ -53,12 +55,12 @@ describe("campaign ended creator email", () => {
     expect(html).toContain("Statistiken ansehen");
   });
 
-  it("asks for feedback by reply, without the NGO referral block for now", () => {
+  it("leads into the survey with one feedback button", () => {
     const html = build();
 
-    expect(html).toContain("Wie war es für dich?");
-    expect(html).toContain("Antworte einfach auf diese Mail");
-    expect(html).not.toContain("/ngo-briefkampagne");
+    expect(html).toContain("1 Minute Feedback");
+    expect(html).toMatch(/href="[^"]*token=test[^"]*ziel=feedback[^"]*"/);
+    expect(html).not.toContain("Wie war es für dich?");
   });
 
   it("keeps the donation hint small: only the support button, no manage or mail button", () => {
@@ -140,5 +142,7 @@ describe("sendCampaignCreatorEmail kind ended", () => {
     expect(payload.htmlContent).toContain(ended.imageUrl);
     expect(payload.htmlContent).toContain(`${ended.imageUrl}?download=1`);
     expect(payload.htmlContent).toContain("/kampagne/verwalten?token=tok#creator-stats");
+    expect(payload.htmlContent).toContain("1 Minute Feedback");
+    expect(payload.htmlContent).toContain("token=tok&amp;ziel=feedback");
   });
 });

@@ -103,7 +103,7 @@ Nach geprüftem Versand und abgeschlossener Klärung lösche `.lastcall-cohort.c
 
 Nach dem Versand hier eintragen, ohne Adressen: Datum, Uhrzeit, Anzahl erfolgreich, Anzahl fehlgeschlagen, ob `pendingEmail` leer ist. Wer genau angeschrieben wurde, steht nur im lokalen Journal `web/.lastcall-send-journal.json` (gitignored). Prüfe nach dem Versand, dass die Datei wirklich lokal liegt und nicht von iCloud ausgelagert wurde (`brctl download web/.lastcall-send-journal.json`).
 
-- Versand: _offen_
+- Versand: 14.10.2026, ca. 09:07 bis 09:09 Uhr. Erfolgreich 335, fehlgeschlagen 0, nicht versucht 0. Journal hat 335 Einträge, `pendingEmail` leer, kein Lock. Kohorten-CSV danach gelöscht.
 
 ## Nächste Runde (z. B. Januar 2027)
 

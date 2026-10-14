@@ -1,6 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { after } from "next/server";
 import {
   CAMPAIGN_ENDED_MESSAGE,
   formatCampaignEndDate,
@@ -15,6 +16,7 @@ import {
 } from "@/lib/campaigns/repository";
 import type { Campaign } from "@/lib/campaigns/schema";
 import { getCampaignManagementSession } from "@/lib/campaigns/session";
+import { sendCampaignEndedAdminNotice } from "@/lib/email/sendCampaignEndedAdminNotice";
 
 export type CampaignEndResult =
   | { ok: true; message: string }
@@ -62,6 +64,23 @@ export async function endCampaignAction(
   try {
     const campaign = await endCampaignNow(campaignId);
     revalidateCampaign(campaign.slug);
+    // Short note to Thomas only. Never changes the result, nothing goes to the creator.
+    const noticeParams = {
+      slug: campaign.slug,
+      title: campaign.title,
+      letterCount: campaign.letterCount,
+      creatorName: campaign.creatorName,
+    };
+    after(async () => {
+      try {
+        await sendCampaignEndedAdminNotice(noticeParams);
+      } catch (error) {
+        console.error(
+          "[endCampaignAction] admin notice failed:",
+          error instanceof Error ? error.message : String(error),
+        );
+      }
+    });
     return {
       ok: true,
       message: "Kampagne beendet. Die Seite zeigt ab jetzt den Endstand.",

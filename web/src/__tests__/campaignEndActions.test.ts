@@ -1,6 +1,9 @@
 jest.mock("server-only", () => ({}), { virtual: true });
 jest.mock("next/cache", () => ({ revalidatePath: jest.fn() }));
 jest.mock("next/server", () => ({ after: jest.fn() }));
+jest.mock("@/lib/email/sendCampaignEndedAdminNotice", () => ({
+  sendCampaignEndedAdminNotice: jest.fn(),
+}));
 jest.mock("@/lib/campaigns/repository", () => {
   class CampaignRepositoryError extends Error {}
   return {
@@ -22,6 +25,7 @@ jest.mock("@/lib/lookup/plzLookup", () => ({ getBundestagPoliticiansByIds: jest.
 jest.mock("@/lib/campaigns/classifyTopic", () => ({ classifyAndSaveCampaignTopic: jest.fn() }));
 
 import { revalidatePath } from "next/cache";
+import { after } from "next/server";
 import {
   endCampaignAction,
   updateCampaignEndDateAction,
@@ -35,6 +39,7 @@ import {
   setCampaignEndsAt,
 } from "@/lib/campaigns/repository";
 import { getCampaignManagementSession } from "@/lib/campaigns/session";
+import { sendCampaignEndedAdminNotice } from "@/lib/email/sendCampaignEndedAdminNotice";
 import { moderateText } from "@/lib/moderation/moderateText";
 
 const CAMPAIGN_ID = "11111111-1111-4111-8111-111111111111";
@@ -43,6 +48,8 @@ const ENDED_MESSAGE = "Diese Kampagne ist beendet und kann nicht mehr geändert 
 const campaign = {
   id: CAMPAIGN_ID,
   slug: "sichere-schulwege",
+  creatorName: "Initiative Beispiel",
+  letterCount: 120,
   creatorEmail: "owner@example.org",
   title: "Sichere Schulwege",
   status: "active",
@@ -118,6 +125,53 @@ describe("campaign end actions", () => {
         message: ENDED_MESSAGE,
       });
       expect(endCampaignNow).not.toHaveBeenCalled();
+      expect(after).not.toHaveBeenCalled();
+    });
+
+    it("schedules one admin notice to Thomas after a successful end", async () => {
+      await endCampaignAction(CAMPAIGN_ID);
+
+      expect(after).toHaveBeenCalledTimes(1);
+      expect(sendCampaignEndedAdminNotice).not.toHaveBeenCalled();
+      const callback = jest.mocked(after).mock.calls[0]![0] as () => Promise<void>;
+      await callback();
+      expect(sendCampaignEndedAdminNotice).toHaveBeenCalledTimes(1);
+      expect(sendCampaignEndedAdminNotice).toHaveBeenCalledWith({
+        slug: "sichere-schulwege",
+        title: "Sichere Schulwege",
+        letterCount: 120,
+        creatorName: "Initiative Beispiel",
+      });
+    });
+
+    it("swallows a rejected notice and keeps the result", async () => {
+      const spy = jest.spyOn(console, "error").mockImplementation(() => undefined);
+      try {
+        jest.mocked(sendCampaignEndedAdminNotice).mockRejectedValue(new Error("brevo down"));
+
+        await expect(endCampaignAction(CAMPAIGN_ID)).resolves.toEqual({
+          ok: true,
+          message: "Kampagne beendet. Die Seite zeigt ab jetzt den Endstand.",
+        });
+        const callback = jest.mocked(after).mock.calls[0]![0] as () => Promise<void>;
+        await expect(callback()).resolves.toBeUndefined();
+      } finally {
+        spy.mockRestore();
+      }
+    });
+
+    it("does not schedule a notice when ending fails or access is denied", async () => {
+      jest.mocked(endCampaignNow).mockRejectedValue(new Error("db down"));
+      const spy = jest.spyOn(console, "error").mockImplementation(() => undefined);
+      try {
+        await expect(endCampaignAction(CAMPAIGN_ID)).resolves.toMatchObject({ ok: false });
+      } finally {
+        spy.mockRestore();
+      }
+      jest.mocked(getCampaignManagementSession).mockResolvedValue(null);
+      await endCampaignAction(CAMPAIGN_ID);
+      expect(after).not.toHaveBeenCalled();
+      expect(sendCampaignEndedAdminNotice).not.toHaveBeenCalled();
     });
   });
 

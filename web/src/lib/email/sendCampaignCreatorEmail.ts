@@ -2,6 +2,7 @@ import { BrevoClient } from "@getbrevo/brevo";
 import { APP_NAME, APP_URL, EMAIL_SENDER_NAME, FOUNDER_EMAIL } from "@/lib/config";
 import { formatLetterCount } from "@/lib/campaigns/milestones";
 import { creatorSurveyUrl } from "@/lib/campaigns/creatorSurvey";
+import type { EndedMailSendStat } from "@/lib/campaigns/endedMail";
 import {
   buildCampaignCreatorEmailHtml,
   type CampaignCreatorEmailKind,
@@ -22,7 +23,13 @@ interface SendCampaignCreatorEmailBase {
   adminCopy?: boolean;
   campaignStatus?: "awaiting_approval" | "active" | "paused";
   milestone?: { count: number; milestones: number[] };
-  ended?: { count: number };
+  ended?: {
+    count: number;
+    note?: string | null;
+    createdByFounder?: boolean;
+    sendStat?: EndedMailSendStat | null;
+    preview?: boolean;
+  };
 }
 
 export type SendCampaignCreatorEmailParams =
@@ -68,6 +75,10 @@ export async function sendCampaignCreatorEmail(
       ? {
           count: params.ended.count,
           feedbackUrl: creatorSurveyUrl(params.token),
+          note: params.ended.note,
+          createdByFounder: params.ended.createdByFounder,
+          sendStat: params.ended.sendStat,
+          preview: params.ended.preview,
           imageUrl: milestoneImageUrl(params.slug, params.ended.count),
           downloadUrl: `${milestoneImageUrl(params.slug, params.ended.count)}?download=1`,
         }
@@ -83,7 +94,7 @@ export async function sendCampaignCreatorEmail(
               : params.kind === "milestone" && params.milestone
                 ? `${formatLetterCount(params.milestone.count)} Briefe für „${params.campaignTitle}“`
                 : params.kind === "ended" && params.ended
-                  ? `Danke für ${formatLetterCount(params.ended.count)} Briefe zu „${params.campaignTitle}“`
+                  ? `${params.ended.preview ? "[Vorschau] " : ""}Danke für ${formatLetterCount(params.ended.count)} Briefe zu „${params.campaignTitle}“`
                   : `${APP_NAME}: Kampagne verwalten`,
       htmlContent: buildCampaignCreatorEmailHtml({
         kind: params.kind,

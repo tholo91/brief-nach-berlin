@@ -8,6 +8,7 @@ import {
   formatLetterCount,
   formatMilestoneList,
 } from "@/lib/campaigns/milestones";
+import type { EndedMailSendStat } from "@/lib/campaigns/endedMail";
 import { BRIEF_EMAIL } from "@/lib/contact";
 import { buildShareTarget, campaignStartUrl } from "@/lib/share";
 import { SUPPORT_CAMPAIGN_CREATOR_COPY, SUPPORT_CONTENT } from "@/lib/support-content";
@@ -41,6 +42,14 @@ export interface CampaignEndedEmailParams {
   imageUrl: string;
   downloadUrl: string;
   feedbackUrl: string;
+  // Thomas' personal paragraph (plain text, escaped here). Null/absent: no slot.
+  note?: string | null;
+  // Preview mails show a dashed placeholder where the note goes when it is empty.
+  preview?: boolean;
+  // created_by_founder: adds the extra thank-you sentence.
+  createdByFounder?: boolean;
+  // Send rate line, only passed when >= 10 answers exist.
+  sendStat?: EndedMailSendStat | null;
 }
 
 export interface BuildCampaignCreatorEmailHtmlParams {
@@ -277,7 +286,6 @@ function buildCampaignEndedEmailHtml(
   const creatorName = params.creatorName?.trim();
   const greeting = creatorName ? `Moin ${escapeHtml(creatorName)},` : "Moin,";
   const count = formatLetterCount(ended.count);
-  const buttons = [outlineButton(DONATION_PROVIDER_URL, "&#9829;&nbsp;Unterstützen", true)];
   const shareTarget = buildShareTarget(
     { slug: params.slug, title: params.campaignTitle, letterCount: ended.count },
     "milestone"
@@ -285,36 +293,63 @@ function buildCampaignEndedEmailHtml(
   const shareBox = buildShareBox("Erfolg auf den Socials teilen", ended.downloadUrl, shareTarget);
   const boxStyle =
     "margin:0 0 22px;padding:16px 18px;background-color:#FAF8F5;border:1px solid #E0DCD7;border-radius:4px;";
-  const boxLabel = (label: string) =>
-    `<p style="margin:0 0 10px;font-family:'Courier New',Courier,monospace;font-size:12px;font-weight:bold;text-transform:uppercase;color:#2D6A4F;">${label}</p>`;
   const boxText = (text: string, margin = "0 0 12px") =>
     `<p style="margin:${margin};font-size:14px;line-height:1.6;color:#666666;">${text}</p>`;
-  const statsBox = `<div style="${boxStyle}">
-                ${boxLabel("Neu: Statistiken zu deiner Kampagne")}
-                ${boxText("Auf deiner Verwaltungsseite siehst du jetzt, aus welchen Bundesländern geschrieben wurde, wie viele ihren Brief abgeschickt haben und wie die Schreibenden ihren Brief bewertet haben.")}
-                <a href="${params.actionUrl}#creator-stats" target="_blank" rel="noopener noreferrer" class="bnb-cta-link" style="display:block;text-align:center;background-color:#2D6A4F;color:#ffffff;font-size:16px;font-weight:bold;text-decoration:none;padding:13px 10px;border-radius:4px;line-height:1.25;">Statistiken ansehen</a>
-              </div>`;
+  const paragraph = (text: string, margin = "0 0 16px") =>
+    `<p style="margin:${margin};font-size:16px;line-height:1.65;">${text}</p>`;
+  const linkStyle = "color:#2D6A4F;text-decoration:underline;";
+  const handwriting =
+    "font-family:'Caveat','Brush Script MT','Lucida Handwriting',cursive;color:#1D3557;";
+
+  const noteText = ended.note?.trim();
+  const personalNote = noteText
+    ? `<p style="margin:0 0 20px;${handwriting}font-size:23px;line-height:1.35;">${escapeHtml(noteText).replace(/\r?\n/g, "<br>")}</p>`
+    : ended.preview
+      ? `<div style="margin:0 0 20px;padding:14px 16px;border:2px dashed #C9A227;border-radius:4px;background-color:#FFFBEA;"><p style="margin:0;font-size:14px;line-height:1.5;color:#7A6200;">Dein persönlicher Absatz: 2-3 Sätze, kommen per --note hier rein.</p></div>`
+      : "";
+
+  const thanks = paragraph(
+    `Eure Kampagne ist beendet. ${count} Briefe sind darüber entstanden: So viele Menschen haben eure Argumente aufgegriffen und daraus ihren eigenen, persönlichen Brief geschrieben. Danke, dass ihr euch das getraut habt, obwohl Brief-nach-Berlin noch so klein ist.${
+      ended.createdByFounder
+        ? " Und danke, dass ihr mir vertraut habt, die Kampagne für euch aufzusetzen."
+        : ""
+    }`
+  );
+
+  const statsLine = ended.sendStat
+    ? `<p style="margin:0 0 22px;font-size:16px;line-height:1.65;">${ended.sendStat.percent} % der ${ended.sendStat.responses} Unterstützer:innen, die geantwortet haben, haben ihren Brief abgeschickt.<br><a href="${params.actionUrl}#creator-stats" target="_blank" rel="noopener noreferrer" style="font-size:13px;${linkStyle}">Alle Zahlen findet ihr auf eurer Verwaltungsseite.</a></p>`
+    : "";
+
+  const referral = paragraph(
+    `Kennt ihr andere Initiativen oder Creator, für die so eine Briefkampagne passt? Erzählt ihnen davon, das hilft mir am meisten. <a href="${APP_URL}/ngo-briefkampagne" target="_blank" rel="noopener noreferrer" style="${linkStyle}">Mehr dazu findet ihr hier.</a>`,
+    "0 0 14px"
+  );
+
   const feedbackBox = `<div style="${boxStyle}">
                 <a href="${escapeHtml(ended.feedbackUrl)}" target="_blank" rel="noopener noreferrer" class="bnb-cta-link" style="display:block;text-align:center;background-color:#2D6A4F;color:#ffffff;font-size:16px;font-weight:bold;text-decoration:none;padding:13px 10px;border-radius:4px;line-height:1.25;margin:0 0 10px;">1 Minute Feedback</a>
                 ${boxText("Oder antwortet einfach auf diese Mail.", "0")}
               </div>`;
 
+  const donation = `<p style="margin:0 0 22px;font-size:13px;line-height:1.5;color:#888888;">Brief-nach-Berlin bleibt kostenlos. Wer mich unterstützen will, findet hier die <a href="${DONATION_PROVIDER_URL}" target="_blank" rel="noopener noreferrer" style="color:#888888;text-decoration:underline;">Spendenseite</a>.</p>`;
+
   return buildCampaignImageEmailShell(params, {
     imageUrl: ended.imageUrl,
     imageAlt: `${count} Briefe für „${title}“`,
     footerLabel: "Kampagnen-Abschluss",
-    footerNoteHtml: "Du bekommst diese Mail einmalig, weil deine Kampagne beendet ist.",
+    footerNoteHtml: "Ihr bekommt diese Mail einmalig, weil eure Kampagne beendet ist.",
     headHtml: `
   <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500&display=swap" rel="stylesheet">`,
-    contentHtml: `<p style="margin:0 0 16px;font-size:16px;line-height:1.65;">${greeting}</p>
-              <p style="margin:0 0 16px;font-size:16px;line-height:1.65;">deine Kampagne ist beendet. ${count} Briefe sind darüber entstanden: So viele Menschen haben deine Argumente aufgegriffen und daraus ihren eigenen, persönlichen Brief geschrieben. Danke, dass du das angestoßen hast.</p>
-              <p style="margin:0 0 22px;font-size:16px;line-height:1.65;">Wenn du magst, teil deinen Erfolg auf Instagram, LinkedIn oder WhatsApp. Das Bild dafür ist schon fertig.</p>
-              ${shareBox}
-              ${statsBox}
+    contentHtml: `${paragraph(greeting)}
+              ${personalNote}
+              ${thanks}
+              ${statsLine}
+              ${referral}
               ${feedbackBox}
-              <p style="margin:0 0 6px;font-size:16px;line-height:1.65;">Allerbeste Grüße aus Bremen und danke für dein Engagement</p>
-              <p style="margin:0 0 22px;font-family:'Caveat','Brush Script MT','Lucida Handwriting',cursive;font-size:32px;color:#1D3557;line-height:1.1;">Thomas</p>
-              ${buildButtonRow(buttons, "100%")}`,
+              ${paragraph("Wenn ihr mögt, teilt euren Erfolg auf Instagram, LinkedIn oder WhatsApp. Das Bild dafür ist schon fertig.", "0 0 22px")}
+              ${shareBox}
+              <p style="margin:0 0 6px;font-size:16px;line-height:1.65;">Allerbeste Grüße aus Bremen</p>
+              <p style="margin:0 0 22px;${handwriting}font-size:32px;line-height:1.1;">Thomas</p>
+              ${donation}`,
   });
 }
 

@@ -859,6 +859,13 @@ export default function Datenschutz() {
               Marketingliste.
             </p>
             <p className="mb-3">
+              An dieselbe Adresse schicke ich Ihnen eine kurze E-Mail, wenn
+              Ihre Kampagne eine Meilenstein-Zahl an Briefen erreicht, und
+              einmalig nach dem Ende der Kampagne eine Abschluss-Mail mit dem
+              Endstand und der Bitte um freiwilliges Feedback. Der Versand
+              läuft über Brevo (siehe Abschnitt 11).
+            </p>
+            <p className="mb-3">
               Öffentliche Kampagnentexte werden vor Veröffentlichung und bei
               späteren Änderungen automatisch moderiert. Dafür werden Anliegen
               und optionale Beschreibung an Mistral AI übermittelt (siehe

@@ -48,12 +48,14 @@ import {
   bucketTimeline,
   bundeslandName,
   daySpan,
+  formatBarShare,
   formatShare,
   granularityForTimeRange,
   isSmallBasis,
   parseStatsFilter,
   peakPoint,
   SHARE_PERCENT_MIN_BASE,
+  shareBaseNote,
   shareParts,
   statsQueryFromFilter,
   timeRangeFromDay,
@@ -475,6 +477,7 @@ function SurveyDistributionBars({
   baselineValues,
   baselineTotal,
   valueLabel,
+  baseNote,
 }: {
   values: Record<string, number>;
   options: readonly { key: string; label: string }[];
@@ -484,7 +487,9 @@ function SurveyDistributionBars({
   baselineValues?: Record<string, number>;
   baselineTotal?: number;
   valueLabel?: (count: number, total: number) => string;
+  baseNote?: (total: number) => string | null;
 }) {
+  const note = valueLabel && baseNote ? baseNote(total) : null;
   return (
     <div className="grid gap-3">
       {options.map(({ key, label }) => {
@@ -513,6 +518,7 @@ function SurveyDistributionBars({
           </div>
         );
       })}
+      {note && <p className="font-typewriter text-xs text-warmgrau/55">{note}</p>}
     </div>
   );
 }
@@ -1743,7 +1749,8 @@ function OutcomeRoundBlock({ round }: { round: OutcomeRoundStats }) {
                 total={round.channelBase}
                 color="#C1121F"
                 mode="prozentual"
-                valueLabel={formatShare}
+                valueLabel={formatBarShare}
+                baseNote={shareBaseNote}
               />
             </div>
             <div>
@@ -1754,7 +1761,8 @@ function OutcomeRoundBlock({ round }: { round: OutcomeRoundStats }) {
                 total={round.addressedBase}
                 color="#2D6A4F"
                 mode="prozentual"
-                valueLabel={formatShare}
+                valueLabel={formatBarShare}
+                baseNote={shareBaseNote}
               />
             </div>
           </DetailBlock>
@@ -1768,12 +1776,13 @@ function OutcomeRoundBlock({ round }: { round: OutcomeRoundStats }) {
                 total={round.writeAgainBase}
                 color="#2D6A4F"
                 mode="prozentual"
-                valueLabel={formatShare}
+                valueLabel={formatBarShare}
+                baseNote={shareBaseNote}
               />
             </div>
             <div>
               <p className="mb-2 font-body text-xs text-warmgrau/70">
-                Gefühl, sich politisch einbringen zu können. Verschiedene Gruppen, keine Person ist verknüpft.
+                Gefühl, sich politisch einbringen zu können. Verschiedene Gruppen und Zeiträume, keine Person ist verknüpft.
               </p>
               <div className="grid gap-5 md:grid-cols-2">
                 <div>
@@ -1787,12 +1796,13 @@ function OutcomeRoundBlock({ round }: { round: OutcomeRoundStats }) {
                     total={selfEfficacy.outcomesBase}
                     color="#2D6A4F"
                     mode="prozentual"
-                    valueLabel={formatShare}
+                    valueLabel={formatBarShare}
+                    baseNote={shareBaseNote}
                   />
                 </div>
                 <div>
                   <p className="mb-2 font-body text-sm font-semibold text-waldgruen-dark">
-                    Reviews bis 12.08.2026 (direkt nach dem Brief)
+                    Reviews{selfEfficacy.reviewsSince ? ` seit ${formatDate(selfEfficacy.reviewsSince)}` : ""} (direkt nach dem Brief)
                     {isSmallBasis(selfEfficacy.reviewsBase, SHARE_PERCENT_MIN_BASE) && <BasisBadge />}
                   </p>
                   <SurveyDistributionBars
@@ -1801,7 +1811,8 @@ function OutcomeRoundBlock({ round }: { round: OutcomeRoundStats }) {
                     total={selfEfficacy.reviewsBase}
                     color="#1D3557"
                     mode="prozentual"
-                    valueLabel={formatShare}
+                    valueLabel={formatBarShare}
+                    baseNote={shareBaseNote}
                   />
                 </div>
               </div>
@@ -1817,7 +1828,8 @@ function OutcomeRoundBlock({ round }: { round: OutcomeRoundStats }) {
                 total={round.notSentReasonBase}
                 color="#C58B18"
                 mode="prozentual"
-                valueLabel={formatShare}
+                valueLabel={formatBarShare}
+                baseNote={shareBaseNote}
               />
             </div>
             <div>

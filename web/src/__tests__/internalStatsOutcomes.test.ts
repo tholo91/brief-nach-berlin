@@ -6,7 +6,7 @@ import {
   type InternalOutcomeRow,
 } from "@/lib/internalStats/outcomes";
 import { getInternalStatsWithBaseline } from "@/lib/internalStats/getInternalStats";
-import { formatShare } from "@/lib/internalStats/view";
+import { formatBarShare, formatShare, shareBaseNote } from "@/lib/internalStats/view";
 import type { InternalReviewRow } from "@/lib/internalStats/aggregate";
 import {
   LASTCALL_COHORT,
@@ -86,6 +86,13 @@ describe("formatShare", () => {
     expect(formatShare(15, 60)).toBe("25,0 % (n = 60)");
     expect(formatShare(12, 322)).toBe("3,7 % (n = 322)");
     expect(formatShare(0, 0)).toBe("0 von 0");
+  });
+
+  it("drops the base from bar rows and states it once below the list", () => {
+    expect(formatBarShare(2, 8)).toBe("2 von 8");
+    expect(formatBarShare(188, 412)).toBe("45,6 %");
+    expect(shareBaseNote(8)).toBeNull();
+    expect(shareBaseNote(412)).toBe("n = 412");
   });
 });
 
@@ -227,7 +234,7 @@ describe("aggregateOutcomes counting rules", () => {
     expect(buckets.map((b) => b.count)).toEqual([2, 0, 1]);
   });
 
-  it("compares self-efficacy with reviews strictly before the cutoff", () => {
+  it("compares self-efficacy with every answered review and reports the earliest one", () => {
     const stats = aggregateOutcomes(
       [
         completedForm({ political_self_efficacy: "rather_yes" }),
@@ -242,9 +249,10 @@ describe("aggregateOutcomes counting rules", () => {
       round,
       FETCHED_AT,
     );
-    expect(stats.selfEfficacy.reviewsBase).toBe(2);
-    expect(stats.selfEfficacy.reviews.clearly_yes).toBe(1);
+    expect(stats.selfEfficacy.reviewsBase).toBe(3);
+    expect(stats.selfEfficacy.reviews.clearly_yes).toBe(2);
     expect(stats.selfEfficacy.reviews.unsure).toBe(1);
+    expect(stats.selfEfficacy.reviewsSince).toBe("2026-07-01T10:00:00.000Z");
     expect(stats.selfEfficacy.outcomesBase).toBe(1);
     expect(stats.selfEfficacy.outcomes.rather_yes).toBe(1);
   });

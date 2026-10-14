@@ -122,7 +122,6 @@ export type OutcomeRoundStats = {
   sentCount: number;
   deliveredCount: number;
   letterWindowLabel: string;
-  reviewCutoffUtc: string;
   respondentCount: number;
   completedCount: number;
   path: {
@@ -157,6 +156,7 @@ export type OutcomeRoundStats = {
     outcomesBase: number;
     reviews: Record<PoliticalSelfEfficacy, number>;
     reviewsBase: number;
+    reviewsSince: string | null;
   };
   freeTexts: OutcomeFreeText[];
   callOkCount: number;
@@ -196,7 +196,6 @@ function emptyOutcomeRoundStats(
     sentCount: round.sentCount,
     deliveredCount: round.deliveredCount,
     letterWindowLabel: round.letterWindowLabel,
-    reviewCutoffUtc: round.reviewCutoffUtc,
     respondentCount: 0,
     completedCount: 0,
     path: {
@@ -231,6 +230,7 @@ function emptyOutcomeRoundStats(
       outcomesBase: 0,
       reviews: zeroRecord(POLITICAL_SELF_EFFICACY_VALUES),
       reviewsBase: 0,
+      reviewsSince: null,
     },
     freeTexts: [],
     callOkCount: 0,
@@ -364,14 +364,16 @@ export function aggregateOutcomes(
   stats.path.addressedBase = stats.addressedBase;
   stats.path.concrete = stats.addressedCounts.concrete;
 
-  const cutoff = Date.parse(round.reviewCutoffUtc);
+  // The reviews only ask this question since 06.09.2026, so the comparison uses every answered review.
+  let earliestReview = Number.POSITIVE_INFINITY;
   for (const review of reviewRows) {
     if (!isOneOf(POLITICAL_SELF_EFFICACY_VALUES, review.political_self_efficacy)) continue;
-    const createdAt = Date.parse(review.created_at ?? "");
-    if (!Number.isFinite(createdAt) || !(createdAt < cutoff)) continue;
     stats.selfEfficacy.reviewsBase += 1;
     stats.selfEfficacy.reviews[review.political_self_efficacy] += 1;
+    const createdAt = Date.parse(review.created_at ?? "");
+    if (Number.isFinite(createdAt) && createdAt < earliestReview) earliestReview = createdAt;
   }
+  if (Number.isFinite(earliestReview)) stats.selfEfficacy.reviewsSince = new Date(earliestReview).toISOString();
 
   stats.freeTexts = completedRows
     .filter((row) => trimmedOrNull(row.body) !== null)

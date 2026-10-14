@@ -167,6 +167,16 @@ export function formatShare(count: number, base: number): string {
   return `${shareText} % (n = ${formatNumber(base)})`;
 }
 
+/** Per-row variant of formatShare for bar lists; the base goes once under the list via shareBaseNote. */
+export function formatBarShare(count: number, base: number): string {
+  if (base < SHARE_PERCENT_MIN_BASE) return formatShare(count, base);
+  return `${shareParts(count, base).shareText} %`;
+}
+
+export function shareBaseNote(base: number): string | null {
+  return base < SHARE_PERCENT_MIN_BASE ? null : `n = ${formatNumber(base)}`;
+}
+
 const MONTH_SHORT = [
   "Jan", "Feb", "Mär", "Apr", "Mai", "Jun",
   "Jul", "Aug", "Sep", "Okt", "Nov", "Dez",

@@ -23,7 +23,6 @@ export type OutcomeRound = {
   sentCount: number;
   deliveredCount: number;
   letterWindowLabel: string;
-  reviewCutoffUtc: string;
 };
 
 // Eine weitere Runde (z. B. lastcall_2027_01) braucht nur einen Eintrag mehr.
@@ -35,7 +34,6 @@ export const OUTCOME_ROUNDS: readonly OutcomeRound[] = [
     sentCount: LASTCALL_SENT_COUNT,
     deliveredCount: LASTCALL_DELIVERED_COUNT,
     letterWindowLabel: LASTCALL_LETTER_WINDOW_LABEL,
-    reviewCutoffUtc: LASTCALL_CUTOFF_UTC,
   },
 ];
 

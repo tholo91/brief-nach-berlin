@@ -1,3 +1,6 @@
+import { createElement } from "react";
+import { renderToStaticMarkup } from "react-dom/server";
+import { Briefweg } from "@/components/internalStats/Briefweg";
 import {
   aggregateOutcomes,
   type InternalOutcomeRow,
@@ -331,5 +334,36 @@ describe("getInternalStatsWithBaseline outcomes query", () => {
     await expect(getInternalStatsWithBaseline()).rejects.toThrow(
       "Internal outcome stats failed: boom",
     );
+  });
+});
+
+describe("Briefweg", () => {
+  it("renders the path as an ordered list with shares and no email", () => {
+    const stats = aggregateOutcomes(
+      [
+        completedForm({ reply_channels: ["email"] }),
+        completedForm({ letter_sent: "typed", reply_channels: ["none"], reply_addressed: null }),
+        outcome({ entry_choice: "no" }),
+      ],
+      [],
+      round,
+      FETCHED_AT,
+    );
+    const markup = renderToStaticMarkup(createElement(Briefweg, { round: stats }));
+    expect(markup).toContain("<ol");
+    expect(markup).toContain("322");
+    expect(markup).toContain(formatShare(3, 322));
+    expect(markup).toContain(formatShare(3, 3));
+    expect(markup).toContain("davon konkret eingegangen");
+    expect(markup).toContain("1 von Hand");
+    expect(markup).not.toContain("@");
+  });
+
+  it("does not divide by zero without respondents", () => {
+    const stats = aggregateOutcomes([], [], round, FETCHED_AT);
+    const markup = renderToStaticMarkup(createElement(Briefweg, { round: stats }));
+    expect(markup).toContain("0,0 % (n = 322)");
+    expect(markup).toContain("0 von 0");
+    expect(markup).not.toContain("NaN");
   });
 });

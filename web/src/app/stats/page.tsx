@@ -21,6 +21,18 @@ import {
 } from "@/lib/internalStats/access";
 import { getInternalStatsWithBaseline } from "@/lib/internalStats/getInternalStats";
 import { BarTrack } from "@/components/internalStats/BarTrack";
+import { Briefweg } from "@/components/internalStats/Briefweg";
+import {
+  OUTCOME_LABELS,
+  type OutcomeRoundStats,
+} from "@/lib/internalStats/outcomes";
+import {
+  EXPECTATION_VALUES,
+  NOT_SENT_REASON_VALUES,
+  REPLY_ADDRESSED_VALUES,
+  REPLY_CHANNEL_VALUES,
+  WRITE_AGAIN_VALUES,
+} from "@/lib/rueckmeldung/schema";
 import {
   campaignSourceTotal,
   topCampaignSlug,
@@ -36,10 +48,12 @@ import {
   bucketTimeline,
   bundeslandName,
   daySpan,
+  formatShare,
   granularityForTimeRange,
   isSmallBasis,
   parseStatsFilter,
   peakPoint,
+  SHARE_PERCENT_MIN_BASE,
   shareParts,
   statsQueryFromFilter,
   timeRangeFromDay,
@@ -183,6 +197,7 @@ const SECTION_LINKS = [
   { id: "verlauf", label: "Verlauf" },
   { id: "themen", label: "Themen" },
   { id: "feedback", label: "Feedback" },
+  { id: "nach-dem-brief", label: "Nach dem Brief" },
   { id: "wirkung", label: "Wirkung" },
   { id: "definitionen", label: "Definitionen" },
 ] as const;
@@ -459,6 +474,7 @@ function SurveyDistributionBars({
   mode,
   baselineValues,
   baselineTotal,
+  valueLabel,
 }: {
   values: Record<string, number>;
   options: readonly { key: string; label: string }[];
@@ -467,6 +483,7 @@ function SurveyDistributionBars({
   mode: ViewMode;
   baselineValues?: Record<string, number>;
   baselineTotal?: number;
+  valueLabel?: (count: number, total: number) => string;
 }) {
   return (
     <div className="grid gap-3">
@@ -482,9 +499,15 @@ function SurveyDistributionBars({
             <div className="flex items-baseline justify-between gap-3">
               <span className="font-body text-sm font-semibold text-waldgruen-dark">
                 {label}
-                {isSmallBasis(count) && <BasisBadge />}
+                {!valueLabel && isSmallBasis(count) && <BasisBadge />}
               </span>
-              <ShareStat mode={mode} value={count} total={total} />
+              {valueLabel ? (
+                <span className="text-right font-typewriter text-sm font-bold tabular-nums text-waldgruen-dark">
+                  {valueLabel(count, total)}
+                </span>
+              ) : (
+                <ShareStat mode={mode} value={count} total={total} />
+              )}
             </div>
             <BarTrack value={share} scale={100} baseline={baselineShare} color={color} />
           </div>
@@ -846,12 +869,14 @@ export default async function InternalStatsPage({ searchParams }: InternalStatsP
 
   let stats: InternalStats;
   let baseline: InternalStats | null;
+  let outcomes: OutcomeRoundStats[];
   try {
-    ({ stats, baseline } = await getInternalStatsWithBaseline(filter));
+    ({ stats, baseline, outcomes } = await getInternalStatsWithBaseline(filter));
   } catch (error) {
     console.error("[internal-stats] read failed", error);
     return <DataError />;
   }
+  const latestRound = outcomes[outcomes.length - 1];
   const chips = activeFilterChips(query, stats.campaignLabels);
   const campaignSignalCounts = stats.letterSignals.sourceCounts.campaign;
   const hasCampaignSignals = Object.keys(campaignSignalCounts).length > 0;
@@ -1417,6 +1442,23 @@ export default async function InternalStatsPage({ searchParams }: InternalStatsP
           </BasisNote>
         </Section>
 
+        <Section id="nach-dem-brief" accent="rot">
+          <SectionHeading
+            eyebrow="Rückmeldungen nach dem Versand"
+            title="Was passiert nach dem Brief?"
+            detail="Antworten auf meine Mail nach dem Versand der Briefe. Die Filter oben wirken hier nicht."
+          />
+          {outcomes.length === 0 ? (
+            <EmptyState>Noch keine Rückmeldungen.</EmptyState>
+          ) : (
+            <div className="grid gap-10">
+              {[...outcomes].reverse().map((round) => (
+                <OutcomeRoundBlock key={round.cohort} round={round} />
+              ))}
+            </div>
+          )}
+        </Section>
+
         <Section id="wirkung" accent="gruen">
           <SectionHeading
             eyebrow="Politische Selbstwirksamkeit"
@@ -1571,12 +1613,16 @@ export default async function InternalStatsPage({ searchParams }: InternalStatsP
               body={`In Reviews ohne verknüpfte Signal-Zeile fehlt die Kampagnen-Zuordnung (Bucket „ohne Signal“): ${formatNumber(stats.reviewSourceCounts.unknown)} Reviews.`}
             />
             <Definition
+              title="Rückmeldungen"
+              body={`Antworten auf meine Mail nach dem Versand der Briefe${latestRound ? ` (${formatNumber(latestRound.deliveredCount)} zugestellt laut Brevo, fester Wert)` : ""}. Der Klick in der Mail entscheidet die Hauptfrage, ein fertiges Formular geht vor. Alle Details kommen nur aus fertigen Formularen. Testadressen sind schon in der Abfrage ausgeschlossen. Unter ${SHARE_PERCENT_MIN_BASE} Antworten zeige ich absolute Zahlen, ab ${SHARE_PERCENT_MIN_BASE} Prozent mit n. Die Filter oben wirken nicht auf diesen Abschnitt.`}
+            />
+            <Definition
               title="Kleine Basen"
               body="Werte mit weniger als 10 Beobachtungen sind markiert und werden nicht als belastbarer Haupterfolg hervorgehoben."
             />
             <Definition
               title="Datenschutz"
-              body="Nur Aggregate · keine Brieftexte · keine E-Mail-Adressen · keine Einzelzeilen · keine vollständigen PLZ. Seite ist passwortgeschützt und für Suchmaschinen gesperrt (noindex)."
+              body="Aggregate · keine Brieftexte · keine E-Mail-Adressen · keine vollständigen PLZ. Einzige Ausnahme sind die Freitexte aus den Rückmeldungen, eingeklappt unter „Alle Antworten“ und ohne E-Mail-Adresse. Die Seite ist passwortgeschützt und für Suchmaschinen gesperrt (noindex)."
             />
           </div>
         </Section>
@@ -1587,11 +1633,251 @@ export default async function InternalStatsPage({ searchParams }: InternalStatsP
             {rangeLabel} · {sourceLabel}
           </p>
           <p className="sm:text-right">
-            Nur Aggregate · keine Anliegen · keine E-Mail-Adressen · keine Einzelzeilen
+            Aggregate · Freitexte aus Rückmeldungen nur eingeklappt · keine Anliegen · keine E-Mail-Adressen
           </p>
         </footer>
       </div>
     </main>
+  );
+}
+
+const channelOptions = REPLY_CHANNEL_VALUES.map((key) => ({
+  key,
+  label: OUTCOME_LABELS.replyChannel[key],
+}));
+const addressedOptions = REPLY_ADDRESSED_VALUES.map((key) => ({
+  key,
+  label: OUTCOME_LABELS.replyAddressed[key],
+}));
+const writeAgainOptions = WRITE_AGAIN_VALUES.map((key) => ({
+  key,
+  label: OUTCOME_LABELS.writeAgain[key],
+}));
+const notSentReasonOptions = NOT_SENT_REASON_VALUES.map((key) => ({
+  key,
+  label: OUTCOME_LABELS.notSentReason[key],
+}));
+
+function formatIsoDay(day: string | null): string {
+  if (!day) return "";
+  const [year, month, dayOfMonth] = day.split("-");
+  return `${dayOfMonth}.${month}.${year}`;
+}
+
+function DetailBlock({
+  title,
+  base,
+  children,
+}: {
+  title: string;
+  base: number;
+  children: ReactNode;
+}) {
+  return (
+    <div className="rounded-xl border border-warmgrau/10 bg-creme/50 p-4 sm:p-5">
+      <SubHeading>
+        {title}
+        {isSmallBasis(base, SHARE_PERCENT_MIN_BASE) && <BasisBadge />}
+      </SubHeading>
+      <div className="grid gap-5">{children}</div>
+    </div>
+  );
+}
+
+function OutcomeRoundBlock({ round }: { round: OutcomeRoundStats }) {
+  const { path, replyRateByMethod, selfEfficacy } = round;
+  const methodBase = replyRateByMethod.handwritten.sent + replyRateByMethod.typed.sent;
+  return (
+    <div className="grid gap-6">
+      <p className="font-typewriter text-sm leading-relaxed text-warmgrau/80">
+        {round.label} · Mail am {formatDate(round.sentAt)} an {formatNumber(round.sentCount)} Leute,{" "}
+        {formatNumber(round.deliveredCount)} zugestellt · Briefe aus {round.letterWindowLabel}
+      </p>
+
+      <div>
+        <SubHeading>
+          Briefweg
+          {isSmallBasis(round.respondentCount, SHARE_PERCENT_MIN_BASE) && <BasisBadge />}
+        </SubHeading>
+        <Briefweg round={round} />
+      </div>
+
+      <div>
+        <SubHeading>Rücklauf pro Tag seit dem Versand</SubHeading>
+        {round.respondentCount === 0 ? (
+          <EmptyState>Noch keine Rückmeldungen zu dieser Runde.</EmptyState>
+        ) : (
+          <ColumnChart
+            data={bucketTimeline(round.returnDayCounts, "day")}
+            unit="Rückmeldungen"
+            axisLabel="Tag"
+          />
+        )}
+      </div>
+
+      {round.completedCount === 0 ? (
+        <EmptyState>Noch keine fertigen Formulare.</EmptyState>
+      ) : (
+        <div className="grid gap-4 lg:grid-cols-2">
+          <DetailBlock title="Von Hand oder getippt" base={methodBase}>
+            <div className="grid gap-3 sm:grid-cols-2">
+              <MiniStat
+                label={OUTCOME_LABELS.letterSent.handwritten}
+                value={formatShare(replyRateByMethod.handwritten.replied, replyRateByMethod.handwritten.sent)}
+                detail="mit Reaktion"
+              />
+              <MiniStat
+                label={OUTCOME_LABELS.letterSent.typed}
+                value={formatShare(replyRateByMethod.typed.replied, replyRateByMethod.typed.sent)}
+                detail="mit Reaktion"
+              />
+            </div>
+          </DetailBlock>
+
+          <DetailBlock title="Reaktion und wie konkret" base={round.channelBase}>
+            <div>
+              <p className="mb-2 font-body text-xs text-warmgrau/70">Welche Reaktion kam? Mehrfachnennung möglich.</p>
+              <SurveyDistributionBars
+                values={round.channelCounts}
+                options={channelOptions}
+                total={round.channelBase}
+                color="#C1121F"
+                mode="prozentual"
+                valueLabel={formatShare}
+              />
+            </div>
+            <div>
+              <p className="mb-2 font-body text-xs text-warmgrau/70">Wurde auf das Anliegen eingegangen?</p>
+              <SurveyDistributionBars
+                values={round.addressedCounts}
+                options={addressedOptions}
+                total={round.addressedBase}
+                color="#2D6A4F"
+                mode="prozentual"
+                valueLabel={formatShare}
+              />
+            </div>
+          </DetailBlock>
+
+          <DetailBlock title="Wieder schreiben und Handlungsfähigkeit" base={round.writeAgainBase}>
+            <div>
+              <p className="mb-2 font-body text-xs text-warmgrau/70">Noch einen Brief schreiben?</p>
+              <SurveyDistributionBars
+                values={round.writeAgainCounts}
+                options={writeAgainOptions}
+                total={round.writeAgainBase}
+                color="#2D6A4F"
+                mode="prozentual"
+                valueLabel={formatShare}
+              />
+            </div>
+            <div>
+              <p className="mb-2 font-body text-xs text-warmgrau/70">
+                Gefühl, sich politisch einbringen zu können. Verschiedene Gruppen, keine Person ist verknüpft.
+              </p>
+              <div className="grid gap-5 md:grid-cols-2">
+                <div>
+                  <p className="mb-2 font-body text-sm font-semibold text-waldgruen-dark">
+                    Rückmeldungen (Wochen nach dem Brief)
+                    {isSmallBasis(selfEfficacy.outcomesBase, SHARE_PERCENT_MIN_BASE) && <BasisBadge />}
+                  </p>
+                  <SurveyDistributionBars
+                    values={selfEfficacy.outcomes}
+                    options={selfEfficacyOptions}
+                    total={selfEfficacy.outcomesBase}
+                    color="#2D6A4F"
+                    mode="prozentual"
+                    valueLabel={formatShare}
+                  />
+                </div>
+                <div>
+                  <p className="mb-2 font-body text-sm font-semibold text-waldgruen-dark">
+                    Reviews bis 12.08.2026 (direkt nach dem Brief)
+                    {isSmallBasis(selfEfficacy.reviewsBase, SHARE_PERCENT_MIN_BASE) && <BasisBadge />}
+                  </p>
+                  <SurveyDistributionBars
+                    values={selfEfficacy.reviews}
+                    options={selfEfficacyOptions}
+                    total={selfEfficacy.reviewsBase}
+                    color="#1D3557"
+                    mode="prozentual"
+                    valueLabel={formatShare}
+                  />
+                </div>
+              </div>
+            </div>
+          </DetailBlock>
+
+          <DetailBlock title="Nicht abgeschickt und Erwartung" base={round.notSentReasonBase}>
+            <div>
+              <p className="mb-2 font-body text-xs text-warmgrau/70">Was hat gebremst?</p>
+              <SurveyDistributionBars
+                values={round.notSentReasonCounts}
+                options={notSentReasonOptions}
+                total={round.notSentReasonBase}
+                color="#C58B18"
+                mode="prozentual"
+                valueLabel={formatShare}
+              />
+            </div>
+            <div>
+              <p className="mb-2 font-body text-xs text-warmgrau/70">Erwartung vorher, Reaktion nachher</p>
+              <ul className="grid gap-1.5 font-body text-sm text-warmgrau/85">
+                {EXPECTATION_VALUES.filter((key) => round.expectationVsResult[key].total > 0).map((key) => {
+                  const entry = round.expectationVsResult[key];
+                  return (
+                    <li key={key}>
+                      <span className="font-semibold text-waldgruen-dark">{OUTCOME_LABELS.expectation[key]}:</span>{" "}
+                      {formatNumber(entry.total)} · davon mit Reaktion {formatShare(entry.replied, entry.total)}
+                    </li>
+                  );
+                })}
+              </ul>
+              {round.expectationBase === 0 && <EmptyState>Noch keine Angaben.</EmptyState>}
+            </div>
+          </DetailBlock>
+        </div>
+      )}
+
+      <div className="grid gap-3 sm:grid-cols-2">
+        <MiniStat label="Fertige Formulare" value={formatNumber(round.completedCount)} />
+        <MiniStat label="Offen für ein Gespräch" value={formatNumber(round.callOkCount)} />
+      </div>
+
+      <Collapsible
+        summary={`Alle Antworten (${formatNumber(round.freeTexts.length)})`}
+        detail="Freitexte aus fertigen Formularen, ohne E-Mail-Adressen. Texte mit Freigabe sind markiert."
+      >
+        {round.freeTexts.length === 0 ? (
+          <EmptyState>Noch keine Freitexte.</EmptyState>
+        ) : (
+          <ul className="grid gap-3">
+            {round.freeTexts.map((entry, index) => (
+              <li key={index}>
+                <blockquote className="rounded-lg border-l-4 border-waldgruen/30 bg-creme/60 px-4 py-3">
+                  <p className="whitespace-pre-line font-body text-sm leading-relaxed text-warmgrau/90">{entry.text}</p>
+                  <footer className="mt-2 font-typewriter text-xs text-warmgrau/70">
+                    {formatIsoDay(entry.day)}
+                    {entry.consent && (
+                      <>
+                        {entry.day ? " · " : ""}Freigabe zur Veröffentlichung
+                        {entry.displayName ? ` · ${entry.displayName}` : ""}
+                      </>
+                    )}
+                  </footer>
+                </blockquote>
+              </li>
+            ))}
+          </ul>
+        )}
+      </Collapsible>
+
+      <BasisNote>
+        Basis: {formatNumber(round.respondentCount)} Rückmeldungen per Klick, {formatNumber(round.completedCount)} fertige
+        Formulare · Testadressen ausgeschlossen · {formatNumber(path.delivered)} zugestellt laut Brevo · Details nur aus
+        fertigen Formularen
+      </BasisNote>
+    </div>
   );
 }
 

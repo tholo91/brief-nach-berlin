@@ -198,7 +198,7 @@ export default async function ManageCampaignPage({
                     <>
                       {creatorStats && <CampaignCreatorStats stats={creatorStats} />}
                       {cardStatus && <CreatorSurveyCard status={cardStatus} />}
-                      {creatorStats && <CampaignReferralCard />}
+                      {creatorStats && <CampaignReferralCard slug={authorizedCampaign.slug} />}
                     </>
                   ) : undefined
                 }

@@ -1,4 +1,5 @@
 import { APP_URL, COMPACT_APP_URL, SHARE_TEXT_CAUSE } from "@/lib/config";
+import { BRIEF_EMAIL } from "@/lib/contact";
 import { formatLetterCount } from "@/lib/campaigns/milestones";
 import type { PoliticalLevel } from "@/lib/types/politician";
 
@@ -95,8 +96,8 @@ export function campaignStartUrl(): string {
 
 export function buildCampaignStartShare(): Pick<ShareTarget, "url" | "text" | "subject" | "emailUrl"> {
   const url = campaignStartUrl();
-  const subject = "Eine Briefkampagne starten mit Brief nach Berlin";
-  const text = `Ich führe eine Briefkampagne bei Brief nach Berlin. Damit schreiben Menschen persönliche Briefe an ihre Abgeordneten, kostenlos und ohne Account. Wäre das was für dich? ${url}`;
+  const subject = "Briefkampagne mit Brief-nach-Berlin";
+  const text = `Kennst du Brief-nach-Berlin? Darüber schreiben Menschen einen persönlichen Brief an ihre Abgeordneten, kostenlos und ohne Account. Ich nutze es für meine Kampagne, es passt gut als Aufruf unter politische Posts. Eine eigene Kampagne startest du hier: ${url} Bei Fragen hilft Thomas, der das Projekt macht: ${BRIEF_EMAIL}`;
   return {
     url,
     text,

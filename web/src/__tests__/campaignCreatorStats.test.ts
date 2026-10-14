@@ -1014,32 +1014,50 @@ describe("CampaignCreatorStats rendering", () => {
 });
 
 describe("CampaignReferralCard", () => {
-  const markup = renderToStaticMarkup(createElement(CampaignReferralCard));
+  const SLUG = "klima-jetzt";
+  const markup = renderToStaticMarkup(
+    createElement(CampaignReferralCard, { slug: SLUG }),
+  );
   const decoded = markup.replace(/&#x27;/g, "'").replace(/&quot;/g, '"');
 
   it("renders the referral copy and both buttons", () => {
     for (const text of [
-      "Kennst du jemanden, der auch was bewegen will?",
-      "Weiterempfehlen",
-      "Thomas vorstellen",
-      "Du willst Brief nach Berlin unterstützen?",
+      "Lust auf einen gemeinsamen Post?",
+      "Ich teile deine Kampagne gern auf Instagram oder LinkedIn, am liebsten in einem gemeinsamen Post.",
+      "Und kennst du Creator oder Initiativen, die über Politik posten?",
+      "Mit Brief-nach-Berlin bekommt ihr Publikum einen konkreten nächsten Schritt: einen Brief an die eigenen Abgeordneten.",
+      "Gemeinsamen Post planen",
+      "Brief-nach-Berlin weiterempfehlen",
+      "Du willst Brief-nach-Berlin unterstützen?",
       "Hier geht's zur Spende.",
     ]) {
       expect(decoded).toContain(text);
     }
     expect(decoded).not.toMatch(/[–—]/);
+    expect(decoded).not.toContain("Brief nach Berlin");
   });
 
   it("shares a mail fallback that links the campaign start page", () => {
     const share = buildCampaignStartShare();
     expect(share.url).toBe(`${APP_URL}/kampagne/starten`);
     expect(share.text).toContain(share.url);
+    expect(share.subject).toBe("Briefkampagne mit Brief-nach-Berlin");
+    expect(share.text).toBe(
+      `Kennst du Brief-nach-Berlin? Darüber schreiben Menschen einen persönlichen Brief an ihre Abgeordneten, kostenlos und ohne Account. Ich nutze es für meine Kampagne, es passt gut als Aufruf unter politische Posts. Eine eigene Kampagne startest du hier: ${share.url} Bei Fragen hilft Thomas, der das Projekt macht: ${BRIEF_EMAIL}`,
+    );
+    expect(share.subject + share.text).not.toMatch(/[–—]/);
+    expect(share.subject + share.text).not.toContain("Brief nach Berlin");
     expect(markup).toContain(`href="${share.emailUrl.replace(/&/g, "&amp;")}"`);
   });
 
-  it("introduces Thomas by mail with the campaign subject", () => {
-    expect(markup).toContain(
-      `href="mailto:${BRIEF_EMAIL}?subject=Vorstellung%3A%20Kampagne"`,
+  it("plans a joint post by mail with the campaign slug as subject", () => {
+    const share = buildCampaignStartShare();
+    const jointHref = `href="mailto:${BRIEF_EMAIL}?subject=${encodeURIComponent(`Gemeinsamer Post: ${SLUG}`)}"`;
+    expect(markup).toContain(jointHref);
+    expect(markup).toContain("Gemeinsamer%20Post%3A%20klima-jetzt");
+    expect(markup).not.toContain("Vorstellung%3A");
+    expect(markup.indexOf(jointHref)).toBeLessThan(
+      markup.indexOf(`href="${share.emailUrl.replace(/&/g, "&amp;")}"`),
     );
   });
 

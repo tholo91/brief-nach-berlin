@@ -13,10 +13,9 @@ const AVATAR_EMOJIS = [
   { emoji: "🌱", className: "left-6 top-0 rotate-3 text-lg" },
 ];
 
-const INTRODUCE_HREF = `mailto:${BRIEF_EMAIL}?subject=${encodeURIComponent("Vorstellung: Kampagne")}`;
-
-export function CampaignReferralCard() {
+export function CampaignReferralCard({ slug }: { slug: string }) {
   const share = buildCampaignStartShare();
+  const jointPostHref = `mailto:${BRIEF_EMAIL}?subject=${encodeURIComponent(`Gemeinsamer Post: ${slug}`)}`;
 
   return (
     <section
@@ -29,31 +28,32 @@ export function CampaignReferralCard() {
           id="creator-referral-heading"
           className="text-balance font-typewriter text-lg font-bold leading-snug text-waldgruen-dark md:text-xl"
         >
-          Kennst du jemanden, der auch was bewegen will?
+          Lust auf einen gemeinsamen Post?
         </h2>
         <p className="mt-3 max-w-2xl font-body text-sm leading-relaxed text-warmgrau/80 md:text-base">
-          Eine Initiative, ein Verein, jemand mit Community und einem Anliegen?
-          Erzähl ihnen von Brief nach Berlin oder stell mich kurz vor. Ich
-          richte die Kampagne gern mit ein.
+          Ich teile deine Kampagne gern auf Instagram oder LinkedIn, am liebsten
+          in einem gemeinsamen Post. Und kennst du Creator oder Initiativen, die
+          über Politik posten? Mit Brief-nach-Berlin bekommt ihr Publikum einen
+          konkreten nächsten Schritt: einen Brief an die eigenen Abgeordneten.
         </p>
       </div>
 
       <div className="col-span-2 flex flex-col gap-2 px-5 pt-5 sm:flex-row sm:flex-wrap md:col-span-1 md:pl-7 md:pr-4">
+        <a
+          href={jointPostHref}
+          className="inline-flex min-h-11 items-center justify-center whitespace-nowrap rounded-md bg-waldgruen px-4 py-2.5 text-center font-body text-sm font-semibold text-creme transition-[background-color,transform] duration-200 hover:bg-waldgruen-dark active:translate-y-px focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-waldgruen"
+        >
+          Gemeinsamen Post planen
+        </a>
         <CampaignReferralShareButton
           text={share.text}
           subject={share.subject}
           fallbackHref={share.emailUrl}
         />
-        <a
-          href={INTRODUCE_HREF}
-          className="inline-flex min-h-11 items-center justify-center whitespace-nowrap rounded-md border border-waldgruen/30 bg-white/45 px-4 py-2.5 text-center font-body text-sm font-semibold text-waldgruen-dark transition-[border-color,background-color,transform] duration-200 hover:border-waldgruen hover:bg-white/80 active:translate-y-px focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-waldgruen"
-        >
-          Thomas vorstellen
-        </a>
       </div>
 
       <p className="self-end pb-5 pl-5 pr-2 pt-4 font-body text-xs leading-relaxed text-warmgrau/60 md:pb-7 md:pl-7">
-        Du willst Brief nach Berlin unterstützen?{" "}
+        Du willst Brief-nach-Berlin unterstützen?{" "}
         <a
           href={DONATION_PROVIDER_URL}
           target="_blank"

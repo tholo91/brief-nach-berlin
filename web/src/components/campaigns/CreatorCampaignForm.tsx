@@ -1152,6 +1152,10 @@ export function CreatorCampaignForm() {
             <a href="/nutzungsbedingungen" target="_blank" rel="noopener noreferrer" className="underline hover:text-waldgruen-dark">
               Nutzungsbedingungen
             </a>{" "}
+            und die{" "}
+            <a href="/kampagnen-grundsaetze" target="_blank" rel="noopener noreferrer" className="underline hover:text-waldgruen-dark">
+              Grundsätze für Kampagnen
+            </a>{" "}
             akzeptiere.
           </span>
         </label>

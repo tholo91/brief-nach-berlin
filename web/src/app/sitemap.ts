@@ -206,6 +206,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 0.3,
     },
     {
+      url: `${BASE_URL}/kampagnen-grundsaetze`,
+      lastModified,
+      changeFrequency: "yearly",
+      priority: 0.3,
+    },
+    {
       url: `${BASE_URL}/wahlkreisbuero-oder-berlin`,
       lastModified,
       changeFrequency: "monthly",

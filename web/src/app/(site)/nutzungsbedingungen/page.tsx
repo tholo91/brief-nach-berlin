@@ -116,9 +116,11 @@ export default function Nutzungsbedingungen() {
               Die KI ist angewiesen, keine Beleidigungen oder Unterstellungen
               zu formulieren. Öffentliche Kampagnentexte prüft zusätzlich ein
               automatischer Filter von Mistral. Bevor eine neue Kampagne online
-              geht, schaue ich sie kurz durch. Das ist eine grobe Prüfung auf
-              offensichtliche Verstöße und Spam, keine inhaltliche Prüfung.
-              Filter machen Fehler. Wenn du glaubst, dass etwas zu
+              geht, prüfe ich sie nach meinen{" "}
+              <Link href="/kampagnen-grundsaetze" className="text-waldgruen hover:underline">
+                Grundsätzen für Kampagnen
+              </Link>
+              . Filter machen Fehler. Wenn du glaubst, dass etwas zu
               Unrecht geblockt wurde, schreib mir.
             </p>
           </div>

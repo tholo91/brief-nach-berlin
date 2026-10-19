@@ -49,3 +49,6 @@ web/data/constituency-offices.csv
 # Förderanträge, Wettbewerbe und persönliche Finanzierung (lokal, nicht im öffentlichen Repo)
 .planning/funding/
 output/pdf/bpb-antragsentwurf-2027.pdf
+
+# Moderation: Absage-Textbausteine und interne Notizen (lokal, nicht im öffentlichen Repo)
+.planning/moderation/

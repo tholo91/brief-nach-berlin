@@ -36,7 +36,7 @@ export const metadata: Metadata = {
 const faqs = [
   {
     q: "Wie starte ich eine Kampagne bei Brief nach Berlin?",
-    a: "Du beschreibst dein Anliegen, Ziel und Kontext. Nach deiner E-Mail-Bestätigung prüfen wir den öffentlichen Text. Danach bekommst du einen Link, den du teilen kannst. Andere Menschen nutzen diesen Link als Einstieg und schreiben daraus ihren eigenen Brief.",
+    a: "Du beschreibst dein Anliegen, Ziel und Kontext. Nach deiner E-Mail-Bestätigung prüfe ich den öffentlichen Text nach meinen Grundsätzen für Kampagnen. Danach bekommst du einen Link, den du teilen kannst. Andere Menschen nutzen diesen Link als Einstieg und schreiben daraus ihren eigenen Brief.",
   },
   {
     q: "Ist Brief nach Berlin eine Petitionsplattform wie WeAct?",
@@ -276,7 +276,8 @@ export default function KampagneStartenSeoPage() {
             ob die AfD verfassungswidrig ist. Über ihre Kampagne sind fast 500 Briefe entstanden.
             Beide Kampagnen hatten eine Gemeinschaft, die den Link geteilt hat.
             Die Inhalte stammen von den Initiatoren, nicht von Brief nach
-            Berlin.
+            Berlin. Welche Kampagnen ich freigebe, steht in den{" "}
+            <Link href="/kampagnen-grundsaetze" className="text-waldgruen hover:underline">Grundsätzen für Kampagnen</Link>.
           </p>
 
           <h2>Petition und Briefkampagne kombinieren: wie geht das?</h2>

@@ -49,7 +49,6 @@ export async function acceptCampaignTransferAction(formData: FormData): Promise<
             campaignTitle: campaign.title,
             slug: campaign.slug,
             token: manageToken,
-            creatorName: campaign.creatorName,
             adminCopy: true,
             campaignStatus:
               campaign.status === "awaiting_approval" ||

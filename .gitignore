@@ -57,3 +57,7 @@ web/scripts/_kampagnen-varianten-*
 
 # Moderation: Absage-Textbausteine und interne Notizen (lokal, nicht im öffentlichen Repo)
 .planning/moderation/
+
+# Interne Plan- und Recherche-Notizen zur Kampagnen-Kuratierung (lokal, nicht im öffentlichen Repo)
+.planning/quick/261019-v48-kampagnen-grundsaetze-seite/
+.planning/research/afd-pruefkampagne-2026-08-14.md

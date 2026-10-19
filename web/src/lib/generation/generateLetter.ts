@@ -3,6 +3,7 @@ import type { GenerateLetterInput, GenerateLetterResult, MdbContext, RecipientLe
 import type { PoliticalLevel } from "@/lib/types/politician";
 import type { Recipient } from "@/lib/lookup/rathausRecipient";
 import { lowercaseAfterSalutation } from "@/lib/generation/lowercaseAfterSalutation";
+import { findRuleViolations, replaceDashes, ruleRetryDirective } from "@/lib/generation/letterRules";
 import { extractJsonObject } from "@/lib/mistral-json";
 import { LETTER_LENGTHS, DEFAULT_LETTER_LENGTH } from "@/lib/config";
 import {
@@ -671,27 +672,44 @@ export async function generateLetter(
   const acceptableMin = Math.floor(minWords * 0.85);
   const acceptableMax = Math.ceil(maxWords * 1.15);
 
-  // One corrective retry if length lands outside the acceptance corridor.
-  // Only retries on length, not on hallucination. Caps cost at 2× per letter.
+  // Hard rules the model still breaks despite the prompt ("nicht nur ...
+  // sondern", invented gender). They share the single corrective retry with
+  // the length check, so the cap stays at 2 calls per letter.
+  const sourceText = [input.issueText, input.name, input.party, input.ngo].filter(Boolean).join("\n");
+  const violations = findRuleViolations(parsed.letter, sourceText);
+  const lengthOff = wordCount < acceptableMin || wordCount > acceptableMax;
+
+  // One corrective retry if length lands outside the acceptance corridor or a
+  // hard rule is broken. Not on hallucination. Caps cost at 2× per letter.
   let retried = false;
-  if (wordCount < acceptableMin || wordCount > acceptableMax) {
+  if (lengthOff || violations.length > 0) {
     retried = true;
-    const directive = wordCount < acceptableMin
+    const lengthDirective = !lengthOff
+      ? ""
+      : wordCount < acceptableMin
       ? `Der vorherige Brief hatte nur ${wordCount} Wörter. Das Zielfenster ist ${minWords}–${maxWords} Wörter. Schreibe den Brief neu mit folgendem Aufbau: (1) Anlass aus <transkript>, (2) persönliche Begründung / Betroffenheit, (3) konkrete Forderung, (4) politischer Schlussappell. Jeder Absatz MUSS eine neue, eigenständige Aussage enthalten. WIEDERHOLE NICHTS aus dem vorherigen Brief in anderen Worten. Wenn das <transkript> nicht genug Substanz für ${minWords} Wörter hergibt, akzeptiere lieber eine kürzere Länge als denselben Gedanken zu wiederholen oder Fakten zu erfinden.`
       : `Der vorherige Brief hatte ${wordCount} Wörter. Das Zielfenster ist ${minWords}–${maxWords} Wörter. Schreibe den Brief neu: kürze, ohne die Stimme oder die Kernargumente des Bürgers zu verlieren.`;
+    const directive = [lengthDirective, ruleRetryDirective(violations, lengthOff)].filter(Boolean).join("\n\n");
 
-    console.warn("[generateLetter] word count out of acceptance corridor, retrying once", {
-      wordCount,
-      minWords,
-      maxWords,
-      acceptableMin,
-      acceptableMax,
-      lengthKey,
-      direction: wordCount < acceptableMin ? "too_short" : "too_long",
-    });
+    if (lengthOff) {
+      console.warn("[generateLetter] word count out of acceptance corridor, retrying once", {
+        wordCount,
+        minWords,
+        maxWords,
+        acceptableMin,
+        acceptableMax,
+        lengthKey,
+        direction: wordCount < acceptableMin ? "too_short" : "too_long",
+      });
+    }
+    if (violations.length > 0) {
+      console.warn("[generateLetter] rule violations, retrying once", {
+        kinds: violations.map((v) => v.kind),
+      });
+    }
 
     try {
-      const retryResponse = await withMistralRetry("generateLetter:length-retry", () =>
+      const retryResponse = await withMistralRetry("generateLetter:retry", () =>
         mistral.chat.complete({
           model: MISTRAL_MODELS.letter,
           messages: [
@@ -709,17 +727,25 @@ export async function generateLetter(
       );
       const retryParsed = parseLetterResponse(retryResponse.choices?.[0]?.message?.content);
       const retryWordCount = countWords(retryParsed.letter);
-      // Only accept the retry if it's actually closer to target than the first attempt.
       const firstDelta = Math.abs(wordCount - targetWords);
       const retryDelta = Math.abs(retryWordCount - targetWords);
-      if (retryDelta < firstDelta) {
+      const retryViolations = findRuleViolations(retryParsed.letter, sourceText).length;
+      const retryInCorridor = retryWordCount >= acceptableMin && retryWordCount <= acceptableMax;
+      // Length-only retry: accept when closer to target. Rule retry: accept only
+      // when it fixed something and the length did not get worse.
+      const retryIsBetter = violations.length > 0
+        ? retryViolations < violations.length && (retryInCorridor || retryDelta < firstDelta)
+        : retryDelta < firstDelta;
+      if (retryIsBetter) {
         parsed = retryParsed;
         wordCount = retryWordCount;
       } else {
-        console.warn("[generateLetter] retry was not closer to target, keeping original", {
+        console.warn("[generateLetter] retry was not better, keeping original", {
           firstWordCount: wordCount,
           retryWordCount,
           target: targetWords,
+          firstViolations: violations.length,
+          retryViolations,
         });
       }
     } catch (err) {
@@ -732,10 +758,10 @@ export async function generateLetter(
   if (input.landesregierung?.addressee === "head" || input.campaignFixedRecipient) {
     const salutation = input.campaignFixedRecipient?.salutation ?? input.landesregierung!.salutation;
     parsed.letter = ensureGovernmentHeadSalutation(parsed.letter, salutation);
-    wordCount = countWords(parsed.letter);
   }
 
-  parsed.letter = lowercaseAfterSalutation(parsed.letter);
+  parsed.letter = lowercaseAfterSalutation(replaceDashes(parsed.letter));
+  wordCount = countWords(parsed.letter);
 
   const wordCountInRange = wordCount >= minWords && wordCount <= maxWords;
   if (!wordCountInRange) {

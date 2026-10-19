@@ -91,7 +91,7 @@ export function format(payload: DebugPayload | { error: string }): string {
     `MdB-Kontext genutzt   ${d.mdbContextUsed}`,
     `Available politicians ${d.availablePoliticianCount}`,
     `Fallback used         ${d.fallbackUsed}`,
-    `Length retry fired    ${d.retried}`,
+    `Retry fired           ${d.retried}`,
     `Sender hints          party=${d.hasParty} ngo=${d.hasNgo}`,
     `Voice input           ${d.usedSpeechToText}`,
     `Tips opened           ${d.tipsOpened ?? false}`,

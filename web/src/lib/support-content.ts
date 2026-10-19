@@ -87,8 +87,8 @@ export type SupportContent = typeof SUPPORT_CONTENT;
 export const SUPPORT_EMAIL_COPY = {
   de: {
     prefix: "Hinweis zur Finanzierung:",
-    heading: "Mein Soloprojekt erhalten",
-    compactHeading: "Mein Soloprojekt erhalten",
+    heading: "Damit Brief-nach-Berlin kostenlos bleibt",
+    compactHeading: "Damit Brief-nach-Berlin kostenlos bleibt",
     body:
       "Ich baue Brief-nach-Berlin allein und ehrenamtlich in meiner Freizeit und trage die laufenden Kosten bisher selbst. Deine Spende hilft, das Projekt kostenlos und unabhängig weiterzubetreiben.",
     status: SUPPORT_CONTENT.status,

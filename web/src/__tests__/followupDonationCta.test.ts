@@ -10,7 +10,7 @@ describe("follow-up donation CTA", () => {
     expect(followup.html).toContain("followup-rating-column");
     expect(followup.html.match(/width="48\.5%"/g)).toHaveLength(2);
     expect(followup.html).toContain(`href="${DONATION_PROVIDER_URL}"`);
-    expect(followup.html).toContain("Mein Soloprojekt erhalten");
+    expect(followup.html).toContain("Damit Brief-nach-Berlin kostenlos bleibt");
     expect(followup.html).toContain("Jetzt spenden");
     expect(followup.html).toContain("icon-heart-white.png");
     expect(buildFollowupHtml({ token: "preview", baseUrl: "http://localhost:3011" }).html).toContain('src="http://localhost:3011/images/icon-heart-white.png"');
@@ -21,7 +21,7 @@ describe("follow-up donation CTA", () => {
     expect(followup.text).toContain(
       `${SUPPORT_EMAIL_COPY.de.button}: ${DONATION_PROVIDER_URL}`,
     );
-    expect(followup.text).toContain("Mein Soloprojekt erhalten");
+    expect(followup.text).toContain("Damit Brief-nach-Berlin kostenlos bleibt");
     expect(followup.text).toContain("über WE AID unterstützen");
     expect(followup.html).not.toContain(
       'href="https://www.brief-nach-berlin.de/spenden',

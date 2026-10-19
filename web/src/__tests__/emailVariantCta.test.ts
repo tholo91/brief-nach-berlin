@@ -62,13 +62,13 @@ describe("letter email variant CTA", () => {
     expect(text.match(new RegExp(donationUrl.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), "g"))).toHaveLength(1);
     expect(html.match(new RegExp(learnMoreUrl.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), "g"))).toHaveLength(1);
     expect(text.match(new RegExp(learnMoreUrl.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), "g"))).toHaveLength(1);
-    expect(html).toContain("Mein Soloprojekt erhalten");
+    expect(html).toContain("Damit Brief-nach-Berlin kostenlos bleibt");
     expect(html).toContain('margin-right:6px;">Jetzt spenden');
     expect(html).toContain(
       "Ich baue Brief-nach-Berlin allein und ehrenamtlich in meiner Freizeit und trage die laufenden Kosten bisher selbst.",
     );
     expect(html).not.toContain("über WE AID unterstützen");
-    expect(text).toContain("Mein Soloprojekt erhalten");
+    expect(text).toContain("Damit Brief-nach-Berlin kostenlos bleibt");
     expect(text).toContain("Jetzt spenden");
     expect(text).not.toContain("über WE AID unterstützen");
     expect(SUPPORT_CONTENT.ctas.donate.label).toBe("Jetzt über WE AID spenden");

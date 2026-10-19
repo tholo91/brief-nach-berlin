@@ -413,6 +413,62 @@ function buildCampaignReportEmailHtml(
 </html>`;
 }
 
+const EYEBROW_STYLE =
+  "font-family:'Courier New',Courier,monospace;font-size:12px;font-weight:bold;text-transform:uppercase;color:#2D6A4F;";
+
+function buildTransferCountTile(count: number): string {
+  return `<div style="margin:0 0 22px;padding:16px 18px;background-color:#FAF8F5;border:1px solid #E0DCD7;border-radius:4px;text-align:center;">
+                <p style="margin:0 0 6px;${EYEBROW_STYLE}">Stand heute</p>
+                <p style="margin:0;font-size:40px;line-height:1.15;font-weight:bold;color:#1B4332;">${formatLetterCount(count)}</p>
+                <p style="margin:4px 0 0;font-size:14px;line-height:1.5;color:#666666;">${count === 1 ? "Brief geschrieben" : "Briefe geschrieben"}</p>
+              </div>`;
+}
+
+function buildTransferHelpHtml(awaitingApproval: boolean): string {
+  const section = (title: string, mark: string, markColor: string, lines: string[], last = false) =>
+    `<p style="margin:0 0 8px;${EYEBROW_STYLE}">${title}</p>
+        <table role="presentation" cellpadding="0" cellspacing="0" width="100%" style="margin:0 0 ${last ? "0" : "16px"};">
+          ${lines
+            .map(
+              (line) =>
+                `<tr>
+            <td valign="top" style="width:22px;padding:0 0 6px;font-size:14px;line-height:1.6;color:${markColor};">${mark}</td>
+            <td valign="top" style="padding:0 0 6px;font-size:14px;line-height:1.6;color:#3D3D3D;">${line}</td>
+          </tr>`
+            )
+            .join("\n          ")}
+        </table>`;
+  return `<div style="margin:0 0 22px;padding:16px 18px;background-color:#ffffff;border:1px solid #E0DCD7;border-radius:4px;">
+        ${section(
+          awaitingApproval
+            ? "Das siehst du live, sobald die Kampagne freigegeben ist"
+            : "Das siehst du live",
+          "&#10003;",
+          "#2D6A4F",
+          [
+            "Briefe gesamt und Verlauf pro Tag oder Woche",
+            "Woher geschrieben wird, nach Bundesländern",
+            "Wie viele ihren Brief wirklich abschicken",
+            "Zufriedenheit und was über die Briefe gesagt wird",
+          ]
+        )}
+        ${section("Das kannst du", "&#10003;", "#2D6A4F", [
+          "Texte ändern, pausieren, beenden oder weitergeben",
+          "Meilenstein-Mails an- oder ausschalten",
+        ])}
+        ${section(
+          "Das bekommst du nicht",
+          "&#10005;",
+          "#999999",
+          [
+            "Briefe oder E-Mail-Adressen der Schreibenden. Jeder Brief geht von Hand direkt an die Politik und wird nicht gespeichert.",
+          ],
+          true
+        )}
+        <p style="margin:14px 0 0;font-size:13px;line-height:1.6;color:#888888;">Der Link ist nur einmal verwendbar. Nach deiner Bestätigung erhältst du zusätzlich eine E-Mail mit deinem dauerhaften Verwaltungslink.</p>
+      </div>`;
+}
+
 export function buildCampaignCreatorEmailHtml(
   params: BuildCampaignCreatorEmailHtmlParams
 ): string {
@@ -436,12 +492,14 @@ export function buildCampaignCreatorEmailHtml(
   }
   const title = escapeHtml(params.campaignTitle);
   const creatorName = params.creatorName?.trim();
-  const greeting = creatorName ? `Moin ${escapeHtml(creatorName)},` : "Moin,";
   const isVerification = params.kind === "verify_email";
   const isPendingManagement = params.kind === "management_pending";
   const isPausedManagement = params.kind === "management" && params.campaignStatus === "paused";
   const isPublicManagement = params.kind === "management" && !isPausedManagement;
   const isTransfer = params.kind === "transfer";
+  // A transfer goes to a new address, so the previous owner's name is never the greeting.
+  const greeting = creatorName && !isTransfer ? `Moin ${escapeHtml(creatorName)},` : "Moin,";
+  const inviterName = params.inviterName?.trim();
   const hasManagementLink = params.kind === "management_pending" || params.kind === "management";
   const share = isPublicManagement
     ? buildShareTarget(
@@ -464,7 +522,7 @@ export function buildCampaignCreatorEmailHtml(
   const intro = isVerification
     ? "Ein Klick bestätigt deine E-Mail. Danach prüfe ich deine Kampagne für die Freigabe."
     : isTransfer
-      ? "Du wurdest eingeladen, diese Kampagne zu übernehmen. Ein Klick bestätigt deine E-Mail-Adresse und öffnet den Verwaltungszugang."
+      ? `${inviterName ? `${escapeHtml(inviterName)} möchte dir die Kampagne übergeben.` : "Du wurdest eingeladen, diese Kampagne zu übernehmen."} Ein Klick bestätigt deine E-Mail-Adresse und öffnet den Verwaltungszugang.`
     : isPendingManagement
       ? "Deine E-Mail ist bestätigt. Ich prüfe deine Kampagne in der Regel innerhalb von 24 Stunden."
       : isPausedManagement
@@ -501,16 +559,17 @@ export function buildCampaignCreatorEmailHtml(
         <p style="margin:0;font-size:14px;line-height:1.6;color:#666666;">Du bekommst eine zweite E-Mail mit deinem Verwaltungslink. Darüber kannst du Inhalte ändern, die Kampagne pausieren oder beenden.</p>
       </div>`
     : isTransfer
-      ? `<div style="margin:0 0 22px;padding:16px 18px;background-color:#ffffff;border:1px solid #E0DCD7;border-radius:4px;">
-        <p style="margin:0 0 8px;font-family:'Courier New',Courier,monospace;font-size:12px;font-weight:bold;text-transform:uppercase;color:#2D6A4F;">Wichtig</p>
-        <p style="margin:0;font-size:14px;line-height:1.6;color:#666666;">Der Link ist nur einmal verwendbar. Nach deiner Bestätigung erhältst du zusätzlich eine E-Mail mit deinem dauerhaften Verwaltungslink.</p>
-      </div>`
+      ? buildTransferHelpHtml(params.campaignStatus === "awaiting_approval")
       : `<div style="margin:0 0 22px;padding:16px 18px;background-color:#ffffff;border:1px solid #E0DCD7;border-radius:4px;">
         <p style="margin:0 0 8px;font-family:'Courier New',Courier,monospace;font-size:12px;font-weight:bold;text-transform:uppercase;color:#2D6A4F;">Verwaltungszugang</p>
         <p style="margin:0 0 8px;font-size:14px;line-height:1.6;color:#1B4332;"><strong>WICHTIG: DIESE E-MAIL AUFBEWAHREN</strong></p>
         <p style="margin:0;font-size:14px;line-height:1.6;color:#666666;">${isPendingManagement ? "Über den Link siehst du den aktuellen Status und kannst die Angaben bis zur Freigabe noch korrigieren." : "Du kannst deine Kampagne ohne Account per Klick auf &bdquo;Kampagne verwalten&ldquo; anpassen."}</p>
         ${ctaTable("14px 0 0")}
       </div>`;
+  const transferCountTile =
+    isTransfer && (params.letterCount ?? 0) > 0 && params.campaignStatus !== "awaiting_approval"
+      ? buildTransferCountTile(params.letterCount as number)
+      : "";
   const campaignLink = isPublicManagement
     ? `<p style="margin:10px 0 0;font-size:14px;line-height:1.5;"><a href="${params.campaignUrl}" target="_blank" rel="noopener noreferrer" style="color:#2D6A4F;text-decoration:underline;">Kampagnenseite öffnen</a></p>`
     : "";
@@ -564,6 +623,7 @@ export function buildCampaignCreatorEmailHtml(
                 <p style="margin:10px 0 0;font-size:14px;line-height:1.5;color:#666666;">${statusText}</p>
                 ${campaignLink}
               </div>
+              ${transferCountTile}
               ${hasManagementLink ? "" : ctaTable("0 0 22px")}
               ${
                 isVerification

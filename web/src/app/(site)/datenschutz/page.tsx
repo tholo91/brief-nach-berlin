@@ -393,8 +393,11 @@ export default function Datenschutz() {
             </p>
             <p className="mt-2">
               Die erste Mail wird zur Erfüllung Ihrer Anfrage versendet. Die
-              zusätzliche zeitversetzte Feedback-Nachfrage dient ausschließlich
-              der freiwilligen Bewertung und Verbesserung des Dienstes. Für
+              zusätzliche zeitversetzte Feedback-Nachfrage dient der freiwilligen
+              Bewertung und Verbesserung des Dienstes. Sie enthält außerdem
+              kurze Hinweise, wie Sie Brief-nach-Berlin unterstützen oder
+              weiterempfehlen können, und bei Briefen an Bundestagsabgeordnete
+              einen Link, über den Sie das zuständige Wahlkreisbüro finden. Für
               diese Nachfrage ist die Rechtsgrundlage Art. 6 Abs. 1 lit. f DSGVO
               (berechtigtes Interesse an der Produktverbesserung). Sie können
               der weiteren Kontaktaufnahme jederzeit widersprechen, indem Sie
@@ -932,7 +935,7 @@ export default function Datenschutz() {
             </p>
           </div>
 
-          <p className="text-sm text-warmgrau/50">Stand: 14. Oktober 2026</p>
+          <p className="text-sm text-warmgrau/50">Stand: 19. Oktober 2026</p>
         </div>
       </div>
     </div>

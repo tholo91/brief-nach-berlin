@@ -45,7 +45,7 @@ describe("privacy email contact", () => {
     expect(policy).toContain("Art. 9 Abs. 2 lit. a DSGVO");
     expect(policy).toContain("höchstens 24 Monate. Eine tägliche");
     expect(policy).toContain("Rückmeldedaten über den persönlichen Link");
-    expect(policy).toContain("Stand: 14. Oktober 2026");
+    expect(policy).toContain("Stand: 19. Oktober 2026");
   });
 
   it("builds a prefilled deletion email for the project mailbox", () => {

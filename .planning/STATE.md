@@ -4,10 +4,10 @@ milestone: v1.0
 current_phase: 05
 status: verifying
 stopped_at: Completed 05-04-PLAN.md
-last_updated: "2026-10-19T19:53:24.744Z"
+last_updated: "2026-10-19T20:08:09.496Z"
 last_activity: 2026-10-19
 last_activity_desc: Quick 261013-wuq lokal implementiert und geprüft; manueller Release offen
-state_head: 3104fcbc354c05e975bdfb27717132b6f4db6ebf
+state_head: 2ca0c359b1b7ec97f7b36e43d258f0b84d8d39bf
 progress:
   total_phases: 33
   completed_phases: 4
@@ -49,7 +49,7 @@ Der level-aware E-Mail-Betreff ist dagegen bereits implementiert und getestet; d
 Phase: 05 — EXECUTING
 Plan: 4 of 4
 Status: Phase complete — ready for verification
-Last activity: 2026-10-19 - Completed quick task 261019-ucr: Bewertungs-Mail mit Wahlkreisbuero-Hinweis fuer MdB-Briefe + Datenschutz-Satz
+Last activity: 2026-10-19 - Completed quick task 261019-uim: Rueckmeldeformular Frage Wie war die Reaktion fuer dich
 
 Progress: [███████░░░] 68%
 
@@ -201,6 +201,7 @@ Recent decisions affecting current work:
 | 73 | Button vor Schritt 3 einheitlich Empfänger:in auswählen (360bb37) | 2026-10-19 | 360bb37 | — |
 | 261019-u1n | /aktiv-werden mit Wahlkreisbuero-Finder verbinden + MdB-Zeile in Brief-Mail | 2026-10-19 | 1379284 | [261019-u1n-aktiv-werden-mit-wahlkreisbuero-finder-v](./quick/261019-u1n-aktiv-werden-mit-wahlkreisbuero-finder-v/) |
 | 261019-ucr | Bewertungs-Mail mit Wahlkreisbuero-Hinweis fuer MdB-Briefe + Datenschutz-Satz | 2026-10-19 | 3104fcb | [261019-ucr-bewertungs-mail-wahlkreisbuero-hinweis-f](./quick/261019-ucr-bewertungs-mail-wahlkreisbuero-hinweis-f/) |
+| 261019-uim | Rueckmeldeformular: Frage Wie war die Reaktion fuer dich (Migration 035, Formular, Stats) | 2026-10-19 | 2ca0c35 | [261019-uim-rueckmeldeformular-frage-wie-war-die-rea](./quick/261019-uim-rueckmeldeformular-frage-wie-war-die-rea/) |
 
 ## Session Continuity
 

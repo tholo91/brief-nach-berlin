@@ -1136,7 +1136,7 @@ export function CreatorCampaignForm() {
           Verantwortung
         </p>
         <p className="mt-2 font-body text-sm leading-relaxed text-warmgrau/75">
-          Rein rechtlich liegen Inhalt und Verantwortung für deine Kampagne bei dir: Titel, Beschreibung, Bild, Links und der vorbereitete Brieftext. Ich schaue vor der Freischaltung nur, dass das Gröbste passt, damit du dich nicht aufs Glatteis begibst.
+          Rein rechtlich liegen Inhalt und Verantwortung für deine Kampagne bei dir: Titel, Beschreibung, Bild, Links und der vorbereitete Brieftext. Vor der Freischaltung prüfe ich sie nach meinen Grundsätzen für Kampagnen.
         </p>
         <label className="mt-3 flex items-start gap-3 font-body text-sm leading-relaxed text-warmgrau/80">
           <input

@@ -221,7 +221,7 @@ export default function Nutzungsbedingungen() {
             </p>
           </div>
 
-          <p className="text-sm text-warmgrau/50">Stand: 9. Oktober 2026</p>
+          <p className="text-sm text-warmgrau/50">Stand: 19. Oktober 2026</p>
         </div>
       </div>
     </div>

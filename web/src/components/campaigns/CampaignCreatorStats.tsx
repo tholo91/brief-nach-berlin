@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 import { BundeslandMap } from "@/components/campaigns/BundeslandMap";
+import { CAMPAIGN_TIME_ZONE } from "@/lib/campaigns/endDate";
 import { CreatorStatsRefresh } from "@/components/campaigns/CreatorStatsRefresh";
 import { StarBar } from "@/components/reviews/RatingStat";
 import type {
@@ -9,7 +10,7 @@ import type {
   CreatorTimeline,
 } from "@/lib/campaigns/creatorStats";
 import {
-  DUPLICATE_LETTER_NOTE,
+  DUPLICATE_LETTER_SHARE_NOTE,
   estimateLettersWithoutDuplicates,
 } from "@/lib/duplicateLetters";
 
@@ -25,8 +26,19 @@ const dateFormatter = new Intl.DateTimeFormat("de-DE", {
   timeZone: "UTC",
 });
 
+const hourFormatter = new Intl.DateTimeFormat("de-DE", {
+  day: "numeric",
+  month: "short",
+  hour: "numeric",
+  timeZone: CAMPAIGN_TIME_ZONE,
+});
+
 function dateLabel(isoDate: string) {
   return dateFormatter.format(new Date(`${isoDate}T00:00:00Z`));
+}
+
+function hourLabel(isoTime: string) {
+  return hourFormatter.format(new Date(isoTime));
 }
 
 function isoWeekNumber(isoDate: string) {
@@ -264,24 +276,32 @@ function Timeline({ timeline }: { timeline: CreatorTimeline }) {
           Verlauf
         </h3>
         <p className="mt-3 font-body text-sm leading-relaxed text-warmgrau/70">
-          {timeline.status === "pending"
-            ? "Der Verlauf erscheint ab dem dritten Tag."
-            : "Zu diesen Briefen gibt es noch keine Zahlen für den Verlauf."}
+          Zu diesen Briefen gibt es noch keine Zahlen für den Verlauf.
         </p>
       </div>
     );
   }
 
   const { granularity, buckets, peak } = timeline;
-  const daily = granularity === "day";
-  const summary = daily
-    ? `Stärkster Tag: ${dateLabel(peak.start)} mit ${lettersLabelDative(peak.count)}`
-    : `Stärkste Woche: ab ${dateLabel(peak.start)} mit ${lettersLabelDative(peak.count)}`;
+  const hourly = granularity === "hour";
+  const pointLabel = hourly ? hourLabel : dateLabel;
+  const peakLabel = {
+    hour: "Stärkste Stunde:",
+    day: "Stärkster Tag:",
+    week: "Stärkste Woche: ab",
+  }[granularity];
+  const summary = `${peakLabel} ${pointLabel(peak.start)} mit ${lettersLabelDative(peak.count)}`;
   const first = buckets[0];
   const last = buckets[buckets.length - 1];
-  const unitLabel = daily ? "Briefe pro Tag" : "Briefe pro Woche";
+  const unitLabel = {
+    hour: "Briefe pro Stunde",
+    day: "Briefe pro Tag",
+    week: "Briefe pro Woche",
+  }[granularity];
   const bucketLabel = (start: string) =>
-    daily ? dateLabel(start) : `KW ${isoWeekNumber(start)}, ab ${dateLabel(start)}`;
+    granularity === "week"
+      ? `KW ${isoWeekNumber(start)}, ab ${dateLabel(start)}`
+      : pointLabel(start);
 
   return (
     <div>
@@ -290,8 +310,8 @@ function Timeline({ timeline }: { timeline: CreatorTimeline }) {
       </h3>
       <div
         role="img"
-        aria-label={`${unitLabel} von ${dateLabel(first.start)} bis ${dateLabel(last.start)} ${summary}`}
-        className="mt-3 flex h-28 items-end justify-end gap-1 md:h-32"
+        aria-label={`${unitLabel} von ${pointLabel(first.start)} bis ${pointLabel(last.start)} ${summary}`}
+        className={`mt-3 flex h-28 items-end justify-end md:h-32 ${hourly ? "gap-px" : "gap-1"}`}
       >
         {buckets.map((bucket) => {
           const isPeak = bucket.start === peak.start;
@@ -330,11 +350,16 @@ function Timeline({ timeline }: { timeline: CreatorTimeline }) {
           aria-hidden="true"
           className="mt-1.5 flex justify-between font-body text-xs text-warmgrau/60"
         >
-          <span>{dateLabel(first.start)}</span>
-          <span>{dateLabel(last.start)}</span>
+          <span>{pointLabel(first.start)}</span>
+          <span>{pointLabel(last.start)}</span>
         </div>
       )}
       <p className="mt-2 font-body text-sm text-warmgrau/85">{summary}</p>
+      {hourly && (
+        <p className="mt-0.5 font-body text-xs text-warmgrau/60">
+          Ab dem dritten Tag zeigt der Verlauf ganze Tage.
+        </p>
+      )}
     </div>
   );
 }
@@ -453,7 +478,9 @@ export function CampaignCreatorStats({
 
   const footnotes: string[] = [];
   if (showDuplicateEstimate) {
-    footnotes.push(DUPLICATE_LETTER_NOTE);
+    footnotes.push(
+      `${DUPLICATE_LETTER_SHARE_NOTE} Ohne Doppelte sind es rund ${numberFormatter.format(lettersWithoutDuplicates)} Briefe (pauschal 4 % abgezogen).`,
+    );
   }
   if (stats.signals.status === "ready") {
     const { signals } = stats.signals;
@@ -495,11 +522,6 @@ export function CampaignCreatorStats({
         </p>
         {!stats.ended && <CreatorStatsRefresh />}
       </div>
-      {showDuplicateEstimate && (
-        <p className="mt-1.5 font-body text-xs text-warmgrau/60">
-          ca. {numberFormatter.format(lettersWithoutDuplicates)} ohne Doppelte
-        </p>
-      )}
 
       <OriginSection signals={stats.signals} />
 

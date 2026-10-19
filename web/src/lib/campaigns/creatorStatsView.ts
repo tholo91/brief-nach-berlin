@@ -26,7 +26,7 @@ export const CREATOR_STATS_SIGNAL_COLUMNS =
   "bundesland_key,recipient_kind,generated_at,created_at";
 export const CREATOR_TIMELINE_MAX_WEEKS = 52;
 export const CREATOR_TIMELINE_DAILY_MAX_DAYS = 28;
-export const CREATOR_TIMELINE_MIN_DAYS = 3;
+export const CREATOR_TIMELINE_HOURLY_MAX_DAYS = 2;
 export const CREATOR_TAG_MIN_COUNT = 5;
 export const CREATOR_TAG_LIMIT = 6;
 const OTHER_REGIONS_LABEL = "Weitere Bundesländer";
@@ -82,11 +82,10 @@ export type CreatorStatsKpi =
 export type CreatorTimelineBucket = { start: string; count: number };
 
 export type CreatorTimeline =
-  | { status: "pending" }
   | { status: "empty" }
   | {
       status: "ready";
-      granularity: "day" | "week";
+      granularity: "hour" | "day" | "week";
       buckets: CreatorTimelineBucket[];
       peak: CreatorTimelineBucket;
     };
@@ -257,7 +256,8 @@ export function bucketRecipients(
   return named.length >= 2 ? named : null;
 }
 
-const DAY_MS = 24 * 60 * 60 * 1000;
+const HOUR_MS = 60 * 60 * 1000;
+const DAY_MS = 24 * HOUR_MS;
 const berlinDayFormatter = new Intl.DateTimeFormat("en-CA", {
   timeZone: CAMPAIGN_TIME_ZONE,
   year: "numeric",
@@ -285,11 +285,15 @@ export function buildTimeline(
   { now, ended }: { now: Date; ended: boolean },
 ): CreatorTimeline {
   const perDay = new Map<number, number>();
+  const perHour = new Map<number, number>();
   for (const row of rows) {
     const time = Date.parse(row.generated_at ?? row.created_at ?? "");
     if (!Number.isFinite(time)) continue;
     const day = berlinDayMs(time);
     perDay.set(day, (perDay.get(day) ?? 0) + 1);
+    // Berlin is a whole-hour UTC offset, so a UTC hour is also a Berlin hour.
+    const hour = Math.floor(time / HOUR_MS) * HOUR_MS;
+    perHour.set(hour, (perHour.get(hour) ?? 0) + 1);
   }
   if (perDay.size === 0) return { status: "empty" };
 
@@ -297,11 +301,19 @@ export function buildTimeline(
   const firstDay = Math.min(...dataDays);
   const lastDay = Math.max(...dataDays, ...(ended ? [] : [berlinDayMs(now.getTime())]));
   const spanDays = Math.round((lastDay - firstDay) / DAY_MS) + 1;
-  if (!ended && spanDays < CREATOR_TIMELINE_MIN_DAYS) return { status: "pending" };
 
-  let granularity: "day" | "week";
+  let granularity: "hour" | "day" | "week";
   let buckets: CreatorTimelineBucket[] = [];
-  if (spanDays <= CREATOR_TIMELINE_DAILY_MAX_DAYS) {
+  if (spanDays <= CREATOR_TIMELINE_HOURLY_MAX_DAYS) {
+    granularity = "hour";
+    const dataHours = [...perHour.keys()];
+    const firstHour = Math.min(...dataHours);
+    const nowHour = Math.floor(now.getTime() / HOUR_MS) * HOUR_MS;
+    const lastHour = Math.max(...dataHours, ...(ended ? [] : [nowHour]));
+    for (let hour = firstHour; hour <= lastHour; hour += HOUR_MS) {
+      buckets.push({ start: new Date(hour).toISOString(), count: perHour.get(hour) ?? 0 });
+    }
+  } else if (spanDays <= CREATOR_TIMELINE_DAILY_MAX_DAYS) {
     granularity = "day";
     for (let day = firstDay; day <= lastDay; day += DAY_MS) {
       buckets.push({ start: isoDay(day), count: perDay.get(day) ?? 0 });

@@ -391,10 +391,24 @@ describe("buildTimeline (D-02b)", () => {
     expect(december.buckets[december.buckets.length - 1]).toEqual({ start: "2026-11-30", count: 0 });
   });
 
-  it("waits for the third day while a campaign is running", () => {
-    expect(
-      buildTimeline([signal({ generated_at: "2026-10-07T10:00:00Z" })], { now, ended: false }),
-    ).toEqual({ status: "pending" });
+  it("buckets the first two days per hour up to now", () => {
+    const hourly = ready(
+      buildTimeline(
+        [
+          ...signals(2, { generated_at: "2026-10-07T21:10:00Z" }),
+          signal({ generated_at: "2026-10-07T21:59:00Z" }),
+          signal({ generated_at: "2026-10-08T07:30:00Z" }),
+        ],
+        { now, ended: false },
+      ),
+    );
+    expect(hourly.granularity).toBe("hour");
+    expect(hourly.buckets).toHaveLength(14);
+    expect(hourly.buckets[0]).toEqual({ start: "2026-10-07T21:00:00.000Z", count: 3 });
+    expect(hourly.buckets[1]).toEqual({ start: "2026-10-07T22:00:00.000Z", count: 0 });
+    expect(hourly.buckets[10]).toEqual({ start: "2026-10-08T07:00:00.000Z", count: 1 });
+    expect(hourly.buckets[13]).toEqual({ start: "2026-10-08T10:00:00.000Z", count: 0 });
+    expect(hourly.peak).toEqual({ start: "2026-10-07T21:00:00.000Z", count: 3 });
 
     const third = ready(
       buildTimeline([signal({ generated_at: "2026-10-06T10:00:00Z" })], { now, ended: false }),
@@ -411,8 +425,8 @@ describe("buildTimeline (D-02b)", () => {
     const oneDay = ready(
       buildTimeline(signals(4, { generated_at: "2026-10-07T10:00:00Z" }), { now, ended: true }),
     );
-    expect(oneDay.granularity).toBe("day");
-    expect(oneDay.buckets).toEqual([{ start: "2026-10-07", count: 4 }]);
+    expect(oneDay.granularity).toBe("hour");
+    expect(oneDay.buckets).toEqual([{ start: "2026-10-07T10:00:00.000Z", count: 4 }]);
 
     const later = ready(
       buildTimeline(seriesRows, { now: new Date("2026-12-01T10:00:00Z"), ended: true }),
@@ -454,7 +468,7 @@ describe("buildTimeline (D-02b)", () => {
         ended: true,
       }),
     );
-    expect(timeline.buckets).toEqual([{ start: "2026-10-06", count: 1 }]);
+    expect(timeline.buckets).toEqual([{ start: "2026-10-06T10:00:00.000Z", count: 1 }]);
 
     expect(buildTimeline(unparseable, { now, ended: true })).toEqual({ status: "empty" });
 
@@ -791,8 +805,11 @@ describe("CampaignCreatorStats rendering", () => {
         stats: buildCampaignCreatorStats({ ...baseInput, letterCount: 3017, rows: [] }),
       }),
     );
-    expect(markup).toContain("ca. 2.896 ohne Doppelte");
-    expect(markup.slice(markup.indexOf("<footer"))).toContain("Etwa 3 bis 5 % der Briefe entstehen doppelt");
+    const footerStart = markup.indexOf("<footer");
+    expect(markup.slice(0, footerStart)).not.toContain("Doppelte");
+    const footer = markup.slice(footerStart);
+    expect(footer).toContain("Etwa 3 bis 5 % der Briefe entstehen doppelt");
+    expect(footer).toContain("Ohne Doppelte sind es rund 2.896 Briefe (pauschal 4 % abgezogen).");
   });
 
   it("hides the duplicate estimate when it would not change the count", () => {
@@ -801,7 +818,7 @@ describe("CampaignCreatorStats rendering", () => {
         stats: buildCampaignCreatorStats({ ...baseInput, letterCount: 3, rows: [] }),
       }),
     );
-    expect(markup).not.toContain("ohne Doppelte");
+    expect(markup).not.toContain("Doppelte");
   });
 
   it("uses the singular for one remaining response", () => {
@@ -914,19 +931,21 @@ describe("CampaignCreatorStats rendering", () => {
     expect(markup).toContain("KW 37, ab 7. Sept.</span>12 Briefe");
   });
 
-  it("shows only a hint while a running campaign is younger than three days", () => {
+  it("shows hourly bars in Berlin time while a campaign is younger than three days", () => {
     const young = signals(10, { generated_at: "2026-10-07T10:00:00Z" });
     const markup = renderFull(young);
-    expect(markup).toContain("Der Verlauf erscheint ab dem dritten Tag.");
-    expect(markup).not.toContain("Stärkst");
+    expect(markup).toContain("Stärkste Stunde: 7. Okt., 12 Uhr mit 10 Briefen");
+    expect(markup).toContain("Briefe pro Stunde von 7. Okt., 12 Uhr bis 8. Okt., 12 Uhr");
+    expect(markup).toContain("7. Okt., 12 Uhr</span>10 Briefe");
+    expect(markup).toContain("Ab dem dritten Tag zeigt der Verlauf ganze Tage.");
 
     const ended = renderToStaticMarkup(
       createElement(CampaignCreatorStats, {
         stats: buildCampaignCreatorStats({ ...baseInput, ended: true, rows: [], signalRows: young }),
       }),
     );
-    expect(ended).toContain("Stärkster Tag: 7. Okt. mit 10 Briefen");
-    expect(ended).not.toContain("Der Verlauf erscheint ab dem dritten Tag.");
+    expect(ended).toContain("Stärkste Stunde: 7. Okt., 12 Uhr mit 10 Briefen");
+    expect(ended).not.toContain("8. Okt., 12 Uhr");
   });
 
   it("describes the collecting teaser without weeks", () => {

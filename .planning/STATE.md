@@ -4,10 +4,10 @@ milestone: v1.0
 current_phase: 05
 status: verifying
 stopped_at: Completed 05-04-PLAN.md
-last_updated: "2026-10-19T19:34:09.189Z"
+last_updated: "2026-10-19T19:41:28.209Z"
 last_activity: 2026-10-19
 last_activity_desc: Quick 261013-wuq lokal implementiert und geprüft; manueller Release offen
-state_head: 360bb3703470da13e21440c2bb11b3bd1cbffdc9
+state_head: 1379284d7788dbed024758a378bce0e1cdfba739
 progress:
   total_phases: 33
   completed_phases: 4
@@ -49,7 +49,7 @@ Der level-aware E-Mail-Betreff ist dagegen bereits implementiert und getestet; d
 Phase: 05 — EXECUTING
 Plan: 4 of 4
 Status: Phase complete — ready for verification
-Last activity: 2026-10-19 - Completed quick task 261019-trg: Kampagnen-Stats Doppelte-Schätzung in Fußnote, Verlauf stündlich an Tag 1-2
+Last activity: 2026-10-19 - Completed quick task 261019-u1n: /aktiv-werden mit Wahlkreisbuero-Finder verbinden + MdB-Zeile in Brief-Mail
 
 Progress: [███████░░░] 68%
 
@@ -199,6 +199,7 @@ Recent decisions affecting current work:
 | 71 | Landeskampagnen: Regierungschef:in statt Landesregierung vorauswählen (prueft-die-afd) | 2026-10-19 | c33a3f5 | — |
 | 261019-trg | Kampagnen-Stats: Doppelte-Schätzung in Fußnote, Verlauf stündlich an Tag 1-2 | 2026-10-19 | 0886d6e | [261019-trg-kampagnen-stats-fussnote-stundenverlauf](./quick/261019-trg-kampagnen-stats-fussnote-stundenverlauf/) |
 | 73 | Button vor Schritt 3 einheitlich Empfänger:in auswählen (360bb37) | 2026-10-19 | 360bb37 | — |
+| 261019-u1n | /aktiv-werden mit Wahlkreisbuero-Finder verbinden + MdB-Zeile in Brief-Mail | 2026-10-19 | 1379284 | [261019-u1n-aktiv-werden-mit-wahlkreisbuero-finder-v](./quick/261019-u1n-aktiv-werden-mit-wahlkreisbuero-finder-v/) |
 
 ## Session Continuity
 

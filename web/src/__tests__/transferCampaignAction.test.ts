@@ -26,6 +26,7 @@ const campaign = {
   title: "Sichere Schulwege",
   creatorName: "Initiative Beispiel",
   status: "active",
+  letterCount: 321,
 };
 
 function form(recipientEmail: string): FormData {
@@ -67,6 +68,27 @@ describe("transferCampaignAction", () => {
         adminCopy: true,
       })
     );
+  });
+
+  it("passes the letter count and inviter, not the old owner as greeting name", async () => {
+    await transferCampaignAction(form("ngo@example.org"));
+
+    const params = jest.mocked(sendCampaignCreatorEmail).mock.calls[0][0];
+    expect(params).toMatchObject({
+      letterCount: 321,
+      inviterName: "Initiative Beispiel",
+      campaignStatus: "active",
+    });
+    expect(params).not.toHaveProperty("creatorName");
+  });
+
+  it("tells the sender that the new address still has to confirm", async () => {
+    const result = await transferCampaignAction(form("ngo@example.org"));
+
+    expect(result).toEqual({
+      ok: true,
+      message: "Die Übernahme-E-Mail wurde verschickt. Die neue Adresse muss den Link noch bestätigen.",
+    });
   });
 
   it.each(["archived", "blocked", "draft", "awaiting_email_verification"])(

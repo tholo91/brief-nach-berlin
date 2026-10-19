@@ -49,6 +49,88 @@ describe("campaign creator emails", () => {
     expect(html).not.toContain(base.campaignUrl);
   });
 
+  describe("transfer mail", () => {
+    const transfer = {
+      ...base,
+      kind: "transfer" as const,
+      actionUrl: "https://www.brief-nach-berlin.de/kampagne/verwalten?token=transfer",
+    };
+
+    it("shows the letter count tile when letters exist", () => {
+      const html = buildCampaignCreatorEmailHtml({ ...transfer, letterCount: 1234 });
+
+      expect(html).toContain("Stand heute");
+      expect(html).toContain("1.234");
+      expect(html).toContain("Briefe geschrieben");
+    });
+
+    it("uses the singular for a single letter", () => {
+      const html = buildCampaignCreatorEmailHtml({ ...transfer, letterCount: 1 });
+
+      expect(html).toContain("Brief geschrieben");
+      expect(html).not.toContain("Briefe geschrieben");
+    });
+
+    it("omits the count tile for zero letters, a missing count or a pending campaign", () => {
+      expect(buildCampaignCreatorEmailHtml({ ...transfer, letterCount: 0 })).not.toContain("Stand heute");
+      expect(buildCampaignCreatorEmailHtml(transfer)).not.toContain("Stand heute");
+      expect(
+        buildCampaignCreatorEmailHtml({
+          ...transfer,
+          letterCount: 50,
+          campaignStatus: "awaiting_approval",
+        })
+      ).not.toContain("Stand heute");
+    });
+
+    it("names the inviter and never greets the new address with the old name", () => {
+      const html = buildCampaignCreatorEmailHtml({
+        ...transfer,
+        creatorName: "Anna",
+        inviterName: "Anna <b>",
+      });
+
+      expect(html).toContain("Anna &lt;b&gt; möchte dir die Kampagne übergeben");
+      expect(html).toContain(">Moin,<");
+      expect(html).not.toContain("Moin Anna");
+    });
+
+    it("keeps the generic intro without an inviter name", () => {
+      const html = buildCampaignCreatorEmailHtml(transfer);
+
+      expect(html).toContain("Du wurdest eingeladen, diese Kampagne zu übernehmen.");
+    });
+
+    it("explains what the new owner sees, can do and does not get", () => {
+      const html = buildCampaignCreatorEmailHtml(transfer);
+
+      expect(html).toContain("Das siehst du live");
+      expect(html).toContain("Das kannst du");
+      expect(html).toContain("Das bekommst du nicht");
+      expect(html).toContain("nur einmal verwendbar");
+      expect(html).not.toContain("sobald die Kampagne freigegeben ist");
+    });
+
+    it("says the live view starts after approval for a pending campaign", () => {
+      const html = buildCampaignCreatorEmailHtml({
+        ...transfer,
+        campaignStatus: "awaiting_approval",
+      });
+
+      expect(html).toContain("Das siehst du live, sobald die Kampagne freigegeben ist");
+    });
+
+    it("contains no dashes in the copy", () => {
+      const html = buildCampaignCreatorEmailHtml({
+        ...transfer,
+        letterCount: 1234,
+        inviterName: "Anna",
+      });
+
+      expect(html).not.toMatch(/[\u2013\u2014]/);
+    });
+  });
+
   it.each([
     ["management_pending", { kind: "management_pending" }],
     ["management (active)", { kind: "management" }],

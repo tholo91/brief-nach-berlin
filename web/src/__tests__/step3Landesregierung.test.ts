@@ -29,7 +29,7 @@ const bremenMdls: MdlRecipient[] = Array.from({ length: 72 }, (_, index) => ({
 }));
 
 describe("Step3Success — institutioneller Land-Default", () => {
-  it("zeigt in einer Landeskampagne Senat, namentlichen Regierungschef und MdL als drei Wege", () => {
+  it("zeigt in einer Landeskampagne Senat, vorausgewählten Regierungschef und MdL als drei Wege", () => {
     const html = renderToStaticMarkup(
       React.createElement(
         LocaleProvider,
@@ -56,6 +56,11 @@ describe("Step3Success — institutioneller Land-Default", () => {
     expect(html).toContain("Lieber einer Person im Landtag schreiben?");
     expect(html).toContain('role="radio" aria-checked="true"');
     expect(html).toContain('role="radio" aria-checked="false"');
+    const radios = html.split('role="radio"').slice(1);
+    const headRadio = radios.find((radio) => radio.includes("Regierungschef:in"));
+    const institutionRadio = radios.find((radio) => radio.includes("Senatskanzlei Bremen"));
+    expect(headRadio).toMatch(/^ aria-checked="true"/);
+    expect(institutionRadio).toMatch(/^ aria-checked="false"/);
   });
 
   it("zeigt für Bremen 28203 nur den vorausgewählten Senat und den optionalen Personenpfad", () => {

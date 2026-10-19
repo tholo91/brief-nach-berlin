@@ -218,7 +218,9 @@ export function Step3Success({
   const [landesregierungSelected, setLandesregierungSelected] = useState<boolean>(
     () => Boolean(landesregierung)
   );
-  const [landAddressee, setLandAddressee] = useState<"institution" | "head">("institution");
+  const [landAddressee, setLandAddressee] = useState<"institution" | "head">(
+    () => (governmentHead ? "head" : "institution")
+  );
   const [bundeskanzlerSelected, setBundeskanzlerSelected] = useState<boolean>(
     () => Boolean(bundeskanzler)
   );
@@ -1269,7 +1271,7 @@ export function Step3Success({
         ? showLandPersonPicker
           ? "Wähle selbst eine Person aus deiner PLZ-Zuordnung. Wir treffen keine automatische Personen- oder Parteiauswahl."
           : governmentHead
-            ? "Die Landesregierung ist vorausgewählt. Du kannst stattdessen die Regierungsspitze oder ein Mitglied des Landtags wählen."
+            ? "Die Regierungsspitze ist vorausgewählt. Du kannst stattdessen an die Landesregierung als Ganzes oder an ein Mitglied des Landtags schreiben."
             : "Der institutionelle Empfänger ist bereits vorausgewählt."
         : campaignRestricted
           ? campaignRestrictedNoLocalMatch
@@ -1907,7 +1909,7 @@ export function Step3Success({
               setSelectedPoliticianId(null);
               setMdbLaterSelected(false);
               setLandesregierungSelected(true);
-              setLandAddressee("institution");
+              setLandAddressee(governmentHead ? "head" : "institution");
             }}
             className="mt-5 font-body text-sm font-semibold text-waldgruen underline underline-offset-4 hover:text-waldgruen-dark"
           >

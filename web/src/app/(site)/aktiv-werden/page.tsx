@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Figure } from "@/components/editorial/Figure";
 import { FAQAccordion } from "@/components/FAQAccordion";
+import { MdbLookupCard } from "@/components/MdbLookupCard";
 import type { Metadata } from "next";
 import { APP_URL } from "@/lib/config";
 
@@ -108,8 +109,8 @@ const cards: ActionCard[] = [
         </p>
       </>
     ),
-    href: "/treppe-der-selbstwirksamkeit#stufe-6",
-    cta: "Mehr zu Stufe 6",
+    href: "#wahlkreisbuero",
+    cta: "Dein Wahlkreisbüro finden",
   },
   {
     kicker: "Der ganze Überblick",
@@ -204,6 +205,20 @@ export default function AktivWerdenPage() {
             </li>
           ))}
         </ul>
+
+        <div id="wahlkreisbuero" className="scroll-mt-24 mt-10">
+          <MdbLookupCard />
+          <p className="mt-4 font-body text-sm text-warmgrau leading-relaxed">
+            Du willst den Bundestag auch mal von innen sehen?{" "}
+            <Link
+              href="/bundestag-besuch-kostenlos"
+              className="text-waldgruen hover:underline"
+            >
+              So kommst du kostenlos nach Berlin
+            </Link>
+            .
+          </p>
+        </div>
 
         <section className="mt-16 mb-10">
           <h2 className="font-body text-2xl md:text-3xl font-bold text-waldgruen-dark mb-6">

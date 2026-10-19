@@ -97,7 +97,14 @@ export async function transferCampaignAction(
       campaignTitle: campaign.title,
       slug: campaign.slug,
       token,
-      creatorName: campaign.creatorName,
+      inviterName: campaign.creatorName,
+      letterCount: campaign.letterCount,
+      campaignStatus:
+        campaign.status === "awaiting_approval" ||
+        campaign.status === "active" ||
+        campaign.status === "paused"
+          ? campaign.status
+          : undefined,
       adminCopy: true,
     });
 
@@ -111,7 +118,7 @@ export async function transferCampaignAction(
 
     return {
       ok: true,
-      message: "Die Übernahme-E-Mail wurde verschickt. Die neue Inhaberin muss den Link bestätigen.",
+      message: "Die Übernahme-E-Mail wurde verschickt. Die neue Adresse muss den Link noch bestätigen.",
     };
   } catch (error) {
     if (tokenRecordId) {

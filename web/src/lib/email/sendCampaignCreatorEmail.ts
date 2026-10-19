@@ -20,6 +20,8 @@ interface SendCampaignCreatorEmailBase {
   campaignTitle: string;
   slug: string;
   creatorName?: string | null;
+  inviterName?: string | null;
+  letterCount?: number;
   adminCopy?: boolean;
   campaignStatus?: "awaiting_approval" | "active" | "paused";
   milestone?: { count: number; milestones: number[] };
@@ -103,6 +105,8 @@ export async function sendCampaignCreatorEmail(
         campaignUrl: campaignUrl(params.slug),
         actionUrl: actionUrl(params),
         creatorName: params.creatorName,
+        inviterName: params.inviterName,
+        letterCount: params.letterCount,
         campaignStatus: params.campaignStatus,
         milestone,
         ended,

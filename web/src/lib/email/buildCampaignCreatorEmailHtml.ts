@@ -59,6 +59,8 @@ export interface BuildCampaignCreatorEmailHtmlParams {
   campaignUrl: string;
   actionUrl: string;
   creatorName?: string | null;
+  inviterName?: string | null;
+  letterCount?: number;
   campaignStatus?: "awaiting_approval" | "active" | "paused";
   milestone?: CampaignMilestoneEmailParams;
   ended?: CampaignEndedEmailParams;

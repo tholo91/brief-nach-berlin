@@ -11,7 +11,7 @@
 **Elevator Pitch:** Du sagst, was dich stört: in deinem Viertel, deiner Stadt oder in der großen Politik. Brief-nach-Berlin findet den richtigen Abgeordneten, formuliert deinen Brief und du schreibst ihn ab. In fünf Minuten. Handgeschrieben wirkt.
 
 **Gründer:** Thomas, Bremen — [LinkedIn-Profil folgt]
-**Rechtsform/Stil:** Soloprojekt + Bürgerinitiative. Thomas macht Brief-nach-Berlin allein, die Marke tritt auf wie eine progressive, bodenständige Bürgerinitiative.
+**Rechtsform/Stil:** Soloprojekt + Bürgerinitiative. Thomas macht Brief-nach-Berlin allein, die Marke tritt auf wie eine bodenständige Bürgerinitiative.
 
 ---
 
@@ -24,7 +24,7 @@
 
 ### Was Brief-nach-Berlin nicht ist
 - Keine Online-Petition (handgeschriebene Briefe wirken 10x stärker)
-- Keine Partei-Plattform (überparteilich im progressiven Spektrum)
+- Keine Partei-Plattform (überparteilich)
 - Kein aggressiver Protest-Kanal
 
 ### Zukunftsvision
@@ -35,7 +35,7 @@
 
 ## 3. Zielgruppe
 
-**Primär:** Progressive Bürger:innen quer durch das linke und liberale Spektrum — Grüne, SPD, Linke, sozialliberale FDP-Wähler:innen. Alter irrelevant, digital affin.
+**Primär:** Bürger:innen, die sich über etwas ärgern und etwas tun wollen, unabhängig von Partei oder politischer Richtung. Alter irrelevant, digital affin.
 
 **Sekundär:** Parteimitglieder, die effektiver kommunizieren wollen. Lokale Bürgerinitiativen. Engagierte Erstschreiber:innen.
 
@@ -96,7 +96,7 @@ Der Nutzer durchläuft auf der Landing Page und im Produkt vier Phasen:
 | Rolle | Farbe | Anmutung |
 |---|---|---|
 | **Hintergrund** | Creme / Warmweiß (#FAF8F5 o.ä.) | Papier, Wärme, Einladung |
-| **Primär** | Waldgrün (#2D6A4F o.ä.) | Natur, Hoffnung, progressiv |
+| **Primär** | Waldgrün (#2D6A4F o.ä.) | Natur, Hoffnung, Aufbruch |
 | **Akzent** | Airmail-Rot (#C1121F o.ä.) oder Airmail-Blau (#1D3557 o.ä.) | Postalisch, Dynamik |
 | **Text** | Dunkelbraun / Warmgrau (#3D3D3D o.ä.) | Lesbarkeit, Wärme statt hartem Schwarz |
 | **CTA** | Grün oder kontrastreich zum Hintergrund | Handlung, Aufmerksamkeit |

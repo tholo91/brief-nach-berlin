@@ -353,7 +353,7 @@ Plans:
 
 ### Phase 999.4: Link Petitionsseiten (Change.org, WeAct) auf Landing/Success Page (BACKLOG)
 
-**Goal:** Auf Landing Page und/oder Success Page zu Petitionsplattformen (Change.org, WeAct, weitere) verlinken, um progressive Causes zu unterstützen und dem Nutzer nach dem Brief weitere Handlungsoptionen anzubieten. Offene Fragen: Welche Plattformen taggen? Wo platzieren (Landing vs. Success)? Thematisch gefiltert nach Issue?
+**Goal:** Auf Landing Page und/oder Success Page zu Petitionsplattformen (Change.org, WeAct, weitere) verlinken, um weitere Anliegen zu unterstützen und dem Nutzer nach dem Brief weitere Handlungsoptionen anzubieten. Offene Fragen: Welche Plattformen taggen? Wo platzieren (Landing vs. Success)? Thematisch gefiltert nach Issue?
 **Requirements:** TBD
 **Plans:** 0 plans
 

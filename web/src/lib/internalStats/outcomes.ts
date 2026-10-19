@@ -10,6 +10,7 @@ import {
   OUTCOME_ENTRY_CHOICES,
   REPLY_ADDRESSED_VALUES,
   REPLY_CHANNEL_VALUES,
+  REPLY_FEELING_VALUES,
   WRITE_AGAIN_VALUES,
 } from "@/lib/rueckmeldung/schema";
 import type { InternalReviewRow } from "./aggregate";
@@ -18,6 +19,7 @@ type LetterSent = (typeof LETTER_SENT_VALUES)[number];
 type NotSentReason = (typeof NOT_SENT_REASON_VALUES)[number];
 type ReplyChannel = (typeof REPLY_CHANNEL_VALUES)[number];
 type ReplyAddressed = (typeof REPLY_ADDRESSED_VALUES)[number];
+type ReplyFeeling = (typeof REPLY_FEELING_VALUES)[number];
 type Expectation = (typeof EXPECTATION_VALUES)[number];
 type WriteAgain = (typeof WRITE_AGAIN_VALUES)[number];
 
@@ -32,6 +34,7 @@ export type InternalOutcomeRow = {
   not_sent_reason: string | null;
   reply_channels: string[] | null;
   reply_addressed: string | null;
+  reply_feeling: string | null;
   expectation: string | null;
   political_self_efficacy: string | null;
   write_again: string | null;
@@ -51,6 +54,7 @@ export const OUTCOME_ROW_COLUMNS = [
   "not_sent_reason",
   "reply_channels",
   "reply_addressed",
+  "reply_feeling",
   "expectation",
   "political_self_efficacy",
   "write_again",
@@ -65,6 +69,7 @@ export const OUTCOME_LABELS: {
   notSentReason: Record<NotSentReason, string>;
   replyChannel: Record<ReplyChannel, string>;
   replyAddressed: Record<ReplyAddressed, string>;
+  replyFeeling: Record<ReplyFeeling, string>;
   expectation: Record<Expectation, string>;
   writeAgain: Record<WriteAgain, string>;
 } = {
@@ -93,6 +98,12 @@ export const OUTCOME_LABELS: {
     concrete: "Ja, konkret",
     partly: "Teilweise",
     generic: "Eher allgemein",
+  },
+  replyFeeling: {
+    positive_surprise: "Positiv überrascht",
+    glad_someone_answered: "Hatte mehr erwartet, finde es aber gut, dass sich jemand gemeldet hat",
+    as_expected: "Ungefähr so, wie ich es erwartet hatte",
+    disappointing: "Eher enttäuschend",
   },
   expectation: {
     answer: "Eine Antwort",
@@ -145,6 +156,9 @@ export type OutcomeRoundStats = {
   channelBase: number;
   addressedCounts: Record<ReplyAddressed, number>;
   addressedBase: number;
+  replyFeelingCounts: Record<ReplyFeeling, number>;
+  replyFeelingBase: number;
+  feelingByAddressed: Record<ReplyAddressed, { total: number; counts: Record<ReplyFeeling, number> }>;
   notSentReasonCounts: Record<NotSentReason, number>;
   notSentReasonBase: number;
   expectationVsResult: Record<Expectation, { total: number; replied: number }>;
@@ -185,6 +199,18 @@ function emptyExpectationVsResult(): Record<
   ) as Record<Expectation, { total: number; replied: number }>;
 }
 
+function emptyFeelingByAddressed(): Record<
+  ReplyAddressed,
+  { total: number; counts: Record<ReplyFeeling, number> }
+> {
+  return Object.fromEntries(
+    REPLY_ADDRESSED_VALUES.map((value) => [
+      value,
+      { total: 0, counts: zeroRecord(REPLY_FEELING_VALUES) },
+    ]),
+  ) as Record<ReplyAddressed, { total: number; counts: Record<ReplyFeeling, number> }>;
+}
+
 function emptyOutcomeRoundStats(
   round: OutcomeRound,
   returnDayCounts: Record<string, number>,
@@ -219,6 +245,9 @@ function emptyOutcomeRoundStats(
     channelBase: 0,
     addressedCounts: zeroRecord(REPLY_ADDRESSED_VALUES),
     addressedBase: 0,
+    replyFeelingCounts: zeroRecord(REPLY_FEELING_VALUES),
+    replyFeelingBase: 0,
+    feelingByAddressed: emptyFeelingByAddressed(),
     notSentReasonCounts: zeroRecord(NOT_SENT_REASON_VALUES),
     notSentReasonBase: 0,
     expectationVsResult: emptyExpectationVsResult(),
@@ -334,6 +363,15 @@ export function aggregateOutcomes(
       if (isOneOf(REPLY_ADDRESSED_VALUES, row.reply_addressed)) {
         stats.addressedBase += 1;
         stats.addressedCounts[row.reply_addressed] += 1;
+      }
+      if (state.replied && isOneOf(REPLY_FEELING_VALUES, row.reply_feeling)) {
+        stats.replyFeelingBase += 1;
+        stats.replyFeelingCounts[row.reply_feeling] += 1;
+        if (isOneOf(REPLY_ADDRESSED_VALUES, row.reply_addressed)) {
+          const cell = stats.feelingByAddressed[row.reply_addressed];
+          cell.total += 1;
+          cell.counts[row.reply_feeling] += 1;
+        }
       }
     }
 

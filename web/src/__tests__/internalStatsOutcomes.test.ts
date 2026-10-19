@@ -37,6 +37,7 @@ function outcome(overrides: Partial<InternalOutcomeRow> = {}): InternalOutcomeRo
     not_sent_reason: null,
     reply_channels: [],
     reply_addressed: null,
+    reply_feeling: null,
     expectation: null,
     political_self_efficacy: null,
     write_again: null,
@@ -189,6 +190,31 @@ describe("aggregateOutcomes counting rules", () => {
     expect(stats.respondentCount).toBe(1);
   });
 
+  it("counts the reply feeling only for completed rows with a reply and a value", () => {
+    const stats = aggregateOutcomes(
+      [
+        completedForm({ reply_feeling: "positive_surprise", reply_addressed: "generic" }),
+        completedForm({ reply_feeling: "glad_someone_answered", reply_addressed: "generic" }),
+        completedForm({ reply_feeling: "disappointing", reply_addressed: "concrete" }),
+        completedForm({ reply_feeling: null, reply_addressed: "partly" }),
+        completedForm({ reply_feeling: "as_expected", reply_channels: ["none"], reply_addressed: null }),
+        outcome({ reply_feeling: "positive_surprise", letter_sent: "handwritten", reply_channels: ["email"], reply_addressed: "concrete" }),
+      ],
+      [],
+      round,
+      FETCHED_AT,
+    );
+    expect(stats.replyFeelingBase).toBe(3);
+    expect(stats.replyFeelingCounts).toEqual({ positive_surprise: 1, glad_someone_answered: 1, as_expected: 0, disappointing: 1 });
+    expect(stats.feelingByAddressed.generic).toEqual({
+      total: 2,
+      counts: { positive_surprise: 1, glad_someone_answered: 1, as_expected: 0, disappointing: 0 },
+    });
+    expect(stats.feelingByAddressed.concrete.total).toBe(1);
+    expect(stats.feelingByAddressed.partly.total).toBe(0);
+    expect(stats.feelingByAddressed.partly.counts).not.toBe(stats.feelingByAddressed.generic.counts);
+  });
+
   it("counts expectation versus result, addressed, reasons and write again", () => {
     const stats = aggregateOutcomes(
       [
@@ -324,7 +350,8 @@ describe("getInternalStatsWithBaseline outcomes query", () => {
 
     const select = String(calls.select[0][0]);
     expect(select).not.toMatch(/\bemail\b/);
-    expect(select.split(",")).toHaveLength(16);
+    expect(select.split(",")).toHaveLength(17);
+    expect(select.split(",")).toContain("reply_feeling");
     expect(calls.in[0]).toEqual(["cohort", OUTCOME_ROUNDS.map((r) => r.cohort)]);
     const [column, operator, list] = calls.not[0] as [string, string, string];
     expect(column).toBe("email");

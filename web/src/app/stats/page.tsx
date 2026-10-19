@@ -31,6 +31,7 @@ import {
   NOT_SENT_REASON_VALUES,
   REPLY_ADDRESSED_VALUES,
   REPLY_CHANNEL_VALUES,
+  REPLY_FEELING_VALUES,
   WRITE_AGAIN_VALUES,
 } from "@/lib/rueckmeldung/schema";
 import {
@@ -1655,6 +1656,15 @@ const addressedOptions = REPLY_ADDRESSED_VALUES.map((key) => ({
   key,
   label: OUTCOME_LABELS.replyAddressed[key],
 }));
+const replyFeelingOptions = REPLY_FEELING_VALUES.map((key) => ({
+  key,
+  label: OUTCOME_LABELS.replyFeeling[key],
+}));
+const feelingByAddressedPrefix: Record<(typeof REPLY_ADDRESSED_VALUES)[number], string> = {
+  concrete: "Bei konkreten Antworten",
+  partly: "Bei teilweise konkreten Antworten",
+  generic: "Bei eher allgemeinen Antworten",
+};
 const writeAgainOptions = WRITE_AGAIN_VALUES.map((key) => ({
   key,
   label: OUTCOME_LABELS.writeAgain[key],
@@ -1764,6 +1774,30 @@ function OutcomeRoundBlock({ round }: { round: OutcomeRoundStats }) {
                 valueLabel={formatBarShare}
                 baseNote={shareBaseNote}
               />
+            </div>
+            <div>
+              <p className="mb-2 font-body text-xs text-warmgrau/70">Wie war die Reaktion für dich?</p>
+              <SurveyDistributionBars
+                values={round.replyFeelingCounts}
+                options={replyFeelingOptions}
+                total={round.replyFeelingBase}
+                color="#C58B18"
+                mode="prozentual"
+                valueLabel={formatBarShare}
+                baseNote={shareBaseNote}
+              />
+              <ul className="mt-3 space-y-1 font-body text-xs text-warmgrau/70">
+                {REPLY_ADDRESSED_VALUES.filter((key) => round.feelingByAddressed[key].total > 0).map((key) => {
+                  const cell = round.feelingByAddressed[key];
+                  const positive = cell.counts.positive_surprise + cell.counts.glad_someone_answered;
+                  return (
+                    <li key={key}>
+                      {feelingByAddressedPrefix[key]}: {formatNumber(positive)} von {formatNumber(cell.total)} positiv überrascht oder froh, dass sich jemand gemeldet hat
+                    </li>
+                  );
+                })}
+              </ul>
+              <p className="mt-2 font-body text-xs text-warmgrau/70">Frage seit 19.10.2026, frühere Rückmeldungen ohne Angabe.</p>
             </div>
           </DetailBlock>
 

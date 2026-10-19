@@ -1,12 +1,7 @@
-export type RuleViolationKind = "nicht_nur_sondern" | "erfundenes_geschlecht";
-
 export interface RuleViolation {
-  kind: RuleViolationKind;
   sentence: string;
-  word?: string;
+  word: string;
 }
-
-const NICHT_NUR_SONDERN = /\bnicht\s+(?:nur|allein|bloß)(?=[\s,])[\s\S]*?\bsondern\b/i;
 
 // "Als Bürgerin dieses Landes", "ich bin Rentnerin", "als Mutter": eine
 // Selbstbezeichnung mit Geschlecht, die nicht aus dem Transkript stammt.
@@ -32,13 +27,10 @@ export function findRuleViolations(letter: string, sourceText: string): RuleViol
   const violations: RuleViolation[] = [];
   for (const raw of letter.split(/(?<=[.!?])\s+/)) {
     const sentence = raw.trim();
-    if (NICHT_NUR_SONDERN.test(sentence)) {
-      violations.push({ kind: "nicht_nur_sondern", sentence });
-    }
     for (const match of sentence.matchAll(GENDERED_SELF)) {
       const word = match[1];
       if (NOT_A_PERSON.has(word) || RECIPIENT_ROLE.test(word) || source.includes(word.toLowerCase())) continue;
-      violations.push({ kind: "erfundenes_geschlecht", sentence, word });
+      violations.push({ sentence, word });
     }
   }
   return violations;
@@ -49,10 +41,8 @@ export function ruleRetryDirective(violations: RuleViolation[], alsoRewriting: b
   const header = alsoRewriting
     ? "Ändere dabei außerdem diese Stellen:"
     : "Überarbeite den Brief nur an diesen Stellen. Inhalt, Ton, Anrede, Grußformel und Länge bleiben gleich.";
-  const lines = violations.map((v) =>
-    v.kind === "nicht_nur_sondern"
-      ? `- Schreibe diesen Satz als zwei eigenständige Sätze: "${v.sentence}"`
-      : `- Lass die Selbstbezeichnung "${v.word}" weg und schreibe neutral in Ich-Form: "${v.sentence}"`
+  const lines = violations.map(
+    (v) => `- Lass die Selbstbezeichnung "${v.word}" weg und schreibe neutral in Ich-Form: "${v.sentence}"`
   );
   return [header, ...lines].join("\n");
 }

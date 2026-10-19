@@ -672,15 +672,15 @@ export async function generateLetter(
   const acceptableMin = Math.floor(minWords * 0.85);
   const acceptableMax = Math.ceil(maxWords * 1.15);
 
-  // Hard rules the model still breaks despite the prompt ("nicht nur ...
-  // sondern", invented gender). They share the single corrective retry with
-  // the length check, so the cap stays at 2 calls per letter.
+  // Invented gender ("Als Bürgerin") is a false statement about the sender,
+  // so it shares the single corrective retry with the length check. The cap
+  // stays at 2 calls per letter.
   const sourceText = [input.issueText, input.name, input.party, input.ngo].filter(Boolean).join("\n");
   const violations = findRuleViolations(parsed.letter, sourceText);
   const lengthOff = wordCount < acceptableMin || wordCount > acceptableMax;
 
-  // One corrective retry if length lands outside the acceptance corridor or a
-  // hard rule is broken. Not on hallucination. Caps cost at 2× per letter.
+  // One corrective retry if length lands outside the acceptance corridor or
+  // the gender is invented. Not on hallucination. Caps cost at 2× per letter.
   let retried = false;
   if (lengthOff || violations.length > 0) {
     retried = true;
@@ -703,8 +703,8 @@ export async function generateLetter(
       });
     }
     if (violations.length > 0) {
-      console.warn("[generateLetter] rule violations, retrying once", {
-        kinds: violations.map((v) => v.kind),
+      console.warn("[generateLetter] invented gender, retrying once", {
+        count: violations.length,
       });
     }
 

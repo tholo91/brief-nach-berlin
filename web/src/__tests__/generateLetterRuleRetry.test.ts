@@ -48,10 +48,10 @@ function respond(...letters: string[]) {
   }
 }
 
-const NICHT_NUR = "Das ist nicht nur ärgerlich, sondern gefährlich.";
-const CLEAN = "Das ist ärgerlich. Es ist auch gefährlich.";
+const GENDER = "Als Bürgerin dieses Landes erwarte ich das.";
+const CLEAN = "Ich erwarte das.";
 
-describe("generateLetter: Hard-Regeln nach der Generierung", () => {
+describe("generateLetter: Nachbearbeitung und Korrektur-Runde", () => {
   beforeEach(() => {
     (mistral.chat.complete as jest.Mock).mockReset();
     jest.spyOn(console, "warn").mockImplementation(() => {});
@@ -72,25 +72,25 @@ describe("generateLetter: Hard-Regeln nach der Generierung", () => {
     expect(result.retried).toBe(false);
   });
 
-  it("korrigiert nicht nur ... sondern mit genau einem zweiten Call", async () => {
-    respond(letterWith(NICHT_NUR), letterWith(CLEAN));
+  it("korrigiert ein erfundenes Geschlecht mit genau einem zweiten Call", async () => {
+    respond(letterWith(GENDER), letterWith(CLEAN));
 
     const result = await generateLetter(input());
 
     expect(mistral.chat.complete).toHaveBeenCalledTimes(2);
     expect(result.letter).toContain(CLEAN);
+    expect(result.letter).not.toContain("Bürgerin");
     expect(result.retried).toBe(true);
     const retryMessages = (mistral.chat.complete as jest.Mock).mock.calls[1][0].messages;
-    expect(retryMessages.at(-1).content).toContain(`"${NICHT_NUR}"`);
+    expect(retryMessages.at(-1).content).toContain(`"${GENDER}"`);
   });
 
-  it("korrigiert ein erfundenes Geschlecht", async () => {
-    respond(letterWith("Als Bürgerin dieses Landes erwarte ich das."), letterWith("Ich erwarte das."));
+  it("löst bei nicht nur ... sondern keinen zweiten Call aus", async () => {
+    respond(letterWith("Das ist nicht nur ärgerlich, sondern gefährlich."));
 
-    const result = await generateLetter(input());
+    await generateLetter(input());
 
-    expect(result.letter).toContain("Ich erwarte das.");
-    expect(result.letter).not.toContain("Bürgerin");
+    expect(mistral.chat.complete).toHaveBeenCalledTimes(1);
   });
 
   it("lässt Selbstbezeichnungen aus dem Transkript stehen", async () => {
@@ -103,36 +103,36 @@ describe("generateLetter: Hard-Regeln nach der Generierung", () => {
   });
 
   it("behält den ersten Brief, wenn die Korrektur den Fehler nicht behebt", async () => {
-    respond(letterWith(`${NICHT_NUR} Der Bus fehlt – gerade abends.`), letterWith("Das ist nicht nur laut, sondern teuer."));
+    respond(letterWith(`${GENDER} Der Bus fehlt – gerade abends.`), letterWith("Als Rentnerin erwarte ich das."));
 
     const result = await generateLetter(input());
 
-    expect(result.letter).toContain(NICHT_NUR);
+    expect(result.letter).toContain(GENDER);
     expect(result.letter).toContain("Der Bus fehlt, gerade abends.");
   });
 
   it("verwirft eine Korrektur, die aus dem Längenfenster fällt", async () => {
-    respond(letterWith(NICHT_NUR), letterWith(CLEAN, 30));
+    respond(letterWith(GENDER), letterWith(CLEAN, 30));
 
     const result = await generateLetter(input());
 
-    expect(result.letter).toContain(NICHT_NUR);
+    expect(result.letter).toContain(GENDER);
     expect(result.wordCountInRange).toBe(true);
   });
 
   it("behält den ersten Brief, wenn der Korrektur-Call fehlschlägt", async () => {
-    respond(letterWith(NICHT_NUR));
+    respond(letterWith(GENDER));
     (mistral.chat.complete as jest.Mock).mockRejectedValueOnce(new Error("Service unavailable"));
     jest.spyOn(console, "error").mockImplementation(() => {});
 
     const result = await generateLetter(input());
 
-    expect(result.letter).toContain(NICHT_NUR);
+    expect(result.letter).toContain(GENDER);
     expect(result.retried).toBe(true);
   });
 
   it("teilt sich die eine Korrektur-Runde mit der Längenprüfung", async () => {
-    respond(letterWith(NICHT_NUR, 30), letterWith(NICHT_NUR, 30));
+    respond(letterWith(GENDER, 30), letterWith(GENDER, 30));
 
     await generateLetter(input());
 

@@ -32,30 +32,12 @@ describe("replaceDashes", () => {
 
 describe("findRuleViolations", () => {
   it.each([
-    "Eine Partei kann nur verboten werden, wenn ihre Ziele nicht nur verfassungsfeindlich sind, sondern auch konkrete Aussicht auf Erfolg haben.",
-    "Das Gutachten belegt, dass die AfD nicht nur verfassungsfeindliche Ziele verfolgt, sondern auch über Strukturen verfügt.",
-    "Diese Forderungen richten sich nicht nur gegen Einzelne, sondern gegen das Prinzip der gleichen Rechte.",
-    "Das betrifft nicht allein mich, sondern viele Familien.",
-    "Das ist nicht bloß ärgerlich, sondern gefährlich.",
-  ])("findet nicht nur ... sondern: %s", (sentence) => {
-    expect(findRuleViolations(`Sehr geehrte Damen und Herren,\n\n${sentence}`, "")).toEqual([
-      expect.objectContaining({ kind: "nicht_nur_sondern" }),
-    ]);
-  });
-
-  it("ignoriert nicht nur ohne sondern im selben Satz", () => {
-    expect(findRuleViolations("Das betrifft nicht nur mich. Sondern das ganze Viertel.", "")).toEqual([]);
-  });
-
-  it.each([
     ["Als Bürgerin dieses Landes erwarte ich, dass das geprüft wird.", "Bürgerin"],
     ["Ich schreibe Ihnen als engagierte Anwohnerin.", "Anwohnerin"],
     ["Ich bin Rentnerin und fahre täglich Bus.", "Rentnerin"],
     ["Als Mutter mache ich mir Sorgen.", "Mutter"],
   ])("findet erfundenes Geschlecht: %s", (sentence, word) => {
-    expect(findRuleViolations(sentence, "Die Busse fahren zu selten.")).toEqual([
-      { kind: "erfundenes_geschlecht", sentence, word },
-    ]);
+    expect(findRuleViolations(sentence, "Die Busse fahren zu selten.")).toEqual([{ sentence, word }]);
   });
 
   it("erlaubt Selbstbezeichnungen, die im Transkript stehen", () => {
@@ -69,6 +51,8 @@ describe("findRuleViolations", () => {
     "Ich sehe die Frist als Termin, den niemand einhält.",
     "Als Verein setzen wir uns dafür ein.",
     "Ich wohne in Berlin und sehe das als Bürger täglich.",
+    // Bewusst kein Auslöser: handgeschrieben fällt die Konstruktion kaum auf (Entscheidung 19.10.2026)
+    "Das ist nicht nur ärgerlich, sondern gefährlich.",
   ])("meldet keinen Fehlalarm: %s", (sentence) => {
     expect(findRuleViolations(sentence, "")).toEqual([]);
   });
@@ -76,14 +60,15 @@ describe("findRuleViolations", () => {
 
 describe("ruleRetryDirective", () => {
   const violations = findRuleViolations(
-    "Als Bürgerin dieses Landes erwarte ich das. Das ist nicht nur ärgerlich, sondern gefährlich.",
+    "Als Bürgerin dieses Landes erwarte ich das. Der Bus fährt zu selten.",
     ""
   );
 
   it("nennt nur die gefundenen Stellen", () => {
     const directive = ruleRetryDirective(violations, false);
     expect(directive).toContain('"Bürgerin"');
-    expect(directive).toContain('"Das ist nicht nur ärgerlich, sondern gefährlich."');
+    expect(directive).toContain('"Als Bürgerin dieses Landes erwarte ich das."');
+    expect(directive).not.toContain("Der Bus fährt zu selten.");
     expect(directive).toContain("Länge bleiben gleich");
     expect(directive).not.toMatch(/[–—]/);
   });

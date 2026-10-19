@@ -170,7 +170,7 @@ Passe die Werte-Sprache an die Partei der Empfängerin/des Empfängers an, damit
 - CDU/CSU: Verlässlichkeit, wirtschaftliche Vernunft, Sicherheit, Bewahrung des Bewährten.
 - FDP: Eigenverantwortung, Bürokratieabbau, Innovation, schlanker Staat.
 - Linke: öffentliches Gut, soziale Ungleichheit, gemeinwohlorientiert.
-- AfD: streng sachlich, lokale Alltagsprobleme, keine ideologische Sprache in beide Richtungen, würdige Distanz wahren.
+- AfD: streng sachlich, lokale Alltagsprobleme, keine ideologische Sprache in beide Richtungen.
 - BSW / sonstige: rein sachlich, Fokus auf das konkrete Anliegen.
 
 MdB-KONTEXT NUTZEN (nur wenn <mdb_kontext> mitgeliefert):
@@ -336,7 +336,7 @@ const BUND_PARTEI_LIST = `- SPD: Arbeitnehmerrechte, sozialer Zusammenhalt, fair
 - CDU/CSU: Verlässlichkeit, wirtschaftliche Vernunft, Sicherheit, Bewahrung des Bewährten.
 - FDP: Eigenverantwortung, Bürokratieabbau, Innovation, schlanker Staat.
 - Linke: öffentliches Gut, soziale Ungleichheit, gemeinwohlorientiert.
-- AfD: streng sachlich, lokale Alltagsprobleme, keine ideologische Sprache in beide Richtungen, würdige Distanz wahren.
+- AfD: streng sachlich, lokale Alltagsprobleme, keine ideologische Sprache in beide Richtungen.
 - BSW / sonstige: rein sachlich, Fokus auf das konkrete Anliegen.`;
 
 /** Kompetenz-Mismatch: der User schreibt bewusst an eine andere als die empfohlene Ebene. */

@@ -55,13 +55,50 @@ function ipFromRequest(req: NextRequest): string {
 // Zieht aus einem geworfenen Fehler die für die "Fehler melden"-Mail nützlichen
 // Felder. Provider-Bodies und Ursachen werden bewusst nicht an den Client
 // zurückgegeben: Sie könnten den Anliegen-Text oder Promptbestandteile spiegeln.
-// Stack wird auf die ersten Zeilen gekürzt.
+// Ausnahme: Bei 429/5xx beschreibt Mistral nur Limits oder Ausfälle, daraus
+// kommen einzelne, gekürzte Felder als `upstream` mit (eigenes Rate-Limit vs.
+// Mistral-Kapazität unterscheidbar). Stack wird auf die ersten Zeilen gekürzt.
+interface UpstreamDetail {
+  type?: string;
+  code?: string;
+  message?: string;
+  retryAfter?: string;
+}
+
 interface ErrorDetail {
   name: string;
   message: string;
   stack?: string;
   status?: number;
   stage?: MistralStage;
+  upstream?: UpstreamDetail;
+}
+
+function extractUpstreamDetail(source: unknown, status: number | undefined): UpstreamDetail | undefined {
+  if (status === undefined || (status !== 429 && status < 500)) return undefined;
+  const raw = source instanceof MistralProviderUnavailableError ? source.cause : source;
+  if (!raw || typeof raw !== "object") return undefined;
+  const e = raw as { body?: unknown; headers?: unknown };
+
+  let parsed: Record<string, unknown> = {};
+  if (typeof e.body === "string") {
+    try {
+      const json: unknown = JSON.parse(e.body);
+      if (json && typeof json === "object") parsed = json as Record<string, unknown>;
+    } catch {
+      // Kein JSON: dann nur Header-Infos.
+    }
+  }
+  const pick = (value: unknown) =>
+    typeof value === "string" || typeof value === "number" ? String(value).slice(0, 120) : undefined;
+
+  const upstream: UpstreamDetail = {
+    type: pick(parsed.type),
+    code: pick(parsed.code),
+    message: pick(parsed.message ?? parsed.detail),
+    retryAfter: e.headers instanceof Headers ? e.headers.get("retry-after") ?? undefined : undefined,
+  };
+  return Object.values(upstream).some((value) => value !== undefined) ? upstream : undefined;
 }
 
 function extractErrorDetail(error: unknown): ErrorDetail {
@@ -83,6 +120,7 @@ function extractErrorDetail(error: unknown): ErrorDetail {
       : typeof e.status === "number"
         ? e.status
         : undefined;
+  const upstream = stageError ? extractUpstreamDetail(source, status) : undefined;
 
   return {
     name: stageError?.name ?? e.name,
@@ -92,6 +130,7 @@ function extractErrorDetail(error: unknown): ErrorDetail {
       : undefined,
     status,
     ...(stageError ? { stage: stageError.stage } : {}),
+    ...(upstream ? { upstream } : {}),
   };
 }
 

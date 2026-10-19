@@ -258,6 +258,61 @@ describe("generate-letter RecipientSelection hardening", () => {
     });
   });
 
+  it("reports Mistral 429 type, code and retry-after as upstream detail", async () => {
+    jest.mocked(checkRateLimit).mockReturnValue({ allowed: true });
+    jest.mocked(hashIdentifier).mockReturnValue("hashed");
+    jest.mocked(resolveRecipientSelection).mockReturnValue({
+      ok: true,
+      availableCount: 1,
+      relation: "institutional",
+      recipient: {
+        kind: "rathaus",
+        level: "Kommune",
+        recipientKind: "buergermeisteramt",
+        gemeindeName: "Musterstadt",
+        plz: "28203",
+        label: "Bürgermeisteramt Musterstadt",
+        postalAddress: "Musterstraße 1",
+        address: { source: "fallback" },
+      },
+    });
+    jest.mocked(generateLetter).mockRejectedValue(
+      new MistralStageError("generation", Object.assign(new Error("Rate limited"), {
+        status: 429,
+        body: JSON.stringify({ message: "Service tier capacity exceeded for this model.", type: "service_tier_capacity_exceeded", code: "3505" }),
+        headers: new Headers({ "retry-after": "2" }),
+      })),
+    );
+
+    const response = await POST(requestWith({
+      wizardData: {
+        plz: "28203",
+        email: "test@example.org",
+        issueText: "Ein ausreichend langes Anliegen für den Test.",
+        letterLength: "1.5",
+        toneLevel: 3,
+      },
+      selection: { kind: "rathaus" },
+    }));
+
+    expect(response.status).toBe(502);
+    await expect(response.json()).resolves.toMatchObject({
+      errorId: expect.any(String),
+      detail: {
+        name: "MistralStageError",
+        status: 429,
+        stage: "generation",
+        upstream: {
+          type: "service_tier_capacity_exceeded",
+          code: "3505",
+          message: "Service tier capacity exceeded for this model.",
+          retryAfter: "2",
+        },
+      },
+      retrySafe: true,
+    });
+  });
+
   describe("Meilenstein-Mail im after()-Block", () => {
     beforeEach(() => {
       jest.spyOn(console, "error").mockImplementation(() => undefined);

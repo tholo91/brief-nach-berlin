@@ -53,6 +53,33 @@ describe("error report privacy boundary", () => {
     expect(payload.detail).toEqual({ name: "MistralStageError", status: 400, stage: "generation" });
   });
 
+  it("forwards only valid Mistral upstream fields", async () => {
+    await reportErrorAction({
+      httpStatus: 502,
+      detail: {
+        name: "MistralStageError",
+        status: 429,
+        stage: "generation",
+        upstream: {
+          type: "service_tier_capacity_exceeded",
+          code: "3505",
+          message: "x".repeat(500),
+          retryAfter: "soon <script>",
+          extra: "private",
+        },
+      },
+      context: { plz: "28203", email: "test@example.org", politicianId: 1, retryCount: 1 },
+    });
+
+    const payload = jest.mocked(sendErrorReportEmail).mock.calls[0]![0];
+    expect(payload.detail).toEqual({
+      name: "MistralStageError",
+      status: 429,
+      stage: "generation",
+      upstream: { type: "service_tier_capacity_exceeded", code: "3505" },
+    });
+  });
+
   it("forwards abort context only as categories and numbers", async () => {
     const privateText = "Load failed: Mein Anliegen";
     await reportErrorAction({

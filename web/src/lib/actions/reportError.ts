@@ -53,6 +53,16 @@ function detectInAppBrowser(userAgent: string | null): string | null {
 
 const mistralStageSchema = z.enum(["routing", "generation"]);
 
+// Mistral-Kurzbeschreibung bei 429/5xx (Limit oder Ausfall). Jedes Feld
+// wird einzeln geprüft und verworfen, wenn es nicht passt.
+const upstreamTokenSchema = z.string().regex(/^[A-Za-z0-9_.-]{1,64}$/).optional().catch(undefined);
+const upstreamSchema = z.object({
+  type: upstreamTokenSchema,
+  code: upstreamTokenSchema,
+  message: z.string().max(120).optional().catch(undefined),
+  retryAfter: z.string().regex(/^\d{1,5}(\.\d{1,3})?$/).optional().catch(undefined),
+});
+
 export type ReportErrorResult = { success: boolean };
 
 export async function reportErrorAction(
@@ -81,6 +91,10 @@ export async function reportErrorAction(
       ? detailRecord.status
       : undefined;
     const detailStage = mistralStageSchema.safeParse(detailRecord?.stage);
+    const detailUpstream = upstreamSchema.safeParse(detailRecord?.upstream);
+    const upstream = detailUpstream.success
+      ? Object.fromEntries(Object.entries(detailUpstream.data).filter(([, value]) => value !== undefined))
+      : {};
     let safePageUrl: string | null = null;
     if (parsed.data.pageUrl) {
       try {
@@ -99,6 +113,7 @@ export async function reportErrorAction(
         name: detailName,
         ...(detailStatus === undefined ? {} : { status: detailStatus }),
         ...(detailStage.success ? { stage: detailStage.data } : {}),
+        ...(Object.keys(upstream).length > 0 ? { upstream } : {}),
       },
       pageUrl: safePageUrl,
       inAppBrowser: detectInAppBrowser(parsed.data.userAgent),

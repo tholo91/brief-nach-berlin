@@ -50,5 +50,10 @@ web/data/constituency-offices.csv
 .planning/funding/
 output/pdf/bpb-antragsentwurf-2027.pdf
 
+# Kampagnen-Varianten: lokaler Skill und Arbeitsdateien
+.claude/skills/kampagnen-varianten/
+.planning/kampagnen-varianten/
+web/scripts/_kampagnen-varianten-*
+
 # Moderation: Absage-Textbausteine und interne Notizen (lokal, nicht im öffentlichen Repo)
 .planning/moderation/

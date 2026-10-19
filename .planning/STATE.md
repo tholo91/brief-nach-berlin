@@ -4,10 +4,10 @@ milestone: v1.0
 current_phase: 05
 status: verifying
 stopped_at: Completed 05-04-PLAN.md
-last_updated: "2026-10-14T11:56:36.088Z"
+last_updated: "2026-10-19T19:01:54.211Z"
 last_activity: 2026-10-14
 last_activity_desc: Quick 261013-wuq lokal implementiert und geprüft; manueller Release offen
-state_head: 914b37f3017738e2c283e894f2d8f1d803452840
+state_head: a049bf39362ea86ddbb0b17d17dcc8fac1adb918
 progress:
   total_phases: 33
   completed_phases: 4
@@ -195,6 +195,7 @@ Recent decisions affecting current work:
 | 67 | Last-Call-Mail aufgeräumt + Rückmeldeseite poliert | 2026-10-14 | 62a5e9b | — |
 | 261014-hpa | Kampagnen-Karte: gemeinsamer Post statt Thomas vorstellen, Weiterempfehlen mit Kontext | 2026-10-14 | 8b3957e | [261014-hpa-kampagnen-karte-gemeinsamer-post-weitere](./quick/261014-hpa-kampagnen-karte-gemeinsamer-post-weitere/) |
 | 261014-iuq | Stats-Seite: Sektion Nach dem Brief fuer Rueckmeldungen (letter_outcomes) | 2026-10-14 | 914b37f | [261014-iuq-stats-seite-sektion-nach-dem-brief-fuer-](./quick/261014-iuq-stats-seite-sektion-nach-dem-brief-fuer-/) |
+| 70 | Mistral-Fehlerart bei 429/5xx als detail.upstream im Fehler-Report (a049bf3) | 2026-10-19 | a049bf3 | — |
 
 ## Session Continuity
 

@@ -4,10 +4,10 @@ milestone: v1.0
 current_phase: 05
 status: verifying
 stopped_at: Completed 05-04-PLAN.md
-last_updated: "2026-10-19T19:28:59.906Z"
-last_activity: 2026-10-14
+last_updated: "2026-10-19T19:34:09.189Z"
+last_activity: 2026-10-19
 last_activity_desc: Quick 261013-wuq lokal implementiert und geprüft; manueller Release offen
-state_head: 0886d6ed380494a8f0d805a3d3a4fc47ae974015
+state_head: 360bb3703470da13e21440c2bb11b3bd1cbffdc9
 progress:
   total_phases: 33
   completed_phases: 4
@@ -198,6 +198,7 @@ Recent decisions affecting current work:
 | 70 | Mistral-Fehlerart bei 429/5xx als detail.upstream im Fehler-Report (a049bf3) | 2026-10-19 | a049bf3 | — |
 | 71 | Landeskampagnen: Regierungschef:in statt Landesregierung vorauswählen (prueft-die-afd) | 2026-10-19 | c33a3f5 | — |
 | 261019-trg | Kampagnen-Stats: Doppelte-Schätzung in Fußnote, Verlauf stündlich an Tag 1-2 | 2026-10-19 | 0886d6e | [261019-trg-kampagnen-stats-fussnote-stundenverlauf](./quick/261019-trg-kampagnen-stats-fussnote-stundenverlauf/) |
+| 73 | Button vor Schritt 3 einheitlich Empfänger:in auswählen (360bb37) | 2026-10-19 | 360bb37 | — |
 
 ## Session Continuity
 

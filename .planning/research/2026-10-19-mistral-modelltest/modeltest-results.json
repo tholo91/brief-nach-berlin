@@ -1,0 +1,468 @@
+[
+  {
+    "model": "mistral-large-4",
+    "caseId": "1-heizungsgesetz",
+    "run": 1,
+    "ok": true,
+    "letter": "19.10.2026\n\nSehr geehrte Frau Beispiel,\n\nich wende mich an Sie, weil ich das neue Heizungsgesetz ablehne. Ich habe bereits ein E-Auto gekauft und eine Wärmepumpe installiert. Diese Investitionen waren teuer und aufwendig.\n\nFür mich persönlich bedeutet das Gesetz einen Eingriff in meine Entscheidungsfreiheit. Ich habe früh gehandelt und klimafreundliche Technik angeschafft. Nun sehe ich, dass genau diese Pioniere durch neue Vorschriften belastet werden. Das fühlt sich ungerecht an.\n\nIch fordere Sie auf, im Bundestag für eine Korrektur des Heizungsgesetzes zu stimmen. Bestehende Anlagen müssen Bestandsschutz erhalten. Technologieoffenheit darf nicht durch starre Vorgaben ersetzt werden.\n\nWer die Energiewende ernst meint, muss die Menschen mitnehmen, die bereits investiert haben. Sonst riskieren wir Akzeptanzverlust bei genau denen, die handeln wollten.\n\nMit freundlichen Grüßen\n[Ihr Name]",
+    "wordCount": 122,
+    "inRange": false,
+    "retried": true,
+    "ms": 10655,
+    "usedModel": "mistral-large-4",
+    "flags": [
+      "platzhalter-name"
+    ]
+  },
+  {
+    "model": "mistral-large-4",
+    "caseId": "1-heizungsgesetz",
+    "run": 2,
+    "ok": true,
+    "letter": "19.10.2026\n\nSehr geehrte Frau Beispiel,\n\nich schreibe Ihnen, weil ich das neue Heizungsgesetz ablehne. Ich habe bereits ein E-Auto gekauft und eine Wärmepumpe installiert. Diese Investitionen waren teuer, und ich habe sie aus eigener Überzeugung getätigt.\n\nDas Gesetz trifft mich doppelt. Einerseits habe ich früh gehandelt und die Kosten allein getragen. Andererseits sehe ich nun, dass andere, die abgewartet haben, möglicherweise staatliche Unterstützung erhalten. Wer sich anpasst, wird bestraft. Wer zögert, wird belohnt. Das ist keine gerechte Klimapolitik.\n\nIch fordere Sie auf, sich für eine technologieoffene Regelung einzusetzen. Der Staat sollte Ziele vorgeben, nicht aber einzelne Technologien vorschreiben. Bürger brauchen Wahlfreiheit bei der Umsetzung.\n\nEine Politik, die frühe Investitionen entwertet, zerstört das Vertrauen der Menschen in den Staat.\n\nMit freundlichen Grüßen\n[Ihr Name]",
+    "wordCount": 123,
+    "inRange": false,
+    "retried": true,
+    "ms": 12939,
+    "usedModel": "mistral-large-4",
+    "flags": [
+      "sowohl-als-auch",
+      "platzhalter-name"
+    ]
+  },
+  {
+    "model": "mistral-large-4",
+    "caseId": "2-oepnv",
+    "run": 1,
+    "ok": true,
+    "letter": "19.10.2026\n\nSehr geehrte Frau Beispiel,\n\nletzte Woche habe ich 90 Minuten an einer Bushaltestelle in meinem Wahlkreis gewartet. Der Bus kam nicht. Ich stand dort bei Kälte und Dunkelheit, ohne zu wissen, ob ich überhaupt noch zur Arbeit komme.\n\nIch fahre jeden Tag mit dem Bus zur Arbeit, weil ich mir kein Auto leisten kann. Wenn der Bus ausfällt oder gar nicht kommt, stehe ich vor einem unlösbaren Problem. Ich habe keine Alternative. Das belastet mich persönlich sehr, denn meine Existenz hängt davon ab, pünktlich zur Arbeit zu erscheinen.\n\nIch bitte Sie, sich im Bundestag für verbindliche Mindeststandards beim öffentlichen Nahverkehr einzusetzen, damit Ausfälle wie dieser der Vergangenheit angehören.\n\nMobilität ist kein Luxus, sondern die Grundlage für Teilhabe am Arbeitsleben. Wer hier spart, schließt Menschen aus.\n\nMit freundlichen Grüßen\n[Ihr Name]",
+    "wordCount": 131,
+    "inRange": false,
+    "retried": true,
+    "ms": 12751,
+    "usedModel": "mistral-large-4",
+    "flags": [
+      "platzhalter-name"
+    ]
+  },
+  {
+    "model": "mistral-large-4",
+    "caseId": "2-oepnv",
+    "run": 2,
+    "ok": true,
+    "letter": "19.10.2026\n\nSehr geehrte Frau Beispiel,\n\nletzte Woche stand ich 90 Minuten an einer Bushaltestelle in meinem Wahlkreis und wartete vergeblich. Der Bus kam nicht. Für mich bedeutet das nicht nur verlorene Zeit, sondern die reale Gefahr, meinen Arbeitsplatz zu verlieren.\n\nIch fahre jeden Tag mit dem Bus zur Arbeit, weil ich mir kein Auto leisten kann. Wenn der öffentliche Nahverkehr nicht funktioniert, trifft das Menschen wie mich am härtesten. Mobilität ist keine Luxusfrage, sondern die Grundlage dafür, dass ich meinen Lebensunterhalt verdienen kann.\n\nIch bitte Sie, sich im Bundestag für verbindliche Qualitätsstandards im öffentlichen Nahverkehr einzusetzen, damit ausgefallene Fahrten zuverlässig ersetzt werden.\n\nOhne einen funktionierenden Busverkehr bleibt vielen Menschen in meinem Wahlkreis der Weg zur Arbeit versperrt. Das darf in einem wohlhabenden Land nicht passieren.\n\nMit freundlichen Grüßen\n[Ihr Name]",
+    "wordCount": 130,
+    "inRange": false,
+    "retried": true,
+    "ms": 28670,
+    "usedModel": "mistral-large-4",
+    "flags": [
+      "nicht-nur-sondern",
+      "platzhalter-name"
+    ]
+  },
+  {
+    "model": "mistral-large-4",
+    "caseId": "3-bildung",
+    "run": 1,
+    "ok": true,
+    "letter": "19.10.2026\n\nSehr geehrte Frau Beispiel,\n\nunsere Schulen stehen unter Druck. Lehrerinnen und Lehrer arbeiten über ihre Kräfte hinaus, weil die Klassen zu groß sind. Gleichzeitig fehlt es an Ausstattung, die Gebäude sind in einem schlechten Zustand. Das belastet alle Beteiligten und geht zulasten der Kinder, die eine gute Bildung brauchen.\n\nBildung ist die Grundlage für faire Chancen in unserer Gesellschaft. Wenn wir hier nicht investieren, zahlen wir später den Preis in Form von Fachkräftemangel und sozialer Ungleichheit. Als Mitglied des Bundestags haben Sie Einfluss auf die Haushaltspolitik und können sich für eine bessere Finanzierung der Schulen einsetzen.\n\nIch bitte Sie, sich im Bundestag für deutlich mehr Investitionen in Bildung starkzumachen: kleinere Klassen, mehr Lehrkräfte und eine zeitgemäße Ausstattung an den Schulen.\n\nOhne entschlossenes Handeln auf Bundesebene wird sich an der Lage nichts ändern.\n\nMit freundlichen Grüßen\n[Ihr Name]",
+    "wordCount": 138,
+    "inRange": false,
+    "retried": true,
+    "ms": 22923,
+    "usedModel": "mistral-large-4",
+    "flags": [
+      "platzhalter-name"
+    ]
+  },
+  {
+    "model": "mistral-large-4",
+    "caseId": "3-bildung",
+    "run": 2,
+    "ok": true,
+    "letter": "19.10.2026\n\nSehr geehrte Frau Beispiel,\n\nin den Schulen unseres Landes herrscht ein Zustand, der jeden Tag sichtbar wird: überlastete Lehrkräfte, überfüllte Klassenräume und eine Ausstattung, die den Anforderungen nicht mehr gerecht wird. Das betrifft nicht abstrakte Statistiken, sondern konkrete Kinder in konkreten Klassenzimmern.\n\nIch sehe, wie sich dieser Zustand auf den Unterricht auswirkt. Wenn eine Lehrkraft allein mit dreißig Schülerinnen und Schülern arbeitet und gleichzeitig mit veralteter Technik kämpft, bleibt für individuelle Förderung keine Zeit. Das ist keine Ausnahme, sondern Alltag an vielen Schulen. Die Folge ist ein Bildungssystem, das Herkunft statt Leistung belohnt, weil Kinder aus bildungsfernen Haushalten besonders stark darunter leiden.\n\nDeshalb wende ich mich an Sie als meine Abgeordnete im Bundestag. Setzen Sie sich dafür ein, dass der Bund gemeinsam mit den Ländern verbindliche Standards für kleinere Klassen und eine angemessene Personalausstattung schafft. Bildungspolitik darf nicht länger zwischen Zuständigkeiten zerfallen.\n\nWer in Bildung investiert, investiert in den Zusammenhalt unserer Gesellschaft. Handeln Sie jetzt.\n\nMit freundlichen Grüßen\n[Ihr Name]",
+    "wordCount": 161,
+    "inRange": false,
+    "retried": true,
+    "ms": 10887,
+    "usedModel": "mistral-large-4",
+    "flags": [
+      "platzhalter-name"
+    ]
+  },
+  {
+    "model": "mistral-large-4",
+    "caseId": "4-krankenpfleger",
+    "run": 1,
+    "ok": true,
+    "letter": "19.10.2026\n\nSehr geehrte Frau Beispiel,\n\nich arbeite seit acht Jahren als Krankenpfleger auf einer Intensivstation. In dieser Zeit habe ich erlebt, wie sich der Personalmangel von Jahr zu Jahr verschärft hat. Heute fehlen in vielen Schichten Kolleginnen und Kollegen, die eigentlich da sein müssten.\n\nFür mich persönlich bedeutet das eine dauerhafte Überlastung. Ich komme erschöpft nach Hause und frage mich, wie lange ich das noch durchhalte. Mein Gehalt liegt inzwischen unter dem, was ein Berufseinsteiger in der freien Wirtschaft verdient. Das empfinde ich als Schlag ins Gesicht für acht Jahre intensiver Arbeit mit schwerkranken Menschen.\n\nIch wende mich an Sie, weil die Pflege auf Bundesebene endlich strukturell gestärkt werden muss. Wir brauchen verbindliche Personalschlüssel, die nicht nur auf dem Papier existieren, und eine Vergütung, die der Verantwortung gerecht wird.\n\nDie Menschen auf Intensivstationen verdienen eine Versorgung, die nicht am Rande des Kollapses stattfindet. Dafür brauchen wir politischen Willen, der sich in Gesetzen niederschlägt.\n\nMit freundlichen Grüßen\n[Ihr Name]",
+    "wordCount": 158,
+    "inRange": false,
+    "retried": true,
+    "ms": 9082,
+    "usedModel": "mistral-large-4",
+    "flags": [
+      "platzhalter-name"
+    ]
+  },
+  {
+    "model": "mistral-large-4",
+    "caseId": "4-krankenpfleger",
+    "run": 2,
+    "ok": true,
+    "letter": "19.10.2026\n\nSehr geehrte Frau Beispiel,\n\nich arbeite seit acht Jahren als Krankenpfleger auf einer Intensivstation. Was ich dort täglich erlebe, belastet mich zunehmend: Kolleginnen und Kollegen verlassen die Station, weil sie überlastet sind. Die verbleibenden Kräfte tragen immer mehr Verantwortung mit immer weniger Personal.\n\nFür mich persönlich bedeutet das, dass ich kaum noch Zeit habe, mich um einzelne Patienten so zu kümmern, wie es mein Berufsethos verlangt. Stattdessen verbringe ich Stunden mit Dokumentation und Verwaltungsaufgaben. Mein Gehalt spiegelt diese Belastung nicht wider. Es liegt unter dem, was ein Berufseinsteiger in der freien Wirtschaft verdient. Das fühlt sich wie eine Abwertung meiner Arbeit an.\n\nIch fordere Sie auf, im Bundestag für eine gesetzliche Personalbemessung in der Pflege zu stimmen und die Tarifgehälter im Gesundheitswesen spürbar anzuheben.\n\nDie Politik muss endlich erkennen, dass Pflegekräfte das Rückgrat unseres Gesundheitssystems sind. Ohne sie kollabiert die Versorgung. Handeln Sie jetzt, bevor weitere Fachkräfte gehen.\n\nMit freundlichen Grüßen\n[Ihr Name]",
+    "wordCount": 154,
+    "inRange": false,
+    "retried": true,
+    "ms": 8686,
+    "usedModel": "mistral-large-4",
+    "flags": [
+      "platzhalter-name"
+    ]
+  },
+  {
+    "model": "mistral-large-4",
+    "caseId": "5-bundeshaushalt",
+    "run": 1,
+    "ok": true,
+    "letter": "19.10.2026\n\nSehr geehrte Frau Beispiel,\n\nich schreibe Ihnen, weil der Bundeshaushalt-Entwurf, der derzeit beraten wird, aus meiner Sicht in die falsche Richtung weist. Die geplanten Kürzungen treffen Bereiche, auf die viele Menschen in diesem Land täglich angewiesen sind.\n\nIch beobachte seit Monaten, wie öffentliche Einrichtungen unter Druck geraten. Wenn Mittel fehlen, spüren das zuerst diejenigen, die keine Lobby haben. Das betrifft nicht nur abstrakte Zahlen in einem Haushaltspapier. Es betrifft den Alltag von Familien, von älteren Menschen, von Menschen mit geringem Einkommen.\n\nIch bitte Sie daher, im weiteren Verfahren gegen diesen Entwurf zu stimmen und sich für eine Haushaltspolitik einzusetzen, die soziale Leistungen schützt statt abzubauen.\n\nEin Haushalt ist mehr als eine Rechenaufgabe. Er zeigt, worauf eine Regierung setzt. Wer hier spart, spart am Zusammenhalt unserer Gesellschaft.\n\nMit freundlichen Grüßen\n[Ihr Name]",
+    "wordCount": 132,
+    "inRange": false,
+    "retried": true,
+    "ms": 8802,
+    "usedModel": "mistral-large-4",
+    "flags": [
+      "antwortbitte",
+      "platzhalter-name"
+    ]
+  },
+  {
+    "model": "mistral-large-4",
+    "caseId": "5-bundeshaushalt",
+    "run": 2,
+    "ok": true,
+    "letter": "19.10.2026\n\nSehr geehrte Frau Beispiel,\n\nder Bundeshaushalt-Entwurf, der derzeit beraten wird, beschäftigt mich zutiefst. Ich habe den Eindruck, dass darin Weichen gestellt werden, die für viele Menschen in diesem Land nachteilig sind.\n\nAls Bürgerin, die täglich mit den Folgen politischer Entscheidungen lebt, sehe ich konkret, wo der Entwurf ansetzt. Kürzungen bei sozialen Leistungen treffen diejenigen, die ohnehin wenig haben. Investitionen in Bildung und Infrastruktur bleiben hinter dem zurück, was nötig wäre. Das ist keine abstrakte Haushaltspolitik, sondern betrifft meinen Alltag und den meiner Nachbarinnen und Nachbarn.\n\nIch fordere Sie auf, im parlamentarischen Verfahren gegen diesen Entwurf zu stimmen und stattdessen einen Haushalt zu unterstützen, der soziale Sicherheit und öffentliche Daseinsvorsorge stärkt.\n\nDie Haushaltsdebatte ist eine der wichtigsten Aufgaben des Bundestages. Nutzen Sie Ihre Stimme dafür, dass der Staat seiner Verantwortung gerecht wird.\n\nMit freundlichen Grüßen\n[Ihr Name]",
+    "wordCount": 137,
+    "inRange": false,
+    "retried": true,
+    "ms": 15712,
+    "usedModel": "mistral-large-4",
+    "flags": [
+      "verbotswort:Daseinsvorsorge",
+      "antwortbitte",
+      "platzhalter-name"
+    ]
+  },
+  {
+    "model": "mistral-large-4",
+    "caseId": "6-kampagne-prueft-die-afd",
+    "run": 1,
+    "ok": true,
+    "letter": "19.10.2026\n\nSehr geehrte Damen und Herren,\n\nich bitte Sie, sich im Bundesrat dafür einzusetzen, das Bundesverfassungsgericht zu beauftragen, die Verfassungswidrigkeit der AfD zu prüfen. Über den Antrag und seine Begründung muss das Gericht unabhängig und ergebnisoffen entscheiden.\n\nDie Gesellschaft für Freiheitsrechte kommt in ihrem Gutachten zu dem Schluss, dass die AfD die Voraussetzungen für ein Verbot erfüllt. Das Gutachten beschreibt ein ethnisch geprägtes Volksverständnis und dokumentiert Forderungen, bestimmte Deutsche mit Migrationsgeschichte auszubürgern. Es belegt systematische Angriffe auf die Religionsfreiheit von Muslimen durch geplante Kopftuchverbote und Moscheebeschränkungen. Hinzu kommen mehr als 200 dokumentierte Forderungen, Abgeordnete anderer Parteien wegen demokratisch legitimierter Entscheidungen strafrechtlich zu verfolgen.\n\nDas Bundesverfassungsgericht stellte 2017 im NPD-Verfahren fest, dass die Ziele der NPD gegen die freiheitliche demokratische Grundordnung gerichtet waren. Ein Verbot lehnte es ab, weil konkrete Anhaltspunkte für eine erfolgreiche Durchsetzung fehlten. Die GFF sieht deutliche inhaltliche Übereinstimmungen zwischen AfD und NPD und kommt zu dem Schluss, dass die AfD auch dieses Potenzialitätskriterium erfüllt.\n\nIch erwarte von Ihnen, dass Sie diesen Antrag im Bundesrat unterstützen und damit eine unabhängige Prüfung durch das höchste Gericht ermöglichen.\n\nMit freundlichen Grüßen\n[Ihr Name]",
+    "wordCount": 183,
+    "inRange": false,
+    "retried": false,
+    "ms": 12500,
+    "usedModel": "mistral-large-4",
+    "flags": [
+      "platzhalter-name"
+    ]
+  },
+  {
+    "model": "mistral-large-4",
+    "caseId": "6-kampagne-prueft-die-afd",
+    "run": 2,
+    "ok": true,
+    "letter": "19.10.2026\n\nSehr geehrte Damen und Herren,\n\nich bitte Sie, sich im Bundesrat dafür einzusetzen, das Bundesverfassungsgericht zu beauftragen, die Verfassungswidrigkeit der AfD zu prüfen. Das Gericht muss über den Antrag unabhängig und ergebnisoffen entscheiden.\n\nDie Gesellschaft für Freiheitsrechte kommt in ihrem umfassenden Gutachten zu dem Schluss, dass die AfD die Voraussetzungen für ein Verbot erfüllt. Im Bundesvorstand dominieren radikale Kräfte, gemäigte Stimmen haben die Partei verlassen oder dulden die Entwicklung. Das Gutachten dokumentiert ein ethnisch geprägtes Volksverständnis, Forderungen nach Ausbürgerung straffällig gewordener Eingebürgerter und Doppelstaatler sowie systematische Angriffe auf die Religionsfreiheit von Muslimen durch Kopftuchverbote und Moscheebeschränkungen. Hinzu kommen mehr als 200 dokumentierte Forderungen, Abgeordnete anderer Parteien wegen demokratisch legitimierter Entscheidungen strafrechtlich zu verfolgen.\n\nDas Bundesverfassungsgericht stellte 2017 im NPD-Verfahren fest, dass die Ziele der NPD gegen die freiheitliche demokratische Grundordnung gerichtet waren. Ein Verbot lehnte es ab, weil konkrete Anhaltspunkte für eine erfolgreiche Durchsetzung fehlten. Die GFF sieht deutliche inhaltliche Übereinstimmungen zwischen AfD und NPD und kommt zu dem Schluss, dass die AfD auch dieses Potenzialitätskriterium erfüllt.\n\nIch erwarte von Ihnen, dass Sie diesen Antrag im Bundesrat unterstützen.\n\nMit freundlichen Grüßen\n[Ihr Name]",
+    "wordCount": 184,
+    "inRange": false,
+    "retried": false,
+    "ms": 7882,
+    "usedModel": "mistral-large-4",
+    "flags": [
+      "platzhalter-name"
+    ]
+  },
+  {
+    "model": "mistral-medium-latest",
+    "caseId": "1-heizungsgesetz",
+    "run": 1,
+    "ok": true,
+    "letter": "19.10.2026\n\nSehr geehrte Frau Beispiel,\n\nich habe bereits in ein E-Auto und eine Wärmepumpe investiert, um meinen Teil zur Energiewende beizutragen. Das neue Heizungsgesetz wirft für mich nun Fragen auf, die ich nicht ignorieren kann.\n\nAls jemand, der bewusst in nachhaltige Technologien investiert hat, erlebe ich die aktuellen Regelungen als demotivierend. Es fühlt sich an, als würden bestehende Anstrengungen nicht ausreichend gewürdigt werden. Die Sorge ist groß, dass solche Gesetze den Übergang zu klimafreundlichen Lösungen eher behindern als fördern.\n\nIch bitte Sie, sich dafür einzusetzen, dass das Gesetz so angepasst wird, dass es bestehende Investitionen in saubere Technologien nicht benachteiligt.\n\nPolitik muss Vertrauen schaffen, damit Bürgerinnen und Bürger weiterhin bereit sind, ihren Beitrag zu leisten.\n\nMit freundlichen Grüßen\n[Ihr Name]",
+    "wordCount": 120,
+    "inRange": false,
+    "retried": true,
+    "ms": 5414,
+    "usedModel": "mistral-medium-latest",
+    "flags": [
+      "platzhalter-name"
+    ]
+  },
+  {
+    "model": "mistral-medium-latest",
+    "caseId": "1-heizungsgesetz",
+    "run": 2,
+    "ok": true,
+    "letter": "19.10.2026\n\nSehr geehrte Frau Beispiel,\n\nich habe bereits in ein E-Auto und eine Wärmepumpe investiert, weil ich überzeugt bin, dass wir unsere Energieversorgung zukunftsfähig gestalten müssen. Das neue Heizungsgesetz wirkt auf mich wie ein Schritt in die falsche Richtung.\n\nAls jemand, der sich bewusst für klimafreundliche Technologien entschieden hat, erlebe ich, wie solche Regelungen die individuelle Entscheidungsfreiheit einschränken. Die Investitionen sind hoch, und es frustriert mich, wenn der Staat nun nachträglich Vorgaben macht, die meine bereits getroffenen Wahlmöglichkeiten infrage stellen.\n\nIch bitte Sie daher, sich dafür einzusetzen, dass bestehende Lösungen wie meine Wärmepumpe nicht durch starre Vorschriften behindert werden. Die Politik sollte Anreize schaffen statt Verbote zu erlassen.\n\nMit freundlichen Grüßen\n[Ihr Name]",
+    "wordCount": 113,
+    "inRange": false,
+    "retried": true,
+    "ms": 5585,
+    "usedModel": "mistral-medium-latest",
+    "flags": [
+      "platzhalter-name"
+    ]
+  },
+  {
+    "model": "mistral-medium-latest",
+    "caseId": "2-oepnv",
+    "run": 1,
+    "ok": true,
+    "letter": "19.10.2026\n\nSehr geehrte Frau Beispiel,\n\nvor einer Woche wartete ich an meiner Haltestelle in Bremen I über eineinhalb Stunden auf den Bus, der schließlich gar nicht kam. Solche Ausfälle sind kein seltenes Ärgernis mehr, sondern Alltag.\n\nAls jemand, der sich kein Auto leisten kann, bin ich auf zuverlässige Verbindungen angewiesen, um pünktlich bei der Arbeit zu sein. Die aktuelle Situation zwingt mich, täglich mit Verspätungen oder sogar dem Ausbleiben des Busses zu rechnen. Das schränkt meine Planbarkeit massiv ein und belastet mein Berufsleben.\n\nIch verlange von Ihnen als meine Vertreterin im Bundestag, dass Sie sich für verbindliche Standards bei Taktung und Pünktlichkeit im ÖPNV einsetzen. Der Bund muss die Länder dabei unterstützen, flächendeckend verlässliche Angebote sicherzustellen.\n\nÖffentlicher Nahverkehr ist keine Luxusleistung, sondern Grundvoraussetzung für Teilhabe und Mobilität aller Bürger.\n\nMit freundlichen Grüßen\n[Ihr Name]",
+    "wordCount": 134,
+    "inRange": false,
+    "retried": true,
+    "ms": 5769,
+    "usedModel": "mistral-medium-latest",
+    "flags": [
+      "platzhalter-name"
+    ]
+  },
+  {
+    "model": "mistral-medium-latest",
+    "caseId": "2-oepnv",
+    "run": 2,
+    "ok": true,
+    "letter": "19.10.2026\n\nSehr geehrte Frau Beispiel,\n\nletzte Woche stand ich in Bremen I 90 Minuten an der Bushaltestelle, ohne dass ein Bus kam. Solche Ausfälle sind für mich kein Ausnahmefall mehr, sondern Alltag.\n\nOhne Auto bin ich auf den ÖPNV angewiesen, um pünktlich zur Arbeit zu kommen. Wenn die Verbindungen so unberechenbar sind, gefährdet das meine berufliche Teilhabe und die vieler anderer im Wahlkreis.\n\nIch bitte Sie, sich für eine verbindliche Verbesserung der Taktung und Zuverlässigkeit des Busnetzes in Bremen I einzusetzen. Die Menschen hier brauchen planbare Mobilität.\n\nAls Abgeordnete aus diesem Wahlkreis haben Sie die Möglichkeit, diese Forderung auf Bundesebene zu vertreten.\n\nMit freundlichen Grüßen\n[Ihr Name]",
+    "wordCount": 107,
+    "inRange": false,
+    "retried": true,
+    "ms": 5250,
+    "usedModel": "mistral-medium-latest",
+    "flags": [
+      "platzhalter-name"
+    ]
+  },
+  {
+    "model": "mistral-medium-latest",
+    "caseId": "3-bildung",
+    "run": 1,
+    "ok": true,
+    "letter": "19.10.2026\n\nSehr geehrte Frau Beispiel,\n\nan vielen Schulen fehlt es an allem: Die Klassen sind überfüllt, die Ausstattung veraltet und die Lehrer arbeiten unter Bedingungen, die auf Dauer niemand durchhält. Das ist kein Einzelfall, sondern ein strukturelles Problem.\n\nIch erlebe mit, wie Schüler und Lehrkräfte täglich gegen diese Umstände ankämpfen müssen. Die Folgen sind Frustration auf allen Seiten und ein Bildungssystem, das seine eigenen Ansprüche nicht mehr einlösen kann.\n\nIch bitte Sie, sich im Bundestag für eine nachhaltige Finanzierung der Schulen einzusetzen. Es geht um ausreichend Personal, moderne Räume und Materialien, die den Ansprüchen einer zeitgemäßen Bildung gerecht werden.\n\nBildung darf nicht von der Haushaltslage abhängen. Sie ist die Grundlage für Chancengerechtigkeit und den Zusammenhalt unserer Gesellschaft.\n\nMit freundlichen Grüßen\n[Ihr Name]",
+    "wordCount": 122,
+    "inRange": false,
+    "retried": true,
+    "ms": 5040,
+    "usedModel": "mistral-medium-latest",
+    "flags": [
+      "platzhalter-name"
+    ]
+  },
+  {
+    "model": "mistral-medium-latest",
+    "caseId": "3-bildung",
+    "run": 2,
+    "ok": true,
+    "letter": "19.10.2026\n\nSehr geehrte Frau Beispiel,\n\nin vielen Schulen fehlt es an allem: Die Klassen sind zu groß, die Lehrer überlastet und die Ausstattung ist marode. Das ist kein Einzelschicksal, sondern ein flächendeckendes Problem.\n\nAls Bürger, der die Bedeutung von Bildung für unsere Zukunft erkennt, mache ich mir große Sorgen. Ohne gut ausgebildete Lehrer und moderne Räume können wir den Ansprüchen einer wissensbasierten Gesellschaft nicht gerecht werden.\n\nIch bitte Sie, sich im Bundestag für eine nachhaltige Finanzierung des Bildungssektors einzusetzen. Es geht um mehr als nur Geld: Es geht um die Rahmenbedingungen, unter denen Lehrkräfte und Schüler täglich arbeiten.\n\nBildung darf kein Sparposten sein. Sie ist die Grundlage für soziale Gerechtigkeit und wirtschaftlichen Fortschritt.\n\nMit freundlichen Grüßen\n[Ihr Name]",
+    "wordCount": 118,
+    "inRange": false,
+    "retried": true,
+    "ms": 5416,
+    "usedModel": "mistral-medium-latest",
+    "flags": [
+      "platzhalter-name"
+    ]
+  },
+  {
+    "model": "mistral-medium-latest",
+    "caseId": "4-krankenpfleger",
+    "run": 1,
+    "ok": true,
+    "letter": "19.10.2026\n\nSehr geehrte Frau Beispiel,\n\nseit acht Jahren arbeite ich als Krankenpfleger auf der Intensivstation. Mein Gehalt liegt unter dem von Berufseinsteigern in der freien Wirtschaft, während die Arbeitsbelastung durch Personalmangel und bürokratische Hürden ständig steigt.\n\nDiese Situation wirkt sich direkt auf meine Motivation aus. Die Diskrepanz zwischen Verantwortung und Anerkennung wird immer unerträglicher. Ich spüre täglich, wie die Ressourcen für eine gute Pflege fehlen, obwohl sie dringend gebraucht werden.\n\nIch verlange von Ihnen als Bundestagsabgeordnete konkrete Schritte zur Verbesserung der Arbeitsbedingungen im Pflegebereich. Die Bezahlung muss der Bedeutung des Berufs entsprechen, und überflüssige Bürokratie muss abgebaut werden.\n\nAls Vertreterin der SPD haben Sie die Möglichkeit, hier bundesweit etwas zu bewegen. Nutzen Sie diese Chance.\n\nMit freundlichen Grüßen\n[Ihr Name]",
+    "wordCount": 120,
+    "inRange": false,
+    "retried": true,
+    "ms": 5999,
+    "usedModel": "mistral-medium-latest",
+    "flags": [
+      "platzhalter-name"
+    ]
+  },
+  {
+    "model": "mistral-medium-latest",
+    "caseId": "4-krankenpfleger",
+    "run": 2,
+    "ok": true,
+    "letter": "19.10.2026\n\nSehr geehrte Frau Beispiel,\n\nseit acht Jahren arbeite ich als Krankenpfleger auf der Intensivstation. Die tägliche Erfahrung zeigt mir, wie überlastet das Personal ist und wie viel Zeit durch unnötige Bürokratie verloren geht.\n\nIch verdiene weniger als ein Berufseinsteiger in der freien Wirtschaft. Das demotiviert nicht nur mich, sondern viele Kollegen, die seit Jahren Verantwortung tragen und unter extremem Druck stehen.\n\nIch bitte Sie, sich im Bundestag für eine angemessene Bezahlung und bessere Arbeitsbedingungen in der Pflege einzusetzen. Die Politik muss die Wertschätzung für diesen Beruf endlich in Taten umsetzen.\n\nAls Abgeordnete der SPD haben Sie die Möglichkeit, hier einen Unterschied zu machen.\n\nMit freundlichen Grüßen\n[Ihr Name]",
+    "wordCount": 109,
+    "inRange": false,
+    "retried": true,
+    "ms": 5003,
+    "usedModel": "mistral-medium-latest",
+    "flags": [
+      "nicht-nur-sondern",
+      "platzhalter-name"
+    ]
+  },
+  {
+    "model": "mistral-medium-latest",
+    "caseId": "5-bundeshaushalt",
+    "run": 1,
+    "ok": true,
+    "letter": "19.10.2026\n\nSehr geehrte Frau Beispiel,\n\nder Bundeshaushalt-Entwurf in seiner jetzigen Form ist für mich nicht akzeptabel. Er stellt eine Richtung dar, die ich als Bürgerin nicht mittragen kann.\n\nIch erlebe täglich, wie wichtig stabile öffentliche Finanzen für den Zusammenhalt sind. Ohne verlässliche Investitionen in Bildung, Infrastruktur und soziale Sicherheit fehlt die Grundlage für ein gutes Leben in diesem Land. Diese Prioritäten müssen im Haushalt klar erkennbar sein.\n\nIch bitte Sie, sich dafür einzusetzen, dass der Entwurf grundlegend überarbeitet wird. Die Mittel müssen so verteilt werden, dass sie den Bedürfnissen der Menschen gerecht werden.\n\nAls Abgeordnete der SPD tragen Sie eine besondere Verantwortung dafür, dass soziale Gerechtigkeit nicht nur ein Lippenbekenntnis bleibt.\n\nMit freundlichen Grüßen\n[Ihr Name]",
+    "wordCount": 116,
+    "inRange": false,
+    "retried": true,
+    "ms": 5569,
+    "usedModel": "mistral-medium-latest",
+    "flags": [
+      "platzhalter-name"
+    ]
+  },
+  {
+    "model": "mistral-medium-latest",
+    "caseId": "5-bundeshaushalt",
+    "run": 2,
+    "ok": true,
+    "letter": "19.10.2026\n\nSehr geehrte Frau Beispiel,\n\nder Entwurf für den Bundeshaushalt löst bei mir große Besorgnis aus. Er steht für eine Richtung, die ich nicht mittragen kann.\n\nAls Bürgerin, die auf ein funktionierendes Gemeinwesen angewiesen ist, mache ich mir Gedanken über die Folgen. Wenn wichtige Bereiche wie soziale Sicherheit oder öffentliche Dienstleistungen weiter geschwächt werden, leidet darunter nicht nur ich, sondern die Gesellschaft als Ganzes.\n\nIch fordere Sie auf, sich im Bundestag dafür einzusetzen, dass dieser Entwurf nicht in der vorliegenden Form beschlossen wird. Es muss eine Neuausrichtung geben, die den Bedürfnissen der Menschen Vorrang einräumt.\n\nDie Haushaltspolitik ist kein Selbstzweck. Sie muss dem Wohl aller dienen.\n\nMit freundlichen Grüßen\n[Ihr Name]",
+    "wordCount": 111,
+    "inRange": false,
+    "retried": true,
+    "ms": 5330,
+    "usedModel": "mistral-medium-latest",
+    "flags": [
+      "nicht-nur-sondern",
+      "platzhalter-name"
+    ]
+  },
+  {
+    "model": "mistral-medium-latest",
+    "caseId": "6-kampagne-prueft-die-afd",
+    "run": 1,
+    "ok": true,
+    "letter": "19.10.2026\n\nSehr geehrte Damen und Herren,\n\nich bitte Sie, sich im Bundesrat für einen Antrag einzusetzen, der das Bundesverfassungsgericht mit der Prüfung der Verfassungswidrigkeit der AfD beauftragt. Ein aktuelles Gutachten der Gesellschaft für Freiheitsrechte kommt zu dem Schluss, dass die Partei die Voraussetzungen für ein Verbot erfüllt.\n\nDas Gutachten dokumentiert ein ethnisch geprägtes Volksverständnis sowie Forderungen nach Ausbürgerungen von Menschen mit Migrationsgeschichte. Zudem werden systematische Angriffe auf die Religionsfreiheit von Muslimen beschrieben, etwa durch Kopftuchverbote oder Moscheebeschränkungen. Hinzu kommen über 200 Fälle, in denen die AfD strafrechtliche Verfolgung von Abgeordneten anderer Parteien wegen demokratisch legitimierter Entscheidungen fordert.\n\nIm NPD-Verfahren 2017 stellte das Bundesverfassungsgericht fest, dass deren Ziele gegen die freiheitliche demokratische Grundordnung gerichtet waren. Die GFF sieht inhaltliche Übereinstimmungen zwischen AfD und NPD und hält das Potenzialitätskriterium für erfüllt. Ob diese Einschätzung trägt, muss das Gericht prüfen.\n\nBitte setzen Sie sich für diesen Antrag im Bundesrat ein.\n\nMit freundlichen Grüßen\n[Ihr Name]",
+    "wordCount": 152,
+    "inRange": false,
+    "retried": true,
+    "ms": 5784,
+    "usedModel": "mistral-medium-latest",
+    "flags": [
+      "platzhalter-name"
+    ]
+  },
+  {
+    "model": "mistral-medium-latest",
+    "caseId": "6-kampagne-prueft-die-afd",
+    "run": 2,
+    "ok": true,
+    "letter": "19.10.2026\n\nSehr geehrte Damen und Herren,\n\nich bitte Sie, sich im Bundesrat dafür einzusetzen, dass das Bundesverfassungsgericht die Verfassungswidrigkeit der AfD prüft. Ein unabhängiges und ergebnisoffenes Verfahren ist hier notwendig.\n\nDas Gutachten der Gesellschaft für Freiheitsrechte zeigt auf, wie radikale Kräfte den Kurs der Partei bestimmen: Gemäßigtere Stimmen haben die AfD verlassen oder dulden die Entwicklung. Das Gutachten dokumentiert ein ethnisch geprägtes Volksverständnis, Forderungen nach Ausbürgerungen von Eingebürgerten und systematische Angriffe auf die Religionsfreiheit von Muslimen. Zudem gibt es über 200 dokumentierte Forderungen, Abgeordnete anderer Parteien strafrechtlich zu verfolgen.\n\nDas Bundesverfassungsgericht hat im NPD-Verfahren 2017 festgestellt, dass deren Ziele gegen die freiheitliche demokratische Grundordnung gerichtet waren. Die GFF sieht deutliche inhaltliche Übereinstimmungen zwischen AfD und NPD und kommt zu dem Schluss, dass auch das Potenzialitätskriterium erfüllt ist. Ich erwarte von Ihnen, dass Sie diese Prüfung initiieren.\n\nMit freundlichen Grüßen\n[Ihr Name]",
+    "wordCount": 141,
+    "inRange": false,
+    "retried": true,
+    "ms": 5051,
+    "usedModel": "mistral-medium-latest",
+    "flags": [
+      "platzhalter-name"
+    ]
+  },
+  {
+    "model": "mistral-large-latest",
+    "caseId": "1-heizungsgesetz",
+    "run": 1,
+    "ok": true,
+    "letter": "19.10.2026\n\nSehr geehrte Frau Beispiel,\n\ndas neue Heizungsgesetz hat mich überrascht. Als jemand, der bereits eine Wärmepumpe nutzt und mit einem E-Auto fährt, hatte ich erwartet, dass die Politik solche Investitionen unterstützt. Stattdessen fühle ich mich nun verunsichert.\n\nIch habe mich bewusst für klimafreundliche Technologien entschieden, weil ich Verantwortung übernehmen möchte. Doch das Gesetz scheint diese Entscheidung nicht zu honorieren. Es wirkt, als würden diejenigen bestraft, die bereits heute ihren Beitrag leisten. Das ist enttäuschend – besonders für Menschen wie mich, die sich auf politische Weichenstellungen verlassen müssen.\n\nIch bitte Sie daher, sich dafür einzusetzen, dass das Gesetz nachgebessert wird. Es sollte klare Anreize für nachhaltige Lösungen schaffen und diejenigen entlasten, die bereits heute in klimafreundliche Technologien investieren. Bürokratische Hürden helfen niemandem weiter.\n\nKlimaschutz gelingt nur mit verlässlichen Rahmenbedingungen. Ich hoffe, dass Sie sich für eine Lösung einsetzen, die Planungssicherheit schafft und Vertrauen in die Politik stärkt.\n\nMit freundlichen Grüßen\n[Ihr Name]",
+    "wordCount": 152,
+    "inRange": false,
+    "retried": true,
+    "ms": 11170,
+    "usedModel": "mistral-large-latest",
+    "flags": [
+      "gedankenstrich",
+      "platzhalter-name"
+    ]
+  },
+  {
+    "model": "mistral-large-latest",
+    "caseId": "2-oepnv",
+    "run": 1,
+    "ok": true,
+    "letter": "19.10.2026\n\nSehr geehrte Frau Beispiel,\n\nletzte Woche stand ich an einer Haltestelle in Bremen und wartete 90 Minuten auf einen Bus, der nie kam. Solche Vorfälle sind kein Einzelfall, sondern werden für viele Menschen in unserem Wahlkreis zum Alltag. Für mich war das keine Unannehmlichkeit, sondern eine existenzielle Frage: Ohne Auto bin ich auf den öffentlichen Nahverkehr angewiesen, um meine Arbeit zu erreichen.\n\nJeder ausgefallene Bus bedeutet nicht nur verlorene Zeit, sondern auch verlorenes Vertrauen in die Infrastruktur. Wenn ich morgens nicht weiß, ob ich pünktlich zur Arbeit komme, kann ich keine verbindlichen Zusagen machen – weder gegenüber meinem Arbeitgeber noch gegenüber Kollegen. Das ist keine individuelle Herausforderung, sondern ein strukturelles Problem: Wer sich kein Auto leisten kann, wird systematisch benachteiligt. Gerade in einer Stadt wie Bremen sollte Mobilität für alle möglich sein, unabhängig vom Einkommen.\n\nIch bitte Sie daher konkret darum, sich für eine verbindliche Mindesttaktung im Bremer ÖPNV einzusetzen – auch außerhalb der Hauptverkehrszeiten. Die Fahrzeuge müssen verlässlich fahren, und bei Ausfällen braucht es sofortige Ersatzlösungen. Das ist keine Frage des guten Willens, sondern eine der politischen Verantwortung.\n\nAls Abgeordnete für Bremen I wissen Sie, wie wichtig ein funktionierender Nahverkehr für den Zusammenhalt unserer Stadt ist. Ich appelliere an Sie, diese Verantwortung ernst zu nehmen und sich mit Nachdruck für Verbesserungen einzusetzen.\n\nMit freundlichen Grüßen\n[Ihr Name]",
+    "wordCount": 219,
+    "inRange": true,
+    "retried": true,
+    "ms": 13640,
+    "usedModel": "mistral-large-latest",
+    "flags": [
+      "gedankenstrich",
+      "nicht-nur-sondern",
+      "platzhalter-name"
+    ]
+  },
+  {
+    "model": "mistral-large-latest",
+    "caseId": "3-bildung",
+    "run": 1,
+    "ok": true,
+    "letter": "19.10.2026\n\nSehr geehrte Frau Beispiel,\n\njeden Tag erlebe ich, wie Schulen in unserem Land an ihre Grenzen stoßen. Die Klassen sind überfüllt, Lehrerinnen und Lehrer arbeiten bis an die Belastungsgrenze, und die Ausstattung vieler Gebäude ist veraltet. Das ist kein Zustand, den wir unseren Kindern zumuten dürfen. Bildung ist die Grundlage für Chancengerechtigkeit und eine starke Gesellschaft – doch diese Grundlage bröckelt.\n\nWenn wir zulassen, dass Schulen nur noch verwalten statt zu gestalten, verlieren wir mehr als nur ein paar Unterrichtsstunden. Wir verlieren Perspektiven für junge Menschen, die auf gute Bildung angewiesen sind. Und wir verlieren das Vertrauen in einen Staat, der seine Verantwortung ernst nimmt. Gerade in Bremen spüre ich, wie dringend hier gehandelt werden muss.\n\nIch bitte Sie: Setzen Sie sich für spürbare Investitionen in die schulische Infrastruktur ein. Nicht irgendwann, sondern jetzt. Es geht um kleinere Klassen, moderne Arbeitsmittel und vor allem um Lehrkräfte, die Zeit haben, sich jedem Kind zu widmen. Als SPD-Abgeordnete wissen Sie, wie wichtig faire Chancen sind – lassen Sie uns gemeinsam dafür sorgen, dass sie nicht nur ein Versprechen bleiben.\n\nMit freundlichen Grüßen\n[Ihr Name]",
+    "wordCount": 183,
+    "inRange": false,
+    "retried": false,
+    "ms": 6393,
+    "usedModel": "mistral-large-latest",
+    "flags": [
+      "gedankenstrich",
+      "platzhalter-name"
+    ]
+  },
+  {
+    "model": "mistral-large-latest",
+    "caseId": "4-krankenpfleger",
+    "run": 1,
+    "ok": true,
+    "letter": "19.10.2026\n\nSehr geehrte Frau Beispiel,\n\njeden Morgen betrete ich die Intensivstation mit dem Wissen, dass wieder Kollegen fehlen werden. Die Schichten sind seit Jahren unterbesetzt, und die wenigen Pflegekräfte, die bleiben, arbeiten bis an ihre Grenzen. Ich selbst verdiene nach acht Jahren Berufserfahrung weniger als ein Berufsanfänger in der Industrie – obwohl ich Menschen in lebensbedrohlichen Situationen versorge.\n\nDiese Situation belastet mich nicht nur finanziell, sondern auch emotional. Wenn ich nach einer Zwölf-Stunden-Schicht ohne Pause nach Hause komme, frage ich mich, wie lange ich das noch durchhalte. Die ständige Überlastung führt zu Fehlern, die niemand wollen kann. Gleichzeitig blockieren uns unnötige Dokumentationspflichten, die uns von der eigentlichen Arbeit abhalten. Es fühlt sich an, als würde unser Einsatz weder gesehen noch honoriert.\n\nIch fordere Sie auf, sich für eine verbindliche Personalbemessung in Krankenhäusern einzusetzen, die sich an den tatsächlichen Bedürfnissen der Patienten orientiert. Zudem brauchen wir eine angemessene Bezahlung, die unsere Verantwortung widerspiegelt – und eine Reform der Bürokratie, die uns Zeit für die Pflege zurückgibt.\n\nAls SPD-Abgeordnete stehen Sie für soziale Gerechtigkeit ein. Die Pflegekrise ist kein Zukunftsproblem, sondern findet jetzt statt – mit realen Konsequenzen für Patienten und Beschäftigte. Ich erwarte von Ihnen konkrete Schritte, um diesen Beruf wieder attraktiv zu machen.\n\nMit freundlichen Grüßen\n[Ihr Name]",
+    "wordCount": 208,
+    "inRange": true,
+    "retried": true,
+    "ms": 15417,
+    "usedModel": "mistral-large-latest",
+    "flags": [
+      "gedankenstrich",
+      "nicht-nur-sondern",
+      "platzhalter-name"
+    ]
+  },
+  {
+    "model": "mistral-large-latest",
+    "caseId": "5-bundeshaushalt",
+    "run": 1,
+    "ok": true,
+    "letter": "19.10.2026\n\nSehr geehrte Frau Beispiel,\n\nmit großer Sorge verfolge ich die aktuellen Beratungen zum Bundeshaushaltsentwurf. Dass dieser Entwurf ohne grundlegende Korrekturen beschlossen werden soll, halte ich für einen Fehler. Als Bürgerin dieses Landes erwarte ich von der Politik, dass sie Verantwortung übernimmt – besonders in finanziellen Fragen, die uns alle betreffen.\n\nDer Haushalt ist mehr als eine bloße Zahlenaufstellung. Er entscheidet darüber, ob Familien ihre Mieten zahlen können, ob Schulen saniert werden und ob wir unsere Klimaziele erreichen. Wenn hier falsche Weichen gestellt werden, spüren das Menschen in ihrem Alltag – sei es durch höhere Abgaben oder fehlende Leistungen. Ich möchte nicht in einem Land leben, in dem kurzfristige Sparzwänge langfristige Chancen zerstören.\n\nIch bitte Sie daher eindringlich: Setzen Sie sich dafür ein, dass der Haushalt noch einmal überarbeitet wird. Prüfen Sie jede Ausgabe darauf, ob sie wirklich dem Gemeinwohl dient. Streichen Sie Subventionen, die nur Partikularinteressen bedienen, und lenken Sie die Mittel stattdessen in Bereiche, die allen zugutekommen – wie bezahlbaren Wohnraum, moderne Bildungseinrichtungen und eine stabile Gesundheitsversorgung.\n\nEin Haushalt ist immer auch ein Spiegel unserer Werte. Zeigen Sie mit Ihrer Stimme im Bundestag, dass Ihnen soziale Gerechtigkeit und generationengerechte Politik wichtiger sind als politische Kompromisse um jeden Preis.\n\nMit freundlichen Grüßen\n[Ihr Name]",
+    "wordCount": 205,
+    "inRange": true,
+    "retried": true,
+    "ms": 14343,
+    "usedModel": "mistral-large-latest",
+    "flags": [
+      "gedankenstrich",
+      "antwortbitte",
+      "platzhalter-name"
+    ]
+  },
+  {
+    "model": "mistral-large-latest",
+    "caseId": "6-kampagne-prueft-die-afd",
+    "run": 1,
+    "ok": true,
+    "letter": "19.10.2026\n\nSehr geehrte Damen und Herren,\n\ndas Gutachten der Gesellschaft für Freiheitsrechte zeigt detailliert, wie die AfD ein ethnisch geprägtes Volksverständnis vertritt. Es dokumentiert Forderungen nach Ausbürgerungen bestimmter Deutscher mit Migrationsgeschichte und systematische Angriffe auf die Religionsfreiheit von Muslimen. Über 200 Vorstöße, Abgeordnete anderer Parteien strafrechtlich zu verfolgen, belegen zudem den autoritären Charakter dieser Bestrebungen.\n\nAls Bürger dieses Landes beunruhigt mich besonders, dass diese Positionen nicht mehr am Rand stehen. Die AfD sitzt in allen Landesparlamenten und im Bundestag. Wenn eine Partei gezielt Minderheitenrechte einschränken will und demokratische Institutionen angreift, betrifft das uns alle. Ich möchte nicht in einem Land leben, in dem solche Ideen normalisiert werden.\n\nIch bitte Sie daher als Landesregierung von Baden-Württemberg, sich im Bundesrat für einen Prüfauftrag an das Bundesverfassungsgericht einzusetzen. Das Gericht muss unabhängig prüfen können, ob die AfD verfassungswidrig ist. Die GFF hat in ihrem Gutachten dargelegt, dass sowohl die Ziele als auch die Erfolgsaussichten dieser Partei gegen unsere freiheitliche demokratische Grundordnung verstoßen.\n\nUnsere Demokratie braucht klare rote Linien. Wenn wir zulassen, dass eine Partei unsere Verfassung aushöhlt, verlieren wir am Ende alle unsere Freiheiten.\n\nMit freundlichen Grüßen\n[Ihr Name]",
+    "wordCount": 186,
+    "inRange": false,
+    "retried": true,
+    "ms": 14369,
+    "usedModel": "mistral-large-latest",
+    "flags": [
+      "sowohl-als-auch",
+      "platzhalter-name"
+    ]
+  }
+]

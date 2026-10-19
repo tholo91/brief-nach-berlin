@@ -14,7 +14,7 @@ import { createRueckmeldungToken, RUECKMELDUNG_COHORT } from "@/lib/rueckmeldung
 const rpc = jest.fn<Promise<{ error: { message: string } | null }>, []>(async () => ({ error: null }));
 const fullAnswers = {
   letterSent: "handwritten" as const, notSentReason: null, replyChannels: ["none"] as const,
-  replyAddressed: null, issueScope: "local" as const, expectation: "answer" as const,
+  replyAddressed: null, replyFeeling: null, issueScope: "local" as const, expectation: "answer" as const,
   politicalSelfEfficacy: "rather_yes" as const, writeAgain: "yes" as const,
 };
 
@@ -53,7 +53,7 @@ describe("submitOutcomeAction", () => {
     }));
   });
   it.each([
-    ["yes", { ...fullAnswers, letterSent: "typed", replyChannels: ["email"], replyAddressed: "partly" }],
+    ["yes", { ...fullAnswers, letterSent: "typed", replyChannels: ["email"], replyAddressed: "partly", replyFeeling: "as_expected" }],
     ["no", { ...fullAnswers, letterSent: "not_sent", notSentReason: "no_time", replyChannels: [], replyAddressed: null }],
     ["not_sent", { ...fullAnswers, letterSent: "handwritten", replyChannels: ["none"], replyAddressed: null }],
   ] as const)("allows the user to update the mail entry choice %s using actual answers", async (entryChoice, answers) => {
@@ -67,6 +67,57 @@ describe("submitOutcomeAction", () => {
     });
     expect(result).toMatchObject({ error: "validation" });
     expect(rpc).not.toHaveBeenCalled();
+  });
+  describe("replyFeeling", () => {
+    const send = (mode: "full" | "progress", answers: object) => submitOutcomeAction({
+      mode, token: createRueckmeldungToken("writer@example.org"), entryChoice: "yes", processingConsent: true,
+      answers, ...(mode === "full" ? { consent: false, callOk: false } : {}),
+    });
+    const replied = { ...fullAnswers, replyChannels: ["email"], replyAddressed: "partly" };
+
+    it("requires a feeling when a reply came", async () => {
+      const result = await send("full", { ...replied, replyFeeling: null });
+      expect(result).toEqual({ error: "validation", message: "Bitte beantworte noch, wie die Reaktion für dich war." });
+      expect(rpc).not.toHaveBeenCalled();
+    });
+    it.each([
+      ["no reply", { ...fullAnswers, replyChannels: ["none"], replyFeeling: "disappointing" }],
+      ["letter not sent", { ...fullAnswers, letterSent: "not_sent", notSentReason: "no_time", replyChannels: [], replyFeeling: "as_expected" }],
+    ])("rejects a feeling without a reply (%s)", async (_label, answers) => {
+      const result = await send("full", answers);
+      expect(result).toMatchObject({ error: "validation" });
+      expect(rpc).not.toHaveBeenCalled();
+    });
+    it("passes the feeling to the RPC when a reply came", async () => {
+      const result = await send("full", { ...replied, replyFeeling: "glad_someone_answered" });
+      expect(result).toEqual({ success: true });
+      expect(rpc).toHaveBeenCalledWith("submit_letter_outcome", expect.objectContaining({
+        p_answers: expect.objectContaining({ replyFeeling: "glad_someone_answered" }),
+      }));
+    });
+    it("nulls the feeling in progress saves when the letter was not sent", async () => {
+      await send("progress", { ...fullAnswers, letterSent: "not_sent", notSentReason: "no_time", replyChannels: [], replyFeeling: "positive_surprise" });
+      expect(rpc).toHaveBeenCalledWith("submit_letter_outcome", expect.objectContaining({
+        p_answers: expect.objectContaining({ replyFeeling: null }),
+      }));
+    });
+    it("nulls the feeling in progress saves when no reply came", async () => {
+      await send("progress", { ...fullAnswers, replyChannels: ["none"], replyFeeling: "positive_surprise" });
+      expect(rpc).toHaveBeenCalledWith("submit_letter_outcome", expect.objectContaining({
+        p_answers: expect.objectContaining({ replyFeeling: null }),
+      }));
+    });
+    it("nulls the feeling in progress saves while no reply channel is chosen yet", async () => {
+      await send("progress", { ...fullAnswers, replyChannels: [], replyFeeling: "positive_surprise" });
+      expect(rpc).toHaveBeenCalledWith("submit_letter_outcome", expect.objectContaining({
+        p_answers: expect.objectContaining({ replyFeeling: null }),
+      }));
+    });
+    it("rejects unknown feeling values", async () => {
+      const result = await send("full", { ...replied, replyFeeling: "great" });
+      expect(result).toMatchObject({ error: "validation" });
+      expect(rpc).not.toHaveBeenCalled();
+    });
   });
   it("uses separate generous progressive and final rate-limit buckets", async () => {
     const token = createRueckmeldungToken("writer@example.org");

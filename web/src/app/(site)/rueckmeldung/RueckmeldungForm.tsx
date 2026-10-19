@@ -12,7 +12,7 @@ import {
 
 const VOICE_URL = "https://www.heyspeak.io/l/_AkL8g0mlosEDTMU6vDxuA";
 const EMPTY_ANSWERS: OutcomeAnswers = {
-  letterSent: null, notSentReason: null, replyChannels: [], replyAddressed: null,
+  letterSent: null, notSentReason: null, replyChannels: [], replyAddressed: null, replyFeeling: null,
   issueScope: null, expectation: null, politicalSelfEfficacy: null, writeAgain: null,
 };
 
@@ -88,9 +88,13 @@ export function RueckmeldungForm({ token, entryChoice }: { token: string; entryC
     if (next.letterSent === "not_sent") {
       next.replyChannels = [];
       next.replyAddressed = null;
+      next.replyFeeling = null;
     } else {
       next.notSentReason = null;
-      if (next.replyChannels.includes("none") || !next.replyChannels.length) next.replyAddressed = null;
+      if (next.replyChannels.includes("none") || !next.replyChannels.length) {
+        next.replyAddressed = null;
+        next.replyFeeling = null;
+      }
     }
     setAnswers(next);
     setError("");
@@ -116,16 +120,17 @@ export function RueckmeldungForm({ token, entryChoice }: { token: string; entryC
 
   const notSent = answers.letterSent === "not_sent";
   const hasReply = answers.replyChannels.length > 0 && !answers.replyChannels.includes("none");
-  const replyReady = answers.replyChannels.length > 0 && (!hasReply || answers.replyAddressed !== null);
+  const replyReady = answers.replyChannels.length > 0 && (!hasReply || (answers.replyAddressed !== null && answers.replyFeeling !== null));
   const showScope = notSent ? answers.notSentReason !== null : answers.letterSent !== null && replyReady;
   const showExpectation = showScope && answers.issueScope !== null;
   const showEfficacy = showExpectation && answers.expectation !== null;
   const showAgain = showEfficacy && answers.politicalSelfEfficacy !== null;
   const complete = showAgain && answers.writeAgain !== null;
-  const questionCount = notSent ? (showSentQuestion ? 6 : 5) : hasReply ? 7 : 6;
+  const questionCount = notSent ? (showSentQuestion ? 6 : 5) : hasReply ? 8 : 6;
   const answered = [showSentQuestion && answers.letterSent !== null,
     notSent ? answers.notSentReason !== null : answers.replyChannels.length > 0,
     !notSent && hasReply && answers.replyAddressed !== null,
+    !notSent && hasReply && answers.replyFeeling !== null,
     answers.issueScope !== null, answers.expectation !== null,
     answers.politicalSelfEfficacy !== null, answers.writeAgain !== null].filter(Boolean).length;
 
@@ -202,6 +207,9 @@ export function RueckmeldungForm({ token, entryChoice }: { token: string; entryC
           </Question>}
           {!notSent && hasReply && <Question title="Wurde auf dein Anliegen eingegangen?" mark="Anliegen">
             <Choices label="Auf das Anliegen eingegangen" values={[["concrete", "Ja, konkret"], ["partly", "Teilweise"], ["generic", "Eher allgemein"]]} value={answers.replyAddressed} onSelect={(replyAddressed) => change({ replyAddressed }, "reply_addressed")} />
+          </Question>}
+          {!notSent && hasReply && <Question title="Wie war die Reaktion für dich?" mark="Reaktion">
+            <Choices label="Gefühl zur Reaktion" values={[["positive_surprise", "Positiv überrascht"], ["glad_someone_answered", "Hatte mehr erwartet, finde es aber gut, dass sich jemand gemeldet hat"], ["as_expected", "Ungefähr so, wie ich es erwartet hatte"], ["disappointing", "Eher enttäuschend"]]} value={answers.replyFeeling} onSelect={(replyFeeling) => change({ replyFeeling }, "reply_feeling")} />
           </Question>}
           {showScope && <Question title="Wie war dein Anliegen?" mark="Anliegen">
             <Choices label="Art des Anliegens" values={[["local", "Konkret vor Ort lösbar"], ["big", "Größeres politisches Thema"]]} value={answers.issueScope} onSelect={(issueScope) => change({ issueScope }, "issue_scope")} />

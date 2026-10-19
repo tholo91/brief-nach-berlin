@@ -31,7 +31,7 @@ function validateFull(answers: OutcomeAnswers): string | null {
   if (!answers.letterSent) return "Bitte beantworte noch, ob du den Brief abgeschickt hast.";
   if (answers.letterSent === "not_sent") {
     if (!answers.notSentReason) return "Bitte sag uns noch, was dich gebremst hat.";
-    if (answers.replyChannels.length || answers.replyAddressed) return "Ungültige Antworten zum Brief.";
+    if (answers.replyChannels.length || answers.replyAddressed || answers.replyFeeling) return "Ungültige Antworten zum Brief.";
   } else {
     if (answers.notSentReason) return "Ungültige Antwort zum Versand.";
     if (answers.replyChannels.length === 0) return "Bitte wähle noch aus, ob eine Reaktion kam.";
@@ -39,6 +39,8 @@ function validateFull(answers: OutcomeAnswers): string | null {
     if (noneSelected && answers.replyChannels.length !== 1) return "Bitte wähle entweder „Noch nichts“ oder eine Reaktion.";
     const hadReply = !noneSelected;
     if (hadReply !== Boolean(answers.replyAddressed)) return "Bitte beantworte noch, ob auf dein Anliegen eingegangen wurde.";
+    if (hadReply && !answers.replyFeeling) return "Bitte beantworte noch, wie die Reaktion für dich war.";
+    if (!hadReply && answers.replyFeeling) return "Ungültige Antwort zur Reaktion.";
   }
   return null;
 }
@@ -74,6 +76,7 @@ export async function submitOutcomeAction(input: unknown): Promise<SubmitOutcome
     console.error("[submitOutcome] REVIEW_IP_SALT not set; refusing to store an unsalted IP");
     return { error: "server_error", message: "Rückmeldungen sind gerade nicht verfügbar. Bitte später erneut versuchen." };
   }
+  const noReply = answers.letterSent === "not_sent" || answers.replyChannels.length === 0 || answers.replyChannels.includes("none");
   const ipHash = createHmac("sha256", salt).update(ip).digest("hex");
   try {
     const { error } = await getServiceRoleClient().rpc("submit_letter_outcome", {
@@ -86,6 +89,7 @@ export async function submitOutcomeAction(input: unknown): Promise<SubmitOutcome
         notSentReason: answers.letterSent === "not_sent" ? answers.notSentReason : null,
         replyChannels: answers.letterSent === "not_sent" ? [] : answers.replyChannels,
         replyAddressed: answers.letterSent === "not_sent" ? null : answers.replyAddressed,
+        replyFeeling: noReply ? null : answers.replyFeeling,
       },
       p_processing_consent: data.mode !== "initial" && data.processingConsent,
       p_last_step: data.lastStep,

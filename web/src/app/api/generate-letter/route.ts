@@ -412,6 +412,7 @@ export async function POST(req: NextRequest) {
             locale: data.locale ?? "de",
             recipientEmail: data.email,
             politicianName: politicianFullName,
+            recipientKind: params.recipientKind,
             feedbackToken,
             scheduledAt,
           });

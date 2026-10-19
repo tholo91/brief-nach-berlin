@@ -1,5 +1,6 @@
 import { BrevoClient } from "@getbrevo/brevo";
 import { buildFollowupHtml } from "./buildFollowupHtml";
+import type { SendLetterEmailParams } from "./sendLetterEmail";
 import { APP_URL, EMAIL_SENDER_NAME, FOUNDER_EMAIL } from "@/lib/config";
 import { createDataDeletionToken } from "@/lib/dataDeletion/token";
 import { DEFAULT_LOCALE, type Locale } from "@/lib/i18n/locale";
@@ -16,6 +17,7 @@ export interface SendFollowupEmailParams {
   locale?: Locale;
   recipientEmail: string;
   politicianName?: string;
+  recipientKind?: SendLetterEmailParams["recipientKind"];
   // Selber signierter Token wie für die Originalmail. Wir signieren NICHT neu —
   // /feedback erwartet den vollen debug_payload aus dem ursprünglichen Token.
   feedbackToken: string;
@@ -34,6 +36,7 @@ export async function sendFollowupEmail(
     const { subject, html, text } = buildFollowupHtml({
       token: params.feedbackToken,
       politicianName: params.politicianName,
+      recipientKind: params.recipientKind,
       locale: params.locale ?? DEFAULT_LOCALE,
       deleteUrl: `${APP_URL}/datenloeschen?t=${createDataDeletionToken(params.recipientEmail)}`,
     });

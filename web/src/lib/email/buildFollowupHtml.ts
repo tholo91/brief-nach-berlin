@@ -6,6 +6,7 @@ import {
   SHARE_URL_EMAIL,
 } from "@/lib/config";
 import { buildStarBarHtml } from "./buildEmailHtml";
+import type { SendLetterEmailParams } from "./sendLetterEmail";
 import { getEmailCopy, resolveEmailLocale } from "./mailLocale";
 import type { Locale } from "@/lib/i18n/locale";
 import { buildDonationButtonLabelHtml } from "./financingNotice";
@@ -19,6 +20,7 @@ export interface BuildFollowupParams {
   locale?: Locale;
   token: string;
   politicianName?: string;
+  recipientKind?: SendLetterEmailParams["recipientKind"];
   // Overrides die Basis-URL für absolute Links und Bild-Assets in der Mail.
   // Default: APP_URL aus config (prod). Für lokale Vorschau im npm run dev:
   // baseUrl: "http://localhost:3000" durchreichen, damit das Envelope-Bild
@@ -68,6 +70,14 @@ export function buildFollowupHtml(params: BuildFollowupParams): FollowupRender {
     : SHARE_URL_EMAIL;
   const instagramUrl = `${base}/weitersagen#insta`;
   const deleteUrl = params.deleteUrl ?? `${base}/datenloeschen`;
+  const meetMdb =
+    params.recipientKind === "mdb" && params.politicianName
+      ? {
+          sentence: copy.meetMdb(params.politicianName),
+          linkLabel: copy.meetMdbLink,
+          url: `${base}/aktiv-werden#wahlkreisbuero`,
+        }
+      : null;
 
   const text = [
     copy.greeting,
@@ -86,6 +96,7 @@ export function buildFollowupHtml(params: BuildFollowupParams): FollowupRender {
     `${supportCopy.compactButton}: ${SUPPORT_CONTENT.ctas.donate.href}`,
     supportCopy.providerLabel,
     ``,
+    ...(meetMdb ? [`${meetMdb.sentence} ${meetMdb.linkLabel}: ${meetMdb.url}`, ``] : []),
     copy.ignore,
     copy.thanks,
     ``,
@@ -216,6 +227,19 @@ export function buildFollowupHtml(params: BuildFollowupParams): FollowupRender {
             </td>
           </tr>
 
+          ${
+            meetMdb
+              ? `<!-- Wahlkreisbüro-Hinweis (nur MdB-Briefe) -->
+          <tr>
+            <td style="padding:0 32px 8px;background-color:#ffffff;">
+              <p style="margin:0;font-family:Georgia,'Times New Roman',serif;font-size:15px;color:#4A4A4A;line-height:1.75;">
+                ${escapeHtml(meetMdb.sentence)} <a href="${meetMdb.url}" target="_blank" rel="noopener noreferrer" style="color:#2D5016;text-decoration:underline;">${escapeHtml(meetMdb.linkLabel)}</a>
+              </p>
+            </td>
+          </tr>
+`
+              : ""
+          }
           <!-- Sign-off paragraph + Caveat signature -->
           <tr>
             <td style="padding:16px 32px 24px;background-color:#ffffff;text-align:left;">

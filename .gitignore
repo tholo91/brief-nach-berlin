@@ -37,6 +37,7 @@ Demokrative Zoom.txt
 
 # Local review and handoff artifacts
 .playwright-mcp/
+.planning/gesamt-review-*.md
 BARRIEREFREIHEIT-AUDIT.md
 press/
 prompts/ngo-briefkampagne/

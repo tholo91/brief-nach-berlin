@@ -4,10 +4,10 @@ milestone: v1.0
 current_phase: 05
 status: verifying
 stopped_at: Completed 05-04-PLAN.md
-last_updated: "2026-10-19T21:14:08.182Z"
+last_updated: "2026-10-20T20:53:17.252Z"
 last_activity: 2026-10-19
 last_activity_desc: Quick 261013-wuq lokal implementiert und geprüft; manueller Release offen
-state_head: 49801db5140eb5af277214b6082c48d2358e29c9
+state_head: 1c3fb25bf22b3f24d935e811a1e8392ea539f2e8
 progress:
   total_phases: 33
   completed_phases: 4
@@ -205,6 +205,7 @@ Recent decisions affecting current work:
 | 261019-uyl | Uebergabe-Mail mit Briefzahl, Stats-Bloecken und Anrede-Fix | 2026-10-19 | 6406f28 | [261019-uyl-uebergabe-mail-mit-briefzahl-stats-bloec](./quick/261019-uyl-uebergabe-mail-mit-briefzahl-stats-bloec/) |
 | 261019-v48 | Seite /kampagnen-grundsaetze + Links | 2026-10-19 | e195b41 | [261019-v48-kampagnen-grundsaetze-seite](./quick/261019-v48-kampagnen-grundsaetze-seite/) |
 | 261019-w59 | Review-Fixes vor Push: Pruefversprechen Kampagnenformular, Stand Nutzungsbedingungen, Anrede nach Uebernahme | 2026-10-19 | 49801db | [261019-w59-review-fixes-vor-push-pruefversprechen-k](./quick/261019-w59-review-fixes-vor-push-pruefversprechen-k/) |
+| 80 | Agent-Doku auf Ist-Stand: Stack (Mistral, Vercel/Brevo bezahlt, Supabase Free), Bauprinzipien lean und nachhaltig in CLAUDE.md und AGENTS.md, doppelter Gitty-Abschnitt entfernt | 2026-10-20 | 1c3fb25 | — |
 
 ## Session Continuity
 

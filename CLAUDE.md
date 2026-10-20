@@ -9,8 +9,8 @@ A web app that turns citizens' frustrations into effective, personalized letters
 
 ### Constraints
 
-- **Budget**: Zero/minimal — free tiers only (Vercel free, OpenAI API pay-per-use via Thomas's existing key)
-- **Stack**: Next.js on Vercel for hosting, OpenAI API for letter generation, Abgeordnetenwatch API for politician data
+- **Budget**: Lean and cost-aware: Vercel (paid plan) and Brevo are paid, Mistral is pay-per-use, Supabase stays on the free tier as long as possible
+- **Stack**: Next.js on Vercel, Mistral for letter generation and Voxtral for transcription (deliberately European, no US model), Supabase Postgres, Brevo for email, Abgeordnetenwatch API for politician data
 - **Frontend**: Landing page built in Lovable first (beautiful UI fast), exported to GitHub, then extended with Claude Code
 - **Data privacy**: DSGVO-compliant — minimal data collection, no accounts, no persistent storage of user data in v1
 - **Language**: German-only UI and letter output

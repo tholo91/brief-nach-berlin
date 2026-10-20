@@ -72,8 +72,8 @@ A frustrated citizen can go from "this is broken" to "here's a letter to the per
 
 ## Constraints
 
-- **Budget**: Zero/minimal — free tiers only (Vercel free, OpenAI API pay-per-use via Thomas's existing key)
-- **Stack**: Next.js on Vercel for hosting, OpenAI API for letter generation, Abgeordnetenwatch API for politician data
+- **Budget**: Lean and cost-aware: Vercel (paid plan) and Brevo are paid, Mistral is pay-per-use, Supabase stays on the free tier as long as possible
+- **Stack**: Next.js on Vercel, Mistral for letter generation and Voxtral for transcription (deliberately European, no US model), Supabase Postgres, Brevo for email, Abgeordnetenwatch API for politician data
 - **Frontend**: Landing page built in Lovable first (beautiful UI fast), exported to GitHub, then extended with Claude Code
 - **Data privacy**: DSGVO-compliant — minimal data collection, no accounts, no persistent storage of user data in v1
 - **Language**: German-only UI and letter output
@@ -87,7 +87,7 @@ A frustrated citizen can go from "this is broken" to "here's a letter to the per
 | Decision | Rationale | Outcome |
 |----------|-----------|---------|
 | Next.js directly (skip Lovable) | Existing Next.js app in /web already has landing page structure. Lovable exports Vite, not Next.js — migration overhead not worth it. | ✓ Good |
-| OpenAI API over Claude API for letter generation | Thomas has existing OpenAI API key, cost matters | — Pending |
+| Mistral instead of OpenAI for letters and transcription | Deliberately European provider, no US model | ✓ Good |
 | No user accounts in v1 | Zero friction > feature completeness. Optional email only. | — Pending |
 | Handwrite-and-mail-yourself (no auto-pen in v1) | Keeps the human decision and effort in the loop. The draft is a starting point, not an automatically dispatched message. Auto-pen is v2 with Pensaki. | — Pending |
 | Free with no donations in v1 | Pure validation — don't let monetization distract from learning | — Pending |

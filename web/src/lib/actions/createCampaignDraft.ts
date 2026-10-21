@@ -26,6 +26,7 @@ import { sendCampaignCreatorEmail } from "@/lib/email/sendCampaignCreatorEmail";
 import { getServiceRoleClient } from "@/lib/supabase/server";
 import { CAMPAIGN_LOGO_BUCKET } from "@/lib/campaigns/logo";
 import { classifyAndSaveCampaignTopic } from "@/lib/campaigns/classifyTopic";
+import { checkRateLimit, getClientIp, hashIdentifier, LIMITS } from "@/lib/rateLimit";
 
 const MAX_LOGO_BYTES = 524288;
 const logoMimeTypes = new Map([
@@ -296,6 +297,27 @@ export async function createCampaignDraftAction(
       fieldErrors: { targetPoliticianIds: "Bitte aktualisiere die MdB-Auswahl." },
     };
   }
+  // Limit nach der Validierung (Formfehler verbrauchen nichts), vor Logo, Moderation, DB und Mail.
+  const ipLimit = checkRateLimit(
+    `campaign-draft:ip:${hashIdentifier(await getClientIp())}`,
+    LIMITS.CAMPAIGN_DRAFTS.max,
+    LIMITS.CAMPAIGN_DRAFTS.windowMs
+  );
+  const emailLimit = ipLimit.allowed
+    ? checkRateLimit(
+        `campaign-draft:email:${hashIdentifier(input.creatorEmail)}`,
+        LIMITS.CAMPAIGN_DRAFTS.max,
+        LIMITS.CAMPAIGN_DRAFTS.windowMs
+      )
+    : ipLimit;
+  if (!ipLimit.allowed || !emailLimit.allowed) {
+    return {
+      ok: false,
+      message:
+        "Du hast in kurzer Zeit mehrere Kampagnen angelegt. Bitte versuch es in einer Stunde noch einmal.",
+    };
+  }
+
   const uploadedLogo = await uploadCampaignLogo(formData, input.slug);
   if (uploadedLogo.error) {
     return {

@@ -11,6 +11,11 @@ jest.mock("@/lib/moderation/moderateText", () => ({ moderateText: jest.fn() }));
 jest.mock("@/lib/email/sendCampaignCreatorEmail", () => ({ sendCampaignCreatorEmail: jest.fn() }));
 jest.mock("@/lib/supabase/server", () => ({ getServiceRoleClient: jest.fn() }));
 jest.mock("@/lib/campaigns/classifyTopic", () => ({ classifyAndSaveCampaignTopic: jest.fn() }));
+jest.mock("@/lib/rateLimit", () => ({
+  ...jest.requireActual("@/lib/rateLimit"),
+  checkRateLimit: jest.fn(() => ({ allowed: true })),
+  getClientIp: jest.fn(async () => "203.0.113.7"),
+}));
 
 import { createCampaignDraftAction } from "@/lib/actions/createCampaignDraft";
 import {
@@ -20,6 +25,8 @@ import {
 import { createCampaignToken } from "@/lib/campaigns/tokens";
 import { moderateText } from "@/lib/moderation/moderateText";
 import { sendCampaignCreatorEmail } from "@/lib/email/sendCampaignCreatorEmail";
+import { getServiceRoleClient } from "@/lib/supabase/server";
+import { checkRateLimit, LIMITS } from "@/lib/rateLimit";
 
 function fixedCampaignFormData(): FormData {
   const formData = new FormData();
@@ -82,6 +89,60 @@ describe("public campaign moderation", () => {
     });
     expect(moderateText).not.toHaveBeenCalled();
     expect(createCampaign).not.toHaveBeenCalled();
+    expect(checkRateLimit).not.toHaveBeenCalled();
+  });
+
+  describe("Rate-Limit für die Kampagnenanlage", () => {
+    function formWithLogo(): FormData {
+      const formData = fixedCampaignFormData();
+      formData.set("fixedAddressAccepted", "on");
+      formData.set("logo", new File([new Uint8Array([137, 80, 78, 71])], "logo.png", { type: "image/png" }));
+      return formData;
+    }
+
+    function expectNothingExpensiveRan() {
+      expect(getServiceRoleClient).not.toHaveBeenCalled();
+      expect(moderateText).not.toHaveBeenCalled();
+      expect(createCampaign).not.toHaveBeenCalled();
+      expect(sendCampaignCreatorEmail).not.toHaveBeenCalled();
+    }
+
+    it("stoppt bei erreichtem IP-Limit vor Logo, Moderation, Datenbank und Mail", async () => {
+      jest.mocked(checkRateLimit).mockReturnValueOnce({ allowed: false, retryAfterSeconds: 3600 });
+
+      await expect(createCampaignDraftAction(formWithLogo())).resolves.toMatchObject({
+        ok: false,
+        message: expect.stringContaining("mehrere Kampagnen"),
+      });
+      expect(checkRateLimit).toHaveBeenCalledWith(
+        expect.stringMatching(/^campaign-draft:ip:/),
+        LIMITS.CAMPAIGN_DRAFTS.max,
+        LIMITS.CAMPAIGN_DRAFTS.windowMs,
+      );
+      expectNothingExpensiveRan();
+    });
+
+    it("stoppt bei erreichtem E-Mail-Limit vor Logo, Moderation, Datenbank und Mail", async () => {
+      jest.mocked(checkRateLimit)
+        .mockReturnValueOnce({ allowed: true })
+        .mockReturnValueOnce({ allowed: false, retryAfterSeconds: 3600 });
+
+      await expect(createCampaignDraftAction(formWithLogo())).resolves.toMatchObject({
+        ok: false,
+        message: expect.stringContaining("mehrere Kampagnen"),
+      });
+      const keys = jest.mocked(checkRateLimit).mock.calls.map(([key]) => key);
+      expect(keys[0]).toMatch(/^campaign-draft:ip:/);
+      expect(keys[1]).toMatch(/^campaign-draft:email:/);
+      expect(keys.some((key) => key.includes("creator@example.org"))).toBe(false);
+      expect(checkRateLimit).toHaveBeenNthCalledWith(
+        2,
+        expect.any(String),
+        LIMITS.CAMPAIGN_DRAFTS.max,
+        LIMITS.CAMPAIGN_DRAFTS.windowMs,
+      );
+      expectNothingExpensiveRan();
+    });
   });
 
   it("übergibt ausschließlich die strukturierte feste Adresse an das Repository", async () => {

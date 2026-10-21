@@ -1,7 +1,7 @@
 import type { Politician } from "../types/politician";
 import officesJson from "../../../data/constituency-offices.json";
 import { formatPartyShort } from "../formatParty";
-import { lookupPLZ } from "./plzLookup";
+import { getBundestagPoliticiansByIds, lookupPLZ } from "./plzLookup";
 
 interface OfficeRecord {
   bundestagId: string;
@@ -84,24 +84,30 @@ function displayName(politician: Politician): string {
     .join(" ");
 }
 
+function toMdbContact(politician: Politician): MdbContact {
+  const record = findOfficeRecord(politician, officeRecords);
+  const profileUrl = record?.profileUrl ?? politician.abgeordnetenwatchUrl ?? null;
+  return {
+    id: politician.id,
+    name: displayName(politician),
+    party: formatPartyShort(politician.party),
+    wahlkreisName: politician.wahlkreisName,
+    isDirect: politician.isDirect,
+    profileUrl,
+    profileSource: record?.profileUrl
+      ? "bundestag"
+      : politician.abgeordnetenwatchUrl
+        ? "abgeordnetenwatch"
+        : null,
+    officeLines: record?.constituencyOffice?.rawLines ?? [],
+  };
+}
+
 export function buildMdbContacts(plz: string): MdbContact[] {
-  const { politicians } = lookupPLZ(plz);
-  return politicians.map((politician) => {
-    const record = findOfficeRecord(politician, officeRecords);
-    const profileUrl = record?.profileUrl ?? politician.abgeordnetenwatchUrl ?? null;
-    return {
-      id: politician.id,
-      name: displayName(politician),
-      party: formatPartyShort(politician.party),
-      wahlkreisName: politician.wahlkreisName,
-      isDirect: politician.isDirect,
-      profileUrl,
-      profileSource: record?.profileUrl
-        ? "bundestag"
-        : politician.abgeordnetenwatchUrl
-          ? "abgeordnetenwatch"
-          : null,
-      officeLines: record?.constituencyOffice?.rawLines ?? [],
-    };
-  });
+  return lookupPLZ(plz).politicians.map(toMdbContact);
+}
+
+export function buildMdbContactById(id: number): MdbContact | null {
+  const [politician] = getBundestagPoliticiansByIds([id]);
+  return politician ? toMdbContact(politician) : null;
 }

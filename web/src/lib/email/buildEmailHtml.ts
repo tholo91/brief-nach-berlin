@@ -694,7 +694,7 @@ export function buildEmailHtml(data: SendLetterEmailParams): string {
                 <tr>
                   <td colspan="7" class="bnb-pad" style="padding:0 32px 16px;background-color:#ffffff;text-align:left;">
                     <p style="margin:0;font-family:Georgia,'Times New Roman',serif;font-size:14px;color:#4A4A4A;line-height:1.6;">
-                      ${copy.meetMdbIntro(fullName)} <a href="${APP_URL}/aktiv-werden#wahlkreisbuero" target="_blank" rel="noopener noreferrer" style="color:#2D5016;text-decoration:underline;">${copy.meetMdbLink}</a>
+                      ${copy.meetMdbIntro(fullName)} <a href="${APP_URL}/aktiv-werden${data.politicianId ? `?mdb=${data.politicianId}` : ""}#wahlkreisbuero" target="_blank" rel="noopener noreferrer" style="color:#2D5016;text-decoration:underline;">${copy.meetMdbLink}</a>
                     </p>
                   </td>
                 </tr>` : ""}

@@ -89,6 +89,8 @@ export interface SendLetterEmailParams {
   politicianParty: string | null;
   politicianPostalAddress: string;
   politicianAbgeordnetenwatchUrl: string | null;
+  // Öffentliche Abgeordnetenwatch-Mandats-ID, nur für den Wahlkreisbüro-Link, nie PLZ oder Token.
+  politicianId?: number;
   // 999.6: steuert Adressblock + Profil-Link-Logik in buildEmailHtml.
   // "mdb" hält das heutige Layout exakt; "mdl" nutzt die Landtag-Anschrift aus
   // postalAddress (keine "Deutscher Bundestag"-Zeile); "rathaus" hat weder
@@ -348,6 +350,7 @@ export function prepareLetterEmail(args: {
       politicianParty: politician.party,
       politicianPostalAddress: politician.postalAddress,
       politicianAbgeordnetenwatchUrl: politician.abgeordnetenwatchUrl,
+      politicianId: politician.id,
       recipientKind: recipient.kind,
       bundeslandKey: politician.bundeslandKey,
       letterText,

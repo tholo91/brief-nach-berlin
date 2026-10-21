@@ -9,6 +9,7 @@ jest.mock("@/lib/campaigns/repository", () => ({
 jest.mock("@/lib/campaigns/session", () => ({
   CAMPAIGN_MANAGEMENT_SESSION_COOKIE: "bnb_campaign_management_session",
   createCampaignManagementSessionValue: jest.fn(() => "session"),
+  SESSION_TTL_SECONDS: 60 * 60 * 24 * 7,
 }));
 
 import { NextRequest } from "next/server";
@@ -89,6 +90,12 @@ describe("campaign transfer access", () => {
       const response = await visit("token=manage-token");
 
       expect(response.headers.get("location")).toBe("/kampagne/verwalten");
+    });
+
+    it("keeps the management session cookie for 7 days", async () => {
+      const response = await visit("token=manage-token");
+
+      expect(response.headers.get("set-cookie")).toContain("Max-Age=604800");
     });
 
     it("does not jump or set a cookie for an invalid token", async () => {

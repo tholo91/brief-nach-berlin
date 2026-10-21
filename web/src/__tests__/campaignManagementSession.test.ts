@@ -37,6 +37,17 @@ describe("campaign management sessions", () => {
     });
   });
 
+  it("lives 7 days by default", () => {
+    const value = createCampaignManagementSessionValue(
+      "11111111-1111-4111-8111-111111111111",
+      "owner@example.org"
+    );
+
+    const session = verifyCampaignManagementSessionValue(value);
+    expect(session).not.toBeNull();
+    expect(session!.exp - session!.iat).toBe(604800);
+  });
+
   it("rejects a session without the creator email claim", () => {
     const body = Buffer.from(
       JSON.stringify({

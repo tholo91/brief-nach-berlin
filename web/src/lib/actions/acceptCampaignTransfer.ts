@@ -10,8 +10,6 @@ import {
 } from "@/lib/campaigns/tokens";
 import { sendCampaignCreatorEmail } from "@/lib/email/sendCampaignCreatorEmail";
 
-const SESSION_TTL_SECONDS = 60 * 60 * 2;
-
 function formValue(formData: FormData, key: string): string {
   const value = formData.get(key);
   return typeof value === "string" ? value : "";
@@ -32,11 +30,7 @@ export async function acceptCampaignTransferAction(formData: FormData): Promise<
           campaign.creatorEmail.trim().toLowerCase() ===
             accepted.recipientEmail.trim().toLowerCase()
         ) {
-          await setCampaignManagementSession(
-            campaign.id,
-            campaign.creatorEmail,
-            SESSION_TTL_SECONDS
-          );
+          await setCampaignManagementSession(campaign.id, campaign.creatorEmail);
 
           const { token: manageToken, record } = await createCampaignToken(
             campaign.id,

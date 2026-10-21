@@ -10,7 +10,7 @@ import type { CampaignTokenKind } from "./schema";
 export const CAMPAIGN_MANAGEMENT_SESSION_COOKIE =
   "bnb_campaign_management_session";
 
-const SESSION_TTL_SECONDS = 60 * 60 * 2;
+export const SESSION_TTL_SECONDS = 60 * 60 * 24 * 7;
 
 const managementSessionSchema = z.object({
   campaignId: z.string().uuid(),

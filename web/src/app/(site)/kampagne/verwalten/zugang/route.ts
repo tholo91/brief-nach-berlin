@@ -2,6 +2,7 @@ import { NextResponse, type NextRequest } from "next/server";
 import {
   CAMPAIGN_MANAGEMENT_SESSION_COOKIE,
   createCampaignManagementSessionValue,
+  SESSION_TTL_SECONDS,
 } from "@/lib/campaigns/session";
 import {
   getUsableCampaignToken,
@@ -9,8 +10,6 @@ import {
 } from "@/lib/campaigns/tokens";
 import { getCampaignById } from "@/lib/campaigns/repository";
 import { resolveManageJumpPath } from "@/lib/campaigns/creatorSurvey";
-
-const SESSION_TTL_SECONDS = 60 * 60 * 2;
 
 export async function GET(request: NextRequest) {
   const response = new NextResponse(null, {

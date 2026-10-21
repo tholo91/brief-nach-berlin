@@ -620,7 +620,9 @@ export function Step3Success({
             setGenerationMayHaveSucceeded(!retryIsSafe);
           } catch {
             // Body nicht lesbar (z.B. HTML-Errorpage) - Status reicht.
-            setGenerationMayHaveSucceeded(res.status >= 500);
+            // 504 = Vercel hat die Funktion bei maxDuration gestoppt; die Brief-Mail geht erst
+            // in after() nach der Antwort raus, also wurde nichts verschickt und Retry ist sicher.
+            setGenerationMayHaveSucceeded(res.status >= 500 && res.status !== 504);
           }
           lastErrorRef.current = {
             httpStatus: res.status,

@@ -82,6 +82,11 @@ describe("success page experience", () => {
     expect(successSource).not.toContain("Ich beeile mich und melde mich");
   });
 
+  it("treats a Vercel 504 timeout as not created so retry stays visible", () => {
+    expect(successSource).toContain("setGenerationMayHaveSucceeded(res.status >= 500 && res.status !== 504)");
+    expect(successSource).toContain("{!generationMayHaveSucceeded && (");
+  });
+
   it("shows a lost connection as the success state with a calm green note, not an error", () => {
     expect(successSource).toContain("setConnectionLost(true);\n            return;");
     expect(successSource).toContain("isNetworkError && (wasHidden || elapsedMs >= 3000)");

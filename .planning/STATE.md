@@ -215,6 +215,7 @@ Recent decisions affecting current work:
 | 261021-oy9 | Stats ohne 1000-Zeilen-Grenze: Paginierung fuer reviews und letter_signals | 2026-10-21 | 97b3878 | [261021-oy9-stats-ohne-1000-zeilen-grenze-paginierun](./quick/261021-oy9-stats-ohne-1000-zeilen-grenze-paginierun/) |
 | 261022-qdd | Brief anpassen behält eigene Stimme, Knopf Einfache Worte | 2026-10-22 | 847635c | [261022-qdd-brief-anpassen-beh-lt-eigene-stimme-knop](./quick/261022-qdd-brief-anpassen-beh-lt-eigene-stimme-knop/) |
 | 261022-qg2 | Feedback-Token komprimieren (deflateRaw), damit Brevo-Stern-Links unter 2083 Zeichen bleiben | 2026-10-22 | 87ab6ff | [261022-qg2-feedback-token-komprimieren-deflateraw-d](./quick/261022-qg2-feedback-token-komprimieren-deflateraw-d/) |
+| 82 | Autopilot: tote Doku-Links (DSGVO-AUDIT, ROADMAP) repariert, 4 erledigte Todos nach completed | 2026-10-21 | 4b97ffb | — |
 
 ## Session Continuity
 

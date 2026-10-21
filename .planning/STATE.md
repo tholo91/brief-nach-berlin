@@ -4,10 +4,10 @@ milestone: v1.0
 current_phase: 05
 status: verifying
 stopped_at: Completed 05-04-PLAN.md
-last_updated: "2026-10-21T15:45:08.697Z"
+last_updated: "2026-10-21T15:50:05.265Z"
 last_activity: 2026-10-21
 last_activity_desc: Quick 261013-wuq lokal implementiert und geprüft; manueller Release offen
-state_head: 22cf755586da3ac8d01816a57615052b851e8a48
+state_head: 7af0c1c63fa9c2e98584f1d92607d7f1de8a59dd
 progress:
   total_phases: 33
   completed_phases: 4
@@ -208,6 +208,7 @@ Recent decisions affecting current work:
 | 80 | Agent-Doku auf Ist-Stand: Stack (Mistral, Vercel/Brevo bezahlt, Supabase Free), Bauprinzipien lean und nachhaltig in CLAUDE.md und AGENTS.md, doppelter Gitty-Abschnitt entfernt | 2026-10-20 | 1c3fb25 | — |
 | 261021-kcm | Erfolgsseite: HTTP 504 (Vercel-Timeout) als nicht erstellt behandeln, Retry zeigen | 2026-10-21 | 4ee870e | [261021-kcm-erfolgsseite-http-504-vercel-timeout-als](./quick/261021-kcm-erfolgsseite-http-504-vercel-timeout-als/) |
 | 261021-oma | Mobiles Burger-Menü: Kampagnen-Links, kein doppelter CTA, Stift-Icon | 2026-10-21 | 22cf755 | [261021-oma-mobiles-burger-menue-kampagnen-links-cta](./quick/261021-oma-mobiles-burger-menue-kampagnen-links-cta/) |
+| 261021-ols | MdB-Mail Wahlkreisbüro-Link mit mdb-ID, aktiv-werden zeigt Büro direkt | 2026-10-21 | 7af0c1c | [261021-ols-mdb-mail-wahlkreisb-ro-link-mit-mdb-id-a](./quick/261021-ols-mdb-mail-wahlkreisb-ro-link-mit-mdb-id-a/) |
 
 ## Session Continuity
 

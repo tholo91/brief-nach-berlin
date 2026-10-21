@@ -592,7 +592,7 @@ Plans:
 
 ### Phase 999.16: Follow-up-Email — Wirksamkeit zeigen & Stories sammeln (BACKLOG)
 
-> **Zusammengeführt am 2026-10-13** in [To-do Rückmeldeseite + Last-Call-Mail](todos/pending/2026-10-13-rueckmeldeseite-lastcall-mail.md). Nicht separat planen.
+> **Zusammengeführt am 2026-10-13** in [To-do Rückmeldeseite + Last-Call-Mail](todos/completed/2026-10-13-rueckmeldeseite-lastcall-mail.md). Nicht separat planen.
 
 **Goal:** In die zweite Follow-up-Email (Feedback-Mail) einen zusätzlichen Block einbauen: "Melde dich gerne, wenn sich in deinem Anliegen etwas getan hat oder jemand auf deinen Brief reagiert hat — wir würden deine Geschichte mit deiner Erlaubnis gerne veröffentlichen." Verlinkt einen HeySpeak-Link, über den die Person sich melden kann (Voice oder Call). Ziele: (1) Wirksamkeit des Tools sichtbar machen, (2) Social Proof für mehr Nutzer:innen generieren, (3) Stories für Marketing/Lage-der-Nation/LinkedIn gewinnen.
 
@@ -944,7 +944,7 @@ Plans:
 
 ### Phase 999.31: Email #3 "Hat dein:e Politiker:in geantwortet?" + Auto-Unsubscribe bei Rating-Klick (BACKLOG)
 
-> **Zusammengeführt am 2026-10-13** in [To-do Rückmeldeseite + Last-Call-Mail](todos/pending/2026-10-13-rueckmeldeseite-lastcall-mail.md). Nicht separat planen.
+> **Zusammengeführt am 2026-10-13** in [To-do Rückmeldeseite + Last-Call-Mail](todos/completed/2026-10-13-rueckmeldeseite-lastcall-mail.md). Nicht separat planen.
 
 **Goal:** Dritte Follow-up-Mail ~14 Tage nach Brief-Versand mit neuer inhaltlicher Frage ("Hat dein:e MdB schon geantwortet?"). Zweck: (1) Send-Rate-KPI sauber tracken — aktuell 24% der Reviews sind "keine Angabe" bei `letter_sent`, (2) qualitative Daten über tatsächliche MdB-Antwort-Quote sammeln (neue KPI).
 

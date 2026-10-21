@@ -46,3 +46,27 @@ Fazit: Ein reiner Modellwechsel ist kein Schnellschuss. Er hebt das Limit (500 b
 2. Retry-Fix (Option 3) klein umsetzen, mit OK.
 3. Modellwechsel als eigenes Experiment: Medium mit höherem Wortziel im Prompt, 10 bis 20 Briefe, Länge und Treue prüfen. Als Fallback bei 429 wäre Medium (5 s, eigener Topf) denkbar, aber mit kürzeren Briefen. Large 4 nicht vor Ende der Public Preview.
 4. Keine Testläufe gegen `mistral-large-latest` während einer beworbenen Kampagne.
+
+## Kosten (20.10.2026, Mistral-Konsole gelesen, nichts geändert)
+
+- Gezahlt insgesamt 30 €: 06.03. 10 € (manuell, erst im Oktober aufgebraucht), 10.10. und 19.10. je 10 € per **Auto Recharge** (aktiv: bei Guthaben unter 10 € lädt Mistral 10 € nach). Guthaben am 20.10.: 18,10 €. Kein Modellwechsel im Code (`mistral.ts` seit 10.09. unverändert).
+- Nutzung 01.10. bis 20.10. mittags: 14.653 Anfragen, geschätzt 16,34 €. Davon Large 3 ca. 15,2 € (Input 25,87 Mio. Tokens zu 0,43 €/Mio. = 11,00 €, Output 3,14 Mio. zu 1,28 €/Mio. = 4,00 €, gecachter Input 0,23 €), Small ca. 0,8 €.
+- Pro Large-Aufruf im Schnitt 3.280 Input- und 400 Output-Tokens = ca. 0,19 Cent. Pro Brief ca. 0,2 Cent.
+- Briefzahl: Zähler `letter_count` = 8.921 (gesamt). Kampagnen: eeg-so-nicht 3.473, prueft-die-afd 1.994, afd-vor-gericht 558. Mistral zeigt 7.881 Large-Aufrufe im Oktober = ca. 7.250 Briefe (bei 1,085 Aufrufen pro Brief). Passt zum Zähler (8.921 minus Stand vor Oktober). Die "2000" sind nur prueft-die-afd.
+- Modelltests am 19./20.10.: Large 4 29 Aufrufe 0,04 €, Medium 26 Aufrufe 0,16 €, 6 Vergleichsbriefe Large 3 ca. 0,03 € (geschätzt).
+- Preise pro 1 Mio. Tokens: Large 3 Input 0,43 € / Output 1,28 €. Medium 3.5 Input 1,28 € / Output 6,38 € (3- bis 5-mal teurer). Large 4 aktuell mit Einführungsrabatt Input 0,58 € / Output 1,78 €. Ein Wechsel auf Medium würde die Kosten also erhöhen, nicht senken.
+
+## Kosten pro Brief nach Modell (20.10.2026)
+
+Grundlage: Mistral-Kostenseite (Oktober, geschätzt) und die Modelltest-Läufe vom 19.10. Ein Brief = 1 Routing-Aufruf (Small) + 1 Brief-Aufruf (+ Längen-Retry, der die erste Antwort mitschickt). Alle Zahlen in Cent, geschätzt, ohne Mehrwertsteuer-Prüfung.
+
+| Modell | Preis pro 1 Mio. Tokens (Input / Output) | Kosten pro Aufruf | Aufrufe pro Brief | Kosten pro Brief | pro 1.000 Briefe |
+|---|---|---|---|---|---|
+| Large 3 (live, `mistral-large-latest`) | 0,43 € / 1,28 € | 0,19 ct (Oktober-Schnitt, 7.881 Aufrufe) | 1,085 (Live-Wert 19.10.) | **0,22 ct** (inkl. Routing) | 2,2 € |
+| Large 4 (Denken aus), Einführungsrabatt | 0,58 € / 1,78 € | 0,14 ct (Test, viel Cache) bis 0,27 ct (ohne Cache) | ca. 1,8 (10 von 12 mit Längen-Retry) | 0,3 bis 0,5 ct | 3 bis 5 € |
+| Large 4, Normalpreis (Doku zeigt Originalpreis doppelt so hoch, Inferenz) | ca. 1,16 € / 3,56 € | ca. 0,5 ct | ca. 1,8 | 0,6 bis 1,0 ct | 6 bis 10 € |
+| Medium 3.5 | 1,28 € / 6,38 € | 0,62 ct (Test) | 2 (12 von 12 mit Längen-Retry) | **1,24 ct** (mit nur 1 Aufruf 0,63 ct) | 12,4 € (bzw. 6,3 €) |
+
+Weitere Posten pro Aufruf: Routing mit Small 0,012 ct. Voxtral-Spracheingabe 0,0043 ct pro Sekunde (30 s = 0,13 ct), nur bei Aufnahme.
+
+Kostentreiber bei Large 3: Input 72 % (System-Prompt ca. 3.300 Tokens pro Aufruf), Output 26 %, gecachter Input 2 %. Ein kürzerer Prompt ist der Hebel, nicht das Modell.

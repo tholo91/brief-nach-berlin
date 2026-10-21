@@ -39,7 +39,7 @@ In `CLAUDE.md` und `AGENTS.md` identisch halten.
 | KI Sprache | Voxtral (Mistral) über `web/src/app/api/transcribe/route.ts` | |
 | Validierung | Zod 4, react-hook-form | |
 | Datenbank | Supabase Postgres, Free-Tarif | nur serverseitig per Service-Role, RLS auf allen Tabellen |
-| Migrationen | `web/supabase/migrations/`, von Thomas per SQL-Editor angewendet | Stand in `web/supabase/MIGRATION_STATUS.md` |
+| Migrationen | `web/supabase/migrations/`, von Thomas per SQL-Editor angewendet | Stand in `web/supabase/MIGRATION_STATUS.md`. Neue Tabelle in `public`: in derselben Migration `REVOKE ALL` von `anon`, `authenticated`, `PUBLIC` und `GRANT` an `service_role` (Supabase vergibt ab 30.10.2026 keine Rechte mehr automatisch, Vorlage: `033_letter_outcomes.sql`) |
 | Mails | Brevo (`@getbrevo/brevo`) | bezahlt, kann echte Menschen erreichen |
 | Hosting | Vercel, bezahlter Tarif, Region `fra1` | Push auf `main` = Produktion |
 | Reichweite | Vercel Analytics, ohne Cookies | Filter in `web/src/components/AnalyticsWrapper.tsx` |

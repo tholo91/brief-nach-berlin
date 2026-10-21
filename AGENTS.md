@@ -12,7 +12,7 @@
 ## Daten, Politik und Versand
 
 - Politiker-, PLZ-, Wahlkreis- und Zuständigkeitsdaten sind fachlich kritisch. Bei Änderungen an Routing, Datenimporten oder Level-Logik Tests und Stichproben einplanen, nicht nur TypeScript prüfen.
-- Supabase wird für Statistik, Reviews, Rückmeldungen und Kampagnenlogik genutzt, nicht als allgemeiner User-Storage. Migrationen unter `web/supabase/migrations/` nicht mit remote angewendetem Zustand gleichsetzen.
+- Supabase wird für Statistik, Reviews, Rückmeldungen und Kampagnenlogik genutzt, nicht als allgemeiner User-Storage. Migrationen unter `web/supabase/migrations/` nicht mit remote angewendetem Zustand gleichsetzen. Neue Tabelle in `public`: in derselben Migration `REVOKE ALL` von `anon`, `authenticated`, `PUBLIC` und `GRANT` an `service_role` (Supabase vergibt ab 30.10.2026 keine Rechte mehr automatisch, Vorlage: `033_letter_outcomes.sql`).
 - Brevo und Follow-up-Skripte können echte E-Mails auslösen. Keine Versand-, Kontaktstatus- oder Batch-Skripte ausführen, außer Thomas autorisiert den konkreten Versand ausdrücklich.
 - Mistral/Voxtral-Aufrufe kosten Geld und können Nutzerdaten verarbeiten. Keine neuen AI-Logging-Flows oder Prompt-Dumps mit echten Anliegen einführen.
 

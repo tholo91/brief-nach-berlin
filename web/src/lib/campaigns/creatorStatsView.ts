@@ -20,6 +20,7 @@ export const CREATOR_COMMENT_LIMIT = 5;
 export const CREATOR_COMMENT_MIN_LENGTH = 10;
 export const CREATOR_STATS_REVIEW_COLUMNS =
   "created_at,rating,letter_sent,political_self_efficacy,body,consent,political_powerlessness_frequency,feedback_tags";
+export const CREATOR_STATS_HOUR_COLUMNS = "hour,letters";
 export const CREATOR_SIGNALS_MIN_TOTAL = 10;
 export const CREATOR_REGION_MIN_BUCKET = 5;
 export const CREATOR_STATS_SIGNAL_COLUMNS =
@@ -79,7 +80,13 @@ export type CreatorStatsKpi =
   | { status: "shown"; value: number; responses: number }
   | { status: "too_few"; responses: number };
 
-export type CreatorTimelineBucket = { start: string; count: number };
+export type CampaignLetterHourRow = { hour: string; letters: number };
+
+export type CreatorTimelineBucket = {
+  start: string;
+  count: number;
+  estimated?: boolean;
+};
 
 export type CreatorTimeline =
   | { status: "empty" }
@@ -280,20 +287,81 @@ function isoDay(ms: number): string {
   return new Date(ms).toISOString().slice(0, 10);
 }
 
-export function buildTimeline(
+type TimelinePoint = { time: number; amount: number; estimated: boolean };
+type TimelineTotal = { total: number; estimated: boolean };
+
+function addTotal(map: Map<number, TimelineTotal>, key: number, point: TimelinePoint) {
+  const entry = map.get(key) ?? { total: 0, estimated: false };
+  entry.total += point.amount;
+  entry.estimated ||= point.estimated;
+  map.set(key, entry);
+}
+
+function toBucket(start: string, entry: TimelineTotal | undefined): CreatorTimelineBucket {
+  const count = Math.round(entry?.total ?? 0);
+  return entry?.estimated && count > 0 ? { start, count, estimated: true } : { start, count };
+}
+
+/**
+ * Without hour rows every signal counts once (the old behavior). With hour
+ * rows the letters are counted exactly; letters from before the first hour
+ * row (letterCount minus the hour-row sum) are spread evenly over the signals
+ * before that hour and marked as estimated.
+ */
+function timelinePoints(
   rows: CampaignSignalRow[],
-  { now, ended }: { now: Date; ended: boolean },
-): CreatorTimeline {
-  const perDay = new Map<number, number>();
-  const perHour = new Map<number, number>();
+  hourRows: CampaignLetterHourRow[] | null,
+  letterCount: number,
+): TimelinePoint[] {
+  const signalTimes: number[] = [];
   for (const row of rows) {
     const time = Date.parse(row.generated_at ?? row.created_at ?? "");
-    if (!Number.isFinite(time)) continue;
-    const day = berlinDayMs(time);
-    perDay.set(day, (perDay.get(day) ?? 0) + 1);
+    if (Number.isFinite(time)) signalTimes.push(time);
+  }
+  if (hourRows === null) {
+    return signalTimes.map((time) => ({ time, amount: 1, estimated: false }));
+  }
+
+  const points: TimelinePoint[] = [];
+  let hourLetters = 0;
+  let cutover = Infinity;
+  for (const hourRow of hourRows) {
+    const time = Date.parse(hourRow.hour);
+    if (!Number.isFinite(time) || !(hourRow.letters > 0)) continue;
+    points.push({ time, amount: hourRow.letters, estimated: false });
+    hourLetters += hourRow.letters;
+    cutover = Math.min(cutover, time);
+  }
+
+  const legacyLetters = Math.max(0, letterCount - hourLetters);
+  const legacyTimes = signalTimes.filter((time) => time < cutover);
+  if (legacyLetters > 0 && legacyTimes.length > 0) {
+    const amount = legacyLetters / legacyTimes.length;
+    for (const time of legacyTimes) points.push({ time, amount, estimated: true });
+  }
+  return points;
+}
+
+export function buildTimeline(
+  rows: CampaignSignalRow[],
+  {
+    now,
+    ended,
+    hourRows = null,
+    letterCount = 0,
+  }: {
+    now: Date;
+    ended: boolean;
+    hourRows?: CampaignLetterHourRow[] | null;
+    letterCount?: number;
+  },
+): CreatorTimeline {
+  const perDay = new Map<number, TimelineTotal>();
+  const perHour = new Map<number, TimelineTotal>();
+  for (const point of timelinePoints(rows, hourRows, letterCount)) {
+    addTotal(perDay, berlinDayMs(point.time), point);
     // Berlin is a whole-hour UTC offset, so a UTC hour is also a Berlin hour.
-    const hour = Math.floor(time / HOUR_MS) * HOUR_MS;
-    perHour.set(hour, (perHour.get(hour) ?? 0) + 1);
+    addTotal(perHour, Math.floor(point.time / HOUR_MS) * HOUR_MS, point);
   }
   if (perDay.size === 0) return { status: "empty" };
 
@@ -311,22 +379,25 @@ export function buildTimeline(
     const nowHour = Math.floor(now.getTime() / HOUR_MS) * HOUR_MS;
     const lastHour = Math.max(...dataHours, ...(ended ? [] : [nowHour]));
     for (let hour = firstHour; hour <= lastHour; hour += HOUR_MS) {
-      buckets.push({ start: new Date(hour).toISOString(), count: perHour.get(hour) ?? 0 });
+      buckets.push(toBucket(new Date(hour).toISOString(), perHour.get(hour)));
     }
   } else if (spanDays <= CREATOR_TIMELINE_DAILY_MAX_DAYS) {
     granularity = "day";
     for (let day = firstDay; day <= lastDay; day += DAY_MS) {
-      buckets.push({ start: isoDay(day), count: perDay.get(day) ?? 0 });
+      buckets.push(toBucket(isoDay(day), perDay.get(day)));
     }
   } else {
     granularity = "week";
-    const perWeek = new Map<number, number>();
-    for (const [day, count] of perDay) {
-      const monday = mondayOf(day);
-      perWeek.set(monday, (perWeek.get(monday) ?? 0) + count);
+    const perWeek = new Map<number, TimelineTotal>();
+    for (const [day, entry] of perDay) {
+      addTotal(perWeek, mondayOf(day), {
+        time: day,
+        amount: entry.total,
+        estimated: entry.estimated,
+      });
     }
     for (let week = mondayOf(firstDay); week <= mondayOf(lastDay); week += 7 * DAY_MS) {
-      buckets.push({ start: isoDay(week), count: perWeek.get(week) ?? 0 });
+      buckets.push(toBucket(isoDay(week), perWeek.get(week)));
     }
     buckets = buckets.slice(-CREATOR_TIMELINE_MAX_WEEKS);
   }
@@ -356,7 +427,17 @@ function buildTags(
 
 function buildSignals(
   signalRows: CampaignSignalRow[] | null,
-  { now, ended }: { now: Date; ended: boolean },
+  {
+    now,
+    ended,
+    hourRows,
+    letterCount,
+  }: {
+    now: Date;
+    ended: boolean;
+    hourRows: CampaignLetterHourRow[] | null;
+    letterCount: number;
+  },
 ): CampaignCreatorStatsView["signals"] {
   if (signalRows === null) return { status: "unavailable" };
   const signals = signalRows.length;
@@ -373,24 +454,30 @@ function buildSignals(
     signals,
     regions: bucketRegions(signalRows),
     recipients: bucketRecipients(signalRows),
-    timeline: buildTimeline(signalRows, { now, ended }),
+    timeline: buildTimeline(signalRows, { now, ended, hourRows, letterCount }),
   };
 }
 
 export function buildCampaignCreatorStats({
   rows,
   signalRows,
+  hourRows = null,
   now,
   letterCount,
   ended,
 }: {
   rows: CampaignFeedbackRow[] | null;
   signalRows: CampaignSignalRow[] | null;
+  hourRows?: CampaignLetterHourRow[] | null;
   now: Date;
   letterCount: number;
   ended: boolean;
 }): CampaignCreatorStatsView {
-  const base = { letterCount, ended, signals: buildSignals(signalRows, { now, ended }) };
+  const base = {
+    letterCount,
+    ended,
+    signals: buildSignals(signalRows, { now, ended, hourRows, letterCount }),
+  };
 
   if (rows === null) {
     return { ...base, feedback: { status: "unavailable" } };

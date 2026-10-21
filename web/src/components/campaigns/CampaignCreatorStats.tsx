@@ -268,6 +268,13 @@ function noAnswerNote(count: number) {
 
 type SignalsView = CampaignCreatorStatsView["signals"];
 
+function barClass(isPeak: boolean, estimated: boolean) {
+  if (estimated) {
+    return isPeak ? "bg-waldgruen/60" : "bg-waldgruen/20 group-hover:bg-waldgruen/35";
+  }
+  return isPeak ? "bg-waldgruen" : "bg-waldgruen/35 group-hover:bg-waldgruen/60";
+}
+
 function Timeline({ timeline }: { timeline: CreatorTimeline }) {
   if (timeline.status !== "ready") {
     return (
@@ -290,7 +297,8 @@ function Timeline({ timeline }: { timeline: CreatorTimeline }) {
     day: "Stärkster Tag:",
     week: "Stärkste Woche: ab",
   }[granularity];
-  const summary = `${peakLabel} ${pointLabel(peak.start)} mit ${lettersLabelDative(peak.count)}`;
+  const summary = `${peakLabel} ${pointLabel(peak.start)} mit ${peak.estimated ? "ca. " : ""}${lettersLabelDative(peak.count)}`;
+  const anyEstimated = buckets.some((bucket) => bucket.estimated);
   const first = buckets[0];
   const last = buckets[buckets.length - 1];
   const unitLabel = {
@@ -327,16 +335,14 @@ function Timeline({ timeline }: { timeline: CreatorTimeline }) {
                 <span className="block font-semibold text-waldgruen-dark">
                   {bucketLabel(bucket.start)}
                 </span>
-                {lettersLabel(bucket.count)}
+                {`${bucket.estimated ? "ca. " : ""}${lettersLabel(bucket.count)}`}
               </span>
               {bucket.count === 0 ? (
                 <div className="h-px bg-warmgrau/15" />
               ) : (
                 <div
                   className={`rounded-t-sm transition-colors ${
-                    isPeak
-                      ? "bg-waldgruen"
-                      : "bg-waldgruen/35 group-hover:bg-waldgruen/60"
+                    barClass(isPeak, bucket.estimated === true)
                   }`}
                   style={{ height: `${Math.max(4, Math.round((bucket.count / peak.count) * 100))}%` }}
                 />
@@ -358,6 +364,11 @@ function Timeline({ timeline }: { timeline: CreatorTimeline }) {
       {hourly && (
         <p className="mt-0.5 font-body text-xs text-warmgrau/60">
           Ab dem dritten Tag zeigt der Verlauf ganze Tage.
+        </p>
+      )}
+      {anyEstimated && (
+        <p className="mt-0.5 font-body text-xs text-warmgrau/60">
+          Hellere Balken sind hochgerechnet aus den Briefen mit Kartenfreigabe.
         </p>
       )}
     </div>

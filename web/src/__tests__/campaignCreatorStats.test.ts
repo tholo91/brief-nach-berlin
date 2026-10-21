@@ -5,11 +5,13 @@ import {
   bucketRegions,
   buildCampaignCreatorStats,
   buildTimeline,
+  CREATOR_STATS_HOUR_COLUMNS,
   CREATOR_STATS_REVIEW_COLUMNS,
   CREATOR_STATS_SIGNAL_COLUMNS,
   getCampaignCreatorStats,
   shouldShowCreatorInsights,
   type CampaignFeedbackRow,
+  type CampaignLetterHourRow,
   type CampaignSignalRow,
 } from "@/lib/campaigns/creatorStats";
 import { CampaignCreatorStats } from "@/components/campaigns/CampaignCreatorStats";
@@ -477,6 +479,226 @@ describe("buildTimeline (D-02b)", () => {
   });
 });
 
+describe("buildTimeline with hour rows (exact letters)", () => {
+  function ready(timeline: ReturnType<typeof buildTimeline>) {
+    if (timeline.status !== "ready") throw new Error(`expected ready, got ${timeline.status}`);
+    return timeline;
+  }
+  const sum = (buckets: Array<{ count: number }>) =>
+    buckets.reduce((total, bucket) => total + bucket.count, 0);
+  const byStart = (buckets: Array<{ start: string; count: number }>) =>
+    new Map(buckets.map((bucket) => [bucket.start, bucket.count]));
+
+  it("counts hour rows exactly per hour and ignores the signal count", () => {
+    const hourRows: CampaignLetterHourRow[] = [
+      { hour: "2026-10-07T21:00:00+00:00", letters: 30 },
+      { hour: "2026-10-08T07:00:00+00:00", letters: 4 },
+    ];
+    const timeline = ready(
+      buildTimeline(signals(2, { generated_at: "2026-10-07T21:30:00Z" }), {
+        now: new Date("2026-10-08T10:00:00Z"),
+        ended: false,
+        hourRows,
+        letterCount: 34,
+      }),
+    );
+    expect(timeline.granularity).toBe("hour");
+    expect(timeline.buckets).toHaveLength(14);
+    expect(timeline.buckets[0]).toStrictEqual({ start: "2026-10-07T21:00:00.000Z", count: 30 });
+    expect(timeline.buckets[10].count).toBe(4);
+    expect(timeline.peak.count).toBe(30);
+    expect(sum(timeline.buckets)).toBe(34);
+  });
+
+  it("buckets days by Berlin day and sums to the hour-row letters", () => {
+    const timeline = ready(
+      buildTimeline(signals(2), {
+        now: new Date("2026-10-08T10:00:00Z"),
+        ended: false,
+        hourRows: [
+          { hour: "2026-09-30T10:00:00+00:00", letters: 7 },
+          { hour: "2026-10-04T21:00:00+00:00", letters: 2 },
+          { hour: "2026-10-04T22:00:00+00:00", letters: 5 },
+        ],
+        letterCount: 14,
+      }),
+    );
+    expect(timeline.granularity).toBe("day");
+    const days = byStart(timeline.buckets);
+    expect(days.get("2026-09-30")).toBe(7);
+    expect(days.get("2026-10-04")).toBe(2);
+    expect(days.get("2026-10-05")).toBe(5);
+    expect(sum(timeline.buckets)).toBe(14);
+  });
+
+  it("buckets weeks and sums to the hour-row letters", () => {
+    const timeline = ready(
+      buildTimeline(signals(2), {
+        now: new Date("2026-10-20T10:00:00Z"),
+        ended: false,
+        hourRows: [
+          { hour: "2026-09-16T10:00:00+00:00", letters: 3 },
+          { hour: "2026-09-30T10:00:00+00:00", letters: 4 },
+        ],
+        letterCount: 7,
+      }),
+    );
+    expect(timeline.granularity).toBe("week");
+    expect(timeline.buckets.map((bucket) => [bucket.start, bucket.count])).toEqual([
+      ["2026-09-14", 3],
+      ["2026-09-21", 0],
+      ["2026-09-28", 4],
+      ["2026-10-05", 0],
+      ["2026-10-12", 0],
+      ["2026-10-19", 0],
+    ]);
+    expect(sum(timeline.buckets)).toBe(7);
+  });
+
+  it("keeps today's signal-based output when the hour rows are null", () => {
+    const seriesRows = [
+      ...signals(3, { generated_at: "2026-09-16T10:00:00Z" }),
+      ...signals(4, { generated_at: "2026-09-30T10:00:00Z" }),
+    ];
+    const now = new Date("2026-10-08T10:00:00Z");
+    const fallback = buildTimeline(seriesRows, { now, ended: false, hourRows: null, letterCount: 999 });
+    expect(fallback).toStrictEqual(buildTimeline(seriesRows, { now, ended: false }));
+    expect(ready(fallback).buckets[0]).toStrictEqual({ start: "2026-09-16", count: 3 });
+  });
+});
+
+describe("estimated legacy letters before the first hour row", () => {
+  const now = new Date("2026-10-08T10:00:00Z");
+  const hourRows: CampaignLetterHourRow[] = [
+    { hour: "2026-10-07T08:00:00+00:00", letters: 25 },
+    { hour: "2026-10-07T15:00:00+00:00", letters: 15 },
+  ];
+  const mixedSignals = [
+    ...signals(6, { generated_at: "2026-10-01T10:00:00Z" }),
+    ...signals(4, { generated_at: "2026-10-03T10:00:00Z" }),
+    ...signals(3, { generated_at: "2026-10-07T10:00:00Z" }),
+  ];
+
+  function ready(timeline: ReturnType<typeof buildTimeline>) {
+    if (timeline.status !== "ready") throw new Error(`expected ready, got ${timeline.status}`);
+    return timeline;
+  }
+  const daysOf = (timeline: ReturnType<typeof buildTimeline>) =>
+    new Map(ready(timeline).buckets.map((bucket) => [bucket.start, bucket]));
+
+  function renderMixed() {
+    return renderToStaticMarkup(
+      createElement(CampaignCreatorStats, {
+        stats: buildCampaignCreatorStats({
+          ...baseInput,
+          letterCount: 140,
+          rows: [],
+          signalRows: mixedSignals,
+          hourRows,
+        }),
+      }),
+    );
+  }
+
+  it("spreads legacy letters over earlier signals and marks only those buckets", () => {
+    const timeline = buildTimeline(mixedSignals, { now, ended: false, hourRows, letterCount: 140 });
+    const days = daysOf(timeline);
+    expect(days.get("2026-10-01")).toStrictEqual({ start: "2026-10-01", count: 60, estimated: true });
+    expect(days.get("2026-10-03")).toStrictEqual({ start: "2026-10-03", count: 40, estimated: true });
+    expect(days.get("2026-10-07")).toStrictEqual({ start: "2026-10-07", count: 40 });
+    expect(days.get("2026-10-02")).toStrictEqual({ start: "2026-10-02", count: 0 });
+    expect(ready(timeline).peak).toStrictEqual({ start: "2026-10-01", count: 60, estimated: true });
+  });
+
+  it("renders ca. in the summary, tooltip, lighter bars and the note", () => {
+    const markup = renderMixed();
+    expect(markup).toContain("Stärkster Tag: 1. Okt. mit ca. 60 Briefen");
+    expect(markup).toMatch(/1\. Okt\.<\/span>ca\. 60 Briefe/);
+    expect(markup).toContain("bg-waldgruen/20 group-hover:bg-waldgruen/35");
+    expect(markup).toContain("bg-waldgruen/35 group-hover:bg-waldgruen/60");
+    expect(markup).toContain("Hellere Balken sind hochgerechnet aus den Briefen mit Kartenfreigabe.");
+  });
+
+  it("marks a mixed bucket as estimated", () => {
+    const withEarly = [...mixedSignals, signal({ generated_at: "2026-10-07T06:00:00Z" })];
+    const days = daysOf(buildTimeline(withEarly, { now, ended: false, hourRows, letterCount: 140 }));
+    expect(days.get("2026-10-07")?.estimated).toBe(true);
+  });
+
+  it("treats everything as legacy when there are no hour rows yet", () => {
+    const days = daysOf(
+      buildTimeline(signals(10, { generated_at: "2026-10-06T10:00:00Z" }), {
+        now,
+        ended: false,
+        hourRows: [],
+        letterCount: 30,
+      }),
+    );
+    expect(days.get("2026-10-06")).toStrictEqual({ start: "2026-10-06", count: 30, estimated: true });
+  });
+
+  it("rounds every bucket to whole letters", () => {
+    const days = daysOf(
+      buildTimeline(
+        [
+          signal({ generated_at: "2026-10-01T10:00:00Z" }),
+          ...signals(2, { generated_at: "2026-10-03T10:00:00Z" }),
+        ],
+        { now, ended: false, hourRows: [], letterCount: 10 },
+      ),
+    );
+    expect(days.get("2026-10-01")?.count).toBe(3);
+    expect(days.get("2026-10-03")?.count).toBe(7);
+
+    const tiny = daysOf(
+      buildTimeline(
+        [
+          ...signals(3, { generated_at: "2026-10-01T10:00:00Z" }),
+          signal({ generated_at: "2026-10-03T10:00:00Z" }),
+        ],
+        { now, ended: false, hourRows: [], letterCount: 1 },
+      ),
+    );
+    expect(tiny.get("2026-10-01")).toStrictEqual({ start: "2026-10-01", count: 1, estimated: true });
+    expect(tiny.get("2026-10-03")).toStrictEqual({ start: "2026-10-03", count: 0 });
+  });
+
+  it("shows no estimate when the hour rows cover all letters", () => {
+    const timeline = ready(
+      buildTimeline(mixedSignals, { now, ended: false, hourRows, letterCount: 40 }),
+    );
+    expect(timeline.buckets.some((bucket) => "estimated" in bucket)).toBe(false);
+    expect(timeline.buckets.reduce((total, bucket) => total + bucket.count, 0)).toBe(40);
+  });
+
+  it("shows only exact buckets when legacy letters exist but no earlier signals do", () => {
+    const timeline = ready(
+      buildTimeline(signals(5, { generated_at: "2026-10-07T10:00:00Z" }), {
+        now,
+        ended: false,
+        hourRows,
+        letterCount: 100,
+      }),
+    );
+    expect(timeline.buckets.some((bucket) => "estimated" in bucket)).toBe(false);
+    expect(timeline.buckets.reduce((total, bucket) => total + bucket.count, 0)).toBe(40);
+  });
+
+  it("renders neither ca. nor the note without hour rows", () => {
+    const markup = renderToStaticMarkup(
+      createElement(CampaignCreatorStats, {
+        stats: buildCampaignCreatorStats({
+          ...baseInput,
+          rows: [],
+          signalRows: signals(12, { generated_at: "2026-10-07T10:00:00Z" }),
+        }),
+      }),
+    );
+    expect(markup).not.toContain("mit ca.");
+    expect(markup).not.toContain("Hellere Balken");
+  });
+});
+
 describe("bucketRecipients (D-02d)", () => {
   it("returns null for one group, treating mdb and mdb_later as the same", () => {
     expect(
@@ -594,16 +816,31 @@ describe("getCampaignCreatorStats", () => {
 
   type QueryResult = { data: unknown; error: unknown };
 
-  function mockTables(results: { reviews?: QueryResult; letter_signals?: QueryResult }) {
+  function mockTables(results: {
+    reviews?: QueryResult;
+    letter_signals?: QueryResult;
+    campaign_letter_hours?: QueryResult;
+  }) {
     const queries: Record<
       string,
-      { select: jest.Mock; eq: jest.Mock; order: jest.Mock }
+      { select: jest.Mock; eq: jest.Mock; order: jest.Mock; range: jest.Mock }
     > = {};
-    for (const table of ["reviews", "letter_signals"] as const) {
-      const query = { select: jest.fn(), eq: jest.fn(), order: jest.fn() };
+    for (const table of ["reviews", "letter_signals", "campaign_letter_hours"] as const) {
+      const query = {
+        select: jest.fn(),
+        eq: jest.fn(),
+        order: jest.fn(),
+        range: jest.fn(),
+      };
       query.select.mockReturnValue(query);
       query.eq.mockReturnValue(query);
-      query.order.mockResolvedValue(results[table] ?? { data: [], error: null });
+      const result = results[table] ?? { data: [], error: null };
+      if (table === "reviews") {
+        query.order.mockResolvedValue(result);
+      } else {
+        query.order.mockReturnValue(query);
+        query.range.mockResolvedValue(result);
+      }
       queries[table] = query;
     }
     const from = jest.fn((table: string) => queries[table]);
@@ -689,7 +926,8 @@ describe("getCampaignCreatorStats", () => {
 
     expect(from).toHaveBeenCalledWith("letter_signals");
     expect(query.eq).toHaveBeenCalledWith("campaign_slug", "duisburg-retten");
-    expect(query.order).toHaveBeenCalledWith("created_at", { ascending: false });
+    expect(query.order).toHaveBeenCalledWith("id");
+    expect(query.range).toHaveBeenCalledWith(0, 999);
     const selected = query.select.mock.calls[0][0] as string;
     expect(selected).toBe(CREATOR_STATS_SIGNAL_COLUMNS);
     expect(selected).toBe("bundesland_key,recipient_kind,generated_at,created_at");
@@ -748,6 +986,103 @@ describe("getCampaignCreatorStats", () => {
     expect(view.signals).toEqual({ status: "unavailable" });
     expect(view.feedback.status).toBe("ready");
     errorSpy.mockRestore();
+  });
+});
+
+describe("getCampaignCreatorStats with hour rows", () => {
+  afterEach(() => jest.clearAllMocks());
+
+  type QueryResult = { data: unknown; error: unknown };
+  const campaign = { slug: "duisburg-retten", letterCount: 37, activatedAt: "2026-08-11T23:30:00Z" };
+
+  function mockHourTables(results: {
+    letter_signals?: QueryResult;
+    campaign_letter_hours?: QueryResult;
+  }) {
+    const queries: Record<string, Record<"select" | "eq" | "order" | "range", jest.Mock>> = {};
+    for (const table of ["reviews", "letter_signals", "campaign_letter_hours"] as const) {
+      const query = {
+        select: jest.fn(),
+        eq: jest.fn(),
+        order: jest.fn(),
+        range: jest.fn(),
+      };
+      query.select.mockReturnValue(query);
+      query.eq.mockReturnValue(query);
+      if (table === "reviews") {
+        query.order.mockResolvedValue({ data: [], error: null });
+      } else {
+        query.order.mockReturnValue(query);
+        query.range.mockResolvedValue(
+          (table === "letter_signals" ? results.letter_signals : results.campaign_letter_hours) ?? {
+            data: [],
+            error: null,
+          },
+        );
+      }
+      queries[table] = query;
+    }
+    mockedGetServiceRoleClient.mockReturnValue({ from: (table: string) => queries[table] } as never);
+    return queries;
+  }
+
+  const twelveSignals = signals(12, { generated_at: "2026-10-07T10:00:00Z" });
+
+  it("reads this campaign's hour rows paged with a counter-only column list", async () => {
+    const queries = mockHourTables({ letter_signals: { data: twelveSignals, error: null } });
+
+    await getCampaignCreatorStats(campaign, false);
+
+    const query = queries.campaign_letter_hours;
+    expect(query.select).toHaveBeenCalledWith(CREATOR_STATS_HOUR_COLUMNS);
+    expect(CREATOR_STATS_HOUR_COLUMNS).toBe("hour,letters");
+    expect(query.eq).toHaveBeenCalledWith("campaign_slug", "duisburg-retten");
+    expect(query.order).toHaveBeenCalledWith("hour");
+    expect(query.range).toHaveBeenCalledWith(0, 999);
+  });
+
+  it("falls back to the signal timeline when the hour table is missing, without logging the slug", async () => {
+    const errorSpy = jest.spyOn(console, "error").mockImplementation(() => undefined);
+    mockHourTables({
+      letter_signals: { data: twelveSignals, error: null },
+      campaign_letter_hours: {
+        data: null,
+        error: { message: 'relation "public.campaign_letter_hours" does not exist' },
+      },
+    });
+
+    const view = await getCampaignCreatorStats(campaign, false, new Date("2026-10-08T10:00:00Z"));
+
+    expect(view.signals.status).toBe("ready");
+    if (view.signals.status !== "ready") return;
+    expect(view.signals.timeline).toStrictEqual(
+      buildTimeline(twelveSignals, { now: new Date("2026-10-08T10:00:00Z"), ended: false }),
+    );
+    expect(errorSpy).toHaveBeenCalled();
+    expect(JSON.stringify(errorSpy.mock.calls)).not.toContain("duisburg-retten");
+    errorSpy.mockRestore();
+  });
+
+  it("shows exact letters end to end", async () => {
+    mockHourTables({
+      letter_signals: { data: twelveSignals, error: null },
+      campaign_letter_hours: {
+        data: [
+          { hour: "2026-10-07T08:00:00+00:00", letters: 25 },
+          { hour: "2026-10-07T15:00:00+00:00", letters: 12 },
+        ],
+        error: null,
+      },
+    });
+
+    const view = await getCampaignCreatorStats(campaign, true, new Date("2026-10-08T10:00:00Z"));
+
+    expect(view.signals.status).toBe("ready");
+    if (view.signals.status !== "ready" || view.signals.timeline.status !== "ready") return;
+    expect(view.signals.timeline.peak).toStrictEqual({ start: "2026-10-07T08:00:00.000Z", count: 25 });
+    const markup = renderToStaticMarkup(createElement(CampaignCreatorStats, { stats: view }));
+    expect(markup).toContain("Stärkste Stunde: 7. Okt., 10 Uhr mit 25 Briefen");
+    expect(markup).not.toContain("mit ca.");
   });
 });
 

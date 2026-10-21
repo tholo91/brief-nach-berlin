@@ -39,7 +39,7 @@
 ## 1. Vercel in Deutschland/Europa hosten
 
 ### Wie es jetzt ist
-In [vercel.json](vercel.json) ist `regions: ["fra1"]` gesetzt - alle Serverless Functions und Server Actions laufen in **Frankfurt**. Das gilt auch für die AI-Calls an Mistral und die Email-Calls an Brevo, denn die initiieren von dort aus.
+In [vercel.json](web/vercel.json) ist `regions: ["fra1"]` gesetzt - alle Serverless Functions und Server Actions laufen in **Frankfurt**. Das gilt auch für die AI-Calls an Mistral und die Email-Calls an Brevo, denn die initiieren von dort aus.
 
 Edge Network / CDN von Vercel ist aber global verteilt. Statische Assets können von einem PoP näher am Nutzer ausgeliefert werden. Das ist DSGVO-rechtlich okay (statische HTML-/JS-Assets sind keine PII), bedeutet aber: ein Edge-Node in den USA sieht IP-Adressen.
 
@@ -47,7 +47,7 @@ Edge Network / CDN von Vercel ist aber global verteilt. Statische Assets können
 Auch mit `fra1` bleibt Vercel Inc. (Delaware, USA) der Vertragspartner. Das Mutterunternehmen kann theoretisch unter dem CLOUD Act Zugriff erhalten. Deshalb:
 - **Du brauchst die Vercel DPA** (Data Processing Addendum). Vercel bietet eine an: https://vercel.com/legal/dpa
 - **EU-US Data Privacy Framework (DPF)**: Vercel ist seit 2023 zertifiziert. Seit dem Adequacy Decision der EU-Kommission (Juli 2023) ist Datenübermittlung in die USA an DPF-zertifizierte Unternehmen wieder ohne SCCs zulässig.
-- **Aktuelle Erklärung sagt SCCs** ([datenschutz/page.tsx:74-77](src/app/datenschutz/page.tsx#L74-L77)). Korrekt wäre: "DPF + ergänzende SCCs für Restrisiken". Beides nennen.
+- **Aktuelle Erklärung sagt SCCs** ([datenschutz/page.tsx:74-77](<web/src/app/(site)/datenschutz/page.tsx#L74-L77>)). Korrekt wäre: "DPF + ergänzende SCCs für Restrisiken". Beides nennen.
 
 ### Echte EU-Alternativen (falls du wirklich raus willst)
 | Option | Aufwand | EU-Souveränität | Kommentar |
@@ -71,10 +71,10 @@ Auch mit `fra1` bleibt Vercel Inc. (Delaware, USA) der Vertragspartner. Das Mutt
 
 | Use Case | Modell | Datei |
 |---|---|---|
-| Briefgenerierung | `mistral-small-latest` | [generateLetter.ts:136](src/lib/generation/generateLetter.ts#L136) |
-| Input-Moderation | `mistral-moderation-latest` | [moderateText.ts:9](src/lib/moderation/moderateText.ts#L9) |
-| Output-Moderation | `mistral-moderation-latest` | [moderateText.ts:9](src/lib/moderation/moderateText.ts#L9) |
-| Audio-Transkription | `voxtral-mini-transcribe-2507` | [api/transcribe/route.ts:54](src/app/api/transcribe/route.ts#L54) |
+| Briefgenerierung | `mistral-small-latest` | [generateLetter.ts:136](web/src/lib/generation/generateLetter.ts#L136) |
+| Input-Moderation | `mistral-moderation-latest` | [moderateText.ts:9](web/src/lib/moderation/moderateText.ts#L9) |
+| Output-Moderation | `mistral-moderation-latest` | [moderateText.ts:9](web/src/lib/moderation/moderateText.ts#L9) |
+| Audio-Transkription | `voxtral-mini-transcribe-2507` | [api/transcribe/route.ts:54](web/src/app/api/transcribe/route.ts#L54) |
 
 `@openai/sdk` ist nicht in `package.json`. `OPENAI_API_KEY` taucht in `.env.example` auf, wird aber nirgendwo gelesen. **Die Datenschutzerklärung beschreibt einen Datenfluss zu OpenAI, der nicht stattfindet.**
 
@@ -100,7 +100,7 @@ Auch mit `fra1` bleibt Vercel Inc. (Delaware, USA) der Vertragspartner. Das Mutt
 ## 3. Brevo - was passiert wirklich?
 
 ### Code-Realität
-[sendLetterEmail.ts:50](src/lib/email/sendLetterEmail.ts#L50) sendet pro Brief **eine** Transaktionsmail an die User-Email. Inhalt:
+[sendLetterEmail.ts:50](web/src/lib/email/sendLetterEmail.ts#L50) sendet pro Brief **eine** Transaktionsmail an die User-Email. Inhalt:
 - Brieftext (HTML-escaped)
 - Politiker-Adresse
 - Profil-Link
@@ -193,7 +193,7 @@ Vercel Frankfurt (fra1)
 | 25 | Privacy by Design | ✅ | Vorbildlich (keine DB, keine Cookies) |
 | 28 | AV-Verträge | ⚠️ | Mit Mistral, Brevo, Vercel: vorhanden? Unterzeichnet? Im Repo abgelegt? |
 | 30 | Verarbeitungsverzeichnis | ❌ | Existiert vermutlich nicht. Pflicht auch für Einzelpersonen, wenn regelmäßig PII verarbeitet wird |
-| 32 | Stand der Technik (Sicherheit) | ⚠️ | CSP/HSTS/X-Frame-Options fehlen in [next.config.ts](next.config.ts), TLS via Vercel okay |
+| 32 | Stand der Technik (Sicherheit) | ⚠️ | CSP/HSTS/X-Frame-Options fehlen in [next.config.ts](web/next.config.ts), TLS via Vercel okay |
 | 33 | Meldepflicht bei Vorfällen | ⚠️ | Kein dokumentierter Prozess - schreibe einen 1-Pager "Was tue ich bei Datenpanne" |
 | 35 | DSFA (Datenschutz-Folgenabschätzung) | ❓ | Wegen automatisierter Entscheidung + politischer Meinung **vermutlich erforderlich** ab gewisser Skalierung. Aktuell vertretbar wegzulassen, weil keine Speicherung & User initiiert jeden Vorgang. |
 
@@ -202,7 +202,7 @@ Vercel Frankfurt (fra1)
 ## 6. Sicherheits-Audit (Art. 32 DSGVO - Stand der Technik)
 
 ### Was fehlt im Code
-[next.config.ts](next.config.ts) ist leer. Das heißt **keine Security Headers**:
+[next.config.ts](web/next.config.ts) ist leer. Das heißt **keine Security Headers**:
 
 ```typescript
 // EMPFOHLEN für next.config.ts
@@ -229,7 +229,7 @@ const nextConfig: NextConfig = {
 - ✅ TLS: Vercel macht das
 - ✅ Rate-Limiting: vorhanden
 - ✅ Input-Validierung: Zod
-- ✅ Output-Escaping: `escapeHtml()` in [buildEmailHtml.ts](src/lib/email/buildEmailHtml.ts)
+- ✅ Output-Escaping: `escapeHtml()` in [buildEmailHtml.ts](web/src/lib/email/buildEmailHtml.ts)
 - ⚠️ Secrets-Management: API-Keys in Vercel Env Vars - okay, aber prüfe, dass sie nicht in Logs landen
 - ❌ Keine Monitoring-Alerts (Sentry o.ä.) - bei Sicherheitsvorfall merkst du es spät. Akzeptabel im Frühstadium.
 
@@ -249,7 +249,7 @@ const nextConfig: NextConfig = {
 ## 8. Konkrete Aktions-Liste (priorisiert)
 
 ### Sofort (vor mehr Reichweite)
-1. ☐ [datenschutz/page.tsx](src/app/datenschutz/page.tsx) Zeilen 191-214: OpenAI-Sektion entfernen, durch Mistral-Moderation ersetzen
+1. ☐ [datenschutz/page.tsx](<web/src/app/(site)/datenschutz/page.tsx>) Zeilen 191-214: OpenAI-Sektion entfernen, durch Mistral-Moderation ersetzen
 2. ☐ Datenschutzerklärung: Hinweis Art. 9 DSGVO (politische Meinung) einfügen
 3. ☐ Datenschutzerklärung: AVV-Links zu Mistral, Brevo, Vercel hinzufügen
 4. ☐ [.env.example](web/.env.example): Langfuse + OpenAI raus, falls nicht geplant
@@ -257,7 +257,7 @@ const nextConfig: NextConfig = {
 6. ☐ Mistral Console: Training-Opt-Out verifizieren
 
 ### Diese Woche
-7. ☐ [next.config.ts](next.config.ts): Security-Header ergänzen (siehe Block oben)
+7. ☐ [next.config.ts](web/next.config.ts): Security-Header ergänzen (siehe Block oben)
 8. ☐ Vercel DPA digital unterzeichnen (Vercel Dashboard -> Settings -> Legal)
 9. ☐ Datenschutzerklärung: Speicherfristen Brevo/Mistral/Vercel präzisieren
 10. ☐ Verarbeitungsverzeichnis (1 Seite Markdown im Repo): wer verarbeitet was, wo, wie lange
@@ -310,4 +310,4 @@ Was ich **sofort** machen würde:
 - Brevo-Tracking abschalten (5 Min, vermeidet Cookie-Banner-Diskussion)
 - Mistral Training-Opt-Out screenshot-dokumentieren
 
-Soll ich die Korrekturen an Datenschutzerklärung und [next.config.ts](next.config.ts) direkt umsetzen? Sind 2-3 fokussierte Edits.
+Soll ich die Korrekturen an Datenschutzerklärung und [next.config.ts](web/next.config.ts) direkt umsetzen? Sind 2-3 fokussierte Edits.

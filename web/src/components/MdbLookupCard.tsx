@@ -1,7 +1,7 @@
 "use client";
 
-import { useId, useState, useTransition } from "react";
-import { lookupMdbContactAction } from "@/lib/actions/lookupMdbContact";
+import { useEffect, useId, useState, useTransition } from "react";
+import { lookupMdbContactAction, lookupMdbContactByIdAction } from "@/lib/actions/lookupMdbContact";
 import type { MdbContact } from "@/lib/lookup/mdbContact";
 
 const AIRMAIL_EDGE =
@@ -22,6 +22,15 @@ export function MdbLookupCard() {
   const [plz, setPlz] = useState("");
   const [state, setState] = useState<State>({ status: "idle" });
   const [pending, startTransition] = useTransition();
+
+  useEffect(() => {
+    const mdbId = new URLSearchParams(window.location.search).get("mdb");
+    if (!mdbId || !/^\d+$/.test(mdbId)) return;
+    startTransition(async () => {
+      const result = await lookupMdbContactByIdAction(Number(mdbId));
+      if (result.ok) setState({ status: "done", contacts: result.contacts });
+    });
+  }, []);
 
   function submit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();

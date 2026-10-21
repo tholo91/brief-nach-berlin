@@ -95,7 +95,7 @@ const mdbRecipient = {
 };
 
 function proofFor(
-  recipient: Parameters<typeof createGenerationProof>[0]["recipient"],
+  recipient: Exclude<Parameters<typeof createGenerationProof>[0], string>["recipient"],
   letterText: string,
   campaignSlug: string | null = null,
 ) {

@@ -14,6 +14,8 @@ describe("getReviewStats", () => {
     const query = {
       select: jest.fn(),
       gte: jest.fn(),
+      order: jest.fn(),
+      range: jest.fn(),
       then: (resolve: (value: unknown) => unknown) =>
         Promise.resolve(resolve({
           data: [
@@ -28,16 +30,17 @@ describe("getReviewStats", () => {
     };
     query.select.mockReturnValue(query);
     query.gte.mockReturnValue(query);
+    query.order.mockReturnValue(query);
+    query.range.mockReturnValue(query);
     mockedGetServiceRoleClient.mockReturnValue({
       from: jest.fn(() => query),
     } as never);
 
     const stats = await getReviewStats();
 
-    expect(query.select).toHaveBeenCalledWith(
-      "rating,full_feedback_submitted",
-      { count: "exact", head: false },
-    );
+    expect(query.select).toHaveBeenCalledWith("rating,full_feedback_submitted");
+    expect(query.order).toHaveBeenCalledWith("id");
+    expect(query.range).toHaveBeenCalledWith(0, 999);
     expect(stats).toEqual({
       averageRating: 3.5,
       totalCount: 4,
@@ -60,11 +63,15 @@ describe("getReviewStats", () => {
     const query = {
       select: jest.fn(),
       gte: jest.fn(),
+      order: jest.fn(),
+      range: jest.fn(),
       then: (resolve: (value: unknown) => unknown) =>
         Promise.resolve(resolve({ data: [], error: null, count: 0 })),
     };
     query.select.mockReturnValue(query);
     query.gte.mockReturnValue(query);
+    query.order.mockReturnValue(query);
+    query.range.mockReturnValue(query);
     mockedGetServiceRoleClient.mockReturnValue({
       from: jest.fn(() => query),
     } as never);

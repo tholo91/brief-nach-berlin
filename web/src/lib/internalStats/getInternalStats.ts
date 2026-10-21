@@ -1,4 +1,5 @@
 import "server-only";
+import { fetchAllRows } from "@/lib/supabase/fetchAllRows";
 import { getServiceRoleClient } from "@/lib/supabase/server";
 import {
   aggregateInternalStats,
@@ -81,17 +82,25 @@ async function fetchInternalStatsRows(): Promise<InternalStatsRows> {
     campaignsResult,
     outcomesResult,
   ] = await Promise.all([
-      client
-        .from("reviews")
-        .select(
-          "created_at,rating,letter_sent,full_feedback_submitted,feedback_tags,political_self_efficacy,political_powerlessness_frequency,debug_payload,letter_id",
-        ),
-      client
-        .from("letter_signals")
-        .select(
-          "created_at,consented_at,generated_at,campaign_slug,topic_categories,topic_labels,political_level,bundesland_key,plz_prefix,letter_id,letter_number",
-        )
-        .eq("status", "contributed"),
+      fetchAllRows((from, to) =>
+        client
+          .from("reviews")
+          .select(
+            "created_at,rating,letter_sent,full_feedback_submitted,feedback_tags,political_self_efficacy,political_powerlessness_frequency,debug_payload,letter_id",
+          )
+          .order("id")
+          .range(from, to),
+      ),
+      fetchAllRows((from, to) =>
+        client
+          .from("letter_signals")
+          .select(
+            "created_at,consented_at,generated_at,campaign_slug,topic_categories,topic_labels,political_level,bundesland_key,plz_prefix,letter_id,letter_number",
+          )
+          .eq("status", "contributed")
+          .order("id")
+          .range(from, to),
+      ),
       client
         .from("counters")
         .select("value")
@@ -103,11 +112,15 @@ async function fetchInternalStatsRows(): Promise<InternalStatsRows> {
         .eq("status", "active")
         .eq("moderation_status", "approved"),
       // Die E-Mail-Spalte wird nur zum Ausschließen der Testadressen gefiltert, nie gelesen.
-      client
-        .from("letter_outcomes")
-        .select(OUTCOME_ROW_COLUMNS.join(","))
-        .in("cohort", OUTCOME_ROUNDS.map((round) => round.cohort))
-        .not("email", "in", testEmailExclusionList()),
+      fetchAllRows((from, to) =>
+        client
+          .from("letter_outcomes")
+          .select(OUTCOME_ROW_COLUMNS.join(","))
+          .in("cohort", OUTCOME_ROUNDS.map((round) => round.cohort))
+          .not("email", "in", testEmailExclusionList())
+          .order("id")
+          .range(from, to),
+      ),
     ]);
 
   if (reviewsResult.error) {

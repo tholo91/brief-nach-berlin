@@ -2,6 +2,7 @@ import "server-only";
 
 import { unstable_cache } from "next/cache";
 import { z } from "zod";
+import { fetchAllRows } from "@/lib/supabase/fetchAllRows";
 import { getServiceRoleClient } from "@/lib/supabase/server";
 import { getPlzMapPoint } from "./plzMapPoint";
 import type { LetterMapData, LetterMapPoint } from "./mapTypes";
@@ -11,20 +12,16 @@ const postcodeRowSchema = z.object({
   contribution_count: z.coerce.number().int().positive(),
 });
 
-const PAGE_SIZE = 1000;
 const LETTER_MAP_TAG = "letter-map";
 
 async function readPostcodeCounts(): Promise<unknown[]> {
-  const rows: unknown[] = [];
-  for (let from = 0; ; from += PAGE_SIZE) {
-    const { data, error } = await getServiceRoleClient()
+  const { data, error } = await fetchAllRows((from, to) =>
+    getServiceRoleClient()
       .rpc("get_letter_signal_postcode_counts")
-      .range(from, from + PAGE_SIZE - 1);
-    if (error) throw error;
-    const page = data ?? [];
-    rows.push(...page);
-    if (page.length < PAGE_SIZE) return rows;
-  }
+      .range(from, to),
+  );
+  if (error) throw error;
+  return data ?? [];
 }
 
 async function buildPublicLetterMapData(): Promise<LetterMapData> {

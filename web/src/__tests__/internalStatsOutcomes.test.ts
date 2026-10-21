@@ -321,7 +321,7 @@ describe("getInternalStatsWithBaseline outcomes query", () => {
   function chain(result: QueryResult) {
     const calls: Record<string, unknown[][]> = {};
     const query: Record<string, unknown> = {};
-    for (const method of ["select", "eq", "in", "not", "maybeSingle"]) {
+    for (const method of ["select", "eq", "in", "not", "order", "range", "maybeSingle"]) {
       query[method] = jest.fn((...args: unknown[]) => {
         (calls[method] ??= []).push(args);
         return query;
@@ -353,6 +353,8 @@ describe("getInternalStatsWithBaseline outcomes query", () => {
     expect(select.split(",")).toHaveLength(17);
     expect(select.split(",")).toContain("reply_feeling");
     expect(calls.in[0]).toEqual(["cohort", OUTCOME_ROUNDS.map((r) => r.cohort)]);
+    expect(calls.order[0]).toEqual(["id"]);
+    expect(calls.range[0]).toEqual([0, 999]);
     const [column, operator, list] = calls.not[0] as [string, string, string];
     expect(column).toBe("email");
     expect(operator).toBe("in");

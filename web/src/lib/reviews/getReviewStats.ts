@@ -1,4 +1,5 @@
 import "server-only";
+import { fetchAllRows } from "@/lib/supabase/fetchAllRows";
 import { getServiceRoleClient } from "@/lib/supabase/server";
 import {
   MIN_PUBLIC_REVIEW_DATE,
@@ -39,10 +40,14 @@ export async function getReviewStats(): Promise<ReviewStats> {
     const client = getServiceRoleClient();
 
     // Fetch only rating and completion status; return aggregates, never rows.
-    const { data, error, count } = await client
-      .from("reviews")
-      .select("rating,full_feedback_submitted", { count: "exact", head: false })
-      .gte("created_at", MIN_PUBLIC_REVIEW_DATE);
+    const { data, error } = await fetchAllRows((from, to) =>
+      client
+        .from("reviews")
+        .select("rating,full_feedback_submitted")
+        .gte("created_at", MIN_PUBLIC_REVIEW_DATE)
+        .order("id")
+        .range(from, to),
+    );
 
     if (error) {
       console.error("[getReviewStats] Supabase error:", error.message);
@@ -68,7 +73,7 @@ export async function getReviewStats(): Promise<ReviewStats> {
       }
     }
 
-    const totalCount = count ?? data.length;
+    const totalCount = data.length;
     const averageRating = data.length > 0 ? Math.round((sum / data.length) * 10) / 10 : 0;
     for (const group of [short, submitted]) {
       const ratingCount = Object.values(group.distribution).reduce((total, value) => total + value, 0);

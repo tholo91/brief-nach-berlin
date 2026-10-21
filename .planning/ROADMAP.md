@@ -697,7 +697,7 @@ Plans:
 
 **Priorität:** P1 — Quick Win, Vertrauen.
 
-**Fix-Skizze:** (a) Retry-Trigger-Off-by-One in [web/src/lib/generation/generateLetter.ts](web/src/lib/generation/generateLetter.ts) Z. 318+: bei `wordCount < min` immer retry, nicht erst unter `min × 0.85`. (b) UI-Hinweis bei finaler Out-of-Range: kleine Banner-Notiz auf Success-Page: "Hinweis: Dein Brief ist 173 Wörter (du hattest 1 Seite gewählt, ~200-240). Du kannst ihn ergänzen oder so schicken."
+**Fix-Skizze:** (a) Retry-Trigger-Off-by-One in [web/src/lib/generation/generateLetter.ts](../web/src/lib/generation/generateLetter.ts) Z. 318+: bei `wordCount < min` immer retry, nicht erst unter `min × 0.85`. (b) UI-Hinweis bei finaler Out-of-Range: kleine Banner-Notiz auf Success-Page: "Hinweis: Dein Brief ist 173 Wörter (du hattest 1 Seite gewählt, ~200-240). Du kannst ihn ergänzen oder so schicken."
 
 **Aufwand:** 0,3 Tag.
 
@@ -744,7 +744,7 @@ Plans:
 
 **Priorität:** P1 — Schnellster Cluster-1-Win.
 
-**Fix-Skizze:** Zusätzliche System-Prompt-Direktive in [web/src/lib/generation/generateLetter.ts](web/src/lib/generation/generateLetter.ts) Z. 74+: "Verknüpfe die 1-3 stärksten Stichpunkte zu einer Argumentationskette mit Ursache → Folge → Forderung. Niemals eine Aufzählung ('Erstens, zweitens') und keine Floskel-Brücken ('Nicht nur, sondern auch')." Plus pro Absatz ein logischer Marker (Anlass / Begründung / Forderung).
+**Fix-Skizze:** Zusätzliche System-Prompt-Direktive in [web/src/lib/generation/generateLetter.ts](../web/src/lib/generation/generateLetter.ts) Z. 74+: "Verknüpfe die 1-3 stärksten Stichpunkte zu einer Argumentationskette mit Ursache → Folge → Forderung. Niemals eine Aufzählung ('Erstens, zweitens') und keine Floskel-Brücken ('Nicht nur, sondern auch')." Plus pro Absatz ein logischer Marker (Anlass / Begründung / Forderung).
 
 **Aufwand:** 0,5 Tag (Prompt-Iteration + manueller Test mit 5 echten Inputs).
 
@@ -765,7 +765,7 @@ Plans:
 **Priorität:** P0 — blockiert Phase 999.6 PLAN-06, weil Level-aware Prompts den Bug auf 3 Ebenen (Bund/Land/Kommune) vervielfältigen würden.
 
 **Fix-Skizze:**
-- `fetchMdbContext` in [web/src/lib/enrichment/](web/src/lib/enrichment/) instrumentieren: explizit loggen, warum die Anreicherung scheitert (Timeout? leerer cachedCommittees? Build-Daten fehlen? abgeordnetenwatch-API down?).
+- `fetchMdbContext` in [web/src/lib/enrichment/](../web/src/lib/enrichment/) instrumentieren: explizit loggen, warum die Anreicherung scheitert (Timeout? leerer cachedCommittees? Build-Daten fehlen? abgeordnetenwatch-API down?).
 - Daten gezielt beheben (z.B. fetch-politician-data.ts ergänzen, Cache neu aufbauen).
 - Defensiver Prompt-Block: wenn `<mdb_kontext>` leer/abwesend → expliziter Anti-Halluzinations-Satz "Es liegen KEINE verifizierten Informationen über Ausschüsse oder Positionen dieser/dieses Abgeordneten vor. Erwähne KEINE konkreten Ausschüsse, Reden oder Abstimmungen."
 
@@ -781,7 +781,7 @@ Plans:
 
 ### Phase 999.25: Named-MdB-Suche als zweiter Empfänger-Modus (BACKLOG)
 
-**Status:** Übernommen und erweitert durch Pending-Todo [`2026-08-11-bestimmte-abgeordnete-anschreiben-personensuche-fuer-brief-und-kampagne`](../todos/pending/2026-08-11-bestimmte-abgeordnete-anschreiben-personensuche-fuer-brief-und-kampagne.md) — Such-Modus für Bund **und** Landtag, plus optionaler fester Empfänger für Kampagnen. Diese Phase bleibt als Ursprungskonzept stehen, wird aber nicht separat gebaut.
+**Status:** Übernommen und erweitert durch Pending-Todo [`2026-08-11-bestimmte-abgeordnete-anschreiben-personensuche-fuer-brief-und-kampagne`](todos/pending/2026-08-11-bestimmte-abgeordnete-anschreiben-personensuche-fuer-brief-und-kampagne.md) — Such-Modus für Bund **und** Landtag, plus optionaler fester Empfänger für Kampagnen. Diese Phase bleibt als Ursprungskonzept stehen, wird aber nicht separat gebaut.
 
 **Goal:** Empfänger-Auswahl erweitern, sodass Nutzer:innen statt der eigenen Wahlkreis-MdBs gezielt eine bestimmte Person anschreiben können (z. B. "ich will Karl Lauterbach schreiben" oder "die Innenministerin"). Heute zwingt der PLZ-Flow zur eigenen Wahlkreis-MdB.
 
@@ -967,7 +967,7 @@ Plans:
 
 ### Phase 999.32: Moderation-Call gegen eigenen Ausfall härten (try/catch in moderateText) (BACKLOG)
 
-**Goal:** `moderateText()` ([web/src/lib/moderation/moderateText.ts](../../web/src/lib/moderation/moderateText.ts)) ruft `mistral.classifiers.moderate()` ohne try/catch auf. Aufgerufen als OUTPUT-Moderation NACH erfolgreicher Briefgenerierung in [generate-letter/route.ts:172](../../web/src/app/api/generate-letter/route.ts). Wenn der Moderations-Endpunkt selbst fehlschlägt (Netzwerk/5xx/Rate-Limit), bubbled der Fehler in den globalen catch (route.ts:229) → User bekommt 500 und verliert den bereits fertig generierten Brief.
+**Goal:** `moderateText()` ([web/src/lib/moderation/moderateText.ts](../web/src/lib/moderation/moderateText.ts)) ruft `mistral.classifiers.moderate()` ohne try/catch auf. Aufgerufen als OUTPUT-Moderation NACH erfolgreicher Briefgenerierung in [generate-letter/route.ts:172](../web/src/app/api/generate-letter/route.ts). Wenn der Moderations-Endpunkt selbst fehlschlägt (Netzwerk/5xx/Rate-Limit), bubbled der Fehler in den globalen catch (route.ts:229) → User bekommt 500 und verliert den bereits fertig generierten Brief.
 
 **Fix:** try/catch in `moderateText`; bei Fehler entweder `{flagged:false}` zurückgeben + separat loggen, ODER eigenen Error-Typ werfen, den die Route so behandelt, dass der Brief trotzdem ausgeliefert + intern alarmiert wird. Aufwand: ~5 Zeilen.
 
@@ -985,7 +985,7 @@ Plans:
 
 **Goal:** Wenn der Nutzertext kein politisches Anliegen, sondern nur Dank, Lob, eine Grußbotschaft oder eine Meinung ohne Bitte/Forderung enthält (z.B. "Dankeschön, dass die Projekte anlaufen. Viel Erfolg bei den Senatswahlen"), soll der Brief ehrlich und warm genau das ausdrücken — und KEINEN Anlass, KEINE Bitte, KEINE Forderung und KEINE Handlungserwartung erfinden.
 
-**Auslöser:** Live-Review 1★ „Ki Sprache" (2026-08-07, Artem, an Jan-Marco Luczak CDU). Die Ebene-Klassifikation hat korrekt `confidence=low` geliefert, aber die Briefgenerierung läuft trotzdem identisch durch: `SYSTEM_PROMPT_TEMPLATE` in [web/src/lib/generation/generateLetter.ts](web/src/lib/generation/generateLetter.ts) erzwingt via `ARGUMENTATIONSAUFBAU` (L88–93) und `PFLICHT-ELEMENTE` (L160–163) zwingend „Anlass → Begründung → Forderung" — bei einem Dank entsteht dadurch „Ki Sprache"-Füllstoff.
+**Auslöser:** Live-Review 1★ „Ki Sprache" (2026-08-07, Artem, an Jan-Marco Luczak CDU). Die Ebene-Klassifikation hat korrekt `confidence=low` geliefert, aber die Briefgenerierung läuft trotzdem identisch durch: `SYSTEM_PROMPT_TEMPLATE` in [web/src/lib/generation/generateLetter.ts](../web/src/lib/generation/generateLetter.ts) erzwingt via `ARGUMENTATIONSAUFBAU` (L88–93) und `PFLICHT-ELEMENTE` (L160–163) zwingend „Anlass → Begründung → Forderung" — bei einem Dank entsteht dadurch „Ki Sprache"-Füllstoff.
 
 **Fix (kleinster Eingriff, vom Subagent bestätigt):** Ein bedingter Prompt-Block im System-Prompt (`generateLetter.ts`): „WENN KEIN KONKRETES ANLIEGEN (nur Dank/Lob/Gruß/Meinung ohne Bitte): schreibe einen ehrlichen, warmen kurzen Brief, der genau das ausdrückt. Erfinde dann KEINEN Anlass, KEINE Bitte, KEINE Forderung." Ein einziger Prompt-Block, kein Routing-Umbau, keine neue AI-Abfrage, keine DSGVO-Veränderung.
 
@@ -1001,7 +1001,7 @@ Plans:
 
 **Goal:** Die 3-Tage-Follow-up-Mail (Stern-Bewertung) wird heute nur an Briefe an Bundestags-MdBs verschickt. Auch Empfänger:innen von Land- und Kommunebriefen sollen den Follow-up mit Stern-Leiste bekommen — aktuell bekommen diese Briefe nur die Erstmail, was die Review-Rate auf diesen Ebenen systematisch senkt und die niedrigen Kommune-Sternwerte verzerrt.
 
-**Befund:** Review-Batch 2026-08-07: Kommune-Reviews im Schnitt 2,3★ vs. Bund 3,3★ (n=3 Kommune) — Confounder: Kommune-Reviewer erhalten nie einen Follow-up-Impuls. Gate in [web/src/app/api/generate-letter/route.ts](web/src/app/api/generate-letter/route.ts) L294: `if (recipient.kind === "mdb" && process.env.BREVO_FOLLOWUP_ENABLED === "true")`.
+**Befund:** Review-Batch 2026-08-07: Kommune-Reviews im Schnitt 2,3★ vs. Bund 3,3★ (n=3 Kommune) — Confounder: Kommune-Reviewer erhalten nie einen Follow-up-Impuls. Gate in [web/src/app/api/generate-letter/route.ts](../web/src/app/api/generate-letter/route.ts) L294: `if (recipient.kind === "mdb" && process.env.BREVO_FOLLOWUP_ENABLED === "true")`.
 
 **Einschätzung (vom Subagent geprüft): Schneller Fix möglich.** Nur zwei Stellen ändern:
 1. `route.ts` L294 — Bedingung erweitern auf `mdb`, `landtag`/`landesregierung` und `rathaus` (Liste der recipient-kinds prüfen).
@@ -1021,7 +1021,7 @@ Plans:
 
 **Auslöser:** Review-Batch 2026-08-08. Aktuell zeigt `fetch-reviews.ts` nur `level ${polLevel}→${repLevel}` ohne die Routing-Konfidenz. Die 1★-Review „Ki Sprache" (Artem, an Luczak) hing zu 100% mit `routedPrimaryConfidence=low` zusammen — ohne den Konfidenz-Wert im Fetch konnte man das nicht erkennen. KPI-Anspruch: „Routing-Qualität nach Konfidenz" (Reviews bei low vs. high), um Prompt-Tuning gezielt auf die low-Fälle zu lenken.
 
-**Fix:** Die `debug_payload`-Felder sind bereits im Code vorhanden ([web/src/lib/email/buildDebugPayload.ts](web/src/lib/email/buildDebugPayload.ts) — `routedPrimaryLevel`, `routedPrimaryConfidence`, `routedSecondaryLevel`, `wasOverridden`, `selectedLevel`). `fetch-reviews.ts` muss sie nur in `ReviewRow.debug_payload` (L261–276) aufnehmen und in `printTable`/`printMd` ausgeben. Aufwand ~15 Zeilen.
+**Fix:** Die `debug_payload`-Felder sind bereits im Code vorhanden ([web/src/lib/email/buildDebugPayload.ts](../web/src/lib/email/buildDebugPayload.ts) — `routedPrimaryLevel`, `routedPrimaryConfidence`, `routedSecondaryLevel`, `wasOverridden`, `selectedLevel`). `fetch-reviews.ts` muss sie nur in `ReviewRow.debug_payload` (L261–276) aufnehmen und in `printTable`/`printMd` ausgeben. Aufwand ~15 Zeilen.
 
 **Anmerkung:** `fetch-reviews.ts` ist laut brief-review-batch-Skill offiziell „read-only, do not modify" — dieser Task erweitert bewusst nur den Output (kein Write), daher gilt das „do not modify" hier nicht als Blocker; Veto nötig, falls Thomas das Skript unangetastet lassen will.
 

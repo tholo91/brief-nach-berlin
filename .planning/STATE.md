@@ -4,10 +4,10 @@ milestone: v1.0
 current_phase: 05
 status: verifying
 stopped_at: Completed 05-04-PLAN.md
-last_updated: "2026-10-21T16:05:45.312Z"
+last_updated: "2026-10-21T16:13:06.039Z"
 last_activity: 2026-10-21
 last_activity_desc: Quick 261013-wuq lokal implementiert und geprüft; manueller Release offen
-state_head: 687282bbef55bdf74c2b7ab31ae95693e6246352
+state_head: 97b3878afa3d4ecdcb1b2170a4ddb04abe62a5f7
 progress:
   total_phases: 33
   completed_phases: 4
@@ -210,6 +210,9 @@ Recent decisions affecting current work:
 | 261021-oma | Mobiles Burger-Menü: Kampagnen-Links, kein doppelter CTA, Stift-Icon | 2026-10-21 | 22cf755 | [261021-oma-mobiles-burger-menue-kampagnen-links-cta](./quick/261021-oma-mobiles-burger-menue-kampagnen-links-cta/) |
 | 261021-ols | MdB-Mail Wahlkreisbüro-Link mit mdb-ID, aktiv-werden zeigt Büro direkt | 2026-10-21 | 7af0c1c | [261021-ols-mdb-mail-wahlkreisb-ro-link-mit-mdb-id-a](./quick/261021-ols-mdb-mail-wahlkreisb-ro-link-mit-mdb-id-a/) |
 | 261021-ot3 | Verwaltungslink per E-Mail anfordern, Erklärtext, Buttons, Sitzung 7 Tage | 2026-10-21 | 687282b | [261021-ot3-kampagne-verwalten-link-anfordern](./quick/261021-ot3-kampagne-verwalten-link-anfordern/) |
+| 261021-oy6 | Briefseite und Mailschutz: 500er retry-sicher, kein Zustaendigkeits-Hinweis bei Kampagnen, Resend nur mit Nachweis, Rate-Limit Kampagnenanlage | 2026-10-21 | 97b3878 | [261021-oy6-briefseite-und-mailschutz-500er-retry-si](./quick/261021-oy6-briefseite-und-mailschutz-500er-retry-si/) |
+| 261021-oy7 | Analytics ohne sensible URLs, Next.js 16.4.2, CI per GitHub Actions | 2026-10-21 | 97b3878 | [261021-oy7-analytics-ohne-sensible-urls-next-js-16-](./quick/261021-oy7-analytics-ohne-sensible-urls-next-js-16-/) |
+| 261021-oy9 | Stats ohne 1000-Zeilen-Grenze: Paginierung fuer reviews und letter_signals | 2026-10-21 | 97b3878 | [261021-oy9-stats-ohne-1000-zeilen-grenze-paginierun](./quick/261021-oy9-stats-ohne-1000-zeilen-grenze-paginierun/) |
 
 ## Session Continuity
 

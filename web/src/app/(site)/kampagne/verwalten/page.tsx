@@ -6,6 +6,7 @@ import { CampaignCreatorStats } from "@/components/campaigns/CampaignCreatorStat
 import { CampaignReferralCard } from "@/components/campaigns/CampaignReferralCard";
 import { CreatorSurveyCard } from "@/components/campaigns/CreatorSurveyCard";
 import { CampaignManager } from "@/components/campaigns/CampaignManager";
+import { ManageLinkRequestForm } from "@/components/campaigns/ManageLinkRequestForm";
 import { SectionNav } from "@/components/internalStats/SectionNav";
 import {
   getCampaignCreatorStats,
@@ -21,16 +22,30 @@ import { getCampaignById } from "@/lib/campaigns/repository";
 import { getCampaignManagementSession } from "@/lib/campaigns/session";
 import { BRIEF_EMAIL, campaignContactHref } from "@/lib/contact";
 
+function MailIcon() {
+  return (
+    <svg width="16" height="16" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+      <rect x="2.5" y="4.5" width="15" height="11" rx="1.5" stroke="currentColor" strokeWidth="1.6" />
+      <path d="m3 5.5 7 5.5 7-5.5" stroke="currentColor" strokeWidth="1.6" strokeLinejoin="round" />
+    </svg>
+  );
+}
+
+function PlusIcon() {
+  return (
+    <svg width="16" height="16" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+      <path d="M10 4v12M4 10h12" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+    </svg>
+  );
+}
+
 function ContactButton({ href }: { href: string }) {
   return (
     <a
       href={href}
       className="-my-2 inline-flex min-h-10 items-center gap-1.5 rounded-lg border border-waldgruen/25 px-3 font-body text-sm font-semibold text-waldgruen-dark transition-colors hover:border-waldgruen/50 hover:bg-waldgruen/5 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-waldgruen"
     >
-      <svg width="16" height="16" viewBox="0 0 20 20" fill="none" aria-hidden="true">
-        <rect x="2.5" y="4.5" width="15" height="11" rx="1.5" stroke="currentColor" strokeWidth="1.6" />
-        <path d="m3 5.5 7 5.5 7-5.5" stroke="currentColor" strokeWidth="1.6" strokeLinejoin="round" />
-      </svg>
+      <MailIcon />
       Kontakt
       <span className="sr-only"> per E-Mail</span>
     </a>
@@ -71,7 +86,10 @@ const LOST_LINK_MAILTO = `mailto:${BRIEF_EMAIL}?subject=${encodeURIComponent(
   "Hallo Thomas,\n\nich habe den Verwaltungslink meiner Kampagne verlegt. Bitte schick mir einen neuen.\n\nName der Kampagne:\nE-Mail-Adresse, mit der ich die Kampagne erstellt habe:\n\nDanke!"
 )}`;
 
-function AccessNotice({ message }: { message: string }) {
+const OUTLINE_BUTTON_CLASS =
+  "inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-md border border-waldgruen/25 px-5 py-3 font-body text-base font-semibold text-waldgruen-dark transition-colors hover:border-waldgruen focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-waldgruen";
+
+function AccessNotice() {
   return (
     <section className="mx-auto max-w-2xl px-6 py-16 md:py-24">
       <div className="rounded-2xl border border-warmgrau/12 bg-white/75 p-6 shadow-sm md:p-8">
@@ -79,23 +97,28 @@ function AccessNotice({ message }: { message: string }) {
           Kampagne verwalten
         </p>
         <h1 className="mt-3 font-typewriter text-3xl font-bold leading-tight text-waldgruen-dark md:text-4xl">
-          Verwaltungslink benötigt
+          Zugang zu deiner Kampagne
         </h1>
         <p className="mt-5 font-body text-base leading-relaxed text-warmgrau/75">
-          {message}
+          Deine Kampagne verwaltest du über den Link aus deinen Kampagnen-Mails. Er steckt auch in jeder Meilenstein-Mail. Mail nicht zur Hand? Gib deine Adresse ein, dann schicke ich dir einen neuen Link.
         </p>
-        <div className="mt-6 flex flex-wrap gap-3">
-          <Link
-            href="/kampagne/starten"
-            className="inline-block rounded-md border border-waldgruen/25 px-5 py-3 font-body text-base font-semibold text-waldgruen-dark transition-colors hover:border-waldgruen"
-          >
-            Zur Kampagnenseite
+        <ManageLinkRequestForm />
+        <div className="mt-8 border-t border-warmgrau/12 pt-6">
+          <h2 className="font-typewriter text-sm font-bold text-waldgruen-dark">
+            Warum kein Login?
+          </h2>
+          <p className="mt-2 font-body text-sm leading-relaxed text-warmgrau/70">
+            Brief-nach-Berlin kommt ohne Konten und Passwörter aus, damit ich so wenig wie möglich über dich speichere. Der Link in deinen Mails ist dein Schlüssel. Gib ihn nicht weiter.
+          </p>
+        </div>
+        <div className="mt-6 grid grid-cols-1 gap-3 sm:grid-cols-2">
+          <Link href="/kampagne/starten" className={OUTLINE_BUTTON_CLASS}>
+            <PlusIcon />
+            Neue Kampagne starten
           </Link>
-          <a
-            href={LOST_LINK_MAILTO}
-            className="inline-block rounded-md border border-waldgruen/25 px-5 py-3 font-body text-base font-semibold text-waldgruen-dark transition-colors hover:border-waldgruen"
-          >
-            Link verlegt? Kontaktiere mich
+          <a href={LOST_LINK_MAILTO} className={OUTLINE_BUTTON_CLASS}>
+            <MailIcon />
+            Thomas schreiben
           </a>
         </div>
       </div>
@@ -207,7 +230,7 @@ export default async function ManageCampaignPage({
           )}
         </>
       ) : (
-        <AccessNotice message="Bitte öffne den aktuellen Verwaltungslink aus deiner Kampagnen-E-Mail. Es gibt keine Nutzerkonten und keinen Login-Bereich." />
+        <AccessNotice />
       )}
     </CampaignBackground>
     </>

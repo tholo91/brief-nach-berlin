@@ -4,10 +4,10 @@ milestone: v1.0
 current_phase: 05
 status: verifying
 stopped_at: Completed 05-04-PLAN.md
-last_updated: "2026-10-21T12:43:34.405Z"
-last_activity: 2026-10-19
+last_updated: "2026-10-21T15:45:08.697Z"
+last_activity: 2026-10-21
 last_activity_desc: Quick 261013-wuq lokal implementiert und geprüft; manueller Release offen
-state_head: 4ee870e9a73ad9f75b55a6dc17b8dcee5a462e13
+state_head: 22cf755586da3ac8d01816a57615052b851e8a48
 progress:
   total_phases: 33
   completed_phases: 4
@@ -49,7 +49,7 @@ Der level-aware E-Mail-Betreff ist dagegen bereits implementiert und getestet; d
 Phase: 05 — EXECUTING
 Plan: 4 of 4
 Status: Phase complete — ready for verification
-Last activity: 2026-10-21 - Completed quick task 261021-kcm: Erfolgsseite: HTTP 504 (Vercel-Timeout) als nicht erstellt behandeln, Retry zeigen
+Last activity: 2026-10-21 - Completed quick task 261021-oma: Mobiles Burger-Menü mit Kampagnen-Links
 
 Progress: [███████░░░] 68%
 
@@ -207,6 +207,7 @@ Recent decisions affecting current work:
 | 261019-w59 | Review-Fixes vor Push: Pruefversprechen Kampagnenformular, Stand Nutzungsbedingungen, Anrede nach Uebernahme | 2026-10-19 | 49801db | [261019-w59-review-fixes-vor-push-pruefversprechen-k](./quick/261019-w59-review-fixes-vor-push-pruefversprechen-k/) |
 | 80 | Agent-Doku auf Ist-Stand: Stack (Mistral, Vercel/Brevo bezahlt, Supabase Free), Bauprinzipien lean und nachhaltig in CLAUDE.md und AGENTS.md, doppelter Gitty-Abschnitt entfernt | 2026-10-20 | 1c3fb25 | — |
 | 261021-kcm | Erfolgsseite: HTTP 504 (Vercel-Timeout) als nicht erstellt behandeln, Retry zeigen | 2026-10-21 | 4ee870e | [261021-kcm-erfolgsseite-http-504-vercel-timeout-als](./quick/261021-kcm-erfolgsseite-http-504-vercel-timeout-als/) |
+| 261021-oma | Mobiles Burger-Menü: Kampagnen-Links, kein doppelter CTA, Stift-Icon | 2026-10-21 | 22cf755 | [261021-oma-mobiles-burger-menue-kampagnen-links-cta](./quick/261021-oma-mobiles-burger-menue-kampagnen-links-cta/) |
 
 ## Session Continuity
 

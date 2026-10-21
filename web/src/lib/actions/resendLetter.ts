@@ -24,7 +24,7 @@ import { getCampaignFixedRecipient } from "@/lib/lookup/campaignFixedRecipient";
 const RESEND_LIMIT_MESSAGE =
   "Der Brief wurde jetzt mehrfach gesendet. Bitte prüfe noch einmal deinen Spam-Ordner und die E-Mail-Adresse. Falls weiterhin nichts ankommt, melde dich gerne direkt.";
 
-const generationProofSchema = z.string().min(20).max(4096).optional();
+const generationProofSchema = z.string().min(20).max(4096);
 
 // SECURITY NOTE (2026-04-27):
 // Previous signature accepted a full Politician object from the client, which
@@ -37,14 +37,12 @@ const generationProofSchema = z.string().min(20).max(4096).optional();
 // back here, avoiding a redundant Mistral API call on each resend.
 export async function resendLetterAction(
   data: WizardData,
-  selection: RecipientSelection | number,
+  selection: RecipientSelection,
   cachedLetterText: string,
   generationProof?: string,
 ): Promise<{ success: true } | { error: string; message: string; retryAfterSeconds?: number }> {
   try {
-    const rawSelection: unknown =
-      typeof selection === "number" ? { kind: "mdb", selectedPoliticianId: selection } : selection;
-    const parsedSelection = recipientSelectionSchema.safeParse(rawSelection);
+    const parsedSelection = recipientSelectionSchema.safeParse(selection);
     if (!parsedSelection.success) {
       return { error: "validation", message: "Ungültige Eingabe." };
     }
@@ -53,16 +51,11 @@ export async function resendLetterAction(
     if (!parsedProof.success) {
       return { error: "validation", message: "Ungültige Eingabe." };
     }
-    const verifiedProof = parsedProof.data ? verifyGenerationProof(parsedProof.data) : null;
-    const letterId = verifiedProof?.letterId;
-    if (parsedProof.data && !verifiedProof) return { error: "validation", message: "Ungültige Eingabe." };
-    if (
-      (normalizedSelection.kind === "landesregierung" ||
-        normalizedSelection.kind === "campaign_fixed") &&
-      !verifiedProof
-    ) {
-      return { error: "validation", message: "Ungültige Eingabe." };
-    }
+    // Jeder Resend braucht den signierten Nachweis: nur ein hier erzeugter Brief
+    // darf an diese Adresse gehen.
+    const verifiedProof = verifyGenerationProof(parsedProof.data);
+    if (!verifiedProof) return { error: "validation", message: "Ungültige Eingabe." };
+    const letterId = verifiedProof.letterId;
     console.log("[resendLetter] start", { email: "***", kind: normalizedSelection.kind });
 
     const s1 = step1Schema.safeParse(data);
@@ -151,7 +144,7 @@ export async function resendLetterAction(
       return { error: "validation", message: "Ungültige Eingabe." };
     }
     const recipient = resolved.recipient;
-    if (verifiedProof && !doesGenerationProofMatch(verifiedProof, {
+    if (!doesGenerationProofMatch(verifiedProof, {
       issueText: data.issueText,
       plz: data.plz,
       recipient,

@@ -94,6 +94,21 @@ const mdbRecipient = {
   abgeordnetenwatchUrl: null,
 };
 
+function proofFor(
+  recipient: Parameters<typeof createGenerationProof>[0]["recipient"],
+  letterText: string,
+  campaignSlug: string | null = null,
+) {
+  return createGenerationProof({
+    letterId: "11111111-1111-4111-8111-111111111111",
+    issueText: data.issueText,
+    plz: data.plz,
+    recipient,
+    letterText,
+    campaignSlug,
+  });
+}
+
 describe("RecipientSelection server hardening", () => {
   beforeEach(() => {
     jest.clearAllMocks();
@@ -223,7 +238,8 @@ describe("RecipientSelection server hardening", () => {
         },
       },
       { kind: "mdb", selectedPoliticianId: 1 },
-      "Ein gültiger Brieftext"
+      "Ein gültiger Brieftext",
+      proofFor(mdbRecipient, "Ein gültiger Brieftext", fixedRecipientCampaign.slug),
     )).resolves.toEqual({
       error: "validation",
       message: "Empfänger nicht gefunden.",
@@ -383,7 +399,12 @@ describe("RecipientSelection server hardening", () => {
     mockedPrepareLetterEmail.mockReturnValue({ feedbackToken: "token", params: {} as never });
     mockedSendLetterEmail.mockResolvedValue({ success: true, messageId: "id" });
     await expect(
-      resendLetterAction({ ...data }, { kind: "rathaus" }, "Ein gültiger Brieftext")
+      resendLetterAction(
+        { ...data },
+        { kind: "rathaus" },
+        "Ein gültiger Brieftext",
+        proofFor(mdbRecipient, "Ein gültiger Brieftext"),
+      )
     ).resolves.toMatchObject({ success: true });
     expect(mockedResolveRecipientSelection).toHaveBeenCalledWith("50667", { kind: "rathaus" });
   });
@@ -430,7 +451,8 @@ describe("RecipientSelection server hardening", () => {
           },
         },
         { kind: "mdb", selectedPoliticianId: 1 },
-        "Ein persönlicher Brieftext"
+        "Ein persönlicher Brieftext",
+        proofFor(mdbRecipient, "Ein persönlicher Brieftext"),
       )
     ).resolves.toEqual({ success: true });
 
@@ -449,7 +471,12 @@ describe("RecipientSelection server hardening", () => {
     mockedSendLetterEmail.mockResolvedValue({ success: true, messageId: "id" });
 
     await expect(
-      resendLetterAction({ ...data }, { kind: "mdb", selectedPoliticianId: 1 }, "Ein persönlicher Brieftext")
+      resendLetterAction(
+        { ...data },
+        { kind: "mdb", selectedPoliticianId: 1 },
+        "Ein persönlicher Brieftext",
+        proofFor(mdbRecipient, "Ein persönlicher Brieftext"),
+      )
     ).resolves.toEqual({ success: true });
     expect(mockedModerateText).not.toHaveBeenCalled();
   });
@@ -599,13 +626,21 @@ describe("RecipientSelection server hardening", () => {
     expect(mockedSendLetterEmail).not.toHaveBeenCalled();
   });
 
-  it("verlangt beim erneuten Versand an Landesregierung oder Regierungsspitze einen Nachweis", async () => {
-    for (const selection of [
-      { kind: "landesregierung" as const },
-      { kind: "landesregierung" as const, addressee: "head" as const },
-    ]) {
+  it("verlangt beim erneuten Versand für jede Empfänger-Art einen Nachweis", async () => {
+    const selections: RecipientSelection[] = [
+      { kind: "mdb", selectedPoliticianId: 1 },
+      { kind: "mdl", selectedPoliticianId: 1 },
+      { kind: "mdb_later" },
+      { kind: "rathaus" },
+      { kind: "landesregierung" },
+      { kind: "landesregierung", addressee: "head" },
+      { kind: "campaign_fixed" },
+      { kind: "bundeskanzler" },
+    ];
+    for (const selection of selections) {
       await expect(resendLetterAction({ ...data }, selection, "Ein fertiger Brief.")).resolves.toMatchObject({ error: "validation" });
     }
+    expect(mockedCheckRateLimit).not.toHaveBeenCalled();
     expect(mockedResolveRecipientSelection).not.toHaveBeenCalled();
     expect(mockedSendLetterEmail).not.toHaveBeenCalled();
   });

@@ -24,6 +24,8 @@ import {
   prepareLetterEmail,
   sendLetterEmail,
 } from "@/lib/email/sendLetterEmail";
+import { getBundeskanzlerRecipient } from "@/lib/lookup/bundeskanzlerRecipient";
+import { createGenerationProof } from "@/lib/letterSignals/token";
 import type { WizardData } from "@/lib/types/wizard";
 
 const mockedGetPublicCampaignBySlug = jest.mocked(getPublicCampaignBySlug);
@@ -46,9 +48,21 @@ function activeCampaign(slug = "schreib-merz") {
   return { slug, targetLevel: "Bund", targetPoliticianIds: [] } as never;
 }
 
+function proofFor(letterText: string, campaignSlug = "schreib-merz") {
+  return createGenerationProof({
+    letterId: "11111111-1111-4111-8111-111111111111",
+    issueText: data.issueText,
+    plz: data.plz,
+    recipient: getBundeskanzlerRecipient(),
+    letterText,
+    campaignSlug,
+  });
+}
+
 describe("Schreib-Merz resend", () => {
   beforeEach(() => {
     jest.clearAllMocks();
+    process.env.LETTER_SIGNAL_TOKEN_SECRET = "schreib-merz-resend-test-secret";
     mockedGetPublicCampaignBySlug.mockResolvedValue(activeCampaign());
     mockedPrepareLetterEmail.mockReturnValue({
       params: { recipientKind: "bundeskanzler" } as never,
@@ -66,6 +80,7 @@ describe("Schreib-Merz resend", () => {
         data,
         { kind: "bundeskanzler" },
         "Sehr geehrter Herr Bundeskanzler,\n\nmein Brief.",
+        proofFor("Sehr geehrter Herr Bundeskanzler,\n\nmein Brief."),
       ),
     ).resolves.toEqual({ success: true });
 
@@ -87,7 +102,7 @@ describe("Schreib-Merz resend", () => {
     mockedGetPublicCampaignBySlug.mockResolvedValue(null);
 
     await expect(
-      resendLetterAction(data, { kind: "bundeskanzler" }, "Brieftext"),
+      resendLetterAction(data, { kind: "bundeskanzler" }, "Brieftext", proofFor("Brieftext")),
     ).resolves.toEqual({
       error: "validation",
       message: "Diese Kampagne ist aktuell nicht aktiv.",
@@ -109,6 +124,7 @@ describe("Schreib-Merz resend", () => {
         },
         { kind: "bundeskanzler" },
         "Brieftext",
+        proofFor("Brieftext", "andere-kampagne"),
       ),
     ).resolves.toMatchObject({ error: "validation" });
     expect(mockedPrepareLetterEmail).not.toHaveBeenCalled();

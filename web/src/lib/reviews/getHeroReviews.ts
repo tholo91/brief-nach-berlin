@@ -1,5 +1,6 @@
 import { supabase } from "@/lib/supabase";
 import { MIN_PUBLIC_REVIEW_DATE, type PublicReview } from "./types";
+import { FALLBACK_HERO_REVIEWS } from "./fallbackReviews";
 
 const HOUR_IN_MS = 60 * 60 * 1000;
 
@@ -50,6 +51,7 @@ function pickBalancedReviews(
 
 /**
  * Fetches hand-curated hero reviews (hero_featured = true, rating >= 4).
+ * Falls back to FALLBACK_HERO_REVIEWS on error or empty result, so the strip never disappears.
  */
 export async function getHeroReviews(): Promise<PublicReview[]> {
   try {
@@ -66,17 +68,18 @@ export async function getHeroReviews(): Promise<PublicReview[]> {
 
     if (featuredError) {
       console.error("[getHeroReviews] query error:", featuredError.message);
-      return [];
+      return FALLBACK_HERO_REVIEWS;
     }
 
-    return pickBalancedReviews(
+    const picked = pickBalancedReviews(
       ((featured as PublicReview[]) ?? []).filter(
         (r) => r.body && r.body.trim().length > 0
       ),
       Math.floor(Date.now() / HOUR_IN_MS)
     );
+    return picked.length > 0 ? picked : FALLBACK_HERO_REVIEWS;
   } catch (err) {
     console.error("[getHeroReviews] unexpected error:", err);
-    return [];
+    return FALLBACK_HERO_REVIEWS;
   }
 }

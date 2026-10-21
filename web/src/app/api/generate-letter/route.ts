@@ -277,8 +277,9 @@ export async function POST(req: NextRequest) {
         };
       }
     }
+    // Kampagnenbriefe bleiben auf der Forderung der Kampagne: kein Zuständigkeits-Hinweis.
     const mismatchRecommendedLevel =
-      routingInfo?.wasOverridden && routingInfo.routedPrimaryLevel
+      !campaign && routingInfo?.wasOverridden && routingInfo.routedPrimaryLevel
         ? routingInfo.routedPrimaryLevel
         : undefined;
 
@@ -481,8 +482,15 @@ export async function POST(req: NextRequest) {
         { status: 502 }
       );
     }
+    // Die Brief-Mail wird erst nach erfolgreicher Erzeugung in after() eingereiht,
+    // ein 500 folgt also nie auf einen versendeten Brief.
     return NextResponse.json(
-      { error: "Es ist ein Fehler aufgetreten. Bitte versuche es erneut.", errorId, detail },
+      {
+        error: "Es ist ein Fehler aufgetreten. Bitte versuche es erneut.",
+        errorId,
+        detail,
+        retrySafe: true,
+      },
       { status: 500 }
     );
   }

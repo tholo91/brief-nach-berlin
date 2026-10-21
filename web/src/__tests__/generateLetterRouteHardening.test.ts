@@ -60,6 +60,7 @@ import { sendLetterEmail, prepareLetterEmail } from "@/lib/email/sendLetterEmail
 import { generateLetter } from "@/lib/generation/generateLetter";
 import { resolveRecipientSelection } from "@/lib/lookup/resolveRecipient";
 import { moderateText } from "@/lib/moderation/moderateText";
+import { verifyRoutingToken } from "@/lib/lookup/routingToken";
 import { checkRateLimit, hashIdentifier } from "@/lib/rateLimit";
 import { getPublicCampaignBySlug } from "@/lib/campaigns/repository";
 import { incrementLetterCounters } from "@/lib/counter";
@@ -310,6 +311,116 @@ describe("generate-letter RecipientSelection hardening", () => {
         },
       },
       retrySafe: true,
+    });
+  });
+
+  describe("generischer 500 und Zuständigkeits-Hinweis", () => {
+    const rathaus = {
+      kind: "rathaus" as const,
+      level: "Kommune" as const,
+      recipientKind: "buergermeisteramt" as const,
+      gemeindeName: "Musterstadt",
+      plz: "28203",
+      label: "Bürgermeisteramt Musterstadt",
+      postalAddress: "Musterstraße 1",
+      address: { source: "fallback" as const },
+    };
+
+    function arrange() {
+      jest.spyOn(console, "error").mockImplementation(() => undefined);
+      jest.spyOn(console, "log").mockImplementation(() => undefined);
+      jest.mocked(checkRateLimit).mockReturnValue({ allowed: true });
+      jest.mocked(hashIdentifier).mockReturnValue("hashed");
+      jest.mocked(resolveRecipientSelection).mockReturnValue({
+        ok: true,
+        availableCount: 1,
+        relation: "institutional",
+        recipient: rathaus,
+      });
+    }
+
+    function postLetter(body: Record<string, unknown> = {}, campaign?: { slug: string; title: string }) {
+      return POST(requestWith({
+        wizardData: {
+          plz: "28203",
+          email: "test@example.org",
+          issueText: "Ein ausreichend langes Anliegen für den Test.",
+          letterLength: "1.5",
+          toneLevel: 3,
+          ...(campaign ? { campaign } : {}),
+        },
+        selection: { kind: "rathaus" },
+        ...body,
+      }));
+    }
+
+    afterEach(() => {
+      jest.restoreAllMocks();
+    });
+
+    it("antwortet bei einem unbekannten Fehler mit 500 und retrySafe, ohne Mail-Job", async () => {
+      arrange();
+      jest.mocked(generateLetter).mockRejectedValue(new Error("boom"));
+
+      const response = await postLetter();
+
+      expect(response.status).toBe(500);
+      await expect(response.json()).resolves.toMatchObject({
+        errorId: expect.any(String),
+        detail: expect.any(Object),
+        retrySafe: true,
+      });
+      expect(after).not.toHaveBeenCalled();
+    });
+
+    it.each([
+      { name: "ohne Kampagne", endsAt: undefined, expected: "Bund" },
+      { name: "mit laufender Kampagne", endsAt: null, expected: undefined },
+      { name: "mit beendeter Kampagne", endsAt: "2026-01-01T22:59:59.000Z", expected: "Bund" },
+    ])("übergibt den Zuständigkeits-Hinweis $name als $expected", async ({ endsAt, expected }) => {
+      arrange();
+      jest.mocked(verifyRoutingToken).mockReturnValueOnce({
+        primary: { level: "Bund", confidence: "high" },
+      } as never);
+      jest.mocked(getPublicCampaignBySlug).mockResolvedValue(
+        endsAt === undefined
+          ? null
+          : ({
+              slug: "kampagne",
+              targetLevel: "Bund",
+              targetState: null,
+              targetRecipient: null,
+              targetPoliticianIds: [],
+              topic: null,
+              endsAt,
+            } as never),
+      );
+      jest.mocked(generateLetter).mockResolvedValue({
+        letter: "Ein normaler Brief.",
+        topic: null,
+        selectedRecipient: rathaus,
+        selectedPolitician: null,
+        politicalLevel: "Kommune",
+        wordCount: 4,
+        wordCountInRange: false,
+        fallbackUsed: false,
+        mdbContextUsed: false,
+        retried: false,
+        model: "test-model",
+        temperature: 0,
+        generationMs: 1,
+      });
+
+      const response = await postLetter(
+        { routingToken: "signed-routing-token" },
+        endsAt === undefined ? undefined : { slug: "kampagne", title: "Kampagne" },
+      );
+
+      expect(response.status).toBe(200);
+      const firstArg = jest.mocked(generateLetter).mock.calls[0]![0] as {
+        mismatchRecommendedLevel?: string;
+      };
+      expect(firstArg.mismatchRecommendedLevel).toBe(expected);
     });
   });
 

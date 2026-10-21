@@ -108,6 +108,12 @@ export const LIMITS = {
   // Data deletion per email: 3 per 24 hours. One click deletes everything,
   // so a handful of retries is plenty.
   DATA_DELETION_PER_EMAIL: { max: 3, windowMs: 24 * 60 * 60_000 },
+  // Manage-link requests per IP: 5 per hour. Each request mails a real creator;
+  // scripted probing stops here.
+  MANAGE_LINK_PER_IP: { max: 5, windowMs: 60 * 60_000 },
+  // Manage-link requests per email: 2 per hour. One lost link needs one retry
+  // at most; anyone targeting a single inbox hits this fast.
+  MANAGE_LINK_PER_EMAIL: { max: 2, windowMs: 60 * 60_000 },
 } as const;
 
 export async function getClientIp(): Promise<string> {

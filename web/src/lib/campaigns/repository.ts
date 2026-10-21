@@ -473,6 +473,34 @@ export async function getRecentActiveCampaigns(
   return (data as CampaignRow[]).map(mapCampaign);
 }
 
+/**
+ * Verifizierte, laufende Kampagnen einer Ersteller-Adresse, für die das
+ * Verwaltungs-Mail-Template passt (wartet auf Freigabe, aktiv, pausiert).
+ */
+export async function getManageableCampaignsByCreatorEmail(
+  creatorEmail: string,
+  limit = 5,
+  db?: RepositoryClient
+): Promise<Campaign[]> {
+  const cappedLimit = Math.min(Math.max(limit, 1), 5);
+  const { data, error } = await client(db)
+    .from("campaigns")
+    .select("*")
+    .eq("creator_email", creatorEmail.trim().toLowerCase())
+    .not("email_verified_at", "is", null)
+    .in("status", ["awaiting_approval", "active", "paused"])
+    .or(runningCampaignFilter())
+    .order("created_at", { ascending: false })
+    .limit(cappedLimit);
+
+  if (error) {
+    throw new CampaignRepositoryError(
+      `Manageable campaigns lookup failed: ${error.message}`
+    );
+  }
+  return (data as CampaignRow[]).map(mapCampaign);
+}
+
 /** Alle laufenden Kampagnen für die Übersicht auf /ngo-briefkampagne. */
 export async function getRunningCampaigns(
   limit = 24,

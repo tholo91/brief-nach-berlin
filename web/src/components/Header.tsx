@@ -5,10 +5,11 @@ import { usePathname } from "next/navigation";
 import { useState, useEffect } from "react";
 import { scrollToAnliegen } from "@/lib/scroll-to-input";
 import { LanguageSwitcher } from "@/components/i18n/LanguageSwitcher";
-import { useUiCopy } from "@/components/i18n/LocaleProvider";
+import { useLocale, useUiCopy } from "@/components/i18n/LocaleProvider";
 
 export default function Header() {
   const copy = useUiCopy();
+  const { locale } = useLocale();
   const navLinks = [
     { label: copy.navigation.howItWorks, href: "#so-funktionierts" },
     { label: copy.navigation.idea, href: "#warum-briefe" },
@@ -18,6 +19,8 @@ export default function Header() {
   const isHome = pathname === "/";
   const [showNavCta, setShowNavCta] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+
+  const headerCtaVisible = showNavCta && !menuOpen;
 
   const handleCtaClick = (e: React.MouseEvent) => {
     if (isHome) {
@@ -99,11 +102,11 @@ export default function Header() {
 
           <div className="flex items-center gap-2">
             <LanguageSwitcher />
-            {!showNavCta && <LanguageSwitcher mobile />}
+            {!showNavCta && !menuOpen && <LanguageSwitcher mobile />}
             {/* CTA — collapses on mobile when in hero section */}
             <div
               className={`overflow-hidden transition-all duration-300 md:max-w-[200px] md:opacity-100 md:pointer-events-auto ${
-                showNavCta
+                headerCtaVisible
                   ? "max-w-[200px] opacity-100"
                   : "max-w-0 opacity-0 pointer-events-none"
               }`}
@@ -158,7 +161,7 @@ export default function Header() {
               : "opacity-0 -translate-y-2 pointer-events-none"
           }`}
         >
-          <div className="px-6 py-4 flex flex-col">
+          <div className="px-6 py-4 flex flex-col max-h-[calc(100dvh-5rem)] overflow-y-auto">
             {navLinks.map((link) => (
               <a
                 key={link.href}
@@ -169,17 +172,47 @@ export default function Header() {
                 {link.label}
               </a>
             ))}
-            {showNavCta && (
-              <div className="flex items-center justify-between border-b border-warmgrau/8 py-4">
-                <span className="font-body text-base text-waldgruen-dark">{copy.language.selectLabel}</span>
-                <LanguageSwitcher mobile />
-              </div>
+            {locale === "de" && (
+              <>
+                <Link
+                  href="/ngo-briefkampagne#laufende-kampagnen"
+                  onClick={closeMenu}
+                  className="font-body text-base text-waldgruen-dark py-4 border-b border-warmgrau/8 transition-colors hover:text-waldgruen active:scale-[0.98]"
+                >
+                  Laufende Kampagnen
+                </Link>
+                <Link
+                  href="/ngo-briefkampagne"
+                  onClick={closeMenu}
+                  className="font-body text-base text-waldgruen-dark py-4 border-b border-warmgrau/8 transition-colors hover:text-waldgruen active:scale-[0.98]"
+                >
+                  Für NGOs + Creator
+                </Link>
+              </>
             )}
+            <div className="flex items-center justify-between border-b border-warmgrau/8 py-4">
+              <span className="font-body text-base text-waldgruen-dark">{copy.language.selectLabel}</span>
+              <LanguageSwitcher mobile />
+            </div>
             <Link
               href={isHome ? "/#anliegen" : "/app"}
               onClick={(e) => { closeMenu(); handleCtaClick(e); }}
-              className="mt-5 mb-1 inline-block text-center font-body text-base font-semibold text-creme bg-waldgruen hover:bg-waldgruen-dark px-4 py-3 rounded-lg transition-colors active:scale-[0.98] shadow-lg shadow-waldgruen/20"
+              className="mt-5 mb-1 inline-flex items-center justify-center gap-2 font-body text-base font-semibold text-creme bg-waldgruen hover:bg-waldgruen-dark px-4 py-3 rounded-lg transition-colors active:scale-[0.98] shadow-lg shadow-waldgruen/20"
             >
+              <svg
+                width="18"
+                height="18"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                aria-hidden="true"
+              >
+                <path d="M12 20h9" />
+                <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4Z" />
+              </svg>
               {copy.navigation.writeLetter}
             </Link>
           </div>

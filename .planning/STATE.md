@@ -4,10 +4,10 @@ milestone: v1.0
 current_phase: 05
 status: verifying
 stopped_at: Completed 05-04-PLAN.md
-last_updated: "2026-10-21T15:50:05.265Z"
+last_updated: "2026-10-21T16:05:45.312Z"
 last_activity: 2026-10-21
 last_activity_desc: Quick 261013-wuq lokal implementiert und geprüft; manueller Release offen
-state_head: 7af0c1c63fa9c2e98584f1d92607d7f1de8a59dd
+state_head: 687282bbef55bdf74c2b7ab31ae95693e6246352
 progress:
   total_phases: 33
   completed_phases: 4
@@ -49,7 +49,7 @@ Der level-aware E-Mail-Betreff ist dagegen bereits implementiert und getestet; d
 Phase: 05 — EXECUTING
 Plan: 4 of 4
 Status: Phase complete — ready for verification
-Last activity: 2026-10-21 - Completed quick task 261021-oma: Mobiles Burger-Menü mit Kampagnen-Links
+Last activity: 2026-10-21 - Completed quick task 261021-ot3: Verwaltungslink per E-Mail anfordern, Sitzung 7 Tage
 
 Progress: [███████░░░] 68%
 
@@ -209,6 +209,7 @@ Recent decisions affecting current work:
 | 261021-kcm | Erfolgsseite: HTTP 504 (Vercel-Timeout) als nicht erstellt behandeln, Retry zeigen | 2026-10-21 | 4ee870e | [261021-kcm-erfolgsseite-http-504-vercel-timeout-als](./quick/261021-kcm-erfolgsseite-http-504-vercel-timeout-als/) |
 | 261021-oma | Mobiles Burger-Menü: Kampagnen-Links, kein doppelter CTA, Stift-Icon | 2026-10-21 | 22cf755 | [261021-oma-mobiles-burger-menue-kampagnen-links-cta](./quick/261021-oma-mobiles-burger-menue-kampagnen-links-cta/) |
 | 261021-ols | MdB-Mail Wahlkreisbüro-Link mit mdb-ID, aktiv-werden zeigt Büro direkt | 2026-10-21 | 7af0c1c | [261021-ols-mdb-mail-wahlkreisb-ro-link-mit-mdb-id-a](./quick/261021-ols-mdb-mail-wahlkreisb-ro-link-mit-mdb-id-a/) |
+| 261021-ot3 | Verwaltungslink per E-Mail anfordern, Erklärtext, Buttons, Sitzung 7 Tage | 2026-10-21 | 687282b | [261021-ot3-kampagne-verwalten-link-anfordern](./quick/261021-ot3-kampagne-verwalten-link-anfordern/) |
 
 ## Session Continuity
 

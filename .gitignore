@@ -62,3 +62,6 @@ web/scripts/_kampagnen-varianten-*
 # Interne Plan- und Recherche-Notizen zur Kampagnen-Kuratierung (lokal, nicht im öffentlichen Repo)
 .planning/quick/261019-v48-kampagnen-grundsaetze-seite/
 .planning/research/afd-pruefkampagne-2026-08-14.md
+
+# Generierte Ausgaben (Bild-Generierung, PDFs), lokaler Arbeitsordner
+output/

@@ -4,6 +4,9 @@ jest.mock("@/lib/mistral", () => ({
   MISTRAL_MODELS: { letter: "mistral-large-latest" },
 }));
 
+import { readFileSync } from "node:fs";
+import { join } from "node:path";
+
 import {
   generateLetterVariant,
   buildVariantUserPrompt,
@@ -142,5 +145,43 @@ describe("letter variant prompt", () => {
     expect(result.lengthRetried).toBe(true);
     expect(result.wordCount).toBeGreaterThanOrEqual(200);
     expect(result.wordCount).toBeLessThanOrEqual(240);
+  });
+});
+
+const EINFACHE_WORTE_TEXT =
+  "Bitte Alltagssprache und kurze Sätze, Fachwörter und Fremdwörter durch einfache Wörter ersetzen.";
+
+describe("Einfache Worte preset", () => {
+  it("offers the chip in VariantForm and no longer the old keep-own-words preset", () => {
+    const source = readFileSync(
+      join(process.cwd(), "src/app/(site)/brief/anpassen/VariantForm.tsx"),
+      "utf8",
+    );
+
+    expect(source).toContain('label: "Einfache Worte"');
+    expect(source).toContain(EINFACHE_WORTE_TEXT);
+    expect(source).not.toContain("Eigene Worte behalten");
+    expect(source).not.toContain("Gute eigene Formulierungen");
+    for (const label of ["Klingt nach mir", "Anliegen im Zentrum", "Nur sichere Fakten", "Klarer roter Faden"]) {
+      expect(source).toContain(`label: "${label}"`);
+    }
+  });
+
+  it("passes the preset text into the aenderungswunsch block", () => {
+    const prompt = buildVariantUserPrompt({
+      originalLetter: "Sehr geehrte Frau Mustermann,\n\n" + "Wort ".repeat(120),
+      changeRequest: `- ${EINFACHE_WORTE_TEXT}`,
+    });
+    const block = prompt.slice(
+      prompt.indexOf("<aenderungswunsch>"),
+      prompt.indexOf("</aenderungswunsch>"),
+    );
+
+    expect(block).toContain(EINFACHE_WORTE_TEXT);
+  });
+
+  it("tells the model how to apply simple language", () => {
+    expect(VARIANT_SYSTEM_PROMPT).toContain("Alltagssprache");
+    expect(VARIANT_SYSTEM_PROMPT).toContain("Fachwörter und Fremdwörter durch einfache Wörter");
   });
 });

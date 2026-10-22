@@ -1,4 +1,5 @@
 import { createHmac } from "node:crypto";
+import { deflateRawSync } from "node:zlib";
 import { signFeedbackToken, verifyFeedbackToken } from "@/lib/feedback/token";
 
 const SECRET = "test-feedback-secret";
@@ -84,5 +85,52 @@ describe("feedback token", () => {
     const token = legacyToken(REALISTIC_PAYLOAD);
     expect(token.startsWith("eyJ")).toBe(true);
     expect(verifyFeedbackToken(token)).toEqual({ ...REALISTIC_PAYLOAD, iat: NOW });
+  });
+
+  it("is at most 70% of the legacy length and keeps the star link under 1000 chars", () => {
+    const token = signFeedbackToken(REALISTIC_PAYLOAD);
+    const legacy = legacyToken(REALISTIC_PAYLOAD);
+    expect(token.length).toBeLessThanOrEqual(legacy.length * 0.7);
+    expect(`https://brief-nach-berlin.de/feedback?r=5&t=${token}&s=2`.length).toBeLessThan(1000);
+  });
+
+  it("rejects a tampered body, a tampered MAC and a different secret", () => {
+    const token = signFeedbackToken(REALISTIC_PAYLOAD);
+    const flip = (t: string, i: number) =>
+      t.slice(0, i) + (t[i] === "A" ? "B" : "A") + t.slice(i + 1);
+    expect(verifyFeedbackToken(flip(token, 5))).toBeNull();
+    expect(verifyFeedbackToken(flip(token, token.length - 3))).toBeNull();
+
+    process.env.FEEDBACK_TOKEN_SECRET = "another-secret";
+    const foreign = signFeedbackToken(REALISTIC_PAYLOAD);
+    process.env.FEEDBACK_TOKEN_SECRET = SECRET;
+    expect(verifyFeedbackToken(foreign)).toBeNull();
+  });
+
+  it("rejects malformed tokens", () => {
+    expect(verifyFeedbackToken("")).toBeNull();
+    expect(verifyFeedbackToken("zabcdef")).toBeNull();
+    expect(verifyFeedbackToken("zabcdef.")).toBeNull();
+    expect(verifyFeedbackToken(signRaw("z"))).toBeNull();
+  });
+
+  it("rejects validly signed garbage without throwing", () => {
+    expect(verifyFeedbackToken(signRaw("z" + b64url(Buffer.from("not deflate data"))))).toBeNull();
+    expect(verifyFeedbackToken(signRaw(b64url(Buffer.from("not json"))))).toBeNull();
+  });
+
+  it("rejects a validly signed decompression bomb", () => {
+    const bomb = signRaw("z" + b64url(deflateRawSync(Buffer.alloc(200_000, 0x20))));
+    expect(() => verifyFeedbackToken(bomb)).not.toThrow();
+    expect(verifyFeedbackToken(bomb)).toBeNull();
+  });
+
+  it("rejects expired tokens and tokens without iat", () => {
+    const token = signFeedbackToken(REALISTIC_PAYLOAD);
+    (Date.now as jest.Mock).mockReturnValue((NOW + 91 * 24 * 60 * 60) * 1000);
+    expect(verifyFeedbackToken(token)).toBeNull();
+
+    const noIat = signRaw("z" + b64url(deflateRawSync(Buffer.from(JSON.stringify({ a: 1 })))));
+    expect(verifyFeedbackToken(noIat)).toBeNull();
   });
 });

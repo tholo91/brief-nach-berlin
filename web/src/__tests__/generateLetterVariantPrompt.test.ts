@@ -185,3 +185,39 @@ describe("Einfache Worte preset", () => {
     expect(VARIANT_SYSTEM_PROMPT).toContain("Fachwörter und Fremdwörter durch einfache Wörter");
   });
 });
+
+describe("Eigene Stimme bleibt", () => {
+  it("carries the own-voice rule block with address-form precedence", () => {
+    for (const fragment of [
+      "Eigene Stimme bleibt",
+      "über die Empfängerin oder den Empfänger",
+      "Autofahrende",
+      "Bürger*innen",
+      "eigener Schlusssatz",
+      "Anredeform des bestehenden Briefs",
+      "Du-Form bleibt Du-Form",
+      "Vorrang vor <tonalitaet>",
+    ]) {
+      expect(VARIANT_SYSTEM_PROMPT).toContain(fragment);
+    }
+  });
+
+  it("no longer forces Sie-Form or invites smoothing language", () => {
+    expect(VARIANT_SYSTEM_PROMPT).not.toContain("formeller Brief in Sie-Form");
+    expect(VARIANT_SYSTEM_PROMPT).not.toContain("glätte");
+  });
+
+  it("keeps the shared tone block unchanged at tone 5", () => {
+    const prompt = buildVariantUserPrompt({
+      originalLetter: "Sehr geehrte Frau Mustermann,\n\n" + "Wort ".repeat(120),
+      toneLevel: 5,
+    });
+    const block = prompt.slice(prompt.indexOf("<tonalitaet>"), prompt.indexOf("</tonalitaet>"));
+
+    expect(block).toContain("Du-Form");
+  });
+
+  it("contains no em or en dash characters", () => {
+    expect(VARIANT_SYSTEM_PROMPT).not.toMatch(/[—–]/);
+  });
+});

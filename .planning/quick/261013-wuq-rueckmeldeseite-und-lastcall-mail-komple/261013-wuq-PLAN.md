@@ -6,7 +6,7 @@ status: approved
 
 # Rückmeldeseite und Last-Call-Mail
 
-Source: `.planning/todos/pending/2026-10-13-rueckmeldeseite-lastcall-mail.md`. All product decisions there are locked; user approved complete local implementation and verification. Existing dirty changes must be preserved. No production migration, deployment, email or bulk send in this execution.
+Source: `.planning/todos/completed/2026-10-13-rueckmeldeseite-lastcall-mail.md`. All product decisions there are locked; user approved complete local implementation and verification. Existing dirty changes must be preserved. No production migration, deployment, email or bulk send in this execution.
 
 1. Backend and privacy: implement token, shared answer schema, initial/progress/full action, migration 033 with service-role-only RLS and monotonic completion; extend lookup/deletion and privacy notice. Verify forged/expired tokens, branching validation, concurrency safeguards, deletion and SQL constraints with focused Jest tests.
 2. UI: implement mobile-first `/rueckmeldung`, extract shared SurveyChoice/SentTab from feedback, preserve existing feedback behavior, strip token and exclude analytics. Verify all three entry choices, branching, progressive saves, consent, errors, completion, keyboard/mobile/desktop layout.

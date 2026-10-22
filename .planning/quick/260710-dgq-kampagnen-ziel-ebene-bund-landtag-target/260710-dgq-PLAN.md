@@ -72,7 +72,7 @@ Output: Datenmodell + Migration, Creator-Formularfeld, Handoff, Wizard-Bindung i
 </execution_context>
 
 <context>
-@.planning/todos/pending/2026-06-29-kampagnen-ziel-bund-oder-landesregierung-festlegen.md
+@.planning/todos/completed/2026-06-29-kampagnen-ziel-bund-oder-landesregierung-festlegen.md
 
 Arbeitsverzeichnis ist der Worktree brief-nach-berlin-999.6 (Branch codex/999-6-level-routing-v2). Alle Pfade relativ dazu.
 

@@ -46,14 +46,22 @@ Nicht verhandelbare Regeln:
 - Erhöhe den emotionalen Druck nur, wenn der Änderungswunsch das ausdrücklich verlangt. Sonst bleibt die emotionale Grundhaltung des bestehenden Briefs erhalten.
 - Worte wie "Verrat", "zerstört", "Schlag ins Gesicht", "Dreistigkeit" oder "ich erwarte" nur verwenden, wenn sie bereits im bestehenden Brief stehen oder im Änderungswunsch ausdrücklich verlangt werden.
 - Bei Tonstufe 4 oder 5: klare, respektvolle Forderungen statt Wutrede. Keine dramatischen Zuspitzungen.
-- Behalte etwa 70 bis 90 Prozent der Sachinhalte und der Argumentationsreihenfolge bei. Kürze, glätte oder schärfe Sprache, aber tausche die Substanz nicht aus.
+- Behalte etwa 70 bis 90 Prozent der Sachinhalte und der Argumentationsreihenfolge bei. Überarbeite die Sprache im Rahmen von <tonalitaet> und <aenderungswunsch>, die Substanz bleibt dieselbe.
 - Keine Bulletpoints, keine Meta-Erklärung, kein Kommentar vor oder nach dem Brief.
 - Verwende ausschließlich Komma, Doppelpunkt, Klammer und Punkt. Keine Gedankenstriche.
-- Der Brief bleibt ein formeller Brief in Sie-Form.
+
+Eigene Stimme bleibt:
+Der Brief gehört der Person, die ihn abschreibt und unterschreibt. Die Variante klingt weiter nach ihr.
+- Persönliche Meinungen und Wertungen bleiben inhaltlich und möglichst wörtlich stehen, auch Wertungen über die Empfängerin oder den Empfänger.
+- Gendergerechte Formen wie "Autofahrende" oder "Bürger*innen" bleiben genau so geschrieben.
+- Erkennbar bewusst gesetzte Sätze, zum Beispiel ein eigener Schlusssatz, bleiben wörtlich stehen. Sie ändern sich nur, wenn <aenderungswunsch> das verlangt.
+- Die Variante übernimmt die Anredeform des bestehenden Briefs: Du-Form bleibt Du-Form, Sie-Form bleibt Sie-Form. Ist keine Anredeform erkennbar, schreibe in Sie-Form.
+- Die Anredeform des bestehenden Briefs hat Vorrang vor <tonalitaet>, auch wenn die Tonstufe die Du-Form ausschließt.
+- Was <aenderungswunsch> ausdrücklich ändern will, setzt du um, auch wenn es diese Punkte betrifft.
 
 Antworte ausschließlich im JSON-Format:
 {
-  "preservation_check": "<ein Satz, dass Fakten, Forderung, Anrede und Grußformel erhalten blieben>",
+  "preservation_check": "<ein Satz, dass Fakten, Forderung, Anrede, Anredeform, eigene Wertungen und Grußformel erhalten blieben>",
   "letter": "<vollständiger umformulierter Brief>"
 }`;
 

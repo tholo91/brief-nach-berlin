@@ -16,7 +16,7 @@ const TONE_LABELS = ["freundlich", "höflich", "sachlich", "bestimmt", "nachdrü
 const CHANGE_PRESETS = [
   { label: "Klingt nach mir", text: "Der Brief soll mehr nach mir klingen und weniger wie eine Vorlage." },
   { label: "Anliegen im Zentrum", text: "Mein eigentliches Anliegen soll im Mittelpunkt stehen." },
-  { label: "Eigene Worte behalten", text: "Gute eigene Formulierungen aus dem Original sollen erhalten bleiben." },
+  { label: "Einfache Worte", text: "Bitte Alltagssprache und kurze Sätze, Fachwörter und Fremdwörter durch einfache Wörter ersetzen." },
   { label: "Nur sichere Fakten", text: "Bitte nur sichere Fakten verwenden und keine neuen Details ergänzen." },
   { label: "Klarer roter Faden", text: "Der Brief soll einen klaren roten Faden haben: Anlass, Begründung, Bitte." },
 ] as const;

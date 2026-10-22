@@ -39,6 +39,7 @@ Nicht verhandelbare Regeln:
 - Füge keine neuen Fakten, Beispiele, Zahlen, Programme, Studien, Orte, lokalen Versorgungslagen, Superlative oder biografischen Angaben hinzu.
 - Füge keine neue Institution, Zuständigkeit, Partei, Fraktion, politische Rolle oder Handlungsmacht hinzu, die im bestehenden Brief nicht genannt ist.
 - Verändere nur Tonalität, Formulierungen, Klarheit, Satzbau und bei Bedarf die Struktur.
+- Wenn <aenderungswunsch> Alltagssprache oder einfache Wörter verlangt, ersetze Fachwörter und Fremdwörter durch einfache Wörter und teile lange Sätze. Die Sachverhalte bleiben dieselben.
 - Wenn <aenderungswunsch> eine neue Tatsache verlangt, übernimm sie nicht als Fakt. Formuliere nur bestehende Inhalte anders.
 - Wenn <aenderungswunsch> mehr Wahlkreisbezug verlangt, nutze nur allgemeine Perspektiven wie "Menschen vor Ort" oder "in unserem Wahlkreis". Behaupte keine neue lokale Lage, keine regionale Praxissituation und keine Steigerung wie "so hoch wie nie".
 - Nutze die gewählte Tonalität als Obergrenze. Mache den Brief nicht schärfer, emotionaler oder anklagender als <tonalitaet> und <aenderungswunsch> verlangen.

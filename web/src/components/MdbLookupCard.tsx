@@ -112,6 +112,9 @@ export function MdbLookupCard() {
                   .sort((a, b) => Number(b.officeLines.length > 0) - Number(a.officeLines.length > 0))
                   .map((contact) => {
                     const hasOffice = contact.officeLines.length > 0;
+                    const postIndex = contact.officeLines.findIndex((line) => /^\d{5}\s+\S/.test(line));
+                    const mapsQuery =
+                      postIndex > 0 ? contact.officeLines.slice(postIndex - 1, postIndex + 1).join(", ") : null;
                     const profileLabel =
                       contact.profileSource === "bundestag"
                         ? "Kontakt auf bundestag.de"
@@ -141,16 +144,16 @@ export function MdbLookupCard() {
                                 </span>
                               ))}
                             </address>
-                            <a
-                              href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
-                                contact.officeLines.slice(-2).join(", ")
-                              )}`}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="mt-1 self-start font-body text-sm font-semibold text-waldgruen underline decoration-waldgruen/30 underline-offset-4 hover:text-waldgruen-dark hover:decoration-waldgruen-dark focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-waldgruen"
-                            >
-                              In Google Maps öffnen
-                            </a>
+                            {mapsQuery ? (
+                              <a
+                                href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(mapsQuery)}`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="mt-1 self-start font-body text-sm font-semibold text-waldgruen underline decoration-waldgruen/30 underline-offset-4 hover:text-waldgruen-dark hover:decoration-waldgruen-dark focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-waldgruen"
+                              >
+                                In Google Maps öffnen
+                              </a>
+                            ) : null}
                             {contact.profileUrl ? (
                               <div className="mt-auto pt-4">
                                 <a

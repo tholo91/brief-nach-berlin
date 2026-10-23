@@ -58,9 +58,6 @@ async function main() {
   console.log(`- ${found.reviews.length} review(s)`);
   console.log(`- ${found.mapEntries.length} voluntary letter signal(s)`);
   console.log(`- ${found.outcomes.length} outcome response(s)`);
-  if (found.reviews.length > 0) {
-    console.log("Note: also remove this person's review from src/lib/reviews/fallbackReviews.ts if it is listed there.");
-  }
 
   if (!args.confirm) {
     console.log("No data was deleted. Re-run with --confirm to permanently delete these rows.");

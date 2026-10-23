@@ -1,6 +1,5 @@
 import { getHeroReviews } from "@/lib/reviews/getHeroReviews";
 import { supabase } from "@/lib/supabase";
-import { FALLBACK_HERO_REVIEWS } from "@/lib/reviews/fallbackReviews";
 
 jest.mock("@/lib/supabase", () => ({
   supabase: {
@@ -77,11 +76,11 @@ describe("getHeroReviews", () => {
     expect(result.filter((r) => r.rating === 5)).toHaveLength(3);
   });
 
-  it("uses the stored fallback, not non-featured reviews, when none are featured", async () => {
+  it("does not fall back to non-featured reviews when none are featured", async () => {
     const query = makeQuery({ data: [], error: null });
     mockedSupabase.from.mockReturnValue(query as never);
 
-    await expect(getHeroReviews()).resolves.toEqual(FALLBACK_HERO_REVIEWS);
+    await expect(getHeroReviews()).resolves.toEqual([]);
     expect(mockedSupabase.from).toHaveBeenCalledTimes(1);
   });
 
@@ -137,12 +136,12 @@ describe("getHeroReviews", () => {
     );
   });
 
-  it("returns the stored fallback when the featured query fails", async () => {
+  it("returns no reviews when the featured query fails", async () => {
     const query = makeQuery({ data: null, error: new Error("database down") });
     mockedSupabase.from.mockReturnValue(query as never);
     const errorSpy = jest.spyOn(console, "error").mockImplementation(() => {});
 
-    await expect(getHeroReviews()).resolves.toEqual(FALLBACK_HERO_REVIEWS);
+    await expect(getHeroReviews()).resolves.toEqual([]);
     expect(mockedSupabase.from).toHaveBeenCalledTimes(1);
     expect(errorSpy).toHaveBeenCalledWith(
       "[getHeroReviews] query error:",

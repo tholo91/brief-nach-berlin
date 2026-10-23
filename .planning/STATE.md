@@ -4,10 +4,10 @@ milestone: v1.0
 current_phase: 05
 status: verifying
 stopped_at: Completed 05-04-PLAN.md
-last_updated: "2026-10-22T17:08:17.057Z"
+last_updated: "2026-10-23T11:27:23.624Z"
 last_activity: 2026-10-22
 last_activity_desc: Quick 261013-wuq lokal implementiert und geprüft; manueller Release offen
-state_head: 87ab6ffb00d1597ba04e0d1a2132cb3cd54bbe7b
+state_head: 2556d9921c49cc1b3074b389f58edfc491f741af
 progress:
   total_phases: 33
   completed_phases: 4
@@ -49,7 +49,7 @@ Der level-aware E-Mail-Betreff ist dagegen bereits implementiert und getestet; d
 Phase: 05 — EXECUTING
 Plan: 4 of 4
 Status: Phase complete — ready for verification
-Last activity: 2026-10-22 - Completed quick task 261022-qg2: Feedback-Token komprimieren (deflateRaw), damit Brevo-Stern-Links unter 2083 Zeichen bleiben
+Last activity: 2026-10-23 - Completed quick task 261023-ilb: Fallback-Reviews entfernen, Review-Streifen blendet bei Fehler aus
 
 Progress: [███████░░░] 68%
 
@@ -216,6 +216,7 @@ Recent decisions affecting current work:
 | 261022-qdd | Brief anpassen behält eigene Stimme, Knopf Einfache Worte | 2026-10-22 | 847635c | [261022-qdd-brief-anpassen-beh-lt-eigene-stimme-knop](./quick/261022-qdd-brief-anpassen-beh-lt-eigene-stimme-knop/) |
 | 261022-qg2 | Feedback-Token komprimieren (deflateRaw), damit Brevo-Stern-Links unter 2083 Zeichen bleiben | 2026-10-22 | 87ab6ff | [261022-qg2-feedback-token-komprimieren-deflateraw-d](./quick/261022-qg2-feedback-token-komprimieren-deflateraw-d/) |
 | 82 | Autopilot: tote Doku-Links (DSGVO-AUDIT, ROADMAP) repariert, 4 erledigte Todos nach completed | 2026-10-21 | 4b97ffb | — |
+| 261023-ilb | Fallback-Reviews entfernen, Review-Streifen blendet bei Fehler aus | 2026-10-23 | 2556d99 | [261023-ilb-fallback-reviews-entfernen-review-streif](./quick/261023-ilb-fallback-reviews-entfernen-review-streif/) |
 
 ## Session Continuity
 

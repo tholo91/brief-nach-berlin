@@ -23,6 +23,7 @@ A web app that turns citizens' frustrations into effective, personalized letters
 In `CLAUDE.md` und `AGENTS.md` identisch halten.
 
 - **Lean und nachhaltig bauen.** Die einfachste Lösung, die das echte Problem der Nutzer:innen löst. Keine komplexen Funktionen, die jeden denkbaren Edge Case abdecken. Seltene Fälle lieber sauber scheitern lassen (klare Meldung, erneut versuchen möglich), statt Sonderlogik zu bauen.
+- **Nur das Wichtigste shippen.** Vor jedem Fix fragen: Merken echte Nutzer:innen es, kostet es Geld, oder geht es um Recht und Datenschutz? Wenn nein, notieren statt bauen. Review-Funde und Kleinigkeiten nicht automatisch abarbeiten: erst den Einfluss auf Nutzer:innen einschätzen und Thomas aktiv bremsen, wenn es Richtung Perfektionieren geht. Nachhaltig heißt sauber gebaut, nicht vollständig.
 - **Erweitern statt kopieren.** Vor neuer Logik prüfen, ob es sie schon gibt (z. B. Rate-Limit, Token, Mailversand, Empfänger-Prüfung). Eine bestehende Stelle erweitern, keine zweite Kopie anlegen.
 - **Kosten im Blick.** Vercel und Brevo sind bezahlt, Mistral wird pro Nutzung bezahlt. Supabase soll so lange wie möglich im Free-Tarif bleiben: Daten in SQL aggregieren statt alle Zeilen zu laden, keine zusätzlichen Supabase-Dienste ohne Rückfrage.
 - **Keine neuen Dienste oder SDKs** ohne Rückfrage bei Thomas.

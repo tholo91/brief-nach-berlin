@@ -107,44 +107,83 @@ export function MdbLookupCard() {
                     : "Für deine Postleitzahl sind mehrere Abgeordnete eingetragen."}
                 </p>
               ) : null}
-              <ul className="space-y-4">
-                {state.contacts.map((contact) => (
-                  <li
-                    key={contact.id}
-                    className="rounded-xl border border-waldgruen/20 bg-waldgruen/5 p-5"
-                  >
-                    <p className="font-body text-lg font-bold text-waldgruen-dark">{contact.name}</p>
-                    <p className="font-body text-sm text-warmgrau/80 mb-3">
-                      {contact.party}, {contact.wahlkreisName}
-                      {contact.isDirect ? ", direkt gewählt" : ""}
-                    </p>
-                    {contact.officeLines.length > 0 ? (
-                      <address className="not-italic font-typewriter text-sm leading-relaxed text-warmgrau mb-4">
-                        {contact.officeLines.map((line) => (
-                          <span key={line} className="block">
-                            {line}
-                          </span>
-                        ))}
-                      </address>
-                    ) : (
-                      <p className="font-body text-sm text-warmgrau/70 mb-4">
-                        Ein Wahlkreisbüro ist im Profil nicht eingetragen.
-                      </p>
-                    )}
-                    {contact.profileUrl ? (
-                      <a
-                        href={contact.profileUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="inline-block rounded-xl bg-waldgruen px-5 py-2.5 font-body text-sm font-semibold text-creme transition-colors hover:bg-waldgruen-dark focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-waldgruen-dark"
+              <ul className={`grid gap-3 ${state.contacts.length > 1 ? "sm:grid-cols-2" : ""}`}>
+                {[...state.contacts]
+                  .sort((a, b) => Number(b.officeLines.length > 0) - Number(a.officeLines.length > 0))
+                  .map((contact) => {
+                    const hasOffice = contact.officeLines.length > 0;
+                    const profileLabel =
+                      contact.profileSource === "bundestag"
+                        ? "Kontakt auf bundestag.de"
+                        : "Profil auf abgeordnetenwatch.de";
+                    return (
+                      <li
+                        key={contact.id}
+                        className={
+                          hasOffice
+                            ? "flex flex-col rounded-xl border border-waldgruen/20 bg-waldgruen/5 p-4"
+                            : "flex flex-col rounded-xl border border-dashed border-warmgrau/30 p-4"
+                        }
                       >
-                        {contact.profileSource === "bundestag"
-                          ? "Kontakt auf bundestag.de"
-                          : "Profil auf abgeordnetenwatch.de"}
-                      </a>
-                    ) : null}
-                  </li>
-                ))}
+                        <p className="font-body text-base font-bold leading-snug text-waldgruen-dark">
+                          {contact.name}
+                        </p>
+                        <p className="font-body text-sm text-warmgrau/80">
+                          {contact.party}, {contact.wahlkreisName}
+                          {contact.isDirect ? ", direkt gewählt" : ""}
+                        </p>
+                        {hasOffice ? (
+                          <>
+                            <address className="not-italic mt-3 font-typewriter text-sm leading-relaxed text-warmgrau">
+                              {contact.officeLines.map((line) => (
+                                <span key={line} className="block">
+                                  {line}
+                                </span>
+                              ))}
+                            </address>
+                            <a
+                              href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
+                                contact.officeLines.slice(-2).join(", ")
+                              )}`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="mt-1 self-start font-body text-sm font-semibold text-waldgruen underline decoration-waldgruen/30 underline-offset-4 hover:text-waldgruen-dark hover:decoration-waldgruen-dark focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-waldgruen"
+                            >
+                              In Google Maps öffnen
+                            </a>
+                            {contact.profileUrl ? (
+                              <div className="mt-auto pt-4">
+                                <a
+                                  href={contact.profileUrl}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="inline-block rounded-xl bg-waldgruen px-4 py-2 font-body text-sm font-semibold text-creme transition-colors hover:bg-waldgruen-dark focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-waldgruen-dark"
+                                >
+                                  {profileLabel}
+                                </a>
+                              </div>
+                            ) : null}
+                          </>
+                        ) : (
+                          <>
+                            <p className="mt-2 font-body text-sm text-warmgrau/70">
+                              Kein Wahlkreisbüro eingetragen.
+                            </p>
+                            {contact.profileUrl ? (
+                              <a
+                                href={contact.profileUrl}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="mt-2 self-start font-body text-sm font-semibold text-waldgruen underline decoration-waldgruen/30 underline-offset-4 hover:text-waldgruen-dark hover:decoration-waldgruen-dark focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-waldgruen"
+                              >
+                                {profileLabel}
+                              </a>
+                            ) : null}
+                          </>
+                        )}
+                      </li>
+                    );
+                  })}
               </ul>
               <p className="font-body text-sm text-warmgrau/70 leading-relaxed">
                 Die Telefonnummer steht meist auf der Homepage des Abgeordneten unter Kontakt oder

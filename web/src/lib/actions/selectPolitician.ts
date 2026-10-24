@@ -16,6 +16,7 @@ import { getPublicCampaignBySlug } from "@/lib/campaigns/repository";
 import { DEFAULT_LETTER_LENGTH } from "@/lib/config";
 import { deriveRoutingLetterId, verifyRoutingTokenEnvelope } from "@/lib/lookup/routingToken";
 import { buildLetterSignalContext } from "@/lib/letterSignals/context";
+import { resolveYouthLetterContext } from "@/lib/schule/youthContext";
 import { isBundeskanzlerCampaignTarget } from "@/lib/lookup/bundeskanzlerRecipient";
 import { getCampaignFixedRecipient } from "@/lib/lookup/campaignFixedRecipient";
 
@@ -120,16 +121,19 @@ export async function selectPoliticianAction(
           }),
         )
       : randomUUID();
-    const signal = buildLetterSignalContext({
-      data,
-      recipient: resolved.recipient,
-      letterId,
-      // A classified campaign carries one shared topic signal into internal
-      // stats. Until the silent background job finishes, keep the established
-      // routing-derived fallback for this individual letter.
-      topic: campaign?.topic ?? routingEnvelope?.routing.topic,
-      campaignSlug: campaign?.slug ?? null,
-    });
+    // Jugendmodus: kein Signal-Kontext.
+    const signal = resolveYouthLetterContext(data)
+      ? null
+      : buildLetterSignalContext({
+          data,
+          recipient: resolved.recipient,
+          letterId,
+          // A classified campaign carries one shared topic signal into internal
+          // stats. Until the silent background job finishes, keep the established
+          // routing-derived fallback for this individual letter.
+          topic: campaign?.topic ?? routingEnvelope?.routing.topic,
+          campaignSlug: campaign?.slug ?? null,
+        });
 
     // Pre-checks passed — letter generation happens async via /api/generate-letter
     // on the Success-Page, so we return immediately without blocking the user.

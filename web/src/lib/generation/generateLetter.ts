@@ -6,6 +6,7 @@ import { lowercaseAfterSalutation } from "@/lib/generation/lowercaseAfterSalutat
 import { findRuleViolations, replaceDashes, ruleRetryDirective } from "@/lib/generation/letterRules";
 import { extractJsonObject } from "@/lib/mistral-json";
 import { LETTER_LENGTHS, DEFAULT_LETTER_LENGTH } from "@/lib/config";
+import { LAST_KLASSE_NOT_YET_VOTING, YOUTH_LETTER_WORDS } from "@/lib/schule/youth";
 import {
   buildTopicSignal,
   TOPIC_JSON_SCHEMA_PROPERTIES,
@@ -502,6 +503,33 @@ function absenderBlock(input: GenerateLetterInput): string {
   return `\n\n<absender_optional>\n${lines.join("\n")}\n</absender_optional>`;
 }
 
+function youthBlock(input: GenerateLetterInput): string {
+  const youth = input.youth;
+  if (!youth) return "";
+  const { klasse, viaClassLink } = youth;
+  const wahlSatz =
+    klasse <= LAST_KLASSE_NOT_YET_VOTING
+      ? "Sage in einem eigenen Satz, dass ich bei der Bundestagswahl noch nicht wählen darf."
+      : "Sage in einem eigenen Satz, dass ich bald zum ersten Mal wählen darf.";
+  const ton =
+    klasse <= 9
+      ? "Schreibe einfach und direkt."
+      : "Schreibe sachlich und gib eine kurze Begründung.";
+  const lines = [
+    "Der Brief kommt von einer Person, die noch zur Schule geht. Diese Angaben sind eine zulässige Quelle wie <absender_optional> und haben Vorrang vor allen anderen Hinweisen zu Absender, Wahlstatus, Wahlkreis, Vita und Erwachsenen-Rolle.",
+    `- Schreibe in der Ich-Form und nenne früh im Brief den Satz „Ich gehe in die ${klasse}. Klasse.“ Formuliere geschlechtsneutral, ohne „als Schüler“ oder „als Schülerin“.`,
+    `- ${wahlSatz} Nenne keine Jahreszahlen.`,
+  ];
+  if (viaClassLink) {
+    lines.push("- Sage im Brief, dass ich im Rahmen eines Unterrichtsprojekts schreibe.");
+  }
+  lines.push(
+    `- Ton: klar, ehrlich und höflich, so wie eine Person dieses Alters an eine erwachsene Person schreibt, die sie ernst nehmen soll. ${ton} Verwende normales Alltagsdeutsch in kurzen Sätzen und eigene Beobachtungen aus Schule und Alltag, soweit sie im <transkript> stehen.`,
+    "- Weitere Angaben zur Person (Alter, Schule, Wohnort, Familie) nennst du nur, wenn sie im <transkript> stehen.",
+  );
+  return `\n\n<absender_jugend>\n${lines.join("\n")}\n</absender_jugend>`;
+}
+
 export function buildUserPrompt(
   input: GenerateLetterInput,
   minWords: number,
@@ -579,7 +607,7 @@ absaetze: 3 bis 4
 
 <empfaenger>
 ${politiciansJson}
-</empfaenger>${contextBlock}${absenderBlock(input)}${shortInputHinweis}`;
+</empfaenger>${contextBlock}${absenderBlock(input)}${youthBlock(input)}${shortInputHinweis}`;
 }
 
 interface ParsedLetter {
@@ -630,7 +658,9 @@ export async function generateLetter(
   input: GenerateLetterInput
 ): Promise<GenerateLetterResult> {
   const lengthKey = input.letterLength ?? DEFAULT_LETTER_LENGTH;
-  const { min: minWords, max: maxWords } = LETTER_LENGTHS[lengthKey];
+  const { min: minWords, max: maxWords } = input.youth
+    ? YOUTH_LETTER_WORDS
+    : LETTER_LENGTHS[lengthKey];
   const targetWords = Math.round((minWords + maxWords) / 2);
   const toneLevel = input.toneLevel ?? 3;
   const maxTokens = Math.ceil(maxWords * 2.2) + 250;

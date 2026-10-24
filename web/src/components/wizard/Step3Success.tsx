@@ -33,6 +33,8 @@ import {
   initialPoliticianId,
   visibleLocalCampaignRecipients,
 } from "@/lib/campaign-recipient-picker";
+import { track } from "@vercel/analytics";
+import { isYouthWizard, youthBriefEvent } from "./youthMode";
 import { WizardForwardIcon } from "./WizardForwardIcon";
 import { LetterSignalCard } from "./LetterSignalCard";
 import { allowsAlternativeRecipients } from "@/lib/lookup/alternativeRecipients";
@@ -297,6 +299,8 @@ export function Step3Success({
   // during the final letter-generation wait.
   const [genPhase, setGenPhase] = useState(0);
   const submitButtonRef = useRef<HTMLButtonElement | null>(null);
+  const isYouth = isYouthWizard(wizardData);
+  const youthEventSentRef = useRef(false);
   const [letterSignalContext, setLetterSignalContext] = useState<string | null>(() =>
     result && "letterSignalContext" in result && typeof result.letterSignalContext === "string"
       ? result.letterSignalContext
@@ -660,6 +664,11 @@ export function Step3Success({
         if (data.letterText) {
           setLetterText(data.letterText);
           setLetterReady(true);
+          const youthEvent = youthBriefEvent(wizardData);
+          if (youthEvent && !youthEventSentRef.current) {
+            youthEventSentRef.current = true;
+            track("jung_brief", youthEvent);
+          }
         } else {
           throw new Error("No letterText");
         }
@@ -1171,7 +1180,7 @@ export function Step3Success({
               </figcaption>
             </figure>
           )}
-          {letterSignalContext && (
+          {letterSignalContext && !isYouth && (
             <LetterSignalCard
               contextToken={letterSignalContext}
               generationProof={generationProof}
@@ -1180,6 +1189,7 @@ export function Step3Success({
           )}
         </aside>
 
+        {!isYouth && (
         <section
           aria-labelledby="success-support-title"
           className="overflow-hidden rounded-2xl border border-waldgruen/15 bg-creme/90 px-5 py-5 shadow-[0_18px_50px_-38px_rgba(24,70,51,0.7)] backdrop-blur-[2px] sm:px-6 md:col-start-1 md:row-start-2"
@@ -1224,6 +1234,7 @@ export function Step3Success({
             </Link>
           </div>
         </section>
+        )}
       </div>
     );
   }

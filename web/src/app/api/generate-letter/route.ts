@@ -21,6 +21,7 @@ import { computeFollowupSlot } from "@/lib/email/computeFollowupSlot";
 import { buildDebugPayload, type LetterRoutingInfo } from "@/lib/email/buildDebugPayload";
 import { checkOriginRateLimit, checkRateLimit, hashIdentifier, LIMITS } from "@/lib/rateLimit";
 import { verifyClassToken } from "@/lib/schule/classToken";
+import { resolveYouthLetterContext } from "@/lib/schule/youthContext";
 import { DEFAULT_LETTER_LENGTH } from "@/lib/config";
 import {
   MistralProviderUnavailableError,
@@ -237,10 +238,13 @@ export async function POST(req: NextRequest) {
     }
     const recipient = resolved.recipient;
 
+    // Jugendmodus: kein Signal-Kontext, keine Folge-Mail, Briefkopie ohne Spendenbitte.
+    const youth = resolveYouthLetterContext(data);
+
     let letterId: string = randomUUID();
     let verifiedSignalContext: ReturnType<typeof verifyLetterSignalContext> = null;
     let suppliedSignalToken: string | null = null;
-    if (body.letterSignalContext !== undefined) {
+    if (!youth && body.letterSignalContext !== undefined) {
       if (typeof body.letterSignalContext !== "string") {
         return NextResponse.json({ error: "Ungültiger Signal-Kontext." }, { status: 400 });
       }
@@ -322,9 +326,12 @@ export async function POST(req: NextRequest) {
       recipientRelation: resolved.relation,
       mismatchRecommendedLevel,
       preclassifiedTopic: campaign?.topic,
+      youth,
     });
 
-    const resolvedSignal = verifiedSignalContext
+    const resolvedSignal = youth
+      ? null
+      : verifiedSignalContext
       ? { context: verifiedSignalContext, token: suppliedSignalToken! }
       : buildLetterSignalContext({
           data,
@@ -357,9 +364,11 @@ export async function POST(req: NextRequest) {
     after(async () => {
       // Generation is optional metadata. The voluntary map contribution was
       // already accepted independently and remains valid if mail delivery fails.
-      const finalized = await markLetterSignalGeneratedAction({ generationProof });
-      if ("error" in finalized && finalized.error === "server_error") {
-        console.error("[brief-nach-berlin][after][letter-signals] finalize failed");
+      if (!youth) {
+        const finalized = await markLetterSignalGeneratedAction({ generationProof });
+        if ("error" in finalized && finalized.error === "server_error") {
+          console.error("[brief-nach-berlin][after][letter-signals] finalize failed");
+        }
       }
 
       const debugPayload = buildDebugPayload(
@@ -389,6 +398,7 @@ export async function POST(req: NextRequest) {
         campaignLetterCount: campaign && letterNumber !== undefined ? campaign.letterCount + 1 : undefined,
         letterNumber,
         letterId,
+        audience: youth ? "jung" : undefined,
       });
 
       const letterResult = await sendLetterEmail(params);
@@ -402,7 +412,7 @@ export async function POST(req: NextRequest) {
       // cross-instance-sicher, aber gut genug gegen ehrliche Mehrfach-Submissions.
       // Alle Empfänger-Ebenen bekommen den Followup (999.34): ohne ihn sind
       // Land-/Kommune-Reviews systematisch unterbewertet (2,3★ vs. Bund 3,3★).
-      if (letterResult.success && process.env.BREVO_FOLLOWUP_ENABLED === "true") {
+      if (!youth && letterResult.success && process.env.BREVO_FOLLOWUP_ENABLED === "true") {
         const followupDedup = checkRateLimit(
           `followup:${hashIdentifier(data.email.toLowerCase())}`,
           1,

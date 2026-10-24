@@ -99,4 +99,58 @@ describe("wizard handoff", () => {
       issueText: "Überarbeiteter Entwurf mit konkreter Bitte.",
     });
   });
+
+  it("keeps valid youth fields", () => {
+    saveHandoff({
+      issueText: "Unser Schulbus kommt zu selten.",
+      audience: "jung",
+      klasse: 9,
+      classToken: "tok.en",
+      plz: "28195",
+    });
+
+    expect(peekHandoff()).toMatchObject({
+      audience: "jung",
+      klasse: 9,
+      classToken: "tok.en",
+      plz: "28195",
+    });
+  });
+
+  it("drops invalid youth fields but keeps the rest of the handoff", () => {
+    sessionStorage.setItem(
+      "wizard-handoff",
+      JSON.stringify({
+        issueText: "Unser Schulbus kommt zu selten.",
+        audience: "erwachsen",
+        klasse: 5,
+        classToken: "x".repeat(513),
+        plz: "2819",
+        savedAt: Date.now(),
+      })
+    );
+
+    const handoff = peekHandoff();
+    expect(handoff?.issueText).toBe("Unser Schulbus kommt zu selten.");
+    expect(handoff?.audience).toBeUndefined();
+    expect(handoff?.klasse).toBeUndefined();
+    expect(handoff?.classToken).toBeUndefined();
+    expect(handoff?.plz).toBeUndefined();
+  });
+
+  it("rejects non-numeric klasse and non-string token or plz", () => {
+    sessionStorage.setItem(
+      "wizard-handoff",
+      JSON.stringify({
+        issueText: "Unser Schulbus kommt zu selten.",
+        audience: "jung",
+        klasse: "8",
+        classToken: 12,
+        plz: 28195,
+        savedAt: Date.now(),
+      })
+    );
+
+    expect(peekHandoff()).toMatchObject({ audience: "jung", klasse: undefined, classToken: undefined, plz: undefined });
+  });
 });

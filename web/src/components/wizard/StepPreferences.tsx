@@ -19,6 +19,7 @@ interface StepPreferencesProps {
   onErrorDismiss?: () => void;
   defaultValues?: Partial<StepPreferencesData>;
   isCampaign?: boolean;
+  isYouth?: boolean;
 }
 
 function PartyExplainer() {
@@ -72,6 +73,7 @@ export function StepPreferences({
   onErrorDismiss,
   defaultValues,
   isCampaign = false,
+  isYouth = false,
 }: StepPreferencesProps) {
   const copy = useUiCopy();
   const [advancedOpen, setAdvancedOpen] = useState(
@@ -121,7 +123,7 @@ export function StepPreferences({
         {copy.preferences.heading}
       </h1>
       <p className="font-body text-sm text-warmgrau/70 mb-8">
-        {copy.preferences.intro}
+        {isYouth ? copy.preferences.introYouth : copy.preferences.intro}
       </p>
 
       {errorMessage && (
@@ -170,124 +172,128 @@ export function StepPreferences({
           </div>
         </fieldset>
 
-        <fieldset>
-          <legend className="block font-body text-sm font-semibold text-warmgrau mb-3">
-            {copy.preferences.lengthLegend}
-          </legend>
-          <div className="flex gap-2">
-            {(["1", "1.5", "2"] as LetterLength[]).map((length) => {
-              const active = selectedLength === length;
-              return (
-                <button
-                  key={length}
-                  type="button"
-                  onClick={() => {
-                    onErrorDismiss?.();
-                    setValue("letterLength", length);
-                    setSelectedLength(length);
-                    notifyChange({ letterLength: length });
-                  }}
-                  className={[
-                    "flex-1 font-body text-sm py-2.5 rounded-lg border transition-all cursor-pointer active:scale-[0.98]",
-                    active
-                      ? "bg-waldgruen text-creme border-waldgruen shadow-sm"
-                      : "bg-creme text-waldgruen-dark border-warmgrau/30 hover:border-waldgruen/50",
-                  ].join(" ")}
-                >
-                  {length === "1"
-                    ? copy.preferences.lengthOne
-                    : length === "1.5"
-                      ? copy.preferences.lengthOneHalf
-                      : copy.preferences.lengthTwo}
-                </button>
-              );
-            })}
-          </div>
-          <p className="text-xs text-warmgrau/50 mt-2">
-            {copy.preferences.lengthHint}
-          </p>
-        </fieldset>
-
-        <div className="border-t border-warmgrau/10 pt-5">
-          <button
-            type="button"
-            onClick={() => setAdvancedOpen((value) => !value)}
-            aria-expanded={advancedOpen}
-            aria-controls="advanced-personal-details"
-            className="flex w-full items-center justify-between gap-4 text-left cursor-pointer"
-          >
-            <span>
-              <span className="block font-body text-base font-semibold text-waldgruen-dark">
-                {copy.preferences.advanced}
-              </span>
-              <span className="mt-1 block font-body text-sm text-warmgrau/65">
-                {copy.preferences.advancedDescription}
-              </span>
-            </span>
-            <svg
-              width="18"
-              height="18"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              aria-hidden="true"
-              className={`shrink-0 transition-transform duration-200 ${advancedOpen ? "rotate-180" : ""}`}
-            >
-              <path d="m6 9 6 6 6-6" />
-            </svg>
-          </button>
-
-          {advancedOpen && (
-            <div
-              id="advanced-personal-details"
-              className="mt-5 space-y-6 rounded-r-lg border-l-4 border-waldgruen/35 bg-waldgruen/5 px-4 py-4"
-            >
-              <div>
-                <label htmlFor="party" className="block font-body text-sm font-semibold text-warmgrau mb-1">
-                  {copy.preferences.partyLabel}
-                </label>
-                <input
-                  id="party"
-                  type="text"
-                  placeholder={copy.preferences.partyPlaceholder}
-                  className={inputClassName}
-                  onFocus={() => onErrorDismiss?.()}
-                  {...partyField}
-                  onChange={(event) => {
-                    partyField.onChange(event);
-                    notifyChange({ party: event.target.value });
-                  }}
-                />
-                <PartyExplainer />
-              </div>
-
-              <div>
-                <label htmlFor="ngo" className="block font-body text-sm font-semibold text-warmgrau mb-1">
-                  {copy.preferences.organisationLabel}
-                </label>
-                <input
-                  id="ngo"
-                  type="text"
-                  placeholder={copy.preferences.organisationPlaceholder}
-                  className={inputClassName}
-                  onFocus={() => onErrorDismiss?.()}
-                  {...ngoField}
-                  onChange={(event) => {
-                    ngoField.onChange(event);
-                    notifyChange({ ngo: event.target.value });
-                  }}
-                />
-              </div>
-
-              <p className="font-body text-xs leading-relaxed text-warmgrau/65">
-                {copy.preferences.advancedPrivacy}
-              </p>
+        {!isYouth && (
+          <fieldset>
+            <legend className="block font-body text-sm font-semibold text-warmgrau mb-3">
+              {copy.preferences.lengthLegend}
+            </legend>
+            <div className="flex gap-2">
+              {(["1", "1.5", "2"] as LetterLength[]).map((length) => {
+                const active = selectedLength === length;
+                return (
+                  <button
+                    key={length}
+                    type="button"
+                    onClick={() => {
+                      onErrorDismiss?.();
+                      setValue("letterLength", length);
+                      setSelectedLength(length);
+                      notifyChange({ letterLength: length });
+                    }}
+                    className={[
+                      "flex-1 font-body text-sm py-2.5 rounded-lg border transition-all cursor-pointer active:scale-[0.98]",
+                      active
+                        ? "bg-waldgruen text-creme border-waldgruen shadow-sm"
+                        : "bg-creme text-waldgruen-dark border-warmgrau/30 hover:border-waldgruen/50",
+                    ].join(" ")}
+                  >
+                    {length === "1"
+                      ? copy.preferences.lengthOne
+                      : length === "1.5"
+                        ? copy.preferences.lengthOneHalf
+                        : copy.preferences.lengthTwo}
+                  </button>
+                );
+              })}
             </div>
-          )}
-        </div>
+            <p className="text-xs text-warmgrau/50 mt-2">
+              {copy.preferences.lengthHint}
+            </p>
+          </fieldset>
+        )}
+
+        {!isYouth && (
+          <div className="border-t border-warmgrau/10 pt-5">
+            <button
+              type="button"
+              onClick={() => setAdvancedOpen((value) => !value)}
+              aria-expanded={advancedOpen}
+              aria-controls="advanced-personal-details"
+              className="flex w-full items-center justify-between gap-4 text-left cursor-pointer"
+            >
+              <span>
+                <span className="block font-body text-base font-semibold text-waldgruen-dark">
+                  {copy.preferences.advanced}
+                </span>
+                <span className="mt-1 block font-body text-sm text-warmgrau/65">
+                  {copy.preferences.advancedDescription}
+                </span>
+              </span>
+              <svg
+                width="18"
+                height="18"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                aria-hidden="true"
+                className={`shrink-0 transition-transform duration-200 ${advancedOpen ? "rotate-180" : ""}`}
+              >
+                <path d="m6 9 6 6 6-6" />
+              </svg>
+            </button>
+
+            {advancedOpen && (
+              <div
+                id="advanced-personal-details"
+                className="mt-5 space-y-6 rounded-r-lg border-l-4 border-waldgruen/35 bg-waldgruen/5 px-4 py-4"
+              >
+                <div>
+                  <label htmlFor="party" className="block font-body text-sm font-semibold text-warmgrau mb-1">
+                    {copy.preferences.partyLabel}
+                  </label>
+                  <input
+                    id="party"
+                    type="text"
+                    placeholder={copy.preferences.partyPlaceholder}
+                    className={inputClassName}
+                    onFocus={() => onErrorDismiss?.()}
+                    {...partyField}
+                    onChange={(event) => {
+                      partyField.onChange(event);
+                      notifyChange({ party: event.target.value });
+                    }}
+                  />
+                  <PartyExplainer />
+                </div>
+
+                <div>
+                  <label htmlFor="ngo" className="block font-body text-sm font-semibold text-warmgrau mb-1">
+                    {copy.preferences.organisationLabel}
+                  </label>
+                  <input
+                    id="ngo"
+                    type="text"
+                    placeholder={copy.preferences.organisationPlaceholder}
+                    className={inputClassName}
+                    onFocus={() => onErrorDismiss?.()}
+                    {...ngoField}
+                    onChange={(event) => {
+                      ngoField.onChange(event);
+                      notifyChange({ ngo: event.target.value });
+                    }}
+                  />
+                </div>
+
+                <p className="font-body text-xs leading-relaxed text-warmgrau/65">
+                  {copy.preferences.advancedPrivacy}
+                </p>
+              </div>
+            )}
+          </div>
+        )}
       </div>
 
       <div className="mt-10">

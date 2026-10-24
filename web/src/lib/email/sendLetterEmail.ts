@@ -134,6 +134,8 @@ export interface SendLetterEmailParams {
   letterNumber?: number;
   campaignLetterCount?: number;
   letterId?: string;
+  // Jugendmodus: nur Briefkopie, ohne Spendenbitte und Sterne-Bewertung.
+  audience?: "jung";
 }
 
 // Gemeinsamer Versand-Tail für Erst- UND Resend-Pfad: mappt einen Politician +
@@ -142,7 +144,16 @@ export interface SendLetterEmailParams {
 // Die Debug-Payload selbst bleibt pfad-spezifisch (Generierung vs. Resend), den
 // signierten Token gibt die Funktion zurück, weil der Erstversand ihn zusätzlich
 // für die Followup-Mail wiederverwendet.
-export function prepareLetterEmail(args: {
+export function prepareLetterEmail(
+  args: Parameters<typeof prepareAdultLetterEmail>[0] & { audience?: "jung" },
+): { params: SendLetterEmailParams; feedbackToken: string } {
+  const prepared = prepareAdultLetterEmail(args);
+  if (args.audience !== "jung") return prepared;
+  // Ohne Feedback-Token entfällt die Sterne-Bewertung in der Mail.
+  return { ...prepared, params: { ...prepared.params, audience: "jung", feedbackToken: undefined } };
+}
+
+function prepareAdultLetterEmail(args: {
   locale?: Locale;
   recipientEmail: string;
   recipient: Recipient;

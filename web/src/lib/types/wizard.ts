@@ -11,6 +11,7 @@ import type { CampaignFixedRecipientRecipient } from "@/lib/lookup/campaignFixed
 import type { LetterLength } from "@/lib/config";
 import type { Locale } from "@/lib/i18n/locale";
 import type { TopicSignal } from "@/lib/topics/topicTaxonomy";
+import type { YouthLetterContext } from "@/lib/schule/youth";
 
 export type WizardStep = 1 | 2 | "2b" | "level" | 3;
 export type RecipientLevel = PoliticalLevel | "Fixed";
@@ -27,6 +28,10 @@ export interface WizardData {
   usedSpeechToText?: boolean;
   tipsOpened?: boolean;
   classToken?: string;
+  /** Jugendmodus (/jung): der Brief kommt von einer Schülerin oder einem Schüler. */
+  audience?: "jung";
+  /** Klassenstufe im Jugendmodus (7 bis 13). */
+  klasse?: number;
   campaign?: {
     slug: string;
     title: string;
@@ -116,6 +121,8 @@ export interface GenerateLetterInput {
    * Briefgeneration das gleiche Statistik-Signal nicht erneut erzeugen.
    */
   preclassifiedTopic?: TopicSignal | null;
+  /** Jugendmodus: Absender ist Schüler:in, Länge nach YOUTH_LETTER_WORDS. */
+  youth?: YouthLetterContext;
 }
 
 export interface GenerateLetterResult {

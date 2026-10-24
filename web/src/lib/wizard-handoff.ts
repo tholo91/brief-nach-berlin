@@ -10,6 +10,8 @@
 // history can restore the same draft. WizardShell clears it once the recipient
 // selection is ready.
 
+import { isValidKlasse } from "@/lib/schule/youth";
+
 const HANDOFF_KEY = "wizard-handoff";
 const HANDOFF_TTL_MS = 30 * 60 * 1000;
 const HANDOFF_SAVED_AT_KEY = "savedAt";
@@ -30,7 +32,14 @@ export interface WizardHandoff {
   // sonst startet der Wizard mit einem frischen "false" und der Debug-Payload
   // meldet faelschlich Voice=false, obwohl auf der Landing gesprochen wurde.
   usedSpeechToText?: boolean;
+  // Jugendmodus (/jung, Klassenlink): Klassenstufe steuert den Brief, PLZ ist vorbelegt.
+  audience?: "jung";
+  klasse?: number;
+  classToken?: string;
+  plz?: string;
 }
+
+const CLASS_TOKEN_MAX_LENGTH = 512;
 
 export function entryStepForHandoff(handoff: WizardHandoff | null): 1 | 2 {
   return handoff ? 2 : 1;
@@ -84,6 +93,10 @@ export function peekHandoff(): WizardHandoff | null {
         campaignTargetLevel,
         campaignTargetState,
         usedSpeechToText,
+        audience,
+        klasse,
+        classToken,
+        plz,
       } = parsed as WizardHandoff;
       return {
         issueText,
@@ -106,6 +119,15 @@ export function peekHandoff(): WizardHandoff | null {
           typeof campaignTargetState === "string" ? campaignTargetState : undefined,
         usedSpeechToText:
           typeof usedSpeechToText === "boolean" ? usedSpeechToText : undefined,
+        audience: audience === "jung" ? "jung" : undefined,
+        klasse: isValidKlasse(klasse) ? klasse : undefined,
+        classToken:
+          typeof classToken === "string" &&
+          classToken.length > 0 &&
+          classToken.length <= CLASS_TOKEN_MAX_LENGTH
+            ? classToken
+            : undefined,
+        plz: typeof plz === "string" && /^\d{5}$/.test(plz) ? plz : undefined,
       };
     }
     return null;

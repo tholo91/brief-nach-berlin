@@ -1,0 +1,950 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Erwachsenen-Mail bleibt unverändert Kampagne: html 1`] = `
+"<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="ai-generated" content="true">
+  <meta name="digital-source-type" content="http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia">
+  <!--[if mso]>
+  <style>td { font-family: 'Courier New', Courier, monospace !important; }</style>
+  <![endif]-->
+  <style>
+    @media only screen and (max-width: 600px) {
+      .bnb-pad { padding-left: 16px !important; padding-right: 16px !important; }
+      .bnb-inner-pad { padding-left: 14px !important; padding-right: 14px !important; }
+      .bnb-stack { display: block !important; width: 100% !important; }
+      .bnb-stack-left { padding: 0 0 14px 0 !important; width: 100% !important; }
+      .bnb-stack-right { padding: 14px 0 0 0 !important; border-left: 0 !important; border-top: 1px solid #E0DCD7 !important; width: 100% !important; text-align: center !important; }
+      .bnb-bleed { margin-left: -14px !important; margin-right: -14px !important; }
+      .bnb-support-action { display: block !important; width: 100% !important; padding-left: 0 !important; padding-right: 0 !important; }
+      .bnb-support-action-primary { padding-bottom: 8px !important; }
+      .bnb-feedback-break { display: inline !important; }
+      .bnb-feedback-space { display: none !important; }
+      /* Share row: on mobile only the square icon-buttons remain (labels hidden). */
+      .bnb-share-label { display: none !important; }
+      .bnb-share-btn { padding: 14px 0 !important; }
+      .bnb-share-icon { width: 24px !important; height: 24px !important; margin: 0 !important; }
+      /* Mobile-only text swaps: kürzere Varianten auf kleinen Screens. */
+      .bnb-desk { display: none !important; }
+      .bnb-mob { display: inline !important; }
+      /* Footer: Tagline im Social-Follow-Label auf Mobile ausblenden. */
+      .bnb-footer-tagline { display: none !important; }
+    }
+  </style>
+</head>
+<body style="margin:0;padding:0;background-color:#FAF8F5;font-family:Georgia,'Times New Roman',serif;">
+
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color:#FAF8F5;">
+    <tr>
+      <td align="center" style="padding:20px 0;">
+
+        <table role="presentation" width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;background-color:#ffffff;border-collapse:collapse;">
+
+                <!-- Airmail stripe header (D-06): thin diagonal red/white/blue like landing page -->
+                <tr>
+                  <td colspan="7" style="height:4px;font-size:0;line-height:0;background:repeating-linear-gradient(-45deg,#C1121F,#C1121F 8px,#FAF8F5 8px,#FAF8F5 12px,#1D3557 12px,#1D3557 20px,#FAF8F5 20px,#FAF8F5 24px);">&nbsp;</td>
+                </tr>
+
+                <!-- Title: "Brief-nach-Berlin". Watermark wandert in den Brief-Kasten als Briefmarke. -->
+                <tr>
+                  <td colspan="7" class="bnb-pad" bgcolor="#ffffff" style="padding:28px 32px 28px;text-align:center;background-color:#ffffff;">
+                    <h1 style="margin:0;font-family:Georgia,'Times New Roman',serif;font-size:22px;color:#2D5016;font-weight:bold;letter-spacing:0.5px;">Brief-nach-Berlin</h1>
+                    <p style="margin:8px 0 0;font-family:Georgia,'Times New Roman',serif;font-size:14px;color:#666666;">Dein Briefentwurf ist fertig. Jetzt schnell zu Papier bringen und abschicken.</p>
+                  </td>
+                </tr>
+
+                <!-- Intro: warm founder voice -->
+                <tr>
+                  <td colspan="7" class="bnb-pad" style="padding:0 32px 20px;background-color:#ffffff;">
+                    <p style="margin:0;font-family:Georgia,'Times New Roman',serif;font-size:14px;color:#4A4A4A;line-height:1.6;">Lies ihn gründlich durch und pass ihn an, damit es dein Brief wird. Dieser Entwurf dient als Schnellstart, <a href="https://www.brief-nach-berlin.de/brief-verbessern" target="_blank" rel="noopener noreferrer" style="color:#2D5016;text-decoration:underline;">verbessere ihn gern</a>, damit er sich wirklich nach dir anhört.<span class="bnb-desk"><br>Bitte bewerte anschließend deinen Brief 🙏 Danke, dass du dich engagierst!</span><span class="bnb-mob" style="display:none;"><br>Danke, dass du dich engagierst 🙏</span></p>
+                  </td>
+                </tr>
+
+                <!-- Brief block (D-08, section 1) — Briefmarke oben rechts, Text fließt drumherum.
+                     align="right" floatet das Bild zuverlässig in allen Mail-Clients; Opacity ist
+                     in die PNG eingebrannt (~80%), weil CSS opacity in Outlook nicht greift. -->
+                <tr>
+                  <td colspan="7" class="bnb-pad" style="padding:0 32px 8px;background-color:#ffffff;">
+                    <div class="bnb-inner-pad" data-ai-generated="true" style="background-color:#FAF8F5;border:1px solid #E0DCD7;border-radius:4px;padding:24px;">
+                      <img src="https://www.brief-nach-berlin.de/images/email-title-watermark-v2.png" width="110" height="110" alt="" align="right" style="display:inline-block;width:110px;height:110px;margin:0 0 6px 14px;border:0;outline:none;text-decoration:none;-ms-interpolation-mode:bicubic;">
+                      <p style="margin:0;font-family:'Courier New',Courier,monospace;font-size:14px;line-height:1.7;color:#4A4A4A;white-space:pre-wrap;">Sehr geehrte Frau Müller,<br><br>Testbrief.<br><br>Mit freundlichen Grüßen</p>
+                    </div>
+                  </td>
+                </tr>
+
+                <!-- Brief anpassen CTA: only for German, because the target flow is German-only. -->
+                <tr>
+                  <td colspan="7" class="bnb-pad" style="padding:8px 32px 8px;background-color:#ffffff;text-align:center;">
+                    <p style="margin:0;font-family:Georgia,'Times New Roman',serif;font-size:14px;color:#4A4A4A;line-height:1.6;text-align:center;">Nicht ganz dein Ton? Hier deinen &rarr; <a href="https://www.brief-nach-berlin.de/brief/anpassen#email=test%40example.org" target="_blank" rel="noopener noreferrer" style="color:#2D5016;text-decoration:underline;">Briefentwurf schnell anpassen</a></p>
+                  </td>
+                </tr>
+
+                <!-- Postadresse (D-08, section 2): name links to abgeordnetenwatch,
+                     right column hosts the star-rating widget instead of a static profile button. -->
+                <tr>
+                  <td colspan="7" class="bnb-pad" style="padding:16px 32px 24px;background-color:#ffffff;">
+                    <h2 style="margin:0 0 12px;font-family:Georgia,'Times New Roman',serif;font-size:16px;color:#2D5016;font-weight:bold;">Adresse</h2>
+                    <div class="bnb-inner-pad" style="background-color:#FAF8F5;border:1px solid #E0DCD7;border-radius:4px;padding:16px 20px;">
+                      <table role="presentation" cellpadding="0" cellspacing="0" width="100%">
+                        <tr>
+                          <td class="bnb-stack bnb-stack-left" style="vertical-align:top;padding-right:16px;width:60%;">
+                            <p style="margin:0;font-family:'Courier New',Courier,monospace;font-size:14px;line-height:1.8;color:#4A4A4A;">
+                              <strong><a href="https://www.abgeordnetenwatch.de/profile/anna-mueller" target="_blank" rel="noopener noreferrer" style="color:#2D5016;text-decoration:underline;">Anna Müller, MdB (SPD)</a></strong><br>
+                              Deutscher Bundestag<br>Platz der Republik 1<br>11011 Berlin
+                            </p>
+                          </td>
+                          <td class="bnb-stack bnb-stack-right" style="vertical-align:middle;text-align:center;padding-left:16px;border-left:1px solid #E0DCD7;width:40%;">
+                            
+    <p style="margin:0 0 8px;font-family:Georgia,'Times New Roman',serif;font-size:12px;color:#2D5016;font-weight:bold;line-height:1.4;">Wie findest du<span class="bnb-feedback-break" style="display:none;"><br></span><span class="bnb-feedback-space"> </span>deinen Brief?</p>
+    <div style="white-space:nowrap;line-height:1;">
+    <a href="https://www.brief-nach-berlin.de/feedback?r=1&t=fixed-token" target="_blank" rel="noopener noreferrer"
+       style="color:#D4A017;mso-color-alt:#D4A017;text-decoration:none;font-size:26px;line-height:1;padding:8px 4px;display:inline-block;">&#9733;</a>
+    <a href="https://www.brief-nach-berlin.de/feedback?r=2&t=fixed-token" target="_blank" rel="noopener noreferrer"
+       style="color:#D4A017;mso-color-alt:#D4A017;text-decoration:none;font-size:26px;line-height:1;padding:8px 4px;display:inline-block;">&#9733;</a>
+    <a href="https://www.brief-nach-berlin.de/feedback?r=3&t=fixed-token" target="_blank" rel="noopener noreferrer"
+       style="color:#D4A017;mso-color-alt:#D4A017;text-decoration:none;font-size:26px;line-height:1;padding:8px 4px;display:inline-block;">&#9733;</a>
+    <a href="https://www.brief-nach-berlin.de/feedback?r=4&t=fixed-token" target="_blank" rel="noopener noreferrer"
+       style="color:#D4A017;mso-color-alt:#D4A017;text-decoration:none;font-size:26px;line-height:1;padding:8px 4px;display:inline-block;">&#9734;</a>
+    <a href="https://www.brief-nach-berlin.de/feedback?r=5&t=fixed-token" target="_blank" rel="noopener noreferrer"
+       style="color:#D4A017;mso-color-alt:#D4A017;text-decoration:none;font-size:26px;line-height:1;padding:8px 4px;display:inline-block;">&#9734;</a></div>
+    <p style="margin:8px 0 0;font-family:Georgia,'Times New Roman',serif;font-size:12px;color:#b0b0b0;line-height:1.4;">Dauert 10 Sek, hilft mir sehr</p>
+                          </td>
+                        </tr>
+                      </table>
+                    </div>
+                  </td>
+                </tr>
+
+                <!-- Naechste Schritte (D-08, section 3) -->
+                <tr>
+                  <td colspan="7" class="bnb-pad" style="padding:0 32px 8px;background-color:#ffffff;">
+                    <h2 style="margin:0 0 16px;font-family:Georgia,'Times New Roman',serif;font-size:16px;color:#2D5016;font-weight:bold;">Nächste Schritte</h2>
+
+                    <table role="presentation" cellpadding="0" cellspacing="0" width="100%">
+                      <tr>
+                        <td style="padding:6px 0;font-family:Georgia,'Times New Roman',serif;font-size:14px;color:#4A4A4A;line-height:1.5;">
+                          <span style="display:inline-block;width:24px;height:24px;background-color:#2D5016;color:#ffffff;border-radius:50%;text-align:center;line-height:24px;font-size:12px;font-weight:bold;margin-right:10px;vertical-align:middle;">1</span>
+                          <span class="bnb-desk">Brief von Hand abschreiben (oder ausdrucken)</span><span class="bnb-mob" style="display:none;">Brief von Hand abschreiben (oder ausdrucken)</span>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td style="padding:6px 0;font-family:Georgia,'Times New Roman',serif;font-size:14px;color:#4A4A4A;line-height:1.5;">
+                          <span style="display:inline-block;width:24px;height:24px;background-color:#2D5016;color:#ffffff;border-radius:50%;text-align:center;line-height:24px;font-size:12px;font-weight:bold;margin-right:10px;vertical-align:middle;">2</span>
+                          <span class="bnb-desk">Empfangs- und Absenderadresse auf den Umschlag</span><span class="bnb-mob" style="display:none;">Adressen auf den Umschlag</span>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td style="padding:6px 0;font-family:Georgia,'Times New Roman',serif;font-size:14px;color:#4A4A4A;line-height:1.5;">
+                          <span style="display:inline-block;width:24px;height:24px;background-color:#2D5016;color:#ffffff;border-radius:50%;text-align:center;line-height:24px;font-size:12px;font-weight:bold;margin-right:10px;vertical-align:middle;">3</span>
+                          <span class="bnb-desk">Briefmarke drauf (0,95 EUR, <a href="https://www.deutschepost.de/de/m/mobile-briefmarke.html" target="_blank" rel="noopener noreferrer" style="color:#2D5016;text-decoration:underline;">online kaufen</a>) + ab in den Briefkasten!</span><span class="bnb-mob" style="display:none;">Briefmarke (<a href="https://www.deutschepost.de/de/m/mobile-briefmarke.html" target="_blank" rel="noopener noreferrer" style="color:#2D5016;text-decoration:underline;">hier kaufen</a>) + ab die Post</span>
+                        </td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+
+
+                <!-- Personal sign-off from Thomas (handwritten Caveat) -->
+                <tr>
+                  <td colspan="7" class="bnb-pad" style="padding:8px 32px 16px;background-color:#ffffff;text-align:left;">
+                    <p style="margin:0 0 14px;font-family:Georgia,'Times New Roman',serif;font-size:14px;color:#4A4A4A;line-height:1.6;">
+                      Handgeschriebene Briefe fallen in Bundestagsbüros auf. Inmitten unpersönlicher Drucksachen signalisieren sie echtes Engagement. &rarr; <a href="https://www.brief-nach-berlin.de/tipps" style="color:#2D5016;text-decoration:underline;">Tipps für den perfekten Brief</a>
+                    </p>
+                    <p style="margin:0 0 20px;font-family:Georgia,'Times New Roman',serif;font-size:14px;color:#4A4A4A;line-height:1.6;">
+                      Toll, dass du dir die Zeit für unsere Demokratie nimmst. Melde dich super gerne bei <a href="https://www.heyspeak.io/l/WIOENjqJn6z6WKtkWgDEFg?email=on" target="_blank" rel="noopener noreferrer" style="color:#2D5016;text-decoration:underline;">Fragen oder weiteren Anregungen</a>. Beste Grüße aus Bremen ✌️
+                    </p>
+                    <p style="margin:0;font-family:'Caveat','Brush Script MT','Lucida Handwriting',cursive;font-size:32px;color:#1D3557;line-height:1.1;">
+                      Thomas
+                    </p>
+                    <p style="margin:6px 0 0;font-family:Georgia,'Times New Roman',serif;font-size:12px;color:#bcbcbc;line-height:1.5;">
+                      Eine Initiative von <a href="https://www.thomas-lorenz.eu" target="_blank" rel="noopener noreferrer" style="color:#bcbcbc;text-decoration:underline;">www.thomas-lorenz.eu</a>
+                    </p>
+                  </td>
+                </tr>
+
+                <!-- Donation CTA: shared by first letter emails and resends, before sharing. -->
+                <tr>
+                  <td colspan="7" class="bnb-pad" style="padding:0 32px 16px;background-color:#ffffff;text-align:left;">
+                    <div class="bnb-inner-pad" style="background-color:#FAF8F5;border:1px solid #E0DCD7;border-radius:6px;padding:18px 20px;">
+      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="width:100%;border-collapse:collapse;">
+        <tr>
+          <td valign="middle" style="padding:0 12px 8px 0;">
+            <h2 style="margin:0;font-family:Georgia,'Times New Roman',serif;font-size:16px;color:#2D5016;font-weight:bold;">Damit Brief-nach-Berlin kostenlos bleibt</h2>
+          </td>
+          <td width="52" valign="top" align="right" style="width:52px;padding:0 0 8px 0;">
+            <img src="https://www.brief-nach-berlin.de/images/thomas-avatar.jpg" width="52" height="52" alt="Thomas Lorenz" style="display:block;width:52px;height:52px;border:0;border-radius:50%;">
+          </td>
+        </tr>
+      </table>
+      <p style="margin:0 0 14px;font-family:Georgia,'Times New Roman',serif;font-size:14px;color:#4A4A4A;line-height:1.6;">Ich baue Brief-nach-Berlin allein und ehrenamtlich in meiner Freizeit und trage die laufenden Kosten bisher selbst. Deine Spende hilft, das Projekt kostenlos und unabhängig weiterzubetreiben.</p>
+      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="width:100%;border-collapse:collapse;">
+        <tr>
+          <td class="bnb-support-action bnb-support-action-primary" width="52%" valign="top" style="width:52%;padding-right:5px;">
+            <a href="https://spende.we-aid.org/Brief-nach-Berlin" target="_blank" rel="noopener noreferrer" style="display:block;background-color:#2D5016;color:#ffffff;font-family:Georgia,'Times New Roman',serif;font-size:14px;font-weight:bold;text-decoration:none;padding:11px 10px;border:2px solid #2D5016;border-radius:4px;line-height:1.4;text-align:center;"><img src="https://www.brief-nach-berlin.de/images/icon-heart-white.png" alt="" aria-hidden="true" width="16" height="16" style="width:16px;height:16px;vertical-align:middle;border:0;margin-right:6px;">Jetzt spenden</a>
+            
+          </td>
+          <td class="bnb-support-action" width="48%" valign="top" style="width:48%;padding-left:5px;">
+            <a href="https://www.brief-nach-berlin.de/spenden?src=email" target="_blank" rel="noopener noreferrer" style="display:block;background-color:#ffffff;color:#2D5016;font-family:Georgia,'Times New Roman',serif;font-size:14px;font-weight:bold;text-decoration:none;padding:11px 10px;border:2px solid #2D5016;border-radius:4px;line-height:1.4;text-align:center;">Mehr Informationen</a>
+          </td>
+        </tr>
+      </table>
+      <p style="margin:12px 0 0;font-family:Georgia,'Times New Roman',serif;font-size:12px;color:#bcbcbc;line-height:1.5;">Brief-nach-Berlin ist eine gemeinnützige Initiative in Trägerschaft der WE AID gGmbH.</p>
+    </div>
+                  </td>
+                </tr>
+
+                
+                <tr>
+                  <td colspan="7" class="bnb-pad" style="padding:0 32px 8px;background-color:#ffffff;">
+                    
+    <div class="bnb-inner-pad" style="margin:0 0 16px;background-color:#FAF8F5;border:1px solid #E0DCD7;border-radius:4px;padding:14px 18px;">
+      <p style="margin:0;font-family:Georgia,'Times New Roman',serif;font-size:13px;color:#4A4A4A;line-height:1.6;">
+        Dieser Brief gehört zu einer öffentlichen Kampagne. Mit deinem Engagement sind es schon <strong>40 Briefe</strong> und es werden immer mehr. Danke dir!
+        <a href="https://www.brief-nach-berlin.de/kampagne/test" target="_blank" rel="noopener noreferrer" style="color:#2D5016;text-decoration:underline;">Zur Kampagne</a>
+      </p>
+    </div>
+                  </td>
+                </tr>
+
+                
+                <tr>
+                  <td colspan="7" class="bnb-pad" style="padding:0 32px 16px;background-color:#ffffff;text-align:left;">
+                    <p style="margin:0;font-family:Georgia,'Times New Roman',serif;font-size:14px;color:#4A4A4A;line-height:1.6;">
+                      Du willst Anna Müller auch persönlich sprechen? <a href="https://www.brief-nach-berlin.de/aktiv-werden?mdb=42#wahlkreisbuero" target="_blank" rel="noopener noreferrer" style="color:#2D5016;text-decoration:underline;">Hier findest du das Wahlkreisbüro und die Bürgersprechstunde.</a>
+                    </p>
+                  </td>
+                </tr>
+
+                <!-- Cause-recruit block: motivate sender to invite Wahlkreis-people to write their own letters -->
+                <tr>
+                  <td colspan="7" class="bnb-pad" style="padding:8px 32px 24px;background-color:#ffffff;">
+                    <div class="bnb-inner-pad" style="background-color:#FAF8F5;border:1px solid #E0DCD7;border-radius:6px;padding:20px 22px;">
+                      <h2 style="margin:0 0 8px;font-family:Georgia,'Times New Roman',serif;font-size:16px;color:#2D5016;font-weight:bold;">Diese Kampagne weitertragen</h2>
+                      <p style="margin:0 0 14px;font-family:Georgia,'Times New Roman',serif;font-size:14px;color:#4A4A4A;line-height:1.6;">
+                        Dein Brief ist ein Anfang. Teile die Kampagne, damit weitere Menschen aus ihrem Wahlkreis mit eigenen Worten schreiben.
+                      </p>
+                      <table role="presentation" cellpadding="0" cellspacing="0" width="100%">
+                        <tr>
+                          <td style="padding-right:4px;width:25%;" valign="top">
+                            <a href="https://wa.me/?text=Ich%20habe%20gerade%20bei%20der%20Kampagne%20%22Testkampagne%22%20einen%20Brief%20an%20die%20Politik%20vorbereitet.%20Machst%20du%20auch%20mit%3F%20https%3A%2F%2Fwww.brief-nach-berlin.de%2Fkampagne%2Ftest" class="bnb-share-btn" style="display:block;text-align:center;background-color:#ffffff;color:#2D5016;font-family:Georgia,'Times New Roman',serif;font-size:14px;font-weight:bold;text-decoration:none;padding:10px 4px;border-radius:6px;border:2px solid #2D5016;line-height:1;white-space:nowrap;"><img src="https://www.brief-nach-berlin.de/images/icon-whatsapp.png" alt="" width="18" height="18" class="bnb-share-icon" style="width:18px;height:18px;vertical-align:middle;border:0;margin-right:6px;"><span class="bnb-share-label">WhatsApp</span></a>
+                          </td>
+                          <td style="padding:0 2px;width:25%;" valign="top">
+                            <a href="https://t.me/share/url?url=https%3A%2F%2Fwww.brief-nach-berlin.de%2Fkampagne%2Ftest&text=Ich%20habe%20gerade%20bei%20der%20Kampagne%20%22Testkampagne%22%20einen%20Brief%20an%20die%20Politik%20vorbereitet.%20Machst%20du%20auch%20mit%3F%20https%3A%2F%2Fwww.brief-nach-berlin.de%2Fkampagne%2Ftest" class="bnb-share-btn" style="display:block;text-align:center;background-color:#ffffff;color:#2D5016;font-family:Georgia,'Times New Roman',serif;font-size:14px;font-weight:bold;text-decoration:none;padding:10px 4px;border-radius:6px;border:2px solid #2D5016;line-height:1;white-space:nowrap;"><img src="https://www.brief-nach-berlin.de/images/icon-telegram.png" alt="" width="18" height="18" class="bnb-share-icon" style="width:18px;height:18px;vertical-align:middle;border:0;margin-right:6px;"><span class="bnb-share-label">Telegram</span></a>
+                          </td>
+                          <td style="padding:0 2px;width:25%;" valign="top">
+                            <a href="https://www.brief-nach-berlin.de/weitersagen#insta" class="bnb-share-btn" style="display:block;text-align:center;background-color:#ffffff;color:#2D5016;font-family:Georgia,'Times New Roman',serif;font-size:14px;font-weight:bold;text-decoration:none;padding:10px 4px;border-radius:6px;border:2px solid #2D5016;line-height:1;white-space:nowrap;"><img src="https://www.brief-nach-berlin.de/images/icon-instagram.png" alt="" width="18" height="18" class="bnb-share-icon" style="width:18px;height:18px;vertical-align:middle;border:0;margin-right:6px;"><span class="bnb-share-label">Instagram</span></a>
+                          </td>
+                          <td style="padding-left:4px;width:25%;" valign="top">
+                            <a href="mailto:?subject=Machst%20du%20bei%20%22Testkampagne%22%20mit%3F&body=Ich%20habe%20gerade%20bei%20der%20Kampagne%20%22Testkampagne%22%20einen%20Brief%20an%20die%20Politik%20vorbereitet.%20Machst%20du%20auch%20mit%3F%20https%3A%2F%2Fwww.brief-nach-berlin.de%2Fkampagne%2Ftest" class="bnb-share-btn" style="display:block;text-align:center;background-color:#ffffff;color:#2D5016;font-family:Georgia,'Times New Roman',serif;font-size:14px;font-weight:bold;text-decoration:none;padding:10px 4px;border-radius:6px;border:2px solid #2D5016;line-height:1;white-space:nowrap;"><img src="https://www.brief-nach-berlin.de/images/icon-email.png" alt="" width="18" height="18" class="bnb-share-icon" style="width:18px;height:18px;vertical-align:middle;border:0;margin-right:6px;"><span class="bnb-share-label">E-Mail</span></a>
+                          </td>
+                        </tr>
+                      </table>
+                      <!-- Secondary links: weiterführende Seiten, normale Schriftgröße, eine Zeile -->
+                      <p style="margin:16px 0 0;font-family:Georgia,'Times New Roman',serif;font-size:14px;color:#4A4A4A;line-height:1.6;text-align:center;">
+                        <a href="https://www.brief-nach-berlin.de/aktiv-werden" target="_blank" rel="noopener noreferrer" style="color:#2D5016;text-decoration:underline;">Was du sonst noch tun kannst</a>
+                        &nbsp;·&nbsp;
+                        <a href="https://www.brief-nach-berlin.de/andere-tools" target="_blank" rel="noopener noreferrer" style="color:#2D5016;text-decoration:underline;">Weitere Tools</a>
+                      </p>
+                      <div class="bnb-bleed" style="margin:18px -22px -20px;font-size:0;line-height:0;">
+                        <img src="https://www.brief-nach-berlin.de/images/email-bundestag-banner.png" alt="" width="556" height="130" style="display:block;width:100%;max-width:556px;height:auto;border:0;outline:none;text-decoration:none;-ms-interpolation-mode:bicubic;border-bottom-left-radius:6px;border-bottom-right-radius:6px;">
+                      </div>
+                    </div>
+                  </td>
+                </tr>
+
+                <!-- Airmail stripe before footer (mirrors header) -->
+                <tr>
+                  <td colspan="7" style="height:4px;font-size:0;line-height:0;background:repeating-linear-gradient(-45deg,#C1121F,#C1121F 8px,#FAF8F5 8px,#FAF8F5 12px,#1D3557 12px,#1D3557 20px,#FAF8F5 20px,#FAF8F5 24px);">&nbsp;</td>
+                </tr>
+
+                <!-- Footer -->
+                <tr>
+                  <td colspan="7" class="bnb-pad" style="padding:20px 32px 12px;background-color:#FAF8F5;text-align:center;">
+                    <table role="presentation" cellpadding="0" cellspacing="0" align="center" style="margin:0px auto 0;border-collapse:collapse;">
+    <tr>
+      <td style="padding-right:8px;font-family:Georgia,'Times New Roman',serif;font-size:12px;line-height:1.4;color:#999999;white-space:normal;vertical-align:middle;">Brief #7 · <span class="bnb-footer-tagline">Deine Stimme zählt · </span>Folge <a href="https://www.brief-nach-berlin.de" style="color:#999999;text-decoration:none;">Brief-nach-Berlin</a></td>
+      <td width="34" height="30" style="width:34px;height:30px;vertical-align:middle;">
+        <a href="https://www.instagram.com/thomas_duisi/" target="_blank" rel="noopener noreferrer" aria-label="Instagram" title="Instagram" style="display:block;width:30px;height:30px;line-height:30px;mso-line-height-rule:exactly;background-color:transparent;border:0;text-align:center;text-decoration:none;">
+          <img src="https://www.brief-nach-berlin.de/images/icon-instagram.png" alt="Instagram" width="18" height="18" style="display:block;width:18px;height:18px;margin:6px auto;border:0;outline:none;">
+        </a>
+      </td>
+      <td width="30" height="30" style="width:30px;height:30px;vertical-align:middle;">
+        <a href="https://www.linkedin.com/in/thomaslorenz91/" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn" title="LinkedIn" style="display:block;width:30px;height:30px;line-height:30px;mso-line-height-rule:exactly;background-color:transparent;border:0;text-align:center;text-decoration:none;">
+          <span aria-hidden="true" style="display:block;width:18px;height:18px;line-height:18px;margin:6px auto;border-radius:2px;background-color:#2D5016;color:#ffffff;font-family:Arial,sans-serif;font-size:12px;font-weight:bold;text-align:center;">in</span>
+        </a>
+      </td>
+    </tr>
+  </table>
+                  </td>
+                </tr>
+
+                <!-- Legal / disclaimer block (smaller, below footer) -->
+                <tr>
+                  <td colspan="7" class="bnb-pad" style="padding:8px 32px 24px;background-color:#FAF8F5;text-align:center;">
+                    <p style="margin:0 0 6px;font-family:Georgia,'Times New Roman',serif;font-size:12px;color:#aaaaaa;line-height:1.5;">
+                      <strong>Hinweis:</strong> Dieser Entwurf ist von KI erstellt und ohne Gewähr. Bitte prüfe Inhalt, Fakten und Adresse (<a href="https://www.abgeordnetenwatch.de/profile/anna-mueller" target="_blank" rel="noopener noreferrer" style="color:#888888;">abgeordnetenwatch.de</a>), bevor du deinen Brief schreibst. Die Verantwortung für den Inhalt liegt bei dir. Es gelten die <a href="https://www.brief-nach-berlin.de/nutzungsbedingungen" style="color:#888888;">Nutzungsbedingungen</a>.
+                    </p>
+                    <p style="margin:0;font-family:Georgia,'Times New Roman',serif;font-size:12px;color:#aaaaaa;line-height:1.5;">
+                      <a href="https://www.brief-nach-berlin.de/datenschutz" style="color:#888888;">Datenschutz</a>: Dein Brief und dein Anliegen werden nicht gespeichert. Nur wenn du dein Anliegen freiwillig auf die Karte setzt, speichere ich ein kurzes Themensignal. Kein Newsletter: In 2-3 Tagen kommt nur noch eine Mail mit der Bitte um eine Bewertung. · <a href="https://example.org/datenloeschen?t=fixed" style="color:#888888;">Meine gespeicherten Daten löschen</a> · <a href="https://www.brief-nach-berlin.de/wer-darf-mdb-schreiben" style="color:#888888;">Wer darf MdBs schreiben?</a>
+                    </p>
+                  </td>
+                </tr>
+
+        </table>
+
+      </td>
+    </tr>
+  </table>
+
+</body>
+</html>"
+`;
+
+exports[`Erwachsenen-Mail bleibt unverändert Kampagne: text 1`] = `
+"Sehr geehrte Frau Müller,
+
+Testbrief.
+
+Mit freundlichen Grüßen
+
+Beste Grüße aus Bremen ✌️
+
+Thomas
+Eine Initiative von https://www.thomas-lorenz.eu
+
+Damit Brief-nach-Berlin kostenlos bleibt
+Hinweis zur Finanzierung: Brief-nach-Berlin ist eine gemeinnützige Initiative in Trägerschaft der WE AID gGmbH.
+Jetzt spenden: https://spende.we-aid.org/Brief-nach-Berlin
+Mehr über die Unterstützung erfahren: https://www.brief-nach-berlin.de/spenden?src=email
+
+Hinweis: Dieser Entwurf ist von KI erstellt und ohne Gewähr. Bitte prüfe Inhalt, Fakten und Adresse, bevor du deinen Brief schreibst. Die Verantwortung für den Inhalt liegt bei dir. Es gelten die Nutzungsbedingungen. https://www.brief-nach-berlin.de/nutzungsbedingungen
+
+Datenschutz: Dein Brief und dein Anliegen werden nicht gespeichert. Nur wenn du dein Anliegen freiwillig auf die Karte setzt, speichere ich ein kurzes Themensignal. Kein Newsletter: In 2-3 Tagen kommt nur noch eine Mail mit der Bitte um eine Bewertung.
+Meine gespeicherten Daten löschen: https://example.org/datenloeschen?t=fixed
+
+Updates von Thomas zu Brief-nach-Berlin: Instagram: https://www.instagram.com/thomas_duisi/ · LinkedIn: https://www.linkedin.com/in/thomaslorenz91/"
+`;
+
+exports[`Erwachsenen-Mail bleibt unverändert mit Feedback-Token (Sterne-Bar): html 1`] = `
+"<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="ai-generated" content="true">
+  <meta name="digital-source-type" content="http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia">
+  <!--[if mso]>
+  <style>td { font-family: 'Courier New', Courier, monospace !important; }</style>
+  <![endif]-->
+  <style>
+    @media only screen and (max-width: 600px) {
+      .bnb-pad { padding-left: 16px !important; padding-right: 16px !important; }
+      .bnb-inner-pad { padding-left: 14px !important; padding-right: 14px !important; }
+      .bnb-stack { display: block !important; width: 100% !important; }
+      .bnb-stack-left { padding: 0 0 14px 0 !important; width: 100% !important; }
+      .bnb-stack-right { padding: 14px 0 0 0 !important; border-left: 0 !important; border-top: 1px solid #E0DCD7 !important; width: 100% !important; text-align: center !important; }
+      .bnb-bleed { margin-left: -14px !important; margin-right: -14px !important; }
+      .bnb-support-action { display: block !important; width: 100% !important; padding-left: 0 !important; padding-right: 0 !important; }
+      .bnb-support-action-primary { padding-bottom: 8px !important; }
+      .bnb-feedback-break { display: inline !important; }
+      .bnb-feedback-space { display: none !important; }
+      /* Share row: on mobile only the square icon-buttons remain (labels hidden). */
+      .bnb-share-label { display: none !important; }
+      .bnb-share-btn { padding: 14px 0 !important; }
+      .bnb-share-icon { width: 24px !important; height: 24px !important; margin: 0 !important; }
+      /* Mobile-only text swaps: kürzere Varianten auf kleinen Screens. */
+      .bnb-desk { display: none !important; }
+      .bnb-mob { display: inline !important; }
+      /* Footer: Tagline im Social-Follow-Label auf Mobile ausblenden. */
+      .bnb-footer-tagline { display: none !important; }
+    }
+  </style>
+</head>
+<body style="margin:0;padding:0;background-color:#FAF8F5;font-family:Georgia,'Times New Roman',serif;">
+
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color:#FAF8F5;">
+    <tr>
+      <td align="center" style="padding:20px 0;">
+
+        <table role="presentation" width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;background-color:#ffffff;border-collapse:collapse;">
+
+                <!-- Airmail stripe header (D-06): thin diagonal red/white/blue like landing page -->
+                <tr>
+                  <td colspan="7" style="height:4px;font-size:0;line-height:0;background:repeating-linear-gradient(-45deg,#C1121F,#C1121F 8px,#FAF8F5 8px,#FAF8F5 12px,#1D3557 12px,#1D3557 20px,#FAF8F5 20px,#FAF8F5 24px);">&nbsp;</td>
+                </tr>
+
+                <!-- Title: "Brief-nach-Berlin". Watermark wandert in den Brief-Kasten als Briefmarke. -->
+                <tr>
+                  <td colspan="7" class="bnb-pad" bgcolor="#ffffff" style="padding:28px 32px 28px;text-align:center;background-color:#ffffff;">
+                    <h1 style="margin:0;font-family:Georgia,'Times New Roman',serif;font-size:22px;color:#2D5016;font-weight:bold;letter-spacing:0.5px;">Brief-nach-Berlin</h1>
+                    <p style="margin:8px 0 0;font-family:Georgia,'Times New Roman',serif;font-size:14px;color:#666666;">Dein Briefentwurf ist fertig. Jetzt schnell zu Papier bringen und abschicken.</p>
+                  </td>
+                </tr>
+
+                <!-- Intro: warm founder voice -->
+                <tr>
+                  <td colspan="7" class="bnb-pad" style="padding:0 32px 20px;background-color:#ffffff;">
+                    <p style="margin:0;font-family:Georgia,'Times New Roman',serif;font-size:14px;color:#4A4A4A;line-height:1.6;">Lies ihn gründlich durch und pass ihn an, damit es dein Brief wird. Dieser Entwurf dient als Schnellstart, <a href="https://www.brief-nach-berlin.de/brief-verbessern" target="_blank" rel="noopener noreferrer" style="color:#2D5016;text-decoration:underline;">verbessere ihn gern</a>, damit er sich wirklich nach dir anhört.<span class="bnb-desk"><br>Bitte bewerte anschließend deinen Brief 🙏 Danke, dass du dich engagierst!</span><span class="bnb-mob" style="display:none;"><br>Danke, dass du dich engagierst 🙏</span></p>
+                  </td>
+                </tr>
+
+                <!-- Brief block (D-08, section 1) — Briefmarke oben rechts, Text fließt drumherum.
+                     align="right" floatet das Bild zuverlässig in allen Mail-Clients; Opacity ist
+                     in die PNG eingebrannt (~80%), weil CSS opacity in Outlook nicht greift. -->
+                <tr>
+                  <td colspan="7" class="bnb-pad" style="padding:0 32px 8px;background-color:#ffffff;">
+                    <div class="bnb-inner-pad" data-ai-generated="true" style="background-color:#FAF8F5;border:1px solid #E0DCD7;border-radius:4px;padding:24px;">
+                      <img src="https://www.brief-nach-berlin.de/images/email-title-watermark-v2.png" width="110" height="110" alt="" align="right" style="display:inline-block;width:110px;height:110px;margin:0 0 6px 14px;border:0;outline:none;text-decoration:none;-ms-interpolation-mode:bicubic;">
+                      <p style="margin:0;font-family:'Courier New',Courier,monospace;font-size:14px;line-height:1.7;color:#4A4A4A;white-space:pre-wrap;">Sehr geehrte Frau Müller,<br><br>Testbrief.<br><br>Mit freundlichen Grüßen</p>
+                    </div>
+                  </td>
+                </tr>
+
+                <!-- Brief anpassen CTA: only for German, because the target flow is German-only. -->
+                <tr>
+                  <td colspan="7" class="bnb-pad" style="padding:8px 32px 8px;background-color:#ffffff;text-align:center;">
+                    <p style="margin:0;font-family:Georgia,'Times New Roman',serif;font-size:14px;color:#4A4A4A;line-height:1.6;text-align:center;">Nicht ganz dein Ton? Hier deinen &rarr; <a href="https://www.brief-nach-berlin.de/brief/anpassen#email=test%40example.org" target="_blank" rel="noopener noreferrer" style="color:#2D5016;text-decoration:underline;">Briefentwurf schnell anpassen</a></p>
+                  </td>
+                </tr>
+
+                <!-- Postadresse (D-08, section 2): name links to abgeordnetenwatch,
+                     right column hosts the star-rating widget instead of a static profile button. -->
+                <tr>
+                  <td colspan="7" class="bnb-pad" style="padding:16px 32px 24px;background-color:#ffffff;">
+                    <h2 style="margin:0 0 12px;font-family:Georgia,'Times New Roman',serif;font-size:16px;color:#2D5016;font-weight:bold;">Adresse</h2>
+                    <div class="bnb-inner-pad" style="background-color:#FAF8F5;border:1px solid #E0DCD7;border-radius:4px;padding:16px 20px;">
+                      <table role="presentation" cellpadding="0" cellspacing="0" width="100%">
+                        <tr>
+                          <td class="bnb-stack bnb-stack-left" style="vertical-align:top;padding-right:16px;width:60%;">
+                            <p style="margin:0;font-family:'Courier New',Courier,monospace;font-size:14px;line-height:1.8;color:#4A4A4A;">
+                              <strong><a href="https://www.abgeordnetenwatch.de/profile/anna-mueller" target="_blank" rel="noopener noreferrer" style="color:#2D5016;text-decoration:underline;">Anna Müller, MdB (SPD)</a></strong><br>
+                              Deutscher Bundestag<br>Platz der Republik 1<br>11011 Berlin
+                            </p>
+                          </td>
+                          <td class="bnb-stack bnb-stack-right" style="vertical-align:middle;text-align:center;padding-left:16px;border-left:1px solid #E0DCD7;width:40%;">
+                            
+    <p style="margin:0 0 8px;font-family:Georgia,'Times New Roman',serif;font-size:12px;color:#2D5016;font-weight:bold;line-height:1.4;">Wie findest du<span class="bnb-feedback-break" style="display:none;"><br></span><span class="bnb-feedback-space"> </span>deinen Brief?</p>
+    <div style="white-space:nowrap;line-height:1;">
+    <a href="https://www.brief-nach-berlin.de/feedback?r=1&t=fixed-token" target="_blank" rel="noopener noreferrer"
+       style="color:#D4A017;mso-color-alt:#D4A017;text-decoration:none;font-size:26px;line-height:1;padding:8px 4px;display:inline-block;">&#9733;</a>
+    <a href="https://www.brief-nach-berlin.de/feedback?r=2&t=fixed-token" target="_blank" rel="noopener noreferrer"
+       style="color:#D4A017;mso-color-alt:#D4A017;text-decoration:none;font-size:26px;line-height:1;padding:8px 4px;display:inline-block;">&#9733;</a>
+    <a href="https://www.brief-nach-berlin.de/feedback?r=3&t=fixed-token" target="_blank" rel="noopener noreferrer"
+       style="color:#D4A017;mso-color-alt:#D4A017;text-decoration:none;font-size:26px;line-height:1;padding:8px 4px;display:inline-block;">&#9733;</a>
+    <a href="https://www.brief-nach-berlin.de/feedback?r=4&t=fixed-token" target="_blank" rel="noopener noreferrer"
+       style="color:#D4A017;mso-color-alt:#D4A017;text-decoration:none;font-size:26px;line-height:1;padding:8px 4px;display:inline-block;">&#9734;</a>
+    <a href="https://www.brief-nach-berlin.de/feedback?r=5&t=fixed-token" target="_blank" rel="noopener noreferrer"
+       style="color:#D4A017;mso-color-alt:#D4A017;text-decoration:none;font-size:26px;line-height:1;padding:8px 4px;display:inline-block;">&#9734;</a></div>
+    <p style="margin:8px 0 0;font-family:Georgia,'Times New Roman',serif;font-size:12px;color:#b0b0b0;line-height:1.4;">Dauert 10 Sek, hilft mir sehr</p>
+                          </td>
+                        </tr>
+                      </table>
+                    </div>
+                  </td>
+                </tr>
+
+                <!-- Naechste Schritte (D-08, section 3) -->
+                <tr>
+                  <td colspan="7" class="bnb-pad" style="padding:0 32px 8px;background-color:#ffffff;">
+                    <h2 style="margin:0 0 16px;font-family:Georgia,'Times New Roman',serif;font-size:16px;color:#2D5016;font-weight:bold;">Nächste Schritte</h2>
+
+                    <table role="presentation" cellpadding="0" cellspacing="0" width="100%">
+                      <tr>
+                        <td style="padding:6px 0;font-family:Georgia,'Times New Roman',serif;font-size:14px;color:#4A4A4A;line-height:1.5;">
+                          <span style="display:inline-block;width:24px;height:24px;background-color:#2D5016;color:#ffffff;border-radius:50%;text-align:center;line-height:24px;font-size:12px;font-weight:bold;margin-right:10px;vertical-align:middle;">1</span>
+                          <span class="bnb-desk">Brief von Hand abschreiben (oder ausdrucken)</span><span class="bnb-mob" style="display:none;">Brief von Hand abschreiben (oder ausdrucken)</span>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td style="padding:6px 0;font-family:Georgia,'Times New Roman',serif;font-size:14px;color:#4A4A4A;line-height:1.5;">
+                          <span style="display:inline-block;width:24px;height:24px;background-color:#2D5016;color:#ffffff;border-radius:50%;text-align:center;line-height:24px;font-size:12px;font-weight:bold;margin-right:10px;vertical-align:middle;">2</span>
+                          <span class="bnb-desk">Empfangs- und Absenderadresse auf den Umschlag</span><span class="bnb-mob" style="display:none;">Adressen auf den Umschlag</span>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td style="padding:6px 0;font-family:Georgia,'Times New Roman',serif;font-size:14px;color:#4A4A4A;line-height:1.5;">
+                          <span style="display:inline-block;width:24px;height:24px;background-color:#2D5016;color:#ffffff;border-radius:50%;text-align:center;line-height:24px;font-size:12px;font-weight:bold;margin-right:10px;vertical-align:middle;">3</span>
+                          <span class="bnb-desk">Briefmarke drauf (0,95 EUR, <a href="https://www.deutschepost.de/de/m/mobile-briefmarke.html" target="_blank" rel="noopener noreferrer" style="color:#2D5016;text-decoration:underline;">online kaufen</a>) + ab in den Briefkasten!</span><span class="bnb-mob" style="display:none;">Briefmarke (<a href="https://www.deutschepost.de/de/m/mobile-briefmarke.html" target="_blank" rel="noopener noreferrer" style="color:#2D5016;text-decoration:underline;">hier kaufen</a>) + ab die Post</span>
+                        </td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+
+
+                <!-- Personal sign-off from Thomas (handwritten Caveat) -->
+                <tr>
+                  <td colspan="7" class="bnb-pad" style="padding:8px 32px 16px;background-color:#ffffff;text-align:left;">
+                    <p style="margin:0 0 14px;font-family:Georgia,'Times New Roman',serif;font-size:14px;color:#4A4A4A;line-height:1.6;">
+                      Handgeschriebene Briefe fallen in Bundestagsbüros auf. Inmitten unpersönlicher Drucksachen signalisieren sie echtes Engagement. &rarr; <a href="https://www.brief-nach-berlin.de/tipps" style="color:#2D5016;text-decoration:underline;">Tipps für den perfekten Brief</a>
+                    </p>
+                    <p style="margin:0 0 20px;font-family:Georgia,'Times New Roman',serif;font-size:14px;color:#4A4A4A;line-height:1.6;">
+                      Toll, dass du dir die Zeit für unsere Demokratie nimmst. Melde dich super gerne bei <a href="https://www.heyspeak.io/l/WIOENjqJn6z6WKtkWgDEFg?email=on" target="_blank" rel="noopener noreferrer" style="color:#2D5016;text-decoration:underline;">Fragen oder weiteren Anregungen</a>. Beste Grüße aus Bremen ✌️
+                    </p>
+                    <p style="margin:0;font-family:'Caveat','Brush Script MT','Lucida Handwriting',cursive;font-size:32px;color:#1D3557;line-height:1.1;">
+                      Thomas
+                    </p>
+                    <p style="margin:6px 0 0;font-family:Georgia,'Times New Roman',serif;font-size:12px;color:#bcbcbc;line-height:1.5;">
+                      Eine Initiative von <a href="https://www.thomas-lorenz.eu" target="_blank" rel="noopener noreferrer" style="color:#bcbcbc;text-decoration:underline;">www.thomas-lorenz.eu</a>
+                    </p>
+                  </td>
+                </tr>
+
+                <!-- Donation CTA: shared by first letter emails and resends, before sharing. -->
+                <tr>
+                  <td colspan="7" class="bnb-pad" style="padding:0 32px 16px;background-color:#ffffff;text-align:left;">
+                    <div class="bnb-inner-pad" style="background-color:#FAF8F5;border:1px solid #E0DCD7;border-radius:6px;padding:18px 20px;">
+      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="width:100%;border-collapse:collapse;">
+        <tr>
+          <td valign="middle" style="padding:0 12px 8px 0;">
+            <h2 style="margin:0;font-family:Georgia,'Times New Roman',serif;font-size:16px;color:#2D5016;font-weight:bold;">Damit Brief-nach-Berlin kostenlos bleibt</h2>
+          </td>
+          <td width="52" valign="top" align="right" style="width:52px;padding:0 0 8px 0;">
+            <img src="https://www.brief-nach-berlin.de/images/thomas-avatar.jpg" width="52" height="52" alt="Thomas Lorenz" style="display:block;width:52px;height:52px;border:0;border-radius:50%;">
+          </td>
+        </tr>
+      </table>
+      <p style="margin:0 0 14px;font-family:Georgia,'Times New Roman',serif;font-size:14px;color:#4A4A4A;line-height:1.6;">Ich baue Brief-nach-Berlin allein und ehrenamtlich in meiner Freizeit und trage die laufenden Kosten bisher selbst. Deine Spende hilft, das Projekt kostenlos und unabhängig weiterzubetreiben.</p>
+      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="width:100%;border-collapse:collapse;">
+        <tr>
+          <td class="bnb-support-action bnb-support-action-primary" width="52%" valign="top" style="width:52%;padding-right:5px;">
+            <a href="https://spende.we-aid.org/Brief-nach-Berlin" target="_blank" rel="noopener noreferrer" style="display:block;background-color:#2D5016;color:#ffffff;font-family:Georgia,'Times New Roman',serif;font-size:14px;font-weight:bold;text-decoration:none;padding:11px 10px;border:2px solid #2D5016;border-radius:4px;line-height:1.4;text-align:center;"><img src="https://www.brief-nach-berlin.de/images/icon-heart-white.png" alt="" aria-hidden="true" width="16" height="16" style="width:16px;height:16px;vertical-align:middle;border:0;margin-right:6px;">Jetzt spenden</a>
+            
+          </td>
+          <td class="bnb-support-action" width="48%" valign="top" style="width:48%;padding-left:5px;">
+            <a href="https://www.brief-nach-berlin.de/spenden?src=email" target="_blank" rel="noopener noreferrer" style="display:block;background-color:#ffffff;color:#2D5016;font-family:Georgia,'Times New Roman',serif;font-size:14px;font-weight:bold;text-decoration:none;padding:11px 10px;border:2px solid #2D5016;border-radius:4px;line-height:1.4;text-align:center;">Mehr Informationen</a>
+          </td>
+        </tr>
+      </table>
+      <p style="margin:12px 0 0;font-family:Georgia,'Times New Roman',serif;font-size:12px;color:#bcbcbc;line-height:1.5;">Brief-nach-Berlin ist eine gemeinnützige Initiative in Trägerschaft der WE AID gGmbH.</p>
+    </div>
+                  </td>
+                </tr>
+
+                
+
+                
+                <tr>
+                  <td colspan="7" class="bnb-pad" style="padding:0 32px 16px;background-color:#ffffff;text-align:left;">
+                    <p style="margin:0;font-family:Georgia,'Times New Roman',serif;font-size:14px;color:#4A4A4A;line-height:1.6;">
+                      Du willst Anna Müller auch persönlich sprechen? <a href="https://www.brief-nach-berlin.de/aktiv-werden?mdb=42#wahlkreisbuero" target="_blank" rel="noopener noreferrer" style="color:#2D5016;text-decoration:underline;">Hier findest du das Wahlkreisbüro und die Bürgersprechstunde.</a>
+                    </p>
+                  </td>
+                </tr>
+
+                <!-- Cause-recruit block: motivate sender to invite Wahlkreis-people to write their own letters -->
+                <tr>
+                  <td colspan="7" class="bnb-pad" style="padding:8px 32px 24px;background-color:#ffffff;">
+                    <div class="bnb-inner-pad" style="background-color:#FAF8F5;border:1px solid #E0DCD7;border-radius:6px;padding:20px 22px;">
+                      <h2 style="margin:0 0 8px;font-family:Georgia,'Times New Roman',serif;font-size:16px;color:#2D5016;font-weight:bold;">Gemeinsam noch lauter</h2>
+                      <p style="margin:0 0 14px;font-family:Georgia,'Times New Roman',serif;font-size:14px;color:#4A4A4A;line-height:1.6;">
+                        Dein Brief wirkt. Und er wirkt noch stärker, wenn weitere Stimmen aus deinem Wahlkreis dazukommen. Teile Brief-nach-Berlin per…
+                      </p>
+                      <table role="presentation" cellpadding="0" cellspacing="0" width="100%">
+                        <tr>
+                          <td style="padding-right:4px;width:25%;" valign="top">
+                            <a href="https://wa.me/?text=Ich%20habe%20heute%20meinem%20Abgeordneten%20im%20Bundestag%20geschrieben%2C%20weil%20mich%20ein%20lokales%20Thema%20besch%C3%A4ftigt.%20Briefe%20aus%20dem%20eigenen%20Wahlkreis%20bekommen%20besonderes%20Gewicht%3A%20wenn%20mehrere%20Stimmen%20aus%20derselben%20Gegend%20zum%20gleichen%20Thema%20schreiben%2C%20wird%20das%20Anliegen%20nachweislich%20st%C3%A4rker%20geh%C3%B6rt.%20Magst%20du%20auch%20einen%20Brief%20schreiben%2C%20mit%20deinen%20eigenen%20Worten%3F%20Brief-nach-Berlin%20macht%20es%20einfach%20und%20kostenlos%3A%20https%3A%2F%2Fwww.brief-nach-berlin.de" class="bnb-share-btn" style="display:block;text-align:center;background-color:#ffffff;color:#2D5016;font-family:Georgia,'Times New Roman',serif;font-size:14px;font-weight:bold;text-decoration:none;padding:10px 4px;border-radius:6px;border:2px solid #2D5016;line-height:1;white-space:nowrap;"><img src="https://www.brief-nach-berlin.de/images/icon-whatsapp.png" alt="" width="18" height="18" class="bnb-share-icon" style="width:18px;height:18px;vertical-align:middle;border:0;margin-right:6px;"><span class="bnb-share-label">WhatsApp</span></a>
+                          </td>
+                          <td style="padding:0 2px;width:25%;" valign="top">
+                            <a href="https://t.me/share/url?url=https%3A%2F%2Fwww.brief-nach-berlin.de&text=Ich%20habe%20heute%20meinem%20Abgeordneten%20im%20Bundestag%20geschrieben%2C%20weil%20mich%20ein%20lokales%20Thema%20besch%C3%A4ftigt.%20Briefe%20aus%20dem%20eigenen%20Wahlkreis%20bekommen%20besonderes%20Gewicht%3A%20wenn%20mehrere%20Stimmen%20aus%20derselben%20Gegend%20zum%20gleichen%20Thema%20schreiben%2C%20wird%20das%20Anliegen%20nachweislich%20st%C3%A4rker%20geh%C3%B6rt.%20Magst%20du%20auch%20einen%20Brief%20schreiben%2C%20mit%20deinen%20eigenen%20Worten%3F%20Brief-nach-Berlin%20macht%20es%20einfach%20und%20kostenlos%3A%20https%3A%2F%2Fwww.brief-nach-berlin.de" class="bnb-share-btn" style="display:block;text-align:center;background-color:#ffffff;color:#2D5016;font-family:Georgia,'Times New Roman',serif;font-size:14px;font-weight:bold;text-decoration:none;padding:10px 4px;border-radius:6px;border:2px solid #2D5016;line-height:1;white-space:nowrap;"><img src="https://www.brief-nach-berlin.de/images/icon-telegram.png" alt="" width="18" height="18" class="bnb-share-icon" style="width:18px;height:18px;vertical-align:middle;border:0;margin-right:6px;"><span class="bnb-share-label">Telegram</span></a>
+                          </td>
+                          <td style="padding:0 2px;width:25%;" valign="top">
+                            <a href="https://www.brief-nach-berlin.de/weitersagen#insta" class="bnb-share-btn" style="display:block;text-align:center;background-color:#ffffff;color:#2D5016;font-family:Georgia,'Times New Roman',serif;font-size:14px;font-weight:bold;text-decoration:none;padding:10px 4px;border-radius:6px;border:2px solid #2D5016;line-height:1;white-space:nowrap;"><img src="https://www.brief-nach-berlin.de/images/icon-instagram.png" alt="" width="18" height="18" class="bnb-share-icon" style="width:18px;height:18px;vertical-align:middle;border:0;margin-right:6px;"><span class="bnb-share-label">Instagram</span></a>
+                          </td>
+                          <td style="padding-left:4px;width:25%;" valign="top">
+                            <a href="mailto:?subject=Schreibst%20du%20auch%20einen%20Brief-nach-Berlin%3F&body=Ich%20habe%20heute%20meinem%20Abgeordneten%20im%20Bundestag%20geschrieben%2C%20weil%20mich%20ein%20lokales%20Thema%20besch%C3%A4ftigt.%20Briefe%20aus%20dem%20eigenen%20Wahlkreis%20bekommen%20besonderes%20Gewicht%3A%20wenn%20mehrere%20Stimmen%20aus%20derselben%20Gegend%20zum%20gleichen%20Thema%20schreiben%2C%20wird%20das%20Anliegen%20nachweislich%20st%C3%A4rker%20geh%C3%B6rt.%20Magst%20du%20auch%20einen%20Brief%20schreiben%2C%20mit%20deinen%20eigenen%20Worten%3F%20Brief-nach-Berlin%20macht%20es%20einfach%20und%20kostenlos%3A%20https%3A%2F%2Fwww.brief-nach-berlin.de" class="bnb-share-btn" style="display:block;text-align:center;background-color:#ffffff;color:#2D5016;font-family:Georgia,'Times New Roman',serif;font-size:14px;font-weight:bold;text-decoration:none;padding:10px 4px;border-radius:6px;border:2px solid #2D5016;line-height:1;white-space:nowrap;"><img src="https://www.brief-nach-berlin.de/images/icon-email.png" alt="" width="18" height="18" class="bnb-share-icon" style="width:18px;height:18px;vertical-align:middle;border:0;margin-right:6px;"><span class="bnb-share-label">E-Mail</span></a>
+                          </td>
+                        </tr>
+                      </table>
+                      <!-- Secondary links: weiterführende Seiten, normale Schriftgröße, eine Zeile -->
+                      <p style="margin:16px 0 0;font-family:Georgia,'Times New Roman',serif;font-size:14px;color:#4A4A4A;line-height:1.6;text-align:center;">
+                        <a href="https://www.brief-nach-berlin.de/aktiv-werden" target="_blank" rel="noopener noreferrer" style="color:#2D5016;text-decoration:underline;">Was du sonst noch tun kannst</a>
+                        &nbsp;·&nbsp;
+                        <a href="https://www.brief-nach-berlin.de/andere-tools" target="_blank" rel="noopener noreferrer" style="color:#2D5016;text-decoration:underline;">Weitere Tools</a>
+                      </p>
+                      <div class="bnb-bleed" style="margin:18px -22px -20px;font-size:0;line-height:0;">
+                        <img src="https://www.brief-nach-berlin.de/images/email-bundestag-banner.png" alt="" width="556" height="130" style="display:block;width:100%;max-width:556px;height:auto;border:0;outline:none;text-decoration:none;-ms-interpolation-mode:bicubic;border-bottom-left-radius:6px;border-bottom-right-radius:6px;">
+                      </div>
+                    </div>
+                  </td>
+                </tr>
+
+                <!-- Airmail stripe before footer (mirrors header) -->
+                <tr>
+                  <td colspan="7" style="height:4px;font-size:0;line-height:0;background:repeating-linear-gradient(-45deg,#C1121F,#C1121F 8px,#FAF8F5 8px,#FAF8F5 12px,#1D3557 12px,#1D3557 20px,#FAF8F5 20px,#FAF8F5 24px);">&nbsp;</td>
+                </tr>
+
+                <!-- Footer -->
+                <tr>
+                  <td colspan="7" class="bnb-pad" style="padding:20px 32px 12px;background-color:#FAF8F5;text-align:center;">
+                    <table role="presentation" cellpadding="0" cellspacing="0" align="center" style="margin:0px auto 0;border-collapse:collapse;">
+    <tr>
+      <td style="padding-right:8px;font-family:Georgia,'Times New Roman',serif;font-size:12px;line-height:1.4;color:#999999;white-space:normal;vertical-align:middle;">Brief #7 · <span class="bnb-footer-tagline">Deine Stimme zählt · </span>Folge <a href="https://www.brief-nach-berlin.de" style="color:#999999;text-decoration:none;">Brief-nach-Berlin</a></td>
+      <td width="34" height="30" style="width:34px;height:30px;vertical-align:middle;">
+        <a href="https://www.instagram.com/thomas_duisi/" target="_blank" rel="noopener noreferrer" aria-label="Instagram" title="Instagram" style="display:block;width:30px;height:30px;line-height:30px;mso-line-height-rule:exactly;background-color:transparent;border:0;text-align:center;text-decoration:none;">
+          <img src="https://www.brief-nach-berlin.de/images/icon-instagram.png" alt="Instagram" width="18" height="18" style="display:block;width:18px;height:18px;margin:6px auto;border:0;outline:none;">
+        </a>
+      </td>
+      <td width="30" height="30" style="width:30px;height:30px;vertical-align:middle;">
+        <a href="https://www.linkedin.com/in/thomaslorenz91/" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn" title="LinkedIn" style="display:block;width:30px;height:30px;line-height:30px;mso-line-height-rule:exactly;background-color:transparent;border:0;text-align:center;text-decoration:none;">
+          <span aria-hidden="true" style="display:block;width:18px;height:18px;line-height:18px;margin:6px auto;border-radius:2px;background-color:#2D5016;color:#ffffff;font-family:Arial,sans-serif;font-size:12px;font-weight:bold;text-align:center;">in</span>
+        </a>
+      </td>
+    </tr>
+  </table>
+                  </td>
+                </tr>
+
+                <!-- Legal / disclaimer block (smaller, below footer) -->
+                <tr>
+                  <td colspan="7" class="bnb-pad" style="padding:8px 32px 24px;background-color:#FAF8F5;text-align:center;">
+                    <p style="margin:0 0 6px;font-family:Georgia,'Times New Roman',serif;font-size:12px;color:#aaaaaa;line-height:1.5;">
+                      <strong>Hinweis:</strong> Dieser Entwurf ist von KI erstellt und ohne Gewähr. Bitte prüfe Inhalt, Fakten und Adresse (<a href="https://www.abgeordnetenwatch.de/profile/anna-mueller" target="_blank" rel="noopener noreferrer" style="color:#888888;">abgeordnetenwatch.de</a>), bevor du deinen Brief schreibst. Die Verantwortung für den Inhalt liegt bei dir. Es gelten die <a href="https://www.brief-nach-berlin.de/nutzungsbedingungen" style="color:#888888;">Nutzungsbedingungen</a>.
+                    </p>
+                    <p style="margin:0;font-family:Georgia,'Times New Roman',serif;font-size:12px;color:#aaaaaa;line-height:1.5;">
+                      <a href="https://www.brief-nach-berlin.de/datenschutz" style="color:#888888;">Datenschutz</a>: Dein Brief und dein Anliegen werden nicht gespeichert. Nur wenn du dein Anliegen freiwillig auf die Karte setzt, speichere ich ein kurzes Themensignal. Kein Newsletter: In 2-3 Tagen kommt nur noch eine Mail mit der Bitte um eine Bewertung. · <a href="https://example.org/datenloeschen?t=fixed" style="color:#888888;">Meine gespeicherten Daten löschen</a> · <a href="https://www.brief-nach-berlin.de/wer-darf-mdb-schreiben" style="color:#888888;">Wer darf MdBs schreiben?</a>
+                    </p>
+                  </td>
+                </tr>
+
+        </table>
+
+      </td>
+    </tr>
+  </table>
+
+</body>
+</html>"
+`;
+
+exports[`Erwachsenen-Mail bleibt unverändert mit Feedback-Token (Sterne-Bar): text 1`] = `
+"Sehr geehrte Frau Müller,
+
+Testbrief.
+
+Mit freundlichen Grüßen
+
+Beste Grüße aus Bremen ✌️
+
+Thomas
+Eine Initiative von https://www.thomas-lorenz.eu
+
+Damit Brief-nach-Berlin kostenlos bleibt
+Hinweis zur Finanzierung: Brief-nach-Berlin ist eine gemeinnützige Initiative in Trägerschaft der WE AID gGmbH.
+Jetzt spenden: https://spende.we-aid.org/Brief-nach-Berlin
+Mehr über die Unterstützung erfahren: https://www.brief-nach-berlin.de/spenden?src=email
+
+Hinweis: Dieser Entwurf ist von KI erstellt und ohne Gewähr. Bitte prüfe Inhalt, Fakten und Adresse, bevor du deinen Brief schreibst. Die Verantwortung für den Inhalt liegt bei dir. Es gelten die Nutzungsbedingungen. https://www.brief-nach-berlin.de/nutzungsbedingungen
+
+Datenschutz: Dein Brief und dein Anliegen werden nicht gespeichert. Nur wenn du dein Anliegen freiwillig auf die Karte setzt, speichere ich ein kurzes Themensignal. Kein Newsletter: In 2-3 Tagen kommt nur noch eine Mail mit der Bitte um eine Bewertung.
+Meine gespeicherten Daten löschen: https://example.org/datenloeschen?t=fixed
+
+Updates von Thomas zu Brief-nach-Berlin: Instagram: https://www.instagram.com/thomas_duisi/ · LinkedIn: https://www.linkedin.com/in/thomaslorenz91/"
+`;
+
+exports[`Erwachsenen-Mail bleibt unverändert ohne Feedback-Token (Profil-Button): html 1`] = `
+"<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="ai-generated" content="true">
+  <meta name="digital-source-type" content="http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia">
+  <!--[if mso]>
+  <style>td { font-family: 'Courier New', Courier, monospace !important; }</style>
+  <![endif]-->
+  <style>
+    @media only screen and (max-width: 600px) {
+      .bnb-pad { padding-left: 16px !important; padding-right: 16px !important; }
+      .bnb-inner-pad { padding-left: 14px !important; padding-right: 14px !important; }
+      .bnb-stack { display: block !important; width: 100% !important; }
+      .bnb-stack-left { padding: 0 0 14px 0 !important; width: 100% !important; }
+      .bnb-stack-right { padding: 14px 0 0 0 !important; border-left: 0 !important; border-top: 1px solid #E0DCD7 !important; width: 100% !important; text-align: center !important; }
+      .bnb-bleed { margin-left: -14px !important; margin-right: -14px !important; }
+      .bnb-support-action { display: block !important; width: 100% !important; padding-left: 0 !important; padding-right: 0 !important; }
+      .bnb-support-action-primary { padding-bottom: 8px !important; }
+      .bnb-feedback-break { display: inline !important; }
+      .bnb-feedback-space { display: none !important; }
+      /* Share row: on mobile only the square icon-buttons remain (labels hidden). */
+      .bnb-share-label { display: none !important; }
+      .bnb-share-btn { padding: 14px 0 !important; }
+      .bnb-share-icon { width: 24px !important; height: 24px !important; margin: 0 !important; }
+      /* Mobile-only text swaps: kürzere Varianten auf kleinen Screens. */
+      .bnb-desk { display: none !important; }
+      .bnb-mob { display: inline !important; }
+      /* Footer: Tagline im Social-Follow-Label auf Mobile ausblenden. */
+      .bnb-footer-tagline { display: none !important; }
+    }
+  </style>
+</head>
+<body style="margin:0;padding:0;background-color:#FAF8F5;font-family:Georgia,'Times New Roman',serif;">
+
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color:#FAF8F5;">
+    <tr>
+      <td align="center" style="padding:20px 0;">
+
+        <table role="presentation" width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;background-color:#ffffff;border-collapse:collapse;">
+
+                <!-- Airmail stripe header (D-06): thin diagonal red/white/blue like landing page -->
+                <tr>
+                  <td colspan="7" style="height:4px;font-size:0;line-height:0;background:repeating-linear-gradient(-45deg,#C1121F,#C1121F 8px,#FAF8F5 8px,#FAF8F5 12px,#1D3557 12px,#1D3557 20px,#FAF8F5 20px,#FAF8F5 24px);">&nbsp;</td>
+                </tr>
+
+                <!-- Title: "Brief-nach-Berlin". Watermark wandert in den Brief-Kasten als Briefmarke. -->
+                <tr>
+                  <td colspan="7" class="bnb-pad" bgcolor="#ffffff" style="padding:28px 32px 28px;text-align:center;background-color:#ffffff;">
+                    <h1 style="margin:0;font-family:Georgia,'Times New Roman',serif;font-size:22px;color:#2D5016;font-weight:bold;letter-spacing:0.5px;">Brief-nach-Berlin</h1>
+                    <p style="margin:8px 0 0;font-family:Georgia,'Times New Roman',serif;font-size:14px;color:#666666;">Dein Briefentwurf ist fertig. Jetzt schnell zu Papier bringen und abschicken.</p>
+                  </td>
+                </tr>
+
+                <!-- Intro: warm founder voice -->
+                <tr>
+                  <td colspan="7" class="bnb-pad" style="padding:0 32px 20px;background-color:#ffffff;">
+                    <p style="margin:0;font-family:Georgia,'Times New Roman',serif;font-size:14px;color:#4A4A4A;line-height:1.6;">Lies ihn gründlich durch und pass ihn an, damit es dein Brief wird. Dieser Entwurf dient als Schnellstart, <a href="https://www.brief-nach-berlin.de/brief-verbessern" target="_blank" rel="noopener noreferrer" style="color:#2D5016;text-decoration:underline;">verbessere ihn gern</a>, damit er sich wirklich nach dir anhört.<span class="bnb-desk"><br>Bitte bewerte anschließend deinen Brief 🙏 Danke, dass du dich engagierst!</span><span class="bnb-mob" style="display:none;"><br>Danke, dass du dich engagierst 🙏</span></p>
+                  </td>
+                </tr>
+
+                <!-- Brief block (D-08, section 1) — Briefmarke oben rechts, Text fließt drumherum.
+                     align="right" floatet das Bild zuverlässig in allen Mail-Clients; Opacity ist
+                     in die PNG eingebrannt (~80%), weil CSS opacity in Outlook nicht greift. -->
+                <tr>
+                  <td colspan="7" class="bnb-pad" style="padding:0 32px 8px;background-color:#ffffff;">
+                    <div class="bnb-inner-pad" data-ai-generated="true" style="background-color:#FAF8F5;border:1px solid #E0DCD7;border-radius:4px;padding:24px;">
+                      <img src="https://www.brief-nach-berlin.de/images/email-title-watermark-v2.png" width="110" height="110" alt="" align="right" style="display:inline-block;width:110px;height:110px;margin:0 0 6px 14px;border:0;outline:none;text-decoration:none;-ms-interpolation-mode:bicubic;">
+                      <p style="margin:0;font-family:'Courier New',Courier,monospace;font-size:14px;line-height:1.7;color:#4A4A4A;white-space:pre-wrap;">Sehr geehrte Frau Müller,<br><br>Testbrief.<br><br>Mit freundlichen Grüßen</p>
+                    </div>
+                  </td>
+                </tr>
+
+                <!-- Brief anpassen CTA: only for German, because the target flow is German-only. -->
+                <tr>
+                  <td colspan="7" class="bnb-pad" style="padding:8px 32px 8px;background-color:#ffffff;text-align:center;">
+                    <p style="margin:0;font-family:Georgia,'Times New Roman',serif;font-size:14px;color:#4A4A4A;line-height:1.6;text-align:center;">Nicht ganz dein Ton? Hier deinen &rarr; <a href="https://www.brief-nach-berlin.de/brief/anpassen#email=test%40example.org" target="_blank" rel="noopener noreferrer" style="color:#2D5016;text-decoration:underline;">Briefentwurf schnell anpassen</a></p>
+                  </td>
+                </tr>
+
+                <!-- Postadresse (D-08, section 2): name links to abgeordnetenwatch,
+                     right column hosts the star-rating widget instead of a static profile button. -->
+                <tr>
+                  <td colspan="7" class="bnb-pad" style="padding:16px 32px 24px;background-color:#ffffff;">
+                    <h2 style="margin:0 0 12px;font-family:Georgia,'Times New Roman',serif;font-size:16px;color:#2D5016;font-weight:bold;">Adresse</h2>
+                    <div class="bnb-inner-pad" style="background-color:#FAF8F5;border:1px solid #E0DCD7;border-radius:4px;padding:16px 20px;">
+                      <table role="presentation" cellpadding="0" cellspacing="0" width="100%">
+                        <tr>
+                          <td class="bnb-stack bnb-stack-left" style="vertical-align:top;padding-right:16px;width:60%;">
+                            <p style="margin:0;font-family:'Courier New',Courier,monospace;font-size:14px;line-height:1.8;color:#4A4A4A;">
+                              <strong><a href="https://www.abgeordnetenwatch.de/profile/anna-mueller" target="_blank" rel="noopener noreferrer" style="color:#2D5016;text-decoration:underline;">Anna Müller, MdB (SPD)</a></strong><br>
+                              Deutscher Bundestag<br>Platz der Republik 1<br>11011 Berlin
+                            </p>
+                          </td>
+                          <td class="bnb-stack bnb-stack-right" style="vertical-align:middle;text-align:center;padding-left:16px;border-left:1px solid #E0DCD7;width:40%;">
+                            <a href="https://www.abgeordnetenwatch.de/profile/anna-mueller" target="_blank" rel="noopener noreferrer" style="display:inline-block;background-color:#2D5016;color:#ffffff;font-family:Georgia,'Times New Roman',serif;font-size:14px;font-weight:bold;text-decoration:none;padding:10px 14px;border-radius:4px;line-height:1.5;text-align:center;">Profil auf<br>abgeordnetenwatch</a>
+                          </td>
+                        </tr>
+                      </table>
+                    </div>
+                  </td>
+                </tr>
+
+                <!-- Naechste Schritte (D-08, section 3) -->
+                <tr>
+                  <td colspan="7" class="bnb-pad" style="padding:0 32px 8px;background-color:#ffffff;">
+                    <h2 style="margin:0 0 16px;font-family:Georgia,'Times New Roman',serif;font-size:16px;color:#2D5016;font-weight:bold;">Nächste Schritte</h2>
+
+                    <table role="presentation" cellpadding="0" cellspacing="0" width="100%">
+                      <tr>
+                        <td style="padding:6px 0;font-family:Georgia,'Times New Roman',serif;font-size:14px;color:#4A4A4A;line-height:1.5;">
+                          <span style="display:inline-block;width:24px;height:24px;background-color:#2D5016;color:#ffffff;border-radius:50%;text-align:center;line-height:24px;font-size:12px;font-weight:bold;margin-right:10px;vertical-align:middle;">1</span>
+                          <span class="bnb-desk">Brief von Hand abschreiben (oder ausdrucken)</span><span class="bnb-mob" style="display:none;">Brief von Hand abschreiben (oder ausdrucken)</span>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td style="padding:6px 0;font-family:Georgia,'Times New Roman',serif;font-size:14px;color:#4A4A4A;line-height:1.5;">
+                          <span style="display:inline-block;width:24px;height:24px;background-color:#2D5016;color:#ffffff;border-radius:50%;text-align:center;line-height:24px;font-size:12px;font-weight:bold;margin-right:10px;vertical-align:middle;">2</span>
+                          <span class="bnb-desk">Empfangs- und Absenderadresse auf den Umschlag</span><span class="bnb-mob" style="display:none;">Adressen auf den Umschlag</span>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td style="padding:6px 0;font-family:Georgia,'Times New Roman',serif;font-size:14px;color:#4A4A4A;line-height:1.5;">
+                          <span style="display:inline-block;width:24px;height:24px;background-color:#2D5016;color:#ffffff;border-radius:50%;text-align:center;line-height:24px;font-size:12px;font-weight:bold;margin-right:10px;vertical-align:middle;">3</span>
+                          <span class="bnb-desk">Briefmarke drauf (0,95 EUR, <a href="https://www.deutschepost.de/de/m/mobile-briefmarke.html" target="_blank" rel="noopener noreferrer" style="color:#2D5016;text-decoration:underline;">online kaufen</a>) + ab in den Briefkasten!</span><span class="bnb-mob" style="display:none;">Briefmarke (<a href="https://www.deutschepost.de/de/m/mobile-briefmarke.html" target="_blank" rel="noopener noreferrer" style="color:#2D5016;text-decoration:underline;">hier kaufen</a>) + ab die Post</span>
+                        </td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+
+
+                <!-- Personal sign-off from Thomas (handwritten Caveat) -->
+                <tr>
+                  <td colspan="7" class="bnb-pad" style="padding:8px 32px 16px;background-color:#ffffff;text-align:left;">
+                    <p style="margin:0 0 14px;font-family:Georgia,'Times New Roman',serif;font-size:14px;color:#4A4A4A;line-height:1.6;">
+                      Handgeschriebene Briefe fallen in Bundestagsbüros auf. Inmitten unpersönlicher Drucksachen signalisieren sie echtes Engagement. &rarr; <a href="https://www.brief-nach-berlin.de/tipps" style="color:#2D5016;text-decoration:underline;">Tipps für den perfekten Brief</a>
+                    </p>
+                    <p style="margin:0 0 20px;font-family:Georgia,'Times New Roman',serif;font-size:14px;color:#4A4A4A;line-height:1.6;">
+                      Toll, dass du dir die Zeit für unsere Demokratie nimmst. Melde dich super gerne bei <a href="https://www.heyspeak.io/l/WIOENjqJn6z6WKtkWgDEFg?email=on" target="_blank" rel="noopener noreferrer" style="color:#2D5016;text-decoration:underline;">Fragen oder weiteren Anregungen</a>. Beste Grüße aus Bremen ✌️
+                    </p>
+                    <p style="margin:0;font-family:'Caveat','Brush Script MT','Lucida Handwriting',cursive;font-size:32px;color:#1D3557;line-height:1.1;">
+                      Thomas
+                    </p>
+                    <p style="margin:6px 0 0;font-family:Georgia,'Times New Roman',serif;font-size:12px;color:#bcbcbc;line-height:1.5;">
+                      Eine Initiative von <a href="https://www.thomas-lorenz.eu" target="_blank" rel="noopener noreferrer" style="color:#bcbcbc;text-decoration:underline;">www.thomas-lorenz.eu</a>
+                    </p>
+                  </td>
+                </tr>
+
+                <!-- Donation CTA: shared by first letter emails and resends, before sharing. -->
+                <tr>
+                  <td colspan="7" class="bnb-pad" style="padding:0 32px 16px;background-color:#ffffff;text-align:left;">
+                    <div class="bnb-inner-pad" style="background-color:#FAF8F5;border:1px solid #E0DCD7;border-radius:6px;padding:18px 20px;">
+      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="width:100%;border-collapse:collapse;">
+        <tr>
+          <td valign="middle" style="padding:0 12px 8px 0;">
+            <h2 style="margin:0;font-family:Georgia,'Times New Roman',serif;font-size:16px;color:#2D5016;font-weight:bold;">Damit Brief-nach-Berlin kostenlos bleibt</h2>
+          </td>
+          <td width="52" valign="top" align="right" style="width:52px;padding:0 0 8px 0;">
+            <img src="https://www.brief-nach-berlin.de/images/thomas-avatar.jpg" width="52" height="52" alt="Thomas Lorenz" style="display:block;width:52px;height:52px;border:0;border-radius:50%;">
+          </td>
+        </tr>
+      </table>
+      <p style="margin:0 0 14px;font-family:Georgia,'Times New Roman',serif;font-size:14px;color:#4A4A4A;line-height:1.6;">Ich baue Brief-nach-Berlin allein und ehrenamtlich in meiner Freizeit und trage die laufenden Kosten bisher selbst. Deine Spende hilft, das Projekt kostenlos und unabhängig weiterzubetreiben.</p>
+      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="width:100%;border-collapse:collapse;">
+        <tr>
+          <td class="bnb-support-action bnb-support-action-primary" width="52%" valign="top" style="width:52%;padding-right:5px;">
+            <a href="https://spende.we-aid.org/Brief-nach-Berlin" target="_blank" rel="noopener noreferrer" style="display:block;background-color:#2D5016;color:#ffffff;font-family:Georgia,'Times New Roman',serif;font-size:14px;font-weight:bold;text-decoration:none;padding:11px 10px;border:2px solid #2D5016;border-radius:4px;line-height:1.4;text-align:center;"><img src="https://www.brief-nach-berlin.de/images/icon-heart-white.png" alt="" aria-hidden="true" width="16" height="16" style="width:16px;height:16px;vertical-align:middle;border:0;margin-right:6px;">Jetzt spenden</a>
+            
+          </td>
+          <td class="bnb-support-action" width="48%" valign="top" style="width:48%;padding-left:5px;">
+            <a href="https://www.brief-nach-berlin.de/spenden?src=email" target="_blank" rel="noopener noreferrer" style="display:block;background-color:#ffffff;color:#2D5016;font-family:Georgia,'Times New Roman',serif;font-size:14px;font-weight:bold;text-decoration:none;padding:11px 10px;border:2px solid #2D5016;border-radius:4px;line-height:1.4;text-align:center;">Mehr Informationen</a>
+          </td>
+        </tr>
+      </table>
+      <p style="margin:12px 0 0;font-family:Georgia,'Times New Roman',serif;font-size:12px;color:#bcbcbc;line-height:1.5;">Brief-nach-Berlin ist eine gemeinnützige Initiative in Trägerschaft der WE AID gGmbH.</p>
+    </div>
+                  </td>
+                </tr>
+
+                
+
+                
+                <tr>
+                  <td colspan="7" class="bnb-pad" style="padding:0 32px 16px;background-color:#ffffff;text-align:left;">
+                    <p style="margin:0;font-family:Georgia,'Times New Roman',serif;font-size:14px;color:#4A4A4A;line-height:1.6;">
+                      Du willst Anna Müller auch persönlich sprechen? <a href="https://www.brief-nach-berlin.de/aktiv-werden?mdb=42#wahlkreisbuero" target="_blank" rel="noopener noreferrer" style="color:#2D5016;text-decoration:underline;">Hier findest du das Wahlkreisbüro und die Bürgersprechstunde.</a>
+                    </p>
+                  </td>
+                </tr>
+
+                <!-- Cause-recruit block: motivate sender to invite Wahlkreis-people to write their own letters -->
+                <tr>
+                  <td colspan="7" class="bnb-pad" style="padding:8px 32px 24px;background-color:#ffffff;">
+                    <div class="bnb-inner-pad" style="background-color:#FAF8F5;border:1px solid #E0DCD7;border-radius:6px;padding:20px 22px;">
+                      <h2 style="margin:0 0 8px;font-family:Georgia,'Times New Roman',serif;font-size:16px;color:#2D5016;font-weight:bold;">Gemeinsam noch lauter</h2>
+                      <p style="margin:0 0 14px;font-family:Georgia,'Times New Roman',serif;font-size:14px;color:#4A4A4A;line-height:1.6;">
+                        Dein Brief wirkt. Und er wirkt noch stärker, wenn weitere Stimmen aus deinem Wahlkreis dazukommen. Teile Brief-nach-Berlin per…
+                      </p>
+                      <table role="presentation" cellpadding="0" cellspacing="0" width="100%">
+                        <tr>
+                          <td style="padding-right:4px;width:25%;" valign="top">
+                            <a href="https://wa.me/?text=Ich%20habe%20heute%20meinem%20Abgeordneten%20im%20Bundestag%20geschrieben%2C%20weil%20mich%20ein%20lokales%20Thema%20besch%C3%A4ftigt.%20Briefe%20aus%20dem%20eigenen%20Wahlkreis%20bekommen%20besonderes%20Gewicht%3A%20wenn%20mehrere%20Stimmen%20aus%20derselben%20Gegend%20zum%20gleichen%20Thema%20schreiben%2C%20wird%20das%20Anliegen%20nachweislich%20st%C3%A4rker%20geh%C3%B6rt.%20Magst%20du%20auch%20einen%20Brief%20schreiben%2C%20mit%20deinen%20eigenen%20Worten%3F%20Brief-nach-Berlin%20macht%20es%20einfach%20und%20kostenlos%3A%20https%3A%2F%2Fwww.brief-nach-berlin.de" class="bnb-share-btn" style="display:block;text-align:center;background-color:#ffffff;color:#2D5016;font-family:Georgia,'Times New Roman',serif;font-size:14px;font-weight:bold;text-decoration:none;padding:10px 4px;border-radius:6px;border:2px solid #2D5016;line-height:1;white-space:nowrap;"><img src="https://www.brief-nach-berlin.de/images/icon-whatsapp.png" alt="" width="18" height="18" class="bnb-share-icon" style="width:18px;height:18px;vertical-align:middle;border:0;margin-right:6px;"><span class="bnb-share-label">WhatsApp</span></a>
+                          </td>
+                          <td style="padding:0 2px;width:25%;" valign="top">
+                            <a href="https://t.me/share/url?url=https%3A%2F%2Fwww.brief-nach-berlin.de&text=Ich%20habe%20heute%20meinem%20Abgeordneten%20im%20Bundestag%20geschrieben%2C%20weil%20mich%20ein%20lokales%20Thema%20besch%C3%A4ftigt.%20Briefe%20aus%20dem%20eigenen%20Wahlkreis%20bekommen%20besonderes%20Gewicht%3A%20wenn%20mehrere%20Stimmen%20aus%20derselben%20Gegend%20zum%20gleichen%20Thema%20schreiben%2C%20wird%20das%20Anliegen%20nachweislich%20st%C3%A4rker%20geh%C3%B6rt.%20Magst%20du%20auch%20einen%20Brief%20schreiben%2C%20mit%20deinen%20eigenen%20Worten%3F%20Brief-nach-Berlin%20macht%20es%20einfach%20und%20kostenlos%3A%20https%3A%2F%2Fwww.brief-nach-berlin.de" class="bnb-share-btn" style="display:block;text-align:center;background-color:#ffffff;color:#2D5016;font-family:Georgia,'Times New Roman',serif;font-size:14px;font-weight:bold;text-decoration:none;padding:10px 4px;border-radius:6px;border:2px solid #2D5016;line-height:1;white-space:nowrap;"><img src="https://www.brief-nach-berlin.de/images/icon-telegram.png" alt="" width="18" height="18" class="bnb-share-icon" style="width:18px;height:18px;vertical-align:middle;border:0;margin-right:6px;"><span class="bnb-share-label">Telegram</span></a>
+                          </td>
+                          <td style="padding:0 2px;width:25%;" valign="top">
+                            <a href="https://www.brief-nach-berlin.de/weitersagen#insta" class="bnb-share-btn" style="display:block;text-align:center;background-color:#ffffff;color:#2D5016;font-family:Georgia,'Times New Roman',serif;font-size:14px;font-weight:bold;text-decoration:none;padding:10px 4px;border-radius:6px;border:2px solid #2D5016;line-height:1;white-space:nowrap;"><img src="https://www.brief-nach-berlin.de/images/icon-instagram.png" alt="" width="18" height="18" class="bnb-share-icon" style="width:18px;height:18px;vertical-align:middle;border:0;margin-right:6px;"><span class="bnb-share-label">Instagram</span></a>
+                          </td>
+                          <td style="padding-left:4px;width:25%;" valign="top">
+                            <a href="mailto:?subject=Schreibst%20du%20auch%20einen%20Brief-nach-Berlin%3F&body=Ich%20habe%20heute%20meinem%20Abgeordneten%20im%20Bundestag%20geschrieben%2C%20weil%20mich%20ein%20lokales%20Thema%20besch%C3%A4ftigt.%20Briefe%20aus%20dem%20eigenen%20Wahlkreis%20bekommen%20besonderes%20Gewicht%3A%20wenn%20mehrere%20Stimmen%20aus%20derselben%20Gegend%20zum%20gleichen%20Thema%20schreiben%2C%20wird%20das%20Anliegen%20nachweislich%20st%C3%A4rker%20geh%C3%B6rt.%20Magst%20du%20auch%20einen%20Brief%20schreiben%2C%20mit%20deinen%20eigenen%20Worten%3F%20Brief-nach-Berlin%20macht%20es%20einfach%20und%20kostenlos%3A%20https%3A%2F%2Fwww.brief-nach-berlin.de" class="bnb-share-btn" style="display:block;text-align:center;background-color:#ffffff;color:#2D5016;font-family:Georgia,'Times New Roman',serif;font-size:14px;font-weight:bold;text-decoration:none;padding:10px 4px;border-radius:6px;border:2px solid #2D5016;line-height:1;white-space:nowrap;"><img src="https://www.brief-nach-berlin.de/images/icon-email.png" alt="" width="18" height="18" class="bnb-share-icon" style="width:18px;height:18px;vertical-align:middle;border:0;margin-right:6px;"><span class="bnb-share-label">E-Mail</span></a>
+                          </td>
+                        </tr>
+                      </table>
+                      <!-- Secondary links: weiterführende Seiten, normale Schriftgröße, eine Zeile -->
+                      <p style="margin:16px 0 0;font-family:Georgia,'Times New Roman',serif;font-size:14px;color:#4A4A4A;line-height:1.6;text-align:center;">
+                        <a href="https://www.brief-nach-berlin.de/aktiv-werden" target="_blank" rel="noopener noreferrer" style="color:#2D5016;text-decoration:underline;">Was du sonst noch tun kannst</a>
+                        &nbsp;·&nbsp;
+                        <a href="https://www.brief-nach-berlin.de/andere-tools" target="_blank" rel="noopener noreferrer" style="color:#2D5016;text-decoration:underline;">Weitere Tools</a>
+                      </p>
+                      <div class="bnb-bleed" style="margin:18px -22px -20px;font-size:0;line-height:0;">
+                        <img src="https://www.brief-nach-berlin.de/images/email-bundestag-banner.png" alt="" width="556" height="130" style="display:block;width:100%;max-width:556px;height:auto;border:0;outline:none;text-decoration:none;-ms-interpolation-mode:bicubic;border-bottom-left-radius:6px;border-bottom-right-radius:6px;">
+                      </div>
+                    </div>
+                  </td>
+                </tr>
+
+                <!-- Airmail stripe before footer (mirrors header) -->
+                <tr>
+                  <td colspan="7" style="height:4px;font-size:0;line-height:0;background:repeating-linear-gradient(-45deg,#C1121F,#C1121F 8px,#FAF8F5 8px,#FAF8F5 12px,#1D3557 12px,#1D3557 20px,#FAF8F5 20px,#FAF8F5 24px);">&nbsp;</td>
+                </tr>
+
+                <!-- Footer -->
+                <tr>
+                  <td colspan="7" class="bnb-pad" style="padding:20px 32px 12px;background-color:#FAF8F5;text-align:center;">
+                    <table role="presentation" cellpadding="0" cellspacing="0" align="center" style="margin:0px auto 0;border-collapse:collapse;">
+    <tr>
+      <td style="padding-right:8px;font-family:Georgia,'Times New Roman',serif;font-size:12px;line-height:1.4;color:#999999;white-space:normal;vertical-align:middle;">Brief #7 · <span class="bnb-footer-tagline">Deine Stimme zählt · </span>Folge <a href="https://www.brief-nach-berlin.de" style="color:#999999;text-decoration:none;">Brief-nach-Berlin</a></td>
+      <td width="34" height="30" style="width:34px;height:30px;vertical-align:middle;">
+        <a href="https://www.instagram.com/thomas_duisi/" target="_blank" rel="noopener noreferrer" aria-label="Instagram" title="Instagram" style="display:block;width:30px;height:30px;line-height:30px;mso-line-height-rule:exactly;background-color:transparent;border:0;text-align:center;text-decoration:none;">
+          <img src="https://www.brief-nach-berlin.de/images/icon-instagram.png" alt="Instagram" width="18" height="18" style="display:block;width:18px;height:18px;margin:6px auto;border:0;outline:none;">
+        </a>
+      </td>
+      <td width="30" height="30" style="width:30px;height:30px;vertical-align:middle;">
+        <a href="https://www.linkedin.com/in/thomaslorenz91/" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn" title="LinkedIn" style="display:block;width:30px;height:30px;line-height:30px;mso-line-height-rule:exactly;background-color:transparent;border:0;text-align:center;text-decoration:none;">
+          <span aria-hidden="true" style="display:block;width:18px;height:18px;line-height:18px;margin:6px auto;border-radius:2px;background-color:#2D5016;color:#ffffff;font-family:Arial,sans-serif;font-size:12px;font-weight:bold;text-align:center;">in</span>
+        </a>
+      </td>
+    </tr>
+  </table>
+                  </td>
+                </tr>
+
+                <!-- Legal / disclaimer block (smaller, below footer) -->
+                <tr>
+                  <td colspan="7" class="bnb-pad" style="padding:8px 32px 24px;background-color:#FAF8F5;text-align:center;">
+                    <p style="margin:0 0 6px;font-family:Georgia,'Times New Roman',serif;font-size:12px;color:#aaaaaa;line-height:1.5;">
+                      <strong>Hinweis:</strong> Dieser Entwurf ist von KI erstellt und ohne Gewähr. Bitte prüfe Inhalt, Fakten und Adresse (<a href="https://www.abgeordnetenwatch.de/profile/anna-mueller" target="_blank" rel="noopener noreferrer" style="color:#888888;">abgeordnetenwatch.de</a>), bevor du deinen Brief schreibst. Die Verantwortung für den Inhalt liegt bei dir. Es gelten die <a href="https://www.brief-nach-berlin.de/nutzungsbedingungen" style="color:#888888;">Nutzungsbedingungen</a>.
+                    </p>
+                    <p style="margin:0;font-family:Georgia,'Times New Roman',serif;font-size:12px;color:#aaaaaa;line-height:1.5;">
+                      <a href="https://www.brief-nach-berlin.de/datenschutz" style="color:#888888;">Datenschutz</a>: Dein Brief und dein Anliegen werden nicht gespeichert. Nur wenn du dein Anliegen freiwillig auf die Karte setzt, speichere ich ein kurzes Themensignal. Kein Newsletter: In 2-3 Tagen kommt nur noch eine Mail mit der Bitte um eine Bewertung. · <a href="https://example.org/datenloeschen?t=fixed" style="color:#888888;">Meine gespeicherten Daten löschen</a> · <a href="https://www.brief-nach-berlin.de/wer-darf-mdb-schreiben" style="color:#888888;">Wer darf MdBs schreiben?</a>
+                    </p>
+                  </td>
+                </tr>
+
+        </table>
+
+      </td>
+    </tr>
+  </table>
+
+</body>
+</html>"
+`;
+
+exports[`Erwachsenen-Mail bleibt unverändert ohne Feedback-Token (Profil-Button): text 1`] = `
+"Sehr geehrte Frau Müller,
+
+Testbrief.
+
+Mit freundlichen Grüßen
+
+Beste Grüße aus Bremen ✌️
+
+Thomas
+Eine Initiative von https://www.thomas-lorenz.eu
+
+Damit Brief-nach-Berlin kostenlos bleibt
+Hinweis zur Finanzierung: Brief-nach-Berlin ist eine gemeinnützige Initiative in Trägerschaft der WE AID gGmbH.
+Jetzt spenden: https://spende.we-aid.org/Brief-nach-Berlin
+Mehr über die Unterstützung erfahren: https://www.brief-nach-berlin.de/spenden?src=email
+
+Hinweis: Dieser Entwurf ist von KI erstellt und ohne Gewähr. Bitte prüfe Inhalt, Fakten und Adresse, bevor du deinen Brief schreibst. Die Verantwortung für den Inhalt liegt bei dir. Es gelten die Nutzungsbedingungen. https://www.brief-nach-berlin.de/nutzungsbedingungen
+
+Datenschutz: Dein Brief und dein Anliegen werden nicht gespeichert. Nur wenn du dein Anliegen freiwillig auf die Karte setzt, speichere ich ein kurzes Themensignal. Kein Newsletter: In 2-3 Tagen kommt nur noch eine Mail mit der Bitte um eine Bewertung.
+Meine gespeicherten Daten löschen: https://example.org/datenloeschen?t=fixed
+
+Updates von Thomas zu Brief-nach-Berlin: Instagram: https://www.instagram.com/thomas_duisi/ · LinkedIn: https://www.linkedin.com/in/thomaslorenz91/"
+`;

@@ -28,6 +28,7 @@ import { StepPreferences, type StepPreferencesData } from "./StepPreferences";
 import { Step2Issue } from "./Step2Issue";
 import { StepLevelSelect } from "./StepLevelSelect";
 import { Step3Success } from "./Step3Success";
+import { isYouthWizard } from "./youthMode";
 import FadeFooterImage from "../FadeFooterImage";
 import { useLocale } from "@/components/i18n/LocaleProvider";
 import {
@@ -200,6 +201,14 @@ export function WizardShell() {
         ...(handoff.toneLevel != null ? { toneLevel: handoff.toneLevel } : {}),
         ...(handoff.tipsOpened ? { tipsOpened: true } : {}),
         ...(handoff.usedSpeechToText ? { usedSpeechToText: true } : {}),
+        ...(handoff.audience === "jung" && handoff.klasse != null
+          ? {
+              audience: "jung" as const,
+              klasse: handoff.klasse,
+              ...(handoff.classToken ? { classToken: handoff.classToken } : {}),
+            }
+          : {}),
+        ...(handoff.plz && !current.plz ? { plz: handoff.plz } : {}),
         ...(handoff.source === "campaign" && handoff.campaignSlug
           ? {
               campaign: {
@@ -237,13 +246,17 @@ export function WizardShell() {
     }
   }, [handoffPending, step, wizardData, router]);
 
-  const ensureRoutingPrefetch = useCallback((issueText: string) => {
-    if (!issueText || routingPrefetchRef.current?.issueText === issueText) return;
-    routingPrefetchRef.current = {
-      issueText,
-      promise: prefetchRoutingAction(issueText).catch(() => null),
-    };
-  }, []);
+  const classToken = wizardData.classToken;
+  const ensureRoutingPrefetch = useCallback(
+    (issueText: string) => {
+      if (!issueText || routingPrefetchRef.current?.issueText === issueText) return;
+      routingPrefetchRef.current = {
+        issueText,
+        promise: prefetchRoutingAction(issueText, classToken).catch(() => null),
+      };
+    },
+    [classToken]
+  );
 
   // Step 1: Anliegen — stores state and advances. This step is reached on a
   // direct visit or when a landing visitor explicitly goes back to edit.
@@ -331,6 +344,13 @@ export function WizardShell() {
         usedSpeechToText: wizardData.usedSpeechToText,
         tipsOpened: wizardData.tipsOpened,
         campaign: wizardData.campaign,
+        ...(isYouthWizard(wizardData)
+          ? {
+              audience: wizardData.audience,
+              klasse: wizardData.klasse,
+              ...(wizardData.classToken ? { classToken: wizardData.classToken } : {}),
+            }
+          : {}),
       };
 
       // Step1b is the PLZ-lookup step, not the final letter-generation click —
@@ -681,6 +701,7 @@ export function WizardShell() {
             errorMessage={errorMessage}
             onErrorDismiss={handleErrorDismiss}
             isCampaign={Boolean(campaignContext)}
+            isYouth={isYouthWizard(wizardData)}
             defaultValues={{
               party: wizardData.party,
               ngo: wizardData.ngo,

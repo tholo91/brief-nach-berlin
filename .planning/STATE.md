@@ -223,6 +223,7 @@ Recent decisions affecting current work:
 | 261024-xax | S0 schule-jung: Klassenlink-Token, Klassen-Bucket, 429-Backoff, Wartetext | 2026-10-25 | d4bf324 | [261024-xax-s0-klassenlink-token-und-belastbarkeit-s](./quick/261024-xax-s0-klassenlink-token-und-belastbarkeit-s/) |
 | 261025-0a4 | S1 schule-jung: Jugendmodus im Wizard (Prompt, Mail, Handoff, Event) | 2026-10-25 | 245f380 | [261025-0a4-s1-jugendmodus-im-wizard-schule-jung](./quick/261025-0a4-s1-jugendmodus-im-wizard-schule-jung/) |
 | 261025-0kf | S2 schule-jung: Einstiegsseite /jung mit Klassenlink, geteilten Chips, Spracheingabe | 2026-10-25 | 0829329 | [261025-0kf-s2-jung-einstiegsseite-schule-jung](./quick/261025-0kf-s2-jung-einstiegsseite-schule-jung/) |
+| 261025-0n9 | S3 schule-jung: /schule mit Klassenlink-Generator, QR-Encoder-Fix | 2026-10-25 | 9e5aa11 | [261025-0n9-s3-schule-lehrkraefte-klassenlink-genera](./quick/261025-0n9-s3-schule-lehrkraefte-klassenlink-genera/) |
 
 ## Session Continuity
 

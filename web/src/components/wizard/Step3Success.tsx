@@ -56,6 +56,9 @@ const LETTER_GEN_PHASES: ReadonlyArray<{ at: number; label: string }> = [
   { at: 2600, label: "Brief wird formuliert..." },
 ];
 const LETTER_GEN_MIN_DISPLAY_MS = 4000;
+// After this long without a letter, the waiting hint explains the delay
+// (Mistral backs off on 429 when many write at once, e.g. a school class).
+const LONG_WAIT_HINT_MS = 20_000;
 
 // Webmail-Provider → öffentliche Inbox-URL. Used by the mobile-only
 // "Mail-App öffnen" button to deep-link users back to where the letter lands.
@@ -285,6 +288,7 @@ export function Step3Success({
   const fetchInFlightRef = useRef(false);
   const [reportState, setReportState] = useState<"idle" | "sending" | "sent" | "failed">("idle");
   const [loadingDots, setLoadingDots] = useState(".");
+  const [longWait, setLongWait] = useState(false);
   // "So geht es weiter" is collapsed by default - the same content lives in
   // the email, so we save vertical space and let the rating teaser breathe.
   const [stepsOpen, setStepsOpen] = useState(false);
@@ -564,6 +568,13 @@ export function Step3Success({
     }, 500);
     return () => clearInterval(interval);
   }, [letterReady, connectionLost]);
+
+  // The timer starts with the generation request, not while the user still picks a recipient.
+  useEffect(() => {
+    if (!generationComplete || letterReady || connectionLost || generationFetchError) return;
+    const timeout = setTimeout(() => setLongWait(true), LONG_WAIT_HINT_MS);
+    return () => clearTimeout(timeout);
+  }, [generationComplete, letterReady, connectionLost, generationFetchError]);
 
   // Fetch the generated letter from the server once pre-checks pass.
   // Ein manueller Retry bleibt nach einem eindeutig fehlgeschlagenen Server-Request möglich.
@@ -851,7 +862,9 @@ export function Step3Success({
               <span aria-hidden="true">{loadingDots}</span>
               {!generationFetchError && (
                 <span className="block mt-1 text-sm">
-                  Bitte lass diese Seite offen. Lange Briefe können bis zu einer Minute dauern.
+                  {longWait
+                    ? "Viele schreiben gerade, dein Brief kommt gleich. Bitte lass diese Seite offen."
+                    : "Bitte lass diese Seite offen. Lange Briefe können bis zu einer Minute dauern."}
                 </span>
               )}
             </>

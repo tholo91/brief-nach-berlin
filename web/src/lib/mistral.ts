@@ -27,6 +27,9 @@ const RETRYABLE_NETWORK_CODES = new Set([
 const MAX_ATTEMPTS = 3;
 const BASE_DELAY_MS = 400;
 const MAX_JITTER_MS = 200;
+const RATE_LIMIT_MAX_ATTEMPTS = 6;
+const RATE_LIMIT_MIN_WAIT_MS = 4_000;
+const RATE_LIMIT_MAX_WAIT_MS = 10_000;
 
 export class MistralProviderUnavailableError extends Error {
   readonly statusCode: number;
@@ -78,15 +81,33 @@ function isRetryable(err: unknown): { retryable: boolean; status?: number } {
   return { retryable: false, status };
 }
 
+function parseRetryAfterSec(err: unknown): number {
+  const header =
+    err &&
+    typeof err === "object" &&
+    "rawResponse" in err &&
+    (err as { rawResponse?: Response }).rawResponse instanceof Response
+      ? (err as { rawResponse: Response }).rawResponse.headers.get("retry-after")
+      : null;
+  return header ? parseFloat(header) : NaN;
+}
+
+// rateLimitBudgetMs (optional): 429 is retried while the summed 429 waits stay
+// within the budget (Retry-After, else random 4-10 s), up to 6 attempts. Other
+// retryable errors keep maxAttempts and their usual schedule.
 export async function withMistralRetry<T>(
   label: string,
   fn: () => Promise<T>,
-  opts: { maxAttempts?: number } = {}
+  opts: { maxAttempts?: number; rateLimitBudgetMs?: number } = {}
 ): Promise<T> {
   const maxAttempts = opts.maxAttempts ?? MAX_ATTEMPTS;
+  const budgetMs = opts.rateLimitBudgetMs;
+  let rateLimitWaitedMs = 0;
   let lastErr: unknown;
   let lastStatus: number | undefined;
-  for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+  const hardMaxAttempts =
+    budgetMs === undefined ? maxAttempts : Math.max(maxAttempts, RATE_LIMIT_MAX_ATTEMPTS);
+  for (let attempt = 1; attempt <= hardMaxAttempts; attempt++) {
     try {
       return await fn();
     } catch (err) {
@@ -94,17 +115,19 @@ export async function withMistralRetry<T>(
       const { retryable, status } = isRetryable(err);
       lastStatus = status;
       if (!retryable) throw err;
-      if (attempt === maxAttempts) break;
+      const budgeted = budgetMs !== undefined && status === 429;
+      if (attempt >= (budgeted ? hardMaxAttempts : maxAttempts)) break;
       let delay: number;
-      if (status === 429) {
-        const retryAfterHeader =
-          err &&
-          typeof err === "object" &&
-          "rawResponse" in err &&
-          (err as { rawResponse?: Response }).rawResponse instanceof Response
-            ? (err as { rawResponse: Response }).rawResponse.headers.get("retry-after")
-            : null;
-        const retryAfterSec = retryAfterHeader ? parseFloat(retryAfterHeader) : NaN;
+      if (budgeted) {
+        const retryAfterSec = parseRetryAfterSec(err);
+        delay = isFinite(retryAfterSec)
+          ? retryAfterSec * 1000
+          : RATE_LIMIT_MIN_WAIT_MS +
+            Math.floor(Math.random() * (RATE_LIMIT_MAX_WAIT_MS - RATE_LIMIT_MIN_WAIT_MS));
+        if (rateLimitWaitedMs + delay > budgetMs) break;
+        rateLimitWaitedMs += delay;
+      } else if (status === 429) {
+        const retryAfterSec = parseRetryAfterSec(err);
         delay = isFinite(retryAfterSec)
           ? Math.min(retryAfterSec * 1000, 10_000)
           : 2_000 * attempt + Math.floor(Math.random() * MAX_JITTER_MS);
@@ -112,7 +135,7 @@ export async function withMistralRetry<T>(
         delay = BASE_DELAY_MS * Math.pow(2, attempt - 1) + Math.floor(Math.random() * MAX_JITTER_MS);
       }
       console.warn(
-        `[mistral-retry] ${label} attempt ${attempt}/${maxAttempts} failed (status ${status ?? "n/a"}), retrying in ${delay}ms`
+        `[mistral-retry] ${label} attempt ${attempt}/${hardMaxAttempts} failed (status ${status ?? "n/a"}), retrying in ${delay}ms`
       );
       await new Promise((r) => setTimeout(r, delay));
     }

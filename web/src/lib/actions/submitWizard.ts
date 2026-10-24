@@ -25,7 +25,8 @@ import {
   signRoutingToken,
   verifyRoutingToken,
 } from "@/lib/lookup/routingToken";
-import { checkRateLimit, getClientIp, hashIdentifier, LIMITS } from "@/lib/rateLimit";
+import { checkOriginRateLimit, checkRateLimit, getClientIp, hashIdentifier, LIMITS } from "@/lib/rateLimit";
+import { verifyClassToken } from "@/lib/schule/classToken";
 import { isCampaignEnded } from "@/lib/campaigns/endDate";
 import { getPublicCampaignBySlug } from "@/lib/campaigns/repository";
 import {
@@ -240,9 +241,14 @@ export async function submitWizardAction(
     // 1b. Rate limit check (IP + email) BEFORE AI spend.
     // IP and email are salted-hashed before use as bucket keys (DSGVO M7).
     const ipHash = hashIdentifier(await getClientIp());
-    const ipLimit = checkRateLimit(`letter:ip:${ipHash}`, LIMITS.LETTERS_PER_IP.max, LIMITS.LETTERS_PER_IP.windowMs);
+    const classBucketId = verifyClassToken(data.classToken)?.bucketId;
+    const ipLimit = checkOriginRateLimit("letter", ipHash, classBucketId);
     if (!ipLimit.allowed) {
-      log("rate limited by ip", { ipHash, retryAfterSeconds: ipLimit.retryAfterSeconds });
+      log("rate limited by origin", {
+        origin: classBucketId ? "class" : "ip",
+        ipHash,
+        retryAfterSeconds: ipLimit.retryAfterSeconds,
+      });
       return {
         error: "rate_limited",
         message: RATE_LIMIT_MESSAGE,

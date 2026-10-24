@@ -15,14 +15,20 @@ jest.mock("@/lib/email/sendLetterEmail", () => ({
 jest.mock("@/lib/email/sendFollowupEmail", () => ({ sendFollowupEmail: jest.fn() }));
 jest.mock("@/lib/email/computeFollowupSlot", () => ({ computeFollowupSlot: jest.fn() }));
 jest.mock("@/lib/email/buildDebugPayload", () => ({ buildDebugPayload: jest.fn() }));
-jest.mock("@/lib/rateLimit", () => ({
-  checkRateLimit: jest.fn(),
+jest.mock("@/lib/rateLimit", () => {
+  const mockCheckRateLimit = jest.fn();
+  return {
+  checkRateLimit: mockCheckRateLimit,
+  checkOriginRateLimit: jest.fn((kind: string, ipHash: string, classBucketId?: string | null) =>
+    mockCheckRateLimit(classBucketId ? `${kind}:class:${classBucketId}` : `${kind}:ip:${ipHash}`, 10, 3_600_000)
+  ),
   hashIdentifier: jest.fn(),
   LIMITS: {
     LETTERS_PER_IP: { max: 10, windowMs: 3_600_000 },
     LETTERS_PER_EMAIL: { max: 3, windowMs: 86_400_000 },
   },
-}));
+  };
+});
 jest.mock("@/lib/counter", () => ({ incrementLetterCounters: jest.fn() }));
 jest.mock("@/lib/campaigns/repository", () => ({ getPublicCampaignBySlug: jest.fn() }));
 jest.mock("@/lib/campaigns/milestoneNotification", () => ({

@@ -26,6 +26,7 @@ export interface WizardData {
   toneLevel?: number;
   usedSpeechToText?: boolean;
   tipsOpened?: boolean;
+  classToken?: string;
   campaign?: {
     slug: string;
     title: string;

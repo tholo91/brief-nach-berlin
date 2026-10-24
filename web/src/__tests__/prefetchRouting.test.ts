@@ -12,12 +12,18 @@ jest.mock("@/lib/lookup/levelRouter", () => ({
 jest.mock("@/lib/mistral", () => ({
   MistralStageError: class extends Error {},
 }));
-jest.mock("@/lib/rateLimit", () => ({
-  checkRateLimit: jest.fn(),
+jest.mock("@/lib/rateLimit", () => {
+  const mockCheckRateLimit = jest.fn();
+  return {
+  checkRateLimit: mockCheckRateLimit,
+  checkOriginRateLimit: jest.fn((kind: string, ipHash: string, classBucketId?: string | null) =>
+    mockCheckRateLimit(classBucketId ? `${kind}:class:${classBucketId}` : `${kind}:ip:${ipHash}`, 10, 3_600_000)
+  ),
   getClientIp: jest.fn(),
   hashIdentifier: jest.fn(),
   LIMITS: { ROUTING_PREFETCH_PER_IP: { max: 10, windowMs: 3_600_000 } },
-}));
+  };
+});
 
 import { prefetchRoutingAction } from "@/lib/actions/prefetchRouting";
 import { routeToLevel } from "@/lib/lookup/levelRouter";
@@ -55,6 +61,26 @@ describe("prefetchRoutingAction", () => {
       3_600_000
     );
     expect(mockedRouteToLevel).not.toHaveBeenCalled();
+  });
+
+  it("nutzt mit gültigem Klassen-Token den Klassen-Bucket, mit ungültigem den IP-Bucket", async () => {
+    process.env.FEEDBACK_TOKEN_SECRET = "test-prefetch-class-secret";
+    const { signClassToken } = await import("@/lib/schule/classToken");
+    const classToken = signClassToken({ klasse: 9, plz: "28203" });
+
+    await prefetchRoutingAction("Lehrermangel an unserer Schule", classToken);
+    expect(mockedCheckRateLimit).toHaveBeenLastCalledWith(
+      "routing-prefetch:class:hashed-ip",
+      10,
+      3_600_000
+    );
+
+    await prefetchRoutingAction("Lehrermangel an unserer Schule", "kein-token");
+    expect(mockedCheckRateLimit).toHaveBeenLastCalledWith(
+      "routing-prefetch:ip:hashed-ip",
+      10,
+      3_600_000
+    );
   });
 
   it("routet exakt den normalisierten Text, an den der Token gebunden wird", async () => {

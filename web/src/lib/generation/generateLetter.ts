@@ -643,6 +643,7 @@ export async function generateLetter(
 
   let firstResponse;
   try {
+    // 429 budget: route maxDuration is 60 s, a letter takes ~14 s median plus a possible length retry.
     firstResponse = await withMistralRetry("generateLetter:first", () =>
       mistral.chat.complete({
         model: MISTRAL_MODELS.letter,
@@ -655,7 +656,8 @@ export async function generateLetter(
         maxTokens,
         frequencyPenalty: 0.3,
         presencePenalty: 0.4,
-      })
+      }),
+      { rateLimitBudgetMs: 20_000 }
     );
   } catch (error) {
     throw new MistralStageError("generation", error);

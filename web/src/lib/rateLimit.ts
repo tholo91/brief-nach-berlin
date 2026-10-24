@@ -73,6 +73,12 @@ export const LIMITS = {
   // Keep this independent from the letter bucket so aborted wizard sessions
   // cannot create unbounded model spend.
   ROUTING_PREFETCH_PER_IP: { max: 10, windowMs: 60 * 60_000 },
+  // Klassenlink: eine Klasse sitzt hinter einer Schul-IP und bekommt ihren
+  // eigenen Bucket statt des IP-Limits. Vorprüfung (submitWizardAction) und
+  // Generierung (/api/generate-letter) teilen den Bucket wie beim IP-Limit,
+  // ein Brief zählt bis zu zweimal: 80 ist also etwa 40 Briefe pro Stunde und Klassenlink.
+  LETTERS_PER_CLASS: { max: 80, windowMs: 60 * 60_000 },
+  ROUTING_PREFETCH_PER_CLASS: { max: 60, windowMs: 60 * 60_000 },
   // Per email: 3 letters per 24 hours. Humans don't legitimately write more
   // than a handful; scripts hammering the same address hit this fast.
   LETTERS_PER_EMAIL: { max: 3, windowMs: 24 * 60 * 60_000 },
@@ -118,6 +124,23 @@ export const LIMITS = {
   // at most; anyone targeting a single inbox hits this fast.
   MANAGE_LINK_PER_EMAIL: { max: 2, windowMs: 60 * 60_000 },
 } as const;
+
+// Herkunfts-Limit für Brief und Routing-Vorabprüfung: Klassen-Bucket, wenn ein
+// gültiger Klassenlink vorliegt, sonst der IP-Bucket. Eine Stelle für alle Aufrufer.
+export function checkOriginRateLimit(
+  kind: "letter" | "routing-prefetch",
+  ipHash: string,
+  classBucketId?: string | null
+): RateLimitResult {
+  const limits =
+    kind === "letter"
+      ? { ip: LIMITS.LETTERS_PER_IP, cls: LIMITS.LETTERS_PER_CLASS }
+      : { ip: LIMITS.ROUTING_PREFETCH_PER_IP, cls: LIMITS.ROUTING_PREFETCH_PER_CLASS };
+  if (classBucketId) {
+    return checkRateLimit(`${kind}:class:${classBucketId}`, limits.cls.max, limits.cls.windowMs);
+  }
+  return checkRateLimit(`${kind}:ip:${ipHash}`, limits.ip.max, limits.ip.windowMs);
+}
 
 export async function getClientIp(): Promise<string> {
   // Runtime-dynamic import so this module stays usable from non-request code.

@@ -7,7 +7,8 @@ import {
   hashRoutingIssue,
   normalizeRoutingIssue,
 } from "@/lib/lookup/routingToken";
-import { checkRateLimit, getClientIp, hashIdentifier, LIMITS } from "@/lib/rateLimit";
+import { checkOriginRateLimit, getClientIp, hashIdentifier } from "@/lib/rateLimit";
+import { verifyClassToken } from "@/lib/schule/classToken";
 
 const ROUTING_TIMEOUT_MS = 3500;
 
@@ -22,18 +23,17 @@ const ROUTING_TIMEOUT_MS = 3500;
  * Foreground-Fallback in submitWizardAction übernimmt.
  */
 export async function prefetchRoutingAction(
-  issueText: string
+  issueText: string,
+  classToken?: string
 ): Promise<{ token: string } | null> {
   if (!issueText || issueText.trim().length < 10) return null;
 
   const ipHash = hashIdentifier(await getClientIp());
-  const ipLimit = checkRateLimit(
-    `routing-prefetch:ip:${ipHash}`,
-    LIMITS.ROUTING_PREFETCH_PER_IP.max,
-    LIMITS.ROUTING_PREFETCH_PER_IP.windowMs
-  );
+  const classBucketId = verifyClassToken(classToken)?.bucketId;
+  const ipLimit = checkOriginRateLimit("routing-prefetch", ipHash, classBucketId);
   if (!ipLimit.allowed) {
     console.warn("[prefetchRouting] rate limited", {
+      origin: classBucketId ? "class" : "ip",
       retryAfterSeconds: ipLimit.retryAfterSeconds,
     });
     return null;

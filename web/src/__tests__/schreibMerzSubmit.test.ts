@@ -18,6 +18,7 @@ jest.mock("@/lib/lookup/routingToken", () => ({
 }));
 jest.mock("@/lib/rateLimit", () => ({
   checkRateLimit: jest.fn(() => ({ allowed: true })),
+  checkOriginRateLimit: jest.fn(() => ({ allowed: true })),
   getClientIp: jest.fn(async () => "127.0.0.1"),
   hashIdentifier: jest.fn((value: string) => `hash:${value}`),
   LIMITS: {

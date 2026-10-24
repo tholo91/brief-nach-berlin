@@ -19,7 +19,8 @@ import { sendLetterEmail, prepareLetterEmail } from "@/lib/email/sendLetterEmail
 import { sendFollowupEmail } from "@/lib/email/sendFollowupEmail";
 import { computeFollowupSlot } from "@/lib/email/computeFollowupSlot";
 import { buildDebugPayload, type LetterRoutingInfo } from "@/lib/email/buildDebugPayload";
-import { checkRateLimit, hashIdentifier, LIMITS } from "@/lib/rateLimit";
+import { checkOriginRateLimit, checkRateLimit, hashIdentifier, LIMITS } from "@/lib/rateLimit";
+import { verifyClassToken } from "@/lib/schule/classToken";
 import { DEFAULT_LETTER_LENGTH } from "@/lib/config";
 import {
   MistralProviderUnavailableError,
@@ -179,7 +180,7 @@ export async function POST(req: NextRequest) {
     // Rate limit (shares buckets with selectPoliticianAction).
     // IP and email are salted-hashed before use as bucket keys (DSGVO M7).
     const ipHash = hashIdentifier(ipFromRequest(req));
-    const ipLimit = checkRateLimit(`letter:ip:${ipHash}`, LIMITS.LETTERS_PER_IP.max, LIMITS.LETTERS_PER_IP.windowMs);
+    const ipLimit = checkOriginRateLimit("letter", ipHash, verifyClassToken(data.classToken)?.bucketId);
     if (!ipLimit.allowed) {
       return NextResponse.json(
         { error: RATE_LIMIT_MESSAGE },

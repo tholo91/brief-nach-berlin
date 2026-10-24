@@ -31,23 +31,30 @@ function fromB64url(s: string): Buffer {
   return Buffer.from(padded, "base64");
 }
 
-export function signFeedbackToken(payload: object): string {
+// Optional pro Token-Art: `macDomain` trennt die MAC-Domäne (ein Token einer Art
+// ist für eine andere ungültig), `maxAgeSeconds` überschreibt die Standard-Gültigkeit.
+export interface TokenOptions {
+  macDomain?: string;
+  maxAgeSeconds?: number;
+}
+
+export function signFeedbackToken(payload: object, opts?: TokenOptions): string {
   // `iat` (issued-at, seconds since epoch) is added inside the signed envelope
   // so verifyFeedbackToken can reject tokens older than TOKEN_MAX_AGE_SECONDS.
   const enriched = { ...payload, iat: Math.floor(Date.now() / 1000) };
   const body =
     COMPRESSED_PREFIX +
     b64url(deflateRawSync(Buffer.from(JSON.stringify(enriched), "utf8"), { level: 9 }));
-  const mac = b64url(createHmac("sha256", secret()).update(body).digest());
+  const mac = b64url(createHmac("sha256", secret()).update((opts?.macDomain ?? "") + body).digest());
   return `${body}.${mac}`;
 }
 
-export function verifyFeedbackToken<T = unknown>(token: string): T | null {
+export function verifyFeedbackToken<T = unknown>(token: string, opts?: TokenOptions): T | null {
   const dot = token.indexOf(".");
   if (dot < 1 || dot === token.length - 1) return null;
   const body = token.slice(0, dot);
   const mac = token.slice(dot + 1);
-  const expected = b64url(createHmac("sha256", secret()).update(body).digest());
+  const expected = b64url(createHmac("sha256", secret()).update((opts?.macDomain ?? "") + body).digest());
   const a = Buffer.from(mac);
   const b = Buffer.from(expected);
   if (a.length !== b.length || !timingSafeEqual(a, b)) return null;
@@ -63,7 +70,7 @@ export function verifyFeedbackToken<T = unknown>(token: string): T | null {
     // since we don't have any prod-relevant feedback yet, treat it as invalid.
     if (typeof parsed.iat !== "number") return null;
     const ageSeconds = Math.floor(Date.now() / 1000) - parsed.iat;
-    if (ageSeconds > TOKEN_MAX_AGE_SECONDS) return null;
+    if (ageSeconds > (opts?.maxAgeSeconds ?? TOKEN_MAX_AGE_SECONDS)) return null;
     return parsed as T;
   } catch {
     return null;

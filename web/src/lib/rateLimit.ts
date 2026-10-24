@@ -77,6 +77,8 @@ export const LIMITS = {
   // eigenen Bucket statt des IP-Limits. Vorprüfung (submitWizardAction) und
   // Generierung (/api/generate-letter) teilen den Bucket wie beim IP-Limit,
   // ein Brief zählt bis zu zweimal: 80 ist also etwa 40 Briefe pro Stunde und Klassenlink.
+  // Jeder Klassenlink öffnet einen eigenen Briefbucket, darum wird das Erstellen pro IP begrenzt.
+  CLASS_LINKS_PER_IP: { max: 10, windowMs: 60 * 60_000 },
   LETTERS_PER_CLASS: { max: 80, windowMs: 60 * 60_000 },
   ROUTING_PREFETCH_PER_CLASS: { max: 60, windowMs: 60 * 60_000 },
   // Per email: 3 letters per 24 hours. Humans don't legitimately write more

@@ -11,6 +11,9 @@ type CampaignQrDownloadProps = {
   url: string;
   slug: string;
   logoUrl?: string | null;
+  fileName?: string;
+  ariaLabel?: string;
+  description?: string;
 };
 
 function roundedRect(
@@ -114,7 +117,7 @@ function canvasToBlob(canvas: HTMLCanvasElement): Promise<Blob> {
   });
 }
 
-export function CampaignQrDownload({ url, slug, logoUrl }: CampaignQrDownloadProps) {
+export function CampaignQrDownload({ url, slug, logoUrl, fileName, ariaLabel, description }: CampaignQrDownloadProps) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const [message, setMessage] = useState("QR-Code bereit");
   const effectiveLogoUrl = logoUrl ?? fallbackLogoUrl;
@@ -155,7 +158,7 @@ export function CampaignQrDownload({ url, slug, logoUrl }: CampaignQrDownloadPro
       const objectUrl = URL.createObjectURL(blob);
       const link = document.createElement("a");
       link.href = objectUrl;
-      link.download = `brief-nach-berlin-kampagne-${slug}-qr.png`;
+      link.download = fileName ?? `brief-nach-berlin-kampagne-${slug}-qr.png`;
       link.click();
       URL.revokeObjectURL(objectUrl);
       setMessage("QR-Code heruntergeladen");
@@ -169,7 +172,7 @@ export function CampaignQrDownload({ url, slug, logoUrl }: CampaignQrDownloadPro
     <div className="grid grid-cols-[96px_1fr] items-center gap-4 sm:grid-cols-[112px_1fr]">
       <canvas
         ref={canvasRef}
-        aria-label="QR-Code zum Kampagnenlink"
+        aria-label={ariaLabel ?? "QR-Code zum Kampagnenlink"}
         className="h-24 w-24 rounded-md border border-warmgrau/12 bg-white sm:h-28 sm:w-28"
       />
       <div className="grid gap-3">
@@ -178,8 +181,8 @@ export function CampaignQrDownload({ url, slug, logoUrl }: CampaignQrDownloadPro
             QR-Code
           </h3>
           <p className="mt-1 font-body text-sm leading-relaxed text-warmgrau/70">
-            Zum Ausdrucken, Teilen oder Aushängen, damit Menschen direkt zur
-            öffentlichen Kampagnenseite gelangen.
+            {description ??
+              "Zum Ausdrucken, Teilen oder Aushängen, damit Menschen direkt zur öffentlichen Kampagnenseite gelangen."}
           </p>
         </div>
         <p className="sr-only" aria-live="polite">

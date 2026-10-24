@@ -1,0 +1,79 @@
+import { createElement } from "react";
+import { renderToStaticMarkup } from "react-dom/server";
+import {
+  LESSON_45,
+  LESSON_90_EXTRAS,
+  PRECHECK_ITEMS,
+  formatMinuteRange,
+} from "@/lib/schule/lessonPlan";
+import { classLinkFileName, formatValidUntil } from "@/components/schule/classLinkHelpers";
+import { CampaignQrDownload } from "@/components/campaigns/CampaignQrDownload";
+
+jest.mock("next/link", () => ({
+  __esModule: true,
+  default: ({ children, href }: { children: React.ReactNode; href: string }) =>
+    createElement("a", { href }, children),
+}));
+jest.mock("@/lib/actions/createClassLink", () => ({ createClassLinkAction: jest.fn() }));
+
+describe("lessonPlan", () => {
+  it("covers minutes 0 to 45 without gaps", () => {
+    expect(LESSON_45[0].from).toBe(0);
+    expect(LESSON_45[LESSON_45.length - 1].to).toBe(45);
+    for (let i = 1; i < LESSON_45.length; i += 1) {
+      expect(LESSON_45[i].from).toBe(LESSON_45[i - 1].to);
+    }
+    LESSON_45.forEach((row) => expect(row.to).toBeGreaterThan(row.from));
+  });
+
+  it("formats ranges with an en dash and has content lists", () => {
+    expect(formatMinuteRange(LESSON_45[0])).toBe("0–5");
+    expect(PRECHECK_ITEMS).toHaveLength(4);
+    expect(LESSON_90_EXTRAS).toHaveLength(6);
+  });
+});
+
+describe("class link helpers", () => {
+  it("builds the download file name", () => {
+    expect(classLinkFileName(9)).toBe("brief-nach-berlin-klassenlink-klasse-9-qr.png");
+  });
+
+  it("formats the expiry date in German", () => {
+    expect(formatValidUntil("2026-11-08T10:00:00.000Z")).toBe("8. November 2026");
+  });
+});
+
+describe("CampaignQrDownload", () => {
+  it("keeps its default markup without the new props", () => {
+    const html = renderToStaticMarkup(createElement(CampaignQrDownload, { url: "https://x.de", slug: "abc" }));
+    expect(html).toContain('aria-label="QR-Code zum Kampagnenlink"');
+    expect(html).toContain("öffentlichen Kampagnenseite gelangen.");
+  });
+});
+
+describe("/schule page", () => {
+  it("renders sections in plan order with binding copy", async () => {
+    const { default: SchulePage } = await import("@/app/(site)/schule/page");
+    const html = renderToStaticMarkup(createElement(SchulePage));
+    const order = [
+      "Deine Klasse schreibt",
+      "Klassenlink erstellen",
+      "Vorher kurz prüfen",
+      "Ablauf in 45 Minuten",
+      "Mit 90 Minuten",
+      "/schule/ablauf",
+      "Warum Handschrift",
+      "Für die Schulleitung",
+      "Häufige Fragen",
+      'href="/jung"',
+    ];
+    let last = -1;
+    for (const needle of order) {
+      const index = html.indexOf(needle);
+      expect(index).toBeGreaterThan(last);
+      last = index;
+    }
+    expect(html).toContain("application/ld+json");
+    expect(html).not.toContain("—");
+  });
+});

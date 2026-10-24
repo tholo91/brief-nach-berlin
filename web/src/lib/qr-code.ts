@@ -216,14 +216,16 @@ function drawAlignment(
 }
 
 function drawFunctionPatterns(modules: boolean[][], functionModules: boolean[][]): void {
-  drawFinder(modules, functionModules, 3, 3);
-  drawFinder(modules, functionModules, size - 4, 3);
-  drawFinder(modules, functionModules, 3, size - 4);
-
+  // Timing first: the finder patterns must overwrite it, otherwise their
+  // row and column 6 get the alternating timing modules and no scanner finds the code.
   for (let i = 0; i < size; i += 1) {
     setFunctionModule(modules, functionModules, 6, i, i % 2 === 0);
     setFunctionModule(modules, functionModules, i, 6, i % 2 === 0);
   }
+
+  drawFinder(modules, functionModules, 3, 3);
+  drawFinder(modules, functionModules, size - 4, 3);
+  drawFinder(modules, functionModules, 3, size - 4);
 
   for (const y of [6, 28, 50]) {
     for (const x of [6, 28, 50]) {

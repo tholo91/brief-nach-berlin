@@ -220,6 +220,7 @@ Recent decisions affecting current work:
 | 92 | Bauprinzip Nur das Wichtigste shippen in CLAUDE.md und AGENTS.md | 2026-10-23 | 49ae6ca | — |
 | 261023-mak | MdbLookupCard Maps-Link nutzt PLZ-Zeile statt letzter zwei Zeilen | 2026-10-23 | ad220eb | [261023-mak-mdblookupcard-maps-link-nutzt-plz-zeile-](./quick/261023-mak-mdblookupcard-maps-link-nutzt-plz-zeile-/) |
 | 261026-tca | Spendenbitte aus Brief-Mail in Follow-up-Mail verlegen (Banner, 5-€-Anker) | 2026-10-26 | 292928c | [261026-tca-spendenbitte-aus-brief-mail-in-follow-up](./quick/261026-tca-spendenbitte-aus-brief-mail-in-follow-up/) |
+| 261024-xax | S0 schule-jung: Klassenlink-Token, Klassen-Bucket, 429-Backoff, Wartetext | 2026-10-25 | d4bf324 | [261024-xax-s0-klassenlink-token-und-belastbarkeit-s](./quick/261024-xax-s0-klassenlink-token-und-belastbarkeit-s/) |
 
 ## Session Continuity
 

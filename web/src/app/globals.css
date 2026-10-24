@@ -660,3 +660,90 @@ video::-webkit-media-controls-start-playback-button {
   .print-qr-wrap { width: 10rem; }
   .print-flyer-steps { grid-template-columns: 1fr; }
 }
+
+/* Unterrichtsmaterial /schule/ablauf: eigener Block, ändert keine bestehende Regel. */
+@page lesson-a4 { size: A4 portrait; margin: 15mm; }
+
+.lesson-print {
+  page: lesson-a4;
+  max-width: 48rem;
+  margin: 0 auto;
+  padding: 1rem 1rem 3rem;
+  font-family: var(--font-source-sans), sans-serif;
+  line-height: 1.5;
+}
+
+.lesson-print h1,
+.lesson-print h2,
+.lesson-print h3 {
+  font-family: var(--font-courier-prime), monospace;
+  color: var(--color-waldgruen-dark);
+}
+
+.lesson-print h1 { font-size: 1.6rem; font-weight: 700; margin-bottom: 0.75rem; }
+.lesson-print h2 { font-size: 1.15rem; font-weight: 700; margin: 1.25rem 0 0.4rem; }
+.lesson-print h3 { font-size: 0.95rem; font-weight: 700; margin: 0.6rem 0 0.2rem; }
+.lesson-print ul { list-style: disc; padding-left: 1.25rem; }
+.lesson-print li { margin-bottom: 0.25rem; }
+
+.lesson-screen-only {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+}
+
+.lesson-toolbar { display: flex; flex-wrap: wrap; align-items: center; gap: 1rem; }
+.lesson-brand { font-family: var(--font-courier-prime), monospace; font-weight: 700; color: var(--color-waldgruen-dark); }
+.lesson-link { font-weight: 600; color: var(--color-waldgruen); text-decoration: underline; text-underline-offset: 2px; }
+.lesson-brand:focus-visible,
+.lesson-link:focus-visible { outline: 2px solid var(--color-waldgruen-dark); outline-offset: 2px; }
+
+.lesson-sheet {
+  margin-bottom: 2rem;
+  padding-bottom: 2rem;
+  border-bottom: 1px dashed var(--color-warmgrau);
+}
+.lesson-sheet:last-child { border-bottom: 0; }
+
+.lesson-table { width: 100%; border-collapse: collapse; font-size: 0.95rem; }
+.lesson-table th,
+.lesson-table td { border: 1px solid var(--color-warmgrau); padding: 0.4rem 0.5rem; text-align: left; vertical-align: top; }
+.lesson-table tr { break-inside: avoid; }
+
+.lesson-nameline { display: flex; gap: 0.5rem; align-items: flex-end; margin-bottom: 0.75rem; }
+.lesson-fill { flex: 1; border-bottom: 1px solid var(--color-warmgrau); height: 1.2em; }
+
+.lesson-print .lesson-checklist { list-style: none; padding-left: 0; margin: 1rem 0; }
+.lesson-checklist li { display: flex; gap: 0.75rem; align-items: flex-start; margin-bottom: 0.6rem; }
+.lesson-box { flex: none; width: 1.1rem; height: 1.1rem; margin-top: 0.2rem; border: 1.5px solid var(--color-warmgrau); }
+
+.lesson-field { break-inside: avoid; }
+.lesson-line { height: 1.9rem; border-bottom: 1px solid #999; }
+
+.lesson-tafel { display: grid; gap: 1rem; }
+.lesson-tafel article { border: 1.5px solid var(--color-warmgrau); padding: 0.75rem 1rem; break-inside: avoid; }
+.lesson-tafel article h2 { margin-top: 0; }
+.lesson-merksatz { margin-top: 1.25rem; border-top: 1.5px solid var(--color-warmgrau); padding-top: 0.75rem; font-size: 1.1rem; }
+
+@media (min-width: 768px) {
+  .lesson-tafel { grid-template-columns: repeat(3, 1fr); }
+}
+
+@media print {
+  html:has(.lesson-print),
+  body:has(.lesson-print) { background: #fff !important; }
+  .lesson-print { max-width: none; margin: 0; padding: 0; background: #fff; color: #000; font-size: 10.5pt; line-height: 1.4; }
+  .lesson-print * { box-shadow: none !important; }
+  .lesson-screen-only { display: none !important; }
+  .lesson-print h1 { font-size: 17pt; }
+  .lesson-print h2 { font-size: 12.5pt; }
+  .lesson-print h3 { font-size: 10.5pt; }
+  .lesson-table { font-size: 10pt; }
+  .lesson-sheet { margin: 0; padding: 0; border: 0; }
+  .lesson-sheet + .lesson-sheet { break-before: page; }
+  .lesson-tafel { grid-template-columns: 1fr; gap: 6mm; }
+  .lesson-merksatz { font-size: 12pt; }
+}

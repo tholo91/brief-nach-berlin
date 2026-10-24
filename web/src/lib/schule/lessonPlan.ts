@@ -59,6 +59,45 @@ export const PRECHECK_ITEMS: readonly string[] = [
 export const COLLECTIVE_ENVELOPE_NOTE =
   "Alle schreiben an dieselben Abgeordneten. Ein großer Umschlag mit allen Briefen an eine Person ist günstiger und fällt mehr auf, zum Beispiel mit einem kurzen Anschreiben: „23 Briefe der 9b“.";
 
+export const WORKSHEET_CHECKLIST: readonly string[] = [
+  "Anrede mit dem richtigen Namen",
+  "Ein eigenes Erlebnis, das nur du erzählen kannst",
+  "Eine konkrete Bitte: Was soll die Person tun?",
+  "Die Bitte um eine Antwort",
+  "Eine Einladung in unsere Klasse",
+];
+
+export interface TafelbildColumn {
+  level: string;
+  decides: string;
+  examples: readonly string[];
+}
+
+export const TAFELBILD: readonly TafelbildColumn[] = [
+  {
+    level: "Bund",
+    decides: "Bundestag und Bundesregierung",
+    examples: ["Wehrdienst", "Bahn", "Bundesgesetze zum Klimaschutz"],
+  },
+  {
+    level: "Land",
+    decides: "Landtag und Landesregierung",
+    examples: ["Schule und Lehrkräfte", "Lehrpläne", "Polizei"],
+  },
+  {
+    level: "Kommune",
+    decides: "Gemeinderat oder Stadtrat und Bürgermeister:in, Kreistag",
+    examples: [
+      "Schulgebäude und Ausstattung (Schulträger)",
+      "Busse im Ort oder Landkreis",
+      "Jugendzentren und Spielplätze",
+    ],
+  },
+];
+
+export const TAFELBILD_MERKSATZ =
+  "Bildung ist Ländersache. Das Schulgebäude gehört meist der Stadt oder dem Landkreis.";
+
 export function formatMinuteRange(row: Pick<LessonRow, "from" | "to">): string {
   return `${row.from}–${row.to}`;
 }

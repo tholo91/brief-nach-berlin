@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { mistral, MISTRAL_MODELS } from "@/lib/mistral";
-import { checkRateLimit, hashIdentifier, LIMITS } from "@/lib/rateLimit";
+import { checkOriginRateLimit, hashIdentifier } from "@/lib/rateLimit";
+import { verifyClassToken } from "@/lib/schule/classToken";
 
 export const maxDuration = 60;
 
@@ -50,10 +51,10 @@ export async function POST(req: NextRequest) {
     }
 
     const ipHash = hashIdentifier(ipFromRequest(req));
-    const limit = checkRateLimit(
-      `transcribe:ip:${ipHash}`,
-      LIMITS.TRANSCRIBE_PER_IP.max,
-      LIMITS.TRANSCRIBE_PER_IP.windowMs
+    const limit = checkOriginRateLimit(
+      "transcribe",
+      ipHash,
+      verifyClassToken(formData.get("classToken"))?.bucketId
     );
     if (!limit.allowed) {
       return NextResponse.json(

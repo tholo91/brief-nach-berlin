@@ -1,13 +1,12 @@
 "use client";
 
 import Image from "next/image";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { WIZARD_PATH } from "@/lib/config";
-import {
-  SCHREIB_MERZ_CAMPAIGN,
-  toggleSpecialCampaignTopic,
-} from "@/lib/campaigns/specialCampaigns";
+import { SCHREIB_MERZ_CAMPAIGN } from "@/lib/campaigns/specialCampaigns";
+import { TopicStarterGrid } from "@/components/topics/TopicStarterGrid";
+import { useTopicStarters } from "@/components/topics/useTopicStarters";
 import { saveHandoff } from "@/lib/wizard-handoff";
 
 const DRAFT_KEY = "special-campaign-draft:schreib-merz:v2";
@@ -15,53 +14,13 @@ const MAX_TOPICS = 2;
 const MIN_ISSUE_LENGTH = 20;
 const MAX_ISSUE_LENGTH = 5000;
 
-type CampaignDraft = {
-  selectedTopicIds: string[];
-  issueText: string;
-  topicInsertions: Record<string, string>;
+const TOPIC_MESSAGES = {
+  limit: "Du kannst höchstens zwei Startpunkte auswählen.",
+  "removed-text": "Startbaustein entfernt.",
+  "removed-kept": "Thema entfernt. Deinen bearbeiteten Text habe ich stehen lassen.",
+  added: "Startbaustein eingefügt. Du kannst ihn direkt verändern.",
+  "added-max": "Zwei Startpunkte eingefügt. Du kannst sie im Text anpassen.",
 };
-
-function readDraft(): CampaignDraft | null {
-  try {
-    const raw = sessionStorage.getItem(DRAFT_KEY);
-    if (!raw) return null;
-    const parsed: unknown = JSON.parse(raw);
-    if (!parsed || typeof parsed !== "object") return null;
-
-    const candidate = parsed as Partial<CampaignDraft>;
-    if (!Array.isArray(candidate.selectedTopicIds)) return null;
-
-    return {
-      selectedTopicIds: candidate.selectedTopicIds.filter(
-        (id): id is string => typeof id === "string",
-      ),
-      issueText: typeof candidate.issueText === "string" ? candidate.issueText : "",
-      topicInsertions:
-        candidate.topicInsertions && typeof candidate.topicInsertions === "object"
-          ? candidate.topicInsertions
-          : {},
-    };
-  } catch {
-    return null;
-  }
-}
-
-function appendText(current: string, addition: string) {
-  const trimmedCurrent = current.trim();
-  return trimmedCurrent ? `${trimmedCurrent}\n\n${addition}` : addition;
-}
-
-function removeInsertedText(current: string, insertion: string) {
-  const start = current.indexOf(insertion);
-  if (start === -1) return { text: current, removed: false };
-
-  const before = current.slice(0, start).trimEnd();
-  const after = current.slice(start + insertion.length).trimStart();
-  return {
-    text: [before, after].filter(Boolean).join("\n\n"),
-    removed: true,
-  };
-}
 
 function ArrowRightIcon() {
   return (
@@ -93,87 +52,25 @@ function CheckIcon() {
 
 export function SchreibMerzExperienceV2() {
   const router = useRouter();
-  const [selectedTopicIds, setSelectedTopicIds] = useState<string[]>([]);
-  const [issueText, setIssueText] = useState("");
-  const [topicInsertions, setTopicInsertions] = useState<Record<string, string>>({});
-  const [draftHydrated, setDraftHydrated] = useState(false);
-  const [statusMessage, setStatusMessage] = useState("");
+  const {
+    selectedTopicIds,
+    issueText,
+    setIssueText,
+    statusMessage,
+    setStatusMessage,
+    toggleTopic,
+    selectionLimitReached,
+  } = useTopicStarters({
+    draftKey: DRAFT_KEY,
+    topics: SCHREIB_MERZ_CAMPAIGN.topics,
+    maxTopics: MAX_TOPICS,
+    maxIssueLength: MAX_ISSUE_LENGTH,
+    messages: TOPIC_MESSAGES,
+  });
 
   useEffect(() => {
     router.prefetch(WIZARD_PATH);
-    const saved = readDraft();
-    const frame = requestAnimationFrame(() => {
-      if (saved) {
-        const validTopicIds = saved.selectedTopicIds
-          .filter((id) => SCHREIB_MERZ_CAMPAIGN.topics.some((topic) => topic.id === id))
-          .slice(0, MAX_TOPICS);
-        const insertionEntries: Array<[string, string]> = [];
-        for (const id of validTopicIds) {
-          const insertion = saved.topicInsertions[id];
-          if (typeof insertion === "string") insertionEntries.push([id, insertion]);
-        }
-        const validInsertions = Object.fromEntries(insertionEntries);
-        setSelectedTopicIds(validTopicIds);
-        setTopicInsertions(validInsertions);
-        setIssueText(saved.issueText.slice(0, MAX_ISSUE_LENGTH));
-      }
-      setDraftHydrated(true);
-    });
-
-    return () => cancelAnimationFrame(frame);
   }, [router]);
-
-  useEffect(() => {
-    if (!draftHydrated) return;
-    try {
-      sessionStorage.setItem(
-        DRAFT_KEY,
-        JSON.stringify({ selectedTopicIds, issueText, topicInsertions } satisfies CampaignDraft),
-      );
-    } catch {
-      // Der Entwurf bleibt privat im Tab; ohne sessionStorage funktioniert der Flow weiter.
-    }
-  }, [draftHydrated, issueText, selectedTopicIds, topicInsertions]);
-
-  function toggleTopic(topicId: string) {
-    const wasSelected = selectedTopicIds.includes(topicId);
-    const nextIds = toggleSpecialCampaignTopic(selectedTopicIds, topicId, MAX_TOPICS);
-
-    if (!wasSelected && nextIds.length === selectedTopicIds.length) {
-      setStatusMessage("Du kannst höchstens zwei Startpunkte auswählen.");
-      return;
-    }
-
-    setSelectedTopicIds(nextIds);
-
-    if (wasSelected) {
-      const insertion = topicInsertions[topicId];
-      const result = insertion ? removeInsertedText(issueText, insertion) : null;
-      if (result?.removed) {
-        setIssueText(result.text);
-        setStatusMessage("Startbaustein entfernt.");
-      } else {
-        setStatusMessage("Thema entfernt. Deinen bearbeiteten Text habe ich stehen lassen.");
-      }
-      setTopicInsertions((current) => {
-        const next = { ...current };
-        delete next[topicId];
-        return next;
-      });
-      return;
-    }
-
-    const topic = SCHREIB_MERZ_CAMPAIGN.topics.find((candidate) => candidate.id === topicId);
-    if (!topic) return;
-
-    setIssueText((current) => appendText(current, topic.issueText));
-    setTopicInsertions((current) => ({ ...current, [topicId]: topic.issueText }));
-    setStatusMessage(
-      nextIds.length === MAX_TOPICS
-        ? "Zwei Startpunkte eingefügt. Du kannst sie im Text anpassen."
-        : "Startbaustein eingefügt. Du kannst ihn direkt verändern.",
-    );
-  }
 
   function continueToWizard() {
     const trimmedIssueText = issueText.trim();
@@ -197,8 +94,6 @@ export function SchreibMerzExperienceV2() {
     });
     router.push(WIZARD_PATH);
   }
-
-  const selectionLimitReached = selectedTopicIds.length >= MAX_TOPICS;
 
   return (
     <div className="relative isolate overflow-hidden bg-creme">
@@ -279,36 +174,13 @@ export function SchreibMerzExperienceV2() {
               <h3 className="font-body text-base font-bold text-waldgruen-dark">Startbaustein wählen <span className="font-normal text-warmgrau/55">(optional)</span></h3>
               <p className="font-body text-sm text-warmgrau/60">Maximal zwei. Ein Klick fügt ihn in dein Anliegen ein.</p>
             </div>
-            <div className="mt-4 grid grid-cols-2 gap-2.5 lg:grid-cols-3">
-              {SCHREIB_MERZ_CAMPAIGN.topics.map((topic, index) => {
-                const selected = selectedTopicIds.includes(topic.id);
-                const disabled = selectionLimitReached && !selected;
-                return (
-                  <button
-                    key={topic.id}
-                    type="button"
-                    aria-pressed={selected}
-                    disabled={disabled}
-                    onClick={() => toggleTopic(topic.id)}
-                    className={`group relative min-h-32 rounded-lg border p-3.5 pr-9 text-left transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-waldgruen focus-visible:ring-offset-2 sm:p-4 sm:pr-10 ${
-                      selected
-                        ? "border-waldgruen bg-waldgruen text-creme shadow-[0_16px_36px_-24px_rgba(27,67,50,0.8)]"
-                        : disabled
-                          ? "cursor-not-allowed border-warmgrau/10 bg-creme/50 text-warmgrau opacity-40"
-                          : "border-waldgruen/15 bg-white text-warmgrau hover:-translate-y-0.5 hover:border-waldgruen/35 hover:shadow-sm motion-reduce:transform-none"
-                    }`}
-                  >
-                    <span className={`font-typewriter text-[10px] font-bold uppercase tracking-[0.14em] ${selected ? "text-creme/70" : "text-waldgruen/60"}`}>
-                      {String(index + 1).padStart(2, "0")} · {topic.eyebrow}
-                    </span>
-                    <span className="mt-3 block font-body text-base font-bold leading-tight sm:text-lg">{topic.title}</span>
-                    <span aria-hidden="true" className={`absolute right-3 top-3 flex h-6 w-6 items-center justify-center rounded-full border text-sm font-bold ${selected ? "border-creme/40 bg-creme text-waldgruen" : "border-waldgruen/20 text-waldgruen/70"}`}>
-                      {selected ? "✓" : "+"}
-                    </span>
-                  </button>
-                );
-              })}
-            </div>
+            <TopicStarterGrid
+              variant="numbered"
+              topics={SCHREIB_MERZ_CAMPAIGN.topics}
+              selectedIds={selectedTopicIds}
+              limitReached={selectionLimitReached}
+              onToggle={toggleTopic}
+            />
           </div>
 
           <div className="mt-5 relative overflow-hidden rounded-[0.4rem] border border-warmgrau/20 bg-[#fffdf8] shadow-[0_24px_70px_-36px_rgba(27,67,50,0.45)]">

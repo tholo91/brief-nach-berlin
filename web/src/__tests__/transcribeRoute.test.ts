@@ -10,9 +10,13 @@ jest.mock("@/lib/mistral", () => ({
 }));
 
 jest.mock("@/lib/rateLimit", () => ({
-  checkRateLimit: jest.fn(() => ({ allowed: true })),
+  ...jest.requireActual("@/lib/rateLimit"),
+  checkOriginRateLimit: jest.fn(() => ({ allowed: true })),
   hashIdentifier: jest.fn(() => "test-ip"),
-  LIMITS: { TRANSCRIBE_PER_IP: { max: 5, windowMs: 60_000 } },
+}));
+
+jest.mock("@/lib/schule/classToken", () => ({
+  verifyClassToken: jest.fn(() => null),
 }));
 
 import { NextRequest } from "next/server";

@@ -659,6 +659,7 @@ export function WizardShell() {
             onSubmit={handleStep1Complete}
             defaultValue={wizardData.issueText}
             isCampaign={Boolean(campaignContext)}
+            classToken={wizardData.classToken}
           />
         )}
         {!handoffPending && step === 2 && (

@@ -33,7 +33,9 @@ jest.mock("@/lib/mistral", () => ({
   MistralStageError: class extends Error {},
 }));
 
+import { NextRequest } from "next/server";
 import { POST } from "@/app/api/generate-letter/route";
+import { POST as transcribePOST } from "@/app/api/transcribe/route";
 import { getPublicCampaignBySlug } from "@/lib/campaigns/repository";
 import { checkOriginRateLimit, checkRateLimit, hashIdentifier } from "@/lib/rateLimit";
 import { signClassToken, verifyClassToken } from "@/lib/schule/classToken";
@@ -219,5 +221,47 @@ describe("POST /api/generate-letter mit Klassen-Token", () => {
     }
     const blocked = await POST(request(ip, "mehrfach@example.org", token));
     expect(blocked.status).toBe(429);
+  });
+});
+
+describe("POST /api/transcribe mit Klassen-Token", () => {
+  beforeAll(() => {
+    process.env.MISTRAL_API_KEY = "test-key";
+  });
+
+  // Ohne Audiodatei endet der Request nach dem Rate-Limit mit 400: 400 = durchgelassen, 429 = blockiert.
+  function request(ip: string, classToken?: string) {
+    const formData = new FormData();
+    if (classToken) formData.append("classToken", classToken);
+    return new NextRequest("http://localhost/api/transcribe", {
+      method: "POST",
+      body: formData,
+      headers: { "x-forwarded-for": ip },
+    });
+  }
+
+  it("lässt mit Klassen-Token den 31. Request einer IP durch", async () => {
+    const token = classTokenFor("28203");
+    const ip = "198.51.100.11";
+    for (let i = 0; i < 31; i++) {
+      expect((await transcribePOST(request(ip, token))).status).toBe(400);
+    }
+  });
+
+  it("blockiert mit manipuliertem Token den 31. Request (IP-Bucket)", async () => {
+    const token = tamper(classTokenFor("28203"));
+    const ip = "198.51.100.12";
+    for (let i = 0; i < 30; i++) {
+      expect((await transcribePOST(request(ip, token))).status).toBe(400);
+    }
+    expect((await transcribePOST(request(ip, token))).status).toBe(429);
+  });
+
+  it("blockiert ohne Token den 31. Request (IP-Bucket)", async () => {
+    const ip = "198.51.100.13";
+    for (let i = 0; i < 30; i++) {
+      expect((await transcribePOST(request(ip))).status).toBe(400);
+    }
+    expect((await transcribePOST(request(ip))).status).toBe(429);
   });
 });

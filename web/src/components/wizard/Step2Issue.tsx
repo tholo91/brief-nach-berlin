@@ -205,6 +205,7 @@ interface Step2IssueProps {
    *  devices so we never force the on-screen keyboard open on touch. */
   autoFocus?: boolean;
   isCampaign?: boolean;
+  classToken?: string;
 }
 
 export function Step2Issue({
@@ -213,6 +214,7 @@ export function Step2Issue({
   variant = "wizard",
   autoFocus = false,
   isCampaign = false,
+  classToken,
 }: Step2IssueProps) {
   const { locale } = useLocale();
   const copy = useUiCopy();
@@ -579,6 +581,7 @@ export function Step2Issue({
           <VoiceRecorder
             key={locale}
             language={transcriptionLanguage}
+            classToken={classToken}
             hidden={voiceUnavailable}
             hasText={charCount > 0}
             charCount={charCount}

@@ -13,6 +13,8 @@ interface VoiceRecorderProps {
   onStateChange?: (state: UIState) => void;
   /** Language passed to the transcription API. */
   language?: TranscriptionLanguage;
+  /** Klassenlink-Token: zählt die Transkription im Klassen-Bucket statt im IP-Limit. */
+  classToken?: string;
   /** Keep the recorder mounted but hide its controls when voice input is unavailable. */
   hidden?: boolean;
   disabled?: boolean;
@@ -115,6 +117,7 @@ export function VoiceRecorder({
   onTranscription,
   onStateChange,
   language = "de",
+  classToken,
   hidden = false,
   disabled,
   hasText = false,
@@ -245,6 +248,7 @@ export function VoiceRecorder({
         const formData = new FormData();
         formData.append("audio", result.blob, "recording.webm");
         formData.append("language", language);
+        if (classToken) formData.append("classToken", classToken);
 
         const response = await fetch("/api/transcribe", {
           method: "POST",
@@ -272,7 +276,7 @@ export function VoiceRecorder({
         flashError();
       }
     },
-    [onTranscription, language, setUiState, flashError]
+    [onTranscription, language, classToken, setUiState, flashError]
   );
 
   const startRecording = useCallback(async () => {

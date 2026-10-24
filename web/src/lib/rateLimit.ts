@@ -90,6 +90,8 @@ export const LIMITS = {
   // Per IP: 30 transcription calls per hour. Voxtral is more expensive; users
   // typically record once or twice per session.
   TRANSCRIBE_PER_IP: { max: 30, windowMs: 60 * 60_000 },
+  // Klassenlink: eine Klasse hinter einer Schul-IP nimmt per Sprache auf, 90 pro Stunde und Klassenlink.
+  TRANSCRIBE_PER_CLASS: { max: 90, windowMs: 60 * 60_000 },
   // Resend per IP: 3 retries per hour. Real users need 1-2 if they typo'd
   // their email or it landed in spam; more is almost always abuse.
   RESEND_PER_IP: { max: 3, windowMs: 60 * 60_000 },
@@ -128,14 +130,16 @@ export const LIMITS = {
 // Herkunfts-Limit für Brief und Routing-Vorabprüfung: Klassen-Bucket, wenn ein
 // gültiger Klassenlink vorliegt, sonst der IP-Bucket. Eine Stelle für alle Aufrufer.
 export function checkOriginRateLimit(
-  kind: "letter" | "routing-prefetch",
+  kind: "letter" | "routing-prefetch" | "transcribe",
   ipHash: string,
   classBucketId?: string | null
 ): RateLimitResult {
   const limits =
     kind === "letter"
       ? { ip: LIMITS.LETTERS_PER_IP, cls: LIMITS.LETTERS_PER_CLASS }
-      : { ip: LIMITS.ROUTING_PREFETCH_PER_IP, cls: LIMITS.ROUTING_PREFETCH_PER_CLASS };
+      : kind === "transcribe"
+        ? { ip: LIMITS.TRANSCRIBE_PER_IP, cls: LIMITS.TRANSCRIBE_PER_CLASS }
+        : { ip: LIMITS.ROUTING_PREFETCH_PER_IP, cls: LIMITS.ROUTING_PREFETCH_PER_CLASS };
   if (classBucketId) {
     return checkRateLimit(`${kind}:class:${classBucketId}`, limits.cls.max, limits.cls.windowMs);
   }

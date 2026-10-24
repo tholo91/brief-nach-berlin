@@ -225,6 +225,7 @@ Recent decisions affecting current work:
 | 261025-0kf | S2 schule-jung: Einstiegsseite /jung mit Klassenlink, geteilten Chips, Spracheingabe | 2026-10-25 | 0829329 | [261025-0kf-s2-jung-einstiegsseite-schule-jung](./quick/261025-0kf-s2-jung-einstiegsseite-schule-jung/) |
 | 261025-0n9 | S3 schule-jung: /schule mit Klassenlink-Generator, QR-Encoder-Fix | 2026-10-25 | 9e5aa11 | [261025-0n9-s3-schule-lehrkraefte-klassenlink-genera](./quick/261025-0n9-s3-schule-lehrkraefte-klassenlink-genera/) |
 | 261025-0ny | S4 schule-jung: druckbares Material /schule/ablauf (3 A4-Seiten) | 2026-10-25 | 7c00cd6 | [261025-0ny-s4-schule-ablauf-druckbares-material-sch](./quick/261025-0ny-s4-schule-ablauf-druckbares-material-sch/) |
+| 261025-0wl | S5 schule-jung: Datenschutz und KI-Transparenz Jugendmodus, Copy-Check, Lint | 2026-10-25 | 6f941c9 | [261025-0wl-s5-recht-und-feinschliff-schule-jung](./quick/261025-0wl-s5-recht-und-feinschliff-schule-jung/) |
 
 ## Session Continuity
 

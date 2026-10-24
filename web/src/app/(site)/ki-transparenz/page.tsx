@@ -199,6 +199,43 @@ export default function KiTransparenzPage() {
               .
             </p>
 
+            <h2
+              id="schueler"
+              className="font-body text-2xl font-bold text-waldgruen-dark pt-4 scroll-mt-24"
+            >
+              Briefe von Schüler:innen
+            </h2>
+            <p>
+              Für Schüler:innen gibt es einen eigenen Weg über{" "}
+              <Link href="/jung" className="text-waldgruen hover:underline">
+                /jung
+              </Link>{" "}
+              oder einen Klassenlink der Lehrkraft. Dort bekommt das
+              Sprachmodell zusätzlich die Klassenstufe. Kommt die Klasse über
+              einen Klassenlink, erhält es außerdem den Hinweis, dass der Brief
+              im Rahmen eines Unterrichtsprojekts entsteht.
+            </p>
+            <p>
+              Der Entwurf ist mit 150 bis 200 Wörtern kürzer als sonst, damit
+              man ihn in einer Schulstunde von Hand abschreiben kann. Er nennt
+              die Klassenstufe und sagt, dass die Person bei der
+              Bundestagswahl noch nicht wählen darf, ab Klasse 12 dass sie bald
+              zum ersten Mal wählen darf.
+            </p>
+            <p>
+              Wie bei allen Entwürfen kann sich die KI irren. Die Schüler:innen
+              prüfen den Entwurf und ergänzen beim Abschreiben ein eigenes
+              Erlebnis, denn der Brief soll ihr eigener sein. Was in diesem Modus mit den Daten passiert,
+              steht im{" "}
+              <Link
+                href="/datenschutz#jugendmodus"
+                className="text-waldgruen hover:underline"
+              >
+                Abschnitt Jugendmodus der Datenschutzerklärung
+              </Link>
+              .
+            </p>
+
             <h2 className="font-body text-2xl font-bold text-waldgruen-dark pt-4">
               Hosting in Deutschland
             </h2>

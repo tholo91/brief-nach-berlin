@@ -935,6 +935,65 @@ export default function Datenschutz() {
             </p>
           </div>
 
+          <div>
+            <h2 id="jugendmodus" className="font-semibold text-waldgruen-dark mb-2 scroll-mt-24">
+              22. Jugendmodus für Schülerinnen und Schüler
+            </h2>
+            <p className="mb-3">
+              Über die Seite{" "}
+              <Link href="/jung" className="text-waldgruen hover:underline">
+                /jung
+              </Link>{" "}
+              und über Klassenlinks, die Lehrkräfte auf der Seite{" "}
+              <Link href="/schule" className="text-waldgruen hover:underline">
+                /schule
+              </Link>{" "}
+              erzeugen, können auch Schülerinnen und Schüler unter 18 Jahren
+              Brief-nach-Berlin nutzen. Sie wählen dort eine Klassenstufe von 7
+              bis 13.
+            </p>
+            <p className="mb-3">
+              Verarbeitet werden das Anliegen, die Klassenstufe, die
+              Postleitzahl und die E-Mail-Adresse. Anliegen, Klassenstufe und
+              Postleitzahl dienen dem Entwurf des Briefs und der Suche nach der
+              zuständigen Person; Anliegen und Klassenstufe gehen dafür an
+              Mistral AI (Abschnitt 9). Die E-Mail-Adresse dient dazu, den
+              Entwurf einmal zuzustellen (Abschnitt 11). Für Speicherung,
+              Löschung und Missbrauchsschutz gelten die Abschnitte 5, 6, 7, 11
+              und 12 wie im normalen Ablauf.
+            </p>
+            <p className="mb-3">
+              Im Jugendmodus fehlt Folgendes: Es folgt keine
+              Bewertungsnachfrage und keine spätere Rückfrage-Mail. Die Mail mit
+              dem Entwurf enthält weder eine Spendenbitte noch die
+              Sterne-Bewertung, und die Erfolgsseite zeigt keine Spendenbitte.
+              Es gibt keine freiwilligen Themensignale für die Karte (Abschnitt
+              19), und die Angaben zu Name, Partei und Organisation werden nicht
+              abgefragt.
+            </p>
+            <p className="mb-3">
+              Ein Klassenlink enthält nur die Klassenstufe, die Postleitzahl der
+              Schule und den Zeitpunkt der Erstellung, keine Namen. Er ist
+              signiert und 14 Tage gültig. Wird ein gültiger Klassenlink
+              benutzt, zählt das Limit gegen Missbrauch (Abschnitt 12) pro
+              Klassenlink statt pro IP-Adresse, damit eine Klasse im selben
+              Schulnetz gemeinsam schreiben kann. Der Entwurf nennt dann außerdem
+              ein Unterrichtsprojekt (siehe die Seite{" "}
+              <Link href="/ki-transparenz" className="text-waldgruen hover:underline">
+                KI &amp; Transparenz
+              </Link>
+              ).
+            </p>
+            <p>
+              Für die Statistik erfasst Vercel Web Analytics (Abschnitt 13) ein
+              anonymes Ereignis „Brief im Jugendmodus erstellt“. Es enthält nur
+              die Klassenstufe und die Angabe, ob ein Klassenlink genutzt wurde,
+              und keine E-Mail-Adresse, keine Postleitzahl und keinen Text. Der
+              Klassenlink in der Adresszeile wird vor der Reichweitenmessung
+              entfernt.
+            </p>
+          </div>
+
           <p className="text-sm text-warmgrau/50">Stand: 19. Oktober 2026</p>
         </div>
       </div>

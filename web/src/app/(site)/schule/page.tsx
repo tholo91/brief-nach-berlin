@@ -166,7 +166,7 @@ export default function SchulePage() {
         <section aria-labelledby="schule-handschrift" className="mt-14">
           <h2 id="schule-handschrift" className={h2Class}>Warum Handschrift</h2>
           <p className={`${bodyClass} mt-3`}>
-            Ein handgeschriebener Brief liegt als Papier vor jemandem im Büro. Büros berichten, dass persönliche, handgeschriebene Briefe die seltenste Kategorie sind und deshalb Aufmerksamkeit bekommen. Feldexperimente zeigen, dass Bürgerkontakt Abgeordnete erreichen kann. Ob Handschrift allein stärker wirkt als eine E-Mail, ist bisher nicht direkt untersucht, deshalb setze ich auf das Zusammenspiel aus richtiger Adresse, konkretem Anliegen und eigenen Worten.
+            Ein handgeschriebener Brief liegt als Papier vor jemandem im Büro. Büros berichten, dass persönliche, handgeschriebene Briefe die seltenste Kategorie sind und deshalb Aufmerksamkeit bekommen. Feldexperimente zeigen, dass Bürgerkontakt Abgeordnete erreichen kann. Ob Handschrift allein stärker wirkt als eine E-Mail, ist bisher nicht direkt untersucht. Ich setze deshalb darauf, dass der Brief bei der zuständigen Person landet und ein eigenes Erlebnis erzählt.
           </p>
           <p className={`${bodyClass} mt-3`}>
             Mehr dazu unter{" "}

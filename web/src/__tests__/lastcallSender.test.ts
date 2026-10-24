@@ -1,5 +1,5 @@
 import { spawnSync } from "node:child_process";
-import { mkdtempSync, readFileSync, rmSync, writeFileSync, statSync } from "node:fs";
+import { existsSync, mkdtempSync, readFileSync, rmSync, writeFileSync, statSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
 import { verifyRueckmeldungToken } from "../lib/rueckmeldung/token";
@@ -55,7 +55,7 @@ function run(args: string[], options: { input?: string; fetchMode?: string; noCs
 }
 
 function requests(): Array<Record<string, unknown>> {
-  if (!require("node:fs").existsSync(capturePath)) return [];
+  if (!existsSync(capturePath)) return [];
   return readFileSync(capturePath, "utf8").trim().split("\n").filter(Boolean).map((line) => JSON.parse(line));
 }
 

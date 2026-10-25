@@ -5,6 +5,14 @@ export function isYouthWizard(data: Pick<Partial<WizardData>, "audience" | "klas
   return isYouthAudience(data);
 }
 
+export function showYouthDraft(
+  data: Pick<Partial<WizardData>, "audience" | "klasse">,
+  letterReady: boolean,
+  letterText: string | null | undefined
+): boolean {
+  return isYouthAudience(data) && letterReady && Boolean(letterText);
+}
+
 // Einziger Inhalt des Events jung_brief: Klassenstufe und ob ein Klassenlink genutzt wurde.
 export function youthBriefEvent(
   data: Pick<Partial<WizardData>, "audience" | "klasse" | "classToken">

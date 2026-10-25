@@ -206,7 +206,7 @@ export function JungExperience({ entry }: { entry: JungEntry }) {
             <WizardForwardIcon />
           </button>
           <p className="mt-3 font-body text-sm leading-relaxed text-warmgrau/70">
-            Als Nächstes gibst du deine E-Mail-Adresse an und wählst, an wen der Brief geht. Den Entwurf bekommst du per Mail.
+            Als Nächstes gibst du deine E-Mail-Adresse an und wählst, an wen der Brief geht. Den Entwurf siehst du danach direkt hier, eine Kopie kommt per Mail.
           </p>
         </div>
       </div>

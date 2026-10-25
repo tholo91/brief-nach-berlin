@@ -34,7 +34,8 @@ import {
   visibleLocalCampaignRecipients,
 } from "@/lib/campaign-recipient-picker";
 import { track } from "@vercel/analytics";
-import { isYouthWizard, youthBriefEvent } from "./youthMode";
+import { isYouthWizard, showYouthDraft, youthBriefEvent } from "./youthMode";
+import { YouthLetterDraft } from "./YouthLetterDraft";
 import { WizardForwardIcon } from "./WizardForwardIcon";
 import { LetterSignalCard } from "./LetterSignalCard";
 import { allowsAlternativeRecipients } from "@/lib/lookup/alternativeRecipients";
@@ -300,6 +301,7 @@ export function Step3Success({
   const [genPhase, setGenPhase] = useState(0);
   const submitButtonRef = useRef<HTMLButtonElement | null>(null);
   const isYouth = isYouthWizard(wizardData);
+  const youthDraft = showYouthDraft(wizardData, letterReady, letterText);
   const youthEventSentRef = useRef(false);
   const [letterSignalContext, setLetterSignalContext] = useState<string | null>(() =>
     result && "letterSignalContext" in result && typeof result.letterSignalContext === "string"
@@ -863,7 +865,9 @@ export function Step3Success({
           </h1>
         </div>
         <p className="font-body text-base text-warmgrau leading-relaxed mt-3">
-          {letterReady || connectionLost ? (
+          {youthDraft ? (
+            <>Dein Entwurf steht unten. Eine Kopie kommt an <strong>{maskEmail(wizardData.email)}</strong>.</>
+          ) : letterReady || connectionLost ? (
             <>Dein Entwurf kommt an <strong>{maskEmail(wizardData.email)}</strong>. Den Brief schickst du anschließend selbst per Post ab.</>
           ) : (
             <>
@@ -897,6 +901,7 @@ export function Step3Success({
               </p>
             </div>
           )}
+          {!youthDraft && (
           <div className="mt-5">
             {mailAppHref ? (
               <a
@@ -913,6 +918,9 @@ export function Step3Success({
               </p>
             )}
           </div>
+          )}
+          {/* Jugendmodus: Entwurf vor der Link-Zeile, damit deren Panels direkt darunter aufgehen. */}
+          {youthDraft && <YouthLetterDraft letterText={letterText} />}
           <div className="mt-3 flex items-center justify-center divide-x divide-warmgrau/20">
             {/* Erneut senden braucht den Brieftext, den es nur mit letterReady gibt. */}
             {letterReady && (

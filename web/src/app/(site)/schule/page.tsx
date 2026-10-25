@@ -66,7 +66,7 @@ const faqs = [
   },
   {
     q: "Brauchen die Schüler:innen einen Account?",
-    a: "Nein. Sie scannen den QR-Code, schreiben ihr Anliegen, geben ihre E-Mail-Adresse an und bekommen den Entwurf per Mail.",
+    a: "Nein. Sie scannen den QR-Code, schreiben ihr Anliegen, geben ihre E-Mail-Adresse an und sehen den Entwurf direkt auf dem Gerät. Eine Kopie kommt per Mail.",
   },
 ];
 

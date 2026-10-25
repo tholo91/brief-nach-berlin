@@ -51,7 +51,7 @@ export const LESSON_90_EXTRAS: readonly string[] = [
 
 export const PRECHECK_ITEMS: readonly string[] = [
   "Jede Schülerin und jeder Schüler braucht eine eigene E-Mail-Adresse, zum Beispiel die Schul-Mail. Eine gemeinsame Adresse für alle funktioniert nicht.",
-  "Den Entwurf bekommen alle per Mail. Probier vorher aus, ob die Schüler:innen auf den Geräten an ihre Mails kommen.",
+  "Den Entwurf sehen alle direkt auf dem Gerät. Eine Kopie mit der Anschrift für den Umschlag kommt per Mail.",
   "Lass die Entwürfe in zwei Wellen erstellen, erst die Hälfte der Klasse, dann den Rest. Wenn alle gleichzeitig klicken, dauert es länger.",
   "Leg Papier, Umschläge und Briefmarken bereit.",
 ];

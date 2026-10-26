@@ -79,8 +79,8 @@ export const emailCopy = {
     guide: "Mehr zum Briefeschreiben",
     followup: {
       greeting: "Moin 👋",
-      created: "Vor ein paar Tagen hast du deinen Brief-nach-Berlin erstellt und das freut mich sehr. Ich hoffe, du hast ihn in deinem Stil personalisiert und handgeschrieben bereits eingeworfen?",
-      feedback: "Wichtig für die Zukunft des Projekts ist das Feedback von Menschen wie dir: Wie hat dir dein Brief gefallen? Sei bitte schonungslos ehrlich bei Kritik, gerne aber auch bei Lob 😉",
+      created: "Vor ein paar Tagen hast du deinen Brief-nach-Berlin erstellt. Ich hoffe, ich konnte dir damit helfen und du hast ihn schon handgeschrieben eingeworfen. Ich drücke dir die Daumen, dass du eine Antwort bekommst. Und wenn viele Menschen zum selben Thema schreiben, steigt die Chance, dass sich jemand der Sache annimmt.",
+      feedback: "Damit das Tool besser wird, hilft mir deine ehrliche Bewertung: Wie hat dir dein Brief gefallen? Kritik gerne schonungslos, Lob natürlich auch 😉",
       ignore: "Falls du schon deinen Brief bewertet hast, kannst du diese Mail ignorieren.",
       meetMdb: (name: string) => `Wenn du dein Anliegen auch persönlich besprechen möchtest: Beim Büro von ${name} kannst du nach einer Bürgersprechstunde fragen.`,
       meetMdbLink: "Wahlkreisbüro finden",
@@ -170,8 +170,8 @@ export const emailCopy = {
     guide: "More about writing letters (in German)",
     followup: {
       greeting: "Hello 👋",
-      created: "A few days ago, you created your letter with Brief-nach-Berlin. I hope you were able to personalise it and send it by post.",
-      feedback: "Your feedback helps shape the future of this project: How did you find your letter? Please be candid, whether you have criticism or praise 😉",
+      created: "A few days ago, you created your letter with Brief-nach-Berlin. I hope it helped you and that you have already handwritten it and posted it. I'm keeping my fingers crossed that you get a reply. And when many people write about the same issue, the chance grows that someone takes it up.",
+      feedback: "To make the tool better, your honest rating helps me a lot: How did you like your letter? Feel free to be blunt with criticism, and praise is welcome too 😉",
       ignore: "If you have already rated your letter, you can ignore this email.",
       meetMdb: (name: string) => `If you'd like to discuss your concern in person, you can ask ${name}'s office about a Bürgersprechstunde (open office hours).`,
       meetMdbLink: "Find the constituency office (in German)",
@@ -261,8 +261,8 @@ export const emailCopy = {
     guide: "Mektup yazma hakkında daha fazlası (Almanca)",
     followup: {
       greeting: "Merhaba 👋",
-      created: "Birkaç gün önce Brief-nach-Berlin ile mektubunuzu oluşturdunuz. Umarım mektubu kişiselleştirip posta yoluyla gönderebildiniz.",
-      feedback: "Geri bildiriminiz bu projenin geleceğini şekillendirmeye yardımcı olur: Mektubunuzu nasıl buldunuz? Eleştiri veya övgü için lütfen açık olun 😉",
+      created: "Birkaç gün önce Brief-nach-Berlin ile mektubunuzu oluşturdunuz. Umarım size yardımcı olabilmişimdir ve mektubu elinizle yazıp postaya vermişsinizdir. Bir yanıt almanız için şimdiden şans diliyorum. Aynı konuda çok sayıda kişi yazdığında, birinin bu konuyla ilgilenme olasılığı da artar.",
+      feedback: "Aracı geliştirebilmem için dürüst değerlendirmeniz bana çok yardımcı olur: Mektubunuzu nasıl buldunuz? Eleştirilerinizi çekinmeden yazın, övgüye de elbette sevinirim 😉",
       ignore: "Mektubunuzu zaten değerlendirdiyseniz bu e-postayı yok sayabilirsiniz.",
       meetMdb: (name: string) => `Konunuzu yüz yüze de görüşmek isterseniz, ${name} ofisinden Bürgersprechstunde (halk görüşme saati) için randevu isteyebilirsiniz.`,
       meetMdbLink: "Seçim bölgesi ofisini bulun (Almanca)",

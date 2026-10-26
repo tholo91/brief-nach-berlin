@@ -97,6 +97,14 @@ export const SUPPORT_EMAIL_COPY = {
     compactButton: "Jetzt spenden",
     providerLabel: "über WE AID unterstützen",
     infoButton: "Mehr Informationen",
+    followup: {
+      heading: "Damit Brief-nach-Berlin kostenlos bleibt",
+      body:
+        "Brief-nach-Berlin ist kostenlos und soll es bleiben. Ich betreibe es allein und ehrenamtlich und trage die Kosten für KI, Mailversand und Server bisher selbst. Wenn dir dein Brief geholfen hat: Schon 5 € helfen, dass es für die Nächsten weiterläuft.",
+      providerLabel: "über WE AID, Spendenquittung möglich",
+      bannerAlt:
+        "Polaroid von Thomas mit „Moin, ich bin Thomas“ und drei Bewertungen von Menschen, die mit Brief-nach-Berlin einen Brief geschrieben haben",
+    },
   },
   en: {
     prefix: "Funding note:",
@@ -111,6 +119,14 @@ export const SUPPORT_EMAIL_COPY = {
     compactButton: "Donate now",
     providerLabel: "Support via WE AID",
     infoButton: "More information",
+    followup: {
+      heading: "Keeping Brief-nach-Berlin free",
+      body:
+        "Brief-nach-Berlin is free and should stay that way. I run it on my own as a volunteer and so far I pay for the AI, email delivery and servers myself. If your letter helped you: even €5 helps keep it running for the next people.",
+      providerLabel: "via WE AID, donation receipt available",
+      bannerAlt:
+        "Polaroid photo of Thomas and three reviews from people who wrote a letter with Brief-nach-Berlin",
+    },
   },
   tr: {
     prefix: "Finansman bilgisi:",
@@ -125,6 +141,14 @@ export const SUPPORT_EMAIL_COPY = {
     compactButton: "Şimdi bağış yap",
     providerLabel: "WE AID üzerinden destekle",
     infoButton: "Daha fazla bilgi",
+    followup: {
+      heading: "Brief-nach-Berlin ücretsiz kalsın diye",
+      body:
+        "Brief-nach-Berlin ücretsizdir ve öyle kalmalı. Projeyi tek başıma ve gönüllü olarak yürütüyorum, yapay zekâ, e-posta gönderimi ve sunucu masraflarını şimdiye kadar kendim karşılıyorum. Mektubunuz işinize yaradıysa: 5 € bile, sonraki kişiler için de devam etmesine yardımcı olur.",
+      providerLabel: "WE AID üzerinden, bağış makbuzu alınabilir",
+      bannerAlt:
+        "Thomas'ın polaroid fotoğrafı ve Brief-nach-Berlin ile mektup yazan kişilerden üç değerlendirme",
+    },
   },
 } as const;
 

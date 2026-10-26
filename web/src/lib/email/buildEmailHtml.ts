@@ -5,7 +5,6 @@ import {
   FOUNDER_FEEDBACK_URL,
   abgeordnetenwatchProfileUrl,
 } from "@/lib/config";
-import { SUPPORT_CONTENT, SUPPORT_EMAIL_COPY } from "@/lib/support-content";
 import { formatPartyShort } from "@/lib/formatParty";
 import { buildShareTarget } from "@/lib/share";
 import { normalizeLetterClosing } from "./normalizeLetterClosing";
@@ -15,7 +14,6 @@ import {
   buildSocialFollowHtml,
   buildSocialFollowText,
 } from "./buildSocialFollowHtml";
-import { buildFinancingNoticeHtml } from "./financingNotice";
 
 function buildDebugUrl(d: LetterDebugPayload): string {
   // base64url-encode JSON payload so it survives URLs without padding/+/ issues
@@ -78,7 +76,6 @@ function nlToBr(text: string): string {
 
 export function buildLetterEmailText(data: SendLetterEmailParams): string {
   const copy = getEmailCopy(data.locale);
-  const supportCopy = SUPPORT_EMAIL_COPY[resolveEmailLocale(data.locale)];
   const parts = [
     normalizeLetterClosing(data.letterText),
     `${copy.greeting}\n\nThomas\n${copy.initiative} ${FOUNDER_HOMEPAGE}`,
@@ -94,9 +91,6 @@ export function buildLetterEmailText(data: SendLetterEmailParams): string {
       "Vor dem Abschreiben:\n1. Wähle ein Mitglied in der Abgeordnetensuche: https://www.bundestag.de/abgeordnete\n2. Ersetze Name, Anschrift und Anrede im Entwurf.\n3. Prüfe den Brief und schreibe ihn erst dann ab."
     );
   }
-  parts.push(
-    `${supportCopy.heading}\n${supportCopy.prefix} ${supportCopy.status}\n${supportCopy.button}: ${SUPPORT_CONTENT.ctas.donate.href}\n${supportCopy.learnMore}: ${APP_URL}${SUPPORT_CONTENT.ctas.learnMore.href}?src=email`,
-  );
   parts.push(
     `${copy.notice} ${copy.noticeText}${copy.noticeTextAfter ? `, ${copy.noticeTextAfter}` : ""}. ${copy.responsibility} ${copy.terms(copy.termsLabel)} ${APP_URL}/nutzungsbedingungen`,
   );
@@ -538,8 +532,6 @@ export function buildEmailHtml(data: SendLetterEmailParams): string {
       .bnb-stack-left { padding: 0 0 14px 0 !important; width: 100% !important; }
       .bnb-stack-right { padding: 14px 0 0 0 !important; border-left: 0 !important; border-top: 1px solid #E0DCD7 !important; width: 100% !important; text-align: center !important; }
       .bnb-bleed { margin-left: -14px !important; margin-right: -14px !important; }
-      .bnb-support-action { display: block !important; width: 100% !important; padding-left: 0 !important; padding-right: 0 !important; }
-      .bnb-support-action-primary { padding-bottom: 8px !important; }
       .bnb-feedback-break { display: inline !important; }
       .bnb-feedback-space { display: none !important; }
       /* Share row: on mobile only the square icon-buttons remain (labels hidden). */
@@ -668,18 +660,6 @@ export function buildEmailHtml(data: SendLetterEmailParams): string {
                     <p style="margin:6px 0 0;font-family:Georgia,'Times New Roman',serif;font-size:12px;color:#bcbcbc;line-height:1.5;">
                       ${copy.initiative} <a href="${FOUNDER_HOMEPAGE}" target="_blank" rel="noopener noreferrer" style="color:#bcbcbc;text-decoration:underline;">www.thomas-lorenz.eu</a>
                     </p>
-                  </td>
-                </tr>
-
-                <!-- Donation CTA: shared by first letter emails and resends, before sharing. -->
-                <tr>
-                  <td colspan="7" class="bnb-pad" style="padding:0 32px 16px;background-color:#ffffff;text-align:left;">
-                    ${buildFinancingNoticeHtml(SUPPORT_EMAIL_COPY[locale], {
-                      src: `${APP_URL}${SUPPORT_CONTENT.founder.avatarPath}`,
-                      alt: SUPPORT_CONTENT.founder.name,
-                    }, {
-                      showHeart: true,
-                    })}
                   </td>
                 </tr>
 

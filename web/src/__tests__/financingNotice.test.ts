@@ -102,16 +102,10 @@ describe("financing notice", () => {
     expect(buildFinancingNoticeHtml(SUPPORT_EMAIL_COPY.de)).not.toContain("<img");
   });
 
-  it.each(["de", "en", "tr"] as const)("is embedded unchanged in the %s letter email", (locale) => {
-    const portrait = {
-      src: `${APP_URL}${SUPPORT_CONTENT.founder.avatarPath}`,
-      alt: SUPPORT_CONTENT.founder.name,
-    };
-    const options = {
-      showHeart: true,
-    };
-    expect(buildEmailHtml(params(locale))).toContain(
-      buildFinancingNoticeHtml(SUPPORT_EMAIL_COPY[locale], portrait, options),
-    );
+  it.each(["de", "en", "tr"] as const)("is no longer embedded in the %s letter email", (locale) => {
+    const html = buildEmailHtml(params(locale));
+
+    expect(html).not.toContain(SUPPORT_CONTENT.ctas.donate.href);
+    expect(html).not.toContain("bnb-support-action");
   });
 });

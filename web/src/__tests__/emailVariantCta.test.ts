@@ -51,56 +51,50 @@ function makeDebug(): NonNullable<SendLetterEmailParams["debug"]> {
 }
 
 describe("letter email variant CTA", () => {
-  it("adds the donation CTA once to the first letter email HTML and plaintext", () => {
+  it("keeps the first letter email free of donation asks in HTML and plaintext", () => {
     const params = makeParams();
     const donationUrl = "https://spende.we-aid.org/Brief-nach-Berlin";
     const learnMoreUrl = "https://www.brief-nach-berlin.de/spenden?src=email";
     const html = buildEmailHtml(params);
     const text = buildLetterEmailText(params);
 
-    expect(html.match(new RegExp(donationUrl.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), "g"))).toHaveLength(1);
-    expect(text.match(new RegExp(donationUrl.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), "g"))).toHaveLength(1);
-    expect(html.match(new RegExp(learnMoreUrl.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), "g"))).toHaveLength(1);
-    expect(text.match(new RegExp(learnMoreUrl.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), "g"))).toHaveLength(1);
-    expect(html).toContain("Damit Brief-nach-Berlin kostenlos bleibt");
-    expect(html).toContain('margin-right:6px;">Jetzt spenden');
-    expect(html).toContain(
-      "Ich baue Brief-nach-Berlin allein und ehrenamtlich in meiner Freizeit und trage die laufenden Kosten bisher selbst.",
-    );
-    expect(html).not.toContain("über WE AID unterstützen");
-    expect(text).toContain("Damit Brief-nach-Berlin kostenlos bleibt");
-    expect(text).toContain("Jetzt spenden");
-    expect(text).not.toContain("über WE AID unterstützen");
+    for (const output of [html, text]) {
+      expect(output).not.toContain(donationUrl);
+      expect(output).not.toContain(learnMoreUrl);
+      expect(output).not.toContain("Hinweis zur Finanzierung");
+      expect(output).not.toContain("Damit Brief-nach-Berlin kostenlos bleibt");
+    }
     expect(SUPPORT_CONTENT.ctas.donate.label).toBe("Jetzt über WE AID spenden");
     expect(html).not.toContain(SUPPORT_CONTENT.ctas.donate.label);
-    expect(html).toContain("Mehr Informationen");
-    expect(html).toContain("gemeinnützige Initiative in Trägerschaft der WE AID gGmbH");
-    expect(text).toContain("Hinweis zur Finanzierung: Brief-nach-Berlin ist eine gemeinnützige Initiative in Trägerschaft der WE AID gGmbH.");
-    expect(text.indexOf("Thomas")).toBeLessThan(text.indexOf("Hinweis zur Finanzierung"));
+    expect(html).not.toContain("über WE AID unterstützen");
+    expect(text).not.toContain("über WE AID unterstützen");
   });
 
   it.each([
     ["en", "Donate now", "Support via WE AID"],
     ["tr", "Şimdi bağış yap", "WE AID üzerinden destekle"],
-  ] as const)("uses the compact button copy for %s letter email while keeping the heart decorative", (locale, label, providerLabel) => {
-    const html = buildEmailHtml({ ...makeParams(), locale });
+  ] as const)("keeps the %s letter email free of donation asks", (locale, label, providerLabel) => {
     const donationUrl = "https://spende.we-aid.org/Brief-nach-Berlin";
-    const button = html.match(new RegExp(`<a href="${donationUrl}"[\\s\\S]*?</a>`))?.[0];
+    const html = buildEmailHtml({ ...makeParams(), locale });
+    const text = buildLetterEmailText({ ...makeParams(), locale });
 
-    expect(button).toContain("icon-heart-white.png");
-    expect(button).toContain(label);
-    expect(button?.indexOf("icon-heart-white.png") ?? -1).toBeLessThan(button?.indexOf(label) ?? -1);
-    expect(html).not.toContain(providerLabel);
-    expect(buildLetterEmailText({ ...makeParams(), locale })).not.toContain(providerLabel);
+    for (const output of [html, text]) {
+      expect(output).not.toContain(donationUrl);
+      expect(output).not.toContain(label);
+      expect(output).not.toContain(providerLabel);
+    }
   });
 
-  it("adds the financing notice to resent letter emails but not follow-up emails", () => {
+  it("keeps resent letter emails and follow-up emails free of the financing notice", () => {
     const params = makeParams();
     const resentDebug = { ...makeDebug(), resent: true };
+    const donationUrl = "https://spende.we-aid.org/Brief-nach-Berlin";
     const learnMoreUrl = "https://www.brief-nach-berlin.de/spenden?src=email";
 
-    expect(buildEmailHtml({ ...params, debug: resentDebug })).toContain(learnMoreUrl);
-    expect(buildLetterEmailText({ ...params, debug: resentDebug })).toContain(learnMoreUrl);
+    for (const url of [learnMoreUrl, donationUrl]) {
+      expect(buildEmailHtml({ ...params, debug: resentDebug })).not.toContain(url);
+      expect(buildLetterEmailText({ ...params, debug: resentDebug })).not.toContain(url);
+    }
     expect(buildFollowupHtml({ token: "signed-token" }).html).not.toContain(learnMoreUrl);
     expect(buildFollowupHtml({ token: "signed-token" }).text).not.toContain(learnMoreUrl);
   });

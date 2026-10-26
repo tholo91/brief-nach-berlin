@@ -1,7 +1,13 @@
 jest.mock("server-only", () => ({}), { virtual: true });
 
 import { resolveJungEntry } from "@/components/jung/jungEntry";
-import { buildJungHandoff, validateJungSubmit } from "@/components/jung/jungHandoff";
+import {
+  JUNG_DRAFT_KEY,
+  JUNG_KLASSE_KEY,
+  buildJungHandoff,
+  clearJungDraft,
+  validateJungSubmit,
+} from "@/components/jung/jungHandoff";
 import { signClassToken } from "@/lib/schule/classToken";
 
 describe("resolveJungEntry", () => {
@@ -77,5 +83,17 @@ describe("buildJungHandoff", () => {
     expect(
       buildJungHandoff({ issueText: "T", klasse: 9, entry: { status: "invalid" }, usedSpeechToText: false }),
     ).not.toHaveProperty("classToken");
+  });
+});
+
+describe("clearJungDraft", () => {
+  it("removes text, topics and klasse so the next person starts empty", () => {
+    const store = new Map<string, string>([
+      [JUNG_DRAFT_KEY, '{"issueText":"Mein Bus kommt nie"}'],
+      [JUNG_KLASSE_KEY, "9"],
+      ["wizard-handoff", "{}"],
+    ]);
+    clearJungDraft({ removeItem: (key: string) => void store.delete(key) });
+    expect([...store.keys()]).toEqual(["wizard-handoff"]);
   });
 });

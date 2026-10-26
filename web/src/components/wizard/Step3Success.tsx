@@ -818,7 +818,9 @@ export function Step3Success({
         : "Ein persönlicher, handgeschriebener Brief macht dein Anliegen für die Verwaltung greifbar.";
   const addressInstruction = effectiveLevel === "Kommune"
     ? "Nutze die Suchhilfe, prüfe die vollständige Anschrift und schreib sie auf den Umschlag."
-    : "Die Adresse findest du im Brief.";
+    : isYouth
+      ? "Die Anschrift für den Umschlag steht in der Mail."
+      : "Die Adresse findest du im Brief.";
   const isSchreibMerzCampaign = wizardData.campaign?.slug === "schreib-merz";
   if (!result) return null;
 
@@ -871,7 +873,7 @@ export function Step3Success({
             <>Dein Entwurf kommt an <strong>{maskEmail(wizardData.email)}</strong>. Den Brief schickst du anschließend selbst per Post ab.</>
           ) : (
             <>
-              Brief und nächste Schritte kommen per E-Mail zu dir
+              {isYouth ? "Dein Entwurf erscheint gleich hier" : "Brief und nächste Schritte kommen per E-Mail zu dir"}
               <span aria-hidden="true">{loadingDots}</span>
               {!generationFetchError && (
                 <span className="block mt-1 text-sm">
@@ -1141,7 +1143,7 @@ export function Step3Success({
                     Mach diesen Brief zu deinem Brief.
                   </p>
                   <p className="mt-1 font-body text-sm leading-relaxed text-warmgrau/75">
-                    Lies dir die Mail durch und pass Ton, Formulierungen oder einzelne Argumente so an, dass der Brief sich nach dir anfühlt. Der Entwurf ist ein Anfang, die Unterschrift ist deine.
+                    Lies dir {isYouth ? "den Entwurf" : "die Mail"} durch und pass Ton, Formulierungen oder einzelne Argumente so an, dass der Brief sich nach dir anfühlt. Der Entwurf ist ein Anfang, die Unterschrift ist deine.
                   </p>
                 </div>
               )}

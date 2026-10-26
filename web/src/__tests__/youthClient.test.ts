@@ -2,6 +2,7 @@ import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 
 import { LocaleProvider } from "@/components/i18n/LocaleProvider";
+import { Step1Form } from "@/components/wizard/Step1Form";
 import { StepPreferences } from "@/components/wizard/StepPreferences";
 import { isYouthWizard, youthBriefEvent } from "@/components/wizard/youthMode";
 
@@ -58,5 +59,26 @@ describe("youth helpers", () => {
   it("youthBriefEvent is null for adults and invalid klasse", () => {
     expect(youthBriefEvent({})).toBeNull();
     expect(youthBriefEvent({ audience: "jung", klasse: 3, classToken: "abc" })).toBeNull();
+  });
+});
+
+describe("Step1Form youth copy", () => {
+  function renderStep1(isYouth: boolean) {
+    return renderToStaticMarkup(
+      createElement(LocaleProvider, null, createElement(Step1Form, { onNext: () => {}, isYouth }))
+    );
+  }
+
+  it("says the draft shows up on screen and the mail is a copy", () => {
+    const html = renderStep1(true);
+    expect(html).toContain("Deinen Entwurf siehst du gleich hier, eine Kopie kommt per E-Mail.");
+    expect(html).toContain("eine Kopie deines Entwurfs, mit der Anschrift für den Umschlag");
+    expect(html).not.toContain("Den fertigen Brief bekommst du per E-Mail.");
+  });
+
+  it("keeps the adult copy without isYouth", () => {
+    const html = renderStep1(false);
+    expect(html).toContain("Den fertigen Brief bekommst du per E-Mail.");
+    expect(html).not.toContain("Deinen Entwurf siehst du gleich hier");
   });
 });

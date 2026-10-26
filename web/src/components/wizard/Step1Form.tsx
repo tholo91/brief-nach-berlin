@@ -13,6 +13,7 @@ interface Step1FormProps {
   defaultValues?: Partial<Step1Data>;
   plzError?: string | null;
   onPlzErrorDismiss?: () => void;
+  isYouth?: boolean;
 }
 
 export function Step1Form({
@@ -20,6 +21,7 @@ export function Step1Form({
   defaultValues,
   plzError,
   onPlzErrorDismiss,
+  isYouth = false,
 }: Step1FormProps) {
   const copy = useUiCopy();
   const {
@@ -136,7 +138,7 @@ export function Step1Form({
         {copy.contact.heading}
       </h1>
       <p className="font-body text-sm text-warmgrau/70 mb-8">
-        {copy.contact.intro}
+        {isYouth ? copy.contact.introYouth : copy.contact.intro}
       </p>
 
       <div className="space-y-4">
@@ -193,7 +195,7 @@ export function Step1Form({
             {...register("email")}
           />
           <p id="email-hint" className="text-sm text-warmgrau/60 mt-1">
-            {copy.contact.emailHint}
+            {isYouth ? copy.contact.emailHintYouth : copy.contact.emailHint}
           </p>
           {errors.email && touchedFields.email && (
             <p id="email-error" role="alert" className="text-sm text-airmail-rot mt-1">

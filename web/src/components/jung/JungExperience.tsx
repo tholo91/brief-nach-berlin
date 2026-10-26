@@ -12,10 +12,14 @@ import { KLASSE_MAX, KLASSE_MIN, isValidKlasse } from "@/lib/schule/youth";
 import { ISSUE_TEXT_MAX, ISSUE_TEXT_MIN } from "@/lib/validation/wizardSchemas";
 import { saveHandoff } from "@/lib/wizard-handoff";
 import type { JungEntry } from "./jungEntry";
-import { buildJungHandoff, validateJungSubmit } from "./jungHandoff";
+import {
+  JUNG_DRAFT_KEY,
+  JUNG_KLASSE_KEY,
+  buildJungHandoff,
+  clearJungDraft,
+  validateJungSubmit,
+} from "./jungHandoff";
 
-const DRAFT_KEY = "jung-draft:v1";
-const KLASSE_KEY = "jung-draft:klasse:v1";
 const KLASSEN = Array.from({ length: KLASSE_MAX - KLASSE_MIN + 1 }, (_, i) => KLASSE_MIN + i);
 
 const TOPIC_MESSAGES = {
@@ -52,7 +56,7 @@ export function JungExperience({ entry }: { entry: JungEntry }) {
     toggleTopic,
     selectionLimitReached,
   } = useTopicStarters({
-    draftKey: DRAFT_KEY,
+    draftKey: JUNG_DRAFT_KEY,
     topics: JUNG_TOPICS,
     maxTopics: JUNG_MAX_TOPICS,
     maxIssueLength: ISSUE_TEXT_MAX,
@@ -67,7 +71,7 @@ export function JungExperience({ entry }: { entry: JungEntry }) {
     if (entryKlasse !== null) return;
     let saved: number | null = null;
     try {
-      const raw = Number(sessionStorage.getItem(KLASSE_KEY));
+      const raw = Number(sessionStorage.getItem(JUNG_KLASSE_KEY));
       if (isValidKlasse(raw)) saved = raw;
     } catch {
       // Ohne sessionStorage wählt man die Klasse eben noch einmal.
@@ -81,7 +85,7 @@ export function JungExperience({ entry }: { entry: JungEntry }) {
     setKlasse(value);
     setStatusMessage("");
     try {
-      sessionStorage.setItem(KLASSE_KEY, String(value));
+      sessionStorage.setItem(JUNG_KLASSE_KEY, String(value));
     } catch {
       // egal
     }
@@ -100,6 +104,11 @@ export function JungExperience({ entry }: { entry: JungEntry }) {
     }
     if (klasse === null) return;
     saveHandoff(buildJungHandoff({ issueText: result.issueText, klasse, entry, usedSpeechToText: usedVoice }));
+    try {
+      clearJungDraft(sessionStorage);
+    } catch {
+      // Ohne sessionStorage gibt es auch keinen Entwurf zu löschen.
+    }
     router.push(WIZARD_PATH);
   }
 

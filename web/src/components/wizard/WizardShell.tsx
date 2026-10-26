@@ -44,6 +44,8 @@ const STEP_LABELS = [
   "Ton & Länge",
 ] as const;
 
+const YOUTH_STEP_LABELS = ["Dein Anliegen", "PLZ & E-Mail", "Ton"] as const;
+
 function readParamsToData(searchParams: URLSearchParams): Partial<WizardData> {
   const data: Record<string, string> = {};
   for (const key of PARAM_KEYS) {
@@ -550,7 +552,7 @@ export function WizardShell() {
           </div>
           {showIndicator && (
             <div className="flex items-center gap-6" aria-label={`Schritt ${progress} von 3`}>
-              {STEP_LABELS.map((label, i) => {
+              {(isYouthWizard(wizardData) ? YOUTH_STEP_LABELS : STEP_LABELS).map((label, i) => {
                 const dotNum = i + 1;
                 const isActive = dotNum === progress;
                 const isDone = dotNum < progress;
@@ -668,6 +670,7 @@ export function WizardShell() {
             defaultValues={{ plz: wizardData.plz, email: wizardData.email }}
             plzError={plzError}
             onPlzErrorDismiss={() => setPlzError(null)}
+            isYouth={isYouthWizard(wizardData)}
           />
         )}
         {step === "2b" && campaignMismatch && (

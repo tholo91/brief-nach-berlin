@@ -3,6 +3,15 @@ import type { WizardHandoff } from "@/lib/wizard-handoff";
 import { isValidKlasse } from "@/lib/schule/youth";
 import type { JungEntry } from "./jungEntry";
 
+export const JUNG_DRAFT_KEY = "jung-draft:v1";
+export const JUNG_KLASSE_KEY = "jung-draft:klasse:v1";
+
+// Nach dem Absenden leeren, damit auf geteilten Geräten niemand den Text der Person davor sieht.
+export function clearJungDraft(storage: Pick<Storage, "removeItem">): void {
+  storage.removeItem(JUNG_DRAFT_KEY);
+  storage.removeItem(JUNG_KLASSE_KEY);
+}
+
 export type JungValidation =
   | { ok: true; issueText: string }
   | { ok: false; reason: "klasse" | "text-short" | "text-long" };

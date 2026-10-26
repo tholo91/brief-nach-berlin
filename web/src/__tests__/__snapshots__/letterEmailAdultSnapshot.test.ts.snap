@@ -19,8 +19,6 @@ exports[`Erwachsenen-Mail bleibt unverändert Kampagne: html 1`] = `
       .bnb-stack-left { padding: 0 0 14px 0 !important; width: 100% !important; }
       .bnb-stack-right { padding: 14px 0 0 0 !important; border-left: 0 !important; border-top: 1px solid #E0DCD7 !important; width: 100% !important; text-align: center !important; }
       .bnb-bleed { margin-left: -14px !important; margin-right: -14px !important; }
-      .bnb-support-action { display: block !important; width: 100% !important; padding-left: 0 !important; padding-right: 0 !important; }
-      .bnb-support-action-primary { padding-bottom: 8px !important; }
       .bnb-feedback-break { display: inline !important; }
       .bnb-feedback-space { display: none !important; }
       /* Share row: on mobile only the square icon-buttons remain (labels hidden). */
@@ -162,37 +160,6 @@ exports[`Erwachsenen-Mail bleibt unverändert Kampagne: html 1`] = `
                     <p style="margin:6px 0 0;font-family:Georgia,'Times New Roman',serif;font-size:12px;color:#bcbcbc;line-height:1.5;">
                       Eine Initiative von <a href="https://www.thomas-lorenz.eu" target="_blank" rel="noopener noreferrer" style="color:#bcbcbc;text-decoration:underline;">www.thomas-lorenz.eu</a>
                     </p>
-                  </td>
-                </tr>
-
-                <!-- Donation CTA: shared by first letter emails and resends, before sharing. -->
-                <tr>
-                  <td colspan="7" class="bnb-pad" style="padding:0 32px 16px;background-color:#ffffff;text-align:left;">
-                    <div class="bnb-inner-pad" style="background-color:#FAF8F5;border:1px solid #E0DCD7;border-radius:6px;padding:18px 20px;">
-      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="width:100%;border-collapse:collapse;">
-        <tr>
-          <td valign="middle" style="padding:0 12px 8px 0;">
-            <h2 style="margin:0;font-family:Georgia,'Times New Roman',serif;font-size:16px;color:#2D5016;font-weight:bold;">Damit Brief-nach-Berlin kostenlos bleibt</h2>
-          </td>
-          <td width="52" valign="top" align="right" style="width:52px;padding:0 0 8px 0;">
-            <img src="https://www.brief-nach-berlin.de/images/thomas-avatar.jpg" width="52" height="52" alt="Thomas Lorenz" style="display:block;width:52px;height:52px;border:0;border-radius:50%;">
-          </td>
-        </tr>
-      </table>
-      <p style="margin:0 0 14px;font-family:Georgia,'Times New Roman',serif;font-size:14px;color:#4A4A4A;line-height:1.6;">Ich baue Brief-nach-Berlin allein und ehrenamtlich in meiner Freizeit und trage die laufenden Kosten bisher selbst. Deine Spende hilft, das Projekt kostenlos und unabhängig weiterzubetreiben.</p>
-      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="width:100%;border-collapse:collapse;">
-        <tr>
-          <td class="bnb-support-action bnb-support-action-primary" width="52%" valign="top" style="width:52%;padding-right:5px;">
-            <a href="https://spende.we-aid.org/Brief-nach-Berlin" target="_blank" rel="noopener noreferrer" style="display:block;background-color:#2D5016;color:#ffffff;font-family:Georgia,'Times New Roman',serif;font-size:14px;font-weight:bold;text-decoration:none;padding:11px 10px;border:2px solid #2D5016;border-radius:4px;line-height:1.4;text-align:center;"><img src="https://www.brief-nach-berlin.de/images/icon-heart-white.png" alt="" aria-hidden="true" width="16" height="16" style="width:16px;height:16px;vertical-align:middle;border:0;margin-right:6px;">Jetzt spenden</a>
-            
-          </td>
-          <td class="bnb-support-action" width="48%" valign="top" style="width:48%;padding-left:5px;">
-            <a href="https://www.brief-nach-berlin.de/spenden?src=email" target="_blank" rel="noopener noreferrer" style="display:block;background-color:#ffffff;color:#2D5016;font-family:Georgia,'Times New Roman',serif;font-size:14px;font-weight:bold;text-decoration:none;padding:11px 10px;border:2px solid #2D5016;border-radius:4px;line-height:1.4;text-align:center;">Mehr Informationen</a>
-          </td>
-        </tr>
-      </table>
-      <p style="margin:12px 0 0;font-family:Georgia,'Times New Roman',serif;font-size:12px;color:#bcbcbc;line-height:1.5;">Brief-nach-Berlin ist eine gemeinnützige Initiative in Trägerschaft der WE AID gGmbH.</p>
-    </div>
                   </td>
                 </tr>
 
@@ -315,11 +282,6 @@ Beste Grüße aus Bremen ✌️
 Thomas
 Eine Initiative von https://www.thomas-lorenz.eu
 
-Damit Brief-nach-Berlin kostenlos bleibt
-Hinweis zur Finanzierung: Brief-nach-Berlin ist eine gemeinnützige Initiative in Trägerschaft der WE AID gGmbH.
-Jetzt spenden: https://spende.we-aid.org/Brief-nach-Berlin
-Mehr über die Unterstützung erfahren: https://www.brief-nach-berlin.de/spenden?src=email
-
 Hinweis: Dieser Entwurf ist von KI erstellt und ohne Gewähr. Bitte prüfe Inhalt, Fakten und Adresse, bevor du deinen Brief schreibst. Die Verantwortung für den Inhalt liegt bei dir. Es gelten die Nutzungsbedingungen. https://www.brief-nach-berlin.de/nutzungsbedingungen
 
 Datenschutz: Dein Brief und dein Anliegen werden nicht gespeichert. Nur wenn du dein Anliegen freiwillig auf die Karte setzt, speichere ich ein kurzes Themensignal. Kein Newsletter: In 2-3 Tagen kommt nur noch eine Mail mit der Bitte um eine Bewertung.
@@ -347,8 +309,6 @@ exports[`Erwachsenen-Mail bleibt unverändert mit Feedback-Token (Sterne-Bar): h
       .bnb-stack-left { padding: 0 0 14px 0 !important; width: 100% !important; }
       .bnb-stack-right { padding: 14px 0 0 0 !important; border-left: 0 !important; border-top: 1px solid #E0DCD7 !important; width: 100% !important; text-align: center !important; }
       .bnb-bleed { margin-left: -14px !important; margin-right: -14px !important; }
-      .bnb-support-action { display: block !important; width: 100% !important; padding-left: 0 !important; padding-right: 0 !important; }
-      .bnb-support-action-primary { padding-bottom: 8px !important; }
       .bnb-feedback-break { display: inline !important; }
       .bnb-feedback-space { display: none !important; }
       /* Share row: on mobile only the square icon-buttons remain (labels hidden). */
@@ -493,37 +453,6 @@ exports[`Erwachsenen-Mail bleibt unverändert mit Feedback-Token (Sterne-Bar): h
                   </td>
                 </tr>
 
-                <!-- Donation CTA: shared by first letter emails and resends, before sharing. -->
-                <tr>
-                  <td colspan="7" class="bnb-pad" style="padding:0 32px 16px;background-color:#ffffff;text-align:left;">
-                    <div class="bnb-inner-pad" style="background-color:#FAF8F5;border:1px solid #E0DCD7;border-radius:6px;padding:18px 20px;">
-      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="width:100%;border-collapse:collapse;">
-        <tr>
-          <td valign="middle" style="padding:0 12px 8px 0;">
-            <h2 style="margin:0;font-family:Georgia,'Times New Roman',serif;font-size:16px;color:#2D5016;font-weight:bold;">Damit Brief-nach-Berlin kostenlos bleibt</h2>
-          </td>
-          <td width="52" valign="top" align="right" style="width:52px;padding:0 0 8px 0;">
-            <img src="https://www.brief-nach-berlin.de/images/thomas-avatar.jpg" width="52" height="52" alt="Thomas Lorenz" style="display:block;width:52px;height:52px;border:0;border-radius:50%;">
-          </td>
-        </tr>
-      </table>
-      <p style="margin:0 0 14px;font-family:Georgia,'Times New Roman',serif;font-size:14px;color:#4A4A4A;line-height:1.6;">Ich baue Brief-nach-Berlin allein und ehrenamtlich in meiner Freizeit und trage die laufenden Kosten bisher selbst. Deine Spende hilft, das Projekt kostenlos und unabhängig weiterzubetreiben.</p>
-      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="width:100%;border-collapse:collapse;">
-        <tr>
-          <td class="bnb-support-action bnb-support-action-primary" width="52%" valign="top" style="width:52%;padding-right:5px;">
-            <a href="https://spende.we-aid.org/Brief-nach-Berlin" target="_blank" rel="noopener noreferrer" style="display:block;background-color:#2D5016;color:#ffffff;font-family:Georgia,'Times New Roman',serif;font-size:14px;font-weight:bold;text-decoration:none;padding:11px 10px;border:2px solid #2D5016;border-radius:4px;line-height:1.4;text-align:center;"><img src="https://www.brief-nach-berlin.de/images/icon-heart-white.png" alt="" aria-hidden="true" width="16" height="16" style="width:16px;height:16px;vertical-align:middle;border:0;margin-right:6px;">Jetzt spenden</a>
-            
-          </td>
-          <td class="bnb-support-action" width="48%" valign="top" style="width:48%;padding-left:5px;">
-            <a href="https://www.brief-nach-berlin.de/spenden?src=email" target="_blank" rel="noopener noreferrer" style="display:block;background-color:#ffffff;color:#2D5016;font-family:Georgia,'Times New Roman',serif;font-size:14px;font-weight:bold;text-decoration:none;padding:11px 10px;border:2px solid #2D5016;border-radius:4px;line-height:1.4;text-align:center;">Mehr Informationen</a>
-          </td>
-        </tr>
-      </table>
-      <p style="margin:12px 0 0;font-family:Georgia,'Times New Roman',serif;font-size:12px;color:#bcbcbc;line-height:1.5;">Brief-nach-Berlin ist eine gemeinnützige Initiative in Trägerschaft der WE AID gGmbH.</p>
-    </div>
-                  </td>
-                </tr>
-
                 
 
                 
@@ -632,11 +561,6 @@ Beste Grüße aus Bremen ✌️
 Thomas
 Eine Initiative von https://www.thomas-lorenz.eu
 
-Damit Brief-nach-Berlin kostenlos bleibt
-Hinweis zur Finanzierung: Brief-nach-Berlin ist eine gemeinnützige Initiative in Trägerschaft der WE AID gGmbH.
-Jetzt spenden: https://spende.we-aid.org/Brief-nach-Berlin
-Mehr über die Unterstützung erfahren: https://www.brief-nach-berlin.de/spenden?src=email
-
 Hinweis: Dieser Entwurf ist von KI erstellt und ohne Gewähr. Bitte prüfe Inhalt, Fakten und Adresse, bevor du deinen Brief schreibst. Die Verantwortung für den Inhalt liegt bei dir. Es gelten die Nutzungsbedingungen. https://www.brief-nach-berlin.de/nutzungsbedingungen
 
 Datenschutz: Dein Brief und dein Anliegen werden nicht gespeichert. Nur wenn du dein Anliegen freiwillig auf die Karte setzt, speichere ich ein kurzes Themensignal. Kein Newsletter: In 2-3 Tagen kommt nur noch eine Mail mit der Bitte um eine Bewertung.
@@ -664,8 +588,6 @@ exports[`Erwachsenen-Mail bleibt unverändert ohne Feedback-Token (Profil-Button
       .bnb-stack-left { padding: 0 0 14px 0 !important; width: 100% !important; }
       .bnb-stack-right { padding: 14px 0 0 0 !important; border-left: 0 !important; border-top: 1px solid #E0DCD7 !important; width: 100% !important; text-align: center !important; }
       .bnb-bleed { margin-left: -14px !important; margin-right: -14px !important; }
-      .bnb-support-action { display: block !important; width: 100% !important; padding-left: 0 !important; padding-right: 0 !important; }
-      .bnb-support-action-primary { padding-bottom: 8px !important; }
       .bnb-feedback-break { display: inline !important; }
       .bnb-feedback-space { display: none !important; }
       /* Share row: on mobile only the square icon-buttons remain (labels hidden). */
@@ -797,37 +719,6 @@ exports[`Erwachsenen-Mail bleibt unverändert ohne Feedback-Token (Profil-Button
                   </td>
                 </tr>
 
-                <!-- Donation CTA: shared by first letter emails and resends, before sharing. -->
-                <tr>
-                  <td colspan="7" class="bnb-pad" style="padding:0 32px 16px;background-color:#ffffff;text-align:left;">
-                    <div class="bnb-inner-pad" style="background-color:#FAF8F5;border:1px solid #E0DCD7;border-radius:6px;padding:18px 20px;">
-      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="width:100%;border-collapse:collapse;">
-        <tr>
-          <td valign="middle" style="padding:0 12px 8px 0;">
-            <h2 style="margin:0;font-family:Georgia,'Times New Roman',serif;font-size:16px;color:#2D5016;font-weight:bold;">Damit Brief-nach-Berlin kostenlos bleibt</h2>
-          </td>
-          <td width="52" valign="top" align="right" style="width:52px;padding:0 0 8px 0;">
-            <img src="https://www.brief-nach-berlin.de/images/thomas-avatar.jpg" width="52" height="52" alt="Thomas Lorenz" style="display:block;width:52px;height:52px;border:0;border-radius:50%;">
-          </td>
-        </tr>
-      </table>
-      <p style="margin:0 0 14px;font-family:Georgia,'Times New Roman',serif;font-size:14px;color:#4A4A4A;line-height:1.6;">Ich baue Brief-nach-Berlin allein und ehrenamtlich in meiner Freizeit und trage die laufenden Kosten bisher selbst. Deine Spende hilft, das Projekt kostenlos und unabhängig weiterzubetreiben.</p>
-      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="width:100%;border-collapse:collapse;">
-        <tr>
-          <td class="bnb-support-action bnb-support-action-primary" width="52%" valign="top" style="width:52%;padding-right:5px;">
-            <a href="https://spende.we-aid.org/Brief-nach-Berlin" target="_blank" rel="noopener noreferrer" style="display:block;background-color:#2D5016;color:#ffffff;font-family:Georgia,'Times New Roman',serif;font-size:14px;font-weight:bold;text-decoration:none;padding:11px 10px;border:2px solid #2D5016;border-radius:4px;line-height:1.4;text-align:center;"><img src="https://www.brief-nach-berlin.de/images/icon-heart-white.png" alt="" aria-hidden="true" width="16" height="16" style="width:16px;height:16px;vertical-align:middle;border:0;margin-right:6px;">Jetzt spenden</a>
-            
-          </td>
-          <td class="bnb-support-action" width="48%" valign="top" style="width:48%;padding-left:5px;">
-            <a href="https://www.brief-nach-berlin.de/spenden?src=email" target="_blank" rel="noopener noreferrer" style="display:block;background-color:#ffffff;color:#2D5016;font-family:Georgia,'Times New Roman',serif;font-size:14px;font-weight:bold;text-decoration:none;padding:11px 10px;border:2px solid #2D5016;border-radius:4px;line-height:1.4;text-align:center;">Mehr Informationen</a>
-          </td>
-        </tr>
-      </table>
-      <p style="margin:12px 0 0;font-family:Georgia,'Times New Roman',serif;font-size:12px;color:#bcbcbc;line-height:1.5;">Brief-nach-Berlin ist eine gemeinnützige Initiative in Trägerschaft der WE AID gGmbH.</p>
-    </div>
-                  </td>
-                </tr>
-
                 
 
                 
@@ -935,11 +826,6 @@ Beste Grüße aus Bremen ✌️
 
 Thomas
 Eine Initiative von https://www.thomas-lorenz.eu
-
-Damit Brief-nach-Berlin kostenlos bleibt
-Hinweis zur Finanzierung: Brief-nach-Berlin ist eine gemeinnützige Initiative in Trägerschaft der WE AID gGmbH.
-Jetzt spenden: https://spende.we-aid.org/Brief-nach-Berlin
-Mehr über die Unterstützung erfahren: https://www.brief-nach-berlin.de/spenden?src=email
 
 Hinweis: Dieser Entwurf ist von KI erstellt und ohne Gewähr. Bitte prüfe Inhalt, Fakten und Adresse, bevor du deinen Brief schreibst. Die Verantwortung für den Inhalt liegt bei dir. Es gelten die Nutzungsbedingungen. https://www.brief-nach-berlin.de/nutzungsbedingungen
 

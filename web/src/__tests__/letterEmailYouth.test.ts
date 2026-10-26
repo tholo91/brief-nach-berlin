@@ -52,15 +52,15 @@ describe("Briefkopie im Jugendmodus", () => {
     expect(text).toContain("Test.");
   });
 
-  it("Erwachsene: Spendenlink und Sterne-Bewertung bleiben", async () => {
+  it("Erwachsene: Sterne-Bewertung bleibt, Spendenbitte steht nur noch in der Follow-up-Mail", async () => {
     const { params } = await prepare();
     const html = buildEmailHtml(params);
     const text = buildLetterEmailText(params);
 
     expect(params.audience).toBeUndefined();
     expect(params.feedbackToken).toBe("signed-feedback-token");
-    expect(html).toContain(DONATION_PROVIDER_URL);
     expect(html).toContain("/feedback?r=");
-    expect(text).toContain(DONATION_PROVIDER_URL);
+    expect(html).not.toContain(DONATION_PROVIDER_URL);
+    expect(text).not.toContain(DONATION_PROVIDER_URL);
   });
 });

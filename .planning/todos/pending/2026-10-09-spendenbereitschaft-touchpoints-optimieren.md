@@ -37,14 +37,18 @@ WE-AID-Seite (Live-Stand 2026-10-08, nicht verifiziert für später): Ziel 5.000
 
 Prinzipien (Inferenz aus Fundraising-Praxis): Bitte direkt nach bestätigtem Nutzen, ein Gesicht statt Institution, konkreter kleiner Betrag, sichtbares Ziel mit Fortschritt. Nicht nerven: eine Bitte pro Kontakt, nie vor dem Nutzen, nie bei Frust (≤3 Sterne, Fehler), immer "völlig ok, wenn nicht".
 
+## Neue Richtung (2026-10-26)
+
+Spendenbitte nur noch in der Follow-up-Mail. Brief-Mail und Resend ohne Bitte, Last-Call bleibt ohne Bitte, Erfolgsscreen unverändert. Das Banner liegt als `web/public/images/spenden-banner-thomas.jpg` und ist für /spenden und /rueckmeldung wiederverwendbar. Folge-Todo für /rueckmeldung angelegt: `2026-10-26-spendenkarte-mit-banner-auf-rueckmeldung-danke-seite.md`.
+
 ## Solution
 
 Jetzt (größter Hebel):
 
 1. **Danke-Seite nach ≥4 Sternen:** Spendenkarte mit Avatar. Copy-Idee: "Schön, dass dein Brief passt. Damit das für die Nächsten auch kostenlos bleibt: Schon 5 € helfen." Auto-Redirect bei ≥4 Sternen abschalten oder deutlich verlängern. Bei ≤3 Sternen keine Bitte (dort läuft die Verbesserungs-Karte).
-2. **Follow-up-Mail:** Spendenbox neben den Sternen entfernen, höchstens eine P.S.-Zeile unter der Signatur. Sterne bekommen volle Breite. Anzahl Bitten bleibt gleich, Zeitpunkt wird besser.
+2. [erledigt 2026-10-26, Quick 261026-tca] Sterne in voller Breite, darunter Spendenabschnitt mit Banner, 5-€-Anker und Button statt P.S.-Zeile. **Follow-up-Mail:** Spendenbox neben den Sternen entfernen, höchstens eine P.S.-Zeile unter der Signatur. Sterne bekommen volle Breite. Anzahl Bitten bleibt gleich, Zeitpunkt wird besser.
 3. **Betrag + Monatsoption** zentral in `support-content.ts` (wirkt auf Erfolgsscreen, Brief-Mail, /spenden): "Schon 5 € helfen. Wer regelmäßig mag: 5 € im Monat machen die Kosten planbar." Stärker mit echter Zahl "5 € decken die KI-Kosten für etwa N Briefe" (braucht Kosten/Monat ÷ Briefe/Monat).
-4. **Avatar in die Spendenbox der Brief-Mail:** `buildFinancingNoticeHtml` nimmt seit den Ersteller-Mails schon einen Avatar-Parameter, Brief-Mail (`buildEmailHtml.ts:670`) übergibt ihn noch nicht. Manuell bei WE AID: Portrait als erstes Bild, Tippfehler fixen.
+4. [erledigt 2026-10-26, Quick 261026-tca] Avatar war schon drin, die Spendenbox ist mit dieser Änderung ganz aus der Brief-Mail raus. **Avatar in die Spendenbox der Brief-Mail:** `buildFinancingNoticeHtml` nimmt seit den Ersteller-Mails schon einen Avatar-Parameter, Brief-Mail (`buildEmailHtml.ts:670`) übergibt ihn noch nicht. Manuell bei WE AID: Portrait als erstes Bild, Tippfehler fixen.
 5. **Fortschritt zeigen:** "1.645 € von 5.000 € gesammelt" auf /spenden und im Erfolgsscreen, als von Hand gepflegte Konstante (monatlich aktualisieren).
 
 Später:

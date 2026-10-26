@@ -4,10 +4,10 @@ milestone: v1.0
 current_phase: 05
 status: verifying
 stopped_at: Completed 05-04-PLAN.md
-last_updated: "2026-10-23T14:03:59.742Z"
+last_updated: "2026-10-26T20:19:24.227Z"
 last_activity: 2026-10-23
 last_activity_desc: Quick 261013-wuq lokal implementiert und geprüft; manueller Release offen
-state_head: ad220eb2196a3221684a64b9d9a0f3bac47aebfb
+state_head: 292928c9d74fd8f07e35ca92a7f7f4f15f8b3384
 progress:
   total_phases: 33
   completed_phases: 4
@@ -49,7 +49,7 @@ Der level-aware E-Mail-Betreff ist dagegen bereits implementiert und getestet; d
 Phase: 05 — EXECUTING
 Plan: 4 of 4
 Status: Phase complete — ready for verification
-Last activity: 2026-10-23 - Completed quick task 261023-mak: MdbLookupCard Maps-Link nutzt PLZ-Zeile
+Last activity: 2026-10-26 - Completed quick task 261026-tca: Spendenbitte aus Brief-Mail in Follow-up-Mail verlegen
 
 Progress: [███████░░░] 68%
 
@@ -219,6 +219,7 @@ Recent decisions affecting current work:
 | 261023-ilb | Fallback-Reviews entfernen, Review-Streifen blendet bei Fehler aus | 2026-10-23 | 2556d99 | [261023-ilb-fallback-reviews-entfernen-review-streif](./quick/261023-ilb-fallback-reviews-entfernen-review-streif/) |
 | 92 | Bauprinzip Nur das Wichtigste shippen in CLAUDE.md und AGENTS.md | 2026-10-23 | 49ae6ca | — |
 | 261023-mak | MdbLookupCard Maps-Link nutzt PLZ-Zeile statt letzter zwei Zeilen | 2026-10-23 | ad220eb | [261023-mak-mdblookupcard-maps-link-nutzt-plz-zeile-](./quick/261023-mak-mdblookupcard-maps-link-nutzt-plz-zeile-/) |
+| 261026-tca | Spendenbitte aus Brief-Mail in Follow-up-Mail verlegen (Banner, 5-€-Anker) | 2026-10-26 | 292928c | [261026-tca-spendenbitte-aus-brief-mail-in-follow-up](./quick/261026-tca-spendenbitte-aus-brief-mail-in-follow-up/) |
 
 ## Session Continuity
 

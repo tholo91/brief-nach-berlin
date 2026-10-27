@@ -1,3 +1,4 @@
+import { APP_URL } from "@/lib/config";
 import { buildEmailHtml, buildLetterEmailSubject } from "@/lib/email/buildEmailHtml";
 import { buildFollowupHtml } from "@/lib/email/buildFollowupHtml";
 import type { SendLetterEmailParams } from "@/lib/email/sendLetterEmail";
@@ -57,9 +58,78 @@ describe("email localization", () => {
       campaignLetterCount,
     });
 
-    expect(html).toContain("Diese Kampagne wurde von <strong>AfD vor Gericht</strong> gestartet.");
-    expect(html.includes("Mit deinem Engagement sind es schon")).toBe(shown);
-    if (campaignLetterCount === 1234) expect(html).toContain("<strong>1.234 Briefe</strong>");
+    const url = `${APP_URL}/kampagne/afd-vor-gericht`;
+    expect(html).toContain(`Teil der <a href="${url}"`);
+    expect(html).toContain(">Kampagne von <strong>AfD vor Gericht</strong></a>.");
+    expect(html).not.toContain("wurde von");
+    expect(html.split(`${url}"`).length - 1).toBe(1);
+    expect(html.includes("Mit dir sind es schon")).toBe(shown);
+    expect(html).toContain("Danke dir \u2764\uFE0F");
+    if (campaignLetterCount === 1234) expect(html).toContain("Mit dir sind es schon <strong>1.234 Briefe</strong>.");
+  });
+
+  it("names a public campaign without creator in German", () => {
+    const html = buildEmailHtml({
+      ...params("de"),
+      campaign: { slug: "afd-vor-gericht", title: "AfD vor Gericht" },
+    });
+
+    expect(html).toContain("Teil einer <a href=");
+    expect(html).toContain(">öffentlichen Kampagne</a>.");
+  });
+
+  it("uses the same campaign structure in English", () => {
+    const html = buildEmailHtml({
+      ...params("en"),
+      campaign: { slug: "afd-vor-gericht", title: "AfD vor Gericht", creatorName: "AfD vor Gericht" },
+      campaignLetterCount: 30,
+    });
+
+    expect(html).toContain("Part of the <a href=");
+    expect(html).toContain(">campaign by <strong>AfD vor Gericht</strong></a>.");
+    expect(html).toContain("With you, there are already <strong>30 letters</strong>.");
+    expect(html).toContain("Thank you \u2764\uFE0F");
+  });
+
+  describe("campaign logo", () => {
+    const originalSupabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+
+    beforeEach(() => {
+      process.env.NEXT_PUBLIC_SUPABASE_URL = "https://example.supabase.co";
+    });
+
+    afterEach(() => {
+      if (originalSupabaseUrl === undefined) delete process.env.NEXT_PUBLIC_SUPABASE_URL;
+      else process.env.NEXT_PUBLIC_SUPABASE_URL = originalSupabaseUrl;
+    });
+
+    it("shows the logo at 40x40 when the campaign has one", () => {
+      const html = buildEmailHtml({
+        ...params("de"),
+        campaign: {
+          slug: "afd-vor-gericht",
+          title: "AfD vor Gericht",
+          creatorName: "AfD vor Gericht",
+          logoPath: "afd-vor-gericht/logo.webp",
+        },
+      });
+
+      expect(html).toContain(
+        'src="https://example.supabase.co/storage/v1/object/public/campaign-logos/afd-vor-gericht/logo.webp"',
+      );
+      expect(html).toContain('alt="AfD vor Gericht"');
+      expect(html).toContain('width="40"');
+      expect(html).toContain('height="40"');
+    });
+
+    it("leaves out the logo when the campaign has none", () => {
+      const html = buildEmailHtml({
+        ...params("de"),
+        campaign: { slug: "afd-vor-gericht", title: "AfD vor Gericht", creatorName: "AfD vor Gericht" },
+      });
+
+      expect(html).not.toContain("campaign-logos/");
+    });
   });
 
   it("uses the short step copy on mobile", () => {

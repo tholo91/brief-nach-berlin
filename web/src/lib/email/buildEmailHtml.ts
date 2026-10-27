@@ -5,6 +5,7 @@ import {
   FOUNDER_FEEDBACK_URL,
   abgeordnetenwatchProfileUrl,
 } from "@/lib/config";
+import { campaignLogoPublicUrl } from "@/lib/campaigns/logo";
 import { formatPartyShort } from "@/lib/formatParty";
 import { buildShareTarget } from "@/lib/share";
 import { normalizeLetterClosing } from "./normalizeLetterClosing";
@@ -112,13 +113,37 @@ function buildCampaignAttributionHtml(
   const copy = getEmailCopy(locale);
   const campaignUrl = `${APP_URL}/kampagne/${encodeURIComponent(campaign.slug)}`;
   const creator = campaign.creatorName?.trim();
+  const link = (label: string) =>
+    `<a href="${campaignUrl}" target="_blank" rel="noopener noreferrer" style="color:#2D5016;text-decoration:underline;">${label}</a>`;
   const countText = letterCount && letterCount >= CAMPAIGN_COUNT_MIN ? ` ${copy.campaignCount(letterCount)}` : "";
+  const text = `${copy.campaignPart(link, creator ? escapeHtml(creator) : undefined)}${countText} ${copy.campaignThanks}`;
+  const paragraph = `<p style="margin:0;font-family:Georgia,'Times New Roman',serif;font-size:13px;color:#4A4A4A;line-height:1.6;">
+        ${text}
+      </p>`;
+  const logoUrl = campaignLogoPublicUrl(campaign.logoPath);
+  const boxStyle =
+    "margin:0 0 16px;background-color:#FAF8F5;border:1px solid #E0DCD7;border-radius:4px;padding:14px 18px;";
+
+  if (!logoUrl) {
+    return `
+    <div class="bnb-inner-pad" style="${boxStyle}">
+      ${paragraph}
+    </div>`;
+  }
+
+  const alt = escapeHtml(creator || campaign.title);
   return `
-    <div class="bnb-inner-pad" style="margin:0 0 16px;background-color:#FAF8F5;border:1px solid #E0DCD7;border-radius:4px;padding:14px 18px;">
-      <p style="margin:0;font-family:Georgia,'Times New Roman',serif;font-size:13px;color:#4A4A4A;line-height:1.6;">
-        ${copy.campaignBy(creator ? escapeHtml(creator) : undefined)}${countText}
-        <a href="${campaignUrl}" target="_blank" rel="noopener noreferrer" style="color:#2D5016;text-decoration:underline;">${copy.campaignLink}</a>
-      </p>
+    <div class="bnb-inner-pad" style="${boxStyle}">
+      <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%">
+        <tr>
+          <td width="40" valign="middle" style="width:40px;padding-right:12px;">
+            <img src="${escapeHtml(logoUrl)}" alt="${alt}" width="40" height="40" style="display:block;width:40px;height:40px;border:0;border-radius:6px;object-fit:cover;">
+          </td>
+          <td valign="middle">
+            ${paragraph}
+          </td>
+        </tr>
+      </table>
     </div>`;
 }
 

@@ -169,8 +169,7 @@ exports[`Erwachsenen-Mail bleibt unverändert Kampagne: html 1`] = `
                     
     <div class="bnb-inner-pad" style="margin:0 0 16px;background-color:#FAF8F5;border:1px solid #E0DCD7;border-radius:4px;padding:14px 18px;">
       <p style="margin:0;font-family:Georgia,'Times New Roman',serif;font-size:13px;color:#4A4A4A;line-height:1.6;">
-        Dieser Brief gehört zu einer öffentlichen Kampagne. Mit deinem Engagement sind es schon <strong>40 Briefe</strong> und es werden immer mehr. Danke dir!
-        <a href="https://www.brief-nach-berlin.de/kampagne/test" target="_blank" rel="noopener noreferrer" style="color:#2D5016;text-decoration:underline;">Zur Kampagne</a>
+        Teil einer <a href="https://www.brief-nach-berlin.de/kampagne/test" target="_blank" rel="noopener noreferrer" style="color:#2D5016;text-decoration:underline;">öffentlichen Kampagne</a>. Mit dir sind es schon <strong>40 Briefe</strong>. Danke dir ❤️
       </p>
     </div>
                   </td>

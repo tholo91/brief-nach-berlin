@@ -1,4 +1,17 @@
+import { createElement } from "react";
+import { renderToStaticMarkup } from "react-dom/server";
+
 jest.mock("server-only", () => ({}), { virtual: true });
+jest.mock("next/navigation", () => ({
+  useRouter: () => ({ prefetch: jest.fn(), push: jest.fn() }),
+}));
+jest.mock("next/link", () => ({
+  __esModule: true,
+  default: ({ children, href }: { children: React.ReactNode; href: string }) =>
+    createElement("a", { href }, children),
+}));
+jest.mock("@/components/audio/VoiceRecorder", () => ({ VoiceRecorder: () => null }));
+jest.mock("@/lib/mistral", () => ({}));
 
 import { resolveJungEntry } from "@/components/jung/jungEntry";
 import {
@@ -95,5 +108,47 @@ describe("clearJungDraft", () => {
     ]);
     clearJungDraft({ removeItem: (key: string) => void store.delete(key) });
     expect([...store.keys()]).toEqual(["wizard-handoff"]);
+  });
+});
+
+describe("/jung page", () => {
+  const originalSecret = process.env.FEEDBACK_TOKEN_SECRET;
+  beforeAll(() => {
+    process.env.FEEDBACK_TOKEN_SECRET = "test-class-token-secret";
+  });
+  afterAll(() => {
+    process.env.FEEDBACK_TOKEN_SECRET = originalSecret;
+  });
+
+  async function render(k?: string) {
+    const { default: JungPage } = await import("@/app/(site)/jung/page");
+    const element = await JungPage({ searchParams: Promise.resolve(k === undefined ? {} : { k }) });
+    return renderToStaticMarkup(element);
+  }
+
+  it("renders the form with chips, connector and reveal without a class link", async () => {
+    const html = await render();
+    expect(html).toContain('id="schreiben"');
+    expect(html).toContain("Wählen darfst du noch nicht. Schreiben schon.");
+    expect(html.match(/name="klasse"/g)).toHaveLength(7);
+    expect(html).toContain("Brief entwerfen");
+    expect(html).toContain("overflow-x-auto");
+    expect(html).toContain("step-connector");
+    expect(html).toContain("reveal");
+    expect(html.match(/<h1/g)).toHaveLength(1);
+    expect(html).not.toContain("font-handwriting");
+    expect(html).not.toMatch(/[–—]/);
+  });
+
+  it("replaces the class picker with a confirmation for a valid link", async () => {
+    const html = await render(signClassToken({ klasse: 9, plz: "28195" }));
+    expect(html).toContain("Klasse 9 und PLZ 28195 sind über den Klassenlink eingetragen.");
+    expect(html).toContain("ändern");
+    expect(html).not.toContain('name="klasse"');
+  });
+
+  it("shows the invalid-link note for a broken token", async () => {
+    const html = await render("kaputt");
+    expect(html).toContain("Dieser Klassenlink ist abgelaufen oder ungültig.");
   });
 });

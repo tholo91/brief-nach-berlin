@@ -44,6 +44,7 @@ export function JungExperience({ entry }: { entry: JungEntry }) {
   const entryKlasse = entry.status === "valid" ? entry.klasse : null;
   const [klasse, setKlasse] = useState<number | null>(entryKlasse);
   const [usedVoice, setUsedVoice] = useState(false);
+  const [showPicker, setShowPicker] = useState(entry.status !== "valid");
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const klasseGroupRef = useRef<HTMLFieldSetElement>(null);
 
@@ -91,12 +92,29 @@ export function JungExperience({ entry }: { entry: JungEntry }) {
     }
   }
 
+  function focusKlasseInput() {
+    requestAnimationFrame(() => {
+      const group = klasseGroupRef.current;
+      const input = group?.querySelector<HTMLInputElement>("input:checked") ?? group?.querySelector<HTMLInputElement>("input");
+      input?.focus();
+    });
+  }
+
+  function revealPicker() {
+    setShowPicker(true);
+    focusKlasseInput();
+  }
+
   function continueToWizard() {
     const result = validateJungSubmit({ klasse, issueText });
     if (!result.ok) {
       setStatusMessage(ERROR_MESSAGES[result.reason]);
       if (result.reason === "klasse") {
-        klasseGroupRef.current?.querySelector<HTMLInputElement>("input")?.focus();
+        if (showPicker) {
+          klasseGroupRef.current?.querySelector<HTMLInputElement>("input")?.focus();
+        } else {
+          revealPicker();
+        }
       } else {
         textareaRef.current?.focus();
       }
@@ -124,41 +142,58 @@ export function JungExperience({ entry }: { entry: JungEntry }) {
             "repeating-linear-gradient(-45deg, #c1121f 0 10px, #faf8f5 10px 15px, #1d3557 15px 25px, #faf8f5 25px 30px)",
         }}
       />
-      <div className="space-y-8 p-5 sm:p-7">
-        <fieldset ref={klasseGroupRef} role="radiogroup" className="min-w-0">
-          <legend className="font-typewriter text-lg font-bold text-waldgruen-dark">
-            <span aria-hidden="true" className="mr-2 text-waldgruen">1</span>
-            In welche Klasse gehst du?
-          </legend>
-          <div className="mt-3 flex flex-wrap gap-2">
-            {KLASSEN.map((value) => (
-              <label key={value} className="relative">
-                <input
-                  type="radio"
-                  name="klasse"
-                  value={value}
-                  checked={klasse === value}
-                  onChange={() => selectKlasse(value)}
-                  className="peer sr-only"
-                />
-                <span
-                  className={`flex h-11 min-w-11 cursor-pointer items-center justify-center rounded-lg border border-waldgruen/25 bg-white px-3 font-body text-base font-bold text-warmgrau transition-colors hover:border-waldgruen/50 hover:bg-waldgruen/5 peer-checked:border-waldgruen peer-checked:bg-waldgruen peer-checked:text-creme peer-focus-visible:ring-2 peer-focus-visible:ring-waldgruen peer-focus-visible:ring-offset-2`}
-                >
-                  {value}
-                </span>
-              </label>
-            ))}
-          </div>
-        </fieldset>
+      <div className="space-y-4 p-4 sm:space-y-8 sm:p-7">
+        {showPicker ? (
+          <fieldset ref={klasseGroupRef} role="radiogroup" className="min-w-0">
+            <legend className="font-typewriter text-base font-bold text-waldgruen-dark sm:text-lg">
+              <span aria-hidden="true" className="mr-2 text-waldgruen">1</span>
+              In welche Klasse gehst du?
+            </legend>
+            <div className="mt-2 grid max-w-sm grid-cols-7 gap-1.5 sm:mt-3">
+              {KLASSEN.map((value) => (
+                <label key={value} className="relative">
+                  <input
+                    type="radio"
+                    name="klasse"
+                    value={value}
+                    checked={klasse === value}
+                    onChange={() => selectKlasse(value)}
+                    className="peer sr-only"
+                  />
+                  <span
+                    className={`flex h-11 w-full cursor-pointer items-center justify-center rounded-lg border border-waldgruen/25 bg-white font-body text-base font-bold text-warmgrau transition-colors hover:border-waldgruen/50 hover:bg-waldgruen/5 peer-checked:border-waldgruen peer-checked:bg-waldgruen peer-checked:text-creme peer-focus-visible:ring-2 peer-focus-visible:ring-waldgruen peer-focus-visible:ring-offset-2`}
+                  >
+                    {value}
+                  </span>
+                </label>
+              ))}
+            </div>
+          </fieldset>
+        ) : (
+          entry.status === "valid" && (
+            <div className="flex items-start justify-between gap-3 rounded-lg border border-waldgruen/25 bg-waldgruen/5 px-3 py-2.5">
+              <p role="status" className="font-body text-sm leading-snug text-waldgruen-dark">
+                <span aria-hidden="true" className="mr-2 font-typewriter font-bold text-waldgruen">1</span>
+                Klasse {entry.klasse} und PLZ {entry.plz} sind über den Klassenlink eingetragen.
+              </p>
+              <button
+                type="button"
+                aria-label="Klasse ändern"
+                onClick={revealPicker}
+                className={`-my-1 shrink-0 rounded-lg px-2 py-1 font-body text-sm font-semibold text-waldgruen underline underline-offset-2 hover:text-waldgruen-dark ${focusRing}`}
+              >
+                ändern
+              </button>
+            </div>
+          )
+        )}
 
         <section aria-labelledby="jung-thema-heading">
-          <h2 id="jung-thema-heading" className="font-typewriter text-lg font-bold text-waldgruen-dark">
+          <h2 id="jung-thema-heading" className="font-typewriter text-base font-bold text-waldgruen-dark sm:text-lg">
             <span aria-hidden="true" className="mr-2 text-waldgruen">2</span>
             Worum geht es dir?
+            <span className="font-body text-sm font-normal text-warmgrau/70"> (bis zu zwei)</span>
           </h2>
-          <p className="mt-1 font-body text-sm leading-relaxed text-warmgrau/70">
-            Wähl bis zu zwei Themen. Jedes fügt einen Satzanfang ein, den du selbst zu Ende schreibst.
-          </p>
           <TopicStarterGrid
             variant="scroll"
             topics={JUNG_TOPICS}
@@ -169,24 +204,24 @@ export function JungExperience({ entry }: { entry: JungEntry }) {
         </section>
 
         <section aria-labelledby="jung-text-label">
-          <h2 className="font-typewriter text-lg font-bold text-waldgruen-dark">
+          <h2 className="font-typewriter text-base font-bold text-waldgruen-dark sm:text-lg">
             <span aria-hidden="true" className="mr-2 text-waldgruen">3</span>
             <label id="jung-text-label" htmlFor="jung-issue-text">Was ist dir passiert?</label>
           </h2>
           <p id="jung-text-help" className="mt-1 font-body text-sm leading-relaxed text-warmgrau/70">
-            Je genauer, desto stärker dein Brief. Du kannst auch sprechen statt tippen.
+            Du kannst auch sprechen statt tippen.
           </p>
-          <div className="relative mt-3">
+          <div className="relative mt-2 sm:mt-3">
             <textarea
               ref={textareaRef}
               id="jung-issue-text"
               value={issueText}
               maxLength={ISSUE_TEXT_MAX}
-              rows={7}
+              rows={3}
               aria-describedby="jung-text-help jung-status"
               onChange={(event) => setIssueText(event.target.value)}
               placeholder="Ein Erlebnis reicht, zum Beispiel: Seit den Herbstferien hatten wir in Mathe drei Vertretungen."
-              className="min-h-44 w-full resize-y rounded-lg border border-dashed border-waldgruen/30 bg-white py-3 pl-4 pr-14 font-body text-base leading-relaxed text-warmgrau outline-none transition placeholder:text-warmgrau/40 focus:border-waldgruen focus:ring-2 focus:ring-waldgruen/20"
+              className="min-h-24 w-full resize-y rounded-lg border border-dashed border-waldgruen/30 bg-white py-3 pl-4 pr-14 font-body text-base leading-relaxed text-warmgrau outline-none transition sm:min-h-44 placeholder:text-warmgrau/40 focus:border-waldgruen focus:ring-2 focus:ring-waldgruen/20"
             />
             <VoiceRecorder
               language="de"
@@ -203,13 +238,13 @@ export function JungExperience({ entry }: { entry: JungEntry }) {
         </section>
 
         <div>
-          <p id="jung-status" aria-live="polite" className="min-h-5 font-body text-sm font-semibold text-waldgruen-dark">
+          <p id="jung-status" aria-live="polite" className="mt-3 font-body text-sm font-semibold text-waldgruen-dark empty:mt-0">
             {statusMessage}
           </p>
           <button
             type="button"
             onClick={continueToWizard}
-            className={`mt-2 inline-flex min-h-12 w-full items-center justify-center gap-3 rounded-lg bg-waldgruen px-6 py-3 font-body text-base font-bold text-creme transition-colors hover:bg-waldgruen-dark ${focusRing}`}
+            className={`mt-3 inline-flex min-h-12 w-full items-center justify-center gap-3 rounded-lg bg-waldgruen px-6 py-3 font-body text-base font-bold text-creme transition-colors hover:bg-waldgruen-dark ${focusRing}`}
           >
             Brief entwerfen
             <WizardForwardIcon />

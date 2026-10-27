@@ -1,3 +1,17 @@
+import { createElement } from "react";
+import { renderToStaticMarkup } from "react-dom/server";
+
+jest.mock("next/navigation", () => ({
+  useRouter: () => ({ prefetch: jest.fn(), push: jest.fn() }),
+}));
+jest.mock("next/link", () => ({
+  __esModule: true,
+  default: ({ children, href }: { children: React.ReactNode; href: string }) =>
+    createElement("a", { href }, children),
+}));
+jest.mock("@/components/audio/VoiceRecorder", () => ({ VoiceRecorder: () => null }));
+jest.mock("@/lib/mistral", () => ({}));
+
 import {
   ELTERN_DRAFT_KEY,
   buildElternHandoff,
@@ -55,5 +69,25 @@ describe("elternHandoff", () => {
     const removeItem = jest.fn();
     clearElternDraft({ removeItem });
     expect(removeItem).toHaveBeenCalledWith(ELTERN_DRAFT_KEY);
+  });
+});
+
+describe("/eltern page", () => {
+  it("renders two doors, the form anchor and the unchanged privacy copy", async () => {
+    const { default: ElternPage } = await import("@/app/(site)/eltern/page");
+    const html = renderToStaticMarkup(createElement(ElternPage));
+    expect(html).toContain("Schreib der Politik, was an der Schule fehlt.");
+    expect(html).toContain('href="#schreiben"');
+    expect(html).toContain('href="#sicher"');
+    expect(html).toContain('id="schreiben"');
+    expect(html).toContain('id="sicher"');
+    expect(html).toContain("Ist das sicher?");
+    expect(html).toContain(
+      "Im Jugendmodus bekommt dein Kind nur die eine Mail mit dem Entwurf: keine Erinnerungen, keine Spendenbitte, keine Frage nach einer Partei, keine Kartenfunktion.",
+    );
+    expect(html).toContain("sie stammt vom Niedersächsischen Kultusministerium.");
+    expect(html).toContain("application/ld+json");
+    expect(html).not.toContain("font-handwriting");
+    expect(html).not.toMatch(/[–—]/);
   });
 });

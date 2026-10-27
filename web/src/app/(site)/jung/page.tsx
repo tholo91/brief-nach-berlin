@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { FAQAccordion } from "@/components/FAQAccordion";
+import { Figure } from "@/components/editorial/Figure";
 import { JungExperience } from "@/components/jung/JungExperience";
 import { resolveJungEntry } from "@/components/jung/jungEntry";
 import { APP_URL } from "@/lib/config";
@@ -85,8 +86,10 @@ const jsonLd = {
   ],
 };
 
+const h2Class = "font-typewriter text-xl font-bold text-waldgruen-dark sm:text-2xl";
+
 const steps = [
-  { title: "Anliegen aufschreiben", text: "ein Thema und ein eigenes Erlebnis, das dauert zwei Minuten." },
+  { title: "Anliegen aufschreiben", text: "Ein Thema und ein eigenes Erlebnis, das dauert zwei Minuten." },
   {
     title: "Entwurf bekommen",
     text: "Ich suche die zuständige Person in Bund, Land oder Gemeinde. Den Entwurf siehst du direkt, eine Kopie kommt per Mail.",
@@ -111,14 +114,9 @@ export default async function JungPage({
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, "\\u003c") }}
       />
-      <div className="mx-auto w-full max-w-xl px-5 pb-16 pt-6 sm:pt-10">
-        {entry.status === "valid" && (
-          <p role="status" className="mb-5 rounded-lg border border-waldgruen/25 bg-waldgruen/5 px-4 py-3 font-body text-sm text-waldgruen-dark">
-            Über den Klassenlink sind Klasse {entry.klasse} und PLZ {entry.plz} schon eingetragen.
-          </p>
-        )}
+      <div className="mx-auto w-full max-w-xl px-5 pb-16 pt-4 sm:pt-10">
         {entry.status === "invalid" && (
-          <p role="status" className="mb-5 rounded-lg border border-bernstein/50 bg-bernstein/10 px-4 py-3 font-body text-sm text-warmgrau">
+          <p role="status" className="mb-4 rounded-lg border border-bernstein/50 bg-bernstein/10 px-4 py-3 font-body text-sm text-warmgrau">
             Dieser Klassenlink ist abgelaufen oder ungültig. Frag deine Lehrkraft nach einem neuen. Schreiben kannst du trotzdem.
           </p>
         )}
@@ -130,41 +128,50 @@ export default async function JungPage({
           height={510}
           sizes="(max-width: 576px) 100vw, 576px"
           priority
-          className="mb-6 h-auto w-full rounded-xl shadow-md shadow-waldgruen/10"
+          className="mb-4 h-24 w-full rounded-xl object-cover object-[center_40%] shadow-md shadow-waldgruen/10 sm:mb-6 sm:h-auto"
         />
 
-        <h1 className="font-typewriter text-[2rem] font-bold leading-tight tracking-tight text-waldgruen-dark sm:text-4xl">
-          Wählen darfst du noch nicht.
-          <span className="mt-1 block origin-left -rotate-1 font-handwriting text-4xl font-normal text-waldgruen sm:text-5xl">
-            Schreiben schon.
-          </span>
+        <h1 className="font-typewriter text-2xl font-bold leading-tight tracking-tight text-waldgruen-dark text-pretty sm:text-[2rem]">
+          Wählen darfst du noch nicht. Schreiben schon.
         </h1>
-        <p className="mb-7 mt-4 font-body text-base leading-relaxed text-warmgrau sm:text-lg">
-          Erzähl, was dich an der Schule, in deinem Ort oder bei deiner Zukunft stört. Ich finde heraus, wer in der Politik dafür zuständig ist, und schreibe dir einen Entwurf. Du schreibst ihn von Hand ab und schickst ihn mit der Post.
+        <p className="mb-5 mt-2 font-body text-base leading-relaxed text-warmgrau sm:mb-7 sm:mt-4 sm:text-lg">
+          Erzähl, was dich stört. Ich schreibe dir einen Entwurf an die zuständige Person.
         </p>
 
         <div id="schreiben" className="scroll-mt-32">
           <JungExperience entry={entry} />
         </div>
 
-        <section aria-labelledby="jung-so-geht-s" className="mt-14">
-          <h2 id="jung-so-geht-s" className="font-typewriter text-2xl font-bold text-waldgruen-dark">So geht&apos;s</h2>
-          <ol className="mt-5 space-y-4">
+        <section aria-labelledby="jung-so-geht-s" className="reveal mt-14">
+          <h2 id="jung-so-geht-s" className={h2Class}>So geht&apos;s</h2>
+          <ol className="mt-6 space-y-6">
             {steps.map((step, index) => (
-              <li key={step.title} className="flex gap-4">
-                <span aria-hidden="true" className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-waldgruen/40 font-typewriter text-sm font-bold text-waldgruen">
+              <li key={step.title} className="relative flex gap-4">
+                <span aria-hidden="true" className="relative z-10 flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-waldgruen/40 bg-creme font-typewriter text-sm font-bold text-waldgruen">
                   {index + 1}
                 </span>
-                <p className="font-body text-base leading-relaxed text-warmgrau">
-                  <strong className="font-bold text-waldgruen-dark">{step.title}:</strong> {step.text}
-                </p>
+                {index < steps.length - 1 && (
+                  <span aria-hidden="true" className="step-connector absolute -bottom-5 left-[15px] top-9 w-0.5" />
+                )}
+                <div>
+                  <p className="font-body font-bold text-waldgruen-dark">{step.title}</p>
+                  <p className="mt-1 font-body text-base leading-relaxed text-warmgrau">{step.text}</p>
+                </div>
               </li>
             ))}
           </ol>
         </section>
 
-        <section aria-labelledby="jung-warum" className="mt-14">
-          <h2 id="jung-warum" className="font-typewriter text-2xl font-bold text-waldgruen-dark">Warum gerade dein Brief zählt</h2>
+        <section aria-labelledby="jung-warum" className="reveal mt-14 flow-root">
+          <h2 id="jung-warum" className={h2Class}>Warum dein Brief zählt</h2>
+          <Figure
+            src="/images/img-im-buero.webp"
+            alt="Ein handgeschriebener Brief liegt auf einem Schreibtisch im Abgeordnetenbüro, daneben ein Stapel Post, durchs Fenster ist die Reichstagskuppel zu sehen, gemalte Illustration"
+            width={1376}
+            height={768}
+            side="right"
+            rotate="right"
+          />
           <ul className="mt-4 list-disc space-y-3 pl-5 marker:text-waldgruen">
             <li className="font-body text-base leading-relaxed text-warmgrau">
               Wählen darfst du je nach Wahl erst ab 16 oder 18, schreiben sofort.{" "}
@@ -187,7 +194,7 @@ export default async function JungPage({
         </section>
 
         <section aria-labelledby="jung-faq" className="reveal mt-14">
-          <h2 id="jung-faq" className="mb-4 font-typewriter text-2xl font-bold text-waldgruen-dark">Häufige Fragen</h2>
+          <h2 id="jung-faq" className={`${h2Class} mb-4`}>Häufige Fragen</h2>
           <FAQAccordion items={faqs} />
         </section>
 

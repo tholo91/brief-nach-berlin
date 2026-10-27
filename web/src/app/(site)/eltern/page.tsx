@@ -3,6 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { FAQAccordion } from "@/components/FAQAccordion";
 import { ElternExperience } from "@/components/eltern/ElternExperience";
+import { WizardForwardIcon } from "@/components/wizard/WizardForwardIcon";
 import { APP_URL } from "@/lib/config";
 
 const URL_PATH = "/eltern";
@@ -73,7 +74,9 @@ const jsonLd = {
   ],
 };
 
-const h2Class = "font-typewriter text-2xl font-bold text-waldgruen-dark";
+const h2Class = "font-typewriter text-xl font-bold text-waldgruen-dark sm:text-2xl";
+const doorClass =
+  "flex items-start justify-between gap-3 rounded-xl border border-waldgruen/20 bg-white p-4 transition-colors hover:border-waldgruen/45 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-waldgruen focus-visible:ring-offset-2";
 const bodyClass = "font-body text-base leading-relaxed text-warmgrau";
 
 export default function ElternPage() {
@@ -83,7 +86,7 @@ export default function ElternPage() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, "\\u003c") }}
       />
-      <div className="mx-auto w-full max-w-xl px-5 pb-16 pt-6 sm:pt-10">
+      <div className="mx-auto w-full max-w-xl px-5 pb-16 pt-4 sm:pt-10">
         <Image
           src="/images/img-eltern-kuechentisch.webp"
           alt="Ein Elternteil schreibt am Küchentisch einen Brief, das Kind zeigt auf eine Zeile, gemalte Illustration"
@@ -91,27 +94,47 @@ export default function ElternPage() {
           height={510}
           sizes="(max-width: 576px) 100vw, 576px"
           priority
-          className="mb-6 h-auto w-full rounded-xl shadow-md shadow-waldgruen/10"
+          className="mb-4 h-24 w-full rounded-xl object-cover object-[center_50%] shadow-md shadow-waldgruen/10 sm:mb-6 sm:h-auto"
         />
 
-        <h1 className="font-typewriter text-[2rem] font-bold leading-tight tracking-tight text-waldgruen-dark sm:text-4xl">
-          Dein Kind schreibt an die Politik.
-          <span className="mt-1 block origin-left -rotate-1 font-handwriting text-4xl font-normal text-waldgruen sm:text-5xl">
-            Du darfst auch.
-          </span>
+        <h1 className="font-typewriter text-2xl font-bold leading-tight tracking-tight text-waldgruen-dark text-balance sm:text-[2rem]">
+          Schreib der Politik, was an der Schule fehlt.
         </h1>
-        <p className="mb-7 mt-4 font-body text-base leading-relaxed text-warmgrau sm:text-lg">
-          Unterricht fällt aus, die Turnhalle ist gesperrt, der Schulbus kommt zu spät? Schreib es der Person in der Politik, die dafür zuständig ist. Ich suche die Ebene heraus und schreibe dir einen Entwurf, den du von Hand abschreibst.
+        <p className="mt-2 font-body text-base leading-relaxed text-warmgrau sm:mt-4 sm:text-lg">
+          Unterrichtsausfall, gesperrte Turnhalle, verspäteter Schulbus? Ich suche die zuständige Ebene und schreibe dir einen Entwurf zum Abschreiben.
         </p>
 
-        <ElternExperience />
+        <div className="mt-6 grid gap-3 sm:grid-cols-2">
+          <a href="#schreiben" className={doorClass}>
+            <span>
+              <span className="block font-body text-base font-bold text-waldgruen-dark">Ich will selbst schreiben</span>
+              <span className="mt-1 block font-body text-sm text-warmgrau/80">
+                Anliegen schildern, Entwurf bekommen, von Hand abschreiben.
+              </span>
+            </span>
+            <WizardForwardIcon className="mt-1 shrink-0 rotate-90 text-waldgruen" />
+          </a>
+          <a href="#sicher" className={doorClass}>
+            <span>
+              <span className="block font-body text-base font-bold text-waldgruen-dark">Mein Kind hat es in der Schule genutzt</span>
+              <span className="mt-1 block font-body text-sm text-warmgrau/80">
+                Welche Daten verarbeitet werden und welche nicht.
+              </span>
+            </span>
+            <WizardForwardIcon className="mt-1 shrink-0 rotate-90 text-waldgruen" />
+          </a>
+        </div>
 
-        <section aria-labelledby="eltern-zustaendig" className="mt-14">
+        <div id="schreiben" className="mt-8 scroll-mt-32">
+          <ElternExperience />
+        </div>
+
+        <section aria-labelledby="eltern-zustaendig" className="reveal mt-14">
           <h2 id="eltern-zustaendig" className={h2Class}>Wer ist zuständig?</h2>
           <div className="mt-5 -rotate-1 border border-warmgrau/20 bg-creme p-5 shadow-[3px_4px_0_rgba(107,100,92,0.15)] motion-reduce:rotate-0 sm:p-6">
             <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 sm:gap-8">
               <div>
-                <h3 className="font-handwriting text-3xl text-waldgruen">Land</h3>
+                <h3 className="font-typewriter text-xl font-bold text-waldgruen">Land</h3>
                 <p className={`${bodyClass} mt-1`}>
                   Lehrkräfte, Unterrichtsausfall, Lehrpläne, Schulgesetz.
                 </p>
@@ -120,7 +143,7 @@ export default function ElternPage() {
                 </p>
               </div>
               <div className="border-t border-dashed border-warmgrau/30 pt-6 sm:border-l sm:border-t-0 sm:pl-8 sm:pt-0">
-                <h3 className="font-handwriting text-3xl text-airmail-blau">Schulträger</h3>
+                <h3 className="font-typewriter text-xl font-bold text-airmail-blau">Schulträger</h3>
                 <p className={`${bodyClass} mt-1`}>
                   Gebäude, Ausstattung, Schulbus.
                 </p>
@@ -135,8 +158,8 @@ export default function ElternPage() {
           </p>
         </section>
 
-        <section aria-labelledby="eltern-daten" className="mt-14">
-          <h2 id="eltern-daten" className={h2Class}>Dein Kind hat Brief-nach-Berlin in der Schule benutzt?</h2>
+        <section id="sicher" aria-labelledby="eltern-daten" className="reveal mt-14 scroll-mt-32">
+          <h2 id="eltern-daten" className={h2Class}>Ist das sicher?</h2>
           <ul className="mt-4 list-disc space-y-3 pl-5 marker:text-waldgruen">
             <li className={bodyClass}>
               Verarbeitet werden E-Mail-Adresse, Postleitzahl und das Anliegen als Text, nur während der Verarbeitung. Es gibt keine Accounts, auf meinem Server wird dafür nichts gespeichert.
@@ -156,7 +179,7 @@ export default function ElternPage() {
           </p>
         </section>
 
-        <section aria-labelledby="eltern-faq" className="mt-14">
+        <section aria-labelledby="eltern-faq" className="reveal mt-14">
           <h2 id="eltern-faq" className={`${h2Class} mb-4`}>Häufige Fragen</h2>
           <FAQAccordion items={faqs} />
         </section>

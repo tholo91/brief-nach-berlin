@@ -4,10 +4,10 @@ milestone: v1.0
 current_phase: 05
 status: verifying
 stopped_at: Completed 05-04-PLAN.md
-last_updated: "2026-10-27T17:23:38.099Z"
+last_updated: "2026-10-27T20:22:34.493Z"
 last_activity: 2026-10-27
 last_activity_desc: Quick 261013-wuq lokal implementiert und geprüft; manueller Release offen
-state_head: 6e58f043d9c6c657b8ebde42f379ac7bf63eee2f
+state_head: 71aee3c8477e47b2aeb35009dade00f0fce78b31
 progress:
   total_phases: 33
   completed_phases: 4
@@ -49,7 +49,7 @@ Der level-aware E-Mail-Betreff ist dagegen bereits implementiert und getestet; d
 Phase: 05 — EXECUTING
 Plan: 4 of 4
 Status: Phase complete — ready for verification
-Last activity: 2026-10-27 - Completed quick task 261027-ore: Schulseiten /jung, /schule, /eltern UX-Umbau
+Last activity: 2026-10-27 - Completed quick task 261027-t9h: Schulseiten Feinschliff: Intro, aufklappbare Themen, wechselnde Platzhalter, Kontakt auf /schule, Eltern-Texte
 
 Progress: [███████░░░] 68%
 
@@ -232,6 +232,7 @@ Recent decisions affecting current work:
 | 261027-itd | Follow-up-Mail kürzer mit kompakter Spendenbox, Spendenkarte auf /feedback-Danke-Seite bei 4-5 Sternen | 2026-10-27 | 64502b0 | [261027-itd-spendenbitte-schaerfen-follow-up-kuerzen](./quick/261027-itd-spendenbitte-schaerfen-follow-up-kuerzen/) |
 | 261027-mrw | Repo-Hygiene: .planning/local, Todos und Outreach lokal, Nutzer anonymisiert | 2026-10-27 | e54ed42 | [261027-mrw-repo-hygiene-privater-ordner-planning-lo](./quick/261027-mrw-repo-hygiene-privater-ordner-planning-lo/) |
 | 261027-ore | Schulseiten /jung, /schule, /eltern UX-Umbau: Navbar-CTA, Überschriften ohne Handschrift, Formular im ersten Screen, Ablauf-Umschalter, zwei Einstiege für Eltern | 2026-10-27 | 6e58f04 | [261027-ore-schulseiten-jung-schule-eltern-ux-umbau](./quick/261027-ore-schulseiten-jung-schule-eltern-ux-umbau/) |
+| 261027-t9h | Schulseiten Feinschliff: Intro, aufklappbare Themen, wechselnde Platzhalter, Kontakt auf /schule, Eltern-Texte | 2026-10-27 | 71aee3c | [261027-t9h-schulseiten-feinschliff-intro-aufklappba](./quick/261027-t9h-schulseiten-feinschliff-intro-aufklappba/) |
 
 ## Session Continuity
 

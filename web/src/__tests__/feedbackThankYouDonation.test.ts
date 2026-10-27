@@ -57,8 +57,9 @@ describe("feedback thank-you card", () => {
     expect(html).toContain('href="/spenden"');
     expect(html).toContain("Mehr Informationen");
     expect(html).toContain(SUPPORT_CONTENT.founder.portraitPath);
-    expect(html).toContain("Generelles Feedback zum Tool");
-    expect(html).toContain("Zurück zur Startseite");
+    expect(html).not.toContain("Generelles Feedback zum Tool");
+    expect(html).not.toContain("Zurück zur Startseite");
+    expect(html).toContain("versprochen ✌️");
 
     expect(html).not.toContain("Du wirst gleich automatisch weitergeleitet");
     expect(html).not.toContain("Pausiert");
@@ -74,8 +75,8 @@ describe("feedback thank-you card", () => {
     expect(html).toContain("Du wirst gleich automatisch weitergeleitet");
     expect(html).toContain("animate-progress");
     expect(html).toContain("Brief jetzt verbessern");
-    expect(html).toContain("Generelles Feedback zum Tool");
-    expect(html).toContain("bg-waldgruen text-creme");
+    expect(html).not.toContain("Generelles Feedback zum Tool");
+    expect(html).not.toContain("Zurück zur Startseite");
 
     expect(html).not.toContain(SUPPORT_CONTENT.feedbackDonation.headline);
     expect(html).not.toContain(DONATION_PROVIDER_URL);

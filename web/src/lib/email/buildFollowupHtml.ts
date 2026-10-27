@@ -1,9 +1,6 @@
 import {
   APP_URL,
   FOUNDER_HOMEPAGE,
-  SHARE_URL_WHATSAPP,
-  SHARE_URL_TELEGRAM,
-  SHARE_URL_EMAIL,
 } from "@/lib/config";
 import { buildStarBarHtml } from "./buildEmailHtml";
 import type { SendLetterEmailParams } from "./sendLetterEmail";
@@ -53,22 +50,6 @@ export function buildFollowupHtml(params: BuildFollowupParams): FollowupRender {
   const copy = getEmailCopy(locale).followup;
   const supportCopy = SUPPORT_EMAIL_COPY[locale];
   const subject = getEmailCopy(locale).feedbackSubject;
-  const isTurkish = locale === "tr";
-  const shareText = isTurkish
-    ? `Brief-nach-Berlin ile siyasete kişisel bir mektup hazırladım. Sen de kendi sözlerinle bir mektup yazmak ister misin? ${base}`
-    : locale === "en"
-      ? `I just prepared a personal letter to politicians with Brief-nach-Berlin. Would you also like to write a letter in your own words? ${base}`
-      : undefined;
-  const shareWhatsappUrl = shareText
-    ? `https://wa.me/?text=${encodeURIComponent(shareText)}`
-    : SHARE_URL_WHATSAPP;
-  const shareTelegramUrl = shareText
-    ? `https://t.me/share/url?url=${encodeURIComponent(base)}&text=${encodeURIComponent(shareText)}`
-    : SHARE_URL_TELEGRAM;
-  const shareEmailUrl = shareText
-    ? `mailto:?subject=${encodeURIComponent(isTurkish ? "Sen de Brief-nach-Berlin ile bir mektup yazar mısın?" : "Would you also write a letter with Brief-nach-Berlin?")}&body=${encodeURIComponent(shareText)}`
-    : SHARE_URL_EMAIL;
-  const instagramUrl = `${base}/weitersagen#insta`;
   const deleteUrl = params.deleteUrl ?? `${base}/datenloeschen`;
   const meetMdb =
     params.recipientKind === "mdb" && params.politicianName
@@ -90,23 +71,16 @@ export function buildFollowupHtml(params: BuildFollowupParams): FollowupRender {
     `4 Sterne: ${base}/feedback?r=4&t=${token}&s=2`,
     `5 Sterne: ${base}/feedback?r=5&t=${token}&s=2`,
     ``,
+    ...(meetMdb ? [`${meetMdb.sentence} ${meetMdb.linkLabel}: ${meetMdb.url}`, ``] : []),
     supportCopy.heading,
     supportCopy.followupBody,
     `${supportCopy.compactButton}: ${SUPPORT_CONTENT.ctas.donate.href}`,
     ``,
-    ...(meetMdb ? [`${meetMdb.sentence} ${meetMdb.linkLabel}: ${meetMdb.url}`, ``] : []),
     copy.ignore,
     copy.thanks,
     ``,
     `Thomas`,
     `${FOUNDER_HOMEPAGE} · ${copy.roadmap}: ${base}/was-noch-kommt`,
-    ``,
-    `--`,
-    `${copy.shareHeading}: ${copy.share}: ${base}/weitersagen`,
-    `WhatsApp: ${shareWhatsappUrl}`,
-    `Telegram: ${shareTelegramUrl}`,
-    `Instagram: ${instagramUrl}`,
-    `E-Mail:   ${shareEmailUrl}`,
     ``,
     `--`,
     copy.oneOff,
@@ -124,11 +98,6 @@ export function buildFollowupHtml(params: BuildFollowupParams): FollowupRender {
   <title>${subject}</title>
   <style>
     @media only screen and (max-width: 600px) {
-      .bnb-share-pad { padding-left: 16px !important; padding-right: 16px !important; }
-      .bnb-share-inner-pad { padding-left: 14px !important; padding-right: 14px !important; }
-      .bnb-share-label { display: none !important; }
-      .bnb-share-btn { padding: 14px 0 !important; }
-      .bnb-share-icon { width: 24px !important; height: 24px !important; margin: 0 !important; }
       .bnb-inner-pad { padding-left: 14px !important; padding-right: 14px !important; }
       .bnb-support-action { display: block !important; width: 100% !important; padding-left: 0 !important; padding-right: 0 !important; }
       .bnb-support-action-primary { padding-bottom: 8px !important; }
@@ -141,6 +110,8 @@ export function buildFollowupHtml(params: BuildFollowupParams): FollowupRender {
     @media only screen and (max-width: 480px) {
       .followup-envelope { display: none !important; }
       .followup-title-cell { padding: 0 !important; }
+      .bnb-feedback-break { display: inline !important; }
+      .bnb-feedback-space { display: none !important; }
     }
   </style>
 </head>
@@ -198,17 +169,30 @@ export function buildFollowupHtml(params: BuildFollowupParams): FollowupRender {
 
           <!-- Primary rating action, full width -->
           <tr>
-            <td style="padding:4px 32px 24px;background-color:#ffffff;">
-              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="width:100%;border-collapse:collapse;">
+            <td style="padding:8px 32px 20px;background-color:#ffffff;">
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="width:100%;border-collapse:separate;border-spacing:0;">
                 <tr>
-                  <td class="followup-rating-column" width="100%" valign="middle" style="width:100%;padding:0;text-align:center;">
-                    ${buildStarBarHtml(token, 2, locale, { showQuestion: false })}
+                  <td class="followup-rating-column" width="100%" valign="middle" bgcolor="#FAF8F5" style="width:100%;background-color:#FAF8F5;border:1px solid #E0DCD7;border-radius:6px;padding:18px 16px;text-align:center;">
+                    ${buildStarBarHtml(token, 2, locale)}
                   </td>
                 </tr>
               </table>
             </td>
           </tr>
 
+          ${
+            meetMdb
+              ? `<!-- Wahlkreisbüro-Hinweis (nur MdB-Briefe) -->
+          <tr>
+            <td style="padding:0 32px 20px;background-color:#ffffff;">
+              <p style="margin:0;font-family:Georgia,'Times New Roman',serif;font-size:15px;color:#4A4A4A;line-height:1.75;">
+                ${escapeHtml(meetMdb.sentence)} <a href="${meetMdb.url}" target="_blank" rel="noopener noreferrer" style="color:#2D5016;text-decoration:underline;">${escapeHtml(meetMdb.linkLabel)}</a>
+              </p>
+            </td>
+          </tr>
+`
+              : ""
+          }
           <!-- Donation box, same component as the campaign creator mails -->
           <tr>
             <td style="padding:0 32px 20px;background-color:#ffffff;">
@@ -220,19 +204,6 @@ export function buildFollowupHtml(params: BuildFollowupParams): FollowupRender {
             </td>
           </tr>
 
-          ${
-            meetMdb
-              ? `<!-- Wahlkreisbüro-Hinweis (nur MdB-Briefe) -->
-          <tr>
-            <td style="padding:0 32px 8px;background-color:#ffffff;">
-              <p style="margin:0;font-family:Georgia,'Times New Roman',serif;font-size:15px;color:#4A4A4A;line-height:1.75;">
-                ${escapeHtml(meetMdb.sentence)} <a href="${meetMdb.url}" target="_blank" rel="noopener noreferrer" style="color:#2D5016;text-decoration:underline;">${escapeHtml(meetMdb.linkLabel)}</a>
-              </p>
-            </td>
-          </tr>
-`
-              : ""
-          }
           <!-- Sign-off paragraph + Caveat signature -->
           <tr>
             <td style="padding:16px 32px 24px;background-color:#ffffff;text-align:left;">
@@ -246,34 +217,6 @@ export function buildFollowupHtml(params: BuildFollowupParams): FollowupRender {
               <p style="margin:10px 0 0;font-family:Georgia,'Times New Roman',serif;font-size:12px;color:#bcbcbc;line-height:1.5;">
                 ${getEmailCopy(locale).initiative} <a href="${FOUNDER_HOMEPAGE}" target="_blank" rel="noopener noreferrer" style="color:#bcbcbc;text-decoration:underline;">www.thomas-lorenz.eu</a> · <a href="${base}/was-noch-kommt" target="_blank" rel="noopener noreferrer" style="color:#bcbcbc;text-decoration:underline;">${copy.roadmap}</a>
               </p>
-            </td>
-          </tr>
-
-          <!-- Share container -->
-          <tr>
-            <td class="bnb-share-pad" style="padding:8px 32px 24px;background-color:#ffffff;">
-              <div class="bnb-share-inner-pad" style="background-color:#FAF8F5;border:1px solid #E0DCD7;border-radius:6px;padding:20px 22px;">
-                <h2 style="margin:0 0 8px;font-family:Georgia,'Times New Roman',serif;font-size:16px;color:#2D5016;font-weight:bold;">${copy.shareHeading}</h2>
-                <p style="margin:0 0 14px;font-family:Georgia,'Times New Roman',serif;font-size:14px;color:#4A4A4A;line-height:1.6;">
-                  ${copy.share} (<a href="${base}/weitersagen" style="color:#2D5016;text-decoration:underline;">${copy.moreInfo}</a>).
-                </p>
-                <table role="presentation" cellpadding="0" cellspacing="0" width="100%">
-                  <tr>
-                    <td style="padding-right:4px;width:25%;" valign="top">
-                      <a href="${shareWhatsappUrl}" class="bnb-share-btn" aria-label="WhatsApp" style="display:block;text-align:center;background-color:#ffffff;color:#2D5016;font-family:Georgia,'Times New Roman',serif;font-size:14px;font-weight:bold;text-decoration:none;padding:10px 4px;border-radius:6px;border:2px solid #2D5016;line-height:1;white-space:nowrap;"><img src="${base}/images/icon-whatsapp.png" alt="" width="18" height="18" class="bnb-share-icon" style="width:18px;height:18px;vertical-align:middle;border:0;margin-right:6px;"><span class="bnb-share-label">WhatsApp</span></a>
-                    </td>
-                    <td style="padding:0 2px;width:25%;" valign="top">
-                      <a href="${shareTelegramUrl}" class="bnb-share-btn" aria-label="Telegram" style="display:block;text-align:center;background-color:#ffffff;color:#2D5016;font-family:Georgia,'Times New Roman',serif;font-size:14px;font-weight:bold;text-decoration:none;padding:10px 4px;border-radius:6px;border:2px solid #2D5016;line-height:1;white-space:nowrap;"><img src="${base}/images/icon-telegram.png" alt="" width="18" height="18" class="bnb-share-icon" style="width:18px;height:18px;vertical-align:middle;border:0;margin-right:6px;"><span class="bnb-share-label">Telegram</span></a>
-                    </td>
-                    <td style="padding:0 2px;width:25%;" valign="top">
-                      <a href="${instagramUrl}" class="bnb-share-btn" aria-label="Instagram" style="display:block;text-align:center;background-color:#ffffff;color:#2D5016;font-family:Georgia,'Times New Roman',serif;font-size:14px;font-weight:bold;text-decoration:none;padding:10px 4px;border-radius:6px;border:2px solid #2D5016;line-height:1;white-space:nowrap;"><img src="${base}/images/icon-instagram.png" alt="" width="18" height="18" class="bnb-share-icon" style="width:18px;height:18px;vertical-align:middle;border:0;margin-right:6px;"><span class="bnb-share-label">Instagram</span></a>
-                    </td>
-                    <td style="padding-left:4px;width:25%;" valign="top">
-                      <a href="${shareEmailUrl}" class="bnb-share-btn" aria-label="E-Mail" style="display:block;text-align:center;background-color:#ffffff;color:#2D5016;font-family:Georgia,'Times New Roman',serif;font-size:14px;font-weight:bold;text-decoration:none;padding:10px 4px;border-radius:6px;border:2px solid #2D5016;line-height:1;white-space:nowrap;"><img src="${base}/images/icon-email.png" alt="" width="18" height="18" class="bnb-share-icon" style="width:18px;height:18px;vertical-align:middle;border:0;margin-right:6px;"><span class="bnb-share-label">E-Mail</span></a>
-                    </td>
-                  </tr>
-                </table>
-              </div>
             </td>
           </tr>
 

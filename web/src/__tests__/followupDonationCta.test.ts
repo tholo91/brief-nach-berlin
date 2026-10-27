@@ -1,6 +1,5 @@
 import { APP_URL, DONATION_PROVIDER_URL } from "@/lib/config";
 import { buildFollowupHtml } from "@/lib/email/buildFollowupHtml";
-import { buildStarBarHtml } from "@/lib/email/buildEmailHtml";
 import { getEmailCopy } from "@/lib/email/mailLocale";
 import { SUPPORT_CONTENT, SUPPORT_EMAIL_COPY } from "@/lib/support-content";
 
@@ -104,40 +103,39 @@ describe("follow-up mail is shorter and calmer", () => {
     expect("feedback" in getEmailCopy(locale).followup).toBe(false);
   });
 
-  it.each(["de", "en", "tr"] as const)("shows a plain star row without question for %s", (locale) => {
-    const html = buildFollowupHtml({ token: "signed-token", locale }).html;
+  it("shows the boxed star rating with its question", () => {
+    const html = buildFollowupHtml({ token: "signed-token" }).html;
+    const start = html.indexOf("followup-rating-column");
+    const tag = html.slice(start, html.indexOf(">", start));
 
-    expect(html).not.toContain("bnb-feedback-break");
-    expect(html).toContain(getEmailCopy(locale).feedbackHint);
+    expect(tag).toContain("border:1px solid #E0DCD7");
+    expect(html).toContain("Wie findest du");
     for (let n = 1; n <= 5; n++) {
       expect(html).toContain(`/feedback?r=${n}&t=signed-token&s=2`);
     }
   });
 
-  it("does not ask 'Wie findest du' above the follow-up stars", () => {
-    expect(buildFollowupHtml({ token: "signed-token" }).html).not.toContain("Wie findest du");
+  it("puts the Wahlkreisbüro line before the donation box and drops the share box", () => {
+    const followup = buildFollowupHtml({
+      token: "signed-token",
+      recipientKind: "mdb",
+      politicianName: "Max Muster",
+    });
+    const body = escapeHtml(SUPPORT_EMAIL_COPY.de.followupBody);
+
+    expect(followup.html.indexOf("Wahlkreisbüro finden")).toBeLessThan(followup.html.indexOf(body));
+    expect(followup.text.indexOf("Wahlkreisbüro finden")).toBeLessThan(
+      followup.text.indexOf(SUPPORT_EMAIL_COPY.de.followupBody),
+    );
+    expect(followup.html).not.toContain("bnb-share-btn");
+    expect(followup.html).not.toContain("Gemeinsam noch lauter");
+    expect(followup.text).not.toContain("WhatsApp");
   });
 
-  it("renders the rating cell without box styling", () => {
-    const html = buildFollowupHtml({ token: "signed-token" }).html;
-    const start = html.indexOf("followup-rating-column");
-    const tag = html.slice(start, html.indexOf(">", start));
-
-    expect(tag).not.toContain("border");
-    expect(tag).not.toContain("#FAF8F5");
-    expect(tag).not.toContain("border-radius");
-  });
-
-  it("keeps the letter mail star bar and makes the question optional", () => {
-    const withQuestion = buildStarBarHtml("t");
-    expect(withQuestion).toContain("bnb-feedback-break");
-    expect(withQuestion).toContain("Wie findest du");
-
-    const plain = buildStarBarHtml("t", 2, "de", { showQuestion: false });
-    expect(plain).not.toContain("bnb-feedback-break");
-    expect(plain).not.toContain("Wie findest du");
-    expect(plain).toContain("Dauert 10 Sek, hilft mir sehr");
-    expect(plain).toContain("/feedback?r=5&t=t&s=2");
+  it("mentions supporters in the ignore line", () => {
+    expect(getEmailCopy("de").followup.ignore).toBe(
+      "Falls du deinen Brief schon bewertet oder Brief-nach-Berlin unterstützt hast, kannst du diese Mail ignorieren.",
+    );
   });
 
   it.each(["de", "en", "tr"] as const)("uses the new preview text for %s", (locale) => {

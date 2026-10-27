@@ -41,13 +41,7 @@ function buildVariantUrl(recipientEmail: string, debug?: LetterDebugPayload): st
 // invites a "besser/schlechter"-Polarität — leaving it as 4/5 made the
 // rating look already-decided. The form on /feedback prefills with
 // whichever star was clicked and lets the user change it.
-export function buildStarBarHtml(
-  token: string,
-  seq?: number,
-  locale?: SendLetterEmailParams["locale"],
-  options: { showQuestion?: boolean } = {},
-): string {
-  const { showQuestion = true } = options;
+export function buildStarBarHtml(token: string, seq?: number, locale?: SendLetterEmailParams["locale"]): string {
   const copy = getEmailCopy(locale);
   const feedbackQuestion = copy.feedbackQuestion.replace(
     "<br>",
@@ -59,11 +53,8 @@ export function buildStarBarHtml(
   const star = (n: number, glyph: "filled" | "outline") => `
     <a href="${url(n)}" target="_blank" rel="noopener noreferrer"
        style="color:#D4A017;mso-color-alt:#D4A017;text-decoration:none;font-size:26px;line-height:1;padding:8px 4px;display:inline-block;">${glyph === "filled" ? "&#9733;" : "&#9734;"}</a>`;
-  const questionHtml = showQuestion
-    ? `
-    <p style="margin:0 0 8px;font-family:Georgia,'Times New Roman',serif;font-size:12px;color:#2D5016;font-weight:bold;line-height:1.4;">${feedbackQuestion}</p>`
-    : "";
-  return `${questionHtml}
+  return `
+    <p style="margin:0 0 8px;font-family:Georgia,'Times New Roman',serif;font-size:12px;color:#2D5016;font-weight:bold;line-height:1.4;">${feedbackQuestion}</p>
     <div style="white-space:nowrap;line-height:1;">${star(1, "filled")}${star(2, "filled")}${star(3, "filled")}${star(4, "outline")}${star(5, "outline")}</div>
     <p style="margin:8px 0 0;font-family:Georgia,'Times New Roman',serif;font-size:12px;color:#b0b0b0;line-height:1.4;">${copy.feedbackHint}</p>`;
 }

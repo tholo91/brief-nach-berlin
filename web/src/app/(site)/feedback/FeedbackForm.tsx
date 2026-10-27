@@ -8,7 +8,6 @@ import { SentTab, SurveyChoice } from "@/components/feedback/SurveyChoice";
 import { InteractiveStars } from "./InteractiveStars";
 import { PrivacyDisclosure } from "./PrivacyDisclosure";
 import { ChipToggle } from "./ChipToggle";
-import { FOUNDER_FEEDBACK_URL } from "@/lib/config";
 import { SUPPORT_CONTENT } from "@/lib/support-content";
 import { DonationCard } from "@/components/support/DonationCard";
 import {
@@ -702,11 +701,9 @@ export function ThankYouCard({
         </p>
         <p className="font-body text-sm text-warmgrau/70 max-w-sm mx-auto mb-6 leading-relaxed">
           Das hilft mir wirklich. Briefe wirken am stärksten, wenn mehrere
-          Stimmen zum selben Thema zusammenkommen.
-        </p>
-        <p className="font-body text-sm text-warmgrau/70 max-w-sm mx-auto mb-6 leading-relaxed">
-          In ein paar Monaten frage ich dich vielleicht noch einmal, was aus
-          deinem Brief geworden ist. Danach ist Schluss, versprochen.
+          Stimmen zum selben Thema zusammenkommen. In ein paar Monaten frage
+          ich dich vielleicht noch einmal, was aus deinem Brief geworden ist.
+          Danach ist Schluss, versprochen ✌️
         </p>
         {showRecoveryCard ? (
           <div
@@ -749,40 +746,9 @@ export function ThankYouCard({
             titleId="feedback-support-title"
             title={SUPPORT_CONTENT.feedbackDonation.headline}
             body={SUPPORT_CONTENT.feedbackDonation.text}
-            className="mx-auto mb-8 max-w-md text-left animate-feedback-in"
+            className="mx-auto max-w-md text-left animate-feedback-in"
           />
         )}
-        <div
-          className="flex flex-col sm:flex-row gap-3 max-w-md mx-auto"
-          onMouseEnter={() => setPaused(true)}
-          onMouseLeave={() => setPaused(false)}
-          onFocus={() => setPaused(true)}
-          onBlur={() => setPaused(false)}
-        >
-          <a
-            href={FOUNDER_FEEDBACK_URL}
-            target="_blank"
-            rel="noopener noreferrer"
-            className={
-              autoRedirect
-                ? "flex-1 inline-flex items-center justify-center bg-waldgruen text-creme font-semibold px-4 py-3 rounded-xl hover:bg-waldgruen-dark transition-colors cursor-pointer text-sm min-h-[44px]"
-                : "flex-1 inline-flex items-center justify-center border border-waldgruen/30 bg-white text-waldgruen-dark font-medium px-4 py-3 rounded-xl hover:bg-waldgruen/5 hover:border-waldgruen transition-colors cursor-pointer text-sm min-h-[44px]"
-            }
-          >
-            Generelles Feedback zum Tool
-          </a>
-          <button
-            type="button"
-            onClick={onSkip}
-            className={
-              autoRedirect
-                ? "flex-1 inline-flex items-center justify-center border border-waldgruen/30 bg-white text-waldgruen-dark font-medium px-4 py-3 rounded-xl hover:bg-waldgruen/5 hover:border-waldgruen transition-colors cursor-pointer text-sm min-h-[44px]"
-                : "flex-1 inline-flex items-center justify-center text-warmgrau font-medium px-4 py-3 rounded-xl underline underline-offset-2 hover:text-waldgruen-dark transition-colors cursor-pointer text-sm min-h-[44px]"
-            }
-          >
-            Zurück zur Startseite
-          </button>
-        </div>
         {autoRedirect && (
           <p className="font-body text-xs text-warmgrau/50 mt-6">
             {paused

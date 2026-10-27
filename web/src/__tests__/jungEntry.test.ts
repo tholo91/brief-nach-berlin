@@ -12,7 +12,12 @@ jest.mock("next/link", () => ({
 }));
 jest.mock("@/components/audio/VoiceRecorder", () => ({ VoiceRecorder: () => null }));
 jest.mock("@/lib/mistral", () => ({}));
+jest.mock("@/components/topics/useTopicStarters", () => {
+  const actual = jest.requireActual("@/components/topics/useTopicStarters");
+  return { ...actual, useTopicStarters: jest.fn(actual.useTopicStarters) };
+});
 
+import { JungExperience } from "@/components/jung/JungExperience";
 import { resolveJungEntry } from "@/components/jung/jungEntry";
 import {
   JUNG_DRAFT_KEY,
@@ -21,7 +26,11 @@ import {
   clearJungDraft,
   validateJungSubmit,
 } from "@/components/jung/jungHandoff";
+import { useTopicStarters } from "@/components/topics/useTopicStarters";
 import { signClassToken } from "@/lib/schule/classToken";
+import { JUNG_TOPICS } from "@/lib/schule/jungTopics";
+
+const LIMIT_MESSAGE = "Du kannst höchstens zwei Themen wählen.";
 
 describe("resolveJungEntry", () => {
   const verify = jest.fn();
@@ -150,6 +159,7 @@ describe("/jung page", () => {
     );
     expect(html).not.toContain("Ein Erlebnis reicht");
     expect(html).not.toContain("bis zu zwei");
+    expect(html).not.toContain(LIMIT_MESSAGE);
     expect(html).toContain("An wen dein Brief geht, schlägt dir das Tool vor.");
     expect(html).not.toContain("Als Nächstes gibst du");
     expect(html).toContain("Alle Themen");
@@ -170,5 +180,22 @@ describe("/jung page", () => {
   it("shows the invalid-link note for a broken token", async () => {
     const html = await render("kaputt");
     expect(html).toContain("Dieser Klassenlink ist abgelaufen oder ungültig.");
+  });
+});
+
+describe("JungExperience topic limit", () => {
+  it("explains the greyed-out chips once two topics are selected", () => {
+    jest.mocked(useTopicStarters).mockReturnValueOnce({
+      selectedTopicIds: JUNG_TOPICS.slice(0, 2).map((topic) => topic.id),
+      issueText: "",
+      setIssueText: jest.fn(),
+      statusMessage: "",
+      setStatusMessage: jest.fn(),
+      toggleTopic: jest.fn(),
+      selectionLimitReached: true,
+    } as ReturnType<typeof useTopicStarters>);
+    const html = renderToStaticMarkup(createElement(JungExperience, { entry: { status: "none" } }));
+    expect(html.match(new RegExp(LIMIT_MESSAGE, "g"))).toHaveLength(1);
+    expect(html).toContain('disabled=""');
   });
 });

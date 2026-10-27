@@ -222,6 +222,9 @@ export function JungExperience({ entry }: { entry: JungEntry }) {
             limitReached={selectionLimitReached}
             onToggle={toggleTopic}
           />
+          {selectionLimitReached && (
+            <p className="mt-2 font-body text-sm leading-relaxed text-warmgrau/70">{TOPIC_MESSAGES.limit}</p>
+          )}
         </section>
 
         <section aria-labelledby="jung-text-label">

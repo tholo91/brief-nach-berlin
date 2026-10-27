@@ -219,6 +219,11 @@ Plans:
 
 ### Phase 999.36: Schulmodus `/schule` — Briefe selbst verfassen lernen (BACKLOG)
 
+> **Update 24.10.2026:** Entschieden ist eine andere Richtung: Jugendmodus des
+> bestehenden Wizards (`/jung`) plus Lehrkräfte-Seite mit Klassenlink
+> (`/schule`), ohne auf den DSS-Pilot zu warten. Gültige Spec:
+> `.planning/schule-jung/SPEC.md`. Der Abschnitt unten ist der alte Stand.
+
 **Goal:** Brief-nach-Berlin wird für Schulklassen und Schüler:innen zu einer
 angeleiteten Formulierungshilfe. Der Wizard führt weiterhin durch Anliegen,
 politische Zuständigkeit und PLZ, aber das Ergebnis ist kein fertig

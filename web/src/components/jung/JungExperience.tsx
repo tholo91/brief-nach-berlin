@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { VoiceRecorder } from "@/components/audio/VoiceRecorder";
-import { TopicStarterGrid } from "@/components/topics/TopicStarterGrid";
+import { ExpandableTopicChips } from "@/components/topics/ExpandableTopicChips";
 import { useTopicStarters } from "@/components/topics/useTopicStarters";
 import { WizardForwardIcon } from "@/components/wizard/WizardForwardIcon";
 import { WIZARD_PATH } from "@/lib/config";
@@ -189,13 +189,14 @@ export function JungExperience({ entry }: { entry: JungEntry }) {
         )}
 
         <section aria-labelledby="jung-thema-heading">
-          <h2 id="jung-thema-heading" className="font-typewriter text-base font-bold text-waldgruen-dark sm:text-lg">
-            <span aria-hidden="true" className="mr-2 text-waldgruen">2</span>
-            Worum geht es dir?
-            <span className="font-body text-sm font-normal text-warmgrau/70"> (bis zu zwei)</span>
-          </h2>
-          <TopicStarterGrid
-            variant="scroll"
+          <ExpandableTopicChips
+            heading={
+              <h2 id="jung-thema-heading" className="font-typewriter text-base font-bold text-waldgruen-dark sm:text-lg">
+                <span aria-hidden="true" className="mr-2 text-waldgruen">2</span>
+                Worum geht es dir?
+              </h2>
+            }
+            gridId="jung-thema-chips"
             topics={JUNG_TOPICS}
             selectedIds={selectedTopicIds}
             limitReached={selectionLimitReached}

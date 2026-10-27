@@ -10,7 +10,8 @@ import {
 import { JUNG_MAX_TOPICS, JUNG_TOPICS } from "@/lib/schule/jungTopics";
 import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
-import { TopicStarterGrid } from "@/components/topics/TopicStarterGrid";
+import { TopicStarterGrid, type TopicStarterGridProps } from "@/components/topics/TopicStarterGrid";
+import { ExpandableTopicChips } from "@/components/topics/ExpandableTopicChips";
 
 const gridTopics = [
   { id: "a", title: "Thema A", eyebrow: "Eins" },
@@ -18,7 +19,7 @@ const gridTopics = [
   { id: "c", title: "Thema C", eyebrow: "Drei" },
 ];
 
-function renderGrid(variant: "numbered" | "scroll") {
+function renderGrid(variant: "numbered" | "scroll", extra: Partial<TopicStarterGridProps> = {}) {
   return renderToStaticMarkup(
     createElement(TopicStarterGrid, {
       topics: gridTopics,
@@ -26,6 +27,7 @@ function renderGrid(variant: "numbered" | "scroll") {
       limitReached: true,
       onToggle: () => {},
       variant,
+      ...extra,
     }),
   );
 }
@@ -41,6 +43,49 @@ describe("TopicStarterGrid scroll", () => {
     expect(markup).toContain('aria-pressed="true"');
     expect(markup.match(/disabled=""/g)).toHaveLength(2);
     expect(markup).not.toContain("grid-cols-2");
+  });
+
+  it("wraps all chips when expanded, without scroll affordances", () => {
+    const markup = renderGrid("scroll", { expanded: true });
+
+    expect(markup).toContain("flex-wrap");
+    for (const cls of ["overflow-x-auto", "chip-scroll-fade", "snap-x", "pr-10"]) {
+      expect(markup).not.toContain(cls);
+    }
+    expect(markup).toContain('aria-pressed="true"');
+    expect(markup.match(/disabled=""/g)).toHaveLength(2);
+  });
+
+  it("puts the id on the root", () => {
+    expect(renderGrid("scroll", { id: "test-chips" })).toContain('id="test-chips"');
+  });
+});
+
+describe("ExpandableTopicChips", () => {
+  it("renders heading, collapsed toggle, hint and grid in order", () => {
+    const markup = renderToStaticMarkup(
+      createElement(ExpandableTopicChips, {
+        topics: gridTopics,
+        selectedIds: [],
+        limitReached: false,
+        onToggle: () => {},
+        heading: createElement("h2", null, "Meine Überschrift"),
+        hint: createElement("p", null, "Mein Hinweis"),
+        gridId: "test-chips",
+      }),
+    );
+
+    expect(markup).toContain("Alle Themen");
+    expect(markup).toContain('aria-expanded="false"');
+    expect(markup).toContain('aria-controls="test-chips"');
+    expect(markup).toContain('id="test-chips"');
+    expect(markup).toContain("overflow-x-auto");
+    const heading = markup.indexOf("Meine Überschrift");
+    const hint = markup.indexOf("Mein Hinweis");
+    const grid = markup.indexOf('id="test-chips"');
+    expect(heading).toBeGreaterThan(-1);
+    expect(hint).toBeGreaterThan(heading);
+    expect(grid).toBeGreaterThan(hint);
   });
 });
 

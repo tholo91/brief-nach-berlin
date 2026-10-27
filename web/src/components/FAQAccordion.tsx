@@ -6,7 +6,7 @@ type FAQItem = {
   aNode?: ReactNode;
 };
 
-function ChevronIcon() {
+export function ChevronIcon() {
   return (
     <svg
       width="18"

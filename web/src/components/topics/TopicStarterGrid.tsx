@@ -1,23 +1,29 @@
 import type { TopicStarter } from "@/lib/topics/topicStarters";
 
-type Props = {
+export type TopicStarterGridProps = {
   topics: readonly Pick<TopicStarter, "id" | "title" | "eyebrow">[];
   selectedIds: readonly string[];
   limitReached: boolean;
   onToggle: (topicId: string) => void;
   /** "numbered": Kampagnen-Kacheln mit Nummer und Eyebrow. "scroll": eine horizontal scrollbare Chip-Reihe ohne Nummern. */
   variant: "numbered" | "scroll";
+  /** Nur "scroll": alle Chips umbrechen statt in einer Reihe zu scrollen. */
+  expanded?: boolean;
+  id?: string;
 };
 
-export function TopicStarterGrid({ topics, selectedIds, limitReached, onToggle, variant }: Props) {
+export function TopicStarterGrid({ topics, selectedIds, limitReached, onToggle, variant, expanded = false, id }: TopicStarterGridProps) {
   const numbered = variant === "numbered";
 
   return (
     <div
+      id={id}
       className={
         numbered
           ? "mt-4 grid grid-cols-2 gap-2.5 lg:grid-cols-3"
-          : "chip-scroll-fade scrollbar-hide -mx-1 mt-2 flex snap-x gap-2 overflow-x-auto py-1 pl-1 pr-10 sm:mt-3"
+          : expanded
+            ? "-mx-1 mt-2 flex flex-wrap gap-2 px-1 py-1 sm:mt-3"
+            : "chip-scroll-fade scrollbar-hide -mx-1 mt-2 flex snap-x gap-2 overflow-x-auto py-1 pl-1 pr-10 sm:mt-3"
       }
     >
       {topics.map((topic, index) => {

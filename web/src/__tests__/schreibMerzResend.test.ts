@@ -1,3 +1,4 @@
+jest.mock("@/lib/mistral", () => ({}));
 jest.mock("@/lib/campaigns/repository", () => ({
   getPublicCampaignBySlug: jest.fn(),
 }));
@@ -95,7 +96,36 @@ describe("Schreib-Merz resend", () => {
         campaign: data.campaign,
       }),
     );
+    expect(mockedPrepareLetterEmail.mock.calls[0][0].audience).toBeUndefined();
     expect(mockedSendLetterEmail).toHaveBeenCalledTimes(1);
+  });
+
+  it("passes the youth audience through to the email", async () => {
+    const letter = "Sehr geehrter Herr Bundeskanzler,\n\nmein Brief.";
+    await expect(
+      resendLetterAction(
+        { ...data, audience: "jung", klasse: 9 },
+        { kind: "bundeskanzler" },
+        letter,
+        proofFor(letter),
+      ),
+    ).resolves.toEqual({ success: true });
+
+    expect(mockedPrepareLetterEmail).toHaveBeenCalledWith(
+      expect.objectContaining({ audience: "jung" }),
+    );
+  });
+
+  it("ignores the youth audience without a valid Klasse", async () => {
+    const letter = "Sehr geehrter Herr Bundeskanzler,\n\nmein Brief.";
+    await resendLetterAction(
+      { ...data, audience: "jung" },
+      { kind: "bundeskanzler" },
+      letter,
+      proofFor(letter),
+    );
+
+    expect(mockedPrepareLetterEmail.mock.calls[0][0].audience).toBeUndefined();
   });
 
   it("does not resend when the campaign is inactive", async () => {

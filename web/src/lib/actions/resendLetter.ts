@@ -20,6 +20,7 @@ import { runningCampaign } from "@/lib/campaigns/endDate";
 import { getPublicCampaignBySlug } from "@/lib/campaigns/repository";
 import { isBundeskanzlerCampaignTarget } from "@/lib/lookup/bundeskanzlerRecipient";
 import { getCampaignFixedRecipient } from "@/lib/lookup/campaignFixedRecipient";
+import { isYouthAudience } from "@/lib/schule/youth";
 
 const RESEND_LIMIT_MESSAGE =
   "Der Brief wurde jetzt mehrfach gesendet. Bitte prüfe noch einmal deinen Spam-Ordner und die E-Mail-Adresse. Falls weiterhin nichts ankommt, melde dich gerne direkt.";
@@ -174,6 +175,7 @@ export async function resendLetterAction(
       debug: debugPayload,
       campaign: campaign ? data.campaign : undefined,
       letterId,
+      audience: isYouthAudience(data) ? "jung" : undefined,
     });
 
     const emailResult = await sendLetterEmail(params);

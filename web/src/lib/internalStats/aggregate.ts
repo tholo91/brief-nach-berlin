@@ -144,6 +144,10 @@ export type PoliticalActivationStats = {
 export type AgeGroupStats = {
   distribution: Record<AgeGroup, number>;
   answerCount: number;
+  answeredSince: string | null;
+  rateBase: number;
+  rateAnswerCount: number;
+  ratePercent: number;
 };
 
 export type TimeRange = "all" | 30 | 90;
@@ -495,6 +499,10 @@ function emptyAgeGroupStats(): AgeGroupStats {
       "75_plus": 0,
     },
     answerCount: 0,
+    answeredSince: null,
+    rateBase: 0,
+    rateAnswerCount: 0,
+    ratePercent: 0,
   };
 }
 
@@ -590,13 +598,32 @@ export function aggregateInternalStats(
   const reviewDates: string[] = [];
   const politicalActivation = emptyPoliticalActivationStats();
   const ageGroups = emptyAgeGroupStats();
+  let answeredSinceMs = Number.POSITIVE_INFINITY;
+  for (const row of rows) {
+    if (!row.created_at || !isAgeGroup(row.age_group)) continue;
+    const ms = Date.parse(row.created_at);
+    if (Number.isFinite(ms) && ms < answeredSinceMs) {
+      answeredSinceMs = ms;
+      ageGroups.answeredSince = row.created_at;
+    }
+  }
 
   for (const row of filteredReviews) {
     if (row.created_at) reviewDates.push(row.created_at);
 
-    if (isAgeGroup(row.age_group)) {
-      ageGroups.distribution[row.age_group] += 1;
+    const ageGroup = row.age_group;
+    const hasAgeGroup = isAgeGroup(ageGroup);
+    if (hasAgeGroup) {
+      ageGroups.distribution[ageGroup] += 1;
       ageGroups.answerCount += 1;
+    }
+    if (
+      row.full_feedback_submitted === true &&
+      row.created_at &&
+      Date.parse(row.created_at) >= answeredSinceMs
+    ) {
+      ageGroups.rateBase += 1;
+      if (hasAgeGroup) ageGroups.rateAnswerCount += 1;
     }
 
     if (row.full_feedback_submitted === true) fullFeedbackCount += 1;
@@ -695,6 +722,9 @@ export function aggregateInternalStats(
       ? roundOne((tagStats.sent / tagStats.known) * 100)
       : 0;
   }
+  ageGroups.ratePercent = ageGroups.rateBase > 0
+    ? roundOne((ageGroups.rateAnswerCount / ageGroups.rateBase) * 100)
+    : 0;
   politicalActivation.selfEfficacyPositiveRatePercent =
     politicalActivation.selfEfficacyDirectionalCount > 0
       ? roundOne(

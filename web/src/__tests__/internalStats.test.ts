@@ -413,4 +413,47 @@ describe("age groups", () => {
     });
     expect(stats.ageGroups.answerCount).toBe(0);
   });
+
+  describe("answer rate", () => {
+    const rateRows = [
+      row({ created_at: "2026-06-01T10:00:00Z", full_feedback_submitted: true }),
+      row({ created_at: "2026-07-01T10:00:00Z", full_feedback_submitted: true, age_group: "45_59" }),
+      row({ created_at: "2026-08-10T10:00:00Z", full_feedback_submitted: true }),
+      row({ created_at: "2026-08-12T10:00:00Z", full_feedback_submitted: true, age_group: "under_20" }),
+      row({ created_at: "2026-08-15T10:00:00Z", full_feedback_submitted: false }),
+    ];
+
+    it("counts the rate from the first age answer onward", () => {
+      const stats = aggregateInternalStats(rateRows, 0, "2026-08-30T12:00:00Z");
+
+      expect(stats.ageGroups.answeredSince).toBe("2026-07-01T10:00:00Z");
+      expect(stats.ageGroups.rateBase).toBe(3);
+      expect(stats.ageGroups.rateAnswerCount).toBe(2);
+      expect(stats.ageGroups.ratePercent).toBe(66.7);
+    });
+
+    it("keeps the global start date under a time range filter", () => {
+      const stats = aggregateInternalStats(
+        rateRows,
+        0,
+        "2026-08-30T12:00:00Z",
+        [],
+        { timeRange: 30, source: { kind: "all" } },
+      );
+
+      expect(stats.ageGroups.answeredSince).toBe("2026-07-01T10:00:00Z");
+      expect(stats.ageGroups.rateBase).toBe(2);
+      expect(stats.ageGroups.rateAnswerCount).toBe(1);
+      expect(stats.ageGroups.ratePercent).toBe(50);
+    });
+
+    it("returns zeros and no start date for an empty dataset", () => {
+      const stats = aggregateInternalStats([], 0, "2026-08-30T12:00:00Z");
+
+      expect(stats.ageGroups.answeredSince).toBeNull();
+      expect(stats.ageGroups.rateBase).toBe(0);
+      expect(stats.ageGroups.rateAnswerCount).toBe(0);
+      expect(stats.ageGroups.ratePercent).toBe(0);
+    });
+  });
 });

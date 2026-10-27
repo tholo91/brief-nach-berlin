@@ -1602,6 +1602,32 @@ export default async function InternalStatsPage({ searchParams }: InternalStatsP
           />
           <div className="grid gap-8 lg:grid-cols-2 lg:gap-12">
             <article>
+              <SubHeading detail="Ab der ersten Altersangabe, damit ältere Bewertungen ohne die Frage nicht mitzählen.">
+                Antwortquote
+              </SubHeading>
+              {stats.ageGroups.answeredSince === null ? (
+                <EmptyState>Noch keine Altersangaben.</EmptyState>
+              ) : (
+                <>
+                  <ValueEmphasis
+                    mode={mode}
+                    value={stats.ageGroups.rateAnswerCount}
+                    total={stats.ageGroups.rateBase}
+                    unit="ausgefüllte Bewertungen"
+                  />
+                  <p className="mt-2 font-body text-xs leading-relaxed text-warmgrau/60">
+                    geben ihr Alter an (seit {formatDate(stats.ageGroups.answeredSince)})
+                  </p>
+                </>
+              )}
+              <BasisNote>
+                {stats.ageGroups.answeredSince === null
+                  ? "Basis: noch keine ausgefüllten Bewertungen mit Altersfrage"
+                  : `Basis: ${formatNumber(stats.ageGroups.rateBase)} ausgefüllte Bewertungen seit der ersten Altersangabe am ${formatDate(stats.ageGroups.answeredSince)} · die Filter oben wirken hier`}
+              </BasisNote>
+            </article>
+
+            <article>
               <SubHeading detail="„Wie alt bist du?“ · nur Bewertungen mit Angabe">
                 Altersverteilung
               </SubHeading>
@@ -1648,6 +1674,10 @@ export default async function InternalStatsPage({ searchParams }: InternalStatsP
             <Definition
               title="Themensignale"
               body={`${formatNumber(stats.letterSignals.signalCount)} freigegebene Signale nach freiwilliger Einwilligung · bis zu drei Oberkategorien und drei Unterthemen je Brief · Unterthemen werden der ersten Oberkategorie zugeordnet.`}
+            />
+            <Definition
+              title="Altersangabe"
+              body={`Freiwillig im ausgefüllten Feedback, erste Angabe am ${stats.ageGroups.answeredSince ? formatDate(stats.ageGroups.answeredSince) : "noch keine Angabe"}. Die Verteilung zählt nur Bewertungen mit Angabe. Die Antwortquote zählt ausgefüllte Bewertungen ab diesem Tag; ältere Bewertungen ohne die Frage bleiben außen vor.`}
             />
             <Definition
               title="Filter & Vergleich"

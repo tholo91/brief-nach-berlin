@@ -69,7 +69,7 @@ export const SUPPORT_CONTENT = {
   feedbackDonation: {
     headline: "Schön, dass dir dein Brief gefällt",
     text:
-      "Ich mache Brief-nach-Berlin allein und ehrenamtlich und zahle KI, Mailversand und Server bisher selbst. Damit es für die Nächsten kostenlos bleibt: Schon 5 € helfen.",
+      "Ich mache Brief-nach-Berlin allein und ehrenamtlich und zahle KI, Mailversand und Server bisher selbst. Damit es für die Nächsten kostenlos bleibt: Schon 5 € helfen.",
   },
   ctas: {
     donate: {
@@ -99,7 +99,7 @@ export const SUPPORT_EMAIL_COPY = {
     compactButton: "Jetzt spenden",
     infoButton: "Mehr Informationen",
     followupBody:
-      "Ich mache das allein und ehrenamtlich und zahle KI, Mailversand und Server bisher selbst. Schon 5 € helfen.",
+      "Ich mache das allein und ehrenamtlich und zahle KI, Mailversand und Server bisher selbst. Schon 5 € helfen.",
   },
   en: {
     heading: "Support Brief-nach-Berlin",
@@ -123,7 +123,7 @@ export const SUPPORT_EMAIL_COPY = {
     compactButton: "Şimdi bağış yap",
     infoButton: "Daha fazla bilgi",
     followupBody:
-      "Bunu tek başıma ve gönüllü olarak yapıyorum, yapay zekâ, e-posta gönderimi ve sunucu masraflarını şimdiye kadar kendim karşılıyorum. 5 € bile yardımcı olur.",
+      "Bunu tek başıma ve gönüllü olarak yapıyorum, yapay zekâ, e-posta gönderimi ve sunucu masraflarını şimdiye kadar kendim karşılıyorum. 5 € bile yardımcı olur.",
   },
 } as const;
 

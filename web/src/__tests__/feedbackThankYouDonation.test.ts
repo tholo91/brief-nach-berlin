@@ -86,7 +86,7 @@ describe("feedback thank-you card", () => {
 
     expect(headline).toBe("Schön, dass dir dein Brief gefällt");
     expect(text).toBe(
-      "Ich mache Brief-nach-Berlin allein und ehrenamtlich und zahle KI, Mailversand und Server bisher selbst. Damit es für die Nächsten kostenlos bleibt: Schon 5 € helfen.",
+      "Ich mache Brief-nach-Berlin allein und ehrenamtlich und zahle KI, Mailversand und Server bisher selbst. Damit es für die Nächsten kostenlos bleibt: Schon 5 € helfen.",
     );
     for (const value of [headline, text]) {
       expect(value).not.toMatch(/[–—]/);

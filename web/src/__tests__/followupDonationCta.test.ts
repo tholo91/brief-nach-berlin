@@ -37,8 +37,8 @@ describe("follow-up donation box", () => {
     expect(countOccurrences(followup.html, DONATION_PROVIDER_URL)).toBe(1);
     expect(countOccurrences(followup.text, DONATION_PROVIDER_URL)).toBe(1);
     expect(followup.text).toContain(`${copy.compactButton}: ${DONATION_PROVIDER_URL}`);
-    expect(followup.html).toContain("Schon 5 € helfen");
-    expect(followup.text).toContain("Schon 5 € helfen");
+    expect(followup.html).toContain("Schon 5 € helfen");
+    expect(followup.text).toContain("Schon 5 € helfen");
   });
 
   it("uses the baseUrl override for the avatar", () => {
@@ -68,7 +68,7 @@ describe("follow-up donation box", () => {
     expect(tBody).toBeLessThan(tIgnore);
   });
 
-  const fiveEuro = { de: "Schon 5 €", en: "€5", tr: "5 € bile" } as const;
+  const fiveEuro = { de: "Schon 5 €", en: "€5", tr: "5 € bile" } as const;
 
   it.each(["de", "en", "tr"] as const)("carries the localized donation copy for %s", (locale) => {
     const followup = buildFollowupHtml({ token: "signed-token", locale });
@@ -155,7 +155,7 @@ describe("follow-up mail is shorter and calmer", () => {
 
   it("uses the short donation body", () => {
     expect(SUPPORT_EMAIL_COPY.de.followupBody).toBe(
-      "Ich mache das allein und ehrenamtlich und zahle KI, Mailversand und Server bisher selbst. Schon 5 € helfen.",
+      "Ich mache das allein und ehrenamtlich und zahle KI, Mailversand und Server bisher selbst. Schon 5 € helfen.",
     );
     for (const locale of ["de", "en", "tr"] as const) {
       expect(SUPPORT_EMAIL_COPY[locale].followupBody).not.toMatch(/\bwir\b/i);

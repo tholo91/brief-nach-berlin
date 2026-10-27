@@ -423,13 +423,12 @@ export function FeedbackForm({
           aria-label="Altersgruppe"
           className="grid grid-cols-2 gap-2"
         >
-          {AGE_GROUP_VALUES.map((value, index) => (
+          {AGE_GROUP_VALUES.map((value) => (
             <SurveyChoice
               key={value}
               checked={ageGroup === value}
               onSelect={() => setAgeGroup(value)}
               label={AGE_GROUP_LABELS[value]}
-              wide={index === AGE_GROUP_VALUES.length - 1}
             />
           ))}
         </div>

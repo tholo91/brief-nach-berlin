@@ -10,6 +10,14 @@ const NGO_NAV_LINKS = [
   { label: "FAQ", href: "/ngo-briefkampagne#faq" },
 ];
 
+const SCHOOL_NAV_LINKS = [
+  { label: "Schüler:innen", href: "/jung" },
+  { label: "Lehrkräfte", href: "/schule" },
+  { label: "Eltern", href: "/eltern" },
+];
+
+const SCHOOL_NAV_PATHS = new Set([...SCHOOL_NAV_LINKS.map((link) => link.href), "/mitbestimmen-ohne-wahlrecht", "/projekttag-demokratie"]);
+
 const CAMPAIGN_TOOL_PATHS = new Set(["starten", "verifizieren", "verwalten"]);
 
 function isPublicCampaignPage(pathname: string | null): boolean {
@@ -22,6 +30,7 @@ export default function AppHeader({ showLanguageSwitcher = false }: { showLangua
   const showCampaignCta = pathname === "/ngo-briefkampagne";
   // Kampagne verwalten portals its section links and contact button into these slots.
   const showManagerSlots = pathname === "/kampagne/verwalten";
+  const showSchoolNav = pathname !== null && SCHOOL_NAV_PATHS.has(pathname);
   const showMoreCampaigns = isPublicCampaignPage(pathname);
 
   return (
@@ -94,6 +103,27 @@ export default function AppHeader({ showLanguageSwitcher = false }: { showLangua
           )}
           </div>
         </nav>
+        {showSchoolNav && (
+          <nav aria-label="Für Schulen" className="max-w-5xl mx-auto px-6 pb-1 flex items-center gap-4">
+            {SCHOOL_NAV_LINKS.map((link) => {
+              const active = pathname === link.href;
+              return (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  aria-current={active ? "page" : undefined}
+                  className={`border-b-2 py-1.5 font-body text-sm transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-waldgruen ${
+                    active
+                      ? "border-waldgruen-dark font-semibold text-waldgruen-dark"
+                      : "border-transparent text-warmgrau hover:text-waldgruen-dark"
+                  }`}
+                >
+                  {link.label}
+                </Link>
+              );
+            })}
+          </nav>
+        )}
       </header>
     </>
   );

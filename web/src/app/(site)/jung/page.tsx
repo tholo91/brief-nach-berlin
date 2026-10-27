@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 import { FAQAccordion } from "@/components/FAQAccordion";
 import { JungExperience } from "@/components/jung/JungExperience";
@@ -29,6 +30,10 @@ const faqs = [
   {
     q: "Darf ich als Schüler:in an Abgeordnete schreiben?",
     a: "Ja. Jede Person darf sich an Abgeordnete wenden, egal wie alt sie ist und ob sie schon wählen darf. Abgeordnete vertreten alle Menschen in ihrem Wahlkreis, auch die, die noch nicht wählen dürfen.",
+  },
+  {
+    q: "Ab wann darf ich wählen?",
+    a: "Das hängt von der Wahl ab. Bei der Bundestagswahl bist du ab 18 dabei, bei der Europawahl ab 16. Bei Landtagswahlen dürfen 16-Jährige in Baden-Württemberg, Brandenburg, Bremen, Hamburg, Mecklenburg-Vorpommern und Schleswig-Holstein wählen, in Nordrhein-Westfalen ab der Landtagswahl 2027. Bei Kommunalwahlen liegt die Grenze in vielen Ländern bei 16. Stand: Oktober 2026. Schreiben darfst du unabhängig davon jederzeit.",
   },
   {
     q: "Warum soll ich den Brief von Hand abschreiben?",
@@ -118,6 +123,16 @@ export default async function JungPage({
           </p>
         )}
 
+        <Image
+          src="/images/img-jung-treppe.webp"
+          alt="Drei Jugendliche auf einer Altbautreppe in Berlin, eine schreibt einen Brief, daneben ein Briefkasten, gemalte Illustration"
+          width={1200}
+          height={510}
+          sizes="(max-width: 576px) 100vw, 576px"
+          priority
+          className="mb-6 h-auto w-full rounded-xl shadow-md shadow-waldgruen/10"
+        />
+
         <h1 className="font-typewriter text-[2rem] font-bold leading-tight tracking-tight text-waldgruen-dark sm:text-4xl">
           Wählen darfst du noch nicht.
           <span className="mt-1 block origin-left -rotate-1 font-handwriting text-4xl font-normal text-waldgruen sm:text-5xl">
@@ -146,6 +161,29 @@ export default async function JungPage({
           </ol>
         </section>
 
+        <section aria-labelledby="jung-warum" className="mt-14">
+          <h2 id="jung-warum" className="font-typewriter text-2xl font-bold text-waldgruen-dark">Warum gerade dein Brief zählt</h2>
+          <ul className="mt-4 list-disc space-y-3 pl-5 marker:text-waldgruen">
+            <li className="font-body text-base leading-relaxed text-warmgrau">
+              Wählen darfst du je nach Wahl erst ab 16 oder 18, schreiben sofort.{" "}
+              <Link href="/mitbestimmen-ohne-wahlrecht" className="font-semibold text-waldgruen underline underline-offset-2">
+                Mitbestimmen ohne Wahlrecht
+              </Link>
+              .
+            </li>
+            <li className="font-body text-base leading-relaxed text-warmgrau">
+              Abgeordnete vertreten auch dich. Briefe von Jugendlichen sind die Ausnahme, deshalb fallen sie auf.
+            </li>
+            <li className="font-body text-base leading-relaxed text-warmgrau">
+              Zusammen ist lauter: Schreib mit Freund:innen, mit deiner Klasse oder über die SV. Wie das in der Schule geht, steht auf der{" "}
+              <Link href="/schule" className="font-semibold text-waldgruen underline underline-offset-2">
+                Seite für Lehrkräfte
+              </Link>
+              .
+            </li>
+          </ul>
+        </section>
+
         <section aria-labelledby="jung-faq" className="mt-14">
           <h2 id="jung-faq" className="mb-4 font-typewriter text-2xl font-bold text-waldgruen-dark">Häufige Fragen</h2>
           <FAQAccordion items={faqs} />
@@ -157,6 +195,13 @@ export default async function JungPage({
             Seite für Schulen
           </Link>{" "}
           gibt es einen Klassenlink mit QR-Code und einen Ablauf für 45 oder 90 Minuten.
+        </p>
+        <p className="mt-3 font-body text-sm leading-relaxed text-warmgrau/80">
+          Du bist Elternteil und willst wissen, was das hier ist, oder selbst schreiben? Die{" "}
+          <Link href="/eltern" className="font-semibold text-waldgruen underline underline-offset-2">
+            Seite für Eltern
+          </Link>{" "}
+          erklärt es.
         </p>
       </div>
     </>

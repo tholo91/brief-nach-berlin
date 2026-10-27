@@ -173,7 +173,9 @@ export async function resendLetterAction(
       letterText: cachedLetterText,
       issueText: data.issueText,
       debug: debugPayload,
-      campaign: campaign ? data.campaign : undefined,
+      campaign: campaign && data.campaign
+        ? { ...data.campaign, logoPath: campaign.logoPath ?? undefined }
+        : undefined,
       letterId,
       audience: isYouthAudience(data) ? "jung" : undefined,
     });

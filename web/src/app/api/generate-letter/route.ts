@@ -393,7 +393,10 @@ export async function POST(req: NextRequest) {
         letterText: result.letter,
         issueText: data.issueText,
         debug: debugPayload,
-        campaign: campaign ? data.campaign : undefined,
+        // Das Logo kommt aus der DB: Der Client-Handoff schickt es nicht immer mit und ist manipulierbar.
+        campaign: campaign && data.campaign
+          ? { ...data.campaign, logoPath: campaign.logoPath ?? undefined }
+          : undefined,
         // Kampagne wurde vor dem Hochzählen geladen, +1 schließt diesen Brief ein.
         campaignLetterCount: campaign && letterNumber !== undefined ? campaign.letterCount + 1 : undefined,
         letterNumber,

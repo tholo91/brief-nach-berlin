@@ -481,7 +481,7 @@ describe("generate-letter RecipientSelection hardening", () => {
       jest.mocked(sendLetterEmail).mockResolvedValue({ success: false });
     }
 
-    function postLetter(campaign?: { slug: string; title: string }) {
+    function postLetter(campaign?: { slug: string; title: string; logoPath?: string }) {
       return POST(requestWith({
         wizardData: {
           plz: "28203",
@@ -521,6 +521,39 @@ describe("generate-letter RecipientSelection hardening", () => {
       expect(incrementLetterCounters).toHaveBeenCalledWith("laufende-kampagne");
       expect(claimAndSendCampaignMilestone).toHaveBeenCalledTimes(1);
       expect(claimAndSendCampaignMilestone).toHaveBeenCalledWith("laufende-kampagne");
+    });
+
+    it("nimmt das Kampagnenlogo für die Mail aus der DB, nicht vom Client", async () => {
+      arrange(
+        {
+          slug: "laufende-kampagne",
+          logoPath: "laufende-kampagne/logo.webp",
+          targetLevel: "Bund",
+          targetState: null,
+          targetRecipient: null,
+          targetPoliticianIds: [],
+          topic: null,
+          endsAt: null,
+        },
+        1234,
+      );
+
+      const response = await postLetter({
+        slug: "laufende-kampagne",
+        title: "Laufende Kampagne",
+        logoPath: "fremd/logo.webp",
+      });
+      await runAfter();
+
+      expect(response.status).toBe(200);
+      expect(prepareLetterEmail).toHaveBeenCalledWith(
+        expect.objectContaining({
+          campaign: expect.objectContaining({
+            slug: "laufende-kampagne",
+            logoPath: "laufende-kampagne/logo.webp",
+          }),
+        }),
+      );
     });
 
     it.each([999, 1000, 1001, 2000])(

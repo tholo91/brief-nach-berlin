@@ -16,8 +16,8 @@ import {
 } from "@/lib/campaigns/creatorStats";
 import { CampaignCreatorStats } from "@/components/campaigns/CampaignCreatorStats";
 import { CampaignReferralCard } from "@/components/campaigns/CampaignReferralCard";
-import { APP_URL, DONATION_PROVIDER_URL } from "@/lib/config";
-import { BRIEF_EMAIL } from "@/lib/contact";
+import { APP_URL, DONATION_PROVIDER_URL, FOUNDER_INSTAGRAM, FOUNDER_LINKEDIN } from "@/lib/config";
+import { BRIEF_EMAIL, campaignJointPostHref } from "@/lib/contact";
 import { buildCampaignStartShare } from "@/lib/share";
 import { SUPPORT_CONTENT } from "@/lib/support-content";
 import { getServiceRoleClient } from "@/lib/supabase/server";
@@ -1404,15 +1404,22 @@ describe("CampaignReferralCard", () => {
     expect(markup).toContain(`href="${share.emailUrl.replace(/&/g, "&amp;")}"`);
   });
 
-  it("plans a joint post by mail with the campaign slug as subject", () => {
+  it("offers a joint post menu before the share button and shows Thomas's profiles", () => {
     const share = buildCampaignStartShare();
-    const jointHref = `href="mailto:${BRIEF_EMAIL}?subject=${encodeURIComponent(`Gemeinsamer Post: ${SLUG}`)}"`;
-    expect(markup).toContain(jointHref);
-    expect(markup).toContain("Gemeinsamer%20Post%3A%20klima-jetzt");
-    expect(markup).not.toContain("Vorstellung%3A");
-    expect(markup.indexOf(jointHref)).toBeLessThan(
-      markup.indexOf(`href="${share.emailUrl.replace(/&/g, "&amp;")}"`),
-    );
+    const trigger = markup.indexOf("Gemeinsamen Post planen");
+    expect(trigger).toBeGreaterThan(-1);
+    expect(markup).toContain('aria-haspopup="menu"');
+    expect(trigger).toBeLessThan(markup.indexOf(`href="${share.emailUrl.replace(/&/g, "&amp;")}"`));
+    expect(markup).toContain(`href="${FOUNDER_INSTAGRAM}"`);
+    expect(markup).toContain(`href="${FOUNDER_LINKEDIN}"`);
+  });
+
+  it("builds a slim joint post mail with the campaign slug as subject", () => {
+    const href = campaignJointPostHref(SLUG);
+    expect(href.startsWith(`mailto:${BRIEF_EMAIL}?subject=Gemeinsamer%20Post%3A%20klima-jetzt&body=`)).toBe(true);
+    const body = decodeURIComponent(href.split("&body=")[1]);
+    expect(body).toBe("Hallo Thomas,\n\nNetzwerk (Instagram oder LinkedIn):\nMein Account:\n\n");
+    expect(body).not.toMatch(/[–—]/);
   });
 
   it("links the donation provider in a new tab as a small line", () => {

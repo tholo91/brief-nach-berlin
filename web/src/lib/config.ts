@@ -78,6 +78,7 @@ export const FOUNDER_EMAIL = BRIEF_EMAIL;
 export const FOUNDER_HOMEPAGE = "https://www.thomas-lorenz.eu" as const;
 export const FOUNDER_LINKEDIN = "https://www.linkedin.com/in/thomaslorenz91/" as const;
 export const FOUNDER_INSTAGRAM = "https://www.instagram.com/thomas_duisi/" as const;
+export const FOUNDER_CALENDLY = "https://calendly.com/thomas-lorenz-eu/call" as const;
 export const FOUNDER_FEEDBACK_URL = "https://www.heyspeak.io/l/WIOENjqJn6z6WKtkWgDEFg?email=on" as const;
 export const BRIEF_FEEDBACK_URL = "https://www.heyspeak.io/l/qi6CAgWkebX3KOY8J3MCrA" as const;
 export const CAMPAIGN_CREATOR_FEEDBACK_URL = "https://www.heyspeak.io/l/1e3SbSQrkg0e2hZqROgUJA" as const;

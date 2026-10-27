@@ -49,7 +49,7 @@ Der level-aware E-Mail-Betreff ist dagegen bereits implementiert und getestet; d
 Phase: 05 — EXECUTING
 Plan: 4 of 4
 Status: Phase complete — ready for verification
-Last activity: 2026-10-26 - Completed quick task 261026-tca: Spendenbitte aus Brief-Mail in Follow-up-Mail verlegen
+Last activity: 2026-10-26 - Completed quick task 261026-urs: Gemeinsamer Post Popup Call oder Mail
 
 Progress: [███████░░░] 68%
 
@@ -227,6 +227,8 @@ Recent decisions affecting current work:
 | 261025-0ny | S4 schule-jung: druckbares Material /schule/ablauf (3 A4-Seiten) | 2026-10-25 | 7c00cd6 | [261025-0ny-s4-schule-ablauf-druckbares-material-sch](./quick/261025-0ny-s4-schule-ablauf-druckbares-material-sch/) |
 | 261025-0wl | S5 schule-jung: Datenschutz und KI-Transparenz Jugendmodus, Copy-Check, Lint | 2026-10-25 | 6f941c9 | [261025-0wl-s5-recht-und-feinschliff-schule-jung](./quick/261025-0wl-s5-recht-und-feinschliff-schule-jung/) |
 | 261025-2y7 | S6 schule-jung: Entwurf im Jugendmodus auf der Erfolgsseite (Entscheidung 1A) | 2026-10-25 | 342900b | [261025-2y7-s6-entwurf-im-jugendmodus-auf-dem-bildsc](./quick/261025-2y7-s6-entwurf-im-jugendmodus-auf-dem-bildsc/) |
+| 261026-urs | Gemeinsamer Post: Popup Call (Calendly) oder Mail, Social-Icons auf der Karte | 2026-10-26 | - | [261026-urs-gemeinsamer-post-karte-popup-call-oder-m](./quick/261026-urs-gemeinsamer-post-karte-popup-call-oder-m/) |
+| 261027-h8l | Schule-Jung-Eltern-Paket: /eltern, /mitbestimmen-ohne-wahlrecht, /projekttag-demokratie, Aufwertung /jung und /schule, Bilder | 2026-10-27 | 8d59b10 | [261027-h8l-schule-jung-eltern-paket-eltern-seite-zw](./quick/261027-h8l-schule-jung-eltern-paket-eltern-seite-zw/) |
 
 ## Session Continuity
 

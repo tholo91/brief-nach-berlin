@@ -1,7 +1,8 @@
 import Image from "next/image";
+import { CampaignJointPostMenu } from "@/components/campaigns/CampaignJointPostMenu";
 import { CampaignReferralShareButton } from "@/components/campaigns/CampaignReferralShareButton";
+import { SocialFollowIcons } from "@/components/SocialFollow";
 import { DONATION_PROVIDER_URL } from "@/lib/config";
-import { BRIEF_EMAIL } from "@/lib/contact";
 import { buildCampaignStartShare } from "@/lib/share";
 import { SUPPORT_CONTENT } from "@/lib/support-content";
 
@@ -15,7 +16,6 @@ const AVATAR_EMOJIS = [
 
 export function CampaignReferralCard({ slug }: { slug: string }) {
   const share = buildCampaignStartShare();
-  const jointPostHref = `mailto:${BRIEF_EMAIL}?subject=${encodeURIComponent(`Gemeinsamer Post: ${slug}`)}`;
 
   return (
     <section
@@ -36,15 +36,13 @@ export function CampaignReferralCard({ slug }: { slug: string }) {
           über Politik posten? Mit Brief-nach-Berlin bekommt ihr Publikum einen
           konkreten nächsten Schritt: einen Brief an die eigenen Abgeordneten.
         </p>
+        <div className="mt-3 flex gap-2">
+          <SocialFollowIcons />
+        </div>
       </div>
 
       <div className="col-span-2 flex flex-col gap-2 px-5 pt-5 sm:flex-row sm:flex-wrap md:col-span-1 md:pl-7 md:pr-4">
-        <a
-          href={jointPostHref}
-          className="inline-flex min-h-11 items-center justify-center whitespace-nowrap rounded-md bg-waldgruen px-4 py-2.5 text-center font-body text-sm font-semibold text-creme transition-[background-color,transform] duration-200 hover:bg-waldgruen-dark active:translate-y-px focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-waldgruen"
-        >
-          Gemeinsamen Post planen
-        </a>
+        <CampaignJointPostMenu slug={slug} />
         <CampaignReferralShareButton
           text={share.text}
           subject={share.subject}

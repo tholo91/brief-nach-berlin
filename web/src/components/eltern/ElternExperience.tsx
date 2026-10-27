@@ -96,7 +96,7 @@ export function ElternExperience() {
       />
       <div className="space-y-8 p-5 sm:p-7">
         <div>
-          <label htmlFor="eltern-klasse" className="font-typewriter text-lg font-bold text-waldgruen-dark">
+          <label htmlFor="eltern-klasse" className="font-typewriter text-base font-bold text-waldgruen-dark sm:text-lg">
             Klasse deines Kindes <span className="font-body text-sm font-normal text-warmgrau/70">(optional)</span>
           </label>
           <select
@@ -120,7 +120,7 @@ export function ElternExperience() {
         <section aria-labelledby="eltern-thema-heading">
           <ExpandableTopicChips
             heading={
-              <h2 id="eltern-thema-heading" className="font-typewriter text-lg font-bold text-waldgruen-dark">
+              <h2 id="eltern-thema-heading" className="font-typewriter text-base font-bold text-waldgruen-dark sm:text-lg">
                 Worum geht es dir?
               </h2>
             }
@@ -138,7 +138,7 @@ export function ElternExperience() {
         </section>
 
         <section aria-labelledby="eltern-text-label">
-          <h2 className="font-typewriter text-lg font-bold text-waldgruen-dark">
+          <h2 className="font-typewriter text-base font-bold text-waldgruen-dark sm:text-lg">
             <label id="eltern-text-label" htmlFor="eltern-issue-text">Was ist passiert?</label>
           </h2>
           <p id="eltern-text-help" className="mt-1 font-body text-sm leading-relaxed text-warmgrau/70">

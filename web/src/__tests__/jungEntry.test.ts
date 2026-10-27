@@ -155,7 +155,7 @@ describe("/jung page", () => {
     expect(html).toContain("Alle Themen");
     expect(html).toContain('aria-controls="jung-thema-chips"');
     expect(html).toContain('id="jung-thema-chips"');
-    expect(html).toContain("h-14 w-full");
+    expect(html).toContain("h-12 w-full");
     expect(html).toContain("sm:h-auto");
     expect(html).not.toContain("h-20 w-full");
   });

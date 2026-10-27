@@ -22,7 +22,7 @@ export function TopicStarterGrid({ topics, selectedIds, limitReached, onToggle, 
         numbered
           ? "mt-4 grid grid-cols-2 gap-2.5 lg:grid-cols-3"
           : expanded
-            ? "-mx-1 mt-2 flex flex-wrap gap-2 px-1 py-1 sm:mt-3"
+            ? "mt-2 grid grid-cols-2 gap-2 py-1 sm:mt-3 sm:grid-cols-3"
             : "chip-scroll-fade scrollbar-hide -mx-1 mt-2 flex snap-x gap-2 overflow-x-auto py-1 pl-1 pr-10 sm:mt-3"
       }
     >
@@ -38,7 +38,9 @@ export function TopicStarterGrid({ topics, selectedIds, limitReached, onToggle, 
               aria-pressed={selected}
               disabled={disabled}
               onClick={() => onToggle(topic.id)}
-              className={`flex h-11 shrink-0 snap-start items-center gap-2 whitespace-nowrap rounded-lg border px-3.5 font-body text-[0.95rem] font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-waldgruen focus-visible:ring-offset-2 ${
+              className={`flex items-center gap-2 rounded-lg border font-body ${
+                expanded ? "min-h-11 justify-between px-3 py-2 text-left leading-tight" : "h-11 shrink-0 snap-start whitespace-nowrap px-3.5"
+              } text-[0.95rem] font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-waldgruen focus-visible:ring-offset-2 ${
                 selected
                   ? "border-waldgruen bg-waldgruen text-creme"
                   : disabled

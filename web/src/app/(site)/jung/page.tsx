@@ -128,13 +128,13 @@ export default async function JungPage({
           height={510}
           sizes="(max-width: 576px) 100vw, 576px"
           priority
-          className="mb-3 h-14 w-full rounded-xl object-cover object-[center_40%] shadow-md shadow-waldgruen/10 sm:mb-6 sm:h-auto"
+          className="mb-3 h-12 w-full rounded-xl object-cover object-[center_40%] shadow-md shadow-waldgruen/10 sm:mb-6 sm:h-auto"
         />
 
         <h1 className="font-typewriter text-2xl font-bold leading-tight tracking-tight text-waldgruen-dark text-pretty sm:text-[2rem]">
           Wählen darfst du noch nicht. Schreiben schon.
         </h1>
-        <p className="mb-5 mt-2 font-body text-base leading-relaxed text-warmgrau sm:mb-7 sm:mt-4 sm:text-lg">
+        <p className="mb-4 mt-2 font-body text-base leading-snug text-warmgrau sm:mb-7 sm:leading-relaxed sm:mt-4 sm:text-lg">
           Erzähl, was dich stört oder was du dir für deine Zukunft wünschst. Das Tool schreibt daraus einen Briefentwurf an die Zuständigen in der Politik.
         </p>
 

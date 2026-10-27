@@ -48,7 +48,7 @@ describe("TopicStarterGrid scroll", () => {
   it("wraps all chips when expanded, without scroll affordances", () => {
     const markup = renderGrid("scroll", { expanded: true });
 
-    expect(markup).toContain("flex-wrap");
+    expect(markup).toContain("grid-cols-2");
     for (const cls of ["overflow-x-auto", "chip-scroll-fade", "snap-x", "pr-10"]) {
       expect(markup).not.toContain(cls);
     }

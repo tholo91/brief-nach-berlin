@@ -140,6 +140,26 @@ describe("/jung page", () => {
     expect(html).not.toMatch(/[–—]/);
   });
 
+  it("shows the new intro, first placeholder, short after-button line and expandable chips", async () => {
+    const html = await render();
+    expect(html).toContain(
+      "Erzähl, was dich stört oder was du dir für deine Zukunft wünschst. Das Tool schreibt daraus einen Briefentwurf an die Zuständigen in der Politik.",
+    );
+    expect(html).toContain(
+      'placeholder="Seit den Herbstferien hatten wir in Mathe drei Vertretungen. Ich fühle mich allein gelassen."',
+    );
+    expect(html).not.toContain("Ein Erlebnis reicht");
+    expect(html).not.toContain("bis zu zwei");
+    expect(html).toContain("An wen dein Brief geht, schlägt dir das Tool vor.");
+    expect(html).not.toContain("Als Nächstes gibst du");
+    expect(html).toContain("Alle Themen");
+    expect(html).toContain('aria-controls="jung-thema-chips"');
+    expect(html).toContain('id="jung-thema-chips"');
+    expect(html).toContain("h-14 w-full");
+    expect(html).toContain("sm:h-auto");
+    expect(html).not.toContain("h-20 w-full");
+  });
+
   it("replaces the class picker with a confirmation for a valid link", async () => {
     const html = await render(signClassToken({ klasse: 9, plz: "28195" }));
     expect(html).toContain("Klasse 9, PLZ 28195 eingetragen.");

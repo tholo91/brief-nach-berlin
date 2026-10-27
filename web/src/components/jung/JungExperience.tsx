@@ -36,6 +36,14 @@ const ERROR_MESSAGES = {
   "text-long": "Dein Text ist zu lang. Bitte kürze ihn etwas.",
 };
 
+const JUNG_PLACEHOLDERS = [
+  "Seit den Herbstferien hatten wir in Mathe drei Vertretungen. Ich fühle mich allein gelassen.",
+  "Mein Bus fährt nur einmal pro Stunde. Morgens warte ich oft 40 Minuten in der Kälte.",
+  "Ich wünsche mir einen Ort in meiner Stadt, an dem wir uns nach der Schule treffen können.",
+  "Die Toiletten an meiner Schule sind seit Monaten kaputt und niemand kümmert sich darum.",
+];
+const PLACEHOLDER_ROTATE_MS = 4000;
+
 const focusRing =
   "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-waldgruen focus-visible:ring-offset-2";
 
@@ -45,6 +53,8 @@ export function JungExperience({ entry }: { entry: JungEntry }) {
   const [klasse, setKlasse] = useState<number | null>(entryKlasse);
   const [usedVoice, setUsedVoice] = useState(false);
   const [showPicker, setShowPicker] = useState(entry.status !== "valid");
+  const [placeholderIndex, setPlaceholderIndex] = useState(0);
+  const [textFocused, setTextFocused] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const klasseGroupRef = useRef<HTMLFieldSetElement>(null);
 
@@ -67,6 +77,16 @@ export function JungExperience({ entry }: { entry: JungEntry }) {
   useEffect(() => {
     router.prefetch(WIZARD_PATH);
   }, [router]);
+
+  const hasText = issueText.length > 0;
+  useEffect(() => {
+    if (textFocused || hasText) return;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    const timer = setInterval(() => {
+      setPlaceholderIndex((index) => (index + 1) % JUNG_PLACEHOLDERS.length);
+    }, PLACEHOLDER_ROTATE_MS);
+    return () => clearInterval(timer);
+  }, [textFocused, hasText]);
 
   useEffect(() => {
     if (entryKlasse !== null) return;
@@ -221,7 +241,9 @@ export function JungExperience({ entry }: { entry: JungEntry }) {
               rows={3}
               aria-describedby="jung-text-help jung-status"
               onChange={(event) => setIssueText(event.target.value)}
-              placeholder="Ein Erlebnis reicht, zum Beispiel: Seit den Herbstferien hatten wir in Mathe drei Vertretungen."
+              onFocus={() => setTextFocused(true)}
+              onBlur={() => setTextFocused(false)}
+              placeholder={JUNG_PLACEHOLDERS[placeholderIndex]}
               className="min-h-24 w-full resize-y rounded-lg border border-dashed border-waldgruen/30 bg-white py-3 pl-4 pr-14 font-body text-base leading-relaxed text-warmgrau outline-none transition sm:min-h-44 placeholder:text-warmgrau/40 focus:border-waldgruen focus:ring-2 focus:ring-waldgruen/20"
             />
             <VoiceRecorder
@@ -251,7 +273,7 @@ export function JungExperience({ entry }: { entry: JungEntry }) {
             <WizardForwardIcon />
           </button>
           <p className="mt-3 font-body text-sm leading-relaxed text-warmgrau/70">
-            Als Nächstes gibst du deine E-Mail-Adresse an und wählst, an wen der Brief geht. Den Entwurf siehst du danach direkt hier, eine Kopie kommt per Mail.
+            An wen dein Brief geht, schlägt dir das Tool vor.
           </p>
         </div>
       </div>

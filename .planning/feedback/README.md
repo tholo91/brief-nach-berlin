@@ -41,7 +41,7 @@ pnpm -F web tsx scripts/fetch-reviews.ts --contacted
 Persönliche Antworten an Reviewer:innen landen unter `drafts/<email-handle>.md`. Diese Dateien sind **nicht committed** (gitignored) — sie enthalten konkrete Personenbezüge.
 
 Konvention:
-- Dateiname: `<email-handle>.md` (z.B. `joimurlaub.md` für joimurlaub@gmail.com)
+- Dateiname: `<email-handle>.md` (z.B. `max.muster.md` für max.muster@example.com)
 - Inhalt: Betreff + Body + zugehörige `reviews.id` für `mark-contacted`
 - Versand: Thomas kopiert raus und schickt aus Posteo (thomas-lorenz@posteo.de)
 - Danach: `mark-contacted.ts <id>` — der Loop bleibt sauber

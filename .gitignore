@@ -65,3 +65,8 @@ web/scripts/_kampagnen-varianten-*
 
 # Generierte Ausgaben (Bild-Generierung, PDFs), lokaler Arbeitsordner
 output/
+
+# Privates lokal: ein Ordner für alles, was nicht ins öffentliche Repo gehört
+.planning/local/
+# GSD-Todos bleiben am festen GSD-Pfad, aber lokal
+.planning/todos/

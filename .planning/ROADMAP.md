@@ -666,7 +666,7 @@ Plans:
 
 **Aufwand:** 0,3 Tag.
 
-**Quellen:** Johannes (joimurlaub, Review dac265b5).
+**Quellen:** Review dac265b5.
 
 **Requirements:** TBD
 **Plans:** 0 plans

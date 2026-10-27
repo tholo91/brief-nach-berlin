@@ -4,10 +4,10 @@ milestone: v1.0
 current_phase: 05
 status: verifying
 stopped_at: Completed 05-04-PLAN.md
-last_updated: "2026-10-26T20:19:24.227Z"
-last_activity: 2026-10-23
+last_updated: "2026-10-27T15:24:31.966Z"
+last_activity: 2026-10-27
 last_activity_desc: Quick 261013-wuq lokal implementiert und geprüft; manueller Release offen
-state_head: 292928c9d74fd8f07e35ca92a7f7f4f15f8b3384
+state_head: e54ed428f1635a0d52c0ce3f048b5977c17a53b2
 progress:
   total_phases: 33
   completed_phases: 4
@@ -49,7 +49,7 @@ Der level-aware E-Mail-Betreff ist dagegen bereits implementiert und getestet; d
 Phase: 05 — EXECUTING
 Plan: 4 of 4
 Status: Phase complete — ready for verification
-Last activity: 2026-10-27 - Completed quick task 261027-itd: Spendenbitte schärfen (Follow-up-Mail, /feedback-Danke-Seite)
+Last activity: 2026-10-27 - Completed quick task 261027-mrw: Repo-Hygiene, Todos und Outreach lokal
 
 Progress: [███████░░░] 68%
 
@@ -230,6 +230,7 @@ Recent decisions affecting current work:
 | 261026-urs | Gemeinsamer Post: Popup Call (Calendly) oder Mail, Social-Icons auf der Karte | 2026-10-26 | - | [261026-urs-gemeinsamer-post-karte-popup-call-oder-m](./quick/261026-urs-gemeinsamer-post-karte-popup-call-oder-m/) |
 | 261027-h8l | Schule-Jung-Eltern-Paket: /eltern, /mitbestimmen-ohne-wahlrecht, /projekttag-demokratie, Aufwertung /jung und /schule, Bilder | 2026-10-27 | 8d59b10 | [261027-h8l-schule-jung-eltern-paket-eltern-seite-zw](./quick/261027-h8l-schule-jung-eltern-paket-eltern-seite-zw/) |
 | 261027-itd | Follow-up-Mail kürzer mit kompakter Spendenbox, Spendenkarte auf /feedback-Danke-Seite bei 4-5 Sternen | 2026-10-27 | 64502b0 | [261027-itd-spendenbitte-schaerfen-follow-up-kuerzen](./quick/261027-itd-spendenbitte-schaerfen-follow-up-kuerzen/) |
+| 261027-mrw | Repo-Hygiene: .planning/local, Todos und Outreach lokal, Nutzer anonymisiert | 2026-10-27 | e54ed42 | [261027-mrw-repo-hygiene-privater-ordner-planning-lo](./quick/261027-mrw-repo-hygiene-privater-ordner-planning-lo/) |
 
 ## Session Continuity
 

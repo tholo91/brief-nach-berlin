@@ -142,7 +142,7 @@ export function JungExperience({ entry }: { entry: JungEntry }) {
             "repeating-linear-gradient(-45deg, #c1121f 0 10px, #faf8f5 10px 15px, #1d3557 15px 25px, #faf8f5 25px 30px)",
         }}
       />
-      <div className="space-y-4 p-4 sm:space-y-8 sm:p-7">
+      <div className="space-y-3 p-4 sm:space-y-8 sm:p-7">
         {showPicker ? (
           <fieldset ref={klasseGroupRef} role="radiogroup" className="min-w-0">
             <legend className="font-typewriter text-base font-bold text-waldgruen-dark sm:text-lg">
@@ -174,7 +174,7 @@ export function JungExperience({ entry }: { entry: JungEntry }) {
             <div className="flex items-start justify-between gap-3 rounded-lg border border-waldgruen/25 bg-waldgruen/5 px-3 py-2.5">
               <p role="status" className="font-body text-sm leading-snug text-waldgruen-dark">
                 <span aria-hidden="true" className="mr-2 font-typewriter font-bold text-waldgruen">1</span>
-                Klasse {entry.klasse} und PLZ {entry.plz} sind über den Klassenlink eingetragen.
+                Klasse {entry.klasse}, PLZ {entry.plz} eingetragen.
               </p>
               <button
                 type="button"
@@ -208,7 +208,7 @@ export function JungExperience({ entry }: { entry: JungEntry }) {
             <span aria-hidden="true" className="mr-2 text-waldgruen">3</span>
             <label id="jung-text-label" htmlFor="jung-issue-text">Was ist dir passiert?</label>
           </h2>
-          <p id="jung-text-help" className="mt-1 font-body text-sm leading-relaxed text-warmgrau/70">
+          <p id="jung-text-help" className="sr-only">
             Du kannst auch sprechen statt tippen.
           </p>
           <div className="relative mt-2 sm:mt-3">
@@ -238,13 +238,13 @@ export function JungExperience({ entry }: { entry: JungEntry }) {
         </section>
 
         <div>
-          <p id="jung-status" aria-live="polite" className="mt-3 font-body text-sm font-semibold text-waldgruen-dark empty:mt-0">
+          <p id="jung-status" aria-live="polite" className="mb-3 font-body text-sm font-semibold text-waldgruen-dark empty:mb-0">
             {statusMessage}
           </p>
           <button
             type="button"
             onClick={continueToWizard}
-            className={`mt-3 inline-flex min-h-12 w-full items-center justify-center gap-3 rounded-lg bg-waldgruen px-6 py-3 font-body text-base font-bold text-creme transition-colors hover:bg-waldgruen-dark ${focusRing}`}
+            className={`inline-flex min-h-12 w-full items-center justify-center gap-3 rounded-lg bg-waldgruen px-6 py-3 font-body text-base font-bold text-creme transition-colors hover:bg-waldgruen-dark ${focusRing}`}
           >
             Brief entwerfen
             <WizardForwardIcon />

@@ -145,10 +145,13 @@ export default function SchulePage() {
             <p className="mt-3 font-body text-base leading-relaxed text-warmgrau sm:text-lg">
               In einer Schulstunde schreiben deine Schüler:innen echte Briefe an ihre Abgeordneten. Los geht es per QR-Code.
             </p>
-            <ul className="mt-4 flex flex-wrap gap-x-5 gap-y-1 font-typewriter text-sm font-bold text-waldgruen-dark">
-              <li>45 oder 90 Minuten</li>
-              <li>Kostenlos</li>
-              <li>Ohne Accounts</li>
+            <ul className="mt-4 flex flex-wrap gap-x-5 gap-y-2 font-body text-sm font-semibold text-waldgruen-dark">
+              {["45 oder 90 Minuten", "Kostenlos", "Ohne Accounts"].map((fact) => (
+                <li key={fact} className="flex items-center gap-1.5 [&>svg]:mt-0">
+                  <CheckIcon />
+                  {fact}
+                </li>
+              ))}
             </ul>
             <div className="mt-6 flex flex-col gap-3 sm:flex-row">
               <a href="#klassenlink" className={`${heroButtonClass} bg-waldgruen text-creme hover:bg-waldgruen-dark`}>

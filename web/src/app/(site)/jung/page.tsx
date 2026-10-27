@@ -128,7 +128,7 @@ export default async function JungPage({
           height={510}
           sizes="(max-width: 576px) 100vw, 576px"
           priority
-          className="mb-4 h-24 w-full rounded-xl object-cover object-[center_40%] shadow-md shadow-waldgruen/10 sm:mb-6 sm:h-auto"
+          className="mb-3 h-20 w-full rounded-xl object-cover object-[center_40%] shadow-md shadow-waldgruen/10 sm:mb-6 sm:h-auto"
         />
 
         <h1 className="font-typewriter text-2xl font-bold leading-tight tracking-tight text-waldgruen-dark text-pretty sm:text-[2rem]">

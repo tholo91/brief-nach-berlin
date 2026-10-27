@@ -142,7 +142,7 @@ describe("/jung page", () => {
 
   it("replaces the class picker with a confirmation for a valid link", async () => {
     const html = await render(signClassToken({ klasse: 9, plz: "28195" }));
-    expect(html).toContain("Klasse 9 und PLZ 28195 sind über den Klassenlink eingetragen.");
+    expect(html).toContain("Klasse 9, PLZ 28195 eingetragen.");
     expect(html).toContain("ändern");
     expect(html).not.toContain('name="klasse"');
   });

@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { VoiceRecorder } from "@/components/audio/VoiceRecorder";
-import { TopicStarterGrid } from "@/components/topics/TopicStarterGrid";
+import { ExpandableTopicChips } from "@/components/topics/ExpandableTopicChips";
 import { useTopicStarters } from "@/components/topics/useTopicStarters";
 import { WizardForwardIcon } from "@/components/wizard/WizardForwardIcon";
 import { WIZARD_PATH } from "@/lib/config";
@@ -118,14 +118,18 @@ export function ElternExperience() {
         </div>
 
         <section aria-labelledby="eltern-thema-heading">
-          <h2 id="eltern-thema-heading" className="font-typewriter text-lg font-bold text-waldgruen-dark">
-            Worum geht es dir?
-          </h2>
-          <p className="mt-1 font-body text-sm leading-relaxed text-warmgrau/70">
-            Wähl bis zu zwei Themen. Jedes fügt einen Satzanfang ein, den du selbst zu Ende schreibst.
-          </p>
-          <TopicStarterGrid
-            variant="scroll"
+          <ExpandableTopicChips
+            heading={
+              <h2 id="eltern-thema-heading" className="font-typewriter text-lg font-bold text-waldgruen-dark">
+                Worum geht es dir?
+              </h2>
+            }
+            hint={
+              <p className="mt-1 font-body text-sm leading-relaxed text-warmgrau/70">
+                Wähl bis zu zwei Themen. Jedes fügt einen Satzanfang ein, den du selbst zu Ende schreibst.
+              </p>
+            }
+            gridId="eltern-thema-chips"
             topics={ELTERN_TOPICS}
             selectedIds={selectedTopicIds}
             limitReached={selectionLimitReached}

@@ -7,6 +7,7 @@ import {
   formatMinuteRange,
 } from "@/lib/schule/lessonPlan";
 import { classLinkFileName, formatValidUntil } from "@/components/schule/classLinkHelpers";
+import { FOUNDER_EMAIL } from "@/lib/config";
 import { CampaignQrDownload } from "@/components/campaigns/CampaignQrDownload";
 
 jest.mock("next/link", () => ({
@@ -59,6 +60,8 @@ describe("/schule page", () => {
       "Deine Klasse schreibt an die Politik.",
       'href="#klassenlink"',
       'href="#ablauf"',
+      "Hilfe bei der Planung? Ich unterstütze dich gern.",
+      "Thomas schreiben",
       'id="klassenlink"',
       "Vorher kurz prüfen",
       'id="ablauf"',
@@ -82,6 +85,14 @@ describe("/schule page", () => {
       expect(index).toBeGreaterThan(last);
       last = index;
     }
+    expect(html).toContain(
+      "Ein kurzer Unterrichtsentwurf: Deine Schüler:innen schreiben in einer Stunde Briefe für ihre Zukunft an ihre Abgeordneten.",
+    );
+    expect(html).not.toContain("Los geht es per QR");
+    const body = encodeURIComponent(
+      "Hallo Thomas,\n\nich möchte Brief-nach-Berlin mit meiner Klasse ausprobieren.\n\nSchule und Ort: \nKlassenstufe: \nGeplanter Termin: \nDabei hätte ich gern Hilfe: \n\nViele Grüße\n",
+    );
+    expect(html).toContain(`mailto:${FOUNDER_EMAIL}?subject=Brief-nach-Berlin%20im%20Unterricht&amp;body=${body}`);
     expect(html).toContain("application/ld+json");
     expect(html).toMatch(/aria-pressed="true"[^>]*>45 Min/);
     expect(html).toMatch(/<div[^>]*hidden=""[^>]*id="schule-90-extras"|<div[^>]*id="schule-90-extras"[^>]*hidden=""/);

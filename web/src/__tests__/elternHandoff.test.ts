@@ -76,7 +76,16 @@ describe("/eltern page", () => {
   it("renders two doors, the form anchor and the unchanged privacy copy", async () => {
     const { default: ElternPage } = await import("@/app/(site)/eltern/page");
     const html = renderToStaticMarkup(createElement(ElternPage));
-    expect(html).toContain("Schreib der Politik, was an der Schule fehlt.");
+    expect(html).toContain("Schreib der Politik, was an der Schule deiner Kinder fehlt.");
+    expect(html).toContain("Ich will selbst einen Brief schreiben");
+    expect(html).toContain("Mein Kind will Brief-nach-Berlin mit seiner Klasse nutzen");
+    expect(html).toContain("Was mit den Daten passiert und wie die Lehrkraft startet.");
+    expect(html).not.toContain("Mein Kind hat es in der Schule genutzt");
+    expect(html).not.toContain("Ich will selbst schreiben");
+    expect(html).not.toContain("Welche Daten verarbeitet werden und welche nicht.");
+    expect(html).toContain("Alle Themen");
+    expect(html).toContain('aria-controls="eltern-thema-chips"');
+    expect(html).toContain('id="eltern-thema-chips"');
     expect(html).toContain('href="#schreiben"');
     expect(html).toContain('href="#sicher"');
     expect(html).toContain('id="schreiben"');

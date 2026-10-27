@@ -98,7 +98,7 @@ export default function ElternPage() {
         />
 
         <h1 className="font-typewriter text-2xl font-bold leading-tight tracking-tight text-waldgruen-dark text-balance sm:text-[2rem]">
-          Schreib der Politik, was an der Schule fehlt.
+          Schreib der Politik, was an der Schule deiner Kinder fehlt.
         </h1>
         <p className="mt-2 font-body text-base leading-relaxed text-warmgrau sm:mt-4 sm:text-lg">
           Unterrichtsausfall, gesperrte Turnhalle, verspäteter Schulbus? Ich suche die zuständige Ebene und schreibe dir einen Entwurf zum Abschreiben.
@@ -107,7 +107,7 @@ export default function ElternPage() {
         <div className="mt-6 grid gap-3 sm:grid-cols-2">
           <a href="#schreiben" className={doorClass}>
             <span>
-              <span className="block font-body text-base font-bold text-waldgruen-dark">Ich will selbst schreiben</span>
+              <span className="block font-body text-base font-bold text-waldgruen-dark">Ich will selbst einen Brief schreiben</span>
               <span className="mt-1 block font-body text-sm text-warmgrau/80">
                 Anliegen schildern, Entwurf bekommen, von Hand abschreiben.
               </span>
@@ -116,9 +116,9 @@ export default function ElternPage() {
           </a>
           <a href="#sicher" className={doorClass}>
             <span>
-              <span className="block font-body text-base font-bold text-waldgruen-dark">Mein Kind hat es in der Schule genutzt</span>
+              <span className="block font-body text-base font-bold text-waldgruen-dark">Mein Kind will Brief-nach-Berlin mit seiner Klasse nutzen</span>
               <span className="mt-1 block font-body text-sm text-warmgrau/80">
-                Welche Daten verarbeitet werden und welche nicht.
+                Was mit den Daten passiert und wie die Lehrkraft startet.
               </span>
             </span>
             <WizardForwardIcon className="mt-1 shrink-0 rotate-90 text-waldgruen" />

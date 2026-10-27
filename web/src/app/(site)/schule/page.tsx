@@ -5,7 +5,7 @@ import { Figure } from "@/components/editorial/Figure";
 import { FAQAccordion } from "@/components/FAQAccordion";
 import { ClassLinkGenerator } from "@/components/schule/ClassLinkGenerator";
 import { LessonPlanToggle } from "@/components/schule/LessonPlanToggle";
-import { APP_URL } from "@/lib/config";
+import { APP_URL, FOUNDER_EMAIL } from "@/lib/config";
 import { COLLECTIVE_ENVELOPE_NOTE, PRECHECK_ITEMS } from "@/lib/schule/lessonPlan";
 
 const URL_PATH = "/schule";
@@ -27,6 +27,12 @@ export const metadata: Metadata = {
   },
   twitter: { card: "summary_large_image", title: TITLE, description: DESCRIPTION },
 };
+
+const CONTACT_MAILTO = `mailto:${FOUNDER_EMAIL}?subject=${encodeURIComponent(
+  "Brief-nach-Berlin im Unterricht",
+)}&body=${encodeURIComponent(
+  "Hallo Thomas,\n\nich möchte Brief-nach-Berlin mit meiner Klasse ausprobieren.\n\nSchule und Ort: \nKlassenstufe: \nGeplanter Termin: \nDabei hätte ich gern Hilfe: \n\nViele Grüße\n",
+)}`;
 
 const linkClass = "font-semibold text-waldgruen underline underline-offset-2";
 const h2Class = "font-typewriter text-xl font-bold text-waldgruen-dark sm:text-2xl";
@@ -143,7 +149,7 @@ export default function SchulePage() {
               Deine Klasse schreibt an die Politik.
             </h1>
             <p className="mt-3 font-body text-base leading-relaxed text-warmgrau sm:text-lg">
-              In einer Schulstunde schreiben deine Schüler:innen echte Briefe an ihre Abgeordneten. Los geht es per QR-Code.
+              Ein kurzer Unterrichtsentwurf: Deine Schüler:innen schreiben in einer Stunde Briefe für ihre Zukunft an ihre Abgeordneten.
             </p>
             <ul className="mt-4 flex flex-wrap gap-x-5 gap-y-2 font-body text-sm font-semibold text-waldgruen-dark">
               {["45 oder 90 Minuten", "Kostenlos", "Ohne Accounts"].map((fact) => (
@@ -164,6 +170,15 @@ export default function SchulePage() {
                 Ablauf ansehen
               </a>
             </div>
+            <p className="mt-4 flex flex-wrap items-center gap-x-2 font-body text-base leading-relaxed text-warmgrau">
+              <span>Hilfe bei der Planung? Ich unterstütze dich gern.</span>
+              <a
+                href={CONTACT_MAILTO}
+                className={`${linkClass} inline-flex min-h-11 items-center rounded-lg hover:text-waldgruen-dark focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-waldgruen focus-visible:ring-offset-2`}
+              >
+                Thomas schreiben
+              </a>
+            </p>
           </div>
           <Image
             src="/images/img-schule-klasse.webp"

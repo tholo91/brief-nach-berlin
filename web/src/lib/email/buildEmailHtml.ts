@@ -371,6 +371,55 @@ function getFooterBannerHtml(data: SendLetterEmailParams): string {
                       </div>`;
 }
 
+// "Gut zu wissen": alle Nebenlinks gesammelt unter dem Teilen-Block, damit der
+// Fließtext oben nur Abschreiben, Porto und Bewerten trägt. Die zwei stärksten
+// Tipps stehen als kurze Absätze ohne Kasten, der Rest als eine Linkzeile.
+function buildGoodToKnowHtml(data: SendLetterEmailParams, fullName: string): string {
+  const locale = resolveEmailLocale(data.locale);
+  const copy = getEmailCopy(locale);
+  const g = copy.goodToKnow;
+  const font = "font-family:Georgia,'Times New Roman',serif;";
+  const link = (url: string, label: string) =>
+    `<a href="${url}" target="_blank" rel="noopener noreferrer" style="color:#2D5016;text-decoration:underline;">${label}</a>`;
+  const isMdb = data.recipientKind === "mdb";
+  const highlight = (icon: string, title: string, text: string, linkHtml: string) => `
+                    <p style="margin:0 0 10px;${font}font-size:14px;color:#4A4A4A;line-height:1.5;">${icon} <strong>${title}</strong><br>${text}${linkHtml ? ` ${linkHtml}` : ""}</p>`;
+  const highlights = [
+    isMdb && highlight(
+      "🤝",
+      g.meetTitle(fullName),
+      g.meetText,
+      link(`${APP_URL}/aktiv-werden${data.politicianId ? `?mdb=${data.politicianId}` : ""}#wahlkreisbuero`, g.meetLink),
+    ),
+    // BPA-Fahrten laden nur Bundestagsabgeordnete ein, mitfahren erst ab 18.
+    isMdb && data.audience !== "jung" && highlight(
+      "🚆",
+      g.tripTitle,
+      `<span class="bnb-desk">${g.tripText} ${link(`${APP_URL}/bundestag-besuch-kostenlos`, g.tripLink)}</span><span class="bnb-mob" style="display:none;">${g.tripTextMobile} ${link(`${APP_URL}/bundestag-besuch-kostenlos`, g.tripLinkMobile)}</span>`,
+      "",
+    ),
+  ].filter(Boolean);
+  const highlightsHtml = highlights.join("");
+  const guideLink = isMdb || data.recipientKind === "mdb_later"
+    ? link(`${APP_URL}/wer-darf-mdb-schreiben`, copy.guideMdb)
+    : link(`${APP_URL}/guide`, copy.guide);
+  const moreLinks = [
+    guideLink,
+    link(`${APP_URL}/tipps`, copy.tips),
+    locale === "de" && link(`${APP_URL}/brief-verbessern`, g.improveLink),
+    link(`${APP_URL}/aktiv-werden`, g.actionsLink),
+    link(`${APP_URL}/andere-tools`, g.toolsLink),
+  ].filter(Boolean);
+  return `<tr>
+                  <td colspan="7" class="bnb-pad" style="padding:0 32px 28px;background-color:#ffffff;">
+                    <h2 style="margin:0 0 12px;padding-bottom:10px;border-bottom:1px solid #EDEAE6;${font}font-size:16px;color:#2D5016;font-weight:bold;">${g.heading}</h2>
+                    ${highlightsHtml}
+                    <p style="margin:0 0 6px;${highlights.length ? "padding-top:12px;border-top:1px solid #EDEAE6;" : ""}${font}font-size:13px;color:#666666;line-height:1.8;"><strong style="color:#4A4A4A;">${g.moreLabel}</strong><br>${moreLinks.map((l) => `<span style="white-space:nowrap;">${l}</span>`).join(" &middot; ")}</p>
+                    <p style="margin:0;${font}font-size:13px;color:#666666;line-height:1.7;">${g.contact} ${link(FOUNDER_FEEDBACK_URL, g.contactLink)}</p>
+                  </td>
+                </tr>`;
+}
+
 export function buildEmailHtml(data: SendLetterEmailParams): string {
   const locale = resolveEmailLocale(data.locale);
   const copy = getEmailCopy(locale);
@@ -497,10 +546,6 @@ export function buildEmailHtml(data: SendLetterEmailParams): string {
   const emailIntro = escapeHtml(getEmailIntro(data));
   const personalImpactCopy = getPersonalImpactCopy(data);
   const recruitCopy = getRecruitCopy(data);
-  const footerGuideLink =
-    data.recipientKind === "mdb" || isMdbLater
-      ? `<a href="${APP_URL}/wer-darf-mdb-schreiben" style="color:#888888;">${copy.guideMdb}</a>`
-      : `<a href="${APP_URL}/guide" style="color:#888888;">${copy.guide}</a>`;
 
   // Letter text: escape then convert newlines to <br> for email clients
   const letterHtml = nlToBr(normalizeLetterClosing(data.letterText));
@@ -570,7 +615,7 @@ export function buildEmailHtml(data: SendLetterEmailParams): string {
                 <!-- Intro: warm founder voice -->
                 <tr>
                   <td colspan="7" class="bnb-pad" style="padding:0 32px 20px;background-color:#ffffff;">
-                    <p style="margin:0;font-family:Georgia,'Times New Roman',serif;font-size:14px;color:#4A4A4A;line-height:1.6;">${copy.review}${locale === "de" ? ` <a href="${APP_URL}/brief-verbessern" target="_blank" rel="noopener noreferrer" style="color:#2D5016;text-decoration:underline;">${copy.improve}</a>,` : ""} ${copy.reviewEnd}<span class="bnb-desk"><br>${copy.reviewRating}</span><span class="bnb-mob" style="display:none;"><br>${copy.reviewMobile}</span></p>
+                    <p style="margin:0;font-family:Georgia,'Times New Roman',serif;font-size:14px;color:#4A4A4A;line-height:1.6;">${copy.review} ${copy.reviewEnd}<span class="bnb-desk"><br>${copy.reviewRating}</span><span class="bnb-mob" style="display:none;"><br>${copy.reviewMobile}</span></p>
                   </td>
                 </tr>
 
@@ -589,7 +634,7 @@ export function buildEmailHtml(data: SendLetterEmailParams): string {
                 ${variantUrl ? `<!-- Brief anpassen CTA: only for German, because the target flow is German-only. -->
                 <tr>
                   <td colspan="7" class="bnb-pad" style="padding:8px 32px 8px;background-color:#ffffff;text-align:center;">
-                    <p style="margin:0;font-family:Georgia,'Times New Roman',serif;font-size:14px;color:#4A4A4A;line-height:1.6;text-align:center;">Nicht ganz dein Ton? Hier deinen &rarr; <a href="${variantUrl}" target="_blank" rel="noopener noreferrer" style="color:#2D5016;text-decoration:underline;">Briefentwurf schnell anpassen</a></p>
+                    <p style="margin:0;font-family:Georgia,'Times New Roman',serif;font-size:14px;color:#4A4A4A;line-height:1.6;text-align:center;">Nicht ganz dein Ton? <span class="bnb-desk">Hier deinen &rarr; <a href="${variantUrl}" target="_blank" rel="noopener noreferrer" style="color:#2D5016;text-decoration:underline;">Briefentwurf schnell anpassen</a></span><span class="bnb-mob" style="display:none;">&rarr; Hier <a href="${variantUrl}" target="_blank" rel="noopener noreferrer" style="color:#2D5016;text-decoration:underline;">schnell anpassen</a></span></p>
                   </td>
                 </tr>` : ""}
 
@@ -649,10 +694,10 @@ export function buildEmailHtml(data: SendLetterEmailParams): string {
                 <tr>
                   <td colspan="7" class="bnb-pad" style="padding:8px 32px 16px;background-color:#ffffff;text-align:left;">
                     <p style="margin:0 0 14px;font-family:Georgia,'Times New Roman',serif;font-size:14px;color:#4A4A4A;line-height:1.6;">
-                      ${personalImpactCopy} &rarr; <a href="${APP_URL}/tipps" style="color:#2D5016;text-decoration:underline;">${copy.tips}</a>
+                      ${personalImpactCopy}
                     </p>
                     <p style="margin:0 0 20px;font-family:Georgia,'Times New Roman',serif;font-size:14px;color:#4A4A4A;line-height:1.6;">
-                      ${copy.engagement} <a href="${FOUNDER_FEEDBACK_URL}" target="_blank" rel="noopener noreferrer" style="color:#2D5016;text-decoration:underline;">${copy.questions}</a>. ${copy.greeting}
+                      ${copy.engagement} ${copy.greeting}
                     </p>
                     <p style="margin:0;font-family:'Caveat','Brush Script MT','Lucida Handwriting',cursive;font-size:32px;color:#1D3557;line-height:1.1;">
                       Thomas
@@ -667,15 +712,6 @@ export function buildEmailHtml(data: SendLetterEmailParams): string {
                 <tr>
                   <td colspan="7" class="bnb-pad" style="padding:0 32px 8px;background-color:#ffffff;">
                     ${buildCampaignAttributionHtml(data.campaign, locale, data.campaignLetterCount)}
-                  </td>
-                </tr>` : ""}
-
-                ${data.recipientKind === "mdb" ? `
-                <tr>
-                  <td colspan="7" class="bnb-pad" style="padding:0 32px 16px;background-color:#ffffff;text-align:left;">
-                    <p style="margin:0;font-family:Georgia,'Times New Roman',serif;font-size:14px;color:#4A4A4A;line-height:1.6;">
-                      ${copy.meetMdbIntro(fullName)} <a href="${APP_URL}/aktiv-werden${data.politicianId ? `?mdb=${data.politicianId}` : ""}#wahlkreisbuero" target="_blank" rel="noopener noreferrer" style="color:#2D5016;text-decoration:underline;">${copy.meetMdbLink}</a>
-                    </p>
                   </td>
                 </tr>` : ""}
 
@@ -703,16 +739,12 @@ export function buildEmailHtml(data: SendLetterEmailParams): string {
                           </td>
                         </tr>
                       </table>
-                      <!-- Secondary links: weiterführende Seiten, normale Schriftgröße, eine Zeile -->
-                      <p style="margin:16px 0 0;font-family:Georgia,'Times New Roman',serif;font-size:14px;color:#4A4A4A;line-height:1.6;text-align:center;">
-                        <a href="${APP_URL}/aktiv-werden" target="_blank" rel="noopener noreferrer" style="color:#2D5016;text-decoration:underline;">${copy.otherAction}</a>
-                        &nbsp;·&nbsp;
-                        <a href="${APP_URL}/andere-tools" target="_blank" rel="noopener noreferrer" style="color:#2D5016;text-decoration:underline;">${copy.otherTools}</a>
-                      </p>
                       ${getFooterBannerHtml(data)}
                     </div>
                   </td>
                 </tr>
+
+                ${buildGoodToKnowHtml(data, fullName)}
 
                 <!-- Airmail stripe before footer (mirrors header) -->
                 <tr>
@@ -733,7 +765,7 @@ export function buildEmailHtml(data: SendLetterEmailParams): string {
                       <strong>${copy.notice}</strong> ${copy.noticeText}${profileUrl ? ` (<a href="${profileUrl}" target="_blank" rel="noopener noreferrer" style="color:#888888;">${disclaimerSiteName}</a>)` : ""}${copy.noticeTextAfter ? `, ${copy.noticeTextAfter}` : ""}. ${copy.responsibility} ${copy.terms(`<a href="${APP_URL}/nutzungsbedingungen" style="color:#888888;">${copy.termsLabel}</a>`)}
                     </p>
                     <p style="margin:0;font-family:Georgia,'Times New Roman',serif;font-size:12px;color:#aaaaaa;line-height:1.5;">
-                      <a href="${APP_URL}/datenschutz" style="color:#888888;">${copy.privacy}</a>: ${copy.dataPolicy} · <a href="${data.deleteUrl ?? `${APP_URL}/datenloeschen`}" style="color:#888888;">${copy.followup.delete}</a> · ${footerGuideLink}${data.debug ? ` · <a href="${buildDebugUrl(data.debug)}" style="color:#888888;text-decoration:none;">Debug</a>` : ""}
+                      <a href="${APP_URL}/datenschutz" style="color:#888888;">${copy.privacy}</a>: ${copy.dataPolicy} · <a href="${data.deleteUrl ?? `${APP_URL}/datenloeschen`}" style="color:#888888;">${copy.followup.delete}</a>${data.debug ? ` · <a href="${buildDebugUrl(data.debug)}" style="color:#888888;text-decoration:none;">Debug</a>` : ""}
                     </p>
                   </td>
                 </tr>

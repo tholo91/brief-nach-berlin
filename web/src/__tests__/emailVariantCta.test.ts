@@ -108,7 +108,8 @@ describe("letter email variant CTA", () => {
   it("links to the no-storage variant flow with email only in the hash", () => {
     const html = buildEmailHtml(makeParams());
 
-    expect(html).toContain("Nicht ganz dein Ton? Hier deinen &rarr;");
+    expect(html).toContain("Nicht ganz dein Ton? <span class=\"bnb-desk\">Hier deinen &rarr;");
+    expect(html).toContain("&rarr; Hier <a");
     expect(html).toContain("Briefentwurf schnell anpassen");
     expect(html).toContain(
       "https://www.brief-nach-berlin.de/brief/anpassen#email=test%2Bvariant%40example.com"

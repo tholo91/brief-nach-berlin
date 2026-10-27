@@ -57,7 +57,7 @@ exports[`Erwachsenen-Mail bleibt unverändert Kampagne: html 1`] = `
                 <!-- Intro: warm founder voice -->
                 <tr>
                   <td colspan="7" class="bnb-pad" style="padding:0 32px 20px;background-color:#ffffff;">
-                    <p style="margin:0;font-family:Georgia,'Times New Roman',serif;font-size:14px;color:#4A4A4A;line-height:1.6;">Lies ihn gründlich durch und pass ihn an, damit es dein Brief wird. Dieser Entwurf dient als Schnellstart, <a href="https://www.brief-nach-berlin.de/brief-verbessern" target="_blank" rel="noopener noreferrer" style="color:#2D5016;text-decoration:underline;">verbessere ihn gern</a>, damit er sich wirklich nach dir anhört.<span class="bnb-desk"><br>Bitte bewerte anschließend deinen Brief 🙏 Danke, dass du dich engagierst!</span><span class="bnb-mob" style="display:none;"><br>Danke, dass du dich engagierst 🙏</span></p>
+                    <p style="margin:0;font-family:Georgia,'Times New Roman',serif;font-size:14px;color:#4A4A4A;line-height:1.6;">Lies ihn gründlich durch und pass ihn an, damit es dein Brief wird. Der Entwurf ist dein Schnellstart, weitere Tipps findest du ganz unten.<span class="bnb-desk"><br>Bitte bewerte anschließend deinen Brief 🙏 Danke, dass du dich engagierst!</span><span class="bnb-mob" style="display:none;"><br>Danke, dass du dich engagierst 🙏</span></p>
                   </td>
                 </tr>
 
@@ -76,7 +76,7 @@ exports[`Erwachsenen-Mail bleibt unverändert Kampagne: html 1`] = `
                 <!-- Brief anpassen CTA: only for German, because the target flow is German-only. -->
                 <tr>
                   <td colspan="7" class="bnb-pad" style="padding:8px 32px 8px;background-color:#ffffff;text-align:center;">
-                    <p style="margin:0;font-family:Georgia,'Times New Roman',serif;font-size:14px;color:#4A4A4A;line-height:1.6;text-align:center;">Nicht ganz dein Ton? Hier deinen &rarr; <a href="https://www.brief-nach-berlin.de/brief/anpassen#email=test%40example.org" target="_blank" rel="noopener noreferrer" style="color:#2D5016;text-decoration:underline;">Briefentwurf schnell anpassen</a></p>
+                    <p style="margin:0;font-family:Georgia,'Times New Roman',serif;font-size:14px;color:#4A4A4A;line-height:1.6;text-align:center;">Nicht ganz dein Ton? <span class="bnb-desk">Hier deinen &rarr; <a href="https://www.brief-nach-berlin.de/brief/anpassen#email=test%40example.org" target="_blank" rel="noopener noreferrer" style="color:#2D5016;text-decoration:underline;">Briefentwurf schnell anpassen</a></span><span class="bnb-mob" style="display:none;">&rarr; Hier <a href="https://www.brief-nach-berlin.de/brief/anpassen#email=test%40example.org" target="_blank" rel="noopener noreferrer" style="color:#2D5016;text-decoration:underline;">schnell anpassen</a></span></p>
                   </td>
                 </tr>
 
@@ -149,10 +149,10 @@ exports[`Erwachsenen-Mail bleibt unverändert Kampagne: html 1`] = `
                 <tr>
                   <td colspan="7" class="bnb-pad" style="padding:8px 32px 16px;background-color:#ffffff;text-align:left;">
                     <p style="margin:0 0 14px;font-family:Georgia,'Times New Roman',serif;font-size:14px;color:#4A4A4A;line-height:1.6;">
-                      Handgeschriebene Briefe fallen in Bundestagsbüros auf. Inmitten unpersönlicher Drucksachen signalisieren sie echtes Engagement. &rarr; <a href="https://www.brief-nach-berlin.de/tipps" style="color:#2D5016;text-decoration:underline;">Tipps für den perfekten Brief</a>
+                      Handgeschriebene Briefe fallen in Bundestagsbüros auf. Inmitten unpersönlicher Drucksachen signalisieren sie echtes Engagement.
                     </p>
                     <p style="margin:0 0 20px;font-family:Georgia,'Times New Roman',serif;font-size:14px;color:#4A4A4A;line-height:1.6;">
-                      Toll, dass du dir die Zeit für unsere Demokratie nimmst. Melde dich super gerne bei <a href="https://www.heyspeak.io/l/WIOENjqJn6z6WKtkWgDEFg?email=on" target="_blank" rel="noopener noreferrer" style="color:#2D5016;text-decoration:underline;">Fragen oder weiteren Anregungen</a>. Beste Grüße aus Bremen ✌️
+                      Toll, dass du dir die Zeit für unsere Demokratie nimmst. Beste Grüße aus Bremen ✌️
                     </p>
                     <p style="margin:0;font-family:'Caveat','Brush Script MT','Lucida Handwriting',cursive;font-size:32px;color:#1D3557;line-height:1.1;">
                       Thomas
@@ -173,15 +173,6 @@ exports[`Erwachsenen-Mail bleibt unverändert Kampagne: html 1`] = `
         <a href="https://www.brief-nach-berlin.de/kampagne/test" target="_blank" rel="noopener noreferrer" style="color:#2D5016;text-decoration:underline;">Zur Kampagne</a>
       </p>
     </div>
-                  </td>
-                </tr>
-
-                
-                <tr>
-                  <td colspan="7" class="bnb-pad" style="padding:0 32px 16px;background-color:#ffffff;text-align:left;">
-                    <p style="margin:0;font-family:Georgia,'Times New Roman',serif;font-size:14px;color:#4A4A4A;line-height:1.6;">
-                      Du willst Anna Müller auch persönlich sprechen? <a href="https://www.brief-nach-berlin.de/aktiv-werden?mdb=42#wahlkreisbuero" target="_blank" rel="noopener noreferrer" style="color:#2D5016;text-decoration:underline;">Hier findest du das Wahlkreisbüro und die Bürgersprechstunde.</a>
-                    </p>
                   </td>
                 </tr>
 
@@ -209,16 +200,21 @@ exports[`Erwachsenen-Mail bleibt unverändert Kampagne: html 1`] = `
                           </td>
                         </tr>
                       </table>
-                      <!-- Secondary links: weiterführende Seiten, normale Schriftgröße, eine Zeile -->
-                      <p style="margin:16px 0 0;font-family:Georgia,'Times New Roman',serif;font-size:14px;color:#4A4A4A;line-height:1.6;text-align:center;">
-                        <a href="https://www.brief-nach-berlin.de/aktiv-werden" target="_blank" rel="noopener noreferrer" style="color:#2D5016;text-decoration:underline;">Was du sonst noch tun kannst</a>
-                        &nbsp;·&nbsp;
-                        <a href="https://www.brief-nach-berlin.de/andere-tools" target="_blank" rel="noopener noreferrer" style="color:#2D5016;text-decoration:underline;">Weitere Tools</a>
-                      </p>
                       <div class="bnb-bleed" style="margin:18px -22px -20px;font-size:0;line-height:0;">
                         <img src="https://www.brief-nach-berlin.de/images/email-bundestag-banner.png" alt="" width="556" height="130" style="display:block;width:100%;max-width:556px;height:auto;border:0;outline:none;text-decoration:none;-ms-interpolation-mode:bicubic;border-bottom-left-radius:6px;border-bottom-right-radius:6px;">
                       </div>
                     </div>
+                  </td>
+                </tr>
+
+                <tr>
+                  <td colspan="7" class="bnb-pad" style="padding:0 32px 28px;background-color:#ffffff;">
+                    <h2 style="margin:0 0 12px;padding-bottom:10px;border-bottom:1px solid #EDEAE6;font-family:Georgia,'Times New Roman',serif;font-size:16px;color:#2D5016;font-weight:bold;">Gut zu wissen</h2>
+                    
+                    <p style="margin:0 0 10px;font-family:Georgia,'Times New Roman',serif;font-size:14px;color:#4A4A4A;line-height:1.5;">🤝 <strong>Anna Müller persönlich treffen</strong><br>Mehr Chancen für dein Anliegen. <a href="https://www.brief-nach-berlin.de/aktiv-werden?mdb=42#wahlkreisbuero" target="_blank" rel="noopener noreferrer" style="color:#2D5016;text-decoration:underline;">Sprechstunde finden</a></p>
+                    <p style="margin:0 0 10px;font-family:Georgia,'Times New Roman',serif;font-size:14px;color:#4A4A4A;line-height:1.5;">🚆 <strong>Kostenlos nach Berlin</strong><br><span class="bnb-desk">Abgeordnete laden zur Informationsfahrt ein. <a href="https://www.brief-nach-berlin.de/bundestag-besuch-kostenlos" target="_blank" rel="noopener noreferrer" style="color:#2D5016;text-decoration:underline;">So kommst du mit</a></span><span class="bnb-mob" style="display:none;">Abgeordnete laden nach Berlin ein, <a href="https://www.brief-nach-berlin.de/bundestag-besuch-kostenlos" target="_blank" rel="noopener noreferrer" style="color:#2D5016;text-decoration:underline;">so kommst du mit</a></span></p>
+                    <p style="margin:0 0 6px;padding-top:12px;border-top:1px solid #EDEAE6;font-family:Georgia,'Times New Roman',serif;font-size:13px;color:#666666;line-height:1.8;"><strong style="color:#4A4A4A;">Weitere Infos + Tipps für dich:</strong><br><span style="white-space:nowrap;"><a href="https://www.brief-nach-berlin.de/wer-darf-mdb-schreiben" target="_blank" rel="noopener noreferrer" style="color:#2D5016;text-decoration:underline;">Wer darf MdBs schreiben?</a></span> &middot; <span style="white-space:nowrap;"><a href="https://www.brief-nach-berlin.de/tipps" target="_blank" rel="noopener noreferrer" style="color:#2D5016;text-decoration:underline;">Tipps für den perfekten Brief</a></span> &middot; <span style="white-space:nowrap;"><a href="https://www.brief-nach-berlin.de/brief-verbessern" target="_blank" rel="noopener noreferrer" style="color:#2D5016;text-decoration:underline;">Brief persönlicher machen</a></span> &middot; <span style="white-space:nowrap;"><a href="https://www.brief-nach-berlin.de/aktiv-werden" target="_blank" rel="noopener noreferrer" style="color:#2D5016;text-decoration:underline;">Weitere Aktionen</a></span> &middot; <span style="white-space:nowrap;"><a href="https://www.brief-nach-berlin.de/andere-tools" target="_blank" rel="noopener noreferrer" style="color:#2D5016;text-decoration:underline;">Andere Tools</a></span></p>
+                    <p style="margin:0;font-family:Georgia,'Times New Roman',serif;font-size:13px;color:#666666;line-height:1.7;">Du hast Fragen oder Ideen? <a href="https://www.heyspeak.io/l/WIOENjqJn6z6WKtkWgDEFg?email=on" target="_blank" rel="noopener noreferrer" style="color:#2D5016;text-decoration:underline;">Schreib mir sehr gern</a></p>
                   </td>
                 </tr>
 
@@ -255,7 +251,7 @@ exports[`Erwachsenen-Mail bleibt unverändert Kampagne: html 1`] = `
                       <strong>Hinweis:</strong> Dieser Entwurf ist von KI erstellt und ohne Gewähr. Bitte prüfe Inhalt, Fakten und Adresse (<a href="https://www.abgeordnetenwatch.de/profile/anna-mueller" target="_blank" rel="noopener noreferrer" style="color:#888888;">abgeordnetenwatch.de</a>), bevor du deinen Brief schreibst. Die Verantwortung für den Inhalt liegt bei dir. Es gelten die <a href="https://www.brief-nach-berlin.de/nutzungsbedingungen" style="color:#888888;">Nutzungsbedingungen</a>.
                     </p>
                     <p style="margin:0;font-family:Georgia,'Times New Roman',serif;font-size:12px;color:#aaaaaa;line-height:1.5;">
-                      <a href="https://www.brief-nach-berlin.de/datenschutz" style="color:#888888;">Datenschutz</a>: Dein Brief und dein Anliegen werden nicht gespeichert. Nur wenn du dein Anliegen freiwillig auf die Karte setzt, speichere ich ein kurzes Themensignal. Kein Newsletter: In 2-3 Tagen kommt nur noch eine Mail mit der Bitte um eine Bewertung. · <a href="https://example.org/datenloeschen?t=fixed" style="color:#888888;">Meine gespeicherten Daten löschen</a> · <a href="https://www.brief-nach-berlin.de/wer-darf-mdb-schreiben" style="color:#888888;">Wer darf MdBs schreiben?</a>
+                      <a href="https://www.brief-nach-berlin.de/datenschutz" style="color:#888888;">Datenschutz</a>: Dein Brief und dein Anliegen werden nicht gespeichert. Nur wenn du dein Anliegen freiwillig auf die Karte setzt, speichere ich ein kurzes Themensignal. Kein Newsletter: In 2-3 Tagen kommt nur noch eine Mail mit der Bitte um eine Bewertung. · <a href="https://example.org/datenloeschen?t=fixed" style="color:#888888;">Meine gespeicherten Daten löschen</a>
                     </p>
                   </td>
                 </tr>
@@ -347,7 +343,7 @@ exports[`Erwachsenen-Mail bleibt unverändert mit Feedback-Token (Sterne-Bar): h
                 <!-- Intro: warm founder voice -->
                 <tr>
                   <td colspan="7" class="bnb-pad" style="padding:0 32px 20px;background-color:#ffffff;">
-                    <p style="margin:0;font-family:Georgia,'Times New Roman',serif;font-size:14px;color:#4A4A4A;line-height:1.6;">Lies ihn gründlich durch und pass ihn an, damit es dein Brief wird. Dieser Entwurf dient als Schnellstart, <a href="https://www.brief-nach-berlin.de/brief-verbessern" target="_blank" rel="noopener noreferrer" style="color:#2D5016;text-decoration:underline;">verbessere ihn gern</a>, damit er sich wirklich nach dir anhört.<span class="bnb-desk"><br>Bitte bewerte anschließend deinen Brief 🙏 Danke, dass du dich engagierst!</span><span class="bnb-mob" style="display:none;"><br>Danke, dass du dich engagierst 🙏</span></p>
+                    <p style="margin:0;font-family:Georgia,'Times New Roman',serif;font-size:14px;color:#4A4A4A;line-height:1.6;">Lies ihn gründlich durch und pass ihn an, damit es dein Brief wird. Der Entwurf ist dein Schnellstart, weitere Tipps findest du ganz unten.<span class="bnb-desk"><br>Bitte bewerte anschließend deinen Brief 🙏 Danke, dass du dich engagierst!</span><span class="bnb-mob" style="display:none;"><br>Danke, dass du dich engagierst 🙏</span></p>
                   </td>
                 </tr>
 
@@ -366,7 +362,7 @@ exports[`Erwachsenen-Mail bleibt unverändert mit Feedback-Token (Sterne-Bar): h
                 <!-- Brief anpassen CTA: only for German, because the target flow is German-only. -->
                 <tr>
                   <td colspan="7" class="bnb-pad" style="padding:8px 32px 8px;background-color:#ffffff;text-align:center;">
-                    <p style="margin:0;font-family:Georgia,'Times New Roman',serif;font-size:14px;color:#4A4A4A;line-height:1.6;text-align:center;">Nicht ganz dein Ton? Hier deinen &rarr; <a href="https://www.brief-nach-berlin.de/brief/anpassen#email=test%40example.org" target="_blank" rel="noopener noreferrer" style="color:#2D5016;text-decoration:underline;">Briefentwurf schnell anpassen</a></p>
+                    <p style="margin:0;font-family:Georgia,'Times New Roman',serif;font-size:14px;color:#4A4A4A;line-height:1.6;text-align:center;">Nicht ganz dein Ton? <span class="bnb-desk">Hier deinen &rarr; <a href="https://www.brief-nach-berlin.de/brief/anpassen#email=test%40example.org" target="_blank" rel="noopener noreferrer" style="color:#2D5016;text-decoration:underline;">Briefentwurf schnell anpassen</a></span><span class="bnb-mob" style="display:none;">&rarr; Hier <a href="https://www.brief-nach-berlin.de/brief/anpassen#email=test%40example.org" target="_blank" rel="noopener noreferrer" style="color:#2D5016;text-decoration:underline;">schnell anpassen</a></span></p>
                   </td>
                 </tr>
 
@@ -439,10 +435,10 @@ exports[`Erwachsenen-Mail bleibt unverändert mit Feedback-Token (Sterne-Bar): h
                 <tr>
                   <td colspan="7" class="bnb-pad" style="padding:8px 32px 16px;background-color:#ffffff;text-align:left;">
                     <p style="margin:0 0 14px;font-family:Georgia,'Times New Roman',serif;font-size:14px;color:#4A4A4A;line-height:1.6;">
-                      Handgeschriebene Briefe fallen in Bundestagsbüros auf. Inmitten unpersönlicher Drucksachen signalisieren sie echtes Engagement. &rarr; <a href="https://www.brief-nach-berlin.de/tipps" style="color:#2D5016;text-decoration:underline;">Tipps für den perfekten Brief</a>
+                      Handgeschriebene Briefe fallen in Bundestagsbüros auf. Inmitten unpersönlicher Drucksachen signalisieren sie echtes Engagement.
                     </p>
                     <p style="margin:0 0 20px;font-family:Georgia,'Times New Roman',serif;font-size:14px;color:#4A4A4A;line-height:1.6;">
-                      Toll, dass du dir die Zeit für unsere Demokratie nimmst. Melde dich super gerne bei <a href="https://www.heyspeak.io/l/WIOENjqJn6z6WKtkWgDEFg?email=on" target="_blank" rel="noopener noreferrer" style="color:#2D5016;text-decoration:underline;">Fragen oder weiteren Anregungen</a>. Beste Grüße aus Bremen ✌️
+                      Toll, dass du dir die Zeit für unsere Demokratie nimmst. Beste Grüße aus Bremen ✌️
                     </p>
                     <p style="margin:0;font-family:'Caveat','Brush Script MT','Lucida Handwriting',cursive;font-size:32px;color:#1D3557;line-height:1.1;">
                       Thomas
@@ -454,15 +450,6 @@ exports[`Erwachsenen-Mail bleibt unverändert mit Feedback-Token (Sterne-Bar): h
                 </tr>
 
                 
-
-                
-                <tr>
-                  <td colspan="7" class="bnb-pad" style="padding:0 32px 16px;background-color:#ffffff;text-align:left;">
-                    <p style="margin:0;font-family:Georgia,'Times New Roman',serif;font-size:14px;color:#4A4A4A;line-height:1.6;">
-                      Du willst Anna Müller auch persönlich sprechen? <a href="https://www.brief-nach-berlin.de/aktiv-werden?mdb=42#wahlkreisbuero" target="_blank" rel="noopener noreferrer" style="color:#2D5016;text-decoration:underline;">Hier findest du das Wahlkreisbüro und die Bürgersprechstunde.</a>
-                    </p>
-                  </td>
-                </tr>
 
                 <!-- Cause-recruit block: motivate sender to invite Wahlkreis-people to write their own letters -->
                 <tr>
@@ -488,16 +475,21 @@ exports[`Erwachsenen-Mail bleibt unverändert mit Feedback-Token (Sterne-Bar): h
                           </td>
                         </tr>
                       </table>
-                      <!-- Secondary links: weiterführende Seiten, normale Schriftgröße, eine Zeile -->
-                      <p style="margin:16px 0 0;font-family:Georgia,'Times New Roman',serif;font-size:14px;color:#4A4A4A;line-height:1.6;text-align:center;">
-                        <a href="https://www.brief-nach-berlin.de/aktiv-werden" target="_blank" rel="noopener noreferrer" style="color:#2D5016;text-decoration:underline;">Was du sonst noch tun kannst</a>
-                        &nbsp;·&nbsp;
-                        <a href="https://www.brief-nach-berlin.de/andere-tools" target="_blank" rel="noopener noreferrer" style="color:#2D5016;text-decoration:underline;">Weitere Tools</a>
-                      </p>
                       <div class="bnb-bleed" style="margin:18px -22px -20px;font-size:0;line-height:0;">
                         <img src="https://www.brief-nach-berlin.de/images/email-bundestag-banner.png" alt="" width="556" height="130" style="display:block;width:100%;max-width:556px;height:auto;border:0;outline:none;text-decoration:none;-ms-interpolation-mode:bicubic;border-bottom-left-radius:6px;border-bottom-right-radius:6px;">
                       </div>
                     </div>
+                  </td>
+                </tr>
+
+                <tr>
+                  <td colspan="7" class="bnb-pad" style="padding:0 32px 28px;background-color:#ffffff;">
+                    <h2 style="margin:0 0 12px;padding-bottom:10px;border-bottom:1px solid #EDEAE6;font-family:Georgia,'Times New Roman',serif;font-size:16px;color:#2D5016;font-weight:bold;">Gut zu wissen</h2>
+                    
+                    <p style="margin:0 0 10px;font-family:Georgia,'Times New Roman',serif;font-size:14px;color:#4A4A4A;line-height:1.5;">🤝 <strong>Anna Müller persönlich treffen</strong><br>Mehr Chancen für dein Anliegen. <a href="https://www.brief-nach-berlin.de/aktiv-werden?mdb=42#wahlkreisbuero" target="_blank" rel="noopener noreferrer" style="color:#2D5016;text-decoration:underline;">Sprechstunde finden</a></p>
+                    <p style="margin:0 0 10px;font-family:Georgia,'Times New Roman',serif;font-size:14px;color:#4A4A4A;line-height:1.5;">🚆 <strong>Kostenlos nach Berlin</strong><br><span class="bnb-desk">Abgeordnete laden zur Informationsfahrt ein. <a href="https://www.brief-nach-berlin.de/bundestag-besuch-kostenlos" target="_blank" rel="noopener noreferrer" style="color:#2D5016;text-decoration:underline;">So kommst du mit</a></span><span class="bnb-mob" style="display:none;">Abgeordnete laden nach Berlin ein, <a href="https://www.brief-nach-berlin.de/bundestag-besuch-kostenlos" target="_blank" rel="noopener noreferrer" style="color:#2D5016;text-decoration:underline;">so kommst du mit</a></span></p>
+                    <p style="margin:0 0 6px;padding-top:12px;border-top:1px solid #EDEAE6;font-family:Georgia,'Times New Roman',serif;font-size:13px;color:#666666;line-height:1.8;"><strong style="color:#4A4A4A;">Weitere Infos + Tipps für dich:</strong><br><span style="white-space:nowrap;"><a href="https://www.brief-nach-berlin.de/wer-darf-mdb-schreiben" target="_blank" rel="noopener noreferrer" style="color:#2D5016;text-decoration:underline;">Wer darf MdBs schreiben?</a></span> &middot; <span style="white-space:nowrap;"><a href="https://www.brief-nach-berlin.de/tipps" target="_blank" rel="noopener noreferrer" style="color:#2D5016;text-decoration:underline;">Tipps für den perfekten Brief</a></span> &middot; <span style="white-space:nowrap;"><a href="https://www.brief-nach-berlin.de/brief-verbessern" target="_blank" rel="noopener noreferrer" style="color:#2D5016;text-decoration:underline;">Brief persönlicher machen</a></span> &middot; <span style="white-space:nowrap;"><a href="https://www.brief-nach-berlin.de/aktiv-werden" target="_blank" rel="noopener noreferrer" style="color:#2D5016;text-decoration:underline;">Weitere Aktionen</a></span> &middot; <span style="white-space:nowrap;"><a href="https://www.brief-nach-berlin.de/andere-tools" target="_blank" rel="noopener noreferrer" style="color:#2D5016;text-decoration:underline;">Andere Tools</a></span></p>
+                    <p style="margin:0;font-family:Georgia,'Times New Roman',serif;font-size:13px;color:#666666;line-height:1.7;">Du hast Fragen oder Ideen? <a href="https://www.heyspeak.io/l/WIOENjqJn6z6WKtkWgDEFg?email=on" target="_blank" rel="noopener noreferrer" style="color:#2D5016;text-decoration:underline;">Schreib mir sehr gern</a></p>
                   </td>
                 </tr>
 
@@ -534,7 +526,7 @@ exports[`Erwachsenen-Mail bleibt unverändert mit Feedback-Token (Sterne-Bar): h
                       <strong>Hinweis:</strong> Dieser Entwurf ist von KI erstellt und ohne Gewähr. Bitte prüfe Inhalt, Fakten und Adresse (<a href="https://www.abgeordnetenwatch.de/profile/anna-mueller" target="_blank" rel="noopener noreferrer" style="color:#888888;">abgeordnetenwatch.de</a>), bevor du deinen Brief schreibst. Die Verantwortung für den Inhalt liegt bei dir. Es gelten die <a href="https://www.brief-nach-berlin.de/nutzungsbedingungen" style="color:#888888;">Nutzungsbedingungen</a>.
                     </p>
                     <p style="margin:0;font-family:Georgia,'Times New Roman',serif;font-size:12px;color:#aaaaaa;line-height:1.5;">
-                      <a href="https://www.brief-nach-berlin.de/datenschutz" style="color:#888888;">Datenschutz</a>: Dein Brief und dein Anliegen werden nicht gespeichert. Nur wenn du dein Anliegen freiwillig auf die Karte setzt, speichere ich ein kurzes Themensignal. Kein Newsletter: In 2-3 Tagen kommt nur noch eine Mail mit der Bitte um eine Bewertung. · <a href="https://example.org/datenloeschen?t=fixed" style="color:#888888;">Meine gespeicherten Daten löschen</a> · <a href="https://www.brief-nach-berlin.de/wer-darf-mdb-schreiben" style="color:#888888;">Wer darf MdBs schreiben?</a>
+                      <a href="https://www.brief-nach-berlin.de/datenschutz" style="color:#888888;">Datenschutz</a>: Dein Brief und dein Anliegen werden nicht gespeichert. Nur wenn du dein Anliegen freiwillig auf die Karte setzt, speichere ich ein kurzes Themensignal. Kein Newsletter: In 2-3 Tagen kommt nur noch eine Mail mit der Bitte um eine Bewertung. · <a href="https://example.org/datenloeschen?t=fixed" style="color:#888888;">Meine gespeicherten Daten löschen</a>
                     </p>
                   </td>
                 </tr>
@@ -626,7 +618,7 @@ exports[`Erwachsenen-Mail bleibt unverändert ohne Feedback-Token (Profil-Button
                 <!-- Intro: warm founder voice -->
                 <tr>
                   <td colspan="7" class="bnb-pad" style="padding:0 32px 20px;background-color:#ffffff;">
-                    <p style="margin:0;font-family:Georgia,'Times New Roman',serif;font-size:14px;color:#4A4A4A;line-height:1.6;">Lies ihn gründlich durch und pass ihn an, damit es dein Brief wird. Dieser Entwurf dient als Schnellstart, <a href="https://www.brief-nach-berlin.de/brief-verbessern" target="_blank" rel="noopener noreferrer" style="color:#2D5016;text-decoration:underline;">verbessere ihn gern</a>, damit er sich wirklich nach dir anhört.<span class="bnb-desk"><br>Bitte bewerte anschließend deinen Brief 🙏 Danke, dass du dich engagierst!</span><span class="bnb-mob" style="display:none;"><br>Danke, dass du dich engagierst 🙏</span></p>
+                    <p style="margin:0;font-family:Georgia,'Times New Roman',serif;font-size:14px;color:#4A4A4A;line-height:1.6;">Lies ihn gründlich durch und pass ihn an, damit es dein Brief wird. Der Entwurf ist dein Schnellstart, weitere Tipps findest du ganz unten.<span class="bnb-desk"><br>Bitte bewerte anschließend deinen Brief 🙏 Danke, dass du dich engagierst!</span><span class="bnb-mob" style="display:none;"><br>Danke, dass du dich engagierst 🙏</span></p>
                   </td>
                 </tr>
 
@@ -645,7 +637,7 @@ exports[`Erwachsenen-Mail bleibt unverändert ohne Feedback-Token (Profil-Button
                 <!-- Brief anpassen CTA: only for German, because the target flow is German-only. -->
                 <tr>
                   <td colspan="7" class="bnb-pad" style="padding:8px 32px 8px;background-color:#ffffff;text-align:center;">
-                    <p style="margin:0;font-family:Georgia,'Times New Roman',serif;font-size:14px;color:#4A4A4A;line-height:1.6;text-align:center;">Nicht ganz dein Ton? Hier deinen &rarr; <a href="https://www.brief-nach-berlin.de/brief/anpassen#email=test%40example.org" target="_blank" rel="noopener noreferrer" style="color:#2D5016;text-decoration:underline;">Briefentwurf schnell anpassen</a></p>
+                    <p style="margin:0;font-family:Georgia,'Times New Roman',serif;font-size:14px;color:#4A4A4A;line-height:1.6;text-align:center;">Nicht ganz dein Ton? <span class="bnb-desk">Hier deinen &rarr; <a href="https://www.brief-nach-berlin.de/brief/anpassen#email=test%40example.org" target="_blank" rel="noopener noreferrer" style="color:#2D5016;text-decoration:underline;">Briefentwurf schnell anpassen</a></span><span class="bnb-mob" style="display:none;">&rarr; Hier <a href="https://www.brief-nach-berlin.de/brief/anpassen#email=test%40example.org" target="_blank" rel="noopener noreferrer" style="color:#2D5016;text-decoration:underline;">schnell anpassen</a></span></p>
                   </td>
                 </tr>
 
@@ -705,10 +697,10 @@ exports[`Erwachsenen-Mail bleibt unverändert ohne Feedback-Token (Profil-Button
                 <tr>
                   <td colspan="7" class="bnb-pad" style="padding:8px 32px 16px;background-color:#ffffff;text-align:left;">
                     <p style="margin:0 0 14px;font-family:Georgia,'Times New Roman',serif;font-size:14px;color:#4A4A4A;line-height:1.6;">
-                      Handgeschriebene Briefe fallen in Bundestagsbüros auf. Inmitten unpersönlicher Drucksachen signalisieren sie echtes Engagement. &rarr; <a href="https://www.brief-nach-berlin.de/tipps" style="color:#2D5016;text-decoration:underline;">Tipps für den perfekten Brief</a>
+                      Handgeschriebene Briefe fallen in Bundestagsbüros auf. Inmitten unpersönlicher Drucksachen signalisieren sie echtes Engagement.
                     </p>
                     <p style="margin:0 0 20px;font-family:Georgia,'Times New Roman',serif;font-size:14px;color:#4A4A4A;line-height:1.6;">
-                      Toll, dass du dir die Zeit für unsere Demokratie nimmst. Melde dich super gerne bei <a href="https://www.heyspeak.io/l/WIOENjqJn6z6WKtkWgDEFg?email=on" target="_blank" rel="noopener noreferrer" style="color:#2D5016;text-decoration:underline;">Fragen oder weiteren Anregungen</a>. Beste Grüße aus Bremen ✌️
+                      Toll, dass du dir die Zeit für unsere Demokratie nimmst. Beste Grüße aus Bremen ✌️
                     </p>
                     <p style="margin:0;font-family:'Caveat','Brush Script MT','Lucida Handwriting',cursive;font-size:32px;color:#1D3557;line-height:1.1;">
                       Thomas
@@ -720,15 +712,6 @@ exports[`Erwachsenen-Mail bleibt unverändert ohne Feedback-Token (Profil-Button
                 </tr>
 
                 
-
-                
-                <tr>
-                  <td colspan="7" class="bnb-pad" style="padding:0 32px 16px;background-color:#ffffff;text-align:left;">
-                    <p style="margin:0;font-family:Georgia,'Times New Roman',serif;font-size:14px;color:#4A4A4A;line-height:1.6;">
-                      Du willst Anna Müller auch persönlich sprechen? <a href="https://www.brief-nach-berlin.de/aktiv-werden?mdb=42#wahlkreisbuero" target="_blank" rel="noopener noreferrer" style="color:#2D5016;text-decoration:underline;">Hier findest du das Wahlkreisbüro und die Bürgersprechstunde.</a>
-                    </p>
-                  </td>
-                </tr>
 
                 <!-- Cause-recruit block: motivate sender to invite Wahlkreis-people to write their own letters -->
                 <tr>
@@ -754,16 +737,21 @@ exports[`Erwachsenen-Mail bleibt unverändert ohne Feedback-Token (Profil-Button
                           </td>
                         </tr>
                       </table>
-                      <!-- Secondary links: weiterführende Seiten, normale Schriftgröße, eine Zeile -->
-                      <p style="margin:16px 0 0;font-family:Georgia,'Times New Roman',serif;font-size:14px;color:#4A4A4A;line-height:1.6;text-align:center;">
-                        <a href="https://www.brief-nach-berlin.de/aktiv-werden" target="_blank" rel="noopener noreferrer" style="color:#2D5016;text-decoration:underline;">Was du sonst noch tun kannst</a>
-                        &nbsp;·&nbsp;
-                        <a href="https://www.brief-nach-berlin.de/andere-tools" target="_blank" rel="noopener noreferrer" style="color:#2D5016;text-decoration:underline;">Weitere Tools</a>
-                      </p>
                       <div class="bnb-bleed" style="margin:18px -22px -20px;font-size:0;line-height:0;">
                         <img src="https://www.brief-nach-berlin.de/images/email-bundestag-banner.png" alt="" width="556" height="130" style="display:block;width:100%;max-width:556px;height:auto;border:0;outline:none;text-decoration:none;-ms-interpolation-mode:bicubic;border-bottom-left-radius:6px;border-bottom-right-radius:6px;">
                       </div>
                     </div>
+                  </td>
+                </tr>
+
+                <tr>
+                  <td colspan="7" class="bnb-pad" style="padding:0 32px 28px;background-color:#ffffff;">
+                    <h2 style="margin:0 0 12px;padding-bottom:10px;border-bottom:1px solid #EDEAE6;font-family:Georgia,'Times New Roman',serif;font-size:16px;color:#2D5016;font-weight:bold;">Gut zu wissen</h2>
+                    
+                    <p style="margin:0 0 10px;font-family:Georgia,'Times New Roman',serif;font-size:14px;color:#4A4A4A;line-height:1.5;">🤝 <strong>Anna Müller persönlich treffen</strong><br>Mehr Chancen für dein Anliegen. <a href="https://www.brief-nach-berlin.de/aktiv-werden?mdb=42#wahlkreisbuero" target="_blank" rel="noopener noreferrer" style="color:#2D5016;text-decoration:underline;">Sprechstunde finden</a></p>
+                    <p style="margin:0 0 10px;font-family:Georgia,'Times New Roman',serif;font-size:14px;color:#4A4A4A;line-height:1.5;">🚆 <strong>Kostenlos nach Berlin</strong><br><span class="bnb-desk">Abgeordnete laden zur Informationsfahrt ein. <a href="https://www.brief-nach-berlin.de/bundestag-besuch-kostenlos" target="_blank" rel="noopener noreferrer" style="color:#2D5016;text-decoration:underline;">So kommst du mit</a></span><span class="bnb-mob" style="display:none;">Abgeordnete laden nach Berlin ein, <a href="https://www.brief-nach-berlin.de/bundestag-besuch-kostenlos" target="_blank" rel="noopener noreferrer" style="color:#2D5016;text-decoration:underline;">so kommst du mit</a></span></p>
+                    <p style="margin:0 0 6px;padding-top:12px;border-top:1px solid #EDEAE6;font-family:Georgia,'Times New Roman',serif;font-size:13px;color:#666666;line-height:1.8;"><strong style="color:#4A4A4A;">Weitere Infos + Tipps für dich:</strong><br><span style="white-space:nowrap;"><a href="https://www.brief-nach-berlin.de/wer-darf-mdb-schreiben" target="_blank" rel="noopener noreferrer" style="color:#2D5016;text-decoration:underline;">Wer darf MdBs schreiben?</a></span> &middot; <span style="white-space:nowrap;"><a href="https://www.brief-nach-berlin.de/tipps" target="_blank" rel="noopener noreferrer" style="color:#2D5016;text-decoration:underline;">Tipps für den perfekten Brief</a></span> &middot; <span style="white-space:nowrap;"><a href="https://www.brief-nach-berlin.de/brief-verbessern" target="_blank" rel="noopener noreferrer" style="color:#2D5016;text-decoration:underline;">Brief persönlicher machen</a></span> &middot; <span style="white-space:nowrap;"><a href="https://www.brief-nach-berlin.de/aktiv-werden" target="_blank" rel="noopener noreferrer" style="color:#2D5016;text-decoration:underline;">Weitere Aktionen</a></span> &middot; <span style="white-space:nowrap;"><a href="https://www.brief-nach-berlin.de/andere-tools" target="_blank" rel="noopener noreferrer" style="color:#2D5016;text-decoration:underline;">Andere Tools</a></span></p>
+                    <p style="margin:0;font-family:Georgia,'Times New Roman',serif;font-size:13px;color:#666666;line-height:1.7;">Du hast Fragen oder Ideen? <a href="https://www.heyspeak.io/l/WIOENjqJn6z6WKtkWgDEFg?email=on" target="_blank" rel="noopener noreferrer" style="color:#2D5016;text-decoration:underline;">Schreib mir sehr gern</a></p>
                   </td>
                 </tr>
 
@@ -800,7 +788,7 @@ exports[`Erwachsenen-Mail bleibt unverändert ohne Feedback-Token (Profil-Button
                       <strong>Hinweis:</strong> Dieser Entwurf ist von KI erstellt und ohne Gewähr. Bitte prüfe Inhalt, Fakten und Adresse (<a href="https://www.abgeordnetenwatch.de/profile/anna-mueller" target="_blank" rel="noopener noreferrer" style="color:#888888;">abgeordnetenwatch.de</a>), bevor du deinen Brief schreibst. Die Verantwortung für den Inhalt liegt bei dir. Es gelten die <a href="https://www.brief-nach-berlin.de/nutzungsbedingungen" style="color:#888888;">Nutzungsbedingungen</a>.
                     </p>
                     <p style="margin:0;font-family:Georgia,'Times New Roman',serif;font-size:12px;color:#aaaaaa;line-height:1.5;">
-                      <a href="https://www.brief-nach-berlin.de/datenschutz" style="color:#888888;">Datenschutz</a>: Dein Brief und dein Anliegen werden nicht gespeichert. Nur wenn du dein Anliegen freiwillig auf die Karte setzt, speichere ich ein kurzes Themensignal. Kein Newsletter: In 2-3 Tagen kommt nur noch eine Mail mit der Bitte um eine Bewertung. · <a href="https://example.org/datenloeschen?t=fixed" style="color:#888888;">Meine gespeicherten Daten löschen</a> · <a href="https://www.brief-nach-berlin.de/wer-darf-mdb-schreiben" style="color:#888888;">Wer darf MdBs schreiben?</a>
+                      <a href="https://www.brief-nach-berlin.de/datenschutz" style="color:#888888;">Datenschutz</a>: Dein Brief und dein Anliegen werden nicht gespeichert. Nur wenn du dein Anliegen freiwillig auf die Karte setzt, speichere ich ein kurzes Themensignal. Kein Newsletter: In 2-3 Tagen kommt nur noch eine Mail mit der Bitte um eine Bewertung. · <a href="https://example.org/datenloeschen?t=fixed" style="color:#888888;">Meine gespeicherten Daten löschen</a>
                     </p>
                   </td>
                 </tr>

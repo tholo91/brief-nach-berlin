@@ -36,15 +36,15 @@ describe("buildEmailHtml - MdB-Zeile Wahlkreisbüro", () => {
   it("mdb: Link auf Wahlkreisbüro-Anker und Name im Intro", () => {
     const html = buildEmailHtml(params({}));
     expect(html).toContain(`${ANCHOR}"`);
-    expect(html).toContain("Du willst Anna Müller auch persönlich sprechen?");
-    expect(html).toContain("Hier findest du das Wahlkreisbüro und die Bürgersprechstunde.");
+    expect(html).toContain("Anna Müller persönlich treffen");
+    expect(html).toContain("Sprechstunde finden");
   });
 
   it("mdb: Titel und Name werden HTML-escaped", () => {
     const html = buildEmailHtml(
       params({ politicianTitle: "Dr.", politicianName: "Anna <b>Müller</b>" }),
     );
-    expect(html).toContain("Du willst Dr. Anna &lt;b&gt;Müller&lt;/b&gt; auch persönlich sprechen?");
+    expect(html).toContain("Dr. Anna &lt;b&gt;Müller&lt;/b&gt; persönlich treffen");
   });
 
   it("mdb: Link trägt die MdB-ID und weder PLZ noch Token", () => {
@@ -119,8 +119,8 @@ describe("buildEmailHtml - MdB-Zeile Wahlkreisbüro", () => {
   );
 
   it.each([
-    ["en", "Want to talk to Anna Müller in person?"],
-    ["tr", "Anna Müller ile yüz yüze görüşmek ister misiniz?"],
+    ["en", "Meet Anna Müller in person"],
+    ["tr", "Anna Müller ile yüz yüze görüşün"],
   ] as const)("mdb: %s-Locale", (locale, intro) => {
     const html = buildEmailHtml(params({ locale }));
     expect(html).toContain(intro);

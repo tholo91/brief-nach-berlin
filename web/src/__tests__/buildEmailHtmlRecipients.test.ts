@@ -395,3 +395,32 @@ describe("buildEmailHtml — Empfänger-Arten", () => {
     expect(html).toContain("/debug?d=");
   });
 });
+
+describe("buildEmailHtml — Block „Gut zu wissen“", () => {
+  const TRIP = "/bundestag-besuch-kostenlos";
+
+  it("mdb: Gespräch und Berlin-Fahrt stehen im Block, Intro ohne Link", () => {
+    const html = buildEmailHtml(baseParams({}));
+    expect(html).toContain("Gut zu wissen</h2>");
+    expect(html).toContain(TRIP);
+    expect(html.indexOf("#wahlkreisbuero")).toBeGreaterThan(html.indexOf("Gut zu wissen"));
+    expect(html).toContain("Schreib mir sehr gern");
+    expect(html).toContain("weitere Tipps findest du ganz unten.");
+    expect(html.indexOf("/brief-verbessern")).toBeGreaterThan(html.indexOf("Gut zu wissen"));
+  });
+
+  it("mdl und Rathaus: keine MdB-Zeilen", () => {
+    for (const recipientKind of ["mdl", "rathaus"] as const) {
+      const html = buildEmailHtml(baseParams({ recipientKind }));
+      expect(html).toContain("Gut zu wissen</h2>");
+      expect(html).not.toContain(TRIP);
+      expect(html).not.toContain("#wahlkreisbuero");
+    }
+  });
+
+  it("jung: keine Berlin-Fahrt (erst ab 18)", () => {
+    const html = buildEmailHtml(baseParams({ audience: "jung" }));
+    expect(html).toContain("#wahlkreisbuero");
+    expect(html).not.toContain(TRIP);
+  });
+});

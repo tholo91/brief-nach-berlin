@@ -4,10 +4,10 @@ milestone: v1.0
 current_phase: 05
 status: verifying
 stopped_at: Completed 05-04-PLAN.md
-last_updated: "2026-10-27T15:24:31.966Z"
+last_updated: "2026-10-27T17:23:38.099Z"
 last_activity: 2026-10-27
 last_activity_desc: Quick 261013-wuq lokal implementiert und geprüft; manueller Release offen
-state_head: e54ed428f1635a0d52c0ce3f048b5977c17a53b2
+state_head: 6e58f043d9c6c657b8ebde42f379ac7bf63eee2f
 progress:
   total_phases: 33
   completed_phases: 4
@@ -49,7 +49,7 @@ Der level-aware E-Mail-Betreff ist dagegen bereits implementiert und getestet; d
 Phase: 05 — EXECUTING
 Plan: 4 of 4
 Status: Phase complete — ready for verification
-Last activity: 2026-10-27 - Completed quick task 261027-mrw: Repo-Hygiene, Todos und Outreach lokal
+Last activity: 2026-10-27 - Completed quick task 261027-ore: Schulseiten /jung, /schule, /eltern UX-Umbau
 
 Progress: [███████░░░] 68%
 
@@ -231,6 +231,7 @@ Recent decisions affecting current work:
 | 261027-h8l | Schule-Jung-Eltern-Paket: /eltern, /mitbestimmen-ohne-wahlrecht, /projekttag-demokratie, Aufwertung /jung und /schule, Bilder | 2026-10-27 | 8d59b10 | [261027-h8l-schule-jung-eltern-paket-eltern-seite-zw](./quick/261027-h8l-schule-jung-eltern-paket-eltern-seite-zw/) |
 | 261027-itd | Follow-up-Mail kürzer mit kompakter Spendenbox, Spendenkarte auf /feedback-Danke-Seite bei 4-5 Sternen | 2026-10-27 | 64502b0 | [261027-itd-spendenbitte-schaerfen-follow-up-kuerzen](./quick/261027-itd-spendenbitte-schaerfen-follow-up-kuerzen/) |
 | 261027-mrw | Repo-Hygiene: .planning/local, Todos und Outreach lokal, Nutzer anonymisiert | 2026-10-27 | e54ed42 | [261027-mrw-repo-hygiene-privater-ordner-planning-lo](./quick/261027-mrw-repo-hygiene-privater-ordner-planning-lo/) |
+| 261027-ore | Schulseiten /jung, /schule, /eltern UX-Umbau: Navbar-CTA, Überschriften ohne Handschrift, Formular im ersten Screen, Ablauf-Umschalter, zwei Einstiege für Eltern | 2026-10-27 | 6e58f04 | [261027-ore-schulseiten-jung-schule-eltern-ux-umbau](./quick/261027-ore-schulseiten-jung-schule-eltern-ux-umbau/) |
 
 ## Session Continuity
 

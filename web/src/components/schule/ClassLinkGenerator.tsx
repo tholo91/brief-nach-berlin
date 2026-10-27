@@ -86,7 +86,7 @@ export function ClassLinkGenerator() {
         }}
       />
       <div className="p-5 sm:p-7">
-        <h2 id="schule-generator" className="font-typewriter text-2xl font-bold text-waldgruen-dark">
+        <h2 id="schule-generator" className="font-typewriter text-xl font-bold text-waldgruen-dark sm:text-2xl">
           Klassenlink erstellen
         </h2>
         <p className="mt-2 font-body text-sm leading-relaxed text-warmgrau/80">

@@ -56,14 +56,23 @@ describe("/schule page", () => {
     const { default: SchulePage } = await import("@/app/(site)/schule/page");
     const html = renderToStaticMarkup(createElement(SchulePage));
     const order = [
-      "Deine Klasse schreibt",
-      "Klassenlink erstellen",
+      "Deine Klasse schreibt an die Politik.",
+      'href="#klassenlink"',
+      'href="#ablauf"',
+      'id="klassenlink"',
       "Vorher kurz prüfen",
-      "Ablauf in 45 Minuten",
-      "Mit 90 Minuten",
+      'id="ablauf"',
+      "Ablauf der Stunde",
+      LESSON_45[0].phase,
+      "Zusätzlich zum Ablauf oben:",
+      LESSON_90_EXTRAS[0],
       "/schule/ablauf",
-      "Warum Handschrift",
-      "Für die Schulleitung",
+      "Warum das wirkt",
+      "Warum Handschrift?",
+      'id="schulleitung"',
+      'id="schule-leitung"',
+      'href="/eltern#sicher"',
+      "projekttag-demokratie",
       "Häufige Fragen",
       'href="/jung"',
     ];
@@ -74,6 +83,14 @@ describe("/schule page", () => {
       last = index;
     }
     expect(html).toContain("application/ld+json");
+    expect(html).toMatch(/aria-pressed="true"[^>]*>45 Min/);
+    expect(html).toMatch(/<div[^>]*hidden=""[^>]*id="schule-90-extras"|<div[^>]*id="schule-90-extras"[^>]*hidden=""/);
+    expect(html).toContain(
+      "Der Klassenlink enthält nur Klassenstufe, Schul-Postleitzahl und den Zeitpunkt der Erstellung, keine Namen. Er gilt 14 Tage.",
+    );
+    expect(html).not.toContain("<table");
+    expect(html).not.toContain("font-handwriting");
     expect(html).not.toContain("—");
+    expect(html).not.toContain(" – ");
   });
 });

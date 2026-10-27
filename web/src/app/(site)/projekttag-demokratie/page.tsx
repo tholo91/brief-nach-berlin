@@ -54,7 +54,7 @@ const faqs = [
     aNode: (
       <>
         {DATA_SUMMARY} Mehr steht im Abschnitt{" "}
-        <Link href="/schule#schule-leitung" className={linkClass}>
+        <Link href="/schule#schulleitung" className={linkClass}>
           Für die Schulleitung
         </Link>{" "}
         und in der{" "}

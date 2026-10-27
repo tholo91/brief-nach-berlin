@@ -9,6 +9,8 @@ import { InteractiveStars } from "./InteractiveStars";
 import { PrivacyDisclosure } from "./PrivacyDisclosure";
 import { ChipToggle } from "./ChipToggle";
 import { FOUNDER_FEEDBACK_URL } from "@/lib/config";
+import { SUPPORT_CONTENT } from "@/lib/support-content";
+import { DonationCard } from "@/components/support/DonationCard";
 import {
   NEGATIVE_FEEDBACK_TAGS,
   POSITIVE_FEEDBACK_TAGS,
@@ -626,7 +628,7 @@ function buildImproveHref(
   return query ? `/brief-verbessern?${query}` : "/brief-verbessern";
 }
 
-function ThankYouCard({
+export function ThankYouCard({
   onSkip,
   rating,
   feedbackTags,
@@ -660,7 +662,11 @@ function ThankYouCard({
     }
   }, []);
 
+  const showRecoveryCard = rating <= 3;
+  const autoRedirect = rating <= 3;
+
   useEffect(() => {
+    if (!autoRedirect) return;
     if (paused) {
       if (timeoutRef.current) {
         clearTimeout(timeoutRef.current);
@@ -678,9 +684,8 @@ function ThankYouCard({
         timeoutRef.current = null;
       }
     };
-  }, [paused, onSkip]);
+  }, [autoRedirect, paused, onSkip]);
 
-  const showRecoveryCard = rating <= 3;
   const improveHref = buildImproveHref(feedbackTags, body);
   const hasMappableFeedback =
     feedbackTags.some((tag) => ALLOWED_HINT_TAGS.has(tag)) || body.trim() !== "";
@@ -739,7 +744,14 @@ function ThankYouCard({
               </Link>
             </p>
           </div>
-        ) : null}
+        ) : (
+          <DonationCard
+            titleId="feedback-support-title"
+            title={SUPPORT_CONTENT.feedbackDonation.headline}
+            body={SUPPORT_CONTENT.feedbackDonation.text}
+            className="mx-auto mb-8 max-w-md text-left animate-feedback-in"
+          />
+        )}
         <div
           className="flex flex-col sm:flex-row gap-3 max-w-md mx-auto"
           onMouseEnter={() => setPaused(true)}
@@ -751,36 +763,48 @@ function ThankYouCard({
             href={FOUNDER_FEEDBACK_URL}
             target="_blank"
             rel="noopener noreferrer"
-            className="flex-1 inline-flex items-center justify-center bg-waldgruen text-creme font-semibold px-4 py-3 rounded-xl hover:bg-waldgruen-dark transition-colors cursor-pointer text-sm min-h-[44px]"
+            className={
+              autoRedirect
+                ? "flex-1 inline-flex items-center justify-center bg-waldgruen text-creme font-semibold px-4 py-3 rounded-xl hover:bg-waldgruen-dark transition-colors cursor-pointer text-sm min-h-[44px]"
+                : "flex-1 inline-flex items-center justify-center border border-waldgruen/30 bg-white text-waldgruen-dark font-medium px-4 py-3 rounded-xl hover:bg-waldgruen/5 hover:border-waldgruen transition-colors cursor-pointer text-sm min-h-[44px]"
+            }
           >
             Generelles Feedback zum Tool
           </a>
           <button
             type="button"
             onClick={onSkip}
-            className="flex-1 inline-flex items-center justify-center border border-waldgruen/30 bg-white text-waldgruen-dark font-medium px-4 py-3 rounded-xl hover:bg-waldgruen/5 hover:border-waldgruen transition-colors cursor-pointer text-sm min-h-[44px]"
+            className={
+              autoRedirect
+                ? "flex-1 inline-flex items-center justify-center border border-waldgruen/30 bg-white text-waldgruen-dark font-medium px-4 py-3 rounded-xl hover:bg-waldgruen/5 hover:border-waldgruen transition-colors cursor-pointer text-sm min-h-[44px]"
+                : "flex-1 inline-flex items-center justify-center text-warmgrau font-medium px-4 py-3 rounded-xl underline underline-offset-2 hover:text-waldgruen-dark transition-colors cursor-pointer text-sm min-h-[44px]"
+            }
           >
             Zurück zur Startseite
           </button>
         </div>
-        <p className="font-body text-xs text-warmgrau/50 mt-6">
-          {paused
-            ? "Pausiert. Nimm dir Zeit."
-            : "Du wirst gleich automatisch weitergeleitet."}
-        </p>
+        {autoRedirect && (
+          <p className="font-body text-xs text-warmgrau/50 mt-6">
+            {paused
+              ? "Pausiert. Nimm dir Zeit."
+              : "Du wirst gleich automatisch weitergeleitet."}
+          </p>
+        )}
       </div>
       {/* Redirect progress: keyframe scaleX 0 → 1 over REDIRECT_MS. Pausing
           freezes the CSS animation at its current frame and resumes from
           there, mirroring the JS timer. */}
-      <div
-        aria-hidden="true"
-        className="absolute bottom-0 left-0 right-0 h-1 bg-waldgruen/10"
-      >
+      {autoRedirect && (
         <div
-          className="h-full bg-waldgruen origin-left animate-progress"
-          style={{ animationPlayState: paused ? "paused" : "running" }}
-        />
-      </div>
+          aria-hidden="true"
+          className="absolute bottom-0 left-0 right-0 h-1 bg-waldgruen/10"
+        >
+          <div
+            className="h-full bg-waldgruen origin-left animate-progress"
+            style={{ animationPlayState: paused ? "paused" : "running" }}
+          />
+        </div>
+      )}
     </div>
   );
 }

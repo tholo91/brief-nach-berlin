@@ -66,6 +66,11 @@ export const SUPPORT_CONTENT = {
       href: "/datenschutz",
     },
   ],
+  feedbackDonation: {
+    headline: "Schön, dass dir dein Brief gefällt",
+    text:
+      "Ich mache Brief-nach-Berlin allein und ehrenamtlich und zahle KI, Mailversand und Server bisher selbst. Damit es für die Nächsten kostenlos bleibt: Schon 5 € helfen.",
+  },
   ctas: {
     donate: {
       label: "Jetzt über WE AID spenden",

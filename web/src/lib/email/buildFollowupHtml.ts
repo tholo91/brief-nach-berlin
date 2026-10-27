@@ -9,7 +9,7 @@ import { buildStarBarHtml } from "./buildEmailHtml";
 import type { SendLetterEmailParams } from "./sendLetterEmail";
 import { getEmailCopy, resolveEmailLocale } from "./mailLocale";
 import type { Locale } from "@/lib/i18n/locale";
-import { buildDonationButtonLabelHtml } from "./financingNotice";
+import { buildFinancingNoticeHtml } from "./financingNotice";
 import { SUPPORT_CONTENT, SUPPORT_EMAIL_COPY } from "@/lib/support-content";
 import {
   buildSocialFollowHtml,
@@ -92,10 +92,9 @@ export function buildFollowupHtml(params: BuildFollowupParams): FollowupRender {
     `4 Sterne: ${base}/feedback?r=4&t=${token}&s=2`,
     `5 Sterne: ${base}/feedback?r=5&t=${token}&s=2`,
     ``,
-    supportCopy.followup.heading,
-    supportCopy.followup.body,
+    supportCopy.heading,
+    supportCopy.followupBody,
     `${supportCopy.compactButton}: ${SUPPORT_CONTENT.ctas.donate.href}`,
-    supportCopy.followup.providerLabel,
     ``,
     ...(meetMdb ? [`${meetMdb.sentence} ${meetMdb.linkLabel}: ${meetMdb.url}`, ``] : []),
     copy.ignore,
@@ -132,6 +131,9 @@ export function buildFollowupHtml(params: BuildFollowupParams): FollowupRender {
       .bnb-share-label { display: none !important; }
       .bnb-share-btn { padding: 14px 0 !important; }
       .bnb-share-icon { width: 24px !important; height: 24px !important; margin: 0 !important; }
+      .bnb-inner-pad { padding-left: 14px !important; padding-right: 14px !important; }
+      .bnb-support-action { display: block !important; width: 100% !important; padding-left: 0 !important; padding-right: 0 !important; }
+      .bnb-support-action-primary { padding-bottom: 8px !important; }
     }
     /* Mobile: ausreichend schmale Viewports lassen das absolut platzierte
        Envelope-Bild mit dem zentrierten Titel kollidieren. Bei <= 480px
@@ -214,26 +216,14 @@ export function buildFollowupHtml(params: BuildFollowupParams): FollowupRender {
             </td>
           </tr>
 
-          <!-- Donation ask: heading, 5-euro anchor, banner, button, provider line -->
+          <!-- Donation box, same component as the campaign creator mails -->
           <tr>
-            <td style="padding:12px 32px 24px;background-color:#ffffff;">
-              <h2 style="margin:0 0 8px;font-family:Georgia,'Times New Roman',serif;font-size:16px;color:#2D5016;font-weight:bold;">${escapeHtml(supportCopy.followup.heading)}</h2>
-              <p style="margin:0 0 16px;font-family:Georgia,'Times New Roman',serif;font-size:15px;color:#4A4A4A;line-height:1.75;">${escapeHtml(supportCopy.followup.body)}</p>
-              <a href="${SUPPORT_CONTENT.ctas.donate.href}" target="_blank" rel="noopener noreferrer" style="display:block;text-decoration:none;border:0;"><img src="${base}/images/spenden-banner-thomas.jpg" alt="${escapeHtml(supportCopy.followup.bannerAlt)}" width="536" height="198" style="display:block;width:100%;max-width:100%;height:auto;border:0;outline:none;border-radius:6px;" /></a>
-              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="width:100%;border-collapse:collapse;margin-top:18px;">
-                <tr>
-                  <td align="center">
-                    <table role="presentation" cellpadding="0" cellspacing="0" style="border-collapse:separate;">
-                      <tr>
-                        <td bgcolor="#2D5016" style="border-radius:6px;text-align:center;">
-                          <a href="${SUPPORT_CONTENT.ctas.donate.href}" target="_blank" rel="noopener noreferrer" style="display:inline-block;background-color:#2D5016;color:#ffffff;font-family:Georgia,'Times New Roman',serif;font-size:16px;font-weight:bold;text-decoration:none;padding:13px 32px;border-radius:6px;line-height:1.4;text-align:center;">${buildDonationButtonLabelHtml(supportCopy.compactButton, base)}</a>
-                        </td>
-                      </tr>
-                    </table>
-                  </td>
-                </tr>
-              </table>
-              <p style="margin:10px 0 0;font-family:Georgia,'Times New Roman',serif;font-size:12px;color:#8a8a8a;line-height:1.4;text-align:center;">${escapeHtml(supportCopy.followup.providerLabel)}</p>
+            <td style="padding:0 32px 20px;background-color:#ffffff;">
+              ${buildFinancingNoticeHtml(
+                { ...supportCopy, body: supportCopy.followupBody },
+                { src: `${base}${SUPPORT_CONTENT.founder.avatarPath}`, alt: SUPPORT_CONTENT.founder.name },
+                { showHeart: true },
+              )}
             </td>
           </tr>
 

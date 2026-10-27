@@ -93,14 +93,8 @@ export const SUPPORT_EMAIL_COPY = {
     button: "Jetzt spenden",
     compactButton: "Jetzt spenden",
     infoButton: "Mehr Informationen",
-    followup: {
-      heading: "Damit Brief-nach-Berlin kostenlos bleibt",
-      body:
-        "Brief-nach-Berlin ist kostenlos und soll es bleiben. Ich betreibe es allein und ehrenamtlich und trage die Kosten für KI, Mailversand und Server bisher selbst. Wenn dir dein Brief geholfen hat: Schon 5 € helfen, dass es für die Nächsten weiterläuft.",
-      providerLabel: "über WE AID, Spendenquittung möglich",
-      bannerAlt:
-        "Polaroid von Thomas mit „Moin, ich bin Thomas“ und drei Bewertungen von Menschen, die mit Brief-nach-Berlin einen Brief geschrieben haben",
-    },
+    followupBody:
+      "Ich betreibe Brief-nach-Berlin allein und ehrenamtlich und trage die Kosten für KI, Mailversand und Server bisher selbst. Wenn dir dein Brief geholfen hat: Schon 5 € helfen, dass es für die Nächsten weiterläuft.",
   },
   en: {
     heading: "Support Brief-nach-Berlin",
@@ -111,14 +105,8 @@ export const SUPPORT_EMAIL_COPY = {
     button: "Donate now",
     compactButton: "Donate now",
     infoButton: "More information",
-    followup: {
-      heading: "Keeping Brief-nach-Berlin free",
-      body:
-        "Brief-nach-Berlin is free and should stay that way. I run it on my own as a volunteer and so far I pay for the AI, email delivery and servers myself. If your letter helped you: even €5 helps keep it running for the next people.",
-      providerLabel: "via WE AID, donation receipt available",
-      bannerAlt:
-        "Polaroid photo of Thomas and three reviews from people who wrote a letter with Brief-nach-Berlin",
-    },
+    followupBody:
+      "I run Brief-nach-Berlin on my own as a volunteer and so far pay for the AI, email delivery and servers myself. If your letter helped you: even €5 helps keep it running for the next people.",
   },
   tr: {
     heading: "Brief-nach-Berlin'i destekle",
@@ -129,14 +117,8 @@ export const SUPPORT_EMAIL_COPY = {
     button: "Şimdi bağış yap",
     compactButton: "Şimdi bağış yap",
     infoButton: "Daha fazla bilgi",
-    followup: {
-      heading: "Brief-nach-Berlin ücretsiz kalsın diye",
-      body:
-        "Brief-nach-Berlin ücretsizdir ve öyle kalmalı. Projeyi tek başıma ve gönüllü olarak yürütüyorum, yapay zekâ, e-posta gönderimi ve sunucu masraflarını şimdiye kadar kendim karşılıyorum. Mektubunuz işinize yaradıysa: 5 € bile, sonraki kişiler için de devam etmesine yardımcı olur.",
-      providerLabel: "WE AID üzerinden, bağış makbuzu alınabilir",
-      bannerAlt:
-        "Thomas'ın polaroid fotoğrafı ve Brief-nach-Berlin ile mektup yazan kişilerden üç değerlendirme",
-    },
+    followupBody:
+      "Brief-nach-Berlin'i tek başıma ve gönüllü olarak yürütüyorum, yapay zekâ, e-posta gönderimi ve sunucu masraflarını şimdiye kadar kendim karşılıyorum. Mektubunuz işinize yaradıysa: 5 € bile, sonraki kişiler için de devam etmesine yardımcı olur.",
   },
 } as const;
 

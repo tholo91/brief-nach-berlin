@@ -1,5 +1,4 @@
 import { buildEmailHtml, buildLetterEmailText } from "@/lib/email/buildEmailHtml";
-import { buildFollowupHtml } from "@/lib/email/buildFollowupHtml";
 import type { SendLetterEmailParams } from "@/lib/email/sendLetterEmail";
 import { SUPPORT_CONTENT } from "@/lib/support-content";
 
@@ -85,7 +84,7 @@ describe("letter email variant CTA", () => {
     }
   });
 
-  it("keeps resent letter emails and follow-up emails free of the financing notice", () => {
+  it("keeps resent letter emails free of the financing notice", () => {
     const params = makeParams();
     const resentDebug = { ...makeDebug(), resent: true };
     const donationUrl = "https://spende.we-aid.org/Brief-nach-Berlin";
@@ -95,8 +94,6 @@ describe("letter email variant CTA", () => {
       expect(buildEmailHtml({ ...params, debug: resentDebug })).not.toContain(url);
       expect(buildLetterEmailText({ ...params, debug: resentDebug })).not.toContain(url);
     }
-    expect(buildFollowupHtml({ token: "signed-token" }).html).not.toContain(learnMoreUrl);
-    expect(buildFollowupHtml({ token: "signed-token" }).text).not.toContain(learnMoreUrl);
   });
 
   it("localizes the plaintext sign-off", () => {

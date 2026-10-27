@@ -4,10 +4,10 @@ milestone: v1.0
 current_phase: 05
 status: verifying
 stopped_at: Completed 05-04-PLAN.md
-last_updated: "2026-10-27T22:08:31.724Z"
+last_updated: "2026-10-27T23:38:40.273Z"
 last_activity: 2026-10-27
 last_activity_desc: Quick 261013-wuq lokal implementiert und geprüft; manueller Release offen
-state_head: a55cd480a24bd48bbd9da55e9d1974366296e027
+state_head: e0e6bfa0f147ad1b2ae25fff76f95a00a4a286cb
 progress:
   total_phases: 33
   completed_phases: 4
@@ -49,7 +49,7 @@ Der level-aware E-Mail-Betreff ist dagegen bereits implementiert und getestet; d
 Phase: 05 — EXECUTING
 Plan: 4 of 4
 Status: Phase complete — ready for verification
-Last activity: 2026-10-27 - Completed quick task 261027-w2f: Briefmail: Nebenlinks in Block Gut zu wissen
+Last activity: 2026-10-28 - Completed quick task 261028-0pn: Review-Fixes vor Push: Themen-Limit-Hinweis /jung, Schulleitung-Anker, Resend-Audience
 
 Progress: [███████░░░] 68%
 
@@ -234,6 +234,7 @@ Recent decisions affecting current work:
 | 261027-ore | Schulseiten /jung, /schule, /eltern UX-Umbau: Navbar-CTA, Überschriften ohne Handschrift, Formular im ersten Screen, Ablauf-Umschalter, zwei Einstiege für Eltern | 2026-10-27 | 6e58f04 | [261027-ore-schulseiten-jung-schule-eltern-ux-umbau](./quick/261027-ore-schulseiten-jung-schule-eltern-ux-umbau/) |
 | 261027-t9h | Schulseiten Feinschliff: Intro, aufklappbare Themen, wechselnde Platzhalter, Kontakt auf /schule, Eltern-Texte | 2026-10-27 | 71aee3c | [261027-t9h-schulseiten-feinschliff-intro-aufklappba](./quick/261027-t9h-schulseiten-feinschliff-intro-aufklappba/) |
 | 261027-w2f | Briefmail: Nebenlinks in Block Gut zu wissen | 2026-10-27 | a55cd48 | [261027-w2f-briefmail-nebenlinks-in-block-gut-zu-wis](./quick/261027-w2f-briefmail-nebenlinks-in-block-gut-zu-wis/) |
+| 261028-0pn | Review-Fixes vor Push: Themen-Limit-Hinweis /jung, Schulleitung-Anker, Resend-Audience | 2026-10-28 | e0e6bfa | [261028-0pn-review-fixes-vor-push-themen-limit-hinwe](./quick/261028-0pn-review-fixes-vor-push-themen-limit-hinwe/) |
 
 ## Session Continuity
 

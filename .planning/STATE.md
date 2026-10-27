@@ -4,10 +4,10 @@ milestone: v1.0
 current_phase: 05
 status: verifying
 stopped_at: Completed 05-04-PLAN.md
-last_updated: "2026-10-27T23:38:40.273Z"
-last_activity: 2026-10-27
+last_updated: "2026-10-27T23:52:40.866Z"
+last_activity: 2026-10-28
 last_activity_desc: Quick 261013-wuq lokal implementiert und geprüft; manueller Release offen
-state_head: e0e6bfa0f147ad1b2ae25fff76f95a00a4a286cb
+state_head: 82df97be6f3be4aa6ab967142d9e28ff06c50a69
 progress:
   total_phases: 33
   completed_phases: 4
@@ -49,7 +49,7 @@ Der level-aware E-Mail-Betreff ist dagegen bereits implementiert und getestet; d
 Phase: 05 — EXECUTING
 Plan: 4 of 4
 Status: Phase complete — ready for verification
-Last activity: 2026-10-28 - Completed quick task 261028-0pn: Review-Fixes vor Push: Themen-Limit-Hinweis /jung, Schulleitung-Anker, Resend-Audience
+Last activity: 2026-10-28 - Completed quick task 261028-0x0: Briefmail Kampagnen-Kasten: Text neu, Link vorne, Logo, Herz
 
 Progress: [███████░░░] 68%
 
@@ -235,6 +235,7 @@ Recent decisions affecting current work:
 | 261027-t9h | Schulseiten Feinschliff: Intro, aufklappbare Themen, wechselnde Platzhalter, Kontakt auf /schule, Eltern-Texte | 2026-10-27 | 71aee3c | [261027-t9h-schulseiten-feinschliff-intro-aufklappba](./quick/261027-t9h-schulseiten-feinschliff-intro-aufklappba/) |
 | 261027-w2f | Briefmail: Nebenlinks in Block Gut zu wissen | 2026-10-27 | a55cd48 | [261027-w2f-briefmail-nebenlinks-in-block-gut-zu-wis](./quick/261027-w2f-briefmail-nebenlinks-in-block-gut-zu-wis/) |
 | 261028-0pn | Review-Fixes vor Push: Themen-Limit-Hinweis /jung, Schulleitung-Anker, Resend-Audience | 2026-10-28 | e0e6bfa | [261028-0pn-review-fixes-vor-push-themen-limit-hinwe](./quick/261028-0pn-review-fixes-vor-push-themen-limit-hinwe/) |
+| 261028-0x0 | Briefmail Kampagnen-Kasten: Text neu, Link vorne, Logo, Herz | 2026-10-28 | 82df97b | [261028-0x0-briefmail-kampagnen-kasten-text-neu-link](./quick/261028-0x0-briefmail-kampagnen-kasten-text-neu-link/) |
 
 ## Session Continuity
 

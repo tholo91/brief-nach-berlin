@@ -5,8 +5,8 @@ type Props = {
   selectedIds: readonly string[];
   limitReached: boolean;
   onToggle: (topicId: string) => void;
-  /** "numbered": Kampagnen-Kacheln mit Nummer und Eyebrow. "plain": ruhige Chips ohne Nummern. */
-  variant: "numbered" | "plain";
+  /** "numbered": Kampagnen-Kacheln mit Nummer und Eyebrow. "scroll": eine horizontal scrollbare Chip-Reihe ohne Nummern. */
+  variant: "numbered" | "scroll";
 };
 
 export function TopicStarterGrid({ topics, selectedIds, limitReached, onToggle, variant }: Props) {
@@ -17,7 +17,7 @@ export function TopicStarterGrid({ topics, selectedIds, limitReached, onToggle, 
       className={
         numbered
           ? "mt-4 grid grid-cols-2 gap-2.5 lg:grid-cols-3"
-          : "mt-3 grid grid-cols-2 gap-2"
+          : "chip-scroll-fade scrollbar-hide -mx-1 mt-2 flex snap-x gap-2 overflow-x-auto py-1 pl-1 pr-10 sm:mt-3"
       }
     >
       {topics.map((topic, index) => {
@@ -32,7 +32,7 @@ export function TopicStarterGrid({ topics, selectedIds, limitReached, onToggle, 
               aria-pressed={selected}
               disabled={disabled}
               onClick={() => onToggle(topic.id)}
-              className={`flex min-h-14 items-center justify-between gap-2 rounded-lg border px-3 py-2 text-left font-body text-[0.95rem] font-semibold leading-snug transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-waldgruen focus-visible:ring-offset-2 ${
+              className={`flex h-11 shrink-0 snap-start items-center gap-2 whitespace-nowrap rounded-lg border px-3.5 font-body text-[0.95rem] font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-waldgruen focus-visible:ring-offset-2 ${
                 selected
                   ? "border-waldgruen bg-waldgruen text-creme"
                   : disabled
@@ -40,7 +40,7 @@ export function TopicStarterGrid({ topics, selectedIds, limitReached, onToggle, 
                     : "border-waldgruen/25 bg-white text-warmgrau hover:border-waldgruen/50 hover:bg-waldgruen/5"
               }`}
             >
-              <span className="min-w-0 break-words">{topic.title}</span>
+              <span>{topic.title}</span>
               <span
                 aria-hidden="true"
                 className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-full border text-xs font-bold ${

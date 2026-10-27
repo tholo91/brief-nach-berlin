@@ -143,7 +143,9 @@ export default async function JungPage({
           Erzähl, was dich an der Schule, in deinem Ort oder bei deiner Zukunft stört. Ich finde heraus, wer in der Politik dafür zuständig ist, und schreibe dir einen Entwurf. Du schreibst ihn von Hand ab und schickst ihn mit der Post.
         </p>
 
-        <JungExperience entry={entry} />
+        <div id="schreiben" className="scroll-mt-32">
+          <JungExperience entry={entry} />
+        </div>
 
         <section aria-labelledby="jung-so-geht-s" className="mt-14">
           <h2 id="jung-so-geht-s" className="font-typewriter text-2xl font-bold text-waldgruen-dark">So geht&apos;s</h2>
@@ -184,7 +186,7 @@ export default async function JungPage({
           </ul>
         </section>
 
-        <section aria-labelledby="jung-faq" className="mt-14">
+        <section aria-labelledby="jung-faq" className="reveal mt-14">
           <h2 id="jung-faq" className="mb-4 font-typewriter text-2xl font-bold text-waldgruen-dark">Häufige Fragen</h2>
           <FAQAccordion items={faqs} />
         </section>

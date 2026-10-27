@@ -8,6 +8,47 @@ import {
   type TopicStarterState,
 } from "@/lib/topics/topicStarters";
 import { JUNG_MAX_TOPICS, JUNG_TOPICS } from "@/lib/schule/jungTopics";
+import { createElement } from "react";
+import { renderToStaticMarkup } from "react-dom/server";
+import { TopicStarterGrid } from "@/components/topics/TopicStarterGrid";
+
+const gridTopics = [
+  { id: "a", title: "Thema A", eyebrow: "Eins" },
+  { id: "b", title: "Thema B", eyebrow: "Zwei" },
+  { id: "c", title: "Thema C", eyebrow: "Drei" },
+];
+
+function renderGrid(variant: "numbered" | "scroll") {
+  return renderToStaticMarkup(
+    createElement(TopicStarterGrid, {
+      topics: gridTopics,
+      selectedIds: ["a"],
+      limitReached: true,
+      onToggle: () => {},
+      variant,
+    }),
+  );
+}
+
+describe("TopicStarterGrid scroll", () => {
+  it("renders one horizontally scrollable chip row", () => {
+    const markup = renderGrid("scroll");
+
+    expect(markup).toContain("overflow-x-auto");
+    expect(markup).toContain("snap-x");
+    expect(markup).toContain("chip-scroll-fade");
+    expect(markup).toContain("whitespace-nowrap");
+    expect(markup).toContain('aria-pressed="true"');
+    expect(markup.match(/disabled=""/g)).toHaveLength(2);
+    expect(markup).not.toContain("grid-cols-2");
+  });
+});
+
+describe("TopicStarterGrid numbered", () => {
+  it("renders the same markup as before the scroll variant (SchreibMerz gate)", () => {
+    expect(renderGrid("numbered")).toMatchSnapshot();
+  });
+});
 
 const topics: TopicStarter[] = [
   { id: "a", title: "A", issueText: "Satz A. " },

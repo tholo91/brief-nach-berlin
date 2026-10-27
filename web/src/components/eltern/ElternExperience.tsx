@@ -125,7 +125,7 @@ export function ElternExperience() {
             Wähl bis zu zwei Themen. Jedes fügt einen Satzanfang ein, den du selbst zu Ende schreibst.
           </p>
           <TopicStarterGrid
-            variant="plain"
+            variant="scroll"
             topics={ELTERN_TOPICS}
             selectedIds={selectedTopicIds}
             limitReached={selectionLimitReached}

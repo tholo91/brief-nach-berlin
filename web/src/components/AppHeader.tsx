@@ -18,6 +18,15 @@ const SCHOOL_NAV_LINKS = [
 
 const SCHOOL_NAV_PATHS = new Set([...SCHOOL_NAV_LINKS.map((link) => link.href), "/mitbestimmen-ohne-wahlrecht", "/projekttag-demokratie"]);
 
+const PRIMARY_CTA_CLASS =
+  "inline-flex items-center justify-center rounded-lg bg-waldgruen px-3 py-2 font-body text-sm font-semibold text-creme transition-colors hover:bg-waldgruen-dark active:scale-[0.98] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-waldgruen sm:px-4";
+
+const SCHOOL_PAGE_CTAS: Record<string, { href: string; label: string; mobileLabel: string }> = {
+  "/jung": { href: "#schreiben", label: "Brief entwerfen", mobileLabel: "Schreiben" },
+  "/eltern": { href: "#schreiben", label: "Brief entwerfen", mobileLabel: "Schreiben" },
+  "/schule": { href: "#klassenlink", label: "Klassenlink erstellen", mobileLabel: "Klassenlink" },
+};
+
 const CAMPAIGN_TOOL_PATHS = new Set(["starten", "verifizieren", "verwalten"]);
 
 function isPublicCampaignPage(pathname: string | null): boolean {
@@ -32,6 +41,7 @@ export default function AppHeader({ showLanguageSwitcher = false }: { showLangua
   const showManagerSlots = pathname === "/kampagne/verwalten";
   const showSchoolNav = pathname !== null && SCHOOL_NAV_PATHS.has(pathname);
   const showMoreCampaigns = isPublicCampaignPage(pathname);
+  const schoolCta = pathname !== null && Object.hasOwn(SCHOOL_PAGE_CTAS, pathname) ? SCHOOL_PAGE_CTAS[pathname] : null;
 
   return (
     <>
@@ -95,11 +105,17 @@ export default function AppHeader({ showLanguageSwitcher = false }: { showLangua
           {showCampaignCta && (
             <Link
               href="/kampagne/starten"
-              className="inline-flex items-center justify-center rounded-lg bg-waldgruen px-3 py-2 font-body text-sm font-semibold text-creme transition-colors hover:bg-waldgruen-dark active:scale-[0.98] sm:px-4"
+              className={PRIMARY_CTA_CLASS}
             >
               <span className="sm:hidden">Starten</span>
               <span className="hidden sm:inline">Kampagne starten</span>
             </Link>
+          )}
+          {schoolCta && (
+            <a href={schoolCta.href} className={PRIMARY_CTA_CLASS}>
+              <span className="sm:hidden">{schoolCta.mobileLabel}</span>
+              <span className="hidden sm:inline">{schoolCta.label}</span>
+            </a>
           )}
           </div>
         </nav>

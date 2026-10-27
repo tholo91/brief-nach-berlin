@@ -200,6 +200,62 @@ video::-webkit-media-controls-start-playback-button {
   to { opacity: 0; transform: translate3d(0, 6px, 0) scale(0.98); }
 }
 
+/* ---------- Schulseiten: ruhige Scroll-Animationen (nur CSS) ---------- */
+@keyframes reveal-in {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: none; }
+}
+
+@keyframes step-connector-draw {
+  from { transform: scaleY(0); }
+  to   { transform: scaleY(1); }
+}
+
+@keyframes fade-in-row {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: none; }
+}
+
+/* Immer sichtbar; die Animation kommt nur dazu, wenn der Browser sie kann. */
+.step-connector {
+  background: repeating-linear-gradient(
+    to bottom,
+    var(--color-airmail-rot) 0 6px,
+    transparent 6px 10px,
+    var(--color-airmail-blau) 10px 16px,
+    transparent 16px 20px
+  );
+  transform-origin: top;
+}
+
+/* Longhands, weil die animation-Kurzschreibweise animation-timeline zurücksetzt. */
+@supports (animation-timeline: view()) {
+  @media screen and (prefers-reduced-motion: no-preference) {
+    .reveal {
+      animation-name: reveal-in;
+      animation-timing-function: linear;
+      animation-fill-mode: both;
+      animation-duration: auto;
+      animation-timeline: view();
+      animation-range: entry 0% cover 25%;
+    }
+    .step-connector {
+      animation-name: step-connector-draw;
+      animation-timing-function: linear;
+      animation-fill-mode: both;
+      animation-duration: auto;
+      animation-timeline: view();
+      animation-range: entry 10% cover 50%;
+    }
+  }
+}
+
+@media screen and (prefers-reduced-motion: no-preference) {
+  .fade-in-row {
+    animation: fade-in-row 260ms cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+}
+
 @keyframes map-dialog-backdrop-in {
   from { opacity: 0; }
   to { opacity: 1; }
@@ -253,7 +309,10 @@ video::-webkit-media-controls-start-playback-button {
   .map-dialog-sheet,
   .map-dialog-panel,
   .map-dialog-backdrop,
-  .map-dialog-backdrop::backdrop {
+  .map-dialog-backdrop::backdrop,
+  .reveal,
+  .step-connector,
+  .fade-in-row {
     animation: none !important;
   }
 }
@@ -265,6 +324,12 @@ video::-webkit-media-controls-start-playback-button {
 }
 .scrollbar-hide::-webkit-scrollbar {
   display: none; /* Chrome/Safari */
+}
+
+/* Fade at the right edge of a horizontally scrolling chip row. */
+.chip-scroll-fade {
+  -webkit-mask-image: linear-gradient(to right, #000 calc(100% - 2.5rem), transparent);
+  mask-image: linear-gradient(to right, #000 calc(100% - 2.5rem), transparent);
 }
 
 /* The landing field is two lines tall, so its placeholder may wrap to a second

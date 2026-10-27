@@ -72,6 +72,7 @@ import {
   POLITICAL_SELF_EFFICACY_LABELS,
   POLITICAL_SELF_EFFICACY_VALUES,
 } from "@/lib/feedback/politicalActivation";
+import { AGE_GROUP_LABELS, AGE_GROUP_VALUES } from "@/lib/feedback/ageGroup";
 
 export const dynamic = "force-dynamic";
 
@@ -202,6 +203,7 @@ const SECTION_LINKS = [
   { id: "feedback", label: "Feedback" },
   { id: "nach-dem-brief", label: "Nach dem Brief" },
   { id: "wirkung", label: "Wirkung" },
+  { id: "alter", label: "Alter" },
   { id: "definitionen", label: "Definitionen" },
 ] as const;
 
@@ -541,6 +543,11 @@ const powerlessnessOptions = POLITICAL_POWERLESSNESS_FREQUENCY_VALUES.map(
     label: POLITICAL_POWERLESSNESS_FREQUENCY_LABELS[key],
   }),
 );
+
+const ageGroupOptions = AGE_GROUP_VALUES.map((key) => ({
+  key,
+  label: AGE_GROUP_LABELS[key],
+}));
 
 const positiveSignals = [
   { key: "sofort_verschickbar", label: "Sofort verschickbar" },
@@ -1584,6 +1591,37 @@ export default async function InternalStatsPage({ searchParams }: InternalStatsP
                 })}
               </div>
             )}
+          </div>
+        </Section>
+
+        <Section id="alter">
+          <SectionHeading
+            eyebrow="Wer schreibt"
+            title="Alter"
+            detail="Freiwillige Angabe im ausgefüllten Feedback. Die Prozente zählen nur Bewertungen mit Altersangabe."
+          />
+          <div className="grid gap-8 lg:grid-cols-2 lg:gap-12">
+            <article>
+              <SubHeading detail="„Wie alt bist du?“ · nur Bewertungen mit Angabe">
+                Altersverteilung
+              </SubHeading>
+              {stats.ageGroups.answerCount === 0 ? (
+                <EmptyState>Noch keine Altersangaben.</EmptyState>
+              ) : (
+                <SurveyDistributionBars
+                  values={stats.ageGroups.distribution}
+                  options={ageGroupOptions}
+                  total={stats.ageGroups.answerCount}
+                  color="#2D6A4F"
+                  mode={mode}
+                  baselineValues={baseline?.ageGroups.distribution}
+                  baselineTotal={baseline?.ageGroups.answerCount}
+                />
+              )}
+              <BasisNote>
+                Basis: {formatNumber(stats.ageGroups.answerCount)} Bewertungen mit Altersangabe
+              </BasisNote>
+            </article>
           </div>
         </Section>
 

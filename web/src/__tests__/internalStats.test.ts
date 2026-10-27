@@ -360,3 +360,57 @@ describe("aggregateInternalStats", () => {
     expect(stats.reviewTimelineDayCounts).toEqual({ "2026-08-03": 1 });
   });
 });
+
+describe("age groups", () => {
+  it("counts only valid age answers and uses them as percent base", () => {
+    const stats = aggregateInternalStats([
+      row({ age_group: "under_20" }),
+      row({ age_group: "under_20" }),
+      row({ age_group: "20_29" }),
+      row({ age_group: null }),
+      row({}),
+      row({ age_group: "legacy_value" }),
+    ], 0, "2026-08-30T12:00:00Z");
+
+    expect(stats.ageGroups.distribution).toEqual({
+      under_20: 2,
+      "20_29": 1,
+      "30_44": 0,
+      "45_59": 0,
+      "60_74": 0,
+      "75_plus": 0,
+    });
+    expect(stats.ageGroups.answerCount).toBe(3);
+  });
+
+  it("applies the time range filter", () => {
+    const stats = aggregateInternalStats(
+      [
+        row({ age_group: "45_59", created_at: "2026-07-01T10:00:00Z" }),
+        row({ age_group: "60_74", created_at: "2026-08-20T10:00:00Z" }),
+      ],
+      0,
+      "2026-08-30T12:00:00Z",
+      [],
+      { timeRange: 30, source: { kind: "all" } },
+    );
+
+    expect(stats.ageGroups.distribution["45_59"]).toBe(0);
+    expect(stats.ageGroups.distribution["60_74"]).toBe(1);
+    expect(stats.ageGroups.answerCount).toBe(1);
+  });
+
+  it("returns zeros for an empty dataset", () => {
+    const stats = aggregateInternalStats([], 0, "2026-08-30T12:00:00Z");
+
+    expect(stats.ageGroups.distribution).toEqual({
+      under_20: 0,
+      "20_29": 0,
+      "30_44": 0,
+      "45_59": 0,
+      "60_74": 0,
+      "75_plus": 0,
+    });
+    expect(stats.ageGroups.answerCount).toBe(0);
+  });
+});

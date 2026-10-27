@@ -1,3 +1,4 @@
+import { AGE_GROUP_VALUES, type AgeGroup } from "@/lib/feedback/ageGroup";
 import {
   POLITICAL_POWERLESSNESS_FREQUENCY_VALUES,
   POLITICAL_SELF_EFFICACY_VALUES,
@@ -18,6 +19,7 @@ export type InternalReviewRow = {
   feedback_tags: string[] | null;
   political_self_efficacy: PoliticalSelfEfficacy | null;
   political_powerlessness_frequency: PoliticalPowerlessnessFrequency | null;
+  age_group?: string | null;
   debug_payload: unknown;
 };
 
@@ -139,6 +141,11 @@ export type PoliticalActivationStats = {
   >;
 };
 
+export type AgeGroupStats = {
+  distribution: Record<AgeGroup, number>;
+  answerCount: number;
+};
+
 export type TimeRange = "all" | 30 | 90;
 
 export type SourceFilter =
@@ -190,6 +197,7 @@ export type InternalStats = {
   fetchedAt: string;
   letterSignals: LetterSignalStats;
   politicalActivation: PoliticalActivationStats;
+  ageGroups: AgeGroupStats;
   reviewSourceCounts: SourceCounts;
   reviewTimelineDayCounts: Record<string, number>;
   letterCounterDayRange: LetterCounterDayRange;
@@ -472,6 +480,24 @@ function isPoliticalPowerlessnessFrequency(
     (POLITICAL_POWERLESSNESS_FREQUENCY_VALUES as readonly string[]).includes(value);
 }
 
+function isAgeGroup(value: string | null | undefined): value is AgeGroup {
+  return value != null && (AGE_GROUP_VALUES as readonly string[]).includes(value);
+}
+
+function emptyAgeGroupStats(): AgeGroupStats {
+  return {
+    distribution: {
+      under_20: 0,
+      "20_29": 0,
+      "30_44": 0,
+      "45_59": 0,
+      "60_74": 0,
+      "75_plus": 0,
+    },
+    answerCount: 0,
+  };
+}
+
 function readPoliticalLevel(payload: unknown): PoliticalLevel | null {
   if (!payload || typeof payload !== "object") return null;
 
@@ -563,9 +589,15 @@ export function aggregateInternalStats(
   let unknownLevelCount = 0;
   const reviewDates: string[] = [];
   const politicalActivation = emptyPoliticalActivationStats();
+  const ageGroups = emptyAgeGroupStats();
 
   for (const row of filteredReviews) {
     if (row.created_at) reviewDates.push(row.created_at);
+
+    if (isAgeGroup(row.age_group)) {
+      ageGroups.distribution[row.age_group] += 1;
+      ageGroups.answerCount += 1;
+    }
 
     if (row.full_feedback_submitted === true) fullFeedbackCount += 1;
 
@@ -702,6 +734,7 @@ export function aggregateInternalStats(
     fetchedAt,
     letterSignals: aggregateLetterSignals(filteredSignals, filteredReviews),
     politicalActivation,
+    ageGroups,
     reviewSourceCounts,
     reviewTimelineDayCounts,
     letterCounterDayRange: collectLetterCounterDayRange(letterSignalRows),

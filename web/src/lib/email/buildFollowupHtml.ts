@@ -84,8 +84,6 @@ export function buildFollowupHtml(params: BuildFollowupParams): FollowupRender {
     ``,
     `${copy.created} (${base})`,
     ``,
-    copy.feedback,
-    ``,
     `1 Stern: ${base}/feedback?r=1&t=${token}&s=2`,
     `2 Sterne: ${base}/feedback?r=2&t=${token}&s=2`,
     `3 Sterne: ${base}/feedback?r=3&t=${token}&s=2`,
@@ -143,8 +141,6 @@ export function buildFollowupHtml(params: BuildFollowupParams): FollowupRender {
     @media only screen and (max-width: 480px) {
       .followup-envelope { display: none !important; }
       .followup-title-cell { padding: 0 !important; }
-      .bnb-feedback-break { display: inline !important; }
-      .bnb-feedback-space { display: none !important; }
     }
   </style>
 </head>
@@ -197,19 +193,16 @@ export function buildFollowupHtml(params: BuildFollowupParams): FollowupRender {
               <p style="margin:0 0 14px;font-family:Georgia,'Times New Roman',serif;font-size:15px;color:#4A4A4A;line-height:1.75;">
                 ${copy.created}
               </p>
-              <p style="margin:0 0 6px;font-family:Georgia,'Times New Roman',serif;font-size:15px;color:#4A4A4A;line-height:1.75;">
-                ${copy.feedback}
-              </p>
             </td>
           </tr>
 
           <!-- Primary rating action, full width -->
           <tr>
-            <td style="padding:8px 32px 20px;background-color:#ffffff;">
-              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="width:100%;border-collapse:separate;border-spacing:0;">
+            <td style="padding:4px 32px 24px;background-color:#ffffff;">
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="width:100%;border-collapse:collapse;">
                 <tr>
-                  <td class="followup-rating-column" width="100%" valign="middle" bgcolor="#FAF8F5" style="width:100%;background-color:#FAF8F5;border:1px solid #E0DCD7;border-radius:6px;padding:18px 16px;text-align:center;">
-                    ${buildStarBarHtml(token, 2, locale)}
+                  <td class="followup-rating-column" width="100%" valign="middle" style="width:100%;padding:0;text-align:center;">
+                    ${buildStarBarHtml(token, 2, locale, { showQuestion: false })}
                   </td>
                 </tr>
               </table>

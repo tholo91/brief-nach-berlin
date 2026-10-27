@@ -1,5 +1,6 @@
 import { APP_URL, DONATION_PROVIDER_URL } from "@/lib/config";
 import { buildFollowupHtml } from "@/lib/email/buildFollowupHtml";
+import { buildStarBarHtml } from "@/lib/email/buildEmailHtml";
 import { getEmailCopy } from "@/lib/email/mailLocale";
 import { SUPPORT_CONTENT, SUPPORT_EMAIL_COPY } from "@/lib/support-content";
 
@@ -80,5 +81,84 @@ describe("follow-up donation box", () => {
     expect(followup.text).toContain(copy.compactButton);
     expect(copy.followupBody).toContain(fiveEuro[locale]);
     expect(copy.followupBody).not.toMatch(/[–—]/);
+  });
+});
+
+describe("follow-up mail is shorter and calmer", () => {
+  const oldParagraph = {
+    de: "Wichtig für die Zukunft des Projekts",
+    en: "Your feedback helps shape the future",
+    tr: "Geri bildiriminiz bu projenin geleceğini",
+  } as const;
+  const preview = {
+    de: "Und eine Bitte von mir, falls dir der Brief geholfen hat.",
+    en: "And one request from me, in case the letter helped you.",
+    tr: "Mektup işinize yaradıysa, sizden bir ricam var.",
+  } as const;
+
+  it.each(["de", "en", "tr"] as const)("drops the feedback paragraph for %s", (locale) => {
+    const followup = buildFollowupHtml({ token: "signed-token", locale });
+
+    expect(followup.html).not.toContain(oldParagraph[locale]);
+    expect(followup.text).not.toContain(oldParagraph[locale]);
+    expect("feedback" in getEmailCopy(locale).followup).toBe(false);
+  });
+
+  it.each(["de", "en", "tr"] as const)("shows a plain star row without question for %s", (locale) => {
+    const html = buildFollowupHtml({ token: "signed-token", locale }).html;
+
+    expect(html).not.toContain("bnb-feedback-break");
+    expect(html).toContain(getEmailCopy(locale).feedbackHint);
+    for (let n = 1; n <= 5; n++) {
+      expect(html).toContain(`/feedback?r=${n}&t=signed-token&s=2`);
+    }
+  });
+
+  it("does not ask 'Wie findest du' above the follow-up stars", () => {
+    expect(buildFollowupHtml({ token: "signed-token" }).html).not.toContain("Wie findest du");
+  });
+
+  it("renders the rating cell without box styling", () => {
+    const html = buildFollowupHtml({ token: "signed-token" }).html;
+    const start = html.indexOf("followup-rating-column");
+    const tag = html.slice(start, html.indexOf(">", start));
+
+    expect(tag).not.toContain("border");
+    expect(tag).not.toContain("#FAF8F5");
+    expect(tag).not.toContain("border-radius");
+  });
+
+  it("keeps the letter mail star bar and makes the question optional", () => {
+    const withQuestion = buildStarBarHtml("t");
+    expect(withQuestion).toContain("bnb-feedback-break");
+    expect(withQuestion).toContain("Wie findest du");
+
+    const plain = buildStarBarHtml("t", 2, "de", { showQuestion: false });
+    expect(plain).not.toContain("bnb-feedback-break");
+    expect(plain).not.toContain("Wie findest du");
+    expect(plain).toContain("Dauert 10 Sek, hilft mir sehr");
+    expect(plain).toContain("/feedback?r=5&t=t&s=2");
+  });
+
+  it.each(["de", "en", "tr"] as const)("uses the new preview text for %s", (locale) => {
+    const html = buildFollowupHtml({ token: "signed-token", locale }).html;
+
+    expect(html).toContain(preview[locale]);
+    if (locale === "de") {
+      expect(html.indexOf(preview.de)).toBeLessThan(html.indexOf("<h1"));
+    }
+  });
+
+  it("keeps the subject unchanged", () => {
+    expect(buildFollowupHtml({ token: "signed-token" }).subject).toBe("Wie fandest du deinen Brief?");
+  });
+
+  it("uses the short donation body", () => {
+    expect(SUPPORT_EMAIL_COPY.de.followupBody).toBe(
+      "Ich mache das allein und ehrenamtlich und zahle KI, Mailversand und Server bisher selbst. Schon 5 € helfen.",
+    );
+    for (const locale of ["de", "en", "tr"] as const) {
+      expect(SUPPORT_EMAIL_COPY[locale].followupBody).not.toMatch(/\bwir\b/i);
+    }
   });
 });

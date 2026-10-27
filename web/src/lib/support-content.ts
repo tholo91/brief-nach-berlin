@@ -94,7 +94,7 @@ export const SUPPORT_EMAIL_COPY = {
     compactButton: "Jetzt spenden",
     infoButton: "Mehr Informationen",
     followupBody:
-      "Ich betreibe Brief-nach-Berlin allein und ehrenamtlich und trage die Kosten für KI, Mailversand und Server bisher selbst. Wenn dir dein Brief geholfen hat: Schon 5 € helfen, dass es für die Nächsten weiterläuft.",
+      "Ich mache das allein und ehrenamtlich und zahle KI, Mailversand und Server bisher selbst. Schon 5 € helfen.",
   },
   en: {
     heading: "Support Brief-nach-Berlin",
@@ -106,7 +106,7 @@ export const SUPPORT_EMAIL_COPY = {
     compactButton: "Donate now",
     infoButton: "More information",
     followupBody:
-      "I run Brief-nach-Berlin on my own as a volunteer and so far pay for the AI, email delivery and servers myself. If your letter helped you: even €5 helps keep it running for the next people.",
+      "I do this on my own as a volunteer and so far pay for the AI, email delivery and servers myself. Even €5 helps.",
   },
   tr: {
     heading: "Brief-nach-Berlin'i destekle",
@@ -118,7 +118,7 @@ export const SUPPORT_EMAIL_COPY = {
     compactButton: "Şimdi bağış yap",
     infoButton: "Daha fazla bilgi",
     followupBody:
-      "Brief-nach-Berlin'i tek başıma ve gönüllü olarak yürütüyorum, yapay zekâ, e-posta gönderimi ve sunucu masraflarını şimdiye kadar kendim karşılıyorum. Mektubunuz işinize yaradıysa: 5 € bile, sonraki kişiler için de devam etmesine yardımcı olur.",
+      "Bunu tek başıma ve gönüllü olarak yapıyorum, yapay zekâ, e-posta gönderimi ve sunucu masraflarını şimdiye kadar kendim karşılıyorum. 5 € bile yardımcı olur.",
   },
 } as const;
 

@@ -10,7 +10,7 @@ export const emailCopy = {
     feedbackQuestion: "Wie findest du<br>deinen Brief?",
     feedbackHint: "Dauert 10 Sek, hilft mir sehr",
     feedbackSubject: "Wie fandest du deinen Brief?",
-    feedbackPreview: "Dein Feedback mit nur 1 Klick, hilft mir sehr bei der Weiterentwicklung.",
+    feedbackPreview: "Und eine Bitte von mir, falls dir der Brief geholfen hat.",
     germanPage: (label: string) => label,
     subject: {
       standard: "Dein Brief nach Berlin ist fertig",
@@ -80,7 +80,6 @@ export const emailCopy = {
     followup: {
       greeting: "Moin 👋",
       created: "Vor ein paar Tagen hast du deinen Brief-nach-Berlin erstellt und das freut mich sehr. Ich hoffe, du hast ihn in deinem Stil personalisiert und handgeschrieben bereits eingeworfen?",
-      feedback: "Wichtig für die Zukunft des Projekts ist das Feedback von Menschen wie dir: Wie hat dir dein Brief gefallen? Sei bitte schonungslos ehrlich bei Kritik, gerne aber auch bei Lob 😉",
       ignore: "Falls du schon deinen Brief bewertet hast, kannst du diese Mail ignorieren.",
       meetMdb: (name: string) => `Wenn du dein Anliegen auch persönlich besprechen möchtest: Beim Büro von ${name} kannst du nach einer Bürgersprechstunde fragen.`,
       meetMdbLink: "Wahlkreisbüro finden",
@@ -101,7 +100,7 @@ export const emailCopy = {
     feedbackQuestion: "How was your<br>letter?",
     feedbackHint: "Takes 10 seconds and helps me a lot",
     feedbackSubject: "How did you find your letter?",
-    feedbackPreview: "Your feedback in one click helps me improve Brief-nach-Berlin.",
+    feedbackPreview: "And one request from me, in case the letter helped you.",
     germanPage: (label: string) => `${label} (in German)`,
     subject: {
       standard: "Your letter to Berlin is ready",
@@ -171,7 +170,6 @@ export const emailCopy = {
     followup: {
       greeting: "Hello 👋",
       created: "A few days ago, you created your letter with Brief-nach-Berlin. I hope you were able to personalise it and send it by post.",
-      feedback: "Your feedback helps shape the future of this project: How did you find your letter? Please be candid, whether you have criticism or praise 😉",
       ignore: "If you have already rated your letter, you can ignore this email.",
       meetMdb: (name: string) => `If you'd like to discuss your concern in person, you can ask ${name}'s office about a Bürgersprechstunde (open office hours).`,
       meetMdbLink: "Find the constituency office (in German)",
@@ -192,7 +190,7 @@ export const emailCopy = {
     feedbackQuestion: "Mektubunuzu<br>nasıl buldunuz?",
     feedbackHint: "10 saniye sürer, bana çok yardımcı olur",
     feedbackSubject: "Mektubunuzu nasıl buldunuz?",
-    feedbackPreview: "Tek tıklamayla geri bildiriminiz Brief-nach-Berlin'i geliştirmeme yardımcı olur.",
+    feedbackPreview: "Mektup işinize yaradıysa, sizden bir ricam var.",
     germanPage: (label: string) => `${label} (Almanca)`,
     subject: {
       standard: "Berlin'e mektubunuz hazır",
@@ -262,7 +260,6 @@ export const emailCopy = {
     followup: {
       greeting: "Merhaba 👋",
       created: "Birkaç gün önce Brief-nach-Berlin ile mektubunuzu oluşturdunuz. Umarım mektubu kişiselleştirip posta yoluyla gönderebildiniz.",
-      feedback: "Geri bildiriminiz bu projenin geleceğini şekillendirmeye yardımcı olur: Mektubunuzu nasıl buldunuz? Eleştiri veya övgü için lütfen açık olun 😉",
       ignore: "Mektubunuzu zaten değerlendirdiyseniz bu e-postayı yok sayabilirsiniz.",
       meetMdb: (name: string) => `Konunuzu yüz yüze de görüşmek isterseniz, ${name} ofisinden Bürgersprechstunde (halk görüşme saati) için randevu isteyebilirsiniz.`,
       meetMdbLink: "Seçim bölgesi ofisini bulun (Almanca)",

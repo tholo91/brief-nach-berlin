@@ -6,6 +6,10 @@ describe("success page experience", () => {
     join(process.cwd(), "src/components/wizard/Step3Success.tsx"),
     "utf8",
   );
+  const donationSource = readFileSync(
+    join(process.cwd(), "src/components/support/DonationCard.tsx"),
+    "utf8",
+  );
   const shellSource = readFileSync(
     join(process.cwd(), "src/components/wizard/WizardShell.tsx"),
     "utf8",
@@ -35,13 +39,17 @@ describe("success page experience", () => {
     expect(successSource).toContain("md:col-start-2 md:row-span-2 md:row-start-1");
     expect(successSource).toContain("md:pl-8 md:pt-12");
     expect(successSource).not.toContain("md:col-span-2");
-    expect(successSource).toContain("SUPPORT_CONTENT.ctas.donate.href");
-    expect(successSource).toContain("SUPPORT_CONTENT.ctas.learnMore.href");
-    expect(successSource).toContain("SUPPORT_EMAIL_COPY.de.compactButton");
-    expect(successSource).toContain("SUPPORT_EMAIL_COPY.de.infoButton");
-    expect(successSource).toContain("SUPPORT_CONTENT.founder.portraitPath");
-    expect(successSource).toContain("mt-4 flex items-start gap-4");
-    expect(successSource).toContain('id="success-support-title" className="font-body text-lg');
+    expect(donationSource).toContain("SUPPORT_CONTENT.ctas.donate.href");
+    expect(donationSource).toContain("SUPPORT_CONTENT.ctas.learnMore.href");
+    expect(donationSource).toContain("SUPPORT_EMAIL_COPY.de.compactButton");
+    expect(donationSource).toContain("SUPPORT_EMAIL_COPY.de.infoButton");
+    expect(donationSource).toContain("SUPPORT_CONTENT.founder.portraitPath");
+    expect(donationSource).toContain("mt-4 flex items-start gap-4");
+    expect(successSource).toContain('titleId="success-support-title"');
+    expect(donationSource).toContain('id={titleId} className="font-body text-lg');
+    expect(successSource).toContain("<DonationCard");
+    expect(successSource).toContain("title={SUPPORT_CONTENT.headline}");
+    expect(successSource).toContain("body={SUPPORT_EMAIL_COPY.de.body}");
     expect(successSource).not.toContain("Ehrenamtlich gebaut");
     expect(successSource).not.toContain("Projekt weiterempfehlen");
     expect(successSource).not.toContain("Feedback geben");

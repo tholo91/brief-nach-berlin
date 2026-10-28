@@ -68,6 +68,8 @@ describe("Jugend-Block im User-Prompt", () => {
     }
     if (viaClassLink) {
       expect(block).toContain("Unterrichtsprojekt");
+      expect(block).toContain("in eigenen Worten");
+      expect(block).not.toContain("im Rahmen");
     } else {
       expect(block).not.toContain("Unterrichtsprojekt");
     }
@@ -78,6 +80,34 @@ describe("Jugend-Block im User-Prompt", () => {
   it("Erwachsene bekommen keinen Jugend-Block", () => {
     const adult: GenerateLetterInput = { issueText: "Test", politicians: [mdb] };
     expect(buildUserPrompt(adult, 200, 240, 3)).not.toContain("absender_jugend");
+  });
+});
+
+describe("Kurz-Hinweis im Jugendmodus", () => {
+  it("Jugend-Eingabe unter 200 Zeichen: konkreter Hinweis ohne Bürger und abstrakt", () => {
+    const prompt = buildUserPrompt(input(8, false), 150, 200, 3);
+    const match = prompt.match(/<hinweis>[\s\S]*<\/hinweis>/);
+    expect(match).not.toBeNull();
+    const hinweis = match![0];
+    expect(hinweis).toContain("konkret");
+    expect(hinweis).toContain("Erfinde keine Erlebnisse");
+    expect(hinweis).not.toContain("Bürger");
+    expect(hinweis).not.toContain("abstrakt");
+  });
+
+  it("Jugend-Eingabe ab 200 Zeichen: kein Hinweis", () => {
+    const long: GenerateLetterInput = {
+      ...input(8, false),
+      issueText: "Unterricht fällt bei uns oft aus. ".repeat(8),
+    };
+    expect(buildUserPrompt(long, 150, 200, 3)).not.toContain("<hinweis>");
+  });
+
+  it("Erwachsene Kurz-Eingabe behält den bisherigen Hinweis wortgleich", () => {
+    const adult: GenerateLetterInput = { issueText: "Test", politicians: [mdb] };
+    expect(buildUserPrompt(adult, 200, 240, 3)).toContain(
+      "Der Bürger hat sich knapp gehalten. Bleibe entsprechend abstrakt"
+    );
   });
 });
 

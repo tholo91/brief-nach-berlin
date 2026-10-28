@@ -531,7 +531,9 @@ function youthBlock(input: GenerateLetterInput): string {
     `- ${wahlSatz} Nenne keine Jahreszahlen.`,
   ];
   if (viaClassLink) {
-    lines.push("- Sage im Brief, dass ich im Rahmen eines Unterrichtsprojekts schreibe.");
+    lines.push(
+      "- Erwähne beiläufig und in eigenen Worten, dass ich den Brief in einem Unterrichtsprojekt schreibe. Formuliere diesen Satz frei, damit Briefe aus derselben Klasse an dieselbe Person nicht gleich klingen.",
+    );
   }
   lines.push(
     `- Ton: klar, ehrlich und höflich, so wie eine Person dieses Alters an eine erwachsene Person schreibt, die sie ernst nehmen soll. ${ton} Verwende normales Alltagsdeutsch in kurzen Sätzen und eigene Beobachtungen aus Schule und Alltag, soweit sie im <transkript> stehen.`,
@@ -539,6 +541,8 @@ function youthBlock(input: GenerateLetterInput): string {
   );
   return `\n\n<absender_jugend>\n${lines.join("\n")}\n</absender_jugend>`;
 }
+
+const YOUTH_SHORT_INPUT_HINWEIS = `\n\n<hinweis>\nDie schreibende Person hat sich kurz gehalten. Bleibe einfach und konkret bei dem, was im <transkript> steht. Erfinde keine Erlebnisse, keine Angaben zur Person und keine Orte dazu.\n</hinweis>`;
 
 export function buildUserPrompt(
   input: GenerateLetterInput,
@@ -594,9 +598,14 @@ export function buildUserPrompt(
   // For short inputs, remind the model to stay abstract. Hallucinated vita
   // (Review 2, Jonathan) showed up most often when the citizen left little
   // material — the model fills the gap with plausible-sounding fiction.
+  // Jugendliche schreiben meist weniger als 200 Zeichen. Ihre Variante bleibt
+  // konkret beim Transkript statt abstrakt, damit sie dem Jugend-Block (eigene
+  // Beobachtungen) nicht widerspricht. Der Halluzinationsschutz bleibt.
   const shortInputHinweis =
     input.issueText.length < 200
-      ? `\n\n<hinweis>\nDer Bürger hat sich knapp gehalten. Bleibe entsprechend abstrakt: keine Erlebnis-Szenen, keine Vita, keine konkreten Ortsangaben außer Stadt/Stadtteil, wenn vorhanden.\n</hinweis>`
+      ? input.youth
+        ? YOUTH_SHORT_INPUT_HINWEIS
+        : `\n\n<hinweis>\nDer Bürger hat sich knapp gehalten. Bleibe entsprechend abstrakt: keine Erlebnis-Szenen, keine Vita, keine konkreten Ortsangaben außer Stadt/Stadtteil, wenn vorhanden.\n</hinweis>`
       : "";
 
   const toneBlock = tonalityBlock(toneLevel);

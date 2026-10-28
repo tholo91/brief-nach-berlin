@@ -15,7 +15,7 @@ exports[`Jugend-Block im User-Prompt Klasse 8, Klassenlink true 1`] = `
 Der Brief kommt von einer Person, die noch zur Schule geht. Diese Angaben sind eine zulässige Quelle wie <absender_optional> und haben Vorrang vor allen anderen Hinweisen zu Absender, Wahlstatus, Wahlkreis, Vita und Erwachsenen-Rolle.
 - Schreibe in der Ich-Form und nenne früh im Brief den Satz „Ich gehe in die 8. Klasse.“ Formuliere geschlechtsneutral, ohne „als Schüler“ oder „als Schülerin“.
 - Sage in einem eigenen Satz, dass ich bei der Bundestagswahl noch nicht wählen darf. Nenne keine Jahreszahlen.
-- Sage im Brief, dass ich im Rahmen eines Unterrichtsprojekts schreibe.
+- Erwähne beiläufig und in eigenen Worten, dass ich den Brief in einem Unterrichtsprojekt schreibe. Formuliere diesen Satz frei, damit Briefe aus derselben Klasse an dieselbe Person nicht gleich klingen.
 - Ton: klar, ehrlich und höflich, so wie eine Person dieses Alters an eine erwachsene Person schreibt, die sie ernst nehmen soll. Schreibe einfach und direkt. Verwende normales Alltagsdeutsch in kurzen Sätzen und eigene Beobachtungen aus Schule und Alltag, soweit sie im <transkript> stehen.
 - Weitere Angaben zur Person (Alter, Schule, Wohnort, Familie) nennst du nur, wenn sie im <transkript> stehen.
 </absender_jugend>"
@@ -36,7 +36,7 @@ exports[`Jugend-Block im User-Prompt Klasse 10, Klassenlink true 1`] = `
 Der Brief kommt von einer Person, die noch zur Schule geht. Diese Angaben sind eine zulässige Quelle wie <absender_optional> und haben Vorrang vor allen anderen Hinweisen zu Absender, Wahlstatus, Wahlkreis, Vita und Erwachsenen-Rolle.
 - Schreibe in der Ich-Form und nenne früh im Brief den Satz „Ich gehe in die 10. Klasse.“ Formuliere geschlechtsneutral, ohne „als Schüler“ oder „als Schülerin“.
 - Sage in einem eigenen Satz, dass ich bei der Bundestagswahl noch nicht wählen darf. Nenne keine Jahreszahlen.
-- Sage im Brief, dass ich im Rahmen eines Unterrichtsprojekts schreibe.
+- Erwähne beiläufig und in eigenen Worten, dass ich den Brief in einem Unterrichtsprojekt schreibe. Formuliere diesen Satz frei, damit Briefe aus derselben Klasse an dieselbe Person nicht gleich klingen.
 - Ton: klar, ehrlich und höflich, so wie eine Person dieses Alters an eine erwachsene Person schreibt, die sie ernst nehmen soll. Schreibe sachlich und gib eine kurze Begründung. Verwende normales Alltagsdeutsch in kurzen Sätzen und eigene Beobachtungen aus Schule und Alltag, soweit sie im <transkript> stehen.
 - Weitere Angaben zur Person (Alter, Schule, Wohnort, Familie) nennst du nur, wenn sie im <transkript> stehen.
 </absender_jugend>"
@@ -57,7 +57,7 @@ exports[`Jugend-Block im User-Prompt Klasse 12, Klassenlink true 1`] = `
 Der Brief kommt von einer Person, die noch zur Schule geht. Diese Angaben sind eine zulässige Quelle wie <absender_optional> und haben Vorrang vor allen anderen Hinweisen zu Absender, Wahlstatus, Wahlkreis, Vita und Erwachsenen-Rolle.
 - Schreibe in der Ich-Form und nenne früh im Brief den Satz „Ich gehe in die 12. Klasse.“ Formuliere geschlechtsneutral, ohne „als Schüler“ oder „als Schülerin“.
 - Sage in einem eigenen Satz, dass ich bald zum ersten Mal wählen darf. Nenne keine Jahreszahlen.
-- Sage im Brief, dass ich im Rahmen eines Unterrichtsprojekts schreibe.
+- Erwähne beiläufig und in eigenen Worten, dass ich den Brief in einem Unterrichtsprojekt schreibe. Formuliere diesen Satz frei, damit Briefe aus derselben Klasse an dieselbe Person nicht gleich klingen.
 - Ton: klar, ehrlich und höflich, so wie eine Person dieses Alters an eine erwachsene Person schreibt, die sie ernst nehmen soll. Schreibe sachlich und gib eine kurze Begründung. Verwende normales Alltagsdeutsch in kurzen Sätzen und eigene Beobachtungen aus Schule und Alltag, soweit sie im <transkript> stehen.
 - Weitere Angaben zur Person (Alter, Schule, Wohnort, Familie) nennst du nur, wenn sie im <transkript> stehen.
 </absender_jugend>"

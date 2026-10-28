@@ -4,10 +4,10 @@ milestone: v1.0
 current_phase: 05
 status: verifying
 stopped_at: Completed 05-04-PLAN.md
-last_updated: "2026-10-28T08:06:39.921Z"
+last_updated: "2026-10-28T09:41:02.725Z"
 last_activity: 2026-10-28
 last_activity_desc: Quick 261013-wuq lokal implementiert und geprüft; manueller Release offen
-state_head: 8c3780b7acf56ad4c133a6aba8c11a1067c9c912
+state_head: 221d4773c0eaa2507339b6251d08f258767db43d
 progress:
   total_phases: 33
   completed_phases: 4
@@ -49,7 +49,7 @@ Der level-aware E-Mail-Betreff ist dagegen bereits implementiert und getestet; d
 Phase: 05 — EXECUTING
 Plan: 4 of 4
 Status: Phase complete — ready for verification
-Last activity: 2026-10-28 - Completed quick task 261028-cgi: Jugend-Prompt: Kurz-Hinweis konkret, keine Partei-Wertesprache, Unterrichtsprojekt-Satz frei
+Last activity: 2026-10-28 - Completed quick task 261028-enu: Erstschreiber-Frage im Feedback-Formular mit Auswertung
 
 Progress: [███████░░░] 68%
 
@@ -115,7 +115,7 @@ Recent decisions affecting current work:
 
 ### Pending Todos
 
-31 pending — see `.planning/todos/pending/`
+35 pending — see `.planning/todos/pending/`
 
 ### Blockers/Concerns
 
@@ -237,6 +237,7 @@ Recent decisions affecting current work:
 | 261028-0pn | Review-Fixes vor Push: Themen-Limit-Hinweis /jung, Schulleitung-Anker, Resend-Audience | 2026-10-28 | e0e6bfa | [261028-0pn-review-fixes-vor-push-themen-limit-hinwe](./quick/261028-0pn-review-fixes-vor-push-themen-limit-hinwe/) |
 | 261028-0x0 | Briefmail Kampagnen-Kasten: Text neu, Link vorne, Logo, Herz | 2026-10-28 | 82df97b | [261028-0x0-briefmail-kampagnen-kasten-text-neu-link](./quick/261028-0x0-briefmail-kampagnen-kasten-text-neu-link/) |
 | 261028-cgi | Jugend-Prompt: Kurz-Hinweis konkret, keine Partei-Wertesprache, Unterrichtsprojekt-Satz frei | 2026-10-28 | 8c3780b | [261028-cgi-jugend-prompt-kurz-hinweis-parteiframing](./quick/261028-cgi-jugend-prompt-kurz-hinweis-parteiframing/) |
+| 261028-enu | Erstschreiber-Frage im Feedback-Formular mit Auswertung in /stats und Kampagnen-Statistik | 2026-10-28 | 221d477 | [261028-enu-erstschreiber-frage-im-feedback-formular](./quick/261028-enu-erstschreiber-frage-im-feedback-formular/) |
 
 ## Session Continuity
 

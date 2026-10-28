@@ -35,6 +35,12 @@ import {
   AGE_GROUP_VALUES,
   type AgeGroup,
 } from "@/lib/feedback/ageGroup";
+import {
+  LETTER_HISTORY_LABELS,
+  LETTER_HISTORY_VALUES,
+  needsPriorContactQuestion,
+  type LetterHistory,
+} from "@/lib/feedback/letterHistory";
 
 interface FeedbackFormProps {
   initialRating: number;
@@ -104,6 +110,12 @@ export function FeedbackForm({
   const [politicalPowerlessnessFrequency, setPoliticalPowerlessnessFrequency] =
     useState<PoliticalPowerlessnessFrequency | null>(null);
   const [ageGroup, setAgeGroup] = useState<AgeGroup | null>(null);
+  const [letterHistory, setLetterHistory] = useState<LetterHistory | null>(
+    null
+  );
+  const [priorOtherContact, setPriorOtherContact] = useState<boolean | null>(
+    null
+  );
   const [feedbackTags, setFeedbackTags] = useState<FeedbackTagSlug[]>([]);
   // Optional fields collapsed by default to keep the page lean.
   const [moreOpen, setMoreOpen] = useState(false);
@@ -193,6 +205,11 @@ export function FeedbackForm({
     if (!value) setPoliticalSelfEfficacy(null);
   }
 
+  function selectLetterHistory(value: LetterHistory) {
+    setLetterHistory(value);
+    if (!needsPriorContactQuestion(value)) setPriorOtherContact(null);
+  }
+
   function onSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (pending) return;
@@ -224,6 +241,10 @@ export function FeedbackForm({
         politicalSelfEfficacy,
         politicalPowerlessnessFrequency,
         ageGroup,
+        letterHistory,
+        priorOtherContact: needsPriorContactQuestion(letterHistory)
+          ? priorOtherContact
+          : null,
         feedbackTags: feedbackTags.length ? feedbackTags : undefined,
         token,
         bypassRateLimit,
@@ -385,6 +406,57 @@ export function FeedbackForm({
                 wide={index === POLITICAL_SELF_EFFICACY_VALUES.length - 1}
               />
             ))}
+          </div>
+        </fieldset>
+      ) : null}
+
+      <fieldset>
+        <legend className="block font-body text-sm font-semibold text-warmgrau mb-1">
+          Hast du schon mal einen Brief an Politiker:innen geschrieben?{" "}
+          <span className="font-normal text-warmgrau/60">(optional)</span>
+        </legend>
+        <p className="font-body text-xs text-warmgrau/60 mb-3">
+          Hilft mir zu sehen, ob Brief-nach-Berlin Menschen zum ersten Mal zum Schreiben bringt.
+        </p>
+        <div
+          role="radiogroup"
+          aria-label="Bisherige Briefe an Politiker:innen"
+          className="grid grid-cols-2 gap-2"
+        >
+          {LETTER_HISTORY_VALUES.map((value, index) => (
+            <SurveyChoice
+              key={value}
+              checked={letterHistory === value}
+              onSelect={() => selectLetterHistory(value)}
+              label={LETTER_HISTORY_LABELS[value]}
+              wide={index === LETTER_HISTORY_VALUES.length - 1}
+            />
+          ))}
+        </div>
+      </fieldset>
+
+      {needsPriorContactQuestion(letterHistory) ? (
+        <fieldset className="animate-feedback-in">
+          <legend className="block font-body text-sm font-semibold text-warmgrau mb-3">
+            Hattest du davor schon mal anders Kontakt zu Politiker:innen, z. B.
+            per Mail oder Anruf?{" "}
+            <span className="font-normal text-warmgrau/60">(optional)</span>
+          </legend>
+          <div
+            role="radiogroup"
+            aria-label="Früherer anderer Kontakt zu Politiker:innen"
+            className="grid grid-cols-2 gap-2"
+          >
+            <SurveyChoice
+              checked={priorOtherContact === true}
+              onSelect={() => setPriorOtherContact(true)}
+              label="Ja"
+            />
+            <SurveyChoice
+              checked={priorOtherContact === false}
+              onSelect={() => setPriorOtherContact(false)}
+              label="Nein"
+            />
           </div>
         </fieldset>
       ) : null}

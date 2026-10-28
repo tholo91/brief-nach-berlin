@@ -606,6 +606,10 @@ export default function Datenschutz() {
               </li>
               <li>Optional: Ihre Altersgruppe (z. B. „45 bis 59“)</li>
               <li>
+                Optional: ob Sie schon einmal an Politiker:innen geschrieben
+                oder sie anders kontaktiert haben
+              </li>
+              <li>
                 Verknüpfung zum erstellten Brief (intern: Politiker-ID, PLZ,
                 technische Brief-Metadaten zur Produktverbesserung)
               </li>

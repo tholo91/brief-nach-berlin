@@ -14,6 +14,10 @@ import {
   validatePoliticalReviewAnswers,
 } from "@/lib/feedback/politicalActivation";
 import { AGE_GROUP_VALUES } from "@/lib/feedback/ageGroup";
+import {
+  LETTER_HISTORY_VALUES,
+  validateLetterHistoryAnswers,
+} from "@/lib/feedback/letterHistory";
 import { checkRateLimit, getClientIp, hashIdentifier, LIMITS } from "@/lib/rateLimit";
 import type { LetterDebugPayload } from "@/lib/email/sendLetterEmail";
 
@@ -47,6 +51,8 @@ const reviewSchema = z.object({
     .nullable()
     .default(null),
   ageGroup: z.enum(AGE_GROUP_VALUES).nullable().default(null),
+  letterHistory: z.enum(LETTER_HISTORY_VALUES).nullable().default(null),
+  priorOtherContact: z.boolean().nullable().default(null),
   // Quick-Tap-Chips: multi-select, server-side allowlist via z.enum.
   // Max accommodates 7 negative + 3 fact-check + headroom.
   feedbackTags: z.array(feedbackTagSchema).max(12).optional(),
@@ -82,6 +88,10 @@ export async function submitReviewAction(
   const politicalAnswersError = validatePoliticalReviewAnswers(data);
   if (politicalAnswersError) {
     return { error: "validation", message: politicalAnswersError };
+  }
+  const letterHistoryError = validateLetterHistoryAnswers(data);
+  if (letterHistoryError) {
+    return { error: "validation", message: letterHistoryError };
   }
 
   const payload = verifyFeedbackToken<LetterDebugPayload & { source?: string }>(
@@ -204,6 +214,8 @@ export async function submitReviewAction(
         political_powerlessness_frequency:
           data.politicalPowerlessnessFrequency,
         age_group: data.ageGroup,
+        letter_history: data.letterHistory,
+        prior_other_contact: data.priorOtherContact,
         full_feedback_submitted: true,
         // Empty array → null so the row doesn't show "{}" in the DB for "no chips".
         feedback_tags: tagsForInsert.length ? tagsForInsert : null,

@@ -332,6 +332,9 @@ Der institutionelle Empfänger hat in diesem Brief keinen verifizierten Personen
 const FIXED_CAMPAIGN_RECIPIENT_PARTEI_HEADER = `EMPFÄNGER-NEUTRALITÄT:
 Für den festen Empfänger sind keine politische Ebene, Partei oder Wahlkreisbeziehung verifiziert. Erfinde nichts davon und benenne keine Partei.`;
 
+const YOUTH_PARTEI_HEADER = `PARTEI-NEUTRALITÄT (Jugendbrief):
+Bleibe sachlich und beim Anliegen aus dem <transkript>. Verwende keine parteibezogene Werte-Sprache.`;
+
 const BUND_PARTEI_LIST = `- SPD: Arbeitnehmerrechte, sozialer Zusammenhalt, faire Chancen.
 - Grüne: Generationengerechtigkeit, Nachhaltigkeit, Lebensqualität, ökologische Verantwortung.
 - CDU/CSU: Verlässlichkeit, wirtschaftliche Vernunft, Sicherheit, Bewahrung des Bewährten.
@@ -371,6 +374,7 @@ Der Bürger hat sich bewusst entschieden, an die ${selectedLabel} zu schreiben, 
  * Baut den System-Prompt abhängig von der gewählten Ebene.
  * - Bund: gemeinsames Grundtemplate ohne Ebenen-Ersetzungen.
  * - Land/Kommune: gezielte Block-Ersetzungen + Strategie-Block.
+ * - Jugendmodus: Partei-Werte-Liste raus, neutrale Jugendzeile rein (nur wo der Bund-Partei-Block noch steht).
  * Exportiert für die Snapshot-Tests.
  */
 export function buildSystemPrompt(input: GenerateLetterInput): string {
@@ -451,6 +455,12 @@ export function buildSystemPrompt(input: GenerateLetterInput): string {
       .replace(BUND_PARTEI_HEADER, KOMMUNE_PARTEI_HEADER)
       .replace(`\n${BUND_PARTEI_LIST}`, "")
       .replace(`${BUND_MDB_CONTEXT_BLOCK}\n\n`, "");
+  }
+
+  if (input.youth) {
+    prompt = prompt
+      .replace(BUND_PARTEI_HEADER, YOUTH_PARTEI_HEADER)
+      .replace(`\n${BUND_PARTEI_LIST}`, "");
   }
 
   if (input.recipientRelation === "outside_constituency") {

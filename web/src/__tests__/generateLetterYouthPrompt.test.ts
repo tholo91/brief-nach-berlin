@@ -11,7 +11,8 @@ jest.mock("@/lib/mistral", () => ({
 }));
 
 import { mistral } from "@/lib/mistral";
-import { buildUserPrompt, generateLetter } from "@/lib/generation/generateLetter";
+import { buildSystemPrompt, buildUserPrompt, generateLetter } from "@/lib/generation/generateLetter";
+import { getLandesregierungRecipient } from "@/lib/lookup/landesregierungRecipient";
 import type { GenerateLetterInput } from "@/lib/types/wizard";
 import type { Politician } from "@/lib/types/politician";
 
@@ -80,6 +81,62 @@ describe("Jugend-Block im User-Prompt", () => {
   });
 });
 
+describe("Jugend-System-Prompt ohne Partei-Werte", () => {
+  beforeAll(() => {
+    jest.useFakeTimers().setSystemTime(new Date("2026-03-15T12:00:00Z"));
+  });
+  afterAll(() => {
+    jest.useRealTimers();
+  });
+
+  function expectNeutral(prompt: string) {
+    expect(prompt).not.toContain("PARTEI-BEWUSSTES FRAMING");
+    expect(prompt).not.toContain("Bewahrung des Bewährten");
+    expect(prompt).not.toContain("- SPD:");
+    expect(prompt).toContain("PARTEI-NEUTRALITÄT (Jugendbrief):");
+    expect(prompt).toContain("Verwende keine parteibezogene Werte-Sprache.");
+  }
+
+  it("Bund mit MdB: keine Partei-Werte, Neutralitätszeile", () => {
+    expectNeutral(buildSystemPrompt(input(8, false)));
+  });
+
+  it("Land mit MdL: keine Partei-Werte, Neutralitätszeile", () => {
+    const landInput: GenerateLetterInput = {
+      ...input(8, false),
+      level: "Land",
+      politicians: [{ ...mdb, level: "Land" }],
+    };
+    expectNeutral(buildSystemPrompt(landInput));
+  });
+
+  it("Landesregierung behält ihren eigenen Neutralitätskopf", () => {
+    const prompt = buildSystemPrompt({
+      ...input(8, false),
+      level: "Land",
+      politicians: [],
+      landesregierung: getLandesregierungRecipient("NW")!,
+    });
+    expect(prompt).toContain("PARTEI-NEUTRALITÄT (Landesregierung/Senat)");
+    expect(prompt).not.toContain("(Jugendbrief)");
+  });
+
+  it("Diff-Wächter: Jugend- und Erwachsenen-Prompt unterscheiden sich nur im Partei-Abschnitt", () => {
+    const normalize = (p: string) =>
+      p.replace(/PARTEI-[^\n]*\n[\s\S]*?\n\nMdB-KONTEXT NUTZEN/, "PARTEI\n\nMdB-KONTEXT NUTZEN");
+    const youth = buildSystemPrompt(input(8, false));
+    const adult = buildSystemPrompt({ ...input(8, false), youth: undefined });
+    expect(youth).not.toBe(adult);
+    expect(normalize(youth)).toBe(normalize(adult));
+  });
+
+  it("Erwachsene Bund mit MdB behalten das Partei-Framing", () => {
+    const adult = buildSystemPrompt({ ...input(8, false), youth: undefined });
+    expect(adult).toContain("PARTEI-BEWUSSTES FRAMING");
+    expect(adult).toContain("Bewahrung des Bewährten");
+  });
+});
+
 describe("generateLetter im Jugendmodus", () => {
   beforeEach(() => {
     (mistral.chat.complete as jest.Mock).mockReset();
@@ -97,6 +154,19 @@ describe("generateLetter im Jugendmodus", () => {
     const args = (mistral.chat.complete as jest.Mock).mock.calls[0][0];
     expect(args.maxTokens).toBe(Math.ceil(200 * 2.2) + 250);
     expect(args.messages[1].content).toContain("woerter: 150 bis 200");
+  });
+
+  it("schickt im Jugendmodus einen System-Prompt ohne Partei-Werte", async () => {
+    const letter = Array.from({ length: 175 }, (_, i) => `Wort${i}`).join(" ");
+    (mistral.chat.complete as jest.Mock).mockResolvedValue({
+      choices: [{ message: { content: JSON.stringify({ selected_politician_id: 1, letter }) } }],
+    });
+
+    await generateLetter(input(12, true));
+
+    const system = (mistral.chat.complete as jest.Mock).mock.calls[0][0].messages[0].content;
+    expect(system).toContain("PARTEI-NEUTRALITÄT (Jugendbrief):");
+    expect(system).not.toContain("Bewahrung des Bewährten");
   });
 
   it("nutzt für den Retry-Korridor 150 bis 200 Wörter", async () => {

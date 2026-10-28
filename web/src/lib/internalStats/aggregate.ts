@@ -1,5 +1,10 @@
 import { AGE_GROUP_VALUES, type AgeGroup } from "@/lib/feedback/ageGroup";
 import {
+  LETTER_HISTORY_VALUES,
+  needsPriorContactQuestion,
+  type LetterHistory,
+} from "@/lib/feedback/letterHistory";
+import {
   POLITICAL_POWERLESSNESS_FREQUENCY_VALUES,
   POLITICAL_SELF_EFFICACY_VALUES,
   type PoliticalPowerlessnessFrequency,
@@ -20,6 +25,8 @@ export type InternalReviewRow = {
   political_self_efficacy: PoliticalSelfEfficacy | null;
   political_powerlessness_frequency: PoliticalPowerlessnessFrequency | null;
   age_group?: string | null;
+  letter_history?: string | null;
+  prior_other_contact?: boolean | null;
   debug_payload: unknown;
 };
 
@@ -150,6 +157,31 @@ export type AgeGroupStats = {
   ratePercent: number;
 };
 
+export type LetterHistoryEfficacy = {
+  /** Antworten mit Angabe zur Handlungsfähigkeit. */
+  answered: number;
+  positive: number;
+  positivePercent: number | null;
+};
+
+export type LetterHistoryStats = {
+  distribution: Record<LetterHistory, number>;
+  answerCount: number;
+  answeredSince: string | null;
+  /** first + bnb_only: vor Brief-nach-Berlin nie einen Brief geschrieben. */
+  neverBeforeCount: number;
+  neverBeforePercent: number | null;
+  repeatCount: number;
+  repeatPercent: number | null;
+  /** first + bnb_only mit Antwort auf die Folgefrage. */
+  priorContactAnswerCount: number;
+  noPriorContactCount: number;
+  noPriorContactPercent: number | null;
+  /** Handlungsfähigkeit positiv: Erstschreiber (first + bnb_only) gegenüber before. */
+  efficacyFirstTimers: LetterHistoryEfficacy;
+  efficacyExperienced: LetterHistoryEfficacy;
+};
+
 export type TimeRange = "all" | 30 | 90;
 
 export type SourceFilter =
@@ -202,6 +234,7 @@ export type InternalStats = {
   letterSignals: LetterSignalStats;
   politicalActivation: PoliticalActivationStats;
   ageGroups: AgeGroupStats;
+  letterHistory: LetterHistoryStats;
   reviewSourceCounts: SourceCounts;
   reviewTimelineDayCounts: Record<string, number>;
   letterCounterDayRange: LetterCounterDayRange;
@@ -488,6 +521,38 @@ function isAgeGroup(value: string | null | undefined): value is AgeGroup {
   return value != null && (AGE_GROUP_VALUES as readonly string[]).includes(value);
 }
 
+function isLetterHistory(
+  value: string | null | undefined,
+): value is LetterHistory {
+  return value != null && (LETTER_HISTORY_VALUES as readonly string[]).includes(value);
+}
+
+function percentOrNull(part: number, total: number): number | null {
+  return total > 0 ? roundOne((part / total) * 100) : null;
+}
+
+function emptyLetterHistoryStats(): LetterHistoryStats {
+  const emptyEfficacy = (): LetterHistoryEfficacy => ({
+    answered: 0,
+    positive: 0,
+    positivePercent: null,
+  });
+  return {
+    distribution: { first: 0, bnb_only: 0, before: 0 },
+    answerCount: 0,
+    answeredSince: null,
+    neverBeforeCount: 0,
+    neverBeforePercent: null,
+    repeatCount: 0,
+    repeatPercent: null,
+    priorContactAnswerCount: 0,
+    noPriorContactCount: 0,
+    noPriorContactPercent: null,
+    efficacyFirstTimers: emptyEfficacy(),
+    efficacyExperienced: emptyEfficacy(),
+  };
+}
+
 function emptyAgeGroupStats(): AgeGroupStats {
   return {
     distribution: {
@@ -598,6 +663,16 @@ export function aggregateInternalStats(
   const reviewDates: string[] = [];
   const politicalActivation = emptyPoliticalActivationStats();
   const ageGroups = emptyAgeGroupStats();
+  const letterHistory = emptyLetterHistoryStats();
+  let letterHistorySinceMs = Number.POSITIVE_INFINITY;
+  for (const row of rows) {
+    if (!row.created_at || !isLetterHistory(row.letter_history)) continue;
+    const ms = Date.parse(row.created_at);
+    if (Number.isFinite(ms) && ms < letterHistorySinceMs) {
+      letterHistorySinceMs = ms;
+      letterHistory.answeredSince = row.created_at;
+    }
+  }
   let answeredSinceMs = Number.POSITIVE_INFINITY;
   for (const row of rows) {
     if (!row.created_at || !isAgeGroup(row.age_group)) continue;
@@ -624,6 +699,35 @@ export function aggregateInternalStats(
     ) {
       ageGroups.rateBase += 1;
       if (hasAgeGroup) ageGroups.rateAnswerCount += 1;
+    }
+
+    const rowLetterHistory = row.letter_history;
+    if (isLetterHistory(rowLetterHistory)) {
+      letterHistory.distribution[rowLetterHistory] += 1;
+      letterHistory.answerCount += 1;
+      const firstTimer = needsPriorContactQuestion(rowLetterHistory);
+      if (firstTimer) {
+        letterHistory.neverBeforeCount += 1;
+        if (row.prior_other_contact === true || row.prior_other_contact === false) {
+          letterHistory.priorContactAnswerCount += 1;
+          if (row.prior_other_contact === false) {
+            letterHistory.noPriorContactCount += 1;
+          }
+        }
+      }
+      if (rowLetterHistory === "bnb_only") letterHistory.repeatCount += 1;
+      if (isPoliticalSelfEfficacy(row.political_self_efficacy)) {
+        const group = firstTimer
+          ? letterHistory.efficacyFirstTimers
+          : letterHistory.efficacyExperienced;
+        group.answered += 1;
+        if (
+          row.political_self_efficacy === "clearly_yes" ||
+          row.political_self_efficacy === "rather_yes"
+        ) {
+          group.positive += 1;
+        }
+      }
     }
 
     if (row.full_feedback_submitted === true) fullFeedbackCount += 1;
@@ -722,6 +826,24 @@ export function aggregateInternalStats(
       ? roundOne((tagStats.sent / tagStats.known) * 100)
       : 0;
   }
+  letterHistory.neverBeforePercent = percentOrNull(
+    letterHistory.neverBeforeCount,
+    letterHistory.answerCount,
+  );
+  letterHistory.repeatPercent = percentOrNull(
+    letterHistory.repeatCount,
+    letterHistory.answerCount,
+  );
+  letterHistory.noPriorContactPercent = percentOrNull(
+    letterHistory.noPriorContactCount,
+    letterHistory.priorContactAnswerCount,
+  );
+  for (const group of [
+    letterHistory.efficacyFirstTimers,
+    letterHistory.efficacyExperienced,
+  ]) {
+    group.positivePercent = percentOrNull(group.positive, group.answered);
+  }
   ageGroups.ratePercent = ageGroups.rateBase > 0
     ? roundOne((ageGroups.rateAnswerCount / ageGroups.rateBase) * 100)
     : 0;
@@ -765,6 +887,7 @@ export function aggregateInternalStats(
     letterSignals: aggregateLetterSignals(filteredSignals, filteredReviews),
     politicalActivation,
     ageGroups,
+    letterHistory,
     reviewSourceCounts,
     reviewTimelineDayCounts,
     letterCounterDayRange: collectLetterCounterDayRange(letterSignalRows),

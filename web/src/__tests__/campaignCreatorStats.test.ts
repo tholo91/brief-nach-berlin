@@ -1436,3 +1436,50 @@ describe("CampaignReferralCard", () => {
     expect(markup).toContain(`alt="${SUPPORT_CONTENT.founder.name}"`);
   });
 });
+
+describe("firstTimeShare (Erstschreiber)", () => {
+  function firstTimeShare(feedbackRows: CampaignFeedbackRow[]) {
+    const view = build(feedbackRows);
+    if (view.feedback.status !== "ready") throw new Error("expected ready");
+    return view.feedback.firstTimeShare;
+  }
+  const history = (value: string, count: number) =>
+    rows(count, { letter_history: value });
+
+  it("is null with 9 answers to the question, even with 12 responses in total", () => {
+    expect(
+      firstTimeShare([...history("first", 5), ...history("before", 4), ...rows(3)]),
+    ).toBeNull();
+  });
+
+  it("shows the percent of first and bnb_only from 10 answers on", () => {
+    expect(
+      firstTimeShare([
+        ...history("first", 4),
+        ...history("bnb_only", 3),
+        ...history("before", 3),
+      ]),
+    ).toBe(70);
+  });
+
+  it("selects letter_history and renders the sentence only when shown", () => {
+    expect(CREATOR_STATS_REVIEW_COLUMNS).toContain("letter_history");
+
+    const shown = renderToStaticMarkup(
+      createElement(CampaignCreatorStats, {
+        stats: build([...history("first", 7), ...history("before", 3)]),
+      }),
+    );
+    expect(shown).toContain("70 %");
+    expect(shown).toContain(
+      "hatten vor Brief-nach-Berlin noch nie einen Brief an Politiker:innen geschrieben",
+    );
+
+    const hidden = renderToStaticMarkup(
+      createElement(CampaignCreatorStats, {
+        stats: build([...history("first", 5), ...history("before", 4), ...rows(3)]),
+      }),
+    );
+    expect(hidden).not.toContain("noch nie einen Brief an Politiker:innen");
+  });
+});

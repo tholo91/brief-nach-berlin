@@ -86,7 +86,7 @@ async function fetchInternalStatsRows(): Promise<InternalStatsRows> {
         client
           .from("reviews")
           .select(
-            "created_at,rating,letter_sent,full_feedback_submitted,feedback_tags,political_self_efficacy,political_powerlessness_frequency,age_group,debug_payload,letter_id",
+            "created_at,rating,letter_sent,full_feedback_submitted,feedback_tags,political_self_efficacy,political_powerlessness_frequency,age_group,letter_history,prior_other_contact,debug_payload,letter_id",
           )
           .order("id")
           .range(from, to),

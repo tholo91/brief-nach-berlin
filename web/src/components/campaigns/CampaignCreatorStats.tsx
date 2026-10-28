@@ -652,6 +652,16 @@ export function CampaignCreatorStats({
               />
             </dl>
 
+            {feedback.firstTimeShare !== null && (
+              <p className="mt-4 font-body text-sm leading-relaxed text-warmgrau/80">
+                <strong className="font-semibold text-waldgruen-dark">
+                  {feedback.firstTimeShare} %
+                </strong>{" "}
+                hatten vor Brief-nach-Berlin noch nie einen Brief an
+                Politiker:innen geschrieben.
+              </p>
+            )}
+
             {feedback.tags.length > 0 && (
               <div className="mt-6">
                 <h3 className="font-typewriter text-base font-bold text-waldgruen-dark">

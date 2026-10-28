@@ -457,3 +457,97 @@ describe("age groups", () => {
     });
   });
 });
+
+describe("letterHistory", () => {
+  const answered = (
+    letter_history: string,
+    overrides: Partial<InternalReviewRow> = {},
+  ) => row({ full_feedback_submitted: true, letter_history, ...overrides });
+
+  it("returns empty values without NaN when nobody answered", () => {
+    const { letterHistory } = aggregateInternalStats([row()], 0);
+
+    expect(letterHistory.answerCount).toBe(0);
+    expect(letterHistory.answeredSince).toBeNull();
+    expect(letterHistory.distribution).toEqual({ first: 0, bnb_only: 0, before: 0 });
+    expect(letterHistory.neverBeforePercent).toBeNull();
+    expect(letterHistory.repeatPercent).toBeNull();
+    expect(letterHistory.noPriorContactPercent).toBeNull();
+    expect(letterHistory.efficacyFirstTimers.positivePercent).toBeNull();
+    expect(letterHistory.efficacyExperienced.positivePercent).toBeNull();
+  });
+
+  it("computes distribution and shares, ignoring unknown values", () => {
+    const { letterHistory } = aggregateInternalStats([
+      answered("first", { created_at: "2026-09-02T10:00:00Z" }),
+      answered("first", { created_at: "2026-09-01T10:00:00Z" }),
+      answered("bnb_only"),
+      answered("before"),
+      answered("bogus"),
+      row(),
+    ], 0);
+
+    expect(letterHistory.distribution).toEqual({ first: 2, bnb_only: 1, before: 1 });
+    expect(letterHistory.answerCount).toBe(4);
+    expect(letterHistory.answeredSince).toBe("2026-08-01T10:00:00Z");
+    expect(letterHistory.neverBeforeCount).toBe(3);
+    expect(letterHistory.neverBeforePercent).toBe(75);
+    expect(letterHistory.repeatCount).toBe(1);
+    expect(letterHistory.repeatPercent).toBe(25);
+  });
+
+  it("bases the no-contact share on follow-up answers of first and bnb_only only", () => {
+    const { letterHistory } = aggregateInternalStats([
+      answered("first", { prior_other_contact: false }),
+      answered("first", { prior_other_contact: false }),
+      answered("bnb_only", { prior_other_contact: true }),
+      answered("first"),
+      answered("before", { prior_other_contact: false }),
+    ], 0);
+
+    expect(letterHistory.priorContactAnswerCount).toBe(3);
+    expect(letterHistory.noPriorContactCount).toBe(2);
+    expect(letterHistory.noPriorContactPercent).toBe(66.7);
+  });
+
+  it("compares positive efficacy of first-timers with people who wrote before", () => {
+    const { letterHistory } = aggregateInternalStats([
+      answered("first", { political_self_efficacy: "clearly_yes" }),
+      answered("bnb_only", { political_self_efficacy: "rather_yes" }),
+      answered("first", { political_self_efficacy: "unsure" }),
+      answered("first", { political_self_efficacy: "no" }),
+      answered("first"),
+      answered("before", { political_self_efficacy: "rather_no" }),
+      answered("before", { political_self_efficacy: "clearly_yes" }),
+      row({ political_self_efficacy: "clearly_yes" }),
+    ], 0);
+
+    expect(letterHistory.efficacyFirstTimers).toEqual({
+      answered: 4,
+      positive: 2,
+      positivePercent: 50,
+    });
+    expect(letterHistory.efficacyExperienced).toEqual({
+      answered: 2,
+      positive: 1,
+      positivePercent: 50,
+    });
+  });
+
+  it("respects the filter for counts but not for the since date", () => {
+    const { letterHistory } = aggregateInternalStats(
+      [
+        answered("first", { created_at: "2026-06-01T10:00:00Z" }),
+        answered("before", { created_at: "2026-08-20T10:00:00Z" }),
+      ],
+      0,
+      "2026-08-30T12:00:00Z",
+      [],
+      { timeRange: 30, source: { kind: "all" } },
+    );
+
+    expect(letterHistory.answerCount).toBe(1);
+    expect(letterHistory.distribution.first).toBe(0);
+    expect(letterHistory.answeredSince).toBe("2026-06-01T10:00:00Z");
+  });
+});

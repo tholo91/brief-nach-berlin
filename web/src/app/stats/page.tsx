@@ -73,6 +73,10 @@ import {
   POLITICAL_SELF_EFFICACY_VALUES,
 } from "@/lib/feedback/politicalActivation";
 import { AGE_GROUP_LABELS, AGE_GROUP_VALUES } from "@/lib/feedback/ageGroup";
+import {
+  LETTER_HISTORY_LABELS,
+  LETTER_HISTORY_VALUES,
+} from "@/lib/feedback/letterHistory";
 
 export const dynamic = "force-dynamic";
 
@@ -204,6 +208,7 @@ const SECTION_LINKS = [
   { id: "nach-dem-brief", label: "Nach dem Brief" },
   { id: "wirkung", label: "Wirkung" },
   { id: "alter", label: "Alter" },
+  { id: "erstschreiber", label: "Erstschreiber" },
   { id: "definitionen", label: "Definitionen" },
 ] as const;
 
@@ -548,6 +553,42 @@ const ageGroupOptions = AGE_GROUP_VALUES.map((key) => ({
   key,
   label: AGE_GROUP_LABELS[key],
 }));
+
+const letterHistoryOptions = LETTER_HISTORY_VALUES.map((key) => ({
+  key,
+  label: LETTER_HISTORY_LABELS[key],
+}));
+
+function formatPercentOrDash(value: number | null): string {
+  return value === null ? "—" : `${formatDecimal(value)} %`;
+}
+
+function ShareLine({
+  label,
+  percent,
+  count,
+  total,
+  baselineText,
+}: {
+  label: string;
+  percent: number | null;
+  count: number;
+  total: number;
+  baselineText?: string;
+}) {
+  return (
+    <div className="border-b border-warmgrau/10 py-3 last:border-b-0">
+      <p className="font-body text-sm leading-snug text-warmgrau/80">{label}</p>
+      <p className="mt-1 font-typewriter text-2xl font-bold tabular-nums text-waldgruen-dark">
+        {formatPercentOrDash(percent)}
+      </p>
+      <p className="font-body text-xs leading-relaxed text-warmgrau/55">
+        {formatNumber(count)} von {formatNumber(total)}
+        {baselineText ? ` · ${baselineText}` : ""}
+      </p>
+    </div>
+  );
+}
 
 const positiveSignals = [
   { key: "sofort_verschickbar", label: "Sofort verschickbar" },
@@ -1646,6 +1687,84 @@ export default async function InternalStatsPage({ searchParams }: InternalStatsP
               )}
               <BasisNote>
                 Basis: {formatNumber(stats.ageGroups.answerCount)} Bewertungen mit Altersangabe
+              </BasisNote>
+            </article>
+          </div>
+        </Section>
+
+        <Section id="erstschreiber">
+          <SectionHeading
+            eyebrow="Wer schreibt"
+            title="Erstschreiber"
+            detail="Freiwillige Angabe im ausgefüllten Feedback: Hat Brief-nach-Berlin Menschen zum ersten Mal zum Schreiben an Politiker:innen gebracht? Die Prozente zählen nur Bewertungen mit Antwort."
+          />
+          <div className="grid gap-8 lg:grid-cols-2 lg:gap-12">
+            <article>
+              <SubHeading detail="„Hast du schon mal einen Brief an Politiker:innen geschrieben?“ · nur Bewertungen mit Angabe">
+                Verteilung
+              </SubHeading>
+              {stats.letterHistory.answerCount === 0 ? (
+                <EmptyState>Noch keine Angaben.</EmptyState>
+              ) : (
+                <SurveyDistributionBars
+                  values={stats.letterHistory.distribution}
+                  options={letterHistoryOptions}
+                  total={stats.letterHistory.answerCount}
+                  color="#2D6A4F"
+                  mode={mode}
+                  baselineValues={baseline?.letterHistory.distribution}
+                  baselineTotal={baseline?.letterHistory.answerCount}
+                />
+              )}
+              <BasisNote>
+                {stats.letterHistory.answeredSince === null
+                  ? "Basis: noch keine Antworten auf die Frage"
+                  : `Basis: ${formatNumber(stats.letterHistory.answerCount)} Bewertungen mit Angabe · erfasst seit ${formatDate(stats.letterHistory.answeredSince)} · die Filter oben wirken hier`}
+              </BasisNote>
+            </article>
+
+            <article>
+              <SubHeading detail="Erstschreiber sind alle, die vor Brief-nach-Berlin nie einen Brief geschrieben hatten (erster Brief oder bisher nur mit Brief-nach-Berlin).">
+                Kennzahlen
+              </SubHeading>
+              {stats.letterHistory.answerCount === 0 ? (
+                <EmptyState>Noch keine Angaben.</EmptyState>
+              ) : (
+                <div>
+                  <ShareLine
+                    label="Vor Brief-nach-Berlin nie einen Brief geschrieben"
+                    percent={stats.letterHistory.neverBeforePercent}
+                    count={stats.letterHistory.neverBeforeCount}
+                    total={stats.letterHistory.answerCount}
+                  />
+                  <ShareLine
+                    label="Davon noch nie anders Kontakt zu Politiker:innen gehabt (nur mit Antwort auf die Folgefrage)"
+                    percent={stats.letterHistory.noPriorContactPercent}
+                    count={stats.letterHistory.noPriorContactCount}
+                    total={stats.letterHistory.priorContactAnswerCount}
+                  />
+                  <ShareLine
+                    label="Schon mehrfach mit Brief-nach-Berlin geschrieben"
+                    percent={stats.letterHistory.repeatPercent}
+                    count={stats.letterHistory.repeatCount}
+                    total={stats.letterHistory.answerCount}
+                  />
+                  <ShareLine
+                    label="Handlungsfähigkeit positiv, Erstschreiber („Ja, deutlich“ oder „Eher ja“)"
+                    percent={stats.letterHistory.efficacyFirstTimers.positivePercent}
+                    count={stats.letterHistory.efficacyFirstTimers.positive}
+                    total={stats.letterHistory.efficacyFirstTimers.answered}
+                  />
+                  <ShareLine
+                    label="Handlungsfähigkeit positiv, schon vorher geschrieben"
+                    percent={stats.letterHistory.efficacyExperienced.positivePercent}
+                    count={stats.letterHistory.efficacyExperienced.positive}
+                    total={stats.letterHistory.efficacyExperienced.answered}
+                  />
+                </div>
+              )}
+              <BasisNote>
+                Handlungsfähigkeit: Basis sind Antworten mit Angabe zur Handlungsfähigkeit, inklusive „Kann ich noch nicht sagen“. Bei kleinen Zahlen nicht überinterpretieren.
               </BasisNote>
             </article>
           </div>

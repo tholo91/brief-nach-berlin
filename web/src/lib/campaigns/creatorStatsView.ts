@@ -19,7 +19,7 @@ export const CREATOR_STATS_MIN_RESPONSES = 10;
 export const CREATOR_COMMENT_LIMIT = 5;
 export const CREATOR_COMMENT_MIN_LENGTH = 10;
 export const CREATOR_STATS_REVIEW_COLUMNS =
-  "created_at,rating,letter_sent,political_self_efficacy,body,consent,political_powerlessness_frequency,feedback_tags";
+  "created_at,rating,letter_sent,political_self_efficacy,body,consent,political_powerlessness_frequency,feedback_tags,letter_history";
 export const CREATOR_STATS_HOUR_COLUMNS = "hour,letters";
 export const CREATOR_SIGNALS_MIN_TOTAL = 10;
 export const CREATOR_REGION_MIN_BUCKET = 5;
@@ -74,6 +74,7 @@ export type CampaignFeedbackRow = {
   consent: boolean | null;
   political_powerlessness_frequency: PoliticalPowerlessnessFrequency | null;
   feedback_tags: string[] | null;
+  letter_history?: string | null;
 };
 
 export type CreatorStatsKpi =
@@ -143,6 +144,8 @@ export type CampaignCreatorStatsView = {
         averageRating: CreatorStatsKpi;
         selfEfficacy: CreatorStatsKpi;
         powerlessness: CreatorStatsKpi;
+        /** Anteil ohne früheren Brief (first + bnb_only); null unter der Mindestzahl an Antworten. */
+        firstTimeShare: number | null;
         tags: CreatorFeedbackTag[];
         comments: CreatorStatsComment[];
       };
@@ -163,6 +166,7 @@ function toInternalRow(row: CampaignFeedbackRow): InternalReviewRow {
     feedback_tags: row.feedback_tags,
     political_self_efficacy: row.political_self_efficacy,
     political_powerlessness_frequency: row.political_powerlessness_frequency,
+    letter_history: row.letter_history ?? null,
     debug_payload: null,
     letter_id: null,
   };
@@ -508,6 +512,7 @@ export function buildCampaignCreatorStats({
     0,
   );
   const activation = stats.politicalActivation;
+  const history = stats.letterHistory;
 
   return {
     ...base,
@@ -538,6 +543,10 @@ export function buildCampaignCreatorStats({
             100,
         ),
       ),
+      firstTimeShare:
+        history.answerCount >= CREATOR_STATS_MIN_RESPONSES
+          ? Math.round((history.neverBeforeCount / history.answerCount) * 100)
+          : null,
       tags: buildTags(stats.feedbackTagStats),
       comments: pickComments(rows),
     },

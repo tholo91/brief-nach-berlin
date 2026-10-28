@@ -1,5 +1,7 @@
 # Production migration status
 
+All migrations live in `web/supabase/migrations/`. The `000_<timestamp>_*` files are the early setup migrations from May/June 2026 (formerly in the repo-root `supabase/migrations/`), long applied in production.
+
 | Migration | Production status | Evidence |
 | --- | --- | --- |
 | `022_campaign_topic_signals.sql` | Manually applied by Thomas on 2026-09-24 | Read-only PostgREST query for all five new `campaigns.topic_*` columns returned HTTP 200 with the app's service role on 2026-09-24. |

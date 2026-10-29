@@ -476,6 +476,8 @@ Plans:
 
 **Trigger (2026-05-16):** Erwähnung im Podcast *Lage der Nation* — größter politischer Podcast in DACH, Zielgruppe = exakt die politisch engagierten Multiplikatoren, die so eine API in eigenen Tools verbauen würden. Vor diesem Moment war API-Demand reine Spekulation; jetzt potenziell real. **Bevor irgendwas gebaut wird:** abwarten und zählen, wie viele inbound-Anfragen nach genau dieser Funktionalität in den nächsten 2-4 Wochen reinkommen.
 
+**Update 2026-10-28:** openPetition fragt nach einem Embed, nicht nach einer API. Kleinere Vorstufe: [999.39 Einbettbarer Wizard](#phase-99939-einbettbarer-wizard-für-partner-iframe-embed-backlog). Embed-Anfragen zählen hier als Nachfrage.
+
 #### API-Design (Kern-Endpoints)
 
 Minimal-viable Surface: drei Endpoints, REST + JSON, kein GraphQL-Overengineering.
@@ -1035,6 +1037,153 @@ Plans:
 
 Plans:
 - [ ] TBD (promote with /gsd-review-backlog when ready)
+
+### Phase 999.39: Einbettbarer Wizard für Partner (iframe-Embed) (BACKLOG)
+
+**Goal:** Partner wie openPetition binden den Wizard per iframe auf ihrer Seite ein, ohne dass Nutzer:innen die Partnerseite verlassen. Zwei Einstiege: freier Brief unter `/embed` (startet bei Schritt 1) und Kampagne unter `/embed/kampagne/<slug>` (Anliegen kommt aus der Kampagne). Es bleibt unsere Seite im Fenster: Design, Briefqualität, Datenschutz und Updates bleiben bei uns.
+
+**Trigger (2026-10-28):** openPetition will den Wizard einbetten, weitere mündliche Anfragen. Zählt als Nachfrage für [999.15](#phase-99915-public-letter-generation-api-für-dritt-plattformen-backlog); das Embed kommt vor der API.
+
+#### Varianten
+
+| Variante | Für Partner | Aufwand bei uns | Einordnung |
+|---|---|---|---|
+| A Link/Button auf `/kampagne/<slug>` oder `/app` | neuer Tab | 0, geht heute | Sofort-Lösung |
+| B iframe `/embed/...` | Wizard direkt auf ihrer Seite, unser Design | klein bis mittel | **v1** |
+| C Script-Snippet (setzt das iframe ein, passt die Höhe an) | eine Zeile einbauen | klein, baut auf B auf | v1.1 |
+| D API ([999.15](#phase-99915-public-letter-generation-api-für-dritt-plattformen-backlog)) | eigenes UI, unser Brieftext | groß | erst bei mehreren Partnern |
+
+#### Bausteine (Stand Code 2026-10-28)
+
+1. **Route ohne Chrome:** Der Wizard rendert heute nur unter `/app` mit Header und Footer ([web/src/app/app/layout.tsx](../web/src/app/app/layout.tsx)). Neues `/embed`-Layout ohne beides, mit einer kleinen „Brief-nach-Berlin"-Zeile.
+2. **Framing erlauben:** [web/next.config.ts](../web/next.config.ts) setzt `X-Frame-Options: DENY` für alle Pfade. Für `/embed/*` stattdessen `Content-Security-Policy: frame-ancestors` mit Partner-Allowlist aus einer ENV-Variable. Die Allowlist ist zugleich die Notbremse pro Partner.
+3. **Kampagne direkt laden:** Heute läuft das Anliegen über den `sessionStorage`-Handoff ([web/src/lib/wizard-handoff.ts](../web/src/lib/wizard-handoff.ts), `CampaignIssueStarter.tsx`). Im Embed die Kampagne serverseitig per Slug laden und direkt in den Wizard geben. Freien Text bewusst nicht per URL (Privacy-Entscheidung in `wizard-handoff.ts`).
+4. **Herkunft zählen:** `?ref=<partner>` erlauben und als Spalte in `letter_signals` speichern (Migration mit REVOKE/GRANT nach Vorlage `033`). [AnalyticsWrapper.tsx](../web/src/components/AnalyticsWrapper.tsx) entfernt heute alle Query-Parameter, Partner-Briefe wären sonst unsichtbar.
+5. **Höhe anpassen:** iframe meldet seine Höhe per `postMessage` an die Partnerseite (Grundlage für Variante C).
+
+**Im iframe prüfen:** Spracheingabe braucht `allow="microphone"` beim Partner. Der `message://`-Mail-Button auf iOS geht im iframe eventuell nicht. Links zu den Nutzungsbedingungen in neuem Tab öffnen. Kein Login, keine Cookies im Briefflow, daher keine Third-Party-Cookie-Probleme.
+
+#### Gate vor dem Bau
+
+1. openPetition nennt Ort im Flow und erwartetes Volumen pro Tag.
+2. Volumen passt zum Mistral-Limit (15/Min für mistral-large, 16 gescheiterte Briefe am 19.10.). Sonst zuerst Rate-Limit lösen: [web/src/lib/rateLimit.ts](../web/src/lib/rateLimit.ts) zählt im Speicher jeder Server-Instanz, und 10 Briefe pro IP und Stunde treffen geteilte IPs.
+3. DSGVO: Brief-nach-Berlin bleibt Verantwortliche für die eingegebenen Daten, openPetition nennt das iframe in seiner Datenschutzerklärung. (Annahme, rechtlich nicht geprüft.)
+
+#### Fragen an openPetition
+
+1. Wo soll der Wizard erscheinen: nach der Unterschrift, auf jeder Petition oder nur bei freigeschalteten?
+2. Wie viele Unterschriften pro Tag haben typische und große Petitionen?
+3. Reicht unser Design im Fenster, oder braucht es ihre Farben?
+4. Wer legt Kampagnen an: Petent:innen selbst über `/kampagne/starten` oder openPetition?
+
+**Nicht in v1:** Theming/Whitelabel, Kampagnen per API anlegen, Captcha.
+
+**Requirements:** TBD
+**Plans:** 0 plans
+
+Plans:
+- [ ] TBD (promote with /gsd-review-backlog when ready)
+
+### Phase 999.40: Absender-Logo im Postfach (BIMI Gmail, Apple Branded Mail) (BACKLOG)
+
+**Goal:** Das Brief-nach-Berlin-Logo erscheint als rundes Absenderbild in der Postfach-Liste (Apple Mail, später evtl. Gmail). Erfasst 2026-10-29, vertagt.
+
+**Stand der Recherche (2026-10-28/29, Quellen: Apple Support, Drittanbieter-Blogs):**
+- Fachbegriff: BIMI (Brand Indicators for Message Identification). Apple nennt es Branded Mail (Apple Business, früher Business Connect).
+- Apple: Logo in der Mail-App (iPhone, Mac) und iCloud Mail im Web. Organisation muss bei Apple verifiziert sein, Marke und Logo von Apple genehmigt, das Unternehmen muss das Logo besitzen. Prüfung bis zu 7 Werktage, Domain-Verifizierung 14 Tage. Eine Markeneintragung nennen Apples Seiten nicht. Kosten nennt Apple nicht, "kostenlos" nur laut Drittquellen (ungeprüft).
+- Technik (Apple): DMARC `v=DMARC1; p=quarantine|reject; pct=100`, alle Mails per DKIM signiert (SPF allein reicht nicht), eigene kommerzielle Domain (kein posteo.de/gmail.com).
+- Gmail: braucht ein Verified Mark Certificate (VMC), ca. 750-1.700 $ pro Jahr, plus eingetragene Marke, Logo muss zur Marke passen. VMC-Prüfung 2-4 Wochen, Markeneintragung eher Monate (Schätzung). Lohnt sich bei den Kosten vorerst nicht.
+
+**Rahmen:** Brief-nach-Berlin läuft unter Trägerschaft der WeAid gGmbH, hat keine eigene Marke und ist nicht eigenständig registriert. Für Apples Verifizierung wäre die Organisation vermutlich die WeAid gGmbH (ungeprüft).
+
+**Offene Punkte:**
+1. WeAid fragen: Kann die Verifizierung bei Apple Business über sie laufen, und gehören ihr die Logo-Rechte? Markenanmeldung durch WeAid denkbar?
+2. Absenderdomain prüfen: Mails kommen laut Notiz von Brief-nach-Berlin@posteo.de. Für BIMI müssten sie von brief-nach-berlin.de über Brevo kommen (DKIM, SPF, DMARC auf der Domain).
+3. Apples Kosten und Anforderungen beim Anmelden gegenprüfen (nicht offiziell bestätigt).
+
+**Nutzen-Check:** Echte Nutzer:innen sehen ein Logo statt Initialen, das betrifft nur Apple-Mail-Nutzer:innen. Kein Datenschutz- oder Rechtsbezug. Niedrige Priorität gegenüber Nutzerkontakt.
+
+**Requirements:** TBD
+**Plans:** 0 plans
+
+Plans:
+- [ ] TBD (promote with /gsd-review-backlog when ready)
+
+### Phase 999.41: Klassenlink mit vorgegebener Ebene (Kommune, Land, Bund) (BACKLOG)
+
+**Goal:** Lehrkräfte können beim Klassenlink optional die Ebene vorgeben. Ohne Auswahl bleibt die Ebene dynamisch wie heute.
+**Trigger:** Erst bauen, wenn eine Lehrkraft danach fragt. Idee vom 2026-10-29.
+**Größe:** M (Machbarkeitscheck 2026-10-29)
+**Ansatz:** Ein optionales `level`-Feld im signierten Class-Token (`classToken.ts`, `createClassLink.ts`, `ClassLinkGenerator.tsx`). `submitWizard` liest das Feld aus dem Token und gibt eine erzwungene Ebene zurück. `WizardShell` nutzt den bestehenden Zweig, der den Ebenen-Schritt überspringt (wie bei `campaignTargetLevel`, aber ohne Kampagnen-Branding).
+**Risiken:**
+- Ohne Anpassung schreibt der Brief „eine andere Ebene ist zuständig“, denn diese Formulierung ist in `generate-letter/route.ts` nur für Kampagnen abgeschaltet.
+- Der Server prüft die Ebene nicht.
+- In Stadtstaaten fehlt die Kommune als Ebene, deshalb beim Erstellen des Links prüfen.
+- Alte Links müssen weiter funktionieren, also bleibt das Feld optional.
+- Die PLZ ist die der Schule.
+**Requirements:** TBD
+**Plans:** 0 plans
+
+Plans:
+- [ ] TBD (promote with /gsd-review-backlog when ready)
+
+### Phase 999.42: Spenden oder Teilen auf dem Erfolgsbildschirm (BACKLOG)
+
+**Goal:** Nach dem Brief fragt der Erfolgsbildschirm nach einer Spende. Bei „Nein, lieber teilen“ bekommt die Person direkt die Teilen-Möglichkeiten (Muster von Change.org). Heute hat der Erfolgsbildschirm gar keine Teilen-Buttons.
+**Trigger:** Erste Story aus dem Grilling vom 2026-10-29 (Reihenfolge: 999.42, 999.43, 999.44, dann 999.45).
+**Größe:** S
+**Ansatz:** Die `DonationCard` in `Step3Success.tsx` bekommt „Ja, ich spende“ (führt zu `/spenden`) und „Nein, lieber teilen“, das die Share-Karte aufklappt. Im Jugendmodus erscheint die Share-Karte sofort. Wiederverwenden: `src/lib/share.ts` (WhatsApp, Telegram, E-Mail) und `WeitersagenShareActions` (Web Share, Text kopieren). Klicks auf Ja, Nein und Teilen als Events in Vercel Analytics, ohne Cookies. Funktioniert auch ohne Grafik, nur mit Link und Text. Nimmt den Todo `2026-10-09-spendenbereitschaft-touchpoints-optimieren` mit auf.
+**Risiken:**
+- Wer schon „Nein“ gesagt hat, teilt womöglich seltener. Nach 2 bis 3 Wochen anhand der Klickzahlen entscheiden, ob die Spende zuerst kommen soll.
+**Requirements:** TBD
+**Plans:** 0 plans
+
+Plans:
+- [ ] TBD (promote with /gsd-review-backlog when ready)
+
+### Phase 999.43: Share-Grafik „Brief Nr. X“ (BACKLOG)
+
+**Goal:** Briefschreiber:innen bekommen eine Grafik im Stil der Meilenstein-Bilder für Insta-Story oder WhatsApp-Status, ohne persönliche Daten.
+**Trigger:** Grilling vom 2026-10-29, nach 999.42.
+**Größe:** M
+**Ansatz:** Neue Bild-Route nach dem Vorbild von `kampagne/[slug]/meilenstein/[stufe]/bild/route.tsx`. Wiederverwenden: `loadAssets`, `formatLetterCount`, `loadCampaignLogoPng`, Logo-Pille mit URL. Hochformat 1080×1920, mit `?download=1`. Kampagnen-Briefe zeigen die Zahl der Kampagne und „Briefe für ‚Titel‘“, alle anderen Briefe die Gesamtzahl (wie `stats/meilenstein/[stufe]/bild`). Keine PLZ, kein Name, kein Brieftext. Auf dem Handy teilt die Web Share API die Bilddatei direkt (`navigator.canShare({files})`), sonst Download, WhatsApp oder Link kopieren. Caching über das Vercel-CDN, keine Last für Supabase.
+**Risiken:**
+- Die Formulierung „Brief Nr. 312 geschrieben“ stimmt erst nach dem Abschicken. Ehrlicher ist „Ich schreibe Brief Nr. 312 nach Berlin“.
+- Ungeprüft: Kennt der Erfolgsbildschirm die Nummer des eigenen Briefs, oder nur den aktuellen Zähler?
+**Requirements:** TBD
+**Plans:** 0 plans
+
+Plans:
+- [ ] TBD (promote with /gsd-review-backlog when ready)
+
+### Phase 999.44: Share-Block in der Brief-Mail (BACKLOG)
+
+**Goal:** Die Brief-Mail bietet direkt unter dem Brieftext die Share-Grafik an. Die bestehende Teilen-Zeile am Ende bleibt als Wiederholung, wie bei Campact.
+**Trigger:** Nach 999.43, braucht deren Bild-Route.
+**Größe:** S
+**Ansatz:** In `web/src/lib/email/buildEmailHtml.ts` eine Vorschau der Grafik und den Button „Bild holen und teilen“ einbauen, als Link auf die Route aus 999.43. Den Snapshot-Test anpassen.
+**Risiken:**
+- Seit Quick 261026-tca steht die Spendenbitte nicht mehr in der Brief-Mail. Den Share-Block nicht mit einer neuen Spendenbitte koppeln.
+**Requirements:** TBD
+**Plans:** 0 plans
+
+Plans:
+- [ ] TBD (promote with /gsd-review-backlog when ready)
+
+### Phase 999.45: Themen-Hintergründe für Kampagnen (BACKLOG)
+
+**Goal:** Jede Kampagne bekommt automatisch einen Hintergrund, der zu ihrem Thema passt. Die Bilder liegen im Repo, nicht in Supabase.
+**Trigger:** Nach 999.42 bis 999.44.
+**Größe:** M
+**Ansatz:** 6 bis 8 Ghibli-Solarpunk-Bilder in `web/public/images/themen/`, gruppiert aus den 13 Codes in `web/src/lib/topics/topicTaxonomy.ts`, etwa Umwelt/Verkehr, Bildung/Jugend, Soziales/Wohnen, Gesundheit, Demokratie/Digitales, Kultur, Sonstiges. Ein Mapping im Code vom ersten `topic_categories`-Code auf ein Bild. Einsatz in `CampaignBackground.tsx`, in der Share-Grafik aus 999.43 und in den Meilenstein-Bildern. Der Skill `kampagne-freigeben` zeigt Thema und Hintergrund-Vorschau, Thomas kann das Thema bei der Freigabe korrigieren. Der Share-Text kommt aus einer Vorlage mit dem Titel, ohne neues DB-Feld.
+**Risiken:**
+- Die Themen werden automatisch vergeben und können danebenliegen, deshalb die Prüfung bei der Freigabe.
+**Requirements:** TBD
+**Plans:** 0 plans
+
+Plans:
+- [ ] TBD (promote with /gsd-review-backlog when ready)
+
 
 ## Progress
 

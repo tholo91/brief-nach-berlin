@@ -1187,6 +1187,8 @@ Plans:
 ### Phase 999.46: Freiwillige Bewertungen von Jugendlichen (BACKLOG)
 
 **Goal:** Auch junge Schreiber:innen können freiwillig bewerten, damit Thomas sieht, ob er die Altersgruppe erreicht und was ihr hilft.
+**Warum:** Thomas will Bewertungen und Zitate von Menschen unter 20 und sehen, wie viele Jugendliche die Seite nutzen. Das ist sein Check, ob sich mehr Ansprache von Jugendlichen und Schulen lohnt, und liefert Zitate dafür.
+**Offen:** Briefe über einen Klassenlink eventuell ohne Bewertung. Beim Discuss klären.
 **Stand heute:** Im Jugendmodus gibt es bewusst keine Sterne in der Briefmail und keine Nachfrage-Mail (`web/src/lib/email/sendLetterEmail.ts` entfernt `feedbackToken` bei `audience: "jung"`). Die Datenschutzseite (Abschnitt Jugendmodus) und der Datenschutzsatz in der Jugend-Mail sagen das genauso (seit Quick 261030-07q).
 **Größe:** M
 **Ansatz:** Sterne in der Jugend-Mail und/oder eine Nachfrage-Mail, freiwillig und ohne Pflichtfelder. Datenschutzseite, Mail-Datenschutzsatz für `jung` und `DSGVO-VERARBEITUNGSVERZEICHNIS.md` nachziehen. Klassenlinks beachten: Lehrkräfte sollen wissen, was die Kinder bekommen.

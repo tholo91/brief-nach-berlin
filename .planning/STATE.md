@@ -4,10 +4,10 @@ milestone: v1.0
 current_phase: 05
 status: verifying
 stopped_at: Completed 05-04-PLAN.md
-last_updated: "2026-10-29T11:52:38.497Z"
-last_activity: 2026-10-28
+last_updated: "2026-10-29T22:33:37.396Z"
+last_activity: 2026-10-29
 last_activity_desc: Quick 261013-wuq lokal implementiert und geprüft; manueller Release offen
-state_head: c19f8af784290ed9a666a4ab592e6aae40bfb590
+state_head: 800ba84a96bf19fcfe435dce60d5cdd685d687b8
 progress:
   total_phases: 33
   completed_phases: 4
@@ -239,6 +239,7 @@ Recent decisions affecting current work:
 | 261028-cgi | Jugend-Prompt: Kurz-Hinweis konkret, keine Partei-Wertesprache, Unterrichtsprojekt-Satz frei | 2026-10-28 | 8c3780b | [261028-cgi-jugend-prompt-kurz-hinweis-parteiframing](./quick/261028-cgi-jugend-prompt-kurz-hinweis-parteiframing/) |
 | 261028-enu | Erstschreiber-Frage im Feedback-Formular mit Auswertung in /stats und Kampagnen-Statistik | 2026-10-28 | 221d477 | [261028-enu-erstschreiber-frage-im-feedback-formular](./quick/261028-enu-erstschreiber-frage-im-feedback-formular/) |
 | 261029-gm2 | Kampagnen: Logo beim Schrittwechsel, Admin-Freigabe-Mail + Skill, Pausiert-Link/Hinweis/Fortsetzen | 2026-10-29 | c19f8af | [261029-gm2-kampagnen-bild-admin-freigabe-pausiert](./quick/261029-gm2-kampagnen-bild-admin-freigabe-pausiert/) |
+| 261029-w6k | URL-Umbau: Kinder-Seite /schule, Lehrer-Seite /unterricht, Nav mit Für | 2026-10-29 | 800ba84 | [261029-w6k-url-umbau-kinder-seite-nach-schule-lehre](./quick/261029-w6k-url-umbau-kinder-seite-nach-schule-lehre/) |
 
 ## Session Continuity
 

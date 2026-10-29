@@ -61,7 +61,7 @@ export function JungExperience({ entry }: { entry: JungEntry }) {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const klasseGroupRef = useRef<HTMLFieldSetElement>(null);
   const [finishRevealed, setFinishRevealed] = useState(false);
-  // Im Unterricht (Klassenlink) bleiben die Satzanfänge neutral, siehe /schule.
+  // Im Unterricht (Klassenlink) bleiben die Satzanfänge neutral, siehe /unterricht.
   const topics = entry.status === "none" ? JUNG_OPEN_TOPICS : JUNG_TOPICS;
 
   const {

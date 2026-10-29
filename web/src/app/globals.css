@@ -726,7 +726,7 @@ video::-webkit-media-controls-start-playback-button {
   .print-flyer-steps { grid-template-columns: 1fr; }
 }
 
-/* Unterrichtsmaterial /schule/ablauf: eigener Block, ändert keine bestehende Regel. */
+/* Unterrichtsmaterial /unterricht/ablauf: eigener Block, ändert keine bestehende Regel. */
 @page lesson-a4 { size: A4 portrait; margin: 15mm; }
 
 .lesson-print {

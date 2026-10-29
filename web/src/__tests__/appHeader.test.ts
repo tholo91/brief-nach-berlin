@@ -37,8 +37,8 @@ describe("AppHeader", () => {
     expect(markup).toContain(">Schreiben<");
   });
 
-  it("shows the class link CTA on /schule", () => {
-    const markup = renderAt("/schule");
+  it("shows the class link CTA on /unterricht", () => {
+    const markup = renderAt("/unterricht");
 
     expect(markup).toContain('href="#klassenlink"');
     expect(markup).toContain("Klassenlink erstellen");

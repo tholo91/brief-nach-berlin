@@ -54,7 +54,7 @@ const faqs = [
     aNode: (
       <>
         {DATA_SUMMARY} Mehr steht im Abschnitt{" "}
-        <Link href="/schule#schulleitung" className={linkClass}>
+        <Link href="/unterricht#schulleitung" className={linkClass}>
           Für die Schulleitung
         </Link>{" "}
         und in der{" "}
@@ -150,8 +150,8 @@ export default function ProjekttagDemokratiePage() {
           <p className={`${bodyClass} mt-3`}>{COLLECTIVE_ENVELOPE_NOTE}</p>
           <p className={`${bodyClass} mt-3`}>
             Den Ablauf der einzelnen Stunde findest du auf der{" "}
-            <Link href="/schule" className={linkClass}>Seite für den Unterricht</Link>, zum Ausdrucken gibt es{" "}
-            <Link href="/schule/ablauf" className={linkClass}>Ablauf, Arbeitsblatt und Tafelbild</Link>.
+            <Link href="/unterricht" className={linkClass}>Seite für den Unterricht</Link>, zum Ausdrucken gibt es{" "}
+            <Link href="/unterricht/ablauf" className={linkClass}>Ablauf, Arbeitsblatt und Tafelbild</Link>.
           </p>
         </section>
 
@@ -204,7 +204,7 @@ export default function ProjekttagDemokratiePage() {
           </h2>
           <p className={`${bodyClass} mt-2`}>Ein Klassenlink pro Klasse, in einer Minute erstellt.</p>
           <Link
-            href="/schule"
+            href="/unterricht"
             className="mt-4 inline-block rounded-sm bg-waldgruen px-6 py-3 font-body text-base font-bold text-white hover:bg-waldgruen-dark focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-waldgruen-dark"
           >
             Klassenlinks erstellen

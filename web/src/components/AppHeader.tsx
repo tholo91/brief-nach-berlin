@@ -12,7 +12,7 @@ const NGO_NAV_LINKS = [
 
 const SCHOOL_NAV_LINKS = [
   { label: "Schüler:innen", href: "/jung" },
-  { label: "Lehrkräfte", href: "/schule" },
+  { label: "Lehrkräfte", href: "/unterricht" },
   { label: "Eltern", href: "/eltern" },
 ];
 
@@ -24,7 +24,7 @@ const PRIMARY_CTA_CLASS =
 const SCHOOL_PAGE_CTAS: Record<string, { href: string; label: string; mobileLabel: string }> = {
   "/jung": { href: "#schreiben", label: "Brief entwerfen", mobileLabel: "Schreiben" },
   "/eltern": { href: "#schreiben", label: "Brief entwerfen", mobileLabel: "Schreiben" },
-  "/schule": { href: "#klassenlink", label: "Klassenlink erstellen", mobileLabel: "Klassenlink" },
+  "/unterricht": { href: "#klassenlink", label: "Klassenlink erstellen", mobileLabel: "Klassenlink" },
 };
 
 const CAMPAIGN_TOOL_PATHS = new Set(["starten", "verifizieren", "verwalten"]);

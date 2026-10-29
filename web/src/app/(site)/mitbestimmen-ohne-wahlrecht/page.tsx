@@ -155,7 +155,7 @@ export default function MitbestimmenOhneWahlrechtPage() {
           </p>
           <p className={pClass}>
             Lehrkräfte finden auf der Seite{" "}
-            <Link href="/schule" className={linkClass}>Brief-nach-Berlin für Schulen</Link>{" "}
+            <Link href="/unterricht" className={linkClass}>Brief-nach-Berlin für Schulen</Link>{" "}
             einen Klassenlink und einen Ablauf für den Unterricht, mehr zum{" "}
             <Link href="/projekttag-demokratie" className={linkClass}>Projekttag Demokratie</Link>{" "}
             steht dort ebenfalls.

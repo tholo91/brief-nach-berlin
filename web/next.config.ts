@@ -22,6 +22,14 @@ const nextConfig: NextConfig = {
     serverFunctions: false,
     incomingRequests: { ignore: [/\/rueckmeldung(?:[/?]|$)/] },
   },
+  // Die spezifische Regel /schule/ablauf muss vor jeder /schule-Regel stehen; /schule selbst wird nie umgeleitet (D-07).
+  async redirects() {
+    return [
+      { source: "/schule/ablauf", destination: "/unterricht/ablauf", statusCode: 301 },
+      { source: "/lehrer", destination: "/unterricht", statusCode: 301 },
+      { source: "/lehrkraefte", destination: "/unterricht", statusCode: 301 },
+    ];
+  },
   async headers() {
     return [
       {

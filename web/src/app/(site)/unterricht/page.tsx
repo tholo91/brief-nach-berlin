@@ -8,7 +8,7 @@ import { LessonPlanToggle } from "@/components/schule/LessonPlanToggle";
 import { APP_URL, FOUNDER_EMAIL } from "@/lib/config";
 import { COLLECTIVE_ENVELOPE_NOTE, PRECHECK_ITEMS } from "@/lib/schule/lessonPlan";
 
-const URL_PATH = "/schule";
+const URL_PATH = "/unterricht";
 const CANONICAL_URL = `${APP_URL}${URL_PATH}`;
 const TITLE = "Briefe an Abgeordnete im Unterricht";
 const DESCRIPTION =
@@ -132,7 +132,7 @@ function ChevronIcon() {
   );
 }
 
-export default function SchulePage() {
+export default function UnterrichtPage() {
   return (
     <>
       <script
@@ -215,7 +215,7 @@ export default function SchulePage() {
               {COLLECTIVE_ENVELOPE_NOTE}
             </p>
             <p className={`${bodyClass} mt-6`}>
-              <Link href="/schule/ablauf" className={linkClass}>
+              <Link href="/unterricht/ablauf" className={linkClass}>
                 Ablauf, Arbeitsblatt und Tafelbild zum Ausdrucken
               </Link>
             </p>

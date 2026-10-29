@@ -1,4 +1,4 @@
-// Ablauf für Lehrkräfte: /schule zeigt ihn, die Druckfassung (/schule/ablauf) nutzt dieselben Daten.
+// Ablauf für Lehrkräfte: /unterricht zeigt ihn, die Druckfassung (/unterricht/ablauf) nutzt dieselben Daten.
 
 export interface LessonRow {
   from: number;

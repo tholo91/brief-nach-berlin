@@ -32,7 +32,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 0.8,
     },
     {
-      url: `${BASE_URL}/schule`,
+      url: `${BASE_URL}/unterricht`,
       lastModified,
       changeFrequency: "monthly",
       priority: 0.8,
@@ -56,7 +56,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 0.8,
     },
     {
-      url: `${BASE_URL}/schule/ablauf`,
+      url: `${BASE_URL}/unterricht/ablauf`,
       lastModified,
       changeFrequency: "monthly",
       priority: 0.7,

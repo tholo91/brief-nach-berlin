@@ -52,10 +52,11 @@ describe("CampaignQrDownload", () => {
   });
 });
 
-describe("/schule page", () => {
+describe("/unterricht page", () => {
   it("renders sections in plan order with binding copy", async () => {
-    const { default: SchulePage } = await import("@/app/(site)/schule/page");
-    const html = renderToStaticMarkup(createElement(SchulePage));
+    const { default: UnterrichtPage, metadata } = await import("@/app/(site)/unterricht/page");
+    expect(metadata.alternates?.canonical).toBe("https://www.brief-nach-berlin.de/unterricht");
+    const html = renderToStaticMarkup(createElement(UnterrichtPage));
     const order = [
       "Deine Klasse schreibt an die Politik.",
       'href="#klassenlink"',
@@ -69,7 +70,7 @@ describe("/schule page", () => {
       LESSON_45[0].phase,
       "Zusätzlich zum Ablauf oben:",
       LESSON_90_EXTRAS[0],
-      "/schule/ablauf",
+      "/unterricht/ablauf",
       "Warum das wirkt",
       "Warum Handschrift?",
       'id="schulleitung"',

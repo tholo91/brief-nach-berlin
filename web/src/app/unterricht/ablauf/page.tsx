@@ -12,7 +12,7 @@ import {
   formatMinuteRange,
 } from "@/lib/schule/lessonPlan";
 
-const CANONICAL_URL = `${APP_URL}/schule/ablauf`;
+const CANONICAL_URL = `${APP_URL}/unterricht/ablauf`;
 const TITLE = "Ablauf und Arbeitsblatt für den Unterricht | Brief-nach-Berlin";
 const DESCRIPTION =
   "Zum Ausdrucken: Stundenablauf, Arbeitsblatt und Tafelbild für Briefe an Abgeordnete im Unterricht.";
@@ -53,7 +53,7 @@ export default function SchuleAblaufPage() {
           Brief-nach-Berlin
         </Link>
         <div className="lesson-toolbar">
-          <Link href="/schule" className="lesson-link">
+          <Link href="/unterricht" className="lesson-link">
             Zurück zur Seite für Schulen
           </Link>
           <PrintButton />

@@ -206,7 +206,7 @@ export default async function JungPage({
             </li>
             <li className="font-body text-base leading-relaxed text-warmgrau">
               Zusammen ist lauter: Schreib mit Freund:innen, mit deiner Klasse oder über die SV. Wie das in der Schule geht, steht auf der{" "}
-              <Link href="/schule" className="font-semibold text-waldgruen underline underline-offset-2">
+              <Link href="/unterricht" className="font-semibold text-waldgruen underline underline-offset-2">
                 Seite für Lehrkräfte
               </Link>
               .
@@ -221,7 +221,7 @@ export default async function JungPage({
 
         <p className="mt-10 font-body text-sm leading-relaxed text-warmgrau/80">
           Du bist Lehrkraft? Auf der{" "}
-          <Link href="/schule" className="font-semibold text-waldgruen underline underline-offset-2">
+          <Link href="/unterricht" className="font-semibold text-waldgruen underline underline-offset-2">
             Seite für Schulen
           </Link>{" "}
           gibt es einen Klassenlink mit QR-Code und einen Ablauf für 45 oder 90 Minuten.

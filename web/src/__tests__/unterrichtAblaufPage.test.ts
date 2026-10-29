@@ -1,6 +1,6 @@
 import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
-import SchuleAblaufPage, { metadata } from "@/app/schule/ablauf/page";
+import UnterrichtAblaufPage, { metadata } from "@/app/unterricht/ablauf/page";
 import { TAFELBILD, WORKSHEET_CHECKLIST } from "@/lib/schule/lessonPlan";
 
 describe("worksheet data", () => {
@@ -16,15 +16,16 @@ describe("worksheet data", () => {
   });
 });
 
-describe("/schule/ablauf page", () => {
+describe("/unterricht/ablauf page", () => {
   it("renders three sheets without em dashes", () => {
-    const html = renderToStaticMarkup(createElement(SchuleAblaufPage));
+    const html = renderToStaticMarkup(createElement(UnterrichtAblaufPage));
     expect(html.match(/class="lesson-sheet"/g)).toHaveLength(3);
     expect(html).toContain("Stundenablauf");
     expect(html).toContain("Arbeitsblatt: Mach den Brief zu deinem");
     expect(html).toContain("Tafelbild: Wer ist zuständig?");
     expect(html).toContain("Zurück zur Seite für Schulen");
     expect(html).toContain("Seite drucken");
+    expect(html).toContain('href="/unterricht"');
     expect(html).toContain("Merksatz:");
     expect(html).not.toContain("—");
     expect(html.startsWith('<main class="lesson-print">')).toBe(true);
@@ -32,6 +33,6 @@ describe("/schule/ablauf page", () => {
 
   it("sets canonical and title", () => {
     expect(metadata.title).toBe("Ablauf und Arbeitsblatt für den Unterricht | Brief-nach-Berlin");
-    expect(metadata.alternates?.canonical).toBe("https://www.brief-nach-berlin.de/schule/ablauf");
+    expect(metadata.alternates?.canonical).toBe("https://www.brief-nach-berlin.de/unterricht/ablauf");
   });
 });

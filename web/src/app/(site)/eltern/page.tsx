@@ -175,7 +175,7 @@ export default function ElternPage() {
             Alle Details stehen in der{" "}
             <Link href="/datenschutz#jugendmodus" className={linkClass}>Datenschutzerklärung</Link>{" "}
             und auf der Seite{" "}
-            <Link href="/schule" className={linkClass}>für Schulen</Link>.
+            <Link href="/unterricht" className={linkClass}>für Schulen</Link>.
           </p>
         </section>
 
@@ -187,7 +187,7 @@ export default function ElternPage() {
         <p className="mt-10 font-body text-sm leading-relaxed text-warmgrau/80">
           Für Schüler:innen geht es auf der{" "}
           <Link href="/jung" className={linkClass}>Seite für Jugendliche</Link> los, für Lehrkräfte auf der{" "}
-          <Link href="/schule" className={linkClass}>Seite für Schulen</Link>.
+          <Link href="/unterricht" className={linkClass}>Seite für Schulen</Link>.
         </p>
       </div>
     </>

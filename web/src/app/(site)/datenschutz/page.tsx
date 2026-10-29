@@ -949,8 +949,8 @@ export default function Datenschutz() {
                 /jung
               </Link>{" "}
               und über Klassenlinks, die Lehrkräfte auf der Seite{" "}
-              <Link href="/schule" className="text-waldgruen hover:underline">
-                /schule
+              <Link href="/unterricht" className="text-waldgruen hover:underline">
+                /unterricht
               </Link>{" "}
               erzeugen, können auch Schülerinnen und Schüler unter 18 Jahren
               Brief-nach-Berlin nutzen. Sie wählen dort eine Klassenstufe von 7

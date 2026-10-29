@@ -80,6 +80,7 @@ describe("landing page content", () => {
     const faqSource = readFileSync(join(process.cwd(), "src/components/FAQ.tsx"), "utf8");
     const mapSource = readFileSync(join(process.cwd(), "src/components/letter-signals/LetterActivityCard.tsx"), "utf8");
     const heroSource = readFileSync(join(process.cwd(), "src/components/Hero.tsx"), "utf8");
+    const loopVideoSource = readFileSync(join(process.cwd(), "src/components/LoopVideoBackground.tsx"), "utf8");
     const voicesSource = readFileSync(join(process.cwd(), "src/app/(site)/stimmen/page.tsx"), "utf8");
 
     expect(pageSource).not.toContain("LetterActivitySection");
@@ -111,9 +112,10 @@ describe("landing page content", () => {
     expect(workflowSource).not.toContain("border-l-airmail-rot");
     expect(heroSource).toContain("NgoCampaignBadge");
     expect(heroSource).toContain('href="/ngo-briefkampagne"');
-    expect(heroSource).toContain("prefers-reduced-motion: reduce");
+    expect(heroSource).toContain("<LoopVideoBackground");
+    expect(loopVideoSource).toContain("prefers-reduced-motion: reduce");
     for (const eventName of ["onWaiting", "onStalled", "onSuspend", "onEmptied", "onPause", "onError"]) {
-      expect(heroSource).toContain(`${eventName}={() => setIsVideoPlaying(false)}`);
+      expect(loopVideoSource).toContain(`${eventName}={() => setIsVideoPlaying(false)}`);
     }
   });
 });

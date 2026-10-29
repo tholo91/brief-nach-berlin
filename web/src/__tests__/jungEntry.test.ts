@@ -138,21 +138,23 @@ describe("/jung page", () => {
   it("renders the form with chips, connector and reveal without a class link", async () => {
     const html = await render();
     expect(html).toContain('id="schreiben"');
-    expect(html).toContain("Wählen darfst du noch nicht. Schreiben schon.");
-    expect(html.match(/name="klasse"/g)).toHaveLength(7);
-    expect(html).toContain("Brief entwerfen");
+    expect(html).toContain("Wählen darfst du noch nicht.");
+    expect(html).toContain("Schreiben schon.");
+    expect(html).not.toContain('name="klasse"');
+    expect(html).toContain("Ein, zwei eigene Sätze reichen.");
+    expect(html).not.toContain("Brief entwerfen");
     expect(html).toContain("overflow-x-auto");
     expect(html).toContain("step-connector");
     expect(html).toContain("reveal");
     expect(html.match(/<h1/g)).toHaveLength(1);
-    expect(html).not.toContain("font-handwriting");
+    expect(html).toContain("font-handwriting");
     expect(html).not.toMatch(/[–—]/);
   });
 
   it("shows the new intro, first placeholder, short after-button line and expandable chips", async () => {
     const html = await render();
     expect(html).toContain(
-      "Erzähl, was dich stört oder was du dir für deine Zukunft wünschst. Das Tool schreibt daraus einen Briefentwurf an die Zuständigen in der Politik.",
+      "Erzähl, was dich stört. Das Tool macht daraus einen Brief an die Politik.",
     );
     expect(html).toContain(
       'placeholder="Seit den Herbstferien hatten wir in Mathe drei Vertretungen. Ich fühle mich allein gelassen."',
@@ -160,19 +162,19 @@ describe("/jung page", () => {
     expect(html).not.toContain("Ein Erlebnis reicht");
     expect(html).not.toContain("bis zu zwei");
     expect(html).not.toContain(LIMIT_MESSAGE);
-    expect(html).toContain("An wen dein Brief geht, schlägt dir das Tool vor.");
+    expect(html).not.toContain("An wen dein Brief geht, schlägt dir das Tool vor.");
     expect(html).not.toContain("Als Nächstes gibst du");
     expect(html).toContain("Alle Themen");
     expect(html).toContain('aria-controls="jung-thema-chips"');
     expect(html).toContain('id="jung-thema-chips"');
-    expect(html).toContain("h-12 w-full");
-    expect(html).toContain("sm:h-auto");
-    expect(html).not.toContain("h-20 w-full");
+    expect(html).toContain('src="/jung-bg.webm"');
+    expect(html).toContain('poster="/jung-bg.webp"');
+    expect(html).not.toContain("img-jung-treppe");
   });
 
   it("replaces the class picker with a confirmation for a valid link", async () => {
     const html = await render(signClassToken({ klasse: 9, plz: "28195" }));
-    expect(html).toContain("Klasse 9, PLZ 28195 eingetragen.");
+    expect(html).not.toContain("Klasse 9, PLZ 28195 eingetragen.");
     expect(html).toContain("ändern");
     expect(html).not.toContain('name="klasse"');
   });
@@ -183,10 +185,44 @@ describe("/jung page", () => {
   });
 });
 
+describe("JungExperience step by step", () => {
+  const hookState = (issueText: string, topicInsertions: Record<string, string>) =>
+    ({
+      selectedTopicIds: Object.keys(topicInsertions),
+      topicInsertions,
+      issueText,
+      setIssueText: jest.fn(),
+      statusMessage: "",
+      setStatusMessage: jest.fn(),
+      toggleTopic: jest.fn(),
+      selectionLimitReached: false,
+    }) as ReturnType<typeof useTopicStarters>;
+
+  it("keeps class and button hidden while only a starter is in the field", () => {
+    const starter = JUNG_TOPICS[0].issueText;
+    jest.mocked(useTopicStarters).mockReturnValueOnce(hookState(starter, { [JUNG_TOPICS[0].id]: starter }));
+    const html = renderToStaticMarkup(createElement(JungExperience, { entry: { status: "none" } }));
+    expect(html).not.toContain('name="klasse"');
+    expect(html).not.toContain("Brief entwerfen");
+  });
+
+  it("shows class after the topic and the button once there is own text", () => {
+    const starter = JUNG_TOPICS[0].issueText;
+    jest
+      .mocked(useTopicStarters)
+      .mockReturnValueOnce(hookState(`${starter}die Fenster gehen nicht auf.`, { [JUNG_TOPICS[0].id]: starter }));
+    const html = renderToStaticMarkup(createElement(JungExperience, { entry: { status: "none" } }));
+    expect(html.match(/name="klasse"/g)).toHaveLength(7);
+    expect(html).toContain("Brief entwerfen");
+    expect(html.indexOf("Was nervt dich?")).toBeLessThan(html.indexOf('name="klasse"'));
+  });
+});
+
 describe("JungExperience topic limit", () => {
   it("explains the greyed-out chips once two topics are selected", () => {
     jest.mocked(useTopicStarters).mockReturnValueOnce({
       selectedTopicIds: JUNG_TOPICS.slice(0, 2).map((topic) => topic.id),
+      topicInsertions: {},
       issueText: "",
       setIssueText: jest.fn(),
       statusMessage: "",

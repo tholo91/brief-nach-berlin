@@ -7,7 +7,7 @@ import {
   type TopicStarter,
   type TopicStarterState,
 } from "@/lib/topics/topicStarters";
-import { JUNG_MAX_TOPICS, JUNG_TOPICS } from "@/lib/schule/jungTopics";
+import { JUNG_MAX_TOPICS, JUNG_OPEN_TOPICS, JUNG_TOPICS } from "@/lib/schule/jungTopics";
 import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { TopicStarterGrid, type TopicStarterGridProps } from "@/components/topics/TopicStarterGrid";
@@ -137,6 +137,14 @@ describe("toggleTopicStarter", () => {
     expect(removed.outcome).toBe("removed-text");
     expect(removed.state).toEqual(empty);
   });
+  it("removes the first of two starters even though its trailing space was trimmed", () => {
+    const jung = { selectedIds: [], issueText: "", insertions: {} };
+    const one = toggleTopicStarter(jung, JUNG_TOPICS, "klima", JUNG_MAX_TOPICS).state;
+    const two = toggleTopicStarter(one, JUNG_TOPICS, "wehrdienst", JUNG_MAX_TOPICS).state;
+    const removed = toggleTopicStarter(two, JUNG_TOPICS, "klima", JUNG_MAX_TOPICS);
+    expect(removed.outcome).toBe("removed-text");
+    expect(removed.state.issueText).toBe(two.insertions.wehrdienst);
+  });
   it("keeps edited text when the insertion was changed", () => {
     const added = toggleTopicStarter(empty, topics, "a", 2).state;
     const edited = { ...added, issueText: "Ganz anders" };
@@ -177,5 +185,12 @@ describe("JUNG_TOPICS", () => {
     expect(JUNG_TOPICS).toHaveLength(8);
     expect(new Set(JUNG_TOPICS.map((t) => t.id)).size).toBe(8);
     expect(JUNG_MAX_TOPICS).toBe(2);
+  });
+  it("has an opinionated variant with the same ids and new texts for every topic", () => {
+    expect(JUNG_OPEN_TOPICS.map((t) => t.id)).toEqual(JUNG_TOPICS.map((t) => t.id));
+    JUNG_OPEN_TOPICS.forEach((topic, i) => {
+      expect(topic.issueText).not.toBe(JUNG_TOPICS[i].issueText);
+      expect(topic.issueText).not.toMatch(/[–—]/);
+    });
   });
 });

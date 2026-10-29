@@ -32,7 +32,9 @@ export function appendText(current: string, addition: string) {
   return trimmedCurrent ? `${trimmedCurrent}\n\n${addition}` : addition;
 }
 
-export function removeInsertedText(current: string, insertion: string) {
+export function removeInsertedText(current: string, fullInsertion: string) {
+  // appendText trims the end of earlier text, so a starter ending in a space may now be stored without it.
+  const insertion = current.includes(fullInsertion) ? fullInsertion : fullInsertion.trimEnd();
   const start = current.indexOf(insertion);
   if (start === -1) return { text: current, removed: false };
 

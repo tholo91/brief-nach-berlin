@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
-import Image from "next/image";
 import Link from "next/link";
+import LoopVideoBackground from "@/components/LoopVideoBackground";
 import { FAQAccordion } from "@/components/FAQAccordion";
 import { Figure } from "@/components/editorial/Figure";
 import { JungExperience } from "@/components/jung/JungExperience";
@@ -114,30 +114,51 @@ export default async function JungPage({
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, "\\u003c") }}
       />
-      <div className="mx-auto w-full max-w-xl px-5 pb-16 pt-4 sm:pt-10">
-        {entry.status === "invalid" && (
-          <p role="status" className="mb-4 rounded-lg border border-bernstein/50 bg-bernstein/10 px-4 py-3 font-body text-sm text-warmgrau">
-            Dieser Klassenlink ist abgelaufen oder ungültig. Frag deine Lehrkraft nach einem neuen. Schreiben kannst du trotzdem.
-          </p>
-        )}
+      <section className="relative overflow-hidden">
+        <div className="absolute inset-x-0 top-0 h-[17rem] sm:h-[26rem] lg:bottom-0 lg:h-auto">
+          <LoopVideoBackground
+            webm="/jung-bg.webm"
+            mp4="/jung-bg.mp4"
+            poster="/jung-bg.webp"
+            playbackRate={0.5}
+            className="object-[20%_center] sm:object-[center_66%] lg:object-[center_75%]"
+          />
+          <div
+            aria-hidden="true"
+            className="absolute inset-0"
+            style={{
+              background: `linear-gradient(
+                to bottom,
+                rgba(250,248,245,0.38) 0%,
+                rgba(250,248,245,0.42) 55%,
+                rgba(250,248,245,0.88) 82%,
+                rgba(250,248,245,1) 100%
+              )`,
+            }}
+          />
+          <div aria-hidden="true" className="absolute inset-0 hidden bg-gradient-to-r from-transparent from-40% via-creme/60 via-60% to-creme/90 lg:block" />
+        </div>
+        <div className="relative mx-auto w-full max-w-2xl px-5 pb-2 pt-52 sm:pt-[21rem] lg:grid lg:min-h-[30rem] lg:max-w-6xl lg:grid-cols-2 lg:items-center lg:pb-14 lg:pt-10">
+          <div className="lg:col-start-2">
+            {entry.status === "invalid" && (
+              <p role="status" className="mb-4 rounded-lg border border-bernstein/50 bg-bernstein/10 px-4 py-3 font-body text-sm text-warmgrau">
+                Dieser Klassenlink ist abgelaufen oder ungültig. Frag deine Lehrkraft nach einem neuen. Schreiben kannst du trotzdem.
+              </p>
+            )}
+            <h1 className="font-typewriter text-xl font-bold leading-tight tracking-tight text-waldgruen-dark sm:text-[2rem]">
+              <span className="block">Wählen darfst du noch nicht.</span>{" "}
+              <span className="mt-1 inline-block origin-left -rotate-3 font-handwriting text-[2.6rem] font-bold leading-none tracking-normal text-waldgruen sm:text-6xl">
+                Schreiben schon.
+              </span>
+            </h1>
+            <p className="mt-3 font-body text-base leading-snug text-warmgrau sm:mt-4 sm:text-lg">
+              Erzähl, was dich stört. Das Tool macht daraus einen Brief an die Politik.
+            </p>
+          </div>
+        </div>
+      </section>
 
-        <Image
-          src="/images/img-jung-treppe.webp"
-          alt="Drei Jugendliche auf einer Altbautreppe in Berlin, eine schreibt einen Brief, daneben ein Briefkasten, gemalte Illustration"
-          width={1200}
-          height={510}
-          sizes="(max-width: 576px) 100vw, 576px"
-          priority
-          className="mb-3 h-12 w-full rounded-xl object-cover object-[center_40%] shadow-md shadow-waldgruen/10 sm:mb-6 sm:h-auto"
-        />
-
-        <h1 className="font-typewriter text-2xl font-bold leading-tight tracking-tight text-waldgruen-dark text-pretty sm:text-[2rem]">
-          Wählen darfst du noch nicht. Schreiben schon.
-        </h1>
-        <p className="mb-4 mt-2 font-body text-base leading-snug text-warmgrau sm:mb-7 sm:leading-relaxed sm:mt-4 sm:text-lg">
-          Erzähl, was dich stört oder was du dir für deine Zukunft wünschst. Das Tool schreibt daraus einen Briefentwurf an die Zuständigen in der Politik.
-        </p>
-
+      <div className="mx-auto w-full max-w-2xl px-5 pb-16 pt-6 sm:pt-8 lg:pt-2">
         <div id="schreiben" className="scroll-mt-32">
           <JungExperience entry={entry} />
         </div>

@@ -75,6 +75,7 @@ export function useTopicStarters({ draftKey, topics, maxTopics, maxIssueLength, 
 
   return {
     selectedTopicIds,
+    topicInsertions,
     issueText,
     setIssueText,
     statusMessage,

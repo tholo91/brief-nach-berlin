@@ -46,3 +46,24 @@ export const JUNG_TOPICS: readonly TopicStarter[] = [
     issueText: "In meinem Ort fehlen Orte für Jugendliche: ",
   },
 ];
+
+// Ohne Klassenlink (kein Unterricht): Satzanfänge mit Haltung, damit Jugendliche schneller ins Schreiben kommen.
+const JUNG_OPEN_TEXT: Record<string, string> = {
+  schulgebaeude: "Ich finde es nicht okay, dass wir in einem Schulgebäude lernen, in dem ",
+  lehrkraeftemangel:
+    "Bei uns fällt ständig Unterricht aus, und in der Prüfung sollen wir trotzdem alles können. Mich ärgert, dass ",
+  "handy-digitales": "Alle reden von Digitalisierung, aber an meiner Schule ",
+  schulweg: "Mein Schulweg kostet mich jeden Tag Zeit und Nerven, weil ",
+  "mentale-gesundheit":
+    "Viele in meinem Alter sind am Limit, und auf einen Therapieplatz wartet man monatelang. Bei mir ",
+  klima:
+    "Wir hatten vom Leben noch kaum etwas und sollen trotzdem ausbaden, was beim Klimaschutz liegen bleibt. Mich stört, dass ",
+  wehrdienst:
+    "Beim Wehrdienst wird über unsere Köpfe hinweg entschieden, obwohl es um unser Leben geht. Ich möchte, dass ",
+  "orte-fuer-jugendliche": "In meinem Ort gibt es kaum einen Platz, an dem wir einfach sein dürfen. Mir fehlt ",
+};
+
+export const JUNG_OPEN_TOPICS: readonly TopicStarter[] = JUNG_TOPICS.map((topic) => ({
+  ...topic,
+  issueText: JUNG_OPEN_TEXT[topic.id] ?? topic.issueText,
+}));

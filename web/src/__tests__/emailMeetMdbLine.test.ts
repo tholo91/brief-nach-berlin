@@ -47,7 +47,7 @@ describe("buildEmailHtml - MdB-Zeile Wahlkreisbüro", () => {
     expect(html).toContain("Dr. Anna &lt;b&gt;Müller&lt;/b&gt; persönlich treffen");
   });
 
-  it("mdb: Link trägt die MdB-ID und weder PLZ noch Token", () => {
+  it("mdb: Link trägt MdB-ID und gültige PLZ, aber keine Tokens", () => {
     const html = buildEmailHtml(
       params({
         politicianId: 123,
@@ -58,10 +58,18 @@ describe("buildEmailHtml - MdB-Zeile Wahlkreisbüro", () => {
     );
     const href = html.match(/href="([^"]*aktiv-werden\?mdb=[^"]*)"/)?.[1];
     expect(href).toBeDefined();
-    expect(href).toMatch(/\/aktiv-werden\?mdb=123#wahlkreisbuero$/);
-    for (const forbidden of ["28195", "plz", "geheim-token", "loeschtoken", "t="]) {
+    expect(href).toMatch(/\/aktiv-werden\?mdb=123&plz=28195#wahlkreisbuero$/);
+    for (const forbidden of ["geheim-token", "loeschtoken", "t="]) {
       expect(href).not.toContain(forbidden);
     }
+  });
+
+  it("mdb: ungültige PLZ landet nicht im Link", () => {
+    const html = buildEmailHtml(
+      params({ politicianId: 123, debug: { plz: "2819x" } as never }),
+    );
+    expect(html).toContain("/aktiv-werden?mdb=123#wahlkreisbuero");
+    expect(html).not.toContain("plz=");
   });
 
   it("mdb: ohne politicianId bleibt der Link ohne Query", () => {

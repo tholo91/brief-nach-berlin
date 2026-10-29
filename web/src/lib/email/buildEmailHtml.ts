@@ -97,6 +97,7 @@ export function buildLetterEmailText(data: SendLetterEmailParams): string {
   );
   parts.push(`${copy.privacy}: ${copy.dataPolicy}\n${copy.followup.delete}: ${data.deleteUrl ?? `${APP_URL}/datenloeschen`}`);
   parts.push(buildSocialFollowText(resolveEmailLocale(data.locale)));
+  if (data.debug) parts.push(`${copy.inputsLink}: ${buildDebugUrl(data.debug)}`);
   return parts.join("\n\n");
 }
 
@@ -407,6 +408,9 @@ function buildGoodToKnowHtml(data: SendLetterEmailParams, fullName: string): str
   const link = (url: string, label: string) =>
     `<a href="${url}" target="_blank" rel="noopener noreferrer" style="color:#2D5016;text-decoration:underline;">${label}</a>`;
   const isMdb = data.recipientKind === "mdb";
+  const validPlz = data.debug?.plz && /^\d{5}$/.test(data.debug.plz)
+    ? data.debug.plz
+    : undefined;
   const highlight = (icon: string, title: string, text: string, linkHtml: string) => `
                     <p style="margin:0 0 10px;${font}font-size:14px;color:#4A4A4A;line-height:1.5;">${icon} <strong>${title}</strong><br>${text}${linkHtml ? ` ${linkHtml}` : ""}</p>`;
   const highlights = [
@@ -414,7 +418,10 @@ function buildGoodToKnowHtml(data: SendLetterEmailParams, fullName: string): str
       "🤝",
       g.meetTitle(fullName),
       g.meetText,
-      link(`${APP_URL}/aktiv-werden${data.politicianId ? `?mdb=${data.politicianId}` : ""}#wahlkreisbuero`, g.meetLink),
+      link(
+        `${APP_URL}/aktiv-werden${data.politicianId ? `?mdb=${data.politicianId}` : ""}${validPlz ? `${data.politicianId ? "&" : "?"}plz=${validPlz}` : ""}#wahlkreisbuero`,
+        g.meetLink,
+      ),
     ),
     // BPA-Fahrten laden nur Bundestagsabgeordnete ein, mitfahren erst ab 18.
     isMdb && data.audience !== "jung" && highlight(
@@ -790,8 +797,11 @@ export function buildEmailHtml(data: SendLetterEmailParams): string {
                       <strong>${copy.notice}</strong> ${copy.noticeText}${profileUrl ? ` (<a href="${profileUrl}" target="_blank" rel="noopener noreferrer" style="color:#888888;">${disclaimerSiteName}</a>)` : ""}${copy.noticeTextAfter ? `, ${copy.noticeTextAfter}` : ""}. ${copy.responsibility} ${copy.terms(`<a href="${APP_URL}/nutzungsbedingungen" style="color:#888888;">${copy.termsLabel}</a>`)}
                     </p>
                     <p style="margin:0;font-family:Georgia,'Times New Roman',serif;font-size:12px;color:#aaaaaa;line-height:1.5;">
-                      <a href="${APP_URL}/datenschutz" style="color:#888888;">${copy.privacy}</a>: ${copy.dataPolicy} · <a href="${data.deleteUrl ?? `${APP_URL}/datenloeschen`}" style="color:#888888;">${copy.followup.delete}</a>${data.debug ? ` · <a href="${buildDebugUrl(data.debug)}" style="color:#888888;text-decoration:none;">Debug</a>` : ""}
-                    </p>
+                      <a href="${APP_URL}/datenschutz" style="color:#888888;">${copy.privacy}</a>: ${copy.dataPolicy} · <a href="${data.deleteUrl ?? `${APP_URL}/datenloeschen`}" style="color:#888888;">${copy.followup.delete}</a>
+                    </p>${data.debug ? `
+                    <p style="margin:6px 0 0;font-family:Georgia,'Times New Roman',serif;font-size:12px;color:#aaaaaa;line-height:1.5;">
+                      <a href="${buildDebugUrl(data.debug)}" target="_blank" rel="noopener noreferrer" style="color:#888888;">${copy.inputsLink}</a>
+                    </p>` : ""}
                   </td>
                 </tr>
 

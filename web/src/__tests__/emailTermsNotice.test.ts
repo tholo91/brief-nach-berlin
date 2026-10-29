@@ -30,8 +30,8 @@ function params(overrides: Partial<SendLetterEmailParams> = {}): SendLetterEmail
 describe("Entwurfs-Mail: Hinweis und Nutzungsbedingungen", () => {
   it("HTML enthält den neuen Hinweis mit Link auf die Nutzungsbedingungen", () => {
     const html = buildEmailHtml(params());
-    expect(html).toContain("Dieser Entwurf ist von KI erstellt und ohne Gewähr. Bitte prüfe Inhalt, Fakten und Adresse");
-    expect(html).toContain(", bevor du deinen Brief schreibst. Die Verantwortung für den Inhalt liegt bei dir.");
+    expect(html).toContain("Dieser Entwurf ist mithilfe von KI erstellt und ohne Gewähr. Bitte prüfe Inhalt, Fakten und Adresse");
+    expect(html).toContain(". Die Verantwortung für den Inhalt deines Briefs liegt bei dir.");
     expect(html).toContain("/nutzungsbedingungen\"");
     expect(html).toContain("Es gelten die <a");
     expect(html).not.toContain("Diese Mail ist ein generierter Entwurf");
@@ -39,7 +39,7 @@ describe("Entwurfs-Mail: Hinweis und Nutzungsbedingungen", () => {
 
   it("Text-Version enthält Hinweis und Link auf die Nutzungsbedingungen", () => {
     const text = buildLetterEmailText(params());
-    expect(text).toContain("Hinweis: Dieser Entwurf ist von KI erstellt und ohne Gewähr.");
+    expect(text).toContain("Hinweis: Dieser Entwurf ist mithilfe von KI erstellt und ohne Gewähr.");
     expect(text).toContain("Es gelten die Nutzungsbedingungen. ");
     expect(text).toContain("/nutzungsbedingungen");
   });
@@ -65,5 +65,26 @@ describe("Entwurfs-Mail: maschinenlesbare KI-Kennzeichnung", () => {
 
   it("der Brieftext in der Text-Version bleibt unverändert", () => {
     expect(buildLetterEmailText(params()).startsWith("Sehr geehrte Frau Müller,\n\nTestbrief.")).toBe(true);
+  });
+});
+
+describe("Entwurfs-Mail: Link zu den eigenen Eingaben", () => {
+  const debug = { plz: "28195", toneLevel: 2 } as never;
+
+  it("zeigt den Link als letzte Zeile nach der Datenschutz-Zeile, ohne Debug-Link", () => {
+    const html = buildEmailHtml(params({ debug }));
+    const link = html.indexOf("Deine Eingaben nochmal einsehen</a>");
+    expect(link).toBeGreaterThan(html.indexOf("/datenschutz"));
+    expect(html).toMatch(/href="[^"]*\/debug\?d=[^"]+"[^>]*>Deine Eingaben nochmal einsehen<\/a>/);
+    expect(html).not.toContain(">Debug</a>");
+    expect(html.indexOf("</p>", link)).toBeLessThan(html.lastIndexOf("</table>"));
+    expect(html.slice(link)).not.toContain("<a ");
+  });
+
+  it("ohne debug fehlt der Link, Text-Version enthält ihn mit debug", () => {
+    expect(buildEmailHtml(params())).not.toContain("Deine Eingaben nochmal einsehen");
+    expect(buildLetterEmailText(params())).not.toContain("Deine Eingaben nochmal einsehen");
+    const text = buildLetterEmailText(params({ debug }));
+    expect(text).toMatch(/\nDeine Eingaben nochmal einsehen: https?:\/\/\S+\/debug\?d=\S+$/);
   });
 });

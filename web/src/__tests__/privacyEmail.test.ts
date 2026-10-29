@@ -120,7 +120,7 @@ describe("privacy email contact", () => {
     const text = buildLetterEmailText(params);
 
     expect(html).toContain("Dein Brief und dein Anliegen werden nicht gespeichert");
-    expect(text).toContain("In 2-3 Tagen kommt nur noch eine Mail");
+    expect(text).toContain("In 2-3 Tagen kommt eine Mail");
     expect(html).toContain("Kein Newsletter");
     expect(text).toContain("Kein Newsletter");
   });

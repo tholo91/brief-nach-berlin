@@ -2,6 +2,7 @@
 
 import { useEffect, useId, useState, useTransition } from "react";
 import { lookupMdbContactAction, lookupMdbContactByIdAction } from "@/lib/actions/lookupMdbContact";
+import { resolveMdbContactQuery } from "@/lib/lookup/mdbContactQuery";
 import type { MdbContact } from "@/lib/lookup/mdbContact";
 
 const AIRMAIL_EDGE =
@@ -24,10 +25,24 @@ export function MdbLookupCard() {
   const [pending, startTransition] = useTransition();
 
   useEffect(() => {
-    const mdbId = new URLSearchParams(window.location.search).get("mdb");
-    if (!mdbId || !/^\d+$/.test(mdbId)) return;
+    const initialQuery = resolveMdbContactQuery(window.location.search);
+    if (initialQuery?.type === "plz") {
+      startTransition(async () => {
+        await Promise.resolve();
+        setPlz(initialQuery.plz);
+        const result = await lookupMdbContactAction(initialQuery.plz);
+        setState(
+          result.ok
+            ? { status: "done", contacts: result.contacts }
+            : { status: "error", message: ERROR_COPY[result.reason] }
+        );
+      });
+      return;
+    }
+
+    if (initialQuery?.type !== "mdb") return;
     startTransition(async () => {
-      const result = await lookupMdbContactByIdAction(Number(mdbId));
+      const result = await lookupMdbContactByIdAction(initialQuery.mdbId);
       if (result.ok) setState({ status: "done", contacts: result.contacts });
     });
   }, []);

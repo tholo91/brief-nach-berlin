@@ -18,6 +18,7 @@ import { buildFinancingNoticeHtml } from "./financingNotice";
 export type CampaignCreatorEmailKind =
   | "verify_email"
   | "management_pending"
+  | "approved"
   | "management"
   | "transfer"
   | "milestone"
@@ -497,11 +498,12 @@ export function buildCampaignCreatorEmailHtml(
   const isPausedManagement = params.kind === "management" && params.campaignStatus === "paused";
   const isPublicManagement = params.kind === "management" && !isPausedManagement;
   const isTransfer = params.kind === "transfer";
+  const isApproved = params.kind === "approved";
   // A transfer goes to a new address, so the previous owner's name is never the greeting.
   const greeting = creatorName && !isTransfer ? `Moin ${escapeHtml(creatorName)},` : "Moin,";
   const inviterName = params.inviterName?.trim();
   const hasManagementLink = params.kind === "management_pending" || params.kind === "management";
-  const share = isPublicManagement
+  const share = isPublicManagement || isApproved
     ? buildShareTarget(
         {
           slug: params.slug,
@@ -512,6 +514,8 @@ export function buildCampaignCreatorEmailHtml(
     : null;
   const headline = isVerification
     ? "Bitte bestätige deine Kampagne"
+    : isApproved
+      ? "Deine Kampagne ist live"
     : isTransfer
       ? "Kampagne übernehmen"
     : isPendingManagement
@@ -523,6 +527,8 @@ export function buildCampaignCreatorEmailHtml(
     ? "Ein Klick bestätigt deine E-Mail. Danach prüfe ich deine Kampagne für die Freigabe."
     : isTransfer
       ? `${inviterName ? `${escapeHtml(inviterName)} möchte dir die Kampagne übergeben.` : "Du wurdest eingeladen, diese Kampagne zu übernehmen."} Ein Klick bestätigt deine E-Mail-Adresse und öffnet den Verwaltungszugang.`
+    : isApproved
+      ? "Ich habe deine Kampagne geprüft und freigegeben. Sie ist jetzt öffentlich. Teile den Link mit Menschen, die einen eigenen Brief mit ihren Worten schreiben sollen."
     : isPendingManagement
       ? "Deine E-Mail ist bestätigt. Ich prüfe deine Kampagne in der Regel innerhalb von 24 Stunden."
       : isPausedManagement
@@ -530,12 +536,16 @@ export function buildCampaignCreatorEmailHtml(
         : "Deine Kampagnenseite ist jetzt öffentlich. Teile den Link mit Menschen, die einen eigenen Brief mit ihren Worten schreiben sollen.";
   const buttonText = isVerification
     ? "E-Mail bestätigen"
+    : isApproved
+      ? "Kampagne ansehen"
     : isTransfer
       ? "Kampagne übernehmen"
     : "Kampagne verwalten";
   const buttonIcon = isVerification ? "&#10003;" : isTransfer ? "&#8594;" : "&#9998;";
   const statusText = isVerification
     ? "Status: wartet auf E-Mail-Bestätigung"
+    : isApproved
+      ? "Status: aktiv und öffentlich teilbar"
     : isTransfer
       ? "Status: Übergabe wartet auf deine Bestätigung"
     : isPendingManagement
@@ -558,6 +568,11 @@ export function buildCampaignCreatorEmailHtml(
         <p style="margin:0 0 8px;font-family:'Courier New',Courier,monospace;font-size:12px;font-weight:bold;text-transform:uppercase;color:#2D6A4F;">Danach</p>
         <p style="margin:0;font-size:14px;line-height:1.6;color:#666666;">Du bekommst eine zweite E-Mail mit deinem Verwaltungslink. Darüber kannst du Inhalte ändern, die Kampagne pausieren oder beenden.</p>
       </div>`
+    : isApproved
+      ? `<div style="margin:0 0 22px;padding:16px 18px;background-color:#ffffff;border:1px solid #E0DCD7;border-radius:4px;">
+        <p style="margin:0 0 8px;font-family:'Courier New',Courier,monospace;font-size:12px;font-weight:bold;text-transform:uppercase;color:#2D6A4F;">Verwalten und teilen</p>
+        <p style="margin:0;font-size:14px;line-height:1.6;color:#666666;">Der Verwaltungslink aus meiner früheren E-Mail funktioniert weiterhin. Dort findest du auch das Teilen-Bild und den QR-Code für deine Kampagne.</p>
+      </div>`
     : isTransfer
       ? buildTransferHelpHtml(params.campaignStatus === "awaiting_approval")
       : `<div style="margin:0 0 22px;padding:16px 18px;background-color:#ffffff;border:1px solid #E0DCD7;border-radius:4px;">
@@ -574,7 +589,7 @@ export function buildCampaignCreatorEmailHtml(
     ? `<p style="margin:10px 0 0;font-size:14px;line-height:1.5;"><a href="${params.campaignUrl}" target="_blank" rel="noopener noreferrer" style="color:#2D6A4F;text-decoration:underline;">Kampagnenseite öffnen</a></p>`
     : "";
   const shareBlock =
-    isPublicManagement && share
+    (isPublicManagement || isApproved) && share
       ? `<div style="margin:0 0 22px;padding:16px 18px;background-color:#FAF8F5;border:1px solid #E0DCD7;border-radius:4px;">
                 <p style="margin:0 0 8px;font-family:'Courier New',Courier,monospace;font-size:12px;font-weight:bold;text-transform:uppercase;color:#2D6A4F;">Kampagne teilen</p>
                 <p style="margin:0 0 12px;font-size:14px;line-height:1.6;color:#666666;">Lade andere ein, einen eigenen Brief mit ihren Worten zu schreiben.</p>

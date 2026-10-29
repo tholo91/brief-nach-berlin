@@ -13,8 +13,10 @@ import {
   revokeCampaignToken,
   revokeCampaignTokensForCampaign,
 } from "@/lib/campaigns/tokens";
+import { after } from "next/server";
 import { moderateText } from "@/lib/moderation/moderateText";
 import { sendCampaignCreatorEmail } from "@/lib/email/sendCampaignCreatorEmail";
+import { sendCampaignApprovalAdminNotice } from "@/lib/email/sendCampaignApprovalAdminNotice";
 
 export type VerifyCampaignEmailResult =
   | { status: "awaiting_approval"; title: string; message: string }
@@ -132,7 +134,27 @@ export async function verifyCampaignEmailAction(
       };
     }
 
-    return sendPendingManagementAccess(verified);
+    const result = await sendPendingManagementAccess(verified);
+    if (result.status === "awaiting_approval") {
+      // Nur beim ersten erfolgreichen Bestätigen. Wiederholte Klicks laufen oben über emailVerifiedAt.
+      const notice = {
+        ...verified,
+        moderationCategories: [
+          ...new Set([...verified.moderationCategories, ...moderation.categories]),
+        ],
+      };
+      after(async () => {
+        try {
+          await sendCampaignApprovalAdminNotice(notice);
+        } catch (error) {
+          console.error(
+            "[verifyCampaignEmailAction] approval admin notice failed:",
+            error instanceof Error ? error.message : String(error),
+          );
+        }
+      });
+    }
+    return result;
   } catch (error) {
     if (error instanceof CampaignRepositoryError) {
       console.error("[verifyCampaignEmailAction] repository failed:", error.message);

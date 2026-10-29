@@ -53,6 +53,8 @@ output/pdf/bpb-antragsentwurf-2027.pdf
 
 # Kampagnen-Varianten: lokaler Skill und Arbeitsdateien
 .claude/skills/kampagnen-varianten/
+.claude/skills/kampagne-freigeben/
+web/scripts/_kampagne-freigeben.ts
 .planning/kampagnen-varianten/
 web/scripts/_kampagnen-varianten-*
 

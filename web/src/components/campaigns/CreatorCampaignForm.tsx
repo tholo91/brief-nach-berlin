@@ -204,6 +204,7 @@ export function CreatorCampaignForm() {
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [slugManuallyEdited, setSlugManuallyEdited] = useState(false);
   const [logoPreviewUrl, setLogoPreviewUrl] = useState<string | null>(null);
+  const [logoFile, setLogoFile] = useState<File | null>(null);
   const [logoFileName, setLogoFileName] = useState<string | null>(null);
   const [logoError, setLogoError] = useState<string | null>(null);
   const [fixedAddressAccepted, setFixedAddressAccepted] = useState(false);
@@ -366,6 +367,7 @@ export function CreatorCampaignForm() {
     if (logoPreviewUrl) URL.revokeObjectURL(logoPreviewUrl);
     setLogoPreviewUrl(null);
     setLogoFileName(null);
+    setLogoFile(null);
     setLogoError(null);
 
     if (!file) return;
@@ -379,6 +381,7 @@ export function CreatorCampaignForm() {
       event.target.value = "";
       return;
     }
+    setLogoFile(file);
     setLogoFileName(file.name);
     setLogoPreviewUrl(URL.createObjectURL(file));
   }
@@ -424,9 +427,10 @@ export function CreatorCampaignForm() {
 
     const formData = new FormData(form);
     formData.set("creationConfirmed", "yes");
-    const logo = formData.get("logo");
-    if (logo instanceof File && logo.size > 0) {
-      formData.set("logo", await resizeLogoFile(logo));
+    if (logoFile) {
+      formData.set("logo", await resizeLogoFile(logoFile));
+    } else {
+      formData.delete("logo");
     }
 
     setResult(null);

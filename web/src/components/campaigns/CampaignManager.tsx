@@ -20,6 +20,7 @@ import {
   pauseCampaignAction,
   type PauseCampaignResult,
 } from "@/lib/actions/pauseCampaign";
+import { resumeCampaignAction } from "@/lib/actions/resumeCampaign";
 import {
   endCampaignAction,
   updateCampaignEndDateAction,
@@ -150,6 +151,7 @@ export function CampaignManager({
   const canEdit = !ended && campaign.status !== "archived" && campaign.status !== "blocked";
   const canEditTarget = canEdit && !isCampaignTargetLocked(campaign);
   const canPause = !ended && campaign.status === "active";
+  const canResume = !ended && campaign.status === "paused";
   const canEnd =
     !ended &&
     ["draft", "awaiting_email_verification", "awaiting_approval", "active", "paused"].includes(
@@ -722,6 +724,28 @@ export function CampaignManager({
             </div>
             <div className="grid gap-3 border-t border-warmgrau/12 pt-5">
               <div className="flex flex-col gap-3 sm:flex-row">
+                {campaign.status === "paused" ? (
+                <button
+                  type="button"
+                  disabled={!canResume || isBusy}
+                  onClick={() => {
+                    setRuntimeResult(null);
+                    setActionPending(true);
+                    startTransition(async () => {
+                      try {
+                        const nextResult = await resumeCampaignAction(campaign.id);
+                        setRuntimeResult(nextResult);
+                        if (nextResult.ok) router.refresh();
+                      } finally {
+                        setActionPending(false);
+                      }
+                    });
+                  }}
+                  className="min-h-11 rounded-md border border-waldgruen/25 px-5 py-3 font-body text-base font-semibold text-waldgruen-dark transition-colors hover:border-waldgruen focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-waldgruen disabled:cursor-not-allowed disabled:opacity-50"
+                >
+                  Kampagne fortsetzen
+                </button>
+                ) : (
                 <button
                   type="button"
                   disabled={!canPause || isBusy}
@@ -742,6 +766,7 @@ export function CampaignManager({
                 >
                   Kampagne pausieren
                 </button>
+                )}
                 <button
                   type="button"
                   disabled={!canEnd || isBusy}

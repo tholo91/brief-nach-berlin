@@ -214,3 +214,19 @@ describe("campaign creator emails", () => {
     expect(html.indexOf("E-Mail</span>")).toBeLessThan(html.indexOf("LinkedIn</span>"));
   });
 });
+
+describe("campaign creator approved mail", () => {
+  const approvedBase = { ...base, kind: "approved" as const, actionUrl: base.campaignUrl };
+
+  it("announces the public campaign with link and sharing", () => {
+    const html = buildCampaignCreatorEmailHtml(approvedBase);
+
+    expect(html).toContain("Deine Kampagne ist live");
+    expect(html).toContain("Ich habe deine Kampagne geprüft");
+    expect(html).toContain(base.campaignUrl);
+    expect(html).toContain("Kampagne teilen");
+    expect(html).toContain("Verwaltungslink aus meiner früheren E-Mail");
+    expect(html).not.toContain("token=");
+    expect(html).not.toMatch(/\bwir\b|—|–/i);
+  });
+});

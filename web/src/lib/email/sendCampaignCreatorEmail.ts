@@ -36,8 +36,11 @@ interface SendCampaignCreatorEmailBase {
 
 export type SendCampaignCreatorEmailParams =
   | (SendCampaignCreatorEmailBase & {
-      kind: Exclude<CampaignCreatorEmailKind, "report">;
+      kind: Exclude<CampaignCreatorEmailKind, "report" | "approved">;
       token: string;
+    })
+  | (SendCampaignCreatorEmailBase & {
+      kind: "approved";
     })
   | (SendCampaignCreatorEmailBase & {
       kind: "report";
@@ -49,7 +52,7 @@ function campaignUrl(slug: string): string {
 }
 
 function actionUrl(params: SendCampaignCreatorEmailParams): string {
-  if (params.kind === "report") return campaignUrl(params.slug);
+  if (params.kind === "report" || params.kind === "approved") return campaignUrl(params.slug);
   const { kind, token } = params;
   if (kind === "verify_email") {
     return `${APP_URL}/kampagne/verifizieren?token=${encodeURIComponent(token)}`;
@@ -89,6 +92,8 @@ export async function sendCampaignCreatorEmail(
       subject:
         params.kind === "verify_email"
           ? `${APP_NAME}: Kampagne bestätigen`
+          : params.kind === "approved"
+            ? `${APP_NAME}: Deine Kampagne ist live`
           : params.kind === "management_pending"
             ? `${APP_NAME}: Kampagne wartet auf Freigabe`
             : params.kind === "report"

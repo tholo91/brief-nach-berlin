@@ -6,6 +6,7 @@ jest.mock("next/navigation", () => ({
 }));
 jest.mock("@/lib/actions/updateCampaign", () => ({ updateCampaignAction: jest.fn() }));
 jest.mock("@/lib/actions/pauseCampaign", () => ({ pauseCampaignAction: jest.fn() }));
+jest.mock("@/lib/actions/resumeCampaign", () => ({ resumeCampaignAction: jest.fn() }));
 jest.mock("@/lib/actions/campaignEnd", () => ({
   endCampaignAction: jest.fn(),
   updateCampaignEndDateAction: jest.fn(),
@@ -126,12 +127,12 @@ describe("CampaignManagerHeader", () => {
     expect(markup).not.toContain("Beendet am");
   });
 
-  it("renders a paused campaign with an amber dot and an unlinked title", () => {
+  it("renders a paused campaign with an amber dot and a linked title", () => {
     const markup = renderHeader({ status: "paused" });
 
     expect(markup).toContain("pausiert");
     expect(markup).toContain("bg-bernstein");
-    expect(markup).not.toContain(`href="${publicUrl}"`);
+    expect(markup).toContain(`href="${publicUrl}"`);
   });
 
   it("renders awaiting_approval with a grey dot", () => {
@@ -435,5 +436,19 @@ describe("CampaignManager layout", () => {
 
       expect(markup).not.toContain('id="meilenstein-mails"');
     });
+  });
+});
+
+describe("CampaignManagerHeader paused", () => {
+  it("links to the public page and shows the paused hint", () => {
+    const markup = renderHeader({ status: "paused" });
+
+    expect(markup).toContain(`href="${publicUrl}"`);
+    expect(markup).toContain("Pausiert: Die Kampagnenseite ist über den Link weiter erreichbar");
+    expect(markup).toContain('title="Pausiert:');
+  });
+
+  it("shows no paused hint for active campaigns", () => {
+    expect(renderHeader({ status: "active" })).not.toContain("Pausiert:");
   });
 });

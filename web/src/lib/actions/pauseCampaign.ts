@@ -42,7 +42,7 @@ export async function pauseCampaignAction(
     revalidatePath("/kampagne/verwalten");
     return {
       ok: true,
-      message: "Kampagne pausiert. Die öffentliche Seite ist nicht mehr erreichbar.",
+      message: "Kampagne pausiert. Über den Link bleibt sie erreichbar, in den Übersichten taucht sie nicht mehr auf.",
     };
   } catch (error) {
     if (error instanceof CampaignRepositoryError) {

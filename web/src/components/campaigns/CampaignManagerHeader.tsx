@@ -62,7 +62,8 @@ export function CampaignManagerHeader({
   publicUrl,
   onEditImage,
 }: CampaignManagerHeaderProps) {
-  const showPublicLink = ended || status === "active";
+  const showPublicLink = ended || status === "active" || status === "paused";
+  const pausedActive = !ended && status === "paused";
   // Keeps the trailing icon glued to the last word so it never wraps alone.
   const lastSpace = title.lastIndexOf(" ");
   const titleHead = lastSpace === -1 ? "" : title.slice(0, lastSpace + 1);
@@ -101,7 +102,14 @@ export function CampaignManagerHeader({
           <p className="min-w-0 truncate font-body text-base font-semibold text-waldgruen-dark sm:text-lg">
             Moin{creatorName ? ` ${creatorName}` : ""} <span aria-hidden="true">👋</span>
           </p>
-          <span className="inline-flex shrink-0 items-center gap-2 rounded-full border border-warmgrau/15 bg-creme px-3 py-1 font-body text-sm font-semibold text-waldgruen-dark">
+          <span
+            title={
+              pausedActive
+                ? "Pausiert: Die Seite ist per Link erreichbar, aber nicht in den Übersichten gelistet."
+                : undefined
+            }
+            className="inline-flex shrink-0 items-center gap-2 rounded-full border border-warmgrau/15 bg-creme px-3 py-1 font-body text-sm font-semibold text-waldgruen-dark"
+          >
             <span
               aria-hidden="true"
               className={`h-2 w-2 rounded-full ${statusDotClass(status, ended)}`}
@@ -141,7 +149,7 @@ export function CampaignManagerHeader({
             </h2>
             <p className="mt-2 max-w-2xl font-body text-sm leading-relaxed text-warmgrau/75 md:text-base">
               Die Kampagnenseite bleibt online und zeigt den Endstand. Ändern lässt sich nichts mehr.
-              Wenn du die Kampagne neu starten willst oder Fragen hast, schreib uns.
+              Wenn du die Kampagne neu starten willst oder Fragen hast, schreib mir.
             </p>
           </div>
           <a
@@ -151,6 +159,14 @@ export function CampaignManagerHeader({
             Kontakt aufnehmen
           </a>
         </div>
+      )}
+
+      {pausedActive && (
+        <p className="mt-5 font-body text-sm leading-relaxed text-warmgrau/70">
+          Pausiert: Die Kampagnenseite ist über den Link weiter erreichbar und nimmt Briefe an. Sie
+          taucht aber nicht mehr in den Übersichten auf Brief-nach-Berlin auf. Wenn niemand mehr
+          schreiben soll, beende die Kampagne.
+        </p>
       )}
 
       {!ended && (status === "archived" || status === "blocked") && (

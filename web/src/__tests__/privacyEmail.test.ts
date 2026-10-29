@@ -121,6 +121,7 @@ describe("privacy email contact", () => {
 
     expect(html).toContain("Dein Brief und dein Anliegen werden nicht gespeichert");
     expect(text).toContain("In 2-3 Tagen kommt eine Mail");
+    expect(text).toContain("Nur wenn du dein Anliegen freiwillig auf die Karte setzt");
     expect(html).toContain("Kein Newsletter");
     expect(text).toContain("Kein Newsletter");
   });

@@ -85,7 +85,7 @@ export const emailCopy = {
     termsLabel: "Nutzungsbedingungen",
     terms: (link: string) => `Es gelten die ${link}.`,
     privacy: "Datenschutz",
-    dataPolicy: "Dein Brief und dein Anliegen werden nicht gespeichert. Nur wenn du deinen Brief freiwillig auf die Karte setzt, speichere ich ein kurzes Themensignal. Kein Newsletter: In 2-3 Tagen kommt eine Mail mit der Bitte um eine Bewertung.",
+    dataPolicy: "Dein Brief und dein Anliegen werden nicht gespeichert. Nur wenn du dein Anliegen freiwillig auf die Karte setzt, speichere ich ein kurzes Themensignal. Kein Newsletter: In 2-3 Tagen kommt eine Mail mit der Bitte um eine Bewertung.",
     dataPolicyJung: "Dein Brief und dein Anliegen werden nicht gespeichert. Kein Newsletter und keine Nachfrage-Mail.",
     inputsLink: "Deine Eingaben nochmal einsehen",
     guideMdb: "Wer darf MdBs schreiben?",

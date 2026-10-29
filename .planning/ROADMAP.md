@@ -1184,6 +1184,21 @@ Plans:
 Plans:
 - [ ] TBD (promote with /gsd-review-backlog when ready)
 
+### Phase 999.46: Freiwillige Bewertungen von Jugendlichen (BACKLOG)
+
+**Goal:** Auch junge Schreiber:innen können freiwillig bewerten, damit Thomas sieht, ob er die Altersgruppe erreicht und was ihr hilft.
+**Stand heute:** Im Jugendmodus gibt es bewusst keine Sterne in der Briefmail und keine Nachfrage-Mail (`web/src/lib/email/sendLetterEmail.ts` entfernt `feedbackToken` bei `audience: "jung"`). Die Datenschutzseite (Abschnitt Jugendmodus) und der Datenschutzsatz in der Jugend-Mail sagen das genauso (seit Quick 261030-07q).
+**Größe:** M
+**Ansatz:** Sterne in der Jugend-Mail und/oder eine Nachfrage-Mail, freiwillig und ohne Pflichtfelder. Datenschutzseite, Mail-Datenschutzsatz für `jung` und `DSGVO-VERARBEITUNGSVERZEICHNIS.md` nachziehen. Klassenlinks beachten: Lehrkräfte sollen wissen, was die Kinder bekommen.
+**Risiken:**
+- Einwilligung bei unter 16 Jahren (Art. 8 DSGVO) ist rechtlich noch nicht geprüft, vor dem Bau klären.
+- Eine zusätzliche Mail an Minderjährige kann bei Schulen und Eltern schlecht ankommen.
+**Requirements:** TBD
+**Plans:** 0 plans
+
+Plans:
+- [ ] TBD (promote with /gsd-review-backlog when ready)
+
 
 ## Progress
 

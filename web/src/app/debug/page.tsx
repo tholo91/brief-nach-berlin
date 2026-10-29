@@ -1,8 +1,18 @@
-import { FOUNDER_FEEDBACK_URL } from "@/lib/config";
+import type { ReactNode } from "react";
+import AppHeader from "@/components/AppHeader";
+import { LETTER_LENGTHS } from "@/lib/config";
+import type { LetterDebugPayload } from "@/lib/email/sendLetterEmail";
+import type { LetterVariantDebugPayload } from "@/lib/email/variantDebugPayload";
+import CopyButton from "./CopyButton";
 import { format, type DebugPayload } from "./formatDebug";
 
+function lengthText(key: string | undefined, min: number, max: number): string {
+  const label = key && key in LETTER_LENGTHS ? LETTER_LENGTHS[key as keyof typeof LETTER_LENGTHS].label : key;
+  return label ? `${label} (${min} bis ${max} Wörter)` : `${min} bis ${max} Wörter`;
+}
+
 export const metadata = {
-  title: "Debug",
+  title: "Deine Eingaben",
   robots: { index: false, follow: false },
 };
 
@@ -18,6 +28,103 @@ function decode(d: string | undefined): DebugPayload | { error: string } {
   }
 }
 
+function isVariant(p: DebugPayload): p is LetterVariantDebugPayload {
+  return "source" in p && p.source === "brief_variant";
+}
+
+function Facts({ items }: { items: Array<[string, string | undefined]> }) {
+  const rows = items.filter((i): i is [string, string] => Boolean(i[1]));
+  return (
+    <dl className="mt-2 divide-y divide-warmgrau/10 text-[15px]">
+      {rows.map(([k, v]) => (
+        <div key={k} className="grid grid-cols-[7.5rem_1fr] gap-3 py-2.5 sm:grid-cols-[9rem_1fr]">
+          <dt className="text-warmgrau/75">{k}</dt>
+          <dd className="min-w-0 break-words font-semibold text-warmgrau">{v}</dd>
+        </div>
+      ))}
+    </dl>
+  );
+}
+
+function Section({ title, children }: { title: string; children: ReactNode }) {
+  return (
+    <section className="mt-6 first:mt-0">
+      <h2 className="font-typewriter text-lg font-bold text-waldgruen-dark">{title}</h2>
+      {children}
+    </section>
+  );
+}
+
+function TextBlock({ text, note }: { text: string; note?: string }) {
+  return (
+    <>
+      <p className="mt-3 whitespace-pre-wrap break-words rounded-xl bg-creme p-4 text-base leading-relaxed text-warmgrau">
+        {text || "—"}
+      </p>
+      {note && <p className="mt-2 text-sm text-warmgrau/75">{note}</p>}
+      {text && (
+        <div className="mt-3">
+          <CopyButton text={text} label="Text kopieren" />
+        </div>
+      )}
+    </>
+  );
+}
+
+function LetterCard({ d }: { d: LetterDebugPayload }) {
+  const preview = d.issueTextPreview ?? "";
+  const truncated = preview.length > 0 && preview.length < d.issueTextLength;
+  const region = d.recipientRegion ?? d.representativeWahlkreis;
+  const recipient = [d.representativeName, d.representativeLevel, region].filter(Boolean);
+  return (
+    <>
+      <Section title="Dein Anliegen">
+        <TextBlock
+          text={preview}
+          note={
+            truncated
+              ? `Gekürzt: ${preview.length} von ${d.issueTextLength} Zeichen. Der Brief selbst steht in deiner Mail.`
+              : undefined
+          }
+        />
+      </Section>
+      <Section title="Dein Brief im Überblick">
+        <Facts
+          items={[
+            ["Empfänger:in", recipient.join(", ")],
+            ["Ebene", d.politicalLevel],
+            ["Tonalität", d.toneLabel],
+            ["Brieflänge", lengthText(d.letterLengthKey, d.letterLengthMin, d.letterLengthMax)],
+            ["PLZ", d.plz],
+            ["Herkunft", d.campaignSlug ? "Kampagnenbrief" : undefined],
+          ]}
+        />
+      </Section>
+    </>
+  );
+}
+
+function VariantCard({ d }: { d: LetterVariantDebugPayload }) {
+  return (
+    <>
+      <Section title="Dein Änderungswunsch">
+        <TextBlock text={d.changeRequestPreview ?? ""} />
+      </Section>
+      <Section title="Dein Brief im Überblick">
+        <Facts
+          items={[
+            ["Gewünschte Tonalität", d.requestedToneLabel],
+            [
+              "Brieflänge",
+              lengthText(d.letterLengthKey, d.letterLengthMin, d.letterLengthMax),
+            ],
+          ]}
+        />
+      </Section>
+    </>
+  );
+}
+
 export default async function DebugPage({
   searchParams,
 }: {
@@ -25,59 +132,42 @@ export default async function DebugPage({
 }) {
   const { d } = await searchParams;
   const payload = decode(d);
+  const failed = "error" in payload;
+
   return (
-    <div style={{ padding: 24, fontFamily: "ui-monospace, Menlo, monospace", fontSize: 13 }}>
-      <div
-        style={{
-          marginBottom: 20,
-          padding: "14px 16px",
-          background: "#ecfdf5",
-          border: "1px solid #a7f3d0",
-          borderRadius: 8,
-          color: "#065f46",
-          fontFamily: "system-ui, -apple-system, sans-serif",
-          fontSize: 14,
-          lineHeight: 1.5,
-          display: "flex",
-          gap: 12,
-          alignItems: "flex-start",
-        }}
-      >
-        <svg
-          width="20"
-          height="20"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          aria-hidden="true"
-          style={{ flexShrink: 0, marginTop: 1 }}
-        >
-          <circle cx="12" cy="12" r="10" />
-          <line x1="12" y1="16" x2="12" y2="12" />
-          <line x1="12" y1="8" x2="12.01" y2="8" />
-        </svg>
-        <div>
-          <strong>Keine Sorge:</strong> Diese Seite zeigt nur die Werte, die in
-          deinem E-Mail-Link mitgeschickt wurden. Es wird nichts aus einer
-          Datenbank geladen und nichts dauerhaft gespeichert.
-          <div style={{ marginTop: 8 }}>
-            Bei Fragen melde dich trotzdem gern{" "}
-            <a
-              href={FOUNDER_FEEDBACK_URL}
-              style={{ color: "#047857", textDecoration: "underline" }}
-            >
-              hier
-            </a>
-            .
-          </div>
-        </div>
-      </div>
-      <pre style={{ margin: 0, whiteSpace: "pre-wrap", wordBreak: "break-word" }}>
-        {format(payload)}
-      </pre>
+    <div className="min-h-screen bg-creme font-body text-warmgrau">
+      <AppHeader />
+      <main className="mx-auto w-full max-w-[640px] px-4 py-8 sm:py-12">
+        <h1 className="font-typewriter text-3xl font-bold text-waldgruen-dark">Deine Eingaben</h1>
+        <p className="mt-3 text-base leading-relaxed">
+          Diese Seite zeigt nur die Werte, die in deinem E-Mail-Link mitgeschickt wurden. Es wird
+          nichts aus einer Datenbank geladen und nichts gespeichert.
+        </p>
+
+        <article className="mt-6 rounded-2xl border border-warmgrau/15 bg-white p-5 shadow-sm sm:p-6">
+          {failed ? (
+            <Section title="Link unvollständig">
+              <p className="mt-2 leading-relaxed">
+                Dieser Link scheint unvollständig zu sein. Öffne ihn bitte noch einmal direkt aus
+                der Mail, ohne ihn zu kopieren oder zu kürzen.
+              </p>
+            </Section>
+          ) : isVariant(payload) ? (
+            <VariantCard d={payload} />
+          ) : (
+            <LetterCard d={payload} />
+          )}
+        </article>
+
+        <details className="mt-6 rounded-2xl border border-warmgrau/15 bg-white/60 p-4">
+          <summary className="cursor-pointer rounded font-semibold text-warmgrau focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-waldgruen">
+            Technische Details
+          </summary>
+          <pre className="mt-3 whitespace-pre-wrap break-words font-mono text-[13px] leading-relaxed">
+            {format(payload)}
+          </pre>
+        </details>
+      </main>
     </div>
   );
 }

@@ -42,6 +42,8 @@ export function MdbLookupCard() {
 
     if (initialQuery?.type !== "mdb") return;
     startTransition(async () => {
+      await Promise.resolve();
+      if (initialQuery.plz) setPlz(initialQuery.plz);
       const result = await lookupMdbContactByIdAction(initialQuery.mdbId);
       if (result.ok) setState({ status: "done", contacts: result.contacts });
     });

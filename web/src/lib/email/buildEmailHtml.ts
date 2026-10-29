@@ -75,6 +75,12 @@ function nlToBr(text: string): string {
   return escapeHtml(text).replace(/\n/g, "<br>");
 }
 
+// Datenschutz-Satz je Zielgruppe: Jugend-Mails erwähnen weder Karte noch Bewertungsmail
+function dataPolicyFor(data: SendLetterEmailParams): string {
+  const copy = getEmailCopy(data.locale);
+  return data.audience === "jung" ? copy.dataPolicyJung : copy.dataPolicy;
+}
+
 export function buildLetterEmailText(data: SendLetterEmailParams): string {
   const copy = getEmailCopy(data.locale);
   const parts = [
@@ -95,7 +101,7 @@ export function buildLetterEmailText(data: SendLetterEmailParams): string {
   parts.push(
     `${copy.notice} ${copy.noticeText}${copy.noticeTextAfter ? `, ${copy.noticeTextAfter}` : ""}. ${copy.responsibility} ${copy.terms(copy.termsLabel)} ${APP_URL}/nutzungsbedingungen`,
   );
-  parts.push(`${copy.privacy}: ${copy.dataPolicy}\n${copy.followup.delete}: ${data.deleteUrl ?? `${APP_URL}/datenloeschen`}`);
+  parts.push(`${copy.privacy}: ${dataPolicyFor(data)}\n${copy.followup.delete}: ${data.deleteUrl ?? `${APP_URL}/datenloeschen`}`);
   parts.push(buildSocialFollowText(resolveEmailLocale(data.locale)));
   if (data.debug) parts.push(`${copy.inputsLink}: ${buildDebugUrl(data.debug)}`);
   return parts.join("\n\n");
@@ -797,7 +803,7 @@ export function buildEmailHtml(data: SendLetterEmailParams): string {
                       <strong>${copy.notice}</strong> ${copy.noticeText}${profileUrl ? ` (<a href="${profileUrl}" target="_blank" rel="noopener noreferrer" style="color:#888888;">${disclaimerSiteName}</a>)` : ""}${copy.noticeTextAfter ? `, ${copy.noticeTextAfter}` : ""}. ${copy.responsibility} ${copy.terms(`<a href="${APP_URL}/nutzungsbedingungen" style="color:#888888;">${copy.termsLabel}</a>`)}
                     </p>
                     <p style="margin:0;font-family:Georgia,'Times New Roman',serif;font-size:12px;color:#aaaaaa;line-height:1.5;">
-                      <a href="${APP_URL}/datenschutz" style="color:#888888;">${copy.privacy}</a>: ${copy.dataPolicy} · <a href="${data.deleteUrl ?? `${APP_URL}/datenloeschen`}" style="color:#888888;">${copy.followup.delete}</a>
+                      <a href="${APP_URL}/datenschutz" style="color:#888888;">${copy.privacy}</a>: ${dataPolicyFor(data)} · <a href="${data.deleteUrl ?? `${APP_URL}/datenloeschen`}" style="color:#888888;">${copy.followup.delete}</a>
                     </p>${data.debug ? `
                     <p style="margin:6px 0 0;font-family:Georgia,'Times New Roman',serif;font-size:12px;color:#aaaaaa;line-height:1.5;">
                       <a href="${buildDebugUrl(data.debug)}" target="_blank" rel="noopener noreferrer" style="color:#888888;">${copy.inputsLink}</a>

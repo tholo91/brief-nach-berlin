@@ -125,6 +125,27 @@ describe("privacy email contact", () => {
     expect(text).toContain("Kein Newsletter");
   });
 
+  it("jung: privacy line without map signal and rating mail", () => {
+    const jungParams: SendLetterEmailParams = { ...params, audience: "jung" };
+    const html = buildEmailHtml(jungParams);
+    const text = buildLetterEmailText(jungParams);
+
+    for (const out of [html, text]) {
+      expect(out).toContain("Dein Brief und dein Anliegen werden nicht gespeichert.");
+      expect(out).toContain("Kein Newsletter und keine Nachfrage-Mail.");
+      expect(out).not.toContain("Karte");
+      expect(out).not.toContain("Themensignal");
+      expect(out).not.toContain("In 2-3 Tagen");
+      expect(out).not.toContain("Bewertung");
+    }
+  });
+
+  it.each(["de", "en", "tr"] as const)("has a jung privacy line in %s", (locale) => {
+    const line = getEmailCopy(locale).dataPolicyJung;
+
+    expect(line).toMatch(/Newsletter|newsletter|Bülten/);
+  });
+
   it("links the tokenless deletion page in the last-call mail by default", () => {
     const lastcall = buildLastcallHtml();
     const mailto = buildDataDeletionMailto("de");

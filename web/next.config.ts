@@ -28,6 +28,9 @@ const nextConfig: NextConfig = {
       { source: "/schule/ablauf", destination: "/unterricht/ablauf", statusCode: 301 },
       { source: "/lehrer", destination: "/unterricht", statusCode: 301 },
       { source: "/lehrkraefte", destination: "/unterricht", statusCode: 301 },
+      { source: "/jung", destination: "/schule", statusCode: 301 },
+      { source: "/genz", destination: "/schule", statusCode: 301 },
+      { source: "/schueler", destination: "/schule", statusCode: 301 },
     ];
   },
   async headers() {

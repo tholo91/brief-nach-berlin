@@ -214,7 +214,7 @@ export default function ProjekttagDemokratiePage() {
         <p className="mt-10 font-body text-sm leading-relaxed text-warmgrau/80">
           Für den Elternbrief:{" "}
           <Link href="/eltern" className={linkClass}>Seite für Eltern</Link>. Für Schüler:innen geht es hier los:{" "}
-          <Link href="/jung" className={linkClass}>/jung</Link>
+          <Link href="/schule" className={linkClass}>/schule</Link>
         </p>
       </div>
     </>

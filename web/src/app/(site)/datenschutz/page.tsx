@@ -945,8 +945,8 @@ export default function Datenschutz() {
             </h2>
             <p className="mb-3">
               Über die Seite{" "}
-              <Link href="/jung" className="text-waldgruen hover:underline">
-                /jung
+              <Link href="/schule" className="text-waldgruen hover:underline">
+                /schule
               </Link>{" "}
               und über Klassenlinks, die Lehrkräfte auf der Seite{" "}
               <Link href="/unterricht" className="text-waldgruen hover:underline">

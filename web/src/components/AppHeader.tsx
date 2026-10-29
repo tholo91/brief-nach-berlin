@@ -11,7 +11,7 @@ const NGO_NAV_LINKS = [
 ];
 
 const SCHOOL_NAV_LINKS = [
-  { label: "Schüler:innen", href: "/jung" },
+  { label: "Schüler:innen", href: "/schule" },
   { label: "Lehrkräfte", href: "/unterricht" },
   { label: "Eltern", href: "/eltern" },
 ];
@@ -22,7 +22,7 @@ const PRIMARY_CTA_CLASS =
   "inline-flex items-center justify-center rounded-lg bg-waldgruen px-3 py-2 font-body text-sm font-semibold text-creme transition-colors hover:bg-waldgruen-dark active:scale-[0.98] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-waldgruen sm:px-4";
 
 const SCHOOL_PAGE_CTAS: Record<string, { href: string; label: string; mobileLabel: string }> = {
-  "/jung": { href: "#schreiben", label: "Brief entwerfen", mobileLabel: "Schreiben" },
+  "/schule": { href: "#schreiben", label: "Brief entwerfen", mobileLabel: "Schreiben" },
   "/eltern": { href: "#schreiben", label: "Brief entwerfen", mobileLabel: "Schreiben" },
   "/unterricht": { href: "#klassenlink", label: "Klassenlink erstellen", mobileLabel: "Klassenlink" },
 };

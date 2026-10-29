@@ -32,7 +32,7 @@ export interface WizardHandoff {
   // sonst startet der Wizard mit einem frischen "false" und der Debug-Payload
   // meldet faelschlich Voice=false, obwohl auf der Landing gesprochen wurde.
   usedSpeechToText?: boolean;
-  // Jugendmodus (/jung, Klassenlink): Klassenstufe steuert den Brief, PLZ ist vorbelegt.
+  // Jugendmodus (/schule, Klassenlink): Klassenstufe steuert den Brief, PLZ ist vorbelegt.
   audience?: "jung";
   klasse?: number;
   classToken?: string;

@@ -26,7 +26,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 0.9,
     },
     {
-      url: `${BASE_URL}/jung`,
+      url: `${BASE_URL}/schule`,
       lastModified,
       changeFrequency: "monthly",
       priority: 0.8,

@@ -28,7 +28,7 @@ export interface WizardData {
   usedSpeechToText?: boolean;
   tipsOpened?: boolean;
   classToken?: string;
-  /** Jugendmodus (/jung): der Brief kommt von einer Schülerin oder einem Schüler. */
+  /** Jugendmodus (/schule): der Brief kommt von einer Schülerin oder einem Schüler. */
   audience?: "jung";
   /** Klassenstufe im Jugendmodus (7 bis 13). */
   klasse?: number;

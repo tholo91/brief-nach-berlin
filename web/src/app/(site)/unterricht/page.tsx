@@ -318,7 +318,7 @@ export default function UnterrichtPage() {
 
           <p className="mt-10 font-body text-sm leading-relaxed text-warmgrau/80">
             Für Schüler:innen geht es hier los:{" "}
-            <Link href="/jung" className={linkClass}>/jung</Link>
+            <Link href="/schule" className={linkClass}>/schule</Link>
           </p>
         </div>
       </div>

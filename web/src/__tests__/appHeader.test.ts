@@ -29,7 +29,7 @@ describe("AppHeader", () => {
     },
   );
 
-  it.each(["/jung", "/eltern"])("shows the write CTA on %s", (pathname) => {
+  it.each(["/schule", "/eltern"])("shows the write CTA on %s", (pathname) => {
     const markup = renderAt(pathname);
 
     expect(markup).toContain('href="#schreiben"');

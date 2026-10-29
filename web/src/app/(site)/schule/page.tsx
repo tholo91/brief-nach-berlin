@@ -7,7 +7,7 @@ import { JungExperience } from "@/components/jung/JungExperience";
 import { resolveJungEntry } from "@/components/jung/jungEntry";
 import { APP_URL } from "@/lib/config";
 
-const URL_PATH = "/jung";
+const URL_PATH = "/schule";
 const CANONICAL_URL = `${APP_URL}${URL_PATH}`;
 const TITLE = "Brief an die Politik für Schüler:innen";
 const DESCRIPTION =
@@ -115,6 +115,12 @@ export default async function JungPage({
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, "\\u003c") }}
       />
       <section className="relative overflow-hidden">
+        <Link
+          href="/unterricht"
+          className="absolute left-3 top-3 z-10 rounded-full bg-creme/90 px-3 py-1.5 font-body text-sm text-waldgruen-dark shadow-sm backdrop-blur-sm transition-colors hover:bg-creme hover:text-waldgruen focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-waldgruen sm:left-4 sm:top-4"
+        >
+          Du bist Lehrkraft? Zur Seite für den Unterricht
+        </Link>
         <div className="absolute inset-x-0 top-0 h-[17rem] sm:h-[26rem] lg:bottom-0 lg:h-auto">
           <LoopVideoBackground
             webm="/jung-bg.webm"

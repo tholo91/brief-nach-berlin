@@ -207,8 +207,8 @@ export default function KiTransparenzPage() {
             </h2>
             <p>
               Für Schüler:innen gibt es einen eigenen Weg über{" "}
-              <Link href="/jung" className="text-waldgruen hover:underline">
-                /jung
+              <Link href="/schule" className="text-waldgruen hover:underline">
+                /schule
               </Link>{" "}
               oder einen Klassenlink der Lehrkraft. Dort bekommt das
               Sprachmodell zusätzlich die Klassenstufe. Kommt die Klasse über

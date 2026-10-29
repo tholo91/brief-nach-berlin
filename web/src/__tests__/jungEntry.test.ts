@@ -120,7 +120,7 @@ describe("clearJungDraft", () => {
   });
 });
 
-describe("/jung page", () => {
+describe("/schule page (Schüler:innen)", () => {
   const originalSecret = process.env.FEEDBACK_TOKEN_SECRET;
   beforeAll(() => {
     process.env.FEEDBACK_TOKEN_SECRET = "test-class-token-secret";
@@ -130,10 +130,20 @@ describe("/jung page", () => {
   });
 
   async function render(k?: string) {
-    const { default: JungPage } = await import("@/app/(site)/jung/page");
+    const { default: JungPage } = await import("@/app/(site)/schule/page");
     const element = await JungPage({ searchParams: Promise.resolve(k === undefined ? {} : { k }) });
     return renderToStaticMarkup(element);
   }
+
+  it("sets the /schule canonical and puts the teacher link before the form", async () => {
+    const { metadata } = await import("@/app/(site)/schule/page");
+    expect(metadata.alternates?.canonical).toBe("https://www.brief-nach-berlin.de/schule");
+    const html = await render();
+    const link = html.indexOf("Du bist Lehrkraft?");
+    expect(link).toBeGreaterThan(-1);
+    expect(link).toBeLessThan(html.indexOf('id="schreiben"'));
+    expect(html).toContain('href="/unterricht"');
+  });
 
   it("renders the form with chips, connector and reveal without a class link", async () => {
     const html = await render();

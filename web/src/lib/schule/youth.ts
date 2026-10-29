@@ -1,4 +1,4 @@
-// Jugendmodus (/jung, Klassenlink aus /unterricht): Die Klassenstufe steuert
+// Jugendmodus (/schule, Klassenlink aus /unterricht): Die Klassenstufe steuert
 // Absender, Ton und Länge des Briefs. Client und Server teilen diese Werte.
 
 export const KLASSE_MIN = 7;

@@ -78,7 +78,7 @@ describe("/unterricht page", () => {
       'href="/eltern#sicher"',
       "projekttag-demokratie",
       "Häufige Fragen",
-      'href="/jung"',
+      'href="/schule"',
     ];
     let last = -1;
     for (const needle of order) {

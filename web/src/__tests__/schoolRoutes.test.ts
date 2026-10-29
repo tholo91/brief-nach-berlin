@@ -21,6 +21,15 @@ describe("school redirects (next.config)", () => {
     expect(destinationOf(rules, "/lehrkraefte")).toBe("/unterricht");
   });
 
+  it("sends the old kids paths to /schule and keeps /schule/ablauf on the teacher print page", async () => {
+    const rules = await loadRules();
+    expect(destinationOf(rules, "/jung")).toBe("/schule");
+    expect(destinationOf(rules, "/genz")).toBe("/schule");
+    expect(destinationOf(rules, "/schueler")).toBe("/schule");
+    expect(destinationOf(rules, "/schule/ablauf")).toBe("/unterricht/ablauf");
+    expect(rules.findIndex((rule) => rule.source === "/schule/ablauf")).toBeGreaterThanOrEqual(0);
+  });
+
   it("uses plain 301 without the permanent key", async () => {
     const rules = await loadRules();
     expect(rules.length).toBeGreaterThan(0);
@@ -64,6 +73,11 @@ describe("sitemap school URLs", () => {
     expect(urls).toContain(`${APP_URL}/eltern`);
     expect(urls).toContain(`${APP_URL}/projekttag-demokratie`);
     expect(urls).not.toContain(`${APP_URL}/schule/ablauf`);
+  });
+
+  it("lists /schule once and no /jung URL", () => {
+    expect(urls.filter((url) => url === `${APP_URL}/schule`)).toHaveLength(1);
+    expect(urls.some((url) => url.endsWith("/jung"))).toBe(false);
   });
 
   it("has no duplicates", () => {

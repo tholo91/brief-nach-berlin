@@ -26,7 +26,7 @@ describe("createClassLinkAction", () => {
   it("returns a verifiable link that fits the QR code", async () => {
     const res = await createClassLinkAction({ klasse: 9, plz: "10115" });
     if ("error" in res) throw new Error(res.error);
-    const prefix = `${APP_URL}/jung?k=`;
+    const prefix = `${APP_URL}/schule?k=`;
     expect(res.url.startsWith(prefix)).toBe(true);
     expect(verifyClassToken(res.url.slice(prefix.length))).toMatchObject({
       klasse: 9,

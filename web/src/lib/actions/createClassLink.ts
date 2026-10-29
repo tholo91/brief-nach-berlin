@@ -40,7 +40,7 @@ export async function createClassLinkAction(input: {
 
   const token = signClassToken({ klasse, plz });
   return {
-    url: `${APP_URL}/jung?k=${token}`,
+    url: `${APP_URL}/schule?k=${token}`,
     expiresAt: new Date(Date.now() + CLASS_TOKEN_MAX_AGE_SECONDS * 1000).toISOString(),
   };
 }

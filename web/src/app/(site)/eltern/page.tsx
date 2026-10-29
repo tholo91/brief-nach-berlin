@@ -186,7 +186,7 @@ export default function ElternPage() {
 
         <p className="mt-10 font-body text-sm leading-relaxed text-warmgrau/80">
           Für Schüler:innen geht es auf der{" "}
-          <Link href="/jung" className={linkClass}>Seite für Jugendliche</Link> los, für Lehrkräfte auf der{" "}
+          <Link href="/schule" className={linkClass}>Seite für Jugendliche</Link> los, für Lehrkräfte auf der{" "}
           <Link href="/unterricht" className={linkClass}>Seite für Schulen</Link>.
         </p>
       </div>

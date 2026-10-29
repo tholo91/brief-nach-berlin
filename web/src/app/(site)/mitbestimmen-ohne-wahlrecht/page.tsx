@@ -127,7 +127,7 @@ export default function MitbestimmenOhneWahlrechtPage() {
           <h2 id="mow-wie" className={h2Class}>Wie kann ich als Jugendliche:r Politik mitbestimmen?</h2>
           <p className={pClass}>
             Mit einem Brief an die Person, die dein Thema entscheiden kann. So geht es in{" "}
-            <Link href="/jung" className={linkClass}>Brief-nach-Berlin für Schüler:innen</Link>:
+            <Link href="/schule" className={linkClass}>Brief-nach-Berlin für Schüler:innen</Link>:
           </p>
           <ol className="mt-5 space-y-4">
             {steps.map((step, index) => (
@@ -182,7 +182,7 @@ export default function MitbestimmenOhneWahlrechtPage() {
             Kostenlos, ohne Account, in wenigen Minuten.
           </p>
           <Link
-            href="/jung"
+            href="/schule"
             className="mt-5 inline-block rounded-lg bg-waldgruen px-8 py-3 font-body font-semibold text-creme transition-colors hover:bg-waldgruen-dark focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-waldgruen-dark"
           >
             Brief schreiben

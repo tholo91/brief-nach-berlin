@@ -59,7 +59,7 @@ function TextBlock({ text, note }: { text: string; note?: string }) {
   return (
     <>
       <p className="mt-3 whitespace-pre-wrap break-words rounded-xl bg-creme p-4 text-base leading-relaxed text-warmgrau">
-        {text || "—"}
+        {text || "Kein Text im Link enthalten."}
       </p>
       {note && <p className="mt-2 text-sm text-warmgrau/75">{note}</p>}
       {text && (

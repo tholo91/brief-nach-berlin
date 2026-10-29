@@ -287,7 +287,7 @@ export const emailCopy = {
     privacy: "Gizlilik politikası (Almanca)",
     dataPolicy: "Mektubunuz ve talebiniz saklanmaz. Yalnızca talebinizi gönüllü olarak haritaya eklerseniz kısa bir konu sinyali saklarım. Bülten yok: 2-3 gün içinde yalnızca mektubunuzu değerlendirmenizi rica eden bir e-posta daha gelir.",
     dataPolicyJung: "Mektubunuz ve talebiniz saklanmaz. Bülten ve takip e-postası yok.",
-    inputsLink: "Girdilerini tekrar görüntüle",
+    inputsLink: "Girdilerinizi tekrar görüntüleyin",
     guideMdb: "Milletvekillerine kim yazabilir? (Almanca)",
     guide: "Mektup yazma hakkında daha fazlası (Almanca)",
     followup: {

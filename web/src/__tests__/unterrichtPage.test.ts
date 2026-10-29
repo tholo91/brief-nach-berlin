@@ -78,7 +78,6 @@ describe("/unterricht page", () => {
       'href="/eltern#sicher"',
       "projekttag-demokratie",
       "Häufige Fragen",
-      'href="/schule"',
     ];
     let last = -1;
     for (const needle of order) {
@@ -90,6 +89,11 @@ describe("/unterricht page", () => {
       "Ein kurzer Unterrichtsentwurf: Deine Schüler:innen schreiben in einer Stunde Briefe für ihre Zukunft an ihre Abgeordneten.",
     );
     expect(html).not.toContain("Los geht es per QR");
+    expect(html.split("Klassenlink erstellen")).toHaveLength(2);
+    expect(html).toContain('id="klassenlink-hero"');
+    expect(html).toContain("Dein Klassenlink");
+    expect(html).toContain("Link erstellen");
+    expect(html).not.toContain("geht es hier los");
     const body = encodeURIComponent(
       "Hallo Thomas,\n\nich möchte Brief-nach-Berlin mit meiner Klasse ausprobieren.\n\nSchule und Ort: \nKlassenstufe: \nGeplanter Termin: \nDabei hätte ich gern Hilfe: \n\nViele Grüße\n",
     );

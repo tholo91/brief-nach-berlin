@@ -160,7 +160,7 @@ export default function UnterrichtPage() {
               ))}
             </ul>
             <div className="mt-6 flex flex-col gap-3 sm:flex-row">
-              <a href="#klassenlink" className={`${heroButtonClass} bg-waldgruen text-creme hover:bg-waldgruen-dark`}>
+              <a id="klassenlink-hero" href="#klassenlink" className={`${heroButtonClass} bg-waldgruen text-creme hover:bg-waldgruen-dark`}>
                 Klassenlink erstellen
               </a>
               <a
@@ -315,11 +315,6 @@ export default function UnterrichtPage() {
             <h2 id="schule-faq" className={`${h2Class} mb-4`}>Häufige Fragen</h2>
             <FAQAccordion items={faqs} />
           </section>
-
-          <p className="mt-10 font-body text-sm leading-relaxed text-warmgrau/80">
-            Für Schüler:innen geht es hier los:{" "}
-            <Link href="/schule" className={linkClass}>/schule</Link>
-          </p>
         </div>
       </div>
     </>

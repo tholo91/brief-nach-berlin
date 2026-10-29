@@ -224,21 +224,6 @@ export default async function JungPage({
           <h2 id="jung-faq" className={`${h2Class} mb-4`}>Häufige Fragen</h2>
           <FAQAccordion items={faqs} />
         </section>
-
-        <p className="mt-10 font-body text-sm leading-relaxed text-warmgrau/80">
-          Du bist Lehrkraft? Auf der{" "}
-          <Link href="/unterricht" className="font-semibold text-waldgruen underline underline-offset-2">
-            Seite für Schulen
-          </Link>{" "}
-          gibt es einen Klassenlink mit QR-Code und einen Ablauf für 45 oder 90 Minuten.
-        </p>
-        <p className="mt-3 font-body text-sm leading-relaxed text-warmgrau/80">
-          Du bist Elternteil und willst wissen, was das hier ist, oder selbst schreiben? Die{" "}
-          <Link href="/eltern" className="font-semibold text-waldgruen underline underline-offset-2">
-            Seite für Eltern
-          </Link>{" "}
-          erklärt es.
-        </p>
       </div>
     </>
   );

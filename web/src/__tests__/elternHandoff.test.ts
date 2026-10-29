@@ -96,6 +96,8 @@ describe("/eltern page", () => {
     );
     expect(html).toContain("sie stammt vom Niedersächsischen Kultusministerium.");
     expect(html).toContain("application/ld+json");
+    expect(html).not.toContain("Seite für Jugendliche");
+    expect(html).toContain('href="/unterricht"');
     expect(html).not.toContain("font-handwriting");
     expect(html).not.toMatch(/[–—]/);
   });

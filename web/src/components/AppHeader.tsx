@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
 import { LanguageSwitcher } from "@/components/i18n/LanguageSwitcher";
 
@@ -11,9 +12,9 @@ const NGO_NAV_LINKS = [
 ];
 
 const SCHOOL_NAV_LINKS = [
-  { label: "Schüler:innen", href: "/schule" },
-  { label: "Lehrkräfte", href: "/unterricht" },
-  { label: "Eltern", href: "/eltern" },
+  { label: "Für Schüler:innen", href: "/schule" },
+  { label: "Für den Unterricht", href: "/unterricht" },
+  { label: "Für Eltern", href: "/eltern" },
 ];
 
 const SCHOOL_NAV_PATHS = new Set([...SCHOOL_NAV_LINKS.map((link) => link.href), "/mitbestimmen-ohne-wahlrecht", "/projekttag-demokratie"]);
@@ -21,10 +22,11 @@ const SCHOOL_NAV_PATHS = new Set([...SCHOOL_NAV_LINKS.map((link) => link.href), 
 const PRIMARY_CTA_CLASS =
   "inline-flex items-center justify-center rounded-lg bg-waldgruen px-3 py-2 font-body text-sm font-semibold text-creme transition-colors hover:bg-waldgruen-dark active:scale-[0.98] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-waldgruen sm:px-4";
 
-const SCHOOL_PAGE_CTAS: Record<string, { href: string; label: string; mobileLabel: string }> = {
+// heroId: Der Header-Button erscheint erst, wenn der Hero-Button mit dieser ID aus dem Bild gescrollt ist.
+const SCHOOL_PAGE_CTAS: Record<string, { href: string; label: string; mobileLabel: string; heroId?: string }> = {
   "/schule": { href: "#schreiben", label: "Brief entwerfen", mobileLabel: "Schreiben" },
   "/eltern": { href: "#schreiben", label: "Brief entwerfen", mobileLabel: "Schreiben" },
-  "/unterricht": { href: "#klassenlink", label: "Klassenlink erstellen", mobileLabel: "Klassenlink" },
+  "/unterricht": { href: "#klassenlink", label: "Klassenlink erstellen", mobileLabel: "Klassenlink", heroId: "klassenlink-hero" },
 };
 
 const CAMPAIGN_TOOL_PATHS = new Set(["starten", "verifizieren", "verwalten"]);
@@ -34,6 +36,22 @@ function isPublicCampaignPage(pathname: string | null): boolean {
   return Boolean(match && !CAMPAIGN_TOOL_PATHS.has(match[1]));
 }
 
+// true, sobald das Element mit dieser ID existiert und nicht im Sichtfeld ist.
+// Ohne Element (oder vor der Hydration) bleibt der Wert false: Header-Button versteckt.
+function useElementOutOfView(id: string | undefined, resetKey: string | null): boolean {
+  const [outOfView, setOutOfView] = useState(false);
+
+  useEffect(() => {
+    const target = id ? document.getElementById(id) : null;
+    if (!target || typeof IntersectionObserver === "undefined") return;
+    const observer = new IntersectionObserver(([entry]) => setOutOfView(!entry.isIntersecting));
+    observer.observe(target);
+    return () => observer.disconnect();
+  }, [id, resetKey]);
+
+  return outOfView;
+}
+
 export default function AppHeader({ showLanguageSwitcher = false }: { showLanguageSwitcher?: boolean }) {
   const pathname = usePathname();
   const showCampaignCta = pathname === "/ngo-briefkampagne";
@@ -41,7 +59,9 @@ export default function AppHeader({ showLanguageSwitcher = false }: { showLangua
   const showManagerSlots = pathname === "/kampagne/verwalten";
   const showSchoolNav = pathname !== null && SCHOOL_NAV_PATHS.has(pathname);
   const showMoreCampaigns = isPublicCampaignPage(pathname);
-  const schoolCta = pathname !== null && Object.hasOwn(SCHOOL_PAGE_CTAS, pathname) ? SCHOOL_PAGE_CTAS[pathname] : null;
+  const schoolPageCta = pathname !== null && Object.hasOwn(SCHOOL_PAGE_CTAS, pathname) ? SCHOOL_PAGE_CTAS[pathname] : null;
+  const heroOutOfView = useElementOutOfView(schoolPageCta?.heroId, pathname);
+  const schoolCta = schoolPageCta && (!schoolPageCta.heroId || heroOutOfView) ? schoolPageCta : null;
 
   return (
     <>
@@ -112,7 +132,7 @@ export default function AppHeader({ showLanguageSwitcher = false }: { showLangua
             </Link>
           )}
           {schoolCta && (
-            <a href={schoolCta.href} className={PRIMARY_CTA_CLASS}>
+            <a href={schoolCta.href} className={`${PRIMARY_CTA_CLASS} ${schoolPageCta?.heroId ? "header-cta-in" : ""}`}>
               <span className="sm:hidden">{schoolCta.mobileLabel}</span>
               <span className="hidden sm:inline">{schoolCta.label}</span>
             </a>
@@ -120,7 +140,10 @@ export default function AppHeader({ showLanguageSwitcher = false }: { showLangua
           </div>
         </nav>
         {showSchoolNav && (
-          <nav aria-label="Für Schulen" className="max-w-5xl mx-auto px-6 pb-1 flex items-center gap-4">
+          <nav
+            aria-label="Für Schulen"
+            className="mx-auto flex max-w-5xl items-center gap-x-3 overflow-x-auto px-6 pb-1.5 pt-1 [scrollbar-width:none] sm:gap-x-5 [&::-webkit-scrollbar]:hidden"
+          >
             {SCHOOL_NAV_LINKS.map((link) => {
               const active = pathname === link.href;
               return (
@@ -128,7 +151,7 @@ export default function AppHeader({ showLanguageSwitcher = false }: { showLangua
                   key={link.href}
                   href={link.href}
                   aria-current={active ? "page" : undefined}
-                  className={`border-b-2 py-1.5 font-body text-sm transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-waldgruen ${
+                  className={`shrink-0 whitespace-nowrap border-b-2 py-1.5 font-body text-sm transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-waldgruen ${
                     active
                       ? "border-waldgruen-dark font-semibold text-waldgruen-dark"
                       : "border-transparent text-warmgrau hover:text-waldgruen-dark"

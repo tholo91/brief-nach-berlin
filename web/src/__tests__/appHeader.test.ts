@@ -37,12 +37,32 @@ describe("AppHeader", () => {
     expect(markup).toContain(">Schreiben<");
   });
 
-  it("shows the class link CTA on /unterricht", () => {
+  it("hides the class link CTA on /unterricht until the hero button is out of view", () => {
     const markup = renderAt("/unterricht");
 
-    expect(markup).toContain('href="#klassenlink"');
-    expect(markup).toContain("Klassenlink erstellen");
-    expect(markup).toContain(">Klassenlink<");
+    expect(markup).not.toContain('href="#klassenlink"');
+    expect(markup).not.toContain("Klassenlink erstellen");
+    expect(markup).not.toContain(">Klassenlink<");
+  });
+
+  it.each(["/schule", "/unterricht", "/eltern", "/mitbestimmen-ohne-wahlrecht", "/projekttag-demokratie"])(
+    "shows the audience navigation with Für labels on %s",
+    (pathname) => {
+      const markup = renderAt(pathname);
+
+      expect(markup).toMatch(/href="\/schule"[^>]*>Für Schüler:innen</);
+      expect(markup).toMatch(/href="\/unterricht"[^>]*>Für den Unterricht</);
+      expect(markup).toMatch(/href="\/eltern"[^>]*>Für Eltern</);
+      expect(markup).not.toContain(">Lehrkräfte<");
+      expect(markup).not.toContain(">Eltern<");
+    },
+  );
+
+  it("marks the current audience page with aria-current", () => {
+    const markup = renderAt("/unterricht");
+
+    expect(markup).toMatch(/aria-current="page"[^>]*href="\/unterricht"/);
+    expect(markup.match(/aria-current="page"/g)).toHaveLength(1);
   });
 
   it.each(["/mitbestimmen-ohne-wahlrecht", "/projekttag-demokratie", "/"])("shows no school CTA on %s", (pathname) => {

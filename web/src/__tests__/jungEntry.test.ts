@@ -143,6 +143,8 @@ describe("/schule page (Schüler:innen)", () => {
     expect(link).toBeGreaterThan(-1);
     expect(link).toBeLessThan(html.indexOf('id="schreiben"'));
     expect(html).toContain('href="/unterricht"');
+    expect(html.split("Du bist Lehrkraft?")).toHaveLength(2);
+    expect(html).not.toContain("Du bist Elternteil");
   });
 
   it("renders the form with chips, connector and reveal without a class link", async () => {

@@ -87,7 +87,7 @@ export function ClassLinkGenerator() {
       />
       <div className="p-5 sm:p-7">
         <h2 id="schule-generator" className="font-typewriter text-xl font-bold text-waldgruen-dark sm:text-2xl">
-          Klassenlink erstellen
+          Dein Klassenlink
         </h2>
         <p className="mt-2 font-body text-sm leading-relaxed text-warmgrau/80">
           Mit der Schul-PLZ schreiben alle an die Abgeordneten deines Schulorts. Der Link gilt 14 Tage.
@@ -137,7 +137,7 @@ export function ClassLinkGenerator() {
               aria-busy={loading}
               className={`${buttonClass} w-full bg-waldgruen text-creme hover:bg-waldgruen-dark disabled:cursor-wait disabled:opacity-70 sm:w-fit`}
             >
-              {loading ? "Link wird erstellt..." : "Klassenlink erstellen"}
+              {loading ? "Link wird erstellt..." : "Link erstellen"}
             </button>
             <p id="schule-fehler" role="alert" className="mt-3 font-body text-sm text-airmail-rot">
               {error}

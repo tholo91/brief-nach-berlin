@@ -72,3 +72,6 @@ output/
 .planning/local/
 # GSD-Todos bleiben am festen GSD-Pfad, aber lokal
 .planning/todos/
+
+# Persönliche Ablage: Meetingnotes, Belege, Förderunterlagen (lokal)
+/admin/

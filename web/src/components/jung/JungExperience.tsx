@@ -52,6 +52,15 @@ const focusRing =
 
 const useIsoLayoutEffect = typeof window !== "undefined" ? useLayoutEffect : useEffect;
 
+function fitTextarea(el: HTMLTextAreaElement) {
+  el.style.height = "";
+  if (!el.value) return;
+  el.style.height = "0px";
+  const height = Math.min(360, el.scrollHeight + 2);
+  el.style.height = "";
+  if (height > el.offsetHeight) el.style.height = `${height}px`;
+}
+
 export function JungExperience({ entry }: { entry: JungEntry }) {
   const router = useRouter();
   const entryKlasse = entry.status === "valid" ? entry.klasse : null;
@@ -83,12 +92,9 @@ export function JungExperience({ entry }: { entry: JungEntry }) {
     messages: TOPIC_MESSAGES,
   });
 
-  // Das Feld wächst mit dem Text, bis 360px; die Mindesthöhe kommt aus min-h.
+  // Das Feld wächst mit dem Text, bis 360px; leer gilt die Höhe aus rows/min-h.
   useIsoLayoutEffect(() => {
-    const el = textareaRef.current;
-    if (!el) return;
-    el.style.height = "auto";
-    el.style.height = `${Math.min(360, el.scrollHeight + 2)}px`;
+    if (textareaRef.current) fitTextarea(textareaRef.current);
   }, [issueText]);
 
   useEffect(() => {
@@ -227,7 +233,10 @@ export function JungExperience({ entry }: { entry: JungEntry }) {
               maxLength={ISSUE_TEXT_MAX}
               rows={3}
               aria-describedby="jung-text-help jung-status"
-              onChange={(event) => setIssueText(event.target.value)}
+              onChange={(event) => {
+                setIssueText(event.target.value);
+                fitTextarea(event.target);
+              }}
               onFocus={() => setTextFocused(true)}
               onBlur={() => setTextFocused(false)}
               placeholder={JUNG_PLACEHOLDERS[placeholderIndex]}

@@ -58,6 +58,18 @@ export function useTopicStarters({ draftKey, topics, maxTopics, maxIssueLength, 
     }
   }, [draftKey, draftHydrated, issueText, selectedTopicIds, topicInsertions]);
 
+  // Leert jemand das Feld, um neu anzufangen, sind auch die Themen wieder frei.
+  const updateIssueText: typeof setIssueText = (next) => {
+    setIssueText((prev) => {
+      const value = typeof next === "function" ? next(prev) : next;
+      if (value.trim() === "") {
+        setSelectedTopicIds([]);
+        setTopicInsertions({});
+      }
+      return value;
+    });
+  };
+
   function toggleTopic(topicId: string) {
     const { state, outcome } = toggleTopicStarter(
       { selectedIds: selectedTopicIds, issueText, insertions: topicInsertions },
@@ -77,7 +89,7 @@ export function useTopicStarters({ draftKey, topics, maxTopics, maxIssueLength, 
     selectedTopicIds,
     topicInsertions,
     issueText,
-    setIssueText,
+    setIssueText: updateIssueText,
     statusMessage,
     setStatusMessage,
     toggleTopic,

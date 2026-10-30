@@ -30,7 +30,7 @@ import { useTopicStarters } from "@/components/topics/useTopicStarters";
 import { signClassToken } from "@/lib/schule/classToken";
 import { JUNG_TOPICS } from "@/lib/schule/jungTopics";
 
-const LIMIT_MESSAGE = "Du kannst höchstens zwei Themen wählen.";
+const LIMIT_MESSAGE = "Ein Brief mit einem Thema wirkt stärker.";
 
 describe("resolveJungEntry", () => {
   const verify = jest.fn();

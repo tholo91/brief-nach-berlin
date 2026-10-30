@@ -189,7 +189,7 @@ export default async function JungPage({
           </ol>
         </section>
 
-        <section aria-labelledby="jung-warum" className="reveal mt-14 flow-root">
+        <section aria-labelledby="jung-warum" className="reveal -mx-5 mt-14 flow-root bg-waldgruen/5 px-5 py-8 sm:mx-0 sm:rounded-2xl sm:px-8">
           <h2 id="jung-warum" className={h2Class}>Warum dein Brief zählt</h2>
           <Figure
             src="/images/img-im-buero.webp"

@@ -114,8 +114,12 @@ describe("landing page content", () => {
     expect(heroSource).toContain('href="/ngo-briefkampagne"');
     expect(heroSource).toContain("<LoopVideoBackground");
     expect(loopVideoSource).toContain("prefers-reduced-motion: reduce");
-    for (const eventName of ["onWaiting", "onStalled", "onSuspend", "onEmptied", "onPause", "onError"]) {
+    for (const eventName of ["onWaiting", "onEmptied", "onPause", "onError"]) {
       expect(loopVideoSource).toContain(`${eventName}={() => setIsVideoPlaying(false)}`);
     }
+    // Safari meldet suspend bei fertig geladenem, weiterlaufendem Video: das Standbild darf dann nicht zurückkommen.
+    expect(loopVideoSource).not.toContain("onSuspend=");
+    expect(loopVideoSource).not.toContain("onStalled=");
+    expect(loopVideoSource).toContain("onTimeUpdate=");
   });
 });

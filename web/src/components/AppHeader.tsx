@@ -13,7 +13,7 @@ const NGO_NAV_LINKS = [
 
 const SCHOOL_NAV_LINKS = [
   { label: "Für Schüler:innen", href: "/schule" },
-  { label: "Für den Unterricht", href: "/unterricht" },
+  { label: "Für Lehrkräfte", href: "/unterricht" },
   { label: "Für Eltern", href: "/eltern" },
 ];
 

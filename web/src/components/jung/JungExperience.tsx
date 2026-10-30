@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { VoiceRecorder } from "@/components/audio/VoiceRecorder";
 import { ExpandableTopicChips } from "@/components/topics/ExpandableTopicChips";
@@ -50,6 +50,8 @@ const OWN_TEXT_MIN = 15;
 const focusRing =
   "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-waldgruen focus-visible:ring-offset-2";
 
+const useIsoLayoutEffect = typeof window !== "undefined" ? useLayoutEffect : useEffect;
+
 export function JungExperience({ entry }: { entry: JungEntry }) {
   const router = useRouter();
   const entryKlasse = entry.status === "valid" ? entry.klasse : null;
@@ -80,6 +82,14 @@ export function JungExperience({ entry }: { entry: JungEntry }) {
     maxIssueLength: ISSUE_TEXT_MAX,
     messages: TOPIC_MESSAGES,
   });
+
+  // Das Feld wächst mit dem Text, bis 360px; die Mindesthöhe kommt aus min-h.
+  useIsoLayoutEffect(() => {
+    const el = textareaRef.current;
+    if (!el) return;
+    el.style.height = "auto";
+    el.style.height = `${Math.min(360, el.scrollHeight + 2)}px`;
+  }, [issueText]);
 
   useEffect(() => {
     router.prefetch(WIZARD_PATH);

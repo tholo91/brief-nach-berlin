@@ -35,13 +35,13 @@ export function FAQAccordion({ items }: { items: FAQItem[] }) {
           key={item.q}
           className="group [&[open]_svg]:rotate-180 [&[open]]:bg-waldgruen/[0.03] rounded-lg transition-colors duration-150 -mx-3 px-3"
         >
-          <summary className="flex items-center justify-between gap-4 py-5 cursor-pointer list-none [&::-webkit-details-marker]:hidden">
-            <span className="font-body text-base md:text-lg font-semibold text-waldgruen-dark pr-2 transition-colors duration-150 group-open:text-waldgruen">
+          <summary className="flex items-center justify-between gap-4 py-3.5 md:py-5 cursor-pointer list-none [&::-webkit-details-marker]:hidden">
+            <span className="font-body text-[0.95rem] leading-snug md:text-lg font-semibold text-waldgruen-dark pr-2 transition-colors duration-150 group-open:text-waldgruen">
               {item.q}
             </span>
             <ChevronIcon />
           </summary>
-          <p className="font-body text-base text-warmgrau leading-relaxed pb-6 pr-8">
+          <p className="font-body text-base text-warmgrau leading-relaxed pb-4 pr-2 md:pb-6 md:pr-8">
             {item.aNode ?? item.a}
           </p>
         </details>

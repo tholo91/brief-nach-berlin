@@ -51,7 +51,7 @@ describe("AppHeader", () => {
       const markup = renderAt(pathname);
 
       expect(markup).toMatch(/href="\/schule"[^>]*>Für Schüler:innen</);
-      expect(markup).toMatch(/href="\/unterricht"[^>]*>Für den Unterricht</);
+      expect(markup).toMatch(/href="\/unterricht"[^>]*>Für Lehrkräfte</);
       expect(markup).toMatch(/href="\/eltern"[^>]*>Für Eltern</);
       expect(markup).not.toContain(">Lehrkräfte<");
       expect(markup).not.toContain(">Eltern<");

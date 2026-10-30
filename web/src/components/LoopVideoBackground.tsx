@@ -96,10 +96,13 @@ export default function LoopVideoBackground({
         aria-hidden="true"
         tabIndex={-1}
         onPlaying={() => setIsVideoPlaying(true)}
+        onTimeUpdate={(event) => {
+          if (!event.currentTarget.paused) setIsVideoPlaying(true);
+        }}
         onPause={() => setIsVideoPlaying(false)}
         onWaiting={() => setIsVideoPlaying(false)}
-        onStalled={() => setIsVideoPlaying(false)}
-        onSuspend={() => setIsVideoPlaying(false)}
+        // Kein onSuspend/onStalled: Safari meldet suspend, sobald das Video fertig geladen ist,
+        // und spielt dabei weiter. Das Standbild läge dann über dem laufenden Video.
         onEmptied={() => setIsVideoPlaying(false)}
         onError={() => setIsVideoPlaying(false)}
         className={`pointer-events-none absolute inset-0 w-full h-full object-cover ${className}`}

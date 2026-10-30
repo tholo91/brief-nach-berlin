@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import {
   parseTopicDraft,
+  releaseEditedTopics,
   restoreTopicDraft,
   toggleTopicStarter,
   type TopicDraft,
@@ -58,16 +59,15 @@ export function useTopicStarters({ draftKey, topics, maxTopics, maxIssueLength, 
     }
   }, [draftKey, draftHydrated, issueText, selectedTopicIds, topicInsertions]);
 
-  // Leert jemand das Feld, um neu anzufangen, sind auch die Themen wieder frei.
+  // Löscht oder ersetzt jemand einen Satzanfang weitgehend, ist das Thema wieder frei.
   const updateIssueText: typeof setIssueText = (next) => {
-    setIssueText((prev) => {
-      const value = typeof next === "function" ? next(prev) : next;
-      if (value.trim() === "") {
-        setSelectedTopicIds([]);
-        setTopicInsertions({});
-      }
-      return value;
-    });
+    const value = typeof next === "function" ? next(issueText) : next;
+    const released = releaseEditedTopics({ selectedIds: selectedTopicIds, issueText: value, insertions: topicInsertions });
+    setIssueText(value);
+    if (released.selectedIds.length !== selectedTopicIds.length) {
+      setSelectedTopicIds(released.selectedIds);
+      setTopicInsertions(released.insertions);
+    }
   };
 
   function toggleTopic(topicId: string) {

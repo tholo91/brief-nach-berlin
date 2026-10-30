@@ -1,6 +1,7 @@
 import {
   appendText,
   parseTopicDraft,
+  releaseEditedTopics,
   removeInsertedText,
   restoreTopicDraft,
   toggleTopicStarter,
@@ -192,5 +193,25 @@ describe("JUNG_TOPICS", () => {
       expect(topic.issueText).not.toBe(JUNG_TOPICS[i].issueText);
       expect(topic.issueText).not.toMatch(/[–—]/);
     });
+  });
+});
+
+describe("releaseEditedTopics", () => {
+  const insertion = "Mein Bus fährt nur einmal pro Stunde und ich warte oft lange.";
+  const state = { selectedIds: ["bus"], insertions: { bus: insertion }, issueText: insertion };
+
+  it("keeps the topic while most of the starter is still there", () => {
+    expect(releaseEditedTopics({ ...state, issueText: `${insertion} Bitte ändern Sie das.` }).selectedIds).toEqual(["bus"]);
+    expect(releaseEditedTopics({ ...state, issueText: "Mein Bus fährt nur einmal pro Stunde." }).selectedIds).toEqual(["bus"]);
+  });
+
+  it("releases the topic once the starter is mostly gone", () => {
+    const result = releaseEditedTopics({ ...state, issueText: "Die Toiletten an meiner Schule sind kaputt." });
+    expect(result.selectedIds).toEqual([]);
+    expect(result.insertions).toEqual({});
+  });
+
+  it("releases everything when the field is empty", () => {
+    expect(releaseEditedTopics({ ...state, issueText: "  " }).selectedIds).toEqual([]);
   });
 });

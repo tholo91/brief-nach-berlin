@@ -213,7 +213,9 @@ export function JungExperience({ entry }: { entry: JungEntry }) {
             onToggle={toggleTopic}
           />
           {selectionLimitReached && (
-            <p className="mt-2 font-body text-sm leading-relaxed text-warmgrau/70">{TOPIC_MESSAGES.limit}</p>
+            <p className="mt-2 font-body text-sm leading-relaxed text-warmgrau/70">
+              Ein Brief mit einem Thema wirkt stärker. Für das zweite kannst du gern einen eigenen Brief schreiben.
+            </p>
           )}
         </section>
 

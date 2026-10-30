@@ -111,6 +111,9 @@ describe("landing page content", () => {
     expect(workflowSource).toContain("list-disc");
     expect(workflowSource).not.toContain("border-l-airmail-rot");
     expect(heroSource).toContain("NgoCampaignBadge");
+    expect(heroSource).toContain("function HeroNote");
+    expect(heroSource).toContain('href="/schule"');
+    expect(heroSource).toContain("Klassenzimmer");
     expect(heroSource).toContain('href="/ngo-briefkampagne"');
     expect(heroSource).toContain("<LoopVideoBackground");
     expect(loopVideoSource).toContain("prefers-reduced-motion: reduce");

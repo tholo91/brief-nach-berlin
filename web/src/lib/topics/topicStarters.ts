@@ -46,6 +46,27 @@ export function removeInsertedText(current: string, fullInsertion: string) {
   };
 }
 
+function words(text: string) {
+  return text.toLowerCase().match(/[\p{L}\p{N}]+/gu) ?? [];
+}
+
+// Ein Thema gilt als weg, wenn vom eingefügten Satzanfang weniger als 40 % der Wörter übrig sind.
+export function releaseEditedTopics(state: TopicStarterState): TopicStarterState {
+  if (state.issueText.trim() === "") return { ...state, selectedIds: [], insertions: {} };
+  const present = new Set(words(state.issueText));
+  const released = state.selectedIds.filter((id) => {
+    const insertion = state.insertions[id];
+    if (!insertion) return false;
+    const insertionWords = words(insertion);
+    const kept = insertionWords.filter((word) => present.has(word)).length;
+    return insertionWords.length > 0 && kept / insertionWords.length < 0.4;
+  });
+  if (released.length === 0) return state;
+  const insertions = { ...state.insertions };
+  for (const id of released) delete insertions[id];
+  return { ...state, selectedIds: state.selectedIds.filter((id) => !released.includes(id)), insertions };
+}
+
 export function toggleTopicStarter(
   state: TopicStarterState,
   topics: readonly TopicStarter[],

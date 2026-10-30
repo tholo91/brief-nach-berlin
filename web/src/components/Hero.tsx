@@ -3,7 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useCallback, useEffect } from "react";
+import { useCallback, useEffect, type ReactNode } from "react";
 import LoopVideoBackground from "@/components/LoopVideoBackground";
 import { Step2Issue } from "@/components/wizard/Step2Issue";
 import { saveHandoff } from "@/lib/wizard-handoff";
@@ -12,7 +12,9 @@ import { useLocale, useUiCopy } from "@/components/i18n/LocaleProvider";
 import { HeroCampaignPills } from "@/components/campaigns/HeroCampaignPills";
 import type { LandingCampaign } from "@/lib/campaigns/landing";
 
-// NGO sticky note is parked for now; flip to true to bring it back.
+// Only one sticky note at a time: the school note sits where the NGO note used to.
+const SHOW_SCHOOL_NOTE = true;
+// NGO sticky note is parked for now; flip to true (and the school note off) to bring it back.
 const SHOW_NGO_BADGE = false;
 
 export default function Hero({ campaigns = [] }: { campaigns?: LandingCampaign[] }) {
@@ -91,6 +93,9 @@ export default function Hero({ campaigns = [] }: { campaigns?: LandingCampaign[]
             {copy.hero.titleStart}{" "}
             <span className="block text-waldgruen">{copy.hero.titleEmphasis}</span>
           </h1>
+          {locale === "de" && SHOW_SCHOOL_NOTE && (
+            <SchoolNote className="hidden sm:inline-flex absolute left-1/2 -top-5 z-20 ml-[9.75rem] rotate-[7deg]" />
+          )}
           {locale === "de" && SHOW_NGO_BADGE && (
             <NgoCampaignBadge className="hidden sm:inline-flex absolute left-1/2 -top-5 z-20 ml-[9.75rem] rotate-[7deg]" />
           )}
@@ -156,6 +161,9 @@ export default function Hero({ campaigns = [] }: { campaigns?: LandingCampaign[]
 
       </div>
 
+      {locale === "de" && SHOW_SCHOOL_NOTE && (
+        <SchoolNote className="inline-flex sm:hidden absolute top-6 right-3 z-20 rotate-[6deg]" />
+      )}
       {locale === "de" && SHOW_NGO_BADGE && (
         <NgoCampaignBadge className="inline-flex sm:hidden absolute top-6 right-3 z-20 rotate-[6deg]" />
       )}
@@ -164,13 +172,58 @@ export default function Hero({ campaigns = [] }: { campaigns?: LandingCampaign[]
   );
 }
 
+function SchoolNote({ className }: { className?: string }) {
+  return (
+    <HeroNote
+      href="/schule"
+      ariaLabel="Briefe aus dem Klassenzimmer: zur Seite für Schulen"
+      kicker="Schule?"
+      className={`${className ?? ""} w-[7.25rem] sm:w-[8.55rem]`}
+    >
+      <span className="block">Briefe aus dem</span>
+      <span className="mt-1 block decoration-airmail-rot/70 decoration-2 underline underline-offset-4">
+        Klassenzimmer
+      </span>
+    </HeroNote>
+  );
+}
+
 function NgoCampaignBadge({ className }: { className?: string }) {
   return (
-    <Link
+    <HeroNote
       href="/ngo-briefkampagne"
+      ariaLabel="Briefkampagne für NGO oder Verein starten"
+      kicker="NGO oder Verein?"
+      className={`${className ?? ""} w-[8.55rem]`}
+    >
+      <span className="decoration-airmail-rot/70 decoration-2 underline underline-offset-4">
+        Briefkampagne
+      </span>
+      <span className="mt-1 block">starten</span>
+    </HeroNote>
+  );
+}
+
+// Yellow pinned sticky note next to the hero headline.
+function HeroNote({
+  href,
+  ariaLabel,
+  kicker,
+  className,
+  children,
+}: {
+  href: string;
+  ariaLabel: string;
+  kicker: string;
+  className?: string;
+  children: ReactNode;
+}) {
+  return (
+    <Link
+      href={href}
       prefetch={false}
-      className={`${className ?? ""} group min-h-[5.25rem] w-[8.55rem] cursor-pointer overflow-visible rounded-[2px] border border-bernstein/25 bg-[#fff0a6] px-3.5 pb-2.5 pt-3.5 text-center font-body text-waldgruen-dark shadow-[0_14px_26px_-20px_rgba(27,67,50,0.72)] transition-shadow duration-200 ease-[cubic-bezier(0.16,1,0.3,1)] hover:shadow-[0_18px_30px_-20px_rgba(27,67,50,0.8)] active:bg-[#ffe98b] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-waldgruen focus-visible:ring-offset-2 focus-visible:ring-offset-creme md:w-[9rem]`}
-      aria-label="Briefkampagne für NGO oder Verein starten"
+      className={`${className ?? ""} group min-h-[4.75rem] sm:min-h-[5.25rem] cursor-pointer overflow-visible rounded-[2px] border border-bernstein/25 bg-[#fff0a6] px-2.5 pb-2 pt-3 sm:px-3.5 sm:pb-2.5 sm:pt-3.5 text-center font-body text-waldgruen-dark shadow-[0_14px_26px_-20px_rgba(27,67,50,0.72)] transition-shadow duration-200 ease-[cubic-bezier(0.16,1,0.3,1)] hover:shadow-[0_18px_30px_-20px_rgba(27,67,50,0.8)] active:bg-[#ffe98b] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-waldgruen focus-visible:ring-offset-2 focus-visible:ring-offset-creme md:w-[9rem]`}
+      aria-label={ariaLabel}
     >
       <Image
         src="/images/ghibli-pin.webp"
@@ -178,19 +231,16 @@ function NgoCampaignBadge({ className }: { className?: string }) {
         width={64}
         height={74}
         aria-hidden="true"
-        className="pointer-events-none absolute right-0 -top-5 h-[2.125rem] w-auto rotate-[14deg] drop-shadow-[0_4px_4px_rgba(27,67,50,0.22)] md:-right-3 md:-top-6 md:h-[2.55rem]"
+        className="pointer-events-none absolute right-0 -top-5 h-[1.9rem] sm:h-[2.125rem] w-auto rotate-[14deg] drop-shadow-[0_4px_4px_rgba(27,67,50,0.22)] md:-right-3 md:-top-6 md:h-[2.55rem]"
       />
       <span aria-hidden="true" className="pointer-events-none absolute inset-x-2 top-7 h-px bg-bernstein/25" />
       <span aria-hidden="true" className="pointer-events-none absolute inset-x-2 top-[3.35rem] h-px bg-bernstein/20" />
       <span className="relative block">
-        <span className="block font-typewriter text-[0.54rem] font-bold uppercase tracking-[0.14em] text-airmail-blau/80">
-          NGO oder Verein?
+        <span className="block font-typewriter text-[0.7rem] sm:text-[0.78rem] font-bold tracking-[0.02em] text-airmail-blau/80">
+          {kicker}
         </span>
-        <span className="mt-1 block font-handwriting text-[1.05rem] font-bold leading-[0.9] text-waldgruen-dark md:text-[1.12rem]">
-          <span className="decoration-airmail-rot/70 decoration-2 underline underline-offset-4">
-            Briefkampagne
-          </span>
-          <span className="mt-1 block">starten</span>
+        <span className="mt-1 block font-handwriting text-[0.95rem] sm:text-[1.05rem] font-bold leading-[0.9] text-waldgruen-dark md:text-[1.12rem]">
+          {children}
         </span>
       </span>
     </Link>

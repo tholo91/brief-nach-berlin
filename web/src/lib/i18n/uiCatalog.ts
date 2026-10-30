@@ -26,6 +26,8 @@ export interface UiCatalog {
   hero: {
     titleStart: string;
     titleEmphasis: string;
+    /** Shorter emphasis line for phones, so the headline stays on two lines. */
+    titleEmphasisShort?: string;
     subtitle: string;
     trustFreeShort: string;
     trustFree: string;
@@ -261,7 +263,7 @@ const de: UiCatalog = {
   },
   navigation: { howItWorks: "Wie es funktioniert", idea: "Die Idee", getInvolved: "Mitmachen", writeLetter: "Brief schreiben", openMenu: "Menü öffnen", closeMenu: "Menü schließen", home: "Startseite" },
   hero: {
-    titleStart: "Dein Anliegen.", titleEmphasis: "Direkt an die Politik.", subtitle: "In 3 Minuten ist dein Brief an die passenden Abgeordneten fertig.",
+    titleStart: "Dein Anliegen.", titleEmphasis: "Direkt an die Politik.", titleEmphasisShort: "An die Politik.", subtitle: "In 3 Minuten ist dein Brief an die passenden Abgeordneten fertig.",
     trustFreeShort: "kostenlos", trustFree: "Vollständig kostenlos", trustNoAccountShort: "ohne Account", trustNoAccount: "Kein Account erforderlich", trustPrivacyShort: "KI aus EU", trustPrivacy: "KI aus Europa, kein Datentracking",
   },
   howItWorks: {

@@ -91,10 +91,19 @@ export default function Hero({ campaigns = [] }: { campaigns?: LandingCampaign[]
         <div className="relative mb-4">
           <h1 className="font-body text-4xl md:text-5xl font-bold text-waldgruen-dark leading-[1.1] tracking-tight text-balance">
             {copy.hero.titleStart}{" "}
-            <span className="block text-waldgruen">{copy.hero.titleEmphasis}</span>
+            <span className="block text-waldgruen">
+              {copy.hero.titleEmphasisShort ? (
+                <>
+                  <span className="min-[400px]:hidden">{copy.hero.titleEmphasisShort}</span>
+                  <span className="hidden min-[400px]:inline">{copy.hero.titleEmphasis}</span>
+                </>
+              ) : (
+                copy.hero.titleEmphasis
+              )}
+            </span>
           </h1>
           {locale === "de" && SHOW_SCHOOL_NOTE && (
-            <SchoolNote className="hidden sm:inline-flex absolute left-1/2 -top-5 z-20 ml-[9.75rem] rotate-[7deg]" />
+            <SchoolNote className="hidden sm:inline-flex absolute left-1/2 -top-[3.1rem] z-20 ml-[6.75rem] md:-top-12 md:ml-[8.6rem] rotate-[7deg]" />
           )}
           {locale === "de" && SHOW_NGO_BADGE && (
             <NgoCampaignBadge className="hidden sm:inline-flex absolute left-1/2 -top-5 z-20 ml-[9.75rem] rotate-[7deg]" />
@@ -178,7 +187,7 @@ function SchoolNote({ className }: { className?: string }) {
       href="/schule"
       ariaLabel="Briefe aus dem Klassenzimmer: zur Seite für Schulen"
       kicker="Schule?"
-      className={`${className ?? ""} w-[7.25rem] sm:w-[8.55rem]`}
+      className={`${className ?? ""} w-[6.9rem] sm:w-[8rem] md:w-[8.4rem]`}
     >
       <span className="block">Briefe aus dem</span>
       <span className="mt-1 block decoration-airmail-rot/70 decoration-2 underline underline-offset-4">
@@ -194,7 +203,7 @@ function NgoCampaignBadge({ className }: { className?: string }) {
       href="/ngo-briefkampagne"
       ariaLabel="Briefkampagne für NGO oder Verein starten"
       kicker="NGO oder Verein?"
-      className={`${className ?? ""} w-[8.55rem]`}
+      className={`${className ?? ""} w-[8.55rem] md:w-[9rem]`}
     >
       <span className="decoration-airmail-rot/70 decoration-2 underline underline-offset-4">
         Briefkampagne
@@ -222,7 +231,7 @@ function HeroNote({
     <Link
       href={href}
       prefetch={false}
-      className={`${className ?? ""} group min-h-[4.75rem] sm:min-h-[5.25rem] cursor-pointer overflow-visible rounded-[2px] border border-bernstein/25 bg-[#fff0a6] px-2.5 pb-2 pt-3 sm:px-3.5 sm:pb-2.5 sm:pt-3.5 text-center font-body text-waldgruen-dark shadow-[0_14px_26px_-20px_rgba(27,67,50,0.72)] transition-shadow duration-200 ease-[cubic-bezier(0.16,1,0.3,1)] hover:shadow-[0_18px_30px_-20px_rgba(27,67,50,0.8)] active:bg-[#ffe98b] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-waldgruen focus-visible:ring-offset-2 focus-visible:ring-offset-creme md:w-[9rem]`}
+      className={`${className ?? ""} group justify-center min-h-[4.75rem] sm:min-h-[5.25rem] cursor-pointer overflow-visible rounded-[2px] rounded-br-[3.75rem_0.65rem] border border-bernstein/25 bg-[#fff0a6] bg-[linear-gradient(156deg,#fff0a6_0%,#fff0a6_60%,#f3d873_83%,#fae78f_92%,#fffbe2_100%)] px-2.5 pb-2 pt-[1.15rem] sm:px-3.5 sm:pb-2.5 sm:pt-[1.35rem] text-center font-body text-waldgruen-dark shadow-[0_12px_20px_-18px_rgba(27,67,50,0.4),10px_14px_14px_-12px_rgba(27,67,50,0.3)] transition-shadow duration-200 ease-[cubic-bezier(0.16,1,0.3,1)] hover:shadow-[0_14px_22px_-18px_rgba(27,67,50,0.48),11px_16px_16px_-12px_rgba(27,67,50,0.38)] active:bg-[#ffe98b] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-waldgruen focus-visible:ring-offset-2 focus-visible:ring-offset-creme`}
       aria-label={ariaLabel}
     >
       <Image
@@ -231,12 +240,12 @@ function HeroNote({
         width={64}
         height={74}
         aria-hidden="true"
-        className="pointer-events-none absolute right-0 -top-5 h-[1.9rem] sm:h-[2.125rem] w-auto rotate-[14deg] drop-shadow-[0_4px_4px_rgba(27,67,50,0.22)] md:-right-3 md:-top-6 md:h-[2.55rem]"
+        className="pointer-events-none absolute left-1/2 -top-[1.15rem] h-[1.9rem] sm:h-[2.125rem] w-auto -translate-x-1/2 rotate-[8deg] drop-shadow-[0_4px_4px_rgba(27,67,50,0.22)] md:-top-[1.35rem] md:h-[2.4rem]"
       />
-      <span aria-hidden="true" className="pointer-events-none absolute inset-x-2 top-7 h-px bg-bernstein/25" />
-      <span aria-hidden="true" className="pointer-events-none absolute inset-x-2 top-[3.35rem] h-px bg-bernstein/20" />
+      <span aria-hidden="true" className="pointer-events-none absolute inset-x-2 top-[2.55rem] sm:top-[2.8rem] h-px bg-bernstein/25" />
+      <span aria-hidden="true" className="pointer-events-none absolute inset-x-2 top-[4.15rem] sm:top-[4.55rem] h-px bg-bernstein/20" />
       <span className="relative block">
-        <span className="block font-typewriter text-[0.7rem] sm:text-[0.78rem] font-bold tracking-[0.02em] text-airmail-blau/80">
+        <span className="block font-typewriter text-[0.9rem] sm:text-[1rem] font-bold leading-none text-airmail-blau">
           {kicker}
         </span>
         <span className="mt-1 block font-handwriting text-[0.95rem] sm:text-[1.05rem] font-bold leading-[0.9] text-waldgruen-dark md:text-[1.12rem]">

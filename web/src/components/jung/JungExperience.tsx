@@ -28,8 +28,20 @@ const TOPIC_MESSAGES = {
   "removed-text": "Satzanfang entfernt.",
   "removed-kept": "Thema entfernt. Deinen bearbeiteten Text habe ich stehen lassen.",
   added: "Satzanfang eingefügt. Schreib ihn selbst zu Ende.",
-  "added-max": "Zwei Satzanfänge eingefügt. Schreib sie selbst zu Ende.",
+  // Bei zwei Themen übernimmt der Fokus-Hinweis unter den Chips die Ansage.
+  "added-max": "",
 };
+
+// Ohne Klassenlink stehen fertige Sätze im Feld, die man nur ergänzt.
+const OPEN_TOPIC_MESSAGES = {
+  ...TOPIC_MESSAGES,
+  "removed-text": "Satz entfernt.",
+  added: "Satz eingefügt. Schreib gern noch mehr dazu.",
+};
+
+const FOCUS_HINT = "Ein, zwei Fokusthemen reichen, sonst wird es ein Buch.";
+const FOCUS_HINT_OPEN = `${FOCUS_HINT} Für weitere schreibst du einen neuen Brief.`;
+const FOCUS_HINT_STARTERS = `${FOCUS_HINT} Schreib die Satzanfänge selbst zu Ende.`;
 
 const ERROR_MESSAGES = {
   klasse: "Wähl zuerst deine Klassenstufe.",
@@ -73,7 +85,8 @@ export function JungExperience({ entry }: { entry: JungEntry }) {
   const klasseGroupRef = useRef<HTMLFieldSetElement>(null);
   const [finishRevealed, setFinishRevealed] = useState(false);
   // Im Unterricht (Klassenlink) bleiben die Satzanfänge neutral, siehe /unterricht.
-  const topics = entry.status === "none" ? JUNG_OPEN_TOPICS : JUNG_TOPICS;
+  const isOpen = entry.status === "none";
+  const topics = isOpen ? JUNG_OPEN_TOPICS : JUNG_TOPICS;
 
   const {
     selectedTopicIds,
@@ -89,7 +102,7 @@ export function JungExperience({ entry }: { entry: JungEntry }) {
     topics,
     maxTopics: JUNG_MAX_TOPICS,
     maxIssueLength: ISSUE_TEXT_MAX,
-    messages: TOPIC_MESSAGES,
+    messages: isOpen ? OPEN_TOPIC_MESSAGES : TOPIC_MESSAGES,
   });
 
   // Das Feld wächst mit dem Text, bis 360px; leer gilt die Höhe aus rows/min-h.
@@ -177,7 +190,8 @@ export function JungExperience({ entry }: { entry: JungEntry }) {
   const ownText = Object.values(topicInsertions)
     .reduce((text, starter) => removeInsertedText(text, starter).text, issueText)
     .trim();
-  const ownTextEnough = ownText.length >= OWN_TEXT_MIN;
+  // Ohne Klassenlink steht der Satz fertig im Feld, dann reicht er für den nächsten Schritt.
+  const ownTextEnough = (isOpen ? issueText.trim() : ownText).length >= OWN_TEXT_MIN;
   const showFinish = finishRevealed || ownTextEnough;
 
   // Einmal sichtbar, bleibt der Abschluss sichtbar, auch wenn jemand Text wieder löscht.
@@ -212,11 +226,13 @@ export function JungExperience({ entry }: { entry: JungEntry }) {
             limitReached={selectionLimitReached}
             onToggle={toggleTopic}
           />
-          {selectionLimitReached && (
-            <p className="mt-2 font-body text-sm leading-relaxed text-warmgrau/70">
-              Ein Brief mit einem Thema wirkt stärker. Für das zweite kannst du gern einen eigenen Brief schreiben.
-            </p>
-          )}
+          <div aria-live="polite">
+            {selectionLimitReached && (
+              <p className="mt-2 text-balance font-body text-sm leading-relaxed text-warmgrau/70">
+                {isOpen ? FOCUS_HINT_OPEN : FOCUS_HINT_STARTERS}
+              </p>
+            )}
+          </div>
         </section>
 
         <section aria-labelledby="jung-text-label">

@@ -28,9 +28,9 @@ import {
 } from "@/components/jung/jungHandoff";
 import { useTopicStarters } from "@/components/topics/useTopicStarters";
 import { signClassToken } from "@/lib/schule/classToken";
-import { JUNG_TOPICS } from "@/lib/schule/jungTopics";
+import { JUNG_OPEN_TOPICS, JUNG_TOPICS } from "@/lib/schule/jungTopics";
 
-const LIMIT_MESSAGE = "Ein Brief mit einem Thema wirkt stärker.";
+const LIMIT_MESSAGE = "Ein, zwei Fokusthemen reichen, sonst wird es ein Buch.";
 
 describe("resolveJungEntry", () => {
   const verify = jest.fn();
@@ -210,12 +210,20 @@ describe("JungExperience step by step", () => {
       selectionLimitReached: false,
     }) as ReturnType<typeof useTopicStarters>;
 
-  it("keeps class and button hidden while only a starter is in the field", () => {
+  it("keeps class and button hidden while only a neutral starter is in the field", () => {
     const starter = JUNG_TOPICS[0].issueText;
     jest.mocked(useTopicStarters).mockReturnValueOnce(hookState(starter, { [JUNG_TOPICS[0].id]: starter }));
-    const html = renderToStaticMarkup(createElement(JungExperience, { entry: { status: "none" } }));
+    const html = renderToStaticMarkup(createElement(JungExperience, { entry: { status: "invalid" } }));
     expect(html).not.toContain('name="klasse"');
     expect(html).not.toContain("Brief entwerfen");
+  });
+
+  it("shows class and button right after a finished sentence without a class link", () => {
+    const sentence = JUNG_OPEN_TOPICS[0].issueText;
+    jest.mocked(useTopicStarters).mockReturnValueOnce(hookState(sentence, { [JUNG_OPEN_TOPICS[0].id]: sentence }));
+    const html = renderToStaticMarkup(createElement(JungExperience, { entry: { status: "none" } }));
+    expect(html.match(/name="klasse"/g)).toHaveLength(7);
+    expect(html).toContain("Brief entwerfen");
   });
 
   it("shows class after the topic and the button once there is own text", () => {
@@ -244,6 +252,24 @@ describe("JungExperience topic limit", () => {
     } as ReturnType<typeof useTopicStarters>);
     const html = renderToStaticMarkup(createElement(JungExperience, { entry: { status: "none" } }));
     expect(html.match(new RegExp(LIMIT_MESSAGE, "g"))).toHaveLength(1);
+    expect(html).toContain("Für weitere schreibst du einen neuen Brief.");
+    expect(html).not.toContain("Satzanfänge selbst zu Ende");
     expect(html).toContain('disabled=""');
+  });
+
+  it("merges the finish-the-starters note into the hint for neutral starters", () => {
+    jest.mocked(useTopicStarters).mockReturnValueOnce({
+      selectedTopicIds: JUNG_TOPICS.slice(0, 2).map((topic) => topic.id),
+      topicInsertions: {},
+      issueText: "",
+      setIssueText: jest.fn(),
+      statusMessage: "",
+      setStatusMessage: jest.fn(),
+      toggleTopic: jest.fn(),
+      selectionLimitReached: true,
+    } as ReturnType<typeof useTopicStarters>);
+    const html = renderToStaticMarkup(createElement(JungExperience, { entry: { status: "invalid" } }));
+    expect(html).toContain(`${LIMIT_MESSAGE} Schreib die Satzanfänge selbst zu Ende.`);
+    expect(html).not.toContain("Für weitere schreibst du");
   });
 });

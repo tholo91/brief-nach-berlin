@@ -47,20 +47,22 @@ export const JUNG_TOPICS: readonly TopicStarter[] = [
   },
 ];
 
-// Ohne Klassenlink (kein Unterricht): Satzanfänge mit Haltung, damit Jugendliche schneller ins Schreiben kommen.
+// Ohne Klassenlink (kein Unterricht): fertige Sätze mit Haltung, damit Jugendliche schnell Luft machen und nur noch ergänzen.
 const JUNG_OPEN_TEXT: Record<string, string> = {
-  schulgebaeude: "Ich finde es nicht okay, dass wir in einem Schulgebäude lernen, in dem ",
+  schulgebaeude:
+    "Ich finde es nicht okay, dass wir in einem Schulgebäude lernen, in dem so vieles kaputt oder veraltet ist.",
   lehrkraeftemangel:
-    "Bei uns fällt ständig Unterricht aus, und in der Prüfung sollen wir trotzdem alles können. Mich ärgert, dass ",
-  "handy-digitales": "Alle reden von Digitalisierung, aber an meiner Schule ",
-  schulweg: "Mein Schulweg kostet mich jeden Tag Zeit und Nerven, weil ",
+    "Bei uns fällt ständig Unterricht aus, und in der Prüfung sollen wir trotzdem alles können. Mich ärgert, dass sich daran nichts ändert.",
+  "handy-digitales": "Alle reden von Digitalisierung, aber an meiner Schule ist davon kaum etwas zu spüren.",
+  schulweg: "Mein Schulweg kostet mich jeden Tag Zeit und Nerven, weil die Verbindungen so schlecht sind.",
   "mentale-gesundheit":
-    "Viele in meinem Alter sind am Limit, und auf einen Therapieplatz wartet man monatelang. Bei mir ",
+    "Viele in meinem Alter sind am Limit, und auf einen Therapieplatz wartet man monatelang. Das muss sich ändern.",
   klima:
-    "Wir hatten vom Leben noch kaum etwas und sollen trotzdem ausbaden, was beim Klimaschutz liegen bleibt. Mich stört, dass ",
+    "Wir hatten vom Leben noch kaum etwas und sollen trotzdem ausbaden, was beim Klimaschutz liegen bleibt. Mich stört, dass dabei so wenig passiert.",
   wehrdienst:
-    "Beim Wehrdienst wird über unsere Köpfe hinweg entschieden, obwohl es um unser Leben geht. Ich möchte, dass ",
-  "orte-fuer-jugendliche": "In meinem Ort gibt es kaum einen Platz, an dem wir einfach sein dürfen. Mir fehlt ",
+    "Beim Wehrdienst wird über unsere Köpfe hinweg entschieden, obwohl es um unser Leben geht. Ich möchte, dass wir mitreden dürfen.",
+  "orte-fuer-jugendliche":
+    "In meinem Ort gibt es kaum einen Platz, an dem wir einfach sein dürfen. Mir fehlt ein Treffpunkt für Jugendliche.",
 };
 
 export const JUNG_OPEN_TOPICS: readonly TopicStarter[] = JUNG_TOPICS.map((topic) => ({

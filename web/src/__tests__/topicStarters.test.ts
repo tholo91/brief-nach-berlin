@@ -194,6 +194,11 @@ describe("JUNG_TOPICS", () => {
       expect(topic.issueText).not.toMatch(/[–—]/);
     });
   });
+  it("ends every opinionated text as a finished sentence", () => {
+    JUNG_OPEN_TOPICS.forEach((topic) => {
+      expect(topic.issueText).toMatch(/[.!?]$/);
+    });
+  });
 });
 
 describe("releaseEditedTopics", () => {

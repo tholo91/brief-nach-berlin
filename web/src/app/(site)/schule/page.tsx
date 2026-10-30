@@ -157,7 +157,7 @@ export default async function JungPage({
                 Schreiben schon.
               </span>
             </h1>
-            <p className="mt-3 font-body text-base leading-snug text-warmgrau sm:mt-4 sm:text-lg">
+            <p className="mt-3 max-w-[44ch] text-balance font-body text-base leading-snug text-warmgrau sm:mt-4 sm:text-lg">
               Erzähl, was dich stört. Das Tool macht daraus einen Brief an die Politik.
             </p>
           </div>

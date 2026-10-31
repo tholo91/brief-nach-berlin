@@ -165,6 +165,13 @@ Gilt für alle KI-generierten Illustrationen. Fertige Prompts liegen in `prompts
 - Erst ein Referenzbild festlegen (Komposition, Farbe, Stil), dann Video daraus ableiten
 - Video: statische Kamera, nur dezente Bewegung (Blätter, Vögel, ein Fahrrad, Windräder), nahtlose Schleife; der Video-Prompt beschreibt nur, was sich bewegt
 
+**Nachtvariante (Startseite im Dunkelmodus):**
+- Dasselbe Bild, andere Tageszeit: Komposition und Stil bleiben, nur Licht und Himmel ändern sich
+- Nachtgrün `#10231D` statt Schwarz, Schatten bleiben blaugrün
+- Die meisten Fenster sind dunkel, wenige leuchten honiggolden
+- Der Rand läuft in Nachtgrün aus statt in Creme
+- Papier bleibt Papier: Briefe, Karten und Zettel bleiben auch nachts hell
+
 ### 6.5 Ikonisches Element
 
 **Der Briefumschlag** — inspiriert von Airmail-Ästhetik und Felix dem Hasen (Briefe an die Welt):

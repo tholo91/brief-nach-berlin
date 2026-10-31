@@ -4,10 +4,10 @@ milestone: v1.0
 current_phase: 05
 status: verifying
 stopped_at: Completed 05-04-PLAN.md
-last_updated: "2026-10-31T12:20:33.858Z"
+last_updated: "2026-10-31T15:58:17.401Z"
 last_activity: 2026-10-31
 last_activity_desc: Quick 261013-wuq lokal implementiert und geprüft; manueller Release offen
-state_head: 5c6a5763b713d0b18a504cccbc43934ed812f2d1
+state_head: ab4ddf0a3b3ed0959247b53d38bb90f9a70294df
 progress:
   total_phases: 33
   completed_phases: 4
@@ -49,7 +49,7 @@ Der level-aware E-Mail-Betreff ist dagegen bereits implementiert und getestet; d
 Phase: 05 — EXECUTING
 Plan: 4 of 4
 Status: Phase complete — ready for verification
-Last activity: 2026-10-31 - Completed quick task 261031-lsb: /unterricht mit Tafel-Hero und Klassenlink mit PDF statt E-Mail
+Last activity: 2026-10-31 - Completed quick task 261031-i13: Nachtmodus Startseite mit Reichstag bei Nacht
 
 Progress: [███████░░░] 68%
 
@@ -247,6 +247,7 @@ Recent decisions affecting current work:
 | 261031-hho | Datenlöschen-Seite nennt Kampagnen und Rückfrage-Mail wieder | 2026-10-31 | 20d07a7 | [261031-hho-datenloeschen-kampagnen-hinweis-und-ruec](./quick/261031-hho-datenloeschen-kampagnen-hinweis-und-ruec/) |
 | 261031-i0q | OG-Bilder reparieren und eigenes Bild für /schule | 2026-10-31 | 5c6a576 | [261031-i0q-og-bilder-reparieren-und-eigenes-bild-f-](./quick/261031-i0q-og-bilder-reparieren-und-eigenes-bild-f-/) |
 | 261031-lsb | /unterricht mit Tafel-Hero und Klassenlink mit PDF statt E-Mail | 2026-10-31 | 5429dd5 | [261031-lsb-unterricht-landingpage-tafel-hero-und-kl](./quick/261031-lsb-unterricht-landingpage-tafel-hero-und-kl/) |
+| 261031-i13 | Nachtmodus Startseite mit Reichstag bei Nacht | 2026-10-31 | ab4ddf0 | [261031-i13-nachtmodus-startseite-mit-reichstag-bei-](./quick/261031-i13-nachtmodus-startseite-mit-reichstag-bei-/) |
 
 ## Session Continuity
 

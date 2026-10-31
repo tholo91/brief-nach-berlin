@@ -451,7 +451,7 @@ function showsTrip(input: GoodToKnowInput): boolean {
 // "Gut zu wissen": alle Nebenlinks gesammelt unter dem Teilen-Block, damit der
 // Fließtext oben nur Abschreiben, Porto und Bewerten trägt. Die zwei stärksten
 // Tipps stehen als kurze Absätze ohne Kasten, der Rest als eine Linkzeile.
-// compact (Follow-up): nur die Tipps plus "Weitere Aktionen", ohne Kontaktlink.
+// compact (Follow-up): nur die Tipps plus die Links, die nach dem Brief noch passen.
 export function buildGoodToKnowHtml(
   input: GoodToKnowInput,
   fullName: string,
@@ -487,7 +487,11 @@ export function buildGoodToKnowHtml(
     ? link(`${base}/wer-darf-mdb-schreiben`, copy.guideMdb)
     : link(`${base}/guide`, copy.guide);
   const moreLinks: (string | false)[] = options.compact
-    ? [link(urls.actions, g.actionsLink)]
+    ? [
+        link(urls.actions, g.actionsLink),
+        link(`${base}/andere-tools`, g.toolsLink),
+        link(FOUNDER_FEEDBACK_URL, g.contactLink),
+      ]
     : [
         ...(options.inputsUrl ? [link(options.inputsUrl, copy.inputsLink)] : []),
         guideLink,
@@ -514,6 +518,8 @@ export function buildGoodToKnowText(input: GoodToKnowInput, fullName: string, ba
     input.recipientKind === "mdb" && `🤝 ${g.meetTitle(fullName)}: ${g.meetText} ${g.meetLink}: ${urls.meet}`,
     showsTrip(input) && `🚆 ${g.tripTitle}: ${g.tripText} ${g.tripLink}: ${urls.trip}`,
     `${g.actionsLink}: ${urls.actions}`,
+    `${g.toolsLink}: ${baseUrl}/andere-tools`,
+    `${g.contactLink}: ${FOUNDER_FEEDBACK_URL}`,
   ]
     .filter(Boolean)
     .join("\n");

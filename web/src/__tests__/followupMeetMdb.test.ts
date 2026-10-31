@@ -26,14 +26,16 @@ describe("buildFollowupHtml - Gut zu wissen", () => {
     expect(r.text).toContain("/bundestag-besuch-kostenlos");
   });
 
-  it("steht nach Gruß und Unterschrift, kompakt ohne Kontaktzeile", () => {
+  it("steht nach Gruß und Unterschrift, kompakt nur mit den Links für nach dem Brief", () => {
     const { html } = buildFollowupHtml(mdb);
     const signoff = html.indexOf("Sign-off paragraph");
     expect(signoff).toBeLessThan(html.indexOf("Gut zu wissen"));
     expect(html.indexOf("Gut zu wissen")).toBeLessThan(html.indexOf(ANCHOR));
-    expect(html).not.toContain("Schreib mir gern");
+    expect(html).toContain("Weitere Aktionen</a>");
+    expect(html).toContain("/andere-tools");
+    expect(html).toContain("Schreib mir gern bei Fragen + Ideen</a>");
     expect(html).not.toContain("Deine Eingaben nochmal einsehen");
-    expect(html).not.toContain("/andere-tools");
+    expect(html).not.toContain("/tipps");
   });
 
   it("ungültige PLZ fällt aus dem Link", () => {

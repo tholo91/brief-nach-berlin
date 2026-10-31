@@ -49,7 +49,7 @@ Der level-aware E-Mail-Betreff ist dagegen bereits implementiert und getestet; d
 Phase: 05 — EXECUTING
 Plan: 4 of 4
 Status: Phase complete — ready for verification
-Last activity: 2026-10-31 - Completed quick task 261031-i0q: OG-Bilder reparieren und eigenes Bild für /schule
+Last activity: 2026-10-31 - Completed quick task 261031-lsb: /unterricht mit Tafel-Hero und Klassenlink mit PDF statt E-Mail
 
 Progress: [███████░░░] 68%
 
@@ -246,6 +246,7 @@ Recent decisions affecting current work:
 | 261031-g16 | Brief-Mail-Footer aufräumen | 2026-10-31 | 9db170a | [261031-g16-brief-mail-footer-aufraeumen](./quick/261031-g16-brief-mail-footer-aufraeumen/) |
 | 261031-hho | Datenlöschen-Seite nennt Kampagnen und Rückfrage-Mail wieder | 2026-10-31 | 20d07a7 | [261031-hho-datenloeschen-kampagnen-hinweis-und-ruec](./quick/261031-hho-datenloeschen-kampagnen-hinweis-und-ruec/) |
 | 261031-i0q | OG-Bilder reparieren und eigenes Bild für /schule | 2026-10-31 | 5c6a576 | [261031-i0q-og-bilder-reparieren-und-eigenes-bild-f-](./quick/261031-i0q-og-bilder-reparieren-und-eigenes-bild-f-/) |
+| 261031-lsb | /unterricht mit Tafel-Hero und Klassenlink mit PDF statt E-Mail | 2026-10-31 | 5429dd5 | [261031-lsb-unterricht-landingpage-tafel-hero-und-kl](./quick/261031-lsb-unterricht-landingpage-tafel-hero-und-kl/) |
 
 ## Session Continuity
 

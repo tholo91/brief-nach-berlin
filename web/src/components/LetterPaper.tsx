@@ -43,7 +43,7 @@ export default function LetterPaper({
 
   return (
     <article
-      className={`relative bg-white rounded-sm shadow-[0_18px_40px_-20px_rgba(45,80,22,0.25),0_4px_12px_-4px_rgba(45,80,22,0.15)] ring-1 ring-warmgrau/10 ${rotateClass} transition-transform`}
+      className={`theme-day relative bg-white rounded-sm shadow-[0_18px_40px_-20px_rgba(45,80,22,0.25),0_4px_12px_-4px_rgba(45,80,22,0.15)] ring-1 ring-warmgrau/10 ${rotateClass} transition-transform`}
     >
       {/* Airmail stripe top */}
       <div

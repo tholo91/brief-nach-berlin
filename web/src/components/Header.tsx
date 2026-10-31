@@ -223,7 +223,7 @@ export default function Header() {
       <div
         onClick={closeMenu}
         aria-hidden="true"
-        className={`md:hidden fixed inset-0 z-40 bg-warmgrau/40 backdrop-blur-[2px] transition-opacity duration-300 ${
+        className={`night-scrim md:hidden fixed inset-0 z-40 bg-warmgrau/40 backdrop-blur-[2px] transition-opacity duration-300 ${
           menuOpen ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
         }`}
       />

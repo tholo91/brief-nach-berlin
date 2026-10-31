@@ -1,6 +1,8 @@
 @import "tailwindcss";
 
-:root {
+/* .theme-day holds paper and fixed bands inside a dark .theme-auto area. */
+:root,
+.theme-day {
   --color-creme: #FAF8F5;
   --color-waldgruen: #2D6A4F;
   --color-waldgruen-light: #40916C;
@@ -9,9 +11,44 @@
   --color-airmail-blau: #1D3557;
   --color-warmgrau: #3D3D3D;
   --color-bernstein: #D4A017;
+  --color-surface: #FFFFFF;
+}
+
+/* Night values follow the system setting, only inside .theme-auto (landing page). */
+@media (prefers-color-scheme: dark) {
+  .theme-auto {
+    color-scheme: dark;
+    --color-creme: #10231D;
+    --color-waldgruen: #86D1A8;
+    --color-waldgruen-light: #6FC297;
+    --color-waldgruen-dark: #F1ECE1;
+    --color-airmail-rot: #F0686F;
+    --color-airmail-blau: #A9C4E4;
+    --color-warmgrau: #D9D4C9;
+    --color-bernstein: #E4B93F;
+    --color-surface: #18322A;
+  }
+
+  .theme-auto .theme-day {
+    color-scheme: light;
+  }
+
+  html:has(.theme-auto),
+  html:has(.theme-auto) body {
+    background: #10231D;
+  }
+}
+
+/* Re-applies the text colour, because body resolves it before the area overrides the tokens. */
+@layer base {
+  .theme-auto,
+  .theme-day {
+    color: var(--color-warmgrau);
+  }
 }
 
 @theme inline {
+  --color-surface: var(--color-surface);
   --color-creme: var(--color-creme);
   --color-waldgruen: var(--color-waldgruen);
   --color-waldgruen-light: var(--color-waldgruen-light);
@@ -33,6 +70,44 @@ body {
 
 html {
   scroll-behavior: smooth;
+}
+
+/* Hero overlay: the night picture is dark itself, so its lights stay visible under a lighter veil. */
+.hero-overlay {
+  background: linear-gradient(
+    to bottom,
+    rgba(250, 248, 245, 0.88) 0%,
+    rgba(250, 248, 245, 0.82) 30%,
+    rgba(250, 248, 245, 0.78) 50%,
+    rgba(250, 248, 245, 0.88) 70%,
+    rgba(250, 248, 245, 0.98) 100%
+  );
+}
+
+@media (prefers-color-scheme: dark) {
+  .theme-auto .hero-overlay {
+    background: linear-gradient(
+      to bottom,
+      rgba(16, 35, 29, 0.45) 0%,
+      rgba(16, 35, 29, 0.4) 30%,
+      rgba(16, 35, 29, 0.42) 50%,
+      rgba(16, 35, 29, 0.6) 65%,
+      rgba(16, 35, 29, 0.85) 80%,
+      rgba(16, 35, 29, 0.97) 92%,
+      #10231d 100%
+    );
+  }
+
+  /* Zooms past the cream edge baked into the illustration. */
+  .theme-auto .night-crop {
+    transform: scale(1.12);
+  }
+
+  /* Scrims use dark tokens that flip to light at night. */
+  .theme-auto .night-scrim,
+  .theme-auto .map-dialog-backdrop::backdrop {
+    background: rgba(16, 35, 29, 0.7);
+  }
 }
 
 /* ---------- /feedback page animations ---------- */

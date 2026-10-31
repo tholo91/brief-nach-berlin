@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import Header from "@/components/Header";
 import Hero from "@/components/Hero";
 import HowItWorksWithExample from "@/components/HowItWorksWithExample";
@@ -23,6 +23,14 @@ export const metadata: Metadata = {
     "Dein Anliegen direkt an die Politik: Brief-nach-Berlin findet, wer zuständig ist, und formuliert deinen persönlichen Brief – kostenlos in 3 Minuten.",
 };
 
+export const viewport: Viewport = {
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#FAF8F5" },
+    { media: "(prefers-color-scheme: dark)", color: "#10231D" },
+  ],
+  colorScheme: "light dark",
+};
+
 // Review-, Briefzähler- und Hero-Kampagnen-Daten werden stündlich aktualisiert.
 export const revalidate = 3600;
 
@@ -35,7 +43,7 @@ export default async function Home() {
   const formattedLetterCount = formatNumber(letterCount);
 
   return (
-    <>
+    <div className="theme-auto bg-creme">
       <Header />
       <main>
         <Hero campaigns={landingCampaigns} />
@@ -60,6 +68,6 @@ export default async function Home() {
         <CallToAction />
       </main>
       <Footer />
-    </>
+    </div>
   );
 }

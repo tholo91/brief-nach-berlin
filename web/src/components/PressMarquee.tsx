@@ -138,6 +138,12 @@ export function PressMarquee() {
             opacity: 1;
           }
         }
+        @media (prefers-color-scheme: dark) {
+          .theme-auto .press-marquee-link,
+          .theme-auto .press-marquee-link:hover {
+            filter: grayscale(1) invert(1);
+          }
+        }
         @media (prefers-reduced-motion: reduce) {
           .press-marquee-track {
             animation: none;

@@ -9,7 +9,7 @@ export default function CallToAction() {
   return (
     <section
       id="cta"
-      className="py-20 md:py-28 px-6 bg-waldgruen-dark relative overflow-hidden"
+      className="theme-day py-20 md:py-28 px-6 bg-waldgruen-dark relative overflow-hidden"
     >
       {/* Ghibli vignette: letterbox in Berlin */}
       <div

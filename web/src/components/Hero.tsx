@@ -46,23 +46,16 @@ export default function Hero({ campaigns = [] }: { campaigns?: LandingCampaign[]
         webm="/hero-bg.webm"
         mp4="/hero-bg.mp4"
         poster="/hero-bg.webp"
+        night={{
+          webm: "/hero-night.webm",
+          mp4: "/hero-night.mp4",
+          poster: "/hero-night.webp",
+        }}
         playbackRate={0.5}
       />
 
       {/* Gradient overlay */}
-      <div
-        className="absolute inset-0"
-        style={{
-          background: `linear-gradient(
-            to bottom,
-            rgba(250,248,245,0.88) 0%,
-            rgba(250,248,245,0.82) 30%,
-            rgba(250,248,245,0.78) 50%,
-            rgba(250,248,245,0.88) 70%,
-            rgba(250,248,245,0.98) 100%
-          )`,
-        }}
-      />
+      <div className="hero-overlay absolute inset-0" />
 
       {/* Extra mobile overlay */}
       <div className="absolute inset-0 bg-creme/20 md:bg-transparent" />
@@ -74,17 +67,23 @@ export default function Hero({ campaigns = [] }: { campaigns?: LandingCampaign[]
           showCampaigns ? "lg:pt-12" : "lg:pt-24"
         }`}
       >
-        {/* Envelope icon — flies in once on mount */}
+        {/* Envelope icon, at night the owl — flies in once on mount */}
         <div className="inline-block -mb-4 md:-mb-5 animate-envelope-fly-x">
           <div className="animate-envelope-fly-y">
-            <Image
-              src="/images/img-umschlag-icon.webp"
-              alt=""
-              width={256}
-              height={256}
-              priority
-              className="w-24 h-24 md:w-36 md:h-36"
-            />
+            <picture>
+              <source
+                media="(prefers-color-scheme: dark)"
+                srcSet="/images/img-eule-nacht.webp"
+              />
+              <Image
+                src="/images/img-umschlag-icon.webp"
+                alt=""
+                width={256}
+                height={256}
+                priority
+                className="w-24 h-24 md:w-36 md:h-36"
+              />
+            </picture>
           </div>
         </div>
 
@@ -231,7 +230,7 @@ function HeroNote({
     <Link
       href={href}
       prefetch={false}
-      className={`${className ?? ""} group justify-center min-h-[4.75rem] sm:min-h-[5.25rem] cursor-pointer overflow-visible rounded-[2px] rounded-br-[3.75rem_0.65rem] border border-bernstein/25 bg-[#fff0a6] bg-[linear-gradient(156deg,#fff0a6_0%,#fff0a6_60%,#f3d873_83%,#fae78f_92%,#fffbe2_100%)] px-2.5 pb-2 pt-[1.15rem] sm:px-3.5 sm:pb-2.5 sm:pt-[1.35rem] text-center font-body text-waldgruen-dark shadow-[0_12px_20px_-18px_rgba(27,67,50,0.4),10px_14px_14px_-12px_rgba(27,67,50,0.3)] transition-shadow duration-200 ease-[cubic-bezier(0.16,1,0.3,1)] hover:shadow-[0_14px_22px_-18px_rgba(27,67,50,0.48),11px_16px_16px_-12px_rgba(27,67,50,0.38)] active:bg-[#ffe98b] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-waldgruen focus-visible:ring-offset-2 focus-visible:ring-offset-creme`}
+      className={`${className ?? ""} theme-day group justify-center min-h-[4.75rem] sm:min-h-[5.25rem] cursor-pointer overflow-visible rounded-[2px] rounded-br-[3.75rem_0.65rem] border border-bernstein/25 bg-[#fff0a6] bg-[linear-gradient(156deg,#fff0a6_0%,#fff0a6_60%,#f3d873_83%,#fae78f_92%,#fffbe2_100%)] px-2.5 pb-2 pt-[1.15rem] sm:px-3.5 sm:pb-2.5 sm:pt-[1.35rem] text-center font-body text-waldgruen-dark shadow-[0_12px_20px_-18px_rgba(27,67,50,0.4),10px_14px_14px_-12px_rgba(27,67,50,0.3)] transition-shadow duration-200 ease-[cubic-bezier(0.16,1,0.3,1)] hover:shadow-[0_14px_22px_-18px_rgba(27,67,50,0.48),11px_16px_16px_-12px_rgba(27,67,50,0.38)] active:bg-[#ffe98b] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-waldgruen focus-visible:ring-offset-2 focus-visible:ring-offset-creme`}
       aria-label={ariaLabel}
     >
       <Image

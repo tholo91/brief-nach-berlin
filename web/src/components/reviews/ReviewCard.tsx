@@ -40,7 +40,7 @@ export function ReviewCard({ review, isExpanded = false, compact = false }: Revi
 
   return (
     <div
-      className={`bg-white/95 rounded-3xl border border-waldgruen/10 ${
+      className={`bg-surface/95 rounded-3xl border border-waldgruen/10 ${
         compact ? "p-4 md:p-5" : "p-5"
       } flex-shrink-0 flex flex-col gap-2 transition-all duration-300 ${
         isExpanded

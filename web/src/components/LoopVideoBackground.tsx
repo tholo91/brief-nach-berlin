@@ -1,25 +1,35 @@
 "use client";
 
-import Image from "next/image";
+import Image, { getImageProps } from "next/image";
 import { useEffect, useRef, useState } from "react";
 
+const DAY_MEDIA = "(prefers-color-scheme: light)";
+const NIGHT_MEDIA = "(prefers-color-scheme: dark)";
+
 // Muted background loop with a poster image underneath. Plays only while in
-// view and never when the visitor prefers reduced motion.
+// view and never when the visitor prefers reduced motion. With `night`, the
+// browser picks day or night files by system setting and loads only that pair.
 export default function LoopVideoBackground({
   webm,
   mp4,
   poster,
+  night,
   playbackRate = 1,
   className = "",
 }: {
   webm: string;
   mp4: string;
   poster: string;
+  night?: { webm: string; mp4: string; poster: string };
   playbackRate?: number;
   className?: string;
 }) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const [isVideoPlaying, setIsVideoPlaying] = useState(false);
+  const hasNight = Boolean(night);
+  const posterClassName = `pointer-events-none absolute inset-0 object-cover transition-opacity duration-200 ${className} ${
+    isVideoPlaying ? "opacity-0" : "opacity-100"
+  }`;
 
   useEffect(() => {
     const video = videoRef.current;
@@ -28,6 +38,7 @@ export default function LoopVideoBackground({
     let isInViewport = false;
     let isMounted = true;
     const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const colorScheme = hasNight ? window.matchMedia(NIGHT_MEDIA) : null;
 
     const attemptPlayback = () => {
       if (reducedMotion.matches) {
@@ -44,6 +55,8 @@ export default function LoopVideoBackground({
       });
     };
 
+    // The default rate survives load(), which resets playbackRate.
+    video.defaultPlaybackRate = playbackRate;
     video.playbackRate = playbackRate;
 
     const observer = new IntersectionObserver(([entry]) => {
@@ -70,20 +83,30 @@ export default function LoopVideoBackground({
       }
     };
 
+    // A loaded video keeps its source, so a system theme change needs a reload.
+    const handleColorSchemeChange = () => {
+      video.load();
+      if (isInViewport && document.visibilityState === "visible") {
+        attemptPlayback();
+      }
+    };
+
     observer.observe(video);
     const bounds = video.getBoundingClientRect();
     isInViewport = bounds.bottom > 0 && bounds.top < window.innerHeight;
     if (isInViewport) attemptPlayback();
     document.addEventListener("visibilitychange", handleVisibilityChange);
     reducedMotion.addEventListener("change", handleMotionPreferenceChange);
+    colorScheme?.addEventListener("change", handleColorSchemeChange);
 
     return () => {
       isMounted = false;
       observer.disconnect();
       document.removeEventListener("visibilitychange", handleVisibilityChange);
       reducedMotion.removeEventListener("change", handleMotionPreferenceChange);
+      colorScheme?.removeEventListener("change", handleColorSchemeChange);
     };
-  }, [playbackRate]);
+  }, [playbackRate, hasNight]);
 
   return (
     <>
@@ -106,23 +129,58 @@ export default function LoopVideoBackground({
         onEmptied={() => setIsVideoPlaying(false)}
         onError={() => setIsVideoPlaying(false)}
         className={`pointer-events-none absolute inset-0 w-full h-full object-cover ${className}`}
-        poster={poster}
+        poster={night ? undefined : poster}
       >
-        <source src={webm} type="video/webm" />
-        <source src={mp4} type="video/mp4" />
+        {/* Day first: browsers that ignore media on source take the day video. */}
+        <source src={webm} type="video/webm" media={night && DAY_MEDIA} />
+        <source src={mp4} type="video/mp4" media={night && DAY_MEDIA} />
+        {night && (
+          <>
+            <source src={night.webm} type="video/webm" media={NIGHT_MEDIA} />
+            <source src={night.mp4} type="video/mp4" media={NIGHT_MEDIA} />
+          </>
+        )}
       </video>
 
-      <Image
-        src={poster}
-        alt=""
-        fill
-        priority
-        sizes="100vw"
-        aria-hidden="true"
-        className={`pointer-events-none absolute inset-0 object-cover transition-opacity duration-200 ${className} ${
-          isVideoPlaying ? "opacity-0" : "opacity-100"
-        }`}
-      />
+      {night ? (
+        <ThemedPoster
+          day={poster}
+          night={night.poster}
+          className={posterClassName}
+        />
+      ) : (
+        <Image
+          src={poster}
+          alt=""
+          fill
+          priority
+          sizes="100vw"
+          aria-hidden="true"
+          className={posterClassName}
+        />
+      )}
     </>
+  );
+}
+
+function ThemedPoster({
+  day,
+  night,
+  className,
+}: {
+  day: string;
+  night: string;
+  className: string;
+}) {
+  const common = { alt: "", fill: true, priority: true, sizes: "100vw" };
+  const { props: nightProps } = getImageProps({ ...common, src: night });
+  const { props: dayProps } = getImageProps({ ...common, src: day });
+
+  return (
+    <picture>
+      <source media={NIGHT_MEDIA} srcSet={nightProps.srcSet ?? nightProps.src} />
+      <source media={DAY_MEDIA} srcSet={dayProps.srcSet ?? dayProps.src} />
+      <img {...dayProps} alt="" aria-hidden="true" className={className} />
+    </picture>
   );
 }

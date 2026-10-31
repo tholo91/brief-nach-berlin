@@ -40,7 +40,7 @@ export function HeroCampaignPills({
                     : campaign.title
                 }
                 aria-label={`Briefkampagne „${campaign.title}“${sender} ansehen`}
-                className="group inline-flex h-10 items-center gap-2 rounded-full border border-waldgruen/15 bg-white/70 pl-[3px] pr-3 shadow-[0_1px_2px_rgba(27,67,50,0.06)] transition-[background-color,border-color,box-shadow] duration-200 ease-[cubic-bezier(0.16,1,0.3,1)] hover:border-waldgruen/35 hover:bg-white hover:shadow-[0_8px_18px_-12px_rgba(27,67,50,0.5)] active:bg-creme focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-waldgruen focus-visible:ring-offset-2 focus-visible:ring-offset-creme"
+                className="group inline-flex h-10 items-center gap-2 rounded-full border border-waldgruen/15 bg-surface/70 pl-[3px] pr-3 shadow-[0_1px_2px_rgba(27,67,50,0.06)] transition-[background-color,border-color,box-shadow] duration-200 ease-[cubic-bezier(0.16,1,0.3,1)] hover:border-waldgruen/35 hover:bg-surface hover:shadow-[0_8px_18px_-12px_rgba(27,67,50,0.5)] active:bg-creme focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-waldgruen focus-visible:ring-offset-2 focus-visible:ring-offset-creme"
               >
                 <CampaignLogo
                   logoPath={campaign.logoPath}

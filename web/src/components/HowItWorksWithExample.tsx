@@ -237,7 +237,7 @@ export default function HowItWorksWithExample({ letterCount }: { letterCount: nu
                   href="/brief-schreiben-wirkt"
                   prefetch={false}
                   aria-label={copy.howItWorks.storyAriaLabel}
-                  className="group mx-auto block max-w-md overflow-hidden rounded-sm border border-waldgruen/15 bg-white shadow-[0_18px_40px_-20px_rgba(45,80,22,0.25),0_4px_12px_-4px_rgba(45,80,22,0.15)] transition-[transform,box-shadow] duration-300 hover:-translate-y-1 hover:shadow-[0_22px_44px_-20px_rgba(45,80,22,0.3),0_8px_16px_-6px_rgba(45,80,22,0.16)] focus:outline-none focus-visible:ring-2 focus-visible:ring-waldgruen focus-visible:ring-offset-4 focus-visible:ring-offset-creme"
+                  className="theme-day group mx-auto block max-w-md overflow-hidden rounded-sm border border-waldgruen/15 bg-white shadow-[0_18px_40px_-20px_rgba(45,80,22,0.25),0_4px_12px_-4px_rgba(45,80,22,0.15)] transition-[transform,box-shadow] duration-300 hover:-translate-y-1 hover:shadow-[0_22px_44px_-20px_rgba(45,80,22,0.3),0_8px_16px_-6px_rgba(45,80,22,0.16)] focus:outline-none focus-visible:ring-2 focus-visible:ring-waldgruen focus-visible:ring-offset-4 focus-visible:ring-offset-creme"
                 >
                   <div className="relative aspect-[16/9] overflow-hidden bg-waldgruen/5">
                     <Image

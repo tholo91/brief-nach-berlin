@@ -11,7 +11,7 @@ export default function WhyItWorks() {
     { number: "70 %", label: copy.whyItWorks.stat2, source: copy.whyItWorks.stat2Source },
   ];
   return (
-    <section id="warum-briefe" className="py-20 md:py-28 px-6 bg-white">
+    <section id="warum-briefe" className="py-20 md:py-28 px-6 bg-surface">
       <div className="max-w-6xl mx-auto">
         <p className="font-typewriter text-sm font-bold tracking-widest uppercase text-waldgruen/50 mb-3">
           {copy.whyItWorks.eyebrow}
@@ -39,7 +39,7 @@ export default function WhyItWorks() {
                 alt={copy.whyItWorks.imageAlt}
                 fill
                 sizes="(min-width: 768px) 50vw, 100vw"
-                className="object-cover"
+                className="object-cover night-crop"
                 priority={false}
               />
             </div>

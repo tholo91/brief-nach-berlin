@@ -55,14 +55,29 @@ function PersonalLine() {
   );
 }
 
+function CampaignNotice() {
+  return (
+    <p className="font-body text-sm text-warmgrau leading-relaxed">
+      Kampagnen sind hier nicht enthalten. Die verwaltest du unter{" "}
+      <Link href="/kampagne/verwalten" className={linkClass}>
+        Kampagne verwalten
+      </Link>
+      .
+    </p>
+  );
+}
+
 function SmallPrint() {
   return (
-    <p className="mt-6 font-body text-sm text-warmgrau leading-relaxed">
-      Du hast auch mit einer anderen Adresse geschrieben?{" "}
-      <a href={buildDataDeletionMailto("de")} className={linkClass}>
-        Schreib mir, dann lösche ich das von Hand.
-      </a>
-    </p>
+    <div className="mt-6 space-y-3">
+      <p className="font-body text-sm text-warmgrau leading-relaxed">
+        Du hast auch mit einer anderen Adresse geschrieben?{" "}
+        <a href={buildDataDeletionMailto("de")} className={linkClass}>
+          Schreib mir, dann lösche ich das von Hand.
+        </a>
+      </p>
+      <CampaignNotice />
+    </div>
   );
 }
 
@@ -108,9 +123,12 @@ export function DatenloeschenClient({ view }: { view: DatenloeschenView }) {
             </a>
             .
           </p>
-          <p className="font-body text-sm text-warmgrau leading-relaxed mb-6">
+          <p className="font-body text-sm text-warmgrau leading-relaxed mb-3">
             Höchstens kommt noch eine Rückfrage-Mail, die schon geplant war. Danach ist Schluss.
           </p>
+          <div className="mb-6">
+            <CampaignNotice />
+          </div>
           <Link href="/app" className={primaryButtonClass}>
             Neuen Brief schreiben
           </Link>

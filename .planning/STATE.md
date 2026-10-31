@@ -4,10 +4,10 @@ milestone: v1.0
 current_phase: 05
 status: verifying
 stopped_at: Completed 05-04-PLAN.md
-last_updated: "2026-10-29T23:21:07.736Z"
-last_activity: 2026-10-29
+last_updated: "2026-10-31T10:07:18.992Z"
+last_activity: 2026-10-30
 last_activity_desc: Quick 261013-wuq lokal implementiert und geprüft; manueller Release offen
-state_head: fabd77dc58b7ad4a470701f56a924ed04c268c59
+state_head: 8b958aa230512b4954e1a7c947d7d65c1da239f1
 progress:
   total_phases: 33
   completed_phases: 4
@@ -49,7 +49,7 @@ Der level-aware E-Mail-Betreff ist dagegen bereits implementiert und getestet; d
 Phase: 05 — EXECUTING
 Plan: 4 of 4
 Status: Phase complete — ready for verification
-Last activity: 2026-10-30 - Completed quick task 261030-07q: Review-Fixes vor Push (Wahlkreisbuero-Link, Jugend-Datenschutzsatz, Anliegen, TR-Siezen)
+Last activity: 2026-10-31 - Completed quick task 261031-fco: Debug-Seite: Haken, Tonleiste, Link-Info, CTA, Teilen-Zeile
 
 Progress: [███████░░░] 68%
 
@@ -241,6 +241,7 @@ Recent decisions affecting current work:
 | 261029-gm2 | Kampagnen: Logo beim Schrittwechsel, Admin-Freigabe-Mail + Skill, Pausiert-Link/Hinweis/Fortsetzen | 2026-10-29 | c19f8af | [261029-gm2-kampagnen-bild-admin-freigabe-pausiert](./quick/261029-gm2-kampagnen-bild-admin-freigabe-pausiert/) |
 | 261029-w6k | URL-Umbau: Kinder-Seite /schule, Lehrer-Seite /unterricht, Nav mit Für | 2026-10-29 | 800ba84 | [261029-w6k-url-umbau-kinder-seite-nach-schule-lehre](./quick/261029-w6k-url-umbau-kinder-seite-nach-schule-lehre/) |
 | 261030-07q | Review-Fixes vor Push: Wahlkreisbuero-Link, Jugend-Datenschutzsatz, Anliegen, TR-Siezen | 2026-10-30 | fabd77d | [261030-07q-review-fixes-vor-push-wahlkreisbuero-lin](./quick/261030-07q-review-fixes-vor-push-wahlkreisbuero-lin/) |
+| 261031-fco | Debug-Seite: Haken, Tonleiste, Link-Info, CTA, Teilen-Zeile | 2026-10-31 | 400e0c5 | [261031-fco-debug-seite-haken-tonleiste-link-info-ct](./quick/261031-fco-debug-seite-haken-tonleiste-link-info-ct/) |
 
 ## Session Continuity
 

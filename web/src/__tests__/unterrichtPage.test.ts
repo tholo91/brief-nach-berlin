@@ -58,9 +58,9 @@ describe("/unterricht page", () => {
     expect(metadata.alternates?.canonical).toBe("https://www.brief-nach-berlin.de/unterricht");
     const html = renderToStaticMarkup(createElement(UnterrichtPage));
     const order = [
-      "Deine Klasse schreibt an die Politik.",
-      'href="#klassenlink"',
+      "Deine Klasse schreibt an den Bundestag.",
       'href="#ablauf"',
+      'href="/unterricht/ablauf"',
       "Hilfe bei der Planung? Ich unterstütze dich gern.",
       "Thomas schreiben",
       'id="klassenlink"',
@@ -70,7 +70,6 @@ describe("/unterricht page", () => {
       LESSON_45[0].phase,
       "Zusätzlich zum Ablauf oben:",
       LESSON_90_EXTRAS[0],
-      "/unterricht/ablauf",
       "Warum das wirkt",
       "Warum Handschrift?",
       'id="schulleitung"',
@@ -89,8 +88,7 @@ describe("/unterricht page", () => {
       "Ein kurzer Unterrichtsentwurf: Deine Schüler:innen schreiben in einer Stunde Briefe für ihre Zukunft an ihre Abgeordneten.",
     );
     expect(html).not.toContain("Los geht es per QR");
-    expect(html.split("Klassenlink erstellen")).toHaveLength(2);
-    expect(html).toContain('id="klassenlink-hero"');
+    expect(html).not.toContain("Klassenlink erstellen");
     expect(html).toContain("Dein Klassenlink");
     expect(html).toContain("Link erstellen");
     expect(html).not.toContain("geht es hier los");
@@ -102,7 +100,7 @@ describe("/unterricht page", () => {
     expect(html).toMatch(/aria-pressed="true"[^>]*>45 Min/);
     expect(html).toMatch(/<div[^>]*hidden=""[^>]*id="schule-90-extras"|<div[^>]*id="schule-90-extras"[^>]*hidden=""/);
     expect(html).toContain(
-      "Der Klassenlink enthält nur Klassenstufe, Schul-Postleitzahl und den Zeitpunkt der Erstellung, keine Namen. Er gilt 14 Tage.",
+      "Der Klassenlink enthält nur Klassenstufe, Schul-Postleitzahl, den gewählten Weg und den Zeitpunkt der Erstellung, keine Namen. Er gilt 14 Tage.",
     );
     expect(html).not.toContain("<table");
     expect(html).not.toContain("font-handwriting");

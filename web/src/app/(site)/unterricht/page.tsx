@@ -4,6 +4,7 @@ import Link from "next/link";
 import { Figure } from "@/components/editorial/Figure";
 import { FAQAccordion } from "@/components/FAQAccordion";
 import { ClassLinkGenerator } from "@/components/schule/ClassLinkGenerator";
+import { ClockIcon, MailIcon, PrinterIcon } from "@/components/schule/icons";
 import { LessonPlanToggle } from "@/components/schule/LessonPlanToggle";
 import { APP_URL, FOUNDER_EMAIL, DEFAULT_OG_IMAGES } from "@/lib/config";
 import { COLLECTIVE_ENVELOPE_NOTE, PRECHECK_ITEMS } from "@/lib/schule/lessonPlan";
@@ -37,12 +38,12 @@ const CONTACT_MAILTO = `mailto:${FOUNDER_EMAIL}?subject=${encodeURIComponent(
 
 const linkClass = "font-semibold text-waldgruen underline underline-offset-2";
 const h2Class = "font-typewriter text-xl font-bold text-waldgruen-dark sm:text-2xl";
-const heroButtonClass =
-  "inline-flex min-h-12 items-center justify-center rounded-lg px-5 py-3 font-body text-base font-bold transition-colors active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-waldgruen focus-visible:ring-offset-2";
+const outlineButtonClass =
+  "inline-flex min-h-12 items-center justify-center gap-2 rounded-lg border border-waldgruen/40 bg-white px-5 py-3 font-body text-base font-bold text-waldgruen-dark transition-colors hover:bg-waldgruen/5 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-waldgruen focus-visible:ring-offset-2";
 const bodyClass = "font-body text-base leading-relaxed text-warmgrau";
 
 const DATA_SUMMARY =
-  "E-Mail-Adresse, Postleitzahl und das Anliegen werden für den Entwurf nur während der Verarbeitung verwendet und danach verworfen. Es gibt keine Accounts. Den Entwurf formuliert eine KI von Mistral, einem Unternehmen aus Frankreich.";
+  "Postleitzahl und Anliegen, beim E-Mail-Weg auch die E-Mail-Adresse, werden für den Entwurf nur während der Verarbeitung verwendet und danach verworfen. Es gibt keine Accounts. Den Entwurf formuliert eine KI von Mistral, einem Unternehmen aus Frankreich.";
 
 const faqs = [
   {
@@ -72,7 +73,7 @@ const faqs = [
   },
   {
     q: "Brauchen die Schüler:innen einen Account?",
-    a: "Nein. Sie scannen den QR-Code, schreiben ihr Anliegen, geben ihre E-Mail-Adresse an und sehen den Entwurf direkt auf dem Gerät. Eine Kopie kommt per Mail.",
+    a: "Nein. Sie scannen den QR-Code, schreiben ihr Anliegen und sehen den Entwurf direkt auf dem Gerät. Mit dem PDF-Weg speichern sie ihn ohne E-Mail-Adresse, beim E-Mail-Weg kommt eine Kopie per Mail.",
   },
 ];
 
@@ -140,19 +141,34 @@ export default function UnterrichtPage() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, "\\u003c") }}
       />
-      <div className="mx-auto w-full max-w-5xl px-5 pb-16 pt-6 sm:pt-10">
-        <section aria-labelledby="schule-h1" className="md:grid md:grid-cols-[1.15fr_1fr] md:items-center md:gap-10">
+      {/* Bild und Überschrift skalieren beide mit der Containerbreite (cqw), so bleibt der Text auf der Tafel im Bild. */}
+      <section aria-labelledby="schule-h1" className="@container mx-auto w-full max-w-[120rem]">
+        <div className="relative h-[75cqw] overflow-hidden bg-waldgruen-dark sm:h-[52cqw] lg:h-[min(36cqw,50vh)]">
+          <Image
+            src="/images/img-schule-klasse-hero.webp"
+            alt="Eine Schulklasse schreibt an Holztischen Briefe von Hand, die Lehrerin geht durch die Reihen, im Fenster die Reichstagskuppel, gemalte Illustration"
+            width={2000}
+            height={1117}
+            sizes="(min-width: 1024px) 100vw, (min-width: 640px) 150vw, 225vw"
+            priority
+            className="absolute left-[-5cqw] top-[-23cqw] w-[225cqw] max-w-none sm:left-[-2.5cqw] sm:top-[-14cqw] sm:w-[150cqw] lg:left-0 lg:top-[-8.5cqw] lg:w-full"
+          />
+          <h1
+            id="schule-h1"
+            className="absolute left-[8cqw] top-[9.5cqw] max-w-[9.4em] font-typewriter text-[7.6cqw] font-bold leading-[1.18] tracking-tight text-creme sm:left-[6cqw] sm:top-[6.5cqw] sm:text-[5.1cqw] lg:left-[6.5cqw] lg:top-[5.8cqw] lg:text-[3.4cqw]"
+          >
+            Deine Klasse schreibt an den Bundestag.
+          </h1>
+        </div>
+      </section>
+
+      <div className="mx-auto w-full max-w-5xl px-5 pb-16 pt-8 sm:pt-12">
+        <div className="grid gap-10 md:grid-cols-[minmax(0,1fr)_minmax(0,25rem)] md:items-start lg:gap-16">
           <div>
-            <h1
-              id="schule-h1"
-              className="font-typewriter text-2xl font-bold leading-tight tracking-tight text-waldgruen-dark text-balance sm:text-[2rem] md:text-[1.75rem] lg:text-[2rem]"
-            >
-              Deine Klasse schreibt an die Politik.
-            </h1>
-            <p className="mt-3 font-body text-base leading-relaxed text-warmgrau sm:text-lg">
+            <p className="font-body text-lg leading-relaxed text-warmgrau">
               Ein kurzer Unterrichtsentwurf: Deine Schüler:innen schreiben in einer Stunde Briefe für ihre Zukunft an ihre Abgeordneten.
             </p>
-            <ul className="mt-4 flex flex-wrap gap-x-5 gap-y-2 font-body text-sm font-semibold text-waldgruen-dark">
+            <ul className="mt-5 flex flex-wrap gap-x-5 gap-y-2 font-body text-sm font-semibold text-waldgruen-dark">
               {["45 oder 90 Minuten", "Kostenlos", "Ohne Accounts"].map((fact) => (
                 <li key={fact} className="flex items-center gap-1.5 [&>svg]:mt-0">
                   <CheckIcon />
@@ -160,43 +176,33 @@ export default function UnterrichtPage() {
                 </li>
               ))}
             </ul>
-            <div className="mt-6 flex flex-col gap-3 sm:flex-row">
-              <a id="klassenlink-hero" href="#klassenlink" className={`${heroButtonClass} bg-waldgruen text-creme hover:bg-waldgruen-dark`}>
-                Klassenlink erstellen
-              </a>
-              <a
-                href="#ablauf"
-                className={`${heroButtonClass} border border-waldgruen/40 bg-white text-waldgruen-dark hover:bg-waldgruen/5`}
-              >
+            <div className="mt-7 flex flex-col gap-3 sm:flex-row md:flex-col lg:flex-row">
+              <a href="#ablauf" className={outlineButtonClass}>
+                <ClockIcon />
                 Ablauf ansehen
               </a>
+              <Link href="/unterricht/ablauf" className={outlineButtonClass}>
+                <PrinterIcon />
+                Material drucken
+              </Link>
             </div>
-            <p className="mt-4 flex flex-wrap items-center gap-x-2 font-body text-base leading-relaxed text-warmgrau">
-              <span>Hilfe bei der Planung? Ich unterstütze dich gern.</span>
-              <a
-                href={CONTACT_MAILTO}
-                className={`${linkClass} inline-flex min-h-11 items-center rounded-lg hover:text-waldgruen-dark focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-waldgruen focus-visible:ring-offset-2`}
-              >
-                Thomas schreiben
-              </a>
+            <p className="mt-6 font-body text-base leading-relaxed text-warmgrau">
+              Hilfe bei der Planung? Ich unterstütze dich gern.
             </p>
+            <a
+              href={CONTACT_MAILTO}
+              className={`${linkClass} inline-flex min-h-11 items-center gap-2 rounded-lg hover:text-waldgruen-dark focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-waldgruen focus-visible:ring-offset-2`}
+            >
+              <MailIcon />
+              Thomas schreiben
+            </a>
           </div>
-          <Image
-            src="/images/img-schule-klasse.webp"
-            alt="Eine Schulklasse schreibt an Holztischen Briefe von Hand, die Lehrerin geht durch die Reihen, im Fenster die Reichstagskuppel, gemalte Illustration"
-            width={1200}
-            height={670}
-            sizes="(min-width: 768px) 460px, 100vw"
-            priority
-            className="mt-8 aspect-[5/2] w-full rounded-xl object-cover object-[center_55%] shadow-md shadow-waldgruen/10 md:mt-0 md:aspect-auto md:h-auto"
-          />
-        </section>
-
-        <div className="mx-auto max-w-2xl">
-          <div id="klassenlink" className="mt-10 scroll-mt-32">
+          <div id="klassenlink" className="scroll-mt-32">
             <ClassLinkGenerator />
           </div>
+        </div>
 
+        <div className="mx-auto max-w-2xl">
           <section aria-labelledby="schule-pruefen" className="reveal mt-14">
             <h2 id="schule-pruefen" className={h2Class}>Vorher kurz prüfen</h2>
             <ul className="mt-5 grid gap-x-8 gap-y-4 md:grid-cols-2">
@@ -269,21 +275,21 @@ export default function UnterrichtPage() {
               </summary>
               <ul className="list-disc space-y-3 pb-6 pl-5 pr-3 marker:text-waldgruen">
                 <li className={bodyClass}>
-                  Verarbeitet werden E-Mail-Adresse, Postleitzahl und das Anliegen als Text. Für den Entwurf werden sie nur während der Verarbeitung verwendet und danach verworfen, auf meinem Server wird dafür nichts gespeichert.
+                  Verarbeitet werden Postleitzahl und Anliegen als Text, beim E-Mail-Weg auch die E-Mail-Adresse. Für den Entwurf werden sie nur während der Verarbeitung verwendet und danach verworfen, auf meinem Server wird dafür nichts gespeichert.
                 </li>
                 <li className={bodyClass}>Es gibt keine Accounts und keine Anmeldung. Ich führe keine Newsletter- oder Marketingliste.</li>
                 <li className={bodyClass}>Die Reichweitenmessung arbeitet ohne Cookies.</li>
                 <li className={bodyClass}>
-                  Die E-Mail-Adresse brauche ich, um den Entwurf zu schicken. Der Versand läuft über Brevo, Server in der EU.
+                  Du wählst pro Klassenlink: Beim PDF-Weg wird keine E-Mail-Adresse abgefragt, das PDF entsteht auf dem Gerät. Beim E-Mail-Weg brauche ich die Adresse, um den Entwurf zu schicken. Der Versand läuft über Brevo, Server in der EU.
                 </li>
                 <li className={bodyClass}>
                   Den Entwurf formuliert eine KI von Mistral, einem Unternehmen aus Frankreich. Die Seite läuft bei Vercel in Frankfurt.
                 </li>
                 <li className={bodyClass}>
-                  Über den Klassenlink schreiben die Schüler:innen im Jugendmodus: Sie bekommen nur die eine Mail mit dem Entwurf, ohne Erinnerungen, ohne Spendenbitte und ohne Bitte um eine Bewertung. Partei und Organisation werden nicht abgefragt, die freiwillige Kartenfunktion gibt es dort nicht.
+                  Über den Klassenlink schreiben die Schüler:innen im Jugendmodus: ohne Erinnerungen, ohne Spendenbitte und ohne Bitte um eine Bewertung. Beim E-Mail-Weg kommt nur die eine Mail mit dem Entwurf. Partei und Organisation werden nicht abgefragt, die freiwillige Kartenfunktion gibt es dort nicht.
                 </li>
                 <li className={bodyClass}>
-                  Der Klassenlink enthält nur Klassenstufe, Schul-Postleitzahl und den Zeitpunkt der Erstellung, keine Namen. Er gilt 14 Tage.
+                  Der Klassenlink enthält nur Klassenstufe, Schul-Postleitzahl, den gewählten Weg und den Zeitpunkt der Erstellung, keine Namen. Er gilt 14 Tage.
                 </li>
               </ul>
             </details>

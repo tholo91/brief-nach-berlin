@@ -37,12 +37,12 @@ describe("AppHeader", () => {
     expect(markup).toContain(">Schreiben<");
   });
 
-  it("hides the class link CTA on /unterricht until the hero button is out of view", () => {
+  it("always shows the class CTA on /unterricht", () => {
     const markup = renderAt("/unterricht");
 
-    expect(markup).not.toContain('href="#klassenlink"');
-    expect(markup).not.toContain("Klassenlink erstellen");
-    expect(markup).not.toContain(">Klassenlink<");
+    expect(markup).toContain('href="#klassenlink"');
+    expect(markup).toContain("Für meine Klasse starten");
+    expect(markup).toContain(">Klasse starten<");
   });
 
   it.each(["/schule", "/unterricht", "/eltern", "/mitbestimmen-ohne-wahlrecht", "/projekttag-demokratie"])(

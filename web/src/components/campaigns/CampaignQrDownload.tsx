@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { DownloadIcon } from "@/components/schule/icons";
 import { createQrMatrix } from "@/lib/qr-code";
 
 const fallbackLogoUrl = "/images/img-umschlag-icon.webp";
@@ -191,8 +192,9 @@ export function CampaignQrDownload({ url, slug, logoUrl, fileName, ariaLabel, de
         <button
           type="button"
           onClick={downloadQr}
-          className="inline-flex min-h-11 w-full items-center justify-center rounded-md bg-waldgruen px-4 py-2.5 font-body text-sm font-semibold text-creme transition-colors hover:bg-waldgruen-dark focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-waldgruen sm:w-fit"
+          className="inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-lg bg-waldgruen px-4 py-2.5 font-body text-sm font-semibold text-creme transition-colors hover:bg-waldgruen-dark focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-waldgruen sm:w-fit"
         >
+          <DownloadIcon />
           QR-Code herunterladen
         </button>
       </div>

@@ -1,9 +1,10 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import type { ReactNode } from "react";
 import { usePathname } from "next/navigation";
 import { LanguageSwitcher } from "@/components/i18n/LanguageSwitcher";
+import { ClassIcon } from "@/components/schule/icons";
 
 const NGO_NAV_LINKS = [
   { label: "Übersicht", href: "/ngo-briefkampagne#uebersicht" },
@@ -20,13 +21,12 @@ const SCHOOL_NAV_LINKS = [
 const SCHOOL_NAV_PATHS = new Set([...SCHOOL_NAV_LINKS.map((link) => link.href), "/mitbestimmen-ohne-wahlrecht", "/projekttag-demokratie"]);
 
 const PRIMARY_CTA_CLASS =
-  "inline-flex items-center justify-center rounded-lg bg-waldgruen px-3 py-2 font-body text-sm font-semibold text-creme transition-colors hover:bg-waldgruen-dark active:scale-[0.98] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-waldgruen sm:px-4";
+  "inline-flex items-center justify-center gap-2 rounded-lg bg-waldgruen px-3 py-2 font-body text-sm font-semibold text-creme transition-colors hover:bg-waldgruen-dark active:scale-[0.98] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-waldgruen sm:px-4";
 
-// heroId: Der Header-Button erscheint erst, wenn der Hero-Button mit dieser ID aus dem Bild gescrollt ist.
-const SCHOOL_PAGE_CTAS: Record<string, { href: string; label: string; mobileLabel: string; heroId?: string }> = {
+const SCHOOL_PAGE_CTAS: Record<string, { href: string; label: string; mobileLabel: string; icon?: ReactNode }> = {
   "/schule": { href: "#schreiben", label: "Brief entwerfen", mobileLabel: "Schreiben" },
   "/eltern": { href: "#schreiben", label: "Brief entwerfen", mobileLabel: "Schreiben" },
-  "/unterricht": { href: "#klassenlink", label: "Klassenlink erstellen", mobileLabel: "Klassenlink", heroId: "klassenlink-hero" },
+  "/unterricht": { href: "#klassenlink", label: "Für meine Klasse starten", mobileLabel: "Klasse starten", icon: <ClassIcon /> },
 };
 
 const CAMPAIGN_TOOL_PATHS = new Set(["starten", "verifizieren", "verwalten"]);
@@ -34,22 +34,6 @@ const CAMPAIGN_TOOL_PATHS = new Set(["starten", "verifizieren", "verwalten"]);
 function isPublicCampaignPage(pathname: string | null): boolean {
   const match = pathname?.match(/^\/kampagne\/([^/]+)$/);
   return Boolean(match && !CAMPAIGN_TOOL_PATHS.has(match[1]));
-}
-
-// true, sobald das Element mit dieser ID existiert und nicht im Sichtfeld ist.
-// Ohne Element (oder vor der Hydration) bleibt der Wert false: Header-Button versteckt.
-function useElementOutOfView(id: string | undefined, resetKey: string | null): boolean {
-  const [outOfView, setOutOfView] = useState(false);
-
-  useEffect(() => {
-    const target = id ? document.getElementById(id) : null;
-    if (!target || typeof IntersectionObserver === "undefined") return;
-    const observer = new IntersectionObserver(([entry]) => setOutOfView(!entry.isIntersecting));
-    observer.observe(target);
-    return () => observer.disconnect();
-  }, [id, resetKey]);
-
-  return outOfView;
 }
 
 export default function AppHeader({
@@ -66,9 +50,7 @@ export default function AppHeader({
   const showSchoolNav = pathname !== null && SCHOOL_NAV_PATHS.has(pathname);
   const showMoreCampaigns = isPublicCampaignPage(pathname);
   const schoolPageCta = pathname !== null && Object.hasOwn(SCHOOL_PAGE_CTAS, pathname) ? SCHOOL_PAGE_CTAS[pathname] : null;
-  const heroOutOfView = useElementOutOfView(schoolPageCta?.heroId, pathname);
-  const schoolCta = schoolPageCta && (!schoolPageCta.heroId || heroOutOfView) ? schoolPageCta : null;
-  const pageCta = cta ?? schoolCta;
+  const pageCta = cta ?? schoolPageCta;
 
   return (
     <>
@@ -139,7 +121,8 @@ export default function AppHeader({
             </Link>
           )}
           {pageCta && (
-            <a href={pageCta.href} className={`${PRIMARY_CTA_CLASS} ${schoolPageCta?.heroId ? "header-cta-in" : ""}`}>
+            <a href={pageCta.href} className={PRIMARY_CTA_CLASS}>
+              {!cta && schoolPageCta?.icon}
               <span className="sm:hidden">{pageCta.mobileLabel}</span>
               <span className="hidden sm:inline">{pageCta.label}</span>
             </a>

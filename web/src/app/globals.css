@@ -256,15 +256,16 @@ video::-webkit-media-controls-start-playback-button {
   }
 }
 
-/* Header-Button auf /unterricht: blendet ein, sobald der Hero-Button aus dem Bild ist. */
-@keyframes header-cta-in {
-  from { opacity: 0; transform: translateY(-4px); }
-  to   { opacity: 1; transform: none; }
+/* Header-Button auf /unterricht: zeigt, wo es losgeht, auch wenn die Karte schon im Bild ist. */
+@keyframes class-card-target {
+  from { outline-offset: 0; outline-color: var(--color-waldgruen); }
+  to   { outline-offset: 12px; outline-color: transparent; }
 }
 
 @media screen and (prefers-reduced-motion: no-preference) {
-  .header-cta-in {
-    animation: header-cta-in 220ms cubic-bezier(0.16, 1, 0.3, 1) both;
+  #klassenlink:target > section {
+    outline: 3px solid transparent;
+    animation: class-card-target 800ms ease-out 200ms 1;
   }
 }
 

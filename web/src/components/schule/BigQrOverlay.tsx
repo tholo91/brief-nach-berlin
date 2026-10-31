@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useRef } from "react";
 import { createQrMatrix } from "@/lib/qr-code";
+import { CloseIcon } from "./icons";
 
 const QUIET_ZONE = 4;
 
@@ -66,8 +67,9 @@ export function BigQrOverlay({
         ref={closeRef}
         type="button"
         onClick={onClose}
-        className="absolute right-4 top-4 inline-flex min-h-11 items-center justify-center rounded-md border border-waldgruen/30 bg-white px-4 py-2 font-body text-sm font-semibold text-waldgruen-dark transition-colors hover:bg-waldgruen/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-waldgruen focus-visible:ring-offset-2"
+        className="absolute right-4 top-4 inline-flex min-h-11 items-center justify-center gap-2 rounded-lg border border-waldgruen/30 bg-white px-4 py-2 font-body text-sm font-semibold text-waldgruen-dark transition-colors hover:bg-waldgruen/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-waldgruen focus-visible:ring-offset-2"
       >
+        <CloseIcon />
         Schließen
       </button>
       <svg

@@ -127,7 +127,7 @@ export default async function JungPage({
             mp4="/jung-bg.mp4"
             poster="/jung-bg.webp"
             playbackRate={0.5}
-            className="object-[20%_center] sm:object-[center_66%] lg:object-[center_75%]"
+            className="object-[20%_center] sm:object-[center_66%] lg:object-[center_35%]"
           />
           <div
             aria-hidden="true"
@@ -142,9 +142,9 @@ export default async function JungPage({
               )`,
             }}
           />
-          <div aria-hidden="true" className="absolute inset-0 hidden bg-gradient-to-r from-transparent from-40% via-creme/60 via-60% to-creme/90 lg:block" />
+          <div aria-hidden="true" className="absolute inset-0 hidden bg-gradient-to-r from-transparent from-40% via-creme/40 via-60% to-creme/60 lg:block" />
         </div>
-        <div className="relative mx-auto w-full max-w-2xl px-5 pb-2 pt-52 sm:pt-[21rem] lg:grid lg:min-h-[30rem] lg:max-w-6xl lg:grid-cols-2 lg:items-center lg:pb-14 lg:pt-10">
+        <div className="relative mx-auto w-full max-w-2xl px-5 pb-2 pt-52 sm:pt-[21rem] lg:grid lg:min-h-[max(30rem,min(34vw,44rem,62vh))] lg:max-w-6xl lg:grid-cols-2 lg:items-center lg:pb-14 lg:pt-10">
           <div className="lg:col-start-2">
             {entry.status === "invalid" && (
               <p role="status" className="mb-4 rounded-lg border border-bernstein/50 bg-bernstein/10 px-4 py-3 font-body text-sm text-warmgrau">

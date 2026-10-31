@@ -102,7 +102,8 @@ export const SUPPORT_EMAIL_COPY = {
     infoButton: "Mehr Informationen",
     followupBody:
       "Ich betreibe Brief-nach-Berlin allein in meiner Freizeit und zahle KI und Server bisher selbst. Schon 5 € helfen.",
-    followupStatus: "Gemeinnützig über WE AID",
+    followupStatus: "Gemeinnützig\nüber WE AID",
+    followupHeadingMobile: SUPPORT_CONTENT.headline,
   },
   en: {
     heading: "Support Brief-nach-Berlin",
@@ -115,7 +116,8 @@ export const SUPPORT_EMAIL_COPY = {
     infoButton: "More information",
     followupBody:
       "I run Brief-nach-Berlin on my own in my free time and so far pay for the AI and servers myself. Even €5 helps.",
-    followupStatus: "Non-profit via WE AID",
+    followupStatus: "Non-profit\nvia WE AID",
+    followupHeadingMobile: "Support Brief-nach-Berlin",
   },
   tr: {
     heading: "Brief-nach-Berlin'i destekle",
@@ -127,8 +129,9 @@ export const SUPPORT_EMAIL_COPY = {
     compactButton: "Şimdi bağış yap",
     infoButton: "Daha fazla bilgi",
     followupBody:
-      "Brief-nach-Berlin'i boş zamanlarımda tek başıma yürütüyorum, yapay zekâ ve sunucu masraflarını şimdilik kendim karşılıyorum. 5 € bile yardımcı olur.",
-    followupStatus: "Kâr amacı gütmez, WE AID",
+      "Brief-nach-Berlin'i tek başıma yürütüyorum, yapay zekâ ve sunucuları kendim ödüyorum. 5 € bile yardımcı olur.",
+    followupStatus: "Kâr amacı gütmez,\nWE AID",
+    followupHeadingMobile: "Brief-nach-Berlin'i destekle",
   },
 } as const;
 

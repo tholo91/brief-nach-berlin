@@ -112,17 +112,18 @@ export function buildFollowupHtml(params: BuildFollowupParams): FollowupRender {
       .bnb-pad { padding-left: 16px !important; padding-right: 16px !important; }
       .bnb-desk { display: none !important; }
       .bnb-mob { display: inline !important; }
+      /* Spendenbox: rundes Foto mittig neben dem Text, Button über die ganze Breite. */
+      .bnb-support-text { padding-left: 14px !important; padding-right: 14px !important; }
+      .bnb-support-photo { width: 68px !important; height: 68px !important; margin: 2px 14px 0 10px !important; border-radius: 50% !important; background-color: #EDEAE6 !important; }
+      .bnb-support-actions { clear: both !important; padding: 2px 14px 14px !important; }
+      .bnb-support-cta { display: block !important; width: auto !important; }
+      .bnb-support-note { display: block !important; margin: 8px 0 0 !important; text-align: center !important; }
+      .bnb-support-note-break { display: none !important; }
     }
-    /* Schmale Screens: Sterne unter der Frage plus Hinweis, Spenden-Button über die
-       ganze Breite unter dem Foto, graue Zeile darunter. */
+    /* Schmale Screens: Sterne unter der Frage plus Hinweis. */
     @media only screen and (max-width: 480px) {
       .bnb-rating-cell { display: block !important; padding: 0 !important; text-align: center !important; }
       .bnb-rating-hint { display: block !important; }
-      .bnb-support-text { padding-left: 14px !important; padding-right: 14px !important; }
-      .bnb-support-photo { width: 100px !important; height: 100px !important; }
-      .bnb-support-actions { clear: both !important; padding: 0 14px 14px !important; }
-      .bnb-support-cta { display: block !important; }
-      .bnb-support-note { display: block !important; max-width: none !important; margin: 8px 0 0 !important; text-align: center !important; }
     }
   </style>
 </head>
@@ -178,7 +179,12 @@ export function buildFollowupHtml(params: BuildFollowupParams): FollowupRender {
           <tr>
             <td class="bnb-pad" style="padding:0 32px 20px;background-color:#ffffff;">
               ${buildFinancingNoticeHtml(
-                { ...supportCopy, body: supportCopy.followupBody, status: supportCopy.followupStatus },
+                {
+                  ...supportCopy,
+                  headingMobile: supportCopy.followupHeadingMobile,
+                  body: supportCopy.followupBody,
+                  status: supportCopy.followupStatus,
+                },
                 { src: `${base}${SUPPORT_CONTENT.founder.cutoutPath}`, alt: SUPPORT_CONTENT.founder.name },
                 { showHeart: true, portraitPlacement: "corner" },
               )}

@@ -3,6 +3,8 @@ import { SUPPORT_CONTENT } from "@/lib/support-content";
 
 export interface FinancingNoticeCopy {
   heading: string;
+  // Kürzerer Titel für schmale Screens, nur in der Eck-Variante.
+  headingMobile?: string;
   body: string;
   button: string;
   infoButton: string;
@@ -30,20 +32,25 @@ export function buildDonationButtonLabelHtml(label: string, baseUrl: string = AP
 // Follow-up: freigestelltes Foto rechts im Fließtext (align="right" wie die Briefmarke
 // in der Briefmail), der Text läuft drumherum. Es ist das höchste Element neben dem
 // Text und sitzt dadurch unten rechts in der Ecke. Mobil-Regeln (bnb-support-*) setzt
-// die Mail im <head>: Button über die ganze Breite, graue Zeile darunter.
+// die Mail im <head>: rundes Foto mittig neben dem Text, Button über die ganze Breite,
+// graue Zeile darunter. Ein Zeilenumbruch in status gilt nur neben dem Button.
 function buildCornerPortraitNoticeHtml(
   copy: FinancingNoticeCopy,
   portrait: FinancingNoticePortrait,
   donationUrl: string,
   showHeart: boolean,
 ): string {
+  const headingHtml = copy.headingMobile
+    ? `<span class="bnb-desk">${escapeHtml(copy.heading)}</span><span class="bnb-mob" style="display:none;">${escapeHtml(copy.headingMobile)}</span>`
+    : escapeHtml(copy.heading);
+  const statusHtml = escapeHtml(copy.status).replace("\n", '<br class="bnb-support-note-break"> ');
   return `<div class="bnb-support-corner" style="background-color:#FAF8F5;border:1px solid #E0DCD7;border-radius:6px;overflow:hidden;">
-      <h2 class="bnb-support-text" style="margin:0;padding:18px 20px 8px;font-family:Georgia,'Times New Roman',serif;font-size:16px;color:#2D5016;font-weight:bold;">${escapeHtml(copy.heading)}</h2>
+      <h2 class="bnb-support-text" style="margin:0;padding:18px 20px 8px;font-family:Georgia,'Times New Roman',serif;font-size:16px;color:#2D5016;font-weight:bold;">${headingHtml}</h2>
       <img class="bnb-support-photo" src="${escapeHtml(portrait.src)}" width="124" height="124" align="right" alt="${escapeHtml(portrait.alt)}" style="float:right;width:124px;height:124px;margin:0 0 0 10px;border:0;outline:none;">
       <p class="bnb-support-text" style="margin:0;padding:0 20px 14px;font-family:Georgia,'Times New Roman',serif;font-size:14px;color:#4A4A4A;line-height:1.6;">${escapeHtml(copy.body)}</p>
       <div class="bnb-support-actions" style="padding:0 0 16px 20px;">
-        <a class="bnb-support-cta" href="${donationUrl}" target="_blank" rel="noopener noreferrer" style="display:inline-block;background-color:#2D5016;color:#ffffff;font-family:Georgia,'Times New Roman',serif;font-size:14px;font-weight:bold;text-decoration:none;padding:11px 22px;border:2px solid #2D5016;border-radius:4px;line-height:1.4;text-align:center;vertical-align:middle;">${showHeart ? buildDonationButtonLabelHtml(copy.button) : escapeHtml(copy.button)}</a>
-        <span class="bnb-support-note" style="display:inline-block;max-width:190px;margin-left:10px;font-family:Georgia,'Times New Roman',serif;font-size:12px;color:#bcbcbc;line-height:1.4;vertical-align:middle;">${escapeHtml(copy.status)}</span>
+        <a class="bnb-support-cta" href="${donationUrl}" target="_blank" rel="noopener noreferrer" style="display:inline-block;background-color:#2D5016;color:#ffffff;font-family:Georgia,'Times New Roman',serif;font-size:14px;font-weight:bold;text-decoration:none;width:256px;box-sizing:border-box;padding:11px 10px;border:2px solid #2D5016;border-radius:4px;line-height:1.4;text-align:center;vertical-align:middle;">${showHeart ? buildDonationButtonLabelHtml(copy.button) : escapeHtml(copy.button)}</a>
+        <span class="bnb-support-note" style="display:inline-block;margin-left:10px;font-family:Georgia,'Times New Roman',serif;font-size:12px;color:#bcbcbc;line-height:1.15;white-space:nowrap;vertical-align:middle;">${statusHtml}</span>
       </div>
       <div style="clear:both;height:0;font-size:0;line-height:0;">&nbsp;</div>
     </div>`;

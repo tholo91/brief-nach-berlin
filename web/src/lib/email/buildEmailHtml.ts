@@ -59,9 +59,9 @@ export function buildStarBarHtml(
   );
   const seqParam = seq != null ? `&s=${seq}` : "";
   const url = (n: number) => `${APP_URL}/feedback?r=${n}&t=${token}${seqParam}`;
-  // Padding bumped to clear the 44pt iOS HIG tap target on mobile mail. Compact hebt
-  // die Sterne etwas an: Das Glyph sitzt tief in seiner Zeile, neben der Frage fällt das auf.
-  const starPadding = options.compact ? "3px 4px 13px" : "8px 4px";
+  // Padding bumped to clear the 44pt iOS HIG tap target on mobile mail. Compact: ungleiches
+  // Padding legt die Mitte der Sterne auf die Mitte der Frage daneben (am Screenshot gemessen).
+  const starPadding = options.compact ? "6px 4px 10px" : "8px 4px";
   const star = (n: number, glyph: "filled" | "outline") => `
     <a href="${url(n)}" target="_blank" rel="noopener noreferrer"
        style="color:#D4A017;mso-color-alt:#D4A017;text-decoration:none;font-size:26px;line-height:1;padding:${starPadding};display:inline-block;">${glyph === "filled" ? "&#9733;" : "&#9734;"}</a>`;

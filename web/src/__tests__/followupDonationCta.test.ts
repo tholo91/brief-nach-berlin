@@ -36,7 +36,7 @@ describe("follow-up donation box", () => {
     expect(followup.html).toContain("icon-heart-white.png");
     expect(followup.html).not.toContain(escapeHtml(copy.infoButton));
     expect(followup.html).not.toContain("/spenden?src=email");
-    expect(followup.html).toContain(`>${copy.followupStatus}</span>`);
+    expect(followup.html).toContain('>Gemeinnützig<br class="bnb-support-note-break"> über WE AID</span>');
     expect(followup.html).not.toContain(copy.status);
 
     expect(countOccurrences(followup.html, DONATION_PROVIDER_URL)).toBe(1);
@@ -135,11 +135,24 @@ describe("follow-up mail is shorter and calmer", () => {
     expect(html).toMatch(/max-width: 480px\)[\s\S]*\.bnb-rating-hint \{ display: block !important; \}/);
   });
 
-  it("makes the donation button full width on narrow screens, below the photo", () => {
+  it("gives the donation button a wide fixed size next to the two-line note", () => {
     const html = buildFollowupHtml({ token: "signed-token" }).html;
+    const cta = html.slice(html.indexOf('class="bnb-support-cta"'), html.indexOf("icon-heart-white.png"));
+    const note = html.slice(html.indexOf('class="bnb-support-note"'), html.indexOf("Gemeinnützig<br"));
 
-    expect(html).toMatch(/max-width: 480px\)[\s\S]*\.bnb-support-actions \{ clear: both !important;/);
-    expect(html).toMatch(/max-width: 480px\)[\s\S]*\.bnb-support-cta \{ display: block !important; \}/);
+    expect(cta).toContain("width:256px;box-sizing:border-box");
+    expect(note).toContain("line-height:1.15");
+  });
+
+  it("switches to a one-row title, a round photo and a full-width button on small screens", () => {
+    const html = buildFollowupHtml({ token: "signed-token" }).html;
+    const small = html.slice(html.indexOf("max-width: 600px"), html.indexOf("max-width: 480px"));
+
+    expect(html).toContain('<span class="bnb-mob" style="display:none;">Brief-nach-Berlin unterstützen</span>');
+    expect(small).toMatch(/\.bnb-support-photo \{[^}]*border-radius: 50% !important;/);
+    expect(small).toContain(".bnb-support-actions { clear: both !important;");
+    expect(small).toContain(".bnb-support-cta { display: block !important; width: auto !important; }");
+    expect(small).toContain(".bnb-support-note-break { display: none !important; }");
   });
 
   it("drops the share box, the ignore line and the old Wahlkreisbüro sentence", () => {

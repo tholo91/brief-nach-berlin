@@ -52,7 +52,13 @@ function useElementOutOfView(id: string | undefined, resetKey: string | null): b
   return outOfView;
 }
 
-export default function AppHeader({ showLanguageSwitcher = false }: { showLanguageSwitcher?: boolean }) {
+export default function AppHeader({
+  showLanguageSwitcher = false,
+  cta,
+}: {
+  showLanguageSwitcher?: boolean;
+  cta?: { href: string; label: string; mobileLabel: string };
+}) {
   const pathname = usePathname();
   const showCampaignCta = pathname === "/ngo-briefkampagne";
   // Kampagne verwalten portals its section links and contact button into these slots.
@@ -62,6 +68,7 @@ export default function AppHeader({ showLanguageSwitcher = false }: { showLangua
   const schoolPageCta = pathname !== null && Object.hasOwn(SCHOOL_PAGE_CTAS, pathname) ? SCHOOL_PAGE_CTAS[pathname] : null;
   const heroOutOfView = useElementOutOfView(schoolPageCta?.heroId, pathname);
   const schoolCta = schoolPageCta && (!schoolPageCta.heroId || heroOutOfView) ? schoolPageCta : null;
+  const pageCta = cta ?? schoolCta;
 
   return (
     <>
@@ -131,10 +138,10 @@ export default function AppHeader({ showLanguageSwitcher = false }: { showLangua
               <span className="hidden sm:inline">Kampagne starten</span>
             </Link>
           )}
-          {schoolCta && (
-            <a href={schoolCta.href} className={`${PRIMARY_CTA_CLASS} ${schoolPageCta?.heroId ? "header-cta-in" : ""}`}>
-              <span className="sm:hidden">{schoolCta.mobileLabel}</span>
-              <span className="hidden sm:inline">{schoolCta.label}</span>
+          {pageCta && (
+            <a href={pageCta.href} className={`${PRIMARY_CTA_CLASS} ${schoolPageCta?.heroId ? "header-cta-in" : ""}`}>
+              <span className="sm:hidden">{pageCta.mobileLabel}</span>
+              <span className="hidden sm:inline">{pageCta.label}</span>
             </a>
           )}
           </div>

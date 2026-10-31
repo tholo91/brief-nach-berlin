@@ -25,9 +25,6 @@ function formatVariant(d: LetterVariantDebugPayload): string {
     ...(d.preservationCheck
       ? ["", "Preservation check:", d.preservationCheck]
       : []),
-    ...(d.changeRequestPreview
-      ? ["", "Änderungswunsch:", d.changeRequestPreview]
-      : ["", "Änderungswunsch:", "—"]),
     "",
     "Eingefügter Brief (Auszug, max 1200 Zeichen):",
     d.originalLetterPreview,
@@ -76,13 +73,7 @@ export function format(payload: DebugPayload | { error: string }): string {
     `Word count            ${wcLabel}`,
     `Issue text length     ${d.issueTextLength} chars`,
     "",
-    "Anliegen (Auszug, max 2000 Zeichen):",
-    d.issueTextPreview || "—",
-    ...(d.issueTextPreview !== undefined && d.issueTextPreview.length < d.issueTextLength
-      ? [`gekürzt: ${d.issueTextPreview.length} von ${d.issueTextLength} Zeichen`]
-      : []),
-    "",
-    `Political level       ${d.politicalLevel}`,
+    `Political level      ${d.politicalLevel}`,
     ...routingLines(d),
     `${recipientLabel.padEnd(21)} ${d.representativeName} (${d.representativeLevel}, ${recipientRegion})`,
     ...(d.representativeKind === "landesregierung" || d.representativeKind === "rathaus"

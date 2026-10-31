@@ -36,19 +36,23 @@ describe("/debug format", () => {
     void _omit;
     const text = format({ ...oldPayload, issueTextLength: 10 });
 
-    expect(text).toContain("Anliegen (Auszug, max 2000 Zeichen):");
-    expect(text).not.toContain("gekürzt");
+    expect(text).toContain("Issue text length     10 chars");
     expect(text).not.toContain("Routed level");
     expect(text).not.toContain("Mismatch framing");
     expect(text).toContain("Letter ID             —");
     expect(text).toContain("Code version          —");
   });
 
-  it("rendert Routing, Mismatch, Letter-ID, Code-Version und Kürzung", () => {
+  it("wiederholt das Anliegen nicht in den technischen Details", () => {
+    const text = format(basePayload);
+
+    expect(text).not.toContain("Kurzes Anliegen");
+    expect(text).not.toContain("Anliegen (Auszug");
+  });
+
+  it("rendert Routing, Mismatch, Letter-ID und Code-Version", () => {
     const text = format({
       ...basePayload,
-      issueTextLength: 2450,
-      issueTextPreview: "x".repeat(2000),
       routedPrimaryLevel: "Land",
       routedPrimaryConfidence: "high",
       wasOverridden: true,
@@ -57,7 +61,6 @@ describe("/debug format", () => {
       codeVersion: "290b27e",
     });
 
-    expect(text).toContain("gekürzt: 2000 von 2450 Zeichen");
     expect(text).toContain("Routed level          Land (high)");
     expect(text).toContain("Selected level        Bund");
     expect(text).toContain("Overridden            true");
@@ -111,9 +114,12 @@ describe("/debug format", () => {
       generationMs: 10,
       lengthRetried: false,
       codeVersion: "290b27e",
+      changeRequestPreview: "Bitte kürzer",
     };
 
     expect(format(variant)).toContain("Code version         290b27e");
+    expect(format(variant)).not.toContain("Bitte kürzer");
+    expect(format(variant)).toContain("Eingefügter Brief (Auszug, max 1200 Zeichen):");
     const { codeVersion: _c, ...old } = variant;
     void _c;
     expect(format(old)).toContain("Code version         —");

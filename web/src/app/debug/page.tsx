@@ -1,3 +1,4 @@
+import Link from "next/link";
 import type { ReactNode } from "react";
 import AppHeader from "@/components/AppHeader";
 import { LETTER_LENGTHS } from "@/lib/config";
@@ -5,6 +6,15 @@ import type { LetterDebugPayload } from "@/lib/email/sendLetterEmail";
 import type { LetterVariantDebugPayload } from "@/lib/email/variantDebugPayload";
 import CopyButton from "./CopyButton";
 import { format, type DebugPayload } from "./formatDebug";
+import LinkInfo from "./LinkInfo";
+import ToneScale, { isToneStep } from "./ToneScale";
+
+const NEW_LETTER_CTA = { href: "/", label: "Neuen Brief schreiben", mobileLabel: "Neuer Brief" };
+const NEW_CAMPAIGN_LETTER_CTA = {
+  href: "/ngo-briefkampagne#laufende-kampagnen",
+  label: "Anderen Kampagnenbrief schreiben",
+  mobileLabel: "Kampagnen",
+};
 
 function lengthText(key: string | undefined, min: number, max: number): string {
   const label = key && key in LETTER_LENGTHS ? LETTER_LENGTHS[key as keyof typeof LETTER_LENGTHS].label : key;
@@ -93,12 +103,13 @@ function LetterCard({ d }: { d: LetterDebugPayload }) {
           items={[
             ["Empfänger:in", recipient.join(", ")],
             ["Ebene", d.politicalLevel],
-            ["Tonalität", d.toneLabel],
+            ["Tonalität", isToneStep(d.toneLevel) ? undefined : d.toneLabel],
             ["Brieflänge", lengthText(d.letterLengthKey, d.letterLengthMin, d.letterLengthMax)],
             ["PLZ", d.plz],
             ["Herkunft", d.campaignSlug ? "Kampagnenbrief" : undefined],
           ]}
         />
+        {isToneStep(d.toneLevel) && <ToneScale title="Tonalität" level={d.toneLevel} />}
       </Section>
     </>
   );
@@ -113,13 +124,16 @@ function VariantCard({ d }: { d: LetterVariantDebugPayload }) {
       <Section title="Dein Brief im Überblick">
         <Facts
           items={[
-            ["Gewünschte Tonalität", d.requestedToneLabel],
+            ["Gewünschte Tonalität", isToneStep(d.requestedToneLevel) ? undefined : d.requestedToneLabel],
             [
               "Brieflänge",
               lengthText(d.letterLengthKey, d.letterLengthMin, d.letterLengthMax),
             ],
           ]}
         />
+        {isToneStep(d.requestedToneLevel) && (
+          <ToneScale title="Gewünschte Tonalität" level={d.requestedToneLevel} />
+        )}
       </Section>
     </>
   );
@@ -133,16 +147,17 @@ export default async function DebugPage({
   const { d } = await searchParams;
   const payload = decode(d);
   const failed = "error" in payload;
+  const isCampaignLetter = !failed && !isVariant(payload) && Boolean(payload.campaignSlug);
 
   return (
     <div className="min-h-screen bg-creme font-body text-warmgrau">
-      <AppHeader />
+      <AppHeader cta={isCampaignLetter ? NEW_CAMPAIGN_LETTER_CTA : NEW_LETTER_CTA} />
       <main className="mx-auto w-full max-w-[640px] px-4 py-8 sm:py-12">
         <h1 className="font-typewriter text-3xl font-bold text-waldgruen-dark">Deine Eingaben</h1>
-        <p className="mt-3 text-base leading-relaxed">
+        <LinkInfo lastWord="gespeichert.">
           Diese Seite zeigt nur die Werte, die in deinem E-Mail-Link mitgeschickt wurden. Es wird
-          nichts aus einer Datenbank geladen und nichts gespeichert.
-        </p>
+          nichts aus einer Datenbank geladen und nichts
+        </LinkInfo>
 
         <article className="mt-6 rounded-2xl border border-warmgrau/15 bg-white p-5 shadow-sm sm:p-6">
           {failed ? (
@@ -158,6 +173,19 @@ export default async function DebugPage({
             <LetterCard d={payload} />
           )}
         </article>
+
+        {!failed && (
+          <p className="mt-5 text-[15px] leading-relaxed">
+            Teile Brief-nach-Berlin gerne: Ich wünsche mir, dass mehr Menschen ihrer Stimme Gehör
+            verschaffen.{" "}
+            <Link
+              href="/weitersagen"
+              className="whitespace-nowrap font-semibold text-waldgruen-dark underline underline-offset-2 transition-colors hover:text-waldgruen focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-waldgruen"
+            >
+              Jetzt teilen →
+            </Link>
+          </p>
+        )}
 
         <details className="mt-6 rounded-2xl border border-warmgrau/15 bg-white/60 p-4">
           <summary className="cursor-pointer rounded font-semibold text-warmgrau focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-waldgruen">

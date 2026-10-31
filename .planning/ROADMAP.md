@@ -1220,6 +1220,32 @@ Plans:
 Plans:
 - [ ] TBD (promote with /gsd-review-backlog when ready)
 
+### Phase 999.48: Porto auf 1,25 € anheben (BACKLOG)
+
+**Goal:** Tipps- und Guide-Seite nennen ab 1.1.2027 das richtige Briefporto.
+**Warum:** Ein Standardbrief kostet ab 1.1.2027 1,25 € statt 0,95 €. Die Briefmails nennen seit dem 31.10.2026 keinen Preis mehr, die Webseiten noch.
+**Termin:** 1.1.2027 (Stand 2026 in den Texten mitziehen).
+**Größe:** XS
+**Ansatz:** `web/src/app/(site)/tipps/page.tsx` (Zeilen 50, 161) und `web/src/app/(site)/guide/page.tsx` (Zeilen 68, 280, 284, 377) von 0,95 € bzw. 95 Cent auf 1,25 € bzw. 125 Cent ändern, "Stand 2026" auf "Stand 2027". Danach `rg "0,95|95 Cent" web/src` auf Reste prüfen, auch FAQ-JSON-LD.
+**Requirements:** TBD
+**Plans:** 0 plans
+
+Plans:
+- [ ] TBD (promote with /gsd-review-backlog when ready)
+
+### Phase 999.49: Anliegen-Text im Debug-Link bei Kampagnen kürzen (BACKLOG)
+
+**Goal:** Der Debug-Link ("Deine Eingaben") enthält bei Kampagnenbriefen weniger Persönliches und bleibt kürzer.
+**Warum:** Die URL trägt bis zu 2000 Zeichen Anliegen plus E-Mail und PLZ. Bei unverändertem Kampagnentext ist das nur eine Kopie von `campaigns.issue_text`.
+**Entscheidung 2026-10-31:** Bewusst nicht gebaut. Der Text ist in der Textarea bearbeitbar, die eigene Fassung ist genau das, was die Person auf der Seite sehen will. Pauschal weglassen verliert Änderungen, "nur wenn unverändert" braucht einen Vergleich (Sonderlogik).
+**Größe:** S
+**Ansatz:** In `buildDebugPayload` (`web/src/lib/email/buildDebugPayload.ts`) `issueTextPreview` weglassen, wenn der Text dem Kampagnentext entspricht; `/debug` zeigt dann "Kampagnentext von {Ersteller}" mit Link. Erst angehen, wenn Link-Länge oder Datenschutz Thema wird.
+**Requirements:** TBD
+**Plans:** 0 plans
+
+Plans:
+- [ ] TBD (promote with /gsd-review-backlog when ready)
+
 
 ## Progress
 

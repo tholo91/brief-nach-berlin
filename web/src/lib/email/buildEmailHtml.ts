@@ -1,6 +1,7 @@
 import type { SendLetterEmailParams, LetterDebugPayload } from "./sendLetterEmail";
 import {
   APP_URL,
+  DONATION_PATH,
   FOUNDER_HOMEPAGE,
   FOUNDER_FEEDBACK_URL,
   abgeordnetenwatchProfileUrl,
@@ -124,6 +125,7 @@ export function buildLetterEmailText(data: SendLetterEmailParams): string {
   );
   parts.push(`${copy.privacy}: ${dataPolicyFor(data)}\n${copy.followup.delete}: ${data.deleteUrl ?? `${APP_URL}/datenloeschen`}`);
   parts.push(buildSocialFollowText(resolveEmailLocale(data.locale)));
+  parts.push(`${copy.supportLink}: ${APP_URL}${DONATION_PATH}`);
   if (data.debug) parts.push(`${copy.inputsLink}: ${buildDebugUrl(data.debug)}`);
   return parts.join("\n\n");
 }
@@ -449,11 +451,11 @@ function showsTrip(input: GoodToKnowInput): boolean {
 // "Gut zu wissen": alle Nebenlinks gesammelt unter dem Teilen-Block, damit der
 // Fließtext oben nur Abschreiben, Porto und Bewerten trägt. Die zwei stärksten
 // Tipps stehen als kurze Absätze ohne Kasten, der Rest als eine Linkzeile.
-// compact (Follow-up): nur die Tipps plus "Weitere Aktionen", ohne Kontaktzeile.
+// compact (Follow-up): nur die Tipps plus "Weitere Aktionen", ohne Kontaktlink.
 export function buildGoodToKnowHtml(
   input: GoodToKnowInput,
   fullName: string,
-  options: { compact?: boolean; baseUrl?: string } = {},
+  options: { compact?: boolean; baseUrl?: string; inputsUrl?: string } = {},
 ): string {
   const locale = resolveEmailLocale(input.locale);
   const copy = getEmailCopy(locale);
@@ -487,21 +489,19 @@ export function buildGoodToKnowHtml(
   const moreLinks: (string | false)[] = options.compact
     ? [link(urls.actions, g.actionsLink)]
     : [
+        ...(options.inputsUrl ? [link(options.inputsUrl, copy.inputsLink)] : []),
         guideLink,
         link(`${base}/tipps`, copy.tips),
         locale === "de" && link(`${base}/brief-verbessern`, g.improveLink),
         link(urls.actions, g.actionsLink),
         link(`${base}/andere-tools`, g.toolsLink),
+        link(FOUNDER_FEEDBACK_URL, g.contactLink),
       ].filter(Boolean);
-  const contactHtml = options.compact
-    ? ""
-    : `
-                    <p style="margin:0;${font}font-size:13px;color:#666666;line-height:1.7;">${g.contact} ${link(FOUNDER_FEEDBACK_URL, g.contactLink)}</p>`;
   return `<tr>
                   <td colspan="7" class="bnb-pad" style="padding:0 32px 28px;background-color:#ffffff;">
                     <h2 style="margin:0 0 12px;padding-bottom:10px;border-bottom:1px solid #EDEAE6;${font}font-size:16px;color:#2D5016;font-weight:bold;">${g.heading}</h2>
                     ${highlightsHtml}
-                    <p style="margin:0 0 6px;${highlights.length ? "padding-top:12px;border-top:1px solid #EDEAE6;" : ""}${font}font-size:13px;color:#666666;line-height:1.8;"><strong style="color:#4A4A4A;">${g.moreLabel}</strong><br>${moreLinks.map((l) => `<span style="white-space:nowrap;">${l}</span>`).join(" &middot; ")}</p>${contactHtml}
+                    <p style="margin:0 0 6px;${highlights.length ? "padding-top:12px;border-top:1px solid #EDEAE6;" : ""}${font}font-size:13px;color:#666666;line-height:1.8;"><strong style="color:#4A4A4A;">${g.moreLabel}</strong><br>${moreLinks.map((l) => `<span style="white-space:nowrap;">${l}</span>`).join(" &middot; ")}</p>
                   </td>
                 </tr>`;
 }
@@ -535,14 +535,11 @@ export function buildEmailHtml(data: SendLetterEmailParams): string {
     typeof data.letterNumber === "number"
       ? `Brief #${new Intl.NumberFormat(locale).format(data.letterNumber)} · `
       : "";
-  const voiceCountsInline = copy.voiceCounts.replace(/[.!?]+$/, "");
   const followBrandHtml = locale === "tr"
     ? `<a href="${APP_URL}" style="color:#999999;text-decoration:none;">Brief-nach-Berlin'i</a> takip et`
     : `${locale === "en" ? "Follow" : "Folge"} <a href="${APP_URL}" style="color:#999999;text-decoration:none;">Brief-nach-Berlin</a>`;
-  // "Deine Stimme zählt" wird auf Mobile ausgeblendet, damit der Footer
-  // kurz bleibt. Das Trennzeichen liegt mit im Span, damit mobil kein
-  // doppeltes " · " stehen bleibt.
-  const compactFooterLabel = `${letterNumberText}<span class="bnb-footer-tagline">${voiceCountsInline} · </span>${followBrandHtml}`;
+  const supportLinkHtml = `<a href="${APP_URL}${DONATION_PATH}" target="_blank" rel="noopener noreferrer" style="color:#999999;text-decoration:underline;">${copy.supportLink}</a>`;
+  const compactFooterLabel = `${letterNumberText}${supportLinkHtml} · <span style="white-space:nowrap;">${followBrandHtml}</span>`;
 
   const fullName = data.politicianTitle
     ? `${escapeHtml(data.politicianTitle)} ${escapeHtml(data.politicianName)}`
@@ -685,8 +682,6 @@ export function buildEmailHtml(data: SendLetterEmailParams): string {
       /* Mobile-only text swaps: kürzere Varianten auf kleinen Screens. */
       .bnb-desk { display: none !important; }
       .bnb-mob { display: inline !important; }
-      /* Footer: Tagline im Social-Follow-Label auf Mobile ausblenden. */
-      .bnb-footer-tagline { display: none !important; }
     }
   </style>
 </head>
@@ -843,7 +838,7 @@ export function buildEmailHtml(data: SendLetterEmailParams): string {
                   </td>
                 </tr>
 
-                ${buildGoodToKnowHtml({ locale: data.locale, recipientKind: data.recipientKind, politicianId: data.politicianId, plz: data.debug?.plz, audience: data.audience }, fullName)}
+                ${buildGoodToKnowHtml({ locale: data.locale, recipientKind: data.recipientKind, politicianId: data.politicianId, plz: data.debug?.plz, audience: data.audience }, fullName, { inputsUrl: data.debug ? buildDebugUrl(data.debug) : undefined })}
 
                 <!-- Airmail stripe before footer (mirrors header) -->
                 <tr>
@@ -865,10 +860,7 @@ export function buildEmailHtml(data: SendLetterEmailParams): string {
                     </p>
                     <p style="margin:0;font-family:Georgia,'Times New Roman',serif;font-size:12px;color:#aaaaaa;line-height:1.5;">
                       <a href="${APP_URL}/datenschutz" style="color:#888888;">${copy.privacy}</a>: ${dataPolicyFor(data)} · <a href="${data.deleteUrl ?? `${APP_URL}/datenloeschen`}" style="color:#888888;">${copy.followup.delete}</a>
-                    </p>${data.debug ? `
-                    <p style="margin:6px 0 0;font-family:Georgia,'Times New Roman',serif;font-size:12px;color:#aaaaaa;line-height:1.5;">
-                      <a href="${buildDebugUrl(data.debug)}" target="_blank" rel="noopener noreferrer" style="color:#888888;">${copy.inputsLink}</a>
-                    </p>` : ""}
+                    </p>
                   </td>
                 </tr>
 

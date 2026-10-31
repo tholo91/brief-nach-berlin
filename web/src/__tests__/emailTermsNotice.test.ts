@@ -71,14 +71,13 @@ describe("Entwurfs-Mail: maschinenlesbare KI-Kennzeichnung", () => {
 describe("Entwurfs-Mail: Link zu den eigenen Eingaben", () => {
   const debug = { plz: "28195", toneLevel: 2 } as never;
 
-  it("zeigt den Link als letzte Zeile nach der Datenschutz-Zeile, ohne Debug-Link", () => {
+  it("zeigt den Link als ersten in der Weitere-Infos-Zeile, ohne Debug-Link", () => {
     const html = buildEmailHtml(params({ debug }));
     const link = html.indexOf("Deine Eingaben nochmal einsehen</a>");
-    expect(link).toBeGreaterThan(html.indexOf("/datenschutz"));
+    expect(link).toBeGreaterThan(html.indexOf("Weitere Infos + Tipps für dich:"));
+    expect(link).toBeLessThan(html.indexOf("Tipps für den perfekten Brief"));
     expect(html).toMatch(/href="[^"]*\/debug\?d=[^"]+"[^>]*>Deine Eingaben nochmal einsehen<\/a>/);
     expect(html).not.toContain(">Debug</a>");
-    expect(html.indexOf("</p>", link)).toBeLessThan(html.lastIndexOf("</table>"));
-    expect(html.slice(link)).not.toContain("<a ");
   });
 
   it("ohne debug fehlt der Link, Text-Version enthält ihn mit debug", () => {

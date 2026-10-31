@@ -404,7 +404,8 @@ describe("buildEmailHtml — Block „Gut zu wissen“", () => {
     expect(html).toContain("Gut zu wissen</h2>");
     expect(html).toContain(TRIP);
     expect(html.indexOf("#wahlkreisbuero")).toBeGreaterThan(html.indexOf("Gut zu wissen"));
-    expect(html).toContain("Schreib mir sehr gern");
+    expect(html).toContain("Schreib mir gern bei Fragen + Ideen</a>");
+    expect(html).not.toContain("Du hast Fragen oder Ideen?");
     expect(html).toContain("weitere Tipps findest du ganz unten.");
     expect(html.indexOf("/brief-verbessern")).toBeGreaterThan(html.indexOf("Gut zu wissen"));
   });

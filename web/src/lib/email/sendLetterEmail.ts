@@ -177,13 +177,14 @@ function prepareAdultLetterEmail(args: {
     campaignLetterCount,
     letterId,
   } = args;
-  const debug = letterId ? { ...initialDebug, letterId } : initialDebug;
-  // Der Anliegen-Auszug gehört nur in den Debug-Link, nicht in den signierten
-  // Feedback-Token, der später als Review-Metadaten gespeichert werden kann.
-  const feedbackPayload = {
-    ...debug,
+  const debug = {
+    ...initialDebug,
+    ...(letterId ? { letterId } : {}),
     ...(campaign?.slug ? { campaignSlug: campaign.slug } : {}),
   };
+  // Der Anliegen-Auszug gehört nur in den Debug-Link, nicht in den signierten
+  // Feedback-Token, der später als Review-Metadaten gespeichert werden kann.
+  const feedbackPayload = { ...debug };
   delete feedbackPayload.issueTextPreview;
   const feedbackToken = signFeedbackToken(feedbackPayload);
 

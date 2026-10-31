@@ -49,6 +49,20 @@ describe("Kampagnen-Slug im Feedback-Token", () => {
     const payload = await signedPayload(undefined);
     expect(payload).not.toHaveProperty("campaignSlug");
   });
+
+  it("gibt campaignSlug auch an den Debug-Link weiter", async () => {
+    const { prepareLetterEmail } = await import("@/lib/email/sendLetterEmail");
+    const { params } = prepareLetterEmail({
+      recipientEmail: "test@example.org",
+      recipient: getLandesregierungRecipient("HB")!,
+      letterText: "Test",
+      issueText: "Test",
+      debug: { issueTextPreview: "Text" } as never,
+      campaign: { slug: "kampagne-a" } as never,
+    });
+    expect(params.debug?.campaignSlug).toBe("kampagne-a");
+    expect(params.debug?.issueTextPreview).toBe("Text");
+  });
 });
 
 describe("submitReview schreibt campaign_slug", () => {

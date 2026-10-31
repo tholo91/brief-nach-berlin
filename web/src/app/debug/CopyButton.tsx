@@ -4,7 +4,15 @@ import { useState } from "react";
 
 const SLOT = "col-start-1 row-start-1 inline-flex items-center gap-1.5";
 
-export default function CopyButton({ text, label }: { text: string; label: string }) {
+export default function CopyButton({
+  text,
+  label,
+  iconOnly = false,
+}: {
+  text: string;
+  label: string;
+  iconOnly?: boolean;
+}) {
   const [state, setState] = useState<"idle" | "done" | "failed">("idle");
 
   async function copy() {
@@ -23,8 +31,11 @@ export default function CopyButton({ text, label }: { text: string; label: strin
     <button
       type="button"
       onClick={copy}
+      aria-label={iconOnly ? label : undefined}
+      title={iconOnly ? label : undefined}
       className={[
-        "inline-grid rounded-lg border border-waldgruen px-3 py-1.5 text-sm font-semibold transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-waldgruen",
+        "inline-grid rounded-lg border border-waldgruen text-sm font-semibold transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-waldgruen",
+        iconOnly ? "p-2" : "px-3 py-1.5",
         done ? "bg-waldgruen text-white" : "text-waldgruen-dark hover:bg-waldgruen hover:text-white",
       ].join(" ")}
     >
@@ -34,7 +45,7 @@ export default function CopyButton({ text, label }: { text: string; label: strin
           <rect x="5" y="5" width="9" height="9" rx="1" stroke="currentColor" strokeWidth="1.5" />
           <path d="M11 5V3a1 1 0 00-1-1H3a1 1 0 00-1 1v7a1 1 0 001 1h2" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
         </svg>
-        {state === "failed" ? "Kopieren nicht möglich" : label}
+        {iconOnly ? null : state === "failed" ? "Kopieren nicht möglich" : label}
       </span>
       <span className={`${SLOT} justify-center ${done ? "" : "invisible"}`}>
         <span className="size-4">
@@ -44,7 +55,7 @@ export default function CopyButton({ text, label }: { text: string; label: strin
             </svg>
           )}
         </span>
-        Kopiert
+        {iconOnly ? null : "Kopiert"}
       </span>
       <span className="sr-only" aria-live="polite">
         {done ? "In die Zwischenablage kopiert" : ""}

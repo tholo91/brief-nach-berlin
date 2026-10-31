@@ -1,7 +1,7 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
 import AppHeader from "@/components/AppHeader";
-import { LETTER_LENGTHS } from "@/lib/config";
+import { APP_URL, LETTER_LENGTHS } from "@/lib/config";
 import type { LetterDebugPayload } from "@/lib/email/sendLetterEmail";
 import type { LetterVariantDebugPayload } from "@/lib/email/variantDebugPayload";
 import CopyButton from "./CopyButton";
@@ -56,13 +56,28 @@ function Facts({ items }: { items: Array<[string, string | undefined]> }) {
   );
 }
 
-function Section({ title, children }: { title: string; children: ReactNode }) {
+function Section({
+  title,
+  action,
+  children,
+}: {
+  title: string;
+  action?: ReactNode;
+  children: ReactNode;
+}) {
   return (
     <section className="mt-6 first:mt-0">
-      <h2 className="font-typewriter text-lg font-bold text-waldgruen-dark">{title}</h2>
+      <div className="flex items-center justify-between gap-3">
+        <h2 className="font-typewriter text-lg font-bold text-waldgruen-dark">{title}</h2>
+        {action}
+      </div>
       {children}
     </section>
   );
+}
+
+function CopyAction({ text }: { text: string }) {
+  return text ? <CopyButton text={text} label="Text kopieren" /> : null;
 }
 
 function TextBlock({ text, note }: { text: string; note?: string }) {
@@ -72,11 +87,6 @@ function TextBlock({ text, note }: { text: string; note?: string }) {
         {text || "Kein Text im Link enthalten."}
       </p>
       {note && <p className="mt-2 text-sm text-warmgrau/75">{note}</p>}
-      {text && (
-        <div className="mt-3">
-          <CopyButton text={text} label="Text kopieren" />
-        </div>
-      )}
     </>
   );
 }
@@ -88,7 +98,7 @@ function LetterCard({ d }: { d: LetterDebugPayload }) {
   const recipient = [d.representativeName, d.representativeLevel, region].filter(Boolean);
   return (
     <>
-      <Section title="Dein Anliegen">
+      <Section title="Dein Anliegen" action={<CopyAction text={preview} />}>
         <TextBlock
           text={preview}
           note={
@@ -118,7 +128,10 @@ function LetterCard({ d }: { d: LetterDebugPayload }) {
 function VariantCard({ d }: { d: LetterVariantDebugPayload }) {
   return (
     <>
-      <Section title="Dein Änderungswunsch">
+      <Section
+        title="Dein Änderungswunsch"
+        action={<CopyAction text={d.changeRequestPreview ?? ""} />}
+      >
         <TextBlock text={d.changeRequestPreview ?? ""} />
       </Section>
       <Section title="Dein Brief im Überblick">
@@ -175,22 +188,33 @@ export default async function DebugPage({
         </article>
 
         {!failed && (
-          <p className="mt-5 text-[15px] leading-relaxed">
-            Teile Brief-nach-Berlin gerne: Ich wünsche mir, dass mehr Menschen ihrer Stimme Gehör
-            verschaffen.{" "}
-            <Link
-              href="/weitersagen"
-              className="whitespace-nowrap font-semibold text-waldgruen-dark underline underline-offset-2 transition-colors hover:text-waldgruen focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-waldgruen"
-            >
-              Jetzt teilen →
-            </Link>
-          </p>
+          <aside className="mt-5 rounded-2xl border border-waldgruen/20 bg-white p-5 shadow-sm">
+            <h2 className="font-typewriter text-lg font-bold text-waldgruen-dark">
+              Gefällt dir die Idee? ✉️
+            </h2>
+            <p className="mt-2 text-[15px] leading-relaxed">
+              Ich baue Brief-nach-Berlin allein. Je mehr Leute schreiben, desto schwerer ist es in
+              Berlin zu überhören.
+            </p>
+            <div className="mt-4 flex flex-wrap items-center gap-3">
+              <CopyButton text={APP_URL} label="Link kopieren" />
+              <Link
+                href="/weitersagen"
+                className="rounded-lg px-1 py-1.5 text-sm font-semibold text-waldgruen-dark underline underline-offset-2 transition-colors hover:text-waldgruen focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-waldgruen"
+              >
+                Weitersagen →
+              </Link>
+            </div>
+          </aside>
         )}
 
-        <details className="mt-6 rounded-2xl border border-warmgrau/15 bg-white/60 p-4">
-          <summary className="cursor-pointer rounded font-semibold text-warmgrau focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-waldgruen">
+        <details className="relative mt-6 rounded-2xl border border-warmgrau/15 bg-white/60 p-4">
+          <summary className="cursor-pointer rounded pr-12 font-semibold text-warmgrau focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-waldgruen">
             Technische Details
           </summary>
+          <div className="absolute right-3 top-3">
+            <CopyButton text={format(payload)} label="Technische Details kopieren" iconOnly />
+          </div>
           <pre className="mt-3 whitespace-pre-wrap break-words font-mono text-[13px] leading-relaxed">
             {format(payload)}
           </pre>

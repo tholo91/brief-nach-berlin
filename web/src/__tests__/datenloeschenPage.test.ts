@@ -69,7 +69,7 @@ describe("/datenloeschen page", () => {
     const markup = await render({ t: createDataDeletionToken("Person@Example.org") });
     expect(markup).toContain("person@example.org");
     expect(markup).toContain("Newsletter");
-    expect(markup).not.toContain("Rückfrage-Mail");
+    expect(markup).toContain("Rückfrage-Mail");
     expect(markup).toContain('href="/kampagne/verwalten"');
     expect(markup).not.toContain("<button");
     expect(markup).toMatch(AVATAR);

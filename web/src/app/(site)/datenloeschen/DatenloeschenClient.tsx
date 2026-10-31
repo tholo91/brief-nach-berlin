@@ -208,6 +208,7 @@ export function DatenloeschenClient({ view }: { view: DatenloeschenView }) {
               Es gibt keinen Newsletter und keine Liste, auf der du stehst. Deinen Brief speichere ich nicht. Etwas
               liegt nur bei mir, wenn du deinen Brief bewertest, eine Rückmeldung abgibst oder dein Anliegen auf die Karte setzt.
             </p>
+            <p>Höchstens kommt noch eine Rückfrage-Mail, die schon geplant war. Danach ist Schluss.</p>
           </div>
           <SmallPrint />
         </>

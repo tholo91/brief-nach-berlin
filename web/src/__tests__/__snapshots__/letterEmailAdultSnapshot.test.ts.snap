@@ -123,7 +123,7 @@ exports[`Erwachsenen-Mail bleibt unverändert Kampagne: html 1`] = `
                       <tr>
                         <td style="padding:6px 0;font-family:Georgia,'Times New Roman',serif;font-size:14px;color:#4A4A4A;line-height:1.5;">
                           <span style="display:inline-block;width:24px;height:24px;background-color:#2D5016;color:#ffffff;border-radius:50%;text-align:center;line-height:24px;font-size:12px;font-weight:bold;margin-right:10px;vertical-align:middle;">1</span>
-                          <span class="bnb-desk">Brief von Hand abschreiben (oder ausdrucken)</span><span class="bnb-mob" style="display:none;">Brief von Hand abschreiben (oder ausdrucken)</span>
+                          <span class="bnb-desk">Brief von Hand schreiben <span style="color:#8A8A8A;">(oder ausdrucken)</span></span><span class="bnb-mob" style="display:none;">Brief von Hand schreiben <span style="color:#8A8A8A;">(oder ausdrucken)</span></span>
                         </td>
                       </tr>
                       <tr>
@@ -135,7 +135,7 @@ exports[`Erwachsenen-Mail bleibt unverändert Kampagne: html 1`] = `
                       <tr>
                         <td style="padding:6px 0;font-family:Georgia,'Times New Roman',serif;font-size:14px;color:#4A4A4A;line-height:1.5;">
                           <span style="display:inline-block;width:24px;height:24px;background-color:#2D5016;color:#ffffff;border-radius:50%;text-align:center;line-height:24px;font-size:12px;font-weight:bold;margin-right:10px;vertical-align:middle;">3</span>
-                          <span class="bnb-desk">Briefmarke drauf (0,95 EUR, <a href="https://www.deutschepost.de/de/m/mobile-briefmarke.html" target="_blank" rel="noopener noreferrer" style="color:#2D5016;text-decoration:underline;">online kaufen</a>) + ab in den Briefkasten!</span><span class="bnb-mob" style="display:none;">Briefmarke (<a href="https://www.deutschepost.de/de/m/mobile-briefmarke.html" target="_blank" rel="noopener noreferrer" style="color:#2D5016;text-decoration:underline;">hier kaufen</a>) + ab die Post</span>
+                          <span class="bnb-desk">Briefmarke drauf (<a href="https://www.deutschepost.de/de/m/mobile-briefmarke.html" target="_blank" rel="noopener noreferrer" style="color:#2D5016;text-decoration:underline;">hier online kaufen</a>) + ab in den Briefkasten!</span><span class="bnb-mob" style="display:none;">Briefmarke drauf (<a href="https://www.deutschepost.de/de/m/mobile-briefmarke.html" target="_blank" rel="noopener noreferrer" style="color:#2D5016;text-decoration:underline;">hier online kaufen</a>) + ab in den Briefkasten!</span>
                         </td>
                       </tr>
                     </table>
@@ -156,7 +156,7 @@ exports[`Erwachsenen-Mail bleibt unverändert Kampagne: html 1`] = `
                       Thomas
                     </p>
                     <p style="margin:6px 0 0;font-family:Georgia,'Times New Roman',serif;font-size:12px;color:#bcbcbc;line-height:1.5;">
-                      Eine Initiative von <a href="https://www.thomas-lorenz.eu" target="_blank" rel="noopener noreferrer" style="color:#bcbcbc;text-decoration:underline;">www.thomas-lorenz.eu</a>
+                      Eine Initiative von <a href="https://www.thomas-lorenz.eu/ai4good" target="_blank" rel="noopener noreferrer" style="color:#bcbcbc;text-decoration:underline;">www.thomas-lorenz.eu</a>
                     </p>
                   </td>
                 </tr>
@@ -210,7 +210,7 @@ exports[`Erwachsenen-Mail bleibt unverändert Kampagne: html 1`] = `
                     
                     <p style="margin:0 0 10px;font-family:Georgia,'Times New Roman',serif;font-size:14px;color:#4A4A4A;line-height:1.5;">🤝 <strong>Anna Müller persönlich treffen</strong><br>Mehr Chancen für dein Anliegen. <a href="https://www.brief-nach-berlin.de/aktiv-werden?mdb=42#wahlkreisbuero" target="_blank" rel="noopener noreferrer" style="color:#2D5016;text-decoration:underline;">Sprechstunde finden</a></p>
                     <p style="margin:0 0 10px;font-family:Georgia,'Times New Roman',serif;font-size:14px;color:#4A4A4A;line-height:1.5;">🚆 <strong>Kostenlos nach Berlin</strong><br><span class="bnb-desk">Abgeordnete laden zur Informationsfahrt ein. <a href="https://www.brief-nach-berlin.de/bundestag-besuch-kostenlos" target="_blank" rel="noopener noreferrer" style="color:#2D5016;text-decoration:underline;">So kommst du mit</a></span><span class="bnb-mob" style="display:none;">Abgeordnete laden nach Berlin ein, <a href="https://www.brief-nach-berlin.de/bundestag-besuch-kostenlos" target="_blank" rel="noopener noreferrer" style="color:#2D5016;text-decoration:underline;">so kommst du mit</a></span></p>
-                    <p style="margin:0 0 6px;padding-top:12px;border-top:1px solid #EDEAE6;font-family:Georgia,'Times New Roman',serif;font-size:13px;color:#666666;line-height:1.8;"><strong style="color:#4A4A4A;">Weitere Infos + Tipps für dich:</strong><br><span style="white-space:nowrap;"><a href="https://www.brief-nach-berlin.de/wer-darf-mdb-schreiben" target="_blank" rel="noopener noreferrer" style="color:#2D5016;text-decoration:underline;">Wer darf MdBs schreiben?</a></span> &middot; <span style="white-space:nowrap;"><a href="https://www.brief-nach-berlin.de/tipps" target="_blank" rel="noopener noreferrer" style="color:#2D5016;text-decoration:underline;">Tipps für den perfekten Brief</a></span> &middot; <span style="white-space:nowrap;"><a href="https://www.brief-nach-berlin.de/brief-verbessern" target="_blank" rel="noopener noreferrer" style="color:#2D5016;text-decoration:underline;">Brief persönlicher machen</a></span> &middot; <span style="white-space:nowrap;"><a href="https://www.brief-nach-berlin.de/aktiv-werden" target="_blank" rel="noopener noreferrer" style="color:#2D5016;text-decoration:underline;">Weitere Aktionen</a></span> &middot; <span style="white-space:nowrap;"><a href="https://www.brief-nach-berlin.de/andere-tools" target="_blank" rel="noopener noreferrer" style="color:#2D5016;text-decoration:underline;">Andere Tools</a></span> &middot; <span style="white-space:nowrap;"><a href="https://www.heyspeak.io/l/WIOENjqJn6z6WKtkWgDEFg?email=on" target="_blank" rel="noopener noreferrer" style="color:#2D5016;text-decoration:underline;">Schreib mir gern bei Fragen + Ideen</a></span></p>
+                    <p style="margin:0 0 6px;padding-top:12px;border-top:1px solid #EDEAE6;font-family:Georgia,'Times New Roman',serif;font-size:13px;color:#666666;line-height:1.8;"><strong style="color:#4A4A4A;">Weitere Infos + Tipps für dich:</strong><br><a href="https://www.brief-nach-berlin.de/wer-darf-mdb-schreiben" target="_blank" rel="noopener noreferrer" style="color:#2D5016;text-decoration:underline;">Wer darf MdBs schreiben?</a> &middot; <a href="https://www.brief-nach-berlin.de/tipps" target="_blank" rel="noopener noreferrer" style="color:#2D5016;text-decoration:underline;">Tipps für den perfekten Brief</a> &middot; <a href="https://www.brief-nach-berlin.de/brief-verbessern" target="_blank" rel="noopener noreferrer" style="color:#2D5016;text-decoration:underline;">Brief persönlicher machen</a> &middot; <a href="https://www.brief-nach-berlin.de/aktiv-werden" target="_blank" rel="noopener noreferrer" style="color:#2D5016;text-decoration:underline;">Was du noch tun kannst</a> &middot; <a href="https://www.brief-nach-berlin.de/andere-tools" target="_blank" rel="noopener noreferrer" style="color:#2D5016;text-decoration:underline;">Andere Tools</a> &middot; <a href="https://www.heyspeak.io/l/WIOENjqJn6z6WKtkWgDEFg?email=on" target="_blank" rel="noopener noreferrer" style="color:#2D5016;text-decoration:underline;">Schreib mir gern bei Fragen + Ideen</a></p>
                   </td>
                 </tr>
 
@@ -272,7 +272,7 @@ Mit freundlichen Grüßen
 Beste Grüße aus Bremen ✌️
 
 Thomas
-Eine Initiative von https://www.thomas-lorenz.eu
+Eine Initiative von https://www.thomas-lorenz.eu/ai4good
 
 Hinweis: Dieser Entwurf ist mithilfe von KI erstellt und ohne Gewähr. Bitte prüfe Inhalt, Fakten und Adresse. Die Verantwortung für den Inhalt deines Briefs liegt bei dir. Es gelten die Nutzungsbedingungen. https://www.brief-nach-berlin.de/nutzungsbedingungen
 
@@ -407,7 +407,7 @@ exports[`Erwachsenen-Mail bleibt unverändert mit Feedback-Token (Sterne-Bar): h
                       <tr>
                         <td style="padding:6px 0;font-family:Georgia,'Times New Roman',serif;font-size:14px;color:#4A4A4A;line-height:1.5;">
                           <span style="display:inline-block;width:24px;height:24px;background-color:#2D5016;color:#ffffff;border-radius:50%;text-align:center;line-height:24px;font-size:12px;font-weight:bold;margin-right:10px;vertical-align:middle;">1</span>
-                          <span class="bnb-desk">Brief von Hand abschreiben (oder ausdrucken)</span><span class="bnb-mob" style="display:none;">Brief von Hand abschreiben (oder ausdrucken)</span>
+                          <span class="bnb-desk">Brief von Hand schreiben <span style="color:#8A8A8A;">(oder ausdrucken)</span></span><span class="bnb-mob" style="display:none;">Brief von Hand schreiben <span style="color:#8A8A8A;">(oder ausdrucken)</span></span>
                         </td>
                       </tr>
                       <tr>
@@ -419,7 +419,7 @@ exports[`Erwachsenen-Mail bleibt unverändert mit Feedback-Token (Sterne-Bar): h
                       <tr>
                         <td style="padding:6px 0;font-family:Georgia,'Times New Roman',serif;font-size:14px;color:#4A4A4A;line-height:1.5;">
                           <span style="display:inline-block;width:24px;height:24px;background-color:#2D5016;color:#ffffff;border-radius:50%;text-align:center;line-height:24px;font-size:12px;font-weight:bold;margin-right:10px;vertical-align:middle;">3</span>
-                          <span class="bnb-desk">Briefmarke drauf (0,95 EUR, <a href="https://www.deutschepost.de/de/m/mobile-briefmarke.html" target="_blank" rel="noopener noreferrer" style="color:#2D5016;text-decoration:underline;">online kaufen</a>) + ab in den Briefkasten!</span><span class="bnb-mob" style="display:none;">Briefmarke (<a href="https://www.deutschepost.de/de/m/mobile-briefmarke.html" target="_blank" rel="noopener noreferrer" style="color:#2D5016;text-decoration:underline;">hier kaufen</a>) + ab die Post</span>
+                          <span class="bnb-desk">Briefmarke drauf (<a href="https://www.deutschepost.de/de/m/mobile-briefmarke.html" target="_blank" rel="noopener noreferrer" style="color:#2D5016;text-decoration:underline;">hier online kaufen</a>) + ab in den Briefkasten!</span><span class="bnb-mob" style="display:none;">Briefmarke drauf (<a href="https://www.deutschepost.de/de/m/mobile-briefmarke.html" target="_blank" rel="noopener noreferrer" style="color:#2D5016;text-decoration:underline;">hier online kaufen</a>) + ab in den Briefkasten!</span>
                         </td>
                       </tr>
                     </table>
@@ -440,7 +440,7 @@ exports[`Erwachsenen-Mail bleibt unverändert mit Feedback-Token (Sterne-Bar): h
                       Thomas
                     </p>
                     <p style="margin:6px 0 0;font-family:Georgia,'Times New Roman',serif;font-size:12px;color:#bcbcbc;line-height:1.5;">
-                      Eine Initiative von <a href="https://www.thomas-lorenz.eu" target="_blank" rel="noopener noreferrer" style="color:#bcbcbc;text-decoration:underline;">www.thomas-lorenz.eu</a>
+                      Eine Initiative von <a href="https://www.thomas-lorenz.eu/ai4good" target="_blank" rel="noopener noreferrer" style="color:#bcbcbc;text-decoration:underline;">www.thomas-lorenz.eu</a>
                     </p>
                   </td>
                 </tr>
@@ -484,7 +484,7 @@ exports[`Erwachsenen-Mail bleibt unverändert mit Feedback-Token (Sterne-Bar): h
                     
                     <p style="margin:0 0 10px;font-family:Georgia,'Times New Roman',serif;font-size:14px;color:#4A4A4A;line-height:1.5;">🤝 <strong>Anna Müller persönlich treffen</strong><br>Mehr Chancen für dein Anliegen. <a href="https://www.brief-nach-berlin.de/aktiv-werden?mdb=42#wahlkreisbuero" target="_blank" rel="noopener noreferrer" style="color:#2D5016;text-decoration:underline;">Sprechstunde finden</a></p>
                     <p style="margin:0 0 10px;font-family:Georgia,'Times New Roman',serif;font-size:14px;color:#4A4A4A;line-height:1.5;">🚆 <strong>Kostenlos nach Berlin</strong><br><span class="bnb-desk">Abgeordnete laden zur Informationsfahrt ein. <a href="https://www.brief-nach-berlin.de/bundestag-besuch-kostenlos" target="_blank" rel="noopener noreferrer" style="color:#2D5016;text-decoration:underline;">So kommst du mit</a></span><span class="bnb-mob" style="display:none;">Abgeordnete laden nach Berlin ein, <a href="https://www.brief-nach-berlin.de/bundestag-besuch-kostenlos" target="_blank" rel="noopener noreferrer" style="color:#2D5016;text-decoration:underline;">so kommst du mit</a></span></p>
-                    <p style="margin:0 0 6px;padding-top:12px;border-top:1px solid #EDEAE6;font-family:Georgia,'Times New Roman',serif;font-size:13px;color:#666666;line-height:1.8;"><strong style="color:#4A4A4A;">Weitere Infos + Tipps für dich:</strong><br><span style="white-space:nowrap;"><a href="https://www.brief-nach-berlin.de/wer-darf-mdb-schreiben" target="_blank" rel="noopener noreferrer" style="color:#2D5016;text-decoration:underline;">Wer darf MdBs schreiben?</a></span> &middot; <span style="white-space:nowrap;"><a href="https://www.brief-nach-berlin.de/tipps" target="_blank" rel="noopener noreferrer" style="color:#2D5016;text-decoration:underline;">Tipps für den perfekten Brief</a></span> &middot; <span style="white-space:nowrap;"><a href="https://www.brief-nach-berlin.de/brief-verbessern" target="_blank" rel="noopener noreferrer" style="color:#2D5016;text-decoration:underline;">Brief persönlicher machen</a></span> &middot; <span style="white-space:nowrap;"><a href="https://www.brief-nach-berlin.de/aktiv-werden" target="_blank" rel="noopener noreferrer" style="color:#2D5016;text-decoration:underline;">Weitere Aktionen</a></span> &middot; <span style="white-space:nowrap;"><a href="https://www.brief-nach-berlin.de/andere-tools" target="_blank" rel="noopener noreferrer" style="color:#2D5016;text-decoration:underline;">Andere Tools</a></span> &middot; <span style="white-space:nowrap;"><a href="https://www.heyspeak.io/l/WIOENjqJn6z6WKtkWgDEFg?email=on" target="_blank" rel="noopener noreferrer" style="color:#2D5016;text-decoration:underline;">Schreib mir gern bei Fragen + Ideen</a></span></p>
+                    <p style="margin:0 0 6px;padding-top:12px;border-top:1px solid #EDEAE6;font-family:Georgia,'Times New Roman',serif;font-size:13px;color:#666666;line-height:1.8;"><strong style="color:#4A4A4A;">Weitere Infos + Tipps für dich:</strong><br><a href="https://www.brief-nach-berlin.de/wer-darf-mdb-schreiben" target="_blank" rel="noopener noreferrer" style="color:#2D5016;text-decoration:underline;">Wer darf MdBs schreiben?</a> &middot; <a href="https://www.brief-nach-berlin.de/tipps" target="_blank" rel="noopener noreferrer" style="color:#2D5016;text-decoration:underline;">Tipps für den perfekten Brief</a> &middot; <a href="https://www.brief-nach-berlin.de/brief-verbessern" target="_blank" rel="noopener noreferrer" style="color:#2D5016;text-decoration:underline;">Brief persönlicher machen</a> &middot; <a href="https://www.brief-nach-berlin.de/aktiv-werden" target="_blank" rel="noopener noreferrer" style="color:#2D5016;text-decoration:underline;">Was du noch tun kannst</a> &middot; <a href="https://www.brief-nach-berlin.de/andere-tools" target="_blank" rel="noopener noreferrer" style="color:#2D5016;text-decoration:underline;">Andere Tools</a> &middot; <a href="https://www.heyspeak.io/l/WIOENjqJn6z6WKtkWgDEFg?email=on" target="_blank" rel="noopener noreferrer" style="color:#2D5016;text-decoration:underline;">Schreib mir gern bei Fragen + Ideen</a></p>
                   </td>
                 </tr>
 
@@ -546,7 +546,7 @@ Mit freundlichen Grüßen
 Beste Grüße aus Bremen ✌️
 
 Thomas
-Eine Initiative von https://www.thomas-lorenz.eu
+Eine Initiative von https://www.thomas-lorenz.eu/ai4good
 
 Hinweis: Dieser Entwurf ist mithilfe von KI erstellt und ohne Gewähr. Bitte prüfe Inhalt, Fakten und Adresse. Die Verantwortung für den Inhalt deines Briefs liegt bei dir. Es gelten die Nutzungsbedingungen. https://www.brief-nach-berlin.de/nutzungsbedingungen
 
@@ -668,7 +668,7 @@ exports[`Erwachsenen-Mail bleibt unverändert ohne Feedback-Token (Profil-Button
                       <tr>
                         <td style="padding:6px 0;font-family:Georgia,'Times New Roman',serif;font-size:14px;color:#4A4A4A;line-height:1.5;">
                           <span style="display:inline-block;width:24px;height:24px;background-color:#2D5016;color:#ffffff;border-radius:50%;text-align:center;line-height:24px;font-size:12px;font-weight:bold;margin-right:10px;vertical-align:middle;">1</span>
-                          <span class="bnb-desk">Brief von Hand abschreiben (oder ausdrucken)</span><span class="bnb-mob" style="display:none;">Brief von Hand abschreiben (oder ausdrucken)</span>
+                          <span class="bnb-desk">Brief von Hand schreiben <span style="color:#8A8A8A;">(oder ausdrucken)</span></span><span class="bnb-mob" style="display:none;">Brief von Hand schreiben <span style="color:#8A8A8A;">(oder ausdrucken)</span></span>
                         </td>
                       </tr>
                       <tr>
@@ -680,7 +680,7 @@ exports[`Erwachsenen-Mail bleibt unverändert ohne Feedback-Token (Profil-Button
                       <tr>
                         <td style="padding:6px 0;font-family:Georgia,'Times New Roman',serif;font-size:14px;color:#4A4A4A;line-height:1.5;">
                           <span style="display:inline-block;width:24px;height:24px;background-color:#2D5016;color:#ffffff;border-radius:50%;text-align:center;line-height:24px;font-size:12px;font-weight:bold;margin-right:10px;vertical-align:middle;">3</span>
-                          <span class="bnb-desk">Briefmarke drauf (0,95 EUR, <a href="https://www.deutschepost.de/de/m/mobile-briefmarke.html" target="_blank" rel="noopener noreferrer" style="color:#2D5016;text-decoration:underline;">online kaufen</a>) + ab in den Briefkasten!</span><span class="bnb-mob" style="display:none;">Briefmarke (<a href="https://www.deutschepost.de/de/m/mobile-briefmarke.html" target="_blank" rel="noopener noreferrer" style="color:#2D5016;text-decoration:underline;">hier kaufen</a>) + ab die Post</span>
+                          <span class="bnb-desk">Briefmarke drauf (<a href="https://www.deutschepost.de/de/m/mobile-briefmarke.html" target="_blank" rel="noopener noreferrer" style="color:#2D5016;text-decoration:underline;">hier online kaufen</a>) + ab in den Briefkasten!</span><span class="bnb-mob" style="display:none;">Briefmarke drauf (<a href="https://www.deutschepost.de/de/m/mobile-briefmarke.html" target="_blank" rel="noopener noreferrer" style="color:#2D5016;text-decoration:underline;">hier online kaufen</a>) + ab in den Briefkasten!</span>
                         </td>
                       </tr>
                     </table>
@@ -701,7 +701,7 @@ exports[`Erwachsenen-Mail bleibt unverändert ohne Feedback-Token (Profil-Button
                       Thomas
                     </p>
                     <p style="margin:6px 0 0;font-family:Georgia,'Times New Roman',serif;font-size:12px;color:#bcbcbc;line-height:1.5;">
-                      Eine Initiative von <a href="https://www.thomas-lorenz.eu" target="_blank" rel="noopener noreferrer" style="color:#bcbcbc;text-decoration:underline;">www.thomas-lorenz.eu</a>
+                      Eine Initiative von <a href="https://www.thomas-lorenz.eu/ai4good" target="_blank" rel="noopener noreferrer" style="color:#bcbcbc;text-decoration:underline;">www.thomas-lorenz.eu</a>
                     </p>
                   </td>
                 </tr>
@@ -745,7 +745,7 @@ exports[`Erwachsenen-Mail bleibt unverändert ohne Feedback-Token (Profil-Button
                     
                     <p style="margin:0 0 10px;font-family:Georgia,'Times New Roman',serif;font-size:14px;color:#4A4A4A;line-height:1.5;">🤝 <strong>Anna Müller persönlich treffen</strong><br>Mehr Chancen für dein Anliegen. <a href="https://www.brief-nach-berlin.de/aktiv-werden?mdb=42#wahlkreisbuero" target="_blank" rel="noopener noreferrer" style="color:#2D5016;text-decoration:underline;">Sprechstunde finden</a></p>
                     <p style="margin:0 0 10px;font-family:Georgia,'Times New Roman',serif;font-size:14px;color:#4A4A4A;line-height:1.5;">🚆 <strong>Kostenlos nach Berlin</strong><br><span class="bnb-desk">Abgeordnete laden zur Informationsfahrt ein. <a href="https://www.brief-nach-berlin.de/bundestag-besuch-kostenlos" target="_blank" rel="noopener noreferrer" style="color:#2D5016;text-decoration:underline;">So kommst du mit</a></span><span class="bnb-mob" style="display:none;">Abgeordnete laden nach Berlin ein, <a href="https://www.brief-nach-berlin.de/bundestag-besuch-kostenlos" target="_blank" rel="noopener noreferrer" style="color:#2D5016;text-decoration:underline;">so kommst du mit</a></span></p>
-                    <p style="margin:0 0 6px;padding-top:12px;border-top:1px solid #EDEAE6;font-family:Georgia,'Times New Roman',serif;font-size:13px;color:#666666;line-height:1.8;"><strong style="color:#4A4A4A;">Weitere Infos + Tipps für dich:</strong><br><span style="white-space:nowrap;"><a href="https://www.brief-nach-berlin.de/wer-darf-mdb-schreiben" target="_blank" rel="noopener noreferrer" style="color:#2D5016;text-decoration:underline;">Wer darf MdBs schreiben?</a></span> &middot; <span style="white-space:nowrap;"><a href="https://www.brief-nach-berlin.de/tipps" target="_blank" rel="noopener noreferrer" style="color:#2D5016;text-decoration:underline;">Tipps für den perfekten Brief</a></span> &middot; <span style="white-space:nowrap;"><a href="https://www.brief-nach-berlin.de/brief-verbessern" target="_blank" rel="noopener noreferrer" style="color:#2D5016;text-decoration:underline;">Brief persönlicher machen</a></span> &middot; <span style="white-space:nowrap;"><a href="https://www.brief-nach-berlin.de/aktiv-werden" target="_blank" rel="noopener noreferrer" style="color:#2D5016;text-decoration:underline;">Weitere Aktionen</a></span> &middot; <span style="white-space:nowrap;"><a href="https://www.brief-nach-berlin.de/andere-tools" target="_blank" rel="noopener noreferrer" style="color:#2D5016;text-decoration:underline;">Andere Tools</a></span> &middot; <span style="white-space:nowrap;"><a href="https://www.heyspeak.io/l/WIOENjqJn6z6WKtkWgDEFg?email=on" target="_blank" rel="noopener noreferrer" style="color:#2D5016;text-decoration:underline;">Schreib mir gern bei Fragen + Ideen</a></span></p>
+                    <p style="margin:0 0 6px;padding-top:12px;border-top:1px solid #EDEAE6;font-family:Georgia,'Times New Roman',serif;font-size:13px;color:#666666;line-height:1.8;"><strong style="color:#4A4A4A;">Weitere Infos + Tipps für dich:</strong><br><a href="https://www.brief-nach-berlin.de/wer-darf-mdb-schreiben" target="_blank" rel="noopener noreferrer" style="color:#2D5016;text-decoration:underline;">Wer darf MdBs schreiben?</a> &middot; <a href="https://www.brief-nach-berlin.de/tipps" target="_blank" rel="noopener noreferrer" style="color:#2D5016;text-decoration:underline;">Tipps für den perfekten Brief</a> &middot; <a href="https://www.brief-nach-berlin.de/brief-verbessern" target="_blank" rel="noopener noreferrer" style="color:#2D5016;text-decoration:underline;">Brief persönlicher machen</a> &middot; <a href="https://www.brief-nach-berlin.de/aktiv-werden" target="_blank" rel="noopener noreferrer" style="color:#2D5016;text-decoration:underline;">Was du noch tun kannst</a> &middot; <a href="https://www.brief-nach-berlin.de/andere-tools" target="_blank" rel="noopener noreferrer" style="color:#2D5016;text-decoration:underline;">Andere Tools</a> &middot; <a href="https://www.heyspeak.io/l/WIOENjqJn6z6WKtkWgDEFg?email=on" target="_blank" rel="noopener noreferrer" style="color:#2D5016;text-decoration:underline;">Schreib mir gern bei Fragen + Ideen</a></p>
                   </td>
                 </tr>
 
@@ -807,7 +807,7 @@ Mit freundlichen Grüßen
 Beste Grüße aus Bremen ✌️
 
 Thomas
-Eine Initiative von https://www.thomas-lorenz.eu
+Eine Initiative von https://www.thomas-lorenz.eu/ai4good
 
 Hinweis: Dieser Entwurf ist mithilfe von KI erstellt und ohne Gewähr. Bitte prüfe Inhalt, Fakten und Adresse. Die Verantwortung für den Inhalt deines Briefs liegt bei dir. Es gelten die Nutzungsbedingungen. https://www.brief-nach-berlin.de/nutzungsbedingungen
 

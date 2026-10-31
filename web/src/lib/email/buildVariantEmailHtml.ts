@@ -1,4 +1,4 @@
-import { APP_URL, FOUNDER_FEEDBACK_URL, FOUNDER_HOMEPAGE } from "@/lib/config";
+import { APP_URL, FOUNDER_FEEDBACK_URL, FOUNDER_INITIATIVE_URL } from "@/lib/config";
 import type { LetterVariantDebugPayload } from "./variantDebugPayload";
 import { normalizeLetterClosing } from "./normalizeLetterClosing";
 import { buildSocialFollowHtml } from "./buildSocialFollowHtml";
@@ -101,7 +101,7 @@ export function buildVariantEmailHtml(
           <tr>
             <td class="bnb-pad" style="padding:24px 32px;background-color:#FAF8F5;text-align:center;">
               <p style="margin:0;font-family:Georgia,'Times New Roman',serif;font-size:12px;color:#999999;">
-                <a href="${APP_URL}" style="color:#999999;text-decoration:none;">Brief-nach-Berlin</a> · Eine Initiative von <a href="${FOUNDER_HOMEPAGE}" target="_blank" rel="noopener noreferrer" style="color:#999999;text-decoration:underline;">Thomas Lorenz</a>${debug ? ` · <a href="${buildDebugUrl(debug)}" style="color:#888888;text-decoration:none;">Debug</a>` : ""}
+                <a href="${APP_URL}" style="color:#999999;text-decoration:none;">Brief-nach-Berlin</a> · Eine Initiative von <a href="${FOUNDER_INITIATIVE_URL}" target="_blank" rel="noopener noreferrer" style="color:#999999;text-decoration:underline;">Thomas Lorenz</a>${debug ? ` · <a href="${buildDebugUrl(debug)}" style="color:#888888;text-decoration:none;">Debug</a>` : ""}
               </p>
               ${buildSocialFollowHtml()}
             </td>

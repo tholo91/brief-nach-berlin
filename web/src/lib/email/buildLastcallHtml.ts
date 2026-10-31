@@ -1,7 +1,7 @@
 import {
   APP_URL,
   FOUNDER_EMAIL,
-  FOUNDER_HOMEPAGE,
+  FOUNDER_INITIATIVE_URL,
   SHARE_URL_WHATSAPP,
   SHARE_URL_TELEGRAM,
   SHARE_URL_EMAIL,
@@ -68,7 +68,7 @@ export function buildLastcallHtml(
     `Danke dir und beste Grüße aus Bremen ✌️`,
     ``,
     `Thomas`,
-    `Eine Initiative von ${FOUNDER_HOMEPAGE}`,
+    `Eine Initiative von ${FOUNDER_INITIATIVE_URL}`,
     ``,
     `--`,
     `Weitersagen:`,
@@ -187,7 +187,7 @@ export function buildLastcallHtml(
                 Thomas
               </p>
               <p style="margin:10px 0 0;font-family:Georgia,'Times New Roman',serif;font-size:12px;color:#bcbcbc;line-height:1.5;">
-                Eine Initiative von <a href="${FOUNDER_HOMEPAGE}" target="_blank" rel="noopener noreferrer" style="color:#bcbcbc;text-decoration:underline;">www.thomas-lorenz.eu</a>
+                Eine Initiative von <a href="${FOUNDER_INITIATIVE_URL}" target="_blank" rel="noopener noreferrer" style="color:#bcbcbc;text-decoration:underline;">www.thomas-lorenz.eu</a>
               </p>
             </td>
           </tr>

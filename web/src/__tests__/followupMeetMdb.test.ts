@@ -31,7 +31,7 @@ describe("buildFollowupHtml - Gut zu wissen", () => {
     const signoff = html.indexOf("Sign-off paragraph");
     expect(signoff).toBeLessThan(html.indexOf("Gut zu wissen"));
     expect(html.indexOf("Gut zu wissen")).toBeLessThan(html.indexOf(ANCHOR));
-    expect(html).toContain("Weitere Aktionen</a>");
+    expect(html).toContain("Was du noch tun kannst</a>");
     expect(html).toContain("/andere-tools");
     expect(html).toContain("Schreib mir gern bei Fragen + Ideen</a>");
     expect(html).not.toContain("Deine Eingaben nochmal einsehen");

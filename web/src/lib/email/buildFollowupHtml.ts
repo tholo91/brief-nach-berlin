@@ -1,6 +1,6 @@
 import {
   APP_URL,
-  FOUNDER_HOMEPAGE,
+  FOUNDER_INITIATIVE_URL,
 } from "@/lib/config";
 import {
   buildGoodToKnowHtml,
@@ -90,7 +90,7 @@ export function buildFollowupHtml(params: BuildFollowupParams): FollowupRender {
     copy.thanks,
     ``,
     `Thomas`,
-    `${emailCopy.initiative} ${FOUNDER_HOMEPAGE}`,
+    `${emailCopy.initiative} ${FOUNDER_INITIATIVE_URL}`,
     ``,
     buildGoodToKnowText(goodToKnow, fullName, base),
     ``,
@@ -201,7 +201,7 @@ export function buildFollowupHtml(params: BuildFollowupParams): FollowupRender {
                 Thomas
               </p>
               <p style="margin:6px 0 0;font-family:Georgia,'Times New Roman',serif;font-size:12px;color:#bcbcbc;line-height:1.5;">
-                ${emailCopy.initiative} <a href="${FOUNDER_HOMEPAGE}" target="_blank" rel="noopener noreferrer" style="color:#bcbcbc;text-decoration:underline;">www.thomas-lorenz.eu</a>
+                ${emailCopy.initiative} <a href="${FOUNDER_INITIATIVE_URL}" target="_blank" rel="noopener noreferrer" style="color:#bcbcbc;text-decoration:underline;">www.thomas-lorenz.eu</a>
               </p>
             </td>
           </tr>

@@ -90,6 +90,7 @@ export const FOUNDER_NAME = "Thomas Lorenz" as const;
 // contact address belongs to the project, not to Thomas's private inbox.
 export const FOUNDER_EMAIL = BRIEF_EMAIL;
 export const FOUNDER_HOMEPAGE = "https://www.thomas-lorenz.eu" as const;
+export const FOUNDER_INITIATIVE_URL = "https://www.thomas-lorenz.eu/ai4good" as const;
 export const FOUNDER_LINKEDIN = "https://www.linkedin.com/in/thomaslorenz91/" as const;
 export const FOUNDER_INSTAGRAM = "https://www.instagram.com/thomas_duisi/" as const;
 export const FOUNDER_CALENDLY = "https://calendly.com/thomas-lorenz-eu/call" as const;

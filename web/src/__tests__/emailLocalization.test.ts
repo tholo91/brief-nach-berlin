@@ -35,9 +35,9 @@ describe("email localization", () => {
   });
 
   it.each([
-    ["de", "Briefmarke drauf (0,95 EUR, ", "online kaufen</a>) + ab in den Briefkasten!"],
-    ["en", "Add a stamp (€0.95, ", "buy online</a>) + into the postbox!"],
-    ["tr", "Pul yapıştırın (0,95 €, ", "online satın al</a>) + posta kutusuna atın!"],
+    ["de", "Briefmarke drauf (", "hier online kaufen</a>) + ab in den Briefkasten!"],
+    ["en", "Add a stamp (", "buy online</a>) + into the postbox!"],
+    ["tr", "Pul yapıştırın (", "online satın al</a>) + posta kutusuna atın!"],
   ] as const)("links the stamp purchase in step 3 for %s", (locale, lead, linkTail) => {
     const html = buildEmailHtml(params(locale));
 
@@ -136,8 +136,8 @@ describe("email localization", () => {
     const html = buildEmailHtml(params("de"));
 
     expect(html).toContain("Adressen auf den Umschlag");
-    expect(html).toContain("Briefmarke (<a");
-    expect(html).toContain("hier kaufen</a>) + ab die Post");
+    expect(html).toContain("Briefmarke drauf (<a");
+    expect(html).toContain("hier online kaufen</a>) + ab in den Briefkasten!");
   });
 
   it.each([

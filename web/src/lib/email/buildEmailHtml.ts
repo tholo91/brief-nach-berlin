@@ -2,7 +2,7 @@ import type { SendLetterEmailParams, LetterDebugPayload } from "./sendLetterEmai
 import {
   APP_URL,
   DONATION_PATH,
-  FOUNDER_HOMEPAGE,
+  FOUNDER_INITIATIVE_URL,
   FOUNDER_FEEDBACK_URL,
   abgeordnetenwatchProfileUrl,
 } from "@/lib/config";
@@ -107,7 +107,7 @@ export function buildLetterEmailText(data: SendLetterEmailParams): string {
   const copy = getEmailCopy(data.locale);
   const parts = [
     normalizeLetterClosing(data.letterText),
-    `${copy.greeting}\n\nThomas\n${copy.initiative} ${FOUNDER_HOMEPAGE}`,
+    `${copy.greeting}\n\nThomas\n${copy.initiative} ${FOUNDER_INITIATIVE_URL}`,
   ];
   if (data.recipientKind === "landesregierung" && data.governmentSource?.addressee === "head" && data.governmentSource.addressLines) {
     parts.push(`Postanschrift:\n${data.governmentSource.addressLines.join("\n")}`);
@@ -505,7 +505,7 @@ export function buildGoodToKnowHtml(
                   <td colspan="7" class="bnb-pad" style="padding:0 32px 28px;background-color:#ffffff;">
                     <h2 style="margin:0 0 12px;padding-bottom:10px;border-bottom:1px solid #EDEAE6;${font}font-size:16px;color:#2D5016;font-weight:bold;">${g.heading}</h2>
                     ${highlightsHtml}
-                    <p style="margin:0 0 6px;${highlights.length ? "padding-top:12px;border-top:1px solid #EDEAE6;" : ""}${font}font-size:13px;color:#666666;line-height:1.8;"><strong style="color:#4A4A4A;">${g.moreLabel}</strong><br>${moreLinks.map((l) => `<span style="white-space:nowrap;">${l}</span>`).join(" &middot; ")}</p>
+                    <p style="margin:0 0 6px;${highlights.length ? "padding-top:12px;border-top:1px solid #EDEAE6;" : ""}${font}font-size:13px;color:#666666;line-height:1.8;"><strong style="color:#4A4A4A;">${g.moreLabel}</strong><br>${moreLinks.join(" &middot; ")}</p>
                   </td>
                 </tr>`;
 }
@@ -782,7 +782,7 @@ export function buildEmailHtml(data: SendLetterEmailParams): string {
                       <tr>
                         <td style="padding:6px 0;font-family:Georgia,'Times New Roman',serif;font-size:14px;color:#4A4A4A;line-height:1.5;">
                           <span style="display:inline-block;width:24px;height:24px;background-color:#2D5016;color:#ffffff;border-radius:50%;text-align:center;line-height:24px;font-size:12px;font-weight:bold;margin-right:10px;vertical-align:middle;">3</span>
-                          <span class="bnb-desk">${isMdbLater ? nextSteps[2] : `${nextSteps[2]} (${copy.stampPrice}, ${stampLink(copy.stampBuy)}) ${copy.stampTail}`}</span><span class="bnb-mob" style="display:none;">${isMdbLater ? nextSteps[2] : `${mobileSteps.stamp} (${stampLink(mobileSteps.stampBuy)}) ${mobileSteps.stampTail}`}</span>
+                          <span class="bnb-desk">${isMdbLater ? nextSteps[2] : `${nextSteps[2]} (${stampLink(copy.stampBuy)}) ${copy.stampTail}`}</span><span class="bnb-mob" style="display:none;">${isMdbLater ? nextSteps[2] : `${mobileSteps.stamp} (${stampLink(mobileSteps.stampBuy)}) ${mobileSteps.stampTail}`}</span>
                         </td>
                       </tr>
                     </table>
@@ -803,7 +803,7 @@ export function buildEmailHtml(data: SendLetterEmailParams): string {
                       Thomas
                     </p>
                     <p style="margin:6px 0 0;font-family:Georgia,'Times New Roman',serif;font-size:12px;color:#bcbcbc;line-height:1.5;">
-                      ${copy.initiative} <a href="${FOUNDER_HOMEPAGE}" target="_blank" rel="noopener noreferrer" style="color:#bcbcbc;text-decoration:underline;">www.thomas-lorenz.eu</a>
+                      ${copy.initiative} <a href="${FOUNDER_INITIATIVE_URL}" target="_blank" rel="noopener noreferrer" style="color:#bcbcbc;text-decoration:underline;">www.thomas-lorenz.eu</a>
                     </p>
                   </td>
                 </tr>

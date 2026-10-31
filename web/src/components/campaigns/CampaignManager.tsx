@@ -355,7 +355,7 @@ export function CampaignManager({
         <section
           id="meilenstein-mails"
           aria-labelledby="meilenstein-mails-label"
-          className="scroll-mt-32 rounded-md border border-warmgrau/12 bg-white/75 p-5 shadow-sm md:p-7"
+          className="scroll-mt-32 rounded-md border border-warmgrau/12 bg-surface/75 p-5 shadow-sm md:p-7"
         >
           <div className="flex items-center justify-between gap-4">
             <div className="grid gap-1">
@@ -383,7 +383,7 @@ export function CampaignManager({
               role="status"
               className={`mt-4 rounded-md border px-4 py-3 font-body text-sm ${
                 milestoneResult.ok
-                  ? "border-waldgruen/20 bg-white/60 text-waldgruen-dark"
+                  ? "border-waldgruen/20 bg-surface/60 text-waldgruen-dark"
                   : "border-airmail-rot/25 bg-airmail-rot/5 text-airmail-rot"
               }`}
             >
@@ -397,7 +397,7 @@ export function CampaignManager({
         id="campaign-settings"
         open={editOpen}
         onToggle={(event) => setEditOpen(event.currentTarget.open)}
-        className="group scroll-mt-32 rounded-md border border-warmgrau/12 bg-white/75 shadow-sm"
+        className="group scroll-mt-32 rounded-md border border-warmgrau/12 bg-surface/75 shadow-sm"
       >
         <summary className="flex min-h-11 cursor-pointer list-none items-center justify-between gap-4 rounded-md p-5 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-waldgruen md:p-7 [&::-webkit-details-marker]:hidden">
           <div className="grid gap-1">
@@ -450,7 +450,7 @@ export function CampaignManager({
               maxLength={120}
               defaultValue={campaign.title}
               disabled={!canEdit || isBusy}
-              className="rounded-md border border-warmgrau/20 bg-white px-4 py-3 font-body text-base outline-none focus:border-waldgruen disabled:opacity-60"
+              className="rounded-md border border-warmgrau/20 bg-surface px-4 py-3 font-body text-base outline-none focus:border-waldgruen disabled:opacity-60"
             />
             {result?.ok === false && "fieldErrors" in result && result.fieldErrors?.title && (
               <p className="font-body text-sm text-airmail-rot">{result.fieldErrors.title}</p>
@@ -470,7 +470,7 @@ export function CampaignManager({
               rows={9}
               defaultValue={campaign.issueText}
               disabled={!canEdit || isBusy}
-              className="rounded-md border border-warmgrau/20 bg-white px-4 py-3 font-body text-base leading-relaxed outline-none focus:border-waldgruen disabled:opacity-60"
+              className="rounded-md border border-warmgrau/20 bg-surface px-4 py-3 font-body text-base leading-relaxed outline-none focus:border-waldgruen disabled:opacity-60"
             />
           </div>
 
@@ -485,7 +485,7 @@ export function CampaignManager({
                 maxLength={120}
                 defaultValue={campaign.creatorName ?? ""}
                 disabled={!canEdit || isBusy}
-                className="rounded-md border border-warmgrau/20 bg-white px-4 py-3 font-body text-base outline-none focus:border-waldgruen disabled:opacity-60"
+                className="rounded-md border border-warmgrau/20 bg-surface px-4 py-3 font-body text-base outline-none focus:border-waldgruen disabled:opacity-60"
               />
             </div>
             <div className="grid gap-2">
@@ -499,13 +499,13 @@ export function CampaignManager({
                 maxLength={500}
                 defaultValue={campaign.externalUrl ?? ""}
                 disabled={!canEdit || isBusy}
-                className="rounded-md border border-warmgrau/20 bg-white px-4 py-3 font-body text-base outline-none focus:border-waldgruen disabled:opacity-60"
+                className="rounded-md border border-warmgrau/20 bg-surface px-4 py-3 font-body text-base outline-none focus:border-waldgruen disabled:opacity-60"
               />
             </div>
           </div>
 
           {canEditTarget && (
-            <fieldset className="grid gap-3 rounded-md border border-warmgrau/15 bg-white/55 p-4">
+            <fieldset className="grid gap-3 rounded-md border border-warmgrau/15 bg-surface/55 p-4">
               <legend className="px-1 font-typewriter text-sm font-bold text-waldgruen-dark">
                 Wohin soll die Kampagne gehen?
               </legend>
@@ -515,7 +515,7 @@ export function CampaignManager({
                   ["Land", "Landesregierung"],
                   ["Fixed", "Fester Empfänger"],
                 ].map(([value, label]) => (
-                  <label key={value} className={`cursor-pointer rounded-md border px-3 py-3 font-body text-sm font-semibold ${targetLevel === value ? "border-waldgruen bg-waldgruen/8 text-waldgruen-dark" : "border-warmgrau/20 bg-white text-warmgrau"}`}>
+                  <label key={value} className={`cursor-pointer rounded-md border px-3 py-3 font-body text-sm font-semibold ${targetLevel === value ? "border-waldgruen bg-waldgruen/8 text-waldgruen-dark" : "border-warmgrau/20 bg-surface text-warmgrau"}`}>
                     <input type="radio" name="targetLevel" value={value} checked={targetLevel === value} onChange={() => selectTargetLevel(value as CampaignTargetLevel)} disabled={isBusy} className="mr-2 accent-waldgruen" />
                     {label}
                   </label>
@@ -565,37 +565,37 @@ export function CampaignManager({
             canEditTarget ? (
               <div className="grid gap-2 rounded-md border border-waldgruen/20 bg-waldgruen/5 p-4">
                 <label className="font-typewriter text-sm font-bold text-waldgruen-dark" htmlFor="managerTargetState">Bundesland</label>
-                <select id="managerTargetState" name="targetState" value={targetState} onChange={(event) => setTargetState(event.target.value)} disabled={isBusy} className="rounded-md border border-warmgrau/20 bg-white px-4 py-3 font-body text-base outline-none focus:border-waldgruen">
+                <select id="managerTargetState" name="targetState" value={targetState} onChange={(event) => setTargetState(event.target.value)} disabled={isBusy} className="rounded-md border border-warmgrau/20 bg-surface px-4 py-3 font-body text-base outline-none focus:border-waldgruen">
                   <option value="">Alle Bundesländer</option>
                   {Object.entries(BUNDESLAND_NAMES).map(([key, name]) => <option key={key} value={key}>{name}</option>)}
                 </select>
               </div>
             ) : (
-            <p className="rounded-md border border-warmgrau/15 bg-white/55 px-4 py-3 font-body text-sm leading-relaxed text-warmgrau/70">
+            <p className="rounded-md border border-warmgrau/15 bg-surface/55 px-4 py-3 font-body text-sm leading-relaxed text-warmgrau/70">
               Diese Landeskampagne richtet sich weiterhin an die institutionelle Landesregierung. Eine konkrete MdB-Auswahl ist hier nicht aktiv.
             </p>
             )
           ) : canEditTarget ? (
             <div className="grid gap-4 rounded-md border border-waldgruen/20 bg-waldgruen/5 p-4">
               <div className="grid gap-3 sm:grid-cols-2">
-                <label className="grid gap-2 font-typewriter text-sm font-bold text-waldgruen-dark">Organisation <span className="font-body font-normal text-warmgrau/55">optional</span><input name="fixedOrganizationName" maxLength={200} value={fixedRecipient.organizationName} onChange={(event) => setFixedRecipient((current) => ({ ...current, organizationName: event.target.value }))} className="rounded-md border border-warmgrau/20 bg-white px-4 py-3 font-body text-base font-normal outline-none focus:border-waldgruen" /></label>
-                <label className="grid gap-2 font-typewriter text-sm font-bold text-waldgruen-dark">Person <span className="font-body font-normal text-warmgrau/55">optional</span><input name="fixedPersonName" maxLength={200} value={fixedRecipient.personName} onChange={(event) => setFixedRecipient((current) => ({ ...current, personName: event.target.value }))} className="rounded-md border border-warmgrau/20 bg-white px-4 py-3 font-body text-base font-normal outline-none focus:border-waldgruen" /></label>
+                <label className="grid gap-2 font-typewriter text-sm font-bold text-waldgruen-dark">Organisation <span className="font-body font-normal text-warmgrau/55">optional</span><input name="fixedOrganizationName" maxLength={200} value={fixedRecipient.organizationName} onChange={(event) => setFixedRecipient((current) => ({ ...current, organizationName: event.target.value }))} className="rounded-md border border-warmgrau/20 bg-surface px-4 py-3 font-body text-base font-normal outline-none focus:border-waldgruen" /></label>
+                <label className="grid gap-2 font-typewriter text-sm font-bold text-waldgruen-dark">Person <span className="font-body font-normal text-warmgrau/55">optional</span><input name="fixedPersonName" maxLength={200} value={fixedRecipient.personName} onChange={(event) => setFixedRecipient((current) => ({ ...current, personName: event.target.value }))} className="rounded-md border border-warmgrau/20 bg-surface px-4 py-3 font-body text-base font-normal outline-none focus:border-waldgruen" /></label>
               </div>
-              <label className="grid gap-2 font-typewriter text-sm font-bold text-waldgruen-dark">Briefanrede<input name="fixedSalutation" required maxLength={200} value={fixedRecipient.salutation} onChange={(event) => setFixedRecipient((current) => ({ ...current, salutation: event.target.value }))} className="rounded-md border border-warmgrau/20 bg-white px-4 py-3 font-body text-base font-normal outline-none focus:border-waldgruen" /></label>
+              <label className="grid gap-2 font-typewriter text-sm font-bold text-waldgruen-dark">Briefanrede<input name="fixedSalutation" required maxLength={200} value={fixedRecipient.salutation} onChange={(event) => setFixedRecipient((current) => ({ ...current, salutation: event.target.value }))} className="rounded-md border border-warmgrau/20 bg-surface px-4 py-3 font-body text-base font-normal outline-none focus:border-waldgruen" /></label>
               <div className="grid gap-3 sm:grid-cols-[minmax(0,1fr)_120px]">
-                <label className="grid gap-2 font-typewriter text-sm font-bold text-waldgruen-dark">Straße<input name="fixedStreet" required maxLength={120} value={fixedRecipient.street} onChange={(event) => setFixedRecipient((current) => ({ ...current, street: event.target.value }))} className="rounded-md border border-warmgrau/20 bg-white px-4 py-3 font-body text-base font-normal outline-none focus:border-waldgruen" /></label>
-                <label className="grid gap-2 font-typewriter text-sm font-bold text-waldgruen-dark">Hausnummer<input name="fixedHouseNumber" required maxLength={20} value={fixedRecipient.houseNumber} onChange={(event) => setFixedRecipient((current) => ({ ...current, houseNumber: event.target.value }))} className="rounded-md border border-warmgrau/20 bg-white px-4 py-3 font-body text-base font-normal outline-none focus:border-waldgruen" /></label>
+                <label className="grid gap-2 font-typewriter text-sm font-bold text-waldgruen-dark">Straße<input name="fixedStreet" required maxLength={120} value={fixedRecipient.street} onChange={(event) => setFixedRecipient((current) => ({ ...current, street: event.target.value }))} className="rounded-md border border-warmgrau/20 bg-surface px-4 py-3 font-body text-base font-normal outline-none focus:border-waldgruen" /></label>
+                <label className="grid gap-2 font-typewriter text-sm font-bold text-waldgruen-dark">Hausnummer<input name="fixedHouseNumber" required maxLength={20} value={fixedRecipient.houseNumber} onChange={(event) => setFixedRecipient((current) => ({ ...current, houseNumber: event.target.value }))} className="rounded-md border border-warmgrau/20 bg-surface px-4 py-3 font-body text-base font-normal outline-none focus:border-waldgruen" /></label>
               </div>
               <div className="grid gap-3 sm:grid-cols-[140px_minmax(0,1fr)_180px]">
-                <label className="grid gap-2 font-typewriter text-sm font-bold text-waldgruen-dark">Postleitzahl<input name="fixedPostalCode" required inputMode="numeric" pattern="[0-9]{5}" maxLength={5} value={fixedRecipient.postalCode} onChange={(event) => setFixedRecipient((current) => ({ ...current, postalCode: event.target.value.replace(/\D/g, "").slice(0, 5) }))} className="rounded-md border border-warmgrau/20 bg-white px-4 py-3 font-body text-base font-normal outline-none focus:border-waldgruen" /></label>
-                <label className="grid gap-2 font-typewriter text-sm font-bold text-waldgruen-dark">Ort<input name="fixedCity" required maxLength={120} value={fixedRecipient.city} onChange={(event) => setFixedRecipient((current) => ({ ...current, city: event.target.value }))} className="rounded-md border border-warmgrau/20 bg-white px-4 py-3 font-body text-base font-normal outline-none focus:border-waldgruen" /></label>
+                <label className="grid gap-2 font-typewriter text-sm font-bold text-waldgruen-dark">Postleitzahl<input name="fixedPostalCode" required inputMode="numeric" pattern="[0-9]{5}" maxLength={5} value={fixedRecipient.postalCode} onChange={(event) => setFixedRecipient((current) => ({ ...current, postalCode: event.target.value.replace(/\D/g, "").slice(0, 5) }))} className="rounded-md border border-warmgrau/20 bg-surface px-4 py-3 font-body text-base font-normal outline-none focus:border-waldgruen" /></label>
+                <label className="grid gap-2 font-typewriter text-sm font-bold text-waldgruen-dark">Ort<input name="fixedCity" required maxLength={120} value={fixedRecipient.city} onChange={(event) => setFixedRecipient((current) => ({ ...current, city: event.target.value }))} className="rounded-md border border-warmgrau/20 bg-surface px-4 py-3 font-body text-base font-normal outline-none focus:border-waldgruen" /></label>
                 <div className="grid gap-2"><span className="font-typewriter text-sm font-bold text-waldgruen-dark">Land</span><div className="rounded-md border border-warmgrau/15 bg-creme/70 px-4 py-3 font-body text-base text-warmgrau/70">Deutschland</div></div>
               </div>
               <label className="flex items-start gap-3 rounded-md border border-airmail-rot/20 bg-airmail-rot/5 p-3 font-body text-sm leading-relaxed text-warmgrau/80"><input name="fixedAddressAccepted" type="checkbox" required className="mt-1 h-4 w-4 shrink-0 accent-waldgruen" /><span>Ich bestätige, dass dies eine öffentlich erreichbare Dienst-, Büro- oder Organisationsadresse und keine private Wohnadresse ist. Ich bin für die Richtigkeit und zulässige Nutzung der Angaben verantwortlich.</span></label>
               {(targetFieldErrors?.targetRecipient || targetFieldErrors?.fixedAddressAccepted) && <p className="font-body text-sm text-airmail-rot">{targetFieldErrors.targetRecipient ?? targetFieldErrors.fixedAddressAccepted}</p>}
             </div>
           ) : (
-            <div className="rounded-md border border-warmgrau/15 bg-white/55 px-4 py-4 font-body text-sm leading-relaxed text-warmgrau/75">
+            <div className="rounded-md border border-warmgrau/15 bg-surface/55 px-4 py-4 font-body text-sm leading-relaxed text-warmgrau/75">
               <p className="font-semibold text-waldgruen-dark">Fester Empfänger · nach Aktivierung gesperrt</p>
               {campaign.targetRecipient?.organizationName && <p className="mt-2">{campaign.targetRecipient.organizationName}</p>}
               {campaign.targetRecipient?.personName && <p>{campaign.targetRecipient.personName}</p>}
@@ -608,7 +608,7 @@ export function CampaignManager({
             <label className="font-typewriter text-sm font-bold text-waldgruen-dark" htmlFor="logo">
               Logo oder Bild
             </label>
-            <div className="grid gap-4 rounded-md border border-warmgrau/15 bg-white/45 p-4 sm:grid-cols-[auto_1fr] sm:items-center">
+            <div className="grid gap-4 rounded-md border border-warmgrau/15 bg-surface/45 p-4 sm:grid-cols-[auto_1fr] sm:items-center">
               <div className="grid justify-items-center gap-2 text-center">
                 <CampaignLogo
                   logoPath={campaign.logoPath}
@@ -656,7 +656,7 @@ export function CampaignManager({
               rows={3}
               defaultValue={campaign.description ?? ""}
               disabled={!canEdit || isBusy}
-              className="rounded-md border border-warmgrau/20 bg-white px-4 py-3 font-body text-base leading-relaxed outline-none focus:border-waldgruen disabled:opacity-60"
+              className="rounded-md border border-warmgrau/20 bg-surface px-4 py-3 font-body text-base leading-relaxed outline-none focus:border-waldgruen disabled:opacity-60"
             />
           </div>
 
@@ -781,7 +781,7 @@ export function CampaignManager({
                   role="status"
                   className={`rounded-md border px-4 py-3 font-body text-sm ${
                     runtimeResult.ok
-                      ? "border-waldgruen/20 bg-white/60 text-waldgruen-dark"
+                      ? "border-waldgruen/20 bg-surface/60 text-waldgruen-dark"
                       : "border-airmail-rot/25 bg-airmail-rot/5 text-airmail-rot"
                   }`}
                 >
@@ -853,7 +853,7 @@ export function CampaignManager({
           </p>
           {transferResult?.ok && (
             <>
-              <div className="rounded-md border border-waldgruen/20 bg-white/60 px-4 py-3 font-body text-sm text-waldgruen-dark">
+              <div className="rounded-md border border-waldgruen/20 bg-surface/60 px-4 py-3 font-body text-sm text-waldgruen-dark">
                 {transferResult.message}
               </div>
               <div className="flex justify-end">
@@ -886,7 +886,7 @@ export function CampaignManager({
                 maxLength={200}
                 placeholder="verein@beispiel.de"
                 disabled={isBusy}
-                className="rounded-md border border-warmgrau/20 bg-white px-4 py-3 font-body text-base outline-none focus:border-waldgruen disabled:opacity-60"
+                className="rounded-md border border-warmgrau/20 bg-surface px-4 py-3 font-body text-base outline-none focus:border-waldgruen disabled:opacity-60"
               />
               <input type="hidden" name="campaignId" value={campaign.id} />
               {transferResult?.ok === false && transferResult.fieldErrors?.recipientEmail && (

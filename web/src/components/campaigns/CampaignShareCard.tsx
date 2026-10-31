@@ -23,7 +23,7 @@ export function CampaignShareCard({
     <section
       id="campaign-share"
       aria-labelledby="campaign-share-heading"
-      className="scroll-mt-32 rounded-md border border-warmgrau/12 bg-white/75 p-5 shadow-sm md:p-7"
+      className="scroll-mt-32 rounded-md border border-warmgrau/12 bg-surface/75 p-5 shadow-sm md:p-7"
     >
       <div className="flex flex-wrap items-center justify-between gap-3">
         <h2

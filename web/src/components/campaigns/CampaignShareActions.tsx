@@ -49,7 +49,7 @@ export function CampaignShareActions({ share }: CampaignShareActionsProps) {
           href={share.whatsappUrl}
           target="_blank"
           rel="noopener noreferrer"
-          className="inline-flex min-h-11 items-center justify-center gap-2 rounded-md border border-waldgruen/25 bg-white px-3 py-2 font-body text-sm font-semibold text-waldgruen-dark transition-colors hover:border-waldgruen"
+          className="inline-flex min-h-11 items-center justify-center gap-2 rounded-md border border-waldgruen/25 bg-surface px-3 py-2 font-body text-sm font-semibold text-waldgruen-dark transition-colors hover:border-waldgruen"
         >
           <ShareIcon src="/images/icon-whatsapp.png" />
           WhatsApp
@@ -58,14 +58,14 @@ export function CampaignShareActions({ share }: CampaignShareActionsProps) {
           href={share.telegramUrl}
           target="_blank"
           rel="noopener noreferrer"
-          className="inline-flex min-h-11 items-center justify-center gap-2 rounded-md border border-waldgruen/25 bg-white px-3 py-2 font-body text-sm font-semibold text-waldgruen-dark transition-colors hover:border-waldgruen"
+          className="inline-flex min-h-11 items-center justify-center gap-2 rounded-md border border-waldgruen/25 bg-surface px-3 py-2 font-body text-sm font-semibold text-waldgruen-dark transition-colors hover:border-waldgruen"
         >
           <ShareIcon src="/images/icon-telegram.png" />
           Telegram
         </a>
         <a
           href={share.emailUrl}
-          className="inline-flex min-h-11 items-center justify-center gap-2 rounded-md border border-waldgruen/25 bg-white px-3 py-2 font-body text-sm font-semibold text-waldgruen-dark transition-colors hover:border-waldgruen"
+          className="inline-flex min-h-11 items-center justify-center gap-2 rounded-md border border-waldgruen/25 bg-surface px-3 py-2 font-body text-sm font-semibold text-waldgruen-dark transition-colors hover:border-waldgruen"
         >
           <ShareIcon src="/images/icon-email.png" />
           E-Mail

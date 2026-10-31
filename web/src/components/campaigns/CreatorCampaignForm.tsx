@@ -479,7 +479,7 @@ export function CreatorCampaignForm() {
               onClick={() => switchStep(item.number as FormStep)}
               disabled={isDisabled}
               className={`rounded-md px-3 py-2 text-left transition-colors ${
-                isActive ? "bg-white text-waldgruen-dark shadow-sm" : "text-warmgrau/60 hover:bg-white/60"
+                isActive ? "bg-surface text-waldgruen-dark shadow-sm" : "text-warmgrau/60 hover:bg-surface/60"
               } ${
                 isDisabled ? "cursor-not-allowed opacity-55 hover:bg-transparent" : "cursor-pointer"
               }`}
@@ -534,7 +534,7 @@ export function CreatorCampaignForm() {
           onChange={(event) => updateTitle(event.target.value)}
           aria-invalid={Boolean(titleError)}
           aria-describedby={titleError ? "title-error" : undefined}
-          className="rounded-md border border-warmgrau/20 bg-white px-4 py-3 font-body text-base outline-none focus:border-waldgruen"
+          className="rounded-md border border-warmgrau/20 bg-surface px-4 py-3 font-body text-base outline-none focus:border-waldgruen"
           placeholder="Mehr sichere Schulwege in Bremen"
         />
         {titleError && (
@@ -558,7 +558,7 @@ export function CreatorCampaignForm() {
           onChange={(event) => updateDraft("creatorName", event.target.value)}
           aria-invalid={Boolean(creatorNameError)}
           aria-describedby={creatorNameError ? "creatorName-error creatorName-help" : "creatorName-help"}
-          className="rounded-md border border-warmgrau/20 bg-white px-4 py-3 font-body text-base outline-none focus:border-waldgruen"
+          className="rounded-md border border-warmgrau/20 bg-surface px-4 py-3 font-body text-base outline-none focus:border-waldgruen"
           placeholder="Initiative sichere Schulwege Bremen"
         />
         <p id="creatorName-help" className="font-body text-sm text-warmgrau/60">
@@ -625,7 +625,7 @@ export function CreatorCampaignForm() {
           onChange={(event) => updateDraft("issueText", event.target.value)}
           aria-invalid={Boolean(issueTextError)}
           aria-describedby={issueTextError ? "issueText-error issueText-meta" : "issueText-meta"}
-          className="rounded-md border border-warmgrau/20 bg-white px-4 py-3 font-body text-base leading-relaxed outline-none focus:border-waldgruen"
+          className="rounded-md border border-warmgrau/20 bg-surface px-4 py-3 font-body text-base leading-relaxed outline-none focus:border-waldgruen"
           placeholder={[
             "Vor mehreren Grundschulen entstehen morgens gefährliche Situationen.",
             "Viele Eltern fahren deshalb wieder mit dem Auto, obwohl sie lieber laufen oder Rad fahren würden.",
@@ -669,7 +669,7 @@ export function CreatorCampaignForm() {
                 className={`flex cursor-pointer items-start gap-3 rounded-md border px-4 py-3 transition-colors ${
                   isSelected
                     ? "border-waldgruen bg-waldgruen/5"
-                    : "border-warmgrau/20 bg-white hover:border-waldgruen/40"
+                    : "border-warmgrau/20 bg-surface hover:border-waldgruen/40"
                 }`}
               >
                 <input
@@ -742,7 +742,7 @@ export function CreatorCampaignForm() {
               value={draft.targetState}
               onChange={(event) => updateDraft("targetState", event.target.value)}
               aria-describedby="targetState-help"
-              className="rounded-md border border-warmgrau/20 bg-white px-4 py-3 font-body text-base outline-none focus:border-waldgruen"
+              className="rounded-md border border-warmgrau/20 bg-surface px-4 py-3 font-body text-base outline-none focus:border-waldgruen"
             >
               <option value="">Alle Bundesländer</option>
               {Object.entries(BUNDESLAND_NAMES).map(([key, name]) => (
@@ -763,13 +763,13 @@ export function CreatorCampaignForm() {
                 <label className="font-typewriter text-sm font-bold text-waldgruen-dark" htmlFor="fixedOrganizationName">
                   Organisation <span className="font-body font-normal text-warmgrau/55">(optional)</span>
                 </label>
-                <input id="fixedOrganizationName" name="fixedOrganizationName" maxLength={200} value={draft.fixedOrganizationName} onChange={(event) => updateDraft("fixedOrganizationName", event.target.value)} className="rounded-md border border-warmgrau/20 bg-white px-4 py-3 font-body text-base outline-none focus:border-waldgruen" placeholder="Hessisches Ministerium der Justiz" />
+                <input id="fixedOrganizationName" name="fixedOrganizationName" maxLength={200} value={draft.fixedOrganizationName} onChange={(event) => updateDraft("fixedOrganizationName", event.target.value)} className="rounded-md border border-warmgrau/20 bg-surface px-4 py-3 font-body text-base outline-none focus:border-waldgruen" placeholder="Hessisches Ministerium der Justiz" />
               </div>
               <div className="grid gap-2">
                 <label className="font-typewriter text-sm font-bold text-waldgruen-dark" htmlFor="fixedPersonName">
                   Person <span className="font-body font-normal text-warmgrau/55">(optional)</span>
                 </label>
-                <input id="fixedPersonName" name="fixedPersonName" maxLength={200} value={draft.fixedPersonName} onChange={(event) => updateDraft("fixedPersonName", event.target.value)} className="rounded-md border border-warmgrau/20 bg-white px-4 py-3 font-body text-base outline-none focus:border-waldgruen" placeholder="Frau Dr. Erika Beispiel" />
+                <input id="fixedPersonName" name="fixedPersonName" maxLength={200} value={draft.fixedPersonName} onChange={(event) => updateDraft("fixedPersonName", event.target.value)} className="rounded-md border border-warmgrau/20 bg-surface px-4 py-3 font-body text-base outline-none focus:border-waldgruen" placeholder="Frau Dr. Erika Beispiel" />
               </div>
             </div>
             <p className="font-body text-xs leading-relaxed text-warmgrau/60">
@@ -777,26 +777,26 @@ export function CreatorCampaignForm() {
             </p>
             <div className="grid gap-2">
               <label className="font-typewriter text-sm font-bold text-waldgruen-dark" htmlFor="fixedSalutation">Briefanrede</label>
-              <input id="fixedSalutation" name="fixedSalutation" required maxLength={200} value={draft.fixedSalutation} onChange={(event) => updateDraft("fixedSalutation", event.target.value)} className="rounded-md border border-warmgrau/20 bg-white px-4 py-3 font-body text-base outline-none focus:border-waldgruen" />
+              <input id="fixedSalutation" name="fixedSalutation" required maxLength={200} value={draft.fixedSalutation} onChange={(event) => updateDraft("fixedSalutation", event.target.value)} className="rounded-md border border-warmgrau/20 bg-surface px-4 py-3 font-body text-base outline-none focus:border-waldgruen" />
             </div>
             <div className="grid gap-3 sm:grid-cols-[minmax(0,1fr)_120px]">
               <div className="grid gap-2">
                 <label className="font-typewriter text-sm font-bold text-waldgruen-dark" htmlFor="fixedStreet">Straße</label>
-                <input id="fixedStreet" name="fixedStreet" required maxLength={120} value={draft.fixedStreet} onChange={(event) => updateDraft("fixedStreet", event.target.value)} className="rounded-md border border-warmgrau/20 bg-white px-4 py-3 font-body text-base outline-none focus:border-waldgruen" />
+                <input id="fixedStreet" name="fixedStreet" required maxLength={120} value={draft.fixedStreet} onChange={(event) => updateDraft("fixedStreet", event.target.value)} className="rounded-md border border-warmgrau/20 bg-surface px-4 py-3 font-body text-base outline-none focus:border-waldgruen" />
               </div>
               <div className="grid gap-2">
                 <label className="font-typewriter text-sm font-bold text-waldgruen-dark" htmlFor="fixedHouseNumber">Hausnummer</label>
-                <input id="fixedHouseNumber" name="fixedHouseNumber" required maxLength={20} value={draft.fixedHouseNumber} onChange={(event) => updateDraft("fixedHouseNumber", event.target.value)} className="rounded-md border border-warmgrau/20 bg-white px-4 py-3 font-body text-base outline-none focus:border-waldgruen" />
+                <input id="fixedHouseNumber" name="fixedHouseNumber" required maxLength={20} value={draft.fixedHouseNumber} onChange={(event) => updateDraft("fixedHouseNumber", event.target.value)} className="rounded-md border border-warmgrau/20 bg-surface px-4 py-3 font-body text-base outline-none focus:border-waldgruen" />
               </div>
             </div>
             <div className="grid gap-3 sm:grid-cols-[140px_minmax(0,1fr)_180px]">
               <div className="grid gap-2">
                 <label className="font-typewriter text-sm font-bold text-waldgruen-dark" htmlFor="fixedPostalCode">Postleitzahl</label>
-                <input id="fixedPostalCode" name="fixedPostalCode" required inputMode="numeric" pattern="[0-9]{5}" maxLength={5} value={draft.fixedPostalCode} onChange={(event) => updateDraft("fixedPostalCode", event.target.value.replace(/\D/g, "").slice(0, 5))} className="rounded-md border border-warmgrau/20 bg-white px-4 py-3 font-body text-base outline-none focus:border-waldgruen" />
+                <input id="fixedPostalCode" name="fixedPostalCode" required inputMode="numeric" pattern="[0-9]{5}" maxLength={5} value={draft.fixedPostalCode} onChange={(event) => updateDraft("fixedPostalCode", event.target.value.replace(/\D/g, "").slice(0, 5))} className="rounded-md border border-warmgrau/20 bg-surface px-4 py-3 font-body text-base outline-none focus:border-waldgruen" />
               </div>
               <div className="grid gap-2">
                 <label className="font-typewriter text-sm font-bold text-waldgruen-dark" htmlFor="fixedCity">Ort</label>
-                <input id="fixedCity" name="fixedCity" required maxLength={120} value={draft.fixedCity} onChange={(event) => updateDraft("fixedCity", event.target.value)} className="rounded-md border border-warmgrau/20 bg-white px-4 py-3 font-body text-base outline-none focus:border-waldgruen" />
+                <input id="fixedCity" name="fixedCity" required maxLength={120} value={draft.fixedCity} onChange={(event) => updateDraft("fixedCity", event.target.value)} className="rounded-md border border-warmgrau/20 bg-surface px-4 py-3 font-body text-base outline-none focus:border-waldgruen" />
               </div>
               <div className="grid gap-2">
                 <span className="font-typewriter text-sm font-bold text-waldgruen-dark">Land</span>
@@ -820,7 +820,7 @@ export function CreatorCampaignForm() {
         <label className="font-typewriter text-sm font-bold text-waldgruen-dark" htmlFor="slug">
           Kurzadresse
         </label>
-        <div className="grid overflow-hidden rounded-md border border-warmgrau/20 bg-white sm:grid-cols-[auto_1fr]">
+        <div className="grid overflow-hidden rounded-md border border-warmgrau/20 bg-surface sm:grid-cols-[auto_1fr]">
           <span className="flex min-w-0 items-center border-b border-warmgrau/15 bg-creme/60 px-3 py-2 font-body text-xs text-warmgrau/60 sm:border-b-0 sm:border-r sm:px-4 sm:py-0 sm:text-sm">
             brief-nach-berlin.de/kampagne/
           </span>
@@ -909,7 +909,7 @@ export function CreatorCampaignForm() {
               </p>
             </div>
 
-            <div className="grid gap-3 rounded-md border border-warmgrau/12 bg-white/65 p-4 sm:grid-cols-[1fr_auto] sm:items-start">
+            <div className="grid gap-3 rounded-md border border-warmgrau/12 bg-surface/65 p-4 sm:grid-cols-[1fr_auto] sm:items-start">
               <div>
                 <p className="font-body text-xs font-semibold uppercase tracking-wide text-warmgrau/50">
                   Öffentlich sichtbar
@@ -950,12 +950,12 @@ export function CreatorCampaignForm() {
             <label className="font-typewriter text-sm font-bold text-waldgruen-dark" htmlFor="logo">
               Logo oder Bild
             </label>
-            <div className="grid gap-3 rounded-md border border-warmgrau/15 bg-white/45 p-4 sm:grid-cols-[72px_1fr] sm:items-center">
+            <div className="grid gap-3 rounded-md border border-warmgrau/15 bg-surface/45 p-4 sm:grid-cols-[72px_1fr] sm:items-center">
               <button
                 type="button"
                 onClick={() => logoInputRef.current?.click()}
                 aria-label="Logo oder Bild auswählen"
-                className="flex h-[72px] w-[72px] items-center justify-center overflow-hidden rounded-md border border-warmgrau/18 bg-white transition-colors hover:border-waldgruen focus:border-waldgruen focus:outline-none"
+                className="flex h-[72px] w-[72px] items-center justify-center overflow-hidden rounded-md border border-warmgrau/18 bg-surface transition-colors hover:border-waldgruen focus:border-waldgruen focus:outline-none"
               >
                 {logoPreviewUrl ? (
                   <div
@@ -1026,7 +1026,7 @@ export function CreatorCampaignForm() {
               onChange={(event) => updateDraft("externalUrl", event.target.value)}
               aria-invalid={Boolean(externalUrlError)}
               aria-describedby={externalUrlError ? "externalUrl-error" : undefined}
-              className="rounded-md border border-warmgrau/20 bg-white px-4 py-3 font-body text-base outline-none focus:border-waldgruen"
+              className="rounded-md border border-warmgrau/20 bg-surface px-4 py-3 font-body text-base outline-none focus:border-waldgruen"
               placeholder="www.ngo.de/schulwege-petition"
             />
             {externalUrlError && (
@@ -1063,7 +1063,7 @@ export function CreatorCampaignForm() {
               }
               aria-invalid={Boolean(descriptionError)}
               aria-describedby={descriptionError ? "description-error" : undefined}
-              className="rounded-md border border-warmgrau/20 bg-white px-4 py-3 font-body text-base leading-relaxed outline-none focus:border-waldgruen"
+              className="rounded-md border border-warmgrau/20 bg-surface px-4 py-3 font-body text-base leading-relaxed outline-none focus:border-waldgruen"
               placeholder="Wir sind eine lokale Initiative für sichere Wege zur Schule und setzen uns für kinderfreundliche Mobilität ein. Diese Kampagne soll zeigen, wie viele Menschen jetzt sichere Querungen und Tempo 30 erwarten."
             />
             {descriptionError && (
@@ -1099,7 +1099,7 @@ export function CreatorCampaignForm() {
           onChange={(event) => updateDraft("creatorEmail", event.target.value)}
           aria-invalid={Boolean(creatorEmailError)}
           aria-describedby={creatorEmailError ? "creatorEmail-error" : "creatorEmail-help"}
-          className="rounded-md border border-warmgrau/20 bg-white px-4 py-3 font-body text-base outline-none focus:border-waldgruen"
+          className="rounded-md border border-warmgrau/20 bg-surface px-4 py-3 font-body text-base outline-none focus:border-waldgruen"
           placeholder="name@organisation.de"
         />
         <p id="creatorEmail-help" className="font-body text-sm text-warmgrau/60">
@@ -1201,7 +1201,7 @@ export function CreatorCampaignForm() {
             >
               Stimmen E-Mail und öffentliche Kampagnendaten?
             </h2>
-            <dl className="mt-5 grid gap-3 rounded-md border border-warmgrau/15 bg-white/70 p-4">
+            <dl className="mt-5 grid gap-3 rounded-md border border-warmgrau/15 bg-surface/70 p-4">
               <div>
                 <dt className="font-body text-xs font-semibold uppercase tracking-wide text-warmgrau/50">
                   Aufrufbare Adressen

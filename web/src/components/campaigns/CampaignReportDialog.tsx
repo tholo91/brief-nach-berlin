@@ -18,10 +18,10 @@ const FIELD_ORDER: FieldName[] = ["reason", "role", "message", "reporterEmail", 
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 
 const fieldClass =
-  "mt-1.5 block min-h-11 w-full rounded-md border border-waldgruen/25 bg-white px-3 py-2 font-body text-base text-waldgruen-dark focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-waldgruen aria-[invalid=true]:border-red-700";
+  "mt-1.5 block min-h-11 w-full rounded-md border border-waldgruen/25 bg-surface px-3 py-2 font-body text-base text-waldgruen-dark focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-waldgruen aria-[invalid=true]:border-airmail-rot";
 const labelClass = "block font-body text-sm font-semibold text-waldgruen-dark";
 const hintClass = "mt-1 font-body text-xs leading-relaxed text-warmgrau/70";
-const errorClass = "mt-1 font-body text-xs font-semibold text-red-800";
+const errorClass = "mt-1 font-body text-xs font-semibold text-airmail-rot";
 
 export function CampaignReportDialog({ slug }: { slug: string }) {
   const dialogRef = useRef<HTMLDialogElement>(null);
@@ -121,7 +121,7 @@ export function CampaignReportDialog({ slug }: { slug: string }) {
 
   return (
     <>
-      <p className="mt-6 font-body text-xs text-warmgrau/45">
+      <p className="mt-6 font-body text-xs text-warmgrau/70">
         <button
           ref={triggerRef}
           type="button"
@@ -164,7 +164,7 @@ export function CampaignReportDialog({ slug }: { slug: string }) {
               type="button"
               autoFocus
               onClick={() => dialogRef.current?.close()}
-              className="mt-6 inline-flex min-h-11 items-center justify-center rounded-full bg-waldgruen px-5 font-body text-sm font-semibold text-white hover:bg-waldgruen-dark focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-waldgruen"
+              className="mt-6 inline-flex min-h-11 items-center justify-center rounded-full bg-waldgruen px-5 font-body text-sm font-semibold text-creme hover:bg-waldgruen-dark focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-waldgruen"
             >
               Schließen
             </button>
@@ -275,7 +275,7 @@ export function CampaignReportDialog({ slug }: { slug: string }) {
                 <button
                   type="submit"
                   disabled={pending}
-                  className="inline-flex min-h-11 items-center justify-center rounded-full bg-waldgruen px-5 font-body text-sm font-semibold text-white hover:bg-waldgruen-dark focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-waldgruen disabled:cursor-not-allowed disabled:opacity-70"
+                  className="inline-flex min-h-11 items-center justify-center rounded-full bg-waldgruen px-5 font-body text-sm font-semibold text-creme hover:bg-waldgruen-dark focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-waldgruen disabled:cursor-not-allowed disabled:opacity-70"
                 >
                   {pending ? "Wird gesendet …" : "Meldung senden"}
                 </button>

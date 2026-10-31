@@ -217,7 +217,7 @@ export function CampaignHero({ campaign }: { campaign: PublicCampaign }) {
           />
         </div>
 
-        <div className="rounded-md border border-waldgruen/15 bg-white/70 p-4 shadow-sm backdrop-blur-sm lg:col-start-1 lg:row-start-2">
+        <div className="rounded-md border border-waldgruen/15 bg-surface/70 p-4 shadow-sm backdrop-blur-sm lg:col-start-1 lg:row-start-2">
           <div className="flex items-center gap-4">
             <CampaignLogo
               logoPath={campaign.logoPath}

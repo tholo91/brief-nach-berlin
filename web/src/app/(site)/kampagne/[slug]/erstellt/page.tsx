@@ -33,10 +33,10 @@ export default async function CampaignCreatedPage({
   if (!campaign) notFound();
 
   return (
-    <section className="relative overflow-hidden bg-creme">
+    <section className="theme-auto relative overflow-hidden bg-creme">
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(98,138,90,0.14),transparent_42%)]" />
       <div className="relative mx-auto max-w-2xl px-6 py-14 md:py-20">
-        <div className="rounded-xl border border-warmgrau/12 bg-white/75 p-6 shadow-sm md:p-8">
+        <div className="rounded-xl border border-warmgrau/12 bg-surface/75 p-6 shadow-sm md:p-8">
           <p className="font-typewriter text-sm font-bold uppercase tracking-widest text-waldgruen/60">
             Kampagne angelegt
           </p>
@@ -67,7 +67,7 @@ export default async function CampaignCreatedPage({
             </ol>
           </div>
 
-          <div className="mt-6 rounded-md border border-warmgrau/15 bg-white/65 px-4 py-4">
+          <div className="mt-6 rounded-md border border-warmgrau/15 bg-surface/65 px-4 py-4">
             <p className="font-typewriter text-xs font-bold uppercase tracking-widest text-waldgruen/60">
               Teilen kommt gleich
             </p>
@@ -80,7 +80,7 @@ export default async function CampaignCreatedPage({
             href={CAMPAIGN_CREATOR_FEEDBACK_URL}
             target="_blank"
             rel="noopener noreferrer"
-            className="mt-4 inline-flex w-full items-center justify-center rounded-md border border-waldgruen/25 bg-white px-5 py-3 font-body text-base font-semibold text-waldgruen-dark transition-colors hover:border-waldgruen"
+            className="mt-4 inline-flex w-full items-center justify-center rounded-md border border-waldgruen/25 bg-surface px-5 py-3 font-body text-base font-semibold text-waldgruen-dark transition-colors hover:border-waldgruen"
           >
             Feedback geben
           </a>

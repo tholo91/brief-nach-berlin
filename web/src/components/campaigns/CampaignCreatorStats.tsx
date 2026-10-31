@@ -241,7 +241,7 @@ function SendRing({ breakdown }: { breakdown: CreatorSendBreakdown }) {
       </svg>
       <span
         aria-hidden="true"
-        className="pointer-events-none absolute right-0 top-full mt-1.5 grid grid-cols-[auto_1fr_auto] items-center gap-x-2 gap-y-1 whitespace-nowrap rounded border border-warmgrau/15 bg-white px-2.5 py-2 font-body text-xs leading-tight text-warmgrau/85 opacity-0 shadow-sm transition-opacity duration-100 group-hover:opacity-100 group-focus:opacity-100 motion-reduce:transition-none"
+        className="pointer-events-none absolute right-0 top-full mt-1.5 grid grid-cols-[auto_1fr_auto] items-center gap-x-2 gap-y-1 whitespace-nowrap rounded border border-warmgrau/15 bg-surface px-2.5 py-2 font-body text-xs leading-tight text-warmgrau/85 opacity-0 shadow-sm transition-opacity duration-100 group-hover:opacity-100 group-focus:opacity-100 motion-reduce:transition-none"
       >
         {rows.map((row) => (
           <span key={row.label} className="contents">
@@ -330,7 +330,7 @@ function Timeline({ timeline }: { timeline: CreatorTimeline }) {
             >
               <span
                 aria-hidden="true"
-                className="pointer-events-none absolute bottom-full left-1/2 z-10 mb-1 -translate-x-1/2 whitespace-nowrap rounded border border-warmgrau/15 bg-white px-2 py-1 text-center font-body text-xs leading-tight text-warmgrau/85 opacity-0 shadow-sm transition-opacity duration-100 group-hover:opacity-100 motion-reduce:transition-none"
+                className="pointer-events-none absolute bottom-full left-1/2 z-10 mb-1 -translate-x-1/2 whitespace-nowrap rounded border border-warmgrau/15 bg-surface px-2 py-1 text-center font-body text-xs leading-tight text-warmgrau/85 opacity-0 shadow-sm transition-opacity duration-100 group-hover:opacity-100 motion-reduce:transition-none"
               >
                 <span className="block font-semibold text-waldgruen-dark">
                   {bucketLabel(bucket.start)}
@@ -510,7 +510,7 @@ export function CampaignCreatorStats({
     <section
       id="creator-stats"
       aria-labelledby="creator-stats-heading"
-      className="scroll-mt-32 rounded-md border border-warmgrau/12 bg-white/75 p-5 shadow-sm md:p-7"
+      className="scroll-mt-32 rounded-md border border-warmgrau/12 bg-surface/75 p-5 shadow-sm md:p-7"
     >
       <h2
         id="creator-stats-heading"

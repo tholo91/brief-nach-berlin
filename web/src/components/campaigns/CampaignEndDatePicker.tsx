@@ -94,7 +94,7 @@ export function CampaignEndDatePicker({
               />
               <label
                 htmlFor={id}
-                className="flex min-h-11 cursor-pointer items-center justify-center rounded-md border border-warmgrau/20 bg-white px-4 py-2 font-body text-sm font-semibold text-warmgrau/80 transition-colors hover:border-waldgruen/40 peer-checked:border-waldgruen peer-checked:bg-waldgruen/8 peer-checked:text-waldgruen-dark peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-waldgruen peer-disabled:cursor-not-allowed peer-disabled:opacity-60"
+                className="flex min-h-11 cursor-pointer items-center justify-center rounded-md border border-warmgrau/20 bg-surface px-4 py-2 font-body text-sm font-semibold text-warmgrau/80 transition-colors hover:border-waldgruen/40 peer-checked:border-waldgruen peer-checked:bg-waldgruen/8 peer-checked:text-waldgruen-dark peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-waldgruen peer-disabled:cursor-not-allowed peer-disabled:opacity-60"
               >
                 {CHOICE_LABELS[choice]}
               </label>
@@ -120,7 +120,7 @@ export function CampaignEndDatePicker({
             }
             aria-invalid={Boolean(error)}
             aria-describedby={error ? errorId : previewId}
-            className="rounded-md border border-warmgrau/20 bg-white px-4 py-3 font-body text-base outline-none focus:border-waldgruen focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-waldgruen disabled:opacity-60"
+            className="rounded-md border border-warmgrau/20 bg-surface px-4 py-3 font-body text-base outline-none focus:border-waldgruen focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-waldgruen disabled:opacity-60"
           />
         </div>
       )}

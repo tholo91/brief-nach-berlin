@@ -65,7 +65,7 @@ export function CampaignLogo({
       <span
         role="img"
         aria-label={`Logo oder Bild von ${displayName}`}
-        className={`${classes.container} shrink-0 bg-white ${classes.image}`}
+        className={`${classes.container} shrink-0 bg-surface ${classes.image}`}
         style={{
           backgroundImage: `url(${logoUrl})`,
           backgroundPosition: "center",

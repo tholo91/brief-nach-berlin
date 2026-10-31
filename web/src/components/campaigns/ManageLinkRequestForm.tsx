@@ -43,7 +43,7 @@ export function ManageLinkRequestForm() {
   return (
     <div aria-live="polite">
       {result?.ok ? (
-        <div className="mt-6 rounded-xl border border-waldgruen/20 bg-white/60 px-5 py-4">
+        <div className="mt-6 rounded-xl border border-waldgruen/20 bg-surface/60 px-5 py-4">
           <p
             ref={titleRef}
             tabIndex={-1}
@@ -75,7 +75,7 @@ export function ManageLinkRequestForm() {
               disabled={pending}
               aria-invalid={error ? true : undefined}
               aria-describedby={error ? "manage-link-error" : undefined}
-              className="min-h-12 w-full min-w-0 rounded-md border border-warmgrau/20 bg-white px-4 py-3 font-body text-base outline-none focus:border-waldgruen disabled:opacity-60 sm:flex-1"
+              className="min-h-12 w-full min-w-0 rounded-md border border-warmgrau/20 bg-surface px-4 py-3 font-body text-base outline-none focus:border-waldgruen disabled:opacity-60 sm:flex-1"
             />
             <button
               type="submit"

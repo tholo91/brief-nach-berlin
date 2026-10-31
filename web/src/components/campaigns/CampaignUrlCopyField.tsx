@@ -110,7 +110,7 @@ export function CampaignUrlCopyField({
           className={`group inline-grid min-w-0 max-w-full grid-cols-[1fr_auto] items-center gap-2 rounded-md border px-3 py-2 text-left font-body text-sm outline-none transition-all duration-200 ${
             copied
               ? "border-waldgruen/40 bg-waldgruen/8 text-waldgruen-dark"
-              : "border-warmgrau/16 bg-white/55 text-warmgrau/70 hover:border-waldgruen/35 hover:bg-white/80 focus:border-waldgruen"
+              : "border-warmgrau/16 bg-surface/55 text-warmgrau/70 hover:border-waldgruen/35 hover:bg-surface/80 focus:border-waldgruen"
           }`}
         >
           <span className="min-w-0 [overflow-wrap:anywhere]">
@@ -130,7 +130,7 @@ export function CampaignUrlCopyField({
   }
 
   return (
-    <div className="grid gap-2 rounded-md border border-warmgrau/15 bg-white/65 px-4 py-4">
+    <div className="grid gap-2 rounded-md border border-warmgrau/15 bg-surface/65 px-4 py-4">
       <label
         htmlFor="campaign-public-url"
         className="font-typewriter text-xs font-bold uppercase tracking-widest text-waldgruen/60"
@@ -142,7 +142,7 @@ export function CampaignUrlCopyField({
           id="campaign-public-url"
           type="button"
           onClick={copyUrl}
-          className="min-w-0 rounded-md border border-warmgrau/20 bg-white px-3 py-2 text-left font-body text-sm outline-none transition-colors hover:border-waldgruen/40 focus:border-waldgruen"
+          className="min-w-0 rounded-md border border-warmgrau/20 bg-surface px-3 py-2 text-left font-body text-sm outline-none transition-colors hover:border-waldgruen/40 focus:border-waldgruen"
         >
           <span className="break-all text-warmgrau/55">{parts.prefix}</span>
           <span className="break-all font-bold text-waldgruen-dark">

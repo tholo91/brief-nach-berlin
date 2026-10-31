@@ -35,7 +35,7 @@ export function CampaignReferralShareButton({
     <a
       href={fallbackHref}
       onClick={handleClick}
-      className="inline-flex min-h-11 items-center justify-center gap-2 whitespace-normal text-balance rounded-md border border-waldgruen/30 bg-white/45 px-4 py-2.5 text-center font-body text-sm font-semibold text-waldgruen-dark transition-[border-color,background-color,transform] duration-200 hover:border-waldgruen hover:bg-white/80 active:translate-y-px focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-waldgruen"
+      className="inline-flex min-h-11 items-center justify-center gap-2 whitespace-normal text-balance rounded-md border border-waldgruen/30 bg-surface/45 px-4 py-2.5 text-center font-body text-sm font-semibold text-waldgruen-dark transition-[border-color,background-color,transform] duration-200 hover:border-waldgruen hover:bg-surface/80 active:translate-y-px focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-waldgruen"
     >
       <ShareIcon />
       Brief-nach-Berlin weiterempfehlen

@@ -63,7 +63,7 @@ export function CampaignFixedRecipientBadge({
           type="button"
           autoFocus
           onClick={() => dialogRef.current?.close()}
-          className="mt-6 inline-flex min-h-11 items-center justify-center rounded-full bg-waldgruen px-5 font-body text-sm font-semibold text-white hover:bg-waldgruen-dark focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-waldgruen"
+          className="mt-6 inline-flex min-h-11 items-center justify-center rounded-full bg-waldgruen px-5 font-body text-sm font-semibold text-creme hover:bg-waldgruen-dark focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-waldgruen"
         >
           Schließen
         </button>

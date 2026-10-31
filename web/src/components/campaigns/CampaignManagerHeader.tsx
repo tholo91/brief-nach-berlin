@@ -70,7 +70,7 @@ export function CampaignManagerHeader({
   const titleTail = title.slice(lastSpace + 1);
 
   return (
-    <section className="rounded-md border border-warmgrau/12 bg-white/75 p-5 shadow-sm md:p-7">
+    <section className="rounded-md border border-warmgrau/12 bg-surface/75 p-5 shadow-sm md:p-7">
       <div className="grid grid-cols-[auto_minmax(0,1fr)] items-center gap-x-4 gap-y-4 sm:items-start md:gap-x-6">
         <div className="flex sm:row-span-2">
           {onEditImage ? (

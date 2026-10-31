@@ -51,7 +51,7 @@ export function CampaignEndedView({
 
         <section
           aria-labelledby="campaign-ended-heading"
-          className="mt-8 rounded-md border border-waldgruen/15 border-l-4 border-l-waldgruen bg-white/70 p-5 shadow-sm backdrop-blur-sm sm:p-6"
+          className="mt-8 rounded-md border border-waldgruen/15 border-l-4 border-l-waldgruen bg-surface/70 p-5 shadow-sm backdrop-blur-sm sm:p-6"
         >
           <h2
             id="campaign-ended-heading"

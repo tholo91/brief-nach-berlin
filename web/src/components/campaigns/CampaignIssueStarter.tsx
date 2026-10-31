@@ -122,7 +122,7 @@ export function CampaignIssueStarter({
   }, [creatorName, externalUrl, logoPath, router, slug, targetLevel, targetState, title, tooShort, trimmed]);
 
   return (
-    <div className="rounded-md border border-waldgruen/20 bg-white/90 p-4 shadow-[0_18px_48px_-28px_rgba(27,67,50,0.55)] backdrop-blur-sm sm:p-5">
+    <div className="rounded-md border border-waldgruen/20 bg-surface/90 p-4 shadow-[0_18px_48px_-28px_rgba(27,67,50,0.55)] backdrop-blur-sm sm:p-5">
       <div>
         <h3 className="font-body text-2xl font-bold leading-tight tracking-tight text-waldgruen-dark">
           Dein Brief ist vorbereitet
@@ -147,7 +147,7 @@ export function CampaignIssueStarter({
           setIssueText(event.target.value);
           writeLandingDraft(event.target.value, slug);
         }}
-        className="scrollbar-hide mt-5 w-full resize-none overflow-y-auto rounded-lg border border-warmgrau/25 bg-creme/65 px-4 py-3 font-body text-base leading-relaxed text-warmgrau outline-none transition-colors focus:border-waldgruen focus:bg-white focus:ring-2 focus:ring-waldgruen/20"
+        className="scrollbar-hide mt-5 w-full resize-none overflow-y-auto rounded-lg border border-warmgrau/25 bg-creme/65 px-4 py-3 font-body text-base leading-relaxed text-warmgrau outline-none transition-colors focus:border-waldgruen focus:bg-surface focus:ring-2 focus:ring-waldgruen/20"
       />
       <div className="mt-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <p

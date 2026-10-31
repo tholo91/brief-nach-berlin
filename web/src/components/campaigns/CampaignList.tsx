@@ -55,7 +55,7 @@ export function CampaignList({
         <li key={campaign.slug} className="min-w-0">
           <Link
             href={`/kampagne/${campaign.slug}`}
-            className="group block h-full w-full max-w-full rounded-md border border-waldgruen/12 bg-white/55 p-3 transition-colors duration-150 hover:bg-white/85 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-waldgruen active:scale-[0.99]"
+            className="group block h-full w-full max-w-full rounded-md border border-waldgruen/12 bg-surface/55 p-3 transition-colors duration-150 hover:bg-surface/85 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-waldgruen active:scale-[0.99]"
           >
             <div className="flex min-w-0 items-start gap-3">
               <CampaignLogo

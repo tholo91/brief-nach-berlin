@@ -56,7 +56,7 @@ function PendingApprovalNotice({ campaign }: { campaign: NonNullable<Awaited<Ret
   return (
     <>
     <section className="mx-auto max-w-2xl px-6 py-10 md:py-14">
-      <div className="rounded-2xl border border-warmgrau/12 bg-white/75 p-6 shadow-sm md:p-8">
+      <div className="rounded-2xl border border-warmgrau/12 bg-surface/75 p-6 shadow-sm md:p-8">
         <p className="font-typewriter text-sm font-bold uppercase tracking-widest text-waldgruen/60">
           Kampagne verwalten
         </p>
@@ -92,7 +92,7 @@ const OUTLINE_BUTTON_CLASS =
 function AccessNotice() {
   return (
     <section className="mx-auto max-w-2xl px-6 py-16 md:py-24">
-      <div className="rounded-2xl border border-warmgrau/12 bg-white/75 p-6 shadow-sm md:p-8">
+      <div className="rounded-2xl border border-warmgrau/12 bg-surface/75 p-6 shadow-sm md:p-8">
         <p className="font-typewriter text-sm font-bold uppercase tracking-widest text-waldgruen/60">
           Kampagne verwalten
         </p>

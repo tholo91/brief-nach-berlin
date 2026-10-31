@@ -104,7 +104,7 @@ export function SchreibMerzExperienceV2() {
 
       <section className="relative mx-auto grid max-w-6xl items-center gap-10 px-5 pb-14 pt-10 sm:px-8 sm:pb-20 sm:pt-16 lg:grid-cols-[1.02fr_0.98fr] lg:gap-16 lg:py-20">
         <div className="relative z-10">
-          <div className="inline-flex -rotate-1 items-center gap-2 border border-waldgruen/20 bg-white/75 px-3 py-1.5 font-typewriter text-xs font-bold uppercase tracking-[0.16em] text-waldgruen shadow-sm">
+          <div className="inline-flex -rotate-1 items-center gap-2 border border-waldgruen/20 bg-surface/75 px-3 py-1.5 font-typewriter text-xs font-bold uppercase tracking-[0.16em] text-waldgruen shadow-sm">
             <span aria-hidden="true">✉</span>
             Für 16- bis 25-Jährige
           </div>
@@ -151,13 +151,13 @@ export function SchreibMerzExperienceV2() {
               </p>
             </div>
           </div>
-          <div className="absolute -bottom-5 right-5 rotate-2 rounded-sm border border-warmgrau/15 bg-white px-4 py-3 shadow-lg sm:right-9">
+          <div className="absolute -bottom-5 right-5 rotate-2 rounded-sm border border-warmgrau/15 bg-surface px-4 py-3 shadow-lg sm:right-9">
             <p className="font-handwriting text-xl text-waldgruen-dark">Demokratie ist kein Zuschauersport.</p>
           </div>
         </div>
       </section>
 
-      <section id="anliegen" aria-labelledby="anliegen-heading" className="relative border-y border-waldgruen/15 bg-white/45 py-14 sm:py-20">
+      <section id="anliegen" aria-labelledby="anliegen-heading" className="relative border-y border-waldgruen/15 bg-surface/45 py-14 sm:py-20">
         <div className="mx-auto max-w-5xl px-5 sm:px-8">
           <div className="max-w-2xl">
             <p className="font-typewriter text-xs font-bold uppercase tracking-[0.18em] text-waldgruen/65">Schritt 1 · dein Anliegen</p>
@@ -200,7 +200,7 @@ export function SchreibMerzExperienceV2() {
                 rows={10}
                 onChange={(event) => setIssueText(event.target.value)}
                 placeholder="Zum Beispiel: Ich suche seit Monaten ein WG-Zimmer. Die Mieten sind für mich als Student:in kaum bezahlbar …"
-                className="mt-5 min-h-72 w-full resize-y rounded-lg border border-dashed border-waldgruen/25 bg-white px-4 py-4 font-body text-base leading-relaxed text-warmgrau outline-none transition placeholder:text-warmgrau/40 focus:border-waldgruen focus:ring-2 focus:ring-waldgruen/15 sm:min-h-80 sm:px-5"
+                className="mt-5 min-h-72 w-full resize-y rounded-lg border border-dashed border-waldgruen/25 bg-surface px-4 py-4 font-body text-base leading-relaxed text-warmgrau outline-none transition placeholder:text-warmgrau/40 focus:border-waldgruen focus:ring-2 focus:ring-waldgruen/15 sm:min-h-80 sm:px-5"
               />
               <div className="mt-5 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                 <div>

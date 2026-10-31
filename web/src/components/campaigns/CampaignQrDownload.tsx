@@ -174,7 +174,7 @@ export function CampaignQrDownload({ url, slug, logoUrl, fileName, ariaLabel, de
       <canvas
         ref={canvasRef}
         aria-label={ariaLabel ?? "QR-Code zum Kampagnenlink"}
-        className="h-24 w-24 rounded-md border border-warmgrau/12 bg-white sm:h-28 sm:w-28"
+        className="h-24 w-24 rounded-md border border-warmgrau/12 bg-surface sm:h-28 sm:w-28"
       />
       <div className="grid gap-3">
         <div>

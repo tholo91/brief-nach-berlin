@@ -211,7 +211,7 @@ export function CreatorSurveyForm({
 
   if (done) {
     return (
-      <div className="mt-6 rounded-md border border-warmgrau/12 bg-white/75 p-6 shadow-sm md:p-8">
+      <div className="mt-6 rounded-md border border-warmgrau/12 bg-surface/75 p-6 shadow-sm md:p-8">
         <h1
           ref={headingRef}
           tabIndex={-1}
@@ -247,7 +247,7 @@ export function CreatorSurveyForm({
     <form
       onSubmit={handleSubmit}
       noValidate
-      className="mt-6 grid gap-8 rounded-md border border-warmgrau/12 bg-white/75 p-5 shadow-sm md:p-8"
+      className="mt-6 grid gap-8 rounded-md border border-warmgrau/12 bg-surface/75 p-5 shadow-sm md:p-8"
     >
       <header>
         <h1

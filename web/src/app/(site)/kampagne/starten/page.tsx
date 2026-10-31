@@ -59,7 +59,7 @@ export default function StartCampaignPage() {
           </div>
         </div>
 
-        <div className="mt-8 grid gap-4 rounded-md border border-waldgruen/12 bg-white/55 p-5 md:mt-10 md:p-6">
+        <div className="mt-8 grid gap-4 rounded-md border border-waldgruen/12 bg-surface/55 p-5 md:mt-10 md:p-6">
           <div>
             <p className="font-typewriter text-xs font-bold uppercase tracking-widest text-waldgruen/60">
               So funktioniert es
@@ -80,7 +80,7 @@ export default function StartCampaignPage() {
           </ol>
         </div>
 
-        <div className="mt-10 rounded-md border border-warmgrau/12 bg-white/70 p-5 shadow-sm md:mt-12 md:p-8">
+        <div className="mt-10 rounded-md border border-warmgrau/12 bg-surface/70 p-5 shadow-sm md:mt-12 md:p-8">
           <CreatorCampaignForm />
         </div>
       </div>

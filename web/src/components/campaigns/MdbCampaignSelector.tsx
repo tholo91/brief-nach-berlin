@@ -155,7 +155,7 @@ export function MdbCampaignSelector({
                   "rounded-full border px-3 py-1.5 font-body text-sm font-semibold transition-colors active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60",
                   active
                     ? "border-waldgruen bg-waldgruen text-creme"
-                    : "border-warmgrau/25 bg-white text-waldgruen-dark hover:border-waldgruen/50",
+                    : "border-warmgrau/25 bg-surface text-waldgruen-dark hover:border-waldgruen/50",
                 ].join(" ")}
               >
                 {party}
@@ -174,12 +174,12 @@ export function MdbCampaignSelector({
           onChange={(event) => setQuery(event.target.value)}
           disabled={disabled}
           placeholder="Name, Partei, Wahlkreis oder Ausschuss"
-          className="rounded-md border border-warmgrau/20 bg-white px-3 py-2.5 font-body text-base outline-none focus:border-waldgruen disabled:opacity-60"
+          className="rounded-md border border-warmgrau/20 bg-surface px-3 py-2.5 font-body text-base outline-none focus:border-waldgruen disabled:opacity-60"
         />
       </label>
 
       {hasActiveFilter && (
-        <div className="flex flex-wrap items-center justify-between gap-3 rounded-md border border-warmgrau/15 bg-white/55 px-3 py-2.5">
+        <div className="flex flex-wrap items-center justify-between gap-3 rounded-md border border-warmgrau/15 bg-surface/55 px-3 py-2.5">
           <p className="font-body text-sm text-warmgrau/70">
             {matchingPoliticians.length} passend{matchingPoliticians.length === 1 ? "e Person" : "e Personen"}
           </p>
@@ -215,7 +215,7 @@ export function MdbCampaignSelector({
       <MdbCampaignHiddenInputs selectedIds={selectedIds} inputName={inputName} />
 
       <div
-        className="grid max-h-[32rem] gap-2 overflow-x-hidden overflow-y-auto rounded-md border border-warmgrau/15 bg-white/55 p-2"
+        className="grid max-h-[32rem] gap-2 overflow-x-hidden overflow-y-auto rounded-md border border-warmgrau/15 bg-surface/55 p-2"
         role="group"
         aria-label="Bundestagsabgeordnete auswählen"
       >

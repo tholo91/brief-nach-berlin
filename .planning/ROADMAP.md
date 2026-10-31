@@ -1247,6 +1247,16 @@ Plans:
 - [ ] TBD (promote with /gsd-review-backlog when ready)
 
 
+### Phase 999.50: Dark Mode für Kampagnenseiten (BACKLOG)
+
+**Goal:** Häufig besuchte Kampagnenseiten im Dark Mode angenehm lesbar gestalten, mit einer stimmigen Nachtversion der bestehenden Menschenmenge.
+**Stand 2026-10-31:** Lokal umgesetzt, Nachtillustration erstellt, gezielte Tests und TypeScript-Prüfung des Quellcodes bestanden. Browserprüfung der hellen und dunklen Ansicht auf Mobilgerät und Desktop sowie Kontrastprüfung der Verwaltungszustände offen; laufender lokaler Server war aus der Sandbox nicht erreichbar. Der reguläre TypeScript-Aufruf scheitert an doppelten generierten `.next`-Typdateien.
+**Requirements:** TBD
+**Plans:** 0 plans
+
+Plans:
+- [ ] TBD (promote with /gsd-review-backlog when ready)
+
 ## Progress
 
 **Execution Order:**

@@ -73,9 +73,9 @@ export default async function VerifyCampaignEmailPage({
 
   if (params.status === "wartet") {
     return (
-      <section className="relative overflow-hidden bg-creme">
+      <section className="theme-auto relative overflow-hidden bg-creme">
         <div className="mx-auto max-w-2xl px-6 py-14 md:py-20">
-          <div className="rounded-md border border-warmgrau/12 bg-white/80 p-6 text-center shadow-sm md:p-8">
+          <div className="rounded-md border border-warmgrau/12 bg-surface/80 p-6 text-center shadow-sm md:p-8">
             <CampaignCreatorMark />
             <p className="mt-4 font-typewriter text-sm font-bold uppercase tracking-widest text-waldgruen/60">
               E-Mail bestätigt
@@ -105,9 +105,9 @@ export default async function VerifyCampaignEmailPage({
       : null;
 
     return (
-      <section className="relative overflow-hidden bg-creme">
+      <section className="theme-auto relative overflow-hidden bg-creme">
         <div className="mx-auto grid max-w-2xl gap-5 px-6 py-14 md:py-20">
-          <div className="rounded-md border border-warmgrau/12 bg-white/80 p-6 text-center shadow-sm md:p-8">
+          <div className="rounded-md border border-warmgrau/12 bg-surface/80 p-6 text-center shadow-sm md:p-8">
             <CampaignCreatorMark />
             <p className="mt-4 font-typewriter text-sm font-bold uppercase tracking-widest text-waldgruen/60">
               Kampagne bestätigen
@@ -130,14 +130,14 @@ export default async function VerifyCampaignEmailPage({
                 href={CAMPAIGN_CREATOR_FEEDBACK_URL}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex min-h-12 items-center justify-center rounded-md border border-waldgruen/25 bg-white px-5 py-3 font-body text-base font-semibold text-waldgruen-dark transition-colors hover:border-waldgruen"
+                className="inline-flex min-h-12 items-center justify-center rounded-md border border-waldgruen/25 bg-surface px-5 py-3 font-body text-base font-semibold text-waldgruen-dark transition-colors hover:border-waldgruen"
               >
                 Feedback geben
               </a>
             </div>
           </div>
           {share && (
-            <div className="rounded-md border border-warmgrau/12 bg-white/75 p-5 shadow-sm md:p-6">
+            <div className="rounded-md border border-warmgrau/12 bg-surface/75 p-5 shadow-sm md:p-6">
               <CampaignUrlCopyField url={share.url} variant="compact" />
               <div className="mt-5">
                 <p className="mb-3 font-body text-sm leading-relaxed text-warmgrau/70">
@@ -168,9 +168,9 @@ export default async function VerifyCampaignEmailPage({
   };
 
   return (
-    <section className="relative overflow-hidden bg-creme">
+    <section className="theme-auto relative overflow-hidden bg-creme">
       <div className="mx-auto max-w-2xl px-6 py-14 md:py-20">
-        <div className="rounded-md border border-warmgrau/12 bg-white/80 p-6 text-center shadow-sm md:p-8">
+        <div className="rounded-md border border-warmgrau/12 bg-surface/80 p-6 text-center shadow-sm md:p-8">
           <CampaignCreatorMark />
           <p className="mt-4 font-typewriter text-sm font-bold uppercase tracking-widest text-waldgruen/60">
             Kampagne bestätigen
@@ -183,7 +183,7 @@ export default async function VerifyCampaignEmailPage({
           </p>
           <Link
             href="/kampagne/starten"
-            className="mt-6 inline-flex min-h-12 items-center justify-center rounded-md border border-waldgruen/25 bg-white px-5 py-3 font-body text-base font-semibold text-waldgruen-dark transition-colors hover:border-waldgruen"
+            className="mt-6 inline-flex min-h-12 items-center justify-center rounded-md border border-waldgruen/25 bg-surface px-5 py-3 font-body text-base font-semibold text-waldgruen-dark transition-colors hover:border-waldgruen"
           >
             Zurück zum Kampagnenstart
           </Link>

@@ -218,7 +218,7 @@ export default async function NgoBriefkampagnePage() {
             />
           </section>
 
-          <figure className="mt-12 overflow-hidden rounded-md border border-waldgruen/12 bg-white/55 shadow-sm">
+          <figure className="mt-12 overflow-hidden rounded-md border border-waldgruen/12 bg-surface/55 shadow-sm">
             <Image
               src="/images/img-ngo-briefkampagne.webp"
               alt="Illustration eines Tisches mit handgeschriebenen Briefen, Airmail-Umschlägen und einer Wahlkreiskarte vor einem hellen Berliner Fenster"
@@ -298,7 +298,7 @@ export default async function NgoBriefkampagnePage() {
               </Link>
               <a
                 href={CONTACT_MAILTO}
-                className="inline-flex min-h-12 items-center justify-center gap-2 rounded-lg border border-waldgruen/18 bg-white/55 px-8 py-3 font-body font-semibold text-waldgruen-dark transition-colors hover:border-waldgruen/35 hover:bg-white/85 active:translate-y-px"
+                className="inline-flex min-h-12 items-center justify-center gap-2 rounded-lg border border-waldgruen/18 bg-surface/55 px-8 py-3 font-body font-semibold text-waldgruen-dark transition-colors hover:border-waldgruen/35 hover:bg-surface/85 active:translate-y-px"
               >
                 <span>Thomas schreiben</span>
               </a>

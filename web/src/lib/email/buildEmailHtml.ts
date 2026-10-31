@@ -39,10 +39,9 @@ function buildVariantUrl(recipientEmail: string, debug?: LetterDebugPayload): st
 // its own anchor pointing at /feedback with the chosen rating; no JS,
 // no hover state (mail clients strip :hover).
 //
-// Visual: 3 gold-filled + 2 gold-outlined stars. The neutral midpoint
-// invites a "besser/schlechter"-Polarität — leaving it as 4/5 made the
-// rating look already-decided. The form on /feedback prefills with
-// whichever star was clicked and lets the user change it.
+// Visual: 4 gold-filled + 1 gold-outlined star, passend zum Schnitt von ca. 4,3.
+// Reine Optik: Gewertet wird der angeklickte Stern. The form on /feedback
+// prefills with whichever star was clicked and lets the user change it.
 // compact: Frage und Sterne als zwei Zellen auf gleicher Höhe (Follow-up). Unter 480px
 // stapelt die Mail die Zellen und zeigt den Hinweis (Klassen bnb-rating-* im <head>).
 export function buildStarBarHtml(
@@ -71,14 +70,14 @@ export function buildStarBarHtml(
     <table role="presentation" align="center" cellpadding="0" cellspacing="0" style="margin:0 auto;border-collapse:collapse;">
       <tr>
         <td class="bnb-rating-cell" valign="middle" style="padding:0 24px 0 0;vertical-align:middle;font-family:Georgia,'Times New Roman',serif;font-size:14px;color:#2D5016;font-weight:bold;line-height:1.4;white-space:nowrap;">${feedbackQuestion}</td>
-        <td class="bnb-rating-cell" valign="middle" style="padding:0;vertical-align:middle;line-height:1;white-space:nowrap;">${star(1, "filled")}${star(2, "filled")}${star(3, "filled")}${star(4, "outline")}${star(5, "outline")}</td>
+        <td class="bnb-rating-cell" valign="middle" style="padding:0;vertical-align:middle;line-height:1;white-space:nowrap;">${star(1, "filled")}${star(2, "filled")}${star(3, "filled")}${star(4, "filled")}${star(5, "outline")}</td>
       </tr>
     </table>
     <p class="bnb-rating-hint" style="display:none;margin:0 0 4px;font-family:Georgia,'Times New Roman',serif;font-size:12px;color:#b0b0b0;line-height:1.4;">${copy.feedbackHint}</p>`;
   }
   return `
     <p style="margin:0 0 8px;font-family:Georgia,'Times New Roman',serif;font-size:12px;color:#2D5016;font-weight:bold;line-height:1.4;">${feedbackQuestion}</p>
-    <div style="white-space:nowrap;line-height:1;">${star(1, "filled")}${star(2, "filled")}${star(3, "filled")}${star(4, "outline")}${star(5, "outline")}</div>
+    <div style="white-space:nowrap;line-height:1;">${star(1, "filled")}${star(2, "filled")}${star(3, "filled")}${star(4, "filled")}${star(5, "outline")}</div>
     <p style="margin:8px 0 0;font-family:Georgia,'Times New Roman',serif;font-size:12px;color:#b0b0b0;line-height:1.4;">${copy.feedbackHint}</p>`;
 }
 

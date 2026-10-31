@@ -103,7 +103,7 @@ exports[`Erwachsenen-Mail bleibt unverändert Kampagne: html 1`] = `
     <a href="https://www.brief-nach-berlin.de/feedback?r=3&t=fixed-token" target="_blank" rel="noopener noreferrer"
        style="color:#D4A017;mso-color-alt:#D4A017;text-decoration:none;font-size:26px;line-height:1;padding:8px 4px;display:inline-block;">&#9733;</a>
     <a href="https://www.brief-nach-berlin.de/feedback?r=4&t=fixed-token" target="_blank" rel="noopener noreferrer"
-       style="color:#D4A017;mso-color-alt:#D4A017;text-decoration:none;font-size:26px;line-height:1;padding:8px 4px;display:inline-block;">&#9734;</a>
+       style="color:#D4A017;mso-color-alt:#D4A017;text-decoration:none;font-size:26px;line-height:1;padding:8px 4px;display:inline-block;">&#9733;</a>
     <a href="https://www.brief-nach-berlin.de/feedback?r=5&t=fixed-token" target="_blank" rel="noopener noreferrer"
        style="color:#D4A017;mso-color-alt:#D4A017;text-decoration:none;font-size:26px;line-height:1;padding:8px 4px;display:inline-block;">&#9734;</a></div>
     <p style="margin:8px 0 0;font-family:Georgia,'Times New Roman',serif;font-size:12px;color:#b0b0b0;line-height:1.4;">Dauert 10 Sek, hilft mir sehr</p>
@@ -387,7 +387,7 @@ exports[`Erwachsenen-Mail bleibt unverändert mit Feedback-Token (Sterne-Bar): h
     <a href="https://www.brief-nach-berlin.de/feedback?r=3&t=fixed-token" target="_blank" rel="noopener noreferrer"
        style="color:#D4A017;mso-color-alt:#D4A017;text-decoration:none;font-size:26px;line-height:1;padding:8px 4px;display:inline-block;">&#9733;</a>
     <a href="https://www.brief-nach-berlin.de/feedback?r=4&t=fixed-token" target="_blank" rel="noopener noreferrer"
-       style="color:#D4A017;mso-color-alt:#D4A017;text-decoration:none;font-size:26px;line-height:1;padding:8px 4px;display:inline-block;">&#9734;</a>
+       style="color:#D4A017;mso-color-alt:#D4A017;text-decoration:none;font-size:26px;line-height:1;padding:8px 4px;display:inline-block;">&#9733;</a>
     <a href="https://www.brief-nach-berlin.de/feedback?r=5&t=fixed-token" target="_blank" rel="noopener noreferrer"
        style="color:#D4A017;mso-color-alt:#D4A017;text-decoration:none;font-size:26px;line-height:1;padding:8px 4px;display:inline-block;">&#9734;</a></div>
     <p style="margin:8px 0 0;font-family:Georgia,'Times New Roman',serif;font-size:12px;color:#b0b0b0;line-height:1.4;">Dauert 10 Sek, hilft mir sehr</p>

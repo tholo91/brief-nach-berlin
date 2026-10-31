@@ -42,10 +42,18 @@ export async function GET(request: Request) {
     } catch {
       deleteUrl = undefined;
     }
+    // ?locale=en|tr für die Übersetzungen, ?mdb=1 für den MdB-Fall mit Sprechstunden-Tipp.
+    const localeParam = url.searchParams.get("locale");
+    const locale = localeParam === "en" || localeParam === "tr" ? localeParam : "de";
+    const mdb = url.searchParams.get("mdb") === "1"
+      ? { recipientKind: "mdb" as const, politicianName: "Anna Müller", politicianId: 123, plz: "28195" }
+      : {};
     const { html, text, subject } = buildFollowupHtml({
       token: dummyToken,
       baseUrl: origin,
       deleteUrl,
+      locale,
+      ...mdb,
     });
     return new NextResponse(wantText ? text : html, {
       status: 200,
@@ -53,7 +61,8 @@ export async function GET(request: Request) {
         "Content-Type": wantText
           ? "text/plain; charset=utf-8"
           : "text/html; charset=utf-8",
-        "X-Email-Subject": subject,
+        // Header dürfen nur Latin-1 enthalten, der türkische Betreff nicht.
+        "X-Email-Subject": encodeURIComponent(subject),
       },
     });
   }

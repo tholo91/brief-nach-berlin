@@ -17,6 +17,9 @@ export interface SendFollowupEmailParams {
   locale?: Locale;
   recipientEmail: string;
   politicianName?: string;
+  politicianTitle?: string | null;
+  politicianId?: number;
+  plz?: string;
   recipientKind?: SendLetterEmailParams["recipientKind"];
   // Selber signierter Token wie für die Originalmail. Wir signieren NICHT neu —
   // /feedback erwartet den vollen debug_payload aus dem ursprünglichen Token.
@@ -36,6 +39,9 @@ export async function sendFollowupEmail(
     const { subject, html, text } = buildFollowupHtml({
       token: params.feedbackToken,
       politicianName: params.politicianName,
+      politicianTitle: params.politicianTitle,
+      politicianId: params.politicianId,
+      plz: params.plz,
       recipientKind: params.recipientKind,
       locale: params.locale ?? DEFAULT_LOCALE,
       deleteUrl: `${APP_URL}/datenloeschen?t=${createDataDeletionToken(params.recipientEmail)}`,

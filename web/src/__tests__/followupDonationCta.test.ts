@@ -17,21 +17,27 @@ function countOccurrences(haystack: string, needle: string): number {
 }
 
 describe("follow-up donation box", () => {
-  it("renders full-width stars and the compact donation box with avatar", () => {
+  it("renders the donation box with text around Thomas and a single button", () => {
     const followup = buildFollowupHtml({ token: "signed-token" });
     const copy = SUPPORT_EMAIL_COPY.de;
 
     expect(SUPPORT_CONTENT.ctas.donate.href).toBe(DONATION_PROVIDER_URL);
-    expect(followup.html).not.toContain("48.5%");
-    expect(followup.html).toContain("followup-rating-column");
     expect(followup.html).not.toContain("spenden-banner-thomas.jpg");
+    expect(followup.html).not.toContain("email-followup-envelope.png");
 
-    expect(followup.html).toContain(`src="${APP_URL}${SUPPORT_CONTENT.founder.avatarPath}"`);
-    expect(followup.html).toContain("bnb-support-action-primary");
-    expect(followup.html).toContain(".bnb-support-action {");
+    expect(followup.html).toContain(`src="${APP_URL}${SUPPORT_CONTENT.founder.cutoutPath}"`);
+    expect(followup.html).not.toContain(SUPPORT_CONTENT.founder.avatarPath);
+    expect(followup.html).toContain('class="bnb-support-corner"');
+    expect(followup.html).toMatch(/<img class="bnb-support-photo"[^>]*align="right"[^>]*float:right/);
+    expect(followup.html.indexOf('class="bnb-support-photo"')).toBeLessThan(
+      followup.html.indexOf(escapeHtml(copy.followupBody)),
+    );
+    expect(followup.html).not.toContain('<td class="bnb-support');
     expect(followup.html).toContain("icon-heart-white.png");
-    expect(followup.html).toContain(escapeHtml(copy.infoButton));
-    expect(followup.html).toContain("/spenden?src=email");
+    expect(followup.html).not.toContain(escapeHtml(copy.infoButton));
+    expect(followup.html).not.toContain("/spenden?src=email");
+    expect(followup.html).toContain(`>${copy.followupStatus}</span>`);
+    expect(followup.html).not.toContain(copy.status);
 
     expect(countOccurrences(followup.html, DONATION_PROVIDER_URL)).toBe(1);
     expect(countOccurrences(followup.text, DONATION_PROVIDER_URL)).toBe(1);
@@ -40,13 +46,13 @@ describe("follow-up donation box", () => {
     expect(followup.text).toContain("Schon 5 € helfen");
   });
 
-  it("uses the baseUrl override for the avatar", () => {
+  it("uses the baseUrl override for the photo", () => {
     const html = buildFollowupHtml({ token: "preview", baseUrl: "http://localhost:3011" }).html;
 
-    expect(html).toContain(`src="http://localhost:3011${SUPPORT_CONTENT.founder.avatarPath}"`);
+    expect(html).toContain(`src="http://localhost:3011${SUPPORT_CONTENT.founder.cutoutPath}"`);
   });
 
-  it("places the donation box between the stars and the sign-off", () => {
+  it("places the stars first, then the donation box, then the sign-off", () => {
     const followup = buildFollowupHtml({ token: "signed-token" });
     const copy = SUPPORT_EMAIL_COPY.de;
     const html = followup.html;
@@ -61,10 +67,10 @@ describe("follow-up donation box", () => {
     const text = followup.text;
     const tStar = text.indexOf("/feedback?r=5");
     const tBody = text.indexOf(copy.followupBody);
-    const tIgnore = text.indexOf(getEmailCopy("de").followup.ignore);
+    const tThanks = text.indexOf(getEmailCopy("de").followup.thanks);
     expect(tStar).toBeGreaterThan(-1);
     expect(tStar).toBeLessThan(tBody);
-    expect(tBody).toBeLessThan(tIgnore);
+    expect(tBody).toBeLessThan(tThanks);
   });
 
   const fiveEuro = { de: "Schon 5 €", en: "€5", tr: "5 € bile" } as const;
@@ -103,39 +109,71 @@ describe("follow-up mail is shorter and calmer", () => {
     expect("feedback" in getEmailCopy(locale).followup).toBe(false);
   });
 
-  it("shows the boxed star rating with its question", () => {
+  it("shows the compact boxed star row with its question", () => {
     const html = buildFollowupHtml({ token: "signed-token" }).html;
     const start = html.indexOf("followup-rating-column");
     const tag = html.slice(start, html.indexOf(">", start));
 
     expect(tag).toContain("border:1px solid #E0DCD7");
-    expect(html).toContain("Wie findest du");
+    expect(tag).toContain("padding:8px 16px");
+    expect(html).toContain("Wie findest du deinen Brief?");
     for (let n = 1; n <= 5; n++) {
       expect(html).toContain(`/feedback?r=${n}&t=signed-token&s=2`);
     }
   });
 
-  it("puts the Wahlkreisbüro line before the donation box and drops the share box", () => {
+  it("keeps question and stars on one height, with the hint only on narrow screens", () => {
+    const html = buildFollowupHtml({ token: "signed-token" }).html;
+    const cells = html.match(/<td class="bnb-rating-cell"[^>]*>/g) ?? [];
+
+    expect(cells).toHaveLength(2);
+    for (const cell of cells) expect(cell).toContain("vertical-align:middle");
+    expect(cells[0]).toContain("padding:0 24px 0 0");
+    expect(html).toContain('class="bnb-rating-hint" style="display:none;');
+    expect(html).toContain(getEmailCopy("de").feedbackHint);
+    expect(html).toMatch(/max-width: 480px\)[\s\S]*\.bnb-rating-cell \{ display: block !important;/);
+    expect(html).toMatch(/max-width: 480px\)[\s\S]*\.bnb-rating-hint \{ display: block !important; \}/);
+  });
+
+  it("makes the donation button full width on narrow screens, below the photo", () => {
+    const html = buildFollowupHtml({ token: "signed-token" }).html;
+
+    expect(html).toMatch(/max-width: 480px\)[\s\S]*\.bnb-support-actions \{ clear: both !important;/);
+    expect(html).toMatch(/max-width: 480px\)[\s\S]*\.bnb-support-cta \{ display: block !important; \}/);
+  });
+
+  it("drops the share box, the ignore line and the old Wahlkreisbüro sentence", () => {
     const followup = buildFollowupHtml({
       token: "signed-token",
       recipientKind: "mdb",
       politicianName: "Max Muster",
     });
-    const body = escapeHtml(SUPPORT_EMAIL_COPY.de.followupBody);
 
-    expect(followup.html.indexOf("Wahlkreisbüro finden")).toBeLessThan(followup.html.indexOf(body));
-    expect(followup.text.indexOf("Wahlkreisbüro finden")).toBeLessThan(
-      followup.text.indexOf(SUPPORT_EMAIL_COPY.de.followupBody),
-    );
     expect(followup.html).not.toContain("bnb-share-btn");
     expect(followup.html).not.toContain("Gemeinsam noch lauter");
     expect(followup.text).not.toContain("WhatsApp");
+    expect(followup.html).not.toContain("diese Mail ignorieren");
+    expect(followup.html).not.toContain("Wahlkreisbüro finden");
+    expect("ignore" in getEmailCopy("de").followup).toBe(false);
   });
 
-  it("mentions supporters in the ignore line", () => {
-    expect(getEmailCopy("de").followup.ignore).toBe(
-      "Falls du deinen Brief schon bewertet oder Brief-nach-Berlin unterstützt hast, kannst du diese Mail ignorieren.",
+  it("uses the new opening and ends with the Bremen greeting", () => {
+    const followup = buildFollowupHtml({ token: "signed-token" });
+
+    expect(getEmailCopy("de").followup.created).toBe(
+      "Vor ein paar Tagen hast du deinen Brief-nach-Berlin geschrieben und das freut mich sehr. Ich hoffe, du hast ihn mit deiner Handschrift bereits eingeworfen?",
     );
+    expect(followup.html).toContain("Tausend Dank dir und beste Grüße aus Bremen ✌️");
+    expect(followup.text).toContain("Tausend Dank dir und beste Grüße aus Bremen ✌️");
+  });
+
+  it("keeps the footer as short as the letter mail", () => {
+    const followup = buildFollowupHtml({ token: "signed-token" });
+
+    expect(followup.html).not.toContain("/was-noch-kommt");
+    expect(followup.html).not.toContain("/wer-darf-mdb-schreiben");
+    expect(followup.text).not.toContain("/was-noch-kommt");
+    expect(followup.html).toContain(`>Datenschutz</a>: ${getEmailCopy("de").followup.oneOff}`);
   });
 
   it.each(["de", "en", "tr"] as const)("uses the new preview text for %s", (locale) => {
@@ -151,9 +189,9 @@ describe("follow-up mail is shorter and calmer", () => {
     expect(buildFollowupHtml({ token: "signed-token" }).subject).toBe("Wie fandest du deinen Brief?");
   });
 
-  it("uses the short donation body", () => {
+  it("uses the donation body Thomas approved", () => {
     expect(SUPPORT_EMAIL_COPY.de.followupBody).toBe(
-      "Ich mache das allein und ehrenamtlich und zahle KI, Mailversand und Server bisher selbst. Schon 5 € helfen.",
+      "Ich betreibe Brief-nach-Berlin allein in meiner Freizeit und zahle KI und Server bisher selbst. Schon 5 € helfen.",
     );
     for (const locale of ["de", "en", "tr"] as const) {
       expect(SUPPORT_EMAIL_COPY[locale].followupBody).not.toMatch(/\bwir\b/i);

@@ -42,18 +42,39 @@ function buildVariantUrl(recipientEmail: string, debug?: LetterDebugPayload): st
 // invites a "besser/schlechter"-Polarität — leaving it as 4/5 made the
 // rating look already-decided. The form on /feedback prefills with
 // whichever star was clicked and lets the user change it.
-export function buildStarBarHtml(token: string, seq?: number, locale?: SendLetterEmailParams["locale"]): string {
+// compact: Frage und Sterne als zwei Zellen auf gleicher Höhe (Follow-up). Unter 480px
+// stapelt die Mail die Zellen und zeigt den Hinweis (Klassen bnb-rating-* im <head>).
+export function buildStarBarHtml(
+  token: string,
+  seq?: number,
+  locale?: SendLetterEmailParams["locale"],
+  options: { compact?: boolean } = {},
+): string {
   const copy = getEmailCopy(locale);
   const feedbackQuestion = copy.feedbackQuestion.replace(
     "<br>",
-    '<span class="bnb-feedback-break" style="display:none;"><br></span><span class="bnb-feedback-space"> </span>',
+    options.compact
+      ? " "
+      : '<span class="bnb-feedback-break" style="display:none;"><br></span><span class="bnb-feedback-space"> </span>',
   );
   const seqParam = seq != null ? `&s=${seq}` : "";
   const url = (n: number) => `${APP_URL}/feedback?r=${n}&t=${token}${seqParam}`;
-  // Padding bumped to clear the 44pt iOS HIG tap target on mobile mail.
+  // Padding bumped to clear the 44pt iOS HIG tap target on mobile mail. Compact hebt
+  // die Sterne etwas an: Das Glyph sitzt tief in seiner Zeile, neben der Frage fällt das auf.
+  const starPadding = options.compact ? "3px 4px 13px" : "8px 4px";
   const star = (n: number, glyph: "filled" | "outline") => `
     <a href="${url(n)}" target="_blank" rel="noopener noreferrer"
-       style="color:#D4A017;mso-color-alt:#D4A017;text-decoration:none;font-size:26px;line-height:1;padding:8px 4px;display:inline-block;">${glyph === "filled" ? "&#9733;" : "&#9734;"}</a>`;
+       style="color:#D4A017;mso-color-alt:#D4A017;text-decoration:none;font-size:26px;line-height:1;padding:${starPadding};display:inline-block;">${glyph === "filled" ? "&#9733;" : "&#9734;"}</a>`;
+  if (options.compact) {
+    return `
+    <table role="presentation" align="center" cellpadding="0" cellspacing="0" style="margin:0 auto;border-collapse:collapse;">
+      <tr>
+        <td class="bnb-rating-cell" valign="middle" style="padding:0 24px 0 0;vertical-align:middle;font-family:Georgia,'Times New Roman',serif;font-size:14px;color:#2D5016;font-weight:bold;line-height:1.4;white-space:nowrap;">${feedbackQuestion}</td>
+        <td class="bnb-rating-cell" valign="middle" style="padding:0;vertical-align:middle;line-height:1;white-space:nowrap;">${star(1, "filled")}${star(2, "filled")}${star(3, "filled")}${star(4, "outline")}${star(5, "outline")}</td>
+      </tr>
+    </table>
+    <p class="bnb-rating-hint" style="display:none;margin:0 0 4px;font-family:Georgia,'Times New Roman',serif;font-size:12px;color:#b0b0b0;line-height:1.4;">${copy.feedbackHint}</p>`;
+  }
   return `
     <p style="margin:0 0 8px;font-family:Georgia,'Times New Roman',serif;font-size:12px;color:#2D5016;font-weight:bold;line-height:1.4;">${feedbackQuestion}</p>
     <div style="white-space:nowrap;line-height:1;">${star(1, "filled")}${star(2, "filled")}${star(3, "filled")}${star(4, "outline")}${star(5, "outline")}</div>
@@ -403,20 +424,46 @@ function getFooterBannerHtml(data: SendLetterEmailParams): string {
                       </div>`;
 }
 
+export interface GoodToKnowInput {
+  locale?: SendLetterEmailParams["locale"];
+  recipientKind?: SendLetterEmailParams["recipientKind"];
+  politicianId?: number;
+  plz?: string;
+  audience?: SendLetterEmailParams["audience"];
+}
+
+function goodToKnowUrls(input: GoodToKnowInput, baseUrl: string) {
+  const validPlz = input.plz && /^\d{5}$/.test(input.plz) ? input.plz : undefined;
+  return {
+    meet: `${baseUrl}/aktiv-werden${input.politicianId ? `?mdb=${input.politicianId}` : ""}${validPlz ? `${input.politicianId ? "&" : "?"}plz=${validPlz}` : ""}#wahlkreisbuero`,
+    trip: `${baseUrl}/bundestag-besuch-kostenlos`,
+    actions: `${baseUrl}/aktiv-werden`,
+  };
+}
+
+// BPA-Fahrten laden nur Bundestagsabgeordnete ein, mitfahren erst ab 18.
+function showsTrip(input: GoodToKnowInput): boolean {
+  return input.recipientKind === "mdb" && input.audience !== "jung";
+}
+
 // "Gut zu wissen": alle Nebenlinks gesammelt unter dem Teilen-Block, damit der
 // Fließtext oben nur Abschreiben, Porto und Bewerten trägt. Die zwei stärksten
 // Tipps stehen als kurze Absätze ohne Kasten, der Rest als eine Linkzeile.
-function buildGoodToKnowHtml(data: SendLetterEmailParams, fullName: string): string {
-  const locale = resolveEmailLocale(data.locale);
+// compact (Follow-up): nur die Tipps plus "Weitere Aktionen", ohne Kontaktzeile.
+export function buildGoodToKnowHtml(
+  input: GoodToKnowInput,
+  fullName: string,
+  options: { compact?: boolean; baseUrl?: string } = {},
+): string {
+  const locale = resolveEmailLocale(input.locale);
   const copy = getEmailCopy(locale);
   const g = copy.goodToKnow;
+  const base = options.baseUrl ?? APP_URL;
+  const urls = goodToKnowUrls(input, base);
   const font = "font-family:Georgia,'Times New Roman',serif;";
   const link = (url: string, label: string) =>
     `<a href="${url}" target="_blank" rel="noopener noreferrer" style="color:#2D5016;text-decoration:underline;">${label}</a>`;
-  const isMdb = data.recipientKind === "mdb";
-  const validPlz = data.debug?.plz && /^\d{5}$/.test(data.debug.plz)
-    ? data.debug.plz
-    : undefined;
+  const isMdb = input.recipientKind === "mdb";
   const highlight = (icon: string, title: string, text: string, linkHtml: string) => `
                     <p style="margin:0 0 10px;${font}font-size:14px;color:#4A4A4A;line-height:1.5;">${icon} <strong>${title}</strong><br>${text}${linkHtml ? ` ${linkHtml}` : ""}</p>`;
   const highlights = [
@@ -424,38 +471,52 @@ function buildGoodToKnowHtml(data: SendLetterEmailParams, fullName: string): str
       "🤝",
       g.meetTitle(fullName),
       g.meetText,
-      link(
-        `${APP_URL}/aktiv-werden${data.politicianId ? `?mdb=${data.politicianId}` : ""}${validPlz ? `${data.politicianId ? "&" : "?"}plz=${validPlz}` : ""}#wahlkreisbuero`,
-        g.meetLink,
-      ),
+      link(urls.meet, g.meetLink),
     ),
-    // BPA-Fahrten laden nur Bundestagsabgeordnete ein, mitfahren erst ab 18.
-    isMdb && data.audience !== "jung" && highlight(
+    showsTrip(input) && highlight(
       "🚆",
       g.tripTitle,
-      `<span class="bnb-desk">${g.tripText} ${link(`${APP_URL}/bundestag-besuch-kostenlos`, g.tripLink)}</span><span class="bnb-mob" style="display:none;">${g.tripTextMobile} ${link(`${APP_URL}/bundestag-besuch-kostenlos`, g.tripLinkMobile)}</span>`,
+      `<span class="bnb-desk">${g.tripText} ${link(urls.trip, g.tripLink)}</span><span class="bnb-mob" style="display:none;">${g.tripTextMobile} ${link(urls.trip, g.tripLinkMobile)}</span>`,
       "",
     ),
   ].filter(Boolean);
   const highlightsHtml = highlights.join("");
-  const guideLink = isMdb || data.recipientKind === "mdb_later"
-    ? link(`${APP_URL}/wer-darf-mdb-schreiben`, copy.guideMdb)
-    : link(`${APP_URL}/guide`, copy.guide);
-  const moreLinks = [
-    guideLink,
-    link(`${APP_URL}/tipps`, copy.tips),
-    locale === "de" && link(`${APP_URL}/brief-verbessern`, g.improveLink),
-    link(`${APP_URL}/aktiv-werden`, g.actionsLink),
-    link(`${APP_URL}/andere-tools`, g.toolsLink),
-  ].filter(Boolean);
+  const guideLink = isMdb || input.recipientKind === "mdb_later"
+    ? link(`${base}/wer-darf-mdb-schreiben`, copy.guideMdb)
+    : link(`${base}/guide`, copy.guide);
+  const moreLinks: (string | false)[] = options.compact
+    ? [link(urls.actions, g.actionsLink)]
+    : [
+        guideLink,
+        link(`${base}/tipps`, copy.tips),
+        locale === "de" && link(`${base}/brief-verbessern`, g.improveLink),
+        link(urls.actions, g.actionsLink),
+        link(`${base}/andere-tools`, g.toolsLink),
+      ].filter(Boolean);
+  const contactHtml = options.compact
+    ? ""
+    : `
+                    <p style="margin:0;${font}font-size:13px;color:#666666;line-height:1.7;">${g.contact} ${link(FOUNDER_FEEDBACK_URL, g.contactLink)}</p>`;
   return `<tr>
                   <td colspan="7" class="bnb-pad" style="padding:0 32px 28px;background-color:#ffffff;">
                     <h2 style="margin:0 0 12px;padding-bottom:10px;border-bottom:1px solid #EDEAE6;${font}font-size:16px;color:#2D5016;font-weight:bold;">${g.heading}</h2>
                     ${highlightsHtml}
-                    <p style="margin:0 0 6px;${highlights.length ? "padding-top:12px;border-top:1px solid #EDEAE6;" : ""}${font}font-size:13px;color:#666666;line-height:1.8;"><strong style="color:#4A4A4A;">${g.moreLabel}</strong><br>${moreLinks.map((l) => `<span style="white-space:nowrap;">${l}</span>`).join(" &middot; ")}</p>
-                    <p style="margin:0;${font}font-size:13px;color:#666666;line-height:1.7;">${g.contact} ${link(FOUNDER_FEEDBACK_URL, g.contactLink)}</p>
+                    <p style="margin:0 0 6px;${highlights.length ? "padding-top:12px;border-top:1px solid #EDEAE6;" : ""}${font}font-size:13px;color:#666666;line-height:1.8;"><strong style="color:#4A4A4A;">${g.moreLabel}</strong><br>${moreLinks.map((l) => `<span style="white-space:nowrap;">${l}</span>`).join(" &middot; ")}</p>${contactHtml}
                   </td>
                 </tr>`;
+}
+
+export function buildGoodToKnowText(input: GoodToKnowInput, fullName: string, baseUrl: string = APP_URL): string {
+  const g = getEmailCopy(input.locale).goodToKnow;
+  const urls = goodToKnowUrls(input, baseUrl);
+  return [
+    g.heading,
+    input.recipientKind === "mdb" && `🤝 ${g.meetTitle(fullName)}: ${g.meetText} ${g.meetLink}: ${urls.meet}`,
+    showsTrip(input) && `🚆 ${g.tripTitle}: ${g.tripText} ${g.tripLink}: ${urls.trip}`,
+    `${g.actionsLink}: ${urls.actions}`,
+  ]
+    .filter(Boolean)
+    .join("\n");
 }
 
 export function buildEmailHtml(data: SendLetterEmailParams): string {
@@ -782,7 +843,7 @@ export function buildEmailHtml(data: SendLetterEmailParams): string {
                   </td>
                 </tr>
 
-                ${buildGoodToKnowHtml(data, fullName)}
+                ${buildGoodToKnowHtml({ locale: data.locale, recipientKind: data.recipientKind, politicianId: data.politicianId, plz: data.debug?.plz, audience: data.audience }, fullName)}
 
                 <!-- Airmail stripe before footer (mirrors header) -->
                 <tr>

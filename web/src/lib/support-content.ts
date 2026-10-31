@@ -23,6 +23,8 @@ export const SUPPORT_CONTENT = {
     name: FOUNDER_NAME,
     portraitPath: "/images/thomas-portrait.webp",
     avatarPath: "/images/thomas-avatar.jpg",
+    // Avatar ohne Hintergrund (transparente PNG) für die Ecke der Spendenbox im Follow-up.
+    cutoutPath: "/images/thomas-cutout.png",
     text:
       "Ich bin Thomas Lorenz und baue Brief-nach-Berlin seit Mai 2026 ehrenamtlich auf. Damit Menschen ihre Anliegen einfach und kostenlos an die zuständigen Abgeordneten richten können.",
     successText:
@@ -99,7 +101,8 @@ export const SUPPORT_EMAIL_COPY = {
     compactButton: "Jetzt spenden",
     infoButton: "Mehr Informationen",
     followupBody:
-      "Ich mache das allein und ehrenamtlich und zahle KI, Mailversand und Server bisher selbst. Schon 5 € helfen.",
+      "Ich betreibe Brief-nach-Berlin allein in meiner Freizeit und zahle KI und Server bisher selbst. Schon 5 € helfen.",
+    followupStatus: "Gemeinnützig über WE AID",
   },
   en: {
     heading: "Support Brief-nach-Berlin",
@@ -111,7 +114,8 @@ export const SUPPORT_EMAIL_COPY = {
     compactButton: "Donate now",
     infoButton: "More information",
     followupBody:
-      "I do this on my own as a volunteer and so far pay for the AI, email delivery and servers myself. Even €5 helps.",
+      "I run Brief-nach-Berlin on my own in my free time and so far pay for the AI and servers myself. Even €5 helps.",
+    followupStatus: "Non-profit via WE AID",
   },
   tr: {
     heading: "Brief-nach-Berlin'i destekle",
@@ -123,7 +127,8 @@ export const SUPPORT_EMAIL_COPY = {
     compactButton: "Şimdi bağış yap",
     infoButton: "Daha fazla bilgi",
     followupBody:
-      "Bunu tek başıma ve gönüllü olarak yapıyorum, yapay zekâ, e-posta gönderimi ve sunucu masraflarını şimdiye kadar kendim karşılıyorum. 5 € bile yardımcı olur.",
+      "Brief-nach-Berlin'i boş zamanlarımda tek başıma yürütüyorum, yapay zekâ ve sunucu masraflarını şimdilik kendim karşılıyorum. 5 € bile yardımcı olur.",
+    followupStatus: "Kâr amacı gütmez, WE AID",
   },
 } as const;
 

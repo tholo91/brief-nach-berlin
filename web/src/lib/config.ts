@@ -4,6 +4,20 @@ import { BRIEF_EMAIL } from "@/lib/contact";
 export const APP_NAME = "Brief-nach-Berlin" as const;
 export const APP_URL = "https://www.brief-nach-berlin.de" as const;
 export const COMPACT_APP_URL = "https://www.briefnachberlin.de" as const;
+
+// Standard-Vorschaubild für Seiten mit eigenem openGraph-Block. Next merged
+// Metadata flach: ein eigener openGraph-Block ersetzt das Bild aus dem Root-Layout.
+// Bild und Alt-Text liegen als Next-Metadata-Dateien in src/app/ (opengraph-image.jpg,
+// opengraph-image.alt.txt); der Jest-Wächter openGraphDefaults hält beides synchron.
+export const DEFAULT_OG_IMAGES = [
+  {
+    url: `${APP_URL}/opengraph-image.jpg`,
+    width: 1280,
+    height: 671,
+    type: "image/jpeg",
+    alt: "Eine Hand wirft einen handgeschriebenen Brief in einen Deutsche-Post-Briefkasten, im Hintergrund eine lebendige Berliner Straße mit dem Reichstag, Cafés, Straßenbahn, Fahrrädern und Solardächern.",
+  },
+];
 export const APP_TAGLINE = "Deine Stimme zählt." as const;
 
 // Email

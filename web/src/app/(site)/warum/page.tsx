@@ -3,6 +3,7 @@ import Image from "next/image";
 import type { Metadata } from "next";
 import {
   APP_URL,
+  DEFAULT_OG_IMAGES,
   DONATION_PATH,
   FOUNDER_FEEDBACK_URL,
   FOUNDER_LINKEDIN,
@@ -26,6 +27,7 @@ export const metadata: Metadata = {
     canonical: `${APP_URL}${URL_PATH}`,
   },
   openGraph: {
+    images: DEFAULT_OG_IMAGES,
     title: TITLE,
     description: DESCRIPTION,
     type: "article",

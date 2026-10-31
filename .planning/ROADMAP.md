@@ -1201,6 +1201,25 @@ Plans:
 Plans:
 - [ ] TBD (promote with /gsd-review-backlog when ready)
 
+### Phase 999.47: Winter-Look und Jahreswechsel-Spendenbitte (BACKLOG)
+
+**Goal:** Jedes Jahr laufen automatisch ein winterlicher Look (1.12. bis 31.1.) und eine Spendenbitte zum Jahreswechsel (24.11. bis 1.1.), ohne Deploy.
+**Warum:** Der Look soll Stimmung machen, die Bitte nutzt den Spendenmonat Dezember (24 % der deutschen Jahresspenden 2025, Sekundärquelle in der Q4-Geld-Strategie). Eine Mail an alle geht nicht, weil es keine Einwilligung gibt.
+**Termine 2026:** Bitte live bis 24.11., Look bis 30.11. Spätestens am 10.11. starten, damit Thomas genug Zeit für die Assets hat.
+**Vorarbeit Claude:** Prompts für Winterbild und Winter-Video in `prompts/winter-hero/` schreiben und Thomas aktiv danach fragen.
+**Vorarbeit Thomas:** Bild und Video erzeugen. Der Winter-Hero und das Mailbild gehen erst mit den fertigen Dateien an.
+**Größe:** M
+**Ansatz:** Datumslogik in `web/src/lib/season.ts`, Text in `web/src/lib/support-content.ts`. Look auf Startseite, Briefmail, Follow-up-Mail und `DonationCard`, Bitte nur in der Follow-up-Spendenbox und `DonationCard`. Entscheidungen, Textentwurf, Schritte und Prüfungen stehen in `.planning/phases/999.47-winter-look-jahreswechsel-spendenbitte/999.47-CONTEXT.md`.
+**Risiken:**
+- Die Follow-up-Mail entsteht beim Brief und geht bis zu 72 Stunden später raus, deshalb zählt `scheduledAt`, nicht das heutige Datum.
+- 999.42 ändert ebenfalls die `DonationCard`. Wenn 999.42 zuerst läuft, die Winter-Variante darauf aufsetzen.
+- Bestehende Tests brechen im Dezember, wenn sie kein festes Datum setzen.
+**Requirements:** TBD
+**Plans:** 0 plans
+
+Plans:
+- [ ] TBD (promote with /gsd-review-backlog when ready)
+
 
 ## Progress
 

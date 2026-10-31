@@ -69,8 +69,8 @@ describe("/datenloeschen page", () => {
     const markup = await render({ t: createDataDeletionToken("Person@Example.org") });
     expect(markup).toContain("person@example.org");
     expect(markup).toContain("Newsletter");
-    expect(markup).toContain("Rückfrage-Mail");
-    expect(markup).toContain('href="/kampagne/verwalten"');
+    expect(markup).not.toContain("Rückfrage-Mail");
+    expect(markup).not.toContain("/kampagne/verwalten");
     expect(markup).not.toContain("<button");
     expect(markup).toMatch(AVATAR);
     expect(mockedLookup).toHaveBeenCalledTimes(1);
@@ -90,7 +90,7 @@ describe("/datenloeschen page", () => {
     expect(markup).toContain("PLZ-Bereich 28");
     expect(markup).toContain("1. September 2026");
     expect(markup).toContain("Alles löschen");
-    expect(markup).toContain('href="/kampagne/verwalten"');
+    expect(markup).not.toContain("/kampagne/verwalten");
     expect(markup).toContain(mailto);
     expect(markup).toMatch(AVATAR);
     expect(mockedDelete).not.toHaveBeenCalled();

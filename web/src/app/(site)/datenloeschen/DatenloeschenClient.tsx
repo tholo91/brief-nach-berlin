@@ -5,6 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { deleteDataAction, type DeleteDataResult } from "@/lib/actions/deleteData";
 import { BRIEF_EMAIL } from "@/lib/contact";
+import { SUPPORT_CONTENT } from "@/lib/support-content";
 import { buildDataDeletionMailto } from "@/lib/email/mailLocale";
 
 export type StoredRow = { id: string; title: string; detail: string };
@@ -44,7 +45,7 @@ function PersonalLine() {
         className="h-10 w-10 shrink-0 rounded-full object-cover"
       />
       <p className="font-body text-sm text-warmgrau leading-relaxed">
-        Ich mache Brief-nach-Berlin allein. Bei Fragen schreib mir an{" "}
+        Moin, ich bin Thomas und baue, fixe und betreue Brief-nach-Berlin allein. Schreib mir gern bei Fragen an{" "}
         <a href={`mailto:${BRIEF_EMAIL}`} className={linkClass}>
           {BRIEF_EMAIL}
         </a>
@@ -56,21 +57,12 @@ function PersonalLine() {
 
 function SmallPrint() {
   return (
-    <div className="mt-6 space-y-2 font-body text-xs text-warmgrau/80 leading-relaxed">
-      <p>
-        Du hast auch mit einer anderen Adresse geschrieben?{" "}
-        <a href={buildDataDeletionMailto("de")} className={linkClass}>
-          Schreib mir, dann lösche ich das von Hand.
-        </a>
-      </p>
-      <p>
-        Kampagnen sind hier nicht enthalten. Die verwaltest du unter{" "}
-        <Link href="/kampagne/verwalten" className={linkClass}>
-          Kampagne verwalten
-        </Link>
-        .
-      </p>
-    </div>
+    <p className="mt-6 font-body text-sm text-warmgrau leading-relaxed">
+      Du hast auch mit einer anderen Adresse geschrieben?{" "}
+      <a href={buildDataDeletionMailto("de")} className={linkClass}>
+        Schreib mir, dann lösche ich das von Hand.
+      </a>
+    </p>
   );
 }
 
@@ -109,7 +101,12 @@ export function DatenloeschenClient({ view }: { view: DatenloeschenView }) {
           <Heading headingRef={headingRef}>Erledigt. Deine Daten sind gelöscht.</Heading>
           <p className="font-body text-sm text-warmgrau leading-relaxed mb-3">{formatDeleted(result.deleted)}</p>
           <p className="font-body text-sm text-warmgrau leading-relaxed mb-3">
-            Danke, dass du einen Brief geschrieben hast.
+            Danke, dass du einen Brief geschrieben hast. Wenn du magst und es dir etwas wert ist: Ich zahle KI,
+            Mailversand und Server bisher allein. Schon 5 € helfen, damit es für die Nächsten kostenlos bleibt.{" "}
+            <a href={SUPPORT_CONTENT.ctas.donate.href} className={linkClass}>
+              {SUPPORT_CONTENT.ctas.donate.label}
+            </a>
+            .
           </p>
           <p className="font-body text-sm text-warmgrau leading-relaxed mb-6">
             Höchstens kommt noch eine Rückfrage-Mail, die schon geplant war. Danach ist Schluss.
@@ -193,7 +190,6 @@ export function DatenloeschenClient({ view }: { view: DatenloeschenView }) {
               Es gibt keinen Newsletter und keine Liste, auf der du stehst. Deinen Brief speichere ich nicht. Etwas
               liegt nur bei mir, wenn du deinen Brief bewertest, eine Rückmeldung abgibst oder dein Anliegen auf die Karte setzt.
             </p>
-            <p>Höchstens kommt noch eine Rückfrage-Mail von mir. Danach ist Schluss.</p>
           </div>
           <SmallPrint />
         </>

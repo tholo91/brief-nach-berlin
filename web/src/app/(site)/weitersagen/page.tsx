@@ -6,6 +6,7 @@ import {
   APP_URL,
   FOUNDER_FEEDBACK_URL,
   INSTAGRAM_CAPTION,
+  DEFAULT_OG_IMAGES,
 } from "@/lib/config";
 import {
   CopyCaptionButton,
@@ -26,6 +27,7 @@ export const metadata: Metadata = {
     canonical: `${APP_URL}${URL_PATH}`,
   },
   openGraph: {
+    images: DEFAULT_OG_IMAGES,
     title: TITLE,
     description: DESCRIPTION,
     type: "article",

@@ -2,7 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
-import { APP_URL, FOUNDER_FEEDBACK_URL, FOUNDER_EMAIL } from "@/lib/config";
+import { APP_URL, FOUNDER_FEEDBACK_URL, FOUNDER_EMAIL, DEFAULT_OG_IMAGES } from "@/lib/config";
 import { Prose } from "@/components/editorial/Prose";
 import { FAQAccordion } from "@/components/FAQAccordion";
 
@@ -18,6 +18,7 @@ export const metadata: Metadata = {
   description: DESCRIPTION,
   alternates: { canonical: `${APP_URL}${URL_PATH}` },
   openGraph: {
+    images: DEFAULT_OG_IMAGES,
     title: "Welche politischen Ebenen unterstützt Brief-nach-Berlin?",
     description: DESCRIPTION,
     type: "article",

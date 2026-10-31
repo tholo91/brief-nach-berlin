@@ -3,7 +3,7 @@ import { Figure } from "@/components/editorial/Figure";
 import { FAQAccordion } from "@/components/FAQAccordion";
 import { MdbLookupCard } from "@/components/MdbLookupCard";
 import type { Metadata } from "next";
-import { APP_URL } from "@/lib/config";
+import { APP_URL, DEFAULT_OG_IMAGES } from "@/lib/config";
 
 const TITLE = "Was du sonst noch tun kannst";
 const DESCRIPTION =
@@ -18,6 +18,7 @@ export const metadata: Metadata = {
     canonical: `${APP_URL}${URL_PATH}`,
   },
   openGraph: {
+    images: DEFAULT_OG_IMAGES,
     title: TITLE,
     description: DESCRIPTION,
     type: "article",

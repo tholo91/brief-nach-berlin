@@ -1,7 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import type { Metadata } from "next";
-import { APP_URL, DONATION_PROVIDER_URL } from "@/lib/config";
+import { APP_URL, DONATION_PROVIDER_URL, DEFAULT_OG_IMAGES } from "@/lib/config";
 import { SUPPORT_CONTENT } from "@/lib/support-content";
 
 const TITLE = "Brief-nach-Berlin unterstützen";
@@ -13,6 +13,7 @@ export const metadata: Metadata = {
   description: DESCRIPTION,
   alternates: { canonical: `${APP_URL}/spenden` },
   openGraph: {
+    images: DEFAULT_OG_IMAGES,
     title: TITLE,
     description: DESCRIPTION,
     type: "website",

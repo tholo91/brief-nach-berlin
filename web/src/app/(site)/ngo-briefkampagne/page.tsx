@@ -1,7 +1,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import type { Metadata } from "next";
-import { APP_URL, FOUNDER_EMAIL } from "@/lib/config";
+import { APP_URL, FOUNDER_EMAIL, DEFAULT_OG_IMAGES } from "@/lib/config";
 import { FAQAccordion } from "@/components/FAQAccordion";
 import { CampaignBackground } from "@/components/campaigns/CampaignBackground";
 import { CampaignList } from "@/components/campaigns/CampaignList";
@@ -21,6 +21,7 @@ export const metadata: Metadata = {
   description: DESCRIPTION,
   alternates: { canonical: `${APP_URL}${URL_PATH}` },
   openGraph: {
+    images: DEFAULT_OG_IMAGES,
     title: TITLE,
     description: DESCRIPTION,
     type: "article",

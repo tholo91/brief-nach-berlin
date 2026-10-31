@@ -4,7 +4,7 @@ import Link from "next/link";
 import { FAQAccordion } from "@/components/FAQAccordion";
 import { ElternExperience } from "@/components/eltern/ElternExperience";
 import { WizardForwardIcon } from "@/components/wizard/WizardForwardIcon";
-import { APP_URL } from "@/lib/config";
+import { APP_URL, DEFAULT_OG_IMAGES } from "@/lib/config";
 
 const URL_PATH = "/eltern";
 const CANONICAL_URL = `${APP_URL}${URL_PATH}`;
@@ -17,6 +17,7 @@ export const metadata: Metadata = {
   description: DESCRIPTION,
   alternates: { canonical: CANONICAL_URL },
   openGraph: {
+    images: DEFAULT_OG_IMAGES,
     title: TITLE,
     description: DESCRIPTION,
     type: "website",

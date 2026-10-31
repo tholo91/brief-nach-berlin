@@ -1,7 +1,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import type { Metadata } from "next";
-import { APP_URL, FOUNDER_NAME, FOUNDER_HOMEPAGE, FOUNDER_LINKEDIN } from "@/lib/config";
+import { APP_URL, FOUNDER_NAME, FOUNDER_HOMEPAGE, FOUNDER_LINKEDIN, DEFAULT_OG_IMAGES } from "@/lib/config";
 import { getLetterCount } from "@/lib/counter";
 import { formatNumber } from "@/lib/formatNumber";
 import { Prose } from "@/components/editorial/Prose";
@@ -59,6 +59,7 @@ export const metadata: Metadata = {
   description: DESCRIPTION,
   alternates: { canonical: `${APP_URL}${URL_PATH}` },
   openGraph: {
+    images: DEFAULT_OG_IMAGES,
     title: "Presse: Brief-nach-Berlin",
     description: DESCRIPTION,
     type: "article",

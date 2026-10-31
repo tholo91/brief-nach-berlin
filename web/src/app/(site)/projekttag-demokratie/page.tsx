@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { FAQAccordion } from "@/components/FAQAccordion";
-import { APP_URL } from "@/lib/config";
+import { APP_URL, DEFAULT_OG_IMAGES } from "@/lib/config";
 import { COLLECTIVE_ENVELOPE_NOTE } from "@/lib/schule/lessonPlan";
 import { PROJEKTTAG_STEPS } from "@/lib/schule/projekttag";
 
@@ -17,6 +17,7 @@ export const metadata: Metadata = {
   description: DESCRIPTION,
   alternates: { canonical: CANONICAL_URL },
   openGraph: {
+    images: DEFAULT_OG_IMAGES,
     title: TITLE,
     description: DESCRIPTION,
     type: "article",

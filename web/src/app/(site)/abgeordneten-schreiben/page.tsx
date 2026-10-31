@@ -4,7 +4,7 @@ import { Prose } from "@/components/editorial/Prose";
 import { StartLetterCta } from "@/components/editorial/StartLetterCta";
 import { FAQAccordion } from "@/components/FAQAccordion";
 import type { Metadata } from "next";
-import { APP_URL } from "@/lib/config";
+import { APP_URL, DEFAULT_OG_IMAGES } from "@/lib/config";
 
 const TITLE = "Brief an Abgeordneten schreiben: So geht's";
 const DESCRIPTION =
@@ -19,6 +19,7 @@ export const metadata: Metadata = {
     canonical: `${APP_URL}${URL_PATH}`,
   },
   openGraph: {
+    images: DEFAULT_OG_IMAGES,
     title: TITLE,
     description: DESCRIPTION,
     type: "article",

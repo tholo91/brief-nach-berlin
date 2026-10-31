@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
-import { APP_URL, FOUNDER_FEEDBACK_URL, FOUNDER_EMAIL } from "@/lib/config";
+import { APP_URL, FOUNDER_FEEDBACK_URL, FOUNDER_EMAIL, DEFAULT_OG_IMAGES } from "@/lib/config";
 import { Prose } from "@/components/editorial/Prose";
 import { PullQuote } from "@/components/editorial/PullQuote";
 import { Figure } from "@/components/editorial/Figure";
@@ -31,6 +31,7 @@ export const metadata: Metadata = {
   robots: { index: false, follow: false },
   alternates: { canonical: `${APP_URL}${URL_PATH}` },
   openGraph: {
+    images: DEFAULT_OG_IMAGES,
     title: "Stimmen aus dem ganzen Land | Brief-nach-Berlin",
     description: DESCRIPTION,
     type: "article",

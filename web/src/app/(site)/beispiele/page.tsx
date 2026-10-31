@@ -1,6 +1,6 @@
 import Link from "next/link";
 import type { Metadata } from "next";
-import { APP_URL } from "@/lib/config";
+import { APP_URL, DEFAULT_OG_IMAGES } from "@/lib/config";
 import { EXAMPLE_LETTERS } from "@/lib/example-letters";
 import LetterPaper from "@/components/LetterPaper";
 
@@ -17,6 +17,7 @@ export const metadata: Metadata = {
     canonical: `${APP_URL}${URL_PATH}`,
   },
   openGraph: {
+    images: DEFAULT_OG_IMAGES,
     title: TITLE,
     description: DESCRIPTION,
     type: "article",

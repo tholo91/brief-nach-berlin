@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { PrintButton } from "@/components/schule/PrintButton";
-import { APP_URL } from "@/lib/config";
+import { APP_URL, DEFAULT_OG_IMAGES } from "@/lib/config";
 import {
   LESSON_45,
   LESSON_90_EXTRAS,
@@ -22,6 +22,7 @@ export const metadata: Metadata = {
   description: DESCRIPTION,
   alternates: { canonical: CANONICAL_URL },
   openGraph: {
+    images: DEFAULT_OG_IMAGES,
     title: TITLE,
     description: DESCRIPTION,
     type: "website",

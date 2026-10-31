@@ -1,7 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import type { Metadata } from "next";
-import { APP_URL, FOUNDER_INSTAGRAM } from "@/lib/config";
+import { APP_URL, FOUNDER_INSTAGRAM, DEFAULT_OG_IMAGES } from "@/lib/config";
 import { getLetterCount } from "@/lib/counter";
 import { formatNumber } from "@/lib/formatNumber";
 
@@ -16,6 +16,7 @@ export const metadata: Metadata = {
   description: DESCRIPTION,
   alternates: { canonical: `${APP_URL}${URL_PATH}` },
   openGraph: {
+    images: DEFAULT_OG_IMAGES,
     title: TITLE,
     description: DESCRIPTION,
     type: "article",

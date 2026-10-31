@@ -1,6 +1,6 @@
 import Link from "next/link";
 import type { Metadata } from "next";
-import { APP_URL } from "@/lib/config";
+import { APP_URL, DEFAULT_OG_IMAGES } from "@/lib/config";
 
 const PAGE_PATH = "/osterholz";
 const PAGE_TITLE = "Osterholz schreibt mit | Brief-nach-Berlin";
@@ -12,6 +12,7 @@ export const metadata: Metadata = {
   description: PAGE_DESCRIPTION,
   alternates: { canonical: `${APP_URL}${PAGE_PATH}` },
   openGraph: {
+    images: DEFAULT_OG_IMAGES,
     title: PAGE_TITLE,
     description: PAGE_DESCRIPTION,
     url: `${APP_URL}${PAGE_PATH}`,

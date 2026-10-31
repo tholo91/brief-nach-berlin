@@ -5,7 +5,7 @@ import { Figure } from "@/components/editorial/Figure";
 import { FAQAccordion } from "@/components/FAQAccordion";
 import { ClassLinkGenerator } from "@/components/schule/ClassLinkGenerator";
 import { LessonPlanToggle } from "@/components/schule/LessonPlanToggle";
-import { APP_URL, FOUNDER_EMAIL } from "@/lib/config";
+import { APP_URL, FOUNDER_EMAIL, DEFAULT_OG_IMAGES } from "@/lib/config";
 import { COLLECTIVE_ENVELOPE_NOTE, PRECHECK_ITEMS } from "@/lib/schule/lessonPlan";
 
 const URL_PATH = "/unterricht";
@@ -19,6 +19,7 @@ export const metadata: Metadata = {
   description: DESCRIPTION,
   alternates: { canonical: CANONICAL_URL },
   openGraph: {
+    images: DEFAULT_OG_IMAGES,
     title: TITLE,
     description: DESCRIPTION,
     type: "website",

@@ -1,6 +1,6 @@
 import Link from "next/link";
 import type { Metadata } from "next";
-import { APP_URL } from "@/lib/config";
+import { APP_URL, DEFAULT_OG_IMAGES } from "@/lib/config";
 import { Prose } from "@/components/editorial/Prose";
 import { FAQAccordion } from "@/components/FAQAccordion";
 import { PullQuote } from "@/components/editorial/PullQuote";
@@ -19,6 +19,7 @@ export const metadata: Metadata = {
   description: DESCRIPTION,
   alternates: { canonical: `${APP_URL}${URL_PATH}` },
   openGraph: {
+    images: DEFAULT_OG_IMAGES,
     title: "Lohnt es sich, einem Politiker zu schreiben?",
     description: DESCRIPTION,
     type: "article",

@@ -3,7 +3,7 @@ import Image from "next/image";
 import { Figure } from "@/components/editorial/Figure";
 import { Prose } from "@/components/editorial/Prose";
 import type { Metadata } from "next";
-import { APP_URL, FOUNDER_LINKEDIN, FOUNDER_FEEDBACK_URL } from "@/lib/config";
+import { APP_URL, FOUNDER_LINKEDIN, FOUNDER_FEEDBACK_URL, DEFAULT_OG_IMAGES } from "@/lib/config";
 
 const TITLE = "Andere Tools für mehr Demokratie";
 const DESCRIPTION =
@@ -18,6 +18,7 @@ export const metadata: Metadata = {
     canonical: `${APP_URL}${URL_PATH}`,
   },
   openGraph: {
+    images: DEFAULT_OG_IMAGES,
     title: TITLE,
     description: DESCRIPTION,
     type: "article",

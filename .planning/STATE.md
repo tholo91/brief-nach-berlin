@@ -4,10 +4,10 @@ milestone: v1.0
 current_phase: 05
 status: verifying
 stopped_at: Completed 05-04-PLAN.md
-last_updated: "2026-10-31T11:08:08.297Z"
+last_updated: "2026-10-31T11:42:57.183Z"
 last_activity: 2026-10-31
 last_activity_desc: Quick 261013-wuq lokal implementiert und geprüft; manueller Release offen
-state_head: 9db170a65fedf601307d4e8a55161b55ad875430
+state_head: 20d07a7d1d98d1feb54d4e26e3759b47a549bcd3
 progress:
   total_phases: 33
   completed_phases: 4
@@ -49,7 +49,7 @@ Der level-aware E-Mail-Betreff ist dagegen bereits implementiert und getestet; d
 Phase: 05 — EXECUTING
 Plan: 4 of 4
 Status: Phase complete — ready for verification
-Last activity: 2026-10-31 - Completed quick task 261031-g16: Brief-Mail-Footer aufräumen
+Last activity: 2026-10-31 - Completed quick task 261031-hho: Datenlöschen-Seite nennt Kampagnen und Rückfrage-Mail wieder
 
 Progress: [███████░░░] 68%
 
@@ -244,6 +244,7 @@ Recent decisions affecting current work:
 | 261031-fco | Debug-Seite: Haken, Tonleiste, Link-Info, CTA, Teilen-Zeile | 2026-10-31 | 400e0c5 | [261031-fco-debug-seite-haken-tonleiste-link-info-ct](./quick/261031-fco-debug-seite-haken-tonleiste-link-info-ct/) |
 | 261030-4e4 | Follow-up-Mail: Spende mit Foto, Sterne kompakt, Gut zu wissen, Footer wie Briefmail | 2026-10-31 | 2c6348a | [261030-4e4-follow-up-mail-spende-mit-eck-foto-stern](./quick/261030-4e4-follow-up-mail-spende-mit-eck-foto-stern/) |
 | 261031-g16 | Brief-Mail-Footer aufräumen | 2026-10-31 | 9db170a | [261031-g16-brief-mail-footer-aufraeumen](./quick/261031-g16-brief-mail-footer-aufraeumen/) |
+| 261031-hho | Datenlöschen-Seite nennt Kampagnen und Rückfrage-Mail wieder | 2026-10-31 | 20d07a7 | [261031-hho-datenloeschen-kampagnen-hinweis-und-ruec](./quick/261031-hho-datenloeschen-kampagnen-hinweis-und-ruec/) |
 
 ## Session Continuity
 

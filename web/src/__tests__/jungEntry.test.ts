@@ -55,13 +55,17 @@ describe("resolveJungEntry", () => {
   it("returns klasse, plz and token but never bucketId", () => {
     verify.mockReturnValue({ klasse: 9, plz: "28195", issuedAt: 1, bucketId: "geheim" });
     const entry = resolveJungEntry(["tok", "zweites"], verify);
-    expect(entry).toEqual({ status: "valid", klasse: 9, plz: "28195", token: "tok" });
+    expect(entry).toEqual({ status: "valid", klasse: 9, plz: "28195", token: "tok", delivery: "email" });
     expect(JSON.stringify(entry)).not.toContain("geheim");
   });
   it("works with the real verifier", () => {
     const token = signClassToken({ klasse: 10, plz: "28195" });
-    expect(resolveJungEntry(token)).toEqual({ status: "valid", klasse: 10, plz: "28195", token });
+    expect(resolveJungEntry(token)).toEqual({ status: "valid", klasse: 10, plz: "28195", token, delivery: "email" });
     expect(resolveJungEntry("kaputt")).toEqual({ status: "invalid" });
+  });
+  it("exposes delivery pdf from a PDF token", () => {
+    const token = signClassToken({ klasse: 10, plz: "28195", delivery: "pdf" });
+    expect(resolveJungEntry(token)).toEqual({ status: "valid", klasse: 10, plz: "28195", token, delivery: "pdf" });
   });
 });
 
@@ -85,12 +89,21 @@ describe("buildJungHandoff", () => {
       buildJungHandoff({ issueText: "Text", klasse: 8, entry: { status: "none" }, usedSpeechToText: false }),
     ).toEqual({ issueText: "Text", source: "landing", audience: "jung", klasse: 8 });
   });
+  it("carries classDelivery only for a PDF class link", () => {
+    const base = { issueText: "T", klasse: 9, usedSpeechToText: false };
+    expect(
+      buildJungHandoff({ ...base, entry: { status: "valid", klasse: 9, plz: "28195", token: "tok", delivery: "pdf" } }),
+    ).toMatchObject({ classToken: "tok", classDelivery: "pdf" });
+    expect(
+      buildJungHandoff({ ...base, entry: { status: "valid", klasse: 9, plz: "28195", token: "tok", delivery: "email" } }),
+    ).not.toHaveProperty("classDelivery");
+  });
   it("adds token and plz only for a valid class link, plus voice flag", () => {
     expect(
       buildJungHandoff({
         issueText: "Text",
         klasse: 9,
-        entry: { status: "valid", klasse: 9, plz: "28195", token: "tok" },
+        entry: { status: "valid", klasse: 9, plz: "28195", token: "tok", delivery: "email" },
         usedSpeechToText: true,
       }),
     ).toEqual({

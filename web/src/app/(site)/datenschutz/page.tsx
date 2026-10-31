@@ -958,13 +958,22 @@ export default function Datenschutz() {
             </p>
             <p className="mb-3">
               Verarbeitet werden das Anliegen, die Klassenstufe, die
-              Postleitzahl und die E-Mail-Adresse. Anliegen, Klassenstufe und
+              Postleitzahl und, außer beim PDF-Weg, die E-Mail-Adresse. Anliegen, Klassenstufe und
               Postleitzahl dienen dem Entwurf des Briefs und der Suche nach der
               zuständigen Person; Anliegen und Klassenstufe gehen dafür an
               Mistral AI (Abschnitt 9). Die E-Mail-Adresse dient dazu, den
               Entwurf einmal zuzustellen (Abschnitt 11). Für Speicherung,
               Löschung und Missbrauchsschutz gelten die Abschnitte 5, 6, 7, 11
               und 12 wie im normalen Ablauf.
+            </p>
+            <p className="mb-3">
+              Beim Erstellen eines Klassenlinks wählt die Lehrkraft zwischen
+              PDF-Weg und E-Mail-Weg. Beim PDF-Weg wird keine E-Mail-Adresse
+              abgefragt, es geht keine Mail raus, und das Limit pro
+              E-Mail-Adresse (Abschnitt 12) entfällt. Das PDF mit Entwurf und
+              Anschrift entsteht im Browser auf dem Gerät und wird nicht an
+              meinen Server übertragen; Brevo ist dann nicht beteiligt. Der
+              Browser lädt dafür nur die Schriftdateien von dieser Website.
             </p>
             <p className="mb-3">
               Im Jugendmodus fehlt Folgendes: Es folgt keine
@@ -977,7 +986,7 @@ export default function Datenschutz() {
             </p>
             <p className="mb-3">
               Ein Klassenlink enthält nur die Klassenstufe, die Postleitzahl der
-              Schule und den Zeitpunkt der Erstellung, keine Namen. Er ist
+              Schule, den gewählten Weg und den Zeitpunkt der Erstellung, keine Namen. Er ist
               signiert und 14 Tage gültig. Wird ein gültiger Klassenlink
               benutzt, zählt das Limit gegen Missbrauch (Abschnitt 12) pro
               Klassenlink statt pro IP-Adresse, damit eine Klasse im selben

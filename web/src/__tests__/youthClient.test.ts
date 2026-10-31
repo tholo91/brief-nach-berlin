@@ -5,6 +5,7 @@ import { LocaleProvider } from "@/components/i18n/LocaleProvider";
 import { Step1Form } from "@/components/wizard/Step1Form";
 import { StepPreferences } from "@/components/wizard/StepPreferences";
 import { isYouthWizard, youthBriefEvent } from "@/components/wizard/youthMode";
+import { YouthLetterDraft } from "@/components/wizard/YouthLetterDraft";
 
 function render(isYouth: boolean) {
   return renderToStaticMarkup(
@@ -76,9 +77,53 @@ describe("Step1Form youth copy", () => {
     expect(html).not.toContain("Den fertigen Brief bekommst du per E-Mail.");
   });
 
+  it("asks only for the postal code on a PDF class link", () => {
+    const html = renderToStaticMarkup(
+      createElement(LocaleProvider, null, createElement(Step1Form, { onNext: () => {}, isYouth: true, pdfDelivery: true }))
+    );
+    expect(html).toContain("speicherst ihn als PDF");
+    expect(html).not.toContain('type="email"');
+    expect(html).not.toContain("eine Kopie kommt per E-Mail");
+  });
+
   it("keeps the adult copy without isYouth", () => {
     const html = renderStep1(false);
     expect(html).toContain("Den fertigen Brief bekommst du per E-Mail.");
     expect(html).not.toContain("Deinen Entwurf siehst du gleich hier");
+  });
+});
+
+describe("YouthLetterDraft", () => {
+  const recipient = {
+    kind: "mdb",
+    id: 1,
+    politicianId: 2,
+    firstName: "Maria",
+    lastName: "Muster",
+    title: null,
+    party: "SPD",
+    wahlkreisId: 3,
+    wahlkreisName: "Bremen",
+    level: "Bund",
+    postalAddress: "Platz der Republik 1, 11011 Berlin",
+    isDirect: true,
+    abgeordnetenwatchUrl: null,
+  } as const;
+
+  it("shows the address with the mail note in email mode", () => {
+    const html = renderToStaticMarkup(createElement(YouthLetterDraft, { letterText: "Sehr geehrte Frau Muster", recipient }));
+    expect(html).toContain("Für den Umschlag");
+    expect(html).toContain("Maria Muster, MdB");
+    expect(html).toContain("Eine Kopie kommt per Mail.");
+    expect(html).not.toContain("PDF");
+  });
+
+  it("offers the PDF instead of the mail on a PDF class link", () => {
+    const html = renderToStaticMarkup(
+      createElement(YouthLetterDraft, { letterText: "Sehr geehrte Frau Muster", recipient, pdfDelivery: true })
+    );
+    expect(html).toContain("Für den Umschlag");
+    expect(html).toContain("PDF wird vorbereitet");
+    expect(html).not.toContain("per Mail");
   });
 });

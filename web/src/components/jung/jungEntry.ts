@@ -4,9 +4,11 @@ import { verifyClassToken } from "@/lib/schule/classToken";
 export type JungEntry =
   | { status: "none" }
   | { status: "invalid" }
-  | { status: "valid"; klasse: number; plz: string; token: string };
+  | { status: "valid"; klasse: number; plz: string; token: string; delivery: "pdf" | "email" };
 
-type Verify = (token: unknown) => { klasse: number; plz: string } | null;
+type Verify = (
+  token: unknown,
+) => { klasse: number; plz: string; delivery?: "pdf" | "email" } | null;
 
 export function resolveJungEntry(
   k: string | string[] | undefined,
@@ -16,5 +18,11 @@ export function resolveJungEntry(
   if (!token) return { status: "none" };
   const verified = verify(token);
   if (!verified) return { status: "invalid" };
-  return { status: "valid", klasse: verified.klasse, plz: verified.plz, token };
+  return {
+    status: "valid",
+    klasse: verified.klasse,
+    plz: verified.plz,
+    token,
+    delivery: verified.delivery === "pdf" ? "pdf" : "email",
+  };
 }

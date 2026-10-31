@@ -37,6 +37,30 @@ describe("createClassLinkAction", () => {
     expect(new Date(res.expiresAt).getTime()).toBeGreaterThan(Date.now());
   });
 
+  it("liefert einen PDF-Link mit delivery pdf, der ins QR passt", async () => {
+    const res = await createClassLinkAction({ klasse: 13, plz: "10115", delivery: "pdf" });
+    if ("error" in res) throw new Error(res.error);
+    const token = res.url.slice(`${APP_URL}/schule?k=`.length);
+    expect(verifyClassToken(token)).toMatchObject({ klasse: 13, plz: "10115", delivery: "pdf" });
+    expect(Buffer.byteLength(res.url)).toBeLessThanOrEqual(151);
+    expect(() => createQrMatrix(res.url)).not.toThrow();
+  });
+
+  it("liefert für delivery email (und ohne Angabe) denselben Token wie früher", async () => {
+    const a = await createClassLinkAction({ klasse: 9, plz: "10115", delivery: "email" });
+    const b = await createClassLinkAction({ klasse: 9, plz: "10115" });
+    if ("error" in a || "error" in b) throw new Error("unexpected");
+    const prefix = `${APP_URL}/schule?k=`;
+    expect(verifyClassToken(a.url.slice(prefix.length))?.delivery).toBe("email");
+    expect(verifyClassToken(b.url.slice(prefix.length))?.delivery).toBe("email");
+  });
+
+  it.each(["PDF", "letter", 1, null])("rejects delivery %p", async (delivery) => {
+    expect(
+      await createClassLinkAction({ klasse: 9, plz: "10115", delivery: delivery as never }),
+    ).toMatchObject({ error: "invalid_input" });
+  });
+
   it.each([
     [6, "10115"],
     [14, "10115"],

@@ -76,7 +76,7 @@ describe("success page experience", () => {
   });
 
   it("treats a lost generation response as a possible email success", () => {
-    expect(successSource).toContain("setGenerationMayHaveSucceeded(true)");
+    expect(successSource).toContain("setGenerationMayHaveSucceeded(!pdfDelivery)");
     expect(successSource).toContain("setGenerationMayHaveSucceeded(false)");
     expect(successSource).toContain("Die Verbindung ist abgebrochen");
     expect(successSource).toContain("Dein Brief ist sehr wahrscheinlich trotzdem fertig geworden");
@@ -84,14 +84,14 @@ describe("success page experience", () => {
     expect(successSource).not.toContain("Nach zwei Minuten noch keine E-Mail? Nochmal versuchen");
     expect(successSource).not.toContain("Wenn nach zwei Minuten nichts angekommen ist");
     expect(successSource).toContain("const retryIsSafe = res.status < 500 || errBody?.retrySafe === true");
-    expect(successSource).toContain("setGenerationMayHaveSucceeded(!retryIsSafe)");
+    expect(successSource).toContain("setGenerationMayHaveSucceeded(!pdfDelivery && !retryIsSafe)");
     expect(successSource).toContain("{!generationMayHaveSucceeded && (");
     expect(successSource).toContain("Brief konnte nicht erstellt werden");
     expect(successSource).not.toContain("Ich beeile mich und melde mich");
   });
 
   it("treats a Vercel 504 timeout as not created so retry stays visible", () => {
-    expect(successSource).toContain("setGenerationMayHaveSucceeded(res.status >= 500 && res.status !== 504)");
+    expect(successSource).toContain("setGenerationMayHaveSucceeded(!pdfDelivery && res.status >= 500 && res.status !== 504)");
     expect(successSource).toContain("{!generationMayHaveSucceeded && (");
   });
 
@@ -102,7 +102,8 @@ describe("success page experience", () => {
     expect(successSource).toContain('letterReady || connectionLost ? "block" : "hidden"');
     expect(successSource).toContain("Die Verbindung war kurz weg");
     expect(successSource).toContain("Nach zehn Minuten noch nichts da?");
-    expect(successSource).toContain("{letterReady && (\n              <button");
+    expect(successSource).toContain("{letterReady && !pdfDelivery && (\n              <button");
+    expect(successSource).toContain("if (!pdfDelivery && isNetworkError");
   });
 
   it("keeps the postbox action available across breakpoints and moves personalization into the accordion", () => {

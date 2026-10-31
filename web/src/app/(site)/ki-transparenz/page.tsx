@@ -184,7 +184,9 @@ export default function KiTransparenzPage() {
             <p>
               Brief-nach-Berlin speichert weder dein Anliegen noch den Brief in
               der Anwendungsdatenbank. Der fertige Entwurf wird über Brevo an
-              dein E-Mail-Postfach übertragen und liegt anschließend dort; für
+              dein E-Mail-Postfach übertragen und liegt anschließend dort. Bei
+              einem Klassenlink mit PDF-Weg entfällt der Versand, das PDF
+              entsteht nur auf deinem Gerät. Für
               technische Logs und Vorschauen des E-Mail-Anbieters gelten die in
               der Datenschutzerklärung beschriebenen und vor Livegang zu
               prüfenden Aufbewahrungseinstellungen.

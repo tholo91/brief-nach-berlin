@@ -7,7 +7,6 @@ import type {
 } from "@/lib/types/wizard";
 import {
   firstZodIssueMessage,
-  step1Schema,
   step1bSchema,
   step2Schema,
   localeSchema,
@@ -27,6 +26,7 @@ import {
 } from "@/lib/lookup/routingToken";
 import { checkOriginRateLimit, checkRateLimit, getClientIp, hashIdentifier, LIMITS } from "@/lib/rateLimit";
 import { verifyClassToken } from "@/lib/schule/classToken";
+import { validateStep1 } from "@/lib/schule/youthContext";
 import { isCampaignEnded } from "@/lib/campaigns/endDate";
 import { getPublicCampaignBySlug } from "@/lib/campaigns/repository";
 import {
@@ -111,11 +111,13 @@ export async function submitWizardAction(
   try {
     data.locale = localeSchema.safeParse(data.locale).success ? data.locale : "de";
     // 1. Validate input server-side with Zod (T-02-09)
-    const step1Result = step1Schema.safeParse(data);
+    const step1Result = validateStep1(data);
     if (!step1Result.success) {
-      console.warn("[submitWizard] step1 validation failed", step1Result.error.flatten());
+      console.warn("[submitWizard] step1 validation failed");
       return { error: "server_error", message: "Ungültige Eingabe." };
     }
+    const pdfDelivery = step1Result.pdfDelivery;
+    if (pdfDelivery) data.email = "";
 
     const step1bResult = step1bSchema.safeParse(data);
     if (!step1bResult.success) {
@@ -255,11 +257,14 @@ export async function submitWizardAction(
         retryAfterSeconds: ipLimit.retryAfterSeconds,
       };
     }
-    const emailLimit = checkRateLimit(
-      `letter:email:${hashIdentifier(data.email.toLowerCase())}`,
-      LIMITS.LETTERS_PER_EMAIL.max,
-      LIMITS.LETTERS_PER_EMAIL.windowMs
-    );
+    // Im PDF-Modus gibt es keine Adresse: ein leerer Hash würde sich einen Bucket teilen.
+    const emailLimit = pdfDelivery
+      ? { allowed: true as const, retryAfterSeconds: 0 }
+      : checkRateLimit(
+          `letter:email:${hashIdentifier(data.email.toLowerCase())}`,
+          LIMITS.LETTERS_PER_EMAIL.max,
+          LIMITS.LETTERS_PER_EMAIL.windowMs
+        );
     if (!emailLimit.allowed) {
       log("rate limited by email", { retryAfterSeconds: emailLimit.retryAfterSeconds });
       return {

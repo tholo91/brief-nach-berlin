@@ -117,6 +117,16 @@ describe("wizard handoff", () => {
     });
   });
 
+  it("keeps classDelivery pdf and drops any other value", () => {
+    saveHandoff({ issueText: "Unser Schulbus kommt zu selten.", audience: "jung", klasse: 9, classDelivery: "pdf" });
+    expect(peekHandoff()?.classDelivery).toBe("pdf");
+    sessionStorage.setItem(
+      "wizard-handoff",
+      JSON.stringify({ issueText: "Unser Schulbus kommt zu selten.", classDelivery: "email", savedAt: Date.now() }),
+    );
+    expect(peekHandoff()?.classDelivery).toBeUndefined();
+  });
+
   it("drops invalid youth fields but keeps the rest of the handoff", () => {
     sessionStorage.setItem(
       "wizard-handoff",

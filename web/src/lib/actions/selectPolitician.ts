@@ -6,7 +6,6 @@ import type { RecipientSelection } from "@/lib/lookup/rathausRecipient";
 import {
   firstZodIssueMessage,
   recipientSelectionSchema,
-  step1Schema,
   step1bSchema,
   step2Schema,
 } from "@/lib/validation/wizardSchemas";
@@ -16,7 +15,7 @@ import { getPublicCampaignBySlug } from "@/lib/campaigns/repository";
 import { DEFAULT_LETTER_LENGTH } from "@/lib/config";
 import { deriveRoutingLetterId, verifyRoutingTokenEnvelope } from "@/lib/lookup/routingToken";
 import { buildLetterSignalContext } from "@/lib/letterSignals/context";
-import { resolveYouthLetterContext } from "@/lib/schule/youthContext";
+import { resolveYouthLetterContext, validateStep1 } from "@/lib/schule/youthContext";
 import { isBundeskanzlerCampaignTarget } from "@/lib/lookup/bundeskanzlerRecipient";
 import { getCampaignFixedRecipient } from "@/lib/lookup/campaignFixedRecipient";
 
@@ -36,10 +35,11 @@ export async function selectPoliticianAction(
 ): Promise<WizardActionResult> {
   try {
     // Re-validate user-supplied input (WR-02: prevent bypassing initial validation)
-    const step1Result = step1Schema.safeParse(data);
+    const step1Result = validateStep1(data);
     if (!step1Result.success) {
       return { error: "server_error", message: "Ungültige Eingabe." };
     }
+    if (step1Result.pdfDelivery) data.email = "";
 
     const step1bResult = step1bSchema.safeParse(data);
     if (!step1bResult.success) {

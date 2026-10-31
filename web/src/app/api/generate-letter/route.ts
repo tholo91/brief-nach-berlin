@@ -5,7 +5,6 @@ import type { RecipientSelection } from "@/lib/lookup/rathausRecipient";
 import {
   firstZodIssueMessage,
   recipientSelectionSchema,
-  step1Schema,
   step1bSchema,
   step2Schema,
   localeSchema,
@@ -21,7 +20,7 @@ import { computeFollowupSlot } from "@/lib/email/computeFollowupSlot";
 import { buildDebugPayload, type LetterRoutingInfo } from "@/lib/email/buildDebugPayload";
 import { checkOriginRateLimit, checkRateLimit, hashIdentifier, LIMITS } from "@/lib/rateLimit";
 import { verifyClassToken } from "@/lib/schule/classToken";
-import { resolveYouthLetterContext } from "@/lib/schule/youthContext";
+import { resolveYouthLetterContext, validateStep1 } from "@/lib/schule/youthContext";
 import { DEFAULT_LETTER_LENGTH } from "@/lib/config";
 import {
   MistralProviderUnavailableError,
@@ -163,10 +162,12 @@ export async function POST(req: NextRequest) {
     }
     data.locale = localeSchema.safeParse(data.locale).success ? data.locale : "de";
     // Re-validate (defense in depth — client could call this endpoint directly)
-    const step1Result = step1Schema.safeParse(data);
+    const step1Result = validateStep1(data);
     if (!step1Result.success) {
       return NextResponse.json({ error: "Ungültige Eingabe." }, { status: 400 });
     }
+    const pdfDelivery = step1Result.pdfDelivery;
+    if (pdfDelivery) data.email = "";
     if (!step1bSchema.safeParse(data).success) {
       data.letterLength = DEFAULT_LETTER_LENGTH;
     }
@@ -188,11 +189,14 @@ export async function POST(req: NextRequest) {
         { status: 429, headers: { "Retry-After": String(ipLimit.retryAfterSeconds ?? 60) } }
       );
     }
-    const emailLimit = checkRateLimit(
-      `letter:email:${hashIdentifier(data.email.toLowerCase())}`,
-      LIMITS.LETTERS_PER_EMAIL.max,
-      LIMITS.LETTERS_PER_EMAIL.windowMs
-    );
+    // Im PDF-Modus gibt es keine Adresse: ein leerer Hash würde sich einen Bucket teilen.
+    const emailLimit = pdfDelivery
+      ? { allowed: true as const, retryAfterSeconds: 0 }
+      : checkRateLimit(
+          `letter:email:${hashIdentifier(data.email.toLowerCase())}`,
+          LIMITS.LETTERS_PER_EMAIL.max,
+          LIMITS.LETTERS_PER_EMAIL.windowMs
+        );
     if (!emailLimit.allowed) {
       return NextResponse.json(
         { error: RATE_LIMIT_MESSAGE },
@@ -371,71 +375,74 @@ export async function POST(req: NextRequest) {
         }
       }
 
-      const debugPayload = buildDebugPayload(
-        data,
-        result,
-        resolved.availableCount,
-        routingInfo ?? undefined,
-        letterId,
-      );
-      const politicianFullName =
-        result.selectedRecipient.kind === "rathaus" ||
-        result.selectedRecipient.kind === "landesregierung" ||
-        result.selectedRecipient.kind === "campaign_fixed" ||
-        result.selectedRecipient.kind === "bundeskanzler" ||
-        result.selectedRecipient.kind === "mdb_later"
-          ? result.selectedRecipient.label
-          : `${result.selectedRecipient.firstName} ${result.selectedRecipient.lastName}`;
-      const { params, feedbackToken } = prepareLetterEmail({
-        locale: data.locale ?? "de",
-        recipientEmail: data.email,
-        recipient: result.selectedRecipient,
-        letterText: result.letter,
-        issueText: data.issueText,
-        debug: debugPayload,
-        // Das Logo kommt aus der DB: Der Client-Handoff schickt es nicht immer mit und ist manipulierbar.
-        campaign: campaign && data.campaign
-          ? { ...data.campaign, logoPath: campaign.logoPath ?? undefined }
-          : undefined,
-        // Kampagne wurde vor dem Hochzählen geladen, +1 schließt diesen Brief ein.
-        campaignLetterCount: campaign && letterNumber !== undefined ? campaign.letterCount + 1 : undefined,
-        letterNumber,
-        letterId,
-        audience: youth ? "jung" : undefined,
-      });
-
-      const letterResult = await sendLetterEmail(params);
-      if (!letterResult.success) {
-        console.error("[brief-nach-berlin][after][letter] returned success=false");
-      }
-
-      // Ziel: 9:45 Berlin-Zeit an Tag+3 (Frühstücks-Inbox statt nachts).
-      // BREVO_FOLLOWUP_ENABLED erlaubt Notabschaltung ohne Deploy.
-      // Dedup: max. 1 Followup pro Email in 24h. In-memory, also nicht
-      // cross-instance-sicher, aber gut genug gegen ehrliche Mehrfach-Submissions.
-      // Alle Empfänger-Ebenen bekommen den Followup (999.34): ohne ihn sind
-      // Land-/Kommune-Reviews systematisch unterbewertet (2,3★ vs. Bund 3,3★).
-      if (!youth && letterResult.success && process.env.BREVO_FOLLOWUP_ENABLED === "true") {
-        const followupDedup = checkRateLimit(
-          `followup:${hashIdentifier(data.email.toLowerCase())}`,
-          1,
-          24 * 60 * 60_000,
+      // PDF-Modus (Klassenlink): keine Adresse, also weder Brief-Mail noch Folge-Mail.
+      if (!pdfDelivery) {
+        const debugPayload = buildDebugPayload(
+          data,
+          result,
+          resolved.availableCount,
+          routingInfo ?? undefined,
+          letterId,
         );
-        if (followupDedup.allowed) {
-          const scheduledAt = computeFollowupSlot();
-          const followupResult = await sendFollowupEmail({
-            locale: data.locale ?? "de",
-            recipientEmail: data.email,
-            politicianName: politicianFullName,
-            politicianTitle: params.politicianTitle,
-            politicianId: params.politicianId,
-            plz: data.plz,
-            recipientKind: params.recipientKind,
-            feedbackToken,
-            scheduledAt,
-          });
-          if (!followupResult.success) {
-            console.error("[brief-nach-berlin][after][followup] returned success=false");
+        const politicianFullName =
+          result.selectedRecipient.kind === "rathaus" ||
+          result.selectedRecipient.kind === "landesregierung" ||
+          result.selectedRecipient.kind === "campaign_fixed" ||
+          result.selectedRecipient.kind === "bundeskanzler" ||
+          result.selectedRecipient.kind === "mdb_later"
+            ? result.selectedRecipient.label
+            : `${result.selectedRecipient.firstName} ${result.selectedRecipient.lastName}`;
+        const { params, feedbackToken } = prepareLetterEmail({
+          locale: data.locale ?? "de",
+          recipientEmail: data.email,
+          recipient: result.selectedRecipient,
+          letterText: result.letter,
+          issueText: data.issueText,
+          debug: debugPayload,
+          // Das Logo kommt aus der DB: Der Client-Handoff schickt es nicht immer mit und ist manipulierbar.
+          campaign: campaign && data.campaign
+            ? { ...data.campaign, logoPath: campaign.logoPath ?? undefined }
+            : undefined,
+          // Kampagne wurde vor dem Hochzählen geladen, +1 schließt diesen Brief ein.
+          campaignLetterCount: campaign && letterNumber !== undefined ? campaign.letterCount + 1 : undefined,
+          letterNumber,
+          letterId,
+          audience: youth ? "jung" : undefined,
+        });
+
+        const letterResult = await sendLetterEmail(params);
+        if (!letterResult.success) {
+          console.error("[brief-nach-berlin][after][letter] returned success=false");
+        }
+
+        // Ziel: 9:45 Berlin-Zeit an Tag+3 (Frühstücks-Inbox statt nachts).
+        // BREVO_FOLLOWUP_ENABLED erlaubt Notabschaltung ohne Deploy.
+        // Dedup: max. 1 Followup pro Email in 24h. In-memory, also nicht
+        // cross-instance-sicher, aber gut genug gegen ehrliche Mehrfach-Submissions.
+        // Alle Empfänger-Ebenen bekommen den Followup (999.34): ohne ihn sind
+        // Land-/Kommune-Reviews systematisch unterbewertet (2,3★ vs. Bund 3,3★).
+        if (!youth && letterResult.success && process.env.BREVO_FOLLOWUP_ENABLED === "true") {
+          const followupDedup = checkRateLimit(
+            `followup:${hashIdentifier(data.email.toLowerCase())}`,
+            1,
+            24 * 60 * 60_000,
+          );
+          if (followupDedup.allowed) {
+            const scheduledAt = computeFollowupSlot();
+            const followupResult = await sendFollowupEmail({
+              locale: data.locale ?? "de",
+              recipientEmail: data.email,
+              politicianName: politicianFullName,
+              politicianTitle: params.politicianTitle,
+              politicianId: params.politicianId,
+              plz: data.plz,
+              recipientKind: params.recipientKind,
+              feedbackToken,
+              scheduledAt,
+            });
+            if (!followupResult.success) {
+              console.error("[brief-nach-berlin][after][followup] returned success=false");
+            }
           }
         }
       }

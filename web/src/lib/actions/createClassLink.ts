@@ -22,10 +22,18 @@ function fail(error: ClassLinkError): { error: ClassLinkError; message: string }
 export async function createClassLinkAction(input: {
   klasse: number;
   plz: string;
+  /** Fehlt das Feld, gilt "email". */
+  delivery?: "pdf" | "email";
 }): Promise<{ url: string; expiresAt: string } | { error: ClassLinkError; message: string }> {
   const klasse = input?.klasse;
   const plz = input?.plz;
-  if (!isValidKlasse(klasse) || typeof plz !== "string" || !/^\d{5}$/.test(plz)) {
+  const delivery = input?.delivery === undefined ? "email" : input.delivery;
+  if (
+    !isValidKlasse(klasse) ||
+    typeof plz !== "string" ||
+    !/^\d{5}$/.test(plz) ||
+    (delivery !== "pdf" && delivery !== "email")
+  ) {
     return fail("invalid_input");
   }
   if (lookupPLZ(plz).wahlkreisIds.length === 0) return fail("unknown_plz");
@@ -38,7 +46,7 @@ export async function createClassLinkAction(input: {
   );
   if (!limit.allowed) return fail("rate_limited");
 
-  const token = signClassToken({ klasse, plz });
+  const token = signClassToken({ klasse, plz, delivery });
   return {
     url: `${APP_URL}/schule?k=${token}`,
     expiresAt: new Date(Date.now() + CLASS_TOKEN_MAX_AGE_SECONDS * 1000).toISOString(),

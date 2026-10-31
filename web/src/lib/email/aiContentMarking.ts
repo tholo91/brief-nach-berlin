@@ -10,3 +10,8 @@ export const AI_CONTENT_HTML_META = `<meta name="ai-generated" content="true">
   <meta name="digital-source-type" content="http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia">`;
 
 export const AI_CONTENT_BLOCK_ATTRIBUTES = 'data-ai-generated="true"';
+
+export const AI_CONTENT_PDF_METADATA = {
+  creator: "Brief-nach-Berlin (Mistral AI)",
+  keywords: "ai-generated, trainedAlgorithmicMedia",
+} as const;

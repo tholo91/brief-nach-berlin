@@ -25,7 +25,11 @@ jest.mock("@/lib/rateLimit", () => ({
 }));
 jest.mock("@/lib/schule/classToken", () => ({
   verifyClassToken: jest.fn((token: unknown) =>
-    token === "valid-token" ? { klasse: 8, plz: "28203", issuedAt: 0, bucketId: "bucket" } : null,
+    token === "valid-token"
+      ? { klasse: 8, plz: "28203", delivery: "email", issuedAt: 0, bucketId: "bucket" }
+      : token === "pdf-token"
+        ? { klasse: 8, plz: "28203", delivery: "pdf", issuedAt: 0, bucketId: "pdf-bucket" }
+        : null,
   ),
 }));
 jest.mock("@/lib/counter", () => ({ incrementLetterCounters: jest.fn(async () => 5) }));
@@ -56,6 +60,10 @@ import { generateLetter } from "@/lib/generation/generateLetter";
 import { resolveRecipientSelection } from "@/lib/lookup/resolveRecipient";
 import { buildLetterSignalContext } from "@/lib/letterSignals/context";
 import { markLetterSignalGeneratedAction } from "@/lib/actions/letterSignals";
+import { checkRateLimit, checkOriginRateLimit } from "@/lib/rateLimit";
+import { claimAndSendCampaignMilestone } from "@/lib/campaigns/milestoneNotification";
+import { claimAndSendGlobalLetterMilestone } from "@/lib/campaigns/globalLetterMilestoneNotification";
+import { incrementLetterCounters } from "@/lib/counter";
 
 const recipient = {
   kind: "rathaus" as const,
@@ -184,5 +192,53 @@ describe("generate-letter: Jugendmodus", () => {
     expect(markLetterSignalGeneratedAction).toHaveBeenCalledTimes(1);
     expect(sendFollowupEmail).toHaveBeenCalledTimes(1);
     expect(jest.mocked(prepareLetterEmail).mock.calls[0]![0].audience).toBeUndefined();
+  });
+
+  describe("PDF statt E-Mail", () => {
+    const pdf = { audience: "jung", klasse: 8, classToken: "pdf-token", email: "" };
+
+    it("erzeugt den Brief ohne E-Mail: keine Mail, keine Folge-Mail, Meilensteine laufen", async () => {
+      const response = await post(pdf);
+      expect(response.status).toBe(200);
+      expect(jest.mocked(generateLetter).mock.calls[0]![0].youth).toEqual({ klasse: 8, viaClassLink: true });
+      expect(incrementLetterCounters).toHaveBeenCalledTimes(1);
+
+      await runAfter();
+      expect(prepareLetterEmail).not.toHaveBeenCalled();
+      expect(sendLetterEmail).not.toHaveBeenCalled();
+      expect(sendFollowupEmail).not.toHaveBeenCalled();
+      expect(claimAndSendGlobalLetterMilestone).toHaveBeenCalledWith(5);
+      expect(claimAndSendCampaignMilestone).not.toHaveBeenCalled();
+    });
+
+    it("überspringt das E-Mail-Limit, behält das Klassen-Limit", async () => {
+      await post(pdf);
+      expect(checkRateLimit).not.toHaveBeenCalled();
+      expect(checkOriginRateLimit).toHaveBeenCalledWith("letter", "hashed", "pdf-bucket");
+    });
+
+    it("lehnt fehlende E-Mail mit audience, aber ohne PDF-Token ab", async () => {
+      for (const classToken of [undefined, "garbage", "valid-token"]) {
+        const response = await post({ audience: "jung", klasse: 8, email: "", ...(classToken ? { classToken } : {}) });
+        expect(response.status).toBe(400);
+      }
+      expect(generateLetter).not.toHaveBeenCalled();
+    });
+
+    it("lehnt einen PDF-Token ohne Jugend-Audience ohne E-Mail ab", async () => {
+      expect((await post({ email: "", classToken: "pdf-token" })).status).toBe(400);
+      expect((await post({ audience: "jung", klasse: 5, email: "", classToken: "pdf-token" })).status).toBe(400);
+    });
+
+    it("prüft im PDF-Modus weiter die PLZ", async () => {
+      expect((await post({ ...pdf, plz: "abc" })).status).toBe(400);
+    });
+
+    it("ignoriert eine mitgeschickte E-Mail im PDF-Modus", async () => {
+      const response = await post({ ...pdf, email: "fremd@example.org" });
+      expect(response.status).toBe(200);
+      await runAfter();
+      expect(sendLetterEmail).not.toHaveBeenCalled();
+    });
   });
 });

@@ -1,9 +1,9 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useForm } from "react-hook-form";
+import { useForm, type Resolver } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { step1Schema, type Step1Data } from "@/lib/validation/wizardSchemas";
+import { step1PlzSchema, step1Schema, type Step1Data } from "@/lib/validation/wizardSchemas";
 import { suggestEmailCorrection } from "@/lib/email/emailProviders";
 import { WizardForwardIcon } from "@/components/wizard/WizardForwardIcon";
 import { useUiCopy } from "@/components/i18n/LocaleProvider";
@@ -14,6 +14,8 @@ interface Step1FormProps {
   plzError?: string | null;
   onPlzErrorDismiss?: () => void;
   isYouth?: boolean;
+  /** Klassenlink "PDF statt E-Mail": kein E-Mail-Feld, keine E-Mail-Prüfung. */
+  pdfDelivery?: boolean;
 }
 
 export function Step1Form({
@@ -22,6 +24,7 @@ export function Step1Form({
   plzError,
   onPlzErrorDismiss,
   isYouth = false,
+  pdfDelivery = false,
 }: Step1FormProps) {
   const copy = useUiCopy();
   const {
@@ -31,7 +34,9 @@ export function Step1Form({
     watch,
     formState: { errors, isValid, touchedFields },
   } = useForm<Step1Data>({
-    resolver: zodResolver(step1Schema),
+    resolver: pdfDelivery
+      ? (zodResolver(step1PlzSchema) as unknown as Resolver<Step1Data>)
+      : zodResolver(step1Schema),
     mode: "onTouched",
     defaultValues: {
       plz: defaultValues?.plz ?? "",
@@ -78,6 +83,10 @@ export function Step1Form({
   }, [plzValue]);
 
   const onSubmit = (data: Step1Data) => {
+    if (pdfDelivery) {
+      onNext({ plz: data.plz, email: "" });
+      return;
+    }
     const suggestion = suggestEmailCorrection(data.email);
     if (!suggestion) {
       onNext(data);
@@ -138,7 +147,7 @@ export function Step1Form({
         {copy.contact.heading}
       </h1>
       <p className="font-body text-sm text-warmgrau/70 mb-8">
-        {isYouth ? copy.contact.introYouth : copy.contact.intro}
+        {pdfDelivery ? copy.contact.introYouthPdf : isYouth ? copy.contact.introYouth : copy.contact.intro}
       </p>
 
       <div className="space-y-4">
@@ -181,6 +190,7 @@ export function Step1Form({
         </div>
 
         {/* Email */}
+        {!pdfDelivery && (
         <div>
           <label htmlFor="email" className="block font-body text-sm font-semibold text-warmgrau mb-1">
             {copy.contact.emailLabel}
@@ -203,6 +213,7 @@ export function Step1Form({
             </p>
           )}
         </div>
+        )}
       </div>
 
       {/* Submit */}

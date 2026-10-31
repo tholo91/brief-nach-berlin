@@ -45,6 +45,7 @@ const STEP_LABELS = [
 ] as const;
 
 const YOUTH_STEP_LABELS = ["Dein Anliegen", "PLZ & E-Mail", "Ton"] as const;
+const YOUTH_PDF_STEP_LABELS = ["Dein Anliegen", "PLZ", "Ton"] as const;
 
 function readParamsToData(searchParams: URLSearchParams): Partial<WizardData> {
   const data: Record<string, string> = {};
@@ -148,6 +149,8 @@ export function WizardShell() {
   const [stepDirection, setStepDirection] = useState<WizardStepDirection>("none");
   const [entrySource, setEntrySource] = useState<"direct" | "landing" | "campaign">("direct");
   const [handoffPending, setHandoffPending] = useState(true);
+  // Nur Anzeige-Hinweis aus dem Handoff; ob ohne E-Mail erlaubt ist, entscheidet allein der Server per Token.
+  const [classDeliveryPdf, setClassDeliveryPdf] = useState(false);
   const [politicians, setPoliticians] = useState<Politician[]>(
     isSuccessPreview ? [previewPolitician] : []
   );
@@ -197,6 +200,7 @@ export function WizardShell() {
       }
 
       setEntrySource(handoff.source ?? "landing");
+      setClassDeliveryPdf(handoff.classDelivery === "pdf");
       setWizardData((current) => ({
         ...current,
         issueText: handoff.issueText,
@@ -249,6 +253,8 @@ export function WizardShell() {
   }, [handoffPending, step, wizardData, router]);
 
   const classToken = wizardData.classToken;
+  const pdfDelivery =
+    classDeliveryPdf && isYouthWizard(wizardData) && Boolean(wizardData.classToken);
   const ensureRoutingPrefetch = useCallback(
     (issueText: string) => {
       if (!issueText || routingPrefetchRef.current?.issueText === issueText) return;
@@ -552,7 +558,7 @@ export function WizardShell() {
           </div>
           {showIndicator && (
             <div className="flex items-center gap-6" aria-label={`Schritt ${progress} von 3`}>
-              {(isYouthWizard(wizardData) ? YOUTH_STEP_LABELS : STEP_LABELS).map((label, i) => {
+              {(pdfDelivery ? YOUTH_PDF_STEP_LABELS : isYouthWizard(wizardData) ? YOUTH_STEP_LABELS : STEP_LABELS).map((label, i) => {
                 const dotNum = i + 1;
                 const isActive = dotNum === progress;
                 const isDone = dotNum < progress;
@@ -671,6 +677,7 @@ export function WizardShell() {
             plzError={plzError}
             onPlzErrorDismiss={() => setPlzError(null)}
             isYouth={isYouthWizard(wizardData)}
+            pdfDelivery={pdfDelivery}
           />
         )}
         {step === "2b" && campaignMismatch && (
@@ -727,6 +734,7 @@ export function WizardShell() {
         {step === 3 && (
           <Step3Success
             key={selectedLevel ?? "flat"}
+            pdfDelivery={pdfDelivery}
             result={actionResult}
             wizardData={wizardData as WizardData}
             recipients={recipientsForLevel(

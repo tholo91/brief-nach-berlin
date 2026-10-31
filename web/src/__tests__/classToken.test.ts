@@ -36,6 +36,25 @@ describe("classToken", () => {
     expect(verifyClassToken(token)?.bucketId).toBe(result?.bucketId);
   });
 
+  it("markiert nur PDF-Tokens mit delivery pdf, alles andere ist email", () => {
+    expect(verifyClassToken(signClassToken({ klasse: 9, plz: "28203", delivery: "pdf" }))?.delivery).toBe("pdf");
+    expect(verifyClassToken(signClassToken({ klasse: 9, plz: "28203", delivery: "email" }))?.delivery).toBe("email");
+    expect(verifyClassToken(signClassToken({ klasse: 9, plz: "28203" }))?.delivery).toBe("email");
+    expect(verifyClassToken(signRaw({ v: 1, k: 9, p: "28203", d: 1 }, "class-link-v1."))?.delivery).toBe("pdf");
+    expect(verifyClassToken(signRaw({ v: 1, k: 9, p: "28203", d: "pdf" }, "class-link-v1."))).toBeNull();
+  });
+
+  it("lässt E-Mail-Tokens unverändert und PDF-Tokens verschieden", () => {
+    jest.useFakeTimers();
+    jest.setSystemTime(new Date("2026-10-01T10:00:00Z"));
+    const legacy = signFeedbackToken({ v: 1, k: 9, p: "28203" }, {
+      macDomain: "class-link-v1.",
+      maxAgeSeconds: 14 * 24 * 60 * 60,
+    });
+    expect(signClassToken({ klasse: 9, plz: "28203", delivery: "email" })).toBe(legacy);
+    expect(signClassToken({ klasse: 9, plz: "28203", delivery: "pdf" })).not.toBe(legacy);
+  });
+
   it("gibt für verschiedene Tokens verschiedene Buckets zurück", () => {
     const a = verifyClassToken(signClassToken({ klasse: 8, plz: "28203" }));
     const b = verifyClassToken(signClassToken({ klasse: 9, plz: "28203" }));

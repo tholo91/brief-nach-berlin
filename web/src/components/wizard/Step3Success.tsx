@@ -99,6 +99,8 @@ interface Step3SuccessProps {
   onChangePlz?: () => void;
   /** Zurück zum Ebene-Auswahl-Step (Override bleibt jederzeit leicht) */
   onChangeLevel?: () => void;
+  /** Klassenlink "PDF statt E-Mail": keine E-Mail-Adresse, kein Versand. Steuert nur die Anzeige. */
+  pdfDelivery?: boolean;
 }
 
 export function Step3Success({
@@ -110,6 +112,7 @@ export function Step3Success({
   routingToken,
   onChangePlz,
   onChangeLevel,
+  pdfDelivery = false,
 }: Step3SuccessProps) {
   // Abgeordneten-Karten (mdb/mdl) und der synthetische Rathaus-Empfänger
   // teilen sich den Step; Kommune zeigt genau eine Verwaltungs-Karte.
@@ -635,12 +638,12 @@ export function Step3Success({
             errorId = errBody?.errorId ?? null;
             detail = errBody?.detail;
             const retryIsSafe = res.status < 500 || errBody?.retrySafe === true;
-            setGenerationMayHaveSucceeded(!retryIsSafe);
+            setGenerationMayHaveSucceeded(!pdfDelivery && !retryIsSafe);
           } catch {
             // Body nicht lesbar (z.B. HTML-Errorpage) - Status reicht.
             // 504 = Vercel hat die Funktion bei maxDuration gestoppt; die Brief-Mail geht erst
             // in after() nach der Antwort raus, also wurde nichts verschickt und Retry ist sicher.
-            setGenerationMayHaveSucceeded(res.status >= 500 && res.status !== 504);
+            setGenerationMayHaveSucceeded(!pdfDelivery && res.status >= 500 && res.status !== 504);
           }
           lastErrorRef.current = {
             httpStatus: res.status,
@@ -706,14 +709,17 @@ export function Step3Success({
             clientErrorKind === "load_failed" ||
             clientErrorKind === "failed_to_fetch" ||
             clientErrorKind === "network_error";
-          if (isNetworkError && (wasHidden || elapsedMs >= 3000)) {
+          if (!pdfDelivery && isNetworkError && (wasHidden || elapsedMs >= 3000)) {
             setConnectionLost(true);
             return;
           }
-          setGenerationMayHaveSucceeded(true);
+          setGenerationMayHaveSucceeded(!pdfDelivery);
         }
+        // Ohne Mail gibt es keinen zweiten Weg zum Brief: Text bleibt, neuer Versuch per Klick.
         setGenerationFetchError(
-          "Beim Erstellen deines Briefes ist ein Fehler aufgetreten."
+          pdfDelivery
+            ? "Die Verbindung war weg. Dein Text ist noch da, du kannst es noch einmal versuchen."
+            : "Beim Erstellen deines Briefes ist ein Fehler aufgetreten."
         );
       });
 
@@ -738,7 +744,7 @@ export function Step3Success({
       consoleLogs: getClientLogs(),
       context: {
         plz: wizardData.plz ?? null,
-        email: wizardData.email ?? null,
+        email: wizardData.email || null,
         politicianId:
           generatedSelection &&
           (generatedSelection.kind === "mdb" || generatedSelection.kind === "mdl")
@@ -820,7 +826,7 @@ export function Step3Success({
   const addressInstruction = effectiveLevel === "Kommune"
     ? "Nutze die Suchhilfe, prüfe die vollständige Anschrift und schreib sie auf den Umschlag."
     : isYouth
-      ? "Die Anschrift für den Umschlag steht in der Mail."
+      ? "Die Anschrift steht unter deinem Entwurf."
       : "Die Adresse findest du im Brief.";
   const isSchreibMerzCampaign = wizardData.campaign?.slug === "schreib-merz";
   if (!result) return null;
@@ -869,7 +875,11 @@ export function Step3Success({
         </div>
         <p className="font-body text-base text-warmgrau leading-relaxed mt-3">
           {youthDraft ? (
-            <>Dein Entwurf steht unten. Eine Kopie kommt an <strong>{maskEmail(wizardData.email)}</strong>.</>
+            pdfDelivery ? (
+              <>Dein Entwurf steht unten. Speicher ihn als PDF, bevor du die Seite schließt.</>
+            ) : (
+              <>Dein Entwurf steht unten. Eine Kopie kommt an <strong>{maskEmail(wizardData.email)}</strong>.</>
+            )
           ) : letterReady || connectionLost ? (
             <>Dein Entwurf kommt an <strong>{maskEmail(wizardData.email)}</strong>. Den Brief schickst du anschließend selbst per Post ab.</>
           ) : (
@@ -923,10 +933,12 @@ export function Step3Success({
           </div>
           )}
           {/* Jugendmodus: Entwurf vor der Link-Zeile, damit deren Panels direkt darunter aufgehen. */}
-          {youthDraft && <YouthLetterDraft letterText={letterText} />}
+          {youthDraft && (
+            <YouthLetterDraft letterText={letterText} recipient={generatedRecipient} pdfDelivery={pdfDelivery} />
+          )}
           <div className="mt-3 flex items-center justify-center divide-x divide-warmgrau/20">
             {/* Erneut senden braucht den Brieftext, den es nur mit letterReady gibt. */}
-            {letterReady && (
+            {letterReady && !pdfDelivery && (
               <button
                 type="button"
                 onClick={() => {

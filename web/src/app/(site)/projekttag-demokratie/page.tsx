@@ -34,7 +34,7 @@ const h2Class = "font-typewriter text-2xl font-bold text-waldgruen-dark";
 const bodyClass = "font-body text-base leading-relaxed text-warmgrau";
 
 const DATA_SUMMARY =
-  "E-Mail-Adresse, Postleitzahl und das Anliegen werden für den Entwurf nur während der Verarbeitung verwendet und danach verworfen. Es gibt keine Accounts. Über den Klassenlink schreiben die Schüler:innen im Jugendmodus: nur eine Mail mit dem Entwurf, ohne Erinnerungen und ohne Spendenbitte. Der Klassenlink enthält keine Namen.";
+  "Postleitzahl und Anliegen, beim E-Mail-Weg auch die E-Mail-Adresse, werden für den Entwurf nur während der Verarbeitung verwendet und danach verworfen. Es gibt keine Accounts. Über den Klassenlink schreiben die Schüler:innen im Jugendmodus: ohne Erinnerungen und ohne Spendenbitte, beim E-Mail-Weg kommt nur eine Mail mit dem Entwurf. Der Klassenlink enthält keine Namen.";
 
 const faqs = [
   {
@@ -43,7 +43,7 @@ const faqs = [
   },
   {
     q: "Brauchen alle ein eigenes Gerät?",
-    a: "Ein Handy oder ein geteiltes Tablet reicht. Der Entwurf erscheint direkt auf dem Bildschirm, den Rest schreiben die Schüler:innen von Hand auf Papier. Auf geteilten Geräten wird der Entwurf nach dem Absenden gelöscht. Jede:r braucht eine eigene E-Mail-Adresse, zum Beispiel die Schul-Mail, denn dorthin kommt die Kopie mit der Anschrift für den Umschlag.",
+    a: "Ein Handy oder ein geteiltes Tablet reicht. Der Entwurf erscheint direkt auf dem Bildschirm, den Rest schreiben die Schüler:innen von Hand auf Papier. Auf geteilten Geräten wird der Entwurf nach dem Absenden gelöscht. Beim PDF-Weg braucht niemand eine E-Mail-Adresse. Beim E-Mail-Weg braucht jede:r eine eigene, zum Beispiel die Schul-Mail.",
   },
   {
     q: "Ist das politisch neutral?",

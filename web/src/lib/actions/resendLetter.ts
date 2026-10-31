@@ -21,6 +21,7 @@ import { getPublicCampaignBySlug } from "@/lib/campaigns/repository";
 import { isBundeskanzlerCampaignTarget } from "@/lib/lookup/bundeskanzlerRecipient";
 import { getCampaignFixedRecipient } from "@/lib/lookup/campaignFixedRecipient";
 import { isYouthAudience } from "@/lib/schule/youth";
+import { verifyClassToken } from "@/lib/schule/classToken";
 
 const RESEND_LIMIT_MESSAGE =
   "Der Brief wurde jetzt mehrfach gesendet. Bitte prüfe noch einmal deinen Spam-Ordner und die E-Mail-Adresse. Falls weiterhin nichts ankommt, melde dich gerne direkt.";
@@ -59,6 +60,13 @@ export async function resendLetterAction(
     const letterId = verifiedProof.letterId;
     console.log("[resendLetter] start", { email: "***", kind: normalizedSelection.kind });
 
+    // Ohne E-Mail-Adresse (PDF-Klassenlink) gibt es nichts zu versenden.
+    if (verifyClassToken(data.classToken)?.delivery === "pdf") {
+      return {
+        error: "validation",
+        message: "Bei diesem Klassenlink gibt es keinen E-Mail-Versand. Lade den Brief als PDF herunter.",
+      };
+    }
     const s1 = step1Schema.safeParse(data);
     if (!s1.success) return { error: "validation", message: "Ungültige Eingabe." };
 

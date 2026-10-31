@@ -36,6 +36,8 @@ export interface WizardHandoff {
   audience?: "jung";
   klasse?: number;
   classToken?: string;
+  // Nur UI-Hinweis (keine E-Mail-Abfrage); der Server prüft allein den Token.
+  classDelivery?: "pdf";
   plz?: string;
 }
 
@@ -96,6 +98,7 @@ export function peekHandoff(): WizardHandoff | null {
         audience,
         klasse,
         classToken,
+        classDelivery,
         plz,
       } = parsed as WizardHandoff;
       return {
@@ -127,6 +130,7 @@ export function peekHandoff(): WizardHandoff | null {
           classToken.length <= CLASS_TOKEN_MAX_LENGTH
             ? classToken
             : undefined,
+        classDelivery: classDelivery === "pdf" ? "pdf" : undefined,
         plz: typeof plz === "string" && /^\d{5}$/.test(plz) ? plz : undefined,
       };
     }

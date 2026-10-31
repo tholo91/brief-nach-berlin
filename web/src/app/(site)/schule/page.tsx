@@ -42,10 +42,10 @@ const faqs = [
   },
   {
     q: "Was passiert mit meinen Daten?",
-    a: "Du gibst eine E-Mail-Adresse und eine Postleitzahl an. Die E-Mail brauche ich, um dir eine Kopie des Entwurfs zu schicken. Du bekommst nur diese eine Mail, keine Werbung und keine Erinnerungen. Den Entwurf formuliert eine KI von Mistral, einem Unternehmen aus Frankreich. Mehr steht in der Datenschutzerklärung.",
+    a: "Du gibst eine Postleitzahl an. Hat deine Lehrkraft den PDF-Weg gewählt, brauchst du keine E-Mail-Adresse. Sonst brauche ich sie, um dir eine Kopie des Entwurfs zu schicken, und du bekommst nur diese eine Mail, keine Werbung und keine Erinnerungen. Den Entwurf formuliert eine KI von Mistral, einem Unternehmen aus Frankreich. Mehr steht in der Datenschutzerklärung.",
     aNode: (
       <>
-        Du gibst eine E-Mail-Adresse und eine Postleitzahl an. Die E-Mail brauche ich, um dir eine Kopie des Entwurfs zu schicken. Du bekommst nur diese eine Mail, keine Werbung und keine Erinnerungen. Den Entwurf formuliert eine KI von Mistral, einem Unternehmen aus Frankreich. Mehr steht in der{" "}
+        Du gibst eine Postleitzahl an. Hat deine Lehrkraft den PDF-Weg gewählt, brauchst du keine E-Mail-Adresse. Sonst brauche ich sie, um dir eine Kopie des Entwurfs zu schicken, und du bekommst nur diese eine Mail, keine Werbung und keine Erinnerungen. Den Entwurf formuliert eine KI von Mistral, einem Unternehmen aus Frankreich. Mehr steht in der{" "}
         <Link href="/datenschutz" className="font-semibold text-waldgruen underline underline-offset-2">
           Datenschutzerklärung
         </Link>
@@ -92,7 +92,7 @@ const steps = [
   { title: "Anliegen aufschreiben", text: "Ein Thema und ein eigenes Erlebnis, das dauert zwei Minuten." },
   {
     title: "Entwurf bekommen",
-    text: "Ich suche die zuständige Person in Bund, Land oder Gemeinde. Den Entwurf siehst du direkt, eine Kopie kommt per Mail.",
+    text: "Ich suche die zuständige Person in Bund, Land oder Gemeinde. Den Entwurf siehst du direkt und speicherst ihn als PDF oder bekommst eine Kopie per Mail.",
   },
   {
     title: "Von Hand abschreiben",

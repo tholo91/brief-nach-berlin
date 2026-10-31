@@ -42,6 +42,7 @@ export function buildJungHandoff(input: {
   if (input.entry.status === "valid") {
     handoff.classToken = input.entry.token;
     handoff.plz = input.entry.plz;
+    if (input.entry.delivery === "pdf") handoff.classDelivery = "pdf";
   }
   if (input.usedSpeechToText) handoff.usedSpeechToText = true;
   return handoff;

@@ -1,4 +1,5 @@
 import type { RathausRecipient } from "@/lib/lookup/rathausRecipient";
+import { rathausSearchUrl } from "@/lib/lookup/recipientEnvelope";
 
 interface RathausAdresseButtonProps {
   recipient: RathausRecipient;
@@ -9,15 +10,7 @@ export function RathausAdresseButton({
   recipient,
   className,
 }: RathausAdresseButtonProps) {
-  const isBezirksamt = recipient.recipientKind === "bezirksamt";
-  const searchTarget = isBezirksamt
-    ? recipient.gemeindeName === "Berlin"
-      ? "Bezirksamt Berlin Postanschrift"
-      : `Bezirksamt ${recipient.gemeindeName} Postanschrift`
-    : recipient.address.source === "destatis"
-      ? `Bürgermeisteramt ${recipient.gemeindeName} Postanschrift`
-      : "Bürgermeisteramt Postanschrift";
-  const searchUrl = `https://www.google.com/search?q=${encodeURIComponent(searchTarget)}`;
+  const searchUrl = rathausSearchUrl(recipient);
   const officialAddress =
     recipient.address.source === "destatis" ? recipient.address : null;
 

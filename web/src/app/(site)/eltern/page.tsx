@@ -44,7 +44,7 @@ const faqs = [
   },
   {
     q: "Ist das für mein Kind sicher?",
-    a: "Ja. Dein Kind gibt in der Schule E-Mail-Adresse, Postleitzahl und Anliegen ein, nur während der Verarbeitung, ohne Account. Im Jugendmodus bekommt es nur die eine Mail mit dem Entwurf, ohne Erinnerungen, ohne Spendenbitte und ohne Frage nach einer Partei. Den Entwurf formuliert eine KI von Mistral aus Frankreich.",
+    a: "Ja. Dein Kind gibt in der Schule Postleitzahl und Anliegen ein, nur während der Verarbeitung, ohne Account. Die Lehrkraft entscheidet, ob der Entwurf als PDF auf dem Gerät bleibt oder per E-Mail kommt; nur beim E-Mail-Weg wird eine Adresse abgefragt. Im Jugendmodus gibt es keine Erinnerungen, keine Spendenbitte und keine Frage nach einer Partei. Den Entwurf formuliert eine KI von Mistral aus Frankreich.",
   },
   {
     q: "Was kostet das?",
@@ -163,13 +163,13 @@ export default function ElternPage() {
           <h2 id="eltern-daten" className={h2Class}>Ist das sicher?</h2>
           <ul className="mt-4 list-disc space-y-3 pl-5 marker:text-waldgruen">
             <li className={bodyClass}>
-              Verarbeitet werden E-Mail-Adresse, Postleitzahl und das Anliegen als Text, nur während der Verarbeitung. Es gibt keine Accounts, auf meinem Server wird dafür nichts gespeichert.
+              Verarbeitet werden Postleitzahl und Anliegen als Text, nur während der Verarbeitung, beim E-Mail-Weg auch die E-Mail-Adresse. Es gibt keine Accounts, auf meinem Server wird dafür nichts gespeichert.
             </li>
             <li className={bodyClass}>
               Den Entwurf formuliert eine KI von Mistral, einem Unternehmen aus Frankreich.
             </li>
             <li className={bodyClass}>
-              Im Jugendmodus bekommt dein Kind nur die eine Mail mit dem Entwurf: keine Erinnerungen, keine Spendenbitte, keine Frage nach einer Partei, keine Kartenfunktion.
+              Im Jugendmodus bekommt dein Kind höchstens die eine Mail mit dem Entwurf: keine Erinnerungen, keine Spendenbitte, keine Frage nach einer Partei, keine Kartenfunktion.
             </li>
           </ul>
           <p className={`${bodyClass} mt-4`}>

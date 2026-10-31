@@ -21,13 +21,18 @@ export const recipientSelectionSchema = z.discriminatedUnion("kind", [
   z.object({ kind: z.literal("rathaus") }).strict(),
 ]);
 
+const plzField = z.string()
+  .regex(/^\d{5}$/, { message: "Bitte gib eine gültige 5-stellige Postleitzahl ein." })
+  .refine((v) => parseInt(v, 10) >= 1001, { message: "Ungültige Postleitzahl" });
+
 export const step1Schema = z.object({
-  plz: z.string()
-    .regex(/^\d{5}$/, { message: "Bitte gib eine gültige 5-stellige Postleitzahl ein." })
-    .refine((v) => parseInt(v, 10) >= 1001, { message: "Ungültige Postleitzahl" }),
+  plz: plzField,
   email: z.string()
     .email({ message: "Bitte gib eine gültige E-Mail-Adresse ein." }),
 });
+
+// PDF-Modus (Klassenlink "PDF statt E-Mail"): nur die Postleitzahl.
+export const step1PlzSchema = z.object({ plz: plzField });
 
 export const step1bSchema = z.object({
   party: z.string().trim().max(80, { message: "Partei darf maximal 80 Zeichen lang sein." }).optional(),

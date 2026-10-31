@@ -92,7 +92,7 @@ describe("/eltern page", () => {
     expect(html).toContain('id="sicher"');
     expect(html).toContain("Ist das sicher?");
     expect(html).toContain(
-      "Im Jugendmodus bekommt dein Kind nur die eine Mail mit dem Entwurf: keine Erinnerungen, keine Spendenbitte, keine Frage nach einer Partei, keine Kartenfunktion.",
+      "Im Jugendmodus bekommt dein Kind höchstens die eine Mail mit dem Entwurf: keine Erinnerungen, keine Spendenbitte, keine Frage nach einer Partei, keine Kartenfunktion.",
     );
     expect(html).toContain("sie stammt vom Niedersächsischen Kultusministerium.");
     expect(html).toContain("application/ld+json");

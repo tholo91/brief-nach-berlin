@@ -241,7 +241,7 @@ export function StepLevelSelect({
                     isSelected
                       ? "border-waldgruen/40 bg-waldgruen text-creme"
                       : isAvailable
-                        ? "border-waldgruen/20 bg-white text-waldgruen-dark"
+                        ? "border-waldgruen/20 bg-surface text-waldgruen-dark"
                         : "border-warmgrau/20 bg-warmgrau/10 text-warmgrau/45",
                   ].join(" ")}
                 >

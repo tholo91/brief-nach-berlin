@@ -986,7 +986,7 @@ export function Step3Success({
                       type="email"
                       value={resendEmail}
                       onChange={(e) => { setResendEmail(e.target.value); setResendState("idle"); }}
-                      className="w-full font-body text-sm text-warmgrau bg-white border border-warmgrau/25 rounded-lg px-3 py-2 focus:outline-none focus:border-waldgruen transition-colors"
+                      className="w-full font-body text-sm text-warmgrau bg-surface border border-warmgrau/25 rounded-lg px-3 py-2 focus:outline-none focus:border-waldgruen transition-colors"
                       disabled={resendState === "sending"}
                     />
                   </div>
@@ -1102,7 +1102,7 @@ export function Step3Success({
                   onClick={handleReportError}
                   disabled={reportState === "sending"}
                   className={[
-                    "inline-flex items-center gap-2 font-body text-sm font-semibold text-white bg-airmail-rot px-4 py-2 rounded-lg transition-colors",
+                    "inline-flex items-center gap-2 font-body text-sm font-semibold text-creme bg-airmail-rot px-4 py-2 rounded-lg transition-colors",
                     reportState === "sending"
                       ? "opacity-60 cursor-not-allowed"
                       : "hover:bg-airmail-rot/90 cursor-pointer",

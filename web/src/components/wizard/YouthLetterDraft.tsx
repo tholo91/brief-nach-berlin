@@ -26,7 +26,7 @@ export function YouthLetterDraft({
         Schreib ihn von Hand ab und ergänze ein eigenes Erlebnis.
         {!pdfDelivery && " Eine Kopie kommt per Mail."}
       </p>
-      <div className="mt-3 overflow-hidden rounded-sm border border-warmgrau/15 bg-white shadow-[0_20px_50px_-30px_rgba(27,67,50,0.45)]">
+      <div className="theme-day mt-3 overflow-hidden rounded-sm border border-warmgrau/15 bg-white shadow-[0_20px_50px_-30px_rgba(27,67,50,0.45)]">
         <div
           aria-hidden="true"
           className="h-2 w-full"

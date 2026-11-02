@@ -45,7 +45,7 @@ export function TopicStarterGrid({ topics, selectedIds, limitReached, onToggle, 
                   ? "border-waldgruen bg-waldgruen text-creme"
                   : disabled
                     ? "cursor-not-allowed border-warmgrau/10 bg-creme/50 text-warmgrau opacity-40"
-                    : "border-waldgruen/25 bg-white text-warmgrau hover:border-waldgruen/50 hover:bg-waldgruen/5"
+                    : "border-waldgruen/25 bg-surface text-warmgrau hover:border-waldgruen/50 hover:bg-waldgruen/5"
               }`}
             >
               <span>{topic.title}</span>
@@ -73,7 +73,7 @@ export function TopicStarterGrid({ topics, selectedIds, limitReached, onToggle, 
                 ? "border-waldgruen bg-waldgruen text-creme shadow-[0_16px_36px_-24px_rgba(27,67,50,0.8)]"
                 : disabled
                   ? "cursor-not-allowed border-warmgrau/10 bg-creme/50 text-warmgrau opacity-40"
-                  : "border-waldgruen/15 bg-white text-warmgrau hover:-translate-y-0.5 hover:border-waldgruen/35 hover:shadow-sm motion-reduce:transform-none"
+                  : "border-waldgruen/15 bg-surface text-warmgrau hover:-translate-y-0.5 hover:border-waldgruen/35 hover:shadow-sm motion-reduce:transform-none"
             }`}
           >
             <span className={`font-typewriter text-[10px] font-bold uppercase tracking-[0.14em] ${selected ? "text-creme/70" : "text-waldgruen/60"}`}>

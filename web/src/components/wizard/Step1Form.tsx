@@ -235,7 +235,7 @@ export function Step1Form({
       </div>
 
       {pendingSubmission && (
-        <div className="fixed inset-0 z-50 grid place-items-center bg-waldgruen-dark/45 px-4 py-6 backdrop-blur-sm">
+        <div className="night-scrim fixed inset-0 z-50 grid place-items-center bg-waldgruen-dark/45 px-4 py-6 backdrop-blur-sm">
           <div
             role="dialog"
             aria-modal="true"

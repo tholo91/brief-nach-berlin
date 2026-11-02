@@ -89,6 +89,7 @@ export function format(payload: DebugPayload | { error: string }): string {
     `Model                 ${d.model}`,
     `Temperature           ${d.temperature}`,
     `Generation            ${d.generationMs} ms`,
+    ...(d.klasse ? [`Klassenstufe          ${d.klasse}`] : []),
     `Letter ID             ${d.letterId ?? "—"}`,
     `Code version          ${d.codeVersion ?? "—"}`,
   ];

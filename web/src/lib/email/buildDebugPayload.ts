@@ -2,6 +2,7 @@ import type { LetterDebugPayload } from "./sendLetterEmail";
 import type { GenerateLetterResult, WizardData, RecipientLevel } from "@/lib/types/wizard";
 import type { Politician, PoliticalLevel } from "@/lib/types/politician";
 import type { Recipient } from "@/lib/lookup/rathausRecipient";
+import { isYouthAudience } from "@/lib/schule/youth";
 import { LETTER_LENGTHS, DEFAULT_LETTER_LENGTH } from "@/lib/config";
 
 /** Routing-Telemetrie für die Debug-URL (D17, LOCK-4c: nie sichtbarer Mail-Text). */
@@ -105,6 +106,7 @@ export function buildDebugPayload(
     plz: data.plz,
     letterId,
     codeVersion: getCodeVersion(),
+    ...(isYouthAudience(data) ? { klasse: data.klasse } : {}),
     ...(routing
       ? {
           routedPrimaryLevel: routing.routedPrimaryLevel,
@@ -200,6 +202,7 @@ export function buildResendDebugPayload(
     plz: data.plz,
     letterId,
     codeVersion: getCodeVersion(),
+    ...(isYouthAudience(data) ? { klasse: data.klasse } : {}),
     resent: true,
   };
 }

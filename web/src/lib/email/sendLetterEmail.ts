@@ -58,6 +58,8 @@ export interface LetterDebugPayload {
   codeVersion?: string;
   // Slug der Kampagne, aus der der Brief stammt. Landet beim Review in reviews.campaign_slug.
   campaignSlug?: string;
+  // Klassenstufe (7-13) bei Briefen aus /schule, sonst nicht gesetzt.
+  klasse?: number;
   // True für Resends: es gab keinen neuen Generierungslauf, daher sind die
   // generierungs-spezifischen Felder (model/temperature/generationMs/…) Platzhalter.
   // /debug zeigt das als Hinweis an, damit man die Werte nicht fehlinterpretiert.

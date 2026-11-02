@@ -116,7 +116,7 @@ function LetterCard({ d }: { d: LetterDebugPayload }) {
             ["Tonalität", isToneStep(d.toneLevel) ? undefined : d.toneLabel],
             ["Brieflänge", lengthText(d.letterLengthKey, d.letterLengthMin, d.letterLengthMax)],
             ["PLZ", d.plz],
-            ["Herkunft", d.campaignSlug ? "Kampagnenbrief" : undefined],
+            ["Herkunft", d.campaignSlug ? "Kampagnenbrief" : d.klasse ? `Schulprojekt, Klasse ${d.klasse}` : undefined],
           ]}
         />
         {isToneStep(d.toneLevel) && <ToneScale title="Tonalität" level={d.toneLevel} />}

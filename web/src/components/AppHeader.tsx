@@ -105,7 +105,7 @@ export default function AppHeader({
           {showMoreCampaigns && (
             <Link
               href="/ngo-briefkampagne"
-              className="inline-flex items-center justify-center rounded-lg border border-waldgruen/18 bg-white/55 px-3 py-2 font-body text-sm font-semibold text-waldgruen-dark transition-colors hover:border-waldgruen/35 hover:bg-white/85 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-waldgruen active:translate-y-px sm:px-4"
+              className="inline-flex items-center justify-center rounded-lg border border-waldgruen/18 bg-surface/55 px-3 py-2 font-body text-sm font-semibold text-waldgruen-dark transition-colors hover:border-waldgruen/35 hover:bg-surface/85 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-waldgruen active:translate-y-px sm:px-4"
             >
               <span className="sm:hidden">Kampagnen</span>
               <span className="hidden sm:inline">Weitere Kampagnen</span>

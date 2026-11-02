@@ -54,7 +54,7 @@ export function DonationCard({
         <Link
           href={SUPPORT_CONTENT.ctas.learnMore.href}
           prefetch={false}
-          className="inline-flex min-h-11 items-center justify-center rounded-lg border border-waldgruen/30 bg-white/45 px-5 py-2.5 font-body text-sm font-semibold text-waldgruen transition-[border-color,background-color,transform] duration-200 hover:border-waldgruen hover:bg-white/80 active:translate-y-px focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-waldgruen"
+          className="inline-flex min-h-11 items-center justify-center rounded-lg border border-waldgruen/30 bg-surface/45 px-5 py-2.5 font-body text-sm font-semibold text-waldgruen transition-[border-color,background-color,transform] duration-200 hover:border-waldgruen hover:bg-surface/80 active:translate-y-px focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-waldgruen"
         >
           {SUPPORT_EMAIL_COPY.de.infoButton}
         </Link>

@@ -590,7 +590,7 @@ export function WizardShell() {
             <div
               role="img"
               aria-label={`Logo von ${campaignContext.creatorName ?? campaignContext.title}`}
-              className="h-11 w-11 shrink-0 rounded-full border border-waldgruen/15 bg-white shadow-sm"
+              className="h-11 w-11 shrink-0 rounded-full border border-waldgruen/15 bg-surface shadow-sm"
               style={{
                 backgroundImage: `url(${campaignLogoUrl})`,
                 backgroundPosition: "center",
@@ -601,7 +601,7 @@ export function WizardShell() {
           ) : (
             <div
               aria-hidden="true"
-              className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-waldgruen/15 bg-white font-typewriter text-base font-bold text-waldgruen-dark shadow-sm"
+              className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-waldgruen/15 bg-surface font-typewriter text-base font-bold text-waldgruen-dark shadow-sm"
             >
               {campaignInitial}
             </div>

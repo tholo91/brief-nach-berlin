@@ -152,11 +152,12 @@ export function Step3Success({
   );
   const governmentHead = useMemo(
     () =>
-      wizardData.campaign && landesregierung && !wizardData.campaign.targetState
+      landesregierung && !wizardData.campaign?.targetState
         ? getLandesregierungRecipient(landesregierung.bundeslandKey, "head")
         : null,
-    [landesregierung, wizardData.campaign]
+    [landesregierung, wizardData.campaign?.targetState]
   );
+  const headPreselected = Boolean(governmentHead && wizardData.campaign);
   const bundeskanzler = useMemo(
     () =>
       recipients.find(
@@ -229,7 +230,7 @@ export function Step3Success({
     () => Boolean(landesregierung)
   );
   const [landAddressee, setLandAddressee] = useState<"institution" | "head">(
-    () => (governmentHead ? "head" : "institution")
+    () => (headPreselected ? "head" : "institution")
   );
   const [bundeskanzlerSelected, setBundeskanzlerSelected] = useState<boolean>(
     () => Boolean(bundeskanzler)
@@ -1237,7 +1238,9 @@ export function Step3Success({
         : bundeskanzler && bundeskanzlerSelected
         ? bundeskanzler.label
         : landesregierung && landesregierungSelected
-        ? landesregierung.label
+        ? landAddressee === "head" && governmentHead
+          ? governmentHead.label
+          : landesregierung.label
         : rathaus && rathausSelected
         ? rathaus.label
         : selectedPolitician
@@ -1281,9 +1284,11 @@ export function Step3Success({
       : isLand
         ? showLandPersonPicker
           ? "Wähle selbst eine Person aus deiner PLZ-Zuordnung. Wir treffen keine automatische Personen- oder Parteiauswahl."
-          : governmentHead
+          : headPreselected
             ? "Die Regierungsspitze ist vorausgewählt. Du kannst stattdessen an die Landesregierung als Ganzes oder an ein Mitglied des Landtags schreiben."
-            : "Der institutionelle Empfänger ist bereits vorausgewählt."
+            : governmentHead
+              ? `${landesregierung?.institutionKind === "senat" ? "Der Senat" : "Die Landesregierung"} ist vorausgewählt. Du kannst stattdessen an die Regierungsspitze oder an ein Mitglied des Landtags schreiben.`
+              : "Der institutionelle Empfänger ist bereits vorausgewählt."
         : campaignRestricted
           ? campaignRestrictedNoLocalMatch
             ? "Filtere nach Partei oder suche nach Name, Wahlkreis und Ausschuss."
@@ -1299,7 +1304,7 @@ export function Step3Success({
             : "Deine PLZ liegt an einer Wahlkreis-Grenze. Wähle das MdB, das deinen Wahlkreis vertritt. Das Direktmandat ist je Wahlkreis vorausgewählt.";
 
     return (
-      <div className={currentSelection !== null ? "pb-32 sm:pb-0" : undefined}>
+      <div className={currentSelection !== null ? "pb-40 sm:pb-0" : undefined}>
         {(onChangePlz || onChangeLevel) && (
           <div className="mb-6 flex items-center gap-4">
             {onChangeLevel && (
@@ -1920,7 +1925,7 @@ export function Step3Success({
               setSelectedPoliticianId(null);
               setMdbLaterSelected(false);
               setLandesregierungSelected(true);
-              setLandAddressee(governmentHead ? "head" : "institution");
+              setLandAddressee(headPreselected ? "head" : "institution");
             }}
             className="mt-5 font-body text-sm font-semibold text-waldgruen underline underline-offset-4 hover:text-waldgruen-dark"
           >

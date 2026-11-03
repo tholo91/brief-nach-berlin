@@ -61,9 +61,10 @@ describe("Step3Success — institutioneller Land-Default", () => {
     const institutionRadio = radios.find((radio) => radio.includes("Senatskanzlei Bremen"));
     expect(headRadio).toMatch(/^ aria-checked="true"/);
     expect(institutionRadio).toMatch(/^ aria-checked="false"/);
+    expect(html).toContain("Ausgewählt: Bürgermeister Dr. Andreas Bovenschulte");
   });
 
-  it("zeigt für Bremen 28203 nur den vorausgewählten Senat und den optionalen Personenpfad", () => {
+  it("zeigt für Bremen 28203 den vorausgewählten Senat, die Regierungsspitze als Alternative und den Personenpfad", () => {
     const html = renderToStaticMarkup(
       React.createElement(
         LocaleProvider,
@@ -93,6 +94,37 @@ describe("Step3Success — institutioneller Land-Default", () => {
     expect(html).not.toContain("Direktmandat");
     expect(html).not.toContain("Landesliste");
     expect(html).not.toContain("Dein Brief geht an die Landesregierung");
+    expect(html).toContain("Der Senat ist vorausgewählt.");
+    expect(html).not.toContain("Die Regierungsspitze ist vorausgewählt.");
+    const radios = html.split('role="radio"').slice(1);
+    const headRadio = radios.find((radio) => radio.includes("Regierungschef:in"));
+    const institutionRadio = radios.find((radio) => radio.includes("Senatskanzlei Bremen"));
+    expect(headRadio).toMatch(/^ aria-checked="false"/);
+    expect(institutionRadio).toMatch(/^ aria-checked="true"/);
+  });
+
+  it("zeigt in einer Kampagne mit festem Bundesland keine Regierungsspitze", () => {
+    const html = renderToStaticMarkup(
+      React.createElement(
+        LocaleProvider,
+        null,
+        React.createElement(Step3Success, {
+          result: { disambiguationNeeded: true, politicians: [] },
+          wizardData: {
+            plz: "28203",
+            email: "test@example.org",
+            issueText: "Ein landespolitisches Anliegen",
+            campaign: { slug: "bremen", title: "Bremen", targetLevel: "Land", targetState: "HB" },
+          },
+          recipients: [bremenSenat],
+          optionalLandRecipients: bremenMdls,
+          selectedLevel: "Land",
+        }),
+      ),
+    );
+
+    expect(html).toContain("Senat der Freien Hansestadt Bremen");
+    expect(html).not.toContain("Regierungschef:in");
   });
 
   it("zeigt im fertigen Legacy-Pfad eine ehrliche mobile CTA-Hierarchie ohne Versandbehauptung", () => {

@@ -41,7 +41,7 @@ describe("StepPreferences youth mode", () => {
 describe("youth helpers", () => {
   it("isYouthWizard needs audience jung and a valid klasse", () => {
     expect(isYouthWizard({ audience: "jung", klasse: 8 })).toBe(true);
-    expect(isYouthWizard({ audience: "jung", klasse: 5 })).toBe(false);
+    expect(isYouthWizard({ audience: "jung", klasse: 4 })).toBe(false);
     expect(isYouthWizard({ audience: "jung" })).toBe(false);
     expect(isYouthWizard({})).toBe(false);
   });

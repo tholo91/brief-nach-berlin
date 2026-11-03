@@ -72,7 +72,7 @@ describe("resolveJungEntry", () => {
 describe("validateJungSubmit", () => {
   it("requires a Klasse first", () => {
     expect(validateJungSubmit({ klasse: null, issueText: "genug Text hier" })).toEqual({ ok: false, reason: "klasse" });
-    expect(validateJungSubmit({ klasse: 6, issueText: "genug Text hier" })).toEqual({ ok: false, reason: "klasse" });
+    expect(validateJungSubmit({ klasse: 4, issueText: "genug Text hier" })).toEqual({ ok: false, reason: "klasse" });
   });
   it("requires the minimum text length after trimming", () => {
     expect(validateJungSubmit({ klasse: 9, issueText: "   kurz   " })).toEqual({ ok: false, reason: "text-short" });
@@ -160,30 +160,30 @@ describe("/schule page (Schüler:innen)", () => {
     expect(html).not.toContain("Du bist Elternteil");
   });
 
-  it("renders the form with chips, connector and reveal without a class link", async () => {
+  it("renders the form with chips and reveal without a class link", async () => {
     const html = await render();
     expect(html).toContain('id="schreiben"');
-    expect(html).toContain("Wählen darfst du noch nicht.");
-    expect(html).toContain("Schreiben schon.");
+    expect(html).toContain("Wählen darfst du noch nicht,");
+    expect(html).toContain("Schreiben schon!");
     expect(html).not.toContain('name="klasse"');
     expect(html).toContain("Ein, zwei eigene Sätze reichen.");
     expect(html).not.toContain("Brief entwerfen");
     expect(html).toContain("overflow-x-auto");
-    expect(html).toContain("step-connector");
+    expect(html).not.toContain("step-connector");
     expect(html).toContain("reveal");
     expect(html.match(/<h1/g)).toHaveLength(1);
     expect(html).toContain("font-handwriting");
     expect(html).not.toMatch(/[–—]/);
   });
 
-  it("shows the new intro, first placeholder, short after-button line and expandable chips", async () => {
+  it("shows the new intro, topic info, short after-button line and expandable chips", async () => {
     const html = await render();
     expect(html).toContain(
       "Erzähl, was dich stört. Das Tool macht daraus einen Brief an die Politik.",
     );
-    expect(html).toContain(
-      'placeholder="Seit den Herbstferien hatten wir in Mathe drei Vertretungen. Ich fühle mich allein gelassen."',
-    );
+    expect(html).toContain('role="tooltip"');
+    expect(html).toContain("Am besten schreibst du dazu, was du selbst erlebt hast.");
+    expect(html).not.toContain("border-dashed");
     expect(html).not.toContain("Ein Erlebnis reicht");
     expect(html).not.toContain("bis zu zwei");
     expect(html).not.toContain(LIMIT_MESSAGE);
@@ -231,12 +231,12 @@ describe("JungExperience step by step", () => {
     expect(html).not.toContain("Brief entwerfen");
   });
 
-  it("shows class and button right after a finished sentence without a class link", () => {
+  it("keeps class and button hidden while only a finished sentence is in the field without a class link", () => {
     const sentence = JUNG_OPEN_TOPICS[0].issueText;
     jest.mocked(useTopicStarters).mockReturnValueOnce(hookState(sentence, { [JUNG_OPEN_TOPICS[0].id]: sentence }));
     const html = renderToStaticMarkup(createElement(JungExperience, { entry: { status: "none" } }));
-    expect(html.match(/name="klasse"/g)).toHaveLength(7);
-    expect(html).toContain("Brief entwerfen");
+    expect(html).not.toContain('name="klasse"');
+    expect(html).not.toContain("Brief entwerfen");
   });
 
   it("shows class after the topic and the button once there is own text", () => {
@@ -245,7 +245,8 @@ describe("JungExperience step by step", () => {
       .mocked(useTopicStarters)
       .mockReturnValueOnce(hookState(`${starter}die Fenster gehen nicht auf.`, { [JUNG_TOPICS[0].id]: starter }));
     const html = renderToStaticMarkup(createElement(JungExperience, { entry: { status: "none" } }));
-    expect(html.match(/name="klasse"/g)).toHaveLength(7);
+    expect(html.match(/name="klasse"/g)).toHaveLength(9);
+    expect(html).toContain('value="5"');
     expect(html).toContain("Brief entwerfen");
     expect(html.indexOf("Was nervt dich?")).toBeLessThan(html.indexOf('name="klasse"'));
   });

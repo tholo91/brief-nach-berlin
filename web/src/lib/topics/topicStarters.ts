@@ -4,6 +4,8 @@ export type TopicStarter = {
   id: string;
   title: string;
   eyebrow?: string;
+  /** Nur Chip-Reihe: steht vor dem Titel. */
+  emoji?: string;
   issueText: string;
 };
 

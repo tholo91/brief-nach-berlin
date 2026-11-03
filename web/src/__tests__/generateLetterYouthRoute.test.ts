@@ -172,7 +172,7 @@ describe("generate-letter: Jugendmodus", () => {
   });
 
   it("fällt bei ungültiger Klasse auf den Erwachsenen-Flow zurück", async () => {
-    const response = await post({ audience: "jung", klasse: 5, classToken: "valid-token" });
+    const response = await post({ audience: "jung", klasse: 4, classToken: "valid-token" });
     expect(response.status).toBe(200);
     expect(jest.mocked(generateLetter).mock.calls[0]![0].youth).toBeUndefined();
     expect((await response.json()).letterSignalContext).toBe("signal-token");
@@ -227,7 +227,7 @@ describe("generate-letter: Jugendmodus", () => {
 
     it("lehnt einen PDF-Token ohne Jugend-Audience ohne E-Mail ab", async () => {
       expect((await post({ email: "", classToken: "pdf-token" })).status).toBe(400);
-      expect((await post({ audience: "jung", klasse: 5, email: "", classToken: "pdf-token" })).status).toBe(400);
+      expect((await post({ audience: "jung", klasse: 4, email: "", classToken: "pdf-token" })).status).toBe(400);
     });
 
     it("prüft im PDF-Modus weiter die PLZ", async () => {

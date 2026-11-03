@@ -186,6 +186,20 @@ describe("generateLetter im Jugendmodus", () => {
     expect(args.messages[1].content).toContain("woerter: 150 bis 200");
   });
 
+  it("verlangt in Klasse 5 und 6 nur 100 bis 150 Wörter", async () => {
+    const letter = Array.from({ length: 125 }, (_, i) => `Wort${i}`).join(" ");
+    (mistral.chat.complete as jest.Mock).mockResolvedValue({
+      choices: [{ message: { content: JSON.stringify({ selected_politician_id: 1, letter }) } }],
+    });
+
+    await generateLetter(input(6, false));
+
+    const args = (mistral.chat.complete as jest.Mock).mock.calls[0][0];
+    expect(args.maxTokens).toBe(Math.ceil(150 * 2.2) + 250);
+    expect(args.messages[1].content).toContain("woerter: 100 bis 150");
+    expect(args.messages[1].content).toContain("Ich gehe in die 6. Klasse.");
+  });
+
   it("schickt im Jugendmodus einen System-Prompt ohne Partei-Werte", async () => {
     const letter = Array.from({ length: 175 }, (_, i) => `Wort${i}`).join(" ");
     (mistral.chat.complete as jest.Mock).mockResolvedValue({

@@ -133,7 +133,7 @@ describe("wizard handoff", () => {
       JSON.stringify({
         issueText: "Unser Schulbus kommt zu selten.",
         audience: "erwachsen",
-        klasse: 5,
+        klasse: 4,
         classToken: "x".repeat(513),
         plz: "2819",
         savedAt: Date.now(),

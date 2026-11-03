@@ -6,7 +6,7 @@ import { lowercaseAfterSalutation } from "@/lib/generation/lowercaseAfterSalutat
 import { findRuleViolations, replaceDashes, ruleRetryDirective } from "@/lib/generation/letterRules";
 import { extractJsonObject } from "@/lib/mistral-json";
 import { LETTER_LENGTHS, DEFAULT_LETTER_LENGTH } from "@/lib/config";
-import { LAST_KLASSE_NOT_YET_VOTING, YOUTH_LETTER_WORDS } from "@/lib/schule/youth";
+import { LAST_KLASSE_NOT_YET_VOTING, youthLetterWords } from "@/lib/schule/youth";
 import {
   buildTopicSignal,
   TOPIC_JSON_SCHEMA_PROPERTIES,
@@ -678,7 +678,7 @@ export async function generateLetter(
 ): Promise<GenerateLetterResult> {
   const lengthKey = input.letterLength ?? DEFAULT_LETTER_LENGTH;
   const { min: minWords, max: maxWords } = input.youth
-    ? YOUTH_LETTER_WORDS
+    ? youthLetterWords(input.youth.klasse)
     : LETTER_LENGTHS[lengthKey];
   const targetWords = Math.round((minWords + maxWords) / 2);
   const toneLevel = input.toneLevel ?? 3;

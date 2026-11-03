@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import LoopVideoBackground from "@/components/LoopVideoBackground";
 import { FAQAccordion } from "@/components/FAQAccordion";
+import FadeFooterImage from "@/components/FadeFooterImage";
 import { Figure } from "@/components/editorial/Figure";
 import { JungExperience } from "@/components/jung/JungExperience";
 import { resolveJungEntry } from "@/components/jung/jungEntry";
@@ -152,9 +153,9 @@ export default async function JungPage({
               </p>
             )}
             <h1 className="font-typewriter text-xl font-bold leading-tight tracking-tight text-waldgruen-dark sm:text-[2rem]">
-              <span className="block">Wählen darfst du noch nicht.</span>{" "}
+              <span className="block">Wählen darfst du noch nicht,</span>{" "}
               <span className="mt-1 inline-block origin-left -rotate-3 font-handwriting text-[2.6rem] font-bold leading-none tracking-normal text-waldgruen sm:text-6xl">
-                Schreiben schon.
+                Schreiben schon!
               </span>
             </h1>
             <p className="mt-3 max-w-[44ch] text-balance font-body text-base leading-snug text-warmgrau sm:mt-4 sm:text-lg">
@@ -164,7 +165,7 @@ export default async function JungPage({
         </div>
       </section>
 
-      <div className="mx-auto w-full max-w-2xl px-5 pb-16 pt-6 sm:pt-8 lg:pt-2">
+      <div className="mx-auto w-full max-w-2xl px-5 pt-6 sm:pt-8 lg:pt-2">
         <div id="schreiben" className="scroll-mt-32">
           <JungExperience entry={entry} />
         </div>
@@ -173,13 +174,10 @@ export default async function JungPage({
           <h2 id="jung-so-geht-s" className={h2Class}>So geht&apos;s</h2>
           <ol className="mt-6 space-y-6">
             {steps.map((step, index) => (
-              <li key={step.title} className="relative flex gap-4">
-                <span aria-hidden="true" className="relative z-10 flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-waldgruen/40 bg-creme font-typewriter text-sm font-bold text-waldgruen">
+              <li key={step.title} className="flex gap-4">
+                <span aria-hidden="true" className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-waldgruen/40 bg-creme font-typewriter text-sm font-bold text-waldgruen">
                   {index + 1}
                 </span>
-                {index < steps.length - 1 && (
-                  <span aria-hidden="true" className="step-connector absolute -bottom-5 left-[15px] top-9 w-0.5" />
-                )}
                 <div>
                   <p className="font-body font-bold text-waldgruen-dark">{step.title}</p>
                   <p className="mt-1 font-body text-base leading-relaxed text-warmgrau">{step.text}</p>
@@ -220,7 +218,12 @@ export default async function JungPage({
           </ul>
         </section>
 
-        <section aria-labelledby="jung-faq" className="reveal mt-14">
+      </div>
+
+      {/* Das Footer-Bild liegt hinter den FAQ statt darunter, siehe ConditionalFadeFooterImage. */}
+      <div className="relative pb-[clamp(120px,16vw,220px)]">
+        <FadeFooterImage variant="content" successBackground />
+        <section aria-labelledby="jung-faq" className="reveal relative mx-auto mt-14 w-full max-w-2xl px-5">
           <h2 id="jung-faq" className={`${h2Class} mb-4`}>Häufige Fragen</h2>
           <FAQAccordion items={faqs} />
         </section>

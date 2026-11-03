@@ -6,6 +6,7 @@ import { VoiceRecorder } from "@/components/audio/VoiceRecorder";
 import { ExpandableTopicChips } from "@/components/topics/ExpandableTopicChips";
 import { useTopicStarters } from "@/components/topics/useTopicStarters";
 import { WizardForwardIcon } from "@/components/wizard/WizardForwardIcon";
+import { useTypewriterPlaceholder } from "@/components/wizard/useTypewriterPlaceholder";
 import { WIZARD_PATH } from "@/lib/config";
 import { JUNG_MAX_TOPICS, JUNG_OPEN_TOPICS, JUNG_TOPICS } from "@/lib/schule/jungTopics";
 import { KLASSE_MAX, KLASSE_MIN, isValidKlasse } from "@/lib/schule/youth";
@@ -39,6 +40,8 @@ const OPEN_TOPIC_MESSAGES = {
   added: "Satz eingefügt. Schreib gern noch mehr dazu.",
 };
 
+const TOPIC_INFO = "Tipp ein Thema an und nutz den Baustein. Am besten schreibst du dazu, was du selbst erlebt hast.";
+
 const FOCUS_HINT = "Ein, zwei Fokusthemen reichen, sonst wird es ein Buch.";
 const FOCUS_HINT_OPEN = `${FOCUS_HINT} Für weitere schreibst du einen neuen Brief.`;
 const FOCUS_HINT_STARTERS = `${FOCUS_HINT} Schreib die Satzanfänge selbst zu Ende.`;
@@ -55,7 +58,6 @@ const JUNG_PLACEHOLDERS = [
   "Ich wünsche mir einen Ort in meiner Stadt, an dem wir uns nach der Schule treffen können.",
   "Die Toiletten an meiner Schule sind seit Monaten kaputt und niemand kümmert sich darum.",
 ];
-const PLACEHOLDER_ROTATE_MS = 4000;
 // Klasse und Button erscheinen erst, wenn jemand selbst etwas geschrieben hat, damit der Einstieg klein wirkt.
 const OWN_TEXT_MIN = 15;
 
@@ -79,8 +81,6 @@ export function JungExperience({ entry }: { entry: JungEntry }) {
   const [klasse, setKlasse] = useState<number | null>(entryKlasse);
   const [usedVoice, setUsedVoice] = useState(false);
   const [showPicker, setShowPicker] = useState(entry.status !== "valid");
-  const [placeholderIndex, setPlaceholderIndex] = useState(0);
-  const [textFocused, setTextFocused] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const klasseGroupRef = useRef<HTMLFieldSetElement>(null);
   const [finishRevealed, setFinishRevealed] = useState(false);
@@ -115,14 +115,7 @@ export function JungExperience({ entry }: { entry: JungEntry }) {
   }, [router]);
 
   const hasText = issueText.length > 0;
-  useEffect(() => {
-    if (textFocused || hasText) return;
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-    const timer = setInterval(() => {
-      setPlaceholderIndex((index) => (index + 1) % JUNG_PLACEHOLDERS.length);
-    }, PLACEHOLDER_ROTATE_MS);
-    return () => clearInterval(timer);
-  }, [textFocused, hasText]);
+  const typedPlaceholder = useTypewriterPlaceholder(JUNG_PLACEHOLDERS, !hasText);
 
   useEffect(() => {
     if (entryKlasse !== null) return;
@@ -190,8 +183,8 @@ export function JungExperience({ entry }: { entry: JungEntry }) {
   const ownText = Object.values(topicInsertions)
     .reduce((text, starter) => removeInsertedText(text, starter).text, issueText)
     .trim();
-  // Ohne Klassenlink steht der Satz fertig im Feld, dann reicht er für den nächsten Schritt.
-  const ownTextEnough = (isOpen ? issueText.trim() : ownText).length >= OWN_TEXT_MIN;
+  // Nur selbst Getipptes zählt: ein eingefügter Baustein allein blendet die Klasse nicht ein.
+  const ownTextEnough = ownText.length >= OWN_TEXT_MIN;
   const showFinish = finishRevealed || ownTextEnough;
 
   // Einmal sichtbar, bleibt der Abschluss sichtbar, auch wenn jemand Text wieder löscht.
@@ -215,10 +208,13 @@ export function JungExperience({ entry }: { entry: JungEntry }) {
         <section aria-labelledby="jung-thema-heading">
           <ExpandableTopicChips
             heading={
-              <h2 id="jung-thema-heading" className="font-typewriter text-base font-bold text-waldgruen-dark sm:text-lg">
-                <span aria-hidden="true" className="mr-2 text-waldgruen">1</span>
-                Was nervt dich?
-              </h2>
+              <div className="relative flex items-center">
+                <h2 id="jung-thema-heading" className="whitespace-nowrap font-typewriter text-base font-bold text-waldgruen-dark sm:text-lg">
+                  <span aria-hidden="true" className="mr-2 text-waldgruen">1</span>
+                  Was nervt dich?
+                </h2>
+                <InfoTip id="jung-thema-info" label="Wie nutze ich die Themen?" text={TOPIC_INFO} />
+              </div>
             }
             gridId="jung-thema-chips"
             topics={topics}
@@ -255,17 +251,27 @@ export function JungExperience({ entry }: { entry: JungEntry }) {
                 setIssueText(event.target.value);
                 fitTextarea(event.target);
               }}
-              onFocus={() => setTextFocused(true)}
-              onBlur={() => setTextFocused(false)}
-              placeholder={JUNG_PLACEHOLDERS[placeholderIndex]}
-              className="min-h-24 w-full resize-y rounded-lg border border-dashed border-waldgruen/30 bg-white py-3 pl-4 pr-14 font-body text-base leading-relaxed text-warmgrau outline-none transition sm:min-h-44 placeholder:text-warmgrau/40 focus:border-waldgruen focus:ring-2 focus:ring-waldgruen/20"
+              className="block min-h-24 w-full resize-y rounded-xl border border-warmgrau/30 bg-creme py-3 pl-4 pr-14 font-body text-base leading-relaxed text-warmgrau shadow-sm outline-none transition sm:min-h-44 focus:border-waldgruen focus:ring-2 focus:ring-waldgruen"
             />
+            {!hasText && (
+              <div
+                aria-hidden="true"
+                className="pointer-events-none absolute left-4 right-14 top-3 font-body text-base leading-relaxed text-warmgrau/40"
+              >
+                {typedPlaceholder.reducedMotion ? JUNG_PLACEHOLDERS[0] : typedPlaceholder.text}
+              </div>
+            )}
             <VoiceRecorder
               language="de"
               hasText={charCount > 0}
               charCount={charCount}
               minChars={ISSUE_TEXT_MIN}
               classToken={entry.status === "valid" ? entry.token : undefined}
+              metaStart={
+                <p id="jung-status" aria-live="polite" className="font-body text-sm font-semibold text-waldgruen-dark">
+                  {statusMessage}
+                </p>
+              }
               onTranscription={(text) => {
                 setUsedVoice(true);
                 setIssueText((prev) => (prev ? `${prev}\n${text}` : text).slice(0, ISSUE_TEXT_MAX));
@@ -274,19 +280,16 @@ export function JungExperience({ entry }: { entry: JungEntry }) {
           </div>
         </section>
 
-        <p id="jung-status" aria-live="polite" className="font-body text-sm font-semibold text-waldgruen-dark empty:hidden">
-          {statusMessage}
-        </p>
-
         {showFinish ? (
-          <div className="fade-in-row space-y-3 sm:space-y-8">
+          <div className="grow-in-row">
+          <div className="-m-1 min-h-0 space-y-3 overflow-hidden p-1 sm:space-y-8">
             {showPicker ? (
               <fieldset ref={klasseGroupRef} role="radiogroup" className="min-w-0">
                 <legend className="font-typewriter text-base font-bold text-waldgruen-dark sm:text-lg">
                   <span aria-hidden="true" className="mr-2 text-waldgruen">3</span>
                   In welche Klasse gehst du?
                 </legend>
-                <div className="mt-2 grid max-w-sm grid-cols-7 gap-1.5 sm:mt-3">
+                <div className="mt-2 grid max-w-md grid-cols-9 gap-1 sm:mt-3 sm:gap-1.5">
                   {KLASSEN.map((value) => (
                     <label key={value} className="relative">
                       <input
@@ -337,6 +340,7 @@ export function JungExperience({ entry }: { entry: JungEntry }) {
               <p className="mt-3 font-body text-sm leading-relaxed text-warmgrau/70">
                 An wen dein Brief geht, schlägt dir das Tool vor.
               </p>
+            </div>
           </div>
           </div>
         ) : (
@@ -346,5 +350,48 @@ export function JungExperience({ entry }: { entry: JungEntry }) {
         )}
       </div>
     </div>
+  );
+}
+
+// Kleiner Hinweis hinter einer Überschrift: Hover und Fokus zeigen ihn, Tippen schaltet ihn um.
+function InfoTip({ id, label, text }: { id: string; label: string; text: string }) {
+  const [open, setOpen] = useState(false);
+  const wrapperRef = useRef<HTMLSpanElement>(null);
+
+  useEffect(() => {
+    if (!open) return;
+    const close = (event: PointerEvent | KeyboardEvent) => {
+      if (event instanceof KeyboardEvent ? event.key === "Escape" : !wrapperRef.current?.contains(event.target as Node)) {
+        setOpen(false);
+      }
+    };
+    document.addEventListener("pointerdown", close);
+    document.addEventListener("keydown", close);
+    return () => {
+      document.removeEventListener("pointerdown", close);
+      document.removeEventListener("keydown", close);
+    };
+  }, [open]);
+
+  return (
+    <span ref={wrapperRef} className="group/info">
+      <button
+        type="button"
+        aria-label={label}
+        aria-describedby={id}
+        aria-expanded={open}
+        onClick={() => setOpen((value) => !value)}
+        className={`relative ml-0.5 inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-full border border-current font-serif text-xs font-bold italic leading-none text-waldgruen/70 after:absolute after:-inset-3 after:content-[''] hover:text-waldgruen ${focusRing}`}
+      >
+        <span aria-hidden="true">i</span>
+      </button>
+      <span
+        id={id}
+        role="tooltip"
+        className={`${open ? "block" : "hidden"} absolute left-0 top-full z-20 mt-1 w-[min(18rem,calc(100vw-4rem))] rounded-lg bg-waldgruen-dark px-3 py-2 font-body text-sm leading-snug text-creme shadow-lg group-hover/info:block`}
+      >
+        {text}
+      </span>
+    </span>
   );
 }

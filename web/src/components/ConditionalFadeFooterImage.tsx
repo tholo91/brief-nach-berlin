@@ -6,7 +6,8 @@ import FadeFooterImage from "./FadeFooterImage";
 export default function ConditionalFadeFooterImage() {
   const pathname = usePathname();
 
-  if (pathname.startsWith("/kampagne") || pathname === "/ngo-briefkampagne") {
+  // /schule setzt das Bild selbst hinter die FAQ.
+  if (pathname.startsWith("/kampagne") || pathname === "/ngo-briefkampagne" || pathname === "/schule") {
     return null;
   }
 

@@ -30,7 +30,7 @@ export interface WizardData {
   classToken?: string;
   /** Jugendmodus (/schule): der Brief kommt von einer Schülerin oder einem Schüler. */
   audience?: "jung";
-  /** Klassenstufe im Jugendmodus (7 bis 13). */
+  /** Klassenstufe im Jugendmodus (5 bis 13). */
   klasse?: number;
   campaign?: {
     slug: string;
@@ -121,7 +121,7 @@ export interface GenerateLetterInput {
    * Briefgeneration das gleiche Statistik-Signal nicht erneut erzeugen.
    */
   preclassifiedTopic?: TopicSignal | null;
-  /** Jugendmodus: Absender ist Schüler:in, Länge nach YOUTH_LETTER_WORDS. */
+  /** Jugendmodus: Absender ist Schüler:in, Länge nach youthLetterWords. */
   youth?: YouthLetterContext;
 }
 

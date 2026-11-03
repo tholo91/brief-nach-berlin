@@ -93,7 +93,7 @@ describe("classToken", () => {
   });
 
   it("lehnt ungültige Klasse oder PLZ ab", () => {
-    expect(verifyClassToken(signClassToken({ klasse: 6, plz: "28203" }))).toBeNull();
+    expect(verifyClassToken(signClassToken({ klasse: 4, plz: "28203" }))).toBeNull();
     expect(verifyClassToken(signClassToken({ klasse: 14, plz: "28203" }))).toBeNull();
     expect(verifyClassToken(signClassToken({ klasse: 9.5, plz: "28203" }))).toBeNull();
     expect(verifyClassToken(signClassToken({ klasse: 9, plz: "2820" }))).toBeNull();

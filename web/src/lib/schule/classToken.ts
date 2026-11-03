@@ -2,6 +2,7 @@ import "server-only";
 import { z } from "zod";
 import { signFeedbackToken, verifyFeedbackToken } from "@/lib/feedback/token";
 import { hashIdentifier } from "@/lib/rateLimit";
+import { KLASSE_MAX, KLASSE_MIN } from "@/lib/schule/youth";
 
 export const CLASS_TOKEN_MAX_AGE_SECONDS = 14 * 24 * 60 * 60;
 
@@ -12,7 +13,7 @@ const OPTS = { macDomain: MAC_DOMAIN, maxAgeSeconds: CLASS_TOKEN_MAX_AGE_SECONDS
 
 const payloadSchema = z.object({
   v: z.literal(1),
-  k: z.number().int().min(7).max(13),
+  k: z.number().int().min(KLASSE_MIN).max(KLASSE_MAX),
   p: z.string().regex(/^\d{5}$/),
   // Nur für "PDF statt E-Mail" gesetzt; fehlt das Feld, gilt E-Mail (alte und neue E-Mail-Tokens sind identisch).
   d: z.literal(1).optional(),

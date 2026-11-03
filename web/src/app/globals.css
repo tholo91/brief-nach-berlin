@@ -291,6 +291,17 @@ video::-webkit-media-controls-start-playback-button {
   to   { opacity: 1; transform: none; }
 }
 
+/* Klappt eine Zeile auf: Inhalt darunter rutscht weich nach unten statt zu springen. */
+@keyframes grow-in-row {
+  from { grid-template-rows: 0fr; opacity: 0; transform: translateY(8px); }
+  to   { grid-template-rows: 1fr; opacity: 1; transform: none; }
+}
+
+.grow-in-row {
+  display: grid;
+  grid-template-rows: 1fr;
+}
+
 /* Immer sichtbar; die Animation kommt nur dazu, wenn der Browser sie kann. */
 .step-connector {
   background: repeating-linear-gradient(
@@ -328,6 +339,9 @@ video::-webkit-media-controls-start-playback-button {
 @media screen and (prefers-reduced-motion: no-preference) {
   .fade-in-row {
     animation: fade-in-row 260ms cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+  .grow-in-row {
+    animation: grow-in-row 520ms cubic-bezier(0.16, 1, 0.3, 1) both;
   }
 }
 
@@ -412,7 +426,8 @@ video::-webkit-media-controls-start-playback-button {
   .map-dialog-backdrop::backdrop,
   .reveal,
   .step-connector,
-  .fade-in-row {
+  .fade-in-row,
+  .grow-in-row {
     animation: none !important;
   }
 }

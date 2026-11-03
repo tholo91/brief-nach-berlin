@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState, type ReactNode } from "react";
 import {
   AudioRecorder,
   classifyMediaError,
@@ -45,6 +45,8 @@ interface VoiceRecorderProps {
   hideMetaRow?: boolean;
   /** Hide only the counter/shortcut part of the meta row. */
   hideCounter?: boolean;
+  /** Left side of the meta row while no recording or transcription is running. */
+  metaStart?: ReactNode;
   /** Pin the recorder control to the bottom-right of a growing textarea. */
   pinToBottom?: boolean;
   /** Increment to stop an active recording from an external control. */
@@ -131,6 +133,7 @@ export function VoiceRecorder({
   hideVoiceStatus = false,
   hideMetaRow = false,
   hideCounter = false,
+  metaStart,
   pinToBottom = false,
   stopRequestKey = 0,
 }: VoiceRecorderProps) {
@@ -501,7 +504,8 @@ export function VoiceRecorder({
 
       {!hideMetaRow && (
       <div className="mt-1 flex min-h-[22px] items-center justify-between gap-3">
-        <div className="flex items-center gap-2 text-sm">
+        <div className="flex min-w-0 items-center gap-2 text-sm">
+          {!isRecording && !isRequesting && !isProcessing && metaStart}
           {!hideVoiceStatus && (
             <>
               {isRecording && (

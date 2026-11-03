@@ -1283,7 +1283,7 @@ export function Step3Success({
       ? "Der kommunale Empfänger ist bereits vorausgewählt."
       : isLand
         ? showLandPersonPicker
-          ? "Wähle selbst eine Person aus deiner PLZ-Zuordnung. Wir treffen keine automatische Personen- oder Parteiauswahl."
+          ? "Wähle selbst eine Person aus deiner PLZ-Zuordnung. Ich treffe keine automatische Personen- oder Parteiauswahl."
           : headPreselected
             ? "Die Regierungsspitze ist vorausgewählt. Du kannst stattdessen an die Landesregierung als Ganzes oder an ein Mitglied des Landtags schreiben."
             : governmentHead
@@ -1390,7 +1390,7 @@ export function Step3Success({
             <p className="mt-1">
               {isAmbiguousLand
                 ? "Eine PLZ kann mehrere Landtagswahlkreise abdecken. Prüfe über das verlinkte Profil, welcher Wahlkreis zu deiner Wohnadresse gehört, bevor du auswählst."
-                : "Diese PLZ kann zu mehreren Berliner Bezirken gehören. Wir wählen deshalb kein Bezirksamt für dich aus. Suche und prüfe das zuständige Bezirksamt anhand deiner vollständigen Adresse."}
+                : "Diese PLZ kann zu mehreren Berliner Bezirken gehören. Ich wähle deshalb kein Bezirksamt für dich aus. Suche und prüfe das zuständige Bezirksamt anhand deiner vollständigen Adresse."}
             </p>
           </div>
         )}

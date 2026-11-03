@@ -16,7 +16,7 @@ type State =
 
 const ERROR_COPY = {
   invalid: "Bitte gib eine Postleitzahl mit fünf Ziffern ein.",
-  not_found: "Zu dieser Postleitzahl haben wir keinen Wahlkreis gefunden. Prüf die Ziffern noch einmal.",
+  not_found: "Zu dieser Postleitzahl habe ich keinen Wahlkreis gefunden. Prüf die Ziffern noch einmal.",
 } as const;
 
 export function MdbLookupCard() {

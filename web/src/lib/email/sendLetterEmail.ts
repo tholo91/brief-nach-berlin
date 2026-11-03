@@ -386,6 +386,7 @@ export async function sendLetterEmail(
     const tags = [
       params.debug?.resent ? "brief-resend" : "brief",
       ...(params.campaign?.slug ? [`brief-${params.campaign.slug}`] : []),
+      ...(params.debug?.klasse ? ["brief-schule"] : []),
     ];
 
     const rendered = {

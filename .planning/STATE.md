@@ -248,6 +248,7 @@ Recent decisions affecting current work:
 | 261031-i0q | OG-Bilder reparieren und eigenes Bild für /schule | 2026-10-31 | 5c6a576 | [261031-i0q-og-bilder-reparieren-und-eigenes-bild-f-](./quick/261031-i0q-og-bilder-reparieren-und-eigenes-bild-f-/) |
 | 261031-lsb | /unterricht mit Tafel-Hero und Klassenlink mit PDF statt E-Mail | 2026-10-31 | 5429dd5 | [261031-lsb-unterricht-landingpage-tafel-hero-und-kl](./quick/261031-lsb-unterricht-landingpage-tafel-hero-und-kl/) |
 | 261031-i13 | Nachtmodus Startseite mit Reichstag bei Nacht | 2026-10-31 | ab4ddf0 | [261031-i13-nachtmodus-startseite-mit-reichstag-bei-](./quick/261031-i13-nachtmodus-startseite-mit-reichstag-bei-/) |
+| 261103-i16 | Copy wir zu ich (Wahlkreis-Fehler, Step-3-Hinweise) | 2026-11-03 | 019aabe | [261103-i16-copy-wir-zu-ich-in-mdblookupcard-und-ste](./quick/261103-i16-copy-wir-zu-ich-in-mdblookupcard-und-ste/) |
 
 ## Session Continuity
 

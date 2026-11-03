@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useId, useState, useTransition } from "react";
+import { useMdbContactContext } from "@/components/MdbContactContext";
 import { lookupMdbContactAction, lookupMdbContactByIdAction } from "@/lib/actions/lookupMdbContact";
 import { resolveMdbContactQuery } from "@/lib/lookup/mdbContactQuery";
 import type { MdbContact } from "@/lib/lookup/mdbContact";
@@ -11,7 +12,7 @@ const AIRMAIL_EDGE =
 type State =
   | { status: "idle" }
   | { status: "error"; message: string }
-  | { status: "done"; contacts: MdbContact[] };
+  | { status: "done"; contacts: MdbContact[]; plz: string };
 
 const ERROR_COPY = {
   invalid: "Bitte gib eine Postleitzahl mit fünf Ziffern ein.",
@@ -23,6 +24,11 @@ export function MdbLookupCard() {
   const [plz, setPlz] = useState("");
   const [state, setState] = useState<State>({ status: "idle" });
   const [pending, startTransition] = useTransition();
+  const setShared = useMdbContactContext()?.setResult;
+
+  useEffect(() => {
+    if (state.status === "done") setShared?.({ plz: state.plz, contacts: state.contacts });
+  }, [state, setShared]);
 
   useEffect(() => {
     const initialQuery = resolveMdbContactQuery(window.location.search);
@@ -33,7 +39,7 @@ export function MdbLookupCard() {
         const result = await lookupMdbContactAction(initialQuery.plz);
         setState(
           result.ok
-            ? { status: "done", contacts: result.contacts }
+            ? { status: "done", contacts: result.contacts, plz: initialQuery.plz }
             : { status: "error", message: ERROR_COPY[result.reason] }
         );
       });
@@ -45,7 +51,7 @@ export function MdbLookupCard() {
       await Promise.resolve();
       if (initialQuery.plz) setPlz(initialQuery.plz);
       const result = await lookupMdbContactByIdAction(initialQuery.mdbId);
-      if (result.ok) setState({ status: "done", contacts: result.contacts });
+      if (result.ok) setState({ status: "done", contacts: result.contacts, plz: initialQuery.plz ?? "" });
     });
   }, []);
 
@@ -55,7 +61,7 @@ export function MdbLookupCard() {
       const result = await lookupMdbContactAction(plz);
       setState(
         result.ok
-          ? { status: "done", contacts: result.contacts }
+          ? { status: "done", contacts: result.contacts, plz }
           : { status: "error", message: ERROR_COPY[result.reason] }
       );
     });
@@ -206,7 +212,7 @@ export function MdbLookupCard() {
                   })}
               </ul>
               <p className="font-body text-sm text-warmgrau/70 leading-relaxed">
-                Die Telefonnummer steht meist auf der Homepage des Abgeordneten unter Kontakt oder
+                Die Telefonnummer steht meist auf der Homepage deines MdB unter Kontakt oder
                 Wahlkreisbüro.
               </p>
             </div>

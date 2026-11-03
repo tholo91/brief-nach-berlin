@@ -8,7 +8,8 @@ import { Prose } from "@/components/editorial/Prose";
 import { FAQAccordion } from "@/components/FAQAccordion";
 import { SectionDivider } from "@/components/editorial/SectionDivider";
 import { MdbLookupCard } from "@/components/MdbLookupCard";
-import { CopyTextButton } from "@/components/CopyTextButton";
+import { BpaCallScript } from "@/components/BpaCallScript";
+import { MdbContactProvider } from "@/components/MdbContactContext";
 
 const TITLE = "Kostenlos in den Bundestag: BPA-Fahrt anfragen";
 const DESCRIPTION =
@@ -49,7 +50,7 @@ export const metadata: Metadata = {
 const faqs = [
   {
     q: "Was bedeutet BPA-Fahrt?",
-    a: "BPA steht für das Presse- und Informationsamt der Bundesregierung, kurz Bundespresseamt. Es organisiert und bezahlt Informationsfahrten nach Berlin. Eingeladen wird nicht über das Amt, sondern über das Büro eines Bundestagsabgeordneten.",
+    a: "BPA steht für das Presse- und Informationsamt der Bundesregierung, kurz Bundespresseamt. Es organisiert und bezahlt Informationsfahrten nach Berlin. Eingeladen wird nicht über das Amt, sondern über das Büro der MdBs.",
   },
   {
     q: "Was kostet eine BPA-Fahrt?",
@@ -57,18 +58,18 @@ const faqs = [
   },
   {
     q: "Wer darf mitfahren?",
-    a: "Der Abgeordnete lädt politisch interessierte Menschen aus seinem Wahlkreis ein. Du musst mindestens 18 Jahre alt sein. Viele Büros verlangen einen Wohnsitz im Wahlkreis und schließen eine zweite Teilnahme aus. Einen Anspruch auf einen Platz gibt es nicht, das Büro entscheidet.",
+    a: "Dein MdB lädt politisch interessierte Menschen aus dem Wahlkreis ein. Du musst mindestens 18 Jahre alt sein. Viele Büros verlangen einen Wohnsitz im Wahlkreis und schließen eine zweite Teilnahme aus. Einen Anspruch auf einen Platz gibt es nicht, das Büro entscheidet.",
   },
   {
     q: "Wie viele Plätze gibt es?",
-    a: "Jeder Abgeordnete kann 2026 bis zu drei Gruppen mit je bis zu 50 Personen einladen. Die Fahrten stehen unter dem Vorbehalt ausreichender Haushaltsmittel. Wie viele Plätze bei deinem Abgeordneten frei sind, weiß nur sein Büro.",
+    a: "Jedes MdB kann 2026 bis zu drei Gruppen mit je bis zu 50 Personen einladen. Die Fahrten stehen unter dem Vorbehalt ausreichender Haushaltsmittel. Wie viele Plätze bei deinem MdB frei sind, weiß nur das Büro.",
   },
   {
     q: "Wann sollte ich nachfragen?",
     a: "Möglichst früh. Die Büros melden Fahrten spätestens zwölf Wochen vor Reisebeginn an, und die Termine für das nächste Jahr stehen oft erst im Spätherbst fest. Einige Büros führen schon vorher Wartelisten. Ein Anruf im Oktober ist deshalb nicht zu früh.",
   },
   {
-    q: "Kann ich auch ohne meinen Abgeordneten in den Bundestag?",
+    q: "Kann ich auch ohne Abgeordnete in den Bundestag?",
     a: "Ja. Plenarsaal und Reichstagskuppel kannst du über den Besucherdienst des Bundestags kostenlos besuchen. Du meldest dich selbst an, auf bundestag.de/besuche oder telefonisch unter 030 227-32152. Die Anmeldung ist Pflicht, die Plätze sind begrenzt. Das Plenum ist nur in Sitzungswochen geöffnet.",
   },
 ];
@@ -100,9 +101,6 @@ const articleJsonLd = {
   inLanguage: "de-DE",
 };
 
-const CALL_SCRIPT =
-  "Guten Tag, mein Name ist [Name]. Ich wohne in [Ort] und interessiere mich sehr für Politik. Ich habe gelesen, dass [Frau/Herr Name] Bürgerinnen und Bürger zu einer Informationsfahrt nach Berlin einlädt. Kann ich mich dafür vormerken lassen? Und was brauchen Sie dafür von mir?";
-
 const h2 = "font-body text-2xl md:text-3xl font-bold text-waldgruen-dark pt-4 text-balance";
 
 const stepClass = "border-l-2 border-waldgruen/20 pl-6 relative";
@@ -133,9 +131,9 @@ export default function BundestagBesuchPage() {
           Wie komme ich kostenlos in den Bundestag?
         </h1>
         <p className="font-handwriting text-xl md:text-2xl text-warmgrau leading-relaxed mb-4 text-pretty">
-          Dein Abgeordneter kann dich im Rahmen einer BPA-Fahrt nach Berlin einladen. Das
+          Dein MdB kann dich im Rahmen einer BPA-Fahrt nach Berlin einladen. Das
           Bundespresseamt zahlt Fahrt, Hotel und einen Teil der Verpflegung. Einen Anspruch darauf
-          gibt es nicht, das Büro des Abgeordneten wählt die Gäste aus. Fragen kostet nichts, und
+          gibt es nicht, das Büro deines MdB wählt die Gäste aus. Fragen kostet nichts, und
           einige Büros führen schon jetzt Wartelisten für das nächste Jahr.
         </p>
         <p className="font-typewriter text-xs text-warmgrau/60 mb-10">Stand: Oktober 2026</p>
@@ -162,7 +160,7 @@ export default function BundestagBesuchPage() {
           <div className="not-prose grid md:grid-cols-2 gap-4 my-8">
             <div className="rounded-2xl border border-waldgruen/30 bg-waldgruen/5 p-6 ring-1 ring-waldgruen/20">
               <h3 className="font-body text-xl font-bold text-waldgruen-dark mb-1">
-                Mit deinem Abgeordneten
+                Mit deinem MdB
               </h3>
               <p className="font-typewriter text-xs text-warmgrau/60 mb-4">BPA-Informationsfahrt</p>
               <ul className="space-y-2 font-body text-sm text-warmgrau">
@@ -187,7 +185,7 @@ export default function BundestagBesuchPage() {
 
             <div className="rounded-2xl border border-warmgrau/20 bg-white/60 p-6">
               <h3 className="font-body text-xl font-bold text-waldgruen-dark mb-1">
-                Ohne Abgeordneten
+                Ohne Abgeordnete
               </h3>
               <p className="font-typewriter text-xs text-warmgrau/60 mb-4">Besucherdienst des Bundestags</p>
               <ul className="space-y-2 font-body text-sm text-warmgrau">
@@ -216,7 +214,7 @@ export default function BundestagBesuchPage() {
                 </li>
                 <li className="flex gap-2">
                   <span className="text-warmgrau/40 mt-0.5">-</span>
-                  <span>Das Plenum ist nur in Sitzungswochen offen, ein Gespräch mit deinem Abgeordneten gehört nicht dazu</span>
+                  <span>Das Plenum ist nur in Sitzungswochen offen, ein Gespräch mit deinem MdB gehört nicht dazu</span>
                 </li>
               </ul>
             </div>
@@ -231,11 +229,12 @@ export default function BundestagBesuchPage() {
           </p>
         </Prose>
 
+        <MdbContactProvider>
         <ol className="not-prose space-y-10 mt-8 mb-10">
           <li className={stepClass}>
             <span aria-hidden className={stepBadge}>1</span>
             <h3 className="font-body text-xl font-bold text-waldgruen-dark mb-1 mt-1">
-              Abgeordneten und Wahlkreisbüro finden
+              MdB und Wahlkreisbüro finden
             </h3>
             <p className="font-body text-warmgrau leading-relaxed">
               Gib unten deine Postleitzahl ein. Du bekommst den Namen und die Adresse des
@@ -248,16 +247,11 @@ export default function BundestagBesuchPage() {
               Anrufen oder schreiben
             </h3>
             <p className="font-body text-warmgrau leading-relaxed mb-4">
-              Die Telefonnummer steht meist auf der Homepage des Abgeordneten unter Kontakt. Viele
+              Die Telefonnummer steht meist auf der Homepage deines MdB unter Kontakt. Viele
               Büros nehmen Anfragen per Mail oder Formular an, du kannst auch einfach anrufen. Sag,
               wo du wohnst, dass du mitfahren möchtest und zu welcher Zeit es dir passt.
             </p>
-            <div className="rounded-xl border border-warmgrau/15 bg-white p-5 shadow-sm">
-              <p className="font-handwriting text-xl md:text-2xl leading-snug text-warmgrau mb-4 text-pretty">
-                {CALL_SCRIPT}
-              </p>
-              <CopyTextButton text={CALL_SCRIPT} label="Text kopieren" />
-            </div>
+            <BpaCallScript />
           </li>
           <li className={stepClass}>
             <span aria-hidden className={stepBadge}>3</span>
@@ -276,9 +270,10 @@ export default function BundestagBesuchPage() {
         <div id="mdb-finden" className="scroll-mt-24 mb-16">
           <MdbLookupCard />
         </div>
+        </MdbContactProvider>
 
         <Prose>
-          <h2 className={h2}>Gibt es Wahlkreisveranstaltungen, bei denen ich meinen Abgeordneten treffe?</h2>
+          <h2 className={h2}>Gibt es Wahlkreisveranstaltungen, bei denen ich mein MdB treffe?</h2>
           <p>
             Ja. Der Bundestag tagt nur in Sitzungswochen. In den Wochen dazwischen, oft
             Wahlkreiswochen genannt, sind die Abgeordneten zu Hause. Dann laden viele zu
@@ -286,8 +281,8 @@ export default function BundestagBesuchPage() {
             zu fahren.
           </p>
           <p>
-            Eine zentrale Liste gibt es nicht. Die Termine stehen meist auf der Website des
-            Abgeordneten, in dessen Newsletter oder in der Lokalzeitung. Auch ein Anruf im
+            Eine zentrale Liste gibt es nicht. Die Termine stehen meist auf der Website deines
+            MdB, in dessen Newsletter oder in der Lokalzeitung. Auch ein Anruf im
             Wahlkreisbüro hilft. Welche Wochen sitzungsfrei sind, zeigt der{" "}
             <a
               href="https://www.bundestag.de/parlament/plenum/sitzungskalender"

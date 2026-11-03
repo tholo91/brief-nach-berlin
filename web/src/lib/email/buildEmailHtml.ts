@@ -435,9 +435,11 @@ export interface GoodToKnowInput {
 
 function goodToKnowUrls(input: GoodToKnowInput, baseUrl: string) {
   const validPlz = input.plz && /^\d{5}$/.test(input.plz) ? input.plz : undefined;
+  const params = [input.politicianId && `mdb=${input.politicianId}`, validPlz && `plz=${validPlz}`].filter(Boolean);
+  const query = params.length ? `?${params.join("&")}` : "";
   return {
-    meet: `${baseUrl}/aktiv-werden${input.politicianId ? `?mdb=${input.politicianId}` : ""}${validPlz ? `${input.politicianId ? "&" : "?"}plz=${validPlz}` : ""}#wahlkreisbuero`,
-    trip: `${baseUrl}/bundestag-besuch-kostenlos`,
+    meet: `${baseUrl}/aktiv-werden${query}#wahlkreisbuero`,
+    trip: `${baseUrl}/bundestag-besuch-kostenlos${query}`,
     actions: `${baseUrl}/aktiv-werden`,
   };
 }

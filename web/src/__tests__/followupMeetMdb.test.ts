@@ -20,10 +20,15 @@ describe("buildFollowupHtml - Gut zu wissen", () => {
     expect(r.text).toContain("Anna Müller persönlich treffen");
   });
 
-  it("mdb: Berlin-Fahrt steht dabei", () => {
+  it("mdb: Berlin-Fahrt steht dabei, mit MdB-ID und PLZ vorbefüllt", () => {
     const r = buildFollowupHtml(mdb);
-    expect(r.html).toContain("/bundestag-besuch-kostenlos");
-    expect(r.text).toContain("/bundestag-besuch-kostenlos");
+    expect(r.html).toContain("/bundestag-besuch-kostenlos?mdb=123&plz=28195");
+    expect(r.text).toContain("/bundestag-besuch-kostenlos?mdb=123&plz=28195");
+  });
+
+  it("mdb: Berlin-Fahrt ohne gültige PLZ nur mit MdB-ID", () => {
+    const r = buildFollowupHtml({ ...mdb, plz: "abc" });
+    expect(r.html).toContain("/bundestag-besuch-kostenlos?mdb=123\"");
   });
 
   it("steht nach Gruß und Unterschrift, kompakt nur mit den Links für nach dem Brief", () => {

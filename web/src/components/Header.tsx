@@ -93,7 +93,9 @@ export default function Header() {
               <a
                 key={link.href}
                 href={link.href}
-                className="font-body text-sm text-warmgrau/60 hover:text-waldgruen-dark transition-colors duration-200"
+                className={`font-body text-sm text-warmgrau/60 hover:text-waldgruen-dark transition-colors duration-200 ${
+                  link.href === "#mitmachen" ? "hidden lg:inline" : ""
+                }`}
               >
                 {link.label}
               </a>
@@ -103,6 +105,14 @@ export default function Header() {
           <div className="flex items-center gap-2">
             <LanguageSwitcher />
             {!showNavCta && !menuOpen && <LanguageSwitcher mobile />}
+            {locale === "de" && (
+              <Link
+                href="/ngo-briefkampagne"
+                className="hidden md:block whitespace-nowrap font-body text-sm font-semibold text-waldgruen-dark border border-waldgruen/40 hover:bg-waldgruen/8 px-4 py-[7px] rounded-lg transition-colors"
+              >
+                Für NGOs + Creator
+              </Link>
+            )}
             {/* CTA — collapses on mobile when in hero section */}
             <div
               className={`overflow-hidden transition-all duration-300 md:max-w-[200px] md:opacity-100 md:pointer-events-auto ${

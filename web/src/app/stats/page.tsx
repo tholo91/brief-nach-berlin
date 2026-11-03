@@ -21,11 +21,17 @@ import {
 } from "@/lib/internalStats/access";
 import { getInternalStatsWithBaseline } from "@/lib/internalStats/getInternalStats";
 import { BarTrack } from "@/components/internalStats/BarTrack";
+import { StatInfo } from "@/components/internalStats/StatInfo";
 import { Briefweg } from "@/components/internalStats/Briefweg";
 import {
+  featuredQuotes,
   OUTCOME_LABELS,
   type OutcomeRoundStats,
 } from "@/lib/internalStats/outcomes";
+import {
+  STAT_QUESTIONS,
+  type StatQuestionKey,
+} from "@/lib/internalStats/questions";
 import {
   EXPECTATION_VALUES,
   NOT_SENT_REASON_VALUES,
@@ -44,12 +50,14 @@ import {
 import {
   activeFilterChips,
   buildImpactSummary,
+  buildStatements,
   buildStatsHref,
   bucketCategoryTimeline,
   bucketCounterTimeline,
   bucketTimeline,
   bundeslandName,
   daySpan,
+  efficacyRate,
   formatBarShare,
   formatShare,
   granularityForTimeRange,
@@ -64,6 +72,9 @@ import {
   timeRangeFromDay,
   topLabelsByCategory,
   VIEW_MODES,
+  type ImpactRate,
+  type ImpactSummary,
+  type StatementKey,
   type StatsQuery,
   type ViewMode,
 } from "@/lib/internalStats/view";
@@ -131,49 +142,6 @@ function AirmailStripe() {
   );
 }
 
-function StatCard({
-  eyebrow,
-  value,
-  label,
-  tone = "light",
-  footer,
-}: {
-  eyebrow: string;
-  value: ReactNode;
-  label: string;
-  tone?: "light" | "green";
-  footer?: ReactNode;
-}) {
-  return (
-    <article
-      className={`rounded-2xl border p-5 shadow-[0_16px_36px_rgba(27,67,50,0.07)] sm:p-6 ${
-        tone === "green"
-          ? "border-waldgruen-dark/20 bg-waldgruen-dark text-creme"
-          : "border-warmgrau/10 bg-white/75 text-waldgruen-dark"
-      }`}
-    >
-      <p
-        className={`font-typewriter text-[11px] font-bold uppercase tracking-[0.18em] ${
-          tone === "green" ? "text-creme/65" : "text-waldgruen/65"
-        }`}
-      >
-        {eyebrow}
-      </p>
-      <p className="mt-3 font-typewriter text-3xl font-bold tabular-nums sm:text-4xl lg:text-5xl">
-        {value}
-      </p>
-      <p
-        className={`mt-2 font-body text-sm leading-relaxed ${
-          tone === "green" ? "text-creme/75" : "text-warmgrau/70"
-        }`}
-      >
-        {label}
-      </p>
-      {footer && <div className={tone === "green" ? "[&_span]:text-creme/70 [&_span>span]:bg-creme/70" : ""}>{footer}</div>}
-    </article>
-  );
-}
-
 function SectionHeading({ eyebrow, title, detail }: { eyebrow: string; title: string; detail?: string }) {
   return (
     <div className="mb-6">
@@ -210,11 +178,11 @@ function BasisBadge() {
 
 const SECTION_LINKS = [
   { id: "ueberblick", label: "Überblick" },
-  { id: "verlauf", label: "Verlauf" },
-  { id: "themen", label: "Themen" },
-  { id: "feedback", label: "Feedback" },
-  { id: "nach-dem-brief", label: "Nach dem Brief" },
   { id: "wirkung", label: "Wirkung" },
+  { id: "nach-dem-brief", label: "Nach dem Brief" },
+  { id: "themen", label: "Themen" },
+  { id: "verlauf", label: "Verlauf" },
+  { id: "feedback", label: "Feedback" },
   { id: "alter", label: "Alter" },
   { id: "erstschreiber", label: "Erstschreiber" },
   { id: "definitionen", label: "Definitionen" },
@@ -245,12 +213,38 @@ function Section({
   );
 }
 
-function SubHeading({ children, detail }: { children: ReactNode; detail?: string }) {
+/** Hinweiszeile mit (i) für Karten, deren Titel nicht selbst die Frage trägt. */
+function InfoNote({ title, question }: { title: string; question: StatQuestionKey }) {
+  return (
+    <p className="flex items-center gap-1 font-body text-xs text-warmgrau/60">
+      Frage dazu im Wortlaut
+      <InfoFor title={title} question={question} />
+    </p>
+  );
+}
+
+/** Frage-Info (i) zu einer Karte; die Daten kommen als einfaches Objekt aus questions.ts. */
+function InfoFor({ title, question }: { title: string; question: StatQuestionKey }) {
+  return <StatInfo title={title} info={STAT_QUESTIONS[question]} />;
+}
+
+function SubHeading({
+  children,
+  detail,
+  info,
+}: {
+  children: ReactNode;
+  detail?: string;
+  info?: { title: string; question: StatQuestionKey };
+}) {
   return (
     <div className="mb-4">
-      <h3 className="font-typewriter text-sm font-bold uppercase tracking-[0.12em] text-waldgruen-dark">
-        {children}
-      </h3>
+      <div className="flex items-start gap-1">
+        <h3 className="font-typewriter text-sm font-bold uppercase tracking-[0.12em] text-waldgruen-dark">
+          {children}
+        </h3>
+        {info && <InfoFor title={info.title} question={info.question} />}
+      </div>
       {detail && <p className="mt-1 font-body text-xs leading-relaxed text-warmgrau/60">{detail}</p>}
     </div>
   );
@@ -260,14 +254,16 @@ function SubHeading({ children, detail }: { children: ReactNode; detail?: string
 function Collapsible({
   summary,
   detail,
+  defaultOpen = false,
   children,
 }: {
   summary: string;
   detail?: string;
+  defaultOpen?: boolean;
   children: ReactNode;
 }) {
   return (
-    <details className="group/collapsible">
+    <details className="group/collapsible" open={defaultOpen || undefined}>
       <summary className="cursor-pointer list-none [&::-webkit-details-marker]:hidden">
         <span className="inline-flex items-center gap-2 font-typewriter text-sm font-bold uppercase tracking-[0.12em] text-waldgruen-dark underline-offset-2 hover:underline">
           <svg
@@ -571,22 +567,36 @@ function formatPercentOrDash(value: number | null): string {
   return value === null ? "—" : `${formatDecimal(value)} %`;
 }
 
+/** Ein Satz mit den Kernzahlen direkt über dem Diagramm; fehlt bei kleiner Basis. */
+function Statement({ statements, id }: { statements: Record<StatementKey, string | null>; id: StatementKey }) {
+  const text = statements[id];
+  if (!text) return null;
+  return (
+    <p className="mb-4 font-body text-sm font-semibold leading-relaxed text-waldgruen-dark">{text}</p>
+  );
+}
+
 function ShareLine({
   label,
   percent,
   count,
   total,
   baselineText,
+  info,
 }: {
   label: string;
   percent: number | null;
   count: number;
   total: number;
   baselineText?: string;
+  info?: { title: string; question: StatQuestionKey };
 }) {
   return (
     <div className="border-b border-warmgrau/10 py-3 last:border-b-0">
-      <p className="font-body text-sm leading-snug text-warmgrau/80">{label}</p>
+      <div className="flex items-start justify-between gap-2">
+        <p className="font-body text-sm leading-snug text-warmgrau/80">{label}</p>
+        {info && <InfoFor title={info.title} question={info.question} />}
+      </div>
       <p className="mt-1 font-typewriter text-2xl font-bold tabular-nums text-waldgruen-dark">
         {formatPercentOrDash(percent)}
       </p>
@@ -699,90 +709,174 @@ function BaselineLine({ children }: { children: ReactNode }) {
   );
 }
 
-function CoreValues({
-  stats,
+/** Anteil groß, Zähler klein (Ansicht "prozentual") oder umgekehrt ("absolut"). */
+function RateValue({ rate, mode, unit }: { rate: ImpactRate; mode: ViewMode; unit?: string }) {
+  const base = `${formatNumber(rate.count)} von ${formatNumber(rate.base)}${unit ? ` ${unit}` : ""}`;
+  const share = rate.percent === null ? "—" : `${rate.percent} %`;
+  const bigClass = "font-typewriter text-4xl font-bold tabular-nums leading-none text-waldgruen-dark sm:text-5xl";
+  const smallClass = "mt-1.5 block font-body text-xs leading-relaxed text-warmgrau/60";
+  return mode === "prozentual" || rate.percent === null ? (
+    <>
+      <span className={bigClass}>{share}</span>
+      <span className={smallClass}>{base}</span>
+    </>
+  ) : (
+    <>
+      <span className={bigClass}>{formatNumber(rate.count)}</span>
+      <span className={smallClass}>
+        ({share} · von {formatNumber(rate.base)}
+        {unit ? ` ${unit}` : ""})
+      </span>
+    </>
+  );
+}
+
+function ImpactMetric({
+  rate,
   mode,
-  activation,
-  baseline,
+  label,
+  unit,
+  info,
+  baselineRate,
+}: {
+  rate: ImpactRate;
+  mode: ViewMode;
+  label: string;
+  unit?: string;
+  info: { title: string; question: StatQuestionKey };
+  baselineRate?: ImpactRate | null;
+}) {
+  return (
+    <div className="border-b border-warmgrau/10 py-4 first:pt-0 last:border-b-0 last:pb-0">
+      <p>
+        <RateValue rate={rate} mode={mode} unit={unit} />
+      </p>
+      <div className="mt-2 flex items-start justify-between gap-2">
+        <p className="font-body text-sm leading-snug text-waldgruen-dark">{label}</p>
+        <InfoFor title={info.title} question={info.question} />
+      </div>
+      {baselineRate && baselineRate.base > 0 && (
+        <BaselineLine>
+          {baselineRate.percent} % · {formatNumber(baselineRate.count)} von {formatNumber(baselineRate.base)}
+        </BaselineLine>
+      )}
+    </div>
+  );
+}
+
+/**
+ * Oben auf der Seite: erst die Zahl der Briefe, dann zwei Spalten. Schreibende
+ * zeigen Anteile mit Basis, die Politik zeigt absolute Zahlen zuerst, weil die
+ * Basis klein ist und aus Selbstauskünften stammt.
+ */
+function ImpactBlock({
+  stats,
+  impact,
+  baselineImpact,
+  mode,
 }: {
   stats: InternalStats;
+  impact: ImpactSummary;
+  baselineImpact: ImpactSummary | null;
   mode: ViewMode;
-  activation: InternalStats["politicalActivation"];
-  baseline?: InternalStats | null;
 }) {
-  const efficacyDirectional = activation.selfEfficacyDirectionalCount;
-  const efficacyPositive = activation.selfEfficacyPositiveCount;
-  const efficacyUnsure =
-    activation.selfEfficacyAnswerCount - activation.selfEfficacyDirectionalCount;
-
+  const { writers, politics } = impact;
+  const cardClass =
+    "rounded-2xl border border-warmgrau/10 bg-white/75 p-5 shadow-[0_16px_36px_rgba(27,67,50,0.07)] sm:p-6";
+  const columnTitle = "font-typewriter text-sm font-bold uppercase tracking-[0.12em] text-waldgruen-dark";
   return (
-    <div className="mt-6 grid gap-3 min-[420px]:grid-cols-2 sm:gap-4 lg:grid-cols-4">
-      <StatCard
-        eyebrow="Brief-Erstellungen"
-        value={formatNumber(stats.letterCount)}
-        label="gezählte Briefe seit Produktstart · Verlauf seit Einführung der Briefnummer unter „Verlauf“"
-        footer={
-          <span className="mt-2 block font-typewriter text-[11px] tabular-nums text-warmgrau/55">
-            ca. {formatNumber(estimateLettersWithoutDuplicates(stats.letterCount))} ohne Doppelte
-          </span>
-        }
-      />
-      <StatCard
-        eyebrow="Durchschnittliche Bewertung"
-        value={`${formatDecimal(stats.averageRating)} / 5`}
-        label={`${formatNumber(stats.reviewCount)} Bewertungen im gewählten Zeitraum`}
-        footer={
-          baseline ? (
-            <BaselineLine>
-              {formatDecimal(baseline.averageRating)} / 5 · {formatNumber(baseline.reviewCount)} Bewertungen
-            </BaselineLine>
-          ) : null
-        }
-      />
-      <StatCard
-        eyebrow="Versandsignal aus dem Feedback"
-        tone="green"
-        value={
-          <ValueEmphasis
+    <div className="mt-6 grid gap-4">
+      <article className="rounded-2xl border border-waldgruen-dark/20 bg-waldgruen-dark px-5 py-5 text-creme shadow-[0_16px_36px_rgba(27,67,50,0.07)] sm:px-8 sm:py-6">
+        <p className="font-typewriter text-3xl font-bold tabular-nums sm:text-5xl">
+          {formatNumber(stats.letterCount)} Briefe
+        </p>
+        <p className="mt-2 font-body text-sm leading-relaxed text-creme/75">
+          seit Produktstart über Brief-nach-Berlin erstellt, ca.{" "}
+          {formatNumber(estimateLettersWithoutDuplicates(stats.letterCount))} ohne Doppelte
+        </p>
+      </article>
+
+      <div className="grid gap-4 md:grid-cols-2">
+        <article className={cardClass}>
+          <h2 className={`${columnTitle} mb-4`}>Bei den Schreibenden</h2>
+          <ImpactMetric
+            rate={writers.topRatingShare}
             mode={mode}
-            tone="dark"
-            value={stats.sentCount}
-            total={stats.knownSendCount}
-            unit="beantwortete Versandfragen"
+            unit="Bewertungen"
+            label="geben 4 bis 5 Sterne"
+            info={{ title: "4 bis 5 Sterne", question: "rating" }}
+            baselineRate={baselineImpact?.writers.topRatingShare}
           />
-        }
-        label={`„Ja, geht raus\" umfasst verschickt und unmittelbar geplanten Versand · fehlende Angabe: ${formatNumber(stats.noAnswerCount)}`}
-        footer={
-          baseline ? (
-            <BaselineLine>
-              {formatDecimal(baseline.sendRatePercent)} % · {formatNumber(baseline.sentCount)} von{" "}
-              {formatNumber(baseline.knownSendCount)}
-            </BaselineLine>
-          ) : null
-        }
-      />
-      <StatCard
-        eyebrow="Wahrgenommene Handlungsfähigkeit"
-        value={
-          efficacyDirectional > 0
-            ? `${formatDecimal(activation.selfEfficacyPositiveRatePercent)} %`
-            : "—"
-        }
-        label={`„Ja, deutlich\" / „Eher ja\" · ${formatNumber(
-          efficacyPositive,
-        )} von ${formatNumber(efficacyDirectional)} gerichteten Antworten · ${formatNumber(
-          efficacyUnsure,
-        )} unsicher`}
-        footer={
-          baseline && baseline.politicalActivation.selfEfficacyDirectionalCount > 0 ? (
-            <BaselineLine>
-              {formatDecimal(baseline.politicalActivation.selfEfficacyPositiveRatePercent)} % ·{" "}
-              {formatNumber(baseline.politicalActivation.selfEfficacyPositiveCount)} von{" "}
-              {formatNumber(baseline.politicalActivation.selfEfficacyDirectionalCount)}
-            </BaselineLine>
-          ) : null
-        }
-      />
+          <ImpactMetric
+            rate={writers.sendRate}
+            mode={mode}
+            unit="Antworten"
+            label="schicken den Brief ab (oder gleich)"
+            info={{ title: "Brief abgeschickt", question: "sendSignal" }}
+            baselineRate={baselineImpact?.writers.sendRate}
+          />
+          <ImpactMetric
+            rate={writers.efficacy}
+            mode={mode}
+            unit="Antworten"
+            label="fühlen sich eher in der Lage, sich politisch einzubringen"
+            info={{ title: "Handlungsfähigkeit", question: "efficacy" }}
+            baselineRate={baselineImpact?.writers.efficacy}
+          />
+        </article>
+
+        <article className={cardClass}>
+          <h2 className={`${columnTitle} mb-4`}>In der Politik</h2>
+          {!politics || politics.reactionRate.base === 0 ? (
+            <EmptyState>Noch keine Rückmeldungen.</EmptyState>
+          ) : (
+            <>
+              <div className="border-b border-warmgrau/10 pb-4">
+                <p>
+                  <span className="font-typewriter text-3xl font-bold tabular-nums leading-none text-waldgruen-dark sm:text-4xl xl:text-5xl">
+                    {formatNumber(politics.reactionRate.count)} von {formatNumber(politics.reactionRate.base)}
+                  </span>
+                  <span className="mt-1.5 block font-body text-xs leading-relaxed text-warmgrau/60">
+                    {politics.reactionRate.percent} %
+                  </span>
+                </p>
+                <div className="mt-2 flex items-start justify-between gap-2">
+                  <p className="font-body text-sm leading-snug text-waldgruen-dark">
+                    der Rückmeldenden, die ihren Brief abgeschickt haben, bekamen eine Reaktion
+                  </p>
+                  <InfoFor title="Reaktion auf den Brief" question="briefweg" />
+                </div>
+              </div>
+              <div className="pt-4">
+                {politics.concreteOrPartly.base > 0 ? (
+                  <>
+                    <p>
+                      <span className="font-typewriter text-3xl font-bold tabular-nums leading-none text-waldgruen-dark sm:text-4xl xl:text-5xl">
+                        {formatNumber(politics.concreteOrPartly.count)} von {formatNumber(politics.concreteOrPartly.base)}
+                      </span>
+                      <span className="mt-1.5 block font-body text-xs leading-relaxed text-warmgrau/60">
+                        {politics.concreteOrPartly.percent} %
+                      </span>
+                    </p>
+                    <div className="mt-2 flex items-start justify-between gap-2">
+                      <p className="font-body text-sm leading-snug text-waldgruen-dark">
+                        davon gingen konkret oder teilweise auf das Anliegen ein
+                      </p>
+                      <InfoFor title="Auf das Anliegen eingegangen" question="outcomeAddressed" />
+                    </div>
+                  </>
+                ) : (
+                  <p className="font-body text-sm text-warmgrau/60">Noch keine Angaben dazu, wie konkret die Reaktionen waren.</p>
+                )}
+              </div>
+              <p className="mt-4 font-body text-xs leading-relaxed text-warmgrau/60">
+                Selbstauskunft aus der Rückmeldungsrunde {politics.roundLabel}, Rücklauf{" "}
+                {formatNumber(politics.respondentCount)} von {formatNumber(politics.deliveredCount)}, unabhängig vom Filter.
+              </p>
+            </>
+          )}
+        </article>
+      </div>
     </div>
   );
 }
@@ -1031,6 +1125,23 @@ export default async function InternalStatsPage({ searchParams }: InternalStatsP
     .filter(Boolean)
     .join(" · ");
 
+  const campaignFilterActive = filter.source.kind === "campaign";
+  const campaignCard = (
+    <>
+      <SubHeading detail="Signale je Kampagne. Klick setzt den Kampagnen-Filter.">Kampagnen</SubHeading>
+      <RankedBars
+        values={campaignSignalCounts}
+        labels={(slug) => stats.campaignLabels[slug] ?? slug}
+        total={stats.letterSignals.signalCount}
+        mode={mode}
+        hrefFor={(slug, isActive) =>
+          buildStatsHref(query, isActive ? { quelle: null, kampagne: null } : { quelle: "campaign", kampagne: slug })
+        }
+        activeKey={kampagneRaw}
+      />
+    </>
+  );
+
   const se = activation.selfEfficacyDistribution;
   const sePositive = (se.clearly_yes ?? 0) + (se.rather_yes ?? 0);
   const seNegative = (se.rather_no ?? 0) + (se.no ?? 0);
@@ -1055,6 +1166,9 @@ export default async function InternalStatsPage({ searchParams }: InternalStatsP
     );
   }
   const impact = buildImpactSummary(stats, outcomes);
+  const baselineImpact = baseline ? buildImpactSummary(baseline, []) : null;
+  const statements = buildStatements(stats, outcomes);
+  const voices = featuredQuotes(outcomes);
   if (impact.writers.efficacy.base > 0) {
     quoteLines.push(
       `${impact.writers.efficacy.percent} % der Antwortenden fühlen sich durch den Brief eher in der Lage, sich politisch einzubringen (${formatNumber(impact.writers.efficacy.count)} von ${formatNumber(impact.writers.efficacy.base)} Antworten).`,
@@ -1146,7 +1260,7 @@ export default async function InternalStatsPage({ searchParams }: InternalStatsP
         )}
 
         <div id="ueberblick" className="scroll-mt-16">
-          <CoreValues stats={stats} mode={mode} activation={activation} baseline={baseline} />
+          <ImpactBlock stats={stats} impact={impact} baselineImpact={baselineImpact} mode={mode} />
 
           <div className="mt-4 rounded-2xl border border-waldgruen/15 bg-white/75 p-5 shadow-[0_16px_36px_rgba(27,67,50,0.06)] sm:p-6">
             <div className="flex flex-wrap items-start justify-between gap-3">
@@ -1172,6 +1286,328 @@ export default async function InternalStatsPage({ searchParams }: InternalStatsP
             </ol>
           </div>
         </div>
+
+        <Section id="wirkung" accent="gruen">
+          <SectionHeading
+            eyebrow="Politische Selbstwirksamkeit"
+            title="Vom Betroffensein ins Handeln"
+            detail="Selbstauskunft direkt im Review. Die Werte zeigen ein wahrgenommenes Gefühl, keine tatsächlich beobachtete spätere Handlung."
+          />
+          <div className="grid gap-8 lg:grid-cols-2 lg:gap-12">
+            <article>
+              <SubHeading
+                info={{ title: "Handlungsfähiger durch den Brief", question: "efficacy" }}
+                detail="Nur Nutzer:innen, die ihren Brief verschicken, sehen diese Frage."
+              >
+                Handlungsfähiger durch den Brief
+              </SubHeading>
+              <Statement statements={statements} id="efficacy" />
+              {activation.selfEfficacyAnswerCount === 0 ? (
+                <EmptyState>Noch keine Antworten zur politischen Handlungsfähigkeit.</EmptyState>
+              ) : (
+                <>
+                  <div className="flex flex-wrap gap-6">
+                    <div className="flex-1">
+                      <span className="block">
+                        <RateValue rate={impact.writers.efficacy} mode={mode} unit="Antworten" />
+                      </span>
+                      <p className="mt-2 font-body text-xs leading-relaxed text-warmgrau/60">
+                        „Ja, deutlich“ oder „Eher ja“ · „Kann ich noch nicht sagen“ zählt in der Basis mit
+                      </p>
+                    </div>
+                    <div className="grid min-w-40 gap-2 self-start">
+                      <p className="flex items-baseline justify-between gap-3 rounded-md bg-creme/70 px-3 py-2 font-body text-sm text-waldgruen-dark">
+                        Ja <span className="font-typewriter text-base font-bold tabular-nums">{formatNumber(sePositive)}</span>
+                      </p>
+                      <p className="flex items-baseline justify-between gap-3 rounded-md bg-creme/70 px-3 py-2 font-body text-sm text-waldgruen-dark">
+                        Nein <span className="font-typewriter text-base font-bold tabular-nums">{formatNumber(seNegative)}</span>
+                      </p>
+                      <p className="flex items-baseline justify-between gap-3 rounded-md bg-creme/70 px-3 py-2 font-body text-sm text-waldgruen-dark">
+                        Unsicher <span className="font-typewriter text-base font-bold tabular-nums">{formatNumber(seUnsure)}</span>
+                      </p>
+                    </div>
+                  </div>
+                  <div className="mt-6">
+                    <SurveyDistributionBars
+                      values={activation.selfEfficacyDistribution}
+                      options={selfEfficacyOptions}
+                      total={activation.selfEfficacyAnswerCount}
+                      color="#2D6A4F"
+                      mode={mode}
+                      baselineValues={baseline?.politicalActivation.selfEfficacyDistribution}
+                      baselineTotal={baseline?.politicalActivation.selfEfficacyAnswerCount}
+                    />
+                  </div>
+                </>
+              )}
+              <BasisNote>
+                Basis: {formatNumber(activation.selfEfficacyAnswerCount)} beantwortet ·{" "}
+                {formatNumber(activation.selfEfficacyDirectionalCount)} gerichtet ·{" "}
+                {formatNumber(activation.selfEfficacyNoAnswerCount)} vollständige Reviews ohne diese Frage
+              </BasisNote>
+            </article>
+
+            <article>
+              <SubHeading
+                info={{ title: "Politische Ohnmacht im Alltag", question: "powerlessness" }}
+                detail="Wie oft politische Inhalte beschäftigen, ohne dass ein konkreter nächster Schritt klar ist."
+              >
+                Politische Ohnmacht im Alltag
+              </SubHeading>
+              {activation.powerlessnessAnswerCount === 0 ? (
+                <EmptyState>Noch keine freiwilligen Antworten zur politischen Ohnmacht.</EmptyState>
+              ) : (
+                <SurveyDistributionBars
+                  values={activation.powerlessnessDistribution}
+                  options={powerlessnessOptions}
+                  total={activation.powerlessnessAnswerCount}
+                  color="#C58B18"
+                  mode={mode}
+                  baselineValues={baseline?.politicalActivation.powerlessnessDistribution}
+                  baselineTotal={baseline?.politicalActivation.powerlessnessAnswerCount}
+                />
+              )}
+              <BasisNote>
+                Basis: {formatNumber(activation.powerlessnessAnswerCount)} freiwillig beantwortet ·{" "}
+                {formatNumber(activation.powerlessnessNoAnswerCount)} vollständige Reviews ohne Angabe
+              </BasisNote>
+            </article>
+          </div>
+
+          <div className="mt-8 border-t border-warmgrau/10 pt-6">
+            <SubHeading
+              info={{ title: "Ohnmacht und Handlungsfähigkeit", question: "efficacy" }}
+              detail="Nur Reviews mit Antworten auf beide Fragen. „Kann ich noch nicht sagen“ bleibt sichtbar und zählt in der Basis mit."
+            >
+              Positive Selbstauskunft nach berichteter Ohnmachtsfrequenz
+            </SubHeading>
+            <Statement statements={statements} id="powerlessness" />
+            {!hasActivationCrossData ? (
+              <EmptyState>Noch keine gemeinsam auswertbaren Antworten.</EmptyState>
+            ) : (
+              <div className="grid gap-3 min-[420px]:grid-cols-2 lg:grid-cols-4">
+                {POLITICAL_POWERLESSNESS_FREQUENCY_VALUES.map((frequency) => {
+                  const item = activation.efficacyByPowerlessness[frequency];
+                  const rate = item.answered > 0 ? Math.round((item.positive / item.answered) * 100) : null;
+                  return (
+                    <div
+                      key={frequency}
+                      className="rounded-lg border border-warmgrau/10 bg-creme/60 px-4 py-4"
+                    >
+                      <p className="font-body text-sm font-semibold text-waldgruen-dark">
+                        {POLITICAL_POWERLESSNESS_FREQUENCY_LABELS[frequency]}
+                      </p>
+                      {rate !== null ? (
+                        <p className="mt-2 font-typewriter text-2xl font-bold tabular-nums text-waldgruen-dark">
+                          {mode === "prozentual" ? `${rate} %` : formatNumber(item.positive)}
+                        </p>
+                      ) : (
+                        <p className="mt-2 font-typewriter text-2xl font-bold tabular-nums text-warmgrau/40">—</p>
+                      )}
+                      <p className="mt-1 font-typewriter text-[11px] leading-relaxed text-warmgrau/55">
+                        {formatNumber(item.positive)} von {formatNumber(item.answered)} Antworten
+                        {rate !== null && mode === "absolut" && ` (${rate} %)`} ·{" "}
+                        {formatNumber(item.unsure)} unsicher
+                      </p>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+
+          {voices.length > 0 && (
+            <div className="mt-8 border-t border-warmgrau/10 pt-6">
+              <SubHeading detail="Ausgewählte Rückmeldungen, nur mit Freigabe zur Veröffentlichung.">Stimmen</SubHeading>
+              <ul className="grid gap-3">
+                {voices.map((voice) => (
+                  <li key={voice.id}>
+                    <blockquote className="rounded-lg border-l-4 border-waldgruen/30 bg-creme/60 px-4 py-3">
+                      <p className="whitespace-pre-line font-body text-sm leading-relaxed text-warmgrau/90">{voice.text}</p>
+                      <footer className="mt-2 font-typewriter text-xs text-warmgrau/70">{voice.name}</footer>
+                    </blockquote>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+        </Section>
+
+        <Section id="nach-dem-brief" accent="rot">
+          <SectionHeading
+            eyebrow="Rückmeldungen nach dem Versand"
+            title="Was passiert nach dem Brief?"
+            detail="Antworten auf meine Mail nach dem Versand der Briefe. Die Filter oben wirken hier nicht."
+          />
+          {outcomes.length === 0 ? (
+            <EmptyState>Noch keine Rückmeldungen.</EmptyState>
+          ) : (
+            <div className="grid gap-10">
+              {[...outcomes].reverse().map((round) => (
+                <OutcomeRoundBlock
+                  key={round.cohort}
+                  round={round}
+                  statements={round === latestRound ? statements : null}
+                />
+              ))}
+            </div>
+          )}
+        </Section>
+
+        <Section id="themen" accent="rot">
+          <SectionHeading
+            eyebrow="Freiwillige Themensignale"
+            title="Worüber wird geschrieben?"
+            detail={`${formatNumber(stats.letterSignals.signalCount)} freigegebene Signale · keine Brieftexte oder Einzelzeilen · bis zu drei Oberkategorien je Brief, deshalb kann die Summe der Anteile über 100 % liegen`}
+          />
+          {signalCampaignShare > 0.5 && dominantCampaign && (
+            <div className="mb-6 rounded-lg border border-bernstein/40 bg-bernstein/10 px-4 py-3">
+              <p className="font-body text-sm leading-relaxed text-warmgrau">
+                <strong>Achtung:</strong> {Math.round(signalCampaignShare * 100)} % der Themensignale stammen
+                aus Kampagnen (dominant: {stats.campaignLabels[dominantCampaign.slug] ?? dominantCampaign.slug},{" "}
+                {formatNumber(dominantCampaign.count)} Signale). Die Themenverteilung ist damit kein allgemeines
+                Stimmungsbild.
+              </p>
+            </div>
+          )}
+          {stats.letterSignals.signalCount === 0 ? (
+            <EmptyState>Es gibt noch keine freigegebenen Themensignale. Diese Übersicht füllt sich erst nach dem freiwilligen Opt-in.</EmptyState>
+          ) : (
+            <div className="grid gap-8 [&>*]:min-w-0">
+              <div className="grid gap-8 lg:grid-cols-2 [&>*]:min-w-0">
+                <div>
+                  <SubHeading detail="Anteil an allen gefilterten Signalen.">Oberkategorien</SubHeading>
+                  <Statement statements={statements} id="topCategory" />
+                  <RankedBars
+                    values={stats.letterSignals.categoryCounts}
+                    labels={topicCategoryLabel}
+                    total={stats.letterSignals.signalCount}
+                    mode={mode}
+                    baseline={baseline?.letterSignals.categoryCounts}
+                    baselineTotal={baseline?.letterSignals.signalCount}
+                  />
+                </div>
+                <div>
+                  <SubHeading detail="Klick setzt den Bundesland-Filter für die ganze Seite.">Bundesländer</SubHeading>
+                  <div className="mb-5">
+                    <BundeslandMapPanel
+                      counts={filter.bundesland && baseline ? baseline.letterSignals.bundeslandCounts : stats.letterSignals.bundeslandCounts}
+                      total={filter.bundesland && baseline ? baseline.letterSignals.signalCount : stats.letterSignals.signalCount}
+                      query={query}
+                      activeKey={filter.bundesland}
+                    />
+                  </div>
+                  <RankedBars
+                    values={filter.bundesland && baseline ? baseline.letterSignals.bundeslandCounts : stats.letterSignals.bundeslandCounts}
+                    labels={bundeslandName}
+                    total={filter.bundesland && baseline ? baseline.letterSignals.signalCount : stats.letterSignals.signalCount}
+                    mode={mode}
+                    hrefFor={(key, isActive) => buildStatsHref(query, { bundesland: isActive ? null : key })}
+                    activeKey={filter.bundesland}
+                  />
+                </div>
+              </div>
+
+              {hasCampaignSignals && campaignFilterActive && (
+                <div className="border-t border-warmgrau/10 pt-6">{campaignCard}</div>
+              )}
+
+              <div className="border-t border-warmgrau/10 pt-6">
+                <Collapsible
+                  summary="Weitere Themen-Details"
+                  detail="Unterthemen, Themen im Zeitverlauf, politische Ebene, Kampagnen, PLZ-Regionen und Bewertung nach Oberkategorie."
+                >
+                  <div className="grid gap-8 [&>*]:min-w-0">
+                    <div>
+                      <SubHeading detail="Die häufigsten neutralen Unterthemen je Oberkategorie. Zuordnung über die erste Oberkategorie eines Briefs.">
+                        Unterthemen je Oberkategorie
+                      </SubHeading>
+                      <SubtopicClusters
+                        clusters={subtopicClusters}
+                        categoryLabel={topicCategoryLabel}
+                        total={stats.letterSignals.signalCount}
+                      />
+                    </div>
+
+                    <div className="border-t border-warmgrau/10 pt-6">
+                      <SubHeading detail={`Signale je Oberkategorie und Abschnitt (${heatmapGranularityLabel}). Dunkler bedeutet mehr. Auf dem Handy horizontal wischen.`}>
+                        Themen im Zeitverlauf
+                      </SubHeading>
+                      {topicHeatmap.rows.length === 0 ? (
+                        <EmptyState />
+                      ) : (
+                        <TopicHeatmap data={topicHeatmap} rowLabel={topicCategoryLabel} />
+                      )}
+                    </div>
+
+                    <div className="grid gap-8 border-t border-warmgrau/10 pt-6 sm:grid-cols-2 [&>*]:min-w-0">
+                      <div>
+                        <SubHeading>Politische Ebene</SubHeading>
+                        <RankedBars
+                          values={stats.letterSignals.levelCounts}
+                          total={stats.letterSignals.signalCount}
+                          mode={mode}
+                          baseline={baseline?.letterSignals.levelCounts}
+                          baselineTotal={baseline?.letterSignals.signalCount}
+                        />
+                      </div>
+                      {hasCampaignSignals && !campaignFilterActive && <div>{campaignCard}</div>}
+                    </div>
+
+                    <div className="border-t border-warmgrau/10 pt-6">
+                      <Collapsible summary="PLZ-Regionen" detail="Zweistellige Postleitzahl-Regionen, höchstens zwölf.">
+                        <div className="sm:max-w-md">
+                          <RankedBars
+                            values={stats.letterSignals.plzPrefixCounts}
+                            labels={(key) => `${key} · Region`}
+                            total={stats.letterSignals.signalCount}
+                            mode={mode}
+                            baseline={baseline?.letterSignals.plzPrefixCounts}
+                            baselineTotal={baseline?.letterSignals.signalCount}
+                          />
+                        </div>
+                      </Collapsible>
+                    </div>
+
+                    <div className="border-t border-warmgrau/10 pt-6">
+                      <Collapsible
+                        summary="Bewertung & Versandabsicht nach Oberkategorie"
+                        detail="Nur Briefe mit verknüpftem Review. Bewertungen, beantwortete Versandfragen und fehlende Angaben getrennt."
+                      >
+                        {Object.keys(stats.letterSignals.reviewByCategory).length === 0 ? (
+                          <EmptyState>Noch keine verknüpften Reviews mit diesen Signalen.</EmptyState>
+                        ) : (
+                          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                            {TOPIC_CATEGORY_CODES.filter((code) => stats.letterSignals.reviewByCategory[code]).map((code) => {
+                              const item = stats.letterSignals.reviewByCategory[code];
+                              const average = item.ratings ? (item.ratingSum / item.ratings).toFixed(1).replace(".", ",") : "—";
+                              return (
+                                <div key={code} className="rounded-lg border border-warmgrau/10 bg-creme/60 px-4 py-3">
+                                  <p className="font-body text-sm font-semibold text-waldgruen-dark">{topicCategoryLabel(code)}</p>
+                                  <p className="mt-1 font-typewriter text-xs text-warmgrau/60">
+                                    {item.reviews} Reviews · Ø {average} ({item.ratings} Bewertungen)
+                                  </p>
+                                  <p className="mt-0.5 font-typewriter text-[11px] leading-relaxed text-warmgrau/55">
+                                    Versandfrage: {item.sent} von {item.knownSent} positiv · {item.noAnswer} ohne Angabe
+                                  </p>
+                                </div>
+                              );
+                            })}
+                          </div>
+                        )}
+                      </Collapsible>
+                    </div>
+                  </div>
+                </Collapsible>
+              </div>
+            </div>
+          )}
+          <BasisNote>
+            Basis: {formatNumber(stats.letterSignals.signalCount)} Themensignale · {formatNumber(signalCampaignTotal)}{" "}
+            aus Kampagnen · {formatNumber(stats.letterSignals.sourceCounts.free)} freie Anliegen · Erhebung ab{" "}
+            {formatDate(stats.oldestReviewAt)}
+          </BasisNote>
+        </Section>
 
         <Section id="verlauf">
           <SectionHeading
@@ -1217,7 +1653,12 @@ export default async function InternalStatsPage({ searchParams }: InternalStatsP
             </>
           )}
 
-          <div className="mt-8 grid gap-8 border-t border-warmgrau/10 pt-6 lg:grid-cols-2 [&>*]:min-w-0">
+          <div className="mt-8 border-t border-warmgrau/10 pt-6">
+          <Collapsible
+            summary="Themensignale und Reviews im Zeitverlauf"
+            detail="Freiwillige Themensignale und Bewertungen, jeweils pro Abschnitt."
+          >
+          <div className="grid gap-8 lg:grid-cols-2 [&>*]:min-w-0">
             <div>
               <SubHeading detail="Nach Zeitpunkt der freiwilligen Einwilligung. Signale ohne generated_at bleiben enthalten.">
                 Themensignale · {granularityLabel}
@@ -1250,165 +1691,11 @@ export default async function InternalStatsPage({ searchParams }: InternalStatsP
               )}
             </div>
           </div>
+          </Collapsible>
+          </div>
           <BasisNote>
             Basis: {formatNumber(stats.letterSignals.signalCount)} Themensignale · {formatNumber(stats.reviewCount)} Reviews ·
             Briefnummern seit {counterSinceLabel ?? "—"} · Abschnitte ohne Beobachtung werden dem nächsten Abschnitt zugeschlagen
-          </BasisNote>
-        </Section>
-
-        <Section id="themen" accent="rot">
-          <SectionHeading
-            eyebrow="Freiwillige Themensignale"
-            title="Worüber wird geschrieben?"
-            detail={`${formatNumber(stats.letterSignals.signalCount)} freigegebene Signale · keine Brieftexte oder Einzelzeilen · bis zu drei Oberkategorien je Brief, deshalb kann die Summe der Anteile über 100 % liegen`}
-          />
-          {signalCampaignShare > 0.5 && dominantCampaign && (
-            <div className="mb-6 rounded-lg border border-bernstein/40 bg-bernstein/10 px-4 py-3">
-              <p className="font-body text-sm leading-relaxed text-warmgrau">
-                <strong>Achtung:</strong> {Math.round(signalCampaignShare * 100)} % der Themensignale stammen
-                aus Kampagnen (dominant: {stats.campaignLabels[dominantCampaign.slug] ?? dominantCampaign.slug},{" "}
-                {formatNumber(dominantCampaign.count)} Signale). Die Themenverteilung ist damit kein allgemeines
-                Stimmungsbild.
-              </p>
-            </div>
-          )}
-          {stats.letterSignals.signalCount === 0 ? (
-            <EmptyState>Es gibt noch keine freigegebenen Themensignale. Diese Übersicht füllt sich erst nach dem freiwilligen Opt-in.</EmptyState>
-          ) : (
-            <div className="grid gap-8 [&>*]:min-w-0">
-              <div className="grid gap-8 lg:grid-cols-[minmax(0,2fr)_minmax(0,3fr)] [&>*]:min-w-0">
-                <div>
-                  <SubHeading detail="Anteil an allen gefilterten Signalen.">Oberkategorien</SubHeading>
-                  <RankedBars
-                    values={stats.letterSignals.categoryCounts}
-                    labels={topicCategoryLabel}
-                    total={stats.letterSignals.signalCount}
-                    mode={mode}
-                    baseline={baseline?.letterSignals.categoryCounts}
-                    baselineTotal={baseline?.letterSignals.signalCount}
-                  />
-                </div>
-                <div>
-                  <SubHeading detail="Die häufigsten neutralen Unterthemen je Oberkategorie. Zuordnung über die erste Oberkategorie eines Briefs.">
-                    Unterthemen je Oberkategorie
-                  </SubHeading>
-                  <SubtopicClusters
-                    clusters={subtopicClusters}
-                    categoryLabel={topicCategoryLabel}
-                    total={stats.letterSignals.signalCount}
-                  />
-                </div>
-              </div>
-
-              <div className="border-t border-warmgrau/10 pt-6">
-                <SubHeading detail={`Signale je Oberkategorie und Abschnitt (${heatmapGranularityLabel}). Dunkler bedeutet mehr. Auf dem Handy horizontal wischen.`}>
-                  Themen im Zeitverlauf
-                </SubHeading>
-                {topicHeatmap.rows.length === 0 ? (
-                  <EmptyState />
-                ) : (
-                  <TopicHeatmap data={topicHeatmap} rowLabel={topicCategoryLabel} />
-                )}
-              </div>
-
-              <div className="grid gap-8 border-t border-warmgrau/10 pt-6 sm:grid-cols-2 [&>*]:min-w-0">
-                <div>
-                  <SubHeading detail="Klick setzt den Bundesland-Filter für die ganze Seite.">Bundesländer</SubHeading>
-                  <div className="mb-5">
-                    <BundeslandMapPanel
-                      counts={filter.bundesland && baseline ? baseline.letterSignals.bundeslandCounts : stats.letterSignals.bundeslandCounts}
-                      total={filter.bundesland && baseline ? baseline.letterSignals.signalCount : stats.letterSignals.signalCount}
-                      query={query}
-                      activeKey={filter.bundesland}
-                    />
-                  </div>
-                  <RankedBars
-                    values={filter.bundesland && baseline ? baseline.letterSignals.bundeslandCounts : stats.letterSignals.bundeslandCounts}
-                    labels={bundeslandName}
-                    total={filter.bundesland && baseline ? baseline.letterSignals.signalCount : stats.letterSignals.signalCount}
-                    mode={mode}
-                    hrefFor={(key, isActive) => buildStatsHref(query, { bundesland: isActive ? null : key })}
-                    activeKey={filter.bundesland}
-                  />
-                </div>
-                <div className="grid content-start gap-8">
-                  <div>
-                    <SubHeading>Politische Ebene</SubHeading>
-                    <RankedBars
-                      values={stats.letterSignals.levelCounts}
-                      total={stats.letterSignals.signalCount}
-                      mode={mode}
-                      baseline={baseline?.letterSignals.levelCounts}
-                      baselineTotal={baseline?.letterSignals.signalCount}
-                    />
-                  </div>
-                  {hasCampaignSignals && (
-                    <div>
-                      <SubHeading detail="Signale je Kampagne. Klick setzt den Kampagnen-Filter.">Kampagnen</SubHeading>
-                      <RankedBars
-                        values={campaignSignalCounts}
-                        labels={(slug) => stats.campaignLabels[slug] ?? slug}
-                        total={stats.letterSignals.signalCount}
-                        mode={mode}
-                        hrefFor={(slug, isActive) =>
-                          buildStatsHref(query, isActive ? { quelle: null, kampagne: null } : { quelle: "campaign", kampagne: slug })
-                        }
-                        activeKey={kampagneRaw}
-                      />
-                    </div>
-                  )}
-                </div>
-              </div>
-
-              <div className="border-t border-warmgrau/10 pt-6">
-                <Collapsible summary="PLZ-Regionen" detail="Zweistellige Postleitzahl-Regionen, höchstens zwölf.">
-                  <div className="sm:max-w-md">
-                    <RankedBars
-                      values={stats.letterSignals.plzPrefixCounts}
-                      labels={(key) => `${key} · Region`}
-                      total={stats.letterSignals.signalCount}
-                      mode={mode}
-                      baseline={baseline?.letterSignals.plzPrefixCounts}
-                      baselineTotal={baseline?.letterSignals.signalCount}
-                    />
-                  </div>
-                </Collapsible>
-              </div>
-
-              <div className="border-t border-warmgrau/10 pt-6">
-                <Collapsible
-                  summary="Bewertung & Versandabsicht nach Oberkategorie"
-                  detail="Nur Briefe mit verknüpftem Review. Bewertungen, beantwortete Versandfragen und fehlende Angaben getrennt."
-                >
-                {Object.keys(stats.letterSignals.reviewByCategory).length === 0 ? (
-                  <EmptyState>Noch keine verknüpften Reviews mit diesen Signalen.</EmptyState>
-                ) : (
-                  <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-                    {TOPIC_CATEGORY_CODES.filter((code) => stats.letterSignals.reviewByCategory[code]).map((code) => {
-                      const item = stats.letterSignals.reviewByCategory[code];
-                      const average = item.ratings ? (item.ratingSum / item.ratings).toFixed(1).replace(".", ",") : "—";
-                      return (
-                        <div key={code} className="rounded-lg border border-warmgrau/10 bg-creme/60 px-4 py-3">
-                          <p className="font-body text-sm font-semibold text-waldgruen-dark">{topicCategoryLabel(code)}</p>
-                          <p className="mt-1 font-typewriter text-xs text-warmgrau/60">
-                            {item.reviews} Reviews · Ø {average} ({item.ratings} Bewertungen)
-                          </p>
-                          <p className="mt-0.5 font-typewriter text-[11px] leading-relaxed text-warmgrau/55">
-                            Versandfrage: {item.sent} von {item.knownSent} positiv · {item.noAnswer} ohne Angabe
-                          </p>
-                        </div>
-                      );
-                    })}
-                  </div>
-                )}
-                </Collapsible>
-              </div>
-            </div>
-          )}
-          <BasisNote>
-            Basis: {formatNumber(stats.letterSignals.signalCount)} Themensignale · {formatNumber(signalCampaignTotal)}{" "}
-            aus Kampagnen · {formatNumber(stats.letterSignals.sourceCounts.free)} freie Anliegen · Erhebung ab{" "}
-            {formatDate(stats.oldestReviewAt)}
           </BasisNote>
         </Section>
 
@@ -1418,72 +1705,91 @@ export default async function InternalStatsPage({ searchParams }: InternalStatsP
             title="Wie kommt der Brief an?"
             detail="Selbstauskunft aus dem Feedbackprozess. „Ja, geht raus“ umfasst bereits verschickte und unmittelbar geplante Briefe — es ist kein physischer Versandnachweis."
           />
-          <SubHeading detail="Prozentwerte gelten relativ zu allen Bewertungen; die Brief-Erstellungen sind ein Gesamtzähler ohne Verlauf und daher nicht prozentual verrechenbar.">
-            Vom Erstellen bis zum Versandsignal
-          </SubHeading>
-          <Funnel stats={stats} />
-
-          <div className="mt-8 grid gap-8 border-t border-warmgrau/10 pt-6 lg:grid-cols-2 lg:gap-12">
+          <div className="grid gap-8 lg:grid-cols-2 lg:gap-12">
             <div>
-              <SubHeading>Bewertung ({formatDecimal(stats.averageRating)} / 5)</SubHeading>
+              <SubHeading info={{ title: "Bewertung", question: "rating" }}>
+                Bewertung ({formatDecimal(stats.averageRating)} / 5)
+              </SubHeading>
+              <Statement statements={statements} id="rating" />
               <RatingBars stats={stats} mode={mode} baseline={baseline} />
             </div>
+
             <div>
-              <SubHeading>Versandsignal</SubHeading>
-              <StatsPie stats={stats} mode={mode} />
-              <p className="mt-4 font-typewriter text-xs leading-relaxed text-warmgrau/55">
-                Positive Quote nur auf beantworteter Basis: {formatNumber(stats.sentCount)} von{" "}
-                {formatNumber(stats.knownSendCount)} ({formatDecimal(stats.sendRatePercent)} %) —{" "}
-                {formatNumber(stats.noAnswerCount)} ohne Angabe.
+              <SubHeading detail="Zwischen Briefbewertung und Versandabsicht zeigt sich ein Zusammenhang. Das ist eine Korrelation, kein Kausalitätsnachweis.">
+                Qualität entscheidet mit
+              </SubHeading>
+              <Statement statements={statements} id="qualitySend" />
+              <p className="font-body text-xs font-semibold uppercase tracking-[0.1em] text-warmgrau/55">
+                Versandabsicht nach Bewertung
               </p>
+              <div className="mt-4 grid gap-5">
+                {ratingBands.map((band) => {
+                  const values = sumRatingBreakdowns(stats, band.ratings);
+                  const baselineValues = baseline ? sumRatingBreakdowns(baseline, band.ratings) : null;
+                  return (
+                    <div key={band.label}>
+                      <div className="flex items-baseline justify-between gap-3">
+                        <span className="font-body text-sm font-semibold text-waldgruen-dark">
+                          {band.label}
+                          {isSmallBasis(values.known) && <BasisBadge />}
+                        </span>
+                        {values.known > 0 ? (
+                          <ShareStat mode={mode} value={values.sent} total={values.known} />
+                        ) : (
+                          <span className="font-typewriter text-xs tabular-nums text-warmgrau/60">—</span>
+                        )}
+                      </div>
+                      <BarTrack
+                        value={values.ratePercent}
+                        scale={100}
+                        baseline={baselineValues && baselineValues.known > 0 ? baselineValues.ratePercent : null}
+                        color={band.color}
+                        height="md"
+                      />
+                      <p className="mt-1 font-typewriter text-[11px] text-warmgrau/55">
+                        {values.known > 0
+                          ? `${formatNumber(values.sent)} von ${formatNumber(values.known)} mit Angabe`
+                          : "Keine beantworteten Versandfragen"}
+                      </p>
+                    </div>
+                  );
+                })}
+              </div>
             </div>
           </div>
 
-          <div className="mt-8 border-t border-warmgrau/10 pt-6">
-            <SubHeading detail="Zwischen Briefbewertung und Versandabsicht zeigt sich ein Zusammenhang. Das ist eine Korrelation, kein Kausalitätsnachweis.">
-              Qualität entscheidet mit
-            </SubHeading>
-            <div className="grid gap-8 lg:grid-cols-2 lg:gap-14">
-              <div>
-                <p className="font-body text-xs font-semibold uppercase tracking-[0.1em] text-warmgrau/55">
-                  Versandabsicht nach Bewertung
-                </p>
-                <div className="mt-4 grid gap-5">
-                  {ratingBands.map((band) => {
-                    const values = sumRatingBreakdowns(stats, band.ratings);
-                    const baselineValues = baseline ? sumRatingBreakdowns(baseline, band.ratings) : null;
-                    return (
-                      <div key={band.label}>
-                        <div className="flex items-baseline justify-between gap-3">
-                          <span className="font-body text-sm font-semibold text-waldgruen-dark">
-                            {band.label}
-                            {isSmallBasis(values.known) && <BasisBadge />}
-                          </span>
-                          {values.known > 0 ? (
-                            <ShareStat mode={mode} value={values.sent} total={values.known} />
-                          ) : (
-                            <span className="font-typewriter text-xs tabular-nums text-warmgrau/60">—</span>
-                          )}
-                        </div>
-                        <BarTrack
-                          value={values.ratePercent}
-                          scale={100}
-                          baseline={baselineValues && baselineValues.known > 0 ? baselineValues.ratePercent : null}
-                          color={band.color}
-                          height="md"
-                        />
-                        <p className="mt-1 font-typewriter text-[11px] text-warmgrau/55">
-                          {values.known > 0
-                            ? `${formatNumber(values.sent)} von ${formatNumber(values.known)} mit Angabe`
-                            : "Keine beantworteten Versandfragen"}
-                        </p>
-                      </div>
-                    );
-                  })}
+          <div className="mt-8 grid gap-6 border-t border-warmgrau/10 pt-6">
+            <Collapsible
+              summary="Vom Erstellen bis zum Versandsignal"
+              detail="Trichter und Versandsignal als Diagramm."
+            >
+              <div className="grid gap-8 [&>*]:min-w-0">
+                <div>
+                  <SubHeading detail="Prozentwerte gelten relativ zu allen Bewertungen; die Brief-Erstellungen sind ein Gesamtzähler ohne Verlauf und daher nicht prozentual verrechenbar.">
+                    Trichter
+                  </SubHeading>
+                  <Funnel stats={stats} />
+                </div>
+                <div className="border-t border-warmgrau/10 pt-6">
+                  <SubHeading info={{ title: "Versandsignal", question: "sendSignal" }}>Versandsignal</SubHeading>
+                  <StatsPie stats={stats} mode={mode} />
+                  <p className="mt-4 font-typewriter text-xs leading-relaxed text-warmgrau/55">
+                    Positive Quote nur auf beantworteter Basis: {formatNumber(stats.sentCount)} von{" "}
+                    {formatNumber(stats.knownSendCount)} ({formatDecimal(stats.sendRatePercent)} %) —{" "}
+                    {formatNumber(stats.noAnswerCount)} ohne Angabe.
+                  </p>
                 </div>
               </div>
+            </Collapsible>
 
-              <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-1 lg:gap-7">
+            <Collapsible
+              summary="Das hilft beim Abschicken und das bremst"
+              detail="Markierungen aus dem Feedback-Formular, mit der Quote derer, die den Brief verschicken."
+            >
+              <div className="mb-4">
+                <InfoNote title="Markierungen im Feedback" question="tags" />
+              </div>
+              <div className="grid gap-8 sm:grid-cols-2">
                 <div>
                   <p className="font-body text-xs font-semibold uppercase tracking-[0.1em] text-warmgrau/55">
                     Das hilft beim Abschicken
@@ -1501,7 +1807,7 @@ export default async function InternalStatsPage({ searchParams }: InternalStatsP
                   </div>
                 </div>
               </div>
-            </div>
+            </Collapsible>
           </div>
           <BasisNote>
             Erhebungszeitraum: {formatDate(stats.oldestReviewAt)} bis {formatDate(stats.newestReviewAt)} · Basis:{" "}
@@ -1510,155 +1816,42 @@ export default async function InternalStatsPage({ searchParams }: InternalStatsP
           </BasisNote>
         </Section>
 
-        <Section id="nach-dem-brief" accent="rot">
-          <SectionHeading
-            eyebrow="Rückmeldungen nach dem Versand"
-            title="Was passiert nach dem Brief?"
-            detail="Antworten auf meine Mail nach dem Versand der Briefe. Die Filter oben wirken hier nicht."
-          />
-          {outcomes.length === 0 ? (
-            <EmptyState>Noch keine Rückmeldungen.</EmptyState>
-          ) : (
-            <div className="grid gap-10">
-              {[...outcomes].reverse().map((round) => (
-                <OutcomeRoundBlock key={round.cohort} round={round} />
-              ))}
-            </div>
-          )}
-        </Section>
-
-        <Section id="wirkung" accent="gruen">
-          <SectionHeading
-            eyebrow="Politische Selbstwirksamkeit"
-            title="Vom Betroffensein ins Handeln"
-            detail="Selbstauskunft direkt im Review. Die Werte zeigen ein wahrgenommenes Gefühl, keine tatsächlich beobachtete spätere Handlung."
-          />
-          <div className="grid gap-8 lg:grid-cols-2 lg:gap-12">
-            <article>
-              <SubHeading detail="„Fühlst du dich durch diesen Brief eher in der Lage, dich politisch einzubringen?“">
-                Handlungsfähiger durch den Brief
-              </SubHeading>
-              {activation.selfEfficacyAnswerCount === 0 ? (
-                <EmptyState>Noch keine Antworten zur politischen Handlungsfähigkeit.</EmptyState>
-              ) : (
-                <>
-                  <div className="flex flex-wrap gap-6">
-                    <div className="flex-1">
-                      <ValueEmphasis
-                        mode={mode}
-                        value={activation.selfEfficacyPositiveCount}
-                        total={activation.selfEfficacyDirectionalCount}
-                        unit="gerichtete Antworten"
-                      />
-                      <p className="mt-2 font-body text-xs leading-relaxed text-warmgrau/60">
-                        „Ja, deutlich“ oder „Eher ja“ · „Unsicher“ bleibt in dieser Quote unberücksichtigt
-                      </p>
-                    </div>
-                    <div className="grid min-w-40 gap-2 self-start">
-                      <p className="flex items-baseline justify-between gap-3 rounded-md bg-creme/70 px-3 py-2 font-body text-sm text-waldgruen-dark">
-                        Ja <span className="font-typewriter text-base font-bold tabular-nums">{formatNumber(sePositive)}</span>
-                      </p>
-                      <p className="flex items-baseline justify-between gap-3 rounded-md bg-creme/70 px-3 py-2 font-body text-sm text-waldgruen-dark">
-                        Nein <span className="font-typewriter text-base font-bold tabular-nums">{formatNumber(seNegative)}</span>
-                      </p>
-                      <p className="flex items-baseline justify-between gap-3 rounded-md bg-creme/70 px-3 py-2 font-body text-sm text-waldgruen-dark">
-                        Unsicher <span className="font-typewriter text-base font-bold tabular-nums">{formatNumber(seUnsure)}</span>
-                      </p>
-                    </div>
-                  </div>
-                  <div className="mt-6">
-                    <SurveyDistributionBars
-                      values={activation.selfEfficacyDistribution}
-                      options={selfEfficacyOptions}
-                      total={activation.selfEfficacyAnswerCount}
-                      color="#2D6A4F"
-                      mode={mode}
-                      baselineValues={baseline?.politicalActivation.selfEfficacyDistribution}
-                      baselineTotal={baseline?.politicalActivation.selfEfficacyAnswerCount}
-                    />
-                  </div>
-                </>
-              )}
-              <BasisNote>
-                Basis: {formatNumber(activation.selfEfficacyAnswerCount)} beantwortet ·{" "}
-                {formatNumber(activation.selfEfficacyDirectionalCount)} gerichtet ·{" "}
-                {formatNumber(activation.selfEfficacyNoAnswerCount)} vollständige Reviews ohne diese Frage
-              </BasisNote>
-            </article>
-
-            <article>
-              <SubHeading detail="Wie oft politische Inhalte beschäftigen, ohne dass ein konkreter nächster Schritt klar ist.">
-                Politische Ohnmacht im Alltag
-              </SubHeading>
-              {activation.powerlessnessAnswerCount === 0 ? (
-                <EmptyState>Noch keine freiwilligen Antworten zur politischen Ohnmacht.</EmptyState>
-              ) : (
-                <SurveyDistributionBars
-                  values={activation.powerlessnessDistribution}
-                  options={powerlessnessOptions}
-                  total={activation.powerlessnessAnswerCount}
-                  color="#C58B18"
-                  mode={mode}
-                  baselineValues={baseline?.politicalActivation.powerlessnessDistribution}
-                  baselineTotal={baseline?.politicalActivation.powerlessnessAnswerCount}
-                />
-              )}
-              <BasisNote>
-                Basis: {formatNumber(activation.powerlessnessAnswerCount)} freiwillig beantwortet ·{" "}
-                {formatNumber(activation.powerlessnessNoAnswerCount)} vollständige Reviews ohne Angabe
-              </BasisNote>
-            </article>
-          </div>
-
-          <div className="mt-8 border-t border-warmgrau/10 pt-6">
-            <SubHeading detail="Nur Reviews mit Antworten auf beide Fragen. „Kann ich noch nicht sagen“ bleibt sichtbar, zählt aber nicht in die positive Quote.">
-              Positive Selbstauskunft nach berichteter Ohnmachtsfrequenz
-            </SubHeading>
-            {!hasActivationCrossData ? (
-              <EmptyState>Noch keine gemeinsam auswertbaren Antworten.</EmptyState>
-            ) : (
-              <div className="grid gap-3 min-[420px]:grid-cols-2 lg:grid-cols-4">
-                {POLITICAL_POWERLESSNESS_FREQUENCY_VALUES.map((frequency) => {
-                  const item = activation.efficacyByPowerlessness[frequency];
-                  return (
-                    <div
-                      key={frequency}
-                      className="rounded-lg border border-warmgrau/10 bg-creme/60 px-4 py-4"
-                    >
-                      <p className="font-body text-sm font-semibold text-waldgruen-dark">
-                        {POLITICAL_POWERLESSNESS_FREQUENCY_LABELS[frequency]}
-                      </p>
-                      {item.directional > 0 ? (
-                        <p className="mt-2 font-typewriter text-2xl font-bold tabular-nums text-waldgruen-dark">
-                          {(mode === "prozentual" ? `${formatDecimal(item.positiveRatePercent)} %` : formatNumber(item.positive))}
-                        </p>
-                      ) : (
-                        <p className="mt-2 font-typewriter text-2xl font-bold tabular-nums text-warmgrau/40">—</p>
-                      )}
-                      <p className="mt-1 font-typewriter text-[11px] leading-relaxed text-warmgrau/55">
-                        {formatNumber(item.positive)} von {formatNumber(item.directional)} gerichtet
-                        {item.directional > 0 && ` (${formatDecimal(item.positiveRatePercent)} %)`} ·{" "}
-                        {formatNumber(item.unsure)} unsicher
-                      </p>
-                    </div>
-                  );
-                })}
-              </div>
-            )}
-          </div>
-        </Section>
-
         <Section id="alter">
           <SectionHeading
             eyebrow="Wer schreibt"
             title="Alter"
             detail="Freiwillige Angabe im ausgefüllten Feedback. Die Prozente zählen nur Bewertungen mit Altersangabe."
           />
-          <div className="grid gap-8 lg:grid-cols-2 lg:gap-12">
-            <article>
-              <SubHeading detail="Ab der ersten Altersangabe, damit ältere Bewertungen ohne die Frage nicht mitzählen.">
-                Antwortquote
-              </SubHeading>
+          <article>
+            <SubHeading
+              info={{ title: "Altersverteilung", question: "age" }}
+              detail="Nur Bewertungen mit Angabe"
+            >
+              Altersverteilung
+            </SubHeading>
+            {stats.ageGroups.answerCount === 0 ? (
+              <EmptyState>Noch keine Altersangaben.</EmptyState>
+            ) : (
+              <SurveyDistributionBars
+                values={stats.ageGroups.distribution}
+                options={ageGroupOptions}
+                total={stats.ageGroups.answerCount}
+                color="#2D6A4F"
+                mode={mode}
+                baselineValues={baseline?.ageGroups.distribution}
+                baselineTotal={baseline?.ageGroups.answerCount}
+              />
+            )}
+            <BasisNote>
+              Basis: {formatNumber(stats.ageGroups.answerCount)} Bewertungen mit Altersangabe
+            </BasisNote>
+          </article>
+
+          <div className="mt-8 border-t border-warmgrau/10 pt-6">
+            <Collapsible
+              summary="Wie viele geben ihr Alter an"
+              detail="Antwortquote ab der ersten Altersangabe."
+            >
               {stats.ageGroups.answeredSince === null ? (
                 <EmptyState>Noch keine Altersangaben.</EmptyState>
               ) : (
@@ -1679,29 +1872,7 @@ export default async function InternalStatsPage({ searchParams }: InternalStatsP
                   ? "Basis: noch keine ausgefüllten Bewertungen mit Altersfrage"
                   : `Basis: ${formatNumber(stats.ageGroups.rateBase)} ausgefüllte Bewertungen seit der ersten Altersangabe am ${formatDate(stats.ageGroups.answeredSince)} · die Filter oben wirken hier`}
               </BasisNote>
-            </article>
-
-            <article>
-              <SubHeading detail="„Wie alt bist du?“ · nur Bewertungen mit Angabe">
-                Altersverteilung
-              </SubHeading>
-              {stats.ageGroups.answerCount === 0 ? (
-                <EmptyState>Noch keine Altersangaben.</EmptyState>
-              ) : (
-                <SurveyDistributionBars
-                  values={stats.ageGroups.distribution}
-                  options={ageGroupOptions}
-                  total={stats.ageGroups.answerCount}
-                  color="#2D6A4F"
-                  mode={mode}
-                  baselineValues={baseline?.ageGroups.distribution}
-                  baselineTotal={baseline?.ageGroups.answerCount}
-                />
-              )}
-              <BasisNote>
-                Basis: {formatNumber(stats.ageGroups.answerCount)} Bewertungen mit Altersangabe
-              </BasisNote>
-            </article>
+            </Collapsible>
           </div>
         </Section>
 
@@ -1711,9 +1882,62 @@ export default async function InternalStatsPage({ searchParams }: InternalStatsP
             title="Erstschreiber"
             detail="Freiwillige Angabe im ausgefüllten Feedback: Hat Brief-nach-Berlin Menschen zum ersten Mal zum Schreiben an Politiker:innen gebracht? Die Prozente zählen nur Bewertungen mit Antwort."
           />
-          <div className="grid gap-8 lg:grid-cols-2 lg:gap-12">
-            <article>
-              <SubHeading detail="„Hast du schon mal einen Brief an Politiker:innen geschrieben?“ · nur Bewertungen mit Angabe">
+          <article>
+            <SubHeading
+              info={{ title: "Erstschreiber", question: "letterHistory" }}
+              detail="Erstschreiber sind alle, die vor Brief-nach-Berlin nie einen Brief geschrieben hatten (erster Brief oder bisher nur mit Brief-nach-Berlin)."
+            >
+              Kennzahlen
+            </SubHeading>
+            <Statement statements={statements} id="firstTimers" />
+            {stats.letterHistory.answerCount === 0 ? (
+              <EmptyState>Noch keine Angaben.</EmptyState>
+            ) : (
+              <div>
+                <ShareLine
+                  label="Vor Brief-nach-Berlin nie einen Brief geschrieben"
+                  percent={stats.letterHistory.neverBeforePercent}
+                  count={stats.letterHistory.neverBeforeCount}
+                  total={stats.letterHistory.answerCount}
+                />
+                <ShareLine
+                  label="Davon noch nie anders Kontakt zu Politiker:innen gehabt (nur mit Antwort auf die Folgefrage)"
+                  percent={stats.letterHistory.noPriorContactPercent}
+                  count={stats.letterHistory.noPriorContactCount}
+                  total={stats.letterHistory.priorContactAnswerCount}
+                  info={{ title: "Früherer Kontakt zu Politiker:innen", question: "priorContact" }}
+                />
+                <ShareLine
+                  label="Schon mehrfach mit Brief-nach-Berlin geschrieben"
+                  percent={stats.letterHistory.repeatPercent}
+                  count={stats.letterHistory.repeatCount}
+                  total={stats.letterHistory.answerCount}
+                />
+                <ShareLine
+                  label="Handlungsfähigkeit positiv, Erstschreiber („Ja, deutlich“ oder „Eher ja“)"
+                  percent={stats.letterHistory.efficacyFirstTimers.positivePercent}
+                  count={stats.letterHistory.efficacyFirstTimers.positive}
+                  total={stats.letterHistory.efficacyFirstTimers.answered}
+                />
+                <ShareLine
+                  label="Handlungsfähigkeit positiv, schon vorher geschrieben"
+                  percent={stats.letterHistory.efficacyExperienced.positivePercent}
+                  count={stats.letterHistory.efficacyExperienced.positive}
+                  total={stats.letterHistory.efficacyExperienced.answered}
+                />
+              </div>
+            )}
+            <BasisNote>
+              Handlungsfähigkeit: Basis sind Antworten mit Angabe zur Handlungsfähigkeit, inklusive „Kann ich noch nicht sagen“. Bei kleinen Zahlen nicht überinterpretieren.
+            </BasisNote>
+          </article>
+
+          <div className="mt-8 border-t border-warmgrau/10 pt-6">
+            <Collapsible summary="Verteilung der bisherigen Briefe" detail="Wie viele Briefe die Antwortenden vorher geschrieben hatten.">
+              <SubHeading
+                info={{ title: "Bisherige Briefe", question: "letterHistory" }}
+                detail="Nur Bewertungen mit Angabe"
+              >
                 Verteilung
               </SubHeading>
               {stats.letterHistory.answerCount === 0 ? (
@@ -1734,52 +1958,7 @@ export default async function InternalStatsPage({ searchParams }: InternalStatsP
                   ? "Basis: noch keine Antworten auf die Frage"
                   : `Basis: ${formatNumber(stats.letterHistory.answerCount)} Bewertungen mit Angabe · erfasst seit ${formatDate(stats.letterHistory.answeredSince)} · die Filter oben wirken hier`}
               </BasisNote>
-            </article>
-
-            <article>
-              <SubHeading detail="Erstschreiber sind alle, die vor Brief-nach-Berlin nie einen Brief geschrieben hatten (erster Brief oder bisher nur mit Brief-nach-Berlin).">
-                Kennzahlen
-              </SubHeading>
-              {stats.letterHistory.answerCount === 0 ? (
-                <EmptyState>Noch keine Angaben.</EmptyState>
-              ) : (
-                <div>
-                  <ShareLine
-                    label="Vor Brief-nach-Berlin nie einen Brief geschrieben"
-                    percent={stats.letterHistory.neverBeforePercent}
-                    count={stats.letterHistory.neverBeforeCount}
-                    total={stats.letterHistory.answerCount}
-                  />
-                  <ShareLine
-                    label="Davon noch nie anders Kontakt zu Politiker:innen gehabt (nur mit Antwort auf die Folgefrage)"
-                    percent={stats.letterHistory.noPriorContactPercent}
-                    count={stats.letterHistory.noPriorContactCount}
-                    total={stats.letterHistory.priorContactAnswerCount}
-                  />
-                  <ShareLine
-                    label="Schon mehrfach mit Brief-nach-Berlin geschrieben"
-                    percent={stats.letterHistory.repeatPercent}
-                    count={stats.letterHistory.repeatCount}
-                    total={stats.letterHistory.answerCount}
-                  />
-                  <ShareLine
-                    label="Handlungsfähigkeit positiv, Erstschreiber („Ja, deutlich“ oder „Eher ja“)"
-                    percent={stats.letterHistory.efficacyFirstTimers.positivePercent}
-                    count={stats.letterHistory.efficacyFirstTimers.positive}
-                    total={stats.letterHistory.efficacyFirstTimers.answered}
-                  />
-                  <ShareLine
-                    label="Handlungsfähigkeit positiv, schon vorher geschrieben"
-                    percent={stats.letterHistory.efficacyExperienced.positivePercent}
-                    count={stats.letterHistory.efficacyExperienced.positive}
-                    total={stats.letterHistory.efficacyExperienced.answered}
-                  />
-                </div>
-              )}
-              <BasisNote>
-                Handlungsfähigkeit: Basis sind Antworten mit Angabe zur Handlungsfähigkeit, inklusive „Kann ich noch nicht sagen“. Bei kleinen Zahlen nicht überinterpretieren.
-              </BasisNote>
-            </article>
+            </Collapsible>
           </div>
         </Section>
 
@@ -1799,6 +1978,10 @@ export default async function InternalStatsPage({ searchParams }: InternalStatsP
               body={`Jeder freigegebene Themenbeitrag speichert seit dem ${counterSinceLabel ?? "Start der Briefnummer"} die laufende Briefnummer. Die Differenz der höchsten Nummern zweier Abschnitte ergibt das Volumen aller Briefe dazwischen. Abschnitte ohne Beitrag fallen weg und werden dem nächsten zugeschlagen.`}
             />
             <Definition title="Doppelte Briefe" body={DUPLICATE_LETTER_NOTE} />
+            <Definition
+              title="Handlungsfähigkeit"
+              body="Anteil „Ja, deutlich“ und „Eher ja“ an allen Antworten, „Kann ich noch nicht sagen“ zählt in der Basis mit. Die Frage sehen nur Nutzer:innen, die ihren Brief verschicken. In den Rückmeldungen Wochen später zählen ebenfalls nur Antworten derer, die den Brief abgeschickt haben."
+            />
             <Definition
               title="„Ja, geht raus“"
               body="Umfasst bereits verschickte und unmittelbar geplante Briefe. Es ist eine Selbstauskunft, kein physischer Versandnachweis."
@@ -1900,7 +2083,43 @@ function DetailBlock({
   );
 }
 
-function OutcomeRoundBlock({ round }: { round: OutcomeRoundStats }) {
+/** Kurze Frage-Zeile über einer Verteilung, mit (i) für den Wortlaut. */
+function QuestionCaption({
+  children,
+  title,
+  question,
+}: {
+  children: ReactNode;
+  title: string;
+  question: StatQuestionKey;
+}) {
+  return (
+    <div className="mb-2 flex items-start justify-between gap-2">
+      <p className="font-body text-xs text-warmgrau/70">{children}</p>
+      <InfoFor title={title} question={question} />
+    </div>
+  );
+}
+
+function EfficacyRateLine({ counts }: { counts: Record<string, number> }) {
+  const rate = efficacyRate(counts);
+  if (rate.base === 0) return null;
+  return (
+    <p className="mb-3 font-typewriter text-sm font-bold tabular-nums text-waldgruen-dark">
+      {rate.base < SHARE_PERCENT_MIN_BASE
+        ? `${formatNumber(rate.count)} von ${formatNumber(rate.base)} eher ja`
+        : `${rate.percent} % eher ja (${formatNumber(rate.count)} von ${formatNumber(rate.base)})`}
+    </p>
+  );
+}
+
+function OutcomeRoundBlock({
+  round,
+  statements,
+}: {
+  round: OutcomeRoundStats;
+  statements: Record<StatementKey, string | null> | null;
+}) {
   const { path, replyRateByMethod, selfEfficacy } = round;
   const methodBase = replyRateByMethod.handwritten.sent + replyRateByMethod.typed.sent;
   return (
@@ -1911,48 +2130,23 @@ function OutcomeRoundBlock({ round }: { round: OutcomeRoundStats }) {
       </p>
 
       <div>
-        <SubHeading>
+        <SubHeading info={{ title: "Briefweg", question: "briefweg" }}>
           Briefweg
           {isSmallBasis(round.respondentCount, SHARE_PERCENT_MIN_BASE) && <BasisBadge />}
         </SubHeading>
+        {statements && <Statement statements={statements} id="briefweg" />}
         <Briefweg round={round} />
-      </div>
-
-      <div>
-        <SubHeading>Rücklauf pro Tag seit dem Versand</SubHeading>
-        {round.respondentCount === 0 ? (
-          <EmptyState>Noch keine Rückmeldungen zu dieser Runde.</EmptyState>
-        ) : (
-          <ColumnChart
-            data={bucketTimeline(round.returnDayCounts, "day")}
-            unit="Rückmeldungen"
-            axisLabel="Tag"
-          />
-        )}
       </div>
 
       {round.completedCount === 0 ? (
         <EmptyState>Noch keine fertigen Formulare.</EmptyState>
       ) : (
         <div className="grid gap-4 lg:grid-cols-2">
-          <DetailBlock title="Von Hand oder getippt" base={methodBase}>
-            <div className="grid gap-3 sm:grid-cols-2">
-              <MiniStat
-                label={OUTCOME_LABELS.letterSent.handwritten}
-                value={formatShare(replyRateByMethod.handwritten.replied, replyRateByMethod.handwritten.sent)}
-                detail="mit Reaktion"
-              />
-              <MiniStat
-                label={OUTCOME_LABELS.letterSent.typed}
-                value={formatShare(replyRateByMethod.typed.replied, replyRateByMethod.typed.sent)}
-                detail="mit Reaktion"
-              />
-            </div>
-          </DetailBlock>
-
           <DetailBlock title="Reaktion und wie konkret" base={round.channelBase}>
             <div>
-              <p className="mb-2 font-body text-xs text-warmgrau/70">Welche Reaktion kam? Mehrfachnennung möglich.</p>
+              <QuestionCaption title="Kam eine Reaktion?" question="outcomeChannels">
+                Welche Reaktion kam? Mehrfachnennung möglich.
+              </QuestionCaption>
               <SurveyDistributionBars
                 values={round.channelCounts}
                 options={channelOptions}
@@ -1964,7 +2158,9 @@ function OutcomeRoundBlock({ round }: { round: OutcomeRoundStats }) {
               />
             </div>
             <div>
-              <p className="mb-2 font-body text-xs text-warmgrau/70">Wurde auf das Anliegen eingegangen?</p>
+              <QuestionCaption title="Auf das Anliegen eingegangen" question="outcomeAddressed">
+                Wurde auf das Anliegen eingegangen?
+              </QuestionCaption>
               <SurveyDistributionBars
                 values={round.addressedCounts}
                 options={addressedOptions}
@@ -1976,7 +2172,9 @@ function OutcomeRoundBlock({ round }: { round: OutcomeRoundStats }) {
               />
             </div>
             <div>
-              <p className="mb-2 font-body text-xs text-warmgrau/70">Wie war die Reaktion für dich?</p>
+              <QuestionCaption title="Wie war die Reaktion" question="outcomeFeeling">
+                Wie war die Reaktion für dich?
+              </QuestionCaption>
               <SurveyDistributionBars
                 values={round.replyFeelingCounts}
                 options={replyFeelingOptions}
@@ -2003,7 +2201,10 @@ function OutcomeRoundBlock({ round }: { round: OutcomeRoundStats }) {
 
           <DetailBlock title="Wieder schreiben und Handlungsfähigkeit" base={round.writeAgainBase}>
             <div>
-              <p className="mb-2 font-body text-xs text-warmgrau/70">Noch einen Brief schreiben?</p>
+              {statements && <Statement statements={statements} id="writeAgain" />}
+              <QuestionCaption title="Wieder einen Brief schreiben" question="outcomeWriteAgain">
+                Noch einen Brief schreiben?
+              </QuestionCaption>
               <SurveyDistributionBars
                 values={round.writeAgainCounts}
                 options={writeAgainOptions}
@@ -2015,15 +2216,16 @@ function OutcomeRoundBlock({ round }: { round: OutcomeRoundStats }) {
               />
             </div>
             <div>
-              <p className="mb-2 font-body text-xs text-warmgrau/70">
-                Gefühl, sich politisch einbringen zu können. Verschiedene Gruppen und Zeiträume, keine Person ist verknüpft.
-              </p>
+              <QuestionCaption title="Handlungsfähigkeit nach dem Brief" question="outcomeEfficacy">
+                Gefühl, sich politisch einbringen zu können. Verschiedene Gruppen und Zeiträume, keine Person ist verknüpft. Rückmeldungen zählen nur Absender.
+              </QuestionCaption>
               <div className="grid gap-5 md:grid-cols-2">
                 <div>
                   <p className="mb-2 font-body text-sm font-semibold text-waldgruen-dark">
                     Rückmeldungen (Wochen nach dem Brief)
                     {isSmallBasis(selfEfficacy.outcomesBase, SHARE_PERCENT_MIN_BASE) && <BasisBadge />}
                   </p>
+                  <EfficacyRateLine counts={selfEfficacy.outcomes} />
                   <SurveyDistributionBars
                     values={selfEfficacy.outcomes}
                     options={selfEfficacyOptions}
@@ -2039,6 +2241,7 @@ function OutcomeRoundBlock({ round }: { round: OutcomeRoundStats }) {
                     Reviews{selfEfficacy.reviewsSince ? ` seit ${formatDate(selfEfficacy.reviewsSince)}` : ""} (direkt nach dem Brief)
                     {isSmallBasis(selfEfficacy.reviewsBase, SHARE_PERCENT_MIN_BASE) && <BasisBadge />}
                   </p>
+                  <EfficacyRateLine counts={selfEfficacy.reviews} />
                   <SurveyDistributionBars
                     values={selfEfficacy.reviews}
                     options={selfEfficacyOptions}
@@ -2052,43 +2255,89 @@ function OutcomeRoundBlock({ round }: { round: OutcomeRoundStats }) {
               </div>
             </div>
           </DetailBlock>
-
-          <DetailBlock title="Nicht abgeschickt und Erwartung" base={round.notSentReasonBase}>
-            <div>
-              <p className="mb-2 font-body text-xs text-warmgrau/70">Was hat gebremst?</p>
-              <SurveyDistributionBars
-                values={round.notSentReasonCounts}
-                options={notSentReasonOptions}
-                total={round.notSentReasonBase}
-                color="#C58B18"
-                mode="prozentual"
-                valueLabel={formatBarShare}
-                baseNote={shareBaseNote}
-              />
-            </div>
-            <div>
-              <p className="mb-2 font-body text-xs text-warmgrau/70">Erwartung vorher, Reaktion nachher</p>
-              <ul className="grid gap-1.5 font-body text-sm text-warmgrau/85">
-                {EXPECTATION_VALUES.filter((key) => round.expectationVsResult[key].total > 0).map((key) => {
-                  const entry = round.expectationVsResult[key];
-                  return (
-                    <li key={key}>
-                      <span className="font-semibold text-waldgruen-dark">{OUTCOME_LABELS.expectation[key]}:</span>{" "}
-                      {formatNumber(entry.total)} · davon mit Reaktion {formatShare(entry.replied, entry.total)}
-                    </li>
-                  );
-                })}
-              </ul>
-              {round.expectationBase === 0 && <EmptyState>Noch keine Angaben.</EmptyState>}
-            </div>
-          </DetailBlock>
         </div>
       )}
 
-      <div className="grid gap-3 sm:grid-cols-2">
-        <MiniStat label="Fertige Formulare" value={formatNumber(round.completedCount)} />
-        <MiniStat label="Offen für ein Gespräch" value={formatNumber(round.callOkCount)} />
-      </div>
+      <Collapsible
+        summary="Weitere Zahlen zur Runde"
+        detail="Rücklauf pro Tag, von Hand oder getippt, Gründe fürs Nichtabschicken, Erwartung und fertige Formulare."
+      >
+        <div className="grid gap-6">
+          <div>
+            <SubHeading>Rücklauf pro Tag seit dem Versand</SubHeading>
+            {round.respondentCount === 0 ? (
+              <EmptyState>Noch keine Rückmeldungen zu dieser Runde.</EmptyState>
+            ) : (
+              <ColumnChart
+                data={bucketTimeline(round.returnDayCounts, "day")}
+                unit="Rückmeldungen"
+                axisLabel="Tag"
+              />
+            )}
+          </div>
+
+          {round.completedCount > 0 && (
+            <div className="grid gap-4 lg:grid-cols-2">
+              <DetailBlock title="Von Hand oder getippt" base={methodBase}>
+                <QuestionCaption title="Brief abgeschickt" question="outcomeSent">
+                  Wie wurde der Brief verfasst?
+                </QuestionCaption>
+                <div className="grid gap-3 sm:grid-cols-2">
+                  <MiniStat
+                    label={OUTCOME_LABELS.letterSent.handwritten}
+                    value={formatShare(replyRateByMethod.handwritten.replied, replyRateByMethod.handwritten.sent)}
+                    detail="mit Reaktion"
+                  />
+                  <MiniStat
+                    label={OUTCOME_LABELS.letterSent.typed}
+                    value={formatShare(replyRateByMethod.typed.replied, replyRateByMethod.typed.sent)}
+                    detail="mit Reaktion"
+                  />
+                </div>
+              </DetailBlock>
+
+              <DetailBlock title="Nicht abgeschickt und Erwartung" base={round.notSentReasonBase}>
+                <div>
+                  <QuestionCaption title="Was hat gebremst" question="outcomeNotSentReason">
+                    Was hat gebremst?
+                  </QuestionCaption>
+                  <SurveyDistributionBars
+                    values={round.notSentReasonCounts}
+                    options={notSentReasonOptions}
+                    total={round.notSentReasonBase}
+                    color="#C58B18"
+                    mode="prozentual"
+                    valueLabel={formatBarShare}
+                    baseNote={shareBaseNote}
+                  />
+                </div>
+                <div>
+                  <QuestionCaption title="Erwartung vor dem Brief" question="outcomeExpectation">
+                    Erwartung vorher, Reaktion nachher
+                  </QuestionCaption>
+                  <ul className="grid gap-1.5 font-body text-sm text-warmgrau/85">
+                    {EXPECTATION_VALUES.filter((key) => round.expectationVsResult[key].total > 0).map((key) => {
+                      const entry = round.expectationVsResult[key];
+                      return (
+                        <li key={key}>
+                          <span className="font-semibold text-waldgruen-dark">{OUTCOME_LABELS.expectation[key]}:</span>{" "}
+                          {formatNumber(entry.total)} · davon mit Reaktion {formatShare(entry.replied, entry.total)}
+                        </li>
+                      );
+                    })}
+                  </ul>
+                  {round.expectationBase === 0 && <EmptyState>Noch keine Angaben.</EmptyState>}
+                </div>
+              </DetailBlock>
+            </div>
+          )}
+
+          <div className="grid gap-3 sm:grid-cols-2">
+            <MiniStat label="Fertige Formulare" value={formatNumber(round.completedCount)} />
+            <MiniStat label="Offen für ein Gespräch" value={formatNumber(round.callOkCount)} />
+          </div>
+        </div>
+      </Collapsible>
 
       <Collapsible
         summary={`Alle Antworten (${formatNumber(round.freeTexts.length)})`}

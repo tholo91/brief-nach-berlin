@@ -350,7 +350,8 @@ describe("getInternalStatsWithBaseline outcomes query", () => {
 
     const select = String(calls.select[0][0]);
     expect(select).not.toMatch(/\bemail\b/);
-    expect(select.split(",")).toHaveLength(17);
+    expect(select.split(",")).toHaveLength(18);
+    expect(select.split(",")).toContain("id");
     expect(select.split(",")).toContain("reply_feeling");
     expect(calls.in[0]).toEqual(["cohort", OUTCOME_ROUNDS.map((r) => r.cohort)]);
     expect(calls.order[0]).toEqual(["id"]);

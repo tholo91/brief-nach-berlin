@@ -105,9 +105,9 @@ export function FilterBar({ query, campaignOptions }: FilterBarProps) {
       </label>
 
       <p className="max-w-prose font-body text-xs leading-relaxed text-warmgrau/50">
-        Der Schalter filtert alle Abschnitte; nur der globale Brief-Zähler bleibt
-        ungefiltert. Klick auf ein Bundesland oder eine Kampagne in den Balken setzt
-        den Filter ebenfalls.
+        Der Schalter filtert die Abschnitte; der globale Brief-Zähler und die
+        Rückmeldungen (Nach dem Brief) bleiben ungefiltert. Klick auf ein Bundesland
+        oder eine Kampagne in den Balken setzt den Filter ebenfalls.
       </p>
     </div>
   );

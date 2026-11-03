@@ -1,9 +1,12 @@
 import { formatDecimal, formatNumber } from "@/lib/formatNumber";
-import type {
-  LetterCounterDayRange,
-  StatsFilter,
-  TimeRange,
+import {
+  topicCategoryLabel,
+  type InternalStats,
+  type LetterCounterDayRange,
+  type StatsFilter,
+  type TimeRange,
 } from "@/lib/internalStats/aggregate";
+import type { OutcomeRoundStats } from "@/lib/internalStats/outcomes";
 import { BUNDESLAND_KEYS, BUNDESLAND_NAMES } from "@/lib/campaigns/schema";
 
 export type ViewMode = "prozentual" | "absolut";
@@ -405,4 +408,227 @@ export function peakPoint<T extends { count: number }>(points: T[]): T | null {
 
 export function isSmallBasis(value: number, threshold = 10): boolean {
   return value > 0 && value < threshold;
+}
+/** Anteil mit Zähler und Basis; percent ist null, solange es keine Basis gibt. */
+export type ImpactRate = { count: number; base: number; percent: number | null };
+
+export function impactRate(count: number, base: number): ImpactRate {
+  return {
+    count,
+    base,
+    percent: base > 0 ? Math.round((count / base) * 100) : null,
+  };
+}
+
+const EFFICACY_POSITIVE_KEYS = ["clearly_yes", "rather_yes"] as const;
+
+/** Handlungsfähigkeit: positiv durch alle Antworten, "unsicher" zählt in der Basis mit. */
+export function efficacyRate(counts: Record<string, number>): ImpactRate {
+  const base = Object.values(counts).reduce((sum, value) => sum + value, 0);
+  const positive = EFFICACY_POSITIVE_KEYS.reduce(
+    (sum, key) => sum + (counts[key] ?? 0),
+    0,
+  );
+  return impactRate(positive, base);
+}
+
+export type ImpactSummary = {
+  writers: {
+    topRatingShare: ImpactRate;
+    sendRate: ImpactRate;
+    efficacy: ImpactRate;
+  };
+  politics: {
+    roundLabel: string;
+    sentCount: number;
+    deliveredCount: number;
+    respondentCount: number;
+    reactionRate: ImpactRate;
+    concrete: ImpactRate;
+    concreteOrPartly: ImpactRate;
+    responseRate: ImpactRate;
+  } | null;
+};
+
+/**
+ * Kernzahlen für die Wirkungsansicht. Die Politikzahlen kommen aus der
+ * neuesten Rückmeldungsrunde und nutzen dieselbe Zählung wie der Briefweg.
+ */
+export function buildImpactSummary(
+  stats: InternalStats,
+  outcomeRounds: readonly OutcomeRoundStats[],
+): ImpactSummary {
+  const activation = stats.politicalActivation;
+  const round = outcomeRounds[outcomeRounds.length - 1];
+  return {
+    writers: {
+      topRatingShare: impactRate(
+        stats.ratingDistribution[4] + stats.ratingDistribution[5],
+        stats.reviewCount,
+      ),
+      sendRate: impactRate(stats.sentCount, stats.knownSendCount),
+      efficacy: impactRate(
+        activation.selfEfficacyPositiveCount,
+        activation.selfEfficacyAnswerCount,
+      ),
+    },
+    politics: round
+      ? {
+          roundLabel: round.label,
+          sentCount: round.sentCount,
+          deliveredCount: round.deliveredCount,
+          respondentCount: round.respondentCount,
+          reactionRate: impactRate(round.path.replied, round.path.sent),
+          concrete: impactRate(round.path.concrete, round.path.addressedBase),
+          concreteOrPartly: impactRate(
+            round.addressedCounts.concrete + round.addressedCounts.partly,
+            round.path.addressedBase,
+          ),
+          responseRate: impactRate(round.respondentCount, round.deliveredCount),
+        }
+      : null,
+  };
+}
+
+/** Satz zur Politik, nur mit tragfähiger Basis (Selbstauskunft der Rückmeldenden). */
+export function politicsReactionSentence(
+  politics: NonNullable<ImpactSummary["politics"]>,
+): string | null {
+  const { reactionRate, respondentCount, deliveredCount } = politics;
+  if (reactionRate.base < SHARE_PERCENT_MIN_BASE) return null;
+  return `Von den Rückmeldenden, die ihren Brief abgeschickt haben, bekamen ${formatNumber(reactionRate.count)} von ${formatNumber(reactionRate.base)} eine Reaktion (Selbstauskunft, Rücklauf ${formatNumber(respondentCount)} von ${formatNumber(deliveredCount)}).`;
+}
+
+export const STATEMENT_KEYS = [
+  "efficacy",
+  "powerlessness",
+  "briefweg",
+  "writeAgain",
+  "rating",
+  "qualitySend",
+  "firstTimers",
+  "topCategory",
+] as const;
+
+export type StatementKey = (typeof STATEMENT_KEYS)[number];
+
+function percentText(rate: ImpactRate): string {
+  return `${rate.percent ?? 0} %`;
+}
+
+function ofText(rate: ImpactRate): string {
+  return `${formatNumber(rate.count)} von ${formatNumber(rate.base)}`;
+}
+
+function comparison(a: ImpactRate, b: ImpactRate): "höher" | "niedriger" | "gleich hoch" {
+  const left = a.percent ?? 0;
+  const right = b.percent ?? 0;
+  return left > right ? "höher" : left < right ? "niedriger" : "gleich hoch";
+}
+
+function sumBands(
+  stats: InternalStats,
+  ratings: readonly (1 | 2 | 3 | 4 | 5)[],
+): ImpactRate {
+  let sent = 0;
+  let known = 0;
+  for (const rating of ratings) {
+    const breakdown = stats.sendByRating[rating];
+    sent += breakdown.sent;
+    known += breakdown.sent + breakdown.notSent;
+  }
+  return impactRate(sent, known);
+}
+
+/**
+ * Feste deutsche Sätze mit den echten Zahlen, einer pro Karte. Unter 30
+ * Antworten gibt es keinen Satz. Vergleiche (höher/niedriger) werden aus den
+ * Zahlen abgeleitet und nie fest verdrahtet.
+ */
+export function buildStatements(
+  stats: InternalStats,
+  outcomeRounds: readonly OutcomeRoundStats[],
+): Record<StatementKey, string | null> {
+  const enough = (base: number) => base >= SHARE_PERCENT_MIN_BASE;
+  const activation = stats.politicalActivation;
+  const round = outcomeRounds[outcomeRounds.length - 1];
+  const result: Record<StatementKey, string | null> = {
+    efficacy: null,
+    powerlessness: null,
+    briefweg: null,
+    writeAgain: null,
+    rating: null,
+    qualitySend: null,
+    firstTimers: null,
+    topCategory: null,
+  };
+
+  const efficacy = impactRate(
+    activation.selfEfficacyPositiveCount,
+    activation.selfEfficacyAnswerCount,
+  );
+  if (enough(efficacy.base)) {
+    result.efficacy = `${percentText(efficacy)} der Antwortenden fühlen sich durch den Brief eher in der Lage, sich politisch einzubringen (${ofText(efficacy)} Antworten, „unsicher“ eingerechnet).`;
+  }
+
+  const often = activation.efficacyByPowerlessness.often;
+  const othersAnswered =
+    activation.efficacyByPowerlessness.sometimes.answered +
+    activation.efficacyByPowerlessness.rarely.answered +
+    activation.efficacyByPowerlessness.never.answered;
+  const othersPositive =
+    activation.efficacyByPowerlessness.sometimes.positive +
+    activation.efficacyByPowerlessness.rarely.positive +
+    activation.efficacyByPowerlessness.never.positive;
+  const oftenRate = impactRate(often.positive, often.answered);
+  const othersRate = impactRate(othersPositive, othersAnswered);
+  if (enough(oftenRate.base) && enough(othersRate.base)) {
+    result.powerlessness = `Wer sich im Alltag oft politisch ohnmächtig fühlt, fühlt sich nach dem Brief zu ${percentText(oftenRate)} eher handlungsfähig (${ofText(oftenRate)}), bei allen anderen zu ${percentText(othersRate)} (${ofText(othersRate)}). Der Anteil ist bei „oft“ ${comparison(oftenRate, othersRate)}.`;
+  }
+
+  if (round) {
+    const politics = buildImpactSummary(stats, outcomeRounds).politics;
+    const sentence = politics ? politicsReactionSentence(politics) : null;
+    if (sentence) result.briefweg = sentence;
+
+    const again = impactRate(
+      round.writeAgainCounts.yes + round.writeAgainCounts.already_did,
+      round.writeAgainBase,
+    );
+    if (enough(again.base)) {
+      result.writeAgain = `${percentText(again)} der Rückmeldenden mit fertigem Formular würden gern noch einen Brief schreiben oder haben es schon getan (${ofText(again)}).`;
+    }
+  }
+
+  const topShare = impactRate(
+    stats.ratingDistribution[4] + stats.ratingDistribution[5],
+    stats.reviewCount,
+  );
+  if (enough(stats.reviewCount)) {
+    result.rating = `Im Schnitt ${formatDecimal(stats.averageRating)} von 5 Sternen, ${percentText(topShare)} geben 4 oder 5 Sterne (${ofText(topShare)} Bewertungen).`;
+  }
+
+  const high = sumBands(stats, [4, 5]);
+  const low = sumBands(stats, [1, 2]);
+  if (enough(high.base) && enough(low.base)) {
+    result.qualitySend = `Bei 4 bis 5 Sternen schicken ${percentText(high)} den Brief ab (${ofText(high)}), bei 1 bis 2 Sternen ${percentText(low)} (${ofText(low)}). Das ist ein Zusammenhang, kein Beleg für eine Ursache.`;
+  }
+
+  const firstTimers = impactRate(
+    stats.letterHistory.neverBeforeCount,
+    stats.letterHistory.answerCount,
+  );
+  if (enough(firstTimers.base)) {
+    result.firstTimers = `${percentText(firstTimers)} hatten vor Brief-nach-Berlin noch nie einen Brief an Politiker:innen geschrieben (${ofText(firstTimers)} Antworten).`;
+  }
+
+  const top = Object.entries(stats.letterSignals.categoryCounts).sort(
+    (a, b) => b[1] - a[1],
+  )[0];
+  if (top && enough(stats.letterSignals.signalCount)) {
+    const topRate = impactRate(top[1], stats.letterSignals.signalCount);
+    result.topCategory = `Häufigstes Thema ist ${topicCategoryLabel(top[0])} mit ${percentText(topRate)} der Themensignale (${ofText(topRate)}).`;
+  }
+
+  return result;
 }

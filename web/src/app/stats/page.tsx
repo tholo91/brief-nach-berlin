@@ -43,6 +43,7 @@ import {
 } from "@/lib/internalStats/aggregate";
 import {
   activeFilterChips,
+  buildImpactSummary,
   buildStatsHref,
   bucketCategoryTimeline,
   bucketCounterTimeline,
@@ -55,6 +56,7 @@ import {
   isSmallBasis,
   parseStatsFilter,
   peakPoint,
+  politicsReactionSentence,
   SHARE_PERCENT_MIN_BASE,
   shareBaseNote,
   shareParts,
@@ -72,6 +74,12 @@ import {
   POLITICAL_SELF_EFFICACY_LABELS,
   POLITICAL_SELF_EFFICACY_VALUES,
 } from "@/lib/feedback/politicalActivation";
+import {
+  FACT_CHECK_FEEDBACK_TAGS,
+  NEGATIVE_FEEDBACK_TAGS,
+  POSITIVE_FEEDBACK_TAGS,
+  type FeedbackTagSlug,
+} from "@/lib/feedback/feedbackTags";
 import { AGE_GROUP_LABELS, AGE_GROUP_VALUES } from "@/lib/feedback/ageGroup";
 import {
   LETTER_HISTORY_LABELS,
@@ -590,17 +598,19 @@ function ShareLine({
   );
 }
 
-const positiveSignals = [
-  { key: "sofort_verschickbar", label: "Sofort verschickbar" },
-  { key: "argumente_stark", label: "Argumente stark" },
-  { key: "tonfall_passt", label: "Tonfall passt" },
-] as const;
+const FEEDBACK_TAG_LABELS: Record<FeedbackTagSlug, string> = Object.fromEntries(
+  [...NEGATIVE_FEEDBACK_TAGS, ...POSITIVE_FEEDBACK_TAGS, ...FACT_CHECK_FEEDBACK_TAGS].map(
+    (tag) => [tag.slug, tag.label],
+  ),
+) as Record<FeedbackTagSlug, string>;
 
-const frictionSignals = [
-  { key: "anliegen_verfehlt", label: "Anliegen verfehlt" },
-  { key: "klingt_nicht_nach_mir", label: "Klingt nicht nach mir" },
-  { key: "zu_generisch", label: "Zu generisch" },
-] as const;
+function tagSignals<const T extends readonly FeedbackTagSlug[]>(slugs: T) {
+  return slugs.map((key) => ({ key, label: FEEDBACK_TAG_LABELS[key] }));
+}
+
+const positiveSignals = tagSignals(["sofort_verschickbar", "argumente_stark", "tonfall_passt"]);
+
+const frictionSignals = tagSignals(["anliegen_verfehlt", "klingt_nicht_nach_mir", "zu_generisch"]);
 
 function sumRatingBreakdowns(
   stats: InternalStats,
@@ -1044,11 +1054,14 @@ export default async function InternalStatsPage({ searchParams }: InternalStatsP
       `Häufigstes Thema: ${topicCategoryLabel(topCategory[0])} mit ${shareParts(topCategory[1], stats.letterSignals.signalCount).shareText} % der ${formatNumber(stats.letterSignals.signalCount)} freiwillig geteilten Themensignale.`,
     );
   }
-  if (activation.selfEfficacyDirectionalCount > 0) {
+  const impact = buildImpactSummary(stats, outcomes);
+  if (impact.writers.efficacy.base > 0) {
     quoteLines.push(
-      `${formatDecimal(activation.selfEfficacyPositiveRatePercent)} % der Antwortenden fühlen sich durch den Brief eher in der Lage, sich politisch einzubringen (${formatNumber(activation.selfEfficacyPositiveCount)} von ${formatNumber(activation.selfEfficacyDirectionalCount)} gerichteten Antworten).`,
+      `${impact.writers.efficacy.percent} % der Antwortenden fühlen sich durch den Brief eher in der Lage, sich politisch einzubringen (${formatNumber(impact.writers.efficacy.count)} von ${formatNumber(impact.writers.efficacy.base)} Antworten).`,
     );
   }
+  const politicsSentence = impact.politics ? politicsReactionSentence(impact.politics) : null;
+  if (politicsSentence) quoteLines.push(politicsSentence);
   if (counterPeak) {
     quoteLines.push(
       `Stärkster Abschnitt (${granularityLabel.replace("pro ", "")}): ${counterPeak.label} mit ${formatNumber(counterPeak.count)} Briefen.`,

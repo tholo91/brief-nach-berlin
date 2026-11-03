@@ -25,6 +25,7 @@ type WriteAgain = (typeof WRITE_AGAIN_VALUES)[number];
 
 /** Spalten aus letter_outcomes. Die E-Mail-Adresse wird bewusst nie gelesen. */
 export type InternalOutcomeRow = {
+  id?: string | number | null;
   cohort: string | null;
   created_at: string | null;
   completed: boolean | null;
@@ -45,6 +46,7 @@ export type InternalOutcomeRow = {
 };
 
 export const OUTCOME_ROW_COLUMNS = [
+  "id",
   "cohort",
   "created_at",
   "completed",
@@ -119,7 +121,14 @@ export const OUTCOME_LABELS: {
   },
 };
 
+/**
+ * Von Thomas ausgewählte Zitate (Zeilen-IDs aus letter_outcomes). Leer, bis er
+ * welche aussucht; nur Zeilen mit Freigabe und Text werden je angezeigt.
+ */
+export const FEATURED_OUTCOME_QUOTES: readonly string[] = [];
+
 export type OutcomeFreeText = {
+  id?: string;
   text: string;
   consent: boolean;
   displayName: string | null;
@@ -360,6 +369,11 @@ export function aggregateOutcomes(
         stats.channelBase += 1;
         for (const channel of channels) stats.channelCounts[channel] += 1;
       }
+      // Nur wer den Brief abgeschickt hat: so ist der Wert mit den Reviews vergleichbar.
+      if (isOneOf(POLITICAL_SELF_EFFICACY_VALUES, row.political_self_efficacy)) {
+        stats.selfEfficacy.outcomesBase += 1;
+        stats.selfEfficacy.outcomes[row.political_self_efficacy] += 1;
+      }
       if (isOneOf(REPLY_ADDRESSED_VALUES, row.reply_addressed)) {
         stats.addressedBase += 1;
         stats.addressedCounts[row.reply_addressed] += 1;
@@ -392,11 +406,6 @@ export function aggregateOutcomes(
       stats.writeAgainCounts[row.write_again] += 1;
     }
 
-    if (isOneOf(POLITICAL_SELF_EFFICACY_VALUES, row.political_self_efficacy)) {
-      stats.selfEfficacy.outcomesBase += 1;
-      stats.selfEfficacy.outcomes[row.political_self_efficacy] += 1;
-    }
-
     if (row.call_ok === true) stats.callOkCount += 1;
   }
   stats.path.addressedBase = stats.addressedBase;
@@ -421,6 +430,7 @@ export function aggregateOutcomes(
       const timestamp = row.completed_at ?? row.created_at;
       const day = timestamp?.slice(0, 10) ?? null;
       return {
+        ...(row.id !== null && row.id !== undefined ? { id: String(row.id) } : {}),
         text: trimmedOrNull(row.body) as string,
         consent,
         displayName: consent ? trimmedOrNull(row.display_name) : null,
@@ -458,4 +468,23 @@ function effectiveState(
   if (click === "yes") return { sent: true, notSent: false, replied: true, method: null };
   if (click === "no") return { sent: true, notSent: false, replied: false, method: null };
   return { sent: false, notSent: click === "not_sent", replied: false, method: null };
+}
+
+export type FeaturedQuote = { id: string; text: string; name: string };
+
+/** Nur freigegebene Texte mit Inhalt aus der Auswahlliste; ohne Anzeigename "anonym". */
+export function featuredQuotes(
+  rounds: readonly OutcomeRoundStats[],
+  ids: readonly string[] = FEATURED_OUTCOME_QUOTES,
+): FeaturedQuote[] {
+  if (ids.length === 0) return [];
+  const quotes: FeaturedQuote[] = [];
+  for (const round of rounds) {
+    for (const entry of round.freeTexts) {
+      if (!entry.id || !ids.includes(entry.id)) continue;
+      if (!entry.consent || entry.text.trim() === "") continue;
+      quotes.push({ id: entry.id, text: entry.text, name: entry.displayName ?? "anonym" });
+    }
+  }
+  return quotes.sort((a, b) => ids.indexOf(a.id) - ids.indexOf(b.id));
 }

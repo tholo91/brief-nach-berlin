@@ -26,7 +26,9 @@ export function StatsPie({ stats, mode }: StatsPieProps) {
     offset += percent(stats[segment.key], total);
     return `${segment.color} ${start}% ${offset}%`;
   });
-  const sentParts = shareParts(stats.sentCount, total);
+  // Mitte wie die Kennzahl oben: verschickt / (verschickt + nicht verschickt), ohne "keine Angabe".
+  const knownTotal = stats.sentCount + stats.notSentCount;
+  const sentParts = shareParts(stats.sentCount, knownTotal);
 
   return (
     <div className="grid items-center gap-8 sm:grid-cols-[190px_1fr]">

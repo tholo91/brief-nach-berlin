@@ -1257,6 +1257,20 @@ Plans:
 Plans:
 - [ ] TBD (promote with /gsd-review-backlog when ready)
 
+
+### Phase 999.51: PLZ → MdL über amtliche Wahlkreisdaten (BACKLOG)
+
+**Goal:** PLZ → Landtagswahlkreis in allen Ländern so verlässlich wie PLZ → Bundestagswahlkreis zuordnen; im MdL-Pfad steht generell der Direkt-MdL zuerst.
+**Warum:** Der heutige Namensvergleich lässt Lücken (Sachsen-Anhalt 93 von 219 PLZ) und erzeugt falsche Treffer (dort 20 von 93 ohne Überschneidung mit der amtlichen Karte).
+**Größe:** L
+**Story:** `.planning/phases/999.51-plz-zu-mdl-ueber-amtliche-wahlkreisdaten/999.51-STORY.md`
+**Recherche:** `.planning/research/plz-zu-mdl-2026-11-02.md`
+**Requirements:** TBD
+**Plans:** 0 plans
+
+Plans:
+- [ ] TBD (promote with /gsd-review-backlog when ready)
+
 ## Progress
 
 **Execution Order:**

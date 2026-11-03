@@ -216,10 +216,10 @@ function Section({
 /** Hinweiszeile mit (i) für Karten, deren Titel nicht selbst die Frage trägt. */
 function InfoNote({ title, question }: { title: string; question: StatQuestionKey }) {
   return (
-    <p className="flex items-center gap-1 font-body text-xs text-warmgrau/60">
+    <div className="flex items-center gap-1 font-body text-xs text-warmgrau/60">
       Frage dazu im Wortlaut
       <InfoFor title={title} question={question} />
-    </p>
+    </div>
   );
 }
 
@@ -811,7 +811,7 @@ function ImpactBlock({
             rate={writers.sendRate}
             mode={mode}
             unit="Antworten"
-            label="schicken den Brief ab (oder gleich)"
+            label="sagen, ihr Brief geht raus"
             info={{ title: "Brief abgeschickt", question: "sendSignal" }}
             baselineRate={baselineImpact?.writers.sendRate}
           />
@@ -860,7 +860,7 @@ function ImpactBlock({
                     </p>
                     <div className="mt-2 flex items-start justify-between gap-2">
                       <p className="font-body text-sm leading-snug text-waldgruen-dark">
-                        davon gingen konkret oder teilweise auf das Anliegen ein
+                        der Reaktionen mit Angabe gingen konkret oder teilweise auf das Anliegen ein
                       </p>
                       <InfoFor title="Auf das Anliegen eingegangen" question="outcomeAddressed" />
                     </div>
@@ -870,7 +870,7 @@ function ImpactBlock({
                 )}
               </div>
               <p className="mt-4 font-body text-xs leading-relaxed text-warmgrau/60">
-                Selbstauskunft aus der Rückmeldungsrunde {politics.roundLabel}, Rücklauf{" "}
+                Selbstauskunft aus der {politics.roundLabel}, Rücklauf{" "}
                 {formatNumber(politics.respondentCount)} von {formatNumber(politics.deliveredCount)}, unabhängig vom Filter.
               </p>
             </>

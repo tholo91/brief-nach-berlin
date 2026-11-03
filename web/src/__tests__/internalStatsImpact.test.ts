@@ -144,6 +144,18 @@ describe("buildStatements", () => {
       FETCHED_AT,
     );
     expect(buildStatements(flipped, []).powerlessness).toContain("niedriger");
+
+    const close = aggregateInternalStats(
+      [
+        ...many(28, { political_self_efficacy: "clearly_yes", political_powerlessness_frequency: "often" }),
+        ...many(2, { political_self_efficacy: "no", political_powerlessness_frequency: "often" }),
+        ...many(27, { political_self_efficacy: "clearly_yes", political_powerlessness_frequency: "never" }),
+        ...many(3, { political_self_efficacy: "no", political_powerlessness_frequency: "never" }),
+      ],
+      10,
+      FETCHED_AT,
+    );
+    expect(buildStatements(close, []).powerlessness).toContain("etwa gleich hoch");
   });
 });
 

@@ -122,10 +122,14 @@ export const OUTCOME_LABELS: {
 };
 
 /**
- * Von Thomas ausgewählte Zitate (Zeilen-IDs aus letter_outcomes). Leer, bis er
- * welche aussucht; nur Zeilen mit Freigabe und Text werden je angezeigt.
+ * Von Thomas ausgewählte Zitate (Zeilen-IDs aus letter_outcomes, freigegeben am
+ * 03.11.2026); nur Zeilen mit Freigabe und Text werden je angezeigt.
  */
-export const FEATURED_OUTCOME_QUOTES: readonly string[] = [];
+export const FEATURED_OUTCOME_QUOTES: readonly string[] = [
+  "733ec28b-09f2-444a-aae8-b61cf7b40588",
+  "9571490f-76ae-425a-860a-e7638b78fa87",
+  "c7f6053a-555b-44b1-9625-dc290652c43d",
+];
 
 export type OutcomeFreeText = {
   id?: string;

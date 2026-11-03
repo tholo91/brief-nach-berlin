@@ -520,10 +520,11 @@ function ofText(rate: ImpactRate): string {
   return `${formatNumber(rate.count)} von ${formatNumber(rate.base)}`;
 }
 
-function comparison(a: ImpactRate, b: ImpactRate): "höher" | "niedriger" | "gleich hoch" {
-  const left = a.percent ?? 0;
-  const right = b.percent ?? 0;
-  return left > right ? "höher" : left < right ? "niedriger" : "gleich hoch";
+// Unter 5 Prozentpunkten Abstand kein "höher"/"niedriger", sonst wirkt Rauschen wie ein Befund.
+function comparison(a: ImpactRate, b: ImpactRate): "höher" | "niedriger" | "etwa gleich hoch" {
+  const diff = (a.percent ?? 0) - (b.percent ?? 0);
+  if (Math.abs(diff) < 5) return "etwa gleich hoch";
+  return diff > 0 ? "höher" : "niedriger";
 }
 
 function sumBands(
@@ -622,12 +623,16 @@ export function buildStatements(
     result.firstTimers = `${percentText(firstTimers)} hatten vor Brief-nach-Berlin noch nie einen Brief an Politiker:innen geschrieben (${ofText(firstTimers)} Antworten).`;
   }
 
-  const top = Object.entries(stats.letterSignals.categoryCounts).sort(
+  const [top, second] = Object.entries(stats.letterSignals.categoryCounts).sort(
     (a, b) => b[1] - a[1],
-  )[0];
+  );
   if (top && enough(stats.letterSignals.signalCount)) {
     const topRate = impactRate(top[1], stats.letterSignals.signalCount);
-    result.topCategory = `Häufigstes Thema ist ${topicCategoryLabel(top[0])} mit ${percentText(topRate)} der Themensignale (${ofText(topRate)}).`;
+    const secondRate = second ? impactRate(second[1], stats.letterSignals.signalCount) : null;
+    result.topCategory =
+      secondRate && (topRate.percent ?? 0) - (secondRate.percent ?? 0) < 2
+        ? `${topicCategoryLabel(top[0])} und ${topicCategoryLabel(second[0])} liegen mit je rund ${percentText(topRate)} der Themensignale gleichauf (${formatNumber(stats.letterSignals.signalCount)} Signale).`
+        : `Häufigstes Thema ist ${topicCategoryLabel(top[0])} mit ${percentText(topRate)} der Themensignale (${ofText(topRate)}).`;
   }
 
   return result;

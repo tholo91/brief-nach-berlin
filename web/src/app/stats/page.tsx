@@ -1150,17 +1150,17 @@ export default async function InternalStatsPage({ searchParams }: InternalStatsP
   const quoteLines: string[] = [
     `Stand ${formatDate(stats.fetchedAt)}: ${formatNumber(stats.letterCount)} Briefe wurden über Brief-nach-Berlin erstellt.`,
   ];
-  if (stats.knownSendCount > 0) {
+  if (stats.knownSendCount >= SHARE_PERCENT_MIN_BASE) {
     quoteLines.push(
       `${formatDecimal(stats.sendRatePercent)} % der Nutzer:innen, die die Versandfrage beantwortet haben, geben an, den Brief verschickt zu haben oder ihn unmittelbar zu verschicken (${formatNumber(stats.sentCount)} von ${formatNumber(stats.knownSendCount)}).`,
     );
   }
-  if (stats.reviewCount > 0) {
+  if (stats.reviewCount >= SHARE_PERCENT_MIN_BASE) {
     quoteLines.push(
       `Die generierten Briefe werden im Schnitt mit ${formatDecimal(stats.averageRating)} von 5 Sternen bewertet (${formatNumber(stats.reviewCount)} Bewertungen).`,
     );
   }
-  if (topCategory && stats.letterSignals.signalCount > 0) {
+  if (topCategory && stats.letterSignals.signalCount >= SHARE_PERCENT_MIN_BASE) {
     quoteLines.push(
       `Häufigstes Thema: ${topicCategoryLabel(topCategory[0])} mit ${shareParts(topCategory[1], stats.letterSignals.signalCount).shareText} % der ${formatNumber(stats.letterSignals.signalCount)} freiwillig geteilten Themensignale.`,
     );
@@ -1169,11 +1169,7 @@ export default async function InternalStatsPage({ searchParams }: InternalStatsP
   const baselineImpact = baseline ? buildImpactSummary(baseline, []) : null;
   const statements = buildStatements(stats, outcomes);
   const voices = featuredQuotes(outcomes);
-  if (impact.writers.efficacy.base > 0) {
-    quoteLines.push(
-      `${impact.writers.efficacy.percent} % der Antwortenden fühlen sich durch den Brief eher in der Lage, sich politisch einzubringen (${formatNumber(impact.writers.efficacy.count)} von ${formatNumber(impact.writers.efficacy.base)} Antworten).`,
-    );
-  }
+  if (statements.efficacy) quoteLines.push(statements.efficacy);
   const politicsSentence = impact.politics ? politicsReactionSentence(impact.politics) : null;
   if (politicsSentence) quoteLines.push(politicsSentence);
   if (counterPeak) {

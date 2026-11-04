@@ -27,7 +27,7 @@ export function MdbLookupCard() {
   const setShared = useMdbContactContext()?.setResult;
 
   useEffect(() => {
-    if (state.status === "done") setShared?.({ plz: state.plz, contacts: state.contacts });
+    setShared?.(state.status === "done" ? { plz: state.plz, contacts: state.contacts } : null);
   }, [state, setShared]);
 
   useEffect(() => {

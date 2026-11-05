@@ -106,6 +106,7 @@ export function buildLetterEmailText(data: SendLetterEmailParams): string {
   const copy = getEmailCopy(data.locale);
   const parts = [
     normalizeLetterClosing(data.letterText),
+    ...(data.recipientKind === "mdb_later" ? [] : [`${copy.nextSteps}:\n${copy.stepsText.map((step, index) => `${index + 1}. ${step}`).join("\n")}`]),
     `${copy.greeting}\n\nThomas\n${copy.initiative} ${FOUNDER_INITIATIVE_URL}`,
   ];
   if (data.recipientKind === "landesregierung" && data.governmentSource?.addressee === "head" && data.governmentSource.addressLines) {

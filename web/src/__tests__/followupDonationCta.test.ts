@@ -148,7 +148,7 @@ describe("follow-up mail is shorter and calmer", () => {
     const html = buildFollowupHtml({ token: "signed-token" }).html;
     const small = html.slice(html.indexOf("max-width: 600px"), html.indexOf("max-width: 480px"));
 
-    expect(html).toContain('<span class="bnb-mob" style="display:none;">Brief-nach-Berlin unterstützen</span>');
+    expect(html).toContain('<span class="bnb-mob" style="display:none;">Damit das Tool kostenlos bleibt</span>');
     expect(small).toMatch(/\.bnb-support-photo \{[^}]*border-radius: 50% !important;/);
     expect(small).toContain(".bnb-support-actions { clear: both !important;");
     expect(small).toContain(".bnb-support-cta { display: block !important; width: auto !important; }");
@@ -204,7 +204,7 @@ describe("follow-up mail is shorter and calmer", () => {
 
   it("uses the donation body Thomas approved", () => {
     expect(SUPPORT_EMAIL_COPY.de.followupBody).toBe(
-      "Ich betreibe Brief-nach-Berlin allein in meiner Freizeit und zahle KI und Server bisher selbst. Schon 5 € helfen.",
+      "Ich baue und betreibe Brief-nach-Berlin allein und ehrenamtlich in meiner Freizeit. Wenn dir das Tool beim Schreiben geholfen hat, freue ich mich über deine Unterstützung. Schon 5 € helfen mir, die laufenden Kosten zu decken.",
     );
     for (const locale of ["de", "en", "tr"] as const) {
       expect(SUPPORT_EMAIL_COPY[locale].followupBody).not.toMatch(/\bwir\b/i);

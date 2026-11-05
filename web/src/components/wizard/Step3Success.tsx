@@ -1976,7 +1976,7 @@ export function Step3Success({
               )}
             </button>
             <p className="text-xs text-warmgrau/60 mt-3 text-center">
-              Du siehst den Entwurf zuerst und kannst ihn anpassen, bevor du ihn abschickst. Es gelten die{" "}
+              Du siehst den Entwurf zuerst und kannst ihn anpassen. Anschließend schreibst du ihn von Hand und verschickst ihn per Post. Es gelten die{" "}
               <Link href="/nutzungsbedingungen" prefetch={false} className="underline hover:text-warmgrau">
                 Nutzungsbedingungen
               </Link>
@@ -2034,7 +2034,7 @@ export function Step3Success({
               )}
             </button>
             <p className="mt-2 text-center font-body text-xs text-warmgrau/60">
-              Du siehst den Entwurf und kannst ihn anpassen. Es gelten die{" "}
+              Du passt den Entwurf an, schreibst ihn von Hand und verschickst ihn selbst per Post. Es gelten die{" "}
               <Link href="/nutzungsbedingungen" prefetch={false} className="underline hover:text-warmgrau">
                 Nutzungsbedingungen
               </Link>

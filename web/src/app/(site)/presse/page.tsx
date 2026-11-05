@@ -463,6 +463,22 @@ export default async function PressePage() {
                 Wie Brief-nach-Berlin KI einsetzt
               </Link>
             </li>
+            <li>
+              <Link
+                href="/warum"
+                className="font-body text-waldgruen-dark underline decoration-waldgruen/30 underline-offset-4 hover:decoration-waldgruen"
+              >
+                Die Geschichte hinter Brief-nach-Berlin
+              </Link>
+            </li>
+            <li>
+              <Link
+                href="/ngo-briefkampagne"
+                className="font-body text-waldgruen-dark underline decoration-waldgruen/30 underline-offset-4 hover:decoration-waldgruen"
+              >
+                Briefkampagnen für NGOs
+              </Link>
+            </li>
           </ul>
         </div>
       </div>

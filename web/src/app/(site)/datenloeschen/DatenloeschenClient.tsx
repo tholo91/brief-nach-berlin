@@ -241,11 +241,15 @@ export function DatenloeschenClient({ view }: { view: DatenloeschenView }) {
   })();
 
   return (
-    <div className="bg-white border border-waldgruen/15 rounded-2xl px-6 py-8 sm:px-10 sm:py-10 shadow-sm">
+    <div className="relative overflow-hidden bg-white border border-waldgruen/15 rounded-2xl px-6 py-8 sm:px-10 sm:py-10 shadow-sm">
+      <Image src="/images/img-fade-content.webp" alt="" fill priority className="object-cover object-center opacity-25" />
+      <div className="absolute inset-0 bg-white/70" aria-hidden="true" />
+      <div className="relative">
       <div role="status" aria-live="polite">
         {body}
       </div>
       <PersonalLine />
+      </div>
     </div>
   );
 }

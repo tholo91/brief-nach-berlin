@@ -1,5 +1,6 @@
 import { buildFollowupHtml } from "@/lib/email/buildFollowupHtml";
 import type { SendLetterEmailParams } from "@/lib/email/sendLetterEmail";
+import { SUPPORT_CONTENT } from "@/lib/support-content";
 
 const ANCHOR = "#wahlkreisbuero";
 const mdb = {
@@ -34,13 +35,31 @@ describe("buildFollowupHtml - Gut zu wissen", () => {
   it("steht nach Gruß und Unterschrift, kompakt nur mit den Links für nach dem Brief", () => {
     const { html } = buildFollowupHtml(mdb);
     const signoff = html.indexOf("Sign-off paragraph");
-    expect(signoff).toBeLessThan(html.indexOf("Gut zu wissen"));
-    expect(html.indexOf("Gut zu wissen")).toBeLessThan(html.indexOf(ANCHOR));
+    expect(signoff).toBeLessThan(html.indexOf(ANCHOR));
     expect(html).toContain("Was du noch tun kannst</a>");
     expect(html).toContain("/andere-tools");
     expect(html).toContain("Schreib mir gern bei Fragen + Ideen</a>");
     expect(html).not.toContain("Deine Eingaben nochmal einsehen");
     expect(html).not.toContain("/tipps");
+    expect(html).not.toContain("Gut zu wissen");
+    expect(html).toContain("Was du noch tun kannst</a>");
+    expect(html).not.toContain("border-bottom:1px solid #EDEAE6");
+    expect(buildFollowupHtml(mdb).text).not.toContain("Gut zu wissen");
+    expect(buildFollowupHtml(mdb).text).toContain("Was du noch tun kannst");
+  });
+
+  it.each([
+    ["de", "Etwa 100 € monatlich", "25–40 € für Tools", "Damit Brief-nach-Berlin kostenlos bleibt*"],
+    ["en", "Around €100 per month", "€25–40 for tools", "Support Brief-nach-Berlin*"],
+    ["tr", "ayda yaklaşık 100 €", "25–40 €", "Brief-nach-Berlin&#39;i destekle*"],
+  ] as const)("zeigt Spendenhinweis und Kostenerklärung in %s", (locale, amount, tools, heading) => {
+    const r = buildFollowupHtml({ token: "t", locale });
+    expect(r.html).toContain(heading);
+    expect(r.html).toContain(amount);
+    expect(r.html).toContain(tools);
+    expect(r.html).toContain(SUPPORT_CONTENT.ctas.donate.href);
+    expect(r.text).toContain(`${amount}`);
+    expect(r.text).toContain(SUPPORT_CONTENT.ctas.donate.href);
   });
 
   it("ungültige PLZ fällt aus dem Link", () => {
@@ -60,9 +79,11 @@ describe("buildFollowupHtml - Gut zu wissen", () => {
     const r = buildFollowupHtml({ token: "t", politicianName: "Anna Müller", recipientKind: kind });
     expect(r.html).not.toContain(ANCHOR);
     expect(r.html).not.toContain("/bundestag-besuch-kostenlos");
-    expect(r.html).toContain("Gut zu wissen");
+    expect(r.html).not.toContain("Gut zu wissen");
+    expect(r.html).toContain("Was du noch tun kannst</a>");
     expect(r.html).toContain('/aktiv-werden" target="_blank"');
     expect(r.text).not.toContain(ANCHOR);
+    expect(r.text).not.toContain("Gut zu wissen");
     expect(r.text).toContain("/aktiv-werden");
   });
 

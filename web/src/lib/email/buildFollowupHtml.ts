@@ -17,6 +17,7 @@ import {
   buildSocialFollowHtml,
   buildSocialFollowText,
 } from "./buildSocialFollowHtml";
+import { isWinterFollowupActive } from "@/lib/winter-action";
 
 export interface BuildFollowupParams {
   locale?: Locale;
@@ -59,6 +60,45 @@ export function buildFollowupHtml(params: BuildFollowupParams): FollowupRender {
   const emailCopy = getEmailCopy(locale);
   const copy = emailCopy.followup;
   const supportCopy = SUPPORT_EMAIL_COPY[locale];
+  const winterAction = isWinterFollowupActive();
+  const winterUrl = `${base}/weihnachten`;
+  const winterCopy = {
+    de: {
+      heading: "Dieses Weihnachten teile ich meine Reichweite",
+      mobileHeading: "Im Winter gemeinsam helfen",
+      body: "Ich sammle sonst Spenden für Brief-nach-Berlin. Diesen Winter unterstütze ich lieber Projekte, die dringender Unterstützung brauchen. Hier findest du meine Auswahl.",
+      button: "Jetzt unterstützen",
+      note: "Im Winter leite ich meine Spendenbitte an ausgewählte Hilfsprojekte weiter.",
+      status: "Die Spendenseite bündelt ausgewählte Hilfsprojekte.",
+    },
+    en: {
+      heading: "This Christmas, I’m sharing my reach",
+      mobileHeading: "Help others this winter",
+      body: "I usually ask for donations to support Brief-nach-Berlin. This winter, I’d rather support projects facing urgent needs. Here’s my selection.",
+      button: "Support winter projects",
+      note: "This winter, I’m directing my donation request to selected aid projects.",
+      status: "The page brings together selected aid projects.",
+    },
+    tr: {
+      heading: "Bu Noel erişimimi paylaşıyorum",
+      mobileHeading: "Bu kış birlikte destek olalım",
+      body: "Normalde Brief-nach-Berlin için bağış çağrısı yapıyorum. Bu kış, acil desteğe ihtiyaç duyan projelere öncelik vermek istiyorum. Seçtiklerimi burada bulabilirsin.",
+      button: "Kış projelerini destekle",
+      note: "Bu kış bağış çağrımı seçtiğim yardım projelerine yönlendiriyorum.",
+      status: "Bu sayfada seçilmiş yardım projeleri yer alıyor.",
+    },
+  }[locale];
+  const winterSupportCopy = winterAction
+    ? {
+        ...supportCopy,
+        heading: winterCopy.heading,
+        followupHeadingMobile: winterCopy.mobileHeading,
+        followupBody: winterCopy.body,
+        compactButton: winterCopy.button,
+        button: winterCopy.button,
+        followupCostNote: winterCopy.note,
+      }
+    : supportCopy;
   const subject = emailCopy.feedbackSubject;
   const deleteUrl = params.deleteUrl ?? `${base}/datenloeschen`;
   const name = params.politicianName?.trim() ?? "";
@@ -83,18 +123,22 @@ export function buildFollowupHtml(params: BuildFollowupParams): FollowupRender {
     `4 Sterne: ${base}/feedback?r=4&t=${token}&s=2`,
     `5 Sterne: ${base}/feedback?r=5&t=${token}&s=2`,
     ``,
-    supportCopy.heading,
-    supportCopy.followupBody,
-    `${supportCopy.compactButton}: ${SUPPORT_CONTENT.ctas.donate.href}`,
+    winterAction ? winterSupportCopy.heading : `${winterSupportCopy.heading}*`,
+    winterSupportCopy.followupBody,
+    `${winterSupportCopy.compactButton}: ${winterAction ? winterUrl : SUPPORT_CONTENT.ctas.donate.href}`,
     ``,
     copy.thanks,
     ``,
     `Thomas`,
     `${emailCopy.initiative} ${FOUNDER_INITIATIVE_URL}`,
     ``,
-    buildGoodToKnowText(goodToKnow, fullName, base),
+    buildGoodToKnowText(goodToKnow, fullName, base, false),
     ``,
     `--`,
+    ...(winterAction ? [] : [
+      supportCopy.followupCostNote,
+      `${supportCopy.compactButton}: ${SUPPORT_CONTENT.ctas.donate.href}`,
+    ]),
     buildSocialFollowText(locale),
     `${copy.privacy}: ${copy.oneOff} ${base}/datenschutz`,
     `${copy.delete}: ${deleteUrl}`,
@@ -180,13 +224,21 @@ export function buildFollowupHtml(params: BuildFollowupParams): FollowupRender {
             <td class="bnb-pad" style="padding:0 32px 20px;background-color:#ffffff;">
               ${buildFinancingNoticeHtml(
                 {
-                  ...supportCopy,
-                  headingMobile: supportCopy.followupHeadingMobile,
-                  body: supportCopy.followupBody,
-                  status: supportCopy.followupStatus,
+                  ...winterSupportCopy,
+                  heading: winterAction ? winterSupportCopy.heading : `${winterSupportCopy.heading}*`,
+                  headingMobile: winterAction ? winterSupportCopy.followupHeadingMobile : `${winterSupportCopy.followupHeadingMobile}*`,
+                  body: winterSupportCopy.followupBody,
+                  status: winterAction ? winterCopy.status : supportCopy.followupStatus,
                 },
-                { src: `${base}${SUPPORT_CONTENT.founder.cutoutPath}`, alt: SUPPORT_CONTENT.founder.name },
-                { showHeart: true, portraitPlacement: "corner" },
+                {
+                  src: `${base}${winterAction ? "/images/thomas-weihnachten.png" : SUPPORT_CONTENT.founder.cutoutPath}`,
+                  alt: SUPPORT_CONTENT.founder.name,
+                },
+                {
+                  showHeart: !winterAction,
+                  portraitPlacement: "corner",
+                  ...(winterAction ? { donationUrl: winterUrl, learnMoreUrl: winterUrl } : {}),
+                },
               )}
             </td>
           </tr>
@@ -206,7 +258,7 @@ export function buildFollowupHtml(params: BuildFollowupParams): FollowupRender {
             </td>
           </tr>
 
-          ${buildGoodToKnowHtml(goodToKnow, escapeHtml(fullName), { compact: true, baseUrl: base })}
+          ${buildGoodToKnowHtml(goodToKnow, escapeHtml(fullName), { compact: true, baseUrl: base, heading: false })}
 
           <!-- Airmail stripe before footer -->
           <tr>
@@ -216,6 +268,7 @@ export function buildFollowupHtml(params: BuildFollowupParams): FollowupRender {
           <!-- Footer, same structure as the letter mail -->
           <tr>
             <td class="bnb-pad" style="padding:20px 32px 24px;background-color:#FAF8F5;text-align:center;">
+              ${winterAction ? "" : `<p style="margin:0 0 8px;font-family:Georgia,'Times New Roman',serif;font-size:12px;color:#888888;line-height:1.6;">${supportCopy.followupCostNote}</p><p style="margin:0 0 8px;font-family:Georgia,'Times New Roman',serif;font-size:12px;color:#888888;line-height:1.5;"><a href="${SUPPORT_CONTENT.ctas.donate.href}" target="_blank" rel="noopener noreferrer" style="color:#888888;text-decoration:underline;">${supportCopy.compactButton}</a></p>`}
               ${buildSocialFollowHtml({ locale, baseUrl: base, marginTop: 0 })}
               <p style="margin:10px 0 0;font-family:Georgia,'Times New Roman',serif;font-size:12px;color:#aaaaaa;line-height:1.5;">
                 <a href="${base}/datenschutz" style="color:#888888;">${copy.privacy}</a>: ${copy.oneOff} · <a href="${deleteUrl}" style="color:#888888;">${copy.delete}</a>

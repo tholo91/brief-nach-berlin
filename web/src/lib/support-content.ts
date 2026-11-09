@@ -104,6 +104,8 @@ export const SUPPORT_EMAIL_COPY = {
       "Ich baue und betreibe Brief-nach-Berlin allein und ehrenamtlich in meiner Freizeit. Wenn dir das Tool beim Schreiben geholfen hat, freue ich mich über deine Unterstützung. Schon 5 € helfen mir, die laufenden Kosten zu decken.",
     followupStatus: "Gemeinnützig\nüber WE AID",
     followupHeadingMobile: "Damit das Tool kostenlos bleibt",
+    followupCostNote:
+      "* Etwa 100 € monatlich für KI und 25–40 € für Tools. Dazu kommen meine ehrenamtliche Arbeitszeit, Vernetzung, Veranstaltungstickets und Bekanntmachung.",
   },
   en: {
     heading: "Support Brief-nach-Berlin",
@@ -118,6 +120,8 @@ export const SUPPORT_EMAIL_COPY = {
       "I run Brief-nach-Berlin on my own in my free time and so far pay for the AI and servers myself. Even €5 helps.",
     followupStatus: "Non-profit\nvia WE AID",
     followupHeadingMobile: "Support Brief-nach-Berlin",
+    followupCostNote:
+      "* Around €100 per month for AI and €25–40 for tools, plus my volunteer time, networking, event tickets, and outreach.",
   },
   tr: {
     heading: "Brief-nach-Berlin'i destekle",
@@ -132,6 +136,8 @@ export const SUPPORT_EMAIL_COPY = {
       "Brief-nach-Berlin'i tek başıma yürütüyorum, yapay zekâ ve sunucuları kendim ödüyorum. 5 € bile yardımcı olur.",
     followupStatus: "Kâr amacı gütmez,\nWE AID",
     followupHeadingMobile: "Brief-nach-Berlin'i destekle",
+    followupCostNote:
+      "* Yapay zekâ için ayda yaklaşık 100 €, araçlar için 25–40 €. Ayrıca gönüllü emeğim, ağ kurma, etkinlik biletleri ve tanıtım giderleri.",
   },
 } as const;
 

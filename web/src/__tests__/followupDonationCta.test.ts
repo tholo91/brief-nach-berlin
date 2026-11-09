@@ -39,8 +39,8 @@ describe("follow-up donation box", () => {
     expect(followup.html).toContain('>Gemeinnützig<br class="bnb-support-note-break"> über WE AID</span>');
     expect(followup.html).not.toContain(copy.status);
 
-    expect(countOccurrences(followup.html, DONATION_PROVIDER_URL)).toBe(1);
-    expect(countOccurrences(followup.text, DONATION_PROVIDER_URL)).toBe(1);
+    expect(countOccurrences(followup.html, DONATION_PROVIDER_URL)).toBe(2);
+    expect(countOccurrences(followup.text, DONATION_PROVIDER_URL)).toBe(2);
     expect(followup.text).toContain(`${copy.compactButton}: ${DONATION_PROVIDER_URL}`);
     expect(followup.html).toContain("Schon 5 € helfen");
     expect(followup.text).toContain("Schon 5 € helfen");
@@ -148,7 +148,7 @@ describe("follow-up mail is shorter and calmer", () => {
     const html = buildFollowupHtml({ token: "signed-token" }).html;
     const small = html.slice(html.indexOf("max-width: 600px"), html.indexOf("max-width: 480px"));
 
-    expect(html).toContain('<span class="bnb-mob" style="display:none;">Damit das Tool kostenlos bleibt</span>');
+    expect(html).toContain('<span class="bnb-mob" style="display:none;">Damit das Tool kostenlos bleibt*</span>');
     expect(small).toMatch(/\.bnb-support-photo \{[^}]*border-radius: 50% !important;/);
     expect(small).toContain(".bnb-support-actions { clear: both !important;");
     expect(small).toContain(".bnb-support-cta { display: block !important; width: auto !important; }");

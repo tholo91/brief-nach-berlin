@@ -59,13 +59,13 @@ function buildCornerPortraitNoticeHtml(
 export function buildFinancingNoticeHtml(
   copy: FinancingNoticeCopy,
   portrait?: FinancingNoticePortrait,
-  options: { showHeart?: boolean; providerLabel?: string; portraitPlacement?: "heading" | "corner" } = {},
+  options: { showHeart?: boolean; providerLabel?: string; portraitPlacement?: "heading" | "corner"; donationUrl?: string; learnMoreUrl?: string } = {},
 ): string {
-  const donationUrl = SUPPORT_CONTENT.ctas.donate.href;
+  const donationUrl = options.donationUrl ?? SUPPORT_CONTENT.ctas.donate.href;
   if (portrait && options.portraitPlacement === "corner") {
     return buildCornerPortraitNoticeHtml(copy, portrait, donationUrl, Boolean(options.showHeart));
   }
-  const learnMoreUrl = `${APP_URL}${SUPPORT_CONTENT.ctas.learnMore.href}?src=email`;
+  const learnMoreUrl = options.learnMoreUrl ?? `${APP_URL}${SUPPORT_CONTENT.ctas.learnMore.href}?src=email`;
   const heading = (margin: string) =>
     `<h2 style="margin:${margin};font-family:Georgia,'Times New Roman',serif;font-size:16px;color:#2D5016;font-weight:bold;">${escapeHtml(copy.heading)}</h2>`;
   const headingHtml = portrait

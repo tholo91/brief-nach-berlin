@@ -1,0 +1,39 @@
+.scene { position: relative; overflow: hidden; padding: 70px 24px 90px; background: #183e35; }
+.scene::before { content: ""; position: absolute; inset: 0; background: radial-gradient(ellipse at 50% 0%, #316252 0%, transparent 60%); pointer-events: none; }
+.snow { position: absolute; inset: 0; overflow: hidden; pointer-events: none; z-index: 2; }
+.snow span { position: absolute; left: var(--x); top: -12px; width: var(--size); height: var(--size); border-radius: 50%; background: #fff; opacity: .68; animation: fall var(--duration) var(--delay) linear infinite; }
+@keyframes fall { to { transform: translateY(1900px) translateX(30px); } }
+.letter { position: relative; max-width: 850px; margin: 0 auto; padding: 60px 64px 55px; background: #f9f5eb; color: #193d32; box-shadow: 0 16px 60px #091d1850; }
+.letter::before { content: ""; position: absolute; inset: 9px; border: 1px solid #c6ad76; pointer-events: none; }
+.intro { display: flex; gap: 36px; align-items: center; }
+.copy { flex: 1; min-width: 0; }
+.eyebrow { margin: 0 0 13px; font-family: var(--font-courier-prime), monospace; color: #9a552f; font-size: 14px; }
+.copy h1 { margin: 0 0 24px; font-size: clamp(2.7rem, 5.5vw, 4.4rem); line-height: 1.02; font-weight: 700; letter-spacing: -.04em; }
+.copy h1 span { color: #bc8c38; }
+.copy p:not(.eyebrow):not(.signature) { margin: 0 0 14px; color: #384a41; font-size: 17px; line-height: 1.6; }
+.copy .signature { margin: 22px 0 0; color: #285945; font-family: var(--font-caveat), cursive; font-size: 25px; line-height: 1.2; }
+.portrait { flex: 0 0 175px; margin: 0; transform: rotate(3deg); text-align: center; }
+.frame { padding: 7px; background: #b89247; border: 2px solid #8a672d; box-shadow: 4px 6px 0 #e8ddc2; }
+.frame img { display: block; width: 100%; height: auto; background: #e4e4d4; }
+.portrait figcaption { margin-top: 12px; color: #8a5d36; font-family: var(--font-caveat), cursive; font-size: 23px; line-height: 1; }
+.causes { margin-top: 54px; }
+.sectionHeading { display: flex; align-items: center; justify-content: space-between; color: #b88c42; }
+.sectionHeading h2 { margin: 0; color: #193d32; font-size: 25px; font-weight: 700; }
+.sectionHeading span { font-size: 25px; }
+.causes ul { display: grid; gap: 10px; padding: 0; margin: 20px 0 0; list-style: none; }
+.causes a { display: flex; align-items: center; justify-content: space-between; gap: 20px; padding: 18px 22px; background: #fffdf8; border: 1px solid #e5dccb; color: #193d32; text-decoration: none; transition: background .2s, transform .2s; }
+.causes a:hover { background: #fff; transform: translateY(-2px); }
+.causes a:focus-visible { outline: 3px solid #9b742c; outline-offset: 3px; }
+.causeText span { display: block; }
+.tag { color: #8d7043; font-size: 13px; font-weight: 700; }
+.causeName { margin-top: 2px; font-size: 21px; font-weight: 700; }
+.description { margin-top: 3px; color: #53635a; font-size: 15px; }
+.arrow { color: #a47a37; font-size: 25px; }
+.ownCause { padding-top: 12px; }
+.ownCause a { background: #ecefe5; }
+.note { margin: 18px 0 0; color: #617067; font-size: 14px; }
+@media (max-width: 640px) { .scene { padding: 32px 16px 45px; } .letter { padding: 40px 25px 36px; } .intro { gap: 22px; align-items: flex-start; flex-direction: column-reverse; } .portrait { flex-basis: auto; width: 132px; align-self: flex-end; margin: 0 6px -2px 0; } .portrait figcaption { font-size: 19px; } .copy h1 { font-size: 43px; } .copy p:not(.eyebrow):not(.signature) { font-size: 16px; } .causes { margin-top: 40px; } .causes a { padding: 16px; } }
+@media (prefers-reduced-motion: reduce) { .snow { display: none; } .causes a { transition: none; } }
+.causeBody { display: flex; align-items: center; gap: 22px; min-width: 0; }
+.logo { display: block; width: 115px; height: 40px; margin: 4px 0; object-fit: contain; object-position: left center; }
+

@@ -125,7 +125,9 @@ export function buildLetterEmailText(data: SendLetterEmailParams): string {
   );
   parts.push(`${copy.privacy}: ${dataPolicyFor(data)}\n${copy.followup.delete}: ${data.deleteUrl ?? `${APP_URL}/datenloeschen`}`);
   parts.push(buildSocialFollowText(resolveEmailLocale(data.locale)));
-  parts.push(`${copy.supportLink}: ${APP_URL}${DONATION_PATH}`);
+  if (data.audience !== "jung") {
+    parts.push(`${copy.supportLink}: ${APP_URL}${DONATION_PATH}`);
+  }
   if (data.debug) parts.push(`${copy.inputsLink}: ${buildDebugUrl(data.debug)}`);
   return parts.join("\n\n");
 }
@@ -457,7 +459,7 @@ function showsTrip(input: GoodToKnowInput): boolean {
 export function buildGoodToKnowHtml(
   input: GoodToKnowInput,
   fullName: string,
-  options: { compact?: boolean; baseUrl?: string; inputsUrl?: string } = {},
+  options: { compact?: boolean; baseUrl?: string; inputsUrl?: string; heading?: boolean } = {},
 ): string {
   const locale = resolveEmailLocale(input.locale);
   const copy = getEmailCopy(locale);
@@ -505,18 +507,18 @@ export function buildGoodToKnowHtml(
       ].filter(Boolean);
   return `<tr>
                   <td colspan="7" class="bnb-pad" style="padding:0 32px 28px;background-color:#ffffff;">
-                    <h2 style="margin:0 0 12px;padding-bottom:10px;border-bottom:1px solid #EDEAE6;${font}font-size:16px;color:#2D5016;font-weight:bold;">${g.heading}</h2>
+                    ${options.heading === false ? "" : `<h2 style="margin:0 0 12px;padding-bottom:10px;border-bottom:1px solid #EDEAE6;${font}font-size:16px;color:#2D5016;font-weight:bold;">${g.heading}</h2>`}
                     ${highlightsHtml}
                     <p style="margin:0 0 6px;${highlights.length ? "padding-top:12px;border-top:1px solid #EDEAE6;" : ""}${font}font-size:13px;color:#666666;line-height:1.8;"><strong style="color:#4A4A4A;">${g.moreLabel}</strong><br>${moreLinks.join(" &middot; ")}</p>
                   </td>
                 </tr>`;
 }
 
-export function buildGoodToKnowText(input: GoodToKnowInput, fullName: string, baseUrl: string = APP_URL): string {
+export function buildGoodToKnowText(input: GoodToKnowInput, fullName: string, baseUrl: string = APP_URL, includeHeading = true): string {
   const g = getEmailCopy(input.locale).goodToKnow;
   const urls = goodToKnowUrls(input, baseUrl);
   return [
-    g.heading,
+    includeHeading && g.heading,
     input.recipientKind === "mdb" && `🤝 ${g.meetTitle(fullName)}: ${g.meetText} ${g.meetLink}: ${urls.meet}`,
     showsTrip(input) && `🚆 ${g.tripTitle}: ${g.tripText} ${g.tripLink}: ${urls.trip}`,
     `${g.actionsLink}: ${urls.actions}`,
@@ -546,7 +548,7 @@ export function buildEmailHtml(data: SendLetterEmailParams): string {
   const followBrandHtml = locale === "tr"
     ? `<a href="${APP_URL}" style="color:#999999;text-decoration:none;">Brief-nach-Berlin'i</a> takip et`
     : `${locale === "en" ? "Follow" : "Folge"} <a href="${APP_URL}" style="color:#999999;text-decoration:none;">Brief-nach-Berlin</a>`;
-  const supportLinkHtml = `<a href="${APP_URL}${DONATION_PATH}" target="_blank" rel="noopener noreferrer" style="color:#999999;text-decoration:underline;">${copy.supportLink}</a>`;
+  const supportLinkHtml = data.audience === "jung" ? "" : `<a href="${APP_URL}${DONATION_PATH}" target="_blank" rel="noopener noreferrer" style="color:#999999;text-decoration:underline;">${copy.supportLink}</a>`;
   const compactFooterLabel = `${letterNumberText}${supportLinkHtml} · <span style="white-space:nowrap;">${followBrandHtml}</span>`;
 
   const fullName = data.politicianTitle

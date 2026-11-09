@@ -39,7 +39,7 @@ describe("email social follow footer", () => {
 
     expect(letterMailHtml).toMatch(/Brief #2\.356 · <a href="[^"]*\/spenden"[^>]*>Projekt unterstützen<\/a> · <span style="white-space:nowrap;">Folge/);
     expect(letterMailHtml).not.toContain("Deine Stimme zählt");
-    expect(buildEmailHtml({ ...letterParams, audience: "jung" })).toContain(">Projekt unterstützen</a>");
+    expect(buildEmailHtml({ ...letterParams, audience: "jung" })).not.toContain(">Projekt unterstützen</a>");
     expect(letterMailHtml).toContain(">Brief-nach-Berlin</a>");
     expect(letterMailHtml).not.toContain("Folge Brief-nach-Berlin:");
 

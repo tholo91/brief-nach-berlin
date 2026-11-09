@@ -779,28 +779,24 @@ export function CreatorCampaignForm() {
               <label className="font-typewriter text-sm font-bold text-waldgruen-dark" htmlFor="fixedSalutation">Briefanrede</label>
               <input id="fixedSalutation" name="fixedSalutation" required maxLength={200} value={draft.fixedSalutation} onChange={(event) => updateDraft("fixedSalutation", event.target.value)} className="rounded-md border border-warmgrau/20 bg-surface px-4 py-3 font-body text-base outline-none focus:border-waldgruen" />
             </div>
-            <div className="grid gap-3 sm:grid-cols-[minmax(0,1fr)_120px]">
-              <div className="grid gap-2">
+            <div className="grid min-w-0 gap-3 md:grid-cols-[minmax(0,1fr)_8rem]">
+              <div className="grid min-w-0 gap-2">
                 <label className="font-typewriter text-sm font-bold text-waldgruen-dark" htmlFor="fixedStreet">Straße</label>
-                <input id="fixedStreet" name="fixedStreet" required maxLength={120} value={draft.fixedStreet} onChange={(event) => updateDraft("fixedStreet", event.target.value)} className="rounded-md border border-warmgrau/20 bg-surface px-4 py-3 font-body text-base outline-none focus:border-waldgruen" />
+                <input id="fixedStreet" name="fixedStreet" required maxLength={120} value={draft.fixedStreet} onChange={(event) => updateDraft("fixedStreet", event.target.value)} className="min-w-0 rounded-md border border-warmgrau/20 bg-surface px-4 py-3 font-body text-base outline-none focus:border-waldgruen" />
               </div>
-              <div className="grid gap-2">
-                <label className="font-typewriter text-sm font-bold text-waldgruen-dark" htmlFor="fixedHouseNumber">Hausnummer</label>
-                <input id="fixedHouseNumber" name="fixedHouseNumber" required maxLength={20} value={draft.fixedHouseNumber} onChange={(event) => updateDraft("fixedHouseNumber", event.target.value)} className="rounded-md border border-warmgrau/20 bg-surface px-4 py-3 font-body text-base outline-none focus:border-waldgruen" />
+              <div className="grid min-w-0 gap-2">
+                <label className="font-typewriter text-sm font-bold text-waldgruen-dark" htmlFor="fixedHouseNumber">Hausnr.</label>
+                <input id="fixedHouseNumber" name="fixedHouseNumber" required maxLength={20} value={draft.fixedHouseNumber} onChange={(event) => updateDraft("fixedHouseNumber", event.target.value)} className="min-w-0 rounded-md border border-warmgrau/20 bg-surface px-4 py-3 font-body text-base outline-none focus:border-waldgruen" />
               </div>
             </div>
-            <div className="grid gap-3 sm:grid-cols-[140px_minmax(0,1fr)_180px]">
-              <div className="grid gap-2">
-                <label className="font-typewriter text-sm font-bold text-waldgruen-dark" htmlFor="fixedPostalCode">Postleitzahl</label>
-                <input id="fixedPostalCode" name="fixedPostalCode" required inputMode="numeric" pattern="[0-9]{5}" maxLength={5} value={draft.fixedPostalCode} onChange={(event) => updateDraft("fixedPostalCode", event.target.value.replace(/\D/g, "").slice(0, 5))} className="rounded-md border border-warmgrau/20 bg-surface px-4 py-3 font-body text-base outline-none focus:border-waldgruen" />
+            <div className="grid min-w-0 gap-3 md:grid-cols-[7rem_minmax(0,1fr)]">
+              <div className="grid min-w-0 gap-2">
+                <label className="font-typewriter text-sm font-bold text-waldgruen-dark" htmlFor="fixedPostalCode">PLZ</label>
+                <input id="fixedPostalCode" name="fixedPostalCode" required inputMode="numeric" pattern="[0-9]{5}" maxLength={5} value={draft.fixedPostalCode} onChange={(event) => updateDraft("fixedPostalCode", event.target.value.replace(/\D/g, "").slice(0, 5))} className="min-w-0 rounded-md border border-warmgrau/20 bg-surface px-4 py-3 font-body text-base outline-none focus:border-waldgruen" />
               </div>
-              <div className="grid gap-2">
-                <label className="font-typewriter text-sm font-bold text-waldgruen-dark" htmlFor="fixedCity">Ort</label>
-                <input id="fixedCity" name="fixedCity" required maxLength={120} value={draft.fixedCity} onChange={(event) => updateDraft("fixedCity", event.target.value)} className="rounded-md border border-warmgrau/20 bg-surface px-4 py-3 font-body text-base outline-none focus:border-waldgruen" />
-              </div>
-              <div className="grid gap-2">
-                <span className="font-typewriter text-sm font-bold text-waldgruen-dark">Land</span>
-                <div className="rounded-md border border-warmgrau/15 bg-creme/70 px-4 py-3 font-body text-base text-warmgrau/70">Deutschland</div>
+              <div className="grid min-w-0 gap-2">
+                <label className="font-typewriter text-sm font-bold text-waldgruen-dark" htmlFor="fixedCity">Ort (Deutschland)</label>
+                <input id="fixedCity" name="fixedCity" required maxLength={120} value={draft.fixedCity} onChange={(event) => updateDraft("fixedCity", event.target.value)} className="min-w-0 rounded-md border border-warmgrau/20 bg-surface px-4 py-3 font-body text-base outline-none focus:border-waldgruen" />
               </div>
             </div>
             <label className="flex items-start gap-3 rounded-md border border-airmail-rot/20 bg-airmail-rot/5 p-3 font-body text-sm leading-relaxed text-warmgrau/80">

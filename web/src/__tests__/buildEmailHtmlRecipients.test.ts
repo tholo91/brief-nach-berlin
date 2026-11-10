@@ -334,6 +334,28 @@ describe("buildEmailHtml — Empfänger-Arten", () => {
     expect(html).not.toContain("60261");
   });
 
+  it("rathaus: nennt im Such-Fallback keinen ungeprüften Ort in Betreff und Einstieg", () => {
+    const params = baseParams({
+      recipientKind: "rathaus",
+      politicianName: "Zuständiges Bürgermeisteramt",
+      politicianFirstName: "",
+      politicianLastName: "Zuständiges Bürgermeisteramt",
+      politicianParty: null,
+      politicianPostalAddress: "Zuständiges Bürgermeisteramt",
+      politicianAbgeordnetenwatchUrl: null,
+      rathausSearch: {
+        ort: "Commerzbank AG",
+        kind: "buergermeisteramt",
+        address: { source: "fallback" },
+      },
+    });
+    const html = buildEmailHtml(params);
+
+    expect(buildLetterEmailSubject(params)).not.toContain("Commerzbank");
+    expect(html).toContain("Dein Brief ans Rathaus ist fertig.");
+    expect(html).not.toContain("Rathaus in Commerzbank");
+  });
+
   it("rathaus: zeigt für eine eindeutige Berliner PLZ die berlin.de-Anschrift", () => {
     const html = buildEmailHtml(baseParams({
       recipientKind: "rathaus",

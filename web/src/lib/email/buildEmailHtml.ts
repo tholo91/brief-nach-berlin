@@ -260,6 +260,15 @@ function getGovernmentAddressLines(data: SendLetterEmailParams): string {
   return addressParts.map((part) => escapeHtml(part)).join("<br>");
 }
 
+// Ohne amtlichen Treffer kann der Ortsname einer Großkunden-PLZ ein Firmenname sein.
+// Betreff und Einstieg nennen den Ort deshalb nur bei amtlicher Anschrift oder Berliner Bezirk.
+function getVerifiedTownHallPlace(data: SendLetterEmailParams): string | undefined {
+  const search = data.rathausSearch;
+  if (!search) return undefined;
+  if (search.address.source !== "official" && search.kind !== "bezirksamt") return undefined;
+  return search.ort.trim() || undefined;
+}
+
 export function buildLetterEmailSubject(data: SendLetterEmailParams): string {
   const copy = getEmailCopy(data.locale);
   if (data.recipientKind === "landesregierung") {
@@ -271,8 +280,7 @@ export function buildLetterEmailSubject(data: SendLetterEmailParams): string {
     return destination ? copy.subject.destination(destination) : copy.subject.standard;
   }
   if (data.recipientKind === "rathaus") {
-    const destination = data.rathausSearch?.ort?.trim();
-    return copy.subject.townHall(destination);
+    return copy.subject.townHall(getVerifiedTownHallPlace(data));
   }
   return copy.subject.standard;
 }
@@ -292,7 +300,7 @@ function getEmailIntro(data: SendLetterEmailParams): string {
       : copy.intro.parliament;
   }
   if (data.recipientKind === "rathaus") {
-    const destination = data.rathausSearch?.ort?.trim();
+    const destination = getVerifiedTownHallPlace(data);
     return destination
       ? copy.intro.townHall(destination)
       : copy.intro.townHall();

@@ -5,6 +5,7 @@
  */
 
 import { lookupPLZWithLevel, buildCoverageHint, lookupPLZ } from "@/lib/lookup/plzLookup";
+import { recipientEnvelope } from "@/lib/lookup/recipientEnvelope";
 import plzBundesland from "../../data/plz-bundesland-mapping.json";
 
 const STATE_KEYS = [
@@ -26,7 +27,7 @@ describe("lookupPLZWithLevel", () => {
     expect(r.optionalByLevel.Land.length).toBeGreaterThan(0);
     expect(r.byLevel.Kommune).toHaveLength(1);
     expect(r.byLevel.Kommune[0].label).toBe("Bürgermeisteramt Köln");
-    expect(r.byLevel.Kommune[0].address.source).toBe("destatis");
+    expect(r.byLevel.Kommune[0].address.source).toBe("official");
     expect(r.byLevel.Bund.length).toBeGreaterThan(0);
     expect(r.coverage.landAmbiguous).toBe(true);
     expect(r.coverage.landWahlkreisIds.length).toBeGreaterThan(1);
@@ -79,6 +80,25 @@ describe("lookupPLZWithLevel", () => {
     expect(r.byLevel.Kommune[0].address).toEqual({ source: "fallback" });
     expect(r.coverage.kommuneAmbiguous).toBe(true);
     expect(r.coverage.kommuneBezirke).toEqual(["Friedrichshain-Kreuzberg", "Pankow"]);
+    expect(r.byLevel.Kommune[0].ambiguous).toBe(true);
+    expect(r.byLevel.Kommune[0].candidates).toEqual([
+      {
+        bezirk: "Friedrichshain-Kreuzberg",
+        label: "Bezirksamt Friedrichshain-Kreuzberg",
+        recipientLine: "Bezirksamt Friedrichshain-Kreuzberg von Berlin",
+        streetAddress: "Postfach 35 07 01",
+        postalCode: "10216",
+        city: "Berlin",
+      },
+      {
+        bezirk: "Pankow",
+        label: "Bezirksamt Pankow",
+        recipientLine: "Bezirksamt Pankow von Berlin",
+        streetAddress: "Postfach 73 01 13",
+        postalCode: "13062",
+        city: "Berlin",
+      },
+    ]);
     expect(r.coverage.landSupported).toBe(true);
     expect(r.byLevel.Land).toHaveLength(1);
     expect(r.byLevel.Land[0].institutionKind).toBe("senat");
@@ -89,7 +109,36 @@ describe("lookupPLZWithLevel", () => {
     expect(r.coverage.kommuneAmbiguous).toBe(false);
     expect(r.coverage.kommuneBezirke).toEqual(["Mitte"]);
     expect(r.byLevel.Kommune[0].label).toBe("Bezirksamt Mitte");
-    expect(r.byLevel.Kommune[0].address).toEqual({ source: "fallback" });
+    expect(r.byLevel.Kommune[0].address).toMatchObject({
+      source: "official",
+      sourceName: "berlin.de",
+      recipientLine: "Bezirksamt Mitte von Berlin",
+      postalCode: "13341",
+      city: "Berlin",
+    });
+    expect(r.byLevel.Kommune[0].candidates).toBeUndefined();
+  });
+
+  it("Berlin 13187 (nur Pankow): berlin.de-Adresse, vollständiger Umschlag", () => {
+    const recipient = lookupPLZWithLevel("13187").byLevel.Kommune[0];
+    expect(recipient.label).toBe("Bezirksamt Pankow");
+    expect(recipient.address).toMatchObject({ source: "official", sourceName: "berlin.de" });
+    expect(recipient.postalAddress).toBe(
+      "Bezirksamt Pankow von Berlin, Postfach 73 01 13, 13062 Berlin"
+    );
+    expect(recipientEnvelope(recipient)).toMatchObject({
+      lines: ["Bezirksamt Pankow von Berlin", "Postfach 73 01 13", "13062 Berlin"],
+      complete: true,
+    });
+  });
+
+  it("Berlin: PLZ in drei Bezirken listet alle drei Kandidaten", () => {
+    const recipient = lookupPLZWithLevel("10967").byLevel.Kommune[0];
+    expect(recipient.candidates?.map((c) => c.bezirk)).toEqual([
+      "Neukölln",
+      "Friedrichshain-Kreuzberg",
+      "Pankow",
+    ]);
   });
 
   it.each([
@@ -103,7 +152,8 @@ describe("lookupPLZWithLevel", () => {
       const recipient = lookupPLZWithLevel(plz).byLevel.Kommune[0];
       expect(recipient.label).toBe(label);
       expect(recipient.address).toMatchObject({
-        source: "destatis",
+        source: "official",
+        sourceName: "Destatis",
         streetAddress,
         postalCode,
         city,

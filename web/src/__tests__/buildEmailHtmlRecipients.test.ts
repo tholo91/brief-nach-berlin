@@ -274,7 +274,8 @@ describe("buildEmailHtml — Empfänger-Arten", () => {
           ort: "Köln",
           kind: "buergermeisteramt",
           address: {
-            source: "destatis",
+            source: "official",
+            sourceName: "Destatis",
             ags: "05315000",
             streetAddress: "Rathaus",
             postalCode: "50667",
@@ -311,7 +312,7 @@ describe("buildEmailHtml — Empfänger-Arten", () => {
     expect(html).not.toContain("aus deinem Wahlkreis");
   });
 
-  it("rathaus: kennzeichnet eine fehlende Zuordnung als Such-Fallback", () => {
+  it("rathaus: kennzeichnet eine fehlende Zuordnung als Such-Fallback mit Ort und Button", () => {
     const html = buildEmailHtml(baseParams({
       recipientKind: "rathaus",
       politicianName: "Zuständiges Bürgermeisteramt",
@@ -321,16 +322,74 @@ describe("buildEmailHtml — Empfänger-Arten", () => {
       politicianPostalAddress: "Zuständiges Bürgermeisteramt",
       politicianAbgeordnetenwatchUrl: null,
       rathausSearch: {
-        ort: "",
+        ort: "Frankfurt am Main",
         kind: "buergermeisteramt",
         address: { source: "fallback" },
       },
     }));
 
-    expect(html).toContain("keine eindeutige amtliche Anschrift");
-    expect(html).toContain("Die genaue Anschrift findest du");
-    expect(html).toContain(encodeURIComponent("Bürgermeisteramt Postanschrift"));
+    expect(html).toContain("Die Postanschrift konnte ich für deine PLZ nicht sicher zuordnen.");
+    expect(html).toMatch(/<a href="[^"]*google\.com\/search[^"]*"[^>]*background-color:#2D5016[^>]*>Adresse suchen<\/a>/);
+    expect(html).toContain(encodeURIComponent("Bürgermeisteramt Frankfurt am Main Postanschrift"));
     expect(html).not.toContain("60261");
+  });
+
+  it("rathaus: zeigt für eine eindeutige Berliner PLZ die berlin.de-Anschrift", () => {
+    const html = buildEmailHtml(baseParams({
+      recipientKind: "rathaus",
+      politicianName: "Bezirksamt Pankow",
+      politicianFirstName: "",
+      politicianLastName: "Bezirksamt Pankow",
+      politicianParty: null,
+      politicianPostalAddress: "Bezirksamt Pankow von Berlin, Postfach 73 01 13, 13062 Berlin",
+      politicianAbgeordnetenwatchUrl: null,
+      rathausSearch: {
+        ort: "Pankow",
+        kind: "bezirksamt",
+        address: {
+          source: "official",
+          sourceName: "berlin.de",
+          recipientLine: "Bezirksamt Pankow von Berlin",
+          streetAddress: "Postfach 73 01 13",
+          postalCode: "13062",
+          city: "Berlin",
+          sourceTitle: "Postanschriften der Berliner Bezirksämter (berlin.de)",
+          sourceUrl: "https://www.berlin.de/ba-pankow/",
+          sourceStand: "10.11.2026",
+        },
+      },
+    }));
+
+    expect(html).toContain("<strong>Bezirksamt Pankow von Berlin</strong><br>");
+    expect(html).toContain("Postfach 73 01 13<br>13062 Berlin");
+    expect(html).toContain("berlin.de</a>, geprüft am 10.11.2026");
+    expect(html).toContain("https://www.berlin.de/ba-pankow/");
+  });
+
+  it("rathaus: listet bei mehrdeutiger Berliner PLZ die Bezirke mit Adresse", () => {
+    const html = buildEmailHtml(baseParams({
+      recipientKind: "rathaus",
+      politicianName: "Zuständiges Bezirksamt in Berlin",
+      politicianFirstName: "",
+      politicianLastName: "Zuständiges Bezirksamt in Berlin",
+      politicianParty: null,
+      politicianPostalAddress: "Zuständiges Bezirksamt in Berlin",
+      politicianAbgeordnetenwatchUrl: null,
+      rathausSearch: {
+        ort: "Berlin",
+        kind: "bezirksamt",
+        address: { source: "fallback" },
+        candidates: [
+          { bezirk: "Pankow", label: "Bezirksamt Pankow", recipientLine: "Bezirksamt Pankow von Berlin", streetAddress: "Postfach 73 01 13", postalCode: "13062", city: "Berlin" },
+          { bezirk: "Mitte", label: "Bezirksamt Mitte", recipientLine: "Bezirksamt Mitte von Berlin", streetAddress: "", postalCode: "13341", city: "Berlin" },
+        ],
+      },
+    }));
+
+    expect(html).toContain("Deine PLZ liegt in Pankow oder Mitte. Nimm die Adresse deines Bezirks:");
+    expect(html).toContain("<strong>Bezirksamt Pankow von Berlin</strong><br>Postfach 73 01 13<br>13062 Berlin");
+    expect(html).toContain("<strong>Bezirksamt Mitte von Berlin</strong><br>13341 Berlin");
+    expect(html).not.toContain(">Adresse suchen<");
   });
 
   it("bezirksamt: sucht ohne Wohn-PLZ nach der genauen Anschrift", () => {

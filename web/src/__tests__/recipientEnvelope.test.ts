@@ -1,7 +1,7 @@
 import type { MdbRecipient, MdlRecipient, RathausRecipient } from "@/lib/lookup/rathausRecipient";
 import { getBundeskanzlerRecipient } from "@/lib/lookup/bundeskanzlerRecipient";
 import { getLandesregierungRecipient } from "@/lib/lookup/landesregierungRecipient";
-import { recipientEnvelope } from "@/lib/lookup/recipientEnvelope";
+import { formatBezirkeList, recipientEnvelope } from "@/lib/lookup/recipientEnvelope";
 
 const politician = {
   id: 1,
@@ -25,7 +25,8 @@ const rathaus: RathausRecipient = {
   label: "Bürgermeisteramt Köln",
   postalAddress: "Bürgermeisteramt Köln, Rathausplatz 1, 50667 Köln",
   address: {
-    source: "destatis",
+    source: "official",
+    sourceName: "Destatis",
     ags: "05315000",
     streetAddress: "Rathausplatz 1",
     postalCode: "50667",
@@ -93,5 +94,33 @@ describe("recipientEnvelope", () => {
     expect(fallback.complete).toBe(false);
     expect(fallback.lines).toEqual(["Zuständiges Bürgermeisteramt"]);
     expect(fallback.searchUrl).toContain("google.com/search");
+    expect(fallback.searchUrl).toContain(encodeURIComponent("Bürgermeisteramt Köln Postanschrift"));
+  });
+
+  it("nimmt für Berlin die offizielle Umschlagzeile und lässt eine leere Straße aus", () => {
+    const berlin: RathausRecipient = {
+      ...rathaus,
+      recipientKind: "bezirksamt",
+      gemeindeName: "Mitte",
+      label: "Bezirksamt Mitte",
+      address: {
+        ...(rathaus.address as Extract<RathausRecipient["address"], { source: "official" }>),
+        sourceName: "berlin.de",
+        ags: undefined,
+        recipientLine: "Bezirksamt Mitte von Berlin",
+        streetAddress: "",
+        postalCode: "13341",
+        city: "Berlin",
+      },
+    };
+    expect(recipientEnvelope(berlin)).toMatchObject({
+      lines: ["Bezirksamt Mitte von Berlin", "13341 Berlin"],
+      complete: true,
+    });
+  });
+
+  it("zählt Bezirke mit oder auf", () => {
+    expect(formatBezirkeList(["Pankow", "Mitte"])).toBe("Pankow oder Mitte");
+    expect(formatBezirkeList(["Neukölln", "Pankow", "Mitte"])).toBe("Neukölln, Pankow oder Mitte");
   });
 });

@@ -43,13 +43,17 @@ describe("buildRathausRecipient", () => {
       officialAddress,
     });
 
-    expect(recipient.address).toEqual({ source: "destatis", ...officialAddress });
+    expect(recipient.address).toEqual({
+      source: "official",
+      sourceName: "Destatis",
+      ...officialAddress,
+    });
     expect(recipient.postalAddress).toBe(
       "Bürgermeisteramt Köln, Rathaus, 50667 Köln"
     );
   });
 
-  it("nutzt für Berlin das Bezirksamt und nie die Destatis-Senatsanschrift", () => {
+  it("nutzt für Berlin die berlin.de-Bezirksamtsanschrift und nie die Destatis-Senatsanschrift", () => {
     const recipient = buildRathausRecipient({
       gemeindeName: "Berlin",
       plz: "10245",
@@ -60,8 +64,17 @@ describe("buildRathausRecipient", () => {
 
     expect(recipient.recipientKind).toBe("bezirksamt");
     expect(recipient.label).toBe("Bezirksamt Friedrichshain-Kreuzberg");
-    expect(recipient.postalAddress).toBe("Bezirksamt Friedrichshain-Kreuzberg");
-    expect(recipient.address).toEqual({ source: "fallback" });
+    expect(recipient.postalAddress).toBe(
+      "Bezirksamt Friedrichshain-Kreuzberg von Berlin, Postfach 35 07 01, 10216 Berlin"
+    );
+    expect(recipient.address).toMatchObject({
+      source: "official",
+      sourceName: "berlin.de",
+      streetAddress: "Postfach 35 07 01",
+      postalCode: "10216",
+      sourceStand: "10.11.2026",
+    });
+    expect(recipient.address).not.toHaveProperty("ags");
   });
 
   it("bleibt in Berlin ohne Bezirksdaten beim allgemeinen Bezirksamt", () => {
@@ -74,6 +87,17 @@ describe("buildRathausRecipient", () => {
 
     expect(recipient.recipientKind).toBe("bezirksamt");
     expect(recipient.label).toBe("Zuständiges Bezirksamt in Berlin");
+  });
+
+  it("lässt die leere Straße einer Großkunden-PLZ aus der Anschrift weg", () => {
+    const recipient = buildRathausRecipient({
+      gemeindeName: "Berlin",
+      plz: "10115",
+      bundeslandKey: "BE",
+      bezirk: "Mitte",
+    });
+
+    expect(recipient.postalAddress).toBe("Bezirksamt Mitte von Berlin, 13341 Berlin");
   });
 
   it("wirft für Hamburg und Bremen (Einheitsgemeinde)", () => {

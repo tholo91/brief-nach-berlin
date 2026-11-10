@@ -159,7 +159,7 @@ describe("letter signal lifecycle actions", () => {
         label: "Rathaus",
         gemeindeName: "Bremen",
         plz: "28203",
-        address: { source: "destatis", ags: "04011000" },
+        address: { source: "official", sourceName: "Destatis", ags: "04011000" },
       } as never,
       letterText: "Sehr geehrte Damen und Herren, ...",
       campaignSlug: null,

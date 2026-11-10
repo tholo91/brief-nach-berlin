@@ -3,7 +3,7 @@ import { buildEmailHtml, buildLetterEmailSubject, buildLetterEmailText } from ".
 import { AI_CONTENT_EMAIL_HEADERS } from "./aiContentMarking";
 import { signFeedbackToken } from "@/lib/feedback/token";
 import type { Politician } from "@/lib/types/politician";
-import type { RathausRecipient, Recipient } from "@/lib/lookup/rathausRecipient";
+import type { RathausCandidate, RathausRecipient, Recipient } from "@/lib/lookup/rathausRecipient";
 import { APP_URL, EMAIL_SENDER_NAME } from "@/lib/config";
 import { createDataDeletionToken } from "@/lib/dataDeletion/token";
 import type { WizardData } from "@/lib/types/wizard";
@@ -124,6 +124,8 @@ export interface SendLetterEmailParams {
     ort: string;
     kind: "buergermeisteramt" | "bezirksamt";
     address: RathausRecipient["address"];
+    /** Nur mehrdeutige Berliner PLZ: mögliche Bezirke mit Adresse. */
+    candidates?: RathausCandidate[];
   };
   letterText: string;
   issueText: string;
@@ -205,12 +207,10 @@ function prepareAdultLetterEmail(args: {
         politicianAbgeordnetenwatchUrl: null,
         recipientKind: "rathaus",
         rathausSearch: {
-          ort:
-            recipient.recipientKind === "bezirksamt" || recipient.address.source === "destatis"
-              ? recipient.gemeindeName
-              : "",
+          ort: recipient.gemeindeName,
           kind: recipient.recipientKind,
           address: recipient.address,
+          ...(recipient.candidates ? { candidates: recipient.candidates } : {}),
         },
         letterText,
         issueText,

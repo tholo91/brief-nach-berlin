@@ -7,7 +7,9 @@ import destatisGemeindeanschriftenJson from "../../../data/destatis-gemeindeansc
 import plzRathausAgsJson from "../../../data/plz-rathaus-ags.json";
 import {
   buildRathausRecipient,
+  getBerlinBezirksamtAddress,
   RathausRecipientNotApplicable,
+  type RathausCandidate,
   type RathausRecipient,
 } from "./rathausRecipient";
 import {
@@ -166,6 +168,19 @@ export function lookupPLZWithLevel(plz: string): PlzLookupResult {
   if (enrichment && bundeslandKey) {
     try {
       if (kommuneAmbiguous) {
+        const candidates: RathausCandidate[] = [];
+        for (const bezirk of kommuneBezirke) {
+          const address = getBerlinBezirksamtAddress(bezirk);
+          if (!address) continue;
+          candidates.push({
+            bezirk,
+            label: `Bezirksamt ${bezirk}`,
+            recipientLine: address.recipientLine ?? `Bezirksamt ${bezirk}`,
+            streetAddress: address.streetAddress,
+            postalCode: address.postalCode,
+            city: address.city,
+          });
+        }
         kommune = [
           {
             ...buildRathausRecipient({
@@ -175,6 +190,7 @@ export function lookupPLZWithLevel(plz: string): PlzLookupResult {
               bezirk: null,
             }),
             ambiguous: true,
+            candidates,
           },
         ];
       } else {

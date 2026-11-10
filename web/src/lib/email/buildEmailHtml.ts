@@ -564,7 +564,7 @@ export function buildEmailHtml(data: SendLetterEmailParams): string {
     .map((part) => escapeHtml(part.trim()))
     .join("<br>");
   const officialRathausAddress =
-    isRathaus && data.rathausSearch?.address.source === "destatis"
+    isRathaus && data.rathausSearch?.address.source === "official"
       ? data.rathausSearch.address
       : null;
   const visibleAddressLines = officialRathausAddress

@@ -12,7 +12,7 @@ export function RathausAdresseButton({
 }: RathausAdresseButtonProps) {
   const searchUrl = rathausSearchUrl(recipient);
   const officialAddress =
-    recipient.address.source === "destatis" ? recipient.address : null;
+    recipient.address.source === "official" ? recipient.address : null;
 
   return (
     <div

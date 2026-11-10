@@ -2,6 +2,65 @@ import type { Politician } from "../types/politician";
 import type { LandesregierungRecipient } from "./landesregierungRecipient";
 import type { BundeskanzlerRecipient } from "./bundeskanzlerRecipient";
 import type { CampaignFixedRecipientRecipient } from "./campaignFixedRecipient";
+import berlinBezirksaemterJson from "../../../data/berlin-bezirksaemter.json";
+
+interface BerlinBezirksamtEntry {
+  recipientLine: string;
+  streetAddress: string;
+  postalCode: string;
+  city: string;
+  sourceUrl: string;
+}
+
+const berlinBezirksaemter = berlinBezirksaemterJson as {
+  _meta: { source: { title: string; url: string; stand: string } };
+  byBezirk: Record<string, BerlinBezirksamtEntry>;
+};
+
+/** Postanschrift eines Berliner Bezirksamts aus dem Repo-Snapshot (berlin.de). */
+export function getBerlinBezirksamtAddress(bezirk: string): RathausOfficialAddress | null {
+  const entry = berlinBezirksaemter.byBezirk[bezirk];
+  if (!entry) return null;
+  return {
+    source: "official",
+    sourceName: "berlin.de",
+    recipientLine: entry.recipientLine,
+    streetAddress: entry.streetAddress,
+    postalCode: entry.postalCode,
+    city: entry.city,
+    sourceTitle: berlinBezirksaemter._meta.source.title,
+    sourceUrl: entry.sourceUrl,
+    sourceStand: berlinBezirksaemter._meta.source.stand,
+  };
+}
+
+export interface RathausOfficialAddress {
+  source: "official";
+  /** Anzeigename der Quelle, z.B. "Destatis" oder "berlin.de" */
+  sourceName: "Destatis" | "berlin.de";
+  /** Nur Destatis-Treffer; stabiler Bindungsschlüssel für das Signal-Token. */
+  ags?: string;
+  /** Offizielle erste Umschlagzeile, falls abweichend vom Label (Berlin: "Bezirksamt X von Berlin"). */
+  recipientLine?: string;
+  /** Darf leer sein (Großkunden-PLZ ohne Straße). */
+  streetAddress: string;
+  postalCode: string;
+  city: string;
+  sourceTitle: string;
+  sourceUrl: string;
+  sourceStand: string;
+}
+
+export interface RathausCandidate {
+  bezirk: string;
+  /** z.B. "Bezirksamt Pankow" */
+  label: string;
+  /** Offizielle erste Umschlagzeile, z.B. "Bezirksamt Pankow von Berlin" */
+  recipientLine: string;
+  streetAddress: string;
+  postalCode: string;
+  city: string;
+}
 
 // Discriminated Union für Brief-Empfänger (LOCK-5):
 // - mdb/mdl sind echte Politician-Objekte mit Abgeordnetenwatch-IDs, die
@@ -38,18 +97,9 @@ export interface RathausRecipient {
   label: string;
   /** Vollständige Anschrift bei amtlichem Treffer, sonst nur das Empfänger-Label. */
   postalAddress: string;
-  address:
-    | {
-        source: "destatis";
-        ags: string;
-        streetAddress: string;
-        postalCode: string;
-        city: string;
-        sourceTitle: string;
-        sourceUrl: string;
-        sourceStand: string;
-      }
-    | { source: "fallback" };
+  address: RathausOfficialAddress | { source: "fallback" };
+  /** Nur bei `ambiguous`: mögliche Bezirke mit Adresse, ohne automatische Auswahl. */
+  candidates?: RathausCandidate[];
   // Kein id-, kein politicianId-Feld (LOCK-5).
 }
 
@@ -118,16 +168,26 @@ export function buildRathausRecipient(args: {
     : args.officialAddress
       ? `Bürgermeisteramt ${name}`
       : "Zuständiges Bürgermeisteramt";
-  const officialAddress = isBerlin ? null : args.officialAddress;
-  const address = officialAddress
-    ? {
-        source: "destatis" as const,
-        ...officialAddress,
-      }
-    : { source: "fallback" as const };
-  const postalAddress = officialAddress
-    ? `${label}, ${officialAddress.streetAddress}, ${officialAddress.postalCode} ${officialAddress.city}`
-    : label;
+  const berlinAddress = hasBezirk ? getBerlinBezirksamtAddress(name) : null;
+  const destatisAddress = isBerlin || !args.officialAddress
+    ? null
+    : {
+        source: "official" as const,
+        sourceName: "Destatis" as const,
+        ...args.officialAddress,
+      };
+  const address: RathausOfficialAddress | { source: "fallback" } =
+    berlinAddress ?? destatisAddress ?? { source: "fallback" as const };
+  const postalAddress =
+    address.source === "official"
+      ? [
+          address.recipientLine ?? label,
+          address.streetAddress,
+          `${address.postalCode} ${address.city}`,
+        ]
+          .filter(Boolean)
+          .join(", ")
+      : label;
 
   return {
     kind: "rathaus",

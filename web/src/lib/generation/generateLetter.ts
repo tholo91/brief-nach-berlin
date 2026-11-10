@@ -576,7 +576,7 @@ export function buildUserPrompt(
             : input.landesregierung
               ? input.landesregierung.bundeslandName
               : input.rathaus &&
-                (input.rathaus.address.source === "destatis" ||
+                (input.rathaus.address.source === "official" ||
                   input.rathaus.recipientKind === "bezirksamt")
               ? `${input.rathaus.plz} ${input.rathaus.gemeindeName}`
               : "nicht eindeutig zugeordnet",

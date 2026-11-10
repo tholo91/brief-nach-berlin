@@ -136,7 +136,7 @@ function recipientProofValue(recipient: Recipient): string {
   if (recipient.kind === "mdb_later") {
     return recipient.kind;
   }
-  const localKey = recipient.address.source === "destatis"
+  const localKey = recipient.address.source === "official" && recipient.address.ags
     ? recipient.address.ags
     : `${recipient.plz}:${recipient.gemeindeName}`;
   return `${recipient.kind}:${localKey}`;

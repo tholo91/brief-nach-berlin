@@ -1,0 +1,24 @@
+{
+  "_meta": {
+    "source": {
+      "title": "Postanschriften der Berliner Bezirksämter (berlin.de)",
+      "url": "https://www.berlin.de/",
+      "stand": "10.11.2026"
+    },
+    "_kommentar": "Postanschrift fürs ganze Bezirksamt, nicht Besucher- oder Bürgeramt-Adresse. Großkunden-PLZ ohne Straße ist gültig, dann ist streetAddress leer. Keys wie die Werte in berlin-bezirke.json."
+  },
+  "byBezirk": {
+    "Mitte": { "recipientLine": "Bezirksamt Mitte von Berlin", "streetAddress": "", "postalCode": "13341", "city": "Berlin", "sourceUrl": "https://www.berlin.de/ba-mitte/" },
+    "Friedrichshain-Kreuzberg": { "recipientLine": "Bezirksamt Friedrichshain-Kreuzberg von Berlin", "streetAddress": "Postfach 35 07 01", "postalCode": "10216", "city": "Berlin", "sourceUrl": "https://www.berlin.de/ba-friedrichshain-kreuzberg/allgemeine-seiten/artikel.123283.php" },
+    "Pankow": { "recipientLine": "Bezirksamt Pankow von Berlin", "streetAddress": "Postfach 73 01 13", "postalCode": "13062", "city": "Berlin", "sourceUrl": "https://www.berlin.de/ba-pankow/" },
+    "Charlottenburg-Wilmersdorf": { "recipientLine": "Bezirksamt Charlottenburg-Wilmersdorf von Berlin", "streetAddress": "", "postalCode": "10617", "city": "Berlin", "sourceUrl": "https://www.berlin.de/ba-charlottenburg-wilmersdorf/allgemeine-inhalte/artikel.13564.php" },
+    "Spandau": { "recipientLine": "Bezirksamt Spandau", "streetAddress": "", "postalCode": "13578", "city": "Berlin", "sourceUrl": "https://www.berlin.de/ba-spandau/" },
+    "Steglitz-Zehlendorf": { "recipientLine": "Bezirksamt Steglitz-Zehlendorf", "streetAddress": "", "postalCode": "14160", "city": "Berlin", "sourceUrl": "https://www.berlin.de/ba-steglitz-zehlendorf/" },
+    "Tempelhof-Schöneberg": { "recipientLine": "Bezirksamt Tempelhof-Schöneberg von Berlin", "streetAddress": "", "postalCode": "10820", "city": "Berlin", "sourceUrl": "https://www.berlin.de/ba-tempelhof-schoeneberg/allgemeine-infos/artikel.350989.php" },
+    "Neukölln": { "recipientLine": "Bezirksamt Neukölln von Berlin", "streetAddress": "", "postalCode": "12040", "city": "Berlin", "sourceUrl": "https://www.berlin.de/ba-neukoelln/" },
+    "Treptow-Köpenick": { "recipientLine": "Bezirksamt Treptow-Köpenick von Berlin", "streetAddress": "Postfach 91 02 40", "postalCode": "12414", "city": "Berlin", "sourceUrl": "https://www.berlin.de/ba-treptow-koepenick/allgemeine-seiten/artikel.4830.php" },
+    "Marzahn-Hellersdorf": { "recipientLine": "Bezirksamt Marzahn-Hellersdorf von Berlin", "streetAddress": "", "postalCode": "12671", "city": "Berlin", "sourceUrl": "https://www.berlin.de/ba-marzahn-hellersdorf/" },
+    "Lichtenberg": { "recipientLine": "Bezirksamt Lichtenberg von Berlin", "streetAddress": "", "postalCode": "10360", "city": "Berlin", "sourceUrl": "https://www.berlin.de/ba-lichtenberg/allgemeine-seiten/artikel.154516.php" },
+    "Reinickendorf": { "recipientLine": "Bezirksamt Reinickendorf von Berlin", "streetAddress": "Eichborndamm 215", "postalCode": "13437", "city": "Berlin", "sourceUrl": "https://www.berlin.de/ba-reinickendorf/" }
+  }
+}

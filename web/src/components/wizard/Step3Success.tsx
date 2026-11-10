@@ -1451,7 +1451,7 @@ export function Step3Success({
                 {rathaus.recipientKind === "bezirksamt" ? "Bezirksamt" : "Bürgermeisteramt"}
               </span>
               <p className="font-body text-base font-semibold text-warmgrau">{rathaus.label}</p>
-              {rathaus.address.source === "destatis" ? (
+              {rathaus.address.source === "official" ? (
                 <>
                   <p className="font-body text-sm text-warmgrau mt-1 leading-relaxed">
                     {rathaus.address.streetAddress}

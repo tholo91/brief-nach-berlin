@@ -25,9 +25,7 @@ export function rathausSearchUrl(recipient: RathausRecipient): string {
       ? recipient.gemeindeName === "Berlin"
         ? "Bezirksamt Berlin Postanschrift"
         : `Bezirksamt ${recipient.gemeindeName} Postanschrift`
-      : recipient.address.source === "destatis"
-        ? `Bürgermeisteramt ${recipient.gemeindeName} Postanschrift`
-        : "Bürgermeisteramt Postanschrift";
+      : `Bürgermeisteramt ${recipient.gemeindeName} Postanschrift`;
   return `https://www.google.com/search?q=${encodeURIComponent(target)}`;
 }
 
@@ -74,13 +72,13 @@ export function recipientEnvelope(recipient: Recipient): RecipientEnvelope {
         complete: true,
       };
     case "rathaus":
-      return recipient.address.source === "destatis"
+      return recipient.address.source === "official"
         ? {
             lines: [
-              recipient.label,
+              recipient.address.recipientLine ?? recipient.label,
               recipient.address.streetAddress,
               `${recipient.address.postalCode} ${recipient.address.city}`,
-            ],
+            ].filter(Boolean),
             complete: true,
             searchUrl: rathausSearchUrl(recipient),
           }

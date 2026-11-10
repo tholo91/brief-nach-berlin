@@ -1,5 +1,6 @@
 import type { RathausRecipient } from "@/lib/lookup/rathausRecipient";
 import { rathausSearchUrl } from "@/lib/lookup/recipientEnvelope";
+import { RathausCandidateList, RathausSearchButton } from "./RathausHinweise";
 
 interface RathausAdresseButtonProps {
   recipient: RathausRecipient;
@@ -27,9 +28,13 @@ export function RathausAdresseButton({
         <>
           <p className="font-semibold text-waldgruen-dark">Amtliche Postanschrift</p>
           <address className="not-italic text-warmgrau leading-relaxed">
-            {recipient.label}
-            <br />
-            {officialAddress.streetAddress}
+            {officialAddress.recipientLine ?? recipient.label}
+            {officialAddress.streetAddress && (
+              <>
+                <br />
+                {officialAddress.streetAddress}
+              </>
+            )}
             <br />
             {officialAddress.postalCode} {officialAddress.city}
           </address>
@@ -42,7 +47,7 @@ export function RathausAdresseButton({
               title={officialAddress.sourceTitle}
               className="font-semibold text-waldgruen-dark underline underline-offset-2"
             >
-              Destatis
+              {officialAddress.sourceName}
             </a>
             , Stand {officialAddress.sourceStand}. Du kannst die Adresse bei Google noch einmal{" "}
             <a
@@ -56,21 +61,17 @@ export function RathausAdresseButton({
             prüfen.
           </p>
         </>
+      ) : recipient.ambiguous && recipient.candidates && recipient.candidates.length > 0 ? (
+        <div className="text-warmgrau leading-relaxed">
+          <RathausCandidateList candidates={recipient.candidates} />
+        </div>
       ) : (
-        <p className="text-warmgrau leading-relaxed">
-          Für diese Postleitzahl lässt sich keine eindeutige amtliche Anschrift
-          zuordnen. Ergänze in der Suche deinen Wohnort und prüfe die Adresse,
-          bevor du den Brief abschickst. Die genaue Anschrift findest du {" "}
-          <a
-            href={searchUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="font-semibold text-waldgruen-dark underline underline-offset-2"
-          >
-            hier
-          </a>
-          .
-        </p>
+        <>
+          <p className="text-warmgrau leading-relaxed">
+            Die Postanschrift konnte ich für deine PLZ nicht sicher zuordnen.
+          </p>
+          <RathausSearchButton href={searchUrl} className="self-start" />
+        </>
       )}
     </div>
   );

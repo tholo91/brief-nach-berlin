@@ -23,6 +23,8 @@ import { WEBMAIL_PROVIDERS } from "@/lib/email/emailProviders";
 import { installClientLogBuffer, getClientLogs } from "@/lib/clientLogBuffer";
 import { formatPartyShort } from "@/lib/formatParty";
 import { formatSourceStand } from "@/lib/formatSourceStand";
+import { rathausSearchUrl } from "@/lib/lookup/recipientEnvelope";
+import { RathausCandidateList, RathausSearchButton } from "./RathausHinweise";
 import {
   FOUNDER_EMAIL,
   FOUNDER_FEEDBACK_URL,
@@ -1387,11 +1389,20 @@ export function Step3Success({
         {(isAmbiguousLand || isAmbiguousKommune) && (
           <div role="note" className="mt-4 rounded-xl border border-waldgruen/25 bg-waldgruen/8 p-4 font-body text-sm text-warmgrau leading-relaxed">
             <p className="font-semibold text-waldgruen-dark">Hinweis zur Zuordnung</p>
-            <p className="mt-1">
-              {isAmbiguousLand
-                ? "Eine PLZ kann mehrere Landtagswahlkreise abdecken. Prüfe über das verlinkte Profil, welcher Wahlkreis zu deiner Wohnadresse gehört, bevor du auswählst."
-                : "Diese PLZ kann zu mehreren Berliner Bezirken gehören. Ich wähle deshalb kein Bezirksamt für dich aus. Suche und prüfe das zuständige Bezirksamt anhand deiner vollständigen Adresse."}
-            </p>
+            {isAmbiguousLand ? (
+              <p className="mt-1">
+                Eine PLZ kann mehrere Landtagswahlkreise abdecken. Prüfe über das verlinkte Profil, welcher Wahlkreis zu deiner Wohnadresse gehört, bevor du auswählst.
+              </p>
+            ) : rathaus?.candidates && rathaus.candidates.length > 0 ? (
+              <RathausCandidateList candidates={rathaus.candidates} />
+            ) : (
+              <>
+                <p className="mt-1">
+                  Diese PLZ kann zu mehreren Berliner Bezirken gehören. Die Postanschrift konnte ich für deine PLZ nicht sicher zuordnen.
+                </p>
+                {rathaus && <RathausSearchButton href={rathausSearchUrl(rathaus)} className="mt-2" />}
+              </>
+            )}
           </div>
         )}
 
@@ -1454,8 +1465,12 @@ export function Step3Success({
               {rathaus.address.source === "official" ? (
                 <>
                   <p className="font-body text-sm text-warmgrau mt-1 leading-relaxed">
-                    {rathaus.address.streetAddress}
-                    <br />
+                    {rathaus.address.streetAddress && (
+                      <>
+                        {rathaus.address.streetAddress}
+                        <br />
+                      </>
+                    )}
                     {rathaus.address.postalCode} {rathaus.address.city}
                   </p>
                   <p className="font-body text-xs text-warmgrau/70 mt-2 leading-relaxed">
@@ -1467,16 +1482,18 @@ export function Step3Success({
                       title={rathaus.address.sourceTitle}
                       className="font-semibold text-waldgruen-dark underline underline-offset-2"
                     >
-                      Destatis
+                      {rathaus.address.sourceName}
                     </a>
                     , Stand {formatSourceStand(rathaus.address.sourceStand)}
                   </p>
                 </>
-              ) : (
-                <p className="font-body text-xs text-warmgrau/70 mt-2 leading-relaxed">
-                  Die genaue Postanschrift prüfst du vor dem Abschicken über die
-                  Suchhilfe.
-                </p>
+              ) : rathaus.ambiguous ? null : (
+                <>
+                  <p className="font-body text-xs text-warmgrau/70 mt-2 leading-relaxed">
+                    Die Postanschrift konnte ich für deine PLZ nicht sicher zuordnen.
+                  </p>
+                  <RathausSearchButton href={rathausSearchUrl(rathaus)} className="mt-2" />
+                </>
               )}
             </div>
           </div>

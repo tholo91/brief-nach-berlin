@@ -11,6 +11,7 @@ import { formatPartyShort } from "@/lib/formatParty";
 import { buildShareTarget } from "@/lib/share";
 import { normalizeLetterClosing } from "./normalizeLetterClosing";
 import { getEmailCopy, resolveEmailLocale } from "./mailLocale";
+import { formatBezirkeList } from "@/lib/lookup/recipientEnvelope";
 import { AI_CONTENT_BLOCK_ATTRIBUTES, AI_CONTENT_HTML_META } from "./aiContentMarking";
 import {
   buildSocialFollowHtml,
@@ -568,7 +569,7 @@ export function buildEmailHtml(data: SendLetterEmailParams): string {
       ? data.rathausSearch.address
       : null;
   const visibleAddressLines = officialRathausAddress
-    ? `${escapeHtml(officialRathausAddress.streetAddress)}<br>${escapeHtml(officialRathausAddress.postalCode)} ${escapeHtml(officialRathausAddress.city)}`
+    ? `${officialRathausAddress.streetAddress ? `${escapeHtml(officialRathausAddress.streetAddress)}<br>` : ""}${escapeHtml(officialRathausAddress.postalCode)} ${escapeHtml(officialRathausAddress.city)}`
     : isLandesregierung && data.governmentSource?.addressee === "head" && data.governmentSource.addressLines
       ? data.governmentSource.addressLines.slice(1).map(escapeHtml).join("<br>")
     : isLandesregierung && data.governmentSource
@@ -592,7 +593,7 @@ export function buildEmailHtml(data: SendLetterEmailParams): string {
   const fallbackUrl = `${APP_URL}/kein-mdb-im-wahlkreis`;
 
   const addressNameLine = isRathaus
-    ? `<strong>${fullName}</strong><br>`
+    ? `<strong>${officialRathausAddress?.recipientLine ? escapeHtml(officialRathausAddress.recipientLine) : fullName}</strong><br>`
     : isLandesregierung && data.governmentSource?.addressee === "head" && data.governmentSource.addressLines
       ? `<strong>${escapeHtml(data.governmentSource.addressLines[0] ?? data.politicianName)}</strong><br>`
     : isLandesregierung && data.governmentSource
@@ -623,11 +624,20 @@ export function buildEmailHtml(data: SendLetterEmailParams): string {
         `${data.rathausSearch.kind === "bezirksamt" ? "Bezirksamt" : "Bürgermeisteramt"}${data.rathausSearch.ort.trim() ? ` ${data.rathausSearch.ort.trim()}` : ""} Postanschrift`
       )}`
     : null;
+  const rathausNoteStyle = "margin:8px 0 0;font-family:Georgia,'Times New Roman',serif;font-size:12px;color:#b0b0b0;line-height:1.4;";
+  const rathausCandidates = data.rathausSearch?.candidates ?? [];
   const rathausSearchLine =
     isRathaus && rathausSearchUrl
       ? officialRathausAddress
-        ? `<p style="margin:8px 0 0;font-family:Georgia,'Times New Roman',serif;font-size:12px;color:#b0b0b0;line-height:1.4;">${copy.source} <a href="${escapeHtml(officialRathausAddress.sourceUrl)}" target="_blank" rel="noopener noreferrer" style="color:#b0b0b0;text-decoration:underline;">Destatis</a>, ${copy.checked} ${escapeHtml(officialRathausAddress.sourceStand)}. ${copy.verifyGoogle} <a href="${rathausSearchUrl}" target="_blank" rel="noopener noreferrer" style="color:#b0b0b0;text-decoration:underline;">${copy.verifyHere}</a> ${copy.verifyEnd}</p>`
-        : `<p style="margin:8px 0 0;font-family:Georgia,'Times New Roman',serif;font-size:12px;color:#b0b0b0;line-height:1.4;">${copy.noAddress} <a href="${rathausSearchUrl}" target="_blank" rel="noopener noreferrer" style="color:#b0b0b0;text-decoration:underline;">${copy.verifyHere}</a>.</p>`
+        ? `<p style="${rathausNoteStyle}">${copy.source} <a href="${escapeHtml(officialRathausAddress.sourceUrl)}" target="_blank" rel="noopener noreferrer" style="color:#b0b0b0;text-decoration:underline;">${escapeHtml(officialRathausAddress.sourceName)}</a>, ${copy.checked} ${escapeHtml(officialRathausAddress.sourceStand)}. ${copy.verifyGoogle} <a href="${rathausSearchUrl}" target="_blank" rel="noopener noreferrer" style="color:#b0b0b0;text-decoration:underline;">${copy.verifyHere}</a> ${copy.verifyEnd}</p>`
+        : data.rathausSearch?.address.source === "fallback" && rathausCandidates.length > 0
+          ? `<p style="${rathausNoteStyle}">${escapeHtml(copy.ambiguousBezirke(formatBezirkeList(rathausCandidates.map((c) => c.bezirk), copy.conjunctionOr)))}</p>${rathausCandidates
+              .map(
+                (candidate) =>
+                  `<p style="margin:8px 0 0;font-family:'Courier New',Courier,monospace;font-size:13px;line-height:1.6;color:#4A4A4A;"><strong>${escapeHtml(candidate.recipientLine)}</strong><br>${candidate.streetAddress ? `${escapeHtml(candidate.streetAddress)}<br>` : ""}${escapeHtml(candidate.postalCode)} ${escapeHtml(candidate.city)}</p>`
+              )
+              .join("")}`
+          : `<p style="${rathausNoteStyle}">${copy.noAddress}</p><p style="margin:10px 0 0;"><a href="${rathausSearchUrl}" target="_blank" rel="noopener noreferrer" style="display:inline-block;background-color:#2D5016;color:#ffffff;font-family:Georgia,'Times New Roman',serif;font-size:14px;font-weight:bold;text-decoration:none;padding:10px 14px;border-radius:4px;line-height:1.5;text-align:center;">${copy.searchAddress}</a></p>`
       : "";
   const governmentSourceLine =
     isLandesregierung && data.governmentSource

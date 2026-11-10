@@ -19,6 +19,12 @@ function personName(recipient: { title: string | null; firstName: string; lastNa
   return [recipient.title, recipient.firstName, recipient.lastName].filter(Boolean).join(" ");
 }
 
+/** "Pankow oder Mitte", bei drei und mehr "A, B oder C". */
+export function formatBezirkeList(names: string[], conjunction = "oder"): string {
+  if (names.length <= 1) return names[0] ?? "";
+  return `${names.slice(0, -1).join(", ")} ${conjunction} ${names[names.length - 1]}`;
+}
+
 export function rathausSearchUrl(recipient: RathausRecipient): string {
   const target =
     recipient.recipientKind === "bezirksamt"

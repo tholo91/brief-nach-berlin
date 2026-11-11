@@ -47,6 +47,8 @@ export interface LetterDebugPayload {
   // Ob der Nutzer die Tipps-Ausklappleiste je geöffnet hat (Landing oder
   // Wizard). Optional, damit ältere serialisierte Payloads weiter dekodieren.
   tipsOpened?: boolean;
+  // UI-Sprache des Wizards (de/en/tr). Optional, alte Payloads haben sie nicht.
+  locale?: Locale;
   // Feedback-Loop additions (optional so older serialized payloads still decode).
   // The /feedback page reads these from the signed token; they are never displayed
   // publicly and never trusted from client-supplied inputs.

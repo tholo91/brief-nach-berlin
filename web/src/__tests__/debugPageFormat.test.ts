@@ -43,6 +43,11 @@ describe("/debug format", () => {
     expect(text).toContain("Code version          —");
   });
 
+  it("zeigt die Wizard-Sprache, alte Payloads zeigen einen Strich", () => {
+    expect(format({ ...basePayload, locale: "en" })).toContain("Wizard language       en");
+    expect(format(basePayload)).toContain("Wizard language       —");
+  });
+
   it("wiederholt das Anliegen nicht in den technischen Details", () => {
     const text = format(basePayload);
 

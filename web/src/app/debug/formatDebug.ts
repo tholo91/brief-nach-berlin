@@ -86,6 +86,7 @@ export function format(payload: DebugPayload | { error: string }): string {
     `Sender hints          party=${d.hasParty} ngo=${d.hasNgo}`,
     `Voice input           ${d.usedSpeechToText}`,
     `Tips opened           ${d.tipsOpened ?? false}`,
+    `Wizard language       ${d.locale ?? "—"}`,
     `Model                 ${d.model}`,
     `Temperature           ${d.temperature}`,
     `Generation            ${d.generationMs} ms`,

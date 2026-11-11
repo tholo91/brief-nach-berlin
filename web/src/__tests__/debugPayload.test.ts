@@ -84,6 +84,14 @@ describe("Debug-Payload", () => {
     expect(payload.issueTextPreview?.length).toBeLessThanOrEqual(ISSUE_TEXT_PREVIEW_MAX);
   });
 
+  it("übernimmt die Wizard-Sprache in Erst- und Resend-Payload", () => {
+    const data = { ...wizardData, locale: "tr" as const };
+
+    expect(buildDebugPayload(data, generationResult, 6).locale).toBe("tr");
+    expect(buildResendDebugPayload(data, recipient, 6, "Cached").locale).toBe("tr");
+    expect(buildDebugPayload(wizardData, generationResult, 6).locale).toBeUndefined();
+  });
+
   it("caps the issue text preview at 2000 characters", () => {
     const payload = buildDebugPayload(wizardData, generationResult, 6);
 

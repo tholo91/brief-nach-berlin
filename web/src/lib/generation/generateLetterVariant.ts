@@ -1,4 +1,5 @@
 import { mistral, withMistralRetry, MISTRAL_MODELS } from "@/lib/mistral";
+import { messageText } from "@/lib/mistral-json";
 import { lowercaseAfterSalutation } from "@/lib/generation/lowercaseAfterSalutation";
 import { tonalityBlock } from "@/lib/generation/generateLetter";
 import { LETTER_LENGTHS, letterLengthFromWordCount, type LetterLength } from "@/lib/config";
@@ -203,7 +204,7 @@ export async function generateLetterVariant(
 
   let response = await requestVariantCompletion(input, maxTokens, "generateLetterVariant:first");
   let lengthRetried = false;
-  let parsed = parseVariantResponse(response.choices?.[0]?.message?.content);
+  let parsed = parseVariantResponse(messageText(response.choices?.[0]?.message?.content));
   let letter = preserveLetterFrame(input.originalLetter, parsed.letter);
   let wordCount = countWords(letter);
 
@@ -215,7 +216,7 @@ export async function generateLetterVariant(
       "generateLetterVariant:length-retry",
       lengthRetryPrompt(wordCount, minWords, maxWords)
     );
-    parsed = parseVariantResponse(response.choices?.[0]?.message?.content);
+    parsed = parseVariantResponse(messageText(response.choices?.[0]?.message?.content));
     letter = preserveLetterFrame(input.originalLetter, parsed.letter);
     wordCount = countWords(letter);
   }

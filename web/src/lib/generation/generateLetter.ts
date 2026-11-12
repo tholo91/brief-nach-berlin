@@ -4,7 +4,7 @@ import type { PoliticalLevel } from "@/lib/types/politician";
 import type { Recipient } from "@/lib/lookup/rathausRecipient";
 import { lowercaseAfterSalutation } from "@/lib/generation/lowercaseAfterSalutation";
 import { findRuleViolations, replaceDashes, ruleRetryDirective } from "@/lib/generation/letterRules";
-import { extractJsonObject } from "@/lib/mistral-json";
+import { extractJsonObject, messageText } from "@/lib/mistral-json";
 import { LETTER_LENGTHS, DEFAULT_LETTER_LENGTH } from "@/lib/config";
 import { LAST_KLASSE_NOT_YET_VOTING, youthLetterWords } from "@/lib/schule/youth";
 import {
@@ -712,7 +712,7 @@ export async function generateLetter(
     throw new MistralStageError("generation", error);
   }
 
-  let parsed = parseLetterResponse(firstResponse.choices?.[0]?.message?.content);
+  let parsed = parseLetterResponse(messageText(firstResponse.choices?.[0]?.message?.content));
   let wordCount = countWords(parsed.letter);
 
   // Retry corridor: ±15% around the configured band. Mistral usually lands
@@ -766,7 +766,7 @@ export async function generateLetter(
           messages: [
             { role: "system", content: systemPrompt },
             { role: "user", content: userPrompt },
-            { role: "assistant", content: firstResponse.choices?.[0]?.message?.content as string ?? "" },
+            { role: "assistant", content: messageText(firstResponse.choices?.[0]?.message?.content) ?? "" },
             { role: "user", content: directive },
           ],
           responseFormat,
@@ -776,7 +776,7 @@ export async function generateLetter(
           presencePenalty: 0.4,
         })
       );
-      const retryParsed = parseLetterResponse(retryResponse.choices?.[0]?.message?.content);
+      const retryParsed = parseLetterResponse(messageText(retryResponse.choices?.[0]?.message?.content));
       const retryWordCount = countWords(retryParsed.letter);
       const firstDelta = Math.abs(wordCount - targetWords);
       const retryDelta = Math.abs(retryWordCount - targetWords);

@@ -24,3 +24,21 @@ export function extractJsonObject(raw: string): unknown | null {
     }
   }
 }
+
+/**
+ * Liest den Text aus einer Mistral-Antwort. Reasoning-Modelle liefern content
+ * als Liste aus "thinking"- und "text"-Blöcken statt als String. Nur die
+ * Text-Blöcke zählen, der Denkprozess wird verworfen.
+ */
+export function messageText(content: unknown): string | null {
+  if (typeof content === "string") return content;
+  if (!Array.isArray(content)) return null;
+  const text = content
+    .map((chunk) =>
+      chunk && typeof chunk === "object" && (chunk as { type?: string }).type === "text"
+        ? String((chunk as { text?: unknown }).text ?? "")
+        : ""
+    )
+    .join("");
+  return text || null;
+}

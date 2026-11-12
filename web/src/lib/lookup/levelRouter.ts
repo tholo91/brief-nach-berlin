@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { mistral, MistralStageError, withMistralRetry, MISTRAL_MODELS } from "@/lib/mistral";
-import { extractJsonObject } from "@/lib/mistral-json";
+import { extractJsonObject, messageText } from "@/lib/mistral-json";
 import {
   TopicSignalWithMetadataSchema,
   buildTopicSignal,
@@ -153,7 +153,7 @@ export async function routeToLevel(
       { maxAttempts: 2 }
     );
     const content = res.choices?.[0]?.message?.content;
-    raw = typeof content === "string" ? content : JSON.stringify(content);
+    raw = messageText(content) ?? JSON.stringify(content);
   } catch (err) {
     throw new LevelRouterError("Mistral routing call failed", new MistralStageError("routing", err));
   }

@@ -7,7 +7,8 @@ export const mistral = new Mistral({ apiKey: process.env.MISTRAL_API_KEY });
 // Reviewed 2026-05-30 after Mistral deprecation email. Next review:
 // before 2026-08-31 (mistral-medium-2508 retirement) or the next email.
 export const MISTRAL_MODELS = {
-  letter: "mistral-large-latest",
+  // Fest auf 2512: "mistral-large-latest" zeigt seit 2026-11 auf Large 4 (Reasoning, thinking-Blöcke).
+  letter: "mistral-large-2512",
   moderation: "mistral-moderation-latest",
   transcription: "voxtral-mini-latest",
   levelRouting: "mistral-small-latest",

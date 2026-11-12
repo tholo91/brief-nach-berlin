@@ -274,7 +274,7 @@ export default function Datenschutz() {
             </p>
             <p className="mt-2">
               Empfänger: Mistral AI, 15 rue des Halles, 75001 Paris, Frankreich.
-              Eingesetzte Modelle: <em>mistral-large-latest</em> (Briefe),{" "}
+              Eingesetzte Modelle: <em>mistral-large-2512</em> (Briefe),{" "}
               <em>mistral-small-latest</em> (Zuständigkeit und Themen),{" "}
               <em>mistral-moderation-latest</em> (Inhaltsprüfung öffentlicher
               Kampagnentexte),{" "}

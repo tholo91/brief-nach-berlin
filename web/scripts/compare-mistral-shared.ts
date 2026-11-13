@@ -17,6 +17,8 @@ export interface ModelConfig {
   reasoningEffort: string | null;
   /** USD pro 1 Mio. Tokens (Eingabe/Ausgabe); null = Preis offen. */
   price: { input: number; output: number } | null;
+  /** Optional: maxTokens der Pipeline ueberschreiben (Reasoning-Modelle brauchen Platz fuer Denk-Tokens). */
+  maxTokens?: number;
 }
 
 // Preise: Stand Story 2026-11-12 (USD pro 1 Mio. Tokens). medium35 ungeprueft.
@@ -71,6 +73,10 @@ export interface CallLog {
   errorClass?: string;
   /** reasoningEffort wurde vom Modell abgelehnt, naechster Aufruf ohne Parameter. */
   effortDropped?: boolean;
+  /** Diagnose: Anfang der Antwort (Testdaten, nur raw.json), plus Art der Inhalts-Bloecke und finishReason. */
+  preview?: string;
+  contentKinds?: string;
+  finishReason?: string | null;
 }
 
 export interface RuleViolationInfo {

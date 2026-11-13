@@ -77,6 +77,23 @@ interface Args {
   models: ModelKey[] | null;
   modelOverrides: Partial<Record<ModelKey, string>>;
   effortOverrides: Partial<Record<ModelKey, string | null>>;
+  maxTokensOverrides: Partial<Record<ModelKey, number>>;
+}
+
+function describeResponse(res: unknown): { preview?: string; contentKinds?: string; finishReason?: string | null } {
+  const choice = (res as { choices?: Array<{ message?: { content?: unknown }; finishReason?: string | null }> })?.choices?.[0];
+  const content = choice?.message?.content;
+  let preview = "";
+  let kinds = "";
+  if (typeof content === "string") {
+    kinds = "string";
+    preview = content;
+  } else if (Array.isArray(content)) {
+    kinds = content.map((c) => (c as { type?: string })?.type ?? "?").join(",");
+    const textChunk = content.find((c) => (c as { type?: string })?.type === "text") as { text?: string } | undefined;
+    preview = textChunk?.text ?? "";
+  }
+  return { preview: preview.slice(0, 400), contentKinds: kinds, finishReason: choice?.finishReason ?? null };
 }
 
 function fail(message: string, code = 2): never {
@@ -102,6 +119,7 @@ function parseArgs(argv: string[]): Args {
     models: null,
     modelOverrides: {},
     effortOverrides: {},
+    maxTokensOverrides: {},
   };
   const value = (i: number, flag: string): string => {
     const v = argv[i + 1];
@@ -163,6 +181,16 @@ function parseArgs(argv: string[]): Args {
         i += 1;
         break;
       }
+      case "--max-tokens": {
+        const [k, v] = value(i, a).split("=");
+        const n = Number(v);
+        if (!k || !isModelKey(k) || !Number.isInteger(n) || n < 100 || n > 32000) {
+          fail(`--max-tokens erwartet key=zahl (100 bis 32000) mit key aus ${MODEL_KEYS.join(", ")}`);
+        }
+        args.maxTokensOverrides[k as ModelKey] = n;
+        i += 1;
+        break;
+      }
       default:
         fail(`Unbekanntes Argument: ${a}\n\n${helpText()}`);
     }
@@ -184,6 +212,7 @@ function helpText(): string {
   --report <run-id>        report.md, blind.html, key.json aus gespeichertem raw.json neu bauen.
   --model key=<id>         Modell-ID ueberschreiben (z. B. large4=mistral-large-2611)
   --effort key=<wert|off>  reasoningEffort ueberschreiben
+  --max-tokens key=<zahl>  maxTokens der Pipeline fuer dieses Modell ueberschreiben (Reasoning braucht Platz)
 
 Ohne --run wird nie ein Generierungsaufruf ausgefuehrt.
 Ausgabe: scripts/compare-mistral-models-output/<run-id>/ (gitignored)`;
@@ -355,6 +384,7 @@ function installWrapper(mistral: MistralClient, target: TaggedComplete, st: Runt
       const params = { ...req, model: cfg.id } as Record<string, unknown>;
       delete params.reasoningEffort;
       if (effort) params.reasoningEffort = effort;
+      if (cfg.maxTokens !== undefined) params.maxTokens = cfg.maxTokens;
       const t0 = Date.now();
       try {
         const res = await target(params as ChatRequest, opts);
@@ -365,6 +395,7 @@ function installWrapper(mistral: MistralClient, target: TaggedComplete, st: Runt
           promptTokens: res.usage?.promptTokens ?? null,
           completionTokens: res.usage?.completionTokens ?? null,
           status: 200,
+          ...describeResponse(res),
         });
         return res;
       } catch (err) {
@@ -725,6 +756,7 @@ function resolveModels(args: Args): Record<ModelKey, ModelConfig> {
       ...base,
       id: args.modelOverrides[k] ?? base.id,
       reasoningEffort: k in args.effortOverrides ? (args.effortOverrides[k] ?? null) : base.reasoningEffort,
+      ...(args.maxTokensOverrides[k] !== undefined ? { maxTokens: args.maxTokensOverrides[k] } : {}),
     };
   }
   return models;

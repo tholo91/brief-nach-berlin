@@ -4,10 +4,10 @@ milestone: v1.0
 current_phase: 05
 status: verifying
 stopped_at: Completed 05-04-PLAN.md
-last_updated: "2026-11-10T16:21:50.790Z"
-last_activity: 2026-11-03
+last_updated: "2026-11-13T15:49:37.358Z"
+last_activity: 2026-11-10
 last_activity_desc: Quick 261013-wuq lokal implementiert und geprüft; manueller Release offen
-state_head: 6d8a910c3b2510e7e7d1ffc028c55a44d5b897ec
+state_head: 9126e530239472ca6e5ff1f073ad8b7df11efbe8
 progress:
   total_phases: 33
   completed_phases: 4
@@ -251,6 +251,7 @@ Recent decisions affecting current work:
 | 261103-i16 | Copy wir zu ich (Wahlkreis-Fehler, Step-3-Hinweise) | 2026-11-03 | 019aabe | [261103-i16-copy-wir-zu-ich-in-mdblookupcard-und-ste](./quick/261103-i16-copy-wir-zu-ich-in-mdblookupcard-und-ste/) |
 | 261103-jrc | /schule Feinschliff: Chips mit Emoji, Tooltip, Eingabefeld wie Landing, Klasse 5-6, FAQ-Bild | 2026-11-03 | 2189bfe | [261103-jrc-schule-feinschliff-eingabekarte-chips-he](./quick/261103-jrc-schule-feinschliff-eingabekarte-chips-he/) |
 | 261110-nui | Berliner Bezirksamt-Postanschriften und besserer Rathaus-Fallback | 2026-11-10 | 6d8a910 | [261110-nui-berliner-bezirksamt-postanschriften-und-](./quick/261110-nui-berliner-bezirksamt-postanschriften-und-/) |
+| 261113-n45 | Mistral-Modellvergleich-Skript (compare-mistral-models.ts) bauen | 2026-11-13 | 9126e53 | [261113-n45-mistral-modellvergleich-skript-compare-m](./quick/261113-n45-mistral-modellvergleich-skript-compare-m/) |
 
 ## Session Continuity
 

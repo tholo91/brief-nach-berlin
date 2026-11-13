@@ -75,3 +75,6 @@ output/
 
 # Persönliche Ablage: Meetingnotes, Belege, Förderunterlagen (lokal)
 /admin/
+
+# Mistral-Modellvergleich: lokale Rohbriefe und Blind-Dateien
+web/scripts/compare-mistral-models-output/

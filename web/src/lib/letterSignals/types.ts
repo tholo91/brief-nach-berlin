@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { TopicSignalWithMetadataSchema } from "@/lib/topics/topicTaxonomy";
+import { DEVICE_CLASSES } from "@/lib/letterSignals/deviceClass";
 
 export const letterSignalContextSchema = TopicSignalWithMetadataSchema.extend({
   letterId: z.string().uuid(),
@@ -19,6 +20,7 @@ export const letterSignalInputSchema = z.object({
   contextToken: z.string().min(20).max(4096),
   email: z.string().trim().email().max(254),
   generationProof: z.string().min(20).max(4096).optional(),
+  deviceClass: z.enum(DEVICE_CLASSES).optional(),
 });
 
 export const generationProofInputSchema = z.object({

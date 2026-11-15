@@ -17,7 +17,7 @@ type SignalActionResult =
   | { success: true; mapPoint?: { x: number; y: number }; created?: boolean }
   | { error: "invalid_context" | "rate_limited" | "server_error" };
 
-const LETTER_SIGNAL_CONSENT_VERSION = "letter-signals-2026-10-v3-topic-keywords";
+const LETTER_SIGNAL_CONSENT_VERSION = "letter-signals-2026-11-v4-device-class";
 
 export async function createLetterSignalAction(input: unknown): Promise<SignalActionResult> {
   const parsedInput = letterSignalInputSchema.safeParse(input);
@@ -73,6 +73,7 @@ export async function createLetterSignalAction(input: unknown): Promise<SignalAc
           email_lookup_hash: context.emailLookupHash,
           generated_at: generationProof ? new Date().toISOString() : null,
           ...(generationProof?.letterNumber ? { letter_number: generationProof.letterNumber } : {}),
+          ...(parsedInput.data.deviceClass ? { device_class: parsedInput.data.deviceClass } : {}),
         },
         { onConflict: "letter_id", ignoreDuplicates: true },
       )

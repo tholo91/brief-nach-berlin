@@ -1,14 +1,19 @@
 "use client";
 
 import Link from "next/link";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useId, useRef, useState } from "react";
 import { GermanyContributionMap } from "@/components/letter-signals/GermanyContributionMap";
 import { loadPublicLetterMapData } from "@/lib/letterSignals/publicMapClient";
 import { createLetterSignalAction } from "@/lib/actions/letterSignals";
 import type { LetterMapData } from "@/lib/letterSignals/mapTypes";
+import { detectDeviceClass } from "@/lib/letterSignals/deviceClass";
 
 type ContributionState = "idle" | "saving" | "flying" | "contributed" | "error";
 type MapState = "loading" | "ready" | "error";
+
+// Unter md liegt die Karte über dem Spendenaufruf; nach dem Eintragen klappt sie dort ein.
+const MOBILE_QUERY = "(max-width: 767px)";
+const AUTO_COLLAPSE_DELAY_MS = 1200;
 
 const EMPTY_MAP: LetterMapData = {
   points: [],
@@ -30,6 +35,10 @@ export function LetterSignalCard({
   const [state, setState] = useState<ContributionState>("idle");
   const [ownPoint, setOwnPoint] = useState<{ x: number; y: number } | null>(null);
   const [reducedMotion, setReducedMotion] = useState(false);
+  const [collapsible, setCollapsible] = useState(false);
+  const [collapsed, setCollapsed] = useState(false);
+  const autoCollapsedRef = useRef(false);
+  const bodyId = useId();
 
   useEffect(() => {
     let active = true;
@@ -62,6 +71,17 @@ export function LetterSignalCard({
     return () => window.clearTimeout(timer);
   }, [state]);
 
+  useEffect(() => {
+    if (state !== "contributed" || autoCollapsedRef.current) return;
+    if (!window.matchMedia(MOBILE_QUERY).matches) return;
+    autoCollapsedRef.current = true;
+    const timer = window.setTimeout(() => {
+      setCollapsible(true);
+      setCollapsed(true);
+    }, AUTO_COLLAPSE_DELAY_MS);
+    return () => window.clearTimeout(timer);
+  }, [state]);
+
   const handleConsent = useCallback(async () => {
     if (state === "saving" || state === "flying" || state === "contributed") return;
     setState("saving");
@@ -69,6 +89,7 @@ export function LetterSignalCard({
       contextToken,
       email,
       ...(generationProof ? { generationProof } : {}),
+      deviceClass: detectDeviceClass(),
     });
     if ("error" in result) {
       setState("error");
@@ -106,15 +127,53 @@ export function LetterSignalCard({
 
   return (
     <section aria-labelledby="letter-signal-title">
-      <div className="grid items-center gap-4 sm:grid-cols-[minmax(0,1fr)_11rem] md:grid-cols-1 xl:grid-cols-[minmax(0,1fr)_10rem]">
-        <div className="min-w-0">
-          <h2 id="letter-signal-title" className="font-body text-lg font-semibold leading-snug text-waldgruen-dark">
-            Zeig, woher dein Brief kommt
-          </h2>
-          <p className="mt-2 font-body text-sm leading-relaxed text-warmgrau/75">
-            Setz dein Anliegen auf die Karte und mach sichtbar, von wo aus Menschen ihre Briefe nach Berlin schreiben.
-          </p>
-        </div>
+      {collapsible ? (
+        <button
+          type="button"
+          onClick={() => setCollapsed((value) => !value)}
+          aria-expanded={!collapsed}
+          aria-controls={bodyId}
+          className="-mx-2 flex w-[calc(100%+1rem)] items-center justify-between gap-3 rounded-lg px-2 py-1 text-left focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-waldgruen"
+        >
+          <span className="min-w-0">
+            <h2 id="letter-signal-title" className="font-body text-lg font-semibold leading-snug text-waldgruen-dark">
+              Zeig, woher dein Brief kommt
+            </h2>
+            {collapsed && (
+              <span className="mt-0.5 block font-body text-sm text-waldgruen">
+                Dein Anliegen ist auf der Karte.
+              </span>
+            )}
+          </span>
+          <svg
+            aria-hidden="true"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            className={`h-5 w-5 shrink-0 text-waldgruen transition-transform duration-300 motion-reduce:transition-none ${collapsed ? "" : "rotate-180"}`}
+          >
+            <path d="m6 9 6 6 6-6" />
+          </svg>
+        </button>
+      ) : (
+        <h2 id="letter-signal-title" className="font-body text-lg font-semibold leading-snug text-waldgruen-dark">
+          Zeig, woher dein Brief kommt
+        </h2>
+      )}
+
+      <div
+        id={bodyId}
+        inert={collapsed}
+        className={`grid transition-[grid-template-rows,opacity] duration-500 ease-out motion-reduce:transition-none ${collapsed ? "grid-rows-[0fr] opacity-0" : "grid-rows-[1fr] opacity-100"}`}
+      >
+      <div className="min-h-0 overflow-hidden">
+      <div className="mt-2 grid items-center gap-4 sm:grid-cols-[minmax(0,1fr)_11rem] md:grid-cols-1 xl:grid-cols-[minmax(0,1fr)_10rem]">
+        <p className="min-w-0 font-body text-sm leading-relaxed text-warmgrau/75">
+          Setz dein Anliegen auf die Karte und mach sichtbar, von wo aus Menschen ihre Briefe nach Berlin schreiben.
+        </p>
 
         <div className={mapState === "loading" ? "animate-pulse opacity-55" : "opacity-100"}>
           <GermanyContributionMap
@@ -156,11 +215,13 @@ export function LetterSignalCard({
       </div>
 
       <p className="mt-3 font-body text-xs leading-relaxed text-warmgrau/60">
-        Mit dem Klick PLZ, E-Mail-Adresse, Zeitpunkt, Thema und bis zu drei Stichworte deines Anliegens bis zum Widerruf speichern. Öffentlich erscheint nur ein Punkt bei deiner ungefähren PLZ. Dein Brief wird nicht gespeichert.{" "}
+        Mit dem Klick PLZ, E-Mail-Adresse, Zeitpunkt, Gerätetyp, Thema und bis zu drei Stichworte deines Anliegens bis zum Widerruf speichern. Öffentlich erscheint nur ein Punkt bei deiner ungefähren PLZ. Dein Brief wird nicht gespeichert.{" "}
         <Link href="/datenschutz#freiwillige-themensignale" className="underline underline-offset-2 hover:text-warmgrau">
           Datenschutz
         </Link>
       </p>
+      </div>
+      </div>
     </section>
   );
 }

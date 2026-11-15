@@ -751,7 +751,8 @@ export default function Datenschutz() {
               die tatsächlich gewählte Ebene Bund/Land/Kommune, die Empfängerart
               (zum Beispiel Bundestagsabgeordnete, Landesregierung oder Rathaus), ein bis drei erlaubte
               Oberkategorien, ein bis drei kurze Themen-Stichworte aus dem Anliegen, Zeitpunkt,
-              optionaler Kampagnen-Slug, eine zufällige Brief-ID, ein HMAC der
+              optionaler Kampagnen-Slug, der grobe Gerätetyp (Smartphone, Tablet
+              oder Computer, ohne Browser-Kennung), eine zufällige Brief-ID, ein HMAC der
               normalisierten E-Mail-Adresse und die Version der Einwilligung.
               Nicht gespeichert werden Anliegen- oder Brief-Volltext,
               Name, Empfängerperson oder IP-Adresse.

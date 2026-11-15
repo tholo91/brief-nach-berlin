@@ -92,10 +92,26 @@ describe("letter signal lifecycle actions", () => {
         email_normalized: TEST_EMAIL,
         email_lookup_hash: context.emailLookupHash,
         generated_at: null,
-        consent_version: "letter-signals-2026-10-v3-topic-keywords",
+        consent_version: "letter-signals-2026-11-v4-device-class",
       }),
       { onConflict: "letter_id", ignoreDuplicates: true },
     );
+  });
+
+  it("stores the coarse device class and rejects unknown values", async () => {
+    const builder = query();
+    mockedClient.mockReturnValue({ from: jest.fn().mockReturnValue(builder) } as never);
+    const token = createLetterSignalContext(context);
+
+    await createLetterSignalAction({ contextToken: token, email: TEST_EMAIL, deviceClass: "tablet" });
+    expect(builder.upsert).toHaveBeenCalledWith(
+      expect.objectContaining({ device_class: "tablet" }),
+      { onConflict: "letter_id", ignoreDuplicates: true },
+    );
+
+    await expect(
+      createLetterSignalAction({ contextToken: token, email: TEST_EMAIL, deviceClass: "Mozilla/5.0" }),
+    ).resolves.toEqual({ error: "invalid_context" });
   });
 
   it("confirms an existing contribution without incrementing it again", async () => {

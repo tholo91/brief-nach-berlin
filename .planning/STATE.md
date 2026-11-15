@@ -4,10 +4,10 @@ milestone: v1.0
 current_phase: 05
 status: verifying
 stopped_at: Completed 05-04-PLAN.md
-last_updated: "2026-11-13T15:49:37.358Z"
+last_updated: "2026-11-15T11:55:42.401Z"
 last_activity: 2026-11-10
 last_activity_desc: Quick 261013-wuq lokal implementiert und geprüft; manueller Release offen
-state_head: 9126e530239472ca6e5ff1f073ad8b7df11efbe8
+state_head: e894705000306c935dffe29807d51790d734861f
 progress:
   total_phases: 33
   completed_phases: 4
@@ -49,7 +49,7 @@ Der level-aware E-Mail-Betreff ist dagegen bereits implementiert und getestet; d
 Phase: 05 — EXECUTING
 Plan: 4 of 4
 Status: Phase complete — ready for verification
-Last activity: 2026-11-10 - Completed quick task 261110-nui: Berliner Bezirksamt-Postanschriften und besserer Rathaus-Fallback
+Last activity: 2026-11-15 - Completed quick task 261115-hvy: Karte auf Mobil einklappen und Geraetetyp in Letter-Signals
 
 Progress: [███████░░░] 68%
 
@@ -252,6 +252,7 @@ Recent decisions affecting current work:
 | 261103-jrc | /schule Feinschliff: Chips mit Emoji, Tooltip, Eingabefeld wie Landing, Klasse 5-6, FAQ-Bild | 2026-11-03 | 2189bfe | [261103-jrc-schule-feinschliff-eingabekarte-chips-he](./quick/261103-jrc-schule-feinschliff-eingabekarte-chips-he/) |
 | 261110-nui | Berliner Bezirksamt-Postanschriften und besserer Rathaus-Fallback | 2026-11-10 | 6d8a910 | [261110-nui-berliner-bezirksamt-postanschriften-und-](./quick/261110-nui-berliner-bezirksamt-postanschriften-und-/) |
 | 261113-n45 | Mistral-Modellvergleich-Skript (compare-mistral-models.ts) bauen | 2026-11-13 | 9126e53 | [261113-n45-mistral-modellvergleich-skript-compare-m](./quick/261113-n45-mistral-modellvergleich-skript-compare-m/) |
+| 261115-hvy | Karte auf Mobil einklappen und Geraetetyp in Letter-Signals | 2026-11-15 | e894705 | [261115-hvy-karte-auf-mobil-einklappen-und-geraetety](./quick/261115-hvy-karte-auf-mobil-einklappen-und-geraetety/) |
 
 ## Session Continuity
 

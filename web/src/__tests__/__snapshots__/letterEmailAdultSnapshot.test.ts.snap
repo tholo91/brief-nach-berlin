@@ -123,7 +123,7 @@ exports[`Erwachsenen-Mail bleibt unverändert Kampagne: html 1`] = `
                       <tr>
                         <td style="padding:6px 0;font-family:Georgia,'Times New Roman',serif;font-size:14px;color:#4A4A4A;line-height:1.5;">
                           <span style="display:inline-block;width:24px;height:24px;background-color:#2D5016;color:#ffffff;border-radius:50%;text-align:center;line-height:24px;font-size:12px;font-weight:bold;margin-right:10px;vertical-align:middle;">1</span>
-                          <span class="bnb-desk">Brief von Hand schreiben <span style="color:#8A8A8A;">(oder ausdrucken)</span></span><span class="bnb-mob" style="display:none;">Brief von Hand schreiben <span style="color:#8A8A8A;">(oder ausdrucken)</span></span>
+                          <span class="bnb-desk">Brief von Hand schreiben <span style="color:#8A8A8A;">(wirkt am stärksten)</span></span><span class="bnb-mob" style="display:none;">Brief von Hand schreiben <span style="color:#8A8A8A;">(wirkt am stärksten)</span></span>
                         </td>
                       </tr>
                       <tr>
@@ -270,7 +270,7 @@ Testbrief.
 Mit freundlichen Grüßen
 
 Nächste Schritte:
-1. Brief von Hand schreiben (oder ausdrucken).
+1. Brief von Hand schreiben (wirkt am stärksten).
 2. Empfangs- und Absenderadresse auf den Umschlag schreiben.
 3. Briefmarke drauf und ab in den Briefkasten.
 
@@ -412,7 +412,7 @@ exports[`Erwachsenen-Mail bleibt unverändert mit Feedback-Token (Sterne-Bar): h
                       <tr>
                         <td style="padding:6px 0;font-family:Georgia,'Times New Roman',serif;font-size:14px;color:#4A4A4A;line-height:1.5;">
                           <span style="display:inline-block;width:24px;height:24px;background-color:#2D5016;color:#ffffff;border-radius:50%;text-align:center;line-height:24px;font-size:12px;font-weight:bold;margin-right:10px;vertical-align:middle;">1</span>
-                          <span class="bnb-desk">Brief von Hand schreiben <span style="color:#8A8A8A;">(oder ausdrucken)</span></span><span class="bnb-mob" style="display:none;">Brief von Hand schreiben <span style="color:#8A8A8A;">(oder ausdrucken)</span></span>
+                          <span class="bnb-desk">Brief von Hand schreiben <span style="color:#8A8A8A;">(wirkt am stärksten)</span></span><span class="bnb-mob" style="display:none;">Brief von Hand schreiben <span style="color:#8A8A8A;">(wirkt am stärksten)</span></span>
                         </td>
                       </tr>
                       <tr>
@@ -549,7 +549,7 @@ Testbrief.
 Mit freundlichen Grüßen
 
 Nächste Schritte:
-1. Brief von Hand schreiben (oder ausdrucken).
+1. Brief von Hand schreiben (wirkt am stärksten).
 2. Empfangs- und Absenderadresse auf den Umschlag schreiben.
 3. Briefmarke drauf und ab in den Briefkasten.
 
@@ -678,7 +678,7 @@ exports[`Erwachsenen-Mail bleibt unverändert ohne Feedback-Token (Profil-Button
                       <tr>
                         <td style="padding:6px 0;font-family:Georgia,'Times New Roman',serif;font-size:14px;color:#4A4A4A;line-height:1.5;">
                           <span style="display:inline-block;width:24px;height:24px;background-color:#2D5016;color:#ffffff;border-radius:50%;text-align:center;line-height:24px;font-size:12px;font-weight:bold;margin-right:10px;vertical-align:middle;">1</span>
-                          <span class="bnb-desk">Brief von Hand schreiben <span style="color:#8A8A8A;">(oder ausdrucken)</span></span><span class="bnb-mob" style="display:none;">Brief von Hand schreiben <span style="color:#8A8A8A;">(oder ausdrucken)</span></span>
+                          <span class="bnb-desk">Brief von Hand schreiben <span style="color:#8A8A8A;">(wirkt am stärksten)</span></span><span class="bnb-mob" style="display:none;">Brief von Hand schreiben <span style="color:#8A8A8A;">(wirkt am stärksten)</span></span>
                         </td>
                       </tr>
                       <tr>
@@ -815,7 +815,7 @@ Testbrief.
 Mit freundlichen Grüßen
 
 Nächste Schritte:
-1. Brief von Hand schreiben (oder ausdrucken).
+1. Brief von Hand schreiben (wirkt am stärksten).
 2. Empfangs- und Absenderadresse auf den Umschlag schreiben.
 3. Briefmarke drauf und ab in den Briefkasten.
 

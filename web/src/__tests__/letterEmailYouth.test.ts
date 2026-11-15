@@ -52,6 +52,17 @@ describe("Briefkopie im Jugendmodus", () => {
     expect(text).toContain("Test.");
   });
 
+  it("Jugend: eigene Einleitung ohne Bewertungsbitte, Teilen führt auf /schule", async () => {
+    const { params } = await prepare("jung");
+    const html = buildEmailHtml(params);
+
+    expect(html).toContain("Nimm diesen Entwurf als Vorlage");
+    expect(html).toContain("Handgeschriebene Briefe fallen auf.");
+    expect(html).not.toContain("Bitte bewerte anschließend");
+    expect(html).toContain("Je mehr junge Menschen schreiben");
+    expect(html).toContain(encodeURIComponent("/schule"));
+  });
+
   it("Erwachsene: Sterne-Bewertung bleibt, Spendenbitte steht nur noch in der Follow-up-Mail", async () => {
     const { params } = await prepare();
     const html = buildEmailHtml(params);

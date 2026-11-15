@@ -328,9 +328,22 @@ function getPersonalImpactCopy(data: SendLetterEmailParams): string {
   return copy.impact.mdb;
 }
 
+// Jugendmodus gibt es nur auf Deutsch; andere Sprachen behalten ihre Texte.
+function isGermanYouthMail(data: SendLetterEmailParams): boolean {
+  return data.audience === "jung" && (!data.locale || data.locale === "de");
+}
+
+const YOUTH_REVIEW_COPY =
+  "Nimm diesen Entwurf als Vorlage und mach ihn zu deinem Brief, damit er sich nach dir anhört. Der Trick dabei: Handgeschriebene Briefe fallen auf.";
+const YOUTH_RECRUIT_COPY =
+  "Je mehr junge Menschen schreiben, desto öfter landen ihre Themen in der Politik. Teile Brief-nach-Berlin mit deiner Klasse, Freund:innen oder Geschwistern per…";
+const YOUTH_SHARE_URL = `${APP_URL}/schule`;
+const YOUTH_SHARE_TEXT = `Ich habe gerade mit Brief-nach-Berlin einen Brief an die Politik geschrieben. Schreibst du auch einen, zu einem Thema, das dir wichtig ist? ${YOUTH_SHARE_URL}`;
+
 function getRecruitCopy(data: SendLetterEmailParams): string {
   const copy = getEmailCopy(data.locale);
   if (data.locale && data.locale !== "de") return copy.recruit;
+  if (isGermanYouthMail(data) && !data.campaign?.slug) return YOUTH_RECRUIT_COPY;
   if (data.campaign?.slug) {
     if (data.recipientKind === "bundeskanzler") {
       return "Dein Brief ist ein Anfang. Teile die Kampagne, damit weitere Menschen dem Bundeskanzler mit eigenen Worten schreiben.";
@@ -398,6 +411,16 @@ function buildEmailShareTarget(data: SendLetterEmailParams) {
     level,
     data.governmentSource?.institutionKind === "senat" ? "senat" : "landesregierung"
   );
+  if (isGermanYouthMail(data) && !data.campaign?.slug) {
+    return {
+      ...share,
+      url: YOUTH_SHARE_URL,
+      text: YOUTH_SHARE_TEXT,
+      whatsappUrl: `https://wa.me/?text=${encodeURIComponent(YOUTH_SHARE_TEXT)}`,
+      telegramUrl: `https://t.me/share/url?url=${encodeURIComponent(YOUTH_SHARE_URL)}&text=${encodeURIComponent(YOUTH_SHARE_TEXT)}`,
+      emailUrl: `mailto:?subject=${encodeURIComponent(share.subject)}&body=${encodeURIComponent(YOUTH_SHARE_TEXT)}`,
+    };
+  }
   if (
     data.campaign?.slug ||
     data.recipientKind === "mdb" ||
@@ -737,7 +760,7 @@ export function buildEmailHtml(data: SendLetterEmailParams): string {
                 <!-- Intro: warm founder voice -->
                 <tr>
                   <td colspan="7" class="bnb-pad" style="padding:0 32px 20px;background-color:#ffffff;">
-                    <p style="margin:0;font-family:Georgia,'Times New Roman',serif;font-size:14px;color:#4A4A4A;line-height:1.6;">${copy.review} ${copy.reviewEnd}<span class="bnb-desk"><br>${copy.reviewRating}</span><span class="bnb-mob" style="display:none;"><br>${copy.reviewMobile}</span></p>
+                    <p style="margin:0;font-family:Georgia,'Times New Roman',serif;font-size:14px;color:#4A4A4A;line-height:1.6;">${isGermanYouthMail(data) ? YOUTH_REVIEW_COPY : `${copy.review} ${copy.reviewEnd}<span class="bnb-desk"><br>${copy.reviewRating}</span><span class="bnb-mob" style="display:none;"><br>${copy.reviewMobile}</span>`}</p>
                   </td>
                 </tr>
 

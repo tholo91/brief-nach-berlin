@@ -70,11 +70,61 @@ export function normalizeEmail(value: unknown): string | null {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) ? email : null;
 }
 
+export type LastcallRoundConfig = {
+  csvFile: string;
+  journalFile: string;
+  /** Inklusive Untergrenze (UTC) für reviews.created_at; null = keine. */
+  reviewsFromUtc: string | null;
+  /** Exklusive Obergrenze (UTC) für reviews.created_at. */
+  reviewsBeforeUtc: string;
+  includeMayList: boolean;
+  /** Versandjournale früherer Runden: deren Adressen werden nicht erneut angeschrieben. */
+  excludeJournalFiles: readonly string[];
+};
+
+export const LASTCALL_ROUND_CONFIG: Record<OutcomeCohort, LastcallRoundConfig> = {
+  [LASTCALL_COHORT]: {
+    csvFile: ".lastcall-cohort.csv",
+    journalFile: ".lastcall-send-journal.json",
+    reviewsFromUtc: null,
+    reviewsBeforeUtc: LASTCALL_CUTOFF_UTC,
+    includeMayList: true,
+    excludeJournalFiles: [],
+  },
+  [LASTCALL_COHORT_2026_11]: {
+    csvFile: ".lastcall-cohort-2026-11.csv",
+    journalFile: ".lastcall-send-journal-2026-11.json",
+    // 13.08.2026 00:00 bis 30.09.2026 24:00 Europe/Berlin (Sommerzeit, UTC+2).
+    reviewsFromUtc: LASTCALL_CUTOFF_UTC,
+    reviewsBeforeUtc: "2026-09-30T22:00:00.000Z",
+    includeMayList: false,
+    excludeJournalFiles: [".lastcall-send-journal.json"],
+  },
+};
+
+/** Einziger Schalter für Export und Versand: welche Runde gerade vorbereitet wird. */
+export const ACTIVE_LASTCALL_COHORT: OutcomeCohort = LASTCALL_COHORT_2026_11;
+
 export function buildLastcallCohort(
   reviewEmails: string[],
-  mayEmails: string[],
-): { emails: string[]; reviewCount: number; mayCount: number; duplicateCount: number; invalidCount: number; testExcludedCount: number } {
+  mayEmails: string[] = [],
+  alreadyMailed: Iterable<string> = [],
+): {
+  emails: string[];
+  reviewCount: number;
+  mayCount: number;
+  duplicateCount: number;
+  invalidCount: number;
+  testExcludedCount: number;
+  alreadyMailedCount: number;
+} {
+  const mailed = new Set<string>();
+  for (const value of alreadyMailed) {
+    const email = normalizeEmail(value);
+    if (email) mailed.add(email);
+  }
   const emails = new Set<string>();
+  const mailedDropped = new Set<string>();
   let reviewCount = 0;
   let mayCount = 0;
   let duplicateCount = 0;
@@ -88,11 +138,20 @@ export function buildLastcallCohort(
       if (LASTCALL_TEST_EMAILS.has(email)) { testExcludedCount++; continue; }
       if (sourceSeen.has(email)) { duplicateCount++; continue; }
       sourceSeen.add(email);
+      if (mailed.has(email)) { mailedDropped.add(email); continue; }
       if (emails.has(email)) { duplicateCount++; continue; }
       emails.add(email);
       if (source === "review") reviewCount++;
       else mayCount++;
     }
   }
-  return { emails: [...emails].sort(), reviewCount, mayCount, duplicateCount, invalidCount, testExcludedCount };
+  return {
+    emails: [...emails].sort(),
+    reviewCount,
+    mayCount,
+    duplicateCount,
+    invalidCount,
+    testExcludedCount,
+    alreadyMailedCount: mailedDropped.size,
+  };
 }

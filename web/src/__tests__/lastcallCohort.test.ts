@@ -21,6 +21,24 @@ describe("last-call cohort", () => {
       duplicateCount: 2,
       invalidCount: 1,
       testExcludedCount: 1,
+      alreadyMailedCount: 0,
+    });
+  });
+
+  it("drops already mailed addresses, counting each distinct address once", () => {
+    const result = buildLastcallCohort(
+      ["a@example.org", " OLD@Example.org ", "old@example.org", "pending@example.org", "Brief-nach-Berlin@posteo.de", "b@example.org"],
+      [],
+      ["old@example.org", "pending@example.org", "unrelated@example.org"],
+    );
+    expect(result).toEqual({
+      emails: ["a@example.org", "b@example.org"],
+      reviewCount: 2,
+      mayCount: 0,
+      duplicateCount: 1,
+      invalidCount: 0,
+      testExcludedCount: 1,
+      alreadyMailedCount: 2,
     });
   });
 

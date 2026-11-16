@@ -1,4 +1,4 @@
-// Manually sends the October 2026 last-call batch. Never schedule this script.
+// Manually sends the active last-call batch (see ACTIVE_LASTCALL_COHORT). Never schedule this script.
 import { readFileSync, existsSync, writeFileSync, renameSync, openSync, closeSync, unlinkSync, mkdirSync, chmodSync } from "node:fs";
 import { resolve } from "node:path";
 import { createInterface } from "node:readline/promises";
@@ -8,16 +8,17 @@ import { buildLastcallHtml } from "../src/lib/email/buildLastcallHtml";
 import { APP_URL } from "../src/lib/config";
 import { createDataDeletionToken } from "../src/lib/dataDeletion/token";
 import { createRueckmeldungToken, verifyRueckmeldungToken } from "../src/lib/rueckmeldung/token";
+import { ACTIVE_LASTCALL_COHORT, LASTCALL_ROUND_CONFIG } from "../src/lib/rueckmeldung/cohort";
 
 loadEnvLocal();
 
 const MAX_RECIPIENTS = 500;
 const THROTTLE_MS = 300;
 const TEST_RECIPIENT = "Brief-nach-Berlin@posteo.de";
-const COHORT = "lastcall_2026_10";
+const COHORT = ACTIVE_LASTCALL_COHORT;
 const JOURNAL_PATH = process.env.NODE_ENV === "test" && process.env.LASTCALL_JOURNAL_PATH
   ? resolve(process.env.LASTCALL_JOURNAL_PATH)
-  : resolve(__dirname, "..", ".lastcall-send-journal.json");
+  : resolve(__dirname, "..", LASTCALL_ROUND_CONFIG[COHORT].journalFile);
 const PREVIEW_DIR = process.env.NODE_ENV === "test" && process.env.LASTCALL_PREVIEW_DIR
   ? resolve(process.env.LASTCALL_PREVIEW_DIR)
   : resolve(__dirname, "..");
@@ -96,6 +97,7 @@ async function main() {
     catch { fail("Token konnten nicht signiert werden. FEEDBACK_TOKEN_SECRET prüfen."); }
 
     console.log("=== Last-Call Versand ===");
+    console.log(`Kohorte: ${COHORT}`);
     console.log(`Eingelesen: ${raw.length}; ungültig: ${invalidRemoved}; Duplikate: ${duplicatesRemoved}`);
     console.log(`Ausschlussliste: ${excluded}; zu senden: ${args.dryRun ? 1 : toSend.length}`);
     console.log(`Betreff: ${subject}; Reply-To: ${args.replyTo}; Dry-Run: ${args.dryRun ? "ja" : "nein"}`);
@@ -205,7 +207,10 @@ function readJournal(): { campaign: string; sentEmails: string[]; pendingEmail?:
     const value = JSON.parse(readFileSync(JOURNAL_PATH, "utf8")) as { campaign?: string; sentEmails?: string[]; pendingEmail?: string | null };
     if (value.campaign !== COHORT || !Array.isArray(value.sentEmails) || !value.sentEmails.every((email) => typeof email === "string") || (value.pendingEmail != null && typeof value.pendingEmail !== "string")) fail("Versandjournal unlesbar oder gehört zu einer anderen Kampagne.");
     return { campaign: COHORT, sentEmails: value.sentEmails, pendingEmail: value.pendingEmail ?? null };
-  } catch { fail("Versandjournal kann nicht gelesen werden. Nicht erneut senden, bis geprüft."); }
+  } catch (error) {
+    if (error instanceof SafeAbort) throw error;
+    fail("Versandjournal kann nicht gelesen werden. Nicht erneut senden, bis geprüft.");
+  }
 }
 
 function writeJournal(journal: { campaign: string; sentEmails: string[]; pendingEmail?: string | null }) {

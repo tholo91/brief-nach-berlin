@@ -58,4 +58,6 @@ next-env.d.ts
 # Last-call personal cohort and send journal
 .lastcall-cohort.csv*
 .lastcall-send-journal.json*
+.lastcall-cohort-*.csv*
+.lastcall-send-journal-*.json*
 .lastcall-preview.*

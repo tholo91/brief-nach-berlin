@@ -3,6 +3,7 @@ import { existsSync, mkdtempSync, readFileSync, rmSync, writeFileSync, statSync 
 import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
 import { verifyRueckmeldungToken } from "../lib/rueckmeldung/token";
+import { ACTIVE_LASTCALL_COHORT } from "../lib/rueckmeldung/cohort";
 import { verifyDataDeletionToken } from "../lib/dataDeletion/token";
 
 const webDir = resolve(__dirname, "../..");
@@ -74,7 +75,7 @@ it("dry-run only targets the founder and all answer buttons carry that recipient
     const url = new URL(href);
     const token = url.searchParams.get("t");
     expect(token).toBeTruthy();
-    expect(verifyRueckmeldungToken(token!)).toEqual({ email: "brief-nach-berlin@posteo.de", cohort: "lastcall_2026_10" });
+    expect(verifyRueckmeldungToken(token!)).toEqual({ email: "brief-nach-berlin@posteo.de", cohort: ACTIVE_LASTCALL_COHORT });
   }
 });
 
@@ -106,7 +107,7 @@ it("writes a private local preview without CSV, Brevo credentials, or network ca
   expect(answerHrefs).toHaveLength(3);
   for (const href of answerHrefs) {
     const token = new URL(href).searchParams.get("t");
-    expect(verifyRueckmeldungToken(token!)).toEqual({ email: "brief-nach-berlin@posteo.de", cohort: "lastcall_2026_10" });
+    expect(verifyRueckmeldungToken(token!)).toEqual({ email: "brief-nach-berlin@posteo.de", cohort: ACTIVE_LASTCALL_COHORT });
   }
   const deleteHref = html.match(/href="([^"]*\/datenloeschen\?t=[^"]+)"/)?.[1];
   expect(deleteHref).toBeTruthy();
@@ -119,12 +120,27 @@ it("writes a private local preview without CSV, Brevo credentials, or network ca
 
 it("skips journaled recipients and sends only the remaining address", () => {
   writeFileSync(csvPath, "email\nperson-one@example.org\nperson-two@example.org\n");
-  writeFileSync(journalPath, JSON.stringify({ campaign: "lastcall_2026_10", sentEmails: ["person-one@example.org"], pendingEmail: null }));
+  writeFileSync(journalPath, JSON.stringify({ campaign: ACTIVE_LASTCALL_COHORT, sentEmails: ["person-one@example.org"], pendingEmail: null }));
   const result = run(["--confirm"], { input: "SENDEN\n" });
   expect(result.status).toBe(0);
   expect(requests()).toHaveLength(1);
   expect(requests()[0].to).toEqual([{ email: "person-two@example.org" }]);
   expect(JSON.parse(readFileSync(journalPath, "utf8")).sentEmails).toContain("person-two@example.org");
+});
+
+it("refuses the October journal and sends nothing", () => {
+  writeFileSync(csvPath, "person@example.org\n");
+  writeFileSync(journalPath, JSON.stringify({ campaign: "lastcall_2026_10", sentEmails: ["person@example.org"], pendingEmail: null }));
+  const result = run(["--confirm"], { input: "SENDEN\n" });
+  expect(result.status).toBe(1);
+  expect(result.stderr).toContain("anderen Kampagne");
+  expect(requests()).toHaveLength(0);
+});
+
+it("shows the active cohort before the confirmation prompt", () => {
+  writeFileSync(csvPath, "person@example.org\n");
+  const result = run(["--dry-run"], { input: "ja\n" });
+  expect(result.stdout).toContain(`Kohorte: ${ACTIVE_LASTCALL_COHORT}`);
 });
 
 it("stops on the first ambiguous network failure and blocks an automatic retry", () => {

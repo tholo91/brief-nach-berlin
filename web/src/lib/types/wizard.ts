@@ -107,6 +107,8 @@ export interface GenerateLetterInput {
   bundeskanzler?: BundeskanzlerRecipient;
   /** Neutraler Bund-Entwurf, dessen konkrete Person später eingesetzt wird. */
   mdbLater?: MdbLaterRecipient;
+  /** Anliegen stammt aus einem Kampagnentext (ggf. vom User angepasst). */
+  fromCampaign?: boolean;
   /** Kampagne: serverseitig geladener fester Empfänger. */
   campaignFixedRecipient?: CampaignFixedRecipientRecipient;
   /** Serverseitig abgeleitete Beziehung zwischen PLZ und Empfänger. */

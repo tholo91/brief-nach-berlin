@@ -173,3 +173,13 @@ describe("buildUserPrompt", () => {
     expect(userPrompt).not.toContain(DEFENSIVE_MARKER);
   });
 });
+
+describe("buildUserPrompt: Kampagnenbriefe", () => {
+  it("verbietet erfundene Erlebnisse nur bei Kampagnenbriefen", () => {
+    const campaign = buildUserPrompt({ ...makeInput(undefined), fromCampaign: true }, 200, 240, 3);
+    const normal = buildUserPrompt(makeInput(undefined), 200, 240, 3);
+    expect(campaign).toContain("stammt aus einer Kampagne");
+    expect(campaign).toContain("nur, wenn sie wörtlich im <transkript> stehen");
+    expect(normal).not.toContain("stammt aus einer Kampagne");
+  });
+});

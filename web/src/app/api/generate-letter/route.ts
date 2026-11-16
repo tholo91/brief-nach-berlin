@@ -330,6 +330,7 @@ export async function POST(req: NextRequest) {
       recipientRelation: resolved.relation,
       mismatchRecommendedLevel,
       preclassifiedTopic: campaign?.topic,
+      fromCampaign: !!campaign,
       youth,
     });
 

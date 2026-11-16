@@ -542,6 +542,11 @@ function youthBlock(input: GenerateLetterInput): string {
   return `\n\n<absender_jugend>\n${lines.join("\n")}\n</absender_jugend>`;
 }
 
+// Kampagnentexte sind sachlich und ohne eigenes Erlebnis geschrieben. Ohne
+// diesen Hinweis füllte Mistral die Lücke mit erfundenen Personen
+// (Hamburg-Kampagne, 16.11.2026: alleinerziehende Nachbarin, Instrument).
+const CAMPAIGN_HINWEIS = `\n\n<hinweis>\nDas <transkript> stammt aus einer Kampagne. Die schreibende Person unterstützt das Anliegen. Persönliche Erlebnisse, Angehörige, Nachbarn, Bekannte, Szenen und Angaben zur Person verwendest du nur, wenn sie wörtlich im <transkript> stehen. Sonst formulierst du die Betroffenheit allgemein in Ich-Form, etwa als Sorge um die Betroffenen. Übernimm alle inhaltlichen Punkte des <transkript> und füge keine neuen Fakten oder Forderungen hinzu.\n</hinweis>`;
+
 const YOUTH_SHORT_INPUT_HINWEIS = `\n\n<hinweis>\nDie schreibende Person hat sich kurz gehalten. Bleibe einfach und konkret bei dem, was im <transkript> steht. Erfinde keine Erlebnisse, keine Angaben zur Person und keine Orte dazu.\n</hinweis>`;
 
 export function buildUserPrompt(
@@ -608,6 +613,8 @@ export function buildUserPrompt(
         : `\n\n<hinweis>\nDer Bürger hat sich knapp gehalten. Bleibe entsprechend abstrakt: keine Erlebnis-Szenen, keine Vita, keine konkreten Ortsangaben außer Stadt/Stadtteil, wenn vorhanden.\n</hinweis>`
       : "";
 
+  const campaignHinweis = input.fromCampaign ? CAMPAIGN_HINWEIS : "";
+
   const toneBlock = tonalityBlock(toneLevel);
   const contextBlock = institutionalRecipient ? "" : mdbContextBlock(input.mdbContext);
 
@@ -626,7 +633,7 @@ absaetze: 3 bis 4
 
 <empfaenger>
 ${politiciansJson}
-</empfaenger>${contextBlock}${absenderBlock(input)}${youthBlock(input)}${shortInputHinweis}`;
+</empfaenger>${contextBlock}${absenderBlock(input)}${youthBlock(input)}${shortInputHinweis}${campaignHinweis}`;
 }
 
 interface ParsedLetter {
@@ -738,7 +745,7 @@ export async function generateLetter(
     const lengthDirective = !lengthOff
       ? ""
       : wordCount < acceptableMin
-      ? `Der vorherige Brief hatte nur ${wordCount} Wörter. Das Zielfenster ist ${minWords}–${maxWords} Wörter. Schreibe den Brief neu mit folgendem Aufbau: (1) Anlass aus <transkript>, (2) persönliche Begründung / Betroffenheit, (3) konkrete Forderung, (4) politischer Schlussappell. Jeder Absatz MUSS eine neue, eigenständige Aussage enthalten. WIEDERHOLE NICHTS aus dem vorherigen Brief in anderen Worten. Wenn das <transkript> nicht genug Substanz für ${minWords} Wörter hergibt, akzeptiere lieber eine kürzere Länge als denselben Gedanken zu wiederholen oder Fakten zu erfinden.`
+      ? `Der vorherige Brief hatte nur ${wordCount} Wörter. Das Zielfenster ist ${minWords}–${maxWords} Wörter. Schreibe den Brief neu mit folgendem Aufbau: (1) Anlass aus <transkript>, (2) Begründung aus <transkript>, persönliche Betroffenheit nur, wenn sie dort steht, (3) konkrete Forderung, (4) politischer Schlussappell. Jeder Absatz MUSS eine neue, eigenständige Aussage enthalten. WIEDERHOLE NICHTS aus dem vorherigen Brief in anderen Worten. Wenn das <transkript> nicht genug Substanz für ${minWords} Wörter hergibt, akzeptiere lieber eine kürzere Länge als denselben Gedanken zu wiederholen oder Fakten zu erfinden.`
       : `Der vorherige Brief hatte ${wordCount} Wörter. Das Zielfenster ist ${minWords}–${maxWords} Wörter. Schreibe den Brief neu: kürze, ohne die Stimme oder die Kernargumente des Bürgers zu verlieren.`;
     const directive = [lengthDirective, ruleRetryDirective(violations, lengthOff)].filter(Boolean).join("\n\n");
 

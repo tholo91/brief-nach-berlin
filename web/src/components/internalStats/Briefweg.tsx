@@ -62,7 +62,15 @@ function buildStages(round: OutcomeRoundStats): Stage[] {
       label: "abgeschickt",
       value: path.sent,
       share: formatShare(path.sent, path.responded),
-      detail: `${formatNumber(path.sentHandwritten)} von Hand · ${formatNumber(path.sentTyped)} getippt · ${formatNumber(path.sentMethodUnknown)} ohne Angabe`,
+      detail: [
+        `${formatNumber(path.sentHandwritten)} von Hand`,
+        path.sentPrinted > 0 ? `${formatNumber(path.sentPrinted)} ausgedruckt` : null,
+        path.sentEmail > 0 ? `${formatNumber(path.sentEmail)} per E-Mail` : null,
+        path.sentTyped > 0 ? `${formatNumber(path.sentTyped)} getippt oder ausgedruckt (alter Wert)` : null,
+        `${formatNumber(path.sentMethodUnknown)} ohne Angabe`,
+      ]
+        .filter((part): part is string => part !== null)
+        .join(" · "),
       barPercent: percentOf(path.sent, path.responded),
       barColor: "var(--color-waldgruen)",
     },

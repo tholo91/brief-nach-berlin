@@ -12,6 +12,7 @@ import {
   LASTCALL_COHORT,
   LASTCALL_TEST_EMAILS,
   OUTCOME_ROUNDS,
+  sentOutcomeRounds,
   testEmailExclusionList,
 } from "@/lib/rueckmeldung/cohort";
 import { bucketTimeline } from "@/lib/internalStats/view";
@@ -141,6 +142,36 @@ describe("aggregateOutcomes counting rules", () => {
     expect(stats.channelCounts.none).toBe(1);
     expect(stats.channelCounts.acknowledgement).toBe(1);
     expect(stats.channelBase).toBe(3);
+  });
+
+  it("counts printed and email separately and keeps typed as old value", () => {
+    const stats = aggregateOutcomes(
+      [
+        completedForm({ letter_sent: "printed", reply_channels: ["email"] }),
+        completedForm({ letter_sent: "printed", reply_channels: ["none"], reply_addressed: null }),
+        completedForm({ letter_sent: "email", reply_channels: ["letter"] }),
+        completedForm({ letter_sent: "typed", reply_channels: ["none"], reply_addressed: null }),
+        completedForm({ letter_sent: "handwritten", reply_channels: ["email"] }),
+      ],
+      [],
+      round,
+      FETCHED_AT,
+    );
+    expect(stats.path.sent).toBe(5);
+    expect(stats.path.sentPrinted).toBe(2);
+    expect(stats.path.sentEmail).toBe(1);
+    expect(stats.path.sentTyped).toBe(1);
+    expect(stats.path.sentHandwritten).toBe(1);
+    expect(stats.path.sentMethodUnknown).toBe(0);
+    expect(stats.replyRateByMethod.printed).toEqual({ sent: 2, replied: 1 });
+    expect(stats.replyRateByMethod.email).toEqual({ sent: 1, replied: 1 });
+    expect(stats.replyRateByMethod.typed).toEqual({ sent: 1, replied: 0 });
+  });
+
+  it("still counts a click-only row as sent with unknown method", () => {
+    const stats = aggregateOutcomes([outcome({ entry_choice: "yes" })], [], round, FETCHED_AT);
+    expect(stats.path.sent).toBe(1);
+    expect(stats.path.sentMethodUnknown).toBe(1);
   });
 
   it("takes details only from completed forms", () => {
@@ -363,7 +394,8 @@ describe("getInternalStatsWithBaseline outcomes query", () => {
     for (const email of LASTCALL_TEST_EMAILS) {
       expect(list).toContain(`"${email}"`);
     }
-    expect(result.outcomes).toHaveLength(OUTCOME_ROUNDS.length);
+    expect(result.outcomes).toHaveLength(sentOutcomeRounds().length);
+    expect(result.outcomes.map((o) => o.cohort)).not.toContain("lastcall_2026_11");
     expect(result.outcomes[0].respondentCount).toBe(1);
   });
 
@@ -395,6 +427,25 @@ describe("Briefweg", () => {
     expect(markup).toContain("davon konkret eingegangen");
     expect(markup).toContain("1 von Hand");
     expect(markup).not.toContain("@");
+  });
+
+  it("lists printed and email counts and labels typed as old value", () => {
+    const stats = aggregateOutcomes(
+      [
+        completedForm({ letter_sent: "printed", reply_channels: ["email"] }),
+        completedForm({ letter_sent: "email", reply_channels: ["email"] }),
+        completedForm({ letter_sent: "typed", reply_channels: ["none"], reply_addressed: null }),
+      ],
+      [],
+      round,
+      FETCHED_AT,
+    );
+    const markup = renderToStaticMarkup(createElement(Briefweg, { round: stats }));
+    expect(markup).toContain("0 von Hand");
+    expect(markup).toContain("1 ausgedruckt");
+    expect(markup).toContain("1 per E-Mail");
+    expect(markup).toContain("1 getippt oder ausgedruckt (alter Wert)");
+    expect(markup).not.toContain("NaN");
   });
 
   it("does not divide by zero without respondents", () => {

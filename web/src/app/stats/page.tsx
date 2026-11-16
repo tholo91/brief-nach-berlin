@@ -13,6 +13,7 @@ import { SectionNav } from "@/components/internalStats/SectionNav";
 import { BundeslandMap } from "@/components/campaigns/BundeslandMap";
 import { BUNDESLAND_KEYS, BUNDESLAND_NAMES, type BundeslandKey } from "@/lib/campaigns/schema";
 import { formatDecimal, formatNumber } from "@/lib/formatNumber";
+import { SENT_METHOD_VALUES } from "@/lib/rueckmeldung/schema";
 import { DUPLICATE_LETTER_NOTE, estimateLettersWithoutDuplicates } from "@/lib/duplicateLetters";
 import { lockInternalStats, unlockInternalStats } from "@/lib/internalStats/actions";
 import {
@@ -2117,7 +2118,7 @@ function OutcomeRoundBlock({
   statements: Record<StatementKey, string | null> | null;
 }) {
   const { path, replyRateByMethod, selfEfficacy } = round;
-  const methodBase = replyRateByMethod.handwritten.sent + replyRateByMethod.typed.sent;
+  const methodBase = SENT_METHOD_VALUES.reduce((sum, method) => sum + replyRateByMethod[method].sent, 0);
   return (
     <div className="grid gap-6">
       <p className="font-typewriter text-sm leading-relaxed text-warmgrau/80">
@@ -2256,7 +2257,7 @@ function OutcomeRoundBlock({
 
       <Collapsible
         summary="Weitere Zahlen zur Runde"
-        detail="Rücklauf pro Tag, von Hand oder getippt, Gründe fürs Nichtabschicken, Erwartung und fertige Formulare."
+        detail="Rücklauf pro Tag, von Hand, ausgedruckt oder per E-Mail, Gründe fürs Nichtabschicken, Erwartung und fertige Formulare."
       >
         <div className="grid gap-6">
           <div>
@@ -2274,21 +2275,21 @@ function OutcomeRoundBlock({
 
           {round.completedCount > 0 && (
             <div className="grid gap-4 lg:grid-cols-2">
-              <DetailBlock title="Von Hand oder getippt" base={methodBase}>
+              <DetailBlock title="Wie der Brief verfasst wurde" base={methodBase}>
                 <QuestionCaption title="Brief abgeschickt" question="outcomeSent">
                   Wie wurde der Brief verfasst?
                 </QuestionCaption>
                 <div className="grid gap-3 sm:grid-cols-2">
-                  <MiniStat
-                    label={OUTCOME_LABELS.letterSent.handwritten}
-                    value={formatShare(replyRateByMethod.handwritten.replied, replyRateByMethod.handwritten.sent)}
-                    detail="mit Reaktion"
-                  />
-                  <MiniStat
-                    label={OUTCOME_LABELS.letterSent.typed}
-                    value={formatShare(replyRateByMethod.typed.replied, replyRateByMethod.typed.sent)}
-                    detail="mit Reaktion"
-                  />
+                  {SENT_METHOD_VALUES.filter(
+                    (method) => method === "handwritten" || replyRateByMethod[method].sent > 0,
+                  ).map((method) => (
+                    <MiniStat
+                      key={method}
+                      label={OUTCOME_LABELS.letterSent[method]}
+                      value={formatShare(replyRateByMethod[method].replied, replyRateByMethod[method].sent)}
+                      detail="mit Reaktion"
+                    />
+                  ))}
                 </div>
               </DetailBlock>
 

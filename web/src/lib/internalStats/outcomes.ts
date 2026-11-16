@@ -11,7 +11,9 @@ import {
   REPLY_ADDRESSED_VALUES,
   REPLY_CHANNEL_VALUES,
   REPLY_FEELING_VALUES,
+  SENT_METHOD_VALUES,
   WRITE_AGAIN_VALUES,
+  type SentMethod,
 } from "@/lib/rueckmeldung/schema";
 import type { InternalReviewRow } from "./aggregate";
 
@@ -156,6 +158,8 @@ export type OutcomeRoundStats = {
     sent: number;
     sentHandwritten: number;
     sentTyped: number;
+    sentPrinted: number;
+    sentEmail: number;
     sentMethodUnknown: number;
     notSent: number;
     replied: number;
@@ -163,10 +167,7 @@ export type OutcomeRoundStats = {
     addressedBase: number;
   };
   returnDayCounts: Record<string, number>;
-  replyRateByMethod: {
-    handwritten: { sent: number; replied: number };
-    typed: { sent: number; replied: number };
-  };
+  replyRateByMethod: Record<SentMethod, { sent: number; replied: number }>;
   channelCounts: Record<ReplyChannel, number>;
   channelBase: number;
   addressedCounts: Record<ReplyAddressed, number>;
@@ -245,6 +246,8 @@ function emptyOutcomeRoundStats(
       sent: 0,
       sentHandwritten: 0,
       sentTyped: 0,
+      sentPrinted: 0,
+      sentEmail: 0,
       sentMethodUnknown: 0,
       notSent: 0,
       replied: 0,
@@ -252,10 +255,9 @@ function emptyOutcomeRoundStats(
       addressedBase: 0,
     },
     returnDayCounts,
-    replyRateByMethod: {
-      handwritten: { sent: 0, replied: 0 },
-      typed: { sent: 0, replied: 0 },
-    },
+    replyRateByMethod: Object.fromEntries(
+      SENT_METHOD_VALUES.map((value) => [value, { sent: 0, replied: 0 }]),
+    ) as Record<SentMethod, { sent: number; replied: number }>,
     channelCounts: zeroRecord(REPLY_CHANNEL_VALUES),
     channelBase: 0,
     addressedCounts: zeroRecord(REPLY_ADDRESSED_VALUES),
@@ -353,10 +355,16 @@ export function aggregateOutcomes(
     if (state.replied) stats.path.replied += 1;
     if (state.method === "handwritten") stats.path.sentHandwritten += 1;
     if (state.method === "typed") stats.path.sentTyped += 1;
+    if (state.method === "printed") stats.path.sentPrinted += 1;
+    if (state.method === "email") stats.path.sentEmail += 1;
   }
   stats.path.responded = stats.respondentCount;
   stats.path.sentMethodUnknown =
-    stats.path.sent - stats.path.sentHandwritten - stats.path.sentTyped;
+    stats.path.sent -
+    stats.path.sentHandwritten -
+    stats.path.sentTyped -
+    stats.path.sentPrinted -
+    stats.path.sentEmail;
 
   for (const row of completedRows) {
     const formSent = isOneOf(LETTER_SENT_VALUES, row.letter_sent);
@@ -365,7 +373,7 @@ export function aggregateOutcomes(
       : null;
     const state = effectiveState(row, formSent, click);
 
-    if (row.letter_sent === "handwritten" || row.letter_sent === "typed") {
+    if (isOneOf(SENT_METHOD_VALUES, row.letter_sent)) {
       const bucket = stats.replyRateByMethod[row.letter_sent];
       bucket.sent += 1;
       if (state.replied) bucket.replied += 1;
@@ -451,7 +459,7 @@ type EffectiveState = {
   sent: boolean;
   notSent: boolean;
   replied: boolean;
-  method: "handwritten" | "typed" | null;
+  method: SentMethod | null;
 };
 
 function effectiveState(
@@ -468,7 +476,7 @@ function effectiveState(
       sent: true,
       notSent: false,
       replied,
-      method: row.letter_sent === "typed" ? "typed" : "handwritten",
+      method: isOneOf(SENT_METHOD_VALUES, row.letter_sent) ? row.letter_sent : null,
     };
   }
   if (click === "yes") return { sent: true, notSent: false, replied: true, method: null };

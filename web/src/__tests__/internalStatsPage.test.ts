@@ -9,7 +9,7 @@ import {
 } from "@/lib/internalStats/aggregate";
 import { aggregateOutcomes, type InternalOutcomeRow } from "@/lib/internalStats/outcomes";
 import { getInternalStatsWithBaseline } from "@/lib/internalStats/getInternalStats";
-import { LASTCALL_COHORT, OUTCOME_ROUNDS } from "@/lib/rueckmeldung/cohort";
+import { LASTCALL_COHORT, LASTCALL_COHORT_2026_11, OUTCOME_ROUNDS, sentOutcomeRounds } from "@/lib/rueckmeldung/cohort";
 
 jest.mock("@/lib/internalStats/getInternalStats", () => ({
   getInternalStatsWithBaseline: jest.fn(),
@@ -81,7 +81,7 @@ describe("InternalStatsPage", () => {
     const reviews = Array.from({ length: 40 }, () => review());
     const rows = Array.from({ length: 40 }, (_, index) => outcome({ id: index + 1 }));
     const stats = aggregateInternalStats(reviews, 500, FETCHED_AT);
-    const outcomes = OUTCOME_ROUNDS.map((round) => aggregateOutcomes(rows, reviews, round, FETCHED_AT));
+    const outcomes = sentOutcomeRounds().map((round) => aggregateOutcomes(rows, reviews, round, FETCHED_AT));
     jest.mocked(getInternalStatsWithBaseline).mockResolvedValue({ stats, baseline: null, outcomes });
     const { default: Page } = await import("@/app/stats/page");
     return renderToStaticMarkup(
@@ -98,6 +98,27 @@ describe("InternalStatsPage", () => {
     const positions = order.map((id) => html.indexOf(`id="${id}"`));
     expect(positions.every((pos) => pos >= 0)).toBe(true);
     expect([...positions].sort((a, b) => a - b)).toEqual(positions);
+  });
+
+  it("renders printed, email and the old typed value for a sent November round without NaN", async () => {
+    const reviews = Array.from({ length: 40 }, () => review());
+    const novemberRound = { ...OUTCOME_ROUNDS[1], sentAt: "2026-11-20T08:00:00.000Z", sentCount: 100, deliveredCount: 95 };
+    const rows = [
+      outcome({ id: 1, cohort: LASTCALL_COHORT_2026_11, letter_sent: "printed" }),
+      outcome({ id: 2, cohort: LASTCALL_COHORT_2026_11, letter_sent: "email" }),
+      outcome({ id: 3, cohort: LASTCALL_COHORT, letter_sent: "typed" }),
+    ];
+    const stats = aggregateInternalStats(reviews, 500, FETCHED_AT);
+    const outcomes = [sentOutcomeRounds()[0], novemberRound].map((round) =>
+      aggregateOutcomes(rows, reviews, round, "2026-11-25T10:00:00.000Z"),
+    );
+    jest.mocked(getInternalStatsWithBaseline).mockResolvedValue({ stats, baseline: null, outcomes });
+    const { default: Page } = await import("@/app/stats/page");
+    const html = renderToStaticMarkup(await Page({ searchParams: Promise.resolve({}) }));
+    expect(html).toContain("Getippt und ausgedruckt");
+    expect(html).toContain("Per E-Mail");
+    expect(html).toContain("alter Wert");
+    expect(html).not.toContain("NaN");
   });
 
   it("uses the tag labels users see and renders no featured quotes without a list", async () => {

@@ -17,7 +17,7 @@ import {
   type InternalOutcomeRow,
   type OutcomeRoundStats,
 } from "./outcomes";
-import { OUTCOME_ROUNDS, testEmailExclusionList } from "@/lib/rueckmeldung/cohort";
+import { OUTCOME_ROUNDS, sentOutcomeRounds, testEmailExclusionList } from "@/lib/rueckmeldung/cohort";
 
 type InternalStatsRows = {
   reviews: InternalReviewRow[];
@@ -52,7 +52,7 @@ export async function getInternalStatsWithBaseline(
     ? aggregateRows(rows, baselineFilter(filter), fetchedAt)
     : null;
   // Rückmeldungen sind ungefiltert: der Filter der Seite wirkt dort nicht.
-  const outcomes = OUTCOME_ROUNDS.map((round) =>
+  const outcomes = sentOutcomeRounds().map((round) =>
     aggregateOutcomes(rows.outcomes, rows.reviews, round, fetchedAt),
   );
   return { stats, baseline, outcomes };

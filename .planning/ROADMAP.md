@@ -837,16 +837,26 @@ Plans:
 - Bei so wenig Input *muss* Mistral raten und rät schlecht
 - Backlog-Campaign (5 Reviews) zeigt zusätzlich dominantes Pattern `zu_generisch`
 
-**Skizze (grob, wird vor Umsetzung konkretisiert):**
-- Nach Eingabe (Text oder Voice) + bevor `generateLetter()` aufgerufen wird: 1× Mistral-Klassifikator-Call
-- Trigger: Input <30 Wörter ODER Klassifikator sagt "zu breit für eine Seite" ODER "Mehrdeutigkeit bei zentraler Forderung"
-- Wenn Trigger feuert: 1 Yes/No-Frage oder 2-3 Optionen anzeigen ("Soll ich auf X fokussieren? Oder Y dazunehmen?")
-- User-Optionen: (a) Vorschlag akzeptieren → generieren, (b) zweiten kurzen Input nachschießen → generieren, (c) "Trotzdem so generieren" → mit Original-Input
-- Max 1 Rückfrage pro Brief (keine Endlosschleife)
+**Entscheidungen (Grilling 2026-11-16):**
+- **Auslöser:** Mistral entscheidet, ob das Anliegen klar genug ist. Klare kurze Texte laufen ohne Nachfrage durch. Keine feste Zeichen- oder Wortgrenze.
+- **Mechanik:** bestehenden Hintergrund-Check erweitern, kein zweiter Mistral-Aufruf.
+  - `routeToLevel` in `web/src/lib/lookup/levelRouter.ts` (mistral-small, JSON-Schema) liefert zusätzlich `clarification: { needed, question, options: [2 Strings] } | null`.
+  - Der Check läuft schon als Prefetch nach Schritt 1 (`ensureRoutingPrefetch` in `WizardShell.tsx`, `prefetchRouting.ts`). Ergebnis kommt mit dem signierten Token. Keine Extra-Kosten, kein neues Rate-Limit.
+- **Platz:** erster Block auf "Zusätzliche Infos" (`StepPreferences.tsx`, Step `2b`). Überschrift: "Kurze Nachfrage für einen besseren Brief". Der Check ist dort sicher fertig, niemand wartet.
+- **Antwortform:** 2 Vorschläge von Mistral als Chips. Ein Klick setzt den Text in ein Textfeld darunter. Dort frei bearbeiten oder direkt selbst tippen.
+- **Optional:** Link "Überspringen, Brief so schreiben". Höchstens 1 Nachfrage pro Brief.
+- **Übergabe an den Brief:** eigenes Feld für Frage und Antwort im Wizard-State, im Zod-Schema (`wizardSchemas.ts`, max. ca. 300 Zeichen) und in `buildUserPrompt` (`generateLetter.ts`) als "Ergänzung auf Nachfrage". Routing wird nicht neu berechnet.
+- **Messen (nachrangig):** im Debug-Payload der Bewertung vermerken: gezeigt, beantwortet oder übersprungen (`buildDebugPayload.ts`). Kein neues Tracking, kein Feature-Flag. Nach ca. 4 Wochen `anliegen_verfehlt` bei kurzen Eingaben vergleichen.
 
-**Erwarteter Impact:** Bessere Briefqualität bei kurzem Input → weniger 1-2★-Reviews → mehr verschickte Briefe.
+**Annahmen (vor dem Bau bestätigen):**
+- Kampagnen-Briefe bekommen keine Nachfrage, ihr Text ist kuratiert.
+- Check nicht fertig oder fehlgeschlagen: Block erscheint nicht, der Flow läuft normal weiter.
+- Gilt gleich für Text- und Spracheingabe.
+- Frontend-Bau über `/frontend-design`. Tests mocken `@/lib/mistral`.
 
-**Risiko:** Zusätzlicher Schritt im Flow kann Conversion senken. → Erst hinter Feature-Flag ausrollen und Funnel messen.
+**Risiko:** Ein Block mehr kann Abbrüche erhöhen. Abgefedert durch "nur wenn vage" und "Überspringen".
+
+**Verwandt:** Todo `.planning/todos/pending/2026-10-04-vollstaendigen-brief-im-anliegenfeld-erkennen.md` (gleiche Stellen im Code).
 
 **Nicht adressiert:** Halluzinationen bei *langem* Input (siehe Phase 999.28 "Fakten-Treue-Check"), Level-Mismatch (eigenes Feature, siehe 999.6).
 

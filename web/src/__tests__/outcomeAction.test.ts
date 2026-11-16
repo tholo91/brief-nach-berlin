@@ -9,7 +9,15 @@ jest.mock("@/lib/rateLimit", () => ({
 import { getServiceRoleClient } from "@/lib/supabase/server";
 import { checkRateLimit } from "@/lib/rateLimit";
 import { submitOutcomeAction } from "@/lib/actions/submitOutcome";
+import { createHmac } from "node:crypto";
 import { createRueckmeldungToken, RUECKMELDUNG_COHORT } from "@/lib/rueckmeldung/token";
+import { LASTCALL_COHORT_2026_11 } from "@/lib/rueckmeldung/cohort";
+
+const b64url = (value: Buffer) => value.toString("base64").replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
+const forgeToken = (payload: object) => {
+  const body = b64url(Buffer.from(JSON.stringify(payload)));
+  return `${body}.${b64url(createHmac("sha256", "test-secret").update(`rueckmeldung-v1.${body}`).digest())}`;
+};
 
 const rpc = jest.fn<Promise<{ error: { message: string } | null }>, []>(async () => ({ error: null }));
 const fullAnswers = {
@@ -41,6 +49,24 @@ describe("submitOutcomeAction", () => {
       p_entry_choice: "yes", p_processing_consent: true, p_answers: expect.objectContaining({ letterSent: "handwritten" }),
     }));
   });
+  it("stores a November token with its own cohort and the printed method", async () => {
+    const token = createRueckmeldungToken("writer@example.org", LASTCALL_COHORT_2026_11);
+    const result = await submitOutcomeAction({ mode: "progress", token, entryChoice: "yes", processingConsent: true, answers: { ...fullAnswers, letterSent: "printed" }, lastStep: "reply" });
+    expect(result).toEqual({ success: true });
+    expect(rpc).toHaveBeenCalledWith("submit_letter_outcome", expect.objectContaining({
+      p_cohort: "lastcall_2026_11", p_answers: expect.objectContaining({ letterSent: "printed" }),
+    }));
+  });
+  it("keeps October tokens on the October cohort", async () => {
+    await submitOutcomeAction({ mode: "initial", token: createRueckmeldungToken("writer@example.org", RUECKMELDUNG_COHORT), entryChoice: "yes" });
+    expect(rpc).toHaveBeenCalledWith("submit_letter_outcome", expect.objectContaining({ p_cohort: "lastcall_2026_10" }));
+  });
+  it("rejects a correctly signed token with an unknown cohort without calling the RPC", async () => {
+    const token = forgeToken({ v: 1, purpose: "rueckmeldung", email: "writer@example.org", cohort: "lastcall_2026_12", iat: Math.floor(Date.now() / 1000) });
+    const result = await submitOutcomeAction({ mode: "initial", token, entryChoice: "yes" });
+    expect(result).toMatchObject({ error: "invalid_token" });
+    expect(rpc).not.toHaveBeenCalled();
+  });
   it("initial saves contain no answer, free text, or consent even if supplied", async () => {
     const result = await submitOutcomeAction({
       mode: "initial", token: createRueckmeldungToken("writer@example.org"), entryChoice: "no",
@@ -54,6 +80,8 @@ describe("submitOutcomeAction", () => {
   });
   it.each([
     ["yes", { ...fullAnswers, letterSent: "typed", replyChannels: ["email"], replyAddressed: "partly", replyFeeling: "as_expected" }],
+    ["yes", { ...fullAnswers, letterSent: "printed", replyChannels: ["email"], replyAddressed: "partly", replyFeeling: "as_expected" }],
+    ["yes", { ...fullAnswers, letterSent: "email", replyChannels: ["letter"], replyAddressed: "concrete", replyFeeling: "positive_surprise" }],
     ["no", { ...fullAnswers, letterSent: "not_sent", notSentReason: "no_time", replyChannels: [], replyAddressed: null }],
     ["not_sent", { ...fullAnswers, letterSent: "handwritten", replyChannels: ["none"], replyAddressed: null }],
   ] as const)("allows the user to update the mail entry choice %s using actual answers", async (entryChoice, answers) => {

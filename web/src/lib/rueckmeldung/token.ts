@@ -1,16 +1,17 @@
 // This module is intentionally usable from the last-call tsx script.
 import { createHmac, timingSafeEqual } from "node:crypto";
 import { z } from "zod";
+import { LASTCALL_COHORT, OUTCOME_COHORTS, type OutcomeCohort } from "./cohort";
 
 export const RUECKMELDUNG_TOKEN_MAX_AGE_SECONDS = 90 * 24 * 60 * 60;
-export const RUECKMELDUNG_COHORT = "lastcall_2026_10" as const;
+export const RUECKMELDUNG_COHORT = LASTCALL_COHORT;
 const MAC_DOMAIN = "rueckmeldung-v1.";
 const MAX_LENGTH = 4096;
 const envelopeSchema = z.object({
   v: z.literal(1),
   purpose: z.literal("rueckmeldung"),
   email: z.string().trim().toLowerCase().email().max(254),
-  cohort: z.literal(RUECKMELDUNG_COHORT),
+  cohort: z.enum(OUTCOME_COHORTS),
   iat: z.number().int(),
 });
 
@@ -28,7 +29,7 @@ function sign(body: string): string {
 
 export function createRueckmeldungToken(
   email: string,
-  cohort: typeof RUECKMELDUNG_COHORT = RUECKMELDUNG_COHORT,
+  cohort: OutcomeCohort = RUECKMELDUNG_COHORT,
   nowSeconds = Math.floor(Date.now() / 1000),
 ): string {
   const payload = { v: 1, purpose: "rueckmeldung", email: email.trim().toLowerCase(), cohort, iat: nowSeconds };
@@ -39,7 +40,7 @@ export function createRueckmeldungToken(
 export function verifyRueckmeldungToken(
   token: string,
   nowSeconds = Math.floor(Date.now() / 1000),
-): { email: string; cohort: typeof RUECKMELDUNG_COHORT } | null {
+): { email: string; cohort: OutcomeCohort } | null {
   if (token.length > MAX_LENGTH) return null;
   const dot = token.indexOf(".");
   if (dot < 1 || dot === token.length - 1) return null;

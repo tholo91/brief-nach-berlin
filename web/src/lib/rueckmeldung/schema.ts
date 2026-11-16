@@ -4,7 +4,10 @@ import { POLITICAL_SELF_EFFICACY_VALUES } from "@/lib/feedback/politicalActivati
 export const OUTCOME_ENTRY_CHOICES = ["yes", "no", "not_sent"] as const;
 export type OutcomeEntryChoice = (typeof OUTCOME_ENTRY_CHOICES)[number];
 
-export const LETTER_SENT_VALUES = ["handwritten", "typed", "not_sent"] as const;
+// `typed` ist der alte Sammelwert (bis 16.11.2026): bleibt gültig, wird nicht mehr angeboten.
+export const SENT_METHOD_VALUES = ["handwritten", "typed", "printed", "email"] as const;
+export type SentMethod = (typeof SENT_METHOD_VALUES)[number];
+export const LETTER_SENT_VALUES = [...SENT_METHOD_VALUES, "not_sent"] as const;
 export const NOT_SENT_REASON_VALUES = ["no_time", "postage_or_address", "doubt", "forgot", "other"] as const;
 export const REPLY_CHANNEL_VALUES = ["letter", "email", "phone", "callback", "meeting", "acknowledgement", "none"] as const;
 export const REPLY_ADDRESSED_VALUES = ["concrete", "partly", "generic"] as const;

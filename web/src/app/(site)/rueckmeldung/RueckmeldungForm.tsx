@@ -195,7 +195,7 @@ export function RueckmeldungForm({ token, entryChoice }: { token: string; entryC
           </div>
           {!showSentQuestion && <p className="flex items-center justify-between gap-4 rounded-lg bg-creme p-4 text-sm"><span>Du hast deinen Brief nicht abgeschickt.</span><button type="button" onClick={() => setShowSentQuestion(true)} className="min-h-11 font-semibold text-waldgruen underline">Ändern</button></p>}
           {showSentQuestion && <Question title="Hast du deinen Brief abgeschickt?" mark="abgeschickt">
-            <Choices label="Brief abgeschickt" values={[["handwritten", "Von Hand geschrieben"], ["typed", "Getippt oder ausgedruckt"], ["not_sent", "Nein"]]} value={answers.letterSent} onSelect={(letterSent) => change({ letterSent }, "letter_sent")} />
+            <Choices label="Brief abgeschickt" values={[["handwritten", "Von Hand geschrieben"], ["printed", "Getippt und ausgedruckt"], ["email", "Per E-Mail"], ["not_sent", "Nein"]]} value={answers.letterSent} onSelect={(letterSent) => change({ letterSent }, "letter_sent")} />
           </Question>}
           {notSent && <Question title="Was hat dich gebremst?" mark="gebremst">
             <Choices label="Grund fürs Nichtabschicken" values={[["no_time", "Keine Zeit"], ["postage_or_address", "Briefmarke oder Adresse"], ["doubt", "Zweifel, ob es was bringt"], ["forgot", "Vergessen"], ["other", "Anderes"]]} value={answers.notSentReason} onSelect={(notSentReason) => change({ notSentReason }, "not_sent_reason")} />

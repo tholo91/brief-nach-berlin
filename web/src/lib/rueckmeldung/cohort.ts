@@ -1,4 +1,7 @@
 export const LASTCALL_COHORT = "lastcall_2026_10";
+export const LASTCALL_COHORT_2026_11 = "lastcall_2026_11";
+export const OUTCOME_COHORTS = [LASTCALL_COHORT, LASTCALL_COHORT_2026_11] as const;
+export type OutcomeCohort = (typeof OUTCOME_COHORTS)[number];
 // 13 Aug 2026 00:00 in Europe/Berlin, expressed as UTC for Supabase filtering.
 export const LASTCALL_CUTOFF_UTC = "2026-08-12T22:00:00.000Z";
 
@@ -25,7 +28,11 @@ export type OutcomeRound = {
   letterWindowLabel: string;
 };
 
-// Eine weitere Runde (z. B. lastcall_2027_01) braucht nur einen Eintrag mehr.
+// Checkliste für eine weitere Runde (z. B. lastcall_2027_01):
+// 1. Eintrag in OUTCOME_COHORTS und OUTCOME_ROUNDS.
+// 2. Migration, die den Cohort-CHECK und die Allowlist in submit_letter_outcome erweitert.
+// 3. Nach dem Versand sentAt (ISO), sentCount und deliveredCount der Runde eintragen
+//    (deliveredCount aus dem Brevo-Bericht, bis dahin sentCount), erst dann zeigt /stats sie.
 export const OUTCOME_ROUNDS: readonly OutcomeRound[] = [
   {
     cohort: LASTCALL_COHORT,
@@ -35,7 +42,21 @@ export const OUTCOME_ROUNDS: readonly OutcomeRound[] = [
     deliveredCount: LASTCALL_DELIVERED_COUNT,
     letterWindowLabel: LASTCALL_LETTER_WINDOW_LABEL,
   },
+  {
+    cohort: LASTCALL_COHORT_2026_11,
+    label: "Runde November 2026",
+    // Noch nicht versendet: sentAt, sentCount und deliveredCount gibt es erst nach dem Versand.
+    sentAt: "",
+    sentCount: 0,
+    deliveredCount: 0,
+    letterWindowLabel: "13.08. bis 30.09.2026",
+  },
 ];
+
+/** Die einzigen Runden, die /stats zeigt: bereits versendet (sentCount > 0). */
+export function sentOutcomeRounds(): OutcomeRound[] {
+  return OUTCOME_ROUNDS.filter((round) => round.sentCount > 0);
+}
 
 /** PostgREST-In-Liste ("a","b") aller Testadressen für `.not("email", "in", ...)`. */
 export function testEmailExclusionList(): string {

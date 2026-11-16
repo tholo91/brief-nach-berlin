@@ -77,7 +77,9 @@ export const OUTCOME_LABELS: {
 } = {
   letterSent: {
     handwritten: "Von Hand geschrieben",
-    typed: "Getippt oder ausgedruckt",
+    typed: "Getippt oder ausgedruckt (alter Wert)",
+    printed: "Getippt und ausgedruckt",
+    email: "Per E-Mail",
     not_sent: "Nein",
   },
   notSentReason: {

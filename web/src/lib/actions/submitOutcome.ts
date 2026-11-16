@@ -5,7 +5,7 @@ import { z } from "zod";
 import { getServiceRoleClient } from "@/lib/supabase/server";
 import { checkRateLimit, getClientIp, hashIdentifier } from "@/lib/rateLimit";
 import { outcomeAnswersSchema, OUTCOME_ENTRY_CHOICES, type OutcomeAnswers } from "@/lib/rueckmeldung/schema";
-import { RUECKMELDUNG_COHORT, verifyRueckmeldungToken } from "@/lib/rueckmeldung/token";
+import { verifyRueckmeldungToken } from "@/lib/rueckmeldung/token";
 
 const inputSchema = z.object({
   mode: z.enum(["initial", "progress", "full"]),
@@ -50,7 +50,7 @@ export async function submitOutcomeAction(input: unknown): Promise<SubmitOutcome
   if (!parsed.success) return { error: "validation", message: "Ungültige Eingabe." };
   const data = parsed.data;
   const token = verifyRueckmeldungToken(data.token);
-  if (!token || token.cohort !== RUECKMELDUNG_COHORT) {
+  if (!token) {
     return { error: "invalid_token", message: "Dieser Rückmelde-Link ist ungültig oder abgelaufen." };
   }
   const answers = data.answers ?? outcomeAnswersSchema.parse({});

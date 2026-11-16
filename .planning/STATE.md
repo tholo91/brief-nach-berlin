@@ -49,7 +49,7 @@ Der level-aware E-Mail-Betreff ist dagegen bereits implementiert und getestet; d
 Phase: 05 — EXECUTING
 Plan: 4 of 4
 Status: Phase complete — ready for verification
-Last activity: 2026-11-16 - Completed quick task 261116-c14: Zweite Rueckmelde-Welle lastcall_2026_11 vorbereiten
+Last activity: 2026-11-16 - Completed quick task 261116-h5k: Kampagnenbriefe: nichts erfinden
 
 Progress: [███████░░░] 68%
 
@@ -254,6 +254,7 @@ Recent decisions affecting current work:
 | 261113-n45 | Mistral-Modellvergleich-Skript (compare-mistral-models.ts) bauen | 2026-11-13 | 9126e53 | [261113-n45-mistral-modellvergleich-skript-compare-m](./quick/261113-n45-mistral-modellvergleich-skript-compare-m/) |
 | 261115-hvy | Karte auf Mobil einklappen und Geraetetyp in Letter-Signals | 2026-11-15 | e894705 | [261115-hvy-karte-auf-mobil-einklappen-und-geraetety](./quick/261115-hvy-karte-auf-mobil-einklappen-und-geraetety/) |
 | 261116-c14 | Zweite Rueckmelde-Welle lastcall_2026_11 vorbereiten | 2026-11-16 | cdb6351 | [261116-c14-zweite-rueckmelde-welle-lastcall-2026-11](./quick/261116-c14-zweite-rueckmelde-welle-lastcall-2026-11/) |
+| 261116-h5k | Kampagnenbriefe: nichts erfinden | 2026-11-16 | – | [261116-h5k-kampagnenbriefe-nichts-erfinden](./quick/261116-h5k-kampagnenbriefe-nichts-erfinden/) |
 
 ## Session Continuity
 

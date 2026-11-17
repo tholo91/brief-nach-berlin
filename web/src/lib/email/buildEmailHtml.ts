@@ -670,13 +670,14 @@ export function buildEmailHtml(data: SendLetterEmailParams): string {
               .join("")}`
           : `<p style="${rathausNoteStyle}">${copy.noAddress}</p><p style="margin:10px 0 0;"><a href="${rathausSearchUrl}" target="_blank" rel="noopener noreferrer" style="display:inline-block;background-color:#2D5016;color:#ffffff;font-family:Georgia,'Times New Roman',serif;font-size:14px;font-weight:bold;text-decoration:none;padding:10px 14px;border-radius:4px;line-height:1.5;text-align:center;">${copy.searchAddress}</a></p>`
       : "";
+  const sourceLabel = escapeHtml(copy.source.replace(/:$/, ""));
   const governmentSourceLine =
     isLandesregierung && data.governmentSource
-      ? `<p style="margin:8px 0 0;font-family:Georgia,'Times New Roman',serif;font-size:12px;color:#b0b0b0;line-height:1.4;">${copy.source} <a href="${escapeHtml(data.governmentSource.url)}" target="_blank" rel="noopener noreferrer" style="color:#b0b0b0;text-decoration:underline;">${escapeHtml(formatGovernmentDisplayName(data.governmentSource.title))}</a>, ${copy.checked} ${escapeHtml(formatGermanDate(data.governmentSource.stand))}.</p>`
+      ? `<p style="margin:8px 0 0;font-family:Georgia,'Times New Roman',serif;font-size:12px;color:#b0b0b0;line-height:1.4;"><a href="${escapeHtml(data.governmentSource.url)}" target="_blank" rel="noopener noreferrer" title="${escapeHtml(formatGovernmentDisplayName(data.governmentSource.title))}" style="color:#b0b0b0;text-decoration:underline;">${sourceLabel}</a>, ${copy.checked} ${escapeHtml(formatGermanDate(data.governmentSource.stand))}.</p>`
       : "";
   const bundeskanzlerSourceLine =
     isBundeskanzler && data.bundeskanzlerSource
-      ? `<p style="margin:8px 0 0;font-family:Georgia,'Times New Roman',serif;font-size:12px;color:#b0b0b0;line-height:1.4;">${copy.source} <a href="${escapeHtml(data.bundeskanzlerSource.url)}" target="_blank" rel="noopener noreferrer" style="color:#b0b0b0;text-decoration:underline;">${escapeHtml(data.bundeskanzlerSource.title)}</a>, ${copy.checked} ${escapeHtml(formatGermanDate(data.bundeskanzlerSource.stand))}.</p>`
+      ? `<p style="margin:8px 0 0;font-family:Georgia,'Times New Roman',serif;font-size:12px;color:#b0b0b0;line-height:1.4;"><a href="${escapeHtml(data.bundeskanzlerSource.url)}" target="_blank" rel="noopener noreferrer" title="${escapeHtml(data.bundeskanzlerSource.title)}" style="color:#b0b0b0;text-decoration:underline;">${sourceLabel}</a>, ${copy.checked} ${escapeHtml(formatGermanDate(data.bundeskanzlerSource.stand))}.</p>`
       : "";
 
   const profileButtonText = isFallback ? copy.findRecipient : copy.profile;

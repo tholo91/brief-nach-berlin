@@ -191,8 +191,8 @@ describe("buildEmailHtml — Empfänger-Arten", () => {
     expect(html).toContain("Horionplatz 1<br>40190 Düsseldorf");
     expect(html).not.toContain("<strong>Landesregierung Nordrhein-Westfalen</strong><br>");
     expect(html).not.toContain("Staatskanzlei des Landes Nordrhein-Westfalen<br>Horionplatz 1");
-    expect(html).toContain("Staatskanzlei NRW: Organisationsplan");
-    expect(html).toContain("geprüft am 20.07.2026");
+    expect(html).toContain('title="Staatskanzlei NRW: Organisationsplan"');
+    expect(html).toContain(">Quelle</a>, geprüft am 20.07.2026");
     expect(html).not.toContain(", MdL (");
     expect(html).not.toContain(", MdB (");
     expect(html).not.toContain("abgeordnetenwatch.de/profile");

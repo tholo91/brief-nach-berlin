@@ -21,6 +21,8 @@ import {
   isInternalStatsCookieValid,
 } from "@/lib/internalStats/access";
 import { getInternalStatsWithBaseline } from "@/lib/internalStats/getInternalStats";
+import { getPublicStatsTeaser, type PublicStatsTeaser } from "@/lib/internalStats/publicTeaser";
+import { PressContactButton } from "@/components/PressContactButton";
 import { BarTrack } from "@/components/internalStats/BarTrack";
 import { StatInfo } from "@/components/internalStats/StatInfo";
 import { Briefweg } from "@/components/internalStats/Briefweg";
@@ -101,8 +103,8 @@ import {
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
-  title: "Interne Wirkung | Brief-nach-Berlin",
-  description: "Interne, aggregierte Produktstatistik von Brief-nach-Berlin.",
+  title: "Zahlen für Presse und Partner | Brief-nach-Berlin",
+  description: "Anonyme, zusammengefasste Zahlen zu Brief-nach-Berlin für Presse, Förderer und Partner.",
   robots: {
     index: false,
     follow: false,
@@ -128,19 +130,6 @@ function formatDate(value: string | null): string {
 function formatDateTime(value: string): string {
   const date = new Date(value);
   return `${dateFormatter.format(date)}, ${timeFormatter.format(date)} Uhr`;
-}
-
-function AirmailStripe() {
-  return (
-    <div
-      aria-hidden="true"
-      className="h-2"
-      style={{
-        background:
-          "repeating-linear-gradient(-45deg, #C1121F 0 12px, #FAF8F5 12px 18px, #1D3557 18px 30px, #FAF8F5 30px 36px)",
-      }}
-    />
-  );
 }
 
 function SectionHeading({ eyebrow, title, detail }: { eyebrow: string; title: string; detail?: string }) {
@@ -951,8 +940,7 @@ function Funnel({ stats }: { stats: InternalStats }) {
 
 function DataError() {
   return (
-    <main className="min-h-screen bg-creme px-5 py-10 sm:px-8 sm:py-16">
-      <AirmailStripe />
+    <div className="flex-1 bg-creme px-5 py-10 sm:px-8 sm:py-16">
       <section className="mx-auto mt-10 max-w-xl rounded-2xl border border-airmail-rot/20 bg-white/75 p-6 shadow-sm sm:p-8">
         <p className="font-typewriter text-xs font-bold uppercase tracking-[0.18em] text-airmail-rot">
           Brief-nach-Berlin · intern
@@ -964,49 +952,135 @@ function DataError() {
           Supabase konnte die aggregierten Werte nicht liefern. Bitte lade die Seite später erneut.
         </p>
       </section>
-    </main>
+    </div>
   );
 }
 
-function StatsLogin({ configured, error }: { configured: boolean; error: boolean }) {
+const ACCESS_MAIL_SUBJECT = "Presseanfrage: Zugang Statistik";
+const ACCESS_MAIL_BODY =
+  "Hallo Thomas,\n\nich schreibe für [Medium] über [Thema] und hätte gern Zugang zur Statistik von Brief-nach-Berlin.\n\nViele Grüße\n";
+
+function TeaserTile({ value, label, note }: { value: ReactNode; label: string; note?: string }) {
   return (
-    <main className="min-h-screen bg-creme px-5 py-10 sm:px-8 sm:py-16">
-      <AirmailStripe />
-      <section className="mx-auto mt-10 max-w-md rounded-2xl border border-warmgrau/10 bg-white/75 p-6 shadow-sm sm:p-8">
+    <div className="flex flex-col rounded-xl border border-warmgrau/10 bg-white/80 p-5">
+      <p className="font-typewriter text-3xl font-bold leading-tight text-waldgruen-dark sm:text-4xl">{value}</p>
+      <p className="mt-2 font-body text-sm leading-snug text-warmgrau/80">{label}</p>
+      {note && <p className="mt-1 font-body text-xs text-warmgrau/55">{note}</p>}
+    </div>
+  );
+}
+
+function StatsLogin({
+  configured,
+  error,
+  teaser,
+}: {
+  configured: boolean;
+  error: boolean;
+  teaser: PublicStatsTeaser | null;
+}) {
+  const tiles: ReactNode[] = [];
+  if (teaser) {
+    tiles.push(
+      <TeaserTile key="letters" value={formatNumber(teaser.letterCount)} label="Briefe mit Brief-nach-Berlin entworfen" />,
+    );
+    if (teaser.sendRatePercent !== null) {
+      tiles.push(
+        <TeaserTile
+          key="sent"
+          value={`${teaser.sendRatePercent} %`}
+          label="sagen, dass ihr Brief in der Post gelandet ist"
+          note={`aus ${formatNumber(teaser.knownSendCount)} Rückmeldungen`}
+        />,
+      );
+    }
+    if (teaser.topCategories.length > 0) {
+      tiles.push(
+        <div key="topics" className="flex flex-col rounded-xl border border-warmgrau/10 bg-white/80 p-5">
+          <ol className="grid gap-1.5 font-body text-base font-semibold leading-snug text-waldgruen-dark">
+            {teaser.topCategories.map((code, index) => (
+              <li key={code}>
+                <span className="text-airmail-rot/80">{index + 1}.</span> {topicCategoryLabel(code)}
+              </li>
+            ))}
+          </ol>
+          <p className="mt-2 font-body text-sm leading-snug text-warmgrau/80">häufigste Themen in den Briefen</p>
+        </div>,
+      );
+    }
+  }
+
+  return (
+    <div className="flex-1 bg-creme">
+      <div className="mx-auto w-full max-w-3xl px-5 py-10 sm:px-8 sm:py-16">
         <p className="font-typewriter text-xs font-bold uppercase tracking-[0.18em] text-waldgruen/65">
-          Brief-nach-Berlin · intern
+          Für Presse und Partner
         </p>
-        <h1 className="mt-3 font-typewriter text-3xl font-bold text-waldgruen-dark">
-          Interne Statistik
+        <h1 className="mt-3 font-typewriter text-3xl font-bold leading-tight text-waldgruen-dark sm:text-5xl">
+          Brief-nach-Berlin in Zahlen
         </h1>
-        {configured ? (
-          <form action={unlockInternalStats} className="mt-6 grid gap-4">
-            <label htmlFor="stats-password" className="font-body text-sm text-warmgrau/75">
-              Passwort für die Demo-Ansicht
-            </label>
-            <input
-              id="stats-password"
-              name="password"
-              type="password"
-              autoComplete="current-password"
-              required
-              className="rounded-md border border-warmgrau/20 bg-white px-3 py-2 font-body text-warmgrau outline-none focus:border-waldgruen focus:ring-2 focus:ring-waldgruen/20"
-            />
-            {error && <p className="font-body text-sm text-airmail-rot">Das Passwort stimmt nicht.</p>}
-            <button
-              type="submit"
-              className="rounded-md bg-waldgruen-dark px-4 py-2.5 font-body font-semibold text-creme transition-colors hover:bg-waldgruen"
-            >
-              Statistik öffnen
-            </button>
-          </form>
-        ) : (
-          <p className="mt-4 font-body leading-relaxed text-warmgrau/70">
-            Der interne Zugang ist noch nicht konfiguriert.
-          </p>
+        <p className="mt-4 max-w-2xl font-body text-base leading-relaxed text-warmgrau/80 sm:text-lg">
+          Hier sammle ich anonyme, zusammengefasste Zahlen: wie viele Briefe entstehen, wie viele
+          wirklich in der Post landen und welche Themen die Leute bewegen. Ein paar davon zeige ich
+          offen. Die ganze Auswertung mit Regionen, Zeitverläufen und Rückmeldungen gibt es für
+          Presse, Förderer und Partner auf Anfrage.
+        </p>
+
+        {tiles.length > 0 && (
+          <section aria-label="Ausgewählte Zahlen" className="mt-8">
+            <div className="grid gap-3 sm:grid-cols-3">{tiles}</div>
+            {teaser && (
+              <p className="mt-3 font-body text-xs text-warmgrau/55">
+                Stand {formatDate(teaser.fetchedAt)}. Versand und Themen beruhen auf freiwilligen
+                Angaben, ohne persönliche Daten.
+              </p>
+            )}
+          </section>
         )}
-      </section>
-    </main>
+
+        <section className="mt-10 rounded-2xl border-2 border-waldgruen/20 bg-white/60 p-6 sm:p-8">
+          <h2 className="font-typewriter text-xl font-bold text-waldgruen-dark sm:text-2xl">
+            Mehr Zahlen für Ihren Artikel?
+          </h2>
+          <p className="mt-2 max-w-xl font-body leading-relaxed text-warmgrau/80">
+            Schreiben Sie mir kurz, für welches Medium Sie berichten. Ich schicke Ihnen einen Link,
+            mit dem Sie die ganze Statistik öffnen können.
+          </p>
+          <div className="mt-5 max-w-xs">
+            <PressContactButton subject={ACCESS_MAIL_SUBJECT} body={ACCESS_MAIL_BODY} label="Zugang anfragen" />
+          </div>
+        </section>
+
+        <section className="mt-8 max-w-md">
+          <h2 className="font-body text-sm font-semibold text-warmgrau/80">Sie haben schon ein Passwort?</h2>
+          {configured ? (
+            <form action={unlockInternalStats} className="mt-3 flex flex-col gap-3 sm:flex-row">
+              <label htmlFor="stats-password" className="sr-only">
+                Passwort
+              </label>
+              <input
+                id="stats-password"
+                name="password"
+                type="password"
+                autoComplete="current-password"
+                placeholder="Passwort"
+                required
+                className="flex-1 rounded-md border border-warmgrau/20 bg-white px-3 py-2 font-body text-warmgrau outline-none focus:border-waldgruen focus:ring-2 focus:ring-waldgruen/20"
+              />
+              <button
+                type="submit"
+                className="rounded-md border-2 border-waldgruen-dark/30 px-4 py-2 font-body font-semibold text-waldgruen-dark transition-colors hover:border-waldgruen-dark hover:bg-waldgruen/5"
+              >
+                Statistik öffnen
+              </button>
+            </form>
+          ) : (
+            <p className="mt-2 font-body text-sm text-warmgrau/70">Der Zugang ist noch nicht eingerichtet.</p>
+          )}
+          {error && <p className="mt-2 font-body text-sm text-airmail-rot">Das Passwort stimmt nicht.</p>}
+        </section>
+      </div>
+    </div>
   );
 }
 
@@ -1018,8 +1092,14 @@ export default async function InternalStatsPage({ searchParams }: InternalStatsP
   const configuredPassword = process.env.INTERNAL_STATS_PASSWORD;
   const cookieValue = (await cookies()).get(INTERNAL_STATS_COOKIE)?.value;
   if (!isInternalStatsCookieValid(cookieValue, configuredPassword)) {
-    const params = await searchParams;
-    return <StatsLogin configured={Boolean(configuredPassword)} error={params?.error === "1"} />;
+    const [params, teaser] = await Promise.all([searchParams, getPublicStatsTeaser()]);
+    return (
+      <StatsLogin
+        configured={Boolean(configuredPassword)}
+        error={params?.error === "1"}
+        teaser={teaser}
+      />
+    );
   }
 
   const params = (await searchParams) ?? {};
@@ -1181,8 +1261,7 @@ export default async function InternalStatsPage({ searchParams }: InternalStatsP
   const quoteText = `${quoteLines.join("\n")}\n\nQuelle: Brief-nach-Berlin, interne Auswertung (${rangeLabel}, ${sourceLabel}). Selbstauskünfte, nur Aggregate.`;
 
   return (
-    <main id="top" className="min-h-screen bg-creme text-warmgrau">
-      <AirmailStripe />
+    <div id="top" className="flex-1 bg-creme text-warmgrau">
       <div className="mx-auto w-full max-w-6xl px-5 py-6 sm:px-8 sm:py-10 lg:px-10">
         <header className="flex flex-col gap-4 pb-6 sm:flex-row sm:items-end sm:justify-between sm:pb-8">
           <div>
@@ -1208,7 +1287,7 @@ export default async function InternalStatsPage({ searchParams }: InternalStatsP
           </div>
         </header>
 
-        <SectionNav links={[...SECTION_LINKS]} />
+        <SectionNav links={[...SECTION_LINKS]} stickyBelow="[data-app-header]" />
 
         <div className="mt-6 flex flex-col gap-4 rounded-2xl border border-warmgrau/10 bg-white/60 p-4 sm:flex-row sm:items-end sm:justify-between sm:p-6">
           <FilterBar query={query} campaignOptions={campaignOptions} />
@@ -2024,7 +2103,7 @@ export default async function InternalStatsPage({ searchParams }: InternalStatsP
           </p>
         </footer>
       </div>
-    </main>
+    </div>
   );
 }
 

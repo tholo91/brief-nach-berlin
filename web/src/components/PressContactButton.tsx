@@ -9,17 +9,26 @@ import { BRIEF_EMAIL } from "@/lib/contact";
 const [USER, DOMAIN] = BRIEF_EMAIL.split("@");
 const SUBJECT = "Presseanfrage: Brief-nach-Berlin";
 
-export function PressContactButton() {
+export function PressContactButton({
+  subject = SUBJECT,
+  body,
+  label = "Presseanfrage senden",
+}: {
+  subject?: string;
+  body?: string;
+  label?: string;
+} = {}) {
   const [href, setHref] = useState<string | undefined>(undefined);
 
   useEffect(() => {
     const address = `${USER}@${DOMAIN}`;
+    const query = `subject=${encodeURIComponent(subject)}${body ? `&body=${encodeURIComponent(body)}` : ""}`;
     const id = window.setTimeout(() => {
-      setHref(`mailto:${address}?subject=${encodeURIComponent(SUBJECT)}`);
+      setHref(`mailto:${address}?${query}`);
     }, 0);
 
     return () => window.clearTimeout(id);
-  }, []);
+  }, [subject, body]);
 
   return (
     <a
@@ -29,7 +38,7 @@ export function PressContactButton() {
       }}
       className="block w-full text-center font-body font-bold text-creme bg-waldgruen-dark hover:bg-waldgruen border-2 border-transparent px-6 py-3 rounded-sm transition-colors"
     >
-      Presseanfrage senden &rarr;
+      {label} &rarr;
     </a>
   );
 }

@@ -250,6 +250,12 @@ export default async function PressePage() {
               Wer dahintersteht
             </a>
           </div>
+          <Link
+            href="/stats"
+            className="mt-5 inline-block font-body text-base text-waldgruen-dark underline underline-offset-4 decoration-waldgruen/40 hover:decoration-waldgruen-dark"
+          >
+            Aktuelle Zahlen zu Briefen und Themen &rarr;
+          </Link>
         </div>
 
         <Prose>

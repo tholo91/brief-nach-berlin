@@ -171,6 +171,7 @@ export function SectionNav({
   return (
     <nav
       aria-label="Abschnitte"
+      style={top === null ? undefined : { top }}
       className="sticky top-0 z-30 -mx-5 border-b border-warmgrau/10 bg-creme/90 backdrop-blur sm:-mx-8 lg:-mx-10"
     >
       <div className="relative">

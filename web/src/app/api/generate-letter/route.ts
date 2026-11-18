@@ -8,6 +8,7 @@ import {
   step1bSchema,
   step2Schema,
   localeSchema,
+  personalNoteSchema,
 } from "@/lib/validation/wizardSchemas";
 import { resolveRecipientSelection } from "@/lib/lookup/resolveRecipient";
 import { lookupPLZWithLevel } from "@/lib/lookup/plzLookup";
@@ -32,6 +33,7 @@ import { runningCampaign } from "@/lib/campaigns/endDate";
 import { claimAndSendCampaignMilestone } from "@/lib/campaigns/milestoneNotification";
 import { claimAndSendGlobalLetterMilestone } from "@/lib/campaigns/globalLetterMilestoneNotification";
 import { getPublicCampaignBySlug } from "@/lib/campaigns/repository";
+import { getCampaignIssueTexts } from "@/lib/campaigns/issueVariants";
 import { buildLetterSignalContext, doesLetterSignalContextMatch } from "@/lib/letterSignals/context";
 import { createGenerationProof, verifyLetterSignalContext } from "@/lib/letterSignals/token";
 import { markLetterSignalGeneratedAction } from "@/lib/actions/letterSignals";
@@ -211,6 +213,17 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Diese Kampagne ist aktuell nicht aktiv." }, { status: 400 });
     }
     const campaign = runningCampaign(activeCampaign, new Date());
+    // Der Satz zur Betroffenheit zählt nur, wenn die Kampagne geladen ist und der
+    // Text unverändert (Haupttext oder Variante) übernommen wurde. Sonst ignorieren.
+    const parsedPersonalNote = personalNoteSchema.safeParse(data.personalNote);
+    const trimmedIssueText = data.issueText.trim();
+    const personalNote =
+      campaign &&
+      parsedPersonalNote.success &&
+      parsedPersonalNote.data &&
+      getCampaignIssueTexts(campaign).some((text) => text.trim() === trimmedIssueText)
+        ? parsedPersonalNote.data
+        : undefined;
     const allowedPoliticianIds = campaign?.targetPoliticianIds ?? [];
     const campaignFixedRecipient = campaign
       ? getCampaignFixedRecipient(campaign)
@@ -331,6 +344,7 @@ export async function POST(req: NextRequest) {
       mismatchRecommendedLevel,
       preclassifiedTopic: campaign?.topic,
       fromCampaign: !!campaign,
+      ...(personalNote ? { personalNote } : {}),
       youth,
     });
 

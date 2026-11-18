@@ -35,6 +35,7 @@ type CampaignRow = {
   issue_text: string;
   issue_text_alternatives?: unknown;
   issue_text_alternatives_base?: string | null;
+  personal_hooks?: string[] | null;
   description: string | null;
   creator_name: string | null;
   external_url: string | null;
@@ -142,6 +143,16 @@ function client(db?: RepositoryClient): RepositoryClient {
   return db ?? getServiceRoleClient();
 }
 
+/** Fehlt die Spalte (Migration 041 offen) oder ist sie ungültig, bleibt die Liste leer. */
+function parsePersonalHooks(value: unknown): string[] {
+  if (!Array.isArray(value)) return [];
+  return value
+    .filter((item): item is string => typeof item === "string")
+    .map((item) => item.trim())
+    .filter((item) => item.length > 0)
+    .slice(0, 3);
+}
+
 function mapCampaign(row: CampaignRow): Campaign {
   const alternatives = campaignIssueAlternativesSchema.safeParse(row.issue_text_alternatives ?? []);
   return {
@@ -152,6 +163,7 @@ function mapCampaign(row: CampaignRow): Campaign {
     issueText: row.issue_text,
     issueTextAlternatives: alternatives.success ? alternatives.data : [],
     issueTextAlternativesBase: row.issue_text_alternatives_base ?? null,
+    personalHooks: parsePersonalHooks(row.personal_hooks),
     description: row.description,
     creatorName: row.creator_name,
     externalUrl: row.external_url,

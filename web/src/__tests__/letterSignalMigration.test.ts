@@ -28,6 +28,18 @@ describe("letter signal migration", () => {
     expect(exactMapMigration).toContain("GRANT EXECUTE ON FUNCTION");
   });
 
+  it("adds only yes/no personal-note signals and campaign hooks without a new table", () => {
+    const hooksMigration = readFileSync(
+      join(process.cwd(), "supabase/migrations/041_campaign_personal_hooks.sql"),
+      "utf8",
+    );
+    expect(hooksMigration).toContain("has_personal_note boolean");
+    expect(hooksMigration).toContain("campaign_text_edited boolean");
+    expect(hooksMigration).toContain("personal_hooks text[] NOT NULL DEFAULT '{}'");
+    expect(hooksMigration).toContain("cardinality(personal_hooks) <= 3");
+    expect(hooksMigration).not.toMatch(/CREATE TABLE/i);
+  });
+
   it("does not depend on a Vercel cron that the Hobby plan cannot deploy", () => {
     expect(vercelConfig.crons).toBeUndefined();
   });

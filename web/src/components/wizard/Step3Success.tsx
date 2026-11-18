@@ -52,6 +52,15 @@ function maskEmail(email: string): string {
   return `${visible}${"•".repeat(Math.max(1, Math.min(5, local.length - visible.length)))}@${domain}`;
 }
 
+function LoadingDots({ value }: { value: string }) {
+  return (
+    <span className="inline-grid grid-cols-1" aria-hidden="true">
+      <span className="invisible col-start-1 row-start-1">...</span>
+      <span className="col-start-1 row-start-1">{value}</span>
+    </span>
+  );
+}
+
 // Phased loading copy. Rotates while the politician-pick spinner runs. This is
 // the user's final click - they sit here waiting for the letter to be drafted,
 // so a single static spinner feels longer than chunked progress. Timings sum
@@ -887,8 +896,11 @@ export function Step3Success({
             <>Dein Entwurf kommt an <strong>{maskEmail(wizardData.email)}</strong>. Den Brief schickst du anschließend selbst per Post ab.</>
           ) : (
             <>
-              {isYouth ? "Dein Entwurf erscheint gleich hier" : "Brief und nächste Schritte kommen per E-Mail zu dir"}
-              <span aria-hidden="true">{loadingDots}</span>
+              {isYouth ? (
+                <>Dein Entwurf erscheint gleich <span className="whitespace-nowrap">hier<LoadingDots value={loadingDots} /></span></>
+              ) : (
+                <>Brief und nächste Schritte kommen per E-Mail zu <span className="whitespace-nowrap">dir<LoadingDots value={loadingDots} /></span></>
+              )}
               {!generationFetchError && (
                 <span className="block mt-1 text-sm">
                   {longWait
@@ -1211,6 +1223,12 @@ export function Step3Success({
               contextToken={letterSignalContext}
               generationProof={generationProof}
               email={wizardData.email}
+              {...(wizardData.campaign
+                ? {
+                    hasPersonalNote: Boolean(wizardData.personalNote?.trim()),
+                    campaignTextEdited: !wizardData.campaign.textUnchanged,
+                  }
+                : {})}
             />
           )}
         </aside>

@@ -40,7 +40,13 @@ export interface WizardData {
     logoPath?: string;
     targetLevel?: "Bund" | "Land" | "Fixed";
     targetState?: string | null;
+    /** Kampagnentext (Haupttext oder Variante) wurde unverändert übernommen. */
+    textUnchanged?: boolean;
+    /** Aufhänger der Kampagne für den Kasten "Bist du selbst betroffen?". */
+    personalHooks?: string[];
   };
+  /** Optionaler Satz zur eigenen Betroffenheit (nur Kampagnenmodus, wird nicht gespeichert). */
+  personalNote?: string;
 }
 
 export interface Step1bData {
@@ -109,6 +115,11 @@ export interface GenerateLetterInput {
   mdbLater?: MdbLaterRecipient;
   /** Anliegen stammt aus einem Kampagnentext (ggf. vom User angepasst). */
   fromCampaign?: boolean;
+  /**
+   * Eigener Satz zur Betroffenheit (nur Kampagne, Text unverändert; serverseitig geprüft).
+   * Wird nur im Prompt genutzt, nie gespeichert oder geloggt.
+   */
+  personalNote?: string;
   /** Kampagne: serverseitig geladener fester Empfänger. */
   campaignFixedRecipient?: CampaignFixedRecipientRecipient;
   /** Serverseitig abgeleitete Beziehung zwischen PLZ und Empfänger. */

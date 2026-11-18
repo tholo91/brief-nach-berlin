@@ -225,6 +225,10 @@ export function WizardShell() {
                 logoPath: handoff.campaignLogoPath,
                 targetLevel: handoff.campaignTargetLevel ?? "Bund",
                 targetState: handoff.campaignTargetState ?? null,
+                ...(handoff.campaignTextUnchanged ? { textUnchanged: true } : {}),
+                ...(handoff.campaignPersonalHooks?.length
+                  ? { personalHooks: handoff.campaignPersonalHooks }
+                  : {}),
               },
             }
           : {}),
@@ -317,6 +321,7 @@ export function WizardShell() {
       ngo: data.ngo,
       letterLength: data.letterLength,
       toneLevel: data.toneLevel,
+      personalNote: data.personalNote,
     }));
   }, []);
 
@@ -426,6 +431,7 @@ export function WizardShell() {
           ngo: optionalData.ngo,
           letterLength: optionalData.letterLength ?? prev.letterLength,
           toneLevel: optionalData.toneLevel ?? prev.toneLevel ?? 3,
+          personalNote: optionalData.personalNote,
         }));
 
         if ("disambiguationNeeded" in result && result.disambiguationNeeded) {
@@ -434,7 +440,7 @@ export function WizardShell() {
           // Beendete Kampagne: wie ein freier Brief weiterlaufen, ohne Kampagnenkontext.
           const campaignEnded = "campaignEnded" in result && result.campaignEnded === true;
           if (campaignEnded) {
-            setWizardData((prev) => ({ ...prev, campaign: undefined }));
+            setWizardData((prev) => ({ ...prev, campaign: undefined, personalNote: undefined }));
           }
           const activeCampaignContext = campaignEnded ? undefined : wizardData.campaign;
           if (activeCampaignContext) {
@@ -694,7 +700,7 @@ export function WizardShell() {
             <button
               type="button"
               onClick={() => {
-                setWizardData((prev) => ({ ...prev, campaign: undefined }));
+                setWizardData((prev) => ({ ...prev, campaign: undefined, personalNote: undefined }));
                 setCampaignMismatch(null);
                 setStepWithoutAnimation("2b");
               }}
@@ -713,11 +719,14 @@ export function WizardShell() {
             onErrorDismiss={handleErrorDismiss}
             isCampaign={Boolean(campaignContext)}
             isYouth={isYouthWizard(wizardData)}
+            showPersonalNote={Boolean(campaignContext?.textUnchanged)}
+            personalHooks={campaignContext?.personalHooks}
             defaultValues={{
               party: wizardData.party,
               ngo: wizardData.ngo,
               letterLength: wizardData.letterLength,
               toneLevel: wizardData.toneLevel,
+              personalNote: wizardData.personalNote,
             }}
           />
         )}

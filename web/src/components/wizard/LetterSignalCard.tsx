@@ -25,10 +25,15 @@ export function LetterSignalCard({
   contextToken,
   generationProof,
   email,
+  hasPersonalNote,
+  campaignTextEdited,
 }: {
   contextToken: string;
   generationProof?: string | null;
   email: string;
+  /** Nur bei Kampagnenbriefen gesetzt (ja/nein, nie der Inhalt). */
+  hasPersonalNote?: boolean;
+  campaignTextEdited?: boolean;
 }) {
   const [mapData, setMapData] = useState<LetterMapData>(EMPTY_MAP);
   const [mapState, setMapState] = useState<MapState>("loading");
@@ -90,6 +95,8 @@ export function LetterSignalCard({
       email,
       ...(generationProof ? { generationProof } : {}),
       deviceClass: detectDeviceClass(),
+      ...(hasPersonalNote !== undefined ? { hasPersonalNote } : {}),
+      ...(campaignTextEdited !== undefined ? { campaignTextEdited } : {}),
     });
     if ("error" in result) {
       setState("error");
@@ -123,7 +130,7 @@ export function LetterSignalCard({
       }
     }
     setState(reducedMotion || !result.mapPoint ? "contributed" : "flying");
-  }, [contextToken, email, generationProof, reducedMotion, state]);
+  }, [campaignTextEdited, contextToken, email, generationProof, hasPersonalNote, reducedMotion, state]);
 
   return (
     <section aria-labelledby="letter-signal-title">
@@ -215,7 +222,9 @@ export function LetterSignalCard({
       </div>
 
       <p className="mt-3 font-body text-xs leading-relaxed text-warmgrau/60">
-        Mit dem Klick PLZ, E-Mail-Adresse, Zeitpunkt, Gerätetyp, Thema und bis zu drei Stichworte deines Anliegens bis zum Widerruf speichern. Öffentlich erscheint nur ein Punkt bei deiner ungefähren PLZ. Dein Brief wird nicht gespeichert.{" "}
+        Mit dem Klick PLZ, E-Mail-Adresse, Zeitpunkt, Gerätetyp, Thema und bis zu drei Stichworte deines Anliegens bis zum Widerruf speichern. Öffentlich erscheint nur ein Punkt bei deiner ungefähren PLZ. Dein Brief wird nicht gespeichert.
+        {campaignTextEdited !== undefined &&
+          " Bei Kampagnenbriefen zusätzlich, ob du den Kampagnentext geändert oder einen Satz zu deiner Betroffenheit ergänzt hast (nur ja oder nein, nie der Inhalt)."}{" "}
         <Link href="/datenschutz#freiwillige-themensignale" className="underline underline-offset-2 hover:text-warmgrau">
           Datenschutz
         </Link>

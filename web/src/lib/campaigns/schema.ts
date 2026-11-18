@@ -276,6 +276,8 @@ export type Campaign = {
   issueText: string;
   issueTextAlternatives?: string[];
   issueTextAlternativesBase?: string | null;
+  /** Bis zu 3 Aufhänger für "Bist du selbst betroffen?". Fehlt oder leer: allgemeine Vorschläge. */
+  personalHooks?: string[];
   description: string | null;
   creatorName: string | null;
   externalUrl: string | null;

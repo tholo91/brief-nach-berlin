@@ -74,6 +74,13 @@ export async function createLetterSignalAction(input: unknown): Promise<SignalAc
           generated_at: generationProof ? new Date().toISOString() : null,
           ...(generationProof?.letterNumber ? { letter_number: generationProof.letterNumber } : {}),
           ...(parsedInput.data.deviceClass ? { device_class: parsedInput.data.deviceClass } : {}),
+          // Nur bei Kampagnenbriefen gesetzt, sonst bleiben beide Spalten null.
+          ...(context.campaignSlug && parsedInput.data.hasPersonalNote !== undefined
+            ? { has_personal_note: parsedInput.data.hasPersonalNote }
+            : {}),
+          ...(context.campaignSlug && parsedInput.data.campaignTextEdited !== undefined
+            ? { campaign_text_edited: parsedInput.data.campaignTextEdited }
+            : {}),
         },
         { onConflict: "letter_id", ignoreDuplicates: true },
       )

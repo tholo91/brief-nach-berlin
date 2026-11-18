@@ -28,6 +28,9 @@ export interface WizardHandoff {
   campaignLogoPath?: string;
   campaignTargetLevel?: "Bund" | "Land" | "Fixed";
   campaignTargetState?: string;
+  // Kampagnentext unverändert übernommen und Aufhänger der Kampagne ("Bist du selbst betroffen?").
+  campaignTextUnchanged?: boolean;
+  campaignPersonalHooks?: string[];
   // Ob auf der Landing eine Sprachnachricht genutzt wurde. Muss mitwandern,
   // sonst startet der Wizard mit einem frischen "false" und der Debug-Payload
   // meldet faelschlich Voice=false, obwohl auf der Landing gesprochen wurde.
@@ -94,6 +97,8 @@ export function peekHandoff(): WizardHandoff | null {
         campaignLogoPath,
         campaignTargetLevel,
         campaignTargetState,
+        campaignTextUnchanged,
+        campaignPersonalHooks,
         usedSpeechToText,
         audience,
         klasse,
@@ -120,6 +125,15 @@ export function peekHandoff(): WizardHandoff | null {
             : undefined,
         campaignTargetState:
           typeof campaignTargetState === "string" ? campaignTargetState : undefined,
+        campaignTextUnchanged:
+          typeof campaignTextUnchanged === "boolean" ? campaignTextUnchanged : undefined,
+        campaignPersonalHooks: Array.isArray(campaignPersonalHooks)
+          ? campaignPersonalHooks
+              .filter((hook): hook is string => typeof hook === "string")
+              .map((hook) => hook.trim())
+              .filter((hook) => hook.length > 0 && hook.length <= 120)
+              .slice(0, 3)
+          : undefined,
         usedSpeechToText:
           typeof usedSpeechToText === "boolean" ? usedSpeechToText : undefined,
         audience: audience === "jung" ? "jung" : undefined,

@@ -40,6 +40,7 @@ type CampaignIssueStarterProps = {
   initialIssueText: string;
   issueTextAlternatives?: string[];
   issueTextAlternativesBase?: string | null;
+  personalHooks?: string[];
   creatorName?: string | null;
   externalUrl?: string | null;
   logoPath?: string | null;
@@ -53,6 +54,7 @@ export function CampaignIssueStarter({
   initialIssueText,
   issueTextAlternatives,
   issueTextAlternativesBase,
+  personalHooks,
   creatorName,
   externalUrl,
   logoPath,
@@ -107,9 +109,17 @@ export function CampaignIssueStarter({
       return;
     }
 
+    const textUnchanged = getCampaignIssueTexts({
+      issueText: initialIssueText,
+      issueTextAlternatives,
+      issueTextAlternativesBase,
+    }).some((text) => text.trim() === trimmed);
+
     saveHandoff({
       issueText: trimmed,
       source: "campaign",
+      campaignTextUnchanged: textUnchanged,
+      ...(personalHooks && personalHooks.length > 0 ? { campaignPersonalHooks: personalHooks } : {}),
       campaignSlug: slug,
       campaignTitle: title,
       campaignCreatorName: creatorName?.trim() || undefined,
@@ -119,7 +129,22 @@ export function CampaignIssueStarter({
       ...(targetState ? { campaignTargetState: targetState } : {}),
     });
     router.push(WIZARD_PATH);
-  }, [creatorName, externalUrl, logoPath, router, slug, targetLevel, targetState, title, tooShort, trimmed]);
+  }, [
+    creatorName,
+    externalUrl,
+    initialIssueText,
+    issueTextAlternatives,
+    issueTextAlternativesBase,
+    logoPath,
+    personalHooks,
+    router,
+    slug,
+    targetLevel,
+    targetState,
+    title,
+    tooShort,
+    trimmed,
+  ]);
 
   return (
     <div className="rounded-md border border-waldgruen/20 bg-surface/90 p-4 shadow-[0_18px_48px_-28px_rgba(27,67,50,0.55)] backdrop-blur-sm sm:p-5">

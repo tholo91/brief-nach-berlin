@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import { setPendingLetterVariantSubmission } from "@/lib/client/letterVariantSubmission";
+import { ToneSlider } from "@/components/wizard/ToneSlider";
 import {
   DEFAULT_LETTER_LENGTH,
   LETTER_LENGTHS,
@@ -216,30 +217,13 @@ export function VariantForm() {
         <label className="block font-body text-sm font-semibold text-waldgruen-dark mb-3">
           Tonalität der neuen Variante
         </label>
-        <input
-          type="range"
-          min={1}
-          max={5}
-          step={1}
+        <ToneSlider
           value={toneLevel}
-          onChange={(event) => setToneLevel(Number(event.target.value))}
+          labels={TONE_LABELS}
+          onChange={setToneLevel}
           disabled={submitState === "sending"}
-          className="w-full accent-waldgruen cursor-pointer disabled:cursor-not-allowed"
-          aria-label="Tonlage der neuen Briefvariante"
+          ariaLabel="Tonlage der neuen Briefvariante"
         />
-        <div className="flex justify-between mt-1">
-          {TONE_LABELS.map((label, i) => (
-            <span
-              key={label}
-              className={[
-                "font-body text-xs transition-colors",
-                toneLevel === i + 1 ? "text-waldgruen font-semibold" : "text-warmgrau/40",
-              ].join(" ")}
-            >
-              {label}
-            </span>
-          ))}
-        </div>
       </div>
 
       <div>

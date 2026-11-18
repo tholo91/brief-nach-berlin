@@ -114,6 +114,33 @@ describe("letter signal lifecycle actions", () => {
     ).resolves.toEqual({ error: "invalid_context" });
   });
 
+  it("stores the personal-note and text-edited flags only for campaign letters", async () => {
+    const builder = query();
+    mockedClient.mockReturnValue({ from: jest.fn().mockReturnValue(builder) } as never);
+    const campaignToken = createLetterSignalContext({ ...context, campaignSlug: "nahverkehr" });
+    const flags = { hasPersonalNote: true, campaignTextEdited: false };
+
+    await createLetterSignalAction({ contextToken: campaignToken, email: TEST_EMAIL, ...flags });
+    expect(builder.upsert).toHaveBeenLastCalledWith(
+      expect.objectContaining({ has_personal_note: true, campaign_text_edited: false }),
+      { onConflict: "letter_id", ignoreDuplicates: true },
+    );
+
+    const freeToken = createLetterSignalContext(context);
+    await createLetterSignalAction({ contextToken: freeToken, email: TEST_EMAIL, ...flags });
+    const freeRow = builder.upsert.mock.calls[1][0] as Record<string, unknown>;
+    expect(freeRow).not.toHaveProperty("has_personal_note");
+    expect(freeRow).not.toHaveProperty("campaign_text_edited");
+
+    await createLetterSignalAction({ contextToken: campaignToken, email: TEST_EMAIL });
+    const plainRow = builder.upsert.mock.calls[2][0] as Record<string, unknown>;
+    expect(plainRow).not.toHaveProperty("has_personal_note");
+
+    await expect(
+      createLetterSignalAction({ contextToken: campaignToken, email: TEST_EMAIL, hasPersonalNote: "yes" }),
+    ).resolves.toEqual({ error: "invalid_context" });
+  });
+
   it("confirms an existing contribution without incrementing it again", async () => {
     const builder = query({ data: [], error: null });
     mockedClient.mockReturnValue({ from: jest.fn().mockReturnValue(builder) } as never);

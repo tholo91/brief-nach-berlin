@@ -21,6 +21,9 @@ export const letterSignalInputSchema = z.object({
   email: z.string().trim().email().max(254),
   generationProof: z.string().min(20).max(4096).optional(),
   deviceClass: z.enum(DEVICE_CLASSES).optional(),
+  // Nur bei Kampagnenbriefen: ja/nein, nie der Inhalt der Notiz.
+  hasPersonalNote: z.boolean().optional(),
+  campaignTextEdited: z.boolean().optional(),
 });
 
 export const generationProofInputSchema = z.object({

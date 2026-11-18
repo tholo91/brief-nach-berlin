@@ -1,14 +1,29 @@
 "use client";
 
-import { useState } from "react";
+import { useCallback, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import type { Step1bData } from "@/lib/validation/wizardSchemas";
 import { DEFAULT_LETTER_LENGTH, type LetterLength } from "@/lib/config";
-import { useUiCopy } from "@/components/i18n/LocaleProvider";
+import { useLocale, useUiCopy } from "@/components/i18n/LocaleProvider";
+import { VoiceRecorder, type VoiceRecorderState } from "@/components/audio/VoiceRecorder";
+import { useTypewriterPlaceholder } from "@/components/wizard/useTypewriterPlaceholder";
 import { WizardForwardIcon } from "@/components/wizard/WizardForwardIcon";
+import { ToneSlider } from "@/components/wizard/ToneSlider";
+
+export const PERSONAL_NOTE_MAX = 400;
+const PERSONAL_NOTE_FIELD_HEIGHT = 128;
+
+export function appendPersonalHook(note: string, hook: string): string {
+  const current = note.trimEnd();
+  const addition = hook.trim();
+  if (!addition || current.includes(addition)) return current;
+  return `${current}${current ? " " : ""}${addition} `;
+}
 
 export interface StepPreferencesData extends Step1bData {
   toneLevel: number;
+  /** Nur im Kampagnenmodus bei unverändertem Kampagnentext: eigener Satz zur Betroffenheit. */
+  personalNote?: string;
 }
 
 interface StepPreferencesProps {
@@ -20,6 +35,10 @@ interface StepPreferencesProps {
   defaultValues?: Partial<StepPreferencesData>;
   isCampaign?: boolean;
   isYouth?: boolean;
+  /** Kasten "Bist du selbst betroffen?" zeigen (Kampagne, Text unverändert). */
+  showPersonalNote?: boolean;
+  /** Aufhänger der Kampagne; leer: allgemeine Vorschläge aus der Copy. */
+  personalHooks?: readonly string[];
 }
 
 function PartyExplainer() {
@@ -74,8 +93,27 @@ export function StepPreferences({
   defaultValues,
   isCampaign = false,
   isYouth = false,
+  showPersonalNote = false,
+  personalHooks,
 }: StepPreferencesProps) {
   const copy = useUiCopy();
+  const { locale } = useLocale();
+  const personalVisible = isCampaign && showPersonalNote && !isYouth;
+  const hooks =
+    personalHooks && personalHooks.length > 0
+      ? personalHooks.slice(0, 3)
+      : copy.preferences.personalGenericHooks;
+  const personalTextareaRef = useRef<HTMLTextAreaElement>(null);
+  const [personalNote, setPersonalNote] = useState(
+    personalVisible ? (defaultValues?.personalNote ?? "").slice(0, PERSONAL_NOTE_MAX) : ""
+  );
+  const personalNoteRef = useRef(personalNote);
+  const [voiceState, setVoiceState] = useState<VoiceRecorderState>("idle");
+  const handleVoiceStateChange = useCallback((state: VoiceRecorderState) => setVoiceState(state), []);
+  const { text: animatedPlaceholder, reducedMotion } = useTypewriterPlaceholder(
+    copy.preferences.personalPlaceholders,
+    personalVisible && personalNote.length === 0 && voiceState === "idle"
+  );
   const [advancedOpen, setAdvancedOpen] = useState(
     Boolean(defaultValues?.party?.trim() || defaultValues?.ngo?.trim())
   );
@@ -101,7 +139,32 @@ export function StepPreferences({
       ngo: values.ngo?.trim() || undefined,
       letterLength: values.letterLength ?? DEFAULT_LETTER_LENGTH,
       toneLevel: values.toneLevel ?? toneLevel,
+      ...(personalVisible ? { personalNote: (changes.personalNote ?? personalNoteRef.current).trim() || undefined } : {}),
     });
+  };
+
+  const updatePersonalNote = (value: string) => {
+    const next = value.slice(0, PERSONAL_NOTE_MAX);
+    personalNoteRef.current = next;
+    setPersonalNote(next);
+    notifyChange({ personalNote: next });
+  };
+
+  const pickPersonalHook = (hook: string) => {
+    onErrorDismiss?.();
+    const next = appendPersonalHook(personalNoteRef.current, hook);
+    updatePersonalNote(next);
+    window.setTimeout(() => {
+      const el = personalTextareaRef.current;
+      if (!el) return;
+      el.focus();
+      el.setSelectionRange(next.length, next.length);
+    }, 0);
+  };
+
+  const appendPersonalTranscription = (text: string) => {
+    const current = personalNoteRef.current.trimEnd();
+    updatePersonalNote(current ? `${current} ${text.trim()}` : text.trim());
   };
 
   const partyField = register("party");
@@ -115,6 +178,7 @@ export function StepPreferences({
           party: data.party?.trim() || undefined,
           ngo: data.ngo?.trim() || undefined,
           toneLevel,
+          ...(personalVisible ? { personalNote: personalNote.trim() || undefined } : {}),
         })
       )}
       noValidate
@@ -140,36 +204,16 @@ export function StepPreferences({
           <legend className="block font-body text-sm font-semibold text-warmgrau mb-3">
             {copy.preferences.toneLegend}
           </legend>
-          <input
-            type="range"
-            min={1}
-            max={5}
-            step={1}
+          <ToneSlider
             value={toneLevel}
-            onChange={(event) => {
+            labels={copy.preferences.tones}
+            ariaLabel={copy.preferences.toneAriaLabel}
+            onChange={(nextToneLevel) => {
               onErrorDismiss?.();
-              const nextToneLevel = Number(event.target.value);
               setToneLevel(nextToneLevel);
               notifyChange({ toneLevel: nextToneLevel });
             }}
-            className="w-full accent-waldgruen cursor-pointer"
-            aria-label={copy.preferences.toneAriaLabel}
           />
-          <div className="mt-1 flex justify-between gap-2">
-            {copy.preferences.tones.map((label, index) => (
-              <span
-                key={label}
-                className={[
-                  "font-body text-xs text-center transition-colors",
-                  toneLevel === index + 1
-                    ? "text-waldgruen font-semibold"
-                    : "text-warmgrau/45",
-                ].join(" ")}
-              >
-                {label}
-              </span>
-            ))}
-          </div>
         </fieldset>
 
         {!isYouth && (
@@ -177,13 +221,18 @@ export function StepPreferences({
             <legend className="block font-body text-sm font-semibold text-warmgrau mb-3">
               {copy.preferences.lengthLegend}
             </legend>
-            <div className="flex gap-2">
+            <div
+              role="group"
+              aria-label={copy.preferences.lengthLegend}
+              className="flex overflow-hidden rounded-lg border border-warmgrau/30 bg-creme divide-x divide-warmgrau/25"
+            >
               {(["1", "1.5", "2"] as LetterLength[]).map((length) => {
                 const active = selectedLength === length;
                 return (
                   <button
                     key={length}
                     type="button"
+                    aria-pressed={active}
                     onClick={() => {
                       onErrorDismiss?.();
                       setValue("letterLength", length);
@@ -191,10 +240,10 @@ export function StepPreferences({
                       notifyChange({ letterLength: length });
                     }}
                     className={[
-                      "flex-1 font-body text-sm py-2.5 rounded-lg border transition-all cursor-pointer active:scale-[0.98]",
+                      "min-w-0 min-h-[44px] flex-1 px-2 py-2.5 font-body text-sm transition-colors cursor-pointer",
                       active
-                        ? "bg-waldgruen text-creme border-waldgruen shadow-sm"
-                        : "bg-creme text-waldgruen-dark border-warmgrau/30 hover:border-waldgruen/50",
+                        ? "bg-waldgruen text-creme font-semibold"
+                        : "text-waldgruen-dark hover:bg-waldgruen/5",
                     ].join(" ")}
                   >
                     {length === "1"
@@ -210,6 +259,102 @@ export function StepPreferences({
               {copy.preferences.lengthHint}
             </p>
           </fieldset>
+        )}
+
+        {personalVisible && (
+          <section aria-labelledby="personal-note-heading">
+            <div className="flex items-baseline gap-2">
+              <h2
+                id="personal-note-heading"
+                className="font-body text-sm font-semibold text-warmgrau"
+              >
+                {copy.preferences.personalHeading}
+              </h2>
+              <span className="font-body text-xs text-warmgrau/50 whitespace-nowrap">
+                ({copy.preferences.personalOptional})
+              </span>
+            </div>
+            <p className="mt-1 mb-3 font-body text-xs leading-relaxed text-warmgrau/65">
+              {copy.preferences.personalHint}
+            </p>
+            <div className="relative">
+              <textarea
+                ref={personalTextareaRef}
+                id="personal-note"
+                value={personalNote}
+                maxLength={PERSONAL_NOTE_MAX}
+                aria-label={copy.preferences.personalFieldLabel}
+                placeholder={reducedMotion ? copy.preferences.personalPlaceholders[0] : ""}
+                onChange={(event) => {
+                  onErrorDismiss?.();
+                  updatePersonalNote(event.target.value);
+                }}
+                onFocus={() => onErrorDismiss?.()}
+                style={{ height: PERSONAL_NOTE_FIELD_HEIGHT }}
+                className={[
+                  inputClassName,
+                  "resize-none overflow-y-auto scrollbar-hide px-4 pt-3 pb-12 pr-14 leading-relaxed placeholder:text-warmgrau/40",
+                ].join(" ")}
+              />
+              {!reducedMotion && personalNote.length === 0 && voiceState === "idle" && (
+                <div
+                  aria-hidden="true"
+                  className="pointer-events-none absolute left-4 right-14 top-3 overflow-hidden text-left font-body text-base leading-relaxed text-warmgrau/40"
+                >
+                  {animatedPlaceholder}
+                </div>
+              )}
+              <div
+                role="group"
+                aria-label={copy.preferences.personalHooksLabel}
+                className="mt-1 flex flex-wrap gap-1"
+              >
+                {hooks.map((hook) => {
+                  const hookText = hook.trim();
+                  const active = personalNote.startsWith(hookText);
+                  return (
+                    <button
+                      key={hook}
+                      type="button"
+                      aria-pressed={active}
+                      title={hookText}
+                      onClick={() => pickPersonalHook(hook)}
+                      className={[
+                        "max-w-[calc(50%-0.25rem)] min-h-[44px] rounded-full border px-3 py-1.5 text-left font-body text-sm leading-5 transition-colors cursor-pointer",
+                        active
+                          ? "border-waldgruen/50 bg-waldgruen/10 text-waldgruen-dark"
+                          : "border-warmgrau/25 bg-creme/60 text-waldgruen-dark hover:border-waldgruen/40 hover:bg-waldgruen/5",
+                      ].join(" ")}
+                    >
+                      <span className="line-clamp-2">{hookText.replace(/:\s*$/, "")}</span>
+                    </button>
+                  );
+                })}
+              </div>
+              <VoiceRecorder
+                key={locale}
+                language={locale === "en" ? "en" : "de"}
+                hidden={locale === "tr"}
+                hasText={personalNote.length > 0}
+                charCount={personalNote.length}
+                fieldHeight={PERSONAL_NOTE_FIELD_HEIGHT}
+                controlRightClass="right-2.5"
+                pinToBottom
+                hideCounter
+                onTranscription={appendPersonalTranscription}
+                onStateChange={handleVoiceStateChange}
+              />
+              {personalNote.length >= PERSONAL_NOTE_MAX - 80 && (
+                <p
+                  aria-live="polite"
+                  className="absolute left-4 font-body text-xs text-warmgrau/50"
+                  style={{ top: PERSONAL_NOTE_FIELD_HEIGHT - 32 }}
+                >
+                  {personalNote.length} / {PERSONAL_NOTE_MAX}
+                </p>
+              )}
+            </div>
+          </section>
         )}
 
         {!isYouth && (

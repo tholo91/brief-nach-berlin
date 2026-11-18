@@ -34,6 +34,11 @@ export const step1Schema = z.object({
 // PDF-Modus (Klassenlink "PDF statt E-Mail"): nur die Postleitzahl.
 export const step1PlzSchema = z.object({ plz: plzField });
 
+export const PERSONAL_NOTE_MAX = 400;
+
+/** Optionaler Satz zur eigenen Betroffenheit (Kampagnenmodus). Wird nirgends gespeichert. */
+export const personalNoteSchema = z.string().trim().max(PERSONAL_NOTE_MAX).optional();
+
 export const step1bSchema = z.object({
   party: z.string().trim().max(80, { message: "Partei darf maximal 80 Zeichen lang sein." }).optional(),
   ngo: z.string().trim().max(100, { message: "Organisation darf maximal 100 Zeichen lang sein." }).optional(),

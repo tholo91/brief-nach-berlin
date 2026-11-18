@@ -51,6 +51,21 @@ describe("wizard handoff", () => {
     expect(entryStepForHandoff({ issueText: "Kampagne", source: "campaign" })).toBe(2);
   });
 
+  it("carries the unchanged-text flag and at most three trimmed hooks for campaigns", () => {
+    saveHandoff({
+      issueText: "Der Nahverkehr auf dem Land muss ausgebaut werden.",
+      source: "campaign",
+      campaignSlug: "nahverkehr",
+      campaignTextUnchanged: true,
+      campaignPersonalHooks: [" Meine Kinder sind direkt betroffen: ", "", "Ich pendle täglich:", "Eins", "Vier"],
+    });
+
+    expect(peekHandoff()).toMatchObject({
+      campaignTextUnchanged: true,
+      campaignPersonalHooks: ["Meine Kinder sind direkt betroffen:", "Ich pendle täglich:", "Eins"],
+    });
+  });
+
   it("removes the handoff once the recipient flow has started", () => {
     saveHandoff({ issueText: "Mehr sichere Schulwege in unserem Stadtteil." });
 

@@ -32,3 +32,12 @@ Anlass: Johanna Steiner (GFF) nimmt Brief-nach-Berlin in die 2. Auflage auf und 
 - Lücke im Handbuch: Landtag und Kommune. Dort liegt oft die Zuständigkeit, ein Viertel der Briefe geht schon an den Landtag.
 - Lücke im Handbuch: kleine Orgas ohne eigenes Tool. Genau dafür sind die Kampagnen da.
 - Nach der 2. Auflage: Handbuch als externe Quelle auf `handschriftliche-briefe-wirkung` zitieren.
+
+## Story-Ideen für Presse, Anträge und /stats (18.11.2026)
+
+- Presse: Die GFF brauchte mehrere Teams für eine Kampagne mit knapp 114.000 Bürgerbriefen. Brief-nach-Berlin macht so eine Kampagne für kleine Initiativen ohne Team möglich.
+- Aufhänger: "Kommt ins Policy-Handbuch der GFF" (2. Auflage zugesagt per LinkedIn, noch nicht erschienen). In Anträgen (Prototype Fund, startsocial) als Zusage formulieren, nicht als Veröffentlichung.
+- Datenlücke: Das Handbuch sagt "Muster-Briefe erhalten Muster-Antworten", ohne Daten. Brief-nach-Berlin misst die Antwortqualität. Mögliche Schlagzeile: "Wer von Hand schreibt, bekommt öfter echte Antworten".
+- Erst belastbar ab grob 100 Rückmeldungen mit Antwort (Richtwert, nicht geprüft). Stand 12.11.: 10 handschriftlich vs. 12 getippt.
+- Verzerrung: Die Rückfrage kam Monate nach dem Brief. Es antworten eher Engagierte, die Erinnerung ist ungenau.
+- GFF-Erfahrungswert für Website/SEO: Rund 90 % der Gesprächsanfragen landen bei Mitarbeitenden, außer bei direktem Wahlkreisbezug (Kap. 4.1).

@@ -78,7 +78,24 @@ Plans:
 
 ## Backlog
 
-### Phase 999.37: Kampagnen: persönlicher Aufhänger im Wizard (BACKLOG)
+### Phase 999.37: Kampagnen: persönlicher Aufhänger im Wizard (IN ARBEIT, Quick 261117-r86)
+
+**Neu geschnitten (Grill-Session 2026-11-17), gilt vor dem alten Scope unten:**
+- Kasten "Bist du selbst betroffen?" in `StepPreferences`, nur Kampagne und nur bei unverändertem Text (Haupttext oder Variante).
+- 2-3 Aufhänger pro Kampagne in `campaigns.personal_hooks`. Claude schlägt sie im Skill `kampagne-freigeben` vor (`aufhaenger <slug>`), Thomas prüft. Keine Mistral-Automatik beim Anlegen.
+- Ohne kuratierte Aufhänger: 3 allgemeine aus der Copy. Ein Klick fügt einen Satzanfang hinzu und erhält eigene Eingaben.
+- Wechselnder Platzhalter und Diktat wie auf der Startseite. Hinweis: ein Satz macht den Brief persönlicher und wirkungsvoller.
+- Prompt-Block `<persoenlich>` trägt den Einstieg. Messung: `letter_signals.has_personal_note`, `campaign_text_edited`.
+- Einstieg würfeln ohne Kasten (Todo 2026-10-07) bewusst nicht mitgebaut.
+- Plan: `.planning/quick/261117-r86-kampagnen-kasten-bist-du-selbst-betroffe/`
+
+**Späteres Backlog (nicht Teil von Quick 261117-r86):** Auf der
+Kampagnen-Managementseite sollen NGO-Ersteller:innen die KI-Vorschläge für
+persönliche Aufhänger prüfen, knapp bearbeiten und speichern können. Dasselbe
+gilt für bis zu drei Anliegen-Versionen: minimale Tab-Leiste zum Wechseln,
+Versionen bearbeiten und bei nur einer Version eine neue hinzufügen. Der
+Workflow richtet sich vor allem an Thomas, der Kampagnen für NGOs vorbereitet;
+keine umfangreiche Redaktionsoberfläche.
 
 **Ergänzung (2026-10-12):** Für die unmittelbare Variation wird zuerst die
 leichteste Lösung mit 1–3 manuell kuratierten Anliegen umgesetzt. Die in dieser
@@ -144,7 +161,9 @@ Plans:
 - [ ] Feld, Chips, Placeholder und Diktat in Schritt 2b
 - [ ] `personalNote` in Request, Prompt und Debug-Payload
 
-### Phase 999.38: Kampagnen: Argument-Variation pro Brief (BACKLOG)
+### Phase 999.38: Kampagnen: Argument-Variation pro Brief (GESCHLOSSEN 2026-11-17)
+
+**Geschlossen:** Durch kuratierte Varianten ersetzt (`issue_text_alternatives`, Skill `kampagnen-varianten`). Variation des Aufbaus bleibt im Todo 2026-10-07. Spec unten nur als Kontext.
 
 **Ergänzung (2026-10-12):** Der aktuelle Backlog-Ansatz mit KI-Extraktion und
 Argument-Auswahl pro Brief wird vorerst zurückgestellt. Zuerst kommt die
@@ -332,15 +351,6 @@ Plans:
 ### Phase 999.1: surv.ai User-Feedback Integration (BACKLOG)
 
 **Goal:** Embed a surv.ai feedback link after the letter generation flow to collect real user feedback ("Hat der Brief geholfen?"). Enables validation without building custom analytics.
-**Requirements:** TBD
-**Plans:** 0 plans
-
-Plans:
-- [ ] TBD (promote with /gsd:review-backlog when ready)
-
-### Phase 999.2: surv.ai Persönlicher Kontext-Abfrage (BACKLOG)
-
-**Goal:** Use surv.ai to collect personal context (profession, affiliations, how personally affected) instead of a simple in-app form. Richer data = stronger letters, and surv.ai handles the conversational UX.
 **Requirements:** TBD
 **Plans:** 0 plans
 

@@ -1,0 +1,2364 @@
+import type { Metadata } from "next";
+import Link from "next/link";
+import type { ReactNode } from "react";
+import { cookies } from "next/headers";
+import { StatsPie } from "@/components/internalStats/StatsPie";
+import { FilterBar } from "@/components/internalStats/FilterBar";
+import { ValueEmphasis } from "@/components/internalStats/ValueEmphasis";
+import { ColumnChart, type ColumnPoint } from "@/components/internalStats/ColumnChart";
+import { TopicHeatmap } from "@/components/internalStats/TopicHeatmap";
+import { SubtopicClusters } from "@/components/internalStats/SubtopicClusters";
+import { CopyButton } from "@/components/internalStats/CopyButton";
+import { SectionNav } from "@/components/internalStats/SectionNav";
+import { BundeslandMap } from "@/components/campaigns/BundeslandMap";
+import { BUNDESLAND_KEYS, BUNDESLAND_NAMES, type BundeslandKey } from "@/lib/campaigns/schema";
+import { formatDecimal, formatNumber } from "@/lib/formatNumber";
+import { SENT_METHOD_VALUES } from "@/lib/rueckmeldung/schema";
+import { DUPLICATE_LETTER_NOTE, estimateLettersWithoutDuplicates } from "@/lib/duplicateLetters";
+import { lockInternalStatsOwner, unlockInternalStatsOwner } from "@/lib/internalStats/ownerActions";
+import {
+  INTERNAL_STATS_OWNER_COOKIE,
+  isInternalStatsOwnerCookieValid,
+} from "@/lib/internalStats/access";
+import { getInternalStatsWithBaseline } from "@/lib/internalStats/getInternalStats";
+import { BarTrack } from "@/components/internalStats/BarTrack";
+import { StatInfo } from "@/components/internalStats/StatInfo";
+import { Briefweg } from "@/components/internalStats/Briefweg";
+import {
+  featuredQuotes,
+  OUTCOME_LABELS,
+  type OutcomeRoundStats,
+} from "@/lib/internalStats/outcomes";
+import {
+  STAT_QUESTIONS,
+  type StatQuestionKey,
+} from "@/lib/internalStats/questions";
+import {
+  EXPECTATION_VALUES,
+  NOT_SENT_REASON_VALUES,
+  REPLY_ADDRESSED_VALUES,
+  REPLY_CHANNEL_VALUES,
+  REPLY_FEELING_VALUES,
+  WRITE_AGAIN_VALUES,
+} from "@/lib/rueckmeldung/schema";
+import {
+  campaignSourceTotal,
+  topCampaignSlug,
+  type InternalStats,
+  type SendBreakdown,
+  topicCategoryLabel,
+} from "@/lib/internalStats/aggregate";
+import {
+  activeFilterChips,
+  buildImpactSummary,
+  buildStatements,
+  buildStatsHref as buildStatsHrefForPath,
+  bucketCategoryTimeline,
+  bucketCounterTimeline,
+  bucketTimeline,
+  bundeslandName,
+  daySpan,
+  efficacyRate,
+  formatBarShare,
+  formatShare,
+  granularityForTimeRange,
+  isSmallBasis,
+  parseStatsFilter,
+  peakPoint,
+  politicsReactionSentence,
+  SHARE_PERCENT_MIN_BASE,
+  shareBaseNote,
+  shareParts,
+  statsQueryFromFilter,
+  timeRangeFromDay,
+  topLabelsByCategory,
+  VIEW_MODES,
+  type ImpactRate,
+  type ImpactSummary,
+  type StatementKey,
+  type StatsQuery,
+  type ViewMode,
+} from "@/lib/internalStats/view";
+import { TOPIC_CATEGORY_CODES } from "@/lib/topics/topicTaxonomy";
+import {
+  POLITICAL_POWERLESSNESS_FREQUENCY_LABELS,
+  POLITICAL_POWERLESSNESS_FREQUENCY_VALUES,
+  POLITICAL_SELF_EFFICACY_LABELS,
+  POLITICAL_SELF_EFFICACY_VALUES,
+} from "@/lib/feedback/politicalActivation";
+import {
+  FACT_CHECK_FEEDBACK_TAGS,
+  NEGATIVE_FEEDBACK_TAGS,
+  POSITIVE_FEEDBACK_TAGS,
+  type FeedbackTagSlug,
+} from "@/lib/feedback/feedbackTags";
+import { AGE_GROUP_LABELS, AGE_GROUP_VALUES } from "@/lib/feedback/ageGroup";
+import {
+  LETTER_HISTORY_LABELS,
+  LETTER_HISTORY_VALUES,
+} from "@/lib/feedback/letterHistory";
+
+export const dynamic = "force-dynamic";
+
+export const metadata: Metadata = {
+  title: "Interne Auswertung | Brief-nach-Berlin",
+  description: "Interne Auswertung aggregierter Statistiken zu Brief-nach-Berlin.",
+  robots: {
+    index: false,
+    follow: false,
+    googleBot: { index: false, follow: false },
+  },
+};
+
+const dateFormatter = new Intl.DateTimeFormat("de-DE", {
+  day: "2-digit",
+  month: "2-digit",
+  year: "numeric",
+});
+
+const timeFormatter = new Intl.DateTimeFormat("de-DE", {
+  hour: "2-digit",
+  minute: "2-digit",
+});
+
+function buildPrivateStatsHref(query: StatsQuery, patch: Partial<StatsQuery> = {}) {
+  return buildStatsHrefForPath(query, patch, "/stats/intern");
+}
+
+function formatDate(value: string | null): string {
+  return value ? dateFormatter.format(new Date(value)) : "—";
+}
+
+function formatDateTime(value: string): string {
+  const date = new Date(value);
+  return `${dateFormatter.format(date)}, ${timeFormatter.format(date)} Uhr`;
+}
+
+function SectionHeading({ eyebrow, title, detail }: { eyebrow: string; title: string; detail?: string }) {
+  return (
+    <div className="mb-6">
+      <p className="font-typewriter text-[11px] font-bold uppercase tracking-[0.18em] text-waldgruen/65">
+        {eyebrow}
+      </p>
+      <h2 className="mt-2 font-typewriter text-2xl font-bold leading-tight text-waldgruen-dark sm:text-3xl">
+        {title}
+      </h2>
+      {detail && <p className="mt-2 font-body text-sm leading-relaxed text-warmgrau/65">{detail}</p>}
+    </div>
+  );
+}
+
+function EmptyState({ children = "Noch keine freigegebenen Signale." }: { children?: string }) {
+  return <p className="rounded-lg bg-warmgrau/5 px-4 py-5 font-body text-sm leading-relaxed text-warmgrau/60">{children}</p>;
+}
+
+function BasisNote({ children }: { children: ReactNode }) {
+  return (
+    <p className="mt-6 border-t border-warmgrau/10 pt-4 font-typewriter text-xs leading-relaxed text-warmgrau/55">
+      {children}
+    </p>
+  );
+}
+
+function BasisBadge() {
+  return (
+    <span className="ml-2 inline-block rounded-full border border-bernstein/40 bg-bernstein/10 px-2 py-0.5 font-typewriter text-[10px] font-bold uppercase tracking-[0.1em] text-warmgrau/70">
+      kleine Basis
+    </span>
+  );
+}
+
+const SECTION_LINKS = [
+  { id: "ueberblick", label: "Überblick" },
+  { id: "wirkung", label: "Wirkung" },
+  { id: "nach-dem-brief", label: "Nach dem Brief" },
+  { id: "themen", label: "Themen" },
+  { id: "verlauf", label: "Verlauf" },
+  { id: "feedback", label: "Feedback" },
+  { id: "alter", label: "Alter" },
+  { id: "erstschreiber", label: "Erstschreiber" },
+  { id: "definitionen", label: "Definitionen" },
+] as const;
+
+function Section({
+  id,
+  accent = "neutral",
+  children,
+}: {
+  id: string;
+  accent?: "neutral" | "rot" | "gruen";
+  children: ReactNode;
+}) {
+  const border =
+    accent === "rot"
+      ? "border-airmail-rot/15"
+      : accent === "gruen"
+        ? "border-waldgruen/15"
+        : "border-warmgrau/10";
+  return (
+    <section
+      id={id}
+      className={`mt-8 scroll-mt-16 rounded-2xl border ${border} bg-white/75 p-5 shadow-[0_16px_36px_rgba(27,67,50,0.06)] sm:mt-10 sm:p-8`}
+    >
+      {children}
+    </section>
+  );
+}
+
+/** Hinweiszeile mit (i) für Karten, deren Titel nicht selbst die Frage trägt. */
+function InfoNote({ title, question }: { title: string; question: StatQuestionKey }) {
+  return (
+    <div className="flex items-center gap-1 font-body text-xs text-warmgrau/60">
+      Frage dazu im Wortlaut
+      <InfoFor title={title} question={question} />
+    </div>
+  );
+}
+
+/** Frage-Info (i) zu einer Karte; die Daten kommen als einfaches Objekt aus questions.ts. */
+function InfoFor({ title, question }: { title: string; question: StatQuestionKey }) {
+  return <StatInfo title={title} info={STAT_QUESTIONS[question]} />;
+}
+
+function SubHeading({
+  children,
+  detail,
+  info,
+}: {
+  children: ReactNode;
+  detail?: string;
+  info?: { title: string; question: StatQuestionKey };
+}) {
+  return (
+    <div className="mb-4">
+      <div className="flex items-start gap-1">
+        <h3 className="font-typewriter text-sm font-bold uppercase tracking-[0.12em] text-waldgruen-dark">
+          {children}
+        </h3>
+        {info && <InfoFor title={info.title} question={info.question} />}
+      </div>
+      {detail && <p className="mt-1 font-body text-xs leading-relaxed text-warmgrau/60">{detail}</p>}
+    </div>
+  );
+}
+
+/** Zugeklappter Nebenbereich; spart auf dem Handy Scrollweg. */
+function Collapsible({
+  summary,
+  detail,
+  defaultOpen = false,
+  children,
+}: {
+  summary: string;
+  detail?: string;
+  defaultOpen?: boolean;
+  children: ReactNode;
+}) {
+  return (
+    <details className="group/collapsible" open={defaultOpen || undefined}>
+      <summary className="cursor-pointer list-none [&::-webkit-details-marker]:hidden">
+        <span className="inline-flex items-center gap-2 font-typewriter text-sm font-bold uppercase tracking-[0.12em] text-waldgruen-dark underline-offset-2 hover:underline">
+          <svg
+            aria-hidden="true"
+            viewBox="0 0 10 10"
+            className="h-3 w-3 transition-transform group-open/collapsible:rotate-90"
+          >
+            <path d="M3 1.5 6.5 5 3 8.5" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
+          {summary}
+        </span>
+        {detail && <p className="mt-1 pl-5 font-body text-xs leading-relaxed text-warmgrau/60">{detail}</p>}
+      </summary>
+      <div className="mt-4">{children}</div>
+    </details>
+  );
+}
+
+function ViewToggle({ mode, query }: { mode: ViewMode; query: StatsQuery }) {
+  const hrefFor = (next: ViewMode) =>
+    buildPrivateStatsHref(query, { ansicht: next === "absolut" ? "absolut" : null });
+  const base =
+    "rounded-md px-3 py-1.5 font-typewriter text-xs font-bold uppercase tracking-[0.12em] transition-colors";
+  return (
+    <fieldset>
+      <legend className="sr-only">Darstellungsart</legend>
+      <div className="inline-flex rounded-lg border border-warmgrau/15 bg-white/70 p-1">
+        {VIEW_MODES.map((next) => (
+          <Link
+            key={next}
+            href={hrefFor(next)}
+            className={`${base} ${
+              mode === next
+                ? "bg-waldgruen-dark text-creme"
+                : "text-warmgrau/60 hover:text-waldgruen-dark"
+            }`}
+          >
+            {next === "prozentual" ? "Prozentual" : "Absolut"}
+          </Link>
+        ))}
+      </div>
+    </fieldset>
+  );
+}
+
+function ShareStat({
+  mode,
+  value,
+  total,
+}: {
+  mode: ViewMode;
+  value: number;
+  total: number;
+}) {
+  const parts = shareParts(value, total);
+  return mode === "prozentual" ? (
+    <span className="flex flex-col items-end gap-0.5">
+      <span className="font-typewriter text-sm font-bold tabular-nums text-waldgruen-dark">
+        {parts.shareText} %
+      </span>
+      <span className="font-typewriter text-[11px] tabular-nums text-warmgrau/55">
+        {parts.count} von {parts.totalText}
+      </span>
+    </span>
+  ) : (
+    <span className="flex flex-col items-end gap-0.5">
+      <span className="font-typewriter text-sm font-bold tabular-nums text-waldgruen-dark">
+        {parts.count}
+      </span>
+      <span className="font-typewriter text-[11px] tabular-nums text-warmgrau/55">
+        ({parts.shareText} % · von {parts.totalText})
+      </span>
+    </span>
+  );
+}
+
+function BundeslandMapPanel({
+  counts,
+  total,
+  query,
+  activeKey,
+}: {
+  counts: Record<string, number>;
+  total: number;
+  query: StatsQuery;
+  activeKey?: string | null;
+}) {
+  const regions = BUNDESLAND_KEYS.filter((key) => (counts[key] ?? 0) > 0).map((key) => ({
+    key,
+    label: BUNDESLAND_NAMES[key],
+    count: counts[key],
+  }));
+  const hrefs = Object.fromEntries(
+    BUNDESLAND_KEYS.map((key) => [
+      key,
+      buildPrivateStatsHref(query, { bundesland: activeKey === key ? null : key }),
+    ]),
+  ) as Record<BundeslandKey, string>;
+  return <BundeslandMap regions={regions} total={total} hrefs={hrefs} selected={activeKey ?? null} />;
+}
+
+function RankedBars({
+  values,
+  labels,
+  total,
+  mode,
+  smallBasis = true,
+  baseline,
+  baselineTotal,
+  hrefFor,
+  activeKey,
+}: {
+  values: Record<string, number>;
+  labels?: (key: string) => string;
+  total?: number;
+  mode?: ViewMode;
+  smallBasis?: boolean;
+  /** Gleiche Kennzahl ohne Filter; zeigt eine Vergleichsmarke je Balken. */
+  baseline?: Record<string, number>;
+  baselineTotal?: number;
+  /** Macht Zeilen klickbar (Filter setzen oder aufheben). */
+  hrefFor?: (key: string, isActive: boolean) => string;
+  activeKey?: string | null;
+}) {
+  const entries = Object.entries(values).sort((a, b) => b[1] - a[1]).slice(0, 12);
+  if (!entries.length) return <EmptyState />;
+  const shareBased = total !== undefined && total > 0;
+  const share = (value: number) => (shareBased ? (value / total) * 100 : value);
+  const baselineShare = (key: string): number | null =>
+    shareBased && baseline && baselineTotal
+      ? ((baseline[key] ?? 0) / baselineTotal) * 100
+      : null;
+  const scale = Math.max(
+    ...entries.map(([key, value]) => Math.max(share(value), baselineShare(key) ?? 0)),
+    0,
+  );
+  return (
+    <div className="grid gap-3">
+      {entries.map(([key, value]) => {
+        const isActive = activeKey === key;
+        const body = (
+          <>
+            <div className="flex items-baseline justify-between gap-3">
+              <span className="font-body text-sm font-semibold text-waldgruen-dark">
+                {labels?.(key) ?? key}
+                {smallBasis && isSmallBasis(value) && <BasisBadge />}
+                {isActive && (
+                  <span className="ml-2 inline-block rounded-full bg-waldgruen-dark px-2 py-0.5 font-typewriter text-[10px] font-bold uppercase tracking-[0.1em] text-creme">
+                    Filter · ×
+                  </span>
+                )}
+              </span>
+              {total !== undefined && mode ? (
+                <ShareStat mode={mode} value={value} total={total} />
+              ) : (
+                <span className="font-typewriter text-xs tabular-nums text-warmgrau/60">
+                  {formatNumber(value)}
+                </span>
+              )}
+            </div>
+            <BarTrack value={share(value)} scale={scale} baseline={baselineShare(key)} />
+          </>
+        );
+        if (!hrefFor) return <div key={key}>{body}</div>;
+        return (
+          <Link
+            key={key}
+            href={hrefFor(key, isActive)}
+            scroll={false}
+            title={isActive ? "Filter aufheben" : `Nur ${labels?.(key) ?? key} anzeigen`}
+            className={`-mx-2 block rounded-lg px-2 py-1 transition-colors hover:bg-waldgruen/5 focus:outline-none focus:ring-2 focus:ring-waldgruen/30 ${
+              isActive ? "bg-waldgruen/10" : ""
+            }`}
+          >
+            {body}
+          </Link>
+        );
+      })}
+    </div>
+  );
+}
+
+function RatingBars({
+  stats,
+  mode,
+  baseline,
+}: {
+  stats: InternalStats;
+  mode: ViewMode;
+  baseline?: InternalStats | null;
+}) {
+  return (
+    <div className="grid gap-3">
+      {([5, 4, 3, 2, 1] as const).map((rating) => {
+        const count = stats.ratingDistribution[rating];
+        const share = stats.reviewCount > 0 ? (count / stats.reviewCount) * 100 : 0;
+        const baselineShare =
+          baseline && baseline.reviewCount > 0
+            ? (baseline.ratingDistribution[rating] / baseline.reviewCount) * 100
+            : null;
+        return (
+          <div key={rating} className="grid grid-cols-[42px_1fr_max-content] items-center gap-3">
+            <span className="font-typewriter text-sm text-warmgrau/70">{rating} ★</span>
+            <div className="-mt-1.5">
+              <BarTrack value={share} scale={100} baseline={baselineShare} colorClassName="bg-bernstein" />
+            </div>
+            <span className="flex min-w-28 justify-end">
+              <ShareStat mode={mode} value={count} total={stats.reviewCount} />
+            </span>
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
+function SurveyDistributionBars({
+  values,
+  options,
+  total,
+  color,
+  mode,
+  baselineValues,
+  baselineTotal,
+  valueLabel,
+  baseNote,
+}: {
+  values: Record<string, number>;
+  options: readonly { key: string; label: string }[];
+  total: number;
+  color: string;
+  mode: ViewMode;
+  baselineValues?: Record<string, number>;
+  baselineTotal?: number;
+  valueLabel?: (count: number, total: number) => string;
+  baseNote?: (total: number) => string | null;
+}) {
+  const note = valueLabel && baseNote ? baseNote(total) : null;
+  return (
+    <div className="grid gap-3">
+      {options.map(({ key, label }) => {
+        const count = values[key] ?? 0;
+        const share = total > 0 ? (count / total) * 100 : 0;
+        const baselineShare =
+          baselineValues && baselineTotal
+            ? ((baselineValues[key] ?? 0) / baselineTotal) * 100
+            : null;
+        return (
+          <div key={key}>
+            <div className="flex items-baseline justify-between gap-3">
+              <span className="font-body text-sm font-semibold text-waldgruen-dark">
+                {label}
+                {!valueLabel && isSmallBasis(count) && <BasisBadge />}
+              </span>
+              {valueLabel ? (
+                <span className="text-right font-typewriter text-sm font-bold tabular-nums text-waldgruen-dark">
+                  {valueLabel(count, total)}
+                </span>
+              ) : (
+                <ShareStat mode={mode} value={count} total={total} />
+              )}
+            </div>
+            <BarTrack value={share} scale={100} baseline={baselineShare} color={color} />
+          </div>
+        );
+      })}
+      {note && <p className="font-typewriter text-xs text-warmgrau/55">{note}</p>}
+    </div>
+  );
+}
+
+const ratingBands = [
+  { label: "1–2 Sterne", ratings: [1, 2] as const, color: "#C1121F" },
+  { label: "3 Sterne", ratings: [3] as const, color: "#C58B18" },
+  { label: "4–5 Sterne", ratings: [4, 5] as const, color: "#2D6A4F" },
+] as const;
+
+const selfEfficacyOptions = POLITICAL_SELF_EFFICACY_VALUES.map((key) => ({
+  key,
+  label: POLITICAL_SELF_EFFICACY_LABELS[key],
+}));
+
+const powerlessnessOptions = POLITICAL_POWERLESSNESS_FREQUENCY_VALUES.map(
+  (key) => ({
+    key,
+    label: POLITICAL_POWERLESSNESS_FREQUENCY_LABELS[key],
+  }),
+);
+
+const ageGroupOptions = AGE_GROUP_VALUES.map((key) => ({
+  key,
+  label: AGE_GROUP_LABELS[key],
+}));
+
+const letterHistoryOptions = LETTER_HISTORY_VALUES.map((key) => ({
+  key,
+  label: LETTER_HISTORY_LABELS[key],
+}));
+
+function formatPercentOrDash(value: number | null): string {
+  return value === null ? "—" : `${formatDecimal(value)} %`;
+}
+
+/** Ein Satz mit den Kernzahlen direkt über dem Diagramm; fehlt bei kleiner Basis. */
+function Statement({ statements, id }: { statements: Record<StatementKey, string | null>; id: StatementKey }) {
+  const text = statements[id];
+  if (!text) return null;
+  return (
+    <p className="mb-4 font-body text-sm font-semibold leading-relaxed text-waldgruen-dark">{text}</p>
+  );
+}
+
+function ShareLine({
+  label,
+  percent,
+  count,
+  total,
+  baselineText,
+  info,
+}: {
+  label: string;
+  percent: number | null;
+  count: number;
+  total: number;
+  baselineText?: string;
+  info?: { title: string; question: StatQuestionKey };
+}) {
+  return (
+    <div className="border-b border-warmgrau/10 py-3 last:border-b-0">
+      <div className="flex items-start justify-between gap-2">
+        <p className="font-body text-sm leading-snug text-warmgrau/80">{label}</p>
+        {info && <InfoFor title={info.title} question={info.question} />}
+      </div>
+      <p className="mt-1 font-typewriter text-2xl font-bold tabular-nums text-waldgruen-dark">
+        {formatPercentOrDash(percent)}
+      </p>
+      <p className="font-body text-xs leading-relaxed text-warmgrau/55">
+        {formatNumber(count)} von {formatNumber(total)}
+        {baselineText ? ` · ${baselineText}` : ""}
+      </p>
+    </div>
+  );
+}
+
+const FEEDBACK_TAG_LABELS: Record<FeedbackTagSlug, string> = Object.fromEntries(
+  [...NEGATIVE_FEEDBACK_TAGS, ...POSITIVE_FEEDBACK_TAGS, ...FACT_CHECK_FEEDBACK_TAGS].map(
+    (tag) => [tag.slug, tag.label],
+  ),
+) as Record<FeedbackTagSlug, string>;
+
+function tagSignals<const T extends readonly FeedbackTagSlug[]>(slugs: T) {
+  return slugs.map((key) => ({ key, label: FEEDBACK_TAG_LABELS[key] }));
+}
+
+const positiveSignals = tagSignals(["sofort_verschickbar", "argumente_stark", "tonfall_passt"]);
+
+const frictionSignals = tagSignals(["anliegen_verfehlt", "klingt_nicht_nach_mir", "zu_generisch"]);
+
+function sumRatingBreakdowns(
+  stats: InternalStats,
+  ratings: readonly (1 | 2 | 3 | 4 | 5)[],
+): SendBreakdown {
+  const result: SendBreakdown = {
+    sent: 0,
+    notSent: 0,
+    noAnswer: 0,
+    known: 0,
+    ratePercent: 0,
+  };
+
+  for (const rating of ratings) {
+    const breakdown = stats.sendByRating[rating];
+    result.sent += breakdown.sent;
+    result.notSent += breakdown.notSent;
+    result.noAnswer += breakdown.noAnswer;
+  }
+
+  result.known = result.sent + result.notSent;
+  result.ratePercent = result.known > 0 ? (result.sent / result.known) * 100 : 0;
+  return result;
+}
+
+function SignalList({
+  stats,
+  signals,
+  color,
+  mode,
+  baseline,
+}: {
+  stats: InternalStats;
+  signals: readonly { key: string; label: string }[];
+  color: string;
+  mode: ViewMode;
+  baseline?: InternalStats | null;
+}) {
+  return (
+    <div className="grid gap-4">
+      {signals.map((signal) => {
+        const values = stats.feedbackTagStats[signal.key];
+        if (!values || values.total === 0) return null;
+        const baselineValues = baseline?.feedbackTagStats[signal.key];
+        const baselineRate =
+          baselineValues && baselineValues.known > 0 ? baselineValues.ratePercent : null;
+        return (
+          <div key={signal.key}>
+            <div className="flex items-baseline justify-between gap-3">
+              <span className="font-body text-sm font-semibold text-waldgruen-dark">
+                {signal.label}
+                {isSmallBasis(values.total) && <BasisBadge />}
+              </span>
+              {values.known > 0 ? (
+                <ShareStat mode={mode} value={values.sent} total={values.known} />
+              ) : (
+                <span className="font-typewriter text-xs tabular-nums text-warmgrau/60">
+                  {formatNumber(values.total)} Markierungen
+                </span>
+              )}
+            </div>
+            <BarTrack
+              value={values.known > 0 ? (values.sent / values.known) * 100 : 0}
+              scale={100}
+              baseline={baselineRate}
+              color={color}
+            />
+            <p className="mt-1 font-typewriter text-[11px] text-warmgrau/55">
+              {values.known > 0
+                ? `${formatNumber(values.sent)} von ${formatNumber(values.known)} mit Angabe`
+                : `${formatNumber(values.total)} Markierungen`}
+            </p>
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
+function BaselineLine({ children }: { children: ReactNode }) {
+  return (
+    <span className="mt-2 block font-typewriter text-[11px] tabular-nums text-warmgrau/55">
+      <span className="mr-1 inline-block h-2.5 w-[2px] translate-y-[1px] rounded-full bg-warmgrau/70" aria-hidden="true" />
+      Gesamt: {children}
+    </span>
+  );
+}
+
+/** Anteil groß, Zähler klein (Ansicht "prozentual") oder umgekehrt ("absolut"). */
+function RateValue({ rate, mode, unit }: { rate: ImpactRate; mode: ViewMode; unit?: string }) {
+  const base = `${formatNumber(rate.count)} von ${formatNumber(rate.base)}${unit ? ` ${unit}` : ""}`;
+  const share = rate.percent === null ? "—" : `${rate.percent} %`;
+  const bigClass = "font-typewriter text-4xl font-bold tabular-nums leading-none text-waldgruen-dark sm:text-5xl";
+  const smallClass = "mt-1.5 block font-body text-xs leading-relaxed text-warmgrau/60";
+  return mode === "prozentual" || rate.percent === null ? (
+    <>
+      <span className={bigClass}>{share}</span>
+      <span className={smallClass}>{base}</span>
+    </>
+  ) : (
+    <>
+      <span className={bigClass}>{formatNumber(rate.count)}</span>
+      <span className={smallClass}>
+        ({share} · von {formatNumber(rate.base)}
+        {unit ? ` ${unit}` : ""})
+      </span>
+    </>
+  );
+}
+
+function ImpactMetric({
+  rate,
+  mode,
+  label,
+  unit,
+  info,
+  baselineRate,
+}: {
+  rate: ImpactRate;
+  mode: ViewMode;
+  label: string;
+  unit?: string;
+  info: { title: string; question: StatQuestionKey };
+  baselineRate?: ImpactRate | null;
+}) {
+  return (
+    <div className="border-b border-warmgrau/10 py-4 first:pt-0 last:border-b-0 last:pb-0">
+      <p>
+        <RateValue rate={rate} mode={mode} unit={unit} />
+      </p>
+      <div className="mt-2 flex items-start justify-between gap-2">
+        <p className="font-body text-sm leading-snug text-waldgruen-dark">{label}</p>
+        <InfoFor title={info.title} question={info.question} />
+      </div>
+      {baselineRate && baselineRate.base > 0 && (
+        <BaselineLine>
+          {baselineRate.percent} % · {formatNumber(baselineRate.count)} von {formatNumber(baselineRate.base)}
+        </BaselineLine>
+      )}
+    </div>
+  );
+}
+
+/**
+ * Oben auf der Seite: erst die Zahl der Briefe, dann zwei Spalten. Schreibende
+ * zeigen Anteile mit Basis, die Politik zeigt absolute Zahlen zuerst, weil die
+ * Basis klein ist und aus Selbstauskünften stammt.
+ */
+function ImpactBlock({
+  stats,
+  impact,
+  baselineImpact,
+  mode,
+}: {
+  stats: InternalStats;
+  impact: ImpactSummary;
+  baselineImpact: ImpactSummary | null;
+  mode: ViewMode;
+}) {
+  const { writers, politics } = impact;
+  const cardClass =
+    "rounded-2xl border border-warmgrau/10 bg-white/75 p-5 shadow-[0_16px_36px_rgba(27,67,50,0.07)] sm:p-6";
+  const columnTitle = "font-typewriter text-sm font-bold uppercase tracking-[0.12em] text-waldgruen-dark";
+  return (
+    <div className="mt-6 grid gap-4">
+      <article className="rounded-2xl border border-waldgruen-dark/20 bg-waldgruen-dark px-5 py-5 text-creme shadow-[0_16px_36px_rgba(27,67,50,0.07)] sm:px-8 sm:py-6">
+        <p className="font-typewriter text-3xl font-bold tabular-nums sm:text-5xl">
+          {formatNumber(stats.letterCount)} Briefe
+        </p>
+        <p className="mt-2 font-body text-sm leading-relaxed text-creme/75">
+          seit Produktstart über Brief-nach-Berlin erstellt, ca.{" "}
+          {formatNumber(estimateLettersWithoutDuplicates(stats.letterCount))} ohne Doppelte
+        </p>
+      </article>
+
+      <div className="grid gap-4 md:grid-cols-2">
+        <article className={cardClass}>
+          <h2 className={`${columnTitle} mb-4`}>Bei den Schreibenden</h2>
+          <ImpactMetric
+            rate={writers.topRatingShare}
+            mode={mode}
+            unit="Bewertungen"
+            label="geben 4 bis 5 Sterne"
+            info={{ title: "4 bis 5 Sterne", question: "rating" }}
+            baselineRate={baselineImpact?.writers.topRatingShare}
+          />
+          <ImpactMetric
+            rate={writers.sendRate}
+            mode={mode}
+            unit="Antworten"
+            label="sagen, ihr Brief geht raus"
+            info={{ title: "Brief abgeschickt", question: "sendSignal" }}
+            baselineRate={baselineImpact?.writers.sendRate}
+          />
+          <ImpactMetric
+            rate={writers.efficacy}
+            mode={mode}
+            unit="Antworten"
+            label="fühlen sich eher in der Lage, sich politisch einzubringen"
+            info={{ title: "Handlungsfähigkeit", question: "efficacy" }}
+            baselineRate={baselineImpact?.writers.efficacy}
+          />
+        </article>
+
+        <article className={cardClass}>
+          <h2 className={`${columnTitle} mb-4`}>In der Politik</h2>
+          {!politics || politics.reactionRate.base === 0 ? (
+            <EmptyState>Noch keine Rückmeldungen.</EmptyState>
+          ) : (
+            <>
+              <div className="border-b border-warmgrau/10 pb-4">
+                <p>
+                  <span className="font-typewriter text-3xl font-bold tabular-nums leading-none text-waldgruen-dark sm:text-4xl xl:text-5xl">
+                    {formatNumber(politics.reactionRate.count)} von {formatNumber(politics.reactionRate.base)}
+                  </span>
+                  <span className="mt-1.5 block font-body text-xs leading-relaxed text-warmgrau/60">
+                    {politics.reactionRate.percent} %
+                  </span>
+                </p>
+                <div className="mt-2 flex items-start justify-between gap-2">
+                  <p className="font-body text-sm leading-snug text-waldgruen-dark">
+                    der Rückmeldenden, die ihren Brief abgeschickt haben, bekamen eine Reaktion
+                  </p>
+                  <InfoFor title="Reaktion auf den Brief" question="briefweg" />
+                </div>
+              </div>
+              <div className="pt-4">
+                {politics.concreteOrPartly.base > 0 ? (
+                  <>
+                    <p>
+                      <span className="font-typewriter text-3xl font-bold tabular-nums leading-none text-waldgruen-dark sm:text-4xl xl:text-5xl">
+                        {formatNumber(politics.concreteOrPartly.count)} von {formatNumber(politics.concreteOrPartly.base)}
+                      </span>
+                      <span className="mt-1.5 block font-body text-xs leading-relaxed text-warmgrau/60">
+                        {politics.concreteOrPartly.percent} %
+                      </span>
+                    </p>
+                    <div className="mt-2 flex items-start justify-between gap-2">
+                      <p className="font-body text-sm leading-snug text-waldgruen-dark">
+                        der Reaktionen mit Angabe gingen konkret oder teilweise auf das Anliegen ein
+                      </p>
+                      <InfoFor title="Auf das Anliegen eingegangen" question="outcomeAddressed" />
+                    </div>
+                  </>
+                ) : (
+                  <p className="font-body text-sm text-warmgrau/60">Noch keine Angaben dazu, wie konkret die Reaktionen waren.</p>
+                )}
+              </div>
+              <p className="mt-4 font-body text-xs leading-relaxed text-warmgrau/60">
+                Selbstauskunft aus der {politics.roundLabel}, Rücklauf{" "}
+                {formatNumber(politics.respondentCount)} von {formatNumber(politics.deliveredCount)}, unabhängig vom Filter.
+              </p>
+            </>
+          )}
+        </article>
+      </div>
+    </div>
+  );
+}
+
+function Funnel({ stats }: { stats: InternalStats }) {
+  const steps = [
+    {
+      label: "Brief erstellt",
+      value: stats.letterCount,
+      note: "Gesamtzähler ohne Ereignisverlauf — wird vom Zeitraum-/Quellenfilter nicht verändert.",
+    },
+    { label: "Bewertung abgegeben", value: stats.reviewCount },
+    { label: "Versandfrage beantwortet", value: stats.knownSendCount },
+    { label: "Positives Versandsignal", value: stats.sentCount },
+  ];
+  const max = Math.max(...steps.map((step) => step.value), 1);
+  return (
+    <ol className="grid gap-4">
+      {steps.map((step, index) => (
+        <li key={step.label} className="rounded-lg border border-warmgrau/10 bg-creme/60 px-4 py-3">
+          <div className="flex items-center gap-3">
+            <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-waldgruen-dark font-typewriter text-xs font-bold text-creme">
+              {index + 1}
+            </span>
+            <span className="min-w-40 font-body text-sm font-semibold text-waldgruen-dark">
+              {step.label}
+            </span>
+            <div className="h-3 flex-1 overflow-hidden rounded-full bg-warmgrau/10">
+              <div
+                className="h-full rounded-full bg-waldgruen"
+                style={{ width: `${(step.value / max) * 100}%` }}
+              />
+            </div>
+            <div className="grid gap-0.5 text-right">
+              <span className="font-typewriter text-lg font-bold tabular-nums text-waldgruen-dark">
+                {formatNumber(step.value)}
+              </span>
+              {index > 0 && stats.reviewCount > 0 && (
+                <span className="font-typewriter text-[11px] tabular-nums text-warmgrau/55">
+                  {shareParts(step.value, stats.reviewCount).shareText} % der Bewertungen
+                </span>
+              )}
+            </div>
+          </div>
+          {step.label === "Bewertung abgegeben" && stats.reviewCount > 0 && (
+            <div className="mt-3 grid gap-3 border-t border-warmgrau/10 pt-3 sm:grid-cols-2">
+              {[
+                { label: "Feedback-Formular abgeschickt", value: stats.fullFeedbackCount },
+                { label: "Kurzbewertung · nur Sterne", value: stats.quickRatingCount },
+              ].map((group) => (
+                <div key={group.label} className="flex items-baseline justify-between gap-3">
+                  <span className="font-body text-xs text-warmgrau/65">{group.label}</span>
+                  <span className="shrink-0 font-typewriter text-xs tabular-nums text-waldgruen-dark">
+                    {formatNumber(group.value)} · {shareParts(group.value, stats.reviewCount).shareText} %
+                  </span>
+                </div>
+              ))}
+              <p className="font-body text-xs leading-relaxed text-warmgrau/55 sm:col-span-2">
+                „Formular abgeschickt“ bezeichnet den gesendeten Formularschritt; optionale Fragen waren freiwillig.
+              </p>
+            </div>
+          )}
+          {step.note && (
+            <p className="mt-2 font-body text-xs leading-relaxed text-warmgrau/55">{step.note}</p>
+          )}
+        </li>
+      ))}
+    </ol>
+  );
+}
+
+function DataError() {
+  return (
+    <div className="flex-1 bg-creme px-5 py-10 sm:px-8 sm:py-16">
+      <section className="mx-auto mt-10 max-w-xl rounded-2xl border border-airmail-rot/20 bg-white/75 p-6 shadow-sm sm:p-8">
+        <p className="font-typewriter text-xs font-bold uppercase tracking-[0.18em] text-airmail-rot">
+          Brief-nach-Berlin · interne Auswertung
+        </p>
+        <h1 className="mt-3 font-typewriter text-3xl font-bold text-waldgruen-dark">
+          Statistik gerade nicht erreichbar
+        </h1>
+        <p className="mt-4 font-body leading-relaxed text-warmgrau/70">
+          Supabase konnte die aggregierten Werte nicht liefern. Bitte lade die Seite später erneut.
+        </p>
+      </section>
+    </div>
+  );
+}
+
+function OwnerStatsLogin({ configured, error }: { configured: boolean; error: boolean }) {
+  return (
+    <div className="flex-1 bg-creme">
+      <div className="mx-auto w-full max-w-xl px-5 py-12 sm:px-8 sm:py-16">
+        <p className="font-typewriter text-xs font-bold uppercase tracking-[0.18em] text-waldgruen/65">Privater Bereich</p>
+        <h1 className="mt-3 font-typewriter text-3xl font-bold text-waldgruen-dark sm:text-4xl">Interne Auswertung</h1>
+        <p className="mt-4 font-body leading-relaxed text-warmgrau/80">Hier findest du zusätzliche Diagnosen und freigegebene Rückmeldungen.</p>
+        {configured ? (
+          <form action={unlockInternalStatsOwner} className="mt-8 flex flex-col gap-3 sm:flex-row">
+            <label htmlFor="owner-stats-password" className="sr-only">Internes Passwort</label>
+            <input id="owner-stats-password" name="password" type="password" autoComplete="current-password" placeholder="Internes Passwort" required className="min-h-11 flex-1 rounded-md border border-warmgrau/20 bg-white px-3 py-2 font-body text-warmgrau outline-none focus:border-waldgruen focus:ring-2 focus:ring-waldgruen/20" />
+            <button type="submit" className="min-h-11 rounded-md border-2 border-waldgruen-dark/30 px-4 py-2 font-body font-semibold text-waldgruen-dark hover:border-waldgruen-dark hover:bg-waldgruen/5">Öffnen</button>
+          </form>
+        ) : <p className="mt-4 font-body text-sm text-warmgrau/70">Der interne Zugang ist nicht eingerichtet.</p>}
+        {error && <p role="alert" className="mt-3 font-body text-sm text-airmail-rot">Das Passwort stimmt nicht.</p>}
+        <Link href="/stats" className="mt-8 inline-flex min-h-11 items-center font-body text-sm font-semibold text-waldgruen underline underline-offset-4">Zur Presseansicht</Link>
+      </div>
+    </div>
+  );
+}
+
+type InternalStatsPageProps = {
+  searchParams?: Promise<Record<string, string | string[] | undefined>>;
+};
+
+export default async function InternalStatsOwnerPage({ searchParams }: InternalStatsPageProps) {
+  const configuredPassword = process.env.INTERNAL_STATS_OWNER_PASSWORD;
+  const cookieValue = (await cookies()).get(INTERNAL_STATS_OWNER_COOKIE)?.value;
+  if (
+    !isInternalStatsOwnerCookieValid(cookieValue, configuredPassword, process.env.INTERNAL_STATS_PASSWORD)
+  ) {
+    const params = (await searchParams) ?? {};
+    return <OwnerStatsLogin configured={Boolean(configuredPassword && configuredPassword !== process.env.INTERNAL_STATS_PASSWORD)} error={params.error === "1"} />;
+  }
+
+  const params = (await searchParams) ?? {};
+  const { filter, mode } = parseStatsFilter(params);
+  const query = statsQueryFromFilter(filter, mode);
+  const kampagneRaw = query.kampagne;
+
+  let stats: InternalStats;
+  let baseline: InternalStats | null;
+  let outcomes: OutcomeRoundStats[];
+  try {
+    ({ stats, baseline, outcomes } = await getInternalStatsWithBaseline(filter));
+  } catch (error) {
+    console.error("[internal-stats] read failed", error);
+    return <DataError />;
+  }
+  const latestRound = outcomes[outcomes.length - 1];
+  const chips = activeFilterChips(query, stats.campaignLabels, "/stats/intern");
+  const campaignSignalCounts = stats.letterSignals.sourceCounts.campaign;
+  const hasCampaignSignals = Object.keys(campaignSignalCounts).length > 0;
+  const activation = stats.politicalActivation;
+  const hasActivationCrossData = Object.values(
+    activation.efficacyByPowerlessness,
+  ).some((item) => item.answered > 0);
+
+  const campaignSlugs = new Set<string>([
+    ...Object.keys(stats.letterSignals.sourceCounts.campaign),
+    ...Object.keys(stats.reviewSourceCounts.campaign),
+  ]);
+  const campaignOptions = [...campaignSlugs]
+    .sort()
+    .map((slug) => ({ slug, label: stats.campaignLabels[slug] ?? slug }));
+
+  const signalCampaignTotal = campaignSourceTotal(stats.letterSignals.sourceCounts);
+  const signalCampaignShare =
+    stats.letterSignals.signalCount > 0
+      ? signalCampaignTotal / stats.letterSignals.signalCount
+      : 0;
+  const dominantCampaign = topCampaignSlug(stats.letterSignals.sourceCounts);
+
+  const granularity = granularityForTimeRange(
+    filter.timeRange,
+    daySpan(stats.oldestReviewAt, stats.newestReviewAt),
+  );
+  const granularityLabel =
+    granularity === "day" ? "pro Tag" : granularity === "week" ? "pro Kalenderwoche" : "pro Monat";
+  const fromDay = timeRangeFromDay(stats.fetchedAt, filter.timeRange);
+
+  const counterTimeline = bucketCounterTimeline(stats.letterCounterDayRange, granularity, fromDay);
+  const counterPoints: ColumnPoint[] = counterTimeline.map((point) => ({
+    key: point.key,
+    label: point.label,
+    count: point.count,
+    partial: point.partial,
+    detail: `Zählerstand ${formatNumber(point.counterEnd)}`,
+  }));
+  const counterPeak = peakPoint(counterTimeline.filter((point) => !point.partial));
+  const lettersInCounterPeriod = counterTimeline.reduce((sum, point) => sum + point.count, 0);
+  const counterDays = Object.keys(stats.letterCounterDayRange).sort();
+  const counterSinceLabel = counterDays[0] ? formatDate(counterDays[0]) : null;
+  const signalCoverage =
+    filter.source.kind === "all" && lettersInCounterPeriod > 0
+      ? Math.min(100, (stats.letterSignals.numberedSignalCount / lettersInCounterPeriod) * 100)
+      : null;
+
+  const signalTimeline: ColumnPoint[] = bucketTimeline(
+    stats.letterSignals.signalTimelineDayCounts,
+    granularity,
+  );
+  const reviewTimeline: ColumnPoint[] = bucketTimeline(
+    stats.reviewTimelineDayCounts,
+    granularity,
+  );
+  const signalPeak = peakPoint(signalTimeline);
+
+  const heatmapGranularity = granularity === "day" ? "week" : granularity;
+  const heatmapGranularityLabel =
+    heatmapGranularity === "week" ? "pro Kalenderwoche" : "pro Monat";
+  const topicHeatmap = bucketCategoryTimeline(
+    stats.letterSignals.categoryTimelineDayCounts,
+    heatmapGranularity,
+  );
+  const subtopicClusters = topLabelsByCategory(
+    stats.letterSignals.labelsByCategory,
+    stats.letterSignals.categoryCounts,
+  );
+  const topCategory = Object.entries(stats.letterSignals.categoryCounts).sort(
+    (a, b) => b[1] - a[1],
+  )[0];
+
+  const rangeLabel =
+    filter.timeRange === "all"
+      ? "Gesamtzeitraum"
+      : `letzte ${String(filter.timeRange)} Tage`;
+
+  const sourceLabel = [
+    filter.source.kind === "free"
+      ? "freie Anliegen"
+      : filter.source.kind === "campaign"
+        ? `Kampagne: ${stats.campaignLabels[kampagneRaw ?? ""] ?? kampagneRaw ?? "alle"}`
+        : "alle Quellen",
+    filter.bundesland ? bundeslandName(filter.bundesland) : null,
+  ]
+    .filter(Boolean)
+    .join(" · ");
+
+  const campaignFilterActive = filter.source.kind === "campaign";
+  const campaignCard = (
+    <>
+      <SubHeading detail="Signale je Kampagne. Klick setzt den Kampagnen-Filter.">Kampagnen</SubHeading>
+      <RankedBars
+        values={campaignSignalCounts}
+        labels={(slug) => stats.campaignLabels[slug] ?? slug}
+        total={stats.letterSignals.signalCount}
+        mode={mode}
+        hrefFor={(slug, isActive) =>
+          buildPrivateStatsHref(query, isActive ? { quelle: null, kampagne: null } : { quelle: "campaign", kampagne: slug })
+        }
+        activeKey={kampagneRaw}
+      />
+    </>
+  );
+
+  const se = activation.selfEfficacyDistribution;
+  const sePositive = (se.clearly_yes ?? 0) + (se.rather_yes ?? 0);
+  const seNegative = (se.rather_no ?? 0) + (se.no ?? 0);
+  const seUnsure = se.unsure ?? 0;
+
+  const quoteLines: string[] = [
+    `Stand ${formatDate(stats.fetchedAt)}: ${formatNumber(stats.letterCount)} Briefe wurden über Brief-nach-Berlin erstellt.`,
+  ];
+  if (stats.knownSendCount >= SHARE_PERCENT_MIN_BASE) {
+    quoteLines.push(
+      `${formatDecimal(stats.sendRatePercent)} % der Nutzer:innen, die die Versandfrage beantwortet haben, geben an, den Brief verschickt zu haben oder ihn unmittelbar zu verschicken (${formatNumber(stats.sentCount)} von ${formatNumber(stats.knownSendCount)}).`,
+    );
+  }
+  if (stats.reviewCount >= SHARE_PERCENT_MIN_BASE) {
+    quoteLines.push(
+      `Die generierten Briefe werden im Schnitt mit ${formatDecimal(stats.averageRating)} von 5 Sternen bewertet (${formatNumber(stats.reviewCount)} Bewertungen).`,
+    );
+  }
+  if (topCategory && stats.letterSignals.signalCount >= SHARE_PERCENT_MIN_BASE) {
+    quoteLines.push(
+      `Häufigstes Thema: ${topicCategoryLabel(topCategory[0])} mit ${shareParts(topCategory[1], stats.letterSignals.signalCount).shareText} % der ${formatNumber(stats.letterSignals.signalCount)} freiwillig geteilten Themensignale.`,
+    );
+  }
+  const impact = buildImpactSummary(stats, outcomes);
+  const baselineImpact = baseline ? buildImpactSummary(baseline, []) : null;
+  const statements = buildStatements(stats, outcomes);
+  const voices = featuredQuotes(outcomes);
+  if (statements.efficacy) quoteLines.push(statements.efficacy);
+  const politicsSentence = impact.politics ? politicsReactionSentence(impact.politics) : null;
+  if (politicsSentence) quoteLines.push(politicsSentence);
+  if (counterPeak) {
+    quoteLines.push(
+      `Stärkster Abschnitt (${granularityLabel.replace("pro ", "")}): ${counterPeak.label} mit ${formatNumber(counterPeak.count)} Briefen.`,
+    );
+  }
+  const quoteText = `${quoteLines.join("\n")}\n\nQuelle: Brief-nach-Berlin, interne Auswertung (${rangeLabel}, ${sourceLabel}). Selbstauskünfte, nur Aggregate.`;
+
+  return (
+    <div id="top" className="flex-1 bg-creme text-warmgrau">
+      <div className="mx-auto w-full max-w-6xl px-5 py-6 sm:px-8 sm:py-10 lg:px-10">
+        <header className="flex flex-col gap-4 pb-6 sm:flex-row sm:items-end sm:justify-between sm:pb-8">
+          <div>
+            <div className="flex items-center gap-2 font-typewriter text-[11px] font-bold uppercase tracking-[0.18em] text-waldgruen/65">
+              <span className="h-2 w-2 rounded-full bg-waldgruen" />
+              Brief-nach-Berlin · interne Auswertung
+            </div>
+            <h1 className="mt-3 max-w-2xl font-typewriter text-3xl font-bold leading-[1.02] tracking-tight text-waldgruen-dark sm:text-5xl lg:text-6xl">
+              Nutzung, Qualität und Selbstauskunft.
+            </h1>
+            <p className="mt-3 max-w-xl font-body text-sm leading-relaxed text-warmgrau/70 sm:text-lg">
+              Aggregierte Produktdaten für Gespräche mit Organisationen, Medien und
+              Multiplikator:innen. Alle Werte sind Selbstauskünfte und Aggregate.
+            </p>
+          </div>
+          <div className="flex items-baseline gap-3 font-typewriter text-xs leading-relaxed text-warmgrau/55 sm:flex-col sm:items-end sm:gap-0 sm:text-right">
+            <p>Live aus Supabase · {formatDateTime(stats.fetchedAt)}</p>
+            <Link href="/stats" className="sm:mt-2 underline underline-offset-2 hover:text-waldgruen-dark">Presseansicht</Link>
+            <form action={lockInternalStatsOwner} className="sm:mt-2">
+              <button type="submit" className="underline underline-offset-2 hover:text-waldgruen-dark">
+                Zugang sperren
+              </button>
+            </form>
+          </div>
+        </header>
+
+        <SectionNav links={[...SECTION_LINKS]} stickyBelow="[data-app-header]" />
+
+        <div className="mt-6 flex flex-col gap-4 rounded-2xl border border-warmgrau/10 bg-white/60 p-4 sm:flex-row sm:items-end sm:justify-between sm:p-6">
+          <FilterBar query={query} campaignOptions={campaignOptions} pathname="/stats/intern" />
+          <div className="sm:pb-1">
+            <ViewToggle mode={mode} query={query} />
+          </div>
+        </div>
+
+        <div className="mt-3 flex flex-wrap items-center gap-2 font-typewriter text-xs text-warmgrau/55">
+          {chips.length === 0 ? (
+            <span>Ansicht: {rangeLabel} · alle Quellen · alle Bundesländer</span>
+          ) : (
+            <>
+              <span>Aktiv:</span>
+              {chips.map((chip) => (
+                <Link
+                  key={chip.key}
+                  href={chip.href}
+                  scroll={false}
+                  className="inline-flex items-center gap-1.5 rounded-full border border-waldgruen-dark/20 bg-waldgruen-dark px-2.5 py-1 font-bold text-creme transition-colors hover:bg-waldgruen"
+                  title={`Filter „${chip.label}“ entfernen`}
+                >
+                  {chip.label}
+                  <span aria-hidden="true">×</span>
+                  <span className="sr-only">entfernen</span>
+                </Link>
+              ))}
+              <Link
+                href={buildPrivateStatsHref(query, { zeitraum: null, quelle: null, kampagne: null, bundesland: null })}
+                scroll={false}
+                className="underline underline-offset-2 hover:text-waldgruen-dark"
+              >
+                alle zurücksetzen
+              </Link>
+            </>
+          )}
+          <span className="ml-auto">
+            {mode === "prozentual" ? "prozentual" : "absolut"} · {granularityLabel}
+          </span>
+        </div>
+        {baseline && (
+          <p className="mt-2 font-body text-xs leading-relaxed text-warmgrau/60">
+            <span className="mr-1.5 inline-block h-3 w-[2px] translate-y-[2px] rounded-full bg-warmgrau/70" aria-hidden="true" />
+            Grauer Strich und „Gesamt“ zeigen denselben Wert ohne Quellen- und Bundesland-Filter im gleichen Zeitraum.
+          </p>
+        )}
+
+        <div id="ueberblick" className="scroll-mt-16">
+          <ImpactBlock stats={stats} impact={impact} baselineImpact={baselineImpact} mode={mode} />
+
+          <div className="mt-4 rounded-2xl border border-waldgruen/15 bg-white/75 p-5 shadow-[0_16px_36px_rgba(27,67,50,0.06)] sm:p-6">
+            <div className="flex flex-wrap items-start justify-between gap-3">
+              <div>
+                <p className="font-typewriter text-[11px] font-bold uppercase tracking-[0.18em] text-waldgruen/65">
+                  Zahlen zum Zitieren
+                </p>
+                <p className="mt-1 font-body text-xs leading-relaxed text-warmgrau/60">
+                  Fertige Sätze für Presseanfragen und Posts · Filter werden übernommen · Quelle hängt am Ende dran
+                </p>
+              </div>
+              <CopyButton text={quoteText} label="Alle kopieren" />
+            </div>
+            <ol className="mt-4 grid gap-2">
+              {quoteLines.map((line) => (
+                <li
+                  key={line}
+                  className="rounded-lg border border-warmgrau/10 bg-creme/60 px-4 py-2.5 font-body text-sm leading-relaxed text-waldgruen-dark"
+                >
+                  {line}
+                </li>
+              ))}
+            </ol>
+          </div>
+        </div>
+
+        <Section id="wirkung" accent="gruen">
+          <SectionHeading
+            eyebrow="Politische Selbstwirksamkeit"
+            title="Vom Betroffensein ins Handeln"
+            detail="Selbstauskunft direkt im Review. Die Werte zeigen ein wahrgenommenes Gefühl, keine tatsächlich beobachtete spätere Handlung."
+          />
+          <div className="grid gap-8 lg:grid-cols-2 lg:gap-12">
+            <article>
+              <SubHeading
+                info={{ title: "Handlungsfähiger durch den Brief", question: "efficacy" }}
+                detail="Nur Nutzer:innen, die ihren Brief verschicken, sehen diese Frage."
+              >
+                Handlungsfähiger durch den Brief
+              </SubHeading>
+              <Statement statements={statements} id="efficacy" />
+              {activation.selfEfficacyAnswerCount === 0 ? (
+                <EmptyState>Noch keine Antworten zur politischen Handlungsfähigkeit.</EmptyState>
+              ) : (
+                <>
+                  <div className="flex flex-wrap gap-6">
+                    <div className="flex-1">
+                      <span className="block">
+                        <RateValue rate={impact.writers.efficacy} mode={mode} unit="Antworten" />
+                      </span>
+                      <p className="mt-2 font-body text-xs leading-relaxed text-warmgrau/60">
+                        „Ja, deutlich“ oder „Eher ja“ · „Kann ich noch nicht sagen“ zählt in der Basis mit
+                      </p>
+                    </div>
+                    <div className="grid min-w-40 gap-2 self-start">
+                      <p className="flex items-baseline justify-between gap-3 rounded-md bg-creme/70 px-3 py-2 font-body text-sm text-waldgruen-dark">
+                        Ja <span className="font-typewriter text-base font-bold tabular-nums">{formatNumber(sePositive)}</span>
+                      </p>
+                      <p className="flex items-baseline justify-between gap-3 rounded-md bg-creme/70 px-3 py-2 font-body text-sm text-waldgruen-dark">
+                        Nein <span className="font-typewriter text-base font-bold tabular-nums">{formatNumber(seNegative)}</span>
+                      </p>
+                      <p className="flex items-baseline justify-between gap-3 rounded-md bg-creme/70 px-3 py-2 font-body text-sm text-waldgruen-dark">
+                        Unsicher <span className="font-typewriter text-base font-bold tabular-nums">{formatNumber(seUnsure)}</span>
+                      </p>
+                    </div>
+                  </div>
+                  <div className="mt-6">
+                    <SurveyDistributionBars
+                      values={activation.selfEfficacyDistribution}
+                      options={selfEfficacyOptions}
+                      total={activation.selfEfficacyAnswerCount}
+                      color="#2D6A4F"
+                      mode={mode}
+                      baselineValues={baseline?.politicalActivation.selfEfficacyDistribution}
+                      baselineTotal={baseline?.politicalActivation.selfEfficacyAnswerCount}
+                    />
+                  </div>
+                </>
+              )}
+              <BasisNote>
+                Basis: {formatNumber(activation.selfEfficacyAnswerCount)} beantwortet ·{" "}
+                {formatNumber(activation.selfEfficacyDirectionalCount)} gerichtet ·{" "}
+                {formatNumber(activation.selfEfficacyNoAnswerCount)} vollständige Reviews ohne diese Frage
+              </BasisNote>
+            </article>
+
+            <article>
+              <SubHeading
+                info={{ title: "Politische Ohnmacht im Alltag", question: "powerlessness" }}
+                detail="Wie oft politische Inhalte beschäftigen, ohne dass ein konkreter nächster Schritt klar ist."
+              >
+                Politische Ohnmacht im Alltag
+              </SubHeading>
+              {activation.powerlessnessAnswerCount === 0 ? (
+                <EmptyState>Noch keine freiwilligen Antworten zur politischen Ohnmacht.</EmptyState>
+              ) : (
+                <SurveyDistributionBars
+                  values={activation.powerlessnessDistribution}
+                  options={powerlessnessOptions}
+                  total={activation.powerlessnessAnswerCount}
+                  color="#C58B18"
+                  mode={mode}
+                  baselineValues={baseline?.politicalActivation.powerlessnessDistribution}
+                  baselineTotal={baseline?.politicalActivation.powerlessnessAnswerCount}
+                />
+              )}
+              <BasisNote>
+                Basis: {formatNumber(activation.powerlessnessAnswerCount)} freiwillig beantwortet ·{" "}
+                {formatNumber(activation.powerlessnessNoAnswerCount)} vollständige Reviews ohne Angabe
+              </BasisNote>
+            </article>
+          </div>
+
+          <div className="mt-8 border-t border-warmgrau/10 pt-6">
+            <SubHeading
+              info={{ title: "Ohnmacht und Handlungsfähigkeit", question: "efficacy" }}
+              detail="Nur Reviews mit Antworten auf beide Fragen. „Kann ich noch nicht sagen“ bleibt sichtbar und zählt in der Basis mit."
+            >
+              Positive Selbstauskunft nach berichteter Ohnmachtsfrequenz
+            </SubHeading>
+            <Statement statements={statements} id="powerlessness" />
+            {!hasActivationCrossData ? (
+              <EmptyState>Noch keine gemeinsam auswertbaren Antworten.</EmptyState>
+            ) : (
+              <div className="grid gap-3 min-[420px]:grid-cols-2 lg:grid-cols-4">
+                {POLITICAL_POWERLESSNESS_FREQUENCY_VALUES.map((frequency) => {
+                  const item = activation.efficacyByPowerlessness[frequency];
+                  const rate = item.answered > 0 ? Math.round((item.positive / item.answered) * 100) : null;
+                  return (
+                    <div
+                      key={frequency}
+                      className="rounded-lg border border-warmgrau/10 bg-creme/60 px-4 py-4"
+                    >
+                      <p className="font-body text-sm font-semibold text-waldgruen-dark">
+                        {POLITICAL_POWERLESSNESS_FREQUENCY_LABELS[frequency]}
+                      </p>
+                      {rate !== null ? (
+                        <p className="mt-2 font-typewriter text-2xl font-bold tabular-nums text-waldgruen-dark">
+                          {mode === "prozentual" ? `${rate} %` : formatNumber(item.positive)}
+                        </p>
+                      ) : (
+                        <p className="mt-2 font-typewriter text-2xl font-bold tabular-nums text-warmgrau/40">—</p>
+                      )}
+                      <p className="mt-1 font-typewriter text-[11px] leading-relaxed text-warmgrau/55">
+                        {formatNumber(item.positive)} von {formatNumber(item.answered)} Antworten
+                        {rate !== null && mode === "absolut" && ` (${rate} %)`} ·{" "}
+                        {formatNumber(item.unsure)} unsicher
+                      </p>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+
+          {voices.length > 0 && (
+            <div className="mt-8 border-t border-warmgrau/10 pt-6">
+              <SubHeading detail="Ausgewählte Rückmeldungen, nur mit Freigabe zur Veröffentlichung.">Stimmen</SubHeading>
+              <ul className="grid gap-3">
+                {voices.map((voice) => (
+                  <li key={voice.id}>
+                    <blockquote className="rounded-lg border-l-4 border-waldgruen/30 bg-creme/60 px-4 py-3">
+                      <p className="whitespace-pre-line font-body text-sm leading-relaxed text-warmgrau/90">{voice.text}</p>
+                      <footer className="mt-2 font-typewriter text-xs text-warmgrau/70">{voice.name}</footer>
+                    </blockquote>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+        </Section>
+
+        <Section id="nach-dem-brief" accent="rot">
+          <SectionHeading
+            eyebrow="Rückmeldungen nach dem Versand"
+            title="Was passiert nach dem Brief?"
+            detail="Antworten auf meine Mail nach dem Versand der Briefe. Die Filter oben wirken hier nicht."
+          />
+          {outcomes.length === 0 ? (
+            <EmptyState>Noch keine Rückmeldungen.</EmptyState>
+          ) : (
+            <div className="grid gap-10">
+              {[...outcomes].reverse().map((round) => (
+                <OutcomeRoundBlock
+                  key={round.cohort}
+                  round={round}
+                  statements={round === latestRound ? statements : null}
+                />
+              ))}
+            </div>
+          )}
+        </Section>
+
+        <Section id="themen" accent="rot">
+          <SectionHeading
+            eyebrow="Freiwillige Themensignale"
+            title="Worüber wird geschrieben?"
+            detail={`${formatNumber(stats.letterSignals.signalCount)} freigegebene Signale · keine Brieftexte oder Einzelzeilen · bis zu drei Oberkategorien je Brief, deshalb kann die Summe der Anteile über 100 % liegen`}
+          />
+          {signalCampaignShare > 0.5 && dominantCampaign && (
+            <div className="mb-6 rounded-lg border border-bernstein/40 bg-bernstein/10 px-4 py-3">
+              <p className="font-body text-sm leading-relaxed text-warmgrau">
+                <strong>Achtung:</strong> {Math.round(signalCampaignShare * 100)} % der Themensignale stammen
+                aus Kampagnen (dominant: {stats.campaignLabels[dominantCampaign.slug] ?? dominantCampaign.slug},{" "}
+                {formatNumber(dominantCampaign.count)} Signale). Die Themenverteilung ist damit kein allgemeines
+                Stimmungsbild.
+              </p>
+            </div>
+          )}
+          {stats.letterSignals.signalCount === 0 ? (
+            <EmptyState>Es gibt noch keine freigegebenen Themensignale. Diese Übersicht füllt sich erst nach dem freiwilligen Opt-in.</EmptyState>
+          ) : (
+            <div className="grid gap-8 [&>*]:min-w-0">
+              <div className="grid gap-8 lg:grid-cols-2 [&>*]:min-w-0">
+                <div>
+                  <SubHeading detail="Anteil an allen gefilterten Signalen.">Oberkategorien</SubHeading>
+                  <Statement statements={statements} id="topCategory" />
+                  <RankedBars
+                    values={stats.letterSignals.categoryCounts}
+                    labels={topicCategoryLabel}
+                    total={stats.letterSignals.signalCount}
+                    mode={mode}
+                    baseline={baseline?.letterSignals.categoryCounts}
+                    baselineTotal={baseline?.letterSignals.signalCount}
+                  />
+                </div>
+                <div>
+                  <SubHeading detail="Klick setzt den Bundesland-Filter für die ganze Seite.">Bundesländer</SubHeading>
+                  <div className="mb-5">
+                    <BundeslandMapPanel
+                      counts={filter.bundesland && baseline ? baseline.letterSignals.bundeslandCounts : stats.letterSignals.bundeslandCounts}
+                      total={filter.bundesland && baseline ? baseline.letterSignals.signalCount : stats.letterSignals.signalCount}
+                      query={query}
+                      activeKey={filter.bundesland}
+                    />
+                  </div>
+                  <RankedBars
+                    values={filter.bundesland && baseline ? baseline.letterSignals.bundeslandCounts : stats.letterSignals.bundeslandCounts}
+                    labels={bundeslandName}
+                    total={filter.bundesland && baseline ? baseline.letterSignals.signalCount : stats.letterSignals.signalCount}
+                    mode={mode}
+                    hrefFor={(key, isActive) => buildPrivateStatsHref(query, { bundesland: isActive ? null : key })}
+                    activeKey={filter.bundesland}
+                  />
+                </div>
+              </div>
+
+              {hasCampaignSignals && campaignFilterActive && (
+                <div className="border-t border-warmgrau/10 pt-6">{campaignCard}</div>
+              )}
+
+              <div className="border-t border-warmgrau/10 pt-6">
+                <Collapsible
+                  summary="Weitere Themen-Details"
+                  detail="Unterthemen, Themen im Zeitverlauf, politische Ebene, Kampagnen, PLZ-Regionen und Bewertung nach Oberkategorie."
+                >
+                  <div className="grid gap-8 [&>*]:min-w-0">
+                    <div>
+                      <SubHeading detail="Die häufigsten neutralen Unterthemen je Oberkategorie. Zuordnung über die erste Oberkategorie eines Briefs.">
+                        Unterthemen je Oberkategorie
+                      </SubHeading>
+                      <SubtopicClusters
+                        clusters={subtopicClusters}
+                        categoryLabel={topicCategoryLabel}
+                        total={stats.letterSignals.signalCount}
+                      />
+                    </div>
+
+                    <div className="border-t border-warmgrau/10 pt-6">
+                      <SubHeading detail={`Signale je Oberkategorie und Abschnitt (${heatmapGranularityLabel}). Dunkler bedeutet mehr. Auf dem Handy horizontal wischen.`}>
+                        Themen im Zeitverlauf
+                      </SubHeading>
+                      {topicHeatmap.rows.length === 0 ? (
+                        <EmptyState />
+                      ) : (
+                        <TopicHeatmap data={topicHeatmap} rowLabel={topicCategoryLabel} />
+                      )}
+                    </div>
+
+                    <div className="grid gap-8 border-t border-warmgrau/10 pt-6 sm:grid-cols-2 [&>*]:min-w-0">
+                      <div>
+                        <SubHeading>Politische Ebene</SubHeading>
+                        <RankedBars
+                          values={stats.letterSignals.levelCounts}
+                          total={stats.letterSignals.signalCount}
+                          mode={mode}
+                          baseline={baseline?.letterSignals.levelCounts}
+                          baselineTotal={baseline?.letterSignals.signalCount}
+                        />
+                      </div>
+                      {hasCampaignSignals && !campaignFilterActive && <div>{campaignCard}</div>}
+                    </div>
+
+                    <div className="border-t border-warmgrau/10 pt-6">
+                      <Collapsible summary="PLZ-Regionen" detail="Zweistellige Postleitzahl-Regionen, höchstens zwölf.">
+                        <div className="sm:max-w-md">
+                          <RankedBars
+                            values={stats.letterSignals.plzPrefixCounts}
+                            labels={(key) => `${key} · Region`}
+                            total={stats.letterSignals.signalCount}
+                            mode={mode}
+                            baseline={baseline?.letterSignals.plzPrefixCounts}
+                            baselineTotal={baseline?.letterSignals.signalCount}
+                          />
+                        </div>
+                      </Collapsible>
+                    </div>
+
+                    <div className="border-t border-warmgrau/10 pt-6">
+                      <Collapsible
+                        summary="Bewertung & Versandabsicht nach Oberkategorie"
+                        detail="Nur Briefe mit verknüpftem Review. Bewertungen, beantwortete Versandfragen und fehlende Angaben getrennt."
+                      >
+                        {Object.keys(stats.letterSignals.reviewByCategory).length === 0 ? (
+                          <EmptyState>Noch keine verknüpften Reviews mit diesen Signalen.</EmptyState>
+                        ) : (
+                          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                            {TOPIC_CATEGORY_CODES.filter((code) => stats.letterSignals.reviewByCategory[code]).map((code) => {
+                              const item = stats.letterSignals.reviewByCategory[code];
+                              const average = item.ratings ? (item.ratingSum / item.ratings).toFixed(1).replace(".", ",") : "—";
+                              return (
+                                <div key={code} className="rounded-lg border border-warmgrau/10 bg-creme/60 px-4 py-3">
+                                  <p className="font-body text-sm font-semibold text-waldgruen-dark">{topicCategoryLabel(code)}</p>
+                                  <p className="mt-1 font-typewriter text-xs text-warmgrau/60">
+                                    {item.reviews} Reviews · Ø {average} ({item.ratings} Bewertungen)
+                                  </p>
+                                  <p className="mt-0.5 font-typewriter text-[11px] leading-relaxed text-warmgrau/55">
+                                    Versandfrage: {item.sent} von {item.knownSent} positiv · {item.noAnswer} ohne Angabe
+                                  </p>
+                                </div>
+                              );
+                            })}
+                          </div>
+                        )}
+                      </Collapsible>
+                    </div>
+                  </div>
+                </Collapsible>
+              </div>
+            </div>
+          )}
+          <BasisNote>
+            Basis: {formatNumber(stats.letterSignals.signalCount)} Themensignale · {formatNumber(signalCampaignTotal)}{" "}
+            aus Kampagnen · {formatNumber(stats.letterSignals.sourceCounts.free)} freie Anliegen · Erhebung ab{" "}
+            {formatDate(stats.oldestReviewAt)}
+          </BasisNote>
+        </Section>
+
+        <Section id="verlauf">
+          <SectionHeading
+            eyebrow="Entwicklung im Zeitverlauf"
+            title="Wann wurden Briefe geschrieben?"
+            detail="Briefvolumen aus dem globalen Zähler, dazu freiwillige Themensignale und Reviews. Die Spitze ist rot markiert."
+          />
+          <SubHeading
+            detail={`Seit dem ${counterSinceLabel ?? "Start der Briefnummer"} trägt jeder freigegebene Themenbeitrag die laufende Briefnummer. Aus der Differenz zwischen zwei Abschnitten ergibt sich das Volumen aller Briefe, nicht nur der Opt-ins. Der Quellenfilter wirkt hier nicht.`}
+          >
+            Brief-Erstellungen · {granularityLabel}
+          </SubHeading>
+          {counterPoints.length === 0 ? (
+            <EmptyState>
+              Noch keine Briefnummern im gewählten Zeitraum. Der Verlauf füllt sich automatisch, sobald Nutzer:innen nach dem Start der Briefnummer ihr Thema freigeben.
+            </EmptyState>
+          ) : (
+            <>
+              <ColumnChart
+                data={counterPoints}
+                unit="Briefe"
+                axisLabel={granularity === "day" ? "Tag" : granularity === "week" ? "Kalenderwoche" : "Monat"}
+                tableSummary="Briefe je Abschnitt als Tabelle"
+              />
+              <div className="mt-4 grid gap-3 sm:grid-cols-3">
+                <MiniStat label="Briefe im Zeitraum" value={formatNumber(lettersInCounterPeriod)} />
+                {counterPeak && (
+                  <MiniStat label={`Spitze · ${counterPeak.label}`} value={`${formatNumber(counterPeak.count)} Briefe`} />
+                )}
+                {signalCoverage !== null && (
+                  <MiniStat
+                    label="Themensignal-Abdeckung"
+                    value={`${formatDecimal(signalCoverage)} %`}
+                    detail={`${formatNumber(stats.letterSignals.numberedSignalCount)} Signale mit Briefnummer`}
+                  />
+                )}
+              </div>
+              {counterTimeline.some((point) => point.partial) && (
+                <p className="mt-3 font-body text-xs leading-relaxed text-warmgrau/55">
+                  Der erste Abschnitt (blass) hat keinen Vorwert und zeigt nur eine Untergrenze.
+                </p>
+              )}
+            </>
+          )}
+
+          <div className="mt-8 border-t border-warmgrau/10 pt-6">
+          <Collapsible
+            summary="Themensignale und Reviews im Zeitverlauf"
+            detail="Freiwillige Themensignale und Bewertungen, jeweils pro Abschnitt."
+          >
+          <div className="grid gap-8 lg:grid-cols-2 [&>*]:min-w-0">
+            <div>
+              <SubHeading detail="Nach Zeitpunkt der freiwilligen Einwilligung. Signale ohne generated_at bleiben enthalten.">
+                Themensignale · {granularityLabel}
+              </SubHeading>
+              {signalTimeline.length === 0 ? (
+                <EmptyState />
+              ) : (
+                <ColumnChart data={signalTimeline} unit="Signale" tableSummary="Signale als Tabelle" />
+              )}
+              {signalPeak && signalTimeline.length > 1 && (
+                <p className="mt-2 font-typewriter text-[11px] text-warmgrau/55">
+                  Spitze: {signalPeak.label} mit {formatNumber(signalPeak.count)} Signalen
+                </p>
+              )}
+            </div>
+            <div>
+              <SubHeading detail="Nach Erstellung der Bewertung, Kurzbewertungen eingeschlossen.">
+                Reviews · {granularityLabel}
+              </SubHeading>
+              {reviewTimeline.length === 0 ? (
+                <EmptyState />
+              ) : (
+                <ColumnChart
+                  data={reviewTimeline}
+                  unit="Reviews"
+                  color="#D4A017"
+                  emphasisColor="#C1121F"
+                  tableSummary="Reviews als Tabelle"
+                />
+              )}
+            </div>
+          </div>
+          </Collapsible>
+          </div>
+          <BasisNote>
+            Basis: {formatNumber(stats.letterSignals.signalCount)} Themensignale · {formatNumber(stats.reviewCount)} Reviews ·
+            Briefnummern seit {counterSinceLabel ?? "—"} · Abschnitte ohne Beobachtung werden dem nächsten Abschnitt zugeschlagen
+          </BasisNote>
+        </Section>
+
+        <Section id="feedback">
+          <SectionHeading
+            eyebrow="Feedback & Versandsignal"
+            title="Wie kommt der Brief an?"
+            detail="Selbstauskunft aus dem Feedbackprozess. „Ja, geht raus“ umfasst bereits verschickte und unmittelbar geplante Briefe — es ist kein physischer Versandnachweis."
+          />
+          <div className="grid gap-8 lg:grid-cols-2 lg:gap-12">
+            <div>
+              <SubHeading info={{ title: "Bewertung", question: "rating" }}>
+                Bewertung ({formatDecimal(stats.averageRating)} / 5)
+              </SubHeading>
+              <Statement statements={statements} id="rating" />
+              <RatingBars stats={stats} mode={mode} baseline={baseline} />
+            </div>
+
+            <div>
+              <SubHeading detail="Zwischen Briefbewertung und Versandabsicht zeigt sich ein Zusammenhang. Das ist eine Korrelation, kein Kausalitätsnachweis.">
+                Qualität entscheidet mit
+              </SubHeading>
+              <Statement statements={statements} id="qualitySend" />
+              <p className="font-body text-xs font-semibold uppercase tracking-[0.1em] text-warmgrau/55">
+                Versandabsicht nach Bewertung
+              </p>
+              <div className="mt-4 grid gap-5">
+                {ratingBands.map((band) => {
+                  const values = sumRatingBreakdowns(stats, band.ratings);
+                  const baselineValues = baseline ? sumRatingBreakdowns(baseline, band.ratings) : null;
+                  return (
+                    <div key={band.label}>
+                      <div className="flex items-baseline justify-between gap-3">
+                        <span className="font-body text-sm font-semibold text-waldgruen-dark">
+                          {band.label}
+                          {isSmallBasis(values.known) && <BasisBadge />}
+                        </span>
+                        {values.known > 0 ? (
+                          <ShareStat mode={mode} value={values.sent} total={values.known} />
+                        ) : (
+                          <span className="font-typewriter text-xs tabular-nums text-warmgrau/60">—</span>
+                        )}
+                      </div>
+                      <BarTrack
+                        value={values.ratePercent}
+                        scale={100}
+                        baseline={baselineValues && baselineValues.known > 0 ? baselineValues.ratePercent : null}
+                        color={band.color}
+                        height="md"
+                      />
+                      <p className="mt-1 font-typewriter text-[11px] text-warmgrau/55">
+                        {values.known > 0
+                          ? `${formatNumber(values.sent)} von ${formatNumber(values.known)} mit Angabe`
+                          : "Keine beantworteten Versandfragen"}
+                      </p>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          </div>
+
+          <div className="mt-8 grid gap-6 border-t border-warmgrau/10 pt-6">
+            <Collapsible
+              summary="Vom Erstellen bis zum Versandsignal"
+              detail="Trichter und Versandsignal als Diagramm."
+            >
+              <div className="grid gap-8 [&>*]:min-w-0">
+                <div>
+                  <SubHeading detail="Prozentwerte gelten relativ zu allen Bewertungen; die Brief-Erstellungen sind ein Gesamtzähler ohne Verlauf und daher nicht prozentual verrechenbar.">
+                    Trichter
+                  </SubHeading>
+                  <Funnel stats={stats} />
+                </div>
+                <div className="border-t border-warmgrau/10 pt-6">
+                  <SubHeading info={{ title: "Versandsignal", question: "sendSignal" }}>Versandsignal</SubHeading>
+                  <StatsPie stats={stats} mode={mode} />
+                  <p className="mt-4 font-typewriter text-xs leading-relaxed text-warmgrau/55">
+                    Positive Quote nur auf beantworteter Basis: {formatNumber(stats.sentCount)} von{" "}
+                    {formatNumber(stats.knownSendCount)} ({formatDecimal(stats.sendRatePercent)} %) —{" "}
+                    {formatNumber(stats.noAnswerCount)} ohne Angabe.
+                  </p>
+                </div>
+              </div>
+            </Collapsible>
+
+            <Collapsible
+              summary="Das hilft beim Abschicken und das bremst"
+              detail="Markierungen aus dem Feedback-Formular, mit der Quote derer, die den Brief verschicken."
+            >
+              <div className="mb-4">
+                <InfoNote title="Markierungen im Feedback" question="tags" />
+              </div>
+              <div className="grid gap-8 sm:grid-cols-2">
+                <div>
+                  <p className="font-body text-xs font-semibold uppercase tracking-[0.1em] text-warmgrau/55">
+                    Das hilft beim Abschicken
+                  </p>
+                  <div className="mt-4">
+                    <SignalList stats={stats} signals={positiveSignals} color="#2D6A4F" mode={mode} baseline={baseline} />
+                  </div>
+                </div>
+                <div>
+                  <p className="font-body text-xs font-semibold uppercase tracking-[0.1em] text-warmgrau/55">
+                    Das bremst
+                  </p>
+                  <div className="mt-4">
+                    <SignalList stats={stats} signals={frictionSignals} color="#C1121F" mode={mode} baseline={baseline} />
+                  </div>
+                </div>
+              </div>
+            </Collapsible>
+          </div>
+          <BasisNote>
+            Erhebungszeitraum: {formatDate(stats.oldestReviewAt)} bis {formatDate(stats.newestReviewAt)} · Basis:{" "}
+            {formatNumber(stats.reviewCount)} Feedbackzeilen · {formatNumber(stats.knownSendCount)} beantwortete
+            Versandfragen · {formatNumber(stats.noAnswerCount)} ohne Angabe · Feedback-Markierungen können sich überschneiden
+          </BasisNote>
+        </Section>
+
+        <Section id="alter">
+          <SectionHeading
+            eyebrow="Wer schreibt"
+            title="Alter"
+            detail="Freiwillige Angabe im ausgefüllten Feedback. Die Prozente zählen nur Bewertungen mit Altersangabe."
+          />
+          <article>
+            <SubHeading
+              info={{ title: "Altersverteilung", question: "age" }}
+              detail="Nur Bewertungen mit Angabe"
+            >
+              Altersverteilung
+            </SubHeading>
+            {stats.ageGroups.answerCount === 0 ? (
+              <EmptyState>Noch keine Altersangaben.</EmptyState>
+            ) : (
+              <SurveyDistributionBars
+                values={stats.ageGroups.distribution}
+                options={ageGroupOptions}
+                total={stats.ageGroups.answerCount}
+                color="#2D6A4F"
+                mode={mode}
+                baselineValues={baseline?.ageGroups.distribution}
+                baselineTotal={baseline?.ageGroups.answerCount}
+              />
+            )}
+            <BasisNote>
+              Basis: {formatNumber(stats.ageGroups.answerCount)} Bewertungen mit Altersangabe
+            </BasisNote>
+          </article>
+
+          <div className="mt-8 border-t border-warmgrau/10 pt-6">
+            <Collapsible
+              summary="Wie viele geben ihr Alter an"
+              detail="Antwortquote ab der ersten Altersangabe."
+            >
+              {stats.ageGroups.answeredSince === null ? (
+                <EmptyState>Noch keine Altersangaben.</EmptyState>
+              ) : (
+                <>
+                  <ValueEmphasis
+                    mode={mode}
+                    value={stats.ageGroups.rateAnswerCount}
+                    total={stats.ageGroups.rateBase}
+                    unit="ausgefüllte Bewertungen"
+                  />
+                  <p className="mt-2 font-body text-xs leading-relaxed text-warmgrau/60">
+                    geben ihr Alter an (seit {formatDate(stats.ageGroups.answeredSince)})
+                  </p>
+                </>
+              )}
+              <BasisNote>
+                {stats.ageGroups.answeredSince === null
+                  ? "Basis: noch keine ausgefüllten Bewertungen mit Altersfrage"
+                  : `Basis: ${formatNumber(stats.ageGroups.rateBase)} ausgefüllte Bewertungen seit der ersten Altersangabe am ${formatDate(stats.ageGroups.answeredSince)} · die Filter oben wirken hier`}
+              </BasisNote>
+            </Collapsible>
+          </div>
+        </Section>
+
+        <Section id="erstschreiber">
+          <SectionHeading
+            eyebrow="Wer schreibt"
+            title="Erstschreiber"
+            detail="Freiwillige Angabe im ausgefüllten Feedback: Hat Brief-nach-Berlin Menschen zum ersten Mal zum Schreiben an Politiker:innen gebracht? Die Prozente zählen nur Bewertungen mit Antwort."
+          />
+          <article>
+            <SubHeading
+              info={{ title: "Erstschreiber", question: "letterHistory" }}
+              detail="Erstschreiber sind alle, die vor Brief-nach-Berlin nie einen Brief geschrieben hatten (erster Brief oder bisher nur mit Brief-nach-Berlin)."
+            >
+              Kennzahlen
+            </SubHeading>
+            <Statement statements={statements} id="firstTimers" />
+            {stats.letterHistory.answerCount === 0 ? (
+              <EmptyState>Noch keine Angaben.</EmptyState>
+            ) : (
+              <div>
+                <ShareLine
+                  label="Vor Brief-nach-Berlin nie einen Brief geschrieben"
+                  percent={stats.letterHistory.neverBeforePercent}
+                  count={stats.letterHistory.neverBeforeCount}
+                  total={stats.letterHistory.answerCount}
+                />
+                <ShareLine
+                  label="Davon noch nie anders Kontakt zu Politiker:innen gehabt (nur mit Antwort auf die Folgefrage)"
+                  percent={stats.letterHistory.noPriorContactPercent}
+                  count={stats.letterHistory.noPriorContactCount}
+                  total={stats.letterHistory.priorContactAnswerCount}
+                  info={{ title: "Früherer Kontakt zu Politiker:innen", question: "priorContact" }}
+                />
+                <ShareLine
+                  label="Schon mehrfach mit Brief-nach-Berlin geschrieben"
+                  percent={stats.letterHistory.repeatPercent}
+                  count={stats.letterHistory.repeatCount}
+                  total={stats.letterHistory.answerCount}
+                />
+                <ShareLine
+                  label="Handlungsfähigkeit positiv, Erstschreiber („Ja, deutlich“ oder „Eher ja“)"
+                  percent={stats.letterHistory.efficacyFirstTimers.positivePercent}
+                  count={stats.letterHistory.efficacyFirstTimers.positive}
+                  total={stats.letterHistory.efficacyFirstTimers.answered}
+                />
+                <ShareLine
+                  label="Handlungsfähigkeit positiv, schon vorher geschrieben"
+                  percent={stats.letterHistory.efficacyExperienced.positivePercent}
+                  count={stats.letterHistory.efficacyExperienced.positive}
+                  total={stats.letterHistory.efficacyExperienced.answered}
+                />
+              </div>
+            )}
+            <BasisNote>
+              Handlungsfähigkeit: Basis sind Antworten mit Angabe zur Handlungsfähigkeit, inklusive „Kann ich noch nicht sagen“. Bei kleinen Zahlen nicht überinterpretieren.
+            </BasisNote>
+          </article>
+
+          <div className="mt-8 border-t border-warmgrau/10 pt-6">
+            <Collapsible summary="Verteilung der bisherigen Briefe" detail="Wie viele Briefe die Antwortenden vorher geschrieben hatten.">
+              <SubHeading
+                info={{ title: "Bisherige Briefe", question: "letterHistory" }}
+                detail="Nur Bewertungen mit Angabe"
+              >
+                Verteilung
+              </SubHeading>
+              {stats.letterHistory.answerCount === 0 ? (
+                <EmptyState>Noch keine Angaben.</EmptyState>
+              ) : (
+                <SurveyDistributionBars
+                  values={stats.letterHistory.distribution}
+                  options={letterHistoryOptions}
+                  total={stats.letterHistory.answerCount}
+                  color="#2D6A4F"
+                  mode={mode}
+                  baselineValues={baseline?.letterHistory.distribution}
+                  baselineTotal={baseline?.letterHistory.answerCount}
+                />
+              )}
+              <BasisNote>
+                {stats.letterHistory.answeredSince === null
+                  ? "Basis: noch keine Antworten auf die Frage"
+                  : `Basis: ${formatNumber(stats.letterHistory.answerCount)} Bewertungen mit Angabe · erfasst seit ${formatDate(stats.letterHistory.answeredSince)} · die Filter oben wirken hier`}
+              </BasisNote>
+            </Collapsible>
+          </div>
+        </Section>
+
+        <Section id="definitionen">
+          <SectionHeading
+            eyebrow="Datenqualität & Definitionen"
+            title="Worauf sich die Zahlen beziehen"
+            detail="Einheitliche Basis für die Einordnung der Werte auf dieser Seite."
+          />
+          <div className="grid gap-4 md:grid-cols-2">
+            <Definition
+              title="Erhebungszeitraum"
+              body={`${formatDate(stats.oldestReviewAt)} bis ${formatDate(stats.newestReviewAt)} · ${rangeLabel} · ${sourceLabel}. Abruf: ${formatDateTime(stats.fetchedAt)}.`}
+            />
+            <Definition
+              title="Brief-Erstellungen im Verlauf"
+              body={`Jeder freigegebene Themenbeitrag speichert seit dem ${counterSinceLabel ?? "Start der Briefnummer"} die laufende Briefnummer. Die Differenz der höchsten Nummern zweier Abschnitte ergibt das Volumen aller Briefe dazwischen. Abschnitte ohne Beitrag fallen weg und werden dem nächsten zugeschlagen.`}
+            />
+            <Definition title="Doppelte Briefe" body={DUPLICATE_LETTER_NOTE} />
+            <Definition
+              title="Handlungsfähigkeit"
+              body="Anteil „Ja, deutlich“ und „Eher ja“ an allen Antworten, „Kann ich noch nicht sagen“ zählt in der Basis mit. Die Frage sehen nur Nutzer:innen, die ihren Brief verschicken. In den Rückmeldungen Wochen später zählen ebenfalls nur Antworten derer, die den Brief abgeschickt haben."
+            />
+            <Definition
+              title="„Ja, geht raus“"
+              body="Umfasst bereits verschickte und unmittelbar geplante Briefe. Es ist eine Selbstauskunft, kein physischer Versandnachweis."
+            />
+            <Definition
+              title="Themensignale"
+              body={`${formatNumber(stats.letterSignals.signalCount)} freigegebene Signale nach freiwilliger Einwilligung · bis zu drei Oberkategorien und drei Unterthemen je Brief · Unterthemen werden der ersten Oberkategorie zugeordnet.`}
+            />
+            <Definition
+              title="Altersangabe"
+              body={`Freiwillig im ausgefüllten Feedback, erste Angabe am ${stats.ageGroups.answeredSince ? formatDate(stats.ageGroups.answeredSince) : "noch keine Angabe"}. Die Verteilung zählt nur Bewertungen mit Angabe. Die Antwortquote zählt ausgefüllte Bewertungen ab diesem Tag; ältere Bewertungen ohne die Frage bleiben außen vor.`}
+            />
+            <Definition
+              title="Filter & Vergleich"
+              body="Bundesland- und Quellenfilter wirken auf Signale und auf Reviews mit verknüpftem Signal; Reviews ohne Signal fallen bei aktivem Bundesland-Filter heraus. Die Vergleichsmarke zeigt denselben Wert ohne diese Filter im gleichen Zeitraum."
+            />
+            <Definition
+              title="Quellen"
+              body={`In Reviews ohne verknüpfte Signal-Zeile fehlt die Kampagnen-Zuordnung (Bucket „ohne Signal“): ${formatNumber(stats.reviewSourceCounts.unknown)} Reviews.`}
+            />
+            <Definition
+              title="Rückmeldungen"
+              body={`Antworten auf meine Mail nach dem Versand der Briefe${latestRound ? ` (${formatNumber(latestRound.deliveredCount)} zugestellt laut Brevo, fester Wert)` : ""}. Der Klick in der Mail entscheidet die Hauptfrage, ein fertiges Formular geht vor. Alle Details kommen nur aus fertigen Formularen. Testadressen sind schon in der Abfrage ausgeschlossen. Unter ${SHARE_PERCENT_MIN_BASE} Antworten zeige ich absolute Zahlen, ab ${SHARE_PERCENT_MIN_BASE} Prozent mit n. Die Filter oben wirken nicht auf diesen Abschnitt.`}
+            />
+            <Definition
+              title="Kleine Basen"
+              body="Werte mit weniger als 10 Beobachtungen sind markiert und werden nicht als belastbarer Haupterfolg hervorgehoben."
+            />
+            <Definition
+              title="Datenschutz"
+              body="Aggregate · keine Brieftexte · keine E-Mail-Adressen · keine vollständigen PLZ. Einzige Ausnahme sind die Freitexte aus den Rückmeldungen, eingeklappt unter „Alle Antworten“ und ohne E-Mail-Adresse. Die Seite ist passwortgeschützt und für Suchmaschinen gesperrt (noindex)."
+            />
+          </div>
+        </Section>
+
+        <footer className="mt-8 grid gap-3 border-t border-warmgrau/10 pt-6 font-typewriter text-xs leading-relaxed text-warmgrau/55 sm:grid-cols-2">
+          <p>
+            Erhebungszeitraum: {formatDate(stats.oldestReviewAt)} bis {formatDate(stats.newestReviewAt)} ·{" "}
+            {rangeLabel} · {sourceLabel}
+          </p>
+          <p className="sm:text-right">
+            Aggregate · Freitexte aus Rückmeldungen nur eingeklappt · keine Anliegen · keine E-Mail-Adressen
+          </p>
+        </footer>
+      </div>
+    </div>
+  );
+}
+
+const channelOptions = REPLY_CHANNEL_VALUES.map((key) => ({
+  key,
+  label: OUTCOME_LABELS.replyChannel[key],
+}));
+const addressedOptions = REPLY_ADDRESSED_VALUES.map((key) => ({
+  key,
+  label: OUTCOME_LABELS.replyAddressed[key],
+}));
+const replyFeelingOptions = REPLY_FEELING_VALUES.map((key) => ({
+  key,
+  label: OUTCOME_LABELS.replyFeeling[key],
+}));
+const feelingByAddressedPrefix: Record<(typeof REPLY_ADDRESSED_VALUES)[number], string> = {
+  concrete: "Bei konkreten Antworten",
+  partly: "Bei teilweise konkreten Antworten",
+  generic: "Bei eher allgemeinen Antworten",
+};
+const writeAgainOptions = WRITE_AGAIN_VALUES.map((key) => ({
+  key,
+  label: OUTCOME_LABELS.writeAgain[key],
+}));
+const notSentReasonOptions = NOT_SENT_REASON_VALUES.map((key) => ({
+  key,
+  label: OUTCOME_LABELS.notSentReason[key],
+}));
+
+function formatIsoDay(day: string | null): string {
+  if (!day) return "";
+  const [year, month, dayOfMonth] = day.split("-");
+  return `${dayOfMonth}.${month}.${year}`;
+}
+
+function DetailBlock({
+  title,
+  base,
+  children,
+}: {
+  title: string;
+  base: number;
+  children: ReactNode;
+}) {
+  return (
+    <div className="rounded-xl border border-warmgrau/10 bg-creme/50 p-4 sm:p-5">
+      <SubHeading>
+        {title}
+        {isSmallBasis(base, SHARE_PERCENT_MIN_BASE) && <BasisBadge />}
+      </SubHeading>
+      <div className="grid gap-5">{children}</div>
+    </div>
+  );
+}
+
+/** Kurze Frage-Zeile über einer Verteilung, mit (i) für den Wortlaut. */
+function QuestionCaption({
+  children,
+  title,
+  question,
+}: {
+  children: ReactNode;
+  title: string;
+  question: StatQuestionKey;
+}) {
+  return (
+    <div className="mb-2 flex items-start justify-between gap-2">
+      <p className="font-body text-xs text-warmgrau/70">{children}</p>
+      <InfoFor title={title} question={question} />
+    </div>
+  );
+}
+
+function EfficacyRateLine({ counts }: { counts: Record<string, number> }) {
+  const rate = efficacyRate(counts);
+  if (rate.base === 0) return null;
+  return (
+    <p className="mb-3 font-typewriter text-sm font-bold tabular-nums text-waldgruen-dark">
+      {rate.base < SHARE_PERCENT_MIN_BASE
+        ? `${formatNumber(rate.count)} von ${formatNumber(rate.base)} eher ja`
+        : `${rate.percent} % eher ja (${formatNumber(rate.count)} von ${formatNumber(rate.base)})`}
+    </p>
+  );
+}
+
+function OutcomeRoundBlock({
+  round,
+  statements,
+}: {
+  round: OutcomeRoundStats;
+  statements: Record<StatementKey, string | null> | null;
+}) {
+  const { path, replyRateByMethod, selfEfficacy } = round;
+  const methodBase = SENT_METHOD_VALUES.reduce((sum, method) => sum + replyRateByMethod[method].sent, 0);
+  return (
+    <div className="grid gap-6">
+      <p className="font-typewriter text-sm leading-relaxed text-warmgrau/80">
+        {round.label} · Mail am {formatDate(round.sentAt)} an {formatNumber(round.sentCount)} Leute,{" "}
+        {formatNumber(round.deliveredCount)} zugestellt · Briefe aus {round.letterWindowLabel}
+      </p>
+
+      <div>
+        <SubHeading info={{ title: "Briefweg", question: "briefweg" }}>
+          Briefweg
+          {isSmallBasis(round.respondentCount, SHARE_PERCENT_MIN_BASE) && <BasisBadge />}
+        </SubHeading>
+        {statements && <Statement statements={statements} id="briefweg" />}
+        <Briefweg round={round} />
+      </div>
+
+      {round.completedCount === 0 ? (
+        <EmptyState>Noch keine fertigen Formulare.</EmptyState>
+      ) : (
+        <div className="grid gap-4 lg:grid-cols-2">
+          <DetailBlock title="Reaktion und wie konkret" base={round.channelBase}>
+            <div>
+              <QuestionCaption title="Kam eine Reaktion?" question="outcomeChannels">
+                Welche Reaktion kam? Mehrfachnennung möglich.
+              </QuestionCaption>
+              <SurveyDistributionBars
+                values={round.channelCounts}
+                options={channelOptions}
+                total={round.channelBase}
+                color="#C1121F"
+                mode="prozentual"
+                valueLabel={formatBarShare}
+                baseNote={shareBaseNote}
+              />
+            </div>
+            <div>
+              <QuestionCaption title="Auf das Anliegen eingegangen" question="outcomeAddressed">
+                Wurde auf das Anliegen eingegangen?
+              </QuestionCaption>
+              <SurveyDistributionBars
+                values={round.addressedCounts}
+                options={addressedOptions}
+                total={round.addressedBase}
+                color="#2D6A4F"
+                mode="prozentual"
+                valueLabel={formatBarShare}
+                baseNote={shareBaseNote}
+              />
+            </div>
+            <div>
+              <QuestionCaption title="Wie war die Reaktion" question="outcomeFeeling">
+                Wie war die Reaktion für dich?
+              </QuestionCaption>
+              <SurveyDistributionBars
+                values={round.replyFeelingCounts}
+                options={replyFeelingOptions}
+                total={round.replyFeelingBase}
+                color="#C58B18"
+                mode="prozentual"
+                valueLabel={formatBarShare}
+                baseNote={shareBaseNote}
+              />
+              <ul className="mt-3 space-y-1 font-body text-xs text-warmgrau/70">
+                {REPLY_ADDRESSED_VALUES.filter((key) => round.feelingByAddressed[key].total > 0).map((key) => {
+                  const cell = round.feelingByAddressed[key];
+                  const positive = cell.counts.positive_surprise + cell.counts.glad_someone_answered;
+                  return (
+                    <li key={key}>
+                      {feelingByAddressedPrefix[key]}: {formatNumber(positive)} von {formatNumber(cell.total)} positiv überrascht oder froh, dass sich jemand gemeldet hat
+                    </li>
+                  );
+                })}
+              </ul>
+              <p className="mt-2 font-body text-xs text-warmgrau/70">Frage seit 19.10.2026, frühere Rückmeldungen ohne Angabe.</p>
+            </div>
+          </DetailBlock>
+
+          <DetailBlock title="Wieder schreiben und Handlungsfähigkeit" base={round.writeAgainBase}>
+            <div>
+              {statements && <Statement statements={statements} id="writeAgain" />}
+              <QuestionCaption title="Wieder einen Brief schreiben" question="outcomeWriteAgain">
+                Noch einen Brief schreiben?
+              </QuestionCaption>
+              <SurveyDistributionBars
+                values={round.writeAgainCounts}
+                options={writeAgainOptions}
+                total={round.writeAgainBase}
+                color="#2D6A4F"
+                mode="prozentual"
+                valueLabel={formatBarShare}
+                baseNote={shareBaseNote}
+              />
+            </div>
+            <div>
+              <QuestionCaption title="Handlungsfähigkeit nach dem Brief" question="outcomeEfficacy">
+                Gefühl, sich politisch einbringen zu können. Verschiedene Gruppen und Zeiträume, keine Person ist verknüpft. Rückmeldungen zählen nur Absender.
+              </QuestionCaption>
+              <div className="grid gap-5 md:grid-cols-2">
+                <div>
+                  <p className="mb-2 font-body text-sm font-semibold text-waldgruen-dark">
+                    Rückmeldungen (Wochen nach dem Brief)
+                    {isSmallBasis(selfEfficacy.outcomesBase, SHARE_PERCENT_MIN_BASE) && <BasisBadge />}
+                  </p>
+                  <EfficacyRateLine counts={selfEfficacy.outcomes} />
+                  <SurveyDistributionBars
+                    values={selfEfficacy.outcomes}
+                    options={selfEfficacyOptions}
+                    total={selfEfficacy.outcomesBase}
+                    color="#2D6A4F"
+                    mode="prozentual"
+                    valueLabel={formatBarShare}
+                    baseNote={shareBaseNote}
+                  />
+                </div>
+                <div>
+                  <p className="mb-2 font-body text-sm font-semibold text-waldgruen-dark">
+                    Reviews{selfEfficacy.reviewsSince ? ` seit ${formatDate(selfEfficacy.reviewsSince)}` : ""} (direkt nach dem Brief)
+                    {isSmallBasis(selfEfficacy.reviewsBase, SHARE_PERCENT_MIN_BASE) && <BasisBadge />}
+                  </p>
+                  <EfficacyRateLine counts={selfEfficacy.reviews} />
+                  <SurveyDistributionBars
+                    values={selfEfficacy.reviews}
+                    options={selfEfficacyOptions}
+                    total={selfEfficacy.reviewsBase}
+                    color="#1D3557"
+                    mode="prozentual"
+                    valueLabel={formatBarShare}
+                    baseNote={shareBaseNote}
+                  />
+                </div>
+              </div>
+            </div>
+          </DetailBlock>
+        </div>
+      )}
+
+      <Collapsible
+        summary="Weitere Zahlen zur Runde"
+        detail="Rücklauf pro Tag, von Hand, ausgedruckt oder per E-Mail, Gründe fürs Nichtabschicken, Erwartung und fertige Formulare."
+      >
+        <div className="grid gap-6">
+          <div>
+            <SubHeading>Rücklauf pro Tag seit dem Versand</SubHeading>
+            {round.respondentCount === 0 ? (
+              <EmptyState>Noch keine Rückmeldungen zu dieser Runde.</EmptyState>
+            ) : (
+              <ColumnChart
+                data={bucketTimeline(round.returnDayCounts, "day")}
+                unit="Rückmeldungen"
+                axisLabel="Tag"
+              />
+            )}
+          </div>
+
+          {round.completedCount > 0 && (
+            <div className="grid gap-4 lg:grid-cols-2">
+              <DetailBlock title="Wie der Brief verfasst wurde" base={methodBase}>
+                <QuestionCaption title="Brief abgeschickt" question="outcomeSent">
+                  Wie wurde der Brief verfasst?
+                </QuestionCaption>
+                <div className="grid gap-3 sm:grid-cols-2">
+                  {SENT_METHOD_VALUES.filter(
+                    (method) => method === "handwritten" || replyRateByMethod[method].sent > 0,
+                  ).map((method) => (
+                    <MiniStat
+                      key={method}
+                      label={OUTCOME_LABELS.letterSent[method]}
+                      value={formatShare(replyRateByMethod[method].replied, replyRateByMethod[method].sent)}
+                      detail="mit Reaktion"
+                    />
+                  ))}
+                </div>
+              </DetailBlock>
+
+              <DetailBlock title="Nicht abgeschickt und Erwartung" base={round.notSentReasonBase}>
+                <div>
+                  <QuestionCaption title="Was hat gebremst" question="outcomeNotSentReason">
+                    Was hat gebremst?
+                  </QuestionCaption>
+                  <SurveyDistributionBars
+                    values={round.notSentReasonCounts}
+                    options={notSentReasonOptions}
+                    total={round.notSentReasonBase}
+                    color="#C58B18"
+                    mode="prozentual"
+                    valueLabel={formatBarShare}
+                    baseNote={shareBaseNote}
+                  />
+                </div>
+                <div>
+                  <QuestionCaption title="Erwartung vor dem Brief" question="outcomeExpectation">
+                    Erwartung vorher, Reaktion nachher
+                  </QuestionCaption>
+                  <ul className="grid gap-1.5 font-body text-sm text-warmgrau/85">
+                    {EXPECTATION_VALUES.filter((key) => round.expectationVsResult[key].total > 0).map((key) => {
+                      const entry = round.expectationVsResult[key];
+                      return (
+                        <li key={key}>
+                          <span className="font-semibold text-waldgruen-dark">{OUTCOME_LABELS.expectation[key]}:</span>{" "}
+                          {formatNumber(entry.total)} · davon mit Reaktion {formatShare(entry.replied, entry.total)}
+                        </li>
+                      );
+                    })}
+                  </ul>
+                  {round.expectationBase === 0 && <EmptyState>Noch keine Angaben.</EmptyState>}
+                </div>
+              </DetailBlock>
+            </div>
+          )}
+
+          <div className="grid gap-3 sm:grid-cols-2">
+            <MiniStat label="Fertige Formulare" value={formatNumber(round.completedCount)} />
+            <MiniStat label="Offen für ein Gespräch" value={formatNumber(round.callOkCount)} />
+          </div>
+        </div>
+      </Collapsible>
+
+      <Collapsible
+        summary={`Alle Antworten (${formatNumber(round.freeTexts.length)})`}
+        detail="Freitexte aus fertigen Formularen, ohne E-Mail-Adressen. Texte mit Freigabe sind markiert."
+      >
+        {round.freeTexts.length === 0 ? (
+          <EmptyState>Noch keine Freitexte.</EmptyState>
+        ) : (
+          <ul className="grid gap-3">
+            {round.freeTexts.map((entry, index) => (
+              <li key={index}>
+                <blockquote className="rounded-lg border-l-4 border-waldgruen/30 bg-creme/60 px-4 py-3">
+                  <p className="whitespace-pre-line font-body text-sm leading-relaxed text-warmgrau/90">{entry.text}</p>
+                  <footer className="mt-2 font-typewriter text-xs text-warmgrau/70">
+                    {formatIsoDay(entry.day)}
+                    {entry.consent && (
+                      <>
+                        {entry.day ? " · " : ""}Freigabe zur Veröffentlichung
+                        {entry.displayName ? ` · ${entry.displayName}` : ""}
+                      </>
+                    )}
+                  </footer>
+                </blockquote>
+              </li>
+            ))}
+          </ul>
+        )}
+      </Collapsible>
+
+      <BasisNote>
+        Basis: {formatNumber(round.respondentCount)} Rückmeldungen per Klick, {formatNumber(round.completedCount)} fertige
+        Formulare · Testadressen ausgeschlossen · {formatNumber(path.delivered)} zugestellt laut Brevo · Details nur aus
+        fertigen Formularen
+      </BasisNote>
+    </div>
+  );
+}
+
+function MiniStat({ label, value, detail }: { label: string; value: string; detail?: string }) {
+  return (
+    <div className="rounded-lg border border-warmgrau/10 bg-creme/60 px-4 py-3">
+      <p className="font-typewriter text-[11px] font-bold uppercase tracking-[0.12em] text-warmgrau/55">{label}</p>
+      <p className="mt-1 font-typewriter text-xl font-bold tabular-nums text-waldgruen-dark">{value}</p>
+      {detail && <p className="mt-0.5 font-body text-xs text-warmgrau/55">{detail}</p>}
+    </div>
+  );
+}
+
+function Definition({ title, body }: { title: string; body: string }) {
+  return (
+    <div className="rounded-lg border border-warmgrau/10 bg-creme/60 px-4 py-3">
+      <p className="font-body text-sm font-semibold text-waldgruen-dark">{title}</p>
+      <p className="mt-1 font-body text-xs leading-relaxed text-warmgrau/60">{body}</p>
+    </div>
+  );
+}

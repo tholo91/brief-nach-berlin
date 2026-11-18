@@ -5,7 +5,7 @@ import {
   aggregateOutcomes,
   type InternalOutcomeRow,
 } from "@/lib/internalStats/outcomes";
-import { getInternalStatsWithBaseline } from "@/lib/internalStats/getInternalStats";
+import { getInternalStats, getInternalStatsWithBaseline, getPressStats } from "@/lib/internalStats/getInternalStats";
 import { formatBarShare, formatShare, shareBaseNote } from "@/lib/internalStats/view";
 import type { InternalReviewRow } from "@/lib/internalStats/aggregate";
 import {
@@ -99,6 +99,29 @@ describe("formatShare", () => {
 });
 
 describe("aggregateOutcomes counting rules", () => {
+  it("compares efficacy only for completed senders with an explicit unambiguous reply answer", () => {
+    const stats = aggregateOutcomes(
+      [
+        completedForm({ reply_channels: ["email"], political_self_efficacy: "rather_yes" }),
+        completedForm({ reply_channels: ["acknowledgement"], political_self_efficacy: "no" }),
+        completedForm({ reply_channels: ["none"], political_self_efficacy: "clearly_yes" }),
+        completedForm({ reply_channels: ["none"], political_self_efficacy: "rather_no" }),
+        completedForm({ reply_channels: ["none", "email"], political_self_efficacy: "rather_yes" }),
+        completedForm({ reply_channels: [], political_self_efficacy: "rather_yes" }),
+        completedForm({ letter_sent: "not_sent", reply_channels: ["none"], political_self_efficacy: "rather_yes" }),
+        outcome({ completed: false, entry_choice: "yes", political_self_efficacy: "rather_yes" }),
+      ],
+      [],
+      round,
+      FETCHED_AT,
+    );
+
+    expect(stats.efficacyByReply).toEqual({
+      withReply: { positive: 1, base: 2 },
+      withoutReply: { positive: 1, base: 2 },
+    });
+  });
+
   it("lets the mail click decide for incomplete rows", () => {
     const stats = aggregateOutcomes(
       [
@@ -375,6 +398,37 @@ describe("getInternalStatsWithBaseline outcomes query", () => {
     return outcomes.calls;
   }
 
+  it("loads review aggregates for the teaser without querying raw outcomes", async () => {
+    const selected: Array<{ table: string; columns: string }> = [];
+    const tables: string[] = [];
+    const ok = (data: unknown): QueryResult => ({ data, error: null });
+    mockedGetServiceRoleClient.mockReturnValue({
+      from: (table: string) => {
+        tables.push(table);
+        const query: Record<string, unknown> = {};
+        for (const method of ["select", "eq", "in", "not", "order", "range", "maybeSingle"]) {
+          query[method] = (...args: unknown[]) => {
+            if (method === "select") selected.push({ table, columns: String(args[0]) });
+            return query;
+          };
+        }
+        query.then = (resolve: (value: QueryResult) => unknown) =>
+          resolve(table === "reviews" ? ok([review("2026-11-01T10:00:00Z", "rather_yes")])
+            : table === "counters" ? ok({ value: 500 }) : ok([]));
+        return query;
+      },
+    } as never);
+
+    const stats = await getInternalStats();
+    const reviewColumns = selected.find((item) => item.table === "reviews")?.columns ?? "";
+
+    expect(tables).not.toContain("letter_outcomes");
+    expect(reviewColumns).toContain("letter_sent");
+    expect(reviewColumns).toContain("rating");
+    expect(reviewColumns).not.toContain("debug_payload");
+    expect(stats.reviewCount).toBe(1);
+  });
+
   it("excludes test addresses in the query and never selects email", async () => {
     const calls = mockClient({ data: [outcome()], error: null });
     const result = await getInternalStatsWithBaseline();
@@ -384,7 +438,7 @@ describe("getInternalStatsWithBaseline outcomes query", () => {
     expect(select.split(",")).toHaveLength(18);
     expect(select.split(",")).toContain("id");
     expect(select.split(",")).toContain("reply_feeling");
-    expect(calls.in[0]).toEqual(["cohort", OUTCOME_ROUNDS.map((r) => r.cohort)]);
+    expect(calls.in[0]).toEqual(["cohort", sentOutcomeRounds().map((r) => r.cohort)]);
     expect(calls.order[0]).toEqual(["id"]);
     expect(calls.range[0]).toEqual([0, 999]);
     const [column, operator, list] = calls.not[0] as [string, string, string];
@@ -397,6 +451,19 @@ describe("getInternalStatsWithBaseline outcomes query", () => {
     expect(result.outcomes).toHaveLength(sentOutcomeRounds().length);
     expect(result.outcomes.map((o) => o.cohort)).not.toContain("lastcall_2026_11");
     expect(result.outcomes[0].respondentCount).toBe(1);
+  });
+
+  it("uses a minimal sent-cohort query for press aggregates", async () => {
+    const calls = mockClient({
+      data: [completedForm({ body: "private response text", display_name: "Reporter", consent: true })],
+      error: null,
+    });
+    const result = await getPressStats({ timeRange: "all", source: { kind: "all" }, bundesland: null });
+    const select = String(calls.select[0][0]);
+
+    expect(select).not.toMatch(/\b(?:body|display_name|consent|id|email)\b/);
+    expect(calls.in[0]).toEqual(["cohort", sentOutcomeRounds().map((r) => r.cohort)]);
+    expect(result.outcomes[0].freeTexts).toEqual([]);
   });
 
   it("rejects when the letter_outcomes read fails", async () => {

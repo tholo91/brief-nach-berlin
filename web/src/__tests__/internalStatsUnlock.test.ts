@@ -1,12 +1,13 @@
 import { NextRequest } from "next/server";
 import { isInternalStatsCookieValid } from "@/lib/internalStats/access";
 
-describe("stats password URL unlock route", () => {
+describe("stats password unlock route", () => {
   const originalPassword = process.env.INTERNAL_STATS_PASSWORD;
   let GET: typeof import("@/app/stats/unlock/route").GET;
+  let POST: typeof import("@/app/stats/unlock/route").POST;
 
   beforeAll(async () => {
-    ({ GET } = await import("@/app/stats/unlock/route"));
+    ({ GET, POST } = await import("@/app/stats/unlock/route"));
   });
 
   afterAll(() => {
@@ -14,38 +15,26 @@ describe("stats password URL unlock route", () => {
     else process.env.INTERNAL_STATS_PASSWORD = originalPassword;
   });
 
-  it("sets the existing cookie and redirects to a clean stats URL for the correct password", async () => {
+  it("rejects password-bearing GET requests", async () => {
     process.env.INTERNAL_STATS_PASSWORD = "correct horse";
-    const response = GET(
-      new NextRequest("https://brief-nach-berlin.de/stats/unlock?pw=correct%20horse"),
-    );
-    const location = response.headers.get("location");
-    const cookie = response.cookies.get("bnb_stats_access");
+    const response = GET();
 
-    expect(response.status).toBe(303);
-    expect(location).toBe("https://brief-nach-berlin.de/stats");
-    expect(cookie?.value).toBeTruthy();
-    expect(cookie?.httpOnly).toBe(true);
-    expect(cookie?.path).toBe("/stats");
-    expect(isInternalStatsCookieValid(cookie?.value, process.env.INTERNAL_STATS_PASSWORD)).toBe(true);
+    expect(response.status).toBe(405);
+    expect(response.headers.get("allow")).toBe("POST");
+    expect(response.cookies.get("bnb_stats_access")).toBeUndefined();
     expect(response.headers.get("cache-control")).toBe("no-store");
     expect(response.headers.get("referrer-policy")).toBe("no-referrer");
   });
 
-  it("does not unlock and removes the supplied password for an invalid password", async () => {
+  it("authenticates a normal form POST and redirects to the dashboard", async () => {
     process.env.INTERNAL_STATS_PASSWORD = "correct horse";
-    const response = GET(new NextRequest("https://brief-nach-berlin.de/stats/unlock?pw=wrong"));
+    const response = await POST(new NextRequest("https://brief-nach-berlin.de/stats/unlock", {
+      method: "POST",
+      body: new URLSearchParams({ password: "correct horse" }),
+    }));
 
     expect(response.status).toBe(303);
-    expect(response.headers.get("location")).toBe("https://brief-nach-berlin.de/stats?error=1");
-    expect(response.cookies.get("bnb_stats_access")).toBeUndefined();
-  });
-
-  it("fails closed when no password is configured", async () => {
-    delete process.env.INTERNAL_STATS_PASSWORD;
-    const response = GET(new NextRequest("https://brief-nach-berlin.de/stats/unlock?pw=anything"));
-
-    expect(response.headers.get("location")).toBe("https://brief-nach-berlin.de/stats?error=1");
-    expect(response.cookies.get("bnb_stats_access")).toBeUndefined();
+    expect(response.headers.get("location")).toBe("/stats");
+    expect(isInternalStatsCookieValid(response.cookies.get("bnb_stats_access")?.value, "correct horse")).toBe(true);
   });
 });

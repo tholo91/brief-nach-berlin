@@ -68,6 +68,18 @@ export const OUTCOME_ROW_COLUMNS = [
   "call_ok",
 ] as const;
 
+/** Aggregate inputs for the press view. Never includes free text or identity fields. */
+export const PRESS_OUTCOME_ROW_COLUMNS = [
+  "cohort",
+  "created_at",
+  "completed",
+  "entry_choice",
+  "letter_sent",
+  "reply_channels",
+  "political_self_efficacy",
+  "write_again",
+] as const;
+
 export const OUTCOME_LABELS: {
   letterSent: Record<LetterSent, string>;
   notSentReason: Record<NotSentReason, string>;
@@ -188,6 +200,10 @@ export type OutcomeRoundStats = {
     reviewsBase: number;
     reviewsSince: string | null;
   };
+  efficacyByReply: {
+    withReply: { positive: number; base: number };
+    withoutReply: { positive: number; base: number };
+  };
   freeTexts: OutcomeFreeText[];
   callOkCount: number;
 };
@@ -277,6 +293,10 @@ function emptyOutcomeRoundStats(
       reviews: zeroRecord(POLITICAL_SELF_EFFICACY_VALUES),
       reviewsBase: 0,
       reviewsSince: null,
+    },
+    efficacyByReply: {
+      withReply: { positive: 0, base: 0 },
+      withoutReply: { positive: 0, base: 0 },
     },
     freeTexts: [],
     callOkCount: 0,
@@ -387,6 +407,25 @@ export function aggregateOutcomes(
       if (isOneOf(POLITICAL_SELF_EFFICACY_VALUES, row.political_self_efficacy)) {
         stats.selfEfficacy.outcomesBase += 1;
         stats.selfEfficacy.outcomes[row.political_self_efficacy] += 1;
+
+        const channels = validChannels(row);
+        const hasNoReply = channels.includes("none");
+        const hasReply = channels.some((channel) => channel !== "none");
+        const efficacyGroup =
+          hasNoReply === hasReply
+            ? null
+            : hasReply
+              ? stats.efficacyByReply.withReply
+              : stats.efficacyByReply.withoutReply;
+        if (efficacyGroup) {
+          efficacyGroup.base += 1;
+          if (
+            row.political_self_efficacy === "clearly_yes" ||
+            row.political_self_efficacy === "rather_yes"
+          ) {
+            efficacyGroup.positive += 1;
+          }
+        }
       }
       if (isOneOf(REPLY_ADDRESSED_VALUES, row.reply_addressed)) {
         stats.addressedBase += 1;

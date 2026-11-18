@@ -16,8 +16,11 @@ jest.mock("next/cache", () => ({
 jest.mock("@/lib/supabase", () => ({
   supabase: {
     from: mockFrom,
-    rpc: mockRpc,
   },
+}));
+
+jest.mock("@/lib/supabase/server", () => ({
+  getServiceRoleClient: () => ({ rpc: mockRpc }),
 }));
 
 import { getLetterCount, incrementLetterCounters } from "@/lib/counter";

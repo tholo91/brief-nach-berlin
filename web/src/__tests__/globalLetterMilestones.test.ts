@@ -33,14 +33,15 @@ describe("global letter milestones", () => {
     const html = buildGlobalLetterMilestoneEmailHtml({
       count: 1000,
       imageUrl: "https://brief-nach-berlin.de/stats/meilenstein/1000/bild",
-      statsUrl: "https://brief-nach-berlin.de/stats/unlock?pw=secret",
+      statsUrl: "https://brief-nach-berlin.de/stats",
     });
 
     expect(html.indexOf("/stats/meilenstein/1000/bild")).toBeLessThan(
       html.indexOf("Zu den Statistiken"),
     );
     expect(html).toContain("1.000 Briefe erstellt");
-    expect(html).toContain('href="https://brief-nach-berlin.de/stats/unlock?pw=secret"');
+    expect(html).toContain('href="https://brief-nach-berlin.de/stats"');
+    expect(html).not.toContain("pw=");
     expect(html).not.toMatch(/Bild speichern|download=|WhatsApp|LinkedIn|Fortschritt teilen/i);
   });
 });

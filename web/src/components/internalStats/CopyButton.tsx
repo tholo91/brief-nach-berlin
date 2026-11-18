@@ -30,7 +30,7 @@ export function CopyButton({ text, label = "Kopieren" }: CopyButtonProps) {
       type="button"
       onClick={copy}
       aria-live="polite"
-      className="rounded-md border border-waldgruen-dark/20 bg-white/80 px-3 py-1.5 font-typewriter text-xs font-bold uppercase tracking-[0.12em] text-waldgruen-dark transition-colors hover:bg-waldgruen-dark hover:text-creme focus:outline-none focus:ring-2 focus:ring-waldgruen/30"
+      className="min-h-11 rounded-md border border-waldgruen-dark/20 bg-white/80 px-3 py-1.5 font-typewriter text-xs font-bold uppercase tracking-[0.12em] text-waldgruen-dark transition-colors hover:bg-waldgruen-dark hover:text-creme focus:outline-none focus:ring-2 focus:ring-waldgruen/30"
     >
       {state === "copied" ? "Kopiert" : state === "failed" ? "Bitte markieren" : label}
     </button>

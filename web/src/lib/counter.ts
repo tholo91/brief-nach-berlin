@@ -1,5 +1,6 @@
 import { unstable_cache } from "next/cache";
 import { supabase } from "@/lib/supabase";
+import { getServiceRoleClient } from "@/lib/supabase/server";
 
 const LETTER_COUNT_TAG = "letter-count";
 const LAST_KNOWN_LETTER_COUNT = 1770;
@@ -25,7 +26,7 @@ const readLetterCount = unstable_cache(
 );
 
 export async function incrementLetterCounters(campaignSlug?: string): Promise<number | undefined> {
-  const { data, error } = await supabase.rpc("increment_letter_counters", {
+  const { data, error } = await getServiceRoleClient().rpc("increment_letter_counters", {
     campaign_slug: campaignSlug ?? null,
   });
   if (error) {

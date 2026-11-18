@@ -94,7 +94,11 @@ export function statsQueryFromFilter(filter: StatsFilter, mode: ViewMode): Stats
 const QUERY_ORDER: (keyof StatsQuery)[] = ["zeitraum", "quelle", "kampagne", "bundesland", "ansicht"];
 
 /** Baut den /stats-Link aus dem aktuellen Zustand plus Änderungen; null entfernt einen Parameter. */
-export function buildStatsHref(query: StatsQuery, patch: Partial<StatsQuery> = {}): string {
+export function buildStatsHref(
+  query: StatsQuery,
+  patch: Partial<StatsQuery> = {},
+  pathname = "/stats",
+): string {
   const merged: StatsQuery = { ...query, ...patch };
   if (merged.quelle !== "campaign") merged.kampagne = null;
   const params = new URLSearchParams();
@@ -103,7 +107,7 @@ export function buildStatsHref(query: StatsQuery, patch: Partial<StatsQuery> = {
     if (value) params.set(key, value);
   }
   const qs = params.toString();
-  return `/stats${qs ? `?${qs}` : ""}`;
+  return `${pathname}${qs ? `?${qs}` : ""}`;
 }
 
 export function bundeslandName(key: string): string {
@@ -116,31 +120,32 @@ export type FilterChip = { key: string; label: string; href: string };
 export function activeFilterChips(
   query: StatsQuery,
   campaignLabels: Record<string, string> = {},
+  pathname = "/stats",
 ): FilterChip[] {
   const chips: FilterChip[] = [];
   if (query.zeitraum) {
     chips.push({
       key: "zeitraum",
       label: `letzte ${query.zeitraum} Tage`,
-      href: buildStatsHref(query, { zeitraum: null }),
+      href: buildStatsHref(query, { zeitraum: null }, pathname),
     });
   }
   if (query.quelle === "free") {
-    chips.push({ key: "quelle", label: "freie Anliegen", href: buildStatsHref(query, { quelle: null }) });
+    chips.push({ key: "quelle", label: "freie Anliegen", href: buildStatsHref(query, { quelle: null }, pathname) });
   } else if (query.quelle === "campaign") {
     chips.push({
       key: "quelle",
       label: query.kampagne
         ? `Kampagne: ${campaignLabels[query.kampagne] ?? query.kampagne}`
         : "alle Kampagnen",
-      href: buildStatsHref(query, { quelle: null, kampagne: null }),
+      href: buildStatsHref(query, { quelle: null, kampagne: null }, pathname),
     });
   }
   if (query.bundesland) {
     chips.push({
       key: "bundesland",
       label: bundeslandName(query.bundesland),
-      href: buildStatsHref(query, { bundesland: null }),
+      href: buildStatsHref(query, { bundesland: null }, pathname),
     });
   }
   return chips;

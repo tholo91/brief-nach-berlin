@@ -7,13 +7,14 @@ import { buildStatsHref, type StatsQuery } from "@/lib/internalStats/view";
 type FilterBarProps = {
   query: StatsQuery;
   campaignOptions: { slug: string; label: string }[];
+  pathname?: string;
 };
 
-export function FilterBar({ query, campaignOptions }: FilterBarProps) {
+export function FilterBar({ query, campaignOptions, pathname = "/stats" }: FilterBarProps) {
   const router = useRouter();
 
   const apply = (patch: Partial<StatsQuery>) => {
-    router.replace(buildStatsHref(query, patch));
+    router.replace(buildStatsHref(query, patch, pathname));
   };
 
   const controlClass =

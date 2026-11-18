@@ -21,6 +21,7 @@ type ColumnChartProps = {
   /** Spitzenwert hervorheben und beschriften. */
   emphasizePeak?: boolean;
   tableSummary?: string;
+  compact?: boolean;
 };
 
 /**
@@ -36,9 +37,11 @@ export function ColumnChart({
   emphasisColor = "#C1121F",
   emphasizePeak = true,
   tableSummary = "Werte als Tabelle",
+  compact = false,
 }: ColumnChartProps) {
   if (!data.length) return null;
-  const max = Math.max(...data.map((point) => point.count), 1);
+  const highest = Math.max(...data.map((point) => point.count));
+  const max = Math.max(highest, 1);
   let peakIndex = -1;
   if (emphasizePeak) {
     data.forEach((point, index) => {
@@ -49,7 +52,7 @@ export function ColumnChart({
   // Achsenbeschriftung nur am Anfang und Ende (bei wenigen Säulen überall);
   // die Spitze trägt ihr Label oben an der Säule, damit nichts kollidiert.
   const showLabel = (index: number) =>
-    index === 0 || index === lastIndex || data.length <= 6;
+    index === 0 || index === lastIndex || data.length <= 6 || (compact && index === Math.floor(lastIndex / 2));
   const peakLabelClass =
     peakIndex === 0
       ? "left-0"
@@ -59,9 +62,14 @@ export function ColumnChart({
 
   return (
     <figure className="m-0">
-      <div className="relative pt-6">
+      <div className="relative pt-6" style={compact ? { maxWidth: `${Math.max(15, data.length * 3)}rem` } : undefined}>
+        {compact && highest > 0 && (
+          <span aria-hidden="true" className="absolute top-1 font-body text-xs tabular-nums text-warmgrau">
+            {formatNumber(highest)}
+          </span>
+        )}
         <div
-          className="flex h-40 items-end gap-[2px] border-b border-warmgrau/15 sm:h-48"
+          className={`flex items-end border-b border-warmgrau/20 ${compact ? "h-32 gap-1 border-t border-t-warmgrau/15 sm:h-40" : "h-40 gap-[2px] sm:h-48"}`}
           role="img"
           aria-label={`${formatNumber(data.reduce((sum, point) => sum + point.count, 0))} ${unit} in ${data.length} Zeitabschnitten`}
         >
@@ -89,7 +97,7 @@ export function ColumnChart({
                   </span>
                 )}
                 <div
-                  className="w-full max-w-6 rounded-t-[4px] transition-opacity group-hover:opacity-75"
+                  className={`w-full rounded-t-[4px] transition-opacity group-hover:opacity-75 ${compact ? "" : "max-w-6"}`}
                   style={{
                     height: `${Math.max(height, point.count > 0 ? 1.5 : 0)}%`,
                     backgroundColor: isPeak ? emphasisColor : color,
@@ -100,12 +108,12 @@ export function ColumnChart({
             );
           })}
         </div>
-        <div className="mt-1.5 flex gap-[2px]" aria-hidden="true">
+        <div className={`mt-1.5 flex ${compact ? "min-h-4 gap-1" : "gap-[2px]"}`} aria-hidden="true">
           {data.map((point, index) => (
             <div key={point.key} className="relative min-w-0 flex-1">
               {showLabel(index) && (
                 <span
-                  className={`block whitespace-nowrap font-typewriter text-[10px] tabular-nums text-warmgrau/60 ${
+                  className={`block whitespace-nowrap font-typewriter tabular-nums ${compact ? "text-xs text-warmgrau" : "text-[10px] text-warmgrau/60"} ${
                     index === 0
                       ? "text-left"
                       : index === lastIndex
@@ -120,8 +128,8 @@ export function ColumnChart({
           ))}
         </div>
       </div>
-      <details className="mt-6 group/table">
-        <summary className="inline-flex cursor-pointer list-none items-center gap-1.5 font-typewriter text-[11px] font-bold uppercase tracking-[0.12em] text-warmgrau/55 underline-offset-2 hover:text-waldgruen-dark hover:underline [&::-webkit-details-marker]:hidden">
+      <details className={compact ? "mt-2 group/table" : "mt-6 group/table"}>
+        <summary className={`inline-flex cursor-pointer list-none items-center gap-1.5 underline-offset-2 hover:text-waldgruen-dark hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-waldgruen [&::-webkit-details-marker]:hidden ${compact ? "min-h-11 font-body text-sm font-semibold text-waldgruen-dark" : "font-typewriter text-[11px] font-bold uppercase tracking-[0.12em] text-warmgrau/55"}`}>
           <svg
             aria-hidden="true"
             viewBox="0 0 10 10"
@@ -132,12 +140,12 @@ export function ColumnChart({
           {tableSummary}
         </summary>
         <div className="mt-3 overflow-x-auto">
-          <table className="w-full min-w-[280px] border-collapse font-body text-sm">
+          <table className={`w-full border-collapse font-body text-sm ${compact ? "" : "min-w-[280px]"}`}>
             <thead>
               <tr className="border-b border-warmgrau/15 text-left font-typewriter text-[11px] uppercase tracking-[0.1em] text-warmgrau/55">
                 <th className="py-1.5 pr-3 font-bold">{axisLabel}</th>
                 <th className="py-1.5 pr-3 text-right font-bold">{unit}</th>
-                {data.some((point) => point.detail) && <th className="py-1.5 font-bold">Hinweis</th>}
+                {data.some((point) => point.detail) && <th className="py-1.5 font-bold">{compact ? "Datum" : "Hinweis"}</th>}
               </tr>
             </thead>
             <tbody>

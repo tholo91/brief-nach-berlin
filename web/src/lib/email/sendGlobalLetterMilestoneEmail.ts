@@ -13,15 +13,13 @@ export async function sendGlobalLetterMilestoneEmail(
   count: number,
 ): Promise<{ success: boolean; messageId?: string }> {
   const recipientEmail = process.env.THOMAS_MAIL;
-  const password = process.env.INTERNAL_STATS_PASSWORD;
-  if (!recipientEmail || !password) {
-    console.error("[brief-nach-berlin][global-milestone] recipient or stats password is not configured");
+  if (!recipientEmail) {
+    console.error("[brief-nach-berlin][global-milestone] recipient is not configured");
     return { success: false };
   }
 
   const imageUrl = `${APP_URL}/stats/meilenstein/${count}/bild`;
-  const unlockUrl = new URL("/stats/unlock", APP_URL);
-  unlockUrl.searchParams.set("pw", password);
+  const statsUrl = `${APP_URL}/stats`;
 
   try {
     const result = await brevo.transactionalEmails.sendTransacEmail({
@@ -29,7 +27,7 @@ export async function sendGlobalLetterMilestoneEmail(
       htmlContent: buildGlobalLetterMilestoneEmailHtml({
         count,
         imageUrl,
-        statsUrl: unlockUrl.toString(),
+        statsUrl,
       }),
       sender: {
         name: EMAIL_SENDER_NAME,

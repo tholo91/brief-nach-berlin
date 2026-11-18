@@ -6,17 +6,18 @@ import {
   isInternalStatsPasswordValid,
 } from "@/lib/internalStats/access";
 
-export function GET(request: NextRequest) {
-  const requestUrl = new URL(request.url);
-  const password = requestUrl.searchParams.get("pw");
+function unlock(password: string | null) {
   const configuredPassword = process.env.INTERNAL_STATS_PASSWORD;
   const valid = isInternalStatsPasswordValid(password, configuredPassword);
 
-  const destination = new URL("/stats", requestUrl);
-  if (!valid) destination.searchParams.set("error", "1");
-  const response = NextResponse.redirect(destination, 303);
-  response.headers.set("Cache-Control", "no-store");
-  response.headers.set("Referrer-Policy", "no-referrer");
+  const response = new NextResponse(null, {
+    status: 303,
+    headers: {
+      Location: valid ? "/stats" : "/stats?error=1",
+      "Cache-Control": "no-store",
+      "Referrer-Policy": "no-referrer",
+    },
+  });
 
   if (valid && password) {
     response.cookies.set(INTERNAL_STATS_COOKIE, createInternalStatsCookieValue(password), {
@@ -29,4 +30,21 @@ export function GET(request: NextRequest) {
   }
 
   return response;
+}
+
+export function GET() {
+  return new NextResponse(null, {
+    status: 405,
+    headers: {
+      Allow: "POST",
+      "Cache-Control": "no-store",
+      "Referrer-Policy": "no-referrer",
+    },
+  });
+}
+
+export async function POST(request: NextRequest) {
+  const formData = await request.formData().catch(() => null);
+  const password = formData?.get("password");
+  return unlock(typeof password === "string" ? password : null);
 }

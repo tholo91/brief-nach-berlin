@@ -1,7 +1,7 @@
 import { renderToStaticMarkup } from "react-dom/server";
 import {
   createInternalStatsCookieValue,
-  INTERNAL_STATS_COOKIE,
+  INTERNAL_STATS_OWNER_COOKIE,
 } from "@/lib/internalStats/access";
 import {
   aggregateInternalStats,
@@ -17,8 +17,8 @@ jest.mock("@/lib/internalStats/getInternalStats", () => ({
 jest.mock("next/headers", () => ({
   cookies: async () => ({
     get: (name: string) =>
-      name === INTERNAL_STATS_COOKIE
-        ? { value: createInternalStatsCookieValue("pw") }
+      name === INTERNAL_STATS_OWNER_COOKIE
+        ? { value: createInternalStatsCookieValue("owner-pw") }
         : undefined,
   }),
 }));
@@ -68,13 +68,17 @@ function outcome(overrides: Partial<InternalOutcomeRow> = {}): InternalOutcomeRo
 }
 
 describe("InternalStatsPage", () => {
-  const originalPassword = process.env.INTERNAL_STATS_PASSWORD;
+  const originalPassword = process.env.INTERNAL_STATS_OWNER_PASSWORD;
+  const originalPressPassword = process.env.INTERNAL_STATS_PASSWORD;
   beforeAll(() => {
-    process.env.INTERNAL_STATS_PASSWORD = "pw";
+    process.env.INTERNAL_STATS_OWNER_PASSWORD = "owner-pw";
+    process.env.INTERNAL_STATS_PASSWORD = "press-pw";
   });
   afterAll(() => {
-    if (originalPassword === undefined) delete process.env.INTERNAL_STATS_PASSWORD;
-    else process.env.INTERNAL_STATS_PASSWORD = originalPassword;
+    if (originalPassword === undefined) delete process.env.INTERNAL_STATS_OWNER_PASSWORD;
+    else process.env.INTERNAL_STATS_OWNER_PASSWORD = originalPassword;
+    if (originalPressPassword === undefined) delete process.env.INTERNAL_STATS_PASSWORD;
+    else process.env.INTERNAL_STATS_PASSWORD = originalPressPassword;
   });
 
   async function render() {
@@ -83,7 +87,7 @@ describe("InternalStatsPage", () => {
     const stats = aggregateInternalStats(reviews, 500, FETCHED_AT);
     const outcomes = sentOutcomeRounds().map((round) => aggregateOutcomes(rows, reviews, round, FETCHED_AT));
     jest.mocked(getInternalStatsWithBaseline).mockResolvedValue({ stats, baseline: null, outcomes });
-    const { default: Page } = await import("@/app/stats/page");
+    const { default: Page } = await import("@/app/stats/intern/page");
     return renderToStaticMarkup(
       await Page({ searchParams: Promise.resolve({}) }),
     );
@@ -113,7 +117,7 @@ describe("InternalStatsPage", () => {
       aggregateOutcomes(rows, reviews, round, "2026-11-25T10:00:00.000Z"),
     );
     jest.mocked(getInternalStatsWithBaseline).mockResolvedValue({ stats, baseline: null, outcomes });
-    const { default: Page } = await import("@/app/stats/page");
+    const { default: Page } = await import("@/app/stats/intern/page");
     const html = renderToStaticMarkup(await Page({ searchParams: Promise.resolve({}) }));
     expect(html).toContain("Getippt und ausgedruckt");
     expect(html).toContain("Per E-Mail");

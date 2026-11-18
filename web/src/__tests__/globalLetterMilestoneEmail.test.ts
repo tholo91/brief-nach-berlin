@@ -36,7 +36,7 @@ describe("sendGlobalLetterMilestoneEmail", () => {
     mockSendTransacEmail.mockResolvedValue({ messageId: "message-1" });
   });
 
-  it("sends the image-first email to THOMAS_MAIL with a password-bearing stats CTA", async () => {
+  it("sends the image-first email to THOMAS_MAIL with a clean stats CTA", async () => {
     await expect(sendGlobalLetterMilestoneEmail(1000)).resolves.toEqual({
       success: true,
       messageId: "message-1",
@@ -46,15 +46,19 @@ describe("sendGlobalLetterMilestoneEmail", () => {
     expect(payload.to).toEqual([{ email: "thomas@example.org" }]);
     expect(payload.subject).toContain("1.000");
     expect(payload.htmlContent).toContain("/stats/meilenstein/1000/bild");
-    expect(payload.htmlContent).toContain("/stats/unlock?pw=my+test+password");
+    expect(payload.htmlContent).toContain("/stats");
+    expect(payload.htmlContent).not.toContain("my+test+password");
     expect(payload.tags).toContain("global-letter-milestone");
   });
 
-  it("fails closed when the stats password is not configured", async () => {
+  it("sends when the stats password is not configured", async () => {
     const consoleError = jest.spyOn(console, "error").mockImplementation(() => undefined);
     delete process.env.INTERNAL_STATS_PASSWORD;
-    await expect(sendGlobalLetterMilestoneEmail(2000)).resolves.toEqual({ success: false });
-    expect(mockSendTransacEmail).not.toHaveBeenCalled();
+    await expect(sendGlobalLetterMilestoneEmail(2000)).resolves.toEqual({
+      success: true,
+      messageId: "message-1",
+    });
+    expect(mockSendTransacEmail).toHaveBeenCalledTimes(1);
     process.env.INTERNAL_STATS_PASSWORD = "my test password";
     consoleError.mockRestore();
   });

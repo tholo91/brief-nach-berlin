@@ -29,7 +29,7 @@ function stats(reviews: InternalReviewRow[]) {
 describe("toPublicStatsTeaser", () => {
   it("liefert Briefzahl, Versandanteil und Top-3-Themen", () => {
     const reviews = [...Array(30)].map((_, i) => review(i < 24));
-    const teaser = toPublicStatsTeaser(stats(reviews));
+    const teaser = toPublicStatsTeaser(stats(reviews), 30);
     expect(teaser.letterCount).toBe(1234);
     expect(teaser.sendRatePercent).toBe(80);
     expect(teaser.knownSendCount).toBe(30);
@@ -39,5 +39,15 @@ describe("toPublicStatsTeaser", () => {
   it("blendet den Versandanteil bei zu kleiner Basis aus", () => {
     const teaser = toPublicStatsTeaser(stats([review(true), review(false)]));
     expect(teaser.sendRatePercent).toBeNull();
+  });
+
+  it("veröffentlicht Oberkategorien erst ab zehn freiwilligen Signalen", () => {
+    const lowBasis = toPublicStatsTeaser(stats([]), 9);
+    const sufficientBasis = toPublicStatsTeaser(stats([]), 10);
+
+    expect(lowBasis.topicSignalCount).toBe(9);
+    expect(lowBasis.topCategories).toEqual([]);
+    expect(sufficientBasis.topicSignalCount).toBe(10);
+    expect(sufficientBasis.topCategories).toEqual(["b", "a", "d"]);
   });
 });

@@ -36,20 +36,41 @@ describe("Briefkopie im Jugendmodus", () => {
     });
   }
 
-  it("Jugend: weder Spendenlink noch Sterne-Bewertung in HTML und Text, Löschlink bleibt", async () => {
+  it("Jugend: Sterne-Bewertung mit Minimal-Token, aber kein Spendenlink in HTML und Text, Löschlink bleibt", async () => {
     const { params } = await prepare("jung");
     const html = buildEmailHtml(params);
     const text = buildLetterEmailText(params);
 
     expect(params.audience).toBe("jung");
-    expect(params.feedbackToken).toBeUndefined();
+    expect(params.feedbackToken).toBe("signed-feedback-token");
+    expect(html).toContain("/feedback?r=");
     for (const output of [html, text]) {
       expect(output).not.toContain(DONATION_PROVIDER_URL);
-      expect(output).not.toContain("/feedback?r=");
     }
     expect(html).toContain("/datenloeschen");
     expect(text).toContain("/datenloeschen");
     expect(text).toContain("Test.");
+  });
+
+  it("Jugend: signierter Token enthält weder E-Mail noch PLZ, Brief- oder Politiker-ID", async () => {
+    const { signFeedbackToken } = await import("@/lib/feedback/token");
+    (signFeedbackToken as jest.Mock).mockClear();
+    const { prepareLetterEmail } = await import("@/lib/email/sendLetterEmail");
+    prepareLetterEmail({
+      recipientEmail: "schueler@example.org",
+      recipient: getLandesregierungRecipient("HB")!,
+      letterText: "Test",
+      issueText: "Test",
+      debug: { klasse: 8, userEmail: "schueler@example.org", plz: "28195", letterId: "abc", politicianId: 7 } as never,
+      letterId: "abc",
+      audience: "jung",
+    });
+    const payloads = (signFeedbackToken as jest.Mock).mock.calls.map((c) => c[0]);
+    const youthPayload = payloads[payloads.length - 1];
+
+    expect(youthPayload).toMatchObject({ audience: "jung", klasse: 8 });
+    expect(typeof youthPayload.nonce).toBe("string");
+    expect(JSON.stringify(youthPayload)).not.toMatch(/schueler@|28195|abc|politicianId|letterId|userEmail/);
   });
 
   it("Jugend: eigene Einleitung ohne Bewertungsbitte, Teilen führt auf /schule", async () => {

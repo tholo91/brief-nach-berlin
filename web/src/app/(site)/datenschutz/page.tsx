@@ -977,13 +977,24 @@ export default function Datenschutz() {
               Browser lädt dafür nur die Schriftdateien von dieser Website.
             </p>
             <p className="mb-3">
-              Im Jugendmodus fehlt Folgendes: Es folgt keine
-              Bewertungsnachfrage und keine spätere Rückfrage-Mail. Die Mail mit
-              dem Entwurf enthält weder eine Spendenbitte noch die
-              Sterne-Bewertung, und die Erfolgsseite zeigt keine Spendenbitte.
-              Es gibt keine freiwilligen Themensignale für die Karte (Abschnitt
+              Im Jugendmodus fehlt Folgendes: Es folgt keine spätere
+              Rückfrage-Mail. Die Mail mit dem Entwurf enthält keine
+              Spendenbitte, und die Erfolgsseite zeigt keine Spendenbitte. Es
+              gibt keine freiwilligen Themensignale für die Karte (Abschnitt
               19), und die Angaben zu Name, Partei und Organisation werden nicht
               abgefragt.
+            </p>
+            <p className="mb-3">
+              Die Mail mit dem Entwurf enthält eine Sterne-Bewertung. Der Link
+              dahinter trägt nur die Klassenstufe und eine zufällige Kennung,
+              keine E-Mail-Adresse. Auf der Bewertungsseite gibt es nur die
+              Sterne, ein paar Antwortfelder zum Anklicken und die Frage, ob der
+              Brief abgeschickt wird. Gespeichert werden Sterne, Antworten,
+              Klassenstufe, die Altersgruppe „unter 20“ und ein
+              nicht zurückrechenbarer Hash der IP-Adresse als Spam-Schutz (Abschnitt 12).
+              Nicht gespeichert werden E-Mail-Adresse, Postleitzahl, Name,
+              Brieftext und Freitext. Es gibt keine Rückfragen und nichts wird
+              öffentlich gezeigt.
             </p>
             <p className="mb-3">
               Ein Klassenlink enthält nur die Klassenstufe, die Postleitzahl der
@@ -1008,7 +1019,7 @@ export default function Datenschutz() {
             </p>
           </div>
 
-          <p className="text-sm text-warmgrau/50">Stand: 19. Oktober 2026</p>
+          <p className="text-sm text-warmgrau/50">Stand: 17. November 2026</p>
         </div>
       </div>
     </div>

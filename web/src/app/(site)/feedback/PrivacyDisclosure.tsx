@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 
-export function PrivacyDisclosure() {
+export function PrivacyDisclosure({ youth = false }: { youth?: boolean }) {
   const [open, setOpen] = useState(false);
 
   return (
@@ -31,6 +31,30 @@ export function PrivacyDisclosure() {
       >
         <div className="overflow-hidden">
           <div className="rounded-lg border border-waldgruen/15 bg-creme/60 px-4 py-4 text-left text-sm text-warmgrau leading-relaxed space-y-3">
+            {youth ? (
+              <>
+                <p>
+                  Deine Bewertung wird in einer Datenbank (
+                  <strong>Supabase</strong>, Server in Frankfurt) gespeichert.
+                  Konkret landen dort nur:
+                </p>
+                <ul className="list-disc pl-5 space-y-1.5">
+                  <li>Deine Sterne-Bewertung</li>
+                  <li>Deine Antworten auf die Kurzfragen</li>
+                  <li>Deine Klassenstufe</li>
+                  <li>
+                    Einen anonymisierten Hash deiner IP-Adresse (nur
+                    Spam-Schutz, nicht zurückrechenbar)
+                  </li>
+                </ul>
+                <p>
+                  Nicht gespeichert werden deine E-Mail-Adresse, deine
+                  Postleitzahl, dein Name und dein Brieftext. Es gibt keine
+                  Rückfragen und nichts wird öffentlich gezeigt.
+                </p>
+              </>
+            ) : (
+              <>
             <p>
               Deine Bewertung wird in einer Datenbank
               (<strong>Supabase</strong>, Server in Frankfurt) gespeichert. Konkret landen
@@ -66,6 +90,9 @@ export function PrivacyDisclosure() {
               angegeben hast.{" "}
               <strong>Deine E-Mail wird niemals öffentlich gezeigt.</strong>
             </p>
+              </>
+            )}
+            {!youth ? (
             <p>
               Deine Bewertung kannst du jederzeit selbst löschen:{" "}
               <Link
@@ -76,6 +103,7 @@ export function PrivacyDisclosure() {
               </Link>
               .
             </p>
+            ) : null}
             <p className="text-xs text-warmgrau/70">
               Mehr Details:{" "}
               <Link

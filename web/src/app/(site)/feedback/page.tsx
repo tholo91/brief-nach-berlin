@@ -23,7 +23,9 @@ export default async function FeedbackPage({
   searchParams: Promise<{ r?: string; t?: string; s?: string }>;
 }) {
   const { r, t, s } = await searchParams;
-  const payload = t ? verifyFeedbackToken<LetterDebugPayload>(t) : null;
+  const payload = t
+    ? verifyFeedbackToken<LetterDebugPayload & { audience?: string }>(t)
+    : null;
 
   if (!t || !payload) {
     return (
@@ -58,7 +60,12 @@ export default async function FeedbackPage({
   return (
     <section className="bg-creme px-4 sm:px-6 py-10 sm:py-12 md:py-16">
       <div className="max-w-xl mx-auto">
-        <FeedbackForm initialRating={initialRating} token={t} mailSeq={s === "2" ? 2 : 1} />
+        <FeedbackForm
+          initialRating={initialRating}
+          token={t}
+          mailSeq={s === "2" ? 2 : 1}
+          youth={payload.audience === "jung"}
+        />
       </div>
     </section>
   );

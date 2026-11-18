@@ -46,6 +46,9 @@ interface FeedbackFormProps {
   initialRating: number;
   token: string;
   mailSeq?: 1 | 2;
+  // Schul-Track: schlankes Formular ohne Freitext, Spende, Veröffentlichung,
+  // Altersfrage und Politik-Fragen. Wird serverseitig aus dem Token abgeleitet.
+  youth?: boolean;
 }
 
 const COMMENT_MAX = 500;
@@ -96,6 +99,7 @@ export function FeedbackForm({
   initialRating,
   token,
   mailSeq,
+  youth = false,
 }: FeedbackFormProps) {
   const router = useRouter();
   const [rating, setRating] = useState<number>(initialRating);
@@ -141,7 +145,7 @@ export function FeedbackForm({
   if (!hasShownRecoveryOffer && rating <= 3 && hasMappableFeedback) {
     setHasShownRecoveryOffer(true);
   }
-  const showRecoveryOffer = hasShownRecoveryOffer && rating <= 3;
+  const showRecoveryOffer = !youth && hasShownRecoveryOffer && rating <= 3;
 
   // Reset selected chips when the polarity flips so a user who picked 5 stars
   // (positive chips), then changes to 1 (negative chips), doesn't smuggle stale
@@ -223,7 +227,7 @@ export function FeedbackForm({
       setErrorMessage("Bitte beantworte noch, ob dein Brief rausgeht.");
       return;
     }
-    if (letterSent && politicalSelfEfficacy === null) {
+    if (!youth && letterSent && politicalSelfEfficacy === null) {
       setErrorMessage(
         "Bitte beantworte noch, ob du dich durch den Brief eher politisch einbringen kannst."
       );
@@ -231,7 +235,17 @@ export function FeedbackForm({
     }
 
     startTransition(async () => {
-      const result: SubmitReviewResult = await submitReviewAction({
+      const result: SubmitReviewResult = youth
+        ? await submitReviewAction({
+            mode: "full",
+            rating,
+            letterSent,
+            feedbackTags: feedbackTags.length ? feedbackTags : undefined,
+            token,
+            bypassRateLimit,
+            mailSeq,
+          })
+        : await submitReviewAction({
         mode: "full",
         rating,
         body: body.trim(),
@@ -265,6 +279,7 @@ export function FeedbackForm({
     return (
       <ThankYouCard
         onSkip={() => router.push("/")}
+        youth={youth}
         rating={rating}
         feedbackTags={feedbackTags}
         body={body}
@@ -361,7 +376,9 @@ export function FeedbackForm({
       {/* Verschickt-Frage (Pflichtfeld) */}
       <fieldset>
         <legend className="block font-body text-sm font-semibold text-warmgrau mb-1">
-          Hast du deinen Brief schon verschickt oder verschickst ihn gleich?
+          {youth
+            ? "Schreibst du den Brief ab und schickst ihn los?"
+            : "Hast du deinen Brief schon verschickt oder verschickst ihn gleich?"}
         </legend>
         <p className="font-body text-xs text-warmgrau/60 mb-3">
           Hilft mir zu sehen, wie viele Briefe wirklich bis in den Briefkasten kommen.
@@ -386,6 +403,8 @@ export function FeedbackForm({
         </div>
       </fieldset>
 
+      {!youth ? (
+        <>
       {letterSent === true ? (
         <fieldset className="animate-feedback-in">
           <legend className="block font-body text-sm font-semibold text-warmgrau mb-3">
@@ -595,6 +614,9 @@ export function FeedbackForm({
         </div>
       </div>
 
+        </>
+      ) : null}
+
       {showRecoveryOffer ? (
         <div
           className="rounded-xl border border-waldgruen/25 bg-waldgruen/5 px-4 py-4 animate-feedback-in"
@@ -670,12 +692,14 @@ export function FeedbackForm({
             </>
           )}
         </button>
-        <p className="font-body text-xs text-warmgrau/60 text-center leading-relaxed">
-          Thomas könnte dich bei Rückfragen zu deiner Bewertung per E-Mail kontaktieren.
-        </p>
+        {!youth ? (
+          <p className="font-body text-xs text-warmgrau/60 text-center leading-relaxed">
+            Thomas könnte dich bei Rückfragen zu deiner Bewertung per E-Mail kontaktieren.
+          </p>
+        ) : null}
       </div>
 
-      <PrivacyDisclosure />
+      <PrivacyDisclosure youth={youth} />
     </form>
   );
 }
@@ -701,6 +725,7 @@ function buildImproveHref(
 
 export function ThankYouCard({
   onSkip,
+  youth = false,
   rating,
   feedbackTags,
   body,
@@ -708,6 +733,7 @@ export function ThankYouCard({
   mailSeq,
 }: {
   onSkip: () => void;
+  youth?: boolean;
   rating: number;
   feedbackTags: FeedbackTagSlug[];
   body: string;
@@ -733,8 +759,8 @@ export function ThankYouCard({
     }
   }, []);
 
-  const showRecoveryCard = rating <= 3;
-  const autoRedirect = rating <= 3;
+  const showRecoveryCard = !youth && rating <= 3;
+  const autoRedirect = !youth && rating <= 3;
 
   useEffect(() => {
     if (!autoRedirect) return;
@@ -772,10 +798,9 @@ export function ThankYouCard({
           Deine Bewertung ist gespeichert.
         </p>
         <p className="font-body text-sm text-warmgrau/70 max-w-sm mx-auto mb-6 leading-relaxed">
-          Das hilft mir wirklich. Briefe wirken am stärksten, wenn mehrere
-          Stimmen zum selben Thema zusammenkommen. In ein paar Monaten frage
-          ich dich vielleicht noch einmal, was aus deinem Brief geworden ist.
-          Danach ist Schluss, versprochen ✌️
+          {youth
+            ? "Das hilft mir wirklich. Viel Erfolg mit deinem Brief ✌️"
+            : "Das hilft mir wirklich. Briefe wirken am stärksten, wenn mehrere Stimmen zum selben Thema zusammenkommen. In ein paar Monaten frage ich dich vielleicht noch einmal, was aus deinem Brief geworden ist. Danach ist Schluss, versprochen ✌️"}
         </p>
         {showRecoveryCard ? (
           <div
@@ -813,7 +838,7 @@ export function ThankYouCard({
               </Link>
             </p>
           </div>
-        ) : (
+        ) : youth ? null : (
           <DonationCard
             titleId="feedback-support-title"
             title={SUPPORT_CONTENT.feedbackDonation.headline}

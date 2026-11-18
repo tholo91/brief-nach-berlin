@@ -1,6 +1,6 @@
 "use server";
 
-import { createHmac } from "node:crypto";
+import { createHash, createHmac } from "node:crypto";
 import { z } from "zod";
 import { getServiceRoleClient } from "@/lib/supabase/server";
 import { verifyFeedbackToken } from "@/lib/feedback/token";
@@ -94,9 +94,9 @@ export async function submitReviewAction(
     return { error: "validation", message: letterHistoryError };
   }
 
-  const payload = verifyFeedbackToken<LetterDebugPayload & { source?: string }>(
-    data.token
-  );
+  const payload = verifyFeedbackToken<
+    LetterDebugPayload & { source?: string; audience?: string }
+  >(data.token);
   if (!payload) {
     return {
       error: "invalid_token",
@@ -156,6 +156,56 @@ export async function submitReviewAction(
     const tagsForInsert = isBacklog
       ? Array.from(new Set([...userTags, "backlog_campaign"]))
       : userTags;
+
+    // Jugend (Schul-Track): nur Sterne, Chips und "Brief verschickt". Keine
+    // E-Mail, PLZ, Brief-ID, kein Freitext, kein Name, keine Veröffentlichung.
+    // Der Token wird nur gehasht gespeichert (Dedup), die Altersgruppe steht fest.
+    const isYouth = payload.audience === "jung";
+    const youthMeta = {
+      email: null,
+      politician_id: null,
+      plz: null,
+      letter_id: null,
+      campaign_slug: null,
+      debug_payload: {
+        audience: "jung",
+        ...(payload.klasse ? { klasse: payload.klasse } : {}),
+        ...(data.mailSeq != null ? { mail_seq: data.mailSeq } : {}),
+      },
+      debug_token: `jung:${createHash("sha256").update(data.token).digest("hex")}`,
+      ip_hash: ipHash,
+      age_group: "under_20",
+      consent: false,
+    };
+
+    if (isYouth) {
+      const { error } =
+        data.mode === "initial"
+          ? await supabase.from("reviews").upsert(
+              { rating: data.rating, ...youthMeta },
+              { onConflict: "debug_token", ignoreDuplicates: true }
+            )
+          : await supabase.from("reviews").upsert(
+              {
+                rating: data.rating,
+                body: null,
+                display_name: null,
+                letter_sent: data.letterSent,
+                full_feedback_submitted: true,
+                feedback_tags: userTags.length ? userTags : null,
+                ...youthMeta,
+              },
+              { onConflict: "debug_token", ignoreDuplicates: false }
+            );
+      if (error) {
+        console.error("[submitReview] youth upsert failed:", error);
+        return {
+          error: "server_error",
+          message: "Bewertung konnte nicht gespeichert werden.",
+        };
+      }
+      return { success: true };
+    }
 
     // Metadata derived from the signed token. Identical for both modes —
     // 'initial' and 'full' over the same token resolve the same values, so

@@ -799,7 +799,7 @@ export function buildEmailHtml(data: SendLetterEmailParams): string {
                             </p>${rathausSearchLine}${governmentSourceLine}${bundeskanzlerSourceLine}
                           </td>
                           <td class="bnb-stack bnb-stack-right" style="vertical-align:middle;text-align:center;padding-left:16px;border-left:1px solid #E0DCD7;width:40%;">
-                            ${data.feedbackToken && data.audience !== "jung" ? buildStarBarHtml(data.feedbackToken, undefined, locale) : profileButtonHtml}
+                            ${data.feedbackToken ? buildStarBarHtml(data.feedbackToken, undefined, locale) : profileButtonHtml}
                           </td>
                         </tr>
                       </table>

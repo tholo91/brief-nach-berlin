@@ -1,3 +1,4 @@
+import { randomUUID } from "node:crypto";
 import { BrevoClient } from "@getbrevo/brevo";
 import { buildEmailHtml, buildLetterEmailSubject, buildLetterEmailText } from "./buildEmailHtml";
 import { AI_CONTENT_EMAIL_HEADERS } from "./aiContentMarking";
@@ -155,8 +156,14 @@ export function prepareLetterEmail(
 ): { params: SendLetterEmailParams; feedbackToken: string } {
   const prepared = prepareAdultLetterEmail(args);
   if (args.audience !== "jung") return prepared;
-  // Ohne Feedback-Token entfällt die Sterne-Bewertung in der Mail.
-  return { ...prepared, params: { ...prepared.params, audience: "jung", feedbackToken: undefined } };
+  // Jugend: eigener, schlanker Token ohne E-Mail, PLZ, Brief- und Politiker-ID.
+  // Der Nonce macht ihn pro Mail eindeutig (Dedup der Bewertung).
+  const feedbackToken = signFeedbackToken({
+    audience: "jung",
+    ...(args.debug.klasse ? { klasse: args.debug.klasse } : {}),
+    nonce: randomUUID(),
+  });
+  return { feedbackToken, params: { ...prepared.params, audience: "jung", feedbackToken } };
 }
 
 function prepareAdultLetterEmail(args: {

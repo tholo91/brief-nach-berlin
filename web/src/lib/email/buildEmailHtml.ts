@@ -136,7 +136,8 @@ export function buildLetterEmailText(data: SendLetterEmailParams): string {
 // Unter dieser Schwelle wirkt eine Zahl eher entmutigend, dann bleibt nur der Kampagnen-Satz.
 const CAMPAIGN_COUNT_MIN = 25;
 
-function buildCampaignAttributionHtml(
+// Kopf der gemeinsamen Teilen-Karte in Kampagnen-Mails: Logo, Kampagne, Zähler, Danke.
+function buildCampaignHeaderHtml(
   campaign: SendLetterEmailParams["campaign"],
   locale?: SendLetterEmailParams["locale"],
   letterCount?: number,
@@ -146,38 +147,32 @@ function buildCampaignAttributionHtml(
   const copy = getEmailCopy(locale);
   const campaignUrl = `${APP_URL}/kampagne/${encodeURIComponent(campaign.slug)}`;
   const creator = campaign.creatorName?.trim();
-  const link = (label: string) =>
-    `<a href="${campaignUrl}" target="_blank" rel="noopener noreferrer" style="color:#2D5016;text-decoration:underline;">${label}</a>`;
-  const countText = letterCount && letterCount >= CAMPAIGN_COUNT_MIN ? ` ${copy.campaignCount(letterCount)}` : "";
-  const text = `${copy.campaignPart(link, creator ? escapeHtml(creator) : undefined)}${countText} ${copy.campaignThanks}`;
-  const paragraph = `<p style="margin:0;font-family:Georgia,'Times New Roman',serif;font-size:13px;color:#4A4A4A;line-height:1.6;">
-        ${text}
-      </p>`;
+  const heading = copy.campaignHeading(creator ? escapeHtml(creator) : undefined);
+  const countText = letterCount && letterCount >= CAMPAIGN_COUNT_MIN ? `${copy.campaignCount(letterCount)} ` : "";
+  const text = `<h2 style="margin:0 0 2px;font-family:Georgia,'Times New Roman',serif;font-size:16px;color:#2D5016;font-weight:bold;line-height:1.35;">
+                          <a href="${campaignUrl}" target="_blank" rel="noopener noreferrer" style="color:#2D5016;text-decoration:none;">${heading}</a>
+                        </h2>
+                        <p style="margin:0;font-family:Georgia,'Times New Roman',serif;font-size:13px;color:#4A4A4A;line-height:1.5;">
+                          ${countText}${copy.campaignThanks.replace(/ (?=\S+$)/, "&nbsp;")}
+                        </p>`;
+  const divider = `<div style="margin:14px 0;border-top:1px solid #E0DCD7;font-size:0;line-height:0;">&nbsp;</div>`;
   const logoUrl = campaignLogoPublicUrl(campaign.logoPath);
-  const boxStyle =
-    "margin:0 0 16px;background-color:#FAF8F5;border:1px solid #E0DCD7;border-radius:4px;padding:14px 18px;";
 
-  if (!logoUrl) {
-    return `
-    <div class="bnb-inner-pad" style="${boxStyle}">
-      ${paragraph}
-    </div>`;
-  }
+  if (!logoUrl) return `${text}
+                      ${divider}`;
 
   const alt = escapeHtml(creator || campaign.title);
-  return `
-    <div class="bnb-inner-pad" style="${boxStyle}">
-      <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%">
-        <tr>
-          <td width="40" valign="middle" style="width:40px;padding-right:12px;">
-            <img src="${escapeHtml(logoUrl)}" alt="${alt}" width="40" height="40" style="display:block;width:40px;height:40px;border:0;border-radius:6px;object-fit:cover;">
-          </td>
-          <td valign="middle">
-            ${paragraph}
-          </td>
-        </tr>
-      </table>
-    </div>`;
+  return `<table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%">
+                        <tr>
+                          <td width="40" valign="middle" style="width:40px;padding-right:12px;">
+                            <img src="${escapeHtml(logoUrl)}" alt="${alt}" width="40" height="40" style="display:block;width:40px;height:40px;border:0;border-radius:6px;object-fit:cover;">
+                          </td>
+                          <td valign="middle">
+                        ${text}
+                          </td>
+                        </tr>
+                      </table>
+                      ${divider}`;
 }
 
 const LANDTAG_WATERMARKS: Record<string, string> = {
@@ -854,18 +849,13 @@ export function buildEmailHtml(data: SendLetterEmailParams): string {
                   </td>
                 </tr>
 
-                ${data.campaign?.slug ? `
-                <tr>
-                  <td colspan="7" class="bnb-pad" style="padding:0 32px 8px;background-color:#ffffff;">
-                    ${buildCampaignAttributionHtml(data.campaign, locale, data.campaignLetterCount)}
-                  </td>
-                </tr>` : ""}
-
                 <!-- Cause-recruit block: motivate sender to invite Wahlkreis-people to write their own letters -->
                 <tr>
                   <td colspan="7" class="bnb-pad" style="padding:8px 32px 24px;background-color:#ffffff;">
                     <div class="bnb-inner-pad" style="background-color:#FAF8F5;border:1px solid #E0DCD7;border-radius:6px;padding:20px 22px;">
-                      <h2 style="margin:0 0 8px;font-family:Georgia,'Times New Roman',serif;font-size:16px;color:#2D5016;font-weight:bold;">${data.campaign?.slug ? copy.campaignShareHeading : copy.shareHeading}</h2>
+                      ${data.campaign?.slug
+                        ? buildCampaignHeaderHtml(data.campaign, locale, data.campaignLetterCount)
+                        : `<h2 style="margin:0 0 8px;font-family:Georgia,'Times New Roman',serif;font-size:16px;color:#2D5016;font-weight:bold;">${copy.shareHeading}</h2>`}
                       <p style="margin:0 0 14px;font-family:Georgia,'Times New Roman',serif;font-size:14px;color:#4A4A4A;line-height:1.6;">
                         ${recruitCopy}
                       </p>

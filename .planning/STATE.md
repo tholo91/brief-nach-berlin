@@ -256,6 +256,7 @@ Recent decisions affecting current work:
 | 261116-c14 | Zweite Rueckmelde-Welle lastcall_2026_11 vorbereiten | 2026-11-16 | cdb6351 | [261116-c14-zweite-rueckmelde-welle-lastcall-2026-11](./quick/261116-c14-zweite-rueckmelde-welle-lastcall-2026-11/) |
 | 261116-h5k | Kampagnenbriefe: nichts erfinden | 2026-11-16 | – | [261116-h5k-kampagnenbriefe-nichts-erfinden](./quick/261116-h5k-kampagnenbriefe-nichts-erfinden/) |
 | 261117-ltd | Landtagsdaten Berlin und MV neu laden | 2026-11-17 | – | [261117-ltd-landtagsdaten-berlin-mv-neu-laden](./quick/261117-ltd-landtagsdaten-berlin-mv-neu-laden/) |
+| 261117-tsu | Brief-Mail: Kampagnen-Karte und Teilen-Karte zu einer Karte | 2026-11-17 | see git log | [261117-tsu-brief-mail-kampagnen-karte-und-teilen-ka](./quick/261117-tsu-brief-mail-kampagnen-karte-und-teilen-ka/) |
 
 ## Session Continuity
 

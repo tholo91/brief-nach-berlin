@@ -161,23 +161,17 @@ exports[`Erwachsenen-Mail bleibt unverändert Kampagne: html 1`] = `
                   </td>
                 </tr>
 
-                
-                <tr>
-                  <td colspan="7" class="bnb-pad" style="padding:0 32px 8px;background-color:#ffffff;">
-                    
-    <div class="bnb-inner-pad" style="margin:0 0 16px;background-color:#FAF8F5;border:1px solid #E0DCD7;border-radius:4px;padding:14px 18px;">
-      <p style="margin:0;font-family:Georgia,'Times New Roman',serif;font-size:13px;color:#4A4A4A;line-height:1.6;">
-        Teil einer <a href="https://www.brief-nach-berlin.de/kampagne/test" target="_blank" rel="noopener noreferrer" style="color:#2D5016;text-decoration:underline;">öffentlichen Kampagne</a>. Mit dir sind es schon <strong>40 Briefe</strong>. Danke dir ❤️
-      </p>
-    </div>
-                  </td>
-                </tr>
-
                 <!-- Cause-recruit block: motivate sender to invite Wahlkreis-people to write their own letters -->
                 <tr>
                   <td colspan="7" class="bnb-pad" style="padding:8px 32px 24px;background-color:#ffffff;">
                     <div class="bnb-inner-pad" style="background-color:#FAF8F5;border:1px solid #E0DCD7;border-radius:6px;padding:20px 22px;">
-                      <h2 style="margin:0 0 8px;font-family:Georgia,'Times New Roman',serif;font-size:16px;color:#2D5016;font-weight:bold;">Diese Kampagne weitertragen</h2>
+                      <h2 style="margin:0 0 2px;font-family:Georgia,'Times New Roman',serif;font-size:16px;color:#2D5016;font-weight:bold;line-height:1.35;">
+                          <a href="https://www.brief-nach-berlin.de/kampagne/test" target="_blank" rel="noopener noreferrer" style="color:#2D5016;text-decoration:none;">Öffentliche Kampagne</a>
+                        </h2>
+                        <p style="margin:0;font-family:Georgia,'Times New Roman',serif;font-size:13px;color:#4A4A4A;line-height:1.5;">
+                          Mit dir sind es schon <strong>40 Briefe</strong>. Danke dir&nbsp;❤️
+                        </p>
+                      <div style="margin:14px 0;border-top:1px solid #E0DCD7;font-size:0;line-height:0;">&nbsp;</div>
                       <p style="margin:0 0 14px;font-family:Georgia,'Times New Roman',serif;font-size:14px;color:#4A4A4A;line-height:1.6;">
                         Dein Brief ist ein Anfang. Teile die Kampagne, damit weitere Menschen aus ihrem Wahlkreis mit eigenen Worten schreiben.
                       </p>
@@ -450,8 +444,6 @@ exports[`Erwachsenen-Mail bleibt unverändert mit Feedback-Token (Sterne-Bar): h
                   </td>
                 </tr>
 
-                
-
                 <!-- Cause-recruit block: motivate sender to invite Wahlkreis-people to write their own letters -->
                 <tr>
                   <td colspan="7" class="bnb-pad" style="padding:8px 32px 24px;background-color:#ffffff;">
@@ -715,8 +707,6 @@ exports[`Erwachsenen-Mail bleibt unverändert ohne Feedback-Token (Profil-Button
                     </p>
                   </td>
                 </tr>
-
-                
 
                 <!-- Cause-recruit block: motivate sender to invite Wahlkreis-people to write their own letters -->
                 <tr>

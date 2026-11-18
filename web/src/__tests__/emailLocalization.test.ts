@@ -59,12 +59,13 @@ describe("email localization", () => {
     });
 
     const url = `${APP_URL}/kampagne/afd-vor-gericht`;
-    expect(html).toContain(`Teil der <a href="${url}"`);
-    expect(html).toContain(">Kampagne von <strong>AfD vor Gericht</strong></a>.");
+    expect(html).toContain(`<a href="${url}"`);
+    expect(html).toContain(">Kampagne von AfD vor Gericht</a>");
+    expect(html).not.toContain("Diese Kampagne weitertragen");
     expect(html).not.toContain("wurde von");
     expect(html.split(`${url}"`).length - 1).toBe(1);
     expect(html.includes("Mit dir sind es schon")).toBe(shown);
-    expect(html).toContain("Danke dir \u2764\uFE0F");
+    expect(html).toContain("Danke dir&nbsp;\u2764\uFE0F");
     if (campaignLetterCount === 1234) expect(html).toContain("Mit dir sind es schon <strong>1.234 Briefe</strong>.");
   });
 
@@ -74,8 +75,7 @@ describe("email localization", () => {
       campaign: { slug: "afd-vor-gericht", title: "AfD vor Gericht" },
     });
 
-    expect(html).toContain("Teil einer <a href=");
-    expect(html).toContain(">öffentlichen Kampagne</a>.");
+    expect(html).toContain(">Öffentliche Kampagne</a>");
   });
 
   it("uses the same campaign structure in English", () => {
@@ -85,10 +85,9 @@ describe("email localization", () => {
       campaignLetterCount: 30,
     });
 
-    expect(html).toContain("Part of the <a href=");
-    expect(html).toContain(">campaign by <strong>AfD vor Gericht</strong></a>.");
+    expect(html).toContain(">Campaign by AfD vor Gericht</a>");
     expect(html).toContain("With you, there are already <strong>30 letters</strong>.");
-    expect(html).toContain("Thank you \u2764\uFE0F");
+    expect(html).toContain("Thank you&nbsp;\u2764\uFE0F");
   });
 
   describe("campaign logo", () => {

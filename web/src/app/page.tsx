@@ -13,7 +13,7 @@ import { PressMarquee } from "@/components/PressMarquee";
 import { MobileCampaignStrip } from "@/components/campaigns/MobileCampaignStrip";
 import { getHeroReviews } from "@/lib/reviews/getHeroReviews";
 import { getLetterCount } from "@/lib/counter";
-import { getLandingCampaigns } from "@/lib/campaigns/repository";
+import { getHomeCampaigns } from "@/lib/campaigns/homeCampaigns";
 import { formatNumber } from "@/lib/formatNumber";
 
 export const metadata: Metadata = {
@@ -38,7 +38,7 @@ export default async function Home() {
   const [heroReviews, letterCount, landingCampaigns] = await Promise.all([
     getHeroReviews(),
     getLetterCount(),
-    getLandingCampaigns().catch(() => []),
+    getHomeCampaigns(),
   ]);
   const formattedLetterCount = formatNumber(letterCount);
 

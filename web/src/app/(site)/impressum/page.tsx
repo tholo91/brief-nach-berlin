@@ -28,9 +28,11 @@ export default function Impressum() {
             <p>
               Thomas Lorenz
               <br />
-              A.d. Schleifmühle 44
+              c/o WE AID gGmbH
               <br />
-              28203 Bremen
+              Anna-Louisa-Karsch-Str. 2
+              <br />
+              10178 Berlin
               <br />
               Deutschland
             </p>
@@ -87,9 +89,11 @@ export default function Impressum() {
             <p>
               Thomas Lorenz
               <br />
-              A.d. Schleifmühle 44
+              c/o WE AID gGmbH
               <br />
-              28203 Bremen
+              Anna-Louisa-Karsch-Str. 2
+              <br />
+              10178 Berlin
               <br />
               Deutschland
             </p>

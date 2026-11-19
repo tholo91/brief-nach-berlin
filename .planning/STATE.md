@@ -49,7 +49,7 @@ Der level-aware E-Mail-Betreff ist dagegen bereits implementiert und getestet; d
 Phase: 05 — EXECUTING
 Plan: 4 of 4
 Status: Phase complete — ready for verification
-Last activity: 2026-11-17 - Completed quick task 261117-ltd: Landtagsdaten Berlin und MV neu laden
+Last activity: 2026-11-19 - Completed quick task 261119-tda: Statistik offen + Presse neu: Kernzahlen und Zitate
 
 Progress: [███████░░░] 68%
 
@@ -259,6 +259,7 @@ Recent decisions affecting current work:
 | 261117-tsu | Brief-Mail: Kampagnen-Karte und Teilen-Karte zu einer Karte | 2026-11-17 | see git log | [261117-tsu-brief-mail-kampagnen-karte-und-teilen-ka](./quick/261117-tsu-brief-mail-kampagnen-karte-und-teilen-ka/) |
 | 261119-rk1 | Kampagnen-Verwaltung: Varianten und Satzanfaenge bearbeitbar | 2026-11-19 | 447d5a8 | [261119-rk1-kampagnen-verwaltung-varianten-und-satza](./quick/261119-rk1-kampagnen-verwaltung-varianten-und-satza/) |
 | 261119-u1b | Land-Empfänger: MdL-Bereich unter Regierungs-Karten klappbar, Filter ab 7 MdLs | 2026-11-19 | 0571f41 | [261119-u1b-land-empfaenger-mdl-bereich-klappbar](./quick/261119-u1b-land-empfaenger-mdl-bereich-klappbar/) |
+| 261119-tda | Statistik offen + Presse neu: Kernzahlen und Zitate | 2026-11-19 | d68fee2 | [261119-tda-statistik-offen-presse-neu-kernzahlen-un](./quick/261119-tda-statistik-offen-presse-neu-kernzahlen-un/) |
 
 ## Session Continuity
 

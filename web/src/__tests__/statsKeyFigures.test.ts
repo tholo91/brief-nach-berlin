@@ -149,7 +149,7 @@ function fullFigures(): KeyFigures {
 
 function landing(figures: KeyFigures | null) {
   return renderToStaticMarkup(
-    createElement(PublicStatsLanding, { configured: true, error: false, figures }),
+    createElement(PublicStatsLanding, { configured: true, error: false, figures, quotes: [] }),
   );
 }
 

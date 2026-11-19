@@ -1,5 +1,7 @@
 import { PressContactButton } from "@/components/PressContactButton";
 import { KeyFigures } from "@/components/internalStats/KeyFigures";
+import { QuoteCarousel } from "@/components/reviews/QuoteCarousel";
+import type { SpreadQuote } from "@/lib/reviews/pickSpreadQuotes";
 import type { KeyFigures as KeyFiguresData } from "@/lib/internalStats/keyFigures";
 
 const ACCESS_MAIL_SUBJECT = "Presseanfrage: Zugang Statistik";
@@ -10,9 +12,10 @@ type PublicStatsLandingProps = {
   configured: boolean;
   error: boolean;
   figures: KeyFiguresData | null;
+  quotes: SpreadQuote[];
 };
 
-export function PublicStatsLanding({ configured, error, figures }: PublicStatsLandingProps) {
+export function PublicStatsLanding({ configured, error, figures, quotes }: PublicStatsLandingProps) {
   return (
     <div className="flex-1 bg-creme">
       <div className="mx-auto w-full max-w-3xl px-5 py-10 sm:px-8 sm:py-16">
@@ -32,6 +35,17 @@ export function PublicStatsLanding({ configured, error, figures }: PublicStatsLa
           <div className="mt-10 sm:mt-12">
             <KeyFigures figures={figures} />
           </div>
+        )}
+
+        {quotes.length > 0 && (
+          <section aria-labelledby="stats-quotes" className="mt-12 sm:mt-14">
+            <h2 id="stats-quotes" className="font-typewriter text-sm font-bold text-waldgruen/80">
+              Was Schreibende sagen
+            </h2>
+            <div className="mt-4">
+              <QuoteCarousel quotes={quotes} />
+            </div>
+          </section>
         )}
 
         <section className="mt-12 rounded-2xl border-2 border-waldgruen/20 bg-white/60 p-6 sm:p-8">

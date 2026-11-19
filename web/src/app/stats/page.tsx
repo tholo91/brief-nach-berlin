@@ -6,7 +6,7 @@ import { PressStatsDashboard } from "@/components/internalStats/PressStatsDashbo
 import { INTERNAL_STATS_COOKIE, isInternalStatsCookieValid } from "@/lib/internalStats/access";
 import { getPressStats } from "@/lib/internalStats/getInternalStats";
 import { getWeeklyDrafts } from "@/lib/internalStats/getWeeklyDrafts";
-import { getPublicStatsTeaser } from "@/lib/internalStats/publicTeaser";
+import { getPublicStatsQuotes, getPublicStatsTeaser } from "@/lib/internalStats/publicTeaser";
 import { parseStatsFilter, statsQueryFromFilter } from "@/lib/internalStats/view";
 
 export const dynamic = "force-dynamic";
@@ -27,11 +27,13 @@ export default async function PressStatsPage({ searchParams }: PressStatsPagePro
   const params = (await searchParams) ?? {};
 
   if (!isInternalStatsCookieValid(cookieValue, configuredPassword)) {
+    const [figures, quotes] = await Promise.all([getPublicStatsTeaser(), getPublicStatsQuotes()]);
     return (
       <PublicStatsLanding
         configured={Boolean(configuredPassword)}
         error={params.error === "1"}
-        figures={await getPublicStatsTeaser()}
+        figures={figures}
+        quotes={quotes}
       />
     );
   }

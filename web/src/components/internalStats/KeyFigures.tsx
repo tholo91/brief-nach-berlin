@@ -13,13 +13,13 @@ type KeyFiguresProps = {
 };
 
 const valueClass =
-  "font-typewriter text-4xl font-bold leading-none tabular-nums text-waldgruen-dark sm:text-5xl";
-const labelClass = "mt-3 font-body text-base font-semibold leading-snug text-waldgruen-dark";
+  "font-typewriter text-3xl font-bold leading-none tabular-nums text-waldgruen-dark sm:text-5xl";
+const labelClass = "mt-2 sm:mt-3 font-body text-base font-semibold leading-snug text-waldgruen-dark";
 const noteClass = "mt-1.5 font-body text-sm leading-snug text-warmgrau/75";
 
 function Tile({ value, label, note }: { value: ReactNode; label: string; note: string }) {
   return (
-    <div className="flex min-w-0 flex-col rounded-xl bg-waldgruen/[0.06] p-5 sm:p-6">
+    <div className="flex min-w-0 flex-col rounded-xl bg-waldgruen/[0.06] p-4 sm:p-6">
       <dt className={`order-2 ${labelClass}`}>{label}</dt>
       <dd className={`order-1 ${valueClass}`}>{value}</dd>
       <dd className={`order-3 ${noteClass}`}>{note}</dd>
@@ -95,10 +95,10 @@ export function KeyFigures({ figures, headingId = "key-figures", action }: KeyFi
 
       <dl className="mt-4">
         <div className="flex flex-col pb-6 sm:pb-8">
-          <dt className="order-2 mt-3 font-body text-lg font-semibold text-waldgruen-dark">
+          <dt className="order-2 mt-2 font-body text-lg font-semibold text-waldgruen-dark">
             Briefentwürfe mit Brief-nach-Berlin
           </dt>
-          <dd className="order-1 font-typewriter text-6xl font-bold leading-none tabular-nums text-waldgruen-dark sm:text-7xl">
+          <dd className="order-1 font-typewriter text-5xl font-bold leading-none tabular-nums text-waldgruen-dark sm:text-7xl">
             {formatNumber(figures.letterCount)}
           </dd>
           <dd className={`order-3 ${noteClass}`}>Bundesweiter Gesamtzähler, einschließlich Kampagnen</dd>

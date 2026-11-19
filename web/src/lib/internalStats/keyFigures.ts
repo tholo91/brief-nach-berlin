@@ -1,3 +1,4 @@
+import { formatDecimal, formatNumber } from "@/lib/formatNumber";
 import type { InternalStats } from "@/lib/internalStats/aggregate";
 import type { OutcomeRoundStats } from "@/lib/internalStats/outcomes";
 import { SHARE_PERCENT_MIN_BASE } from "@/lib/internalStats/view";
@@ -55,4 +56,39 @@ export function buildKeyFigures(
     },
     fetchedAt: stats.fetchedAt,
   };
+}
+
+function countText(share: KeyShare): string {
+  return `${formatNumber(share.positive)} von ${formatNumber(share.base)}`;
+}
+
+/** Zitierfähige Sätze für „Zahlen zitieren“: nur Kernzahlen, die ihre Mindestbasis erreichen. */
+export function keyFigureQuoteLines(figures: KeyFigures): string[] {
+  const lines: string[] = [];
+  const { firstTimers, efficacy, writeAgain, rating } = figures;
+
+  if (firstTimers.percent !== null) {
+    lines.push(
+      `${firstTimers.percent} % der Schreibenden schreiben nach eigener Angabe zum ersten Mal an Politiker:innen (${countText(firstTimers)} Antworten im freiwilligen Feedback direkt nach dem Brief).`,
+    );
+  }
+  if (efficacy.percent !== null) {
+    lines.push(
+      `${efficacy.percent} % fühlen sich durch den Brief eher politisch handlungsfähig, sie antworteten mit „Ja, deutlich“ oder „Eher ja“ (${countText(efficacy)} Antworten im freiwilligen Feedback direkt nach dem Brief).`,
+    );
+  }
+  if (writeAgain.percent !== null) {
+    const source = writeAgain.roundLabel
+      ? `freiwillige Nachbefragung, ${writeAgain.roundLabel}`
+      : "freiwillige Nachbefragung";
+    lines.push(
+      `${writeAgain.percent} % würden wieder einen Brief schreiben oder haben es schon getan (${countText(writeAgain)} Antworten, ${source}).`,
+    );
+  }
+  if (rating.average !== null) {
+    lines.push(
+      `Die durchschnittliche Bewertung liegt bei ${formatDecimal(rating.average)} von 5 Sternen (${formatNumber(rating.count)} Bewertungen).`,
+    );
+  }
+  return lines;
 }

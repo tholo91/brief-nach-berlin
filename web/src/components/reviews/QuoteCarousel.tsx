@@ -41,13 +41,13 @@ export function QuoteCarousel({ quotes }: { quotes: SpreadQuote[] }) {
       onKeyDown={onKeyDown}
       className="rounded-2xl focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-waldgruen"
     >
-      <div aria-live="polite" aria-atomic="true" className="min-h-72 rounded-2xl bg-surface px-5 py-6 sm:min-h-60 sm:px-8 sm:py-8">
+      <div aria-live="polite" aria-atomic="true" className="min-h-56 rounded-2xl bg-surface px-5 py-6 sm:min-h-52 sm:px-8 sm:py-8">
         <figure className="flex h-full flex-col justify-between gap-5">
           <div>
-            <span aria-hidden="true" className="block font-handwriting text-6xl leading-none text-airmail-rot/70">
+            <span aria-hidden="true" className="block h-10 font-handwriting text-5xl leading-none text-airmail-rot/70">
               „
             </span>
-            <blockquote className="-mt-2 font-body text-lg leading-relaxed text-warmgrau sm:text-xl">
+            <blockquote className="font-body text-lg leading-relaxed text-warmgrau sm:text-xl">
               {current.body}
             </blockquote>
           </div>

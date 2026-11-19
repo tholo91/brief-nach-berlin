@@ -2,13 +2,16 @@ import Link from "next/link";
 import type { ReactNode } from "react";
 import { ColumnChart } from "@/components/internalStats/ColumnChart";
 import { CopyButton } from "@/components/internalStats/CopyButton";
+import { KeyFigures } from "@/components/internalStats/KeyFigures";
 import { PressStatsFilters } from "@/components/internalStats/PressStatsFilters";
 import { formatNumber } from "@/lib/formatNumber";
 import { lockInternalStats } from "@/lib/internalStats/actions";
 import { campaignSourceTotal, topicCategoryLabel, type InternalStats, type StatsFilter } from "@/lib/internalStats/aggregate";
 import type { OutcomeRoundStats } from "@/lib/internalStats/outcomes";
 import type { WeeklyDraftsResult } from "@/lib/internalStats/getWeeklyDrafts";
+import { keyFigureQuoteLines, type KeyFigures as KeyFiguresData } from "@/lib/internalStats/keyFigures";
 import { formatPressDate, SEND_SIGNAL_LABEL } from "@/lib/internalStats/pressCopy";
+import { LASTCALL_COHORT } from "@/lib/rueckmeldung/cohort";
 import { buildStatsHref, bundeslandName, SHARE_PERCENT_MIN_BASE, shareParts, type StatsQuery } from "@/lib/internalStats/view";
 
 type PressStatsDashboardProps = {
@@ -16,6 +19,7 @@ type PressStatsDashboardProps = {
   outcomes: OutcomeRoundStats[];
   regions: Record<string, number>;
   topicSignalCount: number;
+  keyFigures: KeyFiguresData;
   weekly: WeeklyDraftsResult;
   filter: StatsFilter;
   query: StatsQuery;
@@ -48,11 +52,12 @@ function RateValue({ positive, base, showPercent }: Rate & { showPercent: boolea
   );
 }
 
-function Disclosure({ title, children }: { title: string; children: ReactNode }) {
+function Disclosure({ title, children, level = "h2" }: { title: string; children: ReactNode; level?: "h2" | "h3" }) {
+  const Heading = level;
   return (
     <details className="group rounded-xl border border-waldgruen/15 bg-white/70">
       <summary className="flex min-h-12 cursor-pointer list-none items-center justify-between gap-2 rounded-xl px-4 py-3 font-body font-semibold text-waldgruen-dark focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-waldgruen sm:px-5 [&::-webkit-details-marker]:hidden">
-        <h2 className="text-base">{title}</h2>
+        <Heading className="text-base">{title}</Heading>
         <span aria-hidden="true" className="shrink-0 text-lg leading-none group-open:rotate-180">⌄</span>
       </summary>
       <div className="border-t border-waldgruen/10 px-4 py-4 sm:px-5">{children}</div>
@@ -60,7 +65,7 @@ function Disclosure({ title, children }: { title: string; children: ReactNode })
   );
 }
 
-function FollowupRound({ round }: { round: OutcomeRoundStats }) {
+function FollowupRound({ round, early = false }: { round: OutcomeRoundStats; early?: boolean }) {
   const { withReply, withoutReply } = round.efficacyByReply;
   const comparable = withReply.base >= SHARE_PERCENT_MIN_BASE && withoutReply.base >= SHARE_PERCENT_MIN_BASE;
   const survey = `Nachbefragung vom ${formatPressDate(round.sentAt)} zu Briefen aus dem Zeitraum ${round.letterWindowLabel}.`;
@@ -72,8 +77,25 @@ function FollowupRound({ round }: { round: OutcomeRoundStats }) {
   ].join("\n") : null;
   return (
     <article className="min-w-0 py-4 first:pt-0 last:pb-0">
-      <h3 className="font-body text-base font-semibold text-waldgruen-dark">{round.label}</h3>
+      <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
+        <h3 className="font-body text-base font-semibold text-waldgruen-dark">{round.label}</h3>
+        {early && (
+          <span className="rounded-full bg-bernstein/20 px-2.5 py-0.5 font-body text-xs font-semibold text-waldgruen-dark">
+            Erste Werte
+          </span>
+        )}
+      </div>
       <p className={bodyClass}>{survey}</p>
+      {early && (
+        <p className={`mt-1 ${bodyClass}`}>Es kommen noch Antworten herein, die Werte können sich ändern.</p>
+      )}
+      {round.cohort === LASTCALL_COHORT && (
+        <p className={`mt-3 rounded-lg bg-bernstein/15 px-3 py-2 ${bodyClass}`}>
+          Diese Briefe stammen aus der Anfangszeit, als Brief-nach-Berlin fast nur an Bundestagsabgeordnete
+          ging und das Abschreiben von Hand noch nicht im Mittelpunkt stand. Die Werte sind deshalb verzerrt
+          und nur teilweise vergleichbar.
+        </p>
+      )}
 
       <h4 className="mt-4 font-body font-semibold text-waldgruen-dark">Politische Handlungsfähigkeit nach dem Brief</h4>
       <p className={bodyClass}>„Ja, deutlich“ oder „Eher ja“ auf die Frage, ob man sich eher politisch einbringen kann.</p>
@@ -109,7 +131,7 @@ function FollowupRound({ round }: { round: OutcomeRoundStats }) {
   );
 }
 
-export function PressStatsDashboard({ stats, outcomes, regions, topicSignalCount, weekly, filter, query }: PressStatsDashboardProps) {
+export function PressStatsDashboard({ stats, outcomes, regions, topicSignalCount, keyFigures, weekly, filter, query }: PressStatsDashboardProps) {
   const date = formatPressDate(stats.fetchedAt);
   const withoutCampaigns = filter.source.kind === "free";
   const timeLabel = filter.timeRange === "all" ? "Gesamtzeitraum" : `letzte ${filter.timeRange} Tage`;
@@ -127,8 +149,11 @@ export function PressStatsDashboard({ stats, outcomes, regions, topicSignalCount
   const regionRows = Object.entries(regions)
     .filter(([, count]) => count >= minimumExternalCell)
     .sort((a, b) => b[1] - a[1] || bundeslandName(a[0]).localeCompare(bundeslandName(b[0]), "de"));
+  const latestRound = outcomes.length > 0 ? outcomes[outcomes.length - 1] : null;
+  const earlierRounds = outcomes.slice(0, -1).reverse();
   const quoteLines = [
-    `Bis zum ${date} wurden bundesweit ${formatNumber(stats.letterCount)} Briefentwürfe mit Brief-nach-Berlin erstellt, einschließlich Kampagnen.`,
+    `Bis zum ${formatPressDate(keyFigures.fetchedAt)} wurden bundesweit ${formatNumber(keyFigures.letterCount)} Briefentwürfe mit Brief-nach-Berlin erstellt, einschließlich Kampagnen.`,
+    ...keyFigureQuoteLines(keyFigures),
   ];
   const topTopic = topTopics[0];
   if (topTopic && topicSignalCount >= SHARE_PERCENT_MIN_BASE) {
@@ -147,50 +172,18 @@ export function PressStatsDashboard({ stats, outcomes, regions, topicSignalCount
         </form>
       </header>
 
-      <section aria-labelledby="press-total" className="rounded-xl border border-waldgruen/15 bg-white/80 px-4 py-4 sm:px-6 sm:py-5">
-        <div className="flex flex-wrap items-end justify-between gap-x-4 gap-y-3">
-          <div>
-            <p id="press-total" className="font-body text-sm font-semibold text-waldgruen-dark">Briefentwürfe insgesamt</p>
-            <p className="my-1 font-typewriter text-4xl font-bold leading-tight tabular-nums text-waldgruen-dark sm:text-5xl">
-              {formatNumber(stats.letterCount)}
-            </p>
-            <p className={bodyClass}>Bundesweiter Gesamtzähler mit Kampagnen · Stand {date}</p>
-          </div>
-          <CopyButton text={quoteLines.join("\n\n")} label="Zahlen zitieren" />
-        </div>
-      </section>
+      <KeyFigures
+        figures={keyFigures}
+        headingId="press-key-figures"
+        action={<CopyButton text={quoteLines.join("\n\n")} label="Zahlen zitieren" />}
+      />
 
-      <div className="mt-5">
+      <div className="mt-10">
+        <p className={`mb-3 ${bodyClass}`}>
+          Die Kernzahlen oben gelten immer für alle Briefe. Die Auswahl wirkt auf Themen, Wochenzahlen und Versandangaben.
+        </p>
         <PressStatsFilters query={query} />
-        <div className="mt-5 grid items-start gap-4 lg:grid-cols-[minmax(0,1.35fr)_minmax(0,1fr)]">
-          <section aria-labelledby="press-weekly" className={panelClass}>
-            <h2 id="press-weekly" className={titleClass}>Entwürfe pro Woche</h2>
-            <p className={`mt-1 ${bodyClass}`}>
-              Bundesweit · {sourceLabel}. Der Bundeslandfilter gilt für die Themen und das Feedback.
-            </p>
-            {weekly.status === "ready" ? (
-              <div className="mt-3">
-                <p className={`mb-1 ${bodyClass}`}>
-                  Letzte {weekly.points.length} vollständig erfasste Kalenderwochen.
-                </p>
-                <ColumnChart
-                  data={weekly.points}
-                  axisLabel="Kalenderwoche"
-                  unit="Entwürfe"
-                  emphasizePeak={false}
-                  tableSummary="Wochenzahlen als Tabelle"
-                  compact
-                />
-              </div>
-            ) : (
-              <p className={`mt-4 rounded-lg bg-creme px-3 py-3 ${bodyClass}`}>
-                {weekly.status === "collecting"
-                  ? "Der Verlauf erscheint, sobald mindestens vier vollständige Wochen erfasst sind."
-                  : "Wochenzahlen sind gerade nicht verfügbar."}
-              </p>
-            )}
-          </section>
-
+        <div className="mt-5 grid items-start gap-4 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.35fr)]">
           <section aria-labelledby="press-topics" className={panelClass}>
             <h2 id="press-topics" className={titleClass}>Häufigste Themen</h2>
             <p className={`mt-1 ${bodyClass}`}>{scopeText}</p>
@@ -218,33 +211,61 @@ export function PressStatsDashboard({ stats, outcomes, regions, topicSignalCount
               <p className={`mt-4 ${bodyClass}`}>Für diese Auswahl liegen zu wenige Themenfreigaben vor.</p>
             )}
           </section>
-        </div>
 
-        <div className="mt-4 space-y-3">
-          <Disclosure title="Was die Nachbefragung zeigt">
-            <p className={`mb-3 ${bodyClass}`}>Die Nachbefragungen haben eigene Zeiträume und gelten bundesweit.</p>
-            {outcomes.length ? (
-              <div className="divide-y divide-waldgruen/15">
-                {[...outcomes].reverse().map((round) => <FollowupRound key={round.cohort} round={round} />)}
+          <section aria-labelledby="press-weekly" className={panelClass}>
+            <h2 id="press-weekly" className={titleClass}>Entwürfe pro Woche</h2>
+            <p className={`mt-1 ${bodyClass}`}>
+              Bundesweit · {sourceLabel}. Der Bundeslandfilter gilt für die Themen und das Feedback.
+            </p>
+            {weekly.status === "ready" ? (
+              <div className="mt-3">
+                <p className={`mb-1 ${bodyClass}`}>
+                  Letzte {weekly.points.length} vollständig erfasste Kalenderwochen.
+                </p>
+                <ColumnChart
+                  data={weekly.points}
+                  axisLabel="Kalenderwoche"
+                  unit="Entwürfe"
+                  emphasizePeak={false}
+                  tableSummary="Wochenzahlen als Tabelle"
+                  compact
+                />
               </div>
             ) : (
-              <p className={bodyClass}>Es liegen noch keine Nachbefragungen vor.</p>
+              <p className={`mt-4 rounded-lg bg-creme px-3 py-3 ${bodyClass}`}>
+                {weekly.status === "collecting"
+                  ? "Der Verlauf erscheint, sobald mindestens vier vollständige Wochen erfasst sind."
+                  : "Wochenzahlen sind gerade nicht verfügbar."}
+              </p>
             )}
-          </Disclosure>
+          </section>
+        </div>
 
-          <Disclosure title="Erste Briefe und Versandangaben">
+        <section aria-labelledby="press-followup" className="mt-8">
+          <h2 id="press-followup" className={titleClass}>Was die Nachbefragung zeigt</h2>
+          <p className={`mt-1 ${bodyClass}`}>Die Nachbefragungen haben eigene Zeiträume und gelten bundesweit.</p>
+          {latestRound ? (
+            <div className={`mt-4 ${panelClass}`}>
+              <FollowupRound round={latestRound} early />
+            </div>
+          ) : (
+            <p className={`mt-4 ${bodyClass}`}>Es liegen noch keine Nachbefragungen vor.</p>
+          )}
+          {earlierRounds.length > 0 && (
+            <div className="mt-3">
+              <Disclosure title="Frühere Runden" level="h3">
+                <div className="divide-y divide-waldgruen/15">
+                  {earlierRounds.map((round) => <FollowupRound key={round.cohort} round={round} />)}
+                </div>
+              </Disclosure>
+            </div>
+          )}
+        </section>
+
+        <div className="mt-6 space-y-3">
+          <Disclosure title="Versandangaben">
             <p className={bodyClass}>{scopeText} · freiwillige Angaben im Feedback</p>
             <dl className="mt-3 grid gap-3 text-waldgruen-dark sm:grid-cols-2">
-              <div className="rounded-lg bg-creme p-3">
-                <dt className="text-sm font-semibold">Schreiben erstmals an Politiker:innen</dt>
-                <dd>
-                  <RateValue
-                    positive={stats.letterHistory.distribution.first}
-                    base={stats.letterHistory.answerCount}
-                    showPercent={stats.letterHistory.answerCount >= SHARE_PERCENT_MIN_BASE}
-                  />
-                </dd>
-              </div>
               <div className="rounded-lg bg-creme p-3">
                 <dt className="text-sm font-semibold first-letter:uppercase">{SEND_SIGNAL_LABEL}</dt>
                 <dd>

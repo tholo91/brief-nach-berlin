@@ -2,7 +2,7 @@ import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { aggregateInternalStats, type InternalReviewRow } from "@/lib/internalStats/aggregate";
 import { aggregateOutcomes, type InternalOutcomeRow } from "@/lib/internalStats/outcomes";
-import { buildKeyFigures, type KeyFigures } from "@/lib/internalStats/keyFigures";
+import { buildKeyFigures, keyFigureQuoteLines, type KeyFigures } from "@/lib/internalStats/keyFigures";
 import { getPublicStatsTeaser } from "@/lib/internalStats/publicTeaser";
 import { getPressStats } from "@/lib/internalStats/getInternalStats";
 import { PublicStatsLanding } from "@/components/internalStats/PublicStatsLanding";
@@ -193,5 +193,31 @@ describe("PublicStatsLanding", () => {
 
   it("enthält keinen Gedankenstrich", () => {
     expect(landing(fullFigures())).not.toContain("—");
+  });
+});
+
+describe("keyFigureQuoteLines", () => {
+  it("liefert je belastbarer Kernzahl einen Satz mit n von N und Prozent", () => {
+    const lines = keyFigureQuoteLines(fullFigures());
+    expect(lines).toHaveLength(4);
+    expect(lines[0]).toContain("40 %");
+    expect(lines[0]).toContain("12 von 30");
+    expect(lines[1]).toContain("60 %");
+    expect(lines[1]).toContain("18 von 30");
+    expect(lines[2]).toContain("75 %");
+    expect(lines[2]).toContain("30 von 40");
+    expect(lines[2]).toContain("Runde Test");
+    expect(lines[3]).toContain("4,5 von 5 Sternen");
+    for (const line of lines) {
+      expect(line).not.toContain("—");
+      expect(line).not.toMatch(/\b(wir|uns)\b/i);
+    }
+  });
+
+  it("lässt Zahlen ohne Mindestbasis weg", () => {
+    expect(keyFigureQuoteLines(buildKeyFigures(statsFrom([]), [], { averageRating: 0, totalCount: 0 }))).toEqual([]);
+    const onlyRating = keyFigureQuoteLines(buildKeyFigures(statsFrom([]), [], RATING));
+    expect(onlyRating).toHaveLength(1);
+    expect(onlyRating[0]).toContain("Sternen");
   });
 });

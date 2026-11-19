@@ -385,8 +385,23 @@ export function Step3Success({
     });
   }, []);
 
+  // Viele lokale MdLs (PLZ über mehrere Landtagswahlkreise): Chips + Suche
+  // filtern die Karten direkt, Logik wie bei Kampagnen ohne lokalen Treffer.
+  const landPersonFilterActive =
+    selectedLevel === "Land" &&
+    showLandPersonPicker &&
+    !campaignRestricted &&
+    politicians.length >= 7;
+
   const displayedPoliticians = useMemo(() => {
     if (campaignRestrictedNoLocalMatch) {
+      return filterCampaignRecipients(
+        politicians,
+        campaignSearch,
+        campaignPartyFilters
+      );
+    }
+    if (landPersonFilterActive) {
       return filterCampaignRecipients(
         politicians,
         campaignSearch,
@@ -406,6 +421,7 @@ export function Step3Success({
     campaignRestrictedNoLocalMatch,
     campaignPartyFilters,
     campaignSearch,
+    landPersonFilterActive,
     politicians,
     selectedPoliticianId,
     showMoreCampaignPoliticians,
@@ -1284,7 +1300,7 @@ export function Step3Success({
       ? "Dein Brief geht an die Verwaltung"
       : isLand
         ? showLandPersonPicker
-          ? "Lieber einer Person schreiben"
+          ? "An wen soll dein Brief gehen?"
           : landesregierung
             ? landAddressee === "head" && governmentHead
               ? `Dein Brief geht an ${governmentHead.label}`
@@ -1303,7 +1319,7 @@ export function Step3Success({
       ? "Der kommunale Empfänger ist bereits vorausgewählt."
       : isLand
         ? showLandPersonPicker
-          ? "Wähle selbst eine Person aus deiner PLZ-Zuordnung. Ich treffe keine automatische Personen- oder Parteiauswahl."
+          ? `Wähle ${landesregierung?.institutionKind === "senat" ? "den Senat" : "die Landesregierung"} oder eine Person aus dem Landtag.`
           : headPreselected
             ? "Die Regierungsspitze ist vorausgewählt. Du kannst stattdessen an die Landesregierung als Ganzes oder an ein Mitglied des Landtags schreiben."
             : governmentHead
@@ -1322,6 +1338,22 @@ export function Step3Success({
           : wahlkreisGroups.length === 1
             ? "Dein Wahlkreis wird von folgenden MdBs vertreten. Das MdB mit Direktmandat ist vorausgewählt, du kannst aber auch jemand anderen wählen."
             : "Deine PLZ liegt an einer Wahlkreis-Grenze. Wähle das MdB, das deinen Wahlkreis vertritt. Das Direktmandat ist je Wahlkreis vorausgewählt.";
+
+    const landInstitutionBackLabel =
+      landesregierung?.institutionKind === "senat"
+        ? "Zurück zum Senat"
+        : "Zurück zur Landesregierung";
+    const closeLandPersonPicker = () => {
+      setShowLandPersonPicker(false);
+      setShowAlternativePicker(false);
+      setAlternativePolitician(null);
+      setSelectedPoliticianId(null);
+      setMdbLaterSelected(false);
+      setCampaignSearch("");
+      setCampaignPartyFilters([]);
+      setLandesregierungSelected(true);
+      setLandAddressee(headPreselected ? "head" : "institution");
+    };
 
     return (
       <div className={currentSelection !== null ? "pb-40 sm:pb-0" : undefined}>
@@ -1404,14 +1436,10 @@ export function Step3Success({
           </div>
         )}
 
-        {(isAmbiguousLand || isAmbiguousKommune) && (
+        {isAmbiguousKommune && (
           <div role="note" className="mt-4 rounded-xl border border-waldgruen/25 bg-waldgruen/8 p-4 font-body text-sm text-warmgrau leading-relaxed">
             <p className="font-semibold text-waldgruen-dark">Hinweis zur Zuordnung</p>
-            {isAmbiguousLand ? (
-              <p className="mt-1">
-                Eine PLZ kann mehrere Landtagswahlkreise abdecken. Prüfe über das verlinkte Profil, welcher Wahlkreis zu deiner Wohnadresse gehört, bevor du auswählst.
-              </p>
-            ) : rathaus?.candidates && rathaus.candidates.length > 0 ? (
+            {rathaus?.candidates && rathaus.candidates.length > 0 ? (
               <RathausCandidateList candidates={rathaus.candidates} />
             ) : (
               <>
@@ -1517,7 +1545,7 @@ export function Step3Success({
           </div>
         )}
 
-        {isLand && landesregierung && !showLandPersonPicker && (
+        {isLand && landesregierung && (
           <div role="radiogroup" aria-label="Empfänger auswählen" className="mt-6">
             <div
               role="radio"
@@ -1621,19 +1649,45 @@ export function Step3Success({
                 </p>
               </div>
             )}
-            {!wizardData.campaign?.targetState && <button
-              type="button"
-              onClick={() => {
-                setShowLandPersonPicker(true);
-                setShowAlternativePicker(optionalLandRecipients.length === 0);
-                setLandesregierungSelected(false);
-                setSelectedPoliticianId(null);
-                setMdbLaterSelected(false);
-              }}
-              className="mt-4 font-body text-sm font-semibold text-waldgruen underline underline-offset-4 hover:text-waldgruen-dark"
-            >
-              Lieber einer Person im Landtag schreiben?
-            </button>}
+            {!wizardData.campaign?.targetState && (
+              <button
+                type="button"
+                aria-expanded={showLandPersonPicker}
+                aria-controls={showLandPersonPicker ? "land-person-picker" : undefined}
+                onClick={() => {
+                  if (showLandPersonPicker) {
+                    closeLandPersonPicker();
+                    return;
+                  }
+                  setShowLandPersonPicker(true);
+                  setShowAlternativePicker(true);
+                  setLandesregierungSelected(false);
+                  setSelectedPoliticianId(null);
+                  setMdbLaterSelected(false);
+                }}
+                className="mt-4 inline-flex items-center gap-1.5 font-body text-sm font-semibold text-waldgruen underline underline-offset-4 hover:text-waldgruen-dark"
+              >
+                Lieber einer Person im Landtag schreiben?
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="14"
+                  height="14"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  aria-hidden="true"
+                  className={[
+                    "flex-shrink-0 transition-transform motion-reduce:transition-none",
+                    showLandPersonPicker ? "rotate-180" : "",
+                  ].join(" ")}
+                >
+                  <polyline points="6 9 12 15 18 9" />
+                </svg>
+              </button>
+            )}
           </div>
         )}
 
@@ -1697,14 +1751,22 @@ export function Step3Success({
 
         {!isKommune &&
           (!isLand || showLandPersonPicker) &&
-          (displayedPoliticians.length > 0 || campaignRestricted) && (
-        <div className="mt-6">
+          (politicians.length > 0 || campaignRestricted) && (
+        <div className="mt-6" id={isLand ? "land-person-picker" : undefined}>
+          {isAmbiguousLand && (
+            <div role="note" className="mb-5 rounded-xl border border-waldgruen/25 bg-waldgruen/8 p-4 font-body text-sm text-warmgrau leading-relaxed">
+              <p className="font-semibold text-waldgruen-dark">Hinweis zur Zuordnung</p>
+              <p className="mt-1">
+                Eine PLZ kann mehrere Landtagswahlkreise abdecken. Prüfe über das verlinkte Profil, welcher Wahlkreis zu deiner Wohnadresse gehört, bevor du auswählst.
+              </p>
+            </div>
+          )}
           {bundeskanzler && (
             <p className="mb-3 font-body text-sm font-semibold text-waldgruen-dark">
               Oder: ein Mitglied des Bundestags aus deinem Wahlkreis
             </p>
           )}
-          {campaignRestrictedNoLocalMatch && (
+          {(campaignRestrictedNoLocalMatch || landPersonFilterActive) && (
             <div className="mb-6 grid gap-5">
               <div className="grid gap-2">
                 <p className="font-body text-sm font-semibold text-waldgruen-dark">
@@ -1735,7 +1797,7 @@ export function Step3Success({
 
               <label className="grid gap-1.5" htmlFor="campaign-recipient-search">
                 <span className="font-body text-sm font-semibold text-waldgruen-dark">
-                  MdB suchen
+                  {landPersonFilterActive ? "MdL suchen" : "MdB suchen"}
                 </span>
                 <input
                   id="campaign-recipient-search"
@@ -1745,11 +1807,16 @@ export function Step3Success({
                     setCampaignSearch(event.target.value);
                     setSelectedPoliticianId(null);
                   }}
-                  placeholder="Name, Partei, Wahlkreis oder Ausschuss"
+                  placeholder={
+                    landPersonFilterActive
+                      ? "Name, Partei oder Wahlkreis"
+                      : "Name, Partei, Wahlkreis oder Ausschuss"
+                  }
                   className="rounded-lg border border-warmgrau/30 bg-creme px-4 py-3 font-body text-base text-warmgrau outline-none focus:border-waldgruen focus:ring-2 focus:ring-waldgruen"
                 />
                 <span className="font-body text-sm text-warmgrau/60" aria-live="polite">
-                  {displayedPoliticians.length} von {campaignTargetCount} Personen
+                  {displayedPoliticians.length} von{" "}
+                  {landPersonFilterActive ? politicians.length : campaignTargetCount} Personen
                 </span>
               </label>
             </div>
@@ -1936,7 +2003,7 @@ export function Step3Success({
                 onClick={() => setShowAlternativePicker((current) => !current)}
                 className="font-body text-sm font-semibold text-waldgruen underline underline-offset-4 hover:text-waldgruen-dark"
               >
-                Lieber einer anderen Person im Landtag schreiben?
+                Nicht dabei? Im ganzen Landtag suchen
               </button>
             )}
             {showAlternativePicker && (
@@ -1953,18 +2020,10 @@ export function Step3Success({
         {isLand && showLandPersonPicker && (
           <button
             type="button"
-            onClick={() => {
-              setShowLandPersonPicker(false);
-              setShowAlternativePicker(false);
-              setAlternativePolitician(null);
-              setSelectedPoliticianId(null);
-              setMdbLaterSelected(false);
-              setLandesregierungSelected(true);
-              setLandAddressee(headPreselected ? "head" : "institution");
-            }}
+            onClick={closeLandPersonPicker}
             className="mt-5 font-body text-sm font-semibold text-waldgruen underline underline-offset-4 hover:text-waldgruen-dark"
           >
-            Zurück zur Landesregierung
+            {landInstitutionBackLabel}
           </button>
         )}
 

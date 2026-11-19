@@ -61,6 +61,7 @@ import {
 import { CampaignLogo } from "./CampaignLogo";
 import { CampaignManagerHeader } from "./CampaignManagerHeader";
 import { CampaignShareCard } from "./CampaignShareCard";
+import { CampaignVariantsEditor } from "./CampaignVariantsEditor";
 import { MdbCampaignSelector } from "./MdbCampaignSelector";
 import { MilestoneMailsSwitch } from "./MilestoneMailsSwitch";
 
@@ -122,6 +123,7 @@ export function CampaignManager({
   const [logoPreviewUrl, setLogoPreviewUrl] = useState<string | null>(null);
   const [logoError, setLogoError] = useState<string | null>(null);
   const [editOpen, setEditOpen] = useState(false);
+  const [issueTextDraft, setIssueTextDraft] = useState(campaign.issueText);
   const [milestoneMailsOn, setMilestoneMailsOn] = useState(campaign.milestoneMailsEnabled ?? true);
   const [milestoneResult, setMilestoneResult] = useState<SetMilestoneMailsResult | null>(null);
   const [milestonePending, startMilestoneTransition] = useTransition();
@@ -469,10 +471,20 @@ export function CampaignManager({
               maxLength={4000}
               rows={9}
               defaultValue={campaign.issueText}
+              onChange={(event) => setIssueTextDraft(event.target.value)}
               disabled={!canEdit || isBusy}
               className="rounded-md border border-warmgrau/20 bg-surface px-4 py-3 font-body text-base leading-relaxed outline-none focus:border-waldgruen disabled:opacity-60"
             />
           </div>
+
+          <CampaignVariantsEditor
+            initialAlternatives={campaign.issueTextAlternatives ?? []}
+            initialHooks={campaign.personalHooks ?? []}
+            issueTextChanged={issueTextDraft.trim() !== campaign.issueText.trim()}
+            disabled={!canEdit || isBusy}
+            alternativesError={targetFieldErrors?.issueTextAlternatives}
+            hooksError={targetFieldErrors?.personalHooks}
+          />
 
           <div className="grid gap-4 md:grid-cols-2">
             <div className="grid gap-2">

@@ -49,6 +49,17 @@ export function CampaignVariantsEditor({
   const hasAlternatives = alternatives.some((text) => text.trim().length > 0);
   const hookLimitReached = editIndex === null && hooks.length >= MAX_HOOKS;
 
+  // Ein getippter, noch nicht bestätigter Satzanfang geht beim Speichern mit.
+  const pendingHook = draft.trim();
+  const submittedHooks =
+    pendingHook.length >= CAMPAIGN_PERSONAL_HOOK_MIN
+      ? editIndex === null
+        ? hooks.length < MAX_HOOKS && !hooks.includes(pendingHook)
+          ? [...hooks, pendingHook]
+          : hooks
+        : hooks.map((hook, i) => (i === editIndex ? pendingHook : hook))
+      : hooks;
+
   function changeAlternative(index: number, value: string) {
     setAlternatives((current) => current.map((text, i) => (i === index ? value : text)));
   }
@@ -106,6 +117,9 @@ export function CampaignVariantsEditor({
   return (
     <>
       <input type="hidden" name="variantsSubmitted" value="1" />
+      {submittedHooks.map((hook) => (
+        <input key={hook} type="hidden" name="personalHook" value={hook} />
+      ))}
 
       <fieldset
         className="grid gap-3 rounded-md border border-warmgrau/15 bg-surface/55 p-4"
@@ -209,7 +223,6 @@ export function CampaignVariantsEditor({
                     : "border-warmgrau/25 bg-creme/60",
                 ].join(" ")}
               >
-                <input type="hidden" name="personalHook" value={hook} />
                 <button
                   type="button"
                   onClick={() => startEdit(index)}

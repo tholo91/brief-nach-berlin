@@ -43,7 +43,7 @@ export default function OsterholzFlyerPage() {
         {[
           ["01", "Erzählen", "Was passiert? Was stört dich?"],
           ["02", "Einordnen", "Wir finden die zuständige politische Ebene."],
-          ["03", "Abschicken", "Du schreibst deinen persönlichen Brief ab."],
+          ["03", "Abschicken", "Du schreibst deinen persönlichen Brief nach dem Entwurf."],
         ].map(([number, title, body]) => (
           <article key={number}>
             <span>{number}</span>

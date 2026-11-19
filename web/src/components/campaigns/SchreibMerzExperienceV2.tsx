@@ -219,7 +219,7 @@ export function SchreibMerzExperienceV2() {
             </div>
           </div>
           <p className="mx-auto mt-5 max-w-3xl font-body text-sm leading-relaxed text-warmgrau/65">
-            Du behältst die Kontrolle: Wir machen einen Entwurf daraus. Du prüfst ihn, schreibst ihn selbst von Hand ab und verschickst ihn. Brief-nach-Berlin verschickt nichts in deinem Namen.
+            Du behältst die Kontrolle: Wir machen einen Entwurf daraus. Du prüfst ihn, schreibst selbst von Hand nach dem Entwurf und verschickst ihn. Brief-nach-Berlin verschickt nichts in deinem Namen.
           </p>
         </div>
       </section>

@@ -52,7 +52,7 @@ const faqs = [
   },
   {
     q: "Ist Brief-nach-Berlin eine Petitionsplattform?",
-    a: "Nein. Petitionen sammeln tausend Unterschriften unter einem Text. Brief-nach-Berlin produziert individuelle Briefe in deinen eigenen Worten an deinen konkreten Wahlkreisabgeordneten. Du schreibst von Hand ab und schickst selbst los.",
+    a: "Nein. Petitionen sammeln tausend Unterschriften unter einem Text. Brief-nach-Berlin produziert individuelle Briefe in deinen eigenen Worten an deinen konkreten Wahlkreisabgeordneten. Du schreibst nach dem Entwurf von Hand und schickst selbst los.",
   },
   {
     q: "Welche Daten sammelt Brief-nach-Berlin?",
@@ -303,7 +303,7 @@ export default function WarumPage() {
           <p>
             Brief-nach-Berlin produziert echte, individuelle Briefe. Jeder
             Brief ist deiner, mit deinen Worten, an deinen konkreten
-            Wahlkreisabgeordneten. Du schreibst ihn von Hand ab und schickst
+            Wahlkreisabgeordneten. Du schreibst nach dem Entwurf von Hand und schickst
             ihn selbst los. Das ist mehr Aufwand als ein Klick auf
             &bdquo;Unterschreiben&ldquo; und genau deshalb wirkt es. Ein
             persönlicher Brief landet auf einem Schreibtisch. Eine
@@ -393,7 +393,7 @@ export default function WarumPage() {
           </h2>
           <p className="font-body text-warmgrau leading-relaxed mb-6">
             Beschreib, was dich stört, und gib deine Postleitzahl ein. Drei Minuten
-            später hast du einen Brief, den du in Ruhe abschreiben kannst.
+            später hast du einen Entwurf, nach dem du in Ruhe schreiben kannst.
           </p>
           <Link
             href="/app"

@@ -87,7 +87,7 @@ export default function BeispielePage() {
           </h1>
           <p className="font-body text-base md:text-lg text-warmgrau leading-relaxed mb-8 max-w-2xl text-pretty">
             Diese drei Briefe wurden mit Brief-nach-Berlin formuliert, von Hand
-            abgeschrieben und in den Briefkasten geworfen. Namen anonymisiert,
+            geschrieben und in den Briefkasten geworfen. Namen anonymisiert,
             der Rest steht so im Original.
           </p>
 

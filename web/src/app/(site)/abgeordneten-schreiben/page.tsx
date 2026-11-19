@@ -267,7 +267,7 @@ export default function AbgeordnetenSchreibenPage() {
           <p className="font-body text-warmgrau leading-relaxed mb-6">
             Drei Minuten, kein Account, kein Tracking. Brief-nach-Berlin prüft
             die passende Ebene für deine Postleitzahl und schlägt dir einen
-            Brief vor, den du selbst abschreibst und verschickst.
+            Brief vor, den du selbst nach dem Entwurf schreibst und verschickst.
           </p>
           <Link
             href="/app"

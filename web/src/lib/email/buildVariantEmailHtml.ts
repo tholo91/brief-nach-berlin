@@ -83,7 +83,7 @@ export function buildVariantEmailHtml(
           </tr>
           <tr>
             <td class="bnb-pad" style="padding:0 32px 28px;background-color:#ffffff;">
-              <p style="margin:0;font-family:Georgia,'Times New Roman',serif;font-size:14px;color:#4A4A4A;line-height:1.6;">Die Anschrift findest du in deiner ursprünglichen Brief-Mail. Bitte lies die Variante vor dem Abschreiben noch einmal gründlich durch.</p>
+              <p style="margin:0;font-family:Georgia,'Times New Roman',serif;font-size:14px;color:#4A4A4A;line-height:1.6;">Die Anschrift findest du in deiner ursprünglichen Brief-Mail. Bitte lies die Variante vor dem Schreiben noch einmal gründlich durch.</p>
             </td>
           </tr>
           <tr>

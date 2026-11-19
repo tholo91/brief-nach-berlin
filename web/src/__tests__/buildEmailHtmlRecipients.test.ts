@@ -59,7 +59,7 @@ describe("buildEmailHtml — Empfänger-Arten", () => {
     expect(html).toContain("Mitglied in der Abgeordnetensuche auswählen");
     expect(html).toContain("https://www.bundestag.de/abgeordnete");
     expect(html).toContain("Name, Anschrift und Anrede im Entwurf ersetzen");
-    expect(html).toContain("Brief prüfen, abschreiben und erst dann versenden");
+    expect(html).toContain("Brief prüfen, von Hand schreiben und erst dann versenden");
     expect(html).toContain("/kein-mdb-im-wahlkreis");
     expect(html).not.toContain(", MdB (");
   });

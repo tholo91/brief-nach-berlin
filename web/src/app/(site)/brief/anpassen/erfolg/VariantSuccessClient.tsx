@@ -175,7 +175,7 @@ export function VariantSuccessClient() {
               <li className="flex gap-3">
                 <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-waldgruen/15 font-body text-xs font-bold text-waldgruen">3</span>
                 <p className="font-body text-sm leading-relaxed text-warmgrau/75">
-                  Schreib die bessere Fassung von Hand ab oder passe einzelne Sätze weiter an.
+                  Schreib nach der besseren Fassung von Hand oder passe einzelne Sätze weiter an.
                 </p>
               </li>
             </ol>

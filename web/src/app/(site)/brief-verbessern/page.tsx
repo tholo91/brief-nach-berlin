@@ -217,7 +217,7 @@ export default async function BriefVerbessernPage({
               q: "Und dann?",
               aNode: (
                 <>
-                  Abschreiben, frankieren, absenden. Handgeschriebene Briefe
+                  Schreiben, frankieren, absenden. Handgeschriebene Briefe
                   werden im Bundestag wirklich gelesen. Tipps zu Länge, Adresse
                   und Tonfall in den{" "}
                   <Link href="/tipps" className="text-waldgruen hover:underline">

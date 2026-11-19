@@ -118,7 +118,7 @@ export function buildLetterEmailText(data: SendLetterEmailParams): string {
   }
   if (data.recipientKind === "mdb_later") {
     parts.push(
-      "Vor dem Abschreiben:\n1. Wähle ein Mitglied in der Abgeordnetensuche: https://www.bundestag.de/abgeordnete\n2. Ersetze Name, Anschrift und Anrede im Entwurf.\n3. Prüfe den Brief und schreibe ihn erst dann ab."
+      "Vor dem Schreiben:\n1. Wähle ein Mitglied in der Abgeordnetensuche: https://www.bundestag.de/abgeordnete\n2. Ersetze Name, Anschrift und Anrede im Entwurf.\n3. Prüfe den Brief und schreibe ihn erst dann von Hand."
     );
   }
   parts.push(
@@ -696,7 +696,7 @@ export function buildEmailHtml(data: SendLetterEmailParams): string {
     ? [
         '<a href="https://www.bundestag.de/abgeordnete" target="_blank" rel="noopener noreferrer" style="color:#2D5016;text-decoration:underline;">Mitglied in der Abgeordnetensuche auswählen</a>',
         "Name, Anschrift und Anrede im Entwurf ersetzen",
-        "Brief prüfen, abschreiben und erst dann versenden",
+        "Brief prüfen, von Hand schreiben und erst dann versenden",
       ]
     : copy.steps;
   const stampLink = (text: string) =>

@@ -38,7 +38,7 @@ const faqs = [
   },
   {
     q: "Wenn Bürger:innen KI nutzen, antworten Abgeordnete dann auch mit KI?",
-    a: "Möglich. Aber die KI-Kette hat bei Brief-nach-Berlin zwei harte Brüche: Der Brief wird per Hand abgeschrieben und per Post verschickt. Wer 150 bis 280 Wörter mit dem Kuli abschreibt, meint das Anliegen ernst. Genau diese Mühe ist das Signal, das durchkommt.",
+    a: "Möglich. Aber die KI-Kette hat bei Brief-nach-Berlin zwei harte Brüche: Der Brief wird per Hand geschrieben und per Post verschickt. Wer 150 bis 280 Wörter mit dem Kuli schreibt, meint das Anliegen ernst. Genau diese Mühe ist das Signal, das durchkommt.",
   },
   {
     q: "Ist das nicht unfair gegenüber der Verwaltung?",
@@ -122,7 +122,7 @@ export default function UeberfordertPage() {
           </h2>
           <p>
             Briefe verteilen sich nach Wahlkreis, also auf 299 Abgeordnete im
-            ganzen Land. Wer einen Brief per Hand abschreibt und per Post
+            ganzen Land. Wer einen Brief per Hand schreibt und per Post
             schickt, hat einen klaren Bruch in jeder KI-Kette eingebaut. Und:
             Interessenverbände schreiben dem Bundestag seit Jahrzehnten mit
             professionellem Apparat. Es geht hier um Waffengleichheit, nicht um
@@ -158,13 +158,13 @@ export default function UeberfordertPage() {
           </p>
           <p>
             Erstens: Der Brief wird nicht versendet, sondern angezeigt. Wer ihn
-            tatsächlich loswerden will, muss ihn von Hand abschreiben. 150 bis
+            tatsächlich loswerden will, muss ihn von Hand schreiben. 150 bis
             280 Wörter mit dem Kuli, das ist Aufwand. Wer das macht, meint das
             Anliegen ernst. Genau diese Mühe ist das Signal, das durchkommt.
           </p>
           <p>
             Zweitens: Brief-nach-Berlin ruft ausdrücklich dazu auf, den Entwurf vor dem
-            Abschreiben zu personalisieren. Eigene Beispiele, eigene Wörter,
+            Schreiben zu personalisieren. Eigene Beispiele, eigene Wörter,
             der eigene Tonfall. Der KI-Entwurf ist Startpunkt, nicht
             Endprodukt. KI-glatte Briefe, die in dieser Form das Paul-Löbe-Haus
             erreichen, gibt es so kaum.
@@ -248,7 +248,7 @@ export default function UeberfordertPage() {
             Schreib deinen Brief
           </h2>
           <p className="font-body text-warmgrau leading-relaxed mb-6">
-            Drei Minuten, ein Entwurf, kein Account. Abschreiben und in den
+            Drei Minuten, ein Entwurf, kein Account. Von Hand schreiben und in den
             Kasten werfen. Genau dieser Schritt ist der Bruch in der KI-Kette,
             und genau er macht den Brief lesenswert.
           </p>

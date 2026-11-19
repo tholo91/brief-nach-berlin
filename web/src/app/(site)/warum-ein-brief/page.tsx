@@ -353,7 +353,7 @@ export default function WarumPage() {
           </p>
           <p className="font-body text-warmgrau leading-relaxed mb-6 text-lg">
             Drei Minuten, kein Account, kein Tracking. Der fertige Brief kommt
-            per Mail zu dir, du schreibst ihn ab und steckst ihn in den
+            per Mail zu dir, du schreibst nach dem Entwurf von Hand und steckst ihn in den
             Briefkasten.
           </p>
           <Link

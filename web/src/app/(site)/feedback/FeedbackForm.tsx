@@ -377,7 +377,7 @@ export function FeedbackForm({
       <fieldset>
         <legend className="block font-body text-sm font-semibold text-warmgrau mb-1">
           {youth
-            ? "Schreibst du den Brief ab und schickst ihn los?"
+            ? "Schreibst du den Brief von Hand und schickst ihn los?"
             : "Hast du deinen Brief schon verschickt oder verschickst ihn gleich?"}
         </legend>
         <p className="font-body text-xs text-warmgrau/60 mb-3">

@@ -501,7 +501,7 @@ export default function AndereToolsPage() {
           </h2>
           <p className="font-body text-warmgrau leading-relaxed mb-6">
             Beschreib, was dich stört, und gib deine Postleitzahl ein. Drei Minuten
-            später hast du einen Brief, den du in Ruhe abschreiben kannst.
+            später hast du einen Entwurf, nach dem du in Ruhe schreiben kannst.
           </p>
           <Link
             href="/app"

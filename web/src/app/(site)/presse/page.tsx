@@ -145,7 +145,7 @@ const coverage = [
 const faqs = [
   {
     q: "Was ist Brief-nach-Berlin?",
-    a: "Brief-nach-Berlin hilft Bürgerinnen und Bürgern, aus ein paar Sätzen Frust einen formellen, persönlichen Brief an die für ihr Anliegen zuständige Abgeordnete oder den zuständigen Abgeordneten zu machen. Anliegen beschreiben, Postleitzahl eingeben, Briefentwurf erhalten. Der Brief wird dann von Hand abgeschrieben und selbst verschickt. Die Idee dahinter: Handgeschriebene Briefe werden im Bundestag tatsächlich gelesen und besprochen, anders als E-Mails oder Petitionen.",
+    a: "Brief-nach-Berlin hilft Bürgerinnen und Bürgern, aus ein paar Sätzen Frust einen formellen, persönlichen Brief an die für ihr Anliegen zuständige Abgeordnete oder den zuständigen Abgeordneten zu machen. Anliegen beschreiben, Postleitzahl eingeben, Briefentwurf erhalten. Der Brief wird dann von Hand geschrieben und selbst verschickt. Die Idee dahinter: Handgeschriebene Briefe werden im Bundestag tatsächlich gelesen und besprochen, anders als E-Mails oder Petitionen.",
   },
   {
     q: "Was kostet die Nutzung, und braucht man ein Konto?",

@@ -109,7 +109,7 @@ export default function OsterholzPage() {
             {[
               ["01", "Erzählen", "Was passiert? Was stört dich? Was sollte sich ändern?"],
               ["02", "Einordnen", "Wir finden heraus, welche politische Ebene zuständig ist."],
-              ["03", "Abschicken", "Du bekommst einen persönlichen Brief zum Abschreiben und Versenden."],
+              ["03", "Abschicken", "Du bekommst einen persönlichen Briefentwurf zum Schreiben und Versenden."],
             ].map(([number, title, body]) => (
               <article key={number} className="osterholz-step-card">
                 <span className="font-typewriter text-sm font-bold tracking-[0.18em] text-airmail-rot">

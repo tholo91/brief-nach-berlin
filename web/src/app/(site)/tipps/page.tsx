@@ -185,7 +185,7 @@ const tips: Tip[] = [
           der zwei Tage vor einer Abstimmung ankommt, hat ein anderes Gewicht
           als einer, der eine Woche danach eintrifft.
         </p>
-        <PullQuote>Schreib ihn heute ab. Heute.</PullQuote>
+        <PullQuote>Schreib deinen Brief heute. Heute.</PullQuote>
       </>
     ),
   },

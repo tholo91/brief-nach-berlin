@@ -124,7 +124,7 @@ export default function WerDarfSchreibenPage() {
 
         <StartLetterCta eyebrow="Gleich loslegen" className="mb-12">
           Beschreib dein Anliegen, gib deine Postleitzahl ein und du bekommst
-          einen Briefvorschlag zum Abschreiben. Kein Account nötig.
+          einen Briefvorschlag als Vorlage. Kein Account nötig.
         </StartLetterCta>
 
         <Prose>

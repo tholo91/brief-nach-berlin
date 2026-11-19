@@ -190,7 +190,7 @@ export default function BriefSchreibenWirktPage() {
             Die App war für meine Mutter der fehlende erste Schritt. Sie musste
             nicht mehr überlegen, wer zuständig ist oder wie ein Brief anfangen
             soll. Sie konnte sich auf ihr Anliegen konzentrieren. Am Ende war es
-            ihr Brief, weil sie ihn selbst abgeschrieben hat.
+            ihr Brief, weil sie ihn selbst geschrieben hat.
           </p>
 
           <h2 className="font-body text-2xl md:text-3xl font-bold text-waldgruen-dark pt-4">

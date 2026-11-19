@@ -250,7 +250,7 @@ export default function KommunalpolitikBriefPage() {
           <p className="font-body text-warmgrau leading-relaxed mb-6">
             Kommunales Anliegen? Drei Minuten, kein Account, kein Tracking.
             Brief-nach-Berlin schlägt dir einen Brief vor, den du selbst
-            prüfst, abschreibst und verschickst.
+            prüfst, von Hand schreibst und verschickst.
           </p>
           <Link
             href="/app"

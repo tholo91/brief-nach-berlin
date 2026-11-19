@@ -133,7 +133,7 @@ export default function Page() {
             Prüfe zuerst, auf welcher Ebene dein Thema entschieden wird. Eine Postleitzahl allein beantwortet diese Frage noch nicht, sie hilft aber beim Finden des Wahlkreises. Bei Bundestagsthemen ist dein Wahlkreisabgeordneter ein guter erster Kontakt. Bei Landes- und kommunalen Themen brauchst du oft eine andere Adresse.
           </p>
           <p>
-            Wenn du diese Suche abkürzen möchtest, kannst du bei <Link href="/app" className="text-waldgruen hover:underline">Brief-nach-Berlin kostenlos starten</Link>. Du beschreibst dein Anliegen, gibst deine Postleitzahl ein und bekommst Hilfe beim Finden der zuständigen Abgeordneten. Der Text wird als Vorschlag formuliert, den du selbst prüfen, abschreiben und verschicken kannst.
+            Wenn du diese Suche abkürzen möchtest, kannst du bei <Link href="/app" className="text-waldgruen hover:underline">Brief-nach-Berlin kostenlos starten</Link>. Du beschreibst dein Anliegen, gibst deine Postleitzahl ein und bekommst Hilfe beim Finden der zuständigen Abgeordneten. Der Text wird als Vorschlag formuliert, den du selbst prüfen, von Hand schreiben und verschicken kannst.
           </p>
 
           <h2>Was sollte ich vermeiden?</h2>

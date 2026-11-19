@@ -152,7 +152,7 @@ export default function LageDerNationPage() {
         <div className="mt-16 p-8 bg-waldgruen/5 border border-waldgruen/15 rounded-xl hover:bg-waldgruen/10 transition-colors">
           <p className="font-body text-warmgrau leading-relaxed mb-6">
             Drei Minuten, kein Account, kein Tracking. Der fertige Brief kommt
-            per Mail zu dir, du schreibst ihn ab und steckst ihn in den
+            per Mail zu dir, du schreibst nach dem Entwurf von Hand und steckst ihn in den
             Briefkasten.
           </p>
           <Link

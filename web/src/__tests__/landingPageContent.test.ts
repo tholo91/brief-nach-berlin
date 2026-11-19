@@ -5,7 +5,7 @@ import { join } from "node:path";
 
 const expectedCopy = {
   de: {
-    steps: ["Anliegen schildern", "Angaben ergänzen", "Abschreiben und abschicken"],
+    steps: ["Anliegen schildern", "Angaben ergänzen", "Schreiben und abschicken"],
     stepLabel: "Schritt 1",
     exampleLink: "Ganzen Beispielbrief lesen",
     storyTab: "So fing alles an",

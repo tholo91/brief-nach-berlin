@@ -248,7 +248,7 @@ const steps: Step[] = [
   },
   {
     n: 4,
-    title: "Schreib ihn von Hand ab",
+    title: "Schreib ihn selbst von Hand",
     effort: "10 bis 15 Minuten",
     body: (
       <>
@@ -564,7 +564,7 @@ export default function GuidePage() {
             Du musst dir nicht den ganzen Guide merken. Sag einfach, was dich
             stört. Brief-nach-Berlin findet die richtige Adresse und schlägt
             dir einen Brief vor, den du noch anpassen und dann mit der Hand
-            abschreiben kannst.
+            schreiben kannst.
           </p>
           <Link
             href="/app"

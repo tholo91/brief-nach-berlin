@@ -535,7 +535,7 @@ export function SchreibMerzExperience() {
                   <p>
                     <strong className="text-waldgruen-dark">Du behältst die Kontrolle:</strong>{" "}
                     Wir schicken dir den fertigen Entwurf per E-Mail. Du prüfst
-                    ihn, schreibst ihn selbst von Hand ab und sendest ihn an das
+                    ihn, schreibst selbst von Hand nach dem Entwurf und sendest ihn an das
                     Bundeskanzleramt oder die gewählte MdB-Adresse. Brief-nach-Berlin
                     verschickt nichts in deinem Namen.
                   </p>

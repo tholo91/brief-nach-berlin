@@ -61,7 +61,7 @@ export default function Nutzungsbedingungen() {
             </h2>
             <p>
               Der Brief ist dein Brief. Du entscheidest, was drinsteht, prüfst
-              und änderst den Entwurf, schreibst ihn ab, unterschreibst ihn und
+              und änderst den Entwurf, schreibst deinen Brief danach von Hand, unterschreibst ihn und
               schickst ihn ab. Die Verantwortung für den Inhalt liegt bei dir.
               Ich mache mir dein Anliegen und den Inhalt deines Briefs nicht zu
               eigen.

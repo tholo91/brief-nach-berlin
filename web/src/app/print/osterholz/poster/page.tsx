@@ -32,7 +32,7 @@ export default function OsterholzPosterPage() {
             <ol>
               <li>Anliegen schildern</li>
               <li>Zuständige Stelle finden</li>
-              <li>Brief abschreiben und abschicken</li>
+              <li>Brief schreiben und abschicken</li>
             </ol>
             <p className="print-url">www.brief-nach-berlin.de/osterholz</p>
           </div>

@@ -61,7 +61,7 @@ const faqs = [
   },
   {
     q: "Kann ich Feedback geben, ohne den Brief abzuschicken?",
-    a: "Ja, ausdrücklich. Du musst nichts abgeschickt haben. Auch wenn du den Brief nur gelesen, aber nicht abgeschrieben hast, zählt deine Meinung. Schreib mir über den Button oben oder direkt per Mail.",
+    a: "Ja, ausdrücklich. Du musst nichts abgeschickt haben. Auch wenn du den Brief nur gelesen, aber nicht geschrieben hast, zählt deine Meinung. Schreib mir über den Button oben oder direkt per Mail.",
   },
   {
     q: "Was wurde dank Feedback konkret verbessert?",

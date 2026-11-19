@@ -22,6 +22,10 @@ jest.mock("@/lib/supabase/server", () => ({
   getServiceRoleClient: jest.fn(),
 }));
 
+jest.mock("@/lib/reviews/getReviewStats", () => ({
+  getReviewStats: jest.fn().mockResolvedValue({ averageRating: 0, totalCount: 0 }),
+}));
+
 const mockedGetServiceRoleClient = jest.mocked(getServiceRoleClient);
 
 const round = OUTCOME_ROUNDS[0];

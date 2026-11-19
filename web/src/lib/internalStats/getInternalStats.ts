@@ -19,6 +19,8 @@ import {
   type OutcomeRoundStats,
 } from "./outcomes";
 import { sentOutcomeRounds, testEmailExclusionList } from "@/lib/rueckmeldung/cohort";
+import { getReviewStats } from "@/lib/reviews/getReviewStats";
+import { buildKeyFigures, type KeyFigures } from "./keyFigures";
 
 type InternalStatsRows = {
   reviews: InternalReviewRow[];
@@ -68,13 +70,22 @@ export async function getPressStats(filter: StatsFilter): Promise<{
   outcomes: OutcomeRoundStats[];
   regions: Record<string, number>;
   topicSignalCount: number;
+  keyFigures: KeyFigures;
 }> {
-  const rows = await fetchInternalStatsRows({
-    includePrivateOutcomeFields: false,
-    includeOutcomes: true,
-  });
+  const [rows, reviewStats] = await Promise.all([
+    fetchInternalStatsRows({
+      includePrivateOutcomeFields: false,
+      includeOutcomes: true,
+    }),
+    getReviewStats(),
+  ]);
   const fetchedAt = new Date().toISOString();
   const stats = aggregateRows(rows, filter, fetchedAt);
+  // Kernzahlen sind immer ungefiltert, damit Presse- und Öffentlichkeitsansicht übereinstimmen.
+  const globalStats =
+    filter.timeRange === "all" && !isNarrowingFilter(filter)
+      ? stats
+      : aggregateRows(rows, DEFAULT_STATS_FILTER, fetchedAt);
   const regionBaseline = filter.bundesland
     ? aggregateRows(rows, { ...filter, bundesland: null }, fetchedAt)
     : stats;
@@ -86,6 +97,7 @@ export async function getPressStats(filter: StatsFilter): Promise<{
     outcomes,
     regions: regionBaseline.letterSignals.bundeslandCounts,
     topicSignalCount: stats.letterSignals.signalCount,
+    keyFigures: buildKeyFigures(globalStats, outcomes, reviewStats),
   };
 }
 

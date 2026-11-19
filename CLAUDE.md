@@ -28,6 +28,7 @@ In `CLAUDE.md` und `AGENTS.md` identisch halten.
 - **Kosten im Blick.** Vercel und Brevo sind bezahlt, Mistral wird pro Nutzung bezahlt. Supabase soll so lange wie möglich im Free-Tarif bleiben: Daten in SQL aggregieren statt alle Zeilen zu laden, keine zusätzlichen Supabase-Dienste ohne Rückfrage.
 - **Keine neuen Dienste oder SDKs** ohne Rückfrage bei Thomas.
 - **Mistral-Kontingent schonen.** Tests mocken Mistral immer (`@/lib/mistral`). Keine echten `generateLetter`-Aufrufe aus Tests oder Skripten, während Kampagnen laufen: Das Kontingent (15 Anfragen pro Minute für mistral-large) teilt sich mit der Live-Seite.
+- **Öffentliches Repo: vor jedem Commit abwägen, was sichtbar sein darf.** Das Repo ist Open Source, alles Committete bleibt in der Git-Historie öffentlich. Keine Privatadressen, Namen Dritter, Nutzerdaten, Secrets, Förderunterlagen oder interne Strategie committen. Solche Notizen gehören in gitignorte Orte (`.planning/todos/`, `.planning/local/`, `.planning/funding/`). Im Zweifel Thomas fragen, bevor es committet wird.
 
 <!-- GSD:stack-start source:codebase/STACK.md -->
 ## Technology Stack

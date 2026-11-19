@@ -328,6 +328,14 @@ export default function KampagneStartenSeoPage() {
             </li>
             <li>
               <Link
+                href="/petition-und-brief"
+                className="font-body text-waldgruen hover:text-waldgruen-dark underline underline-offset-2 transition-colors"
+              >
+                Petition und Brief kombinieren: mehr Druck nach der Unterschrift
+              </Link>
+            </li>
+            <li>
+              <Link
                 href="/brief-oder-petition"
                 className="font-body text-waldgruen hover:text-waldgruen-dark underline underline-offset-2 transition-colors"
               >

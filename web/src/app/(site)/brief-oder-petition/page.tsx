@@ -245,6 +245,14 @@ export default function BriefOderPetitionPage() {
             </li>
             <li>
               <Link
+                href="/petition-und-brief"
+                className="font-body text-waldgruen hover:text-waldgruen-dark underline underline-offset-2 transition-colors"
+              >
+                Nach der Petition: Unterzeichnende einen Brief schreiben lassen
+              </Link>
+            </li>
+            <li>
+              <Link
                 href="/lohnt-sich-brief-an-politiker"
                 className="font-body text-waldgruen hover:text-waldgruen-dark underline underline-offset-2 transition-colors"
               >

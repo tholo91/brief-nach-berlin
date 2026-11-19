@@ -93,6 +93,7 @@ const listLink =
 
 const relatedLinks = [
   { href: "/brief-oder-petition", title: "Brief oder Petition: was wirkt mehr?" },
+  { href: "/petition-und-brief", title: "Petition und Brief kombinieren: mehr Druck nach der Unterschrift" },
   { href: "/kampagne-starten", title: "Briefkampagne starten, allein oder mit deiner Initiative" },
   { href: "/kommune-land-bund-eu", title: "Kommune, Land, Bund oder EU: wer ist zuständig?" },
   { href: "/andere-tools", title: "Andere Tools für mehr Demokratie im Vergleich" },

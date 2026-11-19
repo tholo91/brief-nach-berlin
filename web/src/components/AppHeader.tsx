@@ -5,6 +5,8 @@ import type { ReactNode } from "react";
 import { usePathname } from "next/navigation";
 import { LanguageSwitcher } from "@/components/i18n/LanguageSwitcher";
 import { ClassIcon } from "@/components/schule/icons";
+import { useStoredClassToken } from "@/components/schule/useStoredClassToken";
+import { schuleHref } from "@/lib/schule/classLinkStorage";
 
 const NGO_NAV_LINKS = [
   { label: "Übersicht", href: "/ngo-briefkampagne#uebersicht" },
@@ -44,6 +46,8 @@ export default function AppHeader({
   cta?: { href: string; label: string; mobileLabel: string };
 }) {
   const pathname = usePathname();
+  // Mit gemerktem Klassenlink führt der Reiter "Für Schüler:innen" zurück in die Klasse.
+  const classToken = useStoredClassToken();
   const showCampaignCta = pathname === "/ngo-briefkampagne";
   // Kampagne verwalten portals its section links and contact button into these slots.
   const showManagerSlots = pathname === "/kampagne/verwalten";
@@ -139,7 +143,7 @@ export default function AppHeader({
               return (
                 <Link
                   key={link.href}
-                  href={link.href}
+                  href={link.href === "/schule" ? schuleHref(classToken) : link.href}
                   aria-current={active ? "page" : undefined}
                   className={`shrink-0 whitespace-nowrap border-b-2 py-1.5 font-body text-sm transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-waldgruen ${
                     active

@@ -24,12 +24,16 @@ export async function createClassLinkAction(input: {
   plz: string;
   /** Fehlt das Feld, gilt "email". */
   delivery?: "pdf" | "email";
+  /** Empfänger-Ebene: "auto" (Standard, der Router entscheidet), "Land" oder "Bund". */
+  level?: "auto" | "Land" | "Bund";
 }): Promise<{ url: string; expiresAt: string } | { error: ClassLinkError; message: string }> {
   const klasse = input?.klasse;
   const plz = input?.plz;
   const delivery = input?.delivery === undefined ? "email" : input.delivery;
+  const level = input?.level === undefined ? "auto" : input.level;
   if (
     !isValidKlasse(klasse) ||
+    (level !== "auto" && level !== "Land" && level !== "Bund") ||
     typeof plz !== "string" ||
     !/^\d{5}$/.test(plz) ||
     (delivery !== "pdf" && delivery !== "email")
@@ -46,7 +50,7 @@ export async function createClassLinkAction(input: {
   );
   if (!limit.allowed) return fail("rate_limited");
 
-  const token = signClassToken({ klasse, plz, delivery });
+  const token = signClassToken({ klasse, plz, delivery, ...(level === "auto" ? {} : { level }) });
   return {
     url: `${APP_URL}/schule?k=${token}`,
     expiresAt: new Date(Date.now() + CLASS_TOKEN_MAX_AGE_SECONDS * 1000).toISOString(),

@@ -16,6 +16,8 @@ interface Step1FormProps {
   isYouth?: boolean;
   /** Klassenlink "PDF statt E-Mail": kein E-Mail-Feld, keine E-Mail-Prüfung. */
   pdfDelivery?: boolean;
+  /** Klassenlink: Die PLZ kommt aus dem Link und lässt sich nicht ändern (der Server nimmt ohnehin die Token-PLZ). */
+  plzLocked?: boolean;
 }
 
 export function Step1Form({
@@ -25,6 +27,7 @@ export function Step1Form({
   onPlzErrorDismiss,
   isYouth = false,
   pdfDelivery = false,
+  plzLocked = false,
 }: Step1FormProps) {
   const copy = useUiCopy();
   const {
@@ -162,7 +165,12 @@ export function Step1Form({
             inputMode="numeric"
             maxLength={5}
             placeholder={copy.contact.postalCodePlaceholder}
-            className={inputClassName((!!errors.plz && !!touchedFields.plz) || !!plzError)}
+            readOnly={plzLocked}
+            className={
+              plzLocked
+                ? inputClassName(false).replace("bg-creme", "bg-warmgrau/5 cursor-not-allowed")
+                : inputClassName((!!errors.plz && !!touchedFields.plz) || !!plzError)
+            }
             aria-describedby={errors.plz && touchedFields.plz ? "plz-error" : plzError ? "plz-server-error" : "plz-hint"}
             aria-invalid={(!!errors.plz && !!touchedFields.plz) || !!plzError}
             onFocus={() => onPlzErrorDismiss?.()}
@@ -173,9 +181,11 @@ export function Step1Form({
             className="text-sm text-warmgrau/60 mt-1 truncate"
             aria-live="polite"
           >
-            {locality
-              ? copy.contact.localityLookup.replace("{locality}", locality.ort)
-              : copy.contact.postalCodeHint}
+            {plzLocked
+              ? `Die PLZ kommt aus deinem Klassenlink.${locality ? ` ${copy.contact.localityLookup.replace("{locality}", locality.ort)}` : ""}`
+              : locality
+                ? copy.contact.localityLookup.replace("{locality}", locality.ort)
+                : copy.contact.postalCodeHint}
           </p>
           {errors.plz && touchedFields.plz && (
             <p id="plz-error" role="alert" className="text-sm text-airmail-rot mt-1">

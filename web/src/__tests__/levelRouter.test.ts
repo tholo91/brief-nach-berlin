@@ -100,6 +100,62 @@ describe("routeToLevel", () => {
     expect(request.messages[1].content.length).toBe(5000 + "<anliegen></anliegen>".length);
   });
 
+  it("parst die Antwort mit Ressort und gibt es zurück", async () => {
+    mockResponse({
+      primary: { level: "Land", confidence: "high" },
+      reasoning: "Schulen sind Ländersache.",
+      ressort: "bildung",
+    });
+    const result = await routeToLevel("Unsere Schultoiletten sind kaputt");
+    expect(result.primary.level).toBe("Land");
+    expect(result.ressort).toBe("bildung");
+  });
+
+  it("parst die Antwort ohne Ressort weiterhin", async () => {
+    mockResponse({
+      primary: { level: "Land", confidence: "high" },
+      reasoning: "Schulen sind Ländersache.",
+    });
+    const result = await routeToLevel("Unsere Schultoiletten sind kaputt");
+    expect(result.primary.level).toBe("Land");
+    expect(result.ressort).toBeUndefined();
+  });
+
+  it("wirft bei einem unbekannten Ressort nicht, es zählt als kein Ressort", async () => {
+    mockResponse({
+      primary: { level: "Land", confidence: "high" },
+      reasoning: "Schulen sind Ländersache.",
+      ressort: "zauberei",
+    });
+    const result = await routeToLevel("Unsere Schultoiletten sind kaputt");
+    expect(result.primary.level).toBe("Land");
+    expect(result.ressort).toBeUndefined();
+  });
+
+  it("bietet Mistral die Ressort-Codes im Schema und im Prompt an", async () => {
+    mockResponse({
+      primary: { level: "Land", confidence: "high" },
+      reasoning: "Schulen sind Ländersache.",
+    });
+    await routeToLevel("Unsere Schultoiletten sind kaputt");
+    const request = completeMock.mock.calls[0][0] as {
+      responseFormat: { jsonSchema: { schemaDefinition: { properties: Record<string, unknown>; required: string[] } } };
+      messages: Array<{ content: string }>;
+    };
+    const schema = request.responseFormat.jsonSchema.schemaDefinition;
+    expect(JSON.stringify(schema.properties.ressort)).toContain("bildung");
+    expect(schema.required).not.toContain("ressort");
+    expect(request.messages[0].content).toContain("ressort:");
+  });
+
+  it("alte Routing-Ergebnisse ohne Ressort bleiben gültig", () => {
+    const parsed = RoutingResultSchema.safeParse({
+      primary: { level: "Bund", confidence: "high" },
+      reasoning: "Rentenpolitik ist Bundeskompetenz.",
+    });
+    expect(parsed.success).toBe(true);
+  });
+
   it("wirft bei zu kurzem Anliegen ohne Mistral-Call", async () => {
     await expect(routeToLevel("ab")).rejects.toThrow(LevelRouterError);
     expect(completeMock).not.toHaveBeenCalled();

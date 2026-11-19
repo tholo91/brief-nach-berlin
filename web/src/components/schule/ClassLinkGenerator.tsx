@@ -5,21 +5,33 @@ import { CampaignQrDownload } from "@/components/campaigns/CampaignQrDownload";
 import { createClassLinkAction } from "@/lib/actions/createClassLink";
 import { KLASSE_MAX, KLASSE_MIN } from "@/lib/schule/youth";
 import { BigQrOverlay } from "./BigQrOverlay";
-import { classLinkFileName, formatValidUntil } from "./classLinkHelpers";
+import {
+  LEVEL_OPTIONS,
+  STEP_INFO,
+  STEP_LABELS,
+  classLinkFileName,
+  formatValidUntil,
+  levelSummary,
+  validateClassLinkStep,
+  type ClassLinkLevel,
+  type ClassLinkStep,
+} from "./classLinkHelpers";
 import { CopyIcon, ExpandIcon, LinkIcon } from "./icons";
 
 const KLASSEN = Array.from({ length: KLASSE_MAX - KLASSE_MIN + 1 }, (_, i) => KLASSE_MIN + i);
 
 const focusRing =
   "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-waldgruen focus-visible:ring-offset-2";
-const fieldClass = `mt-2 block min-h-11 w-full rounded-lg border border-waldgruen/25 bg-white px-3 font-body text-base text-warmgrau ${focusRing}`;
-const buttonClass = `inline-flex min-h-12 items-center justify-center gap-2 rounded-lg px-4 py-2.5 font-body text-base font-bold transition-colors ${focusRing}`;
+const fieldClass = `mt-1 block min-h-11 w-full rounded-lg border border-waldgruen/25 bg-white px-3 font-body text-base text-warmgrau ${focusRing}`;
+const optionClass =
+  "flex cursor-pointer items-start gap-2.5 rounded-lg border border-waldgruen/25 bg-white px-3 py-2 transition-colors has-checked:border-waldgruen has-checked:bg-waldgruen/5 has-focus-visible:ring-2 has-focus-visible:ring-waldgruen has-focus-visible:ring-offset-2";
+const buttonClass = `inline-flex min-h-11 items-center justify-center gap-2 rounded-lg px-4 py-2.5 font-body text-base font-bold transition-colors ${focusRing}`;
 
 type Delivery = "pdf" | "email";
-type Result = { url: string; expiresAt: string; klasse: number; plz: string; delivery: Delivery };
+type Result = { url: string; expiresAt: string; klasse: number; plz: string; delivery: Delivery; level: ClassLinkLevel };
 
 const DELIVERY_OPTIONS: { value: Delivery; label: string; hint: string }[] = [
-  { value: "pdf", label: "Als PDF, ohne E-Mail", hint: "Alle speichern den Entwurf auf ihrem Gerät." },
+  { value: "pdf", label: "Als PDF, ohne E-Mail", hint: "Entwurf wird auf dem Gerät gespeichert." },
   { value: "email", label: "Per E-Mail", hint: "Jede Person braucht eine eigene Adresse." },
 ];
 
@@ -27,7 +39,9 @@ export function ClassLinkGenerator() {
   const [klasse, setKlasse] = useState("");
   const [plz, setPlz] = useState("");
   const [delivery, setDelivery] = useState<Delivery>("pdf");
+  const [level, setLevel] = useState<ClassLinkLevel>("auto");
   const [loading, setLoading] = useState(false);
+  const [step, setStep] = useState<ClassLinkStep>(1);
   const [error, setError] = useState("");
   const [result, setResult] = useState<Result | null>(null);
   const [copyState, setCopyState] = useState<"idle" | "copied" | "manual">("idle");
@@ -38,32 +52,52 @@ export function ClassLinkGenerator() {
   async function onSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     if (loading) return;
+    if (step < 3) {
+      goNext();
+      return;
+    }
     setError("");
     setCopyState("idle");
     const klasseNumber = Number(klasse);
     const plzClean = plz.trim();
-    if (!klasse) {
-      setError("Wähl zuerst die Klassenstufe.");
-      return;
-    }
-    if (!/^\d{5}$/.test(plzClean)) {
-      setError("Gib eine fünfstellige Postleitzahl ein.");
+    const stepError = validateClassLinkStep(1, { klasse, plz });
+    if (stepError) {
+      setError(stepError);
+      setStep(1);
       return;
     }
     setLoading(true);
     try {
-      const response = await createClassLinkAction({ klasse: klasseNumber, plz: plzClean, delivery });
+      const response = await createClassLinkAction({ klasse: klasseNumber, plz: plzClean, delivery, level });
       if ("error" in response) {
         setError(response.message);
         setResult(null);
       } else {
-        setResult({ url: response.url, expiresAt: response.expiresAt, klasse: klasseNumber, plz: plzClean, delivery });
+        setResult({ url: response.url, expiresAt: response.expiresAt, klasse: klasseNumber, plz: plzClean, delivery, level });
       }
     } catch {
       setError("Das hat gerade nicht geklappt. Bitte versuch es noch einmal.");
     } finally {
       setLoading(false);
     }
+  }
+
+  function goNext() {
+    const stepError = validateClassLinkStep(step, { klasse, plz });
+    setError(stepError);
+    if (!stepError && step < 3) setStep((step + 1) as ClassLinkStep);
+  }
+
+  function goBack() {
+    setError("");
+    if (step > 1) setStep((step - 1) as ClassLinkStep);
+  }
+
+  function editSettings() {
+    setResult(null);
+    setError("");
+    setStep(1);
+    setOverlayOpen(false);
   }
 
   async function copyLink() {
@@ -97,92 +131,149 @@ export function ClassLinkGenerator() {
         <h2 id="schule-generator" className="font-typewriter text-xl font-bold text-waldgruen-dark sm:text-2xl">
           Dein Klassenlink
         </h2>
-        <p className="mt-2 font-body text-sm leading-relaxed text-warmgrau/80">
-          Mit der Schul-PLZ schreiben alle an die Abgeordneten deines Schulorts. Der Link gilt 14 Tage.
-        </p>
 
-        <form onSubmit={onSubmit} noValidate className="mt-5 grid gap-4">
-          <div>
-            <label htmlFor="schule-klasse" className="font-body text-sm font-semibold text-waldgruen-dark">
-              Klassenstufe
-            </label>
-            <select
-              id="schule-klasse"
-              required
-              value={klasse}
-              onChange={(e) => setKlasse(e.target.value)}
-              className={fieldClass}
-            >
-              <option value="">Bitte wählen</option>
-              {KLASSEN.map((value) => (
-                <option key={value} value={value}>
-                  Klasse {value}
-                </option>
-              ))}
-            </select>
-          </div>
-          <div>
-            <label htmlFor="schule-plz" className="font-body text-sm font-semibold text-waldgruen-dark">
-              Postleitzahl der Schule
-            </label>
-            <input
-              id="schule-plz"
-              type="text"
-              inputMode="numeric"
-              autoComplete="postal-code"
-              maxLength={5}
-              required
-              value={plz}
-              onChange={(e) => setPlz(e.target.value.replace(/\D/g, ""))}
-              aria-describedby={error ? "schule-fehler" : undefined}
-              className={fieldClass}
-            />
-          </div>
-          <fieldset>
-            <legend className="font-body text-sm font-semibold text-waldgruen-dark">Entwurf für die Schüler:innen</legend>
-            <div className="mt-2 grid gap-2">
-              {DELIVERY_OPTIONS.map((option) => (
-                <label
-                  key={option.value}
-                  className="flex cursor-pointer items-start gap-3 rounded-lg border border-waldgruen/25 bg-white p-3 transition-colors has-checked:border-waldgruen has-checked:bg-waldgruen/5 has-focus-visible:ring-2 has-focus-visible:ring-waldgruen has-focus-visible:ring-offset-2"
+        {!result && (
+          <form onSubmit={onSubmit} noValidate className="mt-3">
+            <ol className="flex items-center gap-2 font-body text-xs font-semibold" aria-label="Schritte">
+              {STEP_LABELS.map(({ step: n, label }) => (
+                <li
+                  key={n}
+                  aria-current={step === n ? "step" : undefined}
+                  className={`flex items-center gap-1.5 ${step === n ? "text-waldgruen-dark" : "text-warmgrau/60"}`}
                 >
-                  <input
-                    type="radio"
-                    name="schule-delivery"
-                    value={option.value}
-                    checked={delivery === option.value}
-                    onChange={() => {
-                      setDelivery(option.value);
-                      setResult(null);
-                    }}
-                    className="mt-1 h-4 w-4 accent-waldgruen"
-                  />
-                  <span className="font-body text-sm leading-snug">
-                    <span className="block font-semibold text-waldgruen-dark">{option.label}</span>
-                    <span className="block text-warmgrau/80">{option.hint}</span>
+                  <span
+                    className={`flex h-5 w-5 items-center justify-center rounded-full text-[11px] ${step === n ? "bg-waldgruen text-creme" : step > n ? "bg-waldgruen/20 text-waldgruen-dark" : "border border-warmgrau/30"}`}
+                  >
+                    {n}
                   </span>
-                </label>
+                  {label}
+                  {n < 3 && <span aria-hidden="true" className="ml-1 h-px w-4 bg-warmgrau/30 sm:w-8" />}
+                </li>
               ))}
+            </ol>
+
+            <div className="mt-3 min-h-[11.5rem]">
+              <div hidden={step !== 1} className="grid gap-3">
+                <div>
+                  <label htmlFor="schule-klasse" className="font-body text-sm font-semibold text-waldgruen-dark">
+                    Klassenstufe
+                  </label>
+                  <select
+                    id="schule-klasse"
+                    required
+                    value={klasse}
+                    onChange={(e) => setKlasse(e.target.value)}
+                    className={fieldClass}
+                  >
+                    <option value="">Bitte wählen</option>
+                    {KLASSEN.map((value) => (
+                      <option key={value} value={value}>
+                        Klasse {value}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                <div>
+                  <label htmlFor="schule-plz" className="font-body text-sm font-semibold text-waldgruen-dark">
+                    Postleitzahl der Schule
+                  </label>
+                  <input
+                    id="schule-plz"
+                    type="text"
+                    inputMode="numeric"
+                    autoComplete="postal-code"
+                    maxLength={5}
+                    required
+                    value={plz}
+                    onChange={(e) => setPlz(e.target.value.replace(/\D/g, ""))}
+                    aria-describedby={error ? "schule-fehler" : undefined}
+                    className={fieldClass}
+                  />
+                </div>
+              </div>
+
+              <fieldset hidden={step !== 2}>
+                <legend className="font-body text-sm font-semibold text-waldgruen-dark">Entwurf für die Schüler:innen</legend>
+                <div className="mt-1 grid gap-1.5">
+                  {DELIVERY_OPTIONS.map((option) => (
+                    <label key={option.value} className={optionClass}>
+                      <input
+                        type="radio"
+                        name="schule-delivery"
+                        value={option.value}
+                        checked={delivery === option.value}
+                        onChange={() => setDelivery(option.value)}
+                        className="mt-0.5 h-4 w-4 accent-waldgruen"
+                      />
+                      <span className="font-body text-sm leading-snug">
+                        <span className="block font-semibold text-waldgruen-dark">{option.label}</span>
+                        <span className="block text-xs text-warmgrau/80">{option.hint}</span>
+                      </span>
+                    </label>
+                  ))}
+                </div>
+              </fieldset>
+
+              <fieldset hidden={step !== 3}>
+                <legend className="font-body text-sm font-semibold text-waldgruen-dark">Empfänger</legend>
+                <div className="mt-1 grid gap-1.5">
+                  {LEVEL_OPTIONS.map((option) => (
+                    <label key={option.value} className={optionClass}>
+                      <input
+                        type="radio"
+                        name="schule-level"
+                        value={option.value}
+                        checked={level === option.value}
+                        onChange={() => setLevel(option.value)}
+                        className="mt-0.5 h-4 w-4 accent-waldgruen"
+                      />
+                      <span className="font-body text-sm leading-snug">
+                        <span className="block font-semibold text-waldgruen-dark">{option.label}</span>
+                        <span className="block text-xs text-warmgrau/80">{option.hint}</span>
+                      </span>
+                    </label>
+                  ))}
+                </div>
+              </fieldset>
             </div>
-          </fieldset>
-          <div>
-            <button
-              type="submit"
-              disabled={loading}
-              aria-busy={loading}
-              className={`${buttonClass} w-full bg-waldgruen text-creme hover:bg-waldgruen-dark disabled:cursor-wait disabled:opacity-70`}
-            >
-              <LinkIcon />
-              {loading ? "Link wird erstellt..." : "Link erstellen"}
-            </button>
-            <p id="schule-fehler" role="alert" className="mt-3 font-body text-sm text-airmail-rot empty:hidden">
+
+            <p className="mt-2 font-body text-xs leading-snug text-warmgrau/80">{STEP_INFO[step]}</p>
+            <p id="schule-fehler" role="alert" className="mt-2 font-body text-sm text-airmail-rot empty:hidden">
               {error}
             </p>
-          </div>
-        </form>
+
+            <div className="mt-3 flex gap-2">
+              {step > 1 && (
+                <button
+                  type="button"
+                  onClick={goBack}
+                  className={`${buttonClass} border border-waldgruen/40 bg-white text-waldgruen-dark hover:bg-waldgruen/5`}
+                >
+                  Zurück
+                </button>
+              )}
+              {step < 3 ? (
+                <button key="next" type="button" onClick={goNext} className={`${buttonClass} flex-1 bg-waldgruen text-creme hover:bg-waldgruen-dark`}>
+                  Weiter
+                </button>
+              ) : (
+                <button
+                  key="submit"
+                  type="submit"
+                  disabled={loading}
+                  aria-busy={loading}
+                  className={`${buttonClass} flex-1 bg-waldgruen text-creme hover:bg-waldgruen-dark disabled:cursor-wait disabled:opacity-70`}
+                >
+                  <LinkIcon />
+                  {loading ? "Link wird erstellt..." : "Link erstellen"}
+                </button>
+              )}
+            </div>
+          </form>
+        )}
 
         {result && (
-          <div className="mt-6 space-y-5 border-t border-dashed border-waldgruen/40 pt-5">
+          <div className="mt-4 space-y-5">
             <button
               type="button"
               onClick={() => setOverlayOpen(true)}
@@ -220,8 +311,17 @@ export function ClassLinkGenerator() {
               </div>
               <p className="mt-2 font-body text-sm text-warmgrau/80">
                 Gültig bis {formatValidUntil(result.expiresAt)}.{" "}
-                {result.delivery === "pdf" ? "Die Klasse speichert den Entwurf als PDF." : "Die Klasse bekommt den Entwurf per E-Mail."}
+                {result.delivery === "pdf" ? "Die Klasse speichert den Entwurf als PDF." : "Die Klasse bekommt den Entwurf per E-Mail."}{" "}
+                {levelSummary(result.level)}
+                {" "}Der Link gilt 14 Tage.
               </p>
+              <button
+                type="button"
+                onClick={editSettings}
+                className={`mt-2 font-body text-sm font-semibold text-waldgruen-dark underline underline-offset-2 hover:text-waldgruen ${focusRing}`}
+              >
+                Einstellungen ändern
+              </button>
             </div>
 
             <CampaignQrDownload

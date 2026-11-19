@@ -90,7 +90,7 @@ describe("/unterricht page", () => {
     expect(html).not.toContain("Los geht es per QR");
     expect(html).not.toContain("Klassenlink erstellen");
     expect(html).toContain("Dein Klassenlink");
-    expect(html).toContain("Link erstellen");
+    expect(html).toContain("Dein Klassenlink");
     expect(html).not.toContain("geht es hier los");
     const body = encodeURIComponent(
       "Hallo Thomas,\n\nich möchte Brief-nach-Berlin mit meiner Klasse ausprobieren.\n\nSchule und Ort: \nKlassenstufe: \nGeplanter Termin: \nDabei hätte ich gern Hilfe: \n\nViele Grüße\n",

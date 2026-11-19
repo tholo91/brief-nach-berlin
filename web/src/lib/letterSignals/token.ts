@@ -117,6 +117,9 @@ function recipientProofValue(recipient: Recipient): string {
     }
     return `${recipient.kind}:${recipient.bundeslandKey}`;
   }
+  if (recipient.kind === "landesminister") {
+    return `${recipient.kind}:${recipient.bundeslandKey}:${recipient.ressort}:${recipient.name.trim()}`;
+  }
   if (recipient.kind === "campaign_fixed") {
     return [
       recipient.kind,

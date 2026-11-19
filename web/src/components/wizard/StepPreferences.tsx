@@ -35,6 +35,8 @@ interface StepPreferencesProps {
   defaultValues?: Partial<StepPreferencesData>;
   isCampaign?: boolean;
   isYouth?: boolean;
+  /** Klassen-Link: Ebene und Person stehen fest, der nächste Schritt ist keine Auswahl. */
+  isSchoolClass?: boolean;
   /** Kasten "Bist du selbst betroffen?" zeigen (Kampagne, Text unverändert). */
   showPersonalNote?: boolean;
   /** Aufhänger der Kampagne; leer: allgemeine Vorschläge aus der Copy. */
@@ -93,6 +95,7 @@ export function StepPreferences({
   defaultValues,
   isCampaign = false,
   isYouth = false,
+  isSchoolClass = false,
   showPersonalNote = false,
   personalHooks,
 }: StepPreferencesProps) {
@@ -307,7 +310,7 @@ export function StepPreferences({
               <div
                 role="group"
                 aria-label={copy.preferences.personalHooksLabel}
-                className="mt-1 flex flex-wrap gap-1"
+                className="mt-2 flex flex-wrap gap-2"
               >
                 {hooks.map((hook) => {
                   const hookText = hook.trim();
@@ -320,13 +323,24 @@ export function StepPreferences({
                       title={hookText}
                       onClick={() => pickPersonalHook(hook)}
                       className={[
-                        "max-w-[calc(50%-0.25rem)] min-h-[44px] rounded-full border px-3 py-1.5 text-left font-body text-sm leading-5 transition-colors cursor-pointer",
+                        "inline-flex max-w-full min-h-[44px] items-center gap-1.5 rounded-full border pl-3 pr-4 py-2 text-left font-body text-sm leading-5 transition-colors cursor-pointer",
                         active
                           ? "border-waldgruen/50 bg-waldgruen/10 text-waldgruen-dark"
                           : "border-warmgrau/25 bg-creme/60 text-waldgruen-dark hover:border-waldgruen/40 hover:bg-waldgruen/5",
                       ].join(" ")}
                     >
-                      <span className="line-clamp-2">{hookText.replace(/:\s*$/, "")}</span>
+                      <svg
+                        aria-hidden="true"
+                        viewBox="0 0 24 24"
+                        className="size-3.5 shrink-0 text-waldgruen"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth={2.5}
+                        strokeLinecap="round"
+                      >
+                        {active ? <path d="M5 12.5l4.5 4.5L19 7" /> : <path d="M12 5v14M5 12h14" />}
+                      </svg>
+                      <span className="truncate">{hookText.replace(/:\s*$/, "")}</span>
                     </button>
                   );
                 })}
@@ -453,9 +467,11 @@ export function StepPreferences({
         >
           {isSubmitting
             ? copy.preferences.findingDistrict
-            : isCampaign
-              ? copy.preferences.chooseRecipients
-              : copy.preferences.chooseLevel}
+            : isSchoolClass
+              ? copy.contact.next
+              : isCampaign
+                ? copy.preferences.chooseRecipients
+                : copy.preferences.chooseLevel}
           {!isSubmitting && <WizardForwardIcon className="absolute right-5 top-1/2 -translate-y-1/2" />}
         </button>
       </div>

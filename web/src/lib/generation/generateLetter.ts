@@ -6,7 +6,7 @@ import { lowercaseAfterSalutation } from "@/lib/generation/lowercaseAfterSalutat
 import { findRuleViolations, replaceDashes, ruleRetryDirective } from "@/lib/generation/letterRules";
 import { extractJsonObject, messageText } from "@/lib/mistral-json";
 import { LETTER_LENGTHS, DEFAULT_LETTER_LENGTH } from "@/lib/config";
-import { LAST_KLASSE_NOT_YET_VOTING, youthLetterWords } from "@/lib/schule/youth";
+import { LAST_KLASSE_NOT_YET_VOTING, youthBand, youthLetterWords, type YouthBand } from "@/lib/schule/youth";
 import {
   buildTopicSignal,
   TOPIC_JSON_SCHEMA_PROPERTIES,
@@ -296,6 +296,21 @@ STRATEGIE FÜR DIE LANDES-EBENE (nicht verhandelbar):
 - Erfinde keine Ministerien, Programme, Gesetze und Ausschüsse.
 - Zitiere keine Grundgesetz-Artikel mit Nummern.`;
 
+const MINISTER_ZUSTAENDIGKEIT_BLOCK = `ZUSTÄNDIGKEITSHINWEIS:
+Der Brief richtet sich persönlich an die zuständige Fachministerin oder den zuständigen Fachminister des Bundeslands (Feld "amt" im <empfaenger>-Block). Sprich die Person mit der vorgegebenen Anrede an und beziehe dich auf die Verantwortung ihres Fachressorts im Land. Erfinde keine persönliche, parteipolitische oder ressortfremde Zuständigkeit.
+
+STRATEGIE FÜR DIE LANDES-EBENE (nicht verhandelbar):
+- Argumentiere mit den Handlungsmöglichkeiten des Landes in diesem Fachressort, sofern das Anliegen dazu passt.
+- Behaupte nicht, die Person könne allein Bundesgesetze ändern oder bundesweite Verfahren entscheiden.
+- Versprich keine Weiterleitung, Antwort oder persönliche Kenntnisnahme.
+- Erfinde keine Programme, Gesetze und Ausschüsse.
+- Zitiere keine Grundgesetz-Artikel mit Nummern.`;
+
+const MINISTER_BITTE_LINE = `2. EINE BITTE: genau ein konkretes Verb plus ein konkretes politisches Handlungsobjekt. Richte die Bitte an das Fachressort in seiner Landesverantwortung. Behaupte keine persönliche Alleinzuständigkeit für Entscheidungen des Bundes oder des Bundesrats.`;
+
+const MINISTER_PARTEI_HEADER = `PARTEI-NEUTRALITÄT (Landesministerium):
+Für die Fachministerin oder den Fachminister liegen keine verifizierten Parteiinformationen vor. Verwende KEINE parteibezogene Werte-Sprache und benenne keine Parteien.`;
+
 const KOMMUNE_ZUSTAENDIGKEIT_BLOCK = `ZUSTÄNDIGKEITSHINWEIS:
 Der Empfänger ist das Bürgermeisteramt der Gemeinde oder in Berlin das Bezirksamt. Der Brief richtet sich an die politische Leitung der Kommune, nicht an ein Fachamt.
 
@@ -419,7 +434,18 @@ export function buildSystemPrompt(input: GenerateLetterInput): string {
       .replace(BUND_WAHLKREIS_BLOCK, "")
       .replace(`${BUND_MDB_CONTEXT_BLOCK}\n\n`, "");
   } else if (level === "Land") {
-    if (input.landesregierung) {
+    if (input.landesminister) {
+      prompt = prompt
+        .replace(BUND_ZUSTAENDIGKEIT_BLOCK, MINISTER_ZUSTAENDIGKEIT_BLOCK)
+        .replace(
+          BUND_ANREDE_LINE,
+          `- Anrede: exakt "${input.landesminister.salutation}". Nenne keine andere Person oder Institution.`
+        )
+        .replace(BUND_BITTE_LINE, MINISTER_BITTE_LINE)
+        .replace(BUND_PARTEI_HEADER, MINISTER_PARTEI_HEADER)
+        .replace(`\n${BUND_PARTEI_LIST}`, "")
+        .replace(`${BUND_MDB_CONTEXT_BLOCK}\n\n`, "");
+    } else if (input.landesregierung) {
       prompt = prompt
         .replace(
           BUND_ZUSTAENDIGKEIT_BLOCK,
@@ -513,6 +539,13 @@ function absenderBlock(input: GenerateLetterInput): string {
   return `\n\n<absender_optional>\n${lines.join("\n")}\n</absender_optional>`;
 }
 
+const YOUTH_BAND_RULES: Record<YouthBand, string> = {
+  "5-7": "Schreibe klar und einfach, mit kurzen Sätzen und einem konkreten Beispiel aus meiner Eingabe.",
+  "8-10": "Nenne das Problem, begründe kurz, warum es wichtig ist, und formuliere eine konkrete Bitte.",
+  "11-13":
+    "Schreibe sachlich, gib eine nachvollziehbare Begründung und stelle am Ende eine Frage nach dem Standpunkt des Empfängers.",
+};
+
 function youthBlock(input: GenerateLetterInput): string {
   const youth = input.youth;
   if (!youth) return "";
@@ -521,10 +554,7 @@ function youthBlock(input: GenerateLetterInput): string {
     klasse <= LAST_KLASSE_NOT_YET_VOTING
       ? "Sage in einem eigenen Satz, dass ich bei der Bundestagswahl noch nicht wählen darf."
       : "Sage in einem eigenen Satz, dass ich bald zum ersten Mal wählen darf.";
-  const ton =
-    klasse <= 9
-      ? "Schreibe einfach und direkt."
-      : "Schreibe sachlich und gib eine kurze Begründung.";
+  const stufe = YOUTH_BAND_RULES[youthBand(klasse)];
   const lines = [
     "Der Brief kommt von einer Person, die noch zur Schule geht. Diese Angaben sind eine zulässige Quelle wie <absender_optional> und haben Vorrang vor allen anderen Hinweisen zu Absender, Wahlstatus, Wahlkreis, Vita und Erwachsenen-Rolle.",
     `- Schreibe in der Ich-Form und nenne früh im Brief den Satz „Ich gehe in die ${klasse}. Klasse.“ Formuliere geschlechtsneutral, ohne „als Schüler“ oder „als Schülerin“.`,
@@ -536,8 +566,10 @@ function youthBlock(input: GenerateLetterInput): string {
     );
   }
   lines.push(
-    `- Ton: klar, ehrlich und höflich, so wie eine Person dieses Alters an eine erwachsene Person schreibt, die sie ernst nehmen soll. ${ton} Verwende normales Alltagsdeutsch in kurzen Sätzen und eigene Beobachtungen aus Schule und Alltag, soweit sie im <transkript> stehen.`,
-    "- Weitere Angaben zur Person (Alter, Schule, Wohnort, Familie) nennst du nur, wenn sie im <transkript> stehen.",
+    `- Ton: klar, ehrlich und höflich, so wie eine Person dieses Alters an eine erwachsene Person schreibt, die sie ernst nehmen soll. Verwende normales Alltagsdeutsch in kurzen Sätzen.`,
+    `- Aufbau: ${stufe}`,
+    "- Nutze nur Fakten, Zahlen, Orte und Erlebnisse, die im <transkript> stehen. Alles andere lässt du weg. Weitere Angaben zur Person (Alter, Schule, Wohnort, Familie) nennst du nur, wenn sie im <transkript> stehen.",
+    "- Die Länge folgt der Eingabe: Eine kurze Eingabe ergibt einen kurzen Brief. Die Wortzahl in <ziel> ist eine Obergrenze und kein Ziel zum Auffüllen.",
   );
   return `\n\n<absender_jugend>\n${lines.join("\n")}\n</absender_jugend>`;
 }
@@ -567,7 +599,7 @@ export function buildUserPrompt(
   // Die Pseudo-ID 0 existiert nur im Prompt-Kontrakt (Antwortformat verlangt
   // selected_politician_id); sie wird nie gegen Abgeordnetenwatch-Daten geprüft.
   const institutionalRecipient =
-    input.campaignFixedRecipient ?? input.bundeskanzler ?? input.mdbLater ?? input.landesregierung ?? input.rathaus;
+    input.campaignFixedRecipient ?? input.bundeskanzler ?? input.mdbLater ?? input.landesminister ?? input.landesregierung ?? input.rathaus;
   const empfaenger = institutionalRecipient
     ? [
         {
@@ -577,6 +609,8 @@ export function buildUserPrompt(
             ? input.campaignFixedRecipient.salutation
             : input.bundeskanzler
             ? input.bundeskanzler.anrede
+            : input.landesminister
+              ? input.landesminister.salutation
             : input.landesregierung
               ? input.landesregierung.salutation
             : "Sehr geehrte Damen und Herren,",
@@ -586,6 +620,8 @@ export function buildUserPrompt(
             ? "Bundeskanzleramt, Berlin"
             : input.mdbLater
               ? "Deutscher Bundestag, Platz der Republik 1, 11011 Berlin"
+            : input.landesminister
+              ? input.landesminister.bundeslandName
             : input.landesregierung
               ? input.landesregierung.bundeslandName
               : input.rathaus &&
@@ -596,6 +632,7 @@ export function buildUserPrompt(
           ...(input.campaignFixedRecipient
             ? { anschrift: input.campaignFixedRecipient.postalAddress }
             : {}),
+          ...(input.landesminister ? { amt: input.landesminister.officeName } : {}),
           level: institutionalRecipient.level,
         },
       ]
@@ -702,7 +739,7 @@ export async function generateLetter(
 ): Promise<GenerateLetterResult> {
   const lengthKey = input.letterLength ?? DEFAULT_LETTER_LENGTH;
   const { min: minWords, max: maxWords } = input.youth
-    ? youthLetterWords(input.youth.klasse)
+    ? youthLetterWords(input.youth.klasse, input.issueText.trim().length)
     : LETTER_LENGTHS[lengthKey];
   const targetWords = Math.round((minWords + maxWords) / 2);
   const toneLevel = input.toneLevel ?? 3;
@@ -831,8 +868,15 @@ export async function generateLetter(
     }
   }
 
-  if (input.landesregierung?.addressee === "head" || input.campaignFixedRecipient) {
-    const salutation = input.campaignFixedRecipient?.salutation ?? input.landesregierung!.salutation;
+  if (
+    input.landesregierung?.addressee === "head" ||
+    input.landesminister ||
+    input.campaignFixedRecipient
+  ) {
+    const salutation =
+      input.campaignFixedRecipient?.salutation ??
+      input.landesminister?.salutation ??
+      input.landesregierung!.salutation;
     parsed.letter = ensureGovernmentHeadSalutation(parsed.letter, salutation);
   }
 
@@ -871,6 +915,8 @@ export async function generateLetter(
     selectedRecipient = input.bundeskanzler;
   } else if (input.mdbLater) {
     selectedRecipient = input.mdbLater;
+  } else if (input.landesminister) {
+    selectedRecipient = input.landesminister;
   } else if (input.landesregierung) {
     selectedRecipient = input.landesregierung;
   } else if (input.rathaus) {
@@ -903,6 +949,7 @@ export async function generateLetter(
   const mdbContextUsed = Boolean(
     !input.rathaus &&
       !input.landesregierung &&
+      !input.landesminister &&
       !input.campaignFixedRecipient &&
       !input.bundeskanzler &&
       !input.mdbLater &&

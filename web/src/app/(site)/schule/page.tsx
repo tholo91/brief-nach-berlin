@@ -167,7 +167,8 @@ export default async function JungPage({
 
       <div className="mx-auto w-full max-w-2xl px-5 pt-6 sm:pt-8 lg:pt-2">
         <div id="schreiben" className="scroll-mt-32">
-          <JungExperience entry={entry} />
+          {/* key: Wechselt der Link (Redirect aus dem Tab-Speicher), startet die Form mit Klasse und PLZ neu. */}
+          <JungExperience key={entry.status === "valid" ? entry.token : "frei"} entry={entry} />
         </div>
 
         <section aria-labelledby="jung-so-geht-s" className="reveal mt-14">

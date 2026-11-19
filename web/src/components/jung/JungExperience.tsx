@@ -14,6 +14,7 @@ import { ISSUE_TEXT_MAX, ISSUE_TEXT_MIN } from "@/lib/validation/wizardSchemas";
 import { removeInsertedText } from "@/lib/topics/topicStarters";
 import { saveHandoff } from "@/lib/wizard-handoff";
 import type { JungEntry } from "./jungEntry";
+import { useClassLinkPersistence } from "./classLinkPersistence";
 import {
   JUNG_DRAFT_KEY,
   JUNG_KLASSE_KEY,
@@ -77,6 +78,8 @@ function fitTextarea(el: HTMLTextAreaElement) {
 
 export function JungExperience({ entry }: { entry: JungEntry }) {
   const router = useRouter();
+  // Klassenlink im Tab merken, damit Reiterwechsel und Neuladen die Klasse nicht verlieren.
+  useClassLinkPersistence(entry);
   const entryKlasse = entry.status === "valid" ? entry.klasse : null;
   const [klasse, setKlasse] = useState<number | null>(entryKlasse);
   const [usedVoice, setUsedVoice] = useState(false);
@@ -311,19 +314,12 @@ export function JungExperience({ entry }: { entry: JungEntry }) {
               </fieldset>
             ) : (
               entry.status === "valid" && (
-                <div className="flex items-start justify-between gap-3 rounded-lg border border-waldgruen/25 bg-waldgruen/5 px-3 py-2.5">
-                  <p role="status" className="font-body text-sm leading-snug text-waldgruen-dark">
+                <div className="rounded-lg border border-waldgruen/25 bg-waldgruen/5 px-3 py-2.5">
+                  <p className="font-body text-sm leading-snug text-waldgruen-dark">
                     <span aria-hidden="true" className="mr-2 font-typewriter font-bold text-waldgruen">3</span>
-                    Klasse {entry.klasse}, PLZ {entry.plz} eingetragen.
+                    Klasse {entry.klasse}, PLZ {entry.plz}
+                    <span className="text-warmgrau/70"> (vom Klassenlink festgelegt)</span>
                   </p>
-                  <button
-                    type="button"
-                    aria-label="Klasse ändern"
-                    onClick={revealPicker}
-                    className={`-my-1 shrink-0 rounded-lg px-2 py-1 font-body text-sm font-semibold text-waldgruen underline underline-offset-2 hover:text-waldgruen-dark ${focusRing}`}
-                  >
-                    ändern
-                  </button>
                 </div>
               )
             )}
@@ -338,7 +334,9 @@ export function JungExperience({ entry }: { entry: JungEntry }) {
                 <WizardForwardIcon />
               </button>
               <p className="mt-3 font-body text-sm leading-relaxed text-warmgrau/70">
-                An wen dein Brief geht, schlägt dir das Tool vor.
+                {entry.status === "valid"
+                  ? "Das Tool sucht die passende Person für dein Thema."
+                  : "An wen dein Brief geht, schlägt dir das Tool vor."}
               </p>
             </div>
           </div>

@@ -3,7 +3,8 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useState, useCallback, useMemo, useRef, useEffect } from "react";
-import type { WizardData, WizardActionResult, RecipientLevel } from "@/lib/types/wizard";
+import type { WizardData, WizardActionResult, RecipientLevel, SchoolRecipientPayload } from "@/lib/types/wizard";
+import { describeSchoolRecipient } from "@/lib/schule/schoolRecipientView";
 import type {
   Recipient,
   RecipientSelection,
@@ -112,6 +113,8 @@ interface Step3SuccessProps {
   onChangeLevel?: () => void;
   /** Klassenlink "PDF statt E-Mail": keine E-Mail-Adresse, kein Versand. Steuert nur die Anzeige. */
   pdfDelivery?: boolean;
+  /** Schulmodus: der Server hat den Empfänger gewählt. Keine Ebenen- oder Personenwahl. */
+  schoolRecipient?: SchoolRecipientPayload;
 }
 
 export function Step3Success({
@@ -124,6 +127,7 @@ export function Step3Success({
   onChangePlz,
   onChangeLevel,
   pdfDelivery = false,
+  schoolRecipient,
 }: Step3SuccessProps) {
   // Abgeordneten-Karten (mdb/mdl) und der synthetische Rathaus-Empfänger
   // teilen sich den Step; Kommune zeigt genau eine Verwaltungs-Karte.
@@ -475,6 +479,8 @@ export function Step3Success({
   // Diskriminierte Auswahl für die Server-Seite: rathaus trägt bewusst keine
   // ID (LOCK-5), Abgeordnete gehen mit kind + Abgeordnetenwatch-ID raus.
   const currentSelection = useMemo<RecipientSelection | null>(() => {
+    // Schulmodus: feste Auswahl vom Server; der Server leitet sie bei der Prüfung ohnehin selbst ab.
+    if (schoolRecipient) return schoolRecipient.selection;
     if (campaignFixedRecipient && campaignFixedSelected) return { kind: "campaign_fixed" };
     if (bundeskanzler && bundeskanzlerSelected) return { kind: "bundeskanzler" };
     if (landesregierung && landesregierungSelected) {
@@ -488,7 +494,7 @@ export function Step3Success({
       return { kind: selectedPolitician.kind, selectedPoliticianId: selectedPolitician.id };
     }
     return null;
-  }, [bundeskanzler, bundeskanzlerSelected, campaignFixedRecipient, campaignFixedSelected, governmentHead, landAddressee, landesregierung, landesregierungSelected, mdbLaterSelected, rathaus, rathausSelected, selectedPolitician]);
+  }, [bundeskanzler, bundeskanzlerSelected, campaignFixedRecipient, campaignFixedSelected, governmentHead, landAddressee, landesregierung, landesregierungSelected, mdbLaterSelected, rathaus, rathausSelected, schoolRecipient, selectedPolitician]);
 
   // Group the disambiguation cards by Wahlkreis. sortedPoliticians is already
   // Direkt-first, so insertion order puts the group holding the pre-selected
@@ -1266,8 +1272,11 @@ export function Step3Success({
     const selectedPoliticianParty = selectedPolitician
       ? formatPartyShort(selectedPolitician.party).replace(/^Die Linke$/, "die Linke")
       : "";
+    const schoolView = schoolRecipient ? describeSchoolRecipient(schoolRecipient.recipient) : null;
     const selectedPoliticianLabel =
-      mdbLaterSelected
+      schoolView
+        ? schoolView.name
+        : mdbLaterSelected
         ? "MdB später auswählen"
         : campaignFixedRecipient && campaignFixedSelected
         ? campaignFixedRecipient.label
@@ -1292,7 +1301,9 @@ export function Step3Success({
     const isKommune = selectedLevel === "Kommune" && rathaus !== null;
     const isLand = selectedLevel === "Land";
     const isFixed = selectedLevel === "Fixed" && campaignFixedRecipient !== null;
-    const selectionTitle = isFixed
+    const selectionTitle = schoolView
+      ? `Dein Brief geht an ${schoolView.name}`
+      : isFixed
       ? `Fester Empfänger: ${campaignFixedRecipient.label}`
       : bundeskanzler
       ? "An wen soll dein Brief gehen?"
@@ -1311,7 +1322,9 @@ export function Step3Success({
         : !hasNoLocalMdb && sortedPoliticians.length > 1
           ? `${sortedPoliticians.length} Abgeordnete für PLZ ${wizardData.plz}`
           : "Wer vertritt deinen Wahlkreis?";
-    const introCopy = isFixed
+    const introCopy = schoolView
+      ? "Das Tool hat die passende Person für dein Thema ausgesucht."
+      : isFixed
       ? "Dieser Empfänger ist für die Kampagne festgelegt. Deine PLZ verändert die Adresse nicht."
       : bundeskanzler
       ? "Der Bundeskanzler ist vorausgewählt. Du kannst stattdessen auch ein Mitglied des Bundestags aus deinem Wahlkreis wählen."
@@ -1462,6 +1475,28 @@ export function Step3Success({
           </div>
         )}
 
+        {schoolView && schoolRecipient && (
+          <div className="mt-6 rounded-lg border-2 border-waldgruen bg-waldgruen/10 p-4">
+            <span className="mb-1.5 inline-block rounded bg-waldgruen/15 px-2 py-0.5 font-body text-[11px] font-semibold uppercase tracking-wide text-waldgruen-dark">
+              {schoolView.badge}
+            </span>
+            <p className="font-body text-base font-semibold text-warmgrau">{schoolView.name}</p>
+            {schoolView.office && (
+              <p className="mt-0.5 font-body text-sm text-warmgrau">{schoolView.office}</p>
+            )}
+            {schoolView.addressLines.length > 0 && (
+              <p className="mt-1 font-body text-sm leading-relaxed text-warmgrau">
+                {schoolView.addressLines.filter((line) => line !== schoolView.office && line !== schoolView.name).map((line) => (
+                  <span key={line} className="block">{line}</span>
+                ))}
+              </p>
+            )}
+            <p className="mt-3 font-body text-sm font-semibold text-waldgruen-dark">Warum diese Person?</p>
+            <p className="mt-0.5 font-body text-sm leading-relaxed text-warmgrau/80">{schoolRecipient.reason}</p>
+          </div>
+        )}
+
+        {!schoolView && (<>
         {/* Politician cards - grouped by Wahlkreis. Each group gets a header
             ("Wahlkreis 21 · Hamburg-Nord") and its cards are labelled
             Direktmandat vs Landesliste. On long lists (PLZs straddling
@@ -2026,6 +2061,8 @@ export function Step3Success({
             {landInstitutionBackLabel}
           </button>
         )}
+
+        </>)}
 
         {/* Submit after selection - full width to match cards */}
         {currentSelection !== null && (

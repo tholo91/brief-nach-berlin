@@ -46,6 +46,34 @@ describe("createClassLinkAction", () => {
     expect(() => createQrMatrix(res.url)).not.toThrow();
   });
 
+  it.each([
+    ["Land", "pdf"],
+    ["Bund", "pdf"],
+    ["Land", "email"],
+  ] as const)("schreibt level %s (%s) ins Token und bleibt im QR-Budget", async (level, delivery) => {
+    const res = await createClassLinkAction({ klasse: 13, plz: "28195", delivery, level });
+    if ("error" in res) throw new Error(res.error);
+    const token = res.url.slice(`${APP_URL}/schule?k=`.length);
+    expect(verifyClassToken(token)).toMatchObject({ klasse: 13, plz: "28195", delivery, level });
+    expect(Buffer.byteLength(res.url)).toBeLessThanOrEqual(151);
+    expect(() => createQrMatrix(res.url)).not.toThrow();
+  });
+
+  it("level auto oder fehlend schreibt kein l ins Token", async () => {
+    const auto = await createClassLinkAction({ klasse: 9, plz: "28195", level: "auto" });
+    const none = await createClassLinkAction({ klasse: 9, plz: "28195" });
+    if ("error" in auto || "error" in none) throw new Error("unexpected");
+    const prefix = `${APP_URL}/schule?k=`;
+    expect(verifyClassToken(auto.url.slice(prefix.length))?.level).toBeUndefined();
+    expect(verifyClassToken(none.url.slice(prefix.length))?.level).toBeUndefined();
+  });
+
+  it.each(["land", "Kommune", "L", 1, null])("rejects level %p", async (level) => {
+    expect(
+      await createClassLinkAction({ klasse: 9, plz: "10115", level: level as never }),
+    ).toMatchObject({ error: "invalid_input" });
+  });
+
   it("liefert für delivery email (und ohne Angabe) denselben Token wie früher", async () => {
     const a = await createClassLinkAction({ klasse: 9, plz: "10115", delivery: "email" });
     const b = await createClassLinkAction({ klasse: 9, plz: "10115" });

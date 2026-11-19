@@ -22,6 +22,7 @@ import { isBundeskanzlerCampaignTarget } from "@/lib/lookup/bundeskanzlerRecipie
 import { getCampaignFixedRecipient } from "@/lib/lookup/campaignFixedRecipient";
 import { isYouthAudience } from "@/lib/schule/youth";
 import { verifyClassToken } from "@/lib/schule/classToken";
+import { lockWizardToClassToken, resolveSchoolMode } from "@/lib/schule/youthContext";
 
 const RESEND_LIMIT_MESSAGE =
   "Der Brief wurde jetzt mehrfach gesendet. Bitte prüfe noch einmal deinen Spam-Ordner und die E-Mail-Adresse. Falls weiterhin nichts ankommt, melde dich gerne direkt.";
@@ -49,6 +50,11 @@ export async function resendLetterAction(
       return { error: "validation", message: "Ungültige Eingabe." };
     }
     const normalizedSelection: RecipientSelection = parsedSelection.data;
+    // Klassen-Link: PLZ und Klasse kommen aus dem Token; Fachminister:innen nur im Schulmodus.
+    lockWizardToClassToken(data);
+    if (normalizedSelection.kind === "landesminister" && !resolveSchoolMode(data)) {
+      return { error: "validation", message: "Ungültige Eingabe." };
+    }
     const parsedProof = generationProofSchema.safeParse(generationProof);
     if (!parsedProof.success) {
       return { error: "validation", message: "Ungültige Eingabe." };

@@ -1,5 +1,7 @@
 import type { Politician } from "../types/politician";
 import type { LandesregierungRecipient } from "./landesregierungRecipient";
+import type { LandesministerRecipient } from "./landesministerRecipient";
+import type { Ressort } from "./ressorts";
 import type { BundeskanzlerRecipient } from "./bundeskanzlerRecipient";
 import type { CampaignFixedRecipientRecipient } from "./campaignFixedRecipient";
 import berlinBezirksaemterJson from "../../../data/berlin-bezirksaemter.json";
@@ -110,7 +112,8 @@ export type Recipient =
   | BundeskanzlerRecipient
   | CampaignFixedRecipientRecipient
   | RathausRecipient
-  | LandesregierungRecipient;
+  | LandesregierungRecipient
+  | LandesministerRecipient;
 
 export type RecipientRelation =
   | "local"
@@ -126,6 +129,7 @@ export type RecipientSelection =
   | { kind: "bundeskanzler" }
   | { kind: "campaign_fixed" }
   | { kind: "landesregierung"; addressee?: "institution" | "head" }
+  | { kind: "landesminister"; ressort: Ressort }
   | { kind: "rathaus" };
 
 /** HH/HB: Einheitsgemeinde (Art. 28 Abs. 1 S. 2 GG) — Kommune-Ebene existiert nicht, Land übernimmt. */

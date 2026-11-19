@@ -67,6 +67,8 @@ export function recipientEnvelope(recipient: Recipient): RecipientEnvelope {
             : [recipient.officeName, ...recipient.address.addressLines],
         complete: true,
       };
+    case "landesminister":
+      return { lines: [...recipient.address.addressLines], complete: true };
     case "campaign_fixed":
       return {
         lines: [

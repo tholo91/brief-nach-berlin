@@ -33,10 +33,17 @@ function fromB64url(s: string): Buffer {
 
 // Optional pro Token-Art: `macDomain` trennt die MAC-Domäne (ein Token einer Art
 // ist für eine andere ungültig), `maxAgeSeconds` überschreibt die Standard-Gültigkeit.
+//
+// `shortMac`: Beim Signieren wird der MAC auf 16 Byte (128 Bit) gekürzt, damit das
+// Token in einen QR-Code passt (Klassen-Link, 151 Byte). Beim Prüfen werden
+// beide Längen akzeptiert (voller MAC wie bisher oder gekürzt).
 export interface TokenOptions {
   macDomain?: string;
   maxAgeSeconds?: number;
+  shortMac?: boolean;
 }
+
+const SHORT_MAC_BYTES = 16;
 
 export function signFeedbackToken(payload: object, opts?: TokenOptions): string {
   // `iat` (issued-at, seconds since epoch) is added inside the signed envelope
@@ -45,7 +52,8 @@ export function signFeedbackToken(payload: object, opts?: TokenOptions): string 
   const body =
     COMPRESSED_PREFIX +
     b64url(deflateRawSync(Buffer.from(JSON.stringify(enriched), "utf8"), { level: 9 }));
-  const mac = b64url(createHmac("sha256", secret()).update((opts?.macDomain ?? "") + body).digest());
+  const fullMac = createHmac("sha256", secret()).update((opts?.macDomain ?? "") + body).digest();
+  const mac = b64url(opts?.shortMac ? fullMac.subarray(0, SHORT_MAC_BYTES) : fullMac);
   return `${body}.${mac}`;
 }
 
@@ -54,7 +62,10 @@ export function verifyFeedbackToken<T = unknown>(token: string, opts?: TokenOpti
   if (dot < 1 || dot === token.length - 1) return null;
   const body = token.slice(0, dot);
   const mac = token.slice(dot + 1);
-  const expected = b64url(createHmac("sha256", secret()).update((opts?.macDomain ?? "") + body).digest());
+  const fullMac = createHmac("sha256", secret()).update((opts?.macDomain ?? "") + body).digest();
+  const full = b64url(fullMac);
+  const short = b64url(fullMac.subarray(0, SHORT_MAC_BYTES));
+  const expected = opts?.shortMac && mac.length === short.length ? short : full;
   const a = Buffer.from(mac);
   const b = Buffer.from(expected);
   if (a.length !== b.length || !timingSafeEqual(a, b)) return null;

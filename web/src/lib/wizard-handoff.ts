@@ -46,8 +46,47 @@ export interface WizardHandoff {
 
 const CLASS_TOKEN_MAX_LENGTH = 512;
 
-export function entryStepForHandoff(handoff: WizardHandoff | null): 1 | 2 {
-  return handoff ? 2 : 1;
+/**
+ * PDF-Klassenlink: PLZ steckt im Token und es gibt keine E-Mail, also entfällt der
+ * Kontakt-Schritt ganz. Beim Mail-Modus bleibt er (E-Mail wird gebraucht).
+ */
+export function skipsContactStep(
+  handoff: Pick<WizardHandoff, "audience" | "classToken" | "classDelivery" | "plz" | "source"> | null
+): boolean {
+  return Boolean(
+    handoff &&
+      handoff.source !== "campaign" &&
+      handoff.audience === "jung" &&
+      handoff.classToken &&
+      handoff.classDelivery === "pdf" &&
+      handoff.plz
+  );
+}
+
+export function entryStepForHandoff(handoff: WizardHandoff | null): 1 | 2 | "2b" {
+  if (!handoff) return 1;
+  return skipsContactStep(handoff) ? "2b" : 2;
+}
+
+/**
+ * Klassenlink aus dem Tab-Speicher als Handoff-Felder, wenn der Wizard ohne eigenen
+ * Jugend-Handoff startet (Neuladen, Remount). Mit Kampagne oder erwachsenem Handoff
+ * bleibt alles wie es ist.
+ */
+export function schoolFieldsFromStoredLink(
+  handoff: WizardHandoff | null,
+  link: { token: string; klasse: number; plz: string; delivery: "pdf" | "email" } | null
+): Pick<WizardHandoff, "audience" | "klasse" | "classToken" | "classDelivery" | "plz"> | null {
+  if (!link) return null;
+  if (handoff && (handoff.source === "campaign" || handoff.audience !== "jung")) return null;
+  if (handoff?.classToken) return null;
+  return {
+    audience: "jung",
+    klasse: link.klasse,
+    classToken: link.token,
+    plz: link.plz,
+    ...(link.delivery === "pdf" ? { classDelivery: "pdf" as const } : {}),
+  };
 }
 
 export function saveHandoff(data: WizardHandoff): void {

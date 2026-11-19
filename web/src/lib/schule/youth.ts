@@ -7,15 +7,38 @@ export const KLASSE_MAX = 13;
 // Bis Klasse 11 darf man bei der Bundestagswahl noch nicht wählen, ab Klasse 12 bald.
 export const LAST_KLASSE_NOT_YET_VOTING = 11;
 
-// Eine handgeschriebene Seite in etwa 15 Minuten, passt in eine Schulstunde.
-export const YOUTH_LETTER_WORDS = { min: 150, max: 200 } as const;
+// Drei Altersstufen steuern Ton und Obergrenze der Länge. Die Länge folgt der
+// Eingabe: kurze Eingaben ergeben kurze Briefe (etwa 80 bis 120 Wörter).
+export type YouthBand = "5-7" | "8-10" | "11-13";
 
-// Klasse 5 und 6 schreiben langsamer von Hand, dort reicht ein kürzerer Brief.
-const YOUNGER_LETTER_WORDS = { min: 100, max: 150 } as const;
-const LAST_KLASSE_SHORT_LETTER = 6;
+const LAST_KLASSE_BAND_1 = 7;
+const LAST_KLASSE_BAND_2 = 10;
 
-export function youthLetterWords(klasse: number): { min: number; max: number } {
-  return klasse <= LAST_KLASSE_SHORT_LETTER ? YOUNGER_LETTER_WORDS : YOUTH_LETTER_WORDS;
+export function youthBand(klasse: number): YouthBand {
+  if (klasse <= LAST_KLASSE_BAND_1) return "5-7";
+  if (klasse <= LAST_KLASSE_BAND_2) return "8-10";
+  return "11-13";
+}
+
+const BAND_WORDS: Record<YouthBand, { min: number; max: number }> = {
+  "5-7": { min: 80, max: 150 },
+  "8-10": { min: 100, max: 180 },
+  "11-13": { min: 120, max: 200 },
+};
+
+// Eingaben unter dieser Länge gelten als kurz (gleiche Schwelle wie der Kurz-Hinweis im Prompt).
+export const YOUTH_SHORT_INPUT_CHARS = 200;
+const SHORT_INPUT_WORDS = { min: 80, max: 120 } as const;
+
+export function youthLetterWords(
+  klasse: number,
+  issueTextLength?: number
+): { min: number; max: number } {
+  const band = BAND_WORDS[youthBand(klasse)];
+  if (typeof issueTextLength === "number" && issueTextLength < YOUTH_SHORT_INPUT_CHARS) {
+    return { min: SHORT_INPUT_WORDS.min, max: Math.min(SHORT_INPUT_WORDS.max, band.max) };
+  }
+  return band;
 }
 
 export interface YouthLetterContext {

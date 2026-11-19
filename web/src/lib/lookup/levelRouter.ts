@@ -8,6 +8,7 @@ import {
   TOPIC_PROMPT_RULES,
   type TopicSignal,
 } from "@/lib/topics/topicTaxonomy";
+import { RESSORT_CODES } from "@/lib/lookup/ressorts";
 import taxonomy from "../../../data/zustaendigkeit-taxonomie.json";
 
 // Kanonisches Enum — muss exakt PoliticalLevel entsprechen ("Kommune", nie
@@ -16,6 +17,9 @@ import taxonomy from "../../../data/zustaendigkeit-taxonomie.json";
 // auf Bund zurück.
 export const LevelEnum = z.enum(["Bund", "Land", "Kommune"]);
 export const ConfidenceEnum = z.enum(["high", "medium", "low"]);
+// Optionales Landes-Ressort für den Schulmodus. Ein unbekannter Wert macht den
+// Router-Parse nicht ungültig, er zählt dann als "kein Ressort".
+export const RessortEnum = z.enum(RESSORT_CODES);
 
 // Reasoning wird dem User direkt angezeigt: nur deutsche Buchstaben, Ziffern
 // und harmlose Satzzeichen. URLs, Markup und Sonderzeichen fallen durch und
@@ -36,6 +40,8 @@ export const RoutingResultSchema = z.object({
   // Optional keeps old pre-topic routing tokens verifiable. New calls return
   // null when Mistral omitted or failed the topic contract.
   topic: TopicSignalWithMetadataSchema.nullable().optional(),
+  // Nur bei Land sinnvoll; fehlt bei alten Tokens und Antworten ohne Ressort.
+  ressort: RessortEnum.nullable().optional().catch(undefined),
 });
 export type RoutingResult = z.infer<typeof RoutingResultSchema> & {
   topic?: TopicSignal | null;
@@ -80,12 +86,13 @@ function buildSystemPrompt(): string {
     ...taxonomy.kommune.exclusive.map((t: string) => `- ${t}`),
     "",
     "Antworte ausschließlich als JSON mit dieser Struktur:",
-    '{"primary":{"level":"Bund|Land|Kommune","confidence":"high|medium|low"},"reasoning":"kurze Begründung auf Deutsch","topic_categories":["Hauptthema zuerst, 1 bis 3 Codes"],"topic_labels":["1 bis 3 konkrete Stichworte aus dem Anliegen"]}',
+    '{"primary":{"level":"Bund|Land|Kommune","confidence":"high|medium|low"},"reasoning":"kurze Begründung auf Deutsch","ressort":"nur bei Land, sonst weglassen","topic_categories":["Hauptthema zuerst, 1 bis 3 Codes"],"topic_labels":["1 bis 3 konkrete Stichworte aus dem Anliegen"]}',
     "",
     "Regeln:",
     "- primary = die EINE konkret handlungsfähige Ebene. Der User soll sich nicht entscheiden müssen.",
     "- confidence='low' nur wenn das Anliegen keiner Ebene klar zuordenbar ist.",
     "- reasoning: ein kurzer, konkreter deutscher Satz, der erklärt, warum die gewählte Ebene handeln kann (Substantive groß, max 15 Wörter, max 200 Zeichen). Nenne die Zuständigkeit statt die Einordnung nur zu wiederholen. Wird dem User direkt angezeigt. Beginne natürlich, z.B. 'Bildungspolitik ist Ländersache.' oder 'Asylrecht ist ausschließliche Bundeskompetenz.' KEINE URLs, KEINE Klammern mit Sonderzeichen, KEIN Markup.",
+    `- ressort: nur wenn primary.level = Land und genau ein Fachressort des Landes klar zuständig ist, einer dieser Codes: ${RESSORT_CODES.join(", ")} (z.B. Schule oder Kita = bildung, Hochschule = wissenschaft, Polizei = inneres). Sonst das Feld weglassen.`,
     ...TOPIC_PROMPT_RULES,
   ].join("\n");
 }
@@ -134,6 +141,7 @@ export async function routeToLevel(
                       required: ["level", "confidence"],
                     },
                     reasoning: { type: "string" },
+                    ressort: { type: "string", enum: [...RESSORT_CODES] },
                     ...TOPIC_JSON_SCHEMA_PROPERTIES,
                   },
                   required: ["primary", "reasoning"],

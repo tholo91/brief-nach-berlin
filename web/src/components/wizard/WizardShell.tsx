@@ -8,6 +8,7 @@ import type {
   WizardActionResult,
   LevelRoutingContext,
   RecipientLevel,
+  SchoolRecipientPayload,
 } from "@/lib/types/wizard";
 import type { Politician } from "@/lib/types/politician";
 import type { Recipient } from "@/lib/lookup/rathausRecipient";
@@ -20,7 +21,9 @@ import {
   clearHandoff,
   entryStepForHandoff,
   saveHandoff,
+  schoolFieldsFromStoredLink,
 } from "@/lib/wizard-handoff";
+import { readClassLink } from "@/lib/schule/classLinkStorage";
 import { clearLandingDraft } from "@/lib/landing-draft";
 import { bundRecipientsForCampaign } from "@/lib/campaign-recipient-picker";
 import { Step1Form } from "./Step1Form";
@@ -46,6 +49,8 @@ const STEP_LABELS = [
 
 const YOUTH_STEP_LABELS = ["Dein Anliegen", "PLZ & E-Mail", "Ton"] as const;
 const YOUTH_PDF_STEP_LABELS = ["Dein Anliegen", "PLZ", "Ton"] as const;
+// PDF-Klassenlink: PLZ kommt aus dem Link, der Schritt entfällt.
+const YOUTH_PDF_LOCKED_STEP_LABELS = ["Dein Anliegen", "Ton"] as const;
 
 function readParamsToData(searchParams: URLSearchParams): Partial<WizardData> {
   const data: Record<string, string> = {};
@@ -170,6 +175,8 @@ export function WizardShell() {
   const [levelRouting, setLevelRouting] = useState<LevelRoutingContext | null>(null);
   const [selectedLevel, setSelectedLevel] = useState<RecipientLevel | null>(null);
   const [routingToken, setRoutingToken] = useState<string | null>(null);
+  // Schulmodus: der Server legt den Empfänger fest, Kinder wählen nichts.
+  const [schoolRecipient, setSchoolRecipient] = useState<SchoolRecipientPayload | null>(null);
   const routingPrefetchRef = useRef<{
     issueText: string;
     promise: Promise<{ token: string } | null>;
@@ -193,11 +200,24 @@ export function WizardShell() {
   // affects the server render.
   useEffect(() => {
     const timer = window.setTimeout(() => {
-      const handoff = peekHandoff();
-      if (!handoff) {
+      const storedHandoff = peekHandoff();
+      const schoolFields = schoolFieldsFromStoredLink(storedHandoff, readClassLink());
+      if (!storedHandoff) {
+        // Neuladen oder Remount im Klassenlink: Schulmodus aus dem Tab-Speicher holen.
+        if (schoolFields?.klasse != null) {
+          setClassDeliveryPdf(schoolFields.classDelivery === "pdf");
+          setWizardData((current) => ({
+            ...current,
+            audience: "jung" as const,
+            klasse: schoolFields.klasse,
+            ...(schoolFields.classToken ? { classToken: schoolFields.classToken } : {}),
+            ...(schoolFields.plz ? { plz: schoolFields.plz } : {}),
+          }));
+        }
         setHandoffPending(false);
         return;
       }
+      const handoff = schoolFields ? { ...storedHandoff, ...schoolFields } : storedHandoff;
 
       setEntrySource(handoff.source ?? "landing");
       setClassDeliveryPdf(handoff.classDelivery === "pdf");
@@ -259,6 +279,11 @@ export function WizardShell() {
   const classToken = wizardData.classToken;
   const pdfDelivery =
     classDeliveryPdf && isYouthWizard(wizardData) && Boolean(wizardData.classToken);
+  // PLZ kommt aus dem Klassenlink (der Server nimmt ohnehin die Token-PLZ). Beim PDF-Link
+  // entfällt der Kontakt-Schritt ganz, beim Mail-Link bleibt er mit gesperrter PLZ.
+  const plzFromClassLink =
+    isYouthWizard(wizardData) && Boolean(wizardData.classToken) && /^\d{5}$/.test(wizardData.plz ?? "");
+  const contactStepSkipped = pdfDelivery && plzFromClassLink;
   const ensureRoutingPrefetch = useCallback(
     (issueText: string) => {
       if (!issueText || routingPrefetchRef.current?.issueText === issueText) return;
@@ -269,6 +294,12 @@ export function WizardShell() {
     },
     [classToken]
   );
+
+  // Der Kontakt-Schritt entfällt: Routing wie sonst beim Verlassen von Schritt 2 vorbereiten.
+  const prefetchIssueText = step === "2b" ? wizardData.issueText : undefined;
+  useEffect(() => {
+    if (prefetchIssueText) ensureRoutingPrefetch(prefetchIssueText);
+  }, [ensureRoutingPrefetch, prefetchIssueText]);
 
   // Step 1: Anliegen — stores state and advances. This step is reached on a
   // direct visit or when a landing visitor explicitly goes back to edit.
@@ -297,9 +328,9 @@ export function WizardShell() {
         });
       }
       ensureRoutingPrefetch(issueText);
-      navigateToStep(2);
+      navigateToStep(contactStepSkipped ? "2b" : 2);
     },
-    [ensureRoutingPrefetch, navigateToStep]
+    [contactStepSkipped, ensureRoutingPrefetch, navigateToStep]
   );
 
   // Step 2: start routing while the visitor chooses tone and length. This also
@@ -334,9 +365,9 @@ export function WizardShell() {
         navigateToStep(1);
       }
     }
-    else if (step === "2b") navigateToStep(2);
+    else if (step === "2b") navigateToStep(contactStepSkipped ? 1 : 2);
     else if (step === "level") navigateToStep("2b");
-  }, [entrySource, navigateToStep, router, step]);
+  }, [contactStepSkipped, entrySource, navigateToStep, router, step]);
 
   // Step 3: Preferences — this is where we actually submit to the backend.
   // The advanced fields remain optional and may stay empty.
@@ -443,7 +474,14 @@ export function WizardShell() {
             setWizardData((prev) => ({ ...prev, campaign: undefined, personalNote: undefined }));
           }
           const activeCampaignContext = campaignEnded ? undefined : wizardData.campaign;
-          if (activeCampaignContext) {
+          // Schulmodus: kein Ebenen-Schritt, keine Personenliste. Der Server hat den Empfänger gewählt.
+          const school = !activeCampaignContext ? result.schoolRecipient ?? null : null;
+          setSchoolRecipient(school);
+          if (school) {
+            setLevelRouting(result.levelRouting ?? null);
+            setSelectedLevel(null);
+            navigateToStep(3);
+          } else if (activeCampaignContext) {
             // Kampagne: die Ebene hat der Creator festgelegt. Den Ebene-Step
             // überspringen und den Empfänger an das serverseitig neu geladene
             // Kampagnenziel binden. Session-Werte sind nur Darstellungskontext.
@@ -494,7 +532,14 @@ export function WizardShell() {
     setErrorMessage(null);
   }, []);
 
-  const progress = stepToProgress(step);
+  const progress = contactStepSkipped ? (step === 1 ? 1 : 2) : stepToProgress(step);
+  const stepLabels = contactStepSkipped
+    ? YOUTH_PDF_LOCKED_STEP_LABELS
+    : pdfDelivery
+      ? YOUTH_PDF_STEP_LABELS
+      : isYouthWizard(wizardData)
+        ? YOUTH_STEP_LABELS
+        : STEP_LABELS;
   const showIndicator = step !== 3;
   const showBack = !handoffPending && (step === 2 || step === "2b" || step === "level");
   const campaignContext = wizardData.campaign;
@@ -563,8 +608,8 @@ export function WizardShell() {
             )}
           </div>
           {showIndicator && (
-            <div className="flex items-center gap-6" aria-label={`Schritt ${progress} von 3`}>
-              {(pdfDelivery ? YOUTH_PDF_STEP_LABELS : isYouthWizard(wizardData) ? YOUTH_STEP_LABELS : STEP_LABELS).map((label, i) => {
+            <div className="flex items-center gap-6" aria-label={`Schritt ${progress} von ${stepLabels.length}`}>
+              {stepLabels.map((label, i) => {
                 const dotNum = i + 1;
                 const isActive = dotNum === progress;
                 const isDone = dotNum < progress;
@@ -684,6 +729,7 @@ export function WizardShell() {
             onPlzErrorDismiss={() => setPlzError(null)}
             isYouth={isYouthWizard(wizardData)}
             pdfDelivery={pdfDelivery}
+            plzLocked={plzFromClassLink}
           />
         )}
         {step === "2b" && campaignMismatch && (
@@ -719,6 +765,7 @@ export function WizardShell() {
             onErrorDismiss={handleErrorDismiss}
             isCampaign={Boolean(campaignContext)}
             isYouth={isYouthWizard(wizardData)}
+            isSchoolClass={isYouthWizard(wizardData) && Boolean(wizardData.classToken)}
             showPersonalNote={Boolean(campaignContext?.textUnchanged)}
             personalHooks={campaignContext?.personalHooks}
             defaultValues={{
@@ -769,19 +816,22 @@ export function WizardShell() {
             }
             selectedLevel={selectedLevel ?? undefined}
             routingToken={routingToken}
+            schoolRecipient={schoolRecipient ?? undefined}
             onChangePlz={
-              actionResult && "disambiguationNeeded" in actionResult && actionResult.disambiguationNeeded
+              !schoolRecipient && actionResult && "disambiguationNeeded" in actionResult && actionResult.disambiguationNeeded
                 ? () => {
                     setActionResult(null);
                     setPoliticians([]);
                     setLevelRouting(null);
                     setSelectedLevel(null);
+                    setSchoolRecipient(null);
                     navigateToStep(2);
                   }
                 : undefined
             }
             onChangeLevel={
               !wizardData.campaign &&
+              !schoolRecipient &&
               levelRouting &&
               actionResult &&
               "disambiguationNeeded" in actionResult &&

@@ -5,6 +5,7 @@ import { AI_CONTENT_EMAIL_HEADERS } from "./aiContentMarking";
 import { signFeedbackToken } from "@/lib/feedback/token";
 import type { Politician } from "@/lib/types/politician";
 import type { RathausCandidate, RathausRecipient, Recipient } from "@/lib/lookup/rathausRecipient";
+import { getLandesregierungRecipient } from "@/lib/lookup/landesregierungRecipient";
 import { APP_URL, EMAIL_SENDER_NAME } from "@/lib/config";
 import { createDataDeletionToken } from "@/lib/dataDeletion/token";
 import type { WizardData } from "@/lib/types/wizard";
@@ -36,7 +37,7 @@ export interface LetterDebugPayload {
   recipientRegion?: string;
   representativeLevel: string;
   representativeParty: string | null;
-  representativeKind?: "mdb" | "mdb_later" | "mdl" | "bundeskanzler" | "landesregierung" | "campaign_fixed" | "rathaus";
+  representativeKind?: "mdb" | "mdb_later" | "mdl" | "bundeskanzler" | "landesregierung" | "landesminister" | "campaign_fixed" | "rathaus";
   mdbContextUsed: boolean;
   availablePoliticianCount: number;
   model: string;
@@ -253,6 +254,44 @@ function prepareAdultLetterEmail(args: {
           addressee: recipient.addressee,
           addressLines: recipient.addressee === "head" ? recipient.address.addressLines : undefined,
           institutionKind: recipient.institutionKind,
+          officeName: recipient.officeName,
+          title: recipient.address.sourceTitle,
+          url: recipient.address.sourceUrl,
+          stand: recipient.address.sourceStand,
+        },
+        letterText,
+        issueText,
+        debug,
+        feedbackToken,
+        campaign,
+        letterNumber,
+        campaignLetterCount,
+      },
+    };
+  }
+
+  // Fachminister:in (Schulmodus): gleiche Mail wie die Regierungsspitze mit Personenanschrift.
+  if (recipient.kind === "landesminister") {
+    const institutionKind =
+      getLandesregierungRecipient(recipient.bundeslandKey)?.institutionKind ?? "landesregierung";
+    return {
+      feedbackToken,
+      params: {
+        locale,
+        recipientEmail,
+        politicianName: recipient.name,
+        politicianFirstName: "",
+        politicianLastName: recipient.name,
+        politicianTitle: recipient.title,
+        politicianParty: null,
+        politicianPostalAddress: recipient.postalAddress,
+        politicianAbgeordnetenwatchUrl: null,
+        recipientKind: "landesregierung",
+        bundeslandKey: recipient.bundeslandKey,
+        governmentSource: {
+          addressee: "head",
+          addressLines: recipient.address.addressLines,
+          institutionKind,
           officeName: recipient.officeName,
           title: recipient.address.sourceTitle,
           url: recipient.address.sourceUrl,

@@ -230,8 +230,20 @@ describe("generate-letter: Jugendmodus", () => {
       expect((await post({ audience: "jung", klasse: 4, email: "", classToken: "pdf-token" })).status).toBe(400);
     });
 
-    it("prüft im PDF-Modus weiter die PLZ", async () => {
-      expect((await post({ ...pdf, plz: "abc" })).status).toBe(400);
+    it("nimmt im PDF-Modus die PLZ aus dem Token, nicht vom Client", async () => {
+      const response = await post({ ...pdf, plz: "10115" });
+      expect(response.status).toBe(200);
+      expect(resolveRecipientSelection).toHaveBeenCalledWith("28203", expect.anything(), expect.anything());
+    });
+
+    it("nimmt auch im E-Mail-Modus die PLZ aus dem Token", async () => {
+      const response = await post({ audience: "jung", klasse: 8, classToken: "valid-token", plz: "10115" });
+      expect(response.status).toBe(200);
+      expect(resolveRecipientSelection).toHaveBeenCalledWith("28203", expect.anything(), expect.anything());
+    });
+
+    it("prüft ohne Klassen-Token weiter die PLZ", async () => {
+      expect((await post({ audience: "jung", klasse: 8, plz: "abc" })).status).toBe(400);
     });
 
     it("ignoriert eine mitgeschickte E-Mail im PDF-Modus", async () => {

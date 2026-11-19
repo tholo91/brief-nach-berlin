@@ -21,7 +21,13 @@ import { computeFollowupSlot } from "@/lib/email/computeFollowupSlot";
 import { buildDebugPayload, type LetterRoutingInfo } from "@/lib/email/buildDebugPayload";
 import { checkOriginRateLimit, checkRateLimit, hashIdentifier, LIMITS } from "@/lib/rateLimit";
 import { verifyClassToken } from "@/lib/schule/classToken";
-import { resolveYouthLetterContext, validateStep1 } from "@/lib/schule/youthContext";
+import {
+  lockWizardToClassToken,
+  resolveSchoolMode,
+  resolveSchoolRecipientForRequest,
+  resolveYouthLetterContext,
+  validateStep1,
+} from "@/lib/schule/youthContext";
 import { DEFAULT_LETTER_LENGTH } from "@/lib/config";
 import {
   MistralProviderUnavailableError,
@@ -163,6 +169,8 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Ungültige Anfrage." }, { status: 400 });
     }
     data.locale = localeSchema.safeParse(data.locale).success ? data.locale : "de";
+    // Klassen-Link: PLZ und Klasse kommen aus dem Token, nicht vom Client.
+    lockWizardToClassToken(data);
     // Re-validate (defense in depth — client could call this endpoint directly)
     const step1Result = validateStep1(data);
     if (!step1Result.success) {
@@ -245,7 +253,17 @@ export async function POST(req: NextRequest) {
     // mdb/mdl: ID muss in der PLZ-abgeleiteten Ebenen-Liste stehen.
     // Institutionelle Empfänger kommen aus der PLZ oder dem serverseitig
     // geladenen festen Kampagnenziel (LOCK-5).
-    const resolved = resolveRecipientSelection(data.plz, selection, {
+    // Schulmodus (Jugend + gültiger Klassen-Token): Der Server wählt den Empfänger
+    // aus Token-PLZ, Token-Ebene und signiertem Routing. Die Client-Auswahl zählt nicht.
+    if (selection.kind === "landesminister" && !resolveSchoolMode(data)) {
+      return NextResponse.json({ error: "Empfänger nicht gefunden." }, { status: 400 });
+    }
+    const verifiedRouting =
+      typeof body.routingToken === "string"
+        ? verifyRoutingToken(body.routingToken, data.issueText)
+        : null;
+    const school = resolveSchoolRecipientForRequest(data, verifiedRouting);
+    const resolved = resolveRecipientSelection(data.plz, school?.selection ?? selection, {
       allowedPoliticianIds,
       campaignSlug: campaign?.slug ?? null,
       campaignFixedRecipient,
@@ -283,8 +301,8 @@ export async function POST(req: NextRequest) {
     // Daraus leiten sich Kompetenz-Mismatch-Framing und Debug-Telemetrie ab —
     // beides serverseitig, ohne dem Client zu vertrauen.
     let routingInfo: LetterRoutingInfo | null = null;
-    if (typeof body.routingToken === "string") {
-      const routing = verifyRoutingToken(body.routingToken, data.issueText);
+    {
+      const routing = verifiedRouting;
       if (routing) {
         const routedLevelAvailable =
           lookupPLZWithLevel(data.plz).byLevel[routing.primary.level].length > 0;
@@ -301,7 +319,7 @@ export async function POST(req: NextRequest) {
     }
     // Kampagnenbriefe bleiben auf der Forderung der Kampagne: kein Zuständigkeits-Hinweis.
     const mismatchRecommendedLevel =
-      !campaign && routingInfo?.wasOverridden && routingInfo.routedPrimaryLevel
+      !campaign && !school && routingInfo?.wasOverridden && routingInfo.routedPrimaryLevel
         ? routingInfo.routedPrimaryLevel
         : undefined;
 
@@ -335,6 +353,8 @@ export async function POST(req: NextRequest) {
       rathaus: recipient.kind === "rathaus" ? recipient : undefined,
       landesregierung:
         recipient.kind === "landesregierung" ? recipient : undefined,
+      landesminister:
+        recipient.kind === "landesminister" ? recipient : undefined,
       campaignFixedRecipient:
         recipient.kind === "campaign_fixed" ? recipient : undefined,
       bundeskanzler:
@@ -402,6 +422,7 @@ export async function POST(req: NextRequest) {
         const politicianFullName =
           result.selectedRecipient.kind === "rathaus" ||
           result.selectedRecipient.kind === "landesregierung" ||
+          result.selectedRecipient.kind === "landesminister" ||
           result.selectedRecipient.kind === "campaign_fixed" ||
           result.selectedRecipient.kind === "bundeskanzler" ||
           result.selectedRecipient.kind === "mdb_later"

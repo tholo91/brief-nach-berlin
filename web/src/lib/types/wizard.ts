@@ -4,8 +4,10 @@ import type {
   RathausRecipient,
   Recipient,
   RecipientRelation,
+  RecipientSelection,
 } from "@/lib/lookup/rathausRecipient";
 import type { LandesregierungRecipient } from "@/lib/lookup/landesregierungRecipient";
+import type { LandesministerRecipient } from "@/lib/lookup/landesministerRecipient";
 import type { BundeskanzlerRecipient } from "@/lib/lookup/bundeskanzlerRecipient";
 import type { CampaignFixedRecipientRecipient } from "@/lib/lookup/campaignFixedRecipient";
 import type { LetterLength } from "@/lib/config";
@@ -109,6 +111,8 @@ export interface GenerateLetterInput {
   rathaus?: RathausRecipient;
   /** Land: institutioneller Regierungs-/Senats-Empfänger statt politicians[] */
   landesregierung?: LandesregierungRecipient;
+  /** Land, nur Schulmodus: serverseitig aufgelöste Fachminister:in statt politicians[]. */
+  landesminister?: LandesministerRecipient;
   /** Schreib-Merz: serverseitig aufgelöster Bundeskanzler statt politicians[]. */
   bundeskanzler?: BundeskanzlerRecipient;
   /** Neutraler Bund-Entwurf, dessen konkrete Person später eingesetzt wird. */
@@ -157,6 +161,18 @@ export interface GenerateLetterResult {
   generationMs: number;
 }
 
+/**
+ * Schulmodus (Jugend-Audience mit gültigem Klassen-Token): der vom Server
+ * gewählte Empfänger. Kinder wählen nichts; `reason` ist der Satz für "Warum diese Person?".
+ */
+export interface SchoolRecipientPayload {
+  level: PoliticalLevel;
+  recipient: Recipient;
+  /** Gültige Auswahl für selectPoliticianAction (der Server leitet sie im Schulmodus ohnehin selbst ab). */
+  selection: RecipientSelection;
+  reason: string;
+}
+
 export type WizardActionResult =
   | { success: true; politician: Politician; politicalLevel: PoliticalLevel; letterText: string }
   | {
@@ -174,6 +190,8 @@ export type WizardActionResult =
       campaignRestrictedNoLocalMatch?: boolean;
       campaignTargetCount?: number;
       featuredRecipient?: BundeskanzlerRecipient;
+      /** Nur im Schulmodus: fester Empfänger statt Personenauswahl. */
+      schoolRecipient?: SchoolRecipientPayload;
     }
   | { error: "generation_failed"; message: string }
   | { error: "plz_not_found"; message: string }

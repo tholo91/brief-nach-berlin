@@ -4,6 +4,7 @@ import type {
   WizardData,
   WizardActionResult,
   LevelRoutingContext,
+  SchoolRecipientPayload,
 } from "@/lib/types/wizard";
 import {
   firstZodIssueMessage,
@@ -26,7 +27,11 @@ import {
 } from "@/lib/lookup/routingToken";
 import { checkOriginRateLimit, checkRateLimit, getClientIp, hashIdentifier, LIMITS } from "@/lib/rateLimit";
 import { verifyClassToken } from "@/lib/schule/classToken";
-import { validateStep1 } from "@/lib/schule/youthContext";
+import {
+  lockWizardToClassToken,
+  resolveSchoolRecipientForRequest,
+  validateStep1,
+} from "@/lib/schule/youthContext";
 import { isCampaignEnded } from "@/lib/campaigns/endDate";
 import { getPublicCampaignBySlug } from "@/lib/campaigns/repository";
 import {
@@ -110,6 +115,8 @@ export async function submitWizardAction(
 
   try {
     data.locale = localeSchema.safeParse(data.locale).success ? data.locale : "de";
+    // Klassen-Link: PLZ und Klasse kommen aus dem Token, nicht vom Client.
+    lockWizardToClassToken(data);
     // 1. Validate input server-side with Zod (T-02-09)
     const step1Result = validateStep1(data);
     if (!step1Result.success) {
@@ -278,6 +285,7 @@ export async function submitWizardAction(
     // Prefetch-Token; ohne Token folgt der zeitlich begrenzte Fallback.
     let levelRouting: LevelRoutingContext | undefined;
     let resolvedRoutingToken: string | undefined;
+    let schoolRecipient: SchoolRecipientPayload | undefined;
 
     {
       // Prefetch-Token verifizieren (Signatur, TTL, Issue-Hash) — sonst
@@ -332,6 +340,16 @@ export async function submitWizardAction(
             ? buildCoverageHint(levelResult, recommended.level)
             : null,
       };
+      // Schulmodus: Token-Ebene vor Router-Empfehlung, Empfänger serverseitig.
+      const school = campaignTarget ? null : resolveSchoolRecipientForRequest(data, routing);
+      if (school) {
+        schoolRecipient = {
+          level: school.level,
+          recipient: school.recipient,
+          selection: school.selection,
+          reason: school.reason,
+        };
+      }
       log("level routing", {
         recommendedLevel: recommended?.level ?? null,
         confidence: recommended?.confidence ?? null,
@@ -360,6 +378,7 @@ export async function submitWizardAction(
       ...(resolvedRoutingToken ? { routingToken: resolvedRoutingToken } : {}),
       ...(campaignTarget ? { campaignTargetLevel: campaignTarget.targetLevel } : {}),
       ...(featuredRecipient ? { featuredRecipient } : {}),
+      ...(schoolRecipient ? { schoolRecipient } : {}),
       ...(campaignEnded ? { campaignEnded: true as const } : {}),
     };
   } catch (error) {

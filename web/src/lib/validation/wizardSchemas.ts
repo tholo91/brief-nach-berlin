@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { RESSORT_CODES } from "@/lib/lookup/ressorts";
 
 export const localeSchema = z.enum(["de", "en", "tr"]);
 
@@ -18,6 +19,7 @@ export const recipientSelectionSchema = z.discriminatedUnion("kind", [
   z.object({ kind: z.literal("bundeskanzler") }).strict(),
   z.object({ kind: z.literal("campaign_fixed") }).strict(),
   z.object({ kind: z.literal("landesregierung"), addressee: z.enum(["institution", "head"]).optional() }).strict(),
+  z.object({ kind: z.literal("landesminister"), ressort: z.enum(RESSORT_CODES) }).strict(),
   z.object({ kind: z.literal("rathaus") }).strict(),
 ]);
 

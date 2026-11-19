@@ -3,6 +3,8 @@ import {
   entryStepForHandoff,
   peekHandoff,
   saveHandoff,
+  schoolFieldsFromStoredLink,
+  skipsContactStep,
 } from "@/lib/wizard-handoff";
 
 class SessionStorageMock {
@@ -49,6 +51,80 @@ describe("wizard handoff", () => {
     expect(entryStepForHandoff(null)).toBe(1);
     expect(entryStepForHandoff({ issueText: "Landing", source: "landing" })).toBe(2);
     expect(entryStepForHandoff({ issueText: "Kampagne", source: "campaign" })).toBe(2);
+  });
+
+  it("skips the PLZ and contact step for a PDF class link (A3)", () => {
+    const pdf = {
+      issueText: "Die Toiletten sind kaputt.",
+      source: "landing" as const,
+      audience: "jung" as const,
+      klasse: 7,
+      classToken: "tok",
+      classDelivery: "pdf" as const,
+      plz: "28195",
+    };
+    expect(entryStepForHandoff(pdf)).toBe("2b");
+    expect(skipsContactStep(pdf)).toBe(true);
+  });
+
+  it("keeps the contact step for mail class links and every other handoff (A3)", () => {
+    const mail = {
+      issueText: "Die Toiletten sind kaputt.",
+      source: "landing" as const,
+      audience: "jung" as const,
+      klasse: 7,
+      classToken: "tok",
+      plz: "28195",
+    };
+    expect(entryStepForHandoff(mail)).toBe(2);
+    expect(entryStepForHandoff({ ...mail, classDelivery: "pdf", plz: undefined })).toBe(2);
+    expect(entryStepForHandoff({ ...mail, classDelivery: "pdf", classToken: undefined })).toBe(2);
+    expect(entryStepForHandoff({ ...mail, classDelivery: "pdf", source: "campaign" })).toBe(2);
+    expect(entryStepForHandoff({ issueText: "Landing", source: "landing" })).toBe(2);
+  });
+
+  it("round-trips the PDF class link fields so the skip survives a reload", () => {
+    saveHandoff({
+      issueText: "Die Toiletten sind kaputt.",
+      source: "landing",
+      audience: "jung",
+      klasse: 7,
+      classToken: "tok",
+      classDelivery: "pdf",
+      plz: "28195",
+    });
+    expect(entryStepForHandoff(peekHandoff())).toBe("2b");
+  });
+
+  it("restores school mode from the stored class link when the handoff is gone (A1)", () => {
+    const link = { token: "tok", klasse: 7, plz: "28195", delivery: "pdf" as const };
+    expect(schoolFieldsFromStoredLink(null, link)).toEqual({
+      audience: "jung",
+      klasse: 7,
+      classToken: "tok",
+      plz: "28195",
+      classDelivery: "pdf",
+    });
+    expect(schoolFieldsFromStoredLink(null, { ...link, delivery: "email" })).not.toHaveProperty("classDelivery");
+    expect(schoolFieldsFromStoredLink(null, null)).toBeNull();
+    // Jugend-Handoff ohne Token (Klasse im Formular gewählt): der Link gewinnt.
+    expect(
+      schoolFieldsFromStoredLink({ issueText: "x", source: "landing", audience: "jung", klasse: 9 }, link),
+    ).toMatchObject({ klasse: 7, classToken: "tok" });
+  });
+
+  it("never turns an adult, campaign or already tokened handoff into school mode (A1)", () => {
+    const link = { token: "tok", klasse: 7, plz: "28195", delivery: "pdf" as const };
+    expect(schoolFieldsFromStoredLink({ issueText: "x", source: "landing" }, link)).toBeNull();
+    expect(
+      schoolFieldsFromStoredLink({ issueText: "x", source: "campaign", campaignSlug: "a", audience: "jung" }, link),
+    ).toBeNull();
+    expect(
+      schoolFieldsFromStoredLink(
+        { issueText: "x", source: "landing", audience: "jung", klasse: 9, classToken: "other" },
+        link,
+      ),
+    ).toBeNull();
   });
 
   it("carries the unchanged-text flag and at most three trimmed hooks for campaigns", () => {

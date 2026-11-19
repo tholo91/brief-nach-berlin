@@ -44,6 +44,41 @@ describe("classToken", () => {
     expect(verifyClassToken(signRaw({ v: 1, k: 9, p: "28203", d: "pdf" }, "class-link-v1."))).toBeNull();
   });
 
+  it("liest die feste Ebene aus dem Kurzfeld l, ohne l gilt automatisch", () => {
+    expect(verifyClassToken(signClassToken({ klasse: 9, plz: "28203", level: "Land" }))?.level).toBe("Land");
+    expect(verifyClassToken(signClassToken({ klasse: 9, plz: "28203", level: "Bund" }))?.level).toBe("Bund");
+    expect(verifyClassToken(signClassToken({ klasse: 9, plz: "28203" }))?.level).toBeUndefined();
+    expect(verifyClassToken(signRaw({ v: 1, k: 9, p: "28203", l: "L" }, "class-link-v1."))?.level).toBe("Land");
+    expect(verifyClassToken(signRaw({ v: 1, k: 9, p: "28203", l: "X" }, "class-link-v1."))).toBeNull();
+    expect(verifyClassToken(signRaw({ v: 1, k: 9, p: "28203", l: "Land" }, "class-link-v1."))).toBeNull();
+  });
+
+  it("Token mit fester Ebene trägt einen gekürzten MAC und lehnt Manipulation ab", () => {
+    const withLevel = signClassToken({ klasse: 9, plz: "28203", level: "Land" });
+    const withoutLevel = signClassToken({ klasse: 9, plz: "28203" });
+    expect(withLevel.split(".")[1]).toHaveLength(22);
+    expect(withoutLevel.split(".")[1]).toHaveLength(43);
+
+    const [body, mac] = withLevel.split(".");
+    const flip = (s: string) => s.slice(0, -1) + (s.endsWith("A") ? "B" : "A");
+    expect(verifyClassToken(`${flip(body!)}.${mac}`)).toBeNull();
+    expect(verifyClassToken(`${body}.${flip(mac!)}`)).toBeNull();
+    expect(verifyClassToken(`${body}.${mac!.slice(0, 10)}`)).toBeNull();
+    // Ein anderer Token-Typ akzeptiert den gekürzten MAC nicht.
+    expect(verifyFeedbackToken(withLevel)).toBeNull();
+  });
+
+  it("alter Token ohne l bleibt gültig und unverändert", () => {
+    jest.useFakeTimers();
+    jest.setSystemTime(new Date("2026-10-01T10:00:00Z"));
+    const legacy = signFeedbackToken({ v: 1, k: 9, p: "28203" }, {
+      macDomain: "class-link-v1.",
+      maxAgeSeconds: 14 * 24 * 60 * 60,
+    });
+    expect(verifyClassToken(legacy)).toMatchObject({ klasse: 9, plz: "28203", delivery: "email" });
+    expect(signClassToken({ klasse: 9, plz: "28203", level: "Bund" })).not.toBe(legacy);
+  });
+
   it("lässt E-Mail-Tokens unverändert und PDF-Tokens verschieden", () => {
     jest.useFakeTimers();
     jest.setSystemTime(new Date("2026-10-01T10:00:00Z"));

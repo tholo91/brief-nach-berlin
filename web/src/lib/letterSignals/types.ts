@@ -7,7 +7,7 @@ export const letterSignalContextSchema = TopicSignalWithMetadataSchema.extend({
   plz: z.string().regex(/^\d{5}$/),
   bundeslandKey: z.string().regex(/^[A-Z]{2}$/),
   politicalLevel: z.enum(["Bund", "Land", "Kommune", "Fixed"]),
-  recipientKind: z.enum(["mdb", "mdb_later", "mdl", "bundeskanzler", "landesregierung", "campaign_fixed", "rathaus"]),
+  recipientKind: z.enum(["mdb", "mdb_later", "mdl", "bundeskanzler", "landesregierung", "landesminister", "campaign_fixed", "rathaus"]),
   recipientBinding: z.string().regex(/^[a-f0-9]{64}$/).optional(),
   issueBinding: z.string().regex(/^[a-f0-9]{64}$/),
   campaignSlug: z.string().trim().min(1).max(120).nullable(),

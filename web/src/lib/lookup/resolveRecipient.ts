@@ -15,6 +15,7 @@ import {
   isBundeskanzlerCampaignSlug,
 } from "./bundeskanzlerRecipient";
 import { getLandesregierungRecipient } from "./landesregierungRecipient";
+import { getLandesministerRecipient } from "./landesministerRecipient";
 import type { CampaignFixedRecipientRecipient } from "./campaignFixedRecipient";
 
 export type ResolveRecipientResult =
@@ -38,6 +39,7 @@ type ResolveRecipientOptions = {
  * /api/generate-letter:
  * - mdb/mdl: die numerische Abgeordnetenwatch-ID muss in der PLZ-abgeleiteten
  *   Liste der jeweiligen Ebene stehen (WR-02-Muster).
+ * - landesminister: nur Bundesland (aus der PLZ) und Ressort-Code; keine Client-ID.
  * - rathaus/landesregierung: es wird KEINE Client-ID akzeptiert; der Empfänger
  *   wird aus der PLZ oder aus dem serverseitig geladenen Kampagnenziel gebaut.
  */
@@ -150,6 +152,20 @@ export function resolveRecipientSelection(
     return {
       ok: true,
       recipient: landesregierung,
+      availableCount: 1,
+      relation: "institutional",
+    };
+  }
+
+  if (selection.kind === "landesminister") {
+    const bundeslandKey = lookupPLZWithLevel(plz).bundeslandKey;
+    const minister = bundeslandKey
+      ? getLandesministerRecipient(bundeslandKey, selection.ressort)
+      : null;
+    if (!minister) return { ok: false, reason: "not_found" };
+    return {
+      ok: true,
+      recipient: minister,
       availableCount: 1,
       relation: "institutional",
     };

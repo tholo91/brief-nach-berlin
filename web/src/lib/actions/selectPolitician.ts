@@ -15,7 +15,13 @@ import { getPublicCampaignBySlug } from "@/lib/campaigns/repository";
 import { DEFAULT_LETTER_LENGTH } from "@/lib/config";
 import { deriveRoutingLetterId, verifyRoutingTokenEnvelope } from "@/lib/lookup/routingToken";
 import { buildLetterSignalContext } from "@/lib/letterSignals/context";
-import { resolveYouthLetterContext, validateStep1 } from "@/lib/schule/youthContext";
+import {
+  lockWizardToClassToken,
+  resolveSchoolMode,
+  resolveSchoolRecipientForRequest,
+  resolveYouthLetterContext,
+  validateStep1,
+} from "@/lib/schule/youthContext";
 import { isBundeskanzlerCampaignTarget } from "@/lib/lookup/bundeskanzlerRecipient";
 import { getCampaignFixedRecipient } from "@/lib/lookup/campaignFixedRecipient";
 
@@ -34,6 +40,8 @@ export async function selectPoliticianAction(
   routingToken?: string | null,
 ): Promise<WizardActionResult> {
   try {
+    // Klassen-Link: PLZ und Klasse kommen aus dem Token, nicht vom Client.
+    lockWizardToClassToken(data);
     // Re-validate user-supplied input (WR-02: prevent bypassing initial validation)
     const step1Result = validateStep1(data);
     if (!step1Result.success) {
@@ -63,7 +71,16 @@ export async function selectPoliticianAction(
     if (!parsedSelection.success) {
       return { error: "server_error", message: "Ungültige Eingabe." };
     }
-    const normalizedSelection: RecipientSelection = parsedSelection.data;
+    // Fachminister:innen gibt es nur im Schulmodus.
+    if (parsedSelection.data.kind === "landesminister" && !resolveSchoolMode(data)) {
+      return { error: "server_error", message: "Empfänger nicht gefunden." };
+    }
+    const routingEnvelope = routingToken
+      ? verifyRoutingTokenEnvelope(routingToken, data.issueText)
+      : null;
+    // Schulmodus: Der Server wählt den Empfänger, die Client-Auswahl zählt nicht.
+    const school = resolveSchoolRecipientForRequest(data, routingEnvelope?.routing);
+    const normalizedSelection: RecipientSelection = school?.selection ?? parsedSelection.data;
     const activeCampaign = data.campaign?.slug
       ? await getPublicCampaignBySlug(data.campaign.slug)
       : null;
@@ -107,9 +124,6 @@ export async function selectPoliticianAction(
       return { error: "server_error", message: "Empfänger nicht gefunden." };
     }
 
-    const routingEnvelope = routingToken
-      ? verifyRoutingTokenEnvelope(routingToken, data.issueText)
-      : null;
     const letterId = routingEnvelope
       ? deriveRoutingLetterId(
           routingEnvelope.letterId,

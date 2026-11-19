@@ -27,7 +27,7 @@ import {
   validateJungSubmit,
 } from "@/components/jung/jungHandoff";
 import { useTopicStarters } from "@/components/topics/useTopicStarters";
-import { signClassToken } from "@/lib/schule/classToken";
+import { CLASS_TOKEN_MAX_AGE_SECONDS, signClassToken } from "@/lib/schule/classToken";
 import { JUNG_OPEN_TOPICS, JUNG_TOPICS } from "@/lib/schule/jungTopics";
 
 const LIMIT_MESSAGE = "Ein, zwei Fokusthemen reichen, sonst wird es ein Buch.";
@@ -55,17 +55,46 @@ describe("resolveJungEntry", () => {
   it("returns klasse, plz and token but never bucketId", () => {
     verify.mockReturnValue({ klasse: 9, plz: "28195", issuedAt: 1, bucketId: "geheim" });
     const entry = resolveJungEntry(["tok", "zweites"], verify);
-    expect(entry).toEqual({ status: "valid", klasse: 9, plz: "28195", token: "tok", delivery: "email" });
+    expect(entry).toEqual({
+      status: "valid",
+      klasse: 9,
+      plz: "28195",
+      token: "tok",
+      delivery: "email",
+      expiresAt: (1 + CLASS_TOKEN_MAX_AGE_SECONDS) * 1000,
+    });
     expect(JSON.stringify(entry)).not.toContain("geheim");
   });
   it("works with the real verifier", () => {
     const token = signClassToken({ klasse: 10, plz: "28195" });
-    expect(resolveJungEntry(token)).toEqual({ status: "valid", klasse: 10, plz: "28195", token, delivery: "email" });
+    expect(resolveJungEntry(token)).toEqual({
+      status: "valid",
+      klasse: 10,
+      plz: "28195",
+      token,
+      delivery: "email",
+      expiresAt: expect.any(Number),
+    });
     expect(resolveJungEntry("kaputt")).toEqual({ status: "invalid" });
   });
   it("exposes delivery pdf from a PDF token", () => {
     const token = signClassToken({ klasse: 10, plz: "28195", delivery: "pdf" });
-    expect(resolveJungEntry(token)).toEqual({ status: "valid", klasse: 10, plz: "28195", token, delivery: "pdf" });
+    expect(resolveJungEntry(token)).toEqual({
+      status: "valid",
+      klasse: 10,
+      plz: "28195",
+      token,
+      delivery: "pdf",
+      expiresAt: expect.any(Number),
+    });
+  });
+  it("lets the client keep the link until the token itself expires", () => {
+    const token = signClassToken({ klasse: 10, plz: "28195" });
+    const entry = resolveJungEntry(token);
+    if (entry.status !== "valid" || entry.expiresAt === undefined) throw new Error("expected a valid entry");
+    const lifetime = entry.expiresAt - Date.now();
+    expect(lifetime).toBeGreaterThan((CLASS_TOKEN_MAX_AGE_SECONDS - 5) * 1000);
+    expect(lifetime).toBeLessThanOrEqual(CLASS_TOKEN_MAX_AGE_SECONDS * 1000);
   });
 });
 
@@ -199,8 +228,8 @@ describe("/schule page (Schüler:innen)", () => {
 
   it("replaces the class picker with a confirmation for a valid link", async () => {
     const html = await render(signClassToken({ klasse: 9, plz: "28195" }));
-    expect(html).not.toContain("Klasse 9, PLZ 28195 eingetragen.");
-    expect(html).toContain("ändern");
+    expect(html).not.toContain("Klasse 9, PLZ 28195");
+    expect(html).not.toContain("Klasse ändern");
     expect(html).not.toContain('name="klasse"');
   });
 
@@ -285,5 +314,32 @@ describe("JungExperience topic limit", () => {
     const html = renderToStaticMarkup(createElement(JungExperience, { entry: { status: "invalid" } }));
     expect(html).toContain(`${LIMIT_MESSAGE} Schreib die Satzanfänge selbst zu Ende.`);
     expect(html).not.toContain("Für weitere schreibst du");
+  });
+});
+
+describe("JungExperience with a class link (A3: PLZ and Klasse locked)", () => {
+  it("shows Klasse and PLZ as a fixed line without a change button or picker", () => {
+    jest.mocked(useTopicStarters).mockReturnValueOnce({
+      selectedTopicIds: [],
+      topicInsertions: {},
+      issueText: "Die Toiletten an meiner Schule sind kaputt.",
+      setIssueText: jest.fn(),
+      statusMessage: "",
+      setStatusMessage: jest.fn(),
+      toggleTopic: jest.fn(),
+      selectionLimitReached: false,
+    } as ReturnType<typeof useTopicStarters>);
+    const html = renderToStaticMarkup(
+      createElement(JungExperience, {
+        entry: { status: "valid", klasse: 7, plz: "28195", token: "tok", delivery: "pdf" },
+      }),
+    );
+    expect(html).toContain("Klasse 7, PLZ 28195");
+    expect(html).toContain("vom Klassenlink festgelegt");
+    expect(html).not.toContain("Klasse ändern");
+    expect(html).not.toContain(">ändern<");
+    expect(html).not.toContain('name="klasse"');
+    expect(html).toContain("Das Tool sucht die passende Person für dein Thema.");
+    expect(html).not.toMatch(/[–—]/);
   });
 });

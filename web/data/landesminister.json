@@ -1,0 +1,219 @@
+{
+  "lastUpdated": "2026-11-19",
+  "states": {
+    "HB": {
+      "stateName": "Bremen",
+      "ministers": [
+        {
+          "ressorts": [
+            "kultur"
+          ],
+          "officeName": "Der Senator für Kultur",
+          "name": "Dr. Andreas Bovenschulte",
+          "title": "Bürgermeister, Präsident des Senats, Senator für Kultur",
+          "salutation": "Sehr geehrter Herr Bürgermeister Dr. Bovenschulte,",
+          "addressLines": [
+            "Bürgermeister Dr. Andreas Bovenschulte",
+            "Der Senator für Kultur",
+            "Altenwall 15/16",
+            "28195 Bremen"
+          ],
+          "source": {
+            "title": "Impressum Der Senator für Kultur",
+            "url": "https://www.kultur.bremen.de/impressum",
+            "verifiedAt": "2026-11-19"
+          }
+        },
+        {
+          "ressorts": [
+            "finanzen"
+          ],
+          "officeName": "Der Senator für Finanzen",
+          "name": "Björn Fecker",
+          "title": "Bürgermeister, Senator für Finanzen",
+          "salutation": "Sehr geehrter Herr Bürgermeister Fecker,",
+          "addressLines": [
+            "Bürgermeister Björn Fecker",
+            "Der Senator für Finanzen",
+            "Rudolf-Hilferding-Platz 1",
+            "28195 Bremen"
+          ],
+          "source": {
+            "title": "Impressum Der Senator für Finanzen",
+            "url": "https://www.finanzen.bremen.de/impressum",
+            "verifiedAt": "2026-11-19"
+          }
+        },
+        {
+          "ressorts": [
+            "wirtschaft",
+            "haefen"
+          ],
+          "officeName": "Die Senatorin für Wirtschaft, Häfen und Transformation",
+          "name": "Kristina Vogt",
+          "title": "Senatorin für Wirtschaft, Häfen und Transformation",
+          "salutation": "Sehr geehrte Frau Senatorin Vogt,",
+          "addressLines": [
+            "Senatorin Kristina Vogt",
+            "Die Senatorin für Wirtschaft, Häfen und Transformation",
+            "Zweite Schlachtpforte 3",
+            "28195 Bremen"
+          ],
+          "source": {
+            "title": "Impressum Die Senatorin für Wirtschaft, Häfen und Transformation",
+            "url": "https://www.wirtschaft.bremen.de/impressum",
+            "verifiedAt": "2026-11-19"
+          }
+        },
+        {
+          "ressorts": [
+            "gesundheit",
+            "frauen",
+            "verbraucherschutz"
+          ],
+          "officeName": "Die Senatorin für Gesundheit, Frauen und Verbraucherschutz",
+          "name": "Claudia Bernhard",
+          "title": "Senatorin für Gesundheit, Frauen und Verbraucherschutz",
+          "salutation": "Sehr geehrte Frau Senatorin Bernhard,",
+          "addressLines": [
+            "Senatorin Claudia Bernhard",
+            "Die Senatorin für Gesundheit, Frauen und Verbraucherschutz",
+            "Faulenstraße 9/15",
+            "28195 Bremen"
+          ],
+          "source": {
+            "title": "Impressum Die Senatorin für Gesundheit, Frauen und Verbraucherschutz",
+            "url": "https://www.gesundheit.bremen.de/impressum",
+            "verifiedAt": "2026-11-19"
+          }
+        },
+        {
+          "ressorts": [
+            "soziales",
+            "jugend",
+            "arbeit"
+          ],
+          "officeName": "Die Senatorin für Arbeit, Soziales, Jugend und Integration",
+          "name": "Dr. Claudia Schilling",
+          "title": "Senatorin für Arbeit, Soziales, Jugend und Integration",
+          "salutation": "Sehr geehrte Frau Senatorin Dr. Schilling,",
+          "addressLines": [
+            "Senatorin Dr. Claudia Schilling",
+            "Die Senatorin für Arbeit, Soziales, Jugend und Integration",
+            "Bahnhofsplatz 29",
+            "28195 Bremen"
+          ],
+          "source": {
+            "title": "Impressum Die Senatorin für Arbeit, Soziales, Jugend und Integration",
+            "url": "https://www.soziales.bremen.de/impressum",
+            "verifiedAt": "2026-11-19"
+          }
+        },
+        {
+          "ressorts": [
+            "justiz"
+          ],
+          "officeName": "Die Senatorin für Justiz und Verfassung",
+          "name": "Dr. Claudia Schilling",
+          "title": "Senatorin für Justiz und Verfassung",
+          "salutation": "Sehr geehrte Frau Senatorin Dr. Schilling,",
+          "addressLines": [
+            "Senatorin Dr. Claudia Schilling",
+            "Die Senatorin für Justiz und Verfassung",
+            "Richtweg 16-22",
+            "28195 Bremen"
+          ],
+          "source": {
+            "title": "Impressum Die Senatorin für Justiz und Verfassung",
+            "url": "https://www.justiz.bremen.de/impressum",
+            "verifiedAt": "2026-11-19"
+          }
+        },
+        {
+          "ressorts": [
+            "bau",
+            "verkehr"
+          ],
+          "officeName": "Die Senatorin für Bau, Mobilität und Stadtentwicklung",
+          "name": "Özlem Ünsal",
+          "title": "Senatorin für Bau, Mobilität und Stadtentwicklung",
+          "salutation": "Sehr geehrte Frau Senatorin Ünsal,",
+          "addressLines": [
+            "Senatorin Özlem Ünsal",
+            "Die Senatorin für Bau, Mobilität und Stadtentwicklung",
+            "Contrescarpe 72",
+            "28195 Bremen"
+          ],
+          "source": {
+            "title": "Impressum Die Senatorin für Bau, Mobilität und Stadtentwicklung",
+            "url": "https://www.bau.bremen.de/impressum",
+            "verifiedAt": "2026-11-19"
+          }
+        },
+        {
+          "ressorts": [
+            "bildung"
+          ],
+          "officeName": "Der Senator für Kinder und Bildung",
+          "name": "Mark Rackles",
+          "title": "Senator für Kinder und Bildung",
+          "salutation": "Sehr geehrter Herr Senator Rackles,",
+          "addressLines": [
+            "Senator Mark Rackles",
+            "Der Senator für Kinder und Bildung",
+            "Rembertiring 8-12",
+            "28195 Bremen"
+          ],
+          "source": {
+            "title": "Impressum Der Senator für Kinder und Bildung",
+            "url": "https://www.bildung.bremen.de/impressum",
+            "verifiedAt": "2026-11-19"
+          }
+        },
+        {
+          "ressorts": [
+            "umwelt",
+            "klima",
+            "wissenschaft"
+          ],
+          "officeName": "Die Senatorin für Umwelt, Klima und Wissenschaft",
+          "name": "Henrike Müller",
+          "title": "Senatorin für Umwelt, Klima und Wissenschaft",
+          "salutation": "Sehr geehrte Frau Senatorin Müller,",
+          "addressLines": [
+            "Senatorin Henrike Müller",
+            "Die Senatorin für Umwelt, Klima und Wissenschaft",
+            "An der Reeperbahn 2",
+            "28217 Bremen"
+          ],
+          "source": {
+            "title": "Impressum Die Senatorin für Umwelt, Klima und Wissenschaft",
+            "url": "https://www.umwelt.bremen.de/impressum",
+            "verifiedAt": "2026-11-19"
+          }
+        },
+        {
+          "ressorts": [
+            "inneres",
+            "sport"
+          ],
+          "officeName": "Die Senatorin für Inneres und Sport",
+          "name": "Dr. Eva Högl",
+          "title": "Senatorin für Inneres und Sport",
+          "salutation": "Sehr geehrte Frau Senatorin Dr. Högl,",
+          "addressLines": [
+            "Senatorin Dr. Eva Högl",
+            "Die Senatorin für Inneres und Sport",
+            "Contrescarpe 22/24",
+            "28203 Bremen"
+          ],
+          "source": {
+            "title": "Impressum Die Senatorin für Inneres und Sport",
+            "url": "https://www.inneres.bremen.de/impressum",
+            "verifiedAt": "2026-11-19"
+          }
+        }
+      ]
+    }
+  }
+}

@@ -45,6 +45,7 @@ export function buildDebugPayload(
     ? [p.title, p.firstName, p.lastName].filter(Boolean).join(" ")
     : recipient.kind === "rathaus" ||
         recipient.kind === "landesregierung" ||
+        recipient.kind === "landesminister" ||
         recipient.kind === "campaign_fixed" ||
         recipient.kind === "bundeskanzler" ||
         recipient.kind === "mdb_later"
@@ -68,7 +69,7 @@ export function buildDebugPayload(
     representativeWahlkreis:
       recipient.kind === "rathaus"
         ? `${recipient.plz} ${recipient.gemeindeName}`
-        : recipient.kind === "landesregierung"
+        : recipient.kind === "landesregierung" || recipient.kind === "landesminister"
           ? recipient.bundeslandName
           : recipient.kind === "campaign_fixed"
             ? `${recipient.address.postalCode} ${recipient.address.city}`
@@ -80,7 +81,7 @@ export function buildDebugPayload(
     recipientRegion:
       recipient.kind === "rathaus"
         ? `${recipient.plz} ${recipient.gemeindeName}`
-        : recipient.kind === "landesregierung"
+        : recipient.kind === "landesregierung" || recipient.kind === "landesminister"
           ? recipient.bundeslandName
           : recipient.kind === "campaign_fixed"
             ? `${recipient.address.postalCode} ${recipient.address.city}`
@@ -140,6 +141,7 @@ export function buildResendDebugPayload(
     ? [politician.title, politician.firstName, politician.lastName].filter(Boolean).join(" ")
     : recipient.kind === "rathaus" ||
         recipient.kind === "landesregierung" ||
+        recipient.kind === "landesminister" ||
         recipient.kind === "campaign_fixed" ||
         recipient.kind === "bundeskanzler" ||
         recipient.kind === "mdb_later"
@@ -165,7 +167,7 @@ export function buildResendDebugPayload(
     representativeWahlkreis:
       recipient.kind === "rathaus"
         ? `${recipient.plz} ${recipient.gemeindeName}`
-        : recipient.kind === "landesregierung"
+        : recipient.kind === "landesregierung" || recipient.kind === "landesminister"
           ? recipient.bundeslandName
           : recipient.kind === "campaign_fixed"
             ? `${recipient.address.postalCode} ${recipient.address.city}`
@@ -177,7 +179,7 @@ export function buildResendDebugPayload(
     recipientRegion:
       recipient.kind === "rathaus"
         ? `${recipient.plz} ${recipient.gemeindeName}`
-        : recipient.kind === "landesregierung"
+        : recipient.kind === "landesregierung" || recipient.kind === "landesminister"
           ? recipient.bundeslandName
           : recipient.kind === "campaign_fixed"
             ? `${recipient.address.postalCode} ${recipient.address.city}`

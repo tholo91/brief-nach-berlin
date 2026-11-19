@@ -88,7 +88,7 @@ const jsonLd = {
 const steps = [
   { title: "Anliegen aufschreiben", text: "Ein Thema und ein eigenes Erlebnis, das dauert zwei Minuten." },
   { title: "Entwurf bekommen", text: "Ich suche die zuständige Person in Bund, Land oder Gemeinde und schreibe dir einen Entwurf." },
-  { title: "Von Hand abschreiben", text: "Mit einem eigenen Satz wird es dein Brief. Briefmarke drauf, ab zur Post." },
+  { title: "Brief von Hand schreiben", text: "Mit einem eigenen Satz wird es dein Brief. Briefmarke drauf, ab zur Post." },
 ];
 
 const h2Class = "font-typewriter text-2xl font-bold text-waldgruen-dark";

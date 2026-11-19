@@ -22,6 +22,6 @@ describe("youth mode sections on legal pages", () => {
   it("ki-transparenz has the Schüler:innen section", () => {
     const html = renderToStaticMarkup(createElement(KiTransparenz));
     expect(html).toContain("Briefe von Schüler:innen");
-    expect(html).toContain("150 bis 200 Wörtern");
+    expect(html).toContain("80 bis 200 Wörter");
   });
 });

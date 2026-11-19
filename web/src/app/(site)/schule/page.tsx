@@ -38,8 +38,8 @@ const faqs = [
     a: "Das hängt von der Wahl ab. Bei der Bundestagswahl bist du ab 18 dabei, bei der Europawahl ab 16. Bei Landtagswahlen dürfen 16-Jährige in Baden-Württemberg, Brandenburg, Bremen, Hamburg, Mecklenburg-Vorpommern und Schleswig-Holstein wählen, in Nordrhein-Westfalen ab der Landtagswahl 2027. Bei Kommunalwahlen liegt die Grenze in vielen Ländern bei 16. Stand: Oktober 2026. Schreiben darfst du unabhängig davon jederzeit.",
   },
   {
-    q: "Warum soll ich den Brief von Hand abschreiben?",
-    a: "Ein handgeschriebener Brief fällt im Büro auf und zeigt, dass dir das Thema wirklich wichtig ist. Schreib beim Abschreiben ein eigenes Erlebnis dazu, dann ist es dein Brief und nicht der der KI.",
+    q: "Warum soll ich den Brief von Hand schreiben?",
+    a: "Ein handgeschriebener Brief fällt im Büro auf und zeigt, dass dir das Thema wirklich wichtig ist. Schreib mit eigenen Worten und ergänze ein eigenes Erlebnis, dann ist es dein Brief und nicht der der KI.",
   },
   {
     q: "Was passiert mit meinen Daten?",
@@ -56,7 +56,7 @@ const faqs = [
   },
   {
     q: "Was mache ich, wenn im Entwurf etwas Falsches steht?",
-    a: "Lies den Entwurf genau, die KI kann sich irren. Streich, was nicht stimmt, und schreib es beim Abschreiben richtig. Du unterschreibst den Brief, also zählt, was du für richtig hältst.",
+    a: "Lies den Entwurf genau, die KI kann sich irren. Streich, was nicht stimmt, und schreib es in deinem Brief richtig. Du unterschreibst den Brief, also zählt, was du für richtig hältst.",
   },
   {
     q: "Kostet das etwas?",
@@ -96,8 +96,8 @@ const steps = [
     text: "Ich suche die zuständige Person in Bund, Land oder Gemeinde. Den Entwurf siehst du direkt und speicherst ihn als PDF oder bekommst eine Kopie per Mail.",
   },
   {
-    title: "Von Hand abschreiben",
-    text: "Mit einem eigenen Satz wird es dein Brief. Dann Briefmarke drauf und ab zur Post.",
+    title: "Brief von Hand schreiben",
+    text: "Der Entwurf hilft dir dabei, mit einem eigenen Satz wird es dein Brief. Dann Briefmarke drauf und ab zur Post.",
   },
 ];
 

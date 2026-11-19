@@ -23,7 +23,7 @@ export function YouthLetterDraft({
         Dein Entwurf
       </h2>
       <p className="mt-1 font-body text-sm leading-relaxed text-warmgrau">
-        Schreib ihn von Hand ab und ergänze ein eigenes Erlebnis.
+        Schreib deinen Brief von Hand, der Entwurf hilft dir dabei. Ergänze ein eigenes Erlebnis.
         {!pdfDelivery && " Eine Kopie kommt per Mail."}
       </p>
       <div className="theme-day mt-3 overflow-hidden rounded-sm border border-warmgrau/15 bg-white shadow-[0_20px_50px_-30px_rgba(27,67,50,0.45)]">

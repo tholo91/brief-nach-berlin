@@ -25,7 +25,7 @@ describe("YouthLetterDraft", () => {
 
   it("shows heading, instruction and the letter text with line breaks", () => {
     expect(html).toContain("Dein Entwurf");
-    expect(html).toContain("Schreib ihn von Hand ab und ergänze ein eigenes Erlebnis.");
+    expect(html).toContain("Schreib deinen Brief von Hand, der Entwurf hilft dir dabei. Ergänze ein eigenes Erlebnis.");
     expect(html).toContain("Zeile eins\n\nZeile zwei");
     expect(html).toContain("whitespace-pre-line");
   });

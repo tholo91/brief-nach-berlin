@@ -10,7 +10,7 @@ const URL_PATH = "/eltern";
 const CANONICAL_URL = `${APP_URL}${URL_PATH}`;
 const TITLE = "Unterrichtsausfall beschweren: Brief an die Landespolitik";
 const DESCRIPTION =
-  "Unterrichtsausfall, Lehrermangel, marode Schule? Als Elternteil an Landtag oder Schulträger schreiben: Anliegen schildern, Entwurf bekommen, abschreiben.";
+  "Unterrichtsausfall, Lehrermangel, marode Schule? Als Elternteil an Landtag oder Schulträger schreiben: Anliegen schildern, Entwurf bekommen, eigenen Brief schreiben.";
 
 export const metadata: Metadata = {
   title: `${TITLE} | Brief-nach-Berlin`,
@@ -102,7 +102,7 @@ export default function ElternPage() {
           Schreib der Politik, was an der Schule deiner Kinder fehlt.
         </h1>
         <p className="mt-2 font-body text-base leading-relaxed text-warmgrau sm:mt-4 sm:text-lg">
-          Unterrichtsausfall, gesperrte Turnhalle, verspäteter Schulbus? Ich suche die zuständige Ebene und schreibe dir einen Entwurf zum Abschreiben.
+          Unterrichtsausfall, gesperrte Turnhalle, verspäteter Schulbus? Ich suche die zuständige Ebene und schreibe dir einen Entwurf als Vorlage für deinen Brief.
         </p>
 
         <div className="mt-6 grid gap-3 sm:grid-cols-2">
@@ -110,7 +110,7 @@ export default function ElternPage() {
             <span>
               <span className="block font-body text-base font-bold text-waldgruen-dark">Ich will selbst einen Brief schreiben</span>
               <span className="mt-1 block font-body text-sm text-warmgrau/80">
-                Anliegen schildern, Entwurf bekommen, von Hand abschreiben.
+                Anliegen schildern, Entwurf bekommen, den Brief von Hand schreiben.
               </span>
             </span>
             <WizardForwardIcon className="mt-1 shrink-0 rotate-90 text-waldgruen" />
@@ -155,7 +155,7 @@ export default function ElternPage() {
             </div>
           </div>
           <p className={`${bodyClass} mt-4`}>
-            Brief-nach-Berlin schlägt dir die zuständige Ebene vor. Prüf den Vorschlag, bevor du den Brief abschreibst. Die Aufteilung unterscheidet sich je nach Bundesland, sie stammt vom Niedersächsischen Kultusministerium.
+            Brief-nach-Berlin schlägt dir die zuständige Ebene vor. Prüf den Vorschlag, bevor du deinen Brief schreibst. Die Aufteilung unterscheidet sich je nach Bundesland, sie stammt vom Niedersächsischen Kultusministerium.
           </p>
         </section>
 

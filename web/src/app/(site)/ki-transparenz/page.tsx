@@ -219,15 +219,17 @@ export default function KiTransparenzPage() {
               im Rahmen eines Unterrichtsprojekts entsteht.
             </p>
             <p>
-              Der Entwurf ist mit 150 bis 200 Wörtern kürzer als sonst, damit
-              man ihn in einer Schulstunde von Hand abschreiben kann. Er nennt
+              Der Entwurf ist kürzer als sonst, je nach Klassenstufe und Länge
+              der Eingabe etwa 80 bis 200 Wörter, damit der eigene Brief in eine
+              Schulstunde passt. Er verwendet nur, was die Person selbst
+              geschrieben hat. Er nennt
               die Klassenstufe und sagt, dass die Person bei der
               Bundestagswahl noch nicht wählen darf, ab Klasse 12 dass sie bald
               zum ersten Mal wählen darf.
             </p>
             <p>
               Wie bei allen Entwürfen kann sich die KI irren. Die Schüler:innen
-              prüfen den Entwurf und ergänzen beim Abschreiben ein eigenes
+              prüfen den Entwurf und ergänzen in ihrem Brief ein eigenes
               Erlebnis, denn der Brief soll ihr eigener sein. Was in diesem Modus mit den Daten passiert,
               steht im{" "}
               <Link

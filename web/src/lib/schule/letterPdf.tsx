@@ -65,7 +65,7 @@ function LetterDocument({ letterText, envelope }: { letterText: string; envelope
           <Text style={styles.brand}>Brief-nach-Berlin</Text>
           <Text style={styles.title}>Dein Briefentwurf</Text>
           <Text style={styles.intro}>
-            Schreib ihn von Hand ab und ergänze ein eigenes Erlebnis. Erst dann ist es dein Brief.
+            Schreib deinen Brief von Hand, der Entwurf hilft dir dabei. Ergänze ein eigenes Erlebnis. Erst dann ist es dein Brief.
           </Text>
 
           <View style={styles.envelope} wrap={false}>

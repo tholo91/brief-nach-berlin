@@ -1235,7 +1235,7 @@ export function Step3Success({
                 <li className="flex gap-3">
                   <span className="flex-shrink-0 w-6 h-6 rounded-full bg-waldgruen/15 text-waldgruen font-body text-xs font-bold flex items-center justify-center mt-0.5">1</span>
                   <p className="font-body text-sm text-warmgrau leading-relaxed">
-                    <strong>Brief abschreiben.</strong> Schreib den Brief von Hand ab und pass ihn an deinen Schreibstil an. {handwrittenImpactCopy}
+                    <strong>{isYouth ? "Brief schreiben." : "Brief abschreiben."}</strong> {isYouth ? "Schreib deinen Brief von Hand, der Entwurf hilft dir dabei, und bleib bei deinem Schreibstil." : "Schreib den Brief von Hand ab und pass ihn an deinen Schreibstil an."} {handwrittenImpactCopy}
                   </p>
                 </li>
                 <li className="flex gap-3">
@@ -2139,7 +2139,7 @@ export function Step3Success({
                 >
                   Ohne Person fortfahren
                   <span className="mt-1 block text-xs font-normal leading-relaxed text-warmgrau/65">
-                    Du setzt Name, Anschrift und Anrede vor dem Abschreiben selbst ein.
+                    {isYouth ? "Du setzt Name, Anschrift und Anrede vor dem Schreiben selbst ein." : "Du setzt Name, Anschrift und Anrede vor dem Abschreiben selbst ein."}
                   </span>
                 </button>
               )}

@@ -147,10 +147,10 @@ export function Step1Form({
   return (
     <form onSubmit={handleSubmit(onSubmit)} noValidate>
       <h1 className="font-typewriter text-[28px] font-semibold leading-[1.2] text-waldgruen-dark mb-2">
-        {copy.contact.heading}
+        {plzLocked ? "Wohin soll deine Kopie gehen?" : copy.contact.heading}
       </h1>
       <p className="font-body text-sm text-warmgrau/70 mb-8">
-        {pdfDelivery ? copy.contact.introYouthPdf : isYouth ? copy.contact.introYouth : copy.contact.intro}
+        {plzLocked ? "Deine Lehrkraft hat die Postleitzahl schon eingetragen. An deine E-Mail-Adresse schicke ich dir den Entwurf und die Anschrift." : pdfDelivery ? copy.contact.introYouthPdf : isYouth ? copy.contact.introYouth : copy.contact.intro}
       </p>
 
       <div className="space-y-4">

@@ -103,7 +103,7 @@ export default function SchuleAblaufPage() {
           <span className="lesson-fill" aria-hidden="true" />
         </p>
         <p>
-          Schreib den Entwurf von Hand ab. Hak beim Abschreiben ab, was dein
+          Schreib deinen Brief von Hand, der Entwurf hilft dir dabei. Hak ab, was dein
           Brief schon hat.
         </p>
         <ul className="lesson-checklist">

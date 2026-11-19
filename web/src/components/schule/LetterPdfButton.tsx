@@ -44,7 +44,7 @@ export function LetterPdfButton({ letterText, envelope }: { letterText: string; 
       ) : current?.failed ? (
         <>
           <p role="alert" className="mb-2 font-body text-sm text-airmail-rot">
-            Das PDF ließ sich nicht erstellen. Dein Entwurf steht weiter oben, du kannst ihn auch direkt abschreiben.
+            Das PDF ließ sich nicht erstellen. Dein Entwurf steht weiter oben, du kannst deinen Brief auch direkt danach schreiben.
           </p>
           <button type="button" onClick={() => setAttempt((value) => value + 1)} className={buttonClass}>
             <DownloadIcon />

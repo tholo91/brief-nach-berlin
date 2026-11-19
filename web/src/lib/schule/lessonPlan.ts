@@ -29,8 +29,8 @@ export const LESSON_45: readonly LessonRow[] = [
   {
     from: 25,
     to: 40,
-    phase: "Abschreiben",
-    what: "Von Hand abschreiben, ein eigenes Erlebnis einfügen, einen Satz in eigenen Worten neu schreiben.",
+    phase: "Brief schreiben",
+    what: "Den Brief mit Hilfe des Entwurfs von Hand schreiben, ein eigenes Erlebnis einfügen, einen Satz in eigenen Worten neu schreiben.",
   },
   {
     from: 40,

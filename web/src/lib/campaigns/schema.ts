@@ -1,5 +1,9 @@
 import { z } from "zod";
 import {
+  campaignIssueAlternativesSchema,
+  campaignPersonalHooksSchema,
+} from "./issueVariants";
+import {
   TopicSignalWithMetadataSchema,
   type TopicSignal,
 } from "@/lib/topics/topicTaxonomy";
@@ -258,6 +262,8 @@ export const updateCampaignPublicFieldsSchema = campaignPublicFieldsSchema
     targetState: campaignTargetStateSchema.nullable().optional(),
     targetRecipient: campaignFixedRecipientSchema.nullable().optional(),
     targetPoliticianIds: campaignTargetPoliticianIdsSchema.optional(),
+    issueTextAlternatives: campaignIssueAlternativesSchema.optional(),
+    personalHooks: campaignPersonalHooksSchema.optional(),
   })
   .partial()
   .refine((value) => Object.keys(value).length > 0, "Keine Änderungen übergeben.");

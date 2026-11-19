@@ -21,6 +21,7 @@ import {
   isCampaignTargetLocked,
 } from "@/lib/campaigns/schema";
 import { getCampaignManagementSession } from "@/lib/campaigns/session";
+import { validateCampaignVariantInput } from "@/lib/campaigns/issueVariants";
 import { moderateText } from "@/lib/moderation/moderateText";
 import { getServiceRoleClient } from "@/lib/supabase/server";
 import { getBundestagPoliticiansByIds } from "@/lib/lookup/plzLookup";
@@ -68,15 +69,26 @@ function numberValues(formData: FormData, key: string): number[] {
     .map(Number);
 }
 
+function stringValues(formData: FormData, key: string): string[] {
+  return formData
+    .getAll(key)
+    .filter((raw): raw is string => typeof raw === "string");
+}
+
 function validationErrors(error: z.ZodError): Record<string, string> {
   return Object.fromEntries(
     error.issues.map((issue) => [String(issue.path[0] ?? "form"), issue.message])
   );
 }
 
-async function moderatePublicText(issueText: string, description?: string) {
+async function moderatePublicText(
+  issueText: string,
+  description?: string,
+  extraTexts: string[] = []
+) {
   const checks = [await moderateText(issueText)];
   if (description) checks.push(await moderateText(description));
+  for (const text of extraTexts) checks.push(await moderateText(text));
   const categories = [...new Set(checks.flatMap((check) => check.categories))];
   return { flagged: checks.some((check) => check.flagged), categories };
 }
@@ -177,6 +189,25 @@ export async function updateCampaignAction(
   }
 
   const input = parsed.data;
+
+  // Varianten und Satzanfänge: nur anfassen, wenn das Formular sie mitschickt.
+  const variantsSubmitted = value(formData, "variantsSubmitted") === "1";
+  const variantInput = validateCampaignVariantInput(
+    stringValues(formData, "issueTextAlternative"),
+    stringValues(formData, "personalHook"),
+    input.issueText
+  );
+  if (
+    variantsSubmitted &&
+    (variantInput.errors.issueTextAlternatives || variantInput.errors.personalHooks)
+  ) {
+    return {
+      ok: false,
+      message: "Bitte prüfe die markierten Felder.",
+      fieldErrors: variantInput.errors as Record<string, string>,
+    };
+  }
+
   if (input.campaignId !== session.campaignId) {
     return {
       ok: false,
@@ -214,7 +245,11 @@ export async function updateCampaignAction(
     return { ok: false, message: CAMPAIGN_ENDED_MESSAGE };
   }
 
-  const moderation = await moderatePublicText(input.issueText, input.description);
+  const moderation = await moderatePublicText(
+    input.issueText,
+    input.description,
+    variantsSubmitted ? [...variantInput.alternatives, ...variantInput.hooks] : []
+  );
   if (moderation.flagged) {
     return {
       ok: false,
@@ -322,6 +357,12 @@ export async function updateCampaignAction(
         ? { targetLevel, targetState, targetRecipient }
         : {}),
       logoPath: uploadedLogo.logoPath,
+      ...(variantsSubmitted
+        ? {
+            issueTextAlternatives: variantInput.alternatives,
+            personalHooks: variantInput.hooks,
+          }
+        : {}),
     };
     const updated = campaign.status === "awaiting_approval"
       ? await saveAwaitingApprovalCampaignEdits(input.campaignId, updateInput, moderation.categories)

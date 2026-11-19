@@ -14,6 +14,76 @@ export const campaignIssueAlternativesSchema = z
     }
   });
 
+export const CAMPAIGN_PERSONAL_HOOK_MIN = 3;
+export const CAMPAIGN_PERSONAL_HOOK_MAX = 80;
+
+/** Satzanfänge für die persönliche Zeile: getrimmt, 3 bis 80 Zeichen, höchstens 3, eindeutig. */
+export const campaignPersonalHooksSchema = z
+  .array(
+    z
+      .string()
+      .trim()
+      .min(CAMPAIGN_PERSONAL_HOOK_MIN)
+      .max(CAMPAIGN_PERSONAL_HOOK_MAX),
+  )
+  .max(3)
+  .superRefine((hooks, ctx) => {
+    if (new Set(hooks).size !== hooks.length) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "Satzanfänge müssen eindeutig sein.",
+      });
+    }
+  });
+
+export const CAMPAIGN_ALTERNATIVE_MIN = 50;
+export const CAMPAIGN_ALTERNATIVE_MAX = 4000;
+
+export interface CampaignVariantInputResult {
+  alternatives: string[];
+  hooks: string[];
+  errors: { issueTextAlternatives?: string; personalHooks?: string };
+}
+
+/** Roh-Eingaben aus der Verwaltung: trimmen, Leeres entfernen, mit deutschen Meldungen prüfen. */
+export function validateCampaignVariantInput(
+  rawAlternatives: string[],
+  rawHooks: string[],
+  issueText: string,
+): CampaignVariantInputResult {
+  const alternatives = rawAlternatives.map((text) => text.trim()).filter(Boolean);
+  const hooks = rawHooks.map((text) => text.trim()).filter(Boolean);
+  const errors: CampaignVariantInputResult["errors"] = {};
+
+  if (alternatives.length > 2) {
+    errors.issueTextAlternatives = "Du kannst höchstens 2 Varianten anlegen.";
+  } else if (
+    alternatives.some(
+      (text) => text.length < CAMPAIGN_ALTERNATIVE_MIN || text.length > CAMPAIGN_ALTERNATIVE_MAX,
+    )
+  ) {
+    errors.issueTextAlternatives = `Jede Variante braucht ${CAMPAIGN_ALTERNATIVE_MIN} bis ${CAMPAIGN_ALTERNATIVE_MAX} Zeichen.`;
+  } else if (new Set(alternatives).size !== alternatives.length) {
+    errors.issueTextAlternatives = "Die Varianten müssen sich unterscheiden.";
+  } else if (alternatives.includes(issueText.trim())) {
+    errors.issueTextAlternatives = "Eine Variante ist gleich dem Anliegen. Bitte ändere den Wortlaut.";
+  }
+
+  if (hooks.length > 3) {
+    errors.personalHooks = "Du kannst höchstens 3 Satzanfänge anlegen.";
+  } else if (
+    hooks.some(
+      (text) => text.length < CAMPAIGN_PERSONAL_HOOK_MIN || text.length > CAMPAIGN_PERSONAL_HOOK_MAX,
+    )
+  ) {
+    errors.personalHooks = `Jeder Satzanfang braucht ${CAMPAIGN_PERSONAL_HOOK_MIN} bis ${CAMPAIGN_PERSONAL_HOOK_MAX} Zeichen.`;
+  } else if (new Set(hooks).size !== hooks.length) {
+    errors.personalHooks = "Die Satzanfänge müssen sich unterscheiden.";
+  }
+
+  return { alternatives, hooks, errors };
+}
+
 export interface CampaignIssueVariantSource {
   issueText: string;
   issueTextAlternatives?: unknown;

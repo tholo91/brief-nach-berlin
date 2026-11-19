@@ -88,6 +88,9 @@ type CampaignRevisionRow = {
 type CampaignUpdate = Partial<{
   title: string;
   issue_text: string;
+  issue_text_alternatives: string[];
+  issue_text_alternatives_base: string | null;
+  personal_hooks: string[];
   description: string | null;
   creator_name: string | null;
   external_url: string | null;
@@ -126,6 +129,26 @@ function clearCampaignTopic(): Pick<CampaignUpdate,
     topic_model: null,
     topic_classified_at: null,
   };
+}
+
+/**
+ * Varianten und Satzanfänge ins Update übernehmen. Die Base folgt immer dem neuen
+ * Anliegen, damit die Varianten nach einer Textänderung aktiv bleiben.
+ */
+function variantPatch(
+  parsed: { issueTextAlternatives?: string[]; personalHooks?: string[] },
+  issueText: string
+): Pick<CampaignUpdate, "issue_text_alternatives" | "issue_text_alternatives_base" | "personal_hooks"> {
+  const patch: Pick<
+    CampaignUpdate,
+    "issue_text_alternatives" | "issue_text_alternatives_base" | "personal_hooks"
+  > = {};
+  if (parsed.issueTextAlternatives !== undefined) {
+    patch.issue_text_alternatives = parsed.issueTextAlternatives;
+    patch.issue_text_alternatives_base = issueText;
+  }
+  if (parsed.personalHooks !== undefined) patch.personal_hooks = parsed.personalHooks;
+  return patch;
 }
 
 export class CampaignRepositoryError extends Error {
@@ -598,6 +621,7 @@ export async function updateCampaignPublicFields(
   if (parsed.targetPoliticianIds !== undefined) {
     patch.target_politician_ids = parsed.targetPoliticianIds;
   }
+  Object.assign(patch, variantPatch(parsed, parsed.issueText ?? campaign.issueText));
 
   return updateCampaignRow(campaignId, patch, db);
 }
@@ -633,6 +657,7 @@ export async function saveAwaitingApprovalCampaignEdits(
   if (parsed.targetPoliticianIds !== undefined) {
     patch.target_politician_ids = parsed.targetPoliticianIds;
   }
+  Object.assign(patch, variantPatch(parsed, parsed.issueText ?? campaign.issueText));
 
   return updateCampaignRow(campaignId, patch, db);
 }
@@ -722,9 +747,16 @@ export async function publishCampaignEdits(
   assertStatus(campaign, ["draft", "awaiting_email_verification", "active", "paused"], "edit");
   assertNotEnded(campaign, "edit");
   const parsed = updateCampaignPublicFieldsSchema.parse(input);
+  const issueText = parsed.issueText ?? campaign.issueText;
   const next = {
     title: parsed.title ?? campaign.title,
-    issueText: parsed.issueText ?? campaign.issueText,
+    issueText,
+    issueTextAlternatives:
+      parsed.issueTextAlternatives ?? campaign.issueTextAlternatives ?? [],
+    issueTextAlternativesBase:
+      parsed.issueTextAlternatives !== undefined
+        ? issueText
+        : campaign.issueTextAlternativesBase ?? null,
     description:
       parsed.description !== undefined
         ? nullableText(parsed.description)
@@ -782,8 +814,8 @@ export async function publishCampaignEdits(
       snapshot_reason: "edited",
       title: next.title,
       issue_text: next.issueText,
-      issue_text_alternatives: campaign.issueTextAlternatives ?? [],
-      issue_text_alternatives_base: campaign.issueTextAlternativesBase ?? null,
+      issue_text_alternatives: next.issueTextAlternatives,
+      issue_text_alternatives_base: next.issueTextAlternativesBase,
       description: next.description,
       creator_name: next.creatorName,
       external_url: next.externalUrl,
@@ -810,6 +842,7 @@ export async function publishCampaignEdits(
       title: next.title,
       issue_text: next.issueText,
       ...(next.issueText !== campaign.issueText ? clearCampaignTopic() : {}),
+      ...variantPatch(parsed, next.issueText),
       description: next.description,
       creator_name: next.creatorName,
       external_url: next.externalUrl,

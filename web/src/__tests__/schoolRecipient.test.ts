@@ -113,10 +113,16 @@ describe("resolveSchoolRecipient", () => {
     );
   });
 
-  it("Bremen ohne Ressort: Regierungsspitze", () => {
+  it("Bremen ohne Ressort: Schulkontext nimmt Bildung als Standard", () => {
     const result = resolveSchoolRecipient({ plz: HB_PLZ, routing: land() });
+    expect(result?.selection).toEqual({ kind: "landesminister", ressort: "bildung" });
+    expect(result?.recipient).toMatchObject({ kind: "landesminister", name: "Test Bildung" });
+    expect(result?.reason).toContain("Schule");
+  });
+
+  it("ohne Ressort und ohne verifizierte Bildung im Land: Regierungsspitze", () => {
+    const result = resolveSchoolRecipient({ plz: BE_PLZ, routing: land() });
     expect(result?.selection).toEqual({ kind: "landesregierung", addressee: "head" });
-    expect(result?.recipient).toMatchObject({ kind: "landesregierung", addressee: "head" });
     expect(result?.reason).toContain("kein einzelnes Ressort");
   });
 
@@ -128,12 +134,12 @@ describe("resolveSchoolRecipient", () => {
     expect(result?.selection).toEqual({ kind: "landesminister", ressort: "bildung" });
   });
 
-  it("Bremen ohne Ressort, mehrdeutiges Hauptthema: Regierungsspitze", () => {
+  it("Bremen ohne Ressort, mehrdeutiges Hauptthema: Bildung als Standard", () => {
     const result = resolveSchoolRecipient({
       plz: HB_PLZ,
       routing: { primary: { level: "Land" }, topic: { topicCategories: ["kultur_sport", "bildung"] } },
     });
-    expect(result?.recipient).toMatchObject({ kind: "landesregierung", addressee: "head" });
+    expect(result?.recipient).toMatchObject({ kind: "landesminister", ressort: "bildung" });
   });
 
   it("Bremen mit Ressort ohne verifizierten Eintrag: Regierungsspitze", () => {
@@ -167,7 +173,7 @@ describe("resolveSchoolRecipient", () => {
 
   it("automatisch, Router sagt Kommune: Rathaus, in Stadtstaaten die Regierungsspitze", () => {
     const stadtstaat = resolveSchoolRecipient({ plz: HB_PLZ, routing: { primary: { level: "Kommune" } } });
-    expect(stadtstaat?.recipient).toMatchObject({ kind: "landesregierung", addressee: "head" });
+    expect(stadtstaat?.recipient).toMatchObject({ kind: "landesminister", ressort: "bildung" });
 
     const koeln = resolveSchoolRecipient({ plz: "50667", routing: { primary: { level: "Kommune" } } });
     expect(koeln?.level).toBe("Kommune");

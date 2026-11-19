@@ -2,11 +2,17 @@ import type { Recipient } from "@/lib/lookup/rathausRecipient";
 
 /** Was die feste Empfänger-Karte im Schulmodus zeigt. Reine Anzeige, keine Entscheidung. */
 export interface SchoolRecipientView {
-  /** Kleine Marke über dem Namen, z. B. "Bundestag" oder "Landesregierung". */
-  badge: string;
+  /** Kleine Marke über dem Namen: bei Personen ihre Rolle (z. B. "Senatorin"), sonst die Institution. Kann fehlen. */
+  badge?: string;
   name: string;
   office?: string;
   addressLines: string[];
+}
+
+/** Kurze Rolle aus einem Amtstitel: "Senatorin für Bau, Mobilität" wird "Senatorin", "Bürgermeister, Senator für X" wird "Bürgermeister". */
+export function roleBadge(title: string | undefined): string | undefined {
+  const role = title?.split(",")[0]?.split(" für ")[0]?.trim();
+  return role || undefined;
 }
 
 function withoutFirstIfName(lines: readonly string[], name: string): string[] {
@@ -29,21 +35,21 @@ export function describeSchoolRecipient(recipient: Recipient): SchoolRecipientVi
       return { badge: "Bundestag", name: recipient.label, addressLines: [recipient.postalAddress] };
     case "bundeskanzler":
       return {
-        badge: "Bundesregierung",
+        badge: "Bundeskanzler",
         name: recipient.label,
         office: recipient.officeName,
         addressLines: [recipient.postalAddress],
       };
     case "landesminister":
       return {
-        badge: "Landesregierung",
+        badge: roleBadge(recipient.title),
         name: recipient.label,
         office: recipient.officeName,
         addressLines: withoutFirstIfName(recipient.address.addressLines, recipient.label),
       };
     case "landesregierung":
       return {
-        badge: recipient.institutionKind === "senat" ? "Senat" : "Landesregierung",
+        badge: recipient.addressee === "head" ? roleBadge(recipient.headTitle) : undefined,
         name: recipient.label,
         office: recipient.officeName !== recipient.label ? recipient.officeName : undefined,
         addressLines: withoutFirstIfName(recipient.address.addressLines, recipient.label),

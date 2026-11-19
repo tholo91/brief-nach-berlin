@@ -1,6 +1,945 @@
 {
   "lastUpdated": "2026-11-19",
   "states": {
+    "BB": {
+      "stateName": "Brandenburg",
+      "ministers": [
+        {
+          "ressorts": [
+            "bildung",
+            "jugend",
+            "sport"
+          ],
+          "officeName": "Ministerium für Bildung, Jugend und Sport des Landes Brandenburg",
+          "name": "Gordon Hoffmann",
+          "title": "Minister für Bildung, Jugend und Sport",
+          "salutation": "Sehr geehrter Herr Minister Hoffmann,",
+          "addressLines": [
+            "Minister Gordon Hoffmann",
+            "Ministerium für Bildung, Jugend und Sport des Landes Brandenburg",
+            "Heinrich-Mann-Allee 107",
+            "14473 Potsdam"
+          ],
+          "source": {
+            "title": "Impressum/Kontakt Ministerium für Bildung, Jugend und Sport des Landes Brandenburg; Kabinett lt. Pressemitteilung Staatskanzlei Brandenburg 18.03.2026 (Ernennung Kabinett)",
+            "url": "https://mbjs.brandenburg.de/wir-ueber-uns/impressum.html",
+            "verifiedAt": "2026-11-19"
+          }
+        },
+        {
+          "ressorts": [
+            "inneres"
+          ],
+          "officeName": "Ministerium des Innern und für Kommunales des Landes Brandenburg",
+          "name": "Dr. Jan Redmann",
+          "title": "Stellvertretender Ministerpräsident und Minister des Innern und für Kommunales",
+          "salutation": "Sehr geehrter Herr Minister Dr. Redmann,",
+          "addressLines": [
+            "Minister Dr. Jan Redmann",
+            "Ministerium des Innern und für Kommunales des Landes Brandenburg",
+            "Henning-von-Tresckow-Straße 9-13",
+            "14467 Potsdam"
+          ],
+          "source": {
+            "title": "Impressum/Kontakt Ministerium des Innern und für Kommunales des Landes Brandenburg; Kabinett lt. Pressemitteilung Staatskanzlei Brandenburg 18.03.2026 (Ernennung Kabinett)",
+            "url": "https://mik.brandenburg.de/mik/de/impressum/",
+            "verifiedAt": "2026-11-19"
+          }
+        },
+        {
+          "ressorts": [
+            "verkehr",
+            "bau"
+          ],
+          "officeName": "Ministerium für Infrastruktur und Landesplanung des Landes Brandenburg",
+          "name": "Robert Crumbach",
+          "title": "Minister für Infrastruktur und Landesplanung",
+          "salutation": "Sehr geehrter Herr Minister Crumbach,",
+          "addressLines": [
+            "Minister Robert Crumbach",
+            "Ministerium für Infrastruktur und Landesplanung des Landes Brandenburg",
+            "Henning-von-Tresckow-Straße 2-8",
+            "14467 Potsdam"
+          ],
+          "source": {
+            "title": "Impressum/Kontakt Ministerium für Infrastruktur und Landesplanung des Landes Brandenburg; Kabinett lt. Pressemitteilung Staatskanzlei Brandenburg 18.03.2026 (Ernennung Kabinett)",
+            "url": "https://mil.brandenburg.de/mil/de/impressum/",
+            "verifiedAt": "2026-11-19"
+          }
+        },
+        {
+          "ressorts": [
+            "finanzen"
+          ],
+          "officeName": "Ministerium der Finanzen und für Europa des Landes Brandenburg",
+          "name": "Daniel Keller",
+          "title": "Minister der Finanzen",
+          "salutation": "Sehr geehrter Herr Minister Keller,",
+          "addressLines": [
+            "Minister Daniel Keller",
+            "Ministerium der Finanzen und für Europa des Landes Brandenburg",
+            "Heinrich-Mann-Allee 107",
+            "14473 Potsdam"
+          ],
+          "source": {
+            "title": "Impressum/Kontakt Ministerium der Finanzen und für Europa des Landes Brandenburg; Kabinett lt. Pressemitteilung Staatskanzlei Brandenburg 18.03.2026 (Ernennung Kabinett)",
+            "url": "https://mdfe.brandenburg.de/mdfe/de/impressum/",
+            "verifiedAt": "2026-11-19"
+          }
+        },
+        {
+          "ressorts": [
+            "arbeit",
+            "soziales",
+            "gesundheit"
+          ],
+          "officeName": "Ministerium für Arbeit, Soziales, Gesundheit und gesellschaftlichen Zusammenhalt des Landes Brandenburg",
+          "name": "René Wilke",
+          "title": "Minister für Arbeit, Soziales, Gesundheit und gesellschaftlichen Zusammenhalt",
+          "salutation": "Sehr geehrter Herr Minister Wilke,",
+          "addressLines": [
+            "Minister René Wilke",
+            "Ministerium für Arbeit, Soziales, Gesundheit und gesellschaftlichen Zusammenhalt des Landes Brandenburg",
+            "Henning-von-Tresckow-Straße 2-13, Haus S",
+            "14467 Potsdam"
+          ],
+          "source": {
+            "title": "Impressum/Kontakt Ministerium für Arbeit, Soziales, Gesundheit und gesellschaftlichen Zusammenhalt des Landes Brandenburg; Kabinett lt. Pressemitteilung Staatskanzlei Brandenburg 18.03.2026 (Ernennung Kabinett)",
+            "url": "https://masgz.brandenburg.de/masgz/de/impressum/",
+            "verifiedAt": "2026-11-19"
+          }
+        },
+        {
+          "ressorts": [
+            "wirtschaft",
+            "klima",
+            "europa"
+          ],
+          "officeName": "Ministerium für Wirtschaft, Energie, Klimaschutz und Europa des Landes Brandenburg",
+          "name": "Martina Klement",
+          "title": "Ministerin für Wirtschaft, Energie, Klimaschutz und Europa",
+          "salutation": "Sehr geehrte Frau Ministerin Klement,",
+          "addressLines": [
+            "Ministerin Martina Klement",
+            "Ministerium für Wirtschaft, Energie, Klimaschutz und Europa des Landes Brandenburg",
+            "Heinrich-Mann-Allee 107",
+            "14473 Potsdam"
+          ],
+          "source": {
+            "title": "Impressum/Kontakt Ministerium für Wirtschaft, Energie, Klimaschutz und Europa des Landes Brandenburg; Kabinett lt. Pressemitteilung Staatskanzlei Brandenburg 18.03.2026 (Ernennung Kabinett)",
+            "url": "https://mwaek.brandenburg.de/de/kontakt-und-anfahrt/bb1.c.501561.de",
+            "verifiedAt": "2026-11-19"
+          }
+        },
+        {
+          "ressorts": [
+            "wissenschaft",
+            "kultur"
+          ],
+          "officeName": "Ministerium für Wissenschaft, Forschung und Kultur des Landes Brandenburg",
+          "name": "Dr. Manja Schüle",
+          "title": "Ministerin für Wissenschaft, Forschung und Kultur",
+          "salutation": "Sehr geehrte Frau Ministerin Dr. Schüle,",
+          "addressLines": [
+            "Ministerin Dr. Manja Schüle",
+            "Ministerium für Wissenschaft, Forschung und Kultur des Landes Brandenburg",
+            "Dortustraße 36",
+            "14467 Potsdam"
+          ],
+          "source": {
+            "title": "Impressum/Kontakt Ministerium für Wissenschaft, Forschung und Kultur des Landes Brandenburg; Kabinett lt. Pressemitteilung Staatskanzlei Brandenburg 18.03.2026 (Ernennung Kabinett)",
+            "url": "https://mwfk.brandenburg.de/mwfk/de/impressum/",
+            "verifiedAt": "2026-11-19"
+          }
+        },
+        {
+          "ressorts": [
+            "landwirtschaft",
+            "umwelt",
+            "verbraucherschutz"
+          ],
+          "officeName": "Ministerium für Land- und Ernährungswirtschaft, Umwelt und Verbraucherschutz des Landes Brandenburg",
+          "name": "Hanka Mittelstädt",
+          "title": "Ministerin für Land- und Ernährungswirtschaft, Umwelt und Verbraucherschutz",
+          "salutation": "Sehr geehrte Frau Ministerin Mittelstädt,",
+          "addressLines": [
+            "Ministerin Hanka Mittelstädt",
+            "Ministerium für Land- und Ernährungswirtschaft, Umwelt und Verbraucherschutz des Landes Brandenburg",
+            "Henning-von-Tresckow-Straße 2-13, Haus S",
+            "14467 Potsdam"
+          ],
+          "source": {
+            "title": "Impressum/Kontakt Ministerium für Land- und Ernährungswirtschaft, Umwelt und Verbraucherschutz des Landes Brandenburg; Kabinett lt. Pressemitteilung Staatskanzlei Brandenburg 18.03.2026 (Ernennung Kabinett)",
+            "url": "https://mluk.brandenburg.de/mluk/de/impressum/",
+            "verifiedAt": "2026-11-19"
+          }
+        },
+        {
+          "ressorts": [
+            "justiz",
+            "digitales"
+          ],
+          "officeName": "Ministerium der Justiz und für Digitalisierung des Landes Brandenburg",
+          "name": "Dr. Benjamin Grimm",
+          "title": "Minister der Justiz und für Digitalisierung",
+          "salutation": "Sehr geehrter Herr Minister Dr. Grimm,",
+          "addressLines": [
+            "Minister Dr. Benjamin Grimm",
+            "Ministerium der Justiz und für Digitalisierung des Landes Brandenburg",
+            "Heinrich-Mann-Allee 107",
+            "14473 Potsdam"
+          ],
+          "source": {
+            "title": "Impressum/Kontakt Ministerium der Justiz und für Digitalisierung des Landes Brandenburg; Kabinett lt. Pressemitteilung Staatskanzlei Brandenburg 18.03.2026 (Ernennung Kabinett)",
+            "url": "https://mdjd.brandenburg.de/mdjd/de/impressum/",
+            "verifiedAt": "2026-11-19"
+          }
+        }
+      ]
+    },
+    "BE": {
+      "stateName": "Berlin",
+      "note": "Geschäftsführender Senat Wegner (Wahl 20.09.2026, Koalitionsverhandlungen Linke/SPD/Grüne laufen, Wahl des neuen Regierenden frühestens Januar 2027). Wegner leitet kein Ressort. Evers führt zwei Ressorts.",
+      "ministers": [
+        {
+          "ressorts": [
+            "wirtschaft"
+          ],
+          "officeName": "Senatsverwaltung für Wirtschaft, Energie und Betriebe",
+          "name": "Franziska Giffey",
+          "title": "Bürgermeisterin und Senatorin für Wirtschaft, Energie und Betriebe",
+          "salutation": "Sehr geehrte Frau Senatorin Giffey,",
+          "addressLines": [
+            "Bürgermeisterin und Senatorin Franziska Giffey",
+            "Senatsverwaltung für Wirtschaft, Energie und Betriebe",
+            "Martin-Luther-Straße 105",
+            "10825 Berlin"
+          ],
+          "source": {
+            "title": "Impressum Senatsverwaltung für Wirtschaft, Energie und Betriebe; Senatsmitglieder: berlin.de/rbmskzl/politik/senat/senatsmitglieder",
+            "url": "https://www.berlin.de/sen/web/",
+            "verifiedAt": "2026-11-19"
+          }
+        },
+        {
+          "ressorts": [
+            "finanzen"
+          ],
+          "officeName": "Senatsverwaltung für Finanzen",
+          "name": "Stefan Evers",
+          "title": "Bürgermeister und Senator für Finanzen",
+          "salutation": "Sehr geehrter Herr Senator Evers,",
+          "addressLines": [
+            "Senator Stefan Evers",
+            "Senatsverwaltung für Finanzen",
+            "Klosterstraße 59",
+            "10179 Berlin"
+          ],
+          "source": {
+            "title": "Impressum Senatsverwaltung für Finanzen; Senatsmitglieder: berlin.de/rbmskzl/politik/senat/senatsmitglieder",
+            "url": "https://www.berlin.de/sen/finanzen/",
+            "verifiedAt": "2026-11-19"
+          }
+        },
+        {
+          "ressorts": [
+            "kultur"
+          ],
+          "officeName": "Senatsverwaltung für Kultur und Gesellschaftlichen Zusammenhalt",
+          "name": "Stefan Evers",
+          "title": "Senator für Finanzen, zusätzlich zuständig für Kultur und Gesellschaftlichen Zusammenhalt (seit 29.04.2026)",
+          "salutation": "Sehr geehrter Herr Senator Evers,",
+          "addressLines": [
+            "Senator Stefan Evers",
+            "Senatsverwaltung für Kultur und Gesellschaftlichen Zusammenhalt",
+            "Fehrbelliner Platz 4",
+            "10707 Berlin"
+          ],
+          "source": {
+            "title": "Impressum Senatsverwaltung für Kultur und Gesellschaftlichen Zusammenhalt; Senatsmitglieder: berlin.de/rbmskzl/politik/senat/senatsmitglieder",
+            "url": "https://www.berlin.de/sen/kultur/",
+            "verifiedAt": "2026-11-19"
+          }
+        },
+        {
+          "ressorts": [
+            "soziales",
+            "arbeit",
+            "frauen"
+          ],
+          "officeName": "Senatsverwaltung für Arbeit, Soziales, Gleichstellung, Integration, Vielfalt und Antidiskriminierung",
+          "name": "Cansel Kiziltepe",
+          "title": "Senatorin für Arbeit, Soziales, Gleichstellung, Integration, Vielfalt und Antidiskriminierung",
+          "salutation": "Sehr geehrte Frau Senatorin Kiziltepe,",
+          "addressLines": [
+            "Senatorin Cansel Kiziltepe",
+            "Senatsverwaltung für Arbeit, Soziales, Gleichstellung, Integration, Vielfalt und Antidiskriminierung",
+            "Oranienstraße 106",
+            "10969 Berlin"
+          ],
+          "source": {
+            "title": "Impressum Senatsverwaltung für Arbeit, Soziales, Gleichstellung, Integration, Vielfalt und Antidiskriminierung; Senatsmitglieder: berlin.de/rbmskzl/politik/senat/senatsmitglieder",
+            "url": "https://www.berlin.de/sen/asgiva/service/impressum-541148.php",
+            "verifiedAt": "2026-11-19"
+          }
+        },
+        {
+          "ressorts": [
+            "bildung",
+            "jugend"
+          ],
+          "officeName": "Senatsverwaltung für Bildung, Jugend und Familie",
+          "name": "Katharina Günther-Wünsch",
+          "title": "Senatorin für Bildung, Jugend und Familie",
+          "salutation": "Sehr geehrte Frau Senatorin Günther-Wünsch,",
+          "addressLines": [
+            "Senatorin Katharina Günther-Wünsch",
+            "Senatsverwaltung für Bildung, Jugend und Familie",
+            "Bernhard-Weiß-Straße 6",
+            "10178 Berlin"
+          ],
+          "source": {
+            "title": "Impressum Senatsverwaltung für Bildung, Jugend und Familie; Senatsmitglieder: berlin.de/rbmskzl/politik/senat/senatsmitglieder",
+            "url": "https://www.berlin.de/sen/bjf/service/impressum/",
+            "verifiedAt": "2026-11-19"
+          }
+        },
+        {
+          "ressorts": [
+            "inneres",
+            "sport"
+          ],
+          "officeName": "Senatsverwaltung für Inneres und Sport",
+          "name": "Iris Spranger",
+          "title": "Senatorin für Inneres und Sport",
+          "salutation": "Sehr geehrte Frau Senatorin Spranger,",
+          "addressLines": [
+            "Senatorin Iris Spranger",
+            "Senatsverwaltung für Inneres und Sport",
+            "Klosterstraße 47",
+            "10179 Berlin"
+          ],
+          "source": {
+            "title": "Impressum Senatsverwaltung für Inneres und Sport; Senatsmitglieder: berlin.de/rbmskzl/politik/senat/senatsmitglieder",
+            "url": "https://www.berlin.de/sen/inneres/",
+            "verifiedAt": "2026-11-19"
+          }
+        },
+        {
+          "ressorts": [
+            "justiz",
+            "verbraucherschutz"
+          ],
+          "officeName": "Senatsverwaltung für Justiz und Verbraucherschutz",
+          "name": "Dr. Felor Badenberg",
+          "title": "Senatorin für Justiz und Verbraucherschutz",
+          "salutation": "Sehr geehrte Frau Senatorin Dr. Badenberg,",
+          "addressLines": [
+            "Senatorin Dr. Felor Badenberg",
+            "Senatsverwaltung für Justiz und Verbraucherschutz",
+            "Salzburger Straße 21-25",
+            "10825 Berlin"
+          ],
+          "source": {
+            "title": "Impressum Senatsverwaltung für Justiz und Verbraucherschutz; Senatsmitglieder: berlin.de/rbmskzl/politik/senat/senatsmitglieder",
+            "url": "https://www.berlin.de/sen/justv/",
+            "verifiedAt": "2026-11-19"
+          }
+        },
+        {
+          "ressorts": [
+            "verkehr",
+            "umwelt",
+            "klima"
+          ],
+          "officeName": "Senatsverwaltung für Mobilität, Verkehr, Klimaschutz und Umwelt",
+          "name": "Ute Bonde",
+          "title": "Senatorin für Mobilität, Verkehr, Klimaschutz und Umwelt",
+          "salutation": "Sehr geehrte Frau Senatorin Bonde,",
+          "addressLines": [
+            "Senatorin Ute Bonde",
+            "Senatsverwaltung für Mobilität, Verkehr, Klimaschutz und Umwelt",
+            "Am Köllnischen Park 3",
+            "10179 Berlin"
+          ],
+          "source": {
+            "title": "Impressum Senatsverwaltung für Mobilität, Verkehr, Klimaschutz und Umwelt; Senatsmitglieder: berlin.de/rbmskzl/politik/senat/senatsmitglieder",
+            "url": "https://www.berlin.de/sen/uvk/",
+            "verifiedAt": "2026-11-19"
+          }
+        },
+        {
+          "ressorts": [
+            "bau"
+          ],
+          "officeName": "Senatsverwaltung für Stadtentwicklung, Bauen und Wohnen",
+          "name": "Christian Gaebler",
+          "title": "Senator für Stadtentwicklung, Bauen und Wohnen",
+          "salutation": "Sehr geehrter Herr Senator Gaebler,",
+          "addressLines": [
+            "Senator Christian Gaebler",
+            "Senatsverwaltung für Stadtentwicklung, Bauen und Wohnen",
+            "Württembergische Straße 6",
+            "10707 Berlin"
+          ],
+          "source": {
+            "title": "Impressum Senatsverwaltung für Stadtentwicklung, Bauen und Wohnen; Senatsmitglieder: berlin.de/rbmskzl/politik/senat/senatsmitglieder",
+            "url": "https://www.berlin.de/sen/stadt/ueber-uns/kontakt/",
+            "verifiedAt": "2026-11-19"
+          }
+        },
+        {
+          "ressorts": [
+            "wissenschaft",
+            "gesundheit"
+          ],
+          "officeName": "Senatsverwaltung für Wissenschaft, Gesundheit und Pflege",
+          "name": "Dr. Ina Czyborra",
+          "title": "Senatorin für Wissenschaft, Gesundheit und Pflege",
+          "salutation": "Sehr geehrte Frau Senatorin Dr. Czyborra,",
+          "addressLines": [
+            "Senatorin Dr. Ina Czyborra",
+            "Senatsverwaltung für Wissenschaft, Gesundheit und Pflege",
+            "Oranienstraße 106",
+            "10969 Berlin"
+          ],
+          "source": {
+            "title": "Impressum Senatsverwaltung für Wissenschaft, Gesundheit und Pflege; Senatsmitglieder: berlin.de/rbmskzl/politik/senat/senatsmitglieder",
+            "url": "https://www.berlin.de/sen/wgp/impressum/",
+            "verifiedAt": "2026-11-19"
+          }
+        }
+      ]
+    },
+    "BW": {
+      "stateName": "Baden-Württemberg",
+      "note": "Kabinett Özdemir (gewählt 13.05.2026). Ministerpräsident Özdemir und Staatsministerin Dirks (Staatsministerium) leiten kein Ressort und fehlen daher.",
+      "ministers": [
+        {
+          "ressorts": [
+            "inneres",
+            "digitales",
+            "europa"
+          ],
+          "officeName": "Ministerium des Inneren, für Digitalisierung und Europa Baden-Württemberg",
+          "name": "Manuel Hagel",
+          "title": "Minister des Inneren, für Digitalisierung und Europa; Stellvertretender Ministerpräsident",
+          "salutation": "Sehr geehrter Herr Minister Hagel,",
+          "addressLines": [
+            "Minister Manuel Hagel",
+            "Ministerium des Inneren, für Digitalisierung und Europa Baden-Württemberg",
+            "Willy-Brandt-Straße 41",
+            "70173 Stuttgart"
+          ],
+          "source": {
+            "title": "Impressum Ministerium des Inneren, für Digitalisierung und Europa Baden-Württemberg (Anschrift); Kabinett: Mitglieder der Landesregierung",
+            "url": "https://im.baden-wuerttemberg.de/de/header-und-footer/impressum",
+            "verifiedAt": "2026-11-19"
+          }
+        },
+        {
+          "ressorts": [
+            "finanzen"
+          ],
+          "officeName": "Ministerium für Finanzen Baden-Württemberg",
+          "name": "Dr. Danyal Bayaz",
+          "title": "Minister für Finanzen",
+          "salutation": "Sehr geehrter Herr Minister Dr. Bayaz,",
+          "addressLines": [
+            "Minister Dr. Danyal Bayaz",
+            "Ministerium für Finanzen Baden-Württemberg",
+            "Neues Schloss, Schlossplatz 4",
+            "70173 Stuttgart"
+          ],
+          "source": {
+            "title": "Impressum Ministerium für Finanzen Baden-Württemberg (Anschrift); Kabinett: Mitglieder der Landesregierung",
+            "url": "https://fm.baden-wuerttemberg.de/de/header-und-footer/impressum",
+            "verifiedAt": "2026-11-19"
+          }
+        },
+        {
+          "ressorts": [
+            "bildung"
+          ],
+          "officeName": "Ministerium für Kultus Baden-Württemberg",
+          "name": "Andreas Jung",
+          "title": "Minister für Kultus",
+          "salutation": "Sehr geehrter Herr Minister Jung,",
+          "addressLines": [
+            "Minister Andreas Jung",
+            "Ministerium für Kultus Baden-Württemberg",
+            "Thouretstraße 6",
+            "70173 Stuttgart"
+          ],
+          "source": {
+            "title": "Impressum Ministerium für Kultus Baden-Württemberg (Anschrift); Kabinett: Mitglieder der Landesregierung",
+            "url": "https://km.baden-wuerttemberg.de/de/header-und-footer/impressum",
+            "verifiedAt": "2026-11-19"
+          }
+        },
+        {
+          "ressorts": [
+            "wissenschaft",
+            "kultur"
+          ],
+          "officeName": "Ministerium für Wissenschaft, Forschung und Kunst Baden-Württemberg",
+          "name": "Petra Olschowski",
+          "title": "Ministerin für Wissenschaft, Forschung und Kunst",
+          "salutation": "Sehr geehrte Frau Ministerin Olschowski,",
+          "addressLines": [
+            "Ministerin Petra Olschowski",
+            "Ministerium für Wissenschaft, Forschung und Kunst Baden-Württemberg",
+            "Königstraße 46",
+            "70173 Stuttgart"
+          ],
+          "source": {
+            "title": "Impressum Ministerium für Wissenschaft, Forschung und Kunst Baden-Württemberg (Anschrift); Kabinett: Mitglieder der Landesregierung",
+            "url": "https://mwk.baden-wuerttemberg.de/de/header-und-footer/impressum",
+            "verifiedAt": "2026-11-19"
+          }
+        },
+        {
+          "ressorts": [
+            "umwelt",
+            "klima"
+          ],
+          "officeName": "Ministerium für Umwelt, Klima und Energiewirtschaft Baden-Württemberg",
+          "name": "Thekla Walker",
+          "title": "Ministerin für Umwelt, Klima und Energiewirtschaft",
+          "salutation": "Sehr geehrte Frau Ministerin Walker,",
+          "addressLines": [
+            "Ministerin Thekla Walker",
+            "Ministerium für Umwelt, Klima und Energiewirtschaft Baden-Württemberg",
+            "Kernerplatz 9",
+            "70182 Stuttgart"
+          ],
+          "source": {
+            "title": "Impressum Ministerium für Umwelt, Klima und Energiewirtschaft Baden-Württemberg (Anschrift); Kabinett: Mitglieder der Landesregierung",
+            "url": "https://um.baden-wuerttemberg.de/de/header-und-footer/impressum",
+            "verifiedAt": "2026-11-19"
+          }
+        },
+        {
+          "ressorts": [
+            "wirtschaft"
+          ],
+          "officeName": "Ministerium für Wirtschaft, Handwerk und Tourismus Baden-Württemberg",
+          "name": "Dr. Nicole Hoffmeister-Kraut",
+          "title": "Ministerin für Wirtschaft, Handwerk und Tourismus",
+          "salutation": "Sehr geehrte Frau Ministerin Dr. Hoffmeister-Kraut,",
+          "addressLines": [
+            "Ministerin Dr. Nicole Hoffmeister-Kraut",
+            "Ministerium für Wirtschaft, Handwerk und Tourismus Baden-Württemberg",
+            "Neues Schloss, Schlossplatz 4",
+            "70173 Stuttgart"
+          ],
+          "source": {
+            "title": "Impressum Ministerium für Wirtschaft, Handwerk und Tourismus Baden-Württemberg (Anschrift); Kabinett: Mitglieder der Landesregierung",
+            "url": "https://wm.baden-wuerttemberg.de/de/header-und-footer/impressum",
+            "verifiedAt": "2026-11-19"
+          }
+        },
+        {
+          "ressorts": [
+            "soziales",
+            "arbeit",
+            "gesundheit"
+          ],
+          "officeName": "Ministerium für Soziales, Arbeit und Gesundheit Baden-Württemberg",
+          "name": "Oliver Hildenbrand",
+          "title": "Minister für Soziales, Arbeit und Gesundheit",
+          "salutation": "Sehr geehrter Herr Minister Hildenbrand,",
+          "addressLines": [
+            "Minister Oliver Hildenbrand",
+            "Ministerium für Soziales, Arbeit und Gesundheit Baden-Württemberg",
+            "Else-Josenhans-Straße 6",
+            "70173 Stuttgart"
+          ],
+          "source": {
+            "title": "Impressum Ministerium für Soziales, Arbeit und Gesundheit Baden-Württemberg (Anschrift); Kabinett: Mitglieder der Landesregierung",
+            "url": "https://sozialministerium.baden-wuerttemberg.de/de/header-und-footer/impressum",
+            "verifiedAt": "2026-11-19"
+          }
+        },
+        {
+          "ressorts": [
+            "justiz"
+          ],
+          "officeName": "Ministerium der Justiz und für Migration Baden-Württemberg",
+          "name": "Moritz Oppelt",
+          "title": "Minister der Justiz und für Migration",
+          "salutation": "Sehr geehrter Herr Minister Oppelt,",
+          "addressLines": [
+            "Minister Moritz Oppelt",
+            "Ministerium der Justiz und für Migration Baden-Württemberg",
+            "Schillerplatz 4",
+            "70173 Stuttgart"
+          ],
+          "source": {
+            "title": "Impressum Ministerium der Justiz und für Migration Baden-Württemberg (Anschrift); Kabinett: Mitglieder der Landesregierung",
+            "url": "https://jm.baden-wuerttemberg.de/de/header-und-footer/impressum",
+            "verifiedAt": "2026-11-19"
+          }
+        },
+        {
+          "ressorts": [
+            "verkehr"
+          ],
+          "officeName": "Ministerium für Verkehr Baden-Württemberg",
+          "name": "Nicole Razavi",
+          "title": "Ministerin für Verkehr",
+          "salutation": "Sehr geehrte Frau Ministerin Razavi,",
+          "addressLines": [
+            "Ministerin Nicole Razavi",
+            "Ministerium für Verkehr Baden-Württemberg",
+            "Dorotheenstraße 8",
+            "70173 Stuttgart"
+          ],
+          "source": {
+            "title": "Impressum Ministerium für Verkehr Baden-Württemberg (Anschrift); Kabinett: Mitglieder der Landesregierung",
+            "url": "https://vm.baden-wuerttemberg.de/de/header-und-footer/impressum",
+            "verifiedAt": "2026-11-19"
+          }
+        },
+        {
+          "ressorts": [
+            "landwirtschaft"
+          ],
+          "officeName": "Ministerium für Ländlichen Raum, Landwirtschaft und Heimat Baden-Württemberg",
+          "name": "Marion Gentges",
+          "title": "Ministerin für Ländlichen Raum, Landwirtschaft und Heimat",
+          "salutation": "Sehr geehrte Frau Ministerin Gentges,",
+          "addressLines": [
+            "Ministerin Marion Gentges",
+            "Ministerium für Ländlichen Raum, Landwirtschaft und Heimat Baden-Württemberg",
+            "Kernerplatz 10",
+            "70182 Stuttgart"
+          ],
+          "source": {
+            "title": "Impressum Ministerium für Ländlichen Raum, Landwirtschaft und Heimat Baden-Württemberg (Anschrift); Kabinett: Mitglieder der Landesregierung",
+            "url": "https://mlr.baden-wuerttemberg.de/de/header-und-footer/impressum",
+            "verifiedAt": "2026-11-19"
+          }
+        },
+        {
+          "ressorts": [
+            "bau"
+          ],
+          "officeName": "Ministerium für Landesentwicklung und Wohnen Baden-Württemberg",
+          "name": "Theresa Schopper",
+          "title": "Ministerin für Landesentwicklung und Wohnen",
+          "salutation": "Sehr geehrte Frau Ministerin Schopper,",
+          "addressLines": [
+            "Ministerin Theresa Schopper",
+            "Ministerium für Landesentwicklung und Wohnen Baden-Württemberg",
+            "Theodor-Heuss-Straße 4",
+            "70174 Stuttgart"
+          ],
+          "source": {
+            "title": "Impressum Ministerium für Landesentwicklung und Wohnen Baden-Württemberg (Anschrift); Kabinett: Mitglieder der Landesregierung",
+            "url": "https://mlw.baden-wuerttemberg.de/de/header-und-footer/impressum",
+            "verifiedAt": "2026-11-19"
+          }
+        }
+      ]
+    },
+    "BY": {
+      "stateName": "Bayern",
+      "note": "Kabinett Söder II. Wirtschaftsministerium vakant (Aiwanger † 04.11.2026). Söder leitet kein Ressort.",
+      "ministers": [
+        {
+          "ressorts": [
+            "europa"
+          ],
+          "officeName": "Bayerische Staatskanzlei",
+          "name": "Dr. Florian Herrmann",
+          "title": "Staatsminister für Bundes- und Europaangelegenheiten, Internationales und Medien; Leiter der Staatskanzlei",
+          "salutation": "Sehr geehrter Herr Staatsminister Dr. Herrmann,",
+          "addressLines": [
+            "Staatsminister Dr. Florian Herrmann",
+            "Bayerische Staatskanzlei",
+            "Franz-Josef-Strauß-Ring 1",
+            "80539 München"
+          ],
+          "source": {
+            "title": "Impressum Bayerische Staatskanzlei; Kabinett: bayern.de/staatsregierung/kabinett",
+            "url": "https://www.bayern.de/impressum/",
+            "verifiedAt": "2026-11-19"
+          }
+        },
+        {
+          "ressorts": [
+            "jugend"
+          ],
+          "officeName": "Bayerische Staatskanzlei",
+          "name": "Manuel Knoll",
+          "title": "Staatsminister für Jugend und Demokratie",
+          "salutation": "Sehr geehrter Herr Staatsminister Knoll,",
+          "addressLines": [
+            "Staatsminister Manuel Knoll",
+            "Bayerische Staatskanzlei",
+            "Franz-Josef-Strauß-Ring 1",
+            "80539 München"
+          ],
+          "source": {
+            "title": "Impressum Bayerische Staatskanzlei; Kabinett: bayern.de/staatsregierung/kabinett",
+            "url": "https://www.bayern.de/impressum/",
+            "verifiedAt": "2026-11-19"
+          }
+        },
+        {
+          "ressorts": [
+            "inneres",
+            "sport"
+          ],
+          "officeName": "Bayerisches Staatsministerium des Innern, für Sport und Integration",
+          "name": "Joachim Herrmann",
+          "title": "Staatsminister des Innern, für Sport und Integration",
+          "salutation": "Sehr geehrter Herr Staatsminister Herrmann,",
+          "addressLines": [
+            "Staatsminister Joachim Herrmann",
+            "Bayerisches Staatsministerium des Innern, für Sport und Integration",
+            "Odeonsplatz 3",
+            "80539 München"
+          ],
+          "source": {
+            "title": "Impressum Bayerisches Staatsministerium des Innern, für Sport und Integration; Kabinett: bayern.de/staatsregierung/kabinett",
+            "url": "https://www.stmi.bayern.de/impressum",
+            "verifiedAt": "2026-11-19"
+          }
+        },
+        {
+          "ressorts": [
+            "bau",
+            "verkehr"
+          ],
+          "officeName": "Bayerisches Staatsministerium für Wohnen, Bau und Verkehr",
+          "name": "Christian Bernreiter",
+          "title": "Staatsminister für Wohnen, Bau und Verkehr",
+          "salutation": "Sehr geehrter Herr Staatsminister Bernreiter,",
+          "addressLines": [
+            "Staatsminister Christian Bernreiter",
+            "Bayerisches Staatsministerium für Wohnen, Bau und Verkehr",
+            "Franz-Josef-Strauß-Ring 4",
+            "80539 München"
+          ],
+          "source": {
+            "title": "Impressum Bayerisches Staatsministerium für Wohnen, Bau und Verkehr; Kabinett: bayern.de/staatsregierung/kabinett",
+            "url": "https://www.stmb.bayern.de/hil/impressum/index.php",
+            "verifiedAt": "2026-11-19"
+          }
+        },
+        {
+          "ressorts": [
+            "justiz"
+          ],
+          "officeName": "Bayerisches Staatsministerium der Justiz",
+          "name": "Josef Schmid",
+          "title": "Staatsminister der Justiz",
+          "salutation": "Sehr geehrter Herr Staatsminister Schmid,",
+          "addressLines": [
+            "Staatsminister Josef Schmid",
+            "Bayerisches Staatsministerium der Justiz",
+            "Prielmayerstraße 7",
+            "80335 München"
+          ],
+          "source": {
+            "title": "Impressum Bayerisches Staatsministerium der Justiz; Kabinett: bayern.de/staatsregierung/kabinett",
+            "url": "https://www.justiz.bayern.de/ministerium/kontakt/",
+            "verifiedAt": "2026-11-19"
+          }
+        },
+        {
+          "ressorts": [
+            "bildung",
+            "kultur"
+          ],
+          "officeName": "Bayerisches Staatsministerium für Unterricht und Kultus",
+          "name": "Anna Stolz",
+          "title": "Staatsministerin für Unterricht und Kultus",
+          "salutation": "Sehr geehrte Frau Staatsministerin Stolz,",
+          "addressLines": [
+            "Staatsministerin Anna Stolz",
+            "Bayerisches Staatsministerium für Unterricht und Kultus",
+            "Salvatorstraße 2",
+            "80333 München"
+          ],
+          "source": {
+            "title": "Impressum Bayerisches Staatsministerium für Unterricht und Kultus; Kabinett: bayern.de/staatsregierung/kabinett",
+            "url": "https://www.km.bayern.de/impressum",
+            "verifiedAt": "2026-11-19"
+          }
+        },
+        {
+          "ressorts": [
+            "wissenschaft",
+            "kultur"
+          ],
+          "officeName": "Bayerisches Staatsministerium für Wissenschaft und Kunst",
+          "name": "Markus Blume",
+          "title": "Staatsminister für Wissenschaft und Kunst",
+          "salutation": "Sehr geehrter Herr Staatsminister Blume,",
+          "addressLines": [
+            "Staatsminister Markus Blume",
+            "Bayerisches Staatsministerium für Wissenschaft und Kunst",
+            "Salvatorstraße 2",
+            "80333 München"
+          ],
+          "source": {
+            "title": "Impressum Bayerisches Staatsministerium für Wissenschaft und Kunst; Kabinett: bayern.de/staatsregierung/kabinett",
+            "url": "https://www.stmwk.bayern.de/impressum.html",
+            "verifiedAt": "2026-11-19"
+          }
+        },
+        {
+          "ressorts": [
+            "finanzen"
+          ],
+          "officeName": "Bayerisches Staatsministerium der Finanzen und für Heimat",
+          "name": "Albert Füracker",
+          "title": "Staatsminister der Finanzen und für Heimat",
+          "salutation": "Sehr geehrter Herr Staatsminister Füracker,",
+          "addressLines": [
+            "Staatsminister Albert Füracker",
+            "Bayerisches Staatsministerium der Finanzen und für Heimat",
+            "Odeonsplatz 4",
+            "80539 München"
+          ],
+          "source": {
+            "title": "Impressum Bayerisches Staatsministerium der Finanzen und für Heimat; Kabinett: bayern.de/staatsregierung/kabinett",
+            "url": "https://www.stmfh.bayern.de/impressum.aspx",
+            "verifiedAt": "2026-11-19"
+          }
+        },
+        {
+          "ressorts": [
+            "wirtschaft"
+          ],
+          "officeName": "Bayerisches Staatsministerium für Wirtschaft, Landesentwicklung und Energie",
+          "name": "Tobias Gotthardt",
+          "title": "Staatssekretär, kommissarische Leitung (Staatsminister Hubert Aiwanger am 04.11.2026 verstorben, Nachfolge offen)",
+          "salutation": "Sehr geehrter Herr Staatssekretär Gotthardt,",
+          "addressLines": [
+            "Staatssekretär Tobias Gotthardt",
+            "Bayerisches Staatsministerium für Wirtschaft, Landesentwicklung und Energie",
+            "Prinzregentenstraße 28",
+            "80538 München"
+          ],
+          "source": {
+            "title": "Impressum Bayerisches Staatsministerium für Wirtschaft, Landesentwicklung und Energie; Kabinett: bayern.de/staatsregierung/kabinett",
+            "url": "https://www.stmwi.bayern.de/impressum/",
+            "verifiedAt": "2026-11-19"
+          },
+          "unverified": true,
+          "vacant": true,
+          "note": "Ministeramt vakant seit Tod von Hubert Aiwanger (04.11.2026); Tobias Gotthardt ist Staatssekretär und nur laut Presseberichten kommissarisch zuständig; nach Ernennung eines Nachfolgers ersetzen. Anrede/Anschrift an Staatssekretär nicht verifiziert."
+        },
+        {
+          "ressorts": [
+            "umwelt",
+            "verbraucherschutz"
+          ],
+          "officeName": "Bayerisches Staatsministerium für Umwelt und Verbraucherschutz",
+          "name": "Thorsten Glauber",
+          "title": "Staatsminister für Umwelt und Verbraucherschutz",
+          "salutation": "Sehr geehrter Herr Staatsminister Glauber,",
+          "addressLines": [
+            "Staatsminister Thorsten Glauber",
+            "Bayerisches Staatsministerium für Umwelt und Verbraucherschutz",
+            "Rosenkavalierplatz 2",
+            "81925 München"
+          ],
+          "source": {
+            "title": "Impressum Bayerisches Staatsministerium für Umwelt und Verbraucherschutz; Kabinett: bayern.de/staatsregierung/kabinett",
+            "url": "https://www.stmuv.bayern.de/impressum",
+            "verifiedAt": "2026-11-19"
+          }
+        },
+        {
+          "ressorts": [
+            "landwirtschaft"
+          ],
+          "officeName": "Bayerisches Staatsministerium für Ernährung, Landwirtschaft, Forsten und Tourismus",
+          "name": "Michaela Kaniber",
+          "title": "Staatsministerin für Ernährung, Landwirtschaft, Forsten und Tourismus",
+          "salutation": "Sehr geehrte Frau Staatsministerin Kaniber,",
+          "addressLines": [
+            "Staatsministerin Michaela Kaniber",
+            "Bayerisches Staatsministerium für Ernährung, Landwirtschaft, Forsten und Tourismus",
+            "Ludwigstraße 2",
+            "80539 München"
+          ],
+          "source": {
+            "title": "Impressum Bayerisches Staatsministerium für Ernährung, Landwirtschaft, Forsten und Tourismus; Kabinett: bayern.de/staatsregierung/kabinett",
+            "url": "https://www.stmelf.bayern.de/impressum",
+            "verifiedAt": "2026-11-19"
+          }
+        },
+        {
+          "ressorts": [
+            "soziales",
+            "arbeit",
+            "jugend",
+            "frauen"
+          ],
+          "officeName": "Bayerisches Staatsministerium für Familie, Arbeit und Soziales",
+          "name": "Ulrike Scharf",
+          "title": "Staatsministerin für Familie, Arbeit und Soziales",
+          "salutation": "Sehr geehrte Frau Staatsministerin Scharf,",
+          "addressLines": [
+            "Staatsministerin Ulrike Scharf",
+            "Bayerisches Staatsministerium für Familie, Arbeit und Soziales",
+            "Winzererstraße 9",
+            "80797 München"
+          ],
+          "source": {
+            "title": "Impressum Bayerisches Staatsministerium für Familie, Arbeit und Soziales; Kabinett: bayern.de/staatsregierung/kabinett",
+            "url": "https://www.stmas.bayern.de/impressum",
+            "verifiedAt": "2026-11-19"
+          }
+        },
+        {
+          "ressorts": [
+            "gesundheit"
+          ],
+          "officeName": "Bayerisches Staatsministerium für Gesundheit, Pflege und Prävention",
+          "name": "Judith Gerlach",
+          "title": "Staatsministerin für Gesundheit, Pflege und Prävention",
+          "salutation": "Sehr geehrte Frau Staatsministerin Gerlach,",
+          "addressLines": [
+            "Staatsministerin Judith Gerlach",
+            "Bayerisches Staatsministerium für Gesundheit, Pflege und Prävention",
+            "Haidenauplatz 1",
+            "81667 München"
+          ],
+          "source": {
+            "title": "Impressum Bayerisches Staatsministerium für Gesundheit, Pflege und Prävention; Kabinett: bayern.de/staatsregierung/kabinett",
+            "url": "https://www.stmgp.bayern.de/impressum",
+            "verifiedAt": "2026-11-19"
+          }
+        },
+        {
+          "ressorts": [
+            "digitales"
+          ],
+          "officeName": "Bayerisches Staatsministerium für Digitales",
+          "name": "Dr. Fabian Mehring",
+          "title": "Staatsminister für Digitales",
+          "salutation": "Sehr geehrter Herr Staatsminister Dr. Mehring,",
+          "addressLines": [
+            "Staatsminister Dr. Fabian Mehring",
+            "Bayerisches Staatsministerium für Digitales",
+            "Gewürzmühlstraße 11",
+            "80538 München"
+          ],
+          "source": {
+            "title": "Impressum Bayerisches Staatsministerium für Digitales; Kabinett: bayern.de/staatsregierung/kabinett",
+            "url": "https://www.stmd.bayern.de/impressum",
+            "verifiedAt": "2026-11-19"
+          }
+        }
+      ]
+    },
     "HB": {
       "stateName": "Bremen",
       "ministers": [
@@ -210,6 +1149,2348 @@
           "source": {
             "title": "Impressum Die Senatorin für Inneres und Sport",
             "url": "https://www.inneres.bremen.de/impressum",
+            "verifiedAt": "2026-11-19"
+          }
+        }
+      ]
+    },
+    "HE": {
+      "stateName": "Hessen",
+      "ministers": [
+        {
+          "ressorts": [
+            "wissenschaft",
+            "kultur"
+          ],
+          "officeName": "Hessisches Ministerium für Wissenschaft und Forschung, Kunst und Kultur",
+          "name": "Timon Gremmels",
+          "title": "Hessischer Minister für Wissenschaft und Forschung, Kunst und Kultur",
+          "salutation": "Sehr geehrter Herr Minister Gremmels,",
+          "addressLines": [
+            "Minister Timon Gremmels",
+            "Hessisches Ministerium für Wissenschaft und Forschung, Kunst und Kultur",
+            "Rheinstraße 23-25",
+            "65185 Wiesbaden"
+          ],
+          "source": {
+            "title": "Die Hessische Landesregierung, Infoblatt Hessischer Landtag, Stand August 2026 (Namen und Anschriften)",
+            "url": "https://hessischer-landtag.de/sites/default/files/dateien/2026-08/Die%20Landesregierung-Infoblatt_August2026.pdf",
+            "verifiedAt": "2026-11-19"
+          }
+        },
+        {
+          "ressorts": [
+            "digitales"
+          ],
+          "officeName": "Hessisches Ministerium für Digitalisierung und Innovation",
+          "name": "Prof. Dr. Kristina Sinemus",
+          "title": "Hessische Ministerin für Digitalisierung und Innovation",
+          "salutation": "Sehr geehrte Frau Ministerin Prof. Dr. Sinemus,",
+          "addressLines": [
+            "Ministerin Prof. Dr. Kristina Sinemus",
+            "Hessisches Ministerium für Digitalisierung und Innovation",
+            "Taunusstraße 3",
+            "65183 Wiesbaden"
+          ],
+          "source": {
+            "title": "Die Hessische Landesregierung, Infoblatt Hessischer Landtag, Stand August 2026 (Namen und Anschriften)",
+            "url": "https://hessischer-landtag.de/sites/default/files/dateien/2026-08/Die%20Landesregierung-Infoblatt_August2026.pdf",
+            "verifiedAt": "2026-11-19"
+          }
+        },
+        {
+          "ressorts": [
+            "wirtschaft",
+            "verkehr",
+            "bau"
+          ],
+          "officeName": "Hessisches Ministerium für Wirtschaft, Energie, Verkehr, Wohnen und ländlichen Raum",
+          "name": "Kaweh Mansoori",
+          "title": "Hessischer Minister für Wirtschaft, Energie, Verkehr, Wohnen und ländlichen Raum",
+          "salutation": "Sehr geehrter Herr Minister Mansoori,",
+          "addressLines": [
+            "Minister Kaweh Mansoori",
+            "Hessisches Ministerium für Wirtschaft, Energie, Verkehr, Wohnen und ländlichen Raum",
+            "Kaiser-Friedrich-Ring 75",
+            "65185 Wiesbaden"
+          ],
+          "source": {
+            "title": "Die Hessische Landesregierung, Infoblatt Hessischer Landtag, Stand August 2026 (Namen und Anschriften)",
+            "url": "https://hessischer-landtag.de/sites/default/files/dateien/2026-08/Die%20Landesregierung-Infoblatt_August2026.pdf",
+            "verifiedAt": "2026-11-19"
+          }
+        },
+        {
+          "ressorts": [
+            "landwirtschaft",
+            "umwelt"
+          ],
+          "officeName": "Hessisches Ministerium für Landwirtschaft und Umwelt, Weinbau, Forsten, Jagd und Heimat",
+          "name": "Ingmar Jung",
+          "title": "Hessischer Minister für Landwirtschaft und Umwelt, Weinbau, Forsten, Jagd und Heimat",
+          "salutation": "Sehr geehrter Herr Minister Jung,",
+          "addressLines": [
+            "Minister Ingmar Jung",
+            "Hessisches Ministerium für Landwirtschaft und Umwelt, Weinbau, Forsten, Jagd und Heimat",
+            "Mainzer Straße 80",
+            "65189 Wiesbaden"
+          ],
+          "source": {
+            "title": "Die Hessische Landesregierung, Infoblatt Hessischer Landtag, Stand August 2026 (Namen und Anschriften)",
+            "url": "https://hessischer-landtag.de/sites/default/files/dateien/2026-08/Die%20Landesregierung-Infoblatt_August2026.pdf",
+            "verifiedAt": "2026-11-19"
+          }
+        },
+        {
+          "ressorts": [
+            "inneres"
+          ],
+          "officeName": "Hessisches Ministerium des Innern, für Sicherheit und Heimatschutz",
+          "name": "Prof. Dr. Roman Poseck",
+          "title": "Hessischer Minister des Innern, für Sicherheit und Heimatschutz",
+          "salutation": "Sehr geehrter Herr Minister Prof. Dr. Poseck,",
+          "addressLines": [
+            "Minister Prof. Dr. Roman Poseck",
+            "Hessisches Ministerium des Innern, für Sicherheit und Heimatschutz",
+            "Friedrich-Ebert-Allee 12",
+            "65185 Wiesbaden"
+          ],
+          "source": {
+            "title": "Die Hessische Landesregierung, Infoblatt Hessischer Landtag, Stand August 2026 (Namen und Anschriften)",
+            "url": "https://hessischer-landtag.de/sites/default/files/dateien/2026-08/Die%20Landesregierung-Infoblatt_August2026.pdf",
+            "verifiedAt": "2026-11-19"
+          }
+        },
+        {
+          "ressorts": [
+            "finanzen"
+          ],
+          "officeName": "Hessisches Ministerium der Finanzen",
+          "name": "Prof. Dr. R. Alexander Lorz",
+          "title": "Hessischer Minister der Finanzen",
+          "salutation": "Sehr geehrter Herr Minister Prof. Dr. Lorz,",
+          "addressLines": [
+            "Minister Prof. Dr. R. Alexander Lorz",
+            "Hessisches Ministerium der Finanzen",
+            "Friedrich-Ebert-Allee 8",
+            "65185 Wiesbaden"
+          ],
+          "source": {
+            "title": "Die Hessische Landesregierung, Infoblatt Hessischer Landtag, Stand August 2026 (Namen und Anschriften)",
+            "url": "https://hessischer-landtag.de/sites/default/files/dateien/2026-08/Die%20Landesregierung-Infoblatt_August2026.pdf",
+            "verifiedAt": "2026-11-19"
+          }
+        },
+        {
+          "ressorts": [
+            "justiz"
+          ],
+          "officeName": "Hessisches Ministerium der Justiz und für den Rechtsstaat",
+          "name": "Christian Heinz",
+          "title": "Hessischer Minister der Justiz und für den Rechtsstaat",
+          "salutation": "Sehr geehrter Herr Minister Heinz,",
+          "addressLines": [
+            "Minister Christian Heinz",
+            "Hessisches Ministerium der Justiz und für den Rechtsstaat",
+            "Luisenstraße 13",
+            "65185 Wiesbaden"
+          ],
+          "source": {
+            "title": "Die Hessische Landesregierung, Infoblatt Hessischer Landtag, Stand August 2026 (Namen und Anschriften)",
+            "url": "https://hessischer-landtag.de/sites/default/files/dateien/2026-08/Die%20Landesregierung-Infoblatt_August2026.pdf",
+            "verifiedAt": "2026-11-19"
+          }
+        },
+        {
+          "ressorts": [
+            "bildung"
+          ],
+          "officeName": "Hessisches Ministerium für Kultus, Bildung und Chancen",
+          "name": "Armin Schwarz",
+          "title": "Hessischer Minister für Kultus, Bildung und Chancen",
+          "salutation": "Sehr geehrter Herr Minister Schwarz,",
+          "addressLines": [
+            "Minister Armin Schwarz",
+            "Hessisches Ministerium für Kultus, Bildung und Chancen",
+            "Luisenplatz 10",
+            "65185 Wiesbaden"
+          ],
+          "source": {
+            "title": "Die Hessische Landesregierung, Infoblatt Hessischer Landtag, Stand August 2026 (Namen und Anschriften)",
+            "url": "https://hessischer-landtag.de/sites/default/files/dateien/2026-08/Die%20Landesregierung-Infoblatt_August2026.pdf",
+            "verifiedAt": "2026-11-19"
+          }
+        },
+        {
+          "ressorts": [
+            "sport",
+            "gesundheit"
+          ],
+          "officeName": "Hessisches Ministerium für Familie, Senioren, Sport, Gesundheit und Pflege",
+          "name": "Diana Stolz",
+          "title": "Hessische Ministerin für Familie, Senioren, Sport, Gesundheit und Pflege",
+          "salutation": "Sehr geehrte Frau Ministerin Stolz,",
+          "addressLines": [
+            "Ministerin Diana Stolz",
+            "Hessisches Ministerium für Familie, Senioren, Sport, Gesundheit und Pflege",
+            "Sonnenberger Straße 2/2a",
+            "65193 Wiesbaden"
+          ],
+          "source": {
+            "title": "Die Hessische Landesregierung, Infoblatt Hessischer Landtag, Stand August 2026 (Namen und Anschriften)",
+            "url": "https://hessischer-landtag.de/sites/default/files/dateien/2026-08/Die%20Landesregierung-Infoblatt_August2026.pdf",
+            "verifiedAt": "2026-11-19"
+          }
+        },
+        {
+          "ressorts": [
+            "arbeit",
+            "soziales",
+            "jugend"
+          ],
+          "officeName": "Hessisches Ministerium für Arbeit, Integration, Jugend und Soziales",
+          "name": "Heike Hofmann",
+          "title": "Hessische Ministerin für Arbeit, Integration, Jugend und Soziales",
+          "salutation": "Sehr geehrte Frau Ministerin Hofmann,",
+          "addressLines": [
+            "Ministerin Heike Hofmann",
+            "Hessisches Ministerium für Arbeit, Integration, Jugend und Soziales",
+            "Sonnenberger Straße 2/2a",
+            "65193 Wiesbaden"
+          ],
+          "source": {
+            "title": "Die Hessische Landesregierung, Infoblatt Hessischer Landtag, Stand August 2026 (Namen und Anschriften)",
+            "url": "https://hessischer-landtag.de/sites/default/files/dateien/2026-08/Die%20Landesregierung-Infoblatt_August2026.pdf",
+            "verifiedAt": "2026-11-19"
+          }
+        },
+        {
+          "ressorts": [
+            "europa"
+          ],
+          "officeName": "Hessischer Minister für Bundes- und Europaangelegenheiten, Internationales und Entbürokratisierung und Bevollmächtigter des Landes Hessen beim Bund",
+          "name": "Manfred Pentz",
+          "title": "Hessischer Minister für Bundes- und Europaangelegenheiten, Internationales und Entbürokratisierung und Bevollmächtigter des Landes Hessen beim Bund",
+          "salutation": "Sehr geehrter Herr Minister Pentz,",
+          "addressLines": [
+            "Minister Manfred Pentz",
+            "Hessischer Minister für Bundes- und Europaangelegenheiten, Internationales und Entbürokratisierung und Bevollmächtigter des Landes Hessen beim Bund",
+            "Georg-August-Zinn-Straße 1",
+            "65183 Wiesbaden"
+          ],
+          "source": {
+            "title": "Die Hessische Landesregierung, Infoblatt Hessischer Landtag, Stand August 2026 (Namen und Anschriften)",
+            "url": "https://hessischer-landtag.de/sites/default/files/dateien/2026-08/Die%20Landesregierung-Infoblatt_August2026.pdf",
+            "verifiedAt": "2026-11-19"
+          }
+        }
+      ]
+    },
+    "HH": {
+      "stateName": "Hamburg",
+      "ministers": [
+        {
+          "ressorts": [
+            "bildung",
+            "jugend"
+          ],
+          "officeName": "Behörde für Schule, Familie und Berufsbildung",
+          "name": "Ksenija Bekeris",
+          "title": "Senatorin, Präses der Behörde für Schule, Familie und Berufsbildung",
+          "salutation": "Sehr geehrte Frau Senatorin Bekeris,",
+          "addressLines": [
+            "Senatorin Ksenija Bekeris",
+            "Behörde für Schule, Familie und Berufsbildung",
+            "Hamburger Straße 31",
+            "22083 Hamburg"
+          ],
+          "source": {
+            "title": "Senat: hamburg.de/senat; Adresse: hamburg.de BSFB",
+            "url": "https://www.hamburg.de/politik-und-verwaltung/behoerden/bsfb",
+            "verifiedAt": "2026-11-19"
+          }
+        },
+        {
+          "ressorts": [
+            "umwelt",
+            "klima",
+            "landwirtschaft"
+          ],
+          "officeName": "Behörde für Umwelt, Klima, Energie und Agrarwirtschaft",
+          "name": "Katharina Fegebank",
+          "title": "Zweite Bürgermeisterin und Senatorin, Präses der Behörde für Umwelt, Klima, Energie und Agrarwirtschaft",
+          "salutation": "Sehr geehrte Frau Senatorin Fegebank,",
+          "addressLines": [
+            "Senatorin Katharina Fegebank",
+            "Behörde für Umwelt, Klima, Energie und Agrarwirtschaft",
+            "Neuenfelder Straße 19",
+            "21109 Hamburg"
+          ],
+          "source": {
+            "title": "Senat: hamburg.de/senat; Adresse: Impressum BUKEA",
+            "url": "https://www.hamburg.de/politik-und-verwaltung/behoerden/bukea/impressum-behoerde-fuer-umwelt-klima-energie-und-agrarwirtschaft-1097110",
+            "verifiedAt": "2026-11-19"
+          }
+        },
+        {
+          "ressorts": [
+            "wirtschaft",
+            "arbeit"
+          ],
+          "officeName": "Behörde für Wirtschaft, Arbeit und Innovation",
+          "name": "Dr. Melanie Leonhard",
+          "title": "Senatorin, Präses der Behörde für Wirtschaft, Arbeit und Innovation",
+          "salutation": "Sehr geehrte Frau Senatorin Dr. Leonhard,",
+          "addressLines": [
+            "Senatorin Dr. Melanie Leonhard",
+            "Behörde für Wirtschaft, Arbeit und Innovation",
+            "Alter Steinweg 4",
+            "20459 Hamburg"
+          ],
+          "source": {
+            "title": "Senat: hamburg.de/senat; Adresse: Impressum BWAI",
+            "url": "https://www.hamburg.de/politik-und-verwaltung/behoerden/bwai/impressum-1101800",
+            "verifiedAt": "2026-11-19"
+          }
+        },
+        {
+          "ressorts": [
+            "inneres",
+            "sport"
+          ],
+          "officeName": "Behörde für Inneres und Sport",
+          "name": "Andy Grote",
+          "title": "Senator, Präses der Behörde für Inneres und Sport",
+          "salutation": "Sehr geehrter Herr Senator Grote,",
+          "addressLines": [
+            "Senator Andy Grote",
+            "Behörde für Inneres und Sport",
+            "Johanniswall 4",
+            "20095 Hamburg"
+          ],
+          "source": {
+            "title": "Senat: hamburg.de/senat; Adresse: hamburg.de BIS Wir über uns",
+            "url": "https://www.hamburg.de/politik-und-verwaltung/behoerden/behoerde-fuer-inneres-und-sport/wir-ueber-uns",
+            "verifiedAt": "2026-11-19"
+          }
+        },
+        {
+          "ressorts": [
+            "kultur"
+          ],
+          "officeName": "Behörde für Kultur und Medien",
+          "name": "Dr. Carsten Brosda",
+          "title": "Senator, Präses der Behörde für Kultur und Medien",
+          "salutation": "Sehr geehrter Herr Senator Dr. Brosda,",
+          "addressLines": [
+            "Senator Dr. Carsten Brosda",
+            "Behörde für Kultur und Medien",
+            "Hohe Bleichen 22",
+            "20354 Hamburg"
+          ],
+          "source": {
+            "title": "Senat: hamburg.de/senat; Adresse: hamburg.de BKM Kontaktinformationen",
+            "url": "https://www.hamburg.de/politik-und-verwaltung/behoerden/behoerde-fuer-kultur-und-medien/wir-ueber-uns/kontaktinformationen",
+            "verifiedAt": "2026-11-19"
+          }
+        },
+        {
+          "ressorts": [
+            "finanzen"
+          ],
+          "officeName": "Behörde für Finanzen und Bezirke",
+          "name": "Dr. Andreas Dressel",
+          "title": "Senator, Präses der Behörde für Finanzen und Bezirke",
+          "salutation": "Sehr geehrter Herr Senator Dr. Dressel,",
+          "addressLines": [
+            "Senator Dr. Andreas Dressel",
+            "Behörde für Finanzen und Bezirke",
+            "Adolphsplatz 3-5",
+            "20457 Hamburg"
+          ],
+          "source": {
+            "title": "Senat: hamburg.de/senat; Adresse: Impressum Behörde für Finanzen und Bezirke (Interimssitz Adolphsplatz)",
+            "url": "https://www.hamburg.de/politik-und-verwaltung/behoerden/finanzbehoerde/impressum-der-behoerde-fuer-finanzen-und-bezirke-der-freien-und-hansestadt-hamburg-1209676",
+            "verifiedAt": "2026-11-19"
+          }
+        },
+        {
+          "ressorts": [
+            "verkehr"
+          ],
+          "officeName": "Behörde für Verkehr und Mobilitätswende",
+          "name": "Dr. Anjes Tjarks",
+          "title": "Senator, Präses der Behörde für Verkehr und Mobilitätswende",
+          "salutation": "Sehr geehrter Herr Senator Dr. Tjarks,",
+          "addressLines": [
+            "Senator Dr. Anjes Tjarks",
+            "Behörde für Verkehr und Mobilitätswende",
+            "Alter Steinweg 4",
+            "20459 Hamburg"
+          ],
+          "source": {
+            "title": "Senat: hamburg.de/senat; Adresse: Impressum BVM",
+            "url": "https://www.hamburg.de/politik-und-verwaltung/behoerden/bvm/impressum-1101802",
+            "verifiedAt": "2026-11-19"
+          }
+        },
+        {
+          "ressorts": [
+            "justiz",
+            "verbraucherschutz"
+          ],
+          "officeName": "Behörde für Justiz und Verbraucherschutz",
+          "name": "Anna Gallina",
+          "title": "Senatorin, Präses der Behörde für Justiz und Verbraucherschutz",
+          "salutation": "Sehr geehrte Frau Senatorin Gallina,",
+          "addressLines": [
+            "Senatorin Anna Gallina",
+            "Behörde für Justiz und Verbraucherschutz",
+            "Drehbahn 36",
+            "20354 Hamburg"
+          ],
+          "source": {
+            "title": "Senat: hamburg.de/senat; Adresse: Impressum Justiz-Portal Hamburg",
+            "url": "https://justiz.hamburg.de/impressum",
+            "verifiedAt": "2026-11-19"
+          }
+        },
+        {
+          "ressorts": [
+            "gesundheit",
+            "soziales"
+          ],
+          "officeName": "Behörde für Gesundheit, Soziales und Integration",
+          "name": "Melanie Schlotzhauer",
+          "title": "Senatorin, Präses der Behörde für Gesundheit, Soziales und Integration",
+          "salutation": "Sehr geehrte Frau Senatorin Schlotzhauer,",
+          "addressLines": [
+            "Senatorin Melanie Schlotzhauer",
+            "Behörde für Gesundheit, Soziales und Integration",
+            "Hamburger Straße 47",
+            "22083 Hamburg"
+          ],
+          "source": {
+            "title": "Senat: hamburg.de/senat; Adresse: Hauptsitz der Sozialbehörde",
+            "url": "https://www.hamburg.de/politik-und-verwaltung/behoerden/sozialbehoerde/hauptsitz-der-hamburger-sozialbehoerde-872786",
+            "verifiedAt": "2026-11-19"
+          }
+        },
+        {
+          "ressorts": [
+            "bau"
+          ],
+          "officeName": "Behörde für Stadtentwicklung und Wohnen",
+          "name": "Karen Pein",
+          "title": "Senatorin, Präses der Behörde für Stadtentwicklung und Wohnen",
+          "salutation": "Sehr geehrte Frau Senatorin Pein,",
+          "addressLines": [
+            "Senatorin Karen Pein",
+            "Behörde für Stadtentwicklung und Wohnen",
+            "Neuenfelder Straße 19",
+            "21109 Hamburg"
+          ],
+          "source": {
+            "title": "Senat: hamburg.de/senat; Adresse: Impressum BSW",
+            "url": "https://www.hamburg.de/politik-und-verwaltung/behoerden/behoerde-fuer-stadtentwicklung-und-wohnen/wir-ueber-uns/impressum-behoerde-fuer-stadtentwicklung-und-wohnen-1095300",
+            "verifiedAt": "2026-11-19"
+          }
+        },
+        {
+          "ressorts": [
+            "wissenschaft",
+            "frauen"
+          ],
+          "officeName": "Behörde für Wissenschaft, Forschung und Gleichstellung",
+          "name": "Maryam Blumenthal",
+          "title": "Senatorin, Präses der Behörde für Wissenschaft, Forschung und Gleichstellung",
+          "salutation": "Sehr geehrte Frau Senatorin Blumenthal,",
+          "addressLines": [
+            "Senatorin Maryam Blumenthal",
+            "Behörde für Wissenschaft, Forschung und Gleichstellung",
+            "Hamburger Straße 37",
+            "22083 Hamburg"
+          ],
+          "source": {
+            "title": "Senat: hamburg.de/senat; Adresse: Impressum BWFG (Adresse; Behördenname lt. Senatsseite)",
+            "url": "https://www.hamburg.de/politik-und-verwaltung/behoerden/bwfg/impressum-bwfg-1096986",
+            "verifiedAt": "2026-11-19"
+          }
+        }
+      ]
+    },
+    "MV": {
+      "stateName": "Mecklenburg-Vorpommern",
+      "ministers": [
+        {
+          "ressorts": [
+            "soziales",
+            "arbeit",
+            "gesundheit"
+          ],
+          "officeName": "Ministerium für Soziales, Arbeit und Gesundheit",
+          "name": "Kerstin Mieth",
+          "title": "Ministerin für Soziales, Arbeit und Gesundheit",
+          "salutation": "Sehr geehrte Frau Ministerin Mieth,",
+          "addressLines": [
+            "Ministerin Kerstin Mieth",
+            "Ministerium für Soziales, Arbeit und Gesundheit",
+            "Werderstraße 124",
+            "19055 Schwerin"
+          ],
+          "source": {
+            "title": "Regierung MV: Pressemitteilung 'Ministerpräsidentin Schwesig ernennt neues Kabinett' (16.11.2026) und Kontaktseite",
+            "url": "https://land-mv.de/aktuelles/presse/pressemitteilung/ministerpraesidentin-schwesig-ernennt-neues-kabinett",
+            "verifiedAt": "2026-11-19"
+          },
+          "note": "Neues Kabinett seit 16.11.2026 (kein Interim). Strasse aus Kontaktseite land-mv.de/kontakt (Portal noch nicht auf neue Ressortzuschnitte umgestellt), vom Vorgaenger-Ministerium uebernommen. Seat des Vorgaengers (Soziales, Gesundheit und Sport)."
+        },
+        {
+          "ressorts": [
+            "umwelt",
+            "klima",
+            "verkehr",
+            "frauen"
+          ],
+          "officeName": "Ministerium für Umwelt, Klima, Infrastruktur und Gleichstellung",
+          "name": "Claudia Müller",
+          "title": "Ministerin für Umwelt, Klima, Infrastruktur und Gleichstellung",
+          "salutation": "Sehr geehrte Frau Ministerin Müller,",
+          "addressLines": [
+            "Ministerin Claudia Müller",
+            "Ministerium für Umwelt, Klima, Infrastruktur und Gleichstellung",
+            "Paulshöher Weg 1",
+            "19061 Schwerin"
+          ],
+          "source": {
+            "title": "Regierung MV: Pressemitteilung 'Ministerpräsidentin Schwesig ernennt neues Kabinett' (16.11.2026) und Kontaktseite",
+            "url": "https://land-mv.de/aktuelles/presse/pressemitteilung/ministerpraesidentin-schwesig-ernennt-neues-kabinett",
+            "verifiedAt": "2026-11-19"
+          },
+          "note": "Neues Kabinett seit 16.11.2026 (kein Interim). Strasse aus Kontaktseite land-mv.de/kontakt (Portal noch nicht auf neue Ressortzuschnitte umgestellt), vom Vorgaenger-Ministerium uebernommen. Neu zugeschnittenes Ressort; Sitz nicht bestaetigt, Paulshoeher Weg 1 ist Sitz des frueheren Klima-/Umweltministeriums.",
+          "unverified": true
+        },
+        {
+          "ressorts": [
+            "inneres",
+            "bau"
+          ],
+          "officeName": "Ministerium für Inneres, Kommunales und Bau",
+          "name": "Christian Pegel",
+          "title": "Minister für Inneres, Kommunales und Bau",
+          "salutation": "Sehr geehrter Herr Minister Pegel,",
+          "addressLines": [
+            "Minister Christian Pegel",
+            "Ministerium für Inneres, Kommunales und Bau",
+            "Alexandrinenstraße 1",
+            "19055 Schwerin"
+          ],
+          "source": {
+            "title": "Regierung MV: Pressemitteilung 'Ministerpräsidentin Schwesig ernennt neues Kabinett' (16.11.2026) und Kontaktseite",
+            "url": "https://land-mv.de/aktuelles/presse/pressemitteilung/ministerpraesidentin-schwesig-ernennt-neues-kabinett",
+            "verifiedAt": "2026-11-19"
+          },
+          "note": "Neues Kabinett seit 16.11.2026 (kein Interim). Strasse aus Kontaktseite land-mv.de/kontakt (Portal noch nicht auf neue Ressortzuschnitte umgestellt), vom Vorgaenger-Ministerium uebernommen."
+        },
+        {
+          "ressorts": [
+            "justiz"
+          ],
+          "officeName": "Ministerium für Justiz und Integration",
+          "name": "Michael Noetzel",
+          "title": "Minister für Justiz und Integration",
+          "salutation": "Sehr geehrter Herr Minister Noetzel,",
+          "addressLines": [
+            "Minister Michael Noetzel",
+            "Ministerium für Justiz und Integration",
+            "Puschkinstraße 19-21",
+            "19055 Schwerin"
+          ],
+          "source": {
+            "title": "Regierung MV: Pressemitteilung 'Ministerpräsidentin Schwesig ernennt neues Kabinett' (16.11.2026) und Kontaktseite",
+            "url": "https://land-mv.de/aktuelles/presse/pressemitteilung/ministerpraesidentin-schwesig-ernennt-neues-kabinett",
+            "verifiedAt": "2026-11-19"
+          },
+          "note": "Neues Kabinett seit 16.11.2026 (kein Interim). Strasse aus Kontaktseite land-mv.de/kontakt (Portal noch nicht auf neue Ressortzuschnitte umgestellt), vom Vorgaenger-Ministerium uebernommen."
+        },
+        {
+          "ressorts": [
+            "finanzen"
+          ],
+          "officeName": "Finanzministerium",
+          "name": "Dr. Carola Voß",
+          "title": "Finanzministerin",
+          "salutation": "Sehr geehrte Frau Ministerin Dr. Voß,",
+          "addressLines": [
+            "Ministerin Dr. Carola Voß",
+            "Finanzministerium",
+            "Schloßstraße 9-11",
+            "19053 Schwerin"
+          ],
+          "source": {
+            "title": "Regierung MV: Pressemitteilung 'Ministerpräsidentin Schwesig ernennt neues Kabinett' (16.11.2026) und Kontaktseite",
+            "url": "https://land-mv.de/aktuelles/presse/pressemitteilung/ministerpraesidentin-schwesig-ernennt-neues-kabinett",
+            "verifiedAt": "2026-11-19"
+          },
+          "note": "Neues Kabinett seit 16.11.2026 (kein Interim). Strasse aus Kontaktseite land-mv.de/kontakt (Portal noch nicht auf neue Ressortzuschnitte umgestellt), vom Vorgaenger-Ministerium uebernommen. Offizieller Ressortname in Pressemitteilung nur 'Finanzministerin'; officeName daher generisch."
+        },
+        {
+          "ressorts": [
+            "wirtschaft",
+            "wissenschaft"
+          ],
+          "officeName": "Ministerium für Wirtschaft, Tourismus, Wissenschaft und Forschung",
+          "name": "Dr. Wolfgang Blank",
+          "title": "Minister für Wirtschaft, Tourismus, Wissenschaft und Forschung",
+          "salutation": "Sehr geehrter Herr Minister Dr. Blank,",
+          "addressLines": [
+            "Minister Dr. Wolfgang Blank",
+            "Ministerium für Wirtschaft, Tourismus, Wissenschaft und Forschung",
+            "Johannes-Stelling-Straße 14",
+            "19053 Schwerin"
+          ],
+          "source": {
+            "title": "Regierung MV: Pressemitteilung 'Ministerpräsidentin Schwesig ernennt neues Kabinett' (16.11.2026) und Kontaktseite",
+            "url": "https://land-mv.de/aktuelles/presse/pressemitteilung/ministerpraesidentin-schwesig-ernennt-neues-kabinett",
+            "verifiedAt": "2026-11-19"
+          },
+          "note": "Neues Kabinett seit 16.11.2026 (kein Interim). Strasse aus Kontaktseite land-mv.de/kontakt (Portal noch nicht auf neue Ressortzuschnitte umgestellt), vom Vorgaenger-Ministerium uebernommen. Wirtschafts- und Wissenschaftsressort fusioniert; Sitz nicht bestaetigt (frueher Johannes-Stelling-Str. 14 bzw. Schloßstr. 6-8).",
+          "unverified": true
+        },
+        {
+          "ressorts": [
+            "landwirtschaft",
+            "verbraucherschutz"
+          ],
+          "officeName": "Ministerium für Landwirtschaft, Landesentwicklung, Forst und Verbraucherschutz",
+          "name": "Dr. Till Backhaus",
+          "title": "Minister für Landwirtschaft, Landesentwicklung, Forst und Verbraucherschutz",
+          "salutation": "Sehr geehrter Herr Minister Dr. Backhaus,",
+          "addressLines": [
+            "Minister Dr. Till Backhaus",
+            "Ministerium für Landwirtschaft, Landesentwicklung, Forst und Verbraucherschutz",
+            "Paulshöher Weg 1",
+            "19061 Schwerin"
+          ],
+          "source": {
+            "title": "Regierung MV: Pressemitteilung 'Ministerpräsidentin Schwesig ernennt neues Kabinett' (16.11.2026) und Kontaktseite",
+            "url": "https://land-mv.de/aktuelles/presse/pressemitteilung/ministerpraesidentin-schwesig-ernennt-neues-kabinett",
+            "verifiedAt": "2026-11-19"
+          },
+          "note": "Neues Kabinett seit 16.11.2026 (kein Interim). Strasse aus Kontaktseite land-mv.de/kontakt (Portal noch nicht auf neue Ressortzuschnitte umgestellt), vom Vorgaenger-Ministerium uebernommen."
+        },
+        {
+          "ressorts": [
+            "bildung",
+            "kultur",
+            "sport"
+          ],
+          "officeName": "Ministerium für Bildung, Kindertagesförderung, Kultur und Sport",
+          "name": "Stefanie Drese",
+          "title": "Ministerin für Bildung, Kindertagesförderung, Kultur und Sport",
+          "salutation": "Sehr geehrte Frau Ministerin Drese,",
+          "addressLines": [
+            "Ministerin Stefanie Drese",
+            "Ministerium für Bildung, Kindertagesförderung, Kultur und Sport",
+            "Werderstraße 124",
+            "19055 Schwerin"
+          ],
+          "source": {
+            "title": "Regierung MV: Pressemitteilung 'Ministerpräsidentin Schwesig ernennt neues Kabinett' (16.11.2026) und Kontaktseite",
+            "url": "https://land-mv.de/aktuelles/presse/pressemitteilung/ministerpraesidentin-schwesig-ernennt-neues-kabinett",
+            "verifiedAt": "2026-11-19"
+          },
+          "note": "Neues Kabinett seit 16.11.2026 (kein Interim). Strasse aus Kontaktseite land-mv.de/kontakt (Portal noch nicht auf neue Ressortzuschnitte umgestellt), vom Vorgaenger-Ministerium uebernommen. Seat des Vorgaengers (Bildung und Kindertagesfoerderung)."
+        },
+        {
+          "ressorts": [
+            "europa",
+            "digitales"
+          ],
+          "officeName": "Staatskanzlei Mecklenburg-Vorpommern",
+          "name": "Dr. Heiko Geue",
+          "title": "Minister für Bundes- und Europaangelegenheiten und Digitalisierung, Chef der Staatskanzlei",
+          "salutation": "Sehr geehrter Herr Minister Dr. Geue,",
+          "addressLines": [
+            "Minister Dr. Heiko Geue",
+            "Staatskanzlei Mecklenburg-Vorpommern",
+            "Schloßstraße 2-4",
+            "19053 Schwerin"
+          ],
+          "source": {
+            "title": "Regierung MV: Pressemitteilung 'Ministerpräsidentin Schwesig ernennt neues Kabinett' (16.11.2026) und Kontaktseite",
+            "url": "https://land-mv.de/aktuelles/presse/pressemitteilung/ministerpraesidentin-schwesig-ernennt-neues-kabinett",
+            "verifiedAt": "2026-11-19"
+          },
+          "note": "Neues Kabinett seit 16.11.2026. Chef der Staatskanzlei im Ministerrang. Adresse aus land-mv.de/impressum (Staatskanzlei)."
+        }
+      ]
+    },
+    "NI": {
+      "stateName": "Niedersachsen",
+      "ministers": [
+        {
+          "ressorts": [
+            "inneres",
+            "sport",
+            "digitales"
+          ],
+          "officeName": "Niedersächsisches Ministerium für Inneres, Sport und Digitalisierung",
+          "name": "Daniela Behrens",
+          "title": "Ministerin für Inneres, Sport und Digitalisierung",
+          "salutation": "Sehr geehrte Frau Ministerin Behrens,",
+          "addressLines": [
+            "Ministerin Daniela Behrens",
+            "Niedersächsisches Ministerium für Inneres, Sport und Digitalisierung",
+            "Lavesallee 6",
+            "30169 Hannover"
+          ],
+          "source": {
+            "title": "Niedersachsen aktuell (offizielles Landesportal): Ministerienseite",
+            "url": "https://www.niedersachsen-aktuell.de/ministerien/niedersaechsisches-ministerium-fuer-inneres-und-sport/",
+            "verifiedAt": "2026-11-19"
+          },
+          "note": "Landesportale niedersachsen.de/stk/ministerien-Seiten waren am 19.11.2026 wegen Wartung offline; Quelle ist niedersachsen-aktuell.de plus Landtagsprotokoll 20.05.2025 (Kabinett Lies). Keine Aenderung 2026 gefunden. Adresse aus Presse-Kontakt der Seite."
+        },
+        {
+          "ressorts": [
+            "finanzen"
+          ],
+          "officeName": "Niedersächsisches Finanzministerium",
+          "name": "Gerald Heere",
+          "title": "Finanzminister",
+          "salutation": "Sehr geehrter Herr Minister Heere,",
+          "addressLines": [
+            "Minister Gerald Heere",
+            "Niedersächsisches Finanzministerium",
+            "Schiffgraben 10",
+            "30159 Hannover"
+          ],
+          "source": {
+            "title": "Niedersachsen aktuell (offizielles Landesportal): Ministerienseite",
+            "url": "https://www.niedersachsen-aktuell.de/ministerien/finanzministerium/",
+            "verifiedAt": "2026-11-19"
+          },
+          "note": "Landesportale niedersachsen.de/stk/ministerien-Seiten waren am 19.11.2026 wegen Wartung offline; Quelle ist niedersachsen-aktuell.de plus Landtagsprotokoll 20.05.2025 (Kabinett Lies). Keine Aenderung 2026 gefunden."
+        },
+        {
+          "ressorts": [
+            "soziales",
+            "arbeit",
+            "gesundheit",
+            "frauen"
+          ],
+          "officeName": "Niedersächsisches Ministerium für Soziales, Arbeit, Gesundheit und Gleichstellung",
+          "name": "Dr. Andreas Philippi",
+          "title": "Minister für Soziales, Arbeit, Gesundheit und Gleichstellung",
+          "salutation": "Sehr geehrter Herr Minister Dr. Philippi,",
+          "addressLines": [
+            "Minister Dr. Andreas Philippi",
+            "Niedersächsisches Ministerium für Soziales, Arbeit, Gesundheit und Gleichstellung",
+            "Hannah-Arendt-Platz 2",
+            "30159 Hannover"
+          ],
+          "source": {
+            "title": "Niedersachsen aktuell (offizielles Landesportal): Ministerienseite",
+            "url": "https://www.niedersachsen-aktuell.de/ministerien/4398-2/",
+            "verifiedAt": "2026-11-19"
+          },
+          "note": "Landesportale niedersachsen.de/stk/ministerien-Seiten waren am 19.11.2026 wegen Wartung offline; Quelle ist niedersachsen-aktuell.de plus Landtagsprotokoll 20.05.2025 (Kabinett Lies). Keine Aenderung 2026 gefunden."
+        },
+        {
+          "ressorts": [
+            "wissenschaft",
+            "kultur"
+          ],
+          "officeName": "Niedersächsisches Ministerium für Wissenschaft und Kultur",
+          "name": "Falko Mohrs",
+          "title": "Minister für Wissenschaft und Kultur",
+          "salutation": "Sehr geehrter Herr Minister Mohrs,",
+          "addressLines": [
+            "Minister Falko Mohrs",
+            "Niedersächsisches Ministerium für Wissenschaft und Kultur",
+            "Leibnizufer 9",
+            "30169 Hannover"
+          ],
+          "source": {
+            "title": "Niedersachsen aktuell (offizielles Landesportal): Ministerienseite",
+            "url": "https://www.niedersachsen-aktuell.de/ministerien/ministerium-fuer-wissenschaft-und-kultur/",
+            "verifiedAt": "2026-11-19"
+          },
+          "note": "Landesportale niedersachsen.de/stk/ministerien-Seiten waren am 19.11.2026 wegen Wartung offline; Quelle ist niedersachsen-aktuell.de plus Landtagsprotokoll 20.05.2025 (Kabinett Lies). Keine Aenderung 2026 gefunden. Adresse aus Presse-Kontakt der Seite."
+        },
+        {
+          "ressorts": [
+            "bildung",
+            "jugend"
+          ],
+          "officeName": "Niedersächsisches Kultusministerium",
+          "name": "Julia Willie Hamburg",
+          "title": "Kultusministerin",
+          "salutation": "Sehr geehrte Frau Ministerin Hamburg,",
+          "addressLines": [
+            "Ministerin Julia Willie Hamburg",
+            "Niedersächsisches Kultusministerium",
+            "Hans-Böckler-Allee 5",
+            "30173 Hannover"
+          ],
+          "source": {
+            "title": "Niedersachsen aktuell (offizielles Landesportal): Ministerienseite",
+            "url": "https://www.niedersachsen-aktuell.de/ministerien/kultusministerium/",
+            "verifiedAt": "2026-11-19"
+          },
+          "note": "Landesportale niedersachsen.de/stk/ministerien-Seiten waren am 19.11.2026 wegen Wartung offline; Quelle ist niedersachsen-aktuell.de plus Landtagsprotokoll 20.05.2025 (Kabinett Lies). Keine Aenderung 2026 gefunden."
+        },
+        {
+          "ressorts": [
+            "landwirtschaft",
+            "verbraucherschutz"
+          ],
+          "officeName": "Niedersächsisches Ministerium für Ernährung, Landwirtschaft und Verbraucherschutz",
+          "name": "Miriam Staudte",
+          "title": "Ministerin für Ernährung, Landwirtschaft und Verbraucherschutz",
+          "salutation": "Sehr geehrte Frau Ministerin Staudte,",
+          "addressLines": [
+            "Ministerin Miriam Staudte",
+            "Niedersächsisches Ministerium für Ernährung, Landwirtschaft und Verbraucherschutz",
+            "Calenberger Straße 2",
+            "30169 Hannover"
+          ],
+          "source": {
+            "title": "Niedersachsen aktuell (offizielles Landesportal): Ministerienseite",
+            "url": "https://www.niedersachsen-aktuell.de/ministerien/ministerium-fuer-ernaehrung-landwirtschaft-und-verbraucherschutz/",
+            "verifiedAt": "2026-11-19"
+          },
+          "note": "Landesportale niedersachsen.de/stk/ministerien-Seiten waren am 19.11.2026 wegen Wartung offline; Quelle ist niedersachsen-aktuell.de plus Landtagsprotokoll 20.05.2025 (Kabinett Lies). Keine Aenderung 2026 gefunden."
+        },
+        {
+          "ressorts": [
+            "wirtschaft",
+            "verkehr",
+            "bau"
+          ],
+          "officeName": "Niedersächsisches Ministerium für Wirtschaft, Verkehr und Bauen",
+          "name": "Grant Hendrik Tonne",
+          "title": "Minister für Wirtschaft, Verkehr und Bauen",
+          "salutation": "Sehr geehrter Herr Minister Tonne,",
+          "addressLines": [
+            "Minister Grant Hendrik Tonne",
+            "Niedersächsisches Ministerium für Wirtschaft, Verkehr und Bauen",
+            "Friedrichswall 1",
+            "30159 Hannover"
+          ],
+          "source": {
+            "title": "Niedersachsen aktuell (offizielles Landesportal): Ministerienseite",
+            "url": "https://www.niedersachsen-aktuell.de/ministerien/ministerium-fuer-wirtschaft-verkehr-und-bauen/",
+            "verifiedAt": "2026-11-19"
+          },
+          "note": "Landesportale niedersachsen.de/stk/ministerien-Seiten waren am 19.11.2026 wegen Wartung offline; Quelle ist niedersachsen-aktuell.de plus Landtagsprotokoll 20.05.2025 (Kabinett Lies). Keine Aenderung 2026 gefunden. Ressortname auf Seite teils noch alt (Wirtschaft, Arbeit, Verkehr und Digitalisierung)."
+        },
+        {
+          "ressorts": [
+            "justiz"
+          ],
+          "officeName": "Niedersächsisches Justizministerium",
+          "name": "Dr. Kathrin Wahlmann",
+          "title": "Justizministerin",
+          "salutation": "Sehr geehrte Frau Ministerin Dr. Wahlmann,",
+          "addressLines": [
+            "Ministerin Dr. Kathrin Wahlmann",
+            "Niedersächsisches Justizministerium",
+            "Am Waterlooplatz 1",
+            "30169 Hannover"
+          ],
+          "source": {
+            "title": "Niedersachsen aktuell (offizielles Landesportal): Ministerienseite",
+            "url": "https://www.niedersachsen-aktuell.de/ministerien/justizministerium/",
+            "verifiedAt": "2026-11-19"
+          },
+          "note": "Landesportale niedersachsen.de/stk/ministerien-Seiten waren am 19.11.2026 wegen Wartung offline; Quelle ist niedersachsen-aktuell.de plus Landtagsprotokoll 20.05.2025 (Kabinett Lies). Keine Aenderung 2026 gefunden."
+        },
+        {
+          "ressorts": [
+            "umwelt",
+            "klima"
+          ],
+          "officeName": "Niedersächsisches Ministerium für Umwelt, Energie und Klimaschutz",
+          "name": "Christian Meyer",
+          "title": "Minister für Umwelt, Energie und Klimaschutz",
+          "salutation": "Sehr geehrter Herr Minister Meyer,",
+          "addressLines": [
+            "Minister Christian Meyer",
+            "Niedersächsisches Ministerium für Umwelt, Energie und Klimaschutz",
+            "Archivstraße 2",
+            "30169 Hannover"
+          ],
+          "source": {
+            "title": "Niedersachsen aktuell (offizielles Landesportal): Ministerienseite",
+            "url": "https://www.niedersachsen-aktuell.de/ministerien/ministerium-fuer-umwelt-energie-bauen-und-klimaschutz/",
+            "verifiedAt": "2026-11-19"
+          },
+          "note": "Landesportale niedersachsen.de/stk/ministerien-Seiten waren am 19.11.2026 wegen Wartung offline; Quelle ist niedersachsen-aktuell.de plus Landtagsprotokoll 20.05.2025 (Kabinett Lies). Keine Aenderung 2026 gefunden."
+        },
+        {
+          "ressorts": [
+            "europa"
+          ],
+          "officeName": "Niedersächsische Staatskanzlei",
+          "name": "Melanie Walter",
+          "title": "Ministerin für Europa und regionale Landesentwicklung",
+          "salutation": "Sehr geehrte Frau Ministerin Walter,",
+          "addressLines": [
+            "Ministerin Melanie Walter",
+            "Niedersächsische Staatskanzlei",
+            "Planckstraße 2",
+            "30169 Hannover"
+          ],
+          "source": {
+            "title": "Niedersachsen aktuell (offizielles Landesportal): Ministerienseite",
+            "url": "https://www.niedersachsen-aktuell.de/ministerien/staatskanzlei/",
+            "verifiedAt": "2026-11-19"
+          },
+          "note": "Landesportale niedersachsen.de/stk/ministerien-Seiten waren am 19.11.2026 wegen Wartung offline; Quelle ist niedersachsen-aktuell.de plus Landtagsprotokoll 20.05.2025 (Kabinett Lies). Keine Aenderung 2026 gefunden. Kein eigenes Ministerium, sitzt in der Staatskanzlei."
+        }
+      ]
+    },
+    "NW": {
+      "stateName": "Nordrhein-Westfalen",
+      "ministers": [
+        {
+          "ressorts": [
+            "wirtschaft",
+            "klima"
+          ],
+          "officeName": "Ministerium für Wirtschaft, Industrie, Klimaschutz und Energie",
+          "name": "Mona Neubaur",
+          "title": "Ministerin für Wirtschaft, Industrie, Klimaschutz und Energie, stellv. Ministerpräsidentin",
+          "salutation": "Sehr geehrte Frau Ministerin Neubaur,",
+          "addressLines": [
+            "Ministerin Mona Neubaur",
+            "Ministerium für Wirtschaft, Industrie, Klimaschutz und Energie",
+            "Berger Allee 25",
+            "40213 Düsseldorf"
+          ],
+          "source": {
+            "title": "Land NRW: Ministerien und Vertretungen / Landeskabinett",
+            "url": "https://www.land.nrw/ministerien-und-vertretungen",
+            "verifiedAt": "2026-11-19"
+          },
+          "note": "Kabinett laut land.nrw/landeskabinett; Adresse laut land.nrw/ministerien-und-vertretungen. Letzte Aenderung: Schaeffer seit 27.01.2026."
+        },
+        {
+          "ressorts": [
+            "finanzen"
+          ],
+          "officeName": "Ministerium der Finanzen",
+          "name": "Dr. Marcus Optendrenk",
+          "title": "Minister der Finanzen",
+          "salutation": "Sehr geehrter Herr Minister Dr. Optendrenk,",
+          "addressLines": [
+            "Minister Dr. Marcus Optendrenk",
+            "Ministerium der Finanzen",
+            "Jägerhofstraße 6",
+            "40479 Düsseldorf"
+          ],
+          "source": {
+            "title": "Land NRW: Ministerien und Vertretungen / Landeskabinett",
+            "url": "https://www.land.nrw/ministerien-und-vertretungen",
+            "verifiedAt": "2026-11-19"
+          },
+          "note": "Kabinett laut land.nrw/landeskabinett; Adresse laut land.nrw/ministerien-und-vertretungen. Letzte Aenderung: Schaeffer seit 27.01.2026."
+        },
+        {
+          "ressorts": [
+            "inneres"
+          ],
+          "officeName": "Ministerium des Innern",
+          "name": "Herbert Reul",
+          "title": "Minister des Innern",
+          "salutation": "Sehr geehrter Herr Minister Reul,",
+          "addressLines": [
+            "Minister Herbert Reul",
+            "Ministerium des Innern",
+            "Friedrichstraße 62-80",
+            "40217 Düsseldorf"
+          ],
+          "source": {
+            "title": "Land NRW: Ministerien und Vertretungen / Landeskabinett",
+            "url": "https://www.land.nrw/ministerien-und-vertretungen",
+            "verifiedAt": "2026-11-19"
+          },
+          "note": "Kabinett laut land.nrw/landeskabinett; Adresse laut land.nrw/ministerien-und-vertretungen. Letzte Aenderung: Schaeffer seit 27.01.2026."
+        },
+        {
+          "ressorts": [
+            "jugend",
+            "frauen"
+          ],
+          "officeName": "Ministerium für Kinder, Jugend, Familie, Gleichstellung, Flucht und Integration",
+          "name": "Verena Schäffer",
+          "title": "Ministerin für Kinder, Jugend, Familie, Gleichstellung, Flucht und Integration",
+          "salutation": "Sehr geehrte Frau Ministerin Schäffer,",
+          "addressLines": [
+            "Ministerin Verena Schäffer",
+            "Ministerium für Kinder, Jugend, Familie, Gleichstellung, Flucht und Integration",
+            "Völklinger Straße 4",
+            "40219 Düsseldorf"
+          ],
+          "source": {
+            "title": "Land NRW: Ministerien und Vertretungen / Landeskabinett",
+            "url": "https://www.land.nrw/ministerien-und-vertretungen",
+            "verifiedAt": "2026-11-19"
+          },
+          "note": "Kabinett laut land.nrw/landeskabinett; Adresse laut land.nrw/ministerien-und-vertretungen. Letzte Aenderung: Schaeffer seit 27.01.2026."
+        },
+        {
+          "ressorts": [
+            "arbeit",
+            "gesundheit",
+            "soziales"
+          ],
+          "officeName": "Ministerium für Arbeit, Gesundheit und Soziales",
+          "name": "Karl-Josef Laumann",
+          "title": "Minister für Arbeit, Gesundheit und Soziales",
+          "salutation": "Sehr geehrter Herr Minister Laumann,",
+          "addressLines": [
+            "Minister Karl-Josef Laumann",
+            "Ministerium für Arbeit, Gesundheit und Soziales",
+            "Fürstenwall 25",
+            "40219 Düsseldorf"
+          ],
+          "source": {
+            "title": "Land NRW: Ministerien und Vertretungen / Landeskabinett",
+            "url": "https://www.land.nrw/ministerien-und-vertretungen",
+            "verifiedAt": "2026-11-19"
+          },
+          "note": "Kabinett laut land.nrw/landeskabinett; Adresse laut land.nrw/ministerien-und-vertretungen. Letzte Aenderung: Schaeffer seit 27.01.2026."
+        },
+        {
+          "ressorts": [
+            "bildung"
+          ],
+          "officeName": "Ministerium für Schule und Bildung",
+          "name": "Dorothee Feller",
+          "title": "Ministerin für Schule und Bildung",
+          "salutation": "Sehr geehrte Frau Ministerin Feller,",
+          "addressLines": [
+            "Ministerin Dorothee Feller",
+            "Ministerium für Schule und Bildung",
+            "Völklinger Straße 49",
+            "40221 Düsseldorf"
+          ],
+          "source": {
+            "title": "Land NRW: Ministerien und Vertretungen / Landeskabinett",
+            "url": "https://www.land.nrw/ministerien-und-vertretungen",
+            "verifiedAt": "2026-11-19"
+          },
+          "note": "Kabinett laut land.nrw/landeskabinett; Adresse laut land.nrw/ministerien-und-vertretungen. Letzte Aenderung: Schaeffer seit 27.01.2026."
+        },
+        {
+          "ressorts": [
+            "bau",
+            "digitales"
+          ],
+          "officeName": "Ministerium für Heimat, Kommunales, Bau und Digitalisierung",
+          "name": "Ina Scharrenbach",
+          "title": "Ministerin für Heimat, Kommunales, Bau und Digitalisierung",
+          "salutation": "Sehr geehrte Frau Ministerin Scharrenbach,",
+          "addressLines": [
+            "Ministerin Ina Scharrenbach",
+            "Ministerium für Heimat, Kommunales, Bau und Digitalisierung",
+            "Hubertusstraße 9",
+            "40219 Düsseldorf"
+          ],
+          "source": {
+            "title": "Land NRW: Ministerien und Vertretungen / Landeskabinett",
+            "url": "https://www.land.nrw/ministerien-und-vertretungen",
+            "verifiedAt": "2026-11-19"
+          },
+          "note": "Kabinett laut land.nrw/landeskabinett; Adresse laut land.nrw/ministerien-und-vertretungen. Letzte Aenderung: Schaeffer seit 27.01.2026."
+        },
+        {
+          "ressorts": [
+            "justiz"
+          ],
+          "officeName": "Ministerium der Justiz",
+          "name": "Dr. Benjamin Limbach",
+          "title": "Minister der Justiz",
+          "salutation": "Sehr geehrter Herr Minister Dr. Limbach,",
+          "addressLines": [
+            "Minister Dr. Benjamin Limbach",
+            "Ministerium der Justiz",
+            "Martin-Luther-Platz 40",
+            "40212 Düsseldorf"
+          ],
+          "source": {
+            "title": "Land NRW: Ministerien und Vertretungen / Landeskabinett",
+            "url": "https://www.land.nrw/ministerien-und-vertretungen",
+            "verifiedAt": "2026-11-19"
+          },
+          "note": "Kabinett laut land.nrw/landeskabinett; Adresse laut land.nrw/ministerien-und-vertretungen. Letzte Aenderung: Schaeffer seit 27.01.2026."
+        },
+        {
+          "ressorts": [
+            "umwelt",
+            "verkehr"
+          ],
+          "officeName": "Ministerium für Umwelt, Naturschutz und Verkehr",
+          "name": "Oliver Krischer",
+          "title": "Minister für Umwelt, Naturschutz und Verkehr",
+          "salutation": "Sehr geehrter Herr Minister Krischer,",
+          "addressLines": [
+            "Minister Oliver Krischer",
+            "Ministerium für Umwelt, Naturschutz und Verkehr",
+            "Emilie-Preyer-Platz 1",
+            "40479 Düsseldorf"
+          ],
+          "source": {
+            "title": "Land NRW: Ministerien und Vertretungen / Landeskabinett",
+            "url": "https://www.land.nrw/ministerien-und-vertretungen",
+            "verifiedAt": "2026-11-19"
+          },
+          "note": "Kabinett laut land.nrw/landeskabinett; Adresse laut land.nrw/ministerien-und-vertretungen. Letzte Aenderung: Schaeffer seit 27.01.2026."
+        },
+        {
+          "ressorts": [
+            "landwirtschaft",
+            "verbraucherschutz"
+          ],
+          "officeName": "Ministerium für Landwirtschaft und Verbraucherschutz",
+          "name": "Silke Gorißen",
+          "title": "Ministerin für Landwirtschaft und Verbraucherschutz",
+          "salutation": "Sehr geehrte Frau Ministerin Gorißen,",
+          "addressLines": [
+            "Ministerin Silke Gorißen",
+            "Ministerium für Landwirtschaft und Verbraucherschutz",
+            "Stadttor 1",
+            "40219 Düsseldorf"
+          ],
+          "source": {
+            "title": "Land NRW: Ministerien und Vertretungen / Landeskabinett",
+            "url": "https://www.land.nrw/ministerien-und-vertretungen",
+            "verifiedAt": "2026-11-19"
+          },
+          "note": "Kabinett laut land.nrw/landeskabinett; Adresse laut land.nrw/ministerien-und-vertretungen. Letzte Aenderung: Schaeffer seit 27.01.2026."
+        },
+        {
+          "ressorts": [
+            "kultur",
+            "wissenschaft"
+          ],
+          "officeName": "Ministerium für Kultur und Wissenschaft",
+          "name": "Ina Brandes",
+          "title": "Ministerin für Kultur und Wissenschaft",
+          "salutation": "Sehr geehrte Frau Ministerin Brandes,",
+          "addressLines": [
+            "Ministerin Ina Brandes",
+            "Ministerium für Kultur und Wissenschaft",
+            "Völklinger Straße 49",
+            "40221 Düsseldorf"
+          ],
+          "source": {
+            "title": "Land NRW: Ministerien und Vertretungen / Landeskabinett",
+            "url": "https://www.land.nrw/ministerien-und-vertretungen",
+            "verifiedAt": "2026-11-19"
+          },
+          "note": "Kabinett laut land.nrw/landeskabinett; Adresse laut land.nrw/ministerien-und-vertretungen. Letzte Aenderung: Schaeffer seit 27.01.2026."
+        },
+        {
+          "ressorts": [
+            "europa"
+          ],
+          "officeName": "Staatskanzlei des Landes Nordrhein-Westfalen",
+          "name": "Nathanael Liminski",
+          "title": "Minister für Bundes- und Europaangelegenheiten, Internationales sowie Medien, Chef der Staatskanzlei",
+          "salutation": "Sehr geehrter Herr Minister Liminski,",
+          "addressLines": [
+            "Minister Nathanael Liminski",
+            "Staatskanzlei des Landes Nordrhein-Westfalen",
+            "Horionplatz 1",
+            "40213 Düsseldorf"
+          ],
+          "source": {
+            "title": "Land NRW: Ministerien und Vertretungen / Landeskabinett",
+            "url": "https://www.land.nrw/ministerien-und-vertretungen",
+            "verifiedAt": "2026-11-19"
+          },
+          "note": "Kabinett laut land.nrw/landeskabinett; Adresse laut land.nrw/ministerien-und-vertretungen. Letzte Aenderung: Schaeffer seit 27.01.2026."
+        }
+      ]
+    },
+    "RP": {
+      "stateName": "Rheinland-Pfalz",
+      "ministers": [
+        {
+          "ressorts": [
+            "bildung"
+          ],
+          "officeName": "Ministerium für Bildung Rheinland-Pfalz",
+          "name": "Dr. Ute Eiling-Hütig",
+          "title": "Ministerin für Bildung",
+          "salutation": "Sehr geehrte Frau Ministerin Dr. Eiling-Hütig,",
+          "addressLines": [
+            "Ministerin Dr. Ute Eiling-Hütig",
+            "Ministerium für Bildung Rheinland-Pfalz",
+            "Mittlere Bleiche 61",
+            "55116 Mainz"
+          ],
+          "source": {
+            "title": "Impressum / Kontakt Ministerium für Bildung Rheinland-Pfalz",
+            "url": "https://bm.rlp.de/ueber-uns/impressum",
+            "verifiedAt": "2026-11-19"
+          }
+        },
+        {
+          "ressorts": [
+            "wissenschaft",
+            "gesundheit"
+          ],
+          "officeName": "Ministerium für Wissenschaft, Weiterbildung und Gesundheit Rheinland-Pfalz",
+          "name": "Clemens Hoch",
+          "title": "Minister für Wissenschaft, Weiterbildung und Gesundheit",
+          "salutation": "Sehr geehrter Herr Minister Hoch,",
+          "addressLines": [
+            "Minister Clemens Hoch",
+            "Ministerium für Wissenschaft, Weiterbildung und Gesundheit Rheinland-Pfalz",
+            "Mittlere Bleiche 61",
+            "55116 Mainz"
+          ],
+          "source": {
+            "title": "Impressum / Kontakt Ministerium für Wissenschaft, Weiterbildung und Gesundheit Rheinland-Pfalz",
+            "url": "https://mwg.rlp.de/ueber-uns/impressum",
+            "verifiedAt": "2026-11-19"
+          }
+        },
+        {
+          "ressorts": [
+            "inneres",
+            "verkehr"
+          ],
+          "officeName": "Ministerium des Innern, für Integration und Verkehr Rheinland-Pfalz",
+          "name": "Achim Schwickert",
+          "title": "Minister des Innern, für Integration und Verkehr",
+          "salutation": "Sehr geehrter Herr Minister Schwickert,",
+          "addressLines": [
+            "Minister Achim Schwickert",
+            "Ministerium des Innern, für Integration und Verkehr Rheinland-Pfalz",
+            "Schillerplatz 3-5",
+            "55116 Mainz"
+          ],
+          "source": {
+            "title": "Impressum / Kontakt Ministerium des Innern, für Integration und Verkehr Rheinland-Pfalz",
+            "url": "https://mdi.rlp.de/ueber-uns/impressum",
+            "verifiedAt": "2026-11-19"
+          }
+        },
+        {
+          "ressorts": [
+            "finanzen"
+          ],
+          "officeName": "Ministerium der Finanzen Rheinland-Pfalz",
+          "name": "Doris Ahnen",
+          "title": "Ministerin der Finanzen",
+          "salutation": "Sehr geehrte Frau Ministerin Ahnen,",
+          "addressLines": [
+            "Ministerin Doris Ahnen",
+            "Ministerium der Finanzen Rheinland-Pfalz",
+            "Kaiser-Friedrich-Str. 5",
+            "55116 Mainz"
+          ],
+          "source": {
+            "title": "Impressum / Kontakt Ministerium der Finanzen Rheinland-Pfalz",
+            "url": "https://fm.rlp.de/impressum",
+            "verifiedAt": "2026-11-19"
+          }
+        },
+        {
+          "ressorts": [
+            "justiz",
+            "verbraucherschutz"
+          ],
+          "officeName": "Ministerium der Justiz und für Verbraucherschutz Rheinland-Pfalz",
+          "name": "Dr. Helmut Martin",
+          "title": "Staatsminister der Justiz und für Verbraucherschutz",
+          "salutation": "Sehr geehrter Herr Staatsminister Dr. Martin,",
+          "addressLines": [
+            "Staatsminister Dr. Helmut Martin",
+            "Ministerium der Justiz und für Verbraucherschutz Rheinland-Pfalz",
+            "Ernst-Ludwig-Str. 3",
+            "55116 Mainz"
+          ],
+          "source": {
+            "title": "Impressum / Kontakt Ministerium der Justiz und für Verbraucherschutz Rheinland-Pfalz",
+            "url": "https://mjv.rlp.de/ueber-uns/impressum",
+            "verifiedAt": "2026-11-19"
+          }
+        },
+        {
+          "ressorts": [
+            "landwirtschaft",
+            "umwelt"
+          ],
+          "officeName": "Ministerium für Landwirtschaft, Weinbau, Umwelt und Forsten Rheinland-Pfalz",
+          "name": "Christine Schneider",
+          "title": "Ministerin für Landwirtschaft, Weinbau, Umwelt und Forsten",
+          "salutation": "Sehr geehrte Frau Ministerin Schneider,",
+          "addressLines": [
+            "Ministerin Christine Schneider",
+            "Ministerium für Landwirtschaft, Weinbau, Umwelt und Forsten Rheinland-Pfalz",
+            "Kaiser-Friedrich-Straße 1",
+            "55116 Mainz"
+          ],
+          "source": {
+            "title": "Impressum / Kontakt Ministerium für Landwirtschaft, Weinbau, Umwelt und Forsten Rheinland-Pfalz",
+            "url": "https://mlwuf.rlp.de/ueber-das-ministerium/impressum",
+            "verifiedAt": "2026-11-19"
+          }
+        },
+        {
+          "ressorts": [
+            "bau",
+            "kultur"
+          ],
+          "officeName": "Ministerium für Kommunen, Bauen, Wohnen und Kultur Rheinland-Pfalz",
+          "name": "Sven Teuber",
+          "title": "Minister für Kommunen, Bauen, Wohnen und Kultur",
+          "salutation": "Sehr geehrter Herr Minister Teuber,",
+          "addressLines": [
+            "Minister Sven Teuber",
+            "Ministerium für Kommunen, Bauen, Wohnen und Kultur Rheinland-Pfalz",
+            "Kaiser-Friedrich-Straße 5a",
+            "55116 Mainz"
+          ],
+          "source": {
+            "title": "Impressum / Kontakt Ministerium für Kommunen, Bauen, Wohnen und Kultur Rheinland-Pfalz",
+            "url": "https://mkbwk.rlp.de/ueber-uns/impressum",
+            "verifiedAt": "2026-11-19"
+          }
+        },
+        {
+          "ressorts": [
+            "wirtschaft",
+            "klima"
+          ],
+          "officeName": "Ministerium für Wirtschaft, Tourismus, Energie und Klima Rheinland-Pfalz",
+          "name": "Michael Ebling",
+          "title": "Minister für Wirtschaft, Tourismus, Energie und Klima",
+          "salutation": "Sehr geehrter Herr Minister Ebling,",
+          "addressLines": [
+            "Minister Michael Ebling",
+            "Ministerium für Wirtschaft, Tourismus, Energie und Klima Rheinland-Pfalz",
+            "Stiftsstraße 9",
+            "55116 Mainz"
+          ],
+          "source": {
+            "title": "Impressum / Kontakt Ministerium für Wirtschaft, Tourismus, Energie und Klima Rheinland-Pfalz",
+            "url": "https://mwtek.rlp.de/ueber-uns/impressum",
+            "verifiedAt": "2026-11-19"
+          }
+        },
+        {
+          "ressorts": [
+            "soziales",
+            "arbeit",
+            "frauen",
+            "jugend"
+          ],
+          "officeName": "Ministerium für Arbeit, Soziales, Frauen, Familie und Jugend Rheinland-Pfalz",
+          "name": "Sabine Bätzing-Lichtenthäler",
+          "title": "Ministerin für Arbeit, Soziales, Frauen, Familie und Jugend",
+          "salutation": "Sehr geehrte Frau Ministerin Bätzing-Lichtenthäler,",
+          "addressLines": [
+            "Ministerin Sabine Bätzing-Lichtenthäler",
+            "Ministerium für Arbeit, Soziales, Frauen, Familie und Jugend Rheinland-Pfalz",
+            "Bauhofstraße 9",
+            "55116 Mainz"
+          ],
+          "source": {
+            "title": "Impressum / Kontakt Ministerium für Arbeit, Soziales, Frauen, Familie und Jugend Rheinland-Pfalz",
+            "url": "https://masffj.rlp.de/ueber-uns/impressum",
+            "verifiedAt": "2026-11-19"
+          }
+        },
+        {
+          "ressorts": [
+            "europa",
+            "sport"
+          ],
+          "officeName": "Staatskanzlei Rheinland-Pfalz",
+          "name": "Marcus Klein",
+          "title": "Minister für Bundes- und Europaangelegenheiten, Sport, Ehrenamt und Medien und Chef der Staatskanzlei",
+          "salutation": "Sehr geehrter Herr Minister Klein,",
+          "addressLines": [
+            "Minister Marcus Klein",
+            "Staatskanzlei Rheinland-Pfalz",
+            "Peter-Altmeier-Allee 1",
+            "55116 Mainz"
+          ],
+          "source": {
+            "title": "Impressum rlp.de (Anschrift Staatskanzlei); Ressort und Name: rlp.de Ministerrat und Chef der Staatskanzlei",
+            "url": "https://www.rlp.de/ueber-uns/impressum",
+            "verifiedAt": "2026-11-19"
+          },
+          "note": "Ministerpraesident Gordon Schnieder (CDU) leitet kein eigenes Ressort und ist nicht aufgenommen. Klein ist Fachminister (Bundes-/Europaangelegenheiten, Sport, Ehrenamt, Medien) und Chef der Staatskanzlei."
+        }
+      ]
+    },
+    "SH": {
+      "stateName": "Schleswig-Holstein",
+      "note": "Ministerpräsident Daniel Günther leitet die Staatskanzlei ohne eigenes Fachressort, daher nicht aufgeführt.",
+      "ministers": [
+        {
+          "ressorts": [
+            "justiz",
+            "gesundheit"
+          ],
+          "officeName": "Ministerium für Justiz und Gesundheit des Landes Schleswig-Holstein",
+          "name": "Prof. Dr. Kerstin von der Decken",
+          "title": "Ministerin für Justiz und Gesundheit",
+          "salutation": "Sehr geehrte Frau Ministerin Prof. Dr. von der Decken,",
+          "addressLines": [
+            "Ministerin Prof. Dr. Kerstin von der Decken",
+            "Ministerium für Justiz und Gesundheit des Landes Schleswig-Holstein",
+            "Lorentzendamm 35",
+            "24103 Kiel"
+          ],
+          "source": {
+            "title": "Schleswig-Holstein.de: Landesregierung und Ministerium-Kontakt (II)",
+            "url": "https://www.schleswig-holstein.de/DE/landesregierung/ministerien-behoerden/II/ii_node",
+            "verifiedAt": "2026-11-19"
+          }
+        },
+        {
+          "ressorts": [
+            "bildung",
+            "wissenschaft",
+            "kultur"
+          ],
+          "officeName": "Ministerium für Allgemeine und Berufliche Bildung, Wissenschaft, Forschung und Kultur des Landes Schleswig-Holstein",
+          "name": "Dr. Dorit Stenke",
+          "title": "Ministerin für Allgemeine und Berufliche Bildung, Wissenschaft, Forschung und Kultur",
+          "salutation": "Sehr geehrte Frau Ministerin Dr. Stenke,",
+          "addressLines": [
+            "Ministerin Dr. Dorit Stenke",
+            "Ministerium für Allgemeine und Berufliche Bildung, Wissenschaft, Forschung und Kultur des Landes Schleswig-Holstein",
+            "Brunswiker Straße 16-22",
+            "24105 Kiel"
+          ],
+          "source": {
+            "title": "Schleswig-Holstein.de: Landesregierung und Ministerium-Kontakt (III)",
+            "url": "https://www.schleswig-holstein.de/DE/landesregierung/ministerien-behoerden/III/iii_node",
+            "verifiedAt": "2026-11-19"
+          }
+        },
+        {
+          "ressorts": [
+            "inneres",
+            "bau",
+            "sport"
+          ],
+          "officeName": "Ministerium für Inneres, Kommunales, Wohnen und Sport des Landes Schleswig-Holstein",
+          "name": "Magdalena Finke",
+          "title": "Ministerin für Inneres, Kommunales, Wohnen und Sport",
+          "salutation": "Sehr geehrte Frau Ministerin Finke,",
+          "addressLines": [
+            "Ministerin Magdalena Finke",
+            "Ministerium für Inneres, Kommunales, Wohnen und Sport des Landes Schleswig-Holstein",
+            "Düsternbrooker Weg 92",
+            "24105 Kiel"
+          ],
+          "source": {
+            "title": "Schleswig-Holstein.de: Landesregierung und Ministerium-Kontakt (IV)",
+            "url": "https://www.schleswig-holstein.de/DE/landesregierung/ministerien-behoerden/IV/iv_node",
+            "verifiedAt": "2026-11-19"
+          }
+        },
+        {
+          "ressorts": [
+            "umwelt",
+            "klima"
+          ],
+          "officeName": "Ministerium für Energiewende, Klimaschutz, Umwelt und Natur des Landes Schleswig-Holstein",
+          "name": "Tobias Goldschmidt",
+          "title": "Minister für Energiewende, Klimaschutz, Umwelt und Natur",
+          "salutation": "Sehr geehrter Herr Minister Goldschmidt,",
+          "addressLines": [
+            "Minister Tobias Goldschmidt",
+            "Ministerium für Energiewende, Klimaschutz, Umwelt und Natur des Landes Schleswig-Holstein",
+            "Mercatorstraße 3",
+            "24106 Kiel"
+          ],
+          "source": {
+            "title": "Schleswig-Holstein.de: Landesregierung und Ministerium-Kontakt (V)",
+            "url": "https://www.schleswig-holstein.de/DE/landesregierung/ministerien-behoerden/V/v_node",
+            "verifiedAt": "2026-11-19"
+          }
+        },
+        {
+          "ressorts": [
+            "finanzen"
+          ],
+          "officeName": "Finanzministerium des Landes Schleswig-Holstein",
+          "name": "Dr. Silke Schneider",
+          "title": "Finanzministerin",
+          "salutation": "Sehr geehrte Frau Ministerin Dr. Schneider,",
+          "addressLines": [
+            "Ministerin Dr. Silke Schneider",
+            "Finanzministerium des Landes Schleswig-Holstein",
+            "Düsternbrooker Weg 64",
+            "24105 Kiel"
+          ],
+          "source": {
+            "title": "Schleswig-Holstein.de: Landesregierung und Ministerium-Kontakt (VI)",
+            "url": "https://www.schleswig-holstein.de/DE/landesregierung/ministerien-behoerden/VI/vi_node",
+            "verifiedAt": "2026-11-19"
+          }
+        },
+        {
+          "ressorts": [
+            "wirtschaft",
+            "verkehr",
+            "arbeit"
+          ],
+          "officeName": "Ministerium für Wirtschaft, Verkehr, Arbeit, Technologie und Tourismus des Landes Schleswig-Holstein",
+          "name": "Claus Ruhe Madsen",
+          "title": "Minister für Wirtschaft, Verkehr, Arbeit, Technologie und Tourismus",
+          "salutation": "Sehr geehrter Herr Minister Madsen,",
+          "addressLines": [
+            "Minister Claus Ruhe Madsen",
+            "Ministerium für Wirtschaft, Verkehr, Arbeit, Technologie und Tourismus des Landes Schleswig-Holstein",
+            "Düsternbrooker Weg 94",
+            "24105 Kiel"
+          ],
+          "source": {
+            "title": "Schleswig-Holstein.de: Landesregierung und Ministerium-Kontakt (VII)",
+            "url": "https://www.schleswig-holstein.de/DE/landesregierung/ministerien-behoerden/VII/vii_node",
+            "verifiedAt": "2026-11-19"
+          }
+        },
+        {
+          "ressorts": [
+            "soziales",
+            "jugend",
+            "frauen"
+          ],
+          "officeName": "Ministerium für Soziales, Jugend, Familie, Senioren, Integration und Gleichstellung des Landes Schleswig-Holstein",
+          "name": "Aminata Touré",
+          "title": "Ministerin für Soziales, Jugend, Familie, Senioren, Integration und Gleichstellung",
+          "salutation": "Sehr geehrte Frau Ministerin Touré,",
+          "addressLines": [
+            "Ministerin Aminata Touré",
+            "Ministerium für Soziales, Jugend, Familie, Senioren, Integration und Gleichstellung des Landes Schleswig-Holstein",
+            "Adolf-Westphal-Str. 4",
+            "24143 Kiel"
+          ],
+          "source": {
+            "title": "Schleswig-Holstein.de: Landesregierung und Ministerium-Kontakt (VIII)",
+            "url": "https://www.schleswig-holstein.de/DE/landesregierung/ministerien-behoerden/VIII/viii_node",
+            "verifiedAt": "2026-11-19"
+          }
+        },
+        {
+          "ressorts": [
+            "landwirtschaft",
+            "europa",
+            "verbraucherschutz"
+          ],
+          "officeName": "Ministerium für Landwirtschaft, ländliche Räume, Europa und Verbraucherschutz des Landes Schleswig-Holstein",
+          "name": "Cornelia Schmachtenberg",
+          "title": "Ministerin für Landwirtschaft, ländliche Räume, Europa und Verbraucherschutz",
+          "salutation": "Sehr geehrte Frau Ministerin Schmachtenberg,",
+          "addressLines": [
+            "Ministerin Cornelia Schmachtenberg",
+            "Ministerium für Landwirtschaft, ländliche Räume, Europa und Verbraucherschutz des Landes Schleswig-Holstein",
+            "Fleethörn 29-31",
+            "24103 Kiel"
+          ],
+          "source": {
+            "title": "Schleswig-Holstein.de: Landesregierung und Ministerium-Kontakt (IX)",
+            "url": "https://www.schleswig-holstein.de/DE/landesregierung/ministerien-behoerden/IX",
+            "verifiedAt": "2026-11-19"
+          }
+        }
+      ]
+    },
+    "SL": {
+      "stateName": "Saarland",
+      "ministers": [
+        {
+          "ressorts": [
+            "bildung",
+            "kultur"
+          ],
+          "officeName": "Ministerium für Bildung und Kultur des Saarlandes",
+          "name": "Christine Streichert-Clivot",
+          "title": "Ministerin für Bildung und Kultur",
+          "salutation": "Sehr geehrte Frau Ministerin Streichert-Clivot,",
+          "addressLines": [
+            "Ministerin Christine Streichert-Clivot",
+            "Ministerium für Bildung und Kultur des Saarlandes",
+            "Trierer Straße 33",
+            "66111 Saarbrücken"
+          ],
+          "source": {
+            "title": "Impressum Ministerium für Bildung und Kultur (saarland.de)",
+            "url": "https://www.saarland.de/mbk/DE/services/impressum/impressum",
+            "verifiedAt": "2026-11-19"
+          },
+          "note": "Saarland.de blockiert automatisierte Abrufe (Bot-Schutz, HTTP 403); Name und Anschrift stammen aus Suchmaschinen-Auszuegen der offiziellen saarland.de-Impressumsseiten, nicht aus direktem Seitenabruf."
+        },
+        {
+          "ressorts": [
+            "finanzen",
+            "wissenschaft"
+          ],
+          "officeName": "Ministerium der Finanzen und für Wissenschaft des Saarlandes",
+          "name": "Jakob von Weizsäcker",
+          "title": "Minister der Finanzen und für Wissenschaft",
+          "salutation": "Sehr geehrter Herr Minister von Weizsäcker,",
+          "addressLines": [
+            "Minister Jakob von Weizsäcker",
+            "Ministerium der Finanzen und für Wissenschaft des Saarlandes",
+            "Mecklenburgring 23",
+            "66121 Saarbrücken"
+          ],
+          "source": {
+            "title": "Impressum Ministerium der Finanzen und für Wissenschaft (saarland.de)",
+            "url": "https://www.saarland.de/mfw/DE/services/impressum/impressum_node.html",
+            "verifiedAt": "2026-11-19"
+          },
+          "note": "Saarland.de blockiert automatisierte Abrufe (Bot-Schutz, HTTP 403); Name und Anschrift stammen aus Suchmaschinen-Auszuegen der offiziellen saarland.de-Impressumsseiten, nicht aus direktem Seitenabruf. Anschrift unsicher: Impressum-Auszug nennt Mecklenburgring 23; ein Drittverzeichnis nennt Am Stadtgraben 6-8, 66111 Saarbruecken.",
+          "unverified": true
+        },
+        {
+          "ressorts": [
+            "inneres",
+            "bau",
+            "sport"
+          ],
+          "officeName": "Ministerium für Inneres, Bauen und Sport des Saarlandes",
+          "name": "Reinhold Jost",
+          "title": "Minister für Inneres, Bauen und Sport",
+          "salutation": "Sehr geehrter Herr Minister Jost,",
+          "addressLines": [
+            "Minister Reinhold Jost",
+            "Ministerium für Inneres, Bauen und Sport des Saarlandes",
+            "Mainzer Straße 34",
+            "66111 Saarbrücken"
+          ],
+          "source": {
+            "title": "Impressum Ministerium für Inneres, Bauen und Sport (saarland.de)",
+            "url": "https://www.saarland.de/mibs/DE/services/impressum/impressum",
+            "verifiedAt": "2026-11-19"
+          },
+          "note": "Saarland.de blockiert automatisierte Abrufe (Bot-Schutz, HTTP 403); Name und Anschrift stammen aus Suchmaschinen-Auszuegen der offiziellen saarland.de-Impressumsseiten, nicht aus direktem Seitenabruf. Polizeiportal-Impressum nennt abweichend Franz-Josef-Röder-Straße 17, 66119 Saarbruecken."
+        },
+        {
+          "ressorts": [
+            "arbeit",
+            "soziales",
+            "frauen",
+            "gesundheit"
+          ],
+          "officeName": "Ministerium für Arbeit, Soziales, Frauen und Gesundheit des Saarlandes",
+          "name": "Dr. Magnus Jung",
+          "title": "Minister für Arbeit, Soziales, Frauen und Gesundheit",
+          "salutation": "Sehr geehrter Herr Minister Dr. Jung,",
+          "addressLines": [
+            "Minister Dr. Magnus Jung",
+            "Ministerium für Arbeit, Soziales, Frauen und Gesundheit des Saarlandes",
+            "Mainzer Straße 34",
+            "66111 Saarbrücken"
+          ],
+          "source": {
+            "title": "Impressum Ministerium für Arbeit, Soziales, Frauen und Gesundheit (saarland.de)",
+            "url": "https://www.saarland.de/masfg/DE/services/impressum/impressum_node.html",
+            "verifiedAt": "2026-11-19"
+          },
+          "note": "Saarland.de blockiert automatisierte Abrufe (Bot-Schutz, HTTP 403); Name und Anschrift stammen aus Suchmaschinen-Auszuegen der offiziellen saarland.de-Impressumsseiten, nicht aus direktem Seitenabruf."
+        },
+        {
+          "ressorts": [
+            "wirtschaft",
+            "digitales"
+          ],
+          "officeName": "Ministerium für Wirtschaft, Innovation, Digitales und Energie des Saarlandes",
+          "name": "Jürgen Barke",
+          "title": "Minister für Wirtschaft, Innovation, Digitales und Energie",
+          "salutation": "Sehr geehrter Herr Minister Barke,",
+          "addressLines": [
+            "Minister Jürgen Barke",
+            "Ministerium für Wirtschaft, Innovation, Digitales und Energie des Saarlandes",
+            "Franz-Josef-Röder-Straße 17",
+            "66119 Saarbrücken"
+          ],
+          "source": {
+            "title": "Impressum Ministerium für Wirtschaft, Innovation, Digitales und Energie (saarland.de)",
+            "url": "https://www.saarland.de/mwide/DE/services/impressum/impressum",
+            "verifiedAt": "2026-11-19"
+          },
+          "note": "Saarland.de blockiert automatisierte Abrufe (Bot-Schutz, HTTP 403); Name und Anschrift stammen aus Suchmaschinen-Auszuegen der offiziellen saarland.de-Impressumsseiten, nicht aus direktem Seitenabruf."
+        },
+        {
+          "ressorts": [
+            "umwelt",
+            "klima",
+            "verkehr",
+            "landwirtschaft",
+            "verbraucherschutz"
+          ],
+          "officeName": "Ministerium für Umwelt, Klima, Mobilität, Agrar und Verbraucherschutz des Saarlandes",
+          "name": "Petra Berg",
+          "title": "Ministerin für Umwelt, Klima, Mobilität, Agrar und Verbraucherschutz",
+          "salutation": "Sehr geehrte Frau Ministerin Berg,",
+          "addressLines": [
+            "Ministerin Petra Berg",
+            "Ministerium für Umwelt, Klima, Mobilität, Agrar und Verbraucherschutz des Saarlandes",
+            "Keplerstraße 18",
+            "66117 Saarbrücken"
+          ],
+          "source": {
+            "title": "Ministerium für Umwelt, Klima, Mobilität, Agrar und Verbraucherschutz (saarland.de)",
+            "url": "https://www.saarland.de/mukmav/DE/institution/ministerin/ministerin_node.html",
+            "verifiedAt": "2026-11-19"
+          },
+          "note": "Saarland.de blockiert automatisierte Abrufe (Bot-Schutz, HTTP 403); Name und Anschrift stammen aus Suchmaschinen-Auszuegen der offiziellen saarland.de-Impressumsseiten, nicht aus direktem Seitenabruf. Anschrift Keplerstrasse 18 nur aus Impressum eines nachgeordneten Amtes (LAV) bestaetigt, nicht aus dem Ministeriums-Impressum. Petra Berg leitet nach Quellenlage auch das Justizministerium (Doppelamt).",
+          "unverified": true
+        },
+        {
+          "ressorts": [
+            "justiz"
+          ],
+          "officeName": "Ministerium der Justiz des Saarlandes",
+          "name": "Petra Berg",
+          "title": "Ministerin der Justiz",
+          "salutation": "Sehr geehrte Frau Ministerin Berg,",
+          "addressLines": [
+            "Ministerin Petra Berg",
+            "Ministerium der Justiz des Saarlandes",
+            "Franz-Josef-Röder-Straße 17",
+            "66119 Saarbrücken"
+          ],
+          "source": {
+            "title": "Impressum Ministerium der Justiz (saarland.de)",
+            "url": "https://www.saarland.de/mdj/DE/services/impressum",
+            "verifiedAt": "2026-11-19"
+          },
+          "note": "Saarland.de blockiert automatisierte Abrufe (Bot-Schutz, HTTP 403); Name und Anschrift stammen aus Suchmaschinen-Auszuegen der offiziellen saarland.de-Impressumsseiten, nicht aus direktem Seitenabruf. Doppelamt Berg (Justiz und Umwelt) nicht aus einer Kabinettsliste bestaetigt; Anschrift widerspruechlich (Franz-Josef-Roeder-Str. 17 laut Impressum, Zaehringerstr. 12 als Dienstgebaeude/Briefkasten). Ministerpraesidentin Anke Rehlinger leitet kein Ressort.",
+          "unverified": true
+        }
+      ]
+    },
+    "SN": {
+      "stateName": "Sachsen",
+      "ministers": [
+        {
+          "ressorts": [
+            "bildung"
+          ],
+          "officeName": "Sächsisches Staatsministerium für Kultus",
+          "name": "Conrad Clemens",
+          "title": "Staatsminister für Kultus",
+          "salutation": "Sehr geehrter Herr Staatsminister Clemens,",
+          "addressLines": [
+            "Staatsminister Conrad Clemens",
+            "Sächsisches Staatsministerium für Kultus",
+            "Carolaplatz 1",
+            "01097 Dresden"
+          ],
+          "source": {
+            "title": "Impressum SMK ; Namen: staatsregierung.sachsen.de/regierungsmitglieder-6584.html",
+            "url": "https://www.smk.sachsen.de/impressum.html",
+            "verifiedAt": "2026-11-19"
+          },
+          "note": "Ministerpraesident Kretschmer leitet kein Ressort; Chef der Staatskanzlei Dr. Andreas Handschuh ist Staatssekretaer, nicht Staatsminister. Hausanschrift (Besucheradresse) angegeben; Postfach siehe Impressum."
+        },
+        {
+          "ressorts": [
+            "soziales",
+            "gesundheit",
+            "jugend",
+            "frauen",
+            "verbraucherschutz"
+          ],
+          "officeName": "Sächsisches Staatsministerium für Soziales, Gesundheit und Gesellschaftlichen Zusammenhalt",
+          "name": "Petra Köpping",
+          "title": "Staatsministerin für Soziales, Gesundheit und Gesellschaftlichen Zusammenhalt",
+          "salutation": "Sehr geehrte Frau Staatsministerin Köpping,",
+          "addressLines": [
+            "Staatsministerin Petra Köpping",
+            "Sächsisches Staatsministerium für Soziales, Gesundheit und Gesellschaftlichen Zusammenhalt",
+            "Albertstraße 10",
+            "01097 Dresden"
+          ],
+          "source": {
+            "title": "Impressum SMS ; Namen: staatsregierung.sachsen.de/regierungsmitglieder-6584.html",
+            "url": "https://www.sms.sachsen.de/impressum.html",
+            "verifiedAt": "2026-11-19"
+          }
+        },
+        {
+          "ressorts": [
+            "inneres",
+            "sport"
+          ],
+          "officeName": "Sächsisches Staatsministerium des Innern",
+          "name": "Armin Schuster",
+          "title": "Staatsminister des Innern",
+          "salutation": "Sehr geehrter Herr Staatsminister Schuster,",
+          "addressLines": [
+            "Staatsminister Armin Schuster",
+            "Sächsisches Staatsministerium des Innern",
+            "Wilhelm-Buck-Straße 2",
+            "01097 Dresden"
+          ],
+          "source": {
+            "title": "Impressum SMI ; Namen: staatsregierung.sachsen.de/regierungsmitglieder-6584.html",
+            "url": "https://www.smi.sachsen.de/impressum-4303.html",
+            "verifiedAt": "2026-11-19"
+          }
+        },
+        {
+          "ressorts": [
+            "finanzen"
+          ],
+          "officeName": "Sächsisches Staatsministerium der Finanzen",
+          "name": "Christian Piwarz",
+          "title": "Staatsminister der Finanzen",
+          "salutation": "Sehr geehrter Herr Staatsminister Piwarz,",
+          "addressLines": [
+            "Staatsminister Christian Piwarz",
+            "Sächsisches Staatsministerium der Finanzen",
+            "Carolaplatz 1",
+            "01097 Dresden"
+          ],
+          "source": {
+            "title": "Impressum SMF ; Namen: staatsregierung.sachsen.de/regierungsmitglieder-6584.html",
+            "url": "https://www.smf.sachsen.de/impressum-4224.html",
+            "verifiedAt": "2026-11-19"
+          }
+        },
+        {
+          "ressorts": [
+            "justiz"
+          ],
+          "officeName": "Sächsisches Staatsministerium der Justiz",
+          "name": "Prof. Constanze Geiert",
+          "title": "Staatsministerin der Justiz",
+          "salutation": "Sehr geehrte Frau Staatsministerin Prof. Geiert,",
+          "addressLines": [
+            "Staatsministerin Prof. Constanze Geiert",
+            "Sächsisches Staatsministerium der Justiz",
+            "Hospitalstraße 7",
+            "01097 Dresden"
+          ],
+          "source": {
+            "title": "Impressum SMJ ; Namen: staatsregierung.sachsen.de/regierungsmitglieder-6584.html",
+            "url": "https://www.justiz.sachsen.de/smj/impressum.html",
+            "verifiedAt": "2026-11-19"
+          }
+        },
+        {
+          "ressorts": [
+            "wirtschaft",
+            "arbeit",
+            "klima"
+          ],
+          "officeName": "Sächsisches Staatsministerium für Wirtschaft, Arbeit, Energie und Klimaschutz",
+          "name": "Dirk Panter",
+          "title": "Staatsminister für Wirtschaft, Arbeit, Energie und Klimaschutz",
+          "salutation": "Sehr geehrter Herr Staatsminister Panter,",
+          "addressLines": [
+            "Staatsminister Dirk Panter",
+            "Sächsisches Staatsministerium für Wirtschaft, Arbeit, Energie und Klimaschutz",
+            "Wilhelm-Buck-Straße 2",
+            "01097 Dresden"
+          ],
+          "source": {
+            "title": "Impressum SMWA ; Namen: staatsregierung.sachsen.de/regierungsmitglieder-6584.html",
+            "url": "https://www.smwa.sachsen.de/impressum-4204.html",
+            "verifiedAt": "2026-11-19"
+          }
+        },
+        {
+          "ressorts": [
+            "umwelt",
+            "landwirtschaft"
+          ],
+          "officeName": "Sächsisches Staatsministerium für Umwelt und Landwirtschaft",
+          "name": "Georg-Ludwig von Breitenbuch",
+          "title": "Staatsminister für Umwelt und Landwirtschaft",
+          "salutation": "Sehr geehrter Herr Staatsminister von Breitenbuch,",
+          "addressLines": [
+            "Staatsminister Georg-Ludwig von Breitenbuch",
+            "Sächsisches Staatsministerium für Umwelt und Landwirtschaft",
+            "Wilhelm-Buck-Straße 4",
+            "01097 Dresden"
+          ],
+          "source": {
+            "title": "Kontakt, Anschrift, Anreise SMUL ; Namen: staatsregierung.sachsen.de/regierungsmitglieder-6584.html",
+            "url": "https://www.smul.sachsen.de/kontakt-anschrift-anreise-4131.html",
+            "verifiedAt": "2026-11-19"
+          }
+        },
+        {
+          "ressorts": [
+            "wissenschaft"
+          ],
+          "officeName": "Sächsisches Staatsministerium für Wissenschaft, Kultur und Tourismus",
+          "name": "Sebastian Gemkow",
+          "title": "Staatsminister für Wissenschaft",
+          "salutation": "Sehr geehrter Herr Staatsminister Gemkow,",
+          "addressLines": [
+            "Staatsminister Sebastian Gemkow",
+            "Sächsisches Staatsministerium für Wissenschaft, Kultur und Tourismus",
+            "Wigardstraße 17",
+            "01097 Dresden"
+          ],
+          "source": {
+            "title": "Kontakt SMWK (Wissenschaft) ; Namen: staatsregierung.sachsen.de/regierungsmitglieder-6584.html",
+            "url": "https://www.smwk.sachsen.de/kontakt.html",
+            "verifiedAt": "2026-11-19"
+          }
+        },
+        {
+          "ressorts": [
+            "kultur"
+          ],
+          "officeName": "Sächsisches Staatsministerium für Wissenschaft, Kultur und Tourismus",
+          "name": "Barbara Klepsch",
+          "title": "Staatsministerin für Kultur und Tourismus",
+          "salutation": "Sehr geehrte Frau Staatsministerin Klepsch,",
+          "addressLines": [
+            "Staatsministerin Barbara Klepsch",
+            "Sächsisches Staatsministerium für Wissenschaft, Kultur und Tourismus",
+            "St. Petersburger Straße 2",
+            "01069 Dresden"
+          ],
+          "source": {
+            "title": "Kontakt SMWK (Geschäftsbereich Kultur und Tourismus) ; Namen: staatsregierung.sachsen.de/regierungsmitglieder-6584.html",
+            "url": "https://www.smwk.sachsen.de/kontakt.html",
+            "verifiedAt": "2026-11-19"
+          }
+        },
+        {
+          "ressorts": [
+            "verkehr",
+            "bau"
+          ],
+          "officeName": "Sächsisches Staatsministerium für Infrastruktur und Landesentwicklung",
+          "name": "Regina Kraushaar",
+          "title": "Staatsministerin für Infrastruktur und Landesentwicklung",
+          "salutation": "Sehr geehrte Frau Staatsministerin Kraushaar,",
+          "addressLines": [
+            "Staatsministerin Regina Kraushaar",
+            "Sächsisches Staatsministerium für Infrastruktur und Landesentwicklung",
+            "Archivstraße 1",
+            "01097 Dresden"
+          ],
+          "source": {
+            "title": "Impressum SMIL ; Namen: staatsregierung.sachsen.de/regierungsmitglieder-6584.html",
+            "url": "https://www.smil.sachsen.de/impressum.html",
+            "verifiedAt": "2026-11-19"
+          }
+        }
+      ]
+    },
+    "ST": {
+      "stateName": "Sachsen-Anhalt",
+      "note": "Stand 19.11.2026: Kabinett Schulze amtiert geschäftsführend (Landtagswahl 06.09.2026; Wahl des Ministerpräsidenten laut Presse für 08.12.2026 geplant). Kein neues Kabinett im Amt.",
+      "ministers": [
+        {
+          "ressorts": [
+            "kultur"
+          ],
+          "officeName": "Staatskanzlei und Ministerium für Kultur des Landes Sachsen-Anhalt",
+          "name": "Sven Schulze",
+          "title": "Ministerpräsident und Minister für Kultur",
+          "salutation": "Sehr geehrter Herr Ministerpräsident Schulze,",
+          "addressLines": [
+            "Ministerpräsident Sven Schulze",
+            "Staatskanzlei und Ministerium für Kultur des Landes Sachsen-Anhalt",
+            "Hegelstraße 40 - 42",
+            "39104 Magdeburg"
+          ],
+          "source": {
+            "title": "Sachsen-Anhalt.de: Die Ministerien (Kabinett und Anschriften)",
+            "url": "https://sachsen-anhalt.de/politik-verwaltung/landesregierung/page/die-ministerien",
+            "verifiedAt": "2026-11-19"
+          },
+          "note": "Schulze leitet als Ministerpräsident die Staatskanzlei und Ministerium für Kultur; kultur-Zuordnung aus dem Behördennamen, Staatssekretär für Kultur ist Dr. Sebastian Putz."
+        },
+        {
+          "ressorts": [
+            "inneres",
+            "sport"
+          ],
+          "officeName": "Ministerium für Inneres und Sport des Landes Sachsen-Anhalt",
+          "name": "Dr. Tamara Zieschang",
+          "title": "Ministerin für Inneres und Sport",
+          "salutation": "Sehr geehrte Frau Ministerin Dr. Zieschang,",
+          "addressLines": [
+            "Ministerin Dr. Tamara Zieschang",
+            "Ministerium für Inneres und Sport des Landes Sachsen-Anhalt",
+            "Halberstädter Straße 2",
+            "39112 Magdeburg"
+          ],
+          "source": {
+            "title": "Sachsen-Anhalt.de: Die Ministerien (Kabinett und Anschriften)",
+            "url": "https://sachsen-anhalt.de/politik-verwaltung/landesregierung/page/die-ministerien",
+            "verifiedAt": "2026-11-19"
+          }
+        },
+        {
+          "ressorts": [
+            "justiz",
+            "verbraucherschutz"
+          ],
+          "officeName": "Ministerium für Justiz und Verbraucherschutz des Landes Sachsen-Anhalt",
+          "name": "Franziska Weidinger",
+          "title": "Ministerin für Justiz und Verbraucherschutz",
+          "salutation": "Sehr geehrte Frau Ministerin Weidinger,",
+          "addressLines": [
+            "Ministerin Franziska Weidinger",
+            "Ministerium für Justiz und Verbraucherschutz des Landes Sachsen-Anhalt",
+            "Domplatz 2 - 4",
+            "39104 Magdeburg"
+          ],
+          "source": {
+            "title": "Sachsen-Anhalt.de: Die Ministerien (Kabinett und Anschriften)",
+            "url": "https://sachsen-anhalt.de/politik-verwaltung/landesregierung/page/die-ministerien",
+            "verifiedAt": "2026-11-19"
+          }
+        },
+        {
+          "ressorts": [
+            "finanzen"
+          ],
+          "officeName": "Ministerium der Finanzen des Landes Sachsen-Anhalt",
+          "name": "Michael Richter",
+          "title": "Minister der Finanzen",
+          "salutation": "Sehr geehrter Herr Minister Richter,",
+          "addressLines": [
+            "Minister Michael Richter",
+            "Ministerium der Finanzen des Landes Sachsen-Anhalt",
+            "Editharing 40",
+            "39108 Magdeburg"
+          ],
+          "source": {
+            "title": "Sachsen-Anhalt.de: Die Ministerien (Kabinett und Anschriften)",
+            "url": "https://sachsen-anhalt.de/politik-verwaltung/landesregierung/page/die-ministerien",
+            "verifiedAt": "2026-11-19"
+          },
+          "note": "Richter leitet zugleich das Ministerium für Wirtschaft, Tourismus, Landwirtschaft und Forsten (zwei Einträge)."
+        },
+        {
+          "ressorts": [
+            "soziales",
+            "arbeit",
+            "gesundheit",
+            "frauen"
+          ],
+          "officeName": "Ministerium für Arbeit, Soziales, Gesundheit und Gleichstellung des Landes Sachsen-Anhalt",
+          "name": "Petra Grimm-Benne",
+          "title": "Ministerin für Arbeit, Soziales, Gesundheit und Gleichstellung",
+          "salutation": "Sehr geehrte Frau Ministerin Grimm-Benne,",
+          "addressLines": [
+            "Ministerin Petra Grimm-Benne",
+            "Ministerium für Arbeit, Soziales, Gesundheit und Gleichstellung des Landes Sachsen-Anhalt",
+            "Turmschanzenstraße 25",
+            "39114 Magdeburg"
+          ],
+          "source": {
+            "title": "Sachsen-Anhalt.de: Die Ministerien (Kabinett und Anschriften)",
+            "url": "https://sachsen-anhalt.de/politik-verwaltung/landesregierung/page/die-ministerien",
+            "verifiedAt": "2026-11-19"
+          }
+        },
+        {
+          "ressorts": [
+            "bildung"
+          ],
+          "officeName": "Ministerium für Bildung des Landes Sachsen-Anhalt",
+          "name": "Jan Riedel",
+          "title": "Minister für Bildung",
+          "salutation": "Sehr geehrter Herr Minister Riedel,",
+          "addressLines": [
+            "Minister Jan Riedel",
+            "Ministerium für Bildung des Landes Sachsen-Anhalt",
+            "Turmschanzenstraße 32",
+            "39114 Magdeburg"
+          ],
+          "source": {
+            "title": "Sachsen-Anhalt.de: Die Ministerien (Kabinett und Anschriften)",
+            "url": "https://sachsen-anhalt.de/politik-verwaltung/landesregierung/page/die-ministerien",
+            "verifiedAt": "2026-11-19"
+          }
+        },
+        {
+          "ressorts": [
+            "wirtschaft",
+            "landwirtschaft"
+          ],
+          "officeName": "Ministerium für Wirtschaft, Tourismus, Landwirtschaft und Forsten des Landes Sachsen-Anhalt",
+          "name": "Michael Richter",
+          "title": "Minister für Wirtschaft, Tourismus, Landwirtschaft und Forsten",
+          "salutation": "Sehr geehrter Herr Minister Richter,",
+          "addressLines": [
+            "Minister Michael Richter",
+            "Ministerium für Wirtschaft, Tourismus, Landwirtschaft und Forsten des Landes Sachsen-Anhalt",
+            "Hasselbachstraße 4",
+            "39104 Magdeburg"
+          ],
+          "source": {
+            "title": "Sachsen-Anhalt.de: Die Ministerien (Kabinett und Anschriften)",
+            "url": "https://sachsen-anhalt.de/politik-verwaltung/landesregierung/page/die-ministerien",
+            "verifiedAt": "2026-11-19"
+          },
+          "note": "Richter leitet zugleich das Ministerium der Finanzen."
+        },
+        {
+          "ressorts": [
+            "wissenschaft",
+            "umwelt",
+            "klima"
+          ],
+          "officeName": "Ministerium für Wissenschaft, Energie, Klimaschutz und Umwelt des Landes Sachsen-Anhalt",
+          "name": "Prof. Dr. Armin Willingmann",
+          "title": "Minister für Wissenschaft, Energie, Klimaschutz und Umwelt und stellv. Ministerpräsident",
+          "salutation": "Sehr geehrter Herr Minister Prof. Dr. Willingmann,",
+          "addressLines": [
+            "Minister Prof. Dr. Armin Willingmann",
+            "Ministerium für Wissenschaft, Energie, Klimaschutz und Umwelt des Landes Sachsen-Anhalt",
+            "Leipziger Straße 58",
+            "39112 Magdeburg"
+          ],
+          "source": {
+            "title": "Sachsen-Anhalt.de: Die Ministerien (Kabinett und Anschriften)",
+            "url": "https://sachsen-anhalt.de/politik-verwaltung/landesregierung/page/die-ministerien",
+            "verifiedAt": "2026-11-19"
+          }
+        },
+        {
+          "ressorts": [
+            "verkehr",
+            "bau",
+            "digitales"
+          ],
+          "officeName": "Ministerium für Infrastruktur und Digitales des Landes Sachsen-Anhalt",
+          "name": "Dr. Lydia Hüskens",
+          "title": "Ministerin für Infrastruktur und Digitales und stellv. Ministerpräsidentin",
+          "salutation": "Sehr geehrte Frau Ministerin Dr. Hüskens,",
+          "addressLines": [
+            "Ministerin Dr. Lydia Hüskens",
+            "Ministerium für Infrastruktur und Digitales des Landes Sachsen-Anhalt",
+            "Turmschanzenstraße 30",
+            "39114 Magdeburg"
+          ],
+          "source": {
+            "title": "Sachsen-Anhalt.de: Die Ministerien (Kabinett und Anschriften)",
+            "url": "https://sachsen-anhalt.de/politik-verwaltung/landesregierung/page/die-ministerien",
+            "verifiedAt": "2026-11-19"
+          }
+        }
+      ]
+    },
+    "TH": {
+      "stateName": "Thüringen",
+      "note": "thueringen.de teils per Captcha gesperrt. Kabinett nach Landtags-Pressemitteilung 13.12.2024; keine Wechsel gefunden. MP Voigt leitet kein Ressort, nicht aufgeführt.",
+      "ministers": [
+        {
+          "ressorts": [
+            "europa",
+            "sport"
+          ],
+          "officeName": "Thüringer Staatskanzlei",
+          "name": "Stefan Gruhner",
+          "title": "Chef der Staatskanzlei und Minister für Bundes- und Europaangelegenheiten, Sport und Ehrenamt",
+          "salutation": "Sehr geehrter Herr Minister Gruhner,",
+          "addressLines": [
+            "Minister Stefan Gruhner",
+            "Thüringer Staatskanzlei",
+            "Regierungsstraße 73",
+            "99084 Erfurt"
+          ],
+          "source": {
+            "title": "Thüringer Landtag: Kabinett vereidigt (13.12.2024); Anschrift laut Ministeriums-Impressum bzw. Serviceportal thueringen.de",
+            "url": "https://thueringer-landtag.de/presse/pressemitteilungen/2024/thueringer-kabinett-vereidigt",
+            "verifiedAt": "2026-11-19"
+          },
+          "unverified": true,
+          "note": "Anschrift per Serviceportal-/Suchtreffer thueringen.de, Impressum-Seite wegen Captcha nicht abrufbar. Nur Kabinettsstand 13.12.2024 (Landtag) plus fehlende Hinweise auf Wechsel."
+        },
+        {
+          "ressorts": [
+            "inneres"
+          ],
+          "officeName": "Thüringer Ministerium für Inneres, Kommunales und Landesentwicklung",
+          "name": "Georg Maier",
+          "title": "Minister für Inneres, Kommunales und Landesentwicklung",
+          "salutation": "Sehr geehrter Herr Minister Maier,",
+          "addressLines": [
+            "Minister Georg Maier",
+            "Thüringer Ministerium für Inneres, Kommunales und Landesentwicklung",
+            "Steigerstraße 24",
+            "99096 Erfurt"
+          ],
+          "source": {
+            "title": "Thüringer Landtag: Kabinett vereidigt (13.12.2024); Anschrift laut Ministeriums-Impressum bzw. Serviceportal thueringen.de",
+            "url": "https://thueringer-landtag.de/presse/pressemitteilungen/2024/thueringer-kabinett-vereidigt",
+            "verifiedAt": "2026-11-19"
+          },
+          "unverified": true,
+          "note": "Anschrift aus finanzen.thueringen.de-Schreiben (TMIK, Steigerstr. 24) und Serviceportal; Impressum nicht abrufbar. Postfach 90 01 31, 99104 Erfurt."
+        },
+        {
+          "ressorts": [
+            "finanzen"
+          ],
+          "officeName": "Thüringer Finanzministerium",
+          "name": "Katja Wolf",
+          "title": "Finanzministerin und stellv. Ministerpräsidentin",
+          "salutation": "Sehr geehrte Frau Ministerin Wolf,",
+          "addressLines": [
+            "Ministerin Katja Wolf",
+            "Thüringer Finanzministerium",
+            "Ludwig-Erhard-Ring 7",
+            "99099 Erfurt"
+          ],
+          "source": {
+            "title": "Thüringer Finanzministerium: Impressum",
+            "url": "https://finanzen.thueringen.de/impressum",
+            "verifiedAt": "2026-11-19"
+          },
+          "note": "Wolf amtiert laut Pressemitteilungen von finanzen.thueringen.de weiter als Finanzministerin; Parteiwechsel (BSW zu Thüringen.Gerecht, 09/2026) ohne Ressortwechsel, laut Presse-Recherche."
+        },
+        {
+          "ressorts": [
+            "wirtschaft",
+            "landwirtschaft"
+          ],
+          "officeName": "Thüringer Ministerium für Wirtschaft, Landwirtschaft und Ländlichen Raum",
+          "name": "Colette Boos-John",
+          "title": "Ministerin für Wirtschaft, Landwirtschaft und Ländlichen Raum",
+          "salutation": "Sehr geehrte Frau Ministerin Boos-John,",
+          "addressLines": [
+            "Ministerin Colette Boos-John",
+            "Thüringer Ministerium für Wirtschaft, Landwirtschaft und Ländlichen Raum",
+            "Max-Reger-Straße 4-8",
+            "99096 Erfurt"
+          ],
+          "source": {
+            "title": "Thüringer Wirtschaftsministerium: Impressum (Archivkopie 08/2025, Live-Seite Captcha)",
+            "url": "https://wirtschaft.thueringen.de/impressum",
+            "verifiedAt": "2026-11-19"
+          },
+          "note": "Postfach 90 02 25, 99105 Erfurt."
+        },
+        {
+          "ressorts": [
+            "bildung",
+            "wissenschaft",
+            "kultur"
+          ],
+          "officeName": "Thüringer Ministerium für Bildung, Wissenschaft und Kultur",
+          "name": "Christian Tischner",
+          "title": "Minister für Bildung, Wissenschaft und Kultur",
+          "salutation": "Sehr geehrter Herr Minister Tischner,",
+          "addressLines": [
+            "Minister Christian Tischner",
+            "Thüringer Ministerium für Bildung, Wissenschaft und Kultur",
+            "Werner-Seelenbinder-Straße 7",
+            "99096 Erfurt"
+          ],
+          "source": {
+            "title": "Thüringer Landtag: Kabinett vereidigt (13.12.2024); Anschrift laut Ministeriums-Impressum bzw. Serviceportal thueringen.de",
+            "url": "https://thueringer-landtag.de/presse/pressemitteilungen/2024/thueringer-kabinett-vereidigt",
+            "verifiedAt": "2026-11-19"
+          },
+          "unverified": true,
+          "note": "Name über Landtags-Pressemitteilung und Haushaltsplan 2026/27 (finanzen.thueringen.de) bestätigt; Anschrift über Serviceportal thueringen.de-Treffer, Impressum bildung.thueringen.de per Captcha gesperrt. Postfach 90 04 63, 99107 Erfurt."
+        },
+        {
+          "ressorts": [
+            "justiz",
+            "verbraucherschutz"
+          ],
+          "officeName": "Thüringer Ministerium für Justiz, Migration und Verbraucherschutz",
+          "name": "Beate Meißner",
+          "title": "Ministerin für Justiz, Migration und Verbraucherschutz",
+          "salutation": "Sehr geehrte Frau Ministerin Meißner,",
+          "addressLines": [
+            "Ministerin Beate Meißner",
+            "Thüringer Ministerium für Justiz, Migration und Verbraucherschutz",
+            "Werner-Seelenbinder-Straße 5",
+            "99096 Erfurt"
+          ],
+          "source": {
+            "title": "Thüringer Justizministerium: Impressum",
+            "url": "https://justiz.thueringen.de/impressum",
+            "verifiedAt": "2026-11-19"
+          }
+        },
+        {
+          "ressorts": [
+            "digitales",
+            "verkehr",
+            "bau"
+          ],
+          "officeName": "Thüringer Ministerium für Digitales und Infrastruktur",
+          "name": "Steffen Schütz",
+          "title": "Minister für Digitales und Infrastruktur",
+          "salutation": "Sehr geehrter Herr Minister Schütz,",
+          "addressLines": [
+            "Minister Steffen Schütz",
+            "Thüringer Ministerium für Digitales und Infrastruktur",
+            "Werner-Seelenbinder-Straße 8",
+            "99096 Erfurt"
+          ],
+          "source": {
+            "title": "Thüringer Ministerium für Digitales und Infrastruktur: Impressum (Archivkopie 2025)",
+            "url": "https://infrastruktur-digitales.thueringen.de/impressum",
+            "verifiedAt": "2026-11-19"
+          }
+        },
+        {
+          "ressorts": [
+            "umwelt"
+          ],
+          "officeName": "Thüringer Ministerium für Umwelt, Energie, Naturschutz und Forsten",
+          "name": "Tilo Kummer",
+          "title": "Minister für Umwelt, Energie, Naturschutz und Forsten",
+          "salutation": "Sehr geehrter Herr Minister Kummer,",
+          "addressLines": [
+            "Minister Tilo Kummer",
+            "Thüringer Ministerium für Umwelt, Energie, Naturschutz und Forsten",
+            "Beethovenstraße 3",
+            "99096 Erfurt"
+          ],
+          "source": {
+            "title": "Thüringer Umweltministerium: Anschrift und Kontakt",
+            "url": "https://umwelt.thueringen.de/ministerium/anschrift-und-kontakt",
+            "verifiedAt": "2026-11-19"
+          },
+          "note": "Seite per Captcha gesperrt, Anschrift aus Suchtreffer-Auszug; Postfach 90 03 65, 99106 Erfurt."
+        },
+        {
+          "ressorts": [
+            "soziales",
+            "gesundheit",
+            "arbeit"
+          ],
+          "officeName": "Thüringer Ministerium für Soziales, Gesundheit, Arbeit und Familie",
+          "name": "Katharina Schenk",
+          "title": "Ministerin für Soziales, Gesundheit, Arbeit und Familie",
+          "salutation": "Sehr geehrte Frau Ministerin Schenk,",
+          "addressLines": [
+            "Ministerin Katharina Schenk",
+            "Thüringer Ministerium für Soziales, Gesundheit, Arbeit und Familie",
+            "Werner-Seelenbinder-Straße 6",
+            "99096 Erfurt"
+          ],
+          "source": {
+            "title": "Thüringer Sozialministerium: Impressum",
+            "url": "https://soziales.thueringen.de/impressum",
             "verifiedAt": "2026-11-19"
           }
         }

@@ -30,6 +30,7 @@ import { verifyClassToken } from "@/lib/schule/classToken";
 import {
   lockWizardToClassToken,
   resolveSchoolRecipientForRequest,
+  resolveYouthLandMinister,
   validateStep1,
 } from "@/lib/schule/youthContext";
 import { isCampaignEnded } from "@/lib/campaigns/endDate";
@@ -350,6 +351,9 @@ export async function submitWizardAction(
           reason: school.reason,
         };
       }
+      // Jugend ohne Klassenlink: Fachminister:in für die Landesliste.
+      const youthMinister = campaignTarget ? null : resolveYouthLandMinister(data, routing);
+      if (youthMinister) levelRouting = { ...levelRouting, youthMinister };
       log("level routing", {
         recommendedLevel: recommended?.level ?? null,
         confidence: recommended?.confidence ?? null,

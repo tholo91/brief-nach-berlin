@@ -15,9 +15,9 @@ import { getPublicCampaignBySlug } from "@/lib/campaigns/repository";
 import { DEFAULT_LETTER_LENGTH } from "@/lib/config";
 import { deriveRoutingLetterId, verifyRoutingTokenEnvelope } from "@/lib/lookup/routingToken";
 import { buildLetterSignalContext } from "@/lib/letterSignals/context";
+import { isYouthAudience } from "@/lib/schule/youth";
 import {
   lockWizardToClassToken,
-  resolveSchoolMode,
   resolveSchoolRecipientForRequest,
   resolveYouthLetterContext,
   validateStep1,
@@ -71,8 +71,11 @@ export async function selectPoliticianAction(
     if (!parsedSelection.success) {
       return { error: "server_error", message: "Ungültige Eingabe." };
     }
-    // Fachminister:innen gibt es nur im Schulmodus.
-    if (parsedSelection.data.kind === "landesminister" && !resolveSchoolMode(data)) {
+    // Fachminister:innen gibt es nur für Jugend (Klassenlink oder Landesliste), nie für Erwachsene.
+    if (
+      parsedSelection.data.kind === "landesminister" &&
+      (!isYouthAudience(data) || data.campaign?.slug)
+    ) {
       return { error: "server_error", message: "Empfänger nicht gefunden." };
     }
     const routingEnvelope = routingToken

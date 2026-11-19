@@ -21,9 +21,9 @@ import { computeFollowupSlot } from "@/lib/email/computeFollowupSlot";
 import { buildDebugPayload, type LetterRoutingInfo } from "@/lib/email/buildDebugPayload";
 import { checkOriginRateLimit, checkRateLimit, hashIdentifier, LIMITS } from "@/lib/rateLimit";
 import { verifyClassToken } from "@/lib/schule/classToken";
+import { isYouthAudience } from "@/lib/schule/youth";
 import {
   lockWizardToClassToken,
-  resolveSchoolMode,
   resolveSchoolRecipientForRequest,
   resolveYouthLetterContext,
   validateStep1,
@@ -255,7 +255,7 @@ export async function POST(req: NextRequest) {
     // geladenen festen Kampagnenziel (LOCK-5).
     // Schulmodus (Jugend + gültiger Klassen-Token): Der Server wählt den Empfänger
     // aus Token-PLZ, Token-Ebene und signiertem Routing. Die Client-Auswahl zählt nicht.
-    if (selection.kind === "landesminister" && !resolveSchoolMode(data)) {
+    if (selection.kind === "landesminister" && (!isYouthAudience(data) || campaign)) {
       return NextResponse.json({ error: "Empfänger nicht gefunden." }, { status: 400 });
     }
     const verifiedRouting =

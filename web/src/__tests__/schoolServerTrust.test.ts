@@ -34,7 +34,7 @@ jest.mock("../../data/landesminister.json", () => ({
 
 import { selectPoliticianAction } from "@/lib/actions/selectPolitician";
 import { signClassToken } from "@/lib/schule/classToken";
-import { lockWizardToClassToken, resolveSchoolMode } from "@/lib/schule/youthContext";
+import { lockWizardToClassToken, resolveSchoolMode, resolveYouthLandMinister } from "@/lib/schule/youthContext";
 import { hashRoutingIssue, normalizeRoutingIssue, signRoutingToken } from "@/lib/lookup/routingToken";
 import type { WizardData } from "@/lib/types/wizard";
 import type { RoutingResult } from "@/lib/lookup/levelRouter";
@@ -129,15 +129,16 @@ describe("selectPoliticianAction im Schulmodus", () => {
     expect(result.recipient.wahlkreisName).toMatch(/Bremen/);
   });
 
-  it("ohne Ressort im Routing geht der Brief an die Regierungsspitze", async () => {
-    const result = await selectPoliticianAction(
-      youthData(),
-      { kind: "mdb_later" },
-      routingToken({ primary: { level: "Land", confidence: "high" } })
-    );
-    expect(result).toMatchObject({
+  it("ohne Ressort im Routing geht der Brief an Bildung, ohne Bildung an die Regierungsspitze", async () => {
+    const routing = routingToken({ primary: { level: "Land", confidence: "high" } });
+    expect(await selectPoliticianAction(youthData(), { kind: "mdb_later" }, routing)).toMatchObject({
       preCheckOk: true,
-      recipient: { kind: "landesregierung", addressee: "head", bundeslandKey: "HB" },
+      recipient: { kind: "landesminister", ressort: "bildung", bundeslandKey: "HB" },
+    });
+    const berlin = youthData({ classToken: signClassToken({ klasse: 7, plz: BE_PLZ }) });
+    expect(await selectPoliticianAction(berlin, { kind: "mdb_later" }, routing)).toMatchObject({
+      preCheckOk: true,
+      recipient: { kind: "landesregierung", addressee: "head", bundeslandKey: "BE" },
     });
   });
 
@@ -150,6 +151,28 @@ describe("selectPoliticianAction im Schulmodus", () => {
       preCheckOk: true,
       recipient: { kind: "landesregierung", addressee: "head" },
     });
+  });
+
+  it("Jugend ohne Klassen-Token darf Landesminister wählen, der Server löst Land und Ressort auf", async () => {
+    const data = youthData({ classToken: undefined, plz: HB_PLZ });
+    expect(await selectPoliticianAction(data, { kind: "landesminister", ressort: "bildung" })).toMatchObject({
+      preCheckOk: true,
+      recipient: { kind: "landesminister", ressort: "bildung", bundeslandKey: "HB" },
+    });
+    const ohneDaten = youthData({ classToken: undefined, plz: BE_PLZ });
+    expect(await selectPoliticianAction(ohneDaten, { kind: "landesminister", ressort: "bildung" })).toMatchObject({
+      error: "server_error",
+    });
+  });
+
+  it("resolveYouthLandMinister: nur Jugend ohne Klassenlink und ohne Kampagne", () => {
+    const routing = { primary: { level: "Land" as const } };
+    const noLink = { audience: "jung", klasse: 7, plz: HB_PLZ };
+    expect(resolveYouthLandMinister(noLink, routing)).toMatchObject({ kind: "landesminister", ressort: "bildung" });
+    expect(resolveYouthLandMinister({ ...noLink, plz: BE_PLZ }, routing)).toBeNull();
+    expect(resolveYouthLandMinister({ ...noLink, audience: undefined }, routing)).toBeNull();
+    expect(resolveYouthLandMinister({ ...noLink, campaign: { slug: "k" } }, routing)).toBeNull();
+    expect(resolveYouthLandMinister(youthData(), routing)).toBeNull();
   });
 
   it("Jugend ohne Klassen-Token bleibt wie bisher: Client-PLZ und Client-Auswahl", async () => {

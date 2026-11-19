@@ -1,6 +1,7 @@
 import "server-only";
 import { verifyClassToken, type ClassLevel } from "@/lib/schule/classToken";
-import { resolveSchoolRecipient, type SchoolRecipient, type SchoolRoutingInput } from "@/lib/schule/schoolRecipient";
+import { landMinisterRecipient, resolveSchoolRecipient, type SchoolRecipient, type SchoolRoutingInput } from "@/lib/schule/schoolRecipient";
+import type { LandesministerRecipient } from "@/lib/lookup/landesministerRecipient";
 import { isYouthAudience, type YouthLetterContext } from "@/lib/schule/youth";
 import { step1PlzSchema, step1Schema } from "@/lib/validation/wizardSchemas";
 
@@ -41,6 +42,19 @@ export function resolveSchoolRecipientForRequest(
   const school = resolveSchoolMode(data);
   if (!school) return null;
   return resolveSchoolRecipient({ plz: school.plz, tokenLevel: school.level, routing });
+}
+
+// Jugend ohne Klassenlink: Auf Landesebene steht die passende Fachminister:in (Ressort aus Router
+// oder Thema, sonst Bildung) vorn und ist vorausgewählt. Die Person kommt aus Bundesland und
+// Ressort, nie aus einer Client-ID. Erwachsene und Kampagnen bekommen nichts.
+export function resolveYouthLandMinister(
+  data: Parameters<typeof resolveSchoolMode>[0] & { plz?: unknown },
+  routing: SchoolRoutingInput | null | undefined
+): LandesministerRecipient | null {
+  if (!isYouthAudience(data) || data.campaign?.slug || resolveSchoolMode(data)) return null;
+  if (typeof data.plz !== "string") return null;
+  const minister = landMinisterRecipient(data.plz, routing)?.recipient;
+  return minister?.kind === "landesminister" ? minister : null;
 }
 
 // Serverseitige Auflösung aus den Wizard-Daten: Jugendmodus nur mit gültiger

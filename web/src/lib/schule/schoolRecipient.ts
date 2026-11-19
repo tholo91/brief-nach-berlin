@@ -30,7 +30,7 @@ const TOPIC_TO_RESSORT: Partial<Record<string, Ressort>> = {
   wohnen_bauen: "bau",
 };
 
-function ressortFor(routing: SchoolRoutingInput | null | undefined): Ressort | null {
+export function ressortFor(routing: SchoolRoutingInput | null | undefined): Ressort | null {
   if (routing?.ressort) return routing.ressort;
   const main = routing?.topic?.topicCategories?.[0];
   return (main && TOPIC_TO_RESSORT[main]) || null;
@@ -69,15 +69,32 @@ function resolved(
   };
 }
 
-function landRecipient(plz: string, ressort: Ressort | null | undefined): SchoolRecipient | null {
-  if (ressort) {
-    const minister = resolved("Land", plz, { kind: "landesminister", ressort }, (recipient) =>
-      recipient.kind === "landesminister"
-        ? `Für dein Thema ist in ${recipient.bundeslandName} ${withArticleLowercase(recipient.officeName)} zuständig.`
-        : ""
-    );
-    if (minister) return minister;
-  }
+/** Schulkontext: Ohne Ressort aus Router oder Thema ist die Bildungsministerin oder der Bildungsminister zuständig. */
+export const SCHOOL_DEFAULT_RESSORT: Ressort = "bildung";
+
+/**
+ * Fachminister:in der Landesebene im Schulkontext: Ressort aus Router oder Thema,
+ * sonst Bildung. null, wenn für das Land keine verifizierte Person vorliegt.
+ * Gemeinsam genutzt vom Klassenlink-Modus und von der Jugend-Auswahl ohne Klassenlink.
+ */
+export function landMinisterRecipient(
+  plz: string,
+  routing: SchoolRoutingInput | null | undefined
+): SchoolRecipient | null {
+  const fromRouting = ressortFor(routing);
+  const ressort = fromRouting ?? SCHOOL_DEFAULT_RESSORT;
+  return resolved("Land", plz, { kind: "landesminister", ressort }, (recipient) => {
+    if (recipient.kind !== "landesminister") return "";
+    const office = withArticleLowercase(recipient.officeName);
+    return fromRouting
+      ? `Für dein Thema ist in ${recipient.bundeslandName} ${office} zuständig.`
+      : `Dein Thema betrifft die Schule. In ${recipient.bundeslandName} ist dafür ${office} zuständig.`;
+  });
+}
+
+function landRecipient(plz: string, routing: SchoolRoutingInput | null | undefined): SchoolRecipient | null {
+  const minister = landMinisterRecipient(plz, routing);
+  if (minister) return minister;
   return resolved("Land", plz, { kind: "landesregierung", addressee: "head" }, (recipient) =>
     recipient.kind === "landesregierung" && recipient.headName
       ? `Für dein Thema passt kein einzelnes Ressort. Du schreibst deshalb an ${recipient.headName}, ${recipient.headTitle}.`
@@ -125,9 +142,9 @@ export function resolveSchoolRecipient(args: {
   const level: SchoolLevel = args.tokenLevel ?? args.routing?.primary?.level ?? "Bund";
   if (level === "Bund") return bundRecipient(plz);
   if (level === "Kommune") {
-    return kommuneRecipient(plz) ?? landRecipient(plz, ressortFor(args.routing)) ?? bundRecipient(plz);
+    return kommuneRecipient(plz) ?? landRecipient(plz, args.routing) ?? bundRecipient(plz);
   }
   // Ohne Bundesland (unbekannte PLZ) bleibt nur der Bund.
   if (!lookupPLZWithLevel(plz).bundeslandKey) return bundRecipient(plz);
-  return landRecipient(plz, ressortFor(args.routing)) ?? bundRecipient(plz);
+  return landRecipient(plz, args.routing) ?? bundRecipient(plz);
 }

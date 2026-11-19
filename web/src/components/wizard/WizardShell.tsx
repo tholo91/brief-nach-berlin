@@ -97,7 +97,11 @@ function recipientsForLevel(
     return levelRouting.fixedRecipient ? [levelRouting.fixedRecipient] : [];
   }
   if (level === "Kommune") return levelRouting.byLevel.Kommune;
-  if (level === "Land") return levelRouting.byLevel.Land;
+  if (level === "Land") {
+    return levelRouting.youthMinister
+      ? [levelRouting.youthMinister, ...levelRouting.byLevel.Land]
+      : levelRouting.byLevel.Land;
+  }
   return bundRecipientsForCampaign(
     politicians,
     levelRouting.byLevel.Bund,

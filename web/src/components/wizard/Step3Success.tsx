@@ -12,6 +12,7 @@ import type {
   MdlRecipient,
   RathausRecipient,
 } from "@/lib/lookup/rathausRecipient";
+import type { LandesministerRecipient } from "@/lib/lookup/landesministerRecipient";
 import type { LandesregierungRecipient } from "@/lib/lookup/landesregierungRecipient";
 import { getLandesregierungRecipient } from "@/lib/lookup/landesregierungRecipient";
 import type { BundeskanzlerRecipient } from "@/lib/lookup/bundeskanzlerRecipient";
@@ -241,8 +242,15 @@ export function Step3Success({
   const [showMoreCampaignPoliticians, setShowMoreCampaignPoliticians] = useState(false);
   // Kommune: die einzige Rathaus-Karte ist vorausgewählt (ein Klick weniger)
   const [rathausSelected, setRathausSelected] = useState<boolean>(() => Boolean(rathaus));
+  // Jugend ohne Klassenlink: Fachminister:in der Landesliste, vorausgewählt und zuerst gezeigt.
+  const landesminister = useMemo(
+    () =>
+      recipients.find((r): r is LandesministerRecipient => r.kind === "landesminister") ?? null,
+    [recipients]
+  );
+  const [ministerSelected, setMinisterSelected] = useState<boolean>(() => Boolean(landesminister));
   const [landesregierungSelected, setLandesregierungSelected] = useState<boolean>(
-    () => Boolean(landesregierung)
+    () => Boolean(landesregierung) && !landesminister
   );
   const [landAddressee, setLandAddressee] = useState<"institution" | "head">(
     () => (headPreselected ? "head" : "institution")
@@ -373,6 +381,7 @@ export function Step3Success({
     setMdbLaterSelected(false);
     setRathausSelected(false);
     setLandesregierungSelected(false);
+    setMinisterSelected(false);
     setBundeskanzlerSelected(false);
     requestAnimationFrame(() => {
       const reduce =
@@ -482,6 +491,9 @@ export function Step3Success({
     // Schulmodus: feste Auswahl vom Server; der Server leitet sie bei der Prüfung ohnehin selbst ab.
     if (schoolRecipient) return schoolRecipient.selection;
     if (campaignFixedRecipient && campaignFixedSelected) return { kind: "campaign_fixed" };
+    if (landesminister && ministerSelected) {
+      return { kind: "landesminister", ressort: landesminister.ressort };
+    }
     if (bundeskanzler && bundeskanzlerSelected) return { kind: "bundeskanzler" };
     if (landesregierung && landesregierungSelected) {
       return landAddressee === "head" && governmentHead
@@ -494,7 +506,7 @@ export function Step3Success({
       return { kind: selectedPolitician.kind, selectedPoliticianId: selectedPolitician.id };
     }
     return null;
-  }, [bundeskanzler, bundeskanzlerSelected, campaignFixedRecipient, campaignFixedSelected, governmentHead, landAddressee, landesregierung, landesregierungSelected, mdbLaterSelected, rathaus, rathausSelected, schoolRecipient, selectedPolitician]);
+  }, [bundeskanzler, bundeskanzlerSelected, campaignFixedRecipient, campaignFixedSelected, governmentHead, landAddressee, landesminister, ministerSelected, landesregierung, landesregierungSelected, mdbLaterSelected, rathaus, rathausSelected, schoolRecipient, selectedPolitician]);
 
   // Group the disambiguation cards by Wahlkreis. sortedPoliticians is already
   // Direkt-first, so insertion order puts the group holding the pre-selected
@@ -603,6 +615,18 @@ export function Step3Success({
     },
     [currentSelection, wizardData, routingToken]
   );
+
+  // Klassenlink: Der Server hat den Empfänger gewählt, es gibt nichts zu bestätigen.
+  // Nach "Weiter" im Ton-Schritt startet die Erstellung direkt (Auswahl, dann Generierung).
+  const schoolAutoStartedRef = useRef(false);
+  const schoolReadyToStart = Boolean(
+    schoolRecipient && result && "disambiguationNeeded" in result && result.disambiguationNeeded
+  );
+  useEffect(() => {
+    if (!schoolReadyToStart || currentSelection === null || schoolAutoStartedRef.current) return;
+    schoolAutoStartedRef.current = true;
+    void handleSelectPolitician();
+  }, [schoolReadyToStart, currentSelection, handleSelectPolitician]);
 
   // Animate ". .. ..." while letter is still being generated.
   useEffect(() => {
@@ -933,6 +957,16 @@ export function Step3Success({
             </>
           )}
         </p>
+
+        {schoolRecipient && (
+          <div className="mt-5 rounded-lg border-2 border-waldgruen bg-waldgruen/10 p-4">
+            <p className="font-body text-base font-semibold text-warmgrau">
+              Dein Brief geht an {describeSchoolRecipient(schoolRecipient.recipient).name}
+            </p>
+            <p className="mt-3 font-body text-sm font-semibold text-waldgruen-dark">Warum diese Person?</p>
+            <p className="mt-0.5 font-body text-sm leading-relaxed text-warmgrau/80">{schoolRecipient.reason}</p>
+          </div>
+        )}
 
         {/* Recognized providers get a direct inbox link on every device;
             unknown domains keep the neutral manual instruction. */}
@@ -1272,14 +1306,62 @@ export function Step3Success({
     const selectedPoliticianParty = selectedPolitician
       ? formatPartyShort(selectedPolitician.party).replace(/^Die Linke$/, "die Linke")
       : "";
-    const schoolView = schoolRecipient ? describeSchoolRecipient(schoolRecipient.recipient) : null;
+    const ministerView = landesminister ? describeSchoolRecipient(landesminister) : { addressLines: [] as string[], badge: undefined as string | undefined };
+    if (schoolRecipient) {
+      return (
+        <div className="mx-auto max-w-xl">
+          <h1 className="font-typewriter text-[28px] font-semibold leading-[1.2] text-waldgruen-dark">
+            {generationError ? "Das hat nicht geklappt" : "Dein Brief wird geschrieben"}
+          </h1>
+          {generationError ? (
+            <>
+              <div
+                role="alert"
+                className="bg-airmail-rot/10 border-l-4 border-airmail-rot text-airmail-rot p-4 rounded-r-lg text-sm font-body mt-4"
+              >
+                {generationError}
+              </div>
+              <button
+                type="button"
+                onClick={() => void handleSelectPolitician()}
+                disabled={isGenerating}
+                className="mt-5 w-full cursor-pointer rounded-xl bg-waldgruen px-8 py-4 font-body text-base font-semibold text-creme transition-colors hover:bg-waldgruen-dark disabled:cursor-not-allowed disabled:opacity-60"
+              >
+                Noch einmal versuchen
+              </button>
+            </>
+          ) : (
+            <div role="status" className="mt-4 flex items-center gap-3 font-body text-base text-warmgrau">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="18"
+                height="18"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                className="animate-spin text-waldgruen"
+                aria-hidden="true"
+              >
+                <path d="M21 12a9 9 0 1 1-6.219-8.56" />
+              </svg>
+              <span key={genPhase} className="animate-feedback-in">
+                {LETTER_GEN_PHASES[genPhase].label}
+              </span>
+            </div>
+          )}
+        </div>
+      );
+    }
     const selectedPoliticianLabel =
-      schoolView
-        ? schoolView.name
-        : mdbLaterSelected
+      mdbLaterSelected
         ? "MdB später auswählen"
         : campaignFixedRecipient && campaignFixedSelected
         ? campaignFixedRecipient.label
+        : landesminister && ministerSelected
+        ? landesminister.label
         : bundeskanzler && bundeskanzlerSelected
         ? bundeskanzler.label
         : landesregierung && landesregierungSelected
@@ -1301,9 +1383,7 @@ export function Step3Success({
     const isKommune = selectedLevel === "Kommune" && rathaus !== null;
     const isLand = selectedLevel === "Land";
     const isFixed = selectedLevel === "Fixed" && campaignFixedRecipient !== null;
-    const selectionTitle = schoolView
-      ? `Dein Brief geht an ${schoolView.name}`
-      : isFixed
+    const selectionTitle = isFixed
       ? `Fester Empfänger: ${campaignFixedRecipient.label}`
       : bundeskanzler
       ? "An wen soll dein Brief gehen?"
@@ -1312,6 +1392,8 @@ export function Step3Success({
       : isLand
         ? showLandPersonPicker
           ? "An wen soll dein Brief gehen?"
+          : landesminister && ministerSelected
+          ? `Dein Brief geht an ${landesminister.label}`
           : landesregierung
             ? landAddressee === "head" && governmentHead
               ? `Dein Brief geht an ${governmentHead.label}`
@@ -1322,9 +1404,7 @@ export function Step3Success({
         : !hasNoLocalMdb && sortedPoliticians.length > 1
           ? `${sortedPoliticians.length} Abgeordnete für PLZ ${wizardData.plz}`
           : "Wer vertritt deinen Wahlkreis?";
-    const introCopy = schoolView
-      ? "Das Tool hat die passende Person für dein Thema ausgesucht."
-      : isFixed
+    const introCopy = isFixed
       ? "Dieser Empfänger ist für die Kampagne festgelegt. Deine PLZ verändert die Adresse nicht."
       : bundeskanzler
       ? "Der Bundeskanzler ist vorausgewählt. Du kannst stattdessen auch ein Mitglied des Bundestags aus deinem Wahlkreis wählen."
@@ -1333,6 +1413,8 @@ export function Step3Success({
       : isLand
         ? showLandPersonPicker
           ? `Wähle ${landesregierung?.institutionKind === "senat" ? "den Senat" : "die Landesregierung"} oder eine Person aus dem Landtag.`
+          : landesminister
+            ? "Das Tool hat die passende Person für dein Thema vorausgewählt. Du kannst auch an die Regierung oder an ein Mitglied des Landtags schreiben."
           : headPreselected
             ? "Die Regierungsspitze ist vorausgewählt. Du kannst stattdessen an die Landesregierung als Ganzes oder an ein Mitglied des Landtags schreiben."
             : governmentHead
@@ -1364,7 +1446,8 @@ export function Step3Success({
       setMdbLaterSelected(false);
       setCampaignSearch("");
       setCampaignPartyFilters([]);
-      setLandesregierungSelected(true);
+      setLandesregierungSelected(!landesminister);
+      setMinisterSelected(Boolean(landesminister));
       setLandAddressee(headPreselected ? "head" : "institution");
     };
 
@@ -1475,28 +1558,7 @@ export function Step3Success({
           </div>
         )}
 
-        {schoolView && schoolRecipient && (
-          <div className="mt-6 rounded-lg border-2 border-waldgruen bg-waldgruen/10 p-4">
-            <span className="mb-1.5 inline-block rounded bg-waldgruen/15 px-2 py-0.5 font-body text-[11px] font-semibold uppercase tracking-wide text-waldgruen-dark">
-              {schoolView.badge}
-            </span>
-            <p className="font-body text-base font-semibold text-warmgrau">{schoolView.name}</p>
-            {schoolView.office && (
-              <p className="mt-0.5 font-body text-sm text-warmgrau">{schoolView.office}</p>
-            )}
-            {schoolView.addressLines.length > 0 && (
-              <p className="mt-1 font-body text-sm leading-relaxed text-warmgrau">
-                {schoolView.addressLines.filter((line) => line !== schoolView.office && line !== schoolView.name).map((line) => (
-                  <span key={line} className="block">{line}</span>
-                ))}
-              </p>
-            )}
-            <p className="mt-3 font-body text-sm font-semibold text-waldgruen-dark">Warum diese Person?</p>
-            <p className="mt-0.5 font-body text-sm leading-relaxed text-warmgrau/80">{schoolRecipient.reason}</p>
-          </div>
-        )}
-
-        {!schoolView && (<>
+        <>
         {/* Politician cards - grouped by Wahlkreis. Each group gets a header
             ("Wahlkreis 21 · Hamburg-Nord") and its cards are labelled
             Direktmandat vs Landesliste. On long lists (PLZs straddling
@@ -1580,6 +1642,55 @@ export function Step3Success({
           </div>
         )}
 
+        {isLand && landesminister && (
+          <div role="radiogroup" aria-label="Fachminister:in auswählen" className="mt-6">
+            <div
+              role="radio"
+              aria-checked={ministerSelected}
+              tabIndex={0}
+              onClick={() => {
+                setMinisterSelected(true);
+                setLandesregierungSelected(false);
+                setSelectedPoliticianId(null);
+                setMdbLaterSelected(false);
+              }}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" || e.key === " ") {
+                  e.preventDefault();
+                  setMinisterSelected(true);
+                  setLandesregierungSelected(false);
+                  setSelectedPoliticianId(null);
+                  setMdbLaterSelected(false);
+                }
+              }}
+              className={[
+                "w-full cursor-pointer rounded-lg border-2 p-4 text-left transition-colors",
+                ministerSelected
+                  ? "border-waldgruen bg-waldgruen/10"
+                  : "border-waldgruen/20 bg-creme hover:border-waldgruen/40",
+              ].join(" ")}
+            >
+              {ministerView.badge && (
+                <span className="mb-1.5 inline-block rounded bg-waldgruen/15 px-2 py-0.5 font-body text-[11px] font-semibold uppercase tracking-wide text-waldgruen-dark">
+                  {ministerView.badge}
+                </span>
+              )}
+              <p className="font-body text-base font-semibold text-warmgrau">{landesminister.label}</p>
+              <p className="mt-1 font-body text-sm leading-relaxed text-warmgrau">
+                {landesminister.officeName}
+                {ministerView.addressLines
+                  .filter((line) => line !== landesminister.officeName)
+                  .map((line) => (
+                    <span key={line} className="block">{line}</span>
+                  ))}
+              </p>
+              <p className="mt-3 font-body text-sm leading-relaxed text-warmgrau/80">
+                Für dein Thema zuständig in {landesminister.bundeslandName}.
+              </p>
+            </div>
+          </div>
+        )}
+
         {isLand && landesregierung && (
           <div role="radiogroup" aria-label="Empfänger auswählen" className="mt-6">
             <div
@@ -1588,6 +1699,7 @@ export function Step3Success({
               tabIndex={0}
               onClick={() => {
                 setLandesregierungSelected(true);
+                setMinisterSelected(false);
                 setLandAddressee("institution");
                 setSelectedPoliticianId(null);
                 setMdbLaterSelected(false);
@@ -1596,6 +1708,7 @@ export function Step3Success({
                 if (e.key === "Enter" || e.key === " ") {
                   e.preventDefault();
                   setLandesregierungSelected(true);
+                setMinisterSelected(false);
                   setLandAddressee("institution");
                   setSelectedPoliticianId(null);
                   setMdbLaterSelected(false);
@@ -1650,6 +1763,7 @@ export function Step3Success({
                 tabIndex={0}
                 onClick={() => {
                   setLandesregierungSelected(true);
+                setMinisterSelected(false);
                   setLandAddressee("head");
                   setSelectedPoliticianId(null);
                   setMdbLaterSelected(false);
@@ -1658,6 +1772,7 @@ export function Step3Success({
                   if (e.key === "Enter" || e.key === " ") {
                     e.preventDefault();
                     setLandesregierungSelected(true);
+                setMinisterSelected(false);
                     setLandAddressee("head");
                     setSelectedPoliticianId(null);
                     setMdbLaterSelected(false);
@@ -1697,6 +1812,7 @@ export function Step3Success({
                   setShowLandPersonPicker(true);
                   setShowAlternativePicker(true);
                   setLandesregierungSelected(false);
+                  setMinisterSelected(false);
                   setSelectedPoliticianId(null);
                   setMdbLaterSelected(false);
                 }}
@@ -2011,6 +2127,7 @@ export function Step3Success({
                     setAlternativePolitician(null);
                     setRathausSelected(false);
                     setLandesregierungSelected(false);
+    setMinisterSelected(false);
                     setBundeskanzlerSelected(false);
                   }}
                   className={[
@@ -2062,7 +2179,7 @@ export function Step3Success({
           </button>
         )}
 
-        </>)}
+        </>
 
         {/* Submit after selection - full width to match cards */}
         {currentSelection !== null && (

@@ -92,6 +92,8 @@ export interface LevelRoutingContext {
   bundeslandName: string | null;
   ortsname: string | null;
   fixedRecipient?: CampaignFixedRecipientRecipient;
+  /** Nur Jugend ohne Klassenlink: Fachminister:in des Landes, wird in der Landesliste zuerst gezeigt und vorausgewählt. */
+  youthMinister?: LandesministerRecipient;
   /** Ehrlicher Hinweis, wenn die empfohlene Ebene für die PLZ nicht abgedeckt ist */
   coverageHint: string | null;
 }

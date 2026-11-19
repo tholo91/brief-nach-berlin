@@ -155,6 +155,15 @@ export function Step1Form({
 
       <div className="space-y-4">
         {/* PLZ */}
+        {plzLocked ? (
+          <div>
+            <input type="hidden" {...register("plz")} />
+            <p id="plz-hint" className="font-body text-sm font-semibold text-warmgrau" aria-live="polite">
+              {`PLZ ${plzValue} (von deiner Lehrkraft)`}
+              {locality ? <span className="font-normal text-warmgrau/60">{`, ${locality.ort}`}</span> : null}
+            </p>
+          </div>
+        ) : (
         <div>
           <label htmlFor="plz" className="block font-body text-sm font-semibold text-warmgrau mb-1">
             {copy.contact.postalCodeLabel}
@@ -165,12 +174,7 @@ export function Step1Form({
             inputMode="numeric"
             maxLength={5}
             placeholder={copy.contact.postalCodePlaceholder}
-            readOnly={plzLocked}
-            className={
-              plzLocked
-                ? inputClassName(false).replace("bg-creme", "bg-warmgrau/5 cursor-not-allowed")
-                : inputClassName((!!errors.plz && !!touchedFields.plz) || !!plzError)
-            }
+            className={inputClassName((!!errors.plz && !!touchedFields.plz) || !!plzError)}
             aria-describedby={errors.plz && touchedFields.plz ? "plz-error" : plzError ? "plz-server-error" : "plz-hint"}
             aria-invalid={(!!errors.plz && !!touchedFields.plz) || !!plzError}
             onFocus={() => onPlzErrorDismiss?.()}
@@ -181,11 +185,9 @@ export function Step1Form({
             className="text-sm text-warmgrau/60 mt-1 truncate"
             aria-live="polite"
           >
-            {plzLocked
-              ? `Die PLZ kommt aus deinem Klassenlink.${locality ? ` ${copy.contact.localityLookup.replace("{locality}", locality.ort)}` : ""}`
-              : locality
-                ? copy.contact.localityLookup.replace("{locality}", locality.ort)
-                : copy.contact.postalCodeHint}
+            {locality
+              ? copy.contact.localityLookup.replace("{locality}", locality.ort)
+              : copy.contact.postalCodeHint}
           </p>
           {errors.plz && touchedFields.plz && (
             <p id="plz-error" role="alert" className="text-sm text-airmail-rot mt-1">
@@ -198,6 +200,7 @@ export function Step1Form({
             </p>
           )}
         </div>
+        )}
 
         {/* Email */}
         {!pdfDelivery && (

@@ -1,6 +1,6 @@
 jest.mock("@/lib/mistral", () => ({}));
 
-import { describeSchoolRecipient } from "@/lib/schule/schoolRecipientView";
+import { describeSchoolRecipient, roleBadge } from "@/lib/schule/schoolRecipientView";
 import type { Recipient } from "@/lib/lookup/rathausRecipient";
 
 const minister: Recipient = {
@@ -26,7 +26,7 @@ const minister: Recipient = {
 describe("describeSchoolRecipient", () => {
   it("shows a minister with office and the address without the repeated name", () => {
     expect(describeSchoolRecipient(minister)).toEqual({
-      badge: "Landesregierung",
+      badge: "Senatorin",
       name: "Senatorin Test Bildung",
       office: "Die Senatorin für Kinder und Bildung",
       addressLines: ["Die Senatorin für Kinder und Bildung", "Rembertiring 8-12", "28195 Bremen"],
@@ -83,5 +83,34 @@ describe("describeSchoolRecipient", () => {
       }),
     ).toEqual({ badge: "Rathaus", name: "Bürgermeisteramt Köln", addressLines: ["Rathausplatz 1", "50667 Köln"] });
     expect(describeSchoolRecipient({ ...base, address: { source: "fallback" } }).addressLines).toEqual([]);
+  });
+});
+
+describe("roleBadge", () => {
+  it("shows the role of the person, not the institution", () => {
+    expect(roleBadge("Senatorin für Bau, Mobilität und Stadtentwicklung")).toBe("Senatorin");
+    expect(roleBadge("Bürgermeister, Senator für Finanzen")).toBe("Bürgermeister");
+    expect(roleBadge("Ministerin")).toBe("Ministerin");
+    expect(roleBadge(undefined)).toBeUndefined();
+    expect(roleBadge("")).toBeUndefined();
+  });
+
+  it("never labels a Landesregierung person as Senat or Landesregierung", () => {
+    const head = (describe_: Parameters<typeof describeSchoolRecipient>[0]) => describeSchoolRecipient(describe_);
+    const base = {
+      kind: "landesregierung" as const,
+      level: "Land" as const,
+      salutation: "x",
+      article: "den" as const,
+      institutionKind: "senat" as const,
+      bundeslandKey: "HB",
+      bundeslandName: "Bremen",
+      label: "Bürgermeister Test",
+      officeName: "Der Senat",
+      postalAddress: "x",
+      address: { addressLines: ["Bürgermeister Test", "Rathaus"], sourceTitle: "q", sourceUrl: "https://e.org", sourceStand: "2026-11-19" },
+    };
+    expect(head({ ...base, addressee: "head", headName: "Test", headTitle: "Bürgermeister" }).badge).toBe("Bürgermeister");
+    expect(head({ ...base, addressee: "institution" }).badge).toBeUndefined();
   });
 });

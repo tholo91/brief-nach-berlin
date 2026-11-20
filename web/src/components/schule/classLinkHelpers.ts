@@ -1,3 +1,5 @@
+import { normalizeSchule, SCHULE_MAX_CHARS } from "@/lib/schule/youth";
+
 export function classLinkFileName(klasse: number): string {
   return `brief-nach-berlin-klassenlink-klasse-${klasse}-qr.png`;
 }
@@ -47,9 +49,16 @@ export const STEP_INFO: Record<ClassLinkStep, string> = {
 };
 
 /** Fehlertext für den Schritt oder leer, wenn man weiter darf. */
-export function validateClassLinkStep(step: ClassLinkStep, input: { klasse: string; plz: string }): string {
+export function validateClassLinkStep(
+  step: ClassLinkStep,
+  input: { klasse: string; plz: string; schule?: string }
+): string {
   if (step !== 1) return "";
   if (!input.klasse) return "Wähl zuerst die Klassenstufe.";
   if (!/^\d{5}$/.test(input.plz.trim())) return "Gib eine fünfstellige Postleitzahl ein.";
+  // Leer ist erlaubt (das Feld ist optional); nur eine zu lange Angabe stoppt.
+  if (input.schule && input.schule.trim() && !normalizeSchule(input.schule)) {
+    return `Schule und Ort darf höchstens ${SCHULE_MAX_CHARS} Zeichen lang sein.`;
+  }
   return "";
 }

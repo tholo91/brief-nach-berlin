@@ -216,7 +216,10 @@ export default function KiTransparenzPage() {
               oder einen Klassenlink der Lehrkraft. Dort bekommt das
               Sprachmodell zusätzlich die Klassenstufe. Kommt die Klasse über
               einen Klassenlink, erhält es außerdem den Hinweis, dass der Brief
-              im Rahmen eines Unterrichtsprojekts entsteht.
+              im Rahmen eines Unterrichtsprojekts entsteht. Hat die Lehrkraft im
+              Klassenlink Schule und Ort eingetragen, bekommt es auch diese
+              Angabe und nennt sie einmal in der Vorstellung. Der Name wird in
+              keiner Datenbank gespeichert.
             </p>
             <p>
               Der Entwurf ist kürzer als sonst, je nach Klassenstufe und Länge

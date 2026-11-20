@@ -94,6 +94,10 @@ export default function SchuleAblaufPage() {
             <li key={item}>{item}</li>
           ))}
         </ul>
+        <p>
+          Beim Erstellen des Klassenlinks kannst du Schule und Ort eintragen. Der Name steht
+          dann einmal in jedem Brief und wird in keiner Datenbank gespeichert.
+        </p>
       </section>
 
       <section className="lesson-sheet" aria-labelledby="lesson-arbeitsblatt">

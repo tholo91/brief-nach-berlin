@@ -44,7 +44,7 @@ const faqs = [
   },
   {
     q: "Ist das für mein Kind sicher?",
-    a: "Ja. Dein Kind gibt in der Schule Postleitzahl und Anliegen ein, nur während der Verarbeitung, ohne Account. Die Lehrkraft entscheidet, ob der Entwurf als PDF auf dem Gerät bleibt oder per E-Mail kommt; nur beim E-Mail-Weg wird eine Adresse abgefragt. Im Jugendmodus gibt es keine Erinnerungen, keine Spendenbitte und keine Frage nach einer Partei. Den Entwurf formuliert eine KI von Mistral aus Frankreich.",
+    a: "Ja. Dein Kind gibt in der Schule Postleitzahl und Anliegen ein, nur während der Verarbeitung, ohne Account. Die Lehrkraft entscheidet, ob der Entwurf als PDF auf dem Gerät bleibt oder per E-Mail kommt; nur beim E-Mail-Weg wird eine Adresse abgefragt. Im Jugendmodus gibt es keine Erinnerungen, keine Spendenbitte und keine Frage nach einer Partei. Trägt die Lehrkraft im Klassenlink den Namen der Schule ein, kommt er in den Brief und wird in keiner Datenbank gespeichert. Den Entwurf formuliert eine KI von Mistral aus Frankreich.",
   },
   {
     q: "Was kostet das?",
@@ -163,7 +163,7 @@ export default function ElternPage() {
           <h2 id="eltern-daten" className={h2Class}>Ist das sicher?</h2>
           <ul className="mt-4 list-disc space-y-3 pl-5 marker:text-waldgruen">
             <li className={bodyClass}>
-              Verarbeitet werden Postleitzahl und Anliegen als Text, nur während der Verarbeitung, beim E-Mail-Weg auch die E-Mail-Adresse. Es gibt keine Accounts, auf meinem Server wird dafür nichts gespeichert.
+              Verarbeitet werden Postleitzahl und Anliegen als Text, nur während der Verarbeitung, beim E-Mail-Weg auch die E-Mail-Adresse. Es gibt keine Accounts, auf meinem Server wird dafür nichts gespeichert. Trägt die Lehrkraft den Schulnamen ein, kommt er in den Brief und wird ebenfalls in keiner Datenbank gespeichert.
             </li>
             <li className={bodyClass}>
               Den Entwurf formuliert eine KI von Mistral, einem Unternehmen aus Frankreich.

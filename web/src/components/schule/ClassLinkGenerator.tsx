@@ -3,7 +3,7 @@
 import { useRef, useState } from "react";
 import { CampaignQrDownload } from "@/components/campaigns/CampaignQrDownload";
 import { createClassLinkAction } from "@/lib/actions/createClassLink";
-import { KLASSE_MAX, KLASSE_MIN } from "@/lib/schule/youth";
+import { KLASSE_MAX, KLASSE_MIN, normalizeSchule, SCHULE_MAX_CHARS } from "@/lib/schule/youth";
 import { BigQrOverlay } from "./BigQrOverlay";
 import {
   LEVEL_OPTIONS,
@@ -28,7 +28,15 @@ const optionClass =
 const buttonClass = `inline-flex min-h-11 items-center justify-center gap-2 rounded-lg px-4 py-2.5 font-body text-base font-bold transition-colors ${focusRing}`;
 
 type Delivery = "pdf" | "email";
-type Result = { url: string; expiresAt: string; klasse: number; plz: string; delivery: Delivery; level: ClassLinkLevel };
+type Result = {
+  url: string;
+  expiresAt: string;
+  klasse: number;
+  plz: string;
+  delivery: Delivery;
+  level: ClassLinkLevel;
+  schule?: string;
+};
 
 const DELIVERY_OPTIONS: { value: Delivery; label: string; hint: string }[] = [
   { value: "pdf", label: "Als PDF, ohne E-Mail", hint: "Entwurf wird auf dem Gerät gespeichert." },
@@ -38,6 +46,7 @@ const DELIVERY_OPTIONS: { value: Delivery; label: string; hint: string }[] = [
 export function ClassLinkGenerator() {
   const [klasse, setKlasse] = useState("");
   const [plz, setPlz] = useState("");
+  const [schule, setSchule] = useState("");
   const [delivery, setDelivery] = useState<Delivery>("pdf");
   const [level, setLevel] = useState<ClassLinkLevel>("auto");
   const [loading, setLoading] = useState(false);
@@ -60,7 +69,7 @@ export function ClassLinkGenerator() {
     setCopyState("idle");
     const klasseNumber = Number(klasse);
     const plzClean = plz.trim();
-    const stepError = validateClassLinkStep(1, { klasse, plz });
+    const stepError = validateClassLinkStep(1, { klasse, plz, schule });
     if (stepError) {
       setError(stepError);
       setStep(1);
@@ -68,12 +77,27 @@ export function ClassLinkGenerator() {
     }
     setLoading(true);
     try {
-      const response = await createClassLinkAction({ klasse: klasseNumber, plz: plzClean, delivery, level });
+      const schuleClean = normalizeSchule(schule);
+      const response = await createClassLinkAction({
+        klasse: klasseNumber,
+        plz: plzClean,
+        delivery,
+        level,
+        ...(schuleClean ? { schule: schuleClean } : {}),
+      });
       if ("error" in response) {
         setError(response.message);
         setResult(null);
       } else {
-        setResult({ url: response.url, expiresAt: response.expiresAt, klasse: klasseNumber, plz: plzClean, delivery, level });
+        setResult({
+          url: response.url,
+          expiresAt: response.expiresAt,
+          klasse: klasseNumber,
+          plz: plzClean,
+          delivery,
+          level,
+          ...(schuleClean ? { schule: schuleClean } : {}),
+        });
       }
     } catch {
       setError("Das hat gerade nicht geklappt. Bitte versuch es noch einmal.");
@@ -83,7 +107,7 @@ export function ClassLinkGenerator() {
   }
 
   function goNext() {
-    const stepError = validateClassLinkStep(step, { klasse, plz });
+    const stepError = validateClassLinkStep(step, { klasse, plz, schule });
     setError(stepError);
     if (!stepError && step < 3) setStep((step + 1) as ClassLinkStep);
   }
@@ -189,6 +213,25 @@ export function ClassLinkGenerator() {
                     aria-describedby={error ? "schule-fehler" : undefined}
                     className={fieldClass}
                   />
+                </div>
+                <div>
+                  <label htmlFor="schule-name" className="font-body text-sm font-semibold text-waldgruen-dark">
+                    Schule und Ort <span className="font-normal text-warmgrau/70">(optional)</span>
+                  </label>
+                  <input
+                    id="schule-name"
+                    type="text"
+                    autoComplete="organization"
+                    maxLength={SCHULE_MAX_CHARS}
+                    value={schule}
+                    onChange={(e) => setSchule(e.target.value)}
+                    placeholder="Oberschule am Leibnizplatz, Bremen"
+                    aria-describedby="schule-name-hinweis"
+                    className={fieldClass}
+                  />
+                  <p id="schule-name-hinweis" className="mt-1 font-body text-xs leading-snug text-warmgrau/80">
+                    Steht dann in jedem Brief, damit klar ist, woher er kommt.
+                  </p>
                 </div>
               </div>
 
@@ -311,6 +354,7 @@ export function ClassLinkGenerator() {
               </div>
               <p className="mt-2 font-body text-sm text-warmgrau/80">
                 Gültig bis {formatValidUntil(result.expiresAt)}.{" "}
+                {result.schule ? `Schule im Brief: ${result.schule}. ` : ""}
                 {result.delivery === "pdf" ? "Die Klasse speichert den Entwurf als PDF." : "Die Klasse bekommt den Entwurf per E-Mail."}{" "}
                 {levelSummary(result.level)}
                 {" "}Der Link gilt 14 Tage.

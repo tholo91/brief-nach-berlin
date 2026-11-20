@@ -9,6 +9,7 @@ jest.mock("@/lib/actions/createClassLink", () => ({
 
 import { ClassLinkGenerator } from "@/components/schule/ClassLinkGenerator";
 import { LEVEL_OPTIONS, STEP_INFO, levelSummary } from "@/components/schule/classLinkHelpers";
+import { SCHULE_MAX_CHARS } from "@/lib/schule/youth";
 
 describe("ClassLinkGenerator Empfänger (A4)", () => {
   const html = renderToStaticMarkup(createElement(ClassLinkGenerator));
@@ -35,5 +36,15 @@ describe("ClassLinkGenerator Empfänger (A4)", () => {
     expect(levelSummary("auto")).toContain("passend zum Thema");
     expect(levelSummary("Land")).toContain("Landesebene");
     expect(levelSummary("Bund")).toContain("Bundesebene");
+  });
+
+  it("hat ein optionales Feld Schule und Ort mit Höchstlänge und Hinweis", () => {
+    const input = html.match(/<input id="schule-name"[^>]*>/)?.[0] ?? "";
+    expect(input).toContain(`maxLength="${SCHULE_MAX_CHARS}"`);
+    expect(input).toContain('placeholder="Oberschule am Leibnizplatz, Bremen"');
+    expect(input).not.toContain("required");
+    expect(html).toContain("Schule und Ort");
+    expect(html).toContain("(optional)");
+    expect(html).toContain("Steht dann in jedem Brief, damit klar ist, woher er kommt.");
   });
 });

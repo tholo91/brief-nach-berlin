@@ -25,9 +25,17 @@ describe("YouthLetterDraft", () => {
 
   it("shows heading, instruction and the letter text with line breaks", () => {
     expect(html).toContain("Dein Entwurf");
-    expect(html).toContain("Schreib deinen Brief von Hand, der Entwurf hilft dir dabei. Ergänze ein eigenes Erlebnis.");
+    expect(html).toContain("Schreib deinen Brief von Hand, der Entwurf hilft dir dabei. Du kannst ihn hier direkt ändern und ein eigenes Erlebnis ergänzen.");
     expect(html).toContain("Zeile eins\n\nZeile zwei");
-    expect(html).toContain("whitespace-pre-line");
+    expect(html).toContain("<textarea");
+  });
+
+  it("offers copy, tips and a one-time improve box", () => {
+    expect(html).toContain("Text kopieren");
+    expect(html).toContain("So wirkt dein Brief");
+    expect(html).toContain("ein, höchstens zwei Anliegen");
+    expect(html).toContain("Brief verbessern");
+    expect(html).toContain("Das geht einmal");
   });
 
   it("contains no em dashes", () => {

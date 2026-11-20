@@ -1,11 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
 import { randomUUID } from "node:crypto";
-import { letterVariantSchema } from "@/lib/validation/wizardSchemas";
+import { letterVariantSchema, youthLetterVariantSchema } from "@/lib/validation/wizardSchemas";
 import { generateLetterVariant } from "@/lib/generation/generateLetterVariant";
 import { sendVariantEmail } from "@/lib/email/sendVariantEmail";
 import { buildVariantDebugPayload } from "@/lib/email/variantDebugPayload";
 import { checkRateLimit, hashIdentifier, LIMITS } from "@/lib/rateLimit";
 import { MistralProviderUnavailableError } from "@/lib/mistral";
+import { verifyClassToken } from "@/lib/schule/classToken";
 
 export const maxDuration = 60;
 
@@ -27,9 +28,53 @@ function errorMessage(error: unknown): string {
   return first ?? "Ungültige Eingabe.";
 }
 
+function rateLimited(retryAfterSeconds?: number) {
+  return NextResponse.json(
+    { error: RATE_LIMIT_MESSAGE },
+    { status: 429, headers: { "Retry-After": String(retryAfterSeconds ?? 60) } }
+  );
+}
+
+async function handleYouth(req: NextRequest, body: unknown) {
+  const parsed = youthLetterVariantSchema.safeParse(body);
+  if (!parsed.success) {
+    return NextResponse.json({ error: errorMessage(parsed.error) }, { status: 400 });
+  }
+  const data = parsed.data;
+
+  const bucketId = verifyClassToken(data.classToken)?.bucketId;
+  const limit = bucketId
+    ? checkRateLimit(
+        `letter-variant:class:${bucketId}`,
+        LIMITS.LETTER_VARIANTS_PER_CLASS.max,
+        LIMITS.LETTER_VARIANTS_PER_CLASS.windowMs
+      )
+    : checkRateLimit(
+        `letter-variant-youth:ip:${hashIdentifier(ipFromRequest(req))}`,
+        LIMITS.LETTER_VARIANTS_PER_IP.max,
+        LIMITS.LETTER_VARIANTS_PER_IP.windowMs
+      );
+  if (!limit.allowed) return rateLimited(limit.retryAfterSeconds);
+
+  const wordCount = data.originalLetter.split(/\s+/).filter(Boolean).length;
+  const result = await generateLetterVariant({
+    originalLetter: data.originalLetter,
+    changeRequest: data.changeRequest,
+    toneLevel: 3,
+    originalToneLevel: 3,
+    wordWindow: { min: Math.round(wordCount * 0.7), max: Math.round(wordCount * 1.2) },
+    rateLimitBudgetMs: 20_000,
+  });
+  return NextResponse.json({ success: true, letter: result.letter });
+}
+
 export async function POST(req: NextRequest) {
   try {
-    const parsed = letterVariantSchema.safeParse(await req.json());
+    const body: unknown = await req.json();
+    if ((body as { mode?: unknown } | null)?.mode === "youth") {
+      return await handleYouth(req, body);
+    }
+    const parsed = letterVariantSchema.safeParse(body);
     if (!parsed.success) {
       return NextResponse.json({ error: errorMessage(parsed.error) }, { status: 400 });
     }

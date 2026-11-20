@@ -12,6 +12,10 @@ export interface GenerateLetterVariantInput {
   originalToneLevel?: number;
   letterLength?: LetterLength;
   changeRequest?: string;
+  /** Eigenes Wortfenster (Jugendmodus) statt LETTER_LENGTHS. */
+  wordWindow?: { min: number; max: number };
+  /** Zeitbudget für 429-Retries; ohne Angabe gilt das Standardverhalten. */
+  rateLimitBudgetMs?: number;
 }
 
 export interface GenerateLetterVariantResult {
@@ -71,14 +75,15 @@ export function buildVariantUserPrompt(input: GenerateLetterVariantInput): strin
   const changeRequest = input.changeRequest?.trim();
   const originalWordCount = countWords(input.originalLetter);
   const lengthKey = input.letterLength ?? letterLengthFromWordCount(originalWordCount);
-  const { min: minWords, max: maxWords, label } = LETTER_LENGTHS[lengthKey];
+  const { min: minWords, max: maxWords } = input.wordWindow ?? LETTER_LENGTHS[lengthKey];
+  const lengthPhrase = input.wordWindow ? "etwa so lang wie bisher" : LETTER_LENGTHS[lengthKey].label;
 
   return `<tonalitaet>
 ${tonalityBlock(toneLevel)}
 </tonalitaet>
 
 <laengenvorgabe>
-Der bestehende Brief hat ${originalWordCount} Wörter. Die gewünschte Länge ist ${label}, also ${minWords} bis ${maxWords} Wörter. Die Variante muss ein vollständiger Brief bleiben und in diesem Wortfenster liegen. Wenn der Änderungswunsch kürzer oder länger verlangt, gilt trotzdem dieses Wortfenster. Schreibe keinen Teaser, keine Zusammenfassung und keinen Auszug.
+Der bestehende Brief hat ${originalWordCount} Wörter. Die gewünschte Länge ist ${lengthPhrase}, also ${minWords} bis ${maxWords} Wörter. Die Variante muss ein vollständiger Brief bleiben und in diesem Wortfenster liegen. Wenn der Änderungswunsch kürzer oder länger verlangt, gilt trotzdem dieses Wortfenster. Schreibe keinen Teaser, keine Zusammenfassung und keinen Auszug.
 </laengenvorgabe>
 
 <aenderungswunsch>
@@ -155,9 +160,9 @@ function countWords(text: string): number {
   return text.trim().split(/\s+/).filter(Boolean).length;
 }
 
-function assertCompleteVariant(letter: string): number {
+function assertCompleteVariant(letter: string, floor = 140): number {
   const wordCount = countWords(letter);
-  if (wordCount < 140) {
+  if (wordCount < floor) {
     throw new Error(`Mistral returned incomplete variant letter (${wordCount} words)`);
   }
   return wordCount;
@@ -189,7 +194,8 @@ async function requestVariantCompletion(
       maxTokens,
       frequencyPenalty: 0.25,
       presencePenalty: 0.15,
-    })
+    }),
+    input.rateLimitBudgetMs !== undefined ? { rateLimitBudgetMs: input.rateLimitBudgetMs } : {}
   );
 }
 
@@ -198,7 +204,7 @@ export async function generateLetterVariant(
 ): Promise<GenerateLetterVariantResult> {
   const originalWordCount = countWords(input.originalLetter);
   const lengthKey = input.letterLength ?? letterLengthFromWordCount(originalWordCount);
-  const { min: minWords, max: maxWords } = LETTER_LENGTHS[lengthKey];
+  const { min: minWords, max: maxWords } = input.wordWindow ?? LETTER_LENGTHS[lengthKey];
   const maxTokens = Math.min(4500, Math.max(900, Math.ceil(maxWords * 2.6) + 400));
   const generationStart = Date.now();
 
@@ -222,7 +228,7 @@ export async function generateLetterVariant(
   }
 
   letter = lowercaseAfterSalutation(letter);
-  wordCount = assertCompleteVariant(letter);
+  wordCount = assertCompleteVariant(letter, input.wordWindow ? Math.floor(minWords * 0.7) : 140);
   const wordCountInRange = wordCount >= minWords && wordCount <= maxWords;
 
   if (!wordCountInRange) {

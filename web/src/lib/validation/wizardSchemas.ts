@@ -72,6 +72,20 @@ export const letterVariantSchema = z.object({
     .optional(),
 });
 
+export const youthLetterVariantSchema = z.object({
+  mode: z.literal("youth"),
+  originalLetter: z.string()
+    .trim()
+    .min(200, { message: "Der Brief ist zu kurz zum Verbessern." })
+    .max(6000),
+  changeRequest: z.string()
+    .trim()
+    .min(5, { message: "Schreib kurz, was anders werden soll." })
+    .max(1000),
+  classToken: z.string().max(2000).optional(),
+});
+
+export type YouthLetterVariantData = z.infer<typeof youthLetterVariantSchema>;
 export type Step1Data = z.infer<typeof step1Schema>;
 export type Step1bData = z.infer<typeof step1bSchema>;
 export type Step2Data = z.infer<typeof step2Schema>;

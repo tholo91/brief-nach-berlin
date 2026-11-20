@@ -34,6 +34,15 @@ describe("letter variant prompt", () => {
     expect(VARIANT_SYSTEM_PROMPT).toContain("dramatischen Zuspitzungen");
   });
 
+  it("nennt bei wordWindow das eigene Wortfenster statt des Seitenlabels", () => {
+    const prompt = buildVariantUserPrompt({
+      originalLetter: "wort ".repeat(100).trim(),
+      wordWindow: { min: 70, max: 120 },
+    });
+    expect(prompt).toContain("etwa so lang wie bisher, also 70 bis 120 Wörter");
+    expect(prompt).not.toContain("Seite");
+  });
+
   it("embeds the existing letter and optional change request in separate blocks", () => {
     const prompt = buildVariantUserPrompt({
       originalLetter: "Sehr geehrte Frau Mustermann,\n\nbitte setzen Sie sich für sichere Radwege ein.\n\nMit freundlichen Grüßen,\nMax",

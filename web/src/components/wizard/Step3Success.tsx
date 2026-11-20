@@ -1005,7 +1005,13 @@ export function Step3Success({
           )}
           {/* Jugendmodus: Entwurf vor der Link-Zeile, damit deren Panels direkt darunter aufgehen. */}
           {youthDraft && (
-            <YouthLetterDraft letterText={letterText} recipient={generatedRecipient} pdfDelivery={pdfDelivery} />
+            <YouthLetterDraft
+              key={letterText}
+              letterText={letterText}
+              recipient={generatedRecipient}
+              pdfDelivery={pdfDelivery}
+              classToken={wizardData.classToken}
+            />
           )}
           <div className="mt-3 flex items-center justify-center divide-x divide-warmgrau/20">
             {/* Erneut senden braucht den Brieftext, den es nur mit letterReady gibt. */}

@@ -8,6 +8,7 @@ import { createClassLinkAction } from "@/lib/actions/createClassLink";
 import { APP_URL } from "@/lib/config";
 import { verifyClassToken } from "@/lib/schule/classToken";
 import { createQrMatrix } from "@/lib/qr-code";
+import { SCHULE_MAX_CHARS } from "@/lib/schule/youth";
 import { getClientIp } from "@/lib/rateLimit";
 
 const mockedIp = getClientIp as jest.Mock;
@@ -114,6 +115,61 @@ describe("createClassLinkAction", () => {
     }
     expect(await createClassLinkAction({ klasse: 8, plz: "10115" })).toMatchObject({
       error: "rate_limited",
+    });
+  });
+
+  describe("Schule und Ort", () => {
+    it("schreibt den Schulnamen signiert ins Token und der Link passt ins QR", async () => {
+      const res = await createClassLinkAction({
+        klasse: 13,
+        plz: "28195",
+        delivery: "pdf",
+        level: "Land",
+        schule: "  Oberschule am Leibnizplatz,   Bremen ",
+      });
+      if ("error" in res) throw new Error(res.error);
+      const token = res.url.slice(`${APP_URL}/schule?k=`.length);
+      expect(verifyClassToken(token)).toMatchObject({
+        klasse: 13,
+        delivery: "pdf",
+        level: "Land",
+        schule: "Oberschule am Leibnizplatz, Bremen",
+      });
+      expect(() => createQrMatrix(res.url)).not.toThrow();
+    });
+
+    it("liefert ohne oder mit leerem Schulnamen denselben Token wie früher", async () => {
+      jest.useFakeTimers();
+      jest.setSystemTime(new Date("2026-10-01T10:00:00Z"));
+      try {
+        const none = await createClassLinkAction({ klasse: 9, plz: "10115" });
+        const empty = await createClassLinkAction({ klasse: 9, plz: "10115", schule: "" });
+        const blank = await createClassLinkAction({ klasse: 9, plz: "10115", schule: "   " });
+        if ("error" in none || "error" in empty || "error" in blank) throw new Error("unexpected");
+        expect(empty.url).toBe(none.url);
+        expect(blank.url).toBe(none.url);
+      } finally {
+        jest.useRealTimers();
+      }
+    });
+
+    it("lehnt zu lange oder falsch typisierte Schulnamen mit Hinweis auf die Höchstlänge ab", async () => {
+      const tooLong = await createClassLinkAction({ klasse: 9, plz: "10115", schule: "x".repeat(SCHULE_MAX_CHARS + 1) });
+      expect(tooLong).toMatchObject({ error: "invalid_input" });
+      if (!("error" in tooLong)) throw new Error("unexpected");
+      expect(tooLong.message).toContain(String(SCHULE_MAX_CHARS));
+      expect(await createClassLinkAction({ klasse: 9, plz: "10115", schule: 42 as never })).toMatchObject({
+        error: "invalid_input",
+      });
+    });
+
+    it("lehnt einen Namen ab, dessen Link nicht mehr in den QR-Code passt", async () => {
+      // Zufällig wirkende Schriftzeichen lassen sich kaum komprimieren.
+      const schule = Array.from({ length: SCHULE_MAX_CHARS }, (_, i) =>
+        String.fromCharCode(0x4e00 + i * 331),
+      ).join("");
+      const res = await createClassLinkAction({ klasse: 13, plz: "10115", delivery: "pdf", level: "Land", schule });
+      expect(res).toMatchObject({ error: "invalid_input" });
     });
   });
 });

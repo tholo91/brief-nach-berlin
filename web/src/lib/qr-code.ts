@@ -1,11 +1,68 @@
-const version = 10;
-const size = version * 4 + 17;
-const dataCodewords = 154;
-const rawCodewords = 346;
-const errorCorrectionCodewords = 24;
-const errorCorrectionBlocks = 8;
-const shortBlocks = 6;
-const shortBlockDataCodewords = 19;
+// Hand geschriebener QR-Encoder: Byte-Modus, Fehlerkorrektur Q, feste Maske 0.
+// Es wird die kleinste Version gewählt, in die der Text passt. Die Tabelle unten
+// stammt aus ISO/IEC 18004 (Blöcke, EC-Codewörter je Block, Positionen der
+// Alignment-Muster); alles andere folgt daraus. Version 10 bleibt Byte für Byte
+// wie bisher, größere Versionen kommen nur bei längeren Texten zum Einsatz.
+interface QrVersionSpec {
+  version: number;
+  errorCorrectionBlocks: number;
+  errorCorrectionCodewords: number;
+  alignmentCenters: number[];
+}
+
+const VERSIONS: QrVersionSpec[] = [
+  { version: 10, errorCorrectionBlocks: 8, errorCorrectionCodewords: 24, alignmentCenters: [6, 28, 50] },
+  { version: 12, errorCorrectionBlocks: 10, errorCorrectionCodewords: 26, alignmentCenters: [6, 32, 58] },
+  { version: 14, errorCorrectionBlocks: 16, errorCorrectionCodewords: 20, alignmentCenters: [6, 26, 46, 66] },
+];
+
+interface QrSpec extends QrVersionSpec {
+  size: number;
+  rawCodewords: number;
+  dataCodewords: number;
+  shortBlocks: number;
+  shortBlockDataCodewords: number;
+}
+
+function buildSpec(entry: QrVersionSpec): QrSpec {
+  const { version, errorCorrectionBlocks, errorCorrectionCodewords } = entry;
+  // Datenmodule ohne Funktionsmuster (ISO 18004, Annex): Gesamtfläche minus Finder,
+  // Timing, Alignment und Versionsinfo; Rest-Bits (< 8) gehören nicht zu den Codewörtern.
+  const alignCount = Math.floor(version / 7) + 2;
+  const rawModules =
+    (16 * version + 128) * version + 64 - ((25 * alignCount - 10) * alignCount - 55) - 36;
+  const rawCodewords = Math.floor(rawModules / 8);
+  return {
+    ...entry,
+    size: version * 4 + 17,
+    rawCodewords,
+    dataCodewords: rawCodewords - errorCorrectionBlocks * errorCorrectionCodewords,
+    shortBlocks: errorCorrectionBlocks - (rawCodewords % errorCorrectionBlocks),
+    shortBlockDataCodewords:
+      Math.floor(rawCodewords / errorCorrectionBlocks) - errorCorrectionCodewords,
+  };
+}
+
+const SPECS = VERSIONS.map(buildSpec);
+
+// Moduswahl-Bits (4) + Längenfeld (16 Bit ab Version 10) liegen vor den Nutzdaten.
+function byteCapacity(spec: QrSpec): number {
+  return Math.floor((spec.dataCodewords * 8 - 4 - 16) / 8);
+}
+
+/** Größte Textlänge in Byte, die noch in einen QR-Code passt. */
+export const QR_MAX_BYTES = byteCapacity(SPECS[SPECS.length - 1]);
+
+export function qrFits(text: string): boolean {
+  return new TextEncoder().encode(text).length <= QR_MAX_BYTES;
+}
+
+function pickSpec(byteLength: number): QrSpec {
+  const spec = SPECS.find((candidate) => byteLength <= byteCapacity(candidate));
+  if (!spec) throw new Error("QR payload is too long.");
+  return spec;
+}
+
 const maskPattern = 0;
 const quartileFormatBits = 3;
 
@@ -36,8 +93,8 @@ function bitsToCodewords(bits: number[]): number[] {
   return result;
 }
 
-function encodeData(text: string): number[] {
-  const bytes = [...new TextEncoder().encode(text)];
+function encodeData(bytes: number[], spec: QrSpec): number[] {
+  const { dataCodewords } = spec;
   const capacityBits = dataCodewords * 8;
   const bits: number[] = [];
 
@@ -99,7 +156,14 @@ function reedSolomonRemainder(data: number[], divisor: number[]): number[] {
   return result;
 }
 
-function addErrorCorrection(data: number[]): number[] {
+function addErrorCorrection(data: number[], spec: QrSpec): number[] {
+  const {
+    errorCorrectionBlocks,
+    errorCorrectionCodewords,
+    rawCodewords,
+    shortBlocks,
+    shortBlockDataCodewords,
+  } = spec;
   const divisor = reedSolomonDivisor(errorCorrectionCodewords);
   const blocks: Block[] = [];
   let offset = 0;
@@ -134,7 +198,7 @@ function addErrorCorrection(data: number[]): number[] {
   return result;
 }
 
-function createEmptyMatrix(): { modules: boolean[][]; functionModules: boolean[][] } {
+function createEmptyMatrix(size: number): { modules: boolean[][]; functionModules: boolean[][] } {
   return {
     modules: Array.from({ length: size }, () => Array<boolean>(size).fill(false)),
     functionModules: Array.from({ length: size }, () => Array<boolean>(size).fill(false)),
@@ -154,7 +218,7 @@ function formatBits(): number {
   return ((data << 10) | remainder) ^ 0x5412;
 }
 
-function versionBits(): number {
+function versionBits(version: number): number {
   let remainder = version;
   for (let i = 0; i < 12; i += 1) {
     remainder = (remainder << 1) ^ ((remainder >>> 11) * 0x1f25);
@@ -176,6 +240,7 @@ function setFunctionModule(
 function drawFinder(
   modules: boolean[][],
   functionModules: boolean[][],
+  size: number,
   centerX: number,
   centerY: number
 ): void {
@@ -215,7 +280,12 @@ function drawAlignment(
   }
 }
 
-function drawFunctionPatterns(modules: boolean[][], functionModules: boolean[][]): void {
+function drawFunctionPatterns(
+  modules: boolean[][],
+  functionModules: boolean[][],
+  spec: QrSpec
+): void {
+  const { size, version, alignmentCenters } = spec;
   // Timing first: the finder patterns must overwrite it, otherwise their
   // row and column 6 get the alternating timing modules and no scanner finds the code.
   for (let i = 0; i < size; i += 1) {
@@ -223,13 +293,20 @@ function drawFunctionPatterns(modules: boolean[][], functionModules: boolean[][]
     setFunctionModule(modules, functionModules, i, 6, i % 2 === 0);
   }
 
-  drawFinder(modules, functionModules, 3, 3);
-  drawFinder(modules, functionModules, size - 4, 3);
-  drawFinder(modules, functionModules, 3, size - 4);
+  drawFinder(modules, functionModules, size, 3, 3);
+  drawFinder(modules, functionModules, size, size - 4, 3);
+  drawFinder(modules, functionModules, size, 3, size - 4);
 
-  for (const y of [6, 28, 50]) {
-    for (const x of [6, 28, 50]) {
-      if ((x === 6 && y === 6) || (x === 6 && y === 50) || (x === 50 && y === 6)) {
+  const firstCenter = alignmentCenters[0];
+  const lastCenter = alignmentCenters[alignmentCenters.length - 1];
+  for (const y of alignmentCenters) {
+    for (const x of alignmentCenters) {
+      // Die drei Ecken mit Finder-Mustern bekommen kein Alignment-Muster.
+      if (
+        (x === firstCenter && y === firstCenter) ||
+        (x === firstCenter && y === lastCenter) ||
+        (x === lastCenter && y === firstCenter)
+      ) {
         continue;
       }
       drawAlignment(modules, functionModules, x, y);
@@ -246,7 +323,7 @@ function drawFunctionPatterns(modules: boolean[][], functionModules: boolean[][]
   for (let i = 8; i < 15; i += 1) setFunctionModule(modules, functionModules, 8, size - 15 + i, getBit(format, i));
   setFunctionModule(modules, functionModules, 8, size - 8, true);
 
-  const versionInfo = versionBits();
+  const versionInfo = versionBits(version);
   for (let i = 0; i < 18; i += 1) {
     const bit = getBit(versionInfo, i);
     const a = size - 11 + (i % 3);
@@ -259,7 +336,8 @@ function drawFunctionPatterns(modules: boolean[][], functionModules: boolean[][]
 function drawCodewords(
   modules: boolean[][],
   functionModules: boolean[][],
-  codewords: number[]
+  codewords: number[],
+  size: number
 ): void {
   let bitIndex = 0;
 
@@ -283,8 +361,15 @@ function drawCodewords(
 }
 
 export function createQrMatrix(text: string): boolean[][] {
-  const { modules, functionModules } = createEmptyMatrix();
-  drawFunctionPatterns(modules, functionModules);
-  drawCodewords(modules, functionModules, addErrorCorrection(encodeData(text)));
+  const bytes = [...new TextEncoder().encode(text)];
+  const spec = pickSpec(bytes.length);
+  const { modules, functionModules } = createEmptyMatrix(spec.size);
+  drawFunctionPatterns(modules, functionModules, spec);
+  drawCodewords(
+    modules,
+    functionModules,
+    addErrorCorrection(encodeData(bytes, spec), spec),
+    spec.size
+  );
   return modules;
 }

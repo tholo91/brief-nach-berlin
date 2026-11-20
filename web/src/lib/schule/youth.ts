@@ -41,10 +41,32 @@ export function youthLetterWords(
   return band;
 }
 
+// Optionaler Schulname aus dem Klassenlink ("Schule und Ort"). Er reist im signierten
+// Token und muss mit dem längsten Fall noch in den QR-Code des Links passen.
+export const SCHULE_MAX_CHARS = 60;
+
+/**
+ * Bereinigt "Schule und Ort": nur Text, NFC, ohne Steuerzeichen und spitze Klammern,
+ * Leerraum zusammengezogen. Leer oder zu lang ergibt undefined (nicht kürzen).
+ * Client und Server nutzen dieselbe Funktion.
+ */
+export function normalizeSchule(value: unknown): string | undefined {
+  if (typeof value !== "string") return undefined;
+  const cleaned = value
+    .normalize("NFC")
+    .replace(/[\u0000-\u001f\u007f-\u009f<>]/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+  if (cleaned.length === 0 || cleaned.length > SCHULE_MAX_CHARS) return undefined;
+  return cleaned;
+}
+
 export interface YouthLetterContext {
   klasse: number;
   /** Über einen gültigen Klassenlink gekommen: der Brief nennt das Unterrichtsprojekt. */
   viaClassLink: boolean;
+  /** Schule und Ort aus dem signierten Klassen-Token; nie aus einem Client-Feld. */
+  schule?: string;
 }
 
 export function isValidKlasse(value: unknown): value is number {

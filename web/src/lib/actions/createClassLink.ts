@@ -4,7 +4,8 @@ import { APP_URL } from "@/lib/config";
 import { lookupPLZ } from "@/lib/lookup/plzLookup";
 import { checkRateLimit, getClientIp, hashIdentifier, LIMITS } from "@/lib/rateLimit";
 import { CLASS_TOKEN_MAX_AGE_SECONDS, signClassToken } from "@/lib/schule/classToken";
-import { isValidKlasse } from "@/lib/schule/youth";
+import { qrFits } from "@/lib/qr-code";
+import { isValidKlasse, normalizeSchule, SCHULE_MAX_CHARS } from "@/lib/schule/youth";
 
 type ClassLinkError = "invalid_input" | "unknown_plz" | "rate_limited";
 
@@ -15,8 +16,13 @@ const MESSAGES: Record<ClassLinkError, string> = {
     "Du hast in der letzten Stunde schon viele Links erstellt. Versuch es später noch einmal.",
 };
 
-function fail(error: ClassLinkError): { error: ClassLinkError; message: string } {
-  return { error, message: MESSAGES[error] };
+const SCHULE_MESSAGE = `Schule und Ort darf höchstens ${SCHULE_MAX_CHARS} Zeichen lang sein, mit vielen Sonderzeichen auch weniger. Bitte kürz den Namen.`;
+
+function fail(
+  error: ClassLinkError,
+  message: string = MESSAGES[error]
+): { error: ClassLinkError; message: string } {
+  return { error, message };
 }
 
 export async function createClassLinkAction(input: {
@@ -26,6 +32,8 @@ export async function createClassLinkAction(input: {
   delivery?: "pdf" | "email";
   /** Empfänger-Ebene: "auto" (Standard, der Router entscheidet), "Land" oder "Bund". */
   level?: "auto" | "Land" | "Bund";
+  /** Optional: "Schule und Ort", landet signiert im Token. */
+  schule?: string;
 }): Promise<{ url: string; expiresAt: string } | { error: ClassLinkError; message: string }> {
   const klasse = input?.klasse;
   const plz = input?.plz;
@@ -40,6 +48,13 @@ export async function createClassLinkAction(input: {
   ) {
     return fail("invalid_input");
   }
+  const rawSchule = input?.schule;
+  const hasSchule = typeof rawSchule === "string" && rawSchule.trim().length > 0;
+  const schule = hasSchule ? normalizeSchule(rawSchule) : undefined;
+  if (rawSchule !== undefined && rawSchule !== null && typeof rawSchule !== "string") {
+    return fail("invalid_input");
+  }
+  if (hasSchule && !schule) return fail("invalid_input", SCHULE_MESSAGE);
   if (lookupPLZ(plz).wahlkreisIds.length === 0) return fail("unknown_plz");
 
   const ipHash = hashIdentifier(await getClientIp());
@@ -50,9 +65,18 @@ export async function createClassLinkAction(input: {
   );
   if (!limit.allowed) return fail("rate_limited");
 
-  const token = signClassToken({ klasse, plz, delivery, ...(level === "auto" ? {} : { level }) });
+  const token = signClassToken({
+    klasse,
+    plz,
+    delivery,
+    ...(level === "auto" ? {} : { level }),
+    ...(schule ? { schule } : {}),
+  });
+  const url = `${APP_URL}/schule?k=${token}`;
+  // Ungewöhnliche Zeichen (z. B. Kyrillisch) lassen sich schlecht komprimieren: lieber kürzen lassen als einen QR-Code ohne Platz.
+  if (!qrFits(url)) return fail("invalid_input", SCHULE_MESSAGE);
   return {
-    url: `${APP_URL}/schule?k=${token}`,
+    url,
     expiresAt: new Date(Date.now() + CLASS_TOKEN_MAX_AGE_SECONDS * 1000).toISOString(),
   };
 }

@@ -4,6 +4,7 @@ import { createHmac } from "node:crypto";
 import { deflateRawSync } from "node:zlib";
 import { signFeedbackToken, verifyFeedbackToken } from "@/lib/feedback/token";
 import { signClassToken, verifyClassToken } from "@/lib/schule/classToken";
+import { normalizeSchule, SCHULE_MAX_CHARS } from "@/lib/schule/youth";
 
 const SECRET = "test-class-token-secret";
 const DAY_MS = 24 * 60 * 60 * 1000;
@@ -151,5 +152,78 @@ describe("classToken", () => {
     const token = signClassToken({ klasse: 9, plz: "28203" });
     delete process.env.FEEDBACK_TOKEN_SECRET;
     expect(verifyClassToken(token)).toBeNull();
+  });
+
+  describe("Schule und Ort", () => {
+    it("läuft im Roundtrip mit und ohne Schulname", () => {
+      const withSchule = signClassToken({ klasse: 9, plz: "28203", schule: "Oberschule am Leibnizplatz, Bremen" });
+      expect(verifyClassToken(withSchule)?.schule).toBe("Oberschule am Leibnizplatz, Bremen");
+      expect(verifyClassToken(signClassToken({ klasse: 9, plz: "28203" }))?.schule).toBeUndefined();
+      expect(verifyClassToken(signClassToken({ klasse: 9, plz: "28203", schule: "  " }))?.schule).toBeUndefined();
+    });
+
+    it("lässt Tokens ohne Schulname unverändert (kein s-Feld, voller MAC)", () => {
+      jest.useFakeTimers();
+      jest.setSystemTime(new Date("2026-10-01T10:00:00Z"));
+      const legacy = signFeedbackToken({ v: 1, k: 9, p: "28203" }, {
+        macDomain: "class-link-v1.",
+        maxAgeSeconds: 14 * 24 * 60 * 60,
+      });
+      expect(signClassToken({ klasse: 9, plz: "28203" })).toBe(legacy);
+      expect(signClassToken({ klasse: 9, plz: "28203", schule: undefined })).toBe(legacy);
+    });
+
+    it("kürzt den MAC, sobald ein Schulname im Token steht, und lehnt Manipulation ab", () => {
+      const token = signClassToken({ klasse: 9, plz: "28203", schule: "Gymnasium Musterstadt" });
+      const [body, mac] = token.split(".");
+      expect(mac).toHaveLength(22);
+      const flip = (s: string) => s.slice(0, -1) + (s.endsWith("A") ? "B" : "A");
+      expect(verifyClassToken(`${flip(body!)}.${mac}`)).toBeNull();
+      expect(verifyClassToken(`${body}.${flip(mac!)}`)).toBeNull();
+    });
+
+    it("ignoriert einen ungültigen Schulnamen im Token, das Token bleibt gültig", () => {
+      const tooLong = verifyClassToken(signRaw({ v: 1, k: 9, p: "28203", s: "x".repeat(SCHULE_MAX_CHARS + 1) }, "class-link-v1."));
+      expect(tooLong).toMatchObject({ klasse: 9, plz: "28203" });
+      expect(tooLong?.schule).toBeUndefined();
+      expect(verifyClassToken(signRaw({ v: 1, k: 9, p: "28203", s: 42 }, "class-link-v1."))?.schule).toBeUndefined();
+      expect(verifyClassToken(signRaw({ v: 1, k: 9, p: "28203", s: "" }, "class-link-v1."))?.schule).toBeUndefined();
+    });
+
+    it("trägt auch den längsten Schulnamen in Klasse 13 mit PDF und fester Ebene ins QR", () => {
+      const { createQrMatrix } = jest.requireActual("@/lib/qr-code") as typeof import("@/lib/qr-code");
+      const { APP_URL } = jest.requireActual("@/lib/config") as typeof import("@/lib/config");
+      // Gemischte Umlaute und Buchstaben lassen sich kaum komprimieren.
+      const alphabet = "äöüßÄÖÜabcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ ,.-";
+      const names = [
+        "ü".repeat(SCHULE_MAX_CHARS),
+        Array.from({ length: SCHULE_MAX_CHARS }, (_, i) => alphabet[(i * 37 + 11) % alphabet.length]).join(""),
+        "äöüßÄÖÜ".repeat(10).slice(0, SCHULE_MAX_CHARS),
+      ];
+      for (const schule of names) {
+        expect(normalizeSchule(schule)).toBe(schule.trim().replace(/\s+/g, " "));
+        const token = signClassToken({ klasse: 13, plz: "28203", delivery: "pdf", level: "Land", schule });
+        expect(verifyClassToken(token)?.schule).toBe(schule.trim().replace(/\s+/g, " "));
+        expect(() => createQrMatrix(`${APP_URL}/schule?k=${token}`)).not.toThrow();
+      }
+    });
+  });
+
+  describe("normalizeSchule", () => {
+    it("bereinigt Leerraum, Steuerzeichen und spitze Klammern", () => {
+      expect(normalizeSchule("  Oberschule\n am   Platz\t, Bremen ")).toBe("Oberschule am Platz , Bremen");
+      expect(normalizeSchule("A\u0000B<script>")).toBe("A B script");
+      expect(normalizeSchule("Scho\u0308ne Schule")).toBe("Schöne Schule");
+    });
+
+    it("lehnt leer, zu lang und Nicht-Text ab, ohne zu kürzen", () => {
+      expect(normalizeSchule("")).toBeUndefined();
+      expect(normalizeSchule("   ")).toBeUndefined();
+      expect(normalizeSchule("x".repeat(SCHULE_MAX_CHARS))).toHaveLength(SCHULE_MAX_CHARS);
+      expect(normalizeSchule("x".repeat(SCHULE_MAX_CHARS + 1))).toBeUndefined();
+      expect(normalizeSchule(42)).toBeUndefined();
+      expect(normalizeSchule(null)).toBeUndefined();
+      expect(normalizeSchule({})).toBeUndefined();
+    });
   });
 });

@@ -2,7 +2,7 @@ import "server-only";
 import { z } from "zod";
 import { signFeedbackToken, verifyFeedbackToken } from "@/lib/feedback/token";
 import { hashIdentifier } from "@/lib/rateLimit";
-import { KLASSE_MAX, KLASSE_MIN } from "@/lib/schule/youth";
+import { KLASSE_MAX, KLASSE_MIN, normalizeSchule } from "@/lib/schule/youth";
 
 export const CLASS_TOKEN_MAX_AGE_SECONDS = 14 * 24 * 60 * 60;
 
@@ -21,6 +21,9 @@ const payloadSchema = z.object({
   // Von der Lehrkraft fest eingestellte Ebene: "L" = Land, "B" = Bund. Fehlt das Feld
   // (alle alten Tokens), entscheidet der Router.
   l: z.enum(["L", "B"]).optional(),
+  // Schule und Ort, von der Lehrkraft eingegeben. Absichtlich nur ein Typ-Check: ein
+  // ungültiger Wert verwirft nur das Feld (siehe verifyClassToken), nicht das ganze Token.
+  s: z.unknown().optional(),
   iat: z.number(),
 });
 
@@ -33,6 +36,7 @@ export function signClassToken({
   plz,
   delivery,
   level,
+  schule,
 }: {
   klasse: number;
   plz: string;
@@ -40,8 +44,11 @@ export function signClassToken({
   delivery?: ClassDelivery;
   /** Fehlt das Feld, gilt "automatisch" (kein Token-Feld). */
   level?: ClassLevel;
+  /** Schule und Ort; wird mit normalizeSchule geprüft, ungültig oder leer fällt weg. */
+  schule?: string;
 }): string {
-  // Kurze Felder ("d: 1", "l: L|B") statt Klartext: der QR-Code hat nur 151 Byte Platz.
+  const school = normalizeSchule(schule);
+  // Kurze Felder ("d: 1", "l: L|B", "s") statt Klartext: der QR-Code hat wenig Platz.
   return signFeedbackToken(
     {
       v: 1,
@@ -49,9 +56,10 @@ export function signClassToken({
       p: plz,
       ...(delivery === "pdf" ? { d: 1 } : {}),
       ...(level ? { l: level === "Land" ? "L" : "B" } : {}),
+      ...(school ? { s: school } : {}),
     },
-    // Mit festem Level kürzt der MAC auf 128 Bit, sonst passt Token + "l" nicht in den QR-Code.
-    { ...OPTS, shortMac: Boolean(level) }
+    // Mit festem Level oder Schulname kürzt der MAC auf 128 Bit, sonst wird der QR-Code unnötig groß.
+    { ...OPTS, shortMac: Boolean(level || school) }
   );
 }
 
@@ -63,6 +71,8 @@ export function verifyClassToken(
   delivery: ClassDelivery;
   /** Von der Lehrkraft fest gewählte Ebene; undefined = automatisch. */
   level?: ClassLevel;
+  /** Schule und Ort aus dem Token; fehlt bei alten Tokens. */
+  schule?: string;
   issuedAt: number;
   bucketId: string;
 } | null {
@@ -72,11 +82,14 @@ export function verifyClassToken(
   try {
     const parsed = payloadSchema.safeParse(verifyFeedbackToken(token, OPTS));
     if (!parsed.success) return null;
+    // Ein ungültiger Schulname macht das Token nicht ungültig, er wird nur ignoriert.
+    const schule = normalizeSchule(parsed.data.s);
     return {
       klasse: parsed.data.k,
       plz: parsed.data.p,
       delivery: parsed.data.d === 1 ? "pdf" : "email",
       ...(parsed.data.l ? { level: parsed.data.l === "L" ? ("Land" as const) : ("Bund" as const) } : {}),
+      ...(schule ? { schule } : {}),
       issuedAt: parsed.data.iat,
       bucketId: hashIdentifier(token),
     };

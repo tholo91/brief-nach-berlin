@@ -152,6 +152,7 @@ export default function Page() {
         <div className="mt-16 border-t border-warmgrau/10 pt-8">
           <p className="font-typewriter text-xs font-bold tracking-widest uppercase text-waldgruen/50 mb-4">Mehr dazu</p>
           <ul className="flex flex-col gap-3">
+            <li><Link href="/politiker-kontaktieren" className="font-body text-waldgruen hover:text-waldgruen-dark underline underline-offset-2 transition-colors">Politiker kontaktieren: alle Wege im Vergleich</Link></li>
             <li><Link href="/abgeordneten-schreiben" className="font-body text-waldgruen hover:text-waldgruen-dark underline underline-offset-2 transition-colors">Brief an Abgeordnete schreiben</Link></li>
             <li><Link href="/guide" className="font-body text-waldgruen hover:text-waldgruen-dark underline underline-offset-2 transition-colors">Der komplette Guide vom Frust zum Brief</Link></li>
             <li><Link href="/lohnt-sich-brief-an-politiker" className="font-body text-waldgruen hover:text-waldgruen-dark underline underline-offset-2 transition-colors">Lohnt sich ein Brief an Politiker?</Link></li>

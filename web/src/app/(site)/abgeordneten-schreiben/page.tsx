@@ -279,6 +279,16 @@ export default function AbgeordnetenSchreibenPage() {
 
         <div className="mt-12 font-body text-sm text-warmgrau/70 leading-relaxed space-y-3">
           <p>
+            Brief, E-Mail, Telefon oder Sprechstunde im Vergleich:{" "}
+            <Link
+              href="/politiker-kontaktieren"
+              className="text-waldgruen hover:underline"
+            >
+              Politiker kontaktieren
+            </Link>
+            .
+          </p>
+          <p>
             Warum ein Brief mehr bewirkt als eine E-Mail oder Petition:{" "}
             <Link
               href="/warum-ein-brief"

@@ -321,6 +321,16 @@ export default function KommuneLandBundEuPage() {
 
         <div className="mt-12 font-body text-sm text-warmgrau/70 leading-relaxed space-y-3">
           <p>
+            Alle Wege, Politiker zu erreichen:{" "}
+            <Link
+              href="/politiker-kontaktieren"
+              className="text-waldgruen hover:underline"
+            >
+              Politiker kontaktieren
+            </Link>
+            .
+          </p>
+          <p>
             Wie ein Brief in die Kommune funktioniert:{" "}
             <Link
               href="/kommunalpolitik-brief"

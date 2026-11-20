@@ -289,6 +289,14 @@ export default function LohntSichPage() {
           <ul className="space-y-3">
             <li>
               <Link
+                href="/politiker-kontaktieren"
+                className="font-body text-waldgruen-dark underline decoration-waldgruen/30 underline-offset-4 hover:decoration-waldgruen"
+              >
+                Politiker kontaktieren: alle Wege im Vergleich
+              </Link>
+            </li>
+            <li>
+              <Link
                 href="/brief-oder-petition"
                 className="font-body text-waldgruen-dark underline decoration-waldgruen/30 underline-offset-4 hover:decoration-waldgruen"
               >

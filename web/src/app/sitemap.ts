@@ -62,6 +62,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 0.7,
     },
     {
+      url: `${BASE_URL}/politiker-kontaktieren`,
+      lastModified,
+      changeFrequency: "monthly",
+      priority: 0.9,
+    },
+    {
       url: `${BASE_URL}/wie-schreibt-man-einen-brief-an-einen-abgeordneten`,
       lastModified,
       changeFrequency: "monthly",

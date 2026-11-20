@@ -100,7 +100,7 @@ describe("/unterricht page", () => {
     expect(html).toMatch(/aria-pressed="true"[^>]*>45 Min/);
     expect(html).toMatch(/<div[^>]*hidden=""[^>]*id="schule-90-extras"|<div[^>]*id="schule-90-extras"[^>]*hidden=""/);
     expect(html).toContain(
-      "Der Klassenlink enthält nur Klassenstufe, Schul-Postleitzahl, den gewählten Weg und den Zeitpunkt der Erstellung, keine Namen. Er gilt 14 Tage.",
+      "Der Klassenlink enthält nur Klassenstufe, Schul-Postleitzahl, den gewählten Weg, den Zeitpunkt der Erstellung und auf Wunsch Schule und Ort, keine Namen von Personen. Er gilt 14 Tage.",
     );
     expect(html).not.toContain("<table");
     expect(html).not.toContain("font-handwriting");

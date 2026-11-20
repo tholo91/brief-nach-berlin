@@ -289,7 +289,7 @@ export default function UnterrichtPage() {
                   Über den Klassenlink schreiben die Schüler:innen im Jugendmodus: ohne Erinnerungen, ohne Spendenbitte und ohne Bitte um eine Bewertung. Beim E-Mail-Weg kommt nur die eine Mail mit dem Entwurf. Partei und Organisation werden nicht abgefragt, die freiwillige Kartenfunktion gibt es dort nicht.
                 </li>
                 <li className={bodyClass}>
-                  Der Klassenlink enthält nur Klassenstufe, Schul-Postleitzahl, den gewählten Weg und den Zeitpunkt der Erstellung, keine Namen. Er gilt 14 Tage.
+                  Der Klassenlink enthält nur Klassenstufe, Schul-Postleitzahl, den gewählten Weg, den Zeitpunkt der Erstellung und auf Wunsch Schule und Ort, keine Namen von Personen. Er gilt 14 Tage.
                 </li>
               </ul>
             </details>

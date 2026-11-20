@@ -34,7 +34,12 @@ jest.mock("../../data/landesminister.json", () => ({
 
 import { selectPoliticianAction } from "@/lib/actions/selectPolitician";
 import { signClassToken } from "@/lib/schule/classToken";
-import { lockWizardToClassToken, resolveSchoolMode, resolveYouthLandMinister } from "@/lib/schule/youthContext";
+import {
+  lockWizardToClassToken,
+  resolveSchoolMode,
+  resolveYouthLandMinister,
+  resolveYouthLetterContext,
+} from "@/lib/schule/youthContext";
 import { hashRoutingIssue, normalizeRoutingIssue, signRoutingToken } from "@/lib/lookup/routingToken";
 import type { WizardData } from "@/lib/types/wizard";
 import type { RoutingResult } from "@/lib/lookup/levelRouter";
@@ -101,6 +106,36 @@ describe("resolveSchoolMode", () => {
     expect(
       resolveSchoolMode({ audience: "jung", klasse: 7, classToken: token, campaign: { slug: "kampagne" } })
     ).toBeNull();
+  });
+});
+
+describe("resolveYouthLetterContext: Schule und Ort", () => {
+  const SCHULE = "Oberschule am Leibnizplatz, Bremen";
+
+  it("nimmt die Schule nur aus dem signierten Token", () => {
+    const withSchule = youthData({ classToken: signClassToken({ klasse: 7, plz: HB_PLZ, schule: SCHULE }) });
+    expect(resolveYouthLetterContext(withSchule)).toEqual({ klasse: 12, viaClassLink: true, schule: SCHULE });
+  });
+
+  it("ignoriert eine vom Client mitgeschickte Schule", () => {
+    const forged = {
+      ...youthData({ classToken: signClassToken({ klasse: 7, plz: HB_PLZ }) }),
+      schule: "Gefälschte Schule",
+      classSchule: "Gefälschte Schule",
+    };
+    expect(resolveYouthLetterContext(forged)).toEqual({ klasse: 12, viaClassLink: true });
+    const noToken = { ...youthData({ classToken: undefined }), schule: "Gefälschte Schule" };
+    expect(resolveYouthLetterContext(noToken)).toEqual({ klasse: 12, viaClassLink: false });
+    const badToken = { ...youthData({ classToken: "x.y" }), schule: "Gefälschte Schule" };
+    expect(resolveYouthLetterContext(badToken)).toEqual({ klasse: 12, viaClassLink: false });
+  });
+
+  it("gibt Erwachsenen nie eine Schule", () => {
+    const adult = youthData({
+      audience: undefined,
+      classToken: signClassToken({ klasse: 7, plz: HB_PLZ, schule: SCHULE }),
+    });
+    expect(resolveYouthLetterContext(adult)).toBeUndefined();
   });
 });
 

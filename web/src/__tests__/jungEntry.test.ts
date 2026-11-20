@@ -77,6 +77,14 @@ describe("resolveJungEntry", () => {
     });
     expect(resolveJungEntry("kaputt")).toEqual({ status: "invalid" });
   });
+  it("gibt den Schulnamen aus dem Token weiter, ohne ihn nicht", () => {
+    verify.mockReturnValue({ klasse: 9, plz: "28195", schule: "Gymnasium Nord, Bremen", bucketId: "x" });
+    expect(resolveJungEntry("tok", verify)).toMatchObject({ status: "valid", schule: "Gymnasium Nord, Bremen" });
+    verify.mockReturnValue({ klasse: 9, plz: "28195", bucketId: "x" });
+    expect(resolveJungEntry("tok", verify)).not.toHaveProperty("schule");
+    const token = signClassToken({ klasse: 10, plz: "28195", schule: "Gymnasium Nord, Bremen" });
+    expect(resolveJungEntry(token)).toMatchObject({ status: "valid", schule: "Gymnasium Nord, Bremen" });
+  });
   it("exposes delivery pdf from a PDF token", () => {
     const token = signClassToken({ klasse: 10, plz: "28195", delivery: "pdf" });
     expect(resolveJungEntry(token)).toEqual({
@@ -340,6 +348,37 @@ describe("JungExperience with a class link (A3: PLZ and Klasse locked)", () => {
     expect(html).not.toContain(">ändern<");
     expect(html).not.toContain('name="klasse"');
     expect(html).toContain("Das Tool sucht die passende Person für dein Thema.");
+    expect(html).not.toMatch(/[–—]/);
+    // Ohne Schulname im Link keine Schulzeile.
+    expect(html).not.toContain("Schule:");
+  });
+
+  it("zeigt den Schulnamen aus dem Link gesperrt als Text, nicht als Eingabe", () => {
+    jest.mocked(useTopicStarters).mockReturnValueOnce({
+      selectedTopicIds: [],
+      topicInsertions: {},
+      issueText: "Die Toiletten an meiner Schule sind kaputt.",
+      setIssueText: jest.fn(),
+      statusMessage: "",
+      setStatusMessage: jest.fn(),
+      toggleTopic: jest.fn(),
+      selectionLimitReached: false,
+    } as ReturnType<typeof useTopicStarters>);
+    const html = renderToStaticMarkup(
+      createElement(JungExperience, {
+        entry: {
+          status: "valid",
+          klasse: 7,
+          plz: "28195",
+          token: "tok",
+          delivery: "pdf",
+          schule: "Oberschule am Leibnizplatz, Bremen",
+        },
+      }),
+    );
+    expect(html).toContain("Schule: Oberschule am Leibnizplatz, Bremen");
+    expect(html).toContain("von deiner Lehrkraft festgelegt");
+    expect(html).not.toContain('name="schule"');
     expect(html).not.toMatch(/[–—]/);
   });
 });

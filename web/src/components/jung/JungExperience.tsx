@@ -320,6 +320,12 @@ export function JungExperience({ entry }: { entry: JungEntry }) {
                     Klasse {entry.klasse}, PLZ {entry.plz}
                     <span className="text-warmgrau/70"> (vom Klassenlink festgelegt)</span>
                   </p>
+                  {entry.schule && (
+                    <p className="mt-1 pl-5 font-body text-sm leading-snug text-waldgruen-dark">
+                      Schule: {entry.schule}
+                      <span className="text-warmgrau/70"> (von deiner Lehrkraft festgelegt)</span>
+                    </p>
+                  )}
                 </div>
               )
             )}

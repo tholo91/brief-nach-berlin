@@ -65,9 +65,12 @@ export function resolveYouthLetterContext(data: {
   classToken?: unknown;
 }): YouthLetterContext | undefined {
   if (!isYouthAudience(data)) return undefined;
+  const token = verifyClassToken(data.classToken);
   return {
     klasse: data.klasse as number,
-    viaClassLink: verifyClassToken(data.classToken) !== null,
+    viaClassLink: token !== null,
+    // Schule und Ort nur aus dem signierten Token, nie aus einem Client-Feld.
+    ...(token?.schule ? { schule: token.schule } : {}),
   };
 }
 

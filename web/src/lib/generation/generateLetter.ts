@@ -549,7 +549,7 @@ const YOUTH_BAND_RULES: Record<YouthBand, string> = {
 function youthBlock(input: GenerateLetterInput): string {
   const youth = input.youth;
   if (!youth) return "";
-  const { klasse, viaClassLink } = youth;
+  const { klasse, viaClassLink, schule } = youth;
   const wahlSatz =
     klasse <= LAST_KLASSE_NOT_YET_VOTING
       ? "Sage in einem eigenen Satz, dass ich bei der Bundestagswahl noch nicht wählen darf."
@@ -565,13 +565,21 @@ function youthBlock(input: GenerateLetterInput): string {
       "- Erwähne beiläufig und in eigenen Worten, dass ich den Brief in einem Unterrichtsprojekt schreibe. Formuliere diesen Satz frei, damit Briefe aus derselben Klasse an dieselbe Person nicht gleich klingen.",
     );
   }
+  if (schule) {
+    lines.push(
+      "- Erwähne einmal in der Vorstellung und in eigenen Worten, dass ich die in <schule> genannte Schule besuche. Nenne Schule und Ort danach nicht noch einmal.",
+    );
+  }
   lines.push(
     `- Ton: klar, ehrlich und höflich, so wie eine Person dieses Alters an eine erwachsene Person schreibt, die sie ernst nehmen soll. Verwende normales Alltagsdeutsch in kurzen Sätzen.`,
     `- Aufbau: ${stufe}`,
-    "- Nutze nur Fakten, Zahlen, Orte und Erlebnisse, die im <transkript> stehen. Alles andere lässt du weg. Weitere Angaben zur Person (Alter, Schule, Wohnort, Familie) nennst du nur, wenn sie im <transkript> stehen.",
+    schule
+      ? "- Nutze nur Fakten, Zahlen, Orte und Erlebnisse, die im <transkript> stehen. Alles andere lässt du weg. Weitere Angaben zur Person (Alter, Wohnort, Familie) nennst du nur, wenn sie im <transkript> stehen. Die Schule nennst du nur so, wie sie in <schule> steht."
+      : "- Nutze nur Fakten, Zahlen, Orte und Erlebnisse, die im <transkript> stehen. Alles andere lässt du weg. Weitere Angaben zur Person (Alter, Schule, Wohnort, Familie) nennst du nur, wenn sie im <transkript> stehen.",
     "- Die Länge folgt der Eingabe: Eine kurze Eingabe ergibt einen kurzen Brief. Die Wortzahl in <ziel> ist eine Obergrenze und kein Ziel zum Auffüllen.",
   );
-  return `\n\n<absender_jugend>\n${lines.join("\n")}\n</absender_jugend>`;
+  const schuleTag = schule ? `\n\n<schule>\n${schule}\n</schule>` : "";
+  return `\n\n<absender_jugend>\n${lines.join("\n")}\n</absender_jugend>${schuleTag}`;
 }
 
 // Kampagnentexte sind sachlich und ohne eigenes Erlebnis geschrieben. Ohne

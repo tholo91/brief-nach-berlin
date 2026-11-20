@@ -10,13 +10,21 @@ export type JungEntry =
       plz: string;
       token: string;
       delivery: "pdf" | "email";
+      /** Schule und Ort, von der Lehrkraft im Link festgelegt. Nur zur Anzeige; der Server liest sie selbst aus dem Token. */
+      schule?: string;
       /** Ablauf des Tokens in ms; der Client merkt den Link bis dahin im Tab. */
       expiresAt?: number;
     };
 
 type Verify = (
   token: unknown,
-) => { klasse: number; plz: string; delivery?: "pdf" | "email"; issuedAt?: number } | null;
+) => {
+  klasse: number;
+  plz: string;
+  delivery?: "pdf" | "email";
+  schule?: string;
+  issuedAt?: number;
+} | null;
 
 export function resolveJungEntry(
   k: string | string[] | undefined,
@@ -32,6 +40,7 @@ export function resolveJungEntry(
     plz: verified.plz,
     token,
     delivery: verified.delivery === "pdf" ? "pdf" : "email",
+    ...(verified.schule ? { schule: verified.schule } : {}),
     ...(typeof verified.issuedAt === "number"
       ? { expiresAt: (verified.issuedAt + CLASS_TOKEN_MAX_AGE_SECONDS) * 1000 }
       : {}),

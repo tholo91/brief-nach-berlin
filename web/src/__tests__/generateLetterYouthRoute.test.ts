@@ -29,7 +29,9 @@ jest.mock("@/lib/schule/classToken", () => ({
       ? { klasse: 8, plz: "28203", delivery: "email", issuedAt: 0, bucketId: "bucket" }
       : token === "pdf-token"
         ? { klasse: 8, plz: "28203", delivery: "pdf", issuedAt: 0, bucketId: "pdf-bucket" }
-        : null,
+        : token === "school-token"
+          ? { klasse: 8, plz: "28203", delivery: "email", schule: "Gymnasium Nord, Bremen", issuedAt: 0, bucketId: "school-bucket" }
+          : null,
   ),
 }));
 jest.mock("@/lib/counter", () => ({ incrementLetterCounters: jest.fn(async () => 5) }));
@@ -144,6 +146,21 @@ describe("generate-letter: Jugendmodus", () => {
       klasse: 8,
       viaClassLink: true,
     });
+  });
+
+  it("reicht die Schule nur aus dem Token durch, nie aus einem Client-Feld", async () => {
+    await post({ audience: "jung", klasse: 8, classToken: "school-token", schule: "Gefälscht" });
+    expect(jest.mocked(generateLetter).mock.calls[0]![0].youth).toEqual({
+      klasse: 8,
+      viaClassLink: true,
+      schule: "Gymnasium Nord, Bremen",
+    });
+    jest.mocked(generateLetter).mockClear();
+    await post({ audience: "jung", klasse: 8, classToken: "valid-token", schule: "Gefälscht" });
+    await post({ audience: "jung", klasse: 8, classToken: "garbage", schule: "Gefälscht" });
+    for (const call of jest.mocked(generateLetter).mock.calls) {
+      expect(call[0].youth).not.toHaveProperty("schule");
+    }
   });
 
   it("reicht youth mit viaClassLink=false ohne gültigen Token durch", async () => {

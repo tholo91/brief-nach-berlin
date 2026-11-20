@@ -84,6 +84,38 @@ describe("Jugend-Block im User-Prompt", () => {
   });
 });
 
+describe("Schule und Ort im Jugend-Block", () => {
+  const schule = "Oberschule am Leibnizplatz, Bremen";
+
+  function prompt(withSchule: boolean): string {
+    const base = input(9, true);
+    return buildUserPrompt(
+      { ...base, youth: { ...base.youth!, ...(withSchule ? { schule } : {}) } },
+      150,
+      200,
+      3,
+    );
+  }
+
+  it("ohne Schule bleibt der Prompt unverändert", () => {
+    const text = prompt(false);
+    expect(text).not.toContain("<schule>");
+    expect(text).toContain("Weitere Angaben zur Person (Alter, Schule, Wohnort, Familie) nennst du nur, wenn sie im <transkript> stehen.");
+    expect(text).toBe(buildUserPrompt(input(9, true), 150, 200, 3));
+  });
+
+  it("mit Schule: eigener Tag, einmal in der Vorstellung, Regel erlaubt diese Quelle", () => {
+    const text = prompt(true);
+    expect(text).toContain(`<schule>\n${schule}\n</schule>`);
+    expect(text.split(schule)).toHaveLength(2);
+    const block = youthBlock(text);
+    expect(block).toContain("Erwähne einmal in der Vorstellung und in eigenen Worten");
+    expect(block).toContain("Die Schule nennst du nur so, wie sie in <schule> steht.");
+    expect(block).not.toContain("(Alter, Schule, Wohnort, Familie)");
+    expect(block).toContain("Unterrichtsprojekt");
+  });
+});
+
 describe("Kurz-Hinweis im Jugendmodus", () => {
   it("Jugend-Eingabe unter 200 Zeichen: konkreter Hinweis ohne Bürger und abstrakt", () => {
     const prompt = buildUserPrompt(input(8, false), 150, 200, 3);

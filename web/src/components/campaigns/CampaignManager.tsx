@@ -459,25 +459,26 @@ export function CampaignManager({
             )}
           </div>
 
-          <div className="grid gap-2">
-            <label className="font-typewriter text-sm font-bold text-waldgruen-dark" htmlFor="issueText">
-              Anliegen
-            </label>
-            <textarea
-              id="issueText"
-              name="issueText"
-              required
-              minLength={20}
-              maxLength={4000}
-              rows={9}
-              defaultValue={campaign.issueText}
-              onChange={(event) => setIssueTextDraft(event.target.value)}
-              disabled={!canEdit || isBusy}
-              className="rounded-md border border-warmgrau/20 bg-surface px-4 py-3 font-body text-base leading-relaxed outline-none focus:border-waldgruen disabled:opacity-60"
-            />
-          </div>
-
           <CampaignVariantsEditor
+            mainField={
+              <>
+                <label className="font-body text-sm font-semibold text-waldgruen-dark" htmlFor="issueText">
+                  Anliegen
+                </label>
+                <textarea
+                  id="issueText"
+                  name="issueText"
+                  required
+                  minLength={20}
+                  maxLength={4000}
+                  rows={9}
+                  defaultValue={campaign.issueText}
+                  onChange={(event) => setIssueTextDraft(event.target.value)}
+                  disabled={!canEdit || isBusy}
+                  className="rounded-md border border-warmgrau/20 bg-surface px-4 py-3 font-body text-base leading-relaxed outline-none focus:border-waldgruen disabled:opacity-60"
+                />
+              </>
+            }
             initialAlternatives={campaign.issueTextAlternatives ?? []}
             initialHooks={campaign.personalHooks ?? []}
             issueTextChanged={issueTextDraft.trim() !== campaign.issueText.trim()}

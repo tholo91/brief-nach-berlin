@@ -69,11 +69,11 @@ function renderEditor(overrides: Partial<Parameters<typeof CampaignVariantsEdito
 }
 
 describe("CampaignManager: Varianten und Satzanfänge", () => {
-  it("rendert beide Abschnitte direkt nach dem Anliegen", () => {
+  it("rendert Tabs mit dem Anliegen als erstem Panel, dann die Satzanfänge", () => {
     const markup = renderManager(baseCampaign);
     const positions = [
+      markup.indexOf("Anliegen und Varianten"),
       markup.indexOf('id="issueText"'),
-      markup.indexOf("Varianten des Anliegens"),
       markup.indexOf("Satzanfänge für die persönliche Zeile"),
       markup.indexOf('for="creatorName"'),
     ];
@@ -96,7 +96,8 @@ describe("CampaignManager: Varianten und Satzanfänge", () => {
     expect(markup).toContain(variantB);
     expect(markup).toContain('name="personalHook"');
     expect(markup).toContain('value="Ich pendle täglich:"');
-    expect(markup).not.toContain("Variante hinzufügen");
+    expect(markup).not.toContain('aria-label="Variante hinzufügen"');
+    expect(markup).toContain('aria-label="Variante 2 entfernen"');
   });
 
   it("verbirgt den Änderungshinweis, solange das Anliegen unverändert ist", () => {
@@ -106,13 +107,16 @@ describe("CampaignManager: Varianten und Satzanfänge", () => {
 });
 
 describe("CampaignVariantsEditor", () => {
-  it("zeigt Erklärtexte, den leeren Zustand und den Hinzufügen-Button", () => {
+  it("zeigt Erklärtexte, den leeren Zustand und den Plus-Tab", () => {
     const markup = renderEditor();
+
+    expect(markup).toContain('role="tablist"');
+    expect(markup).toContain('aria-selected="true"');
 
     expect(markup).toContain("Damit Büros nicht lauter gleiche Briefe bekommen");
     expect(markup).toContain("Schreibende sehen diese Anfänge als Vorschläge");
     expect(markup).toContain("Ohne eigene Satzanfänge erscheinen allgemeine Vorschläge");
-    expect(markup).toContain("Variante hinzufügen");
+    expect(markup).toContain('aria-label="Variante hinzufügen"');
     expect(markup).not.toContain('name="issueTextAlternative"');
     expect(markup).not.toContain('name="personalHook"');
   });

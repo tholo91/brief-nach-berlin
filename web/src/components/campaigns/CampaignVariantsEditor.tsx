@@ -1,6 +1,6 @@
 "use client";
 
-import { useId, useState, type KeyboardEvent } from "react";
+import { useId, useState, type KeyboardEvent, type ReactNode } from "react";
 import {
   CAMPAIGN_ALTERNATIVE_MAX,
   CAMPAIGN_ALTERNATIVE_MIN,
@@ -16,6 +16,12 @@ const helpClass = "font-body text-sm leading-relaxed text-warmgrau/70";
 const errorClass = "font-body text-sm text-airmail-rot";
 const secondaryButtonClass =
   "min-h-11 rounded-md border border-waldgruen/25 px-4 py-2 font-body text-sm font-semibold text-waldgruen-dark transition-colors hover:border-waldgruen focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-waldgruen disabled:cursor-not-allowed disabled:opacity-50";
+const tabClass = (selected: boolean) =>
+  `-mb-px min-h-11 shrink-0 border-b-2 px-3 py-2 font-body text-sm font-semibold transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-waldgruen ${
+    selected
+      ? "border-waldgruen text-waldgruen-dark"
+      : "border-transparent text-warmgrau/70 hover:text-waldgruen-dark"
+  }`;
 const quietButtonClass =
   "min-h-11 rounded-md px-3 py-2 font-body text-sm font-semibold text-warmgrau/75 underline-offset-2 transition-colors hover:text-airmail-rot hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-waldgruen disabled:cursor-not-allowed disabled:opacity-50";
 
@@ -25,6 +31,7 @@ const quietButtonClass =
  * `personalHook` (je Satzanfang) und `variantsSubmitted=1`.
  */
 export function CampaignVariantsEditor({
+  mainField,
   initialAlternatives,
   initialHooks,
   issueTextChanged,
@@ -32,6 +39,8 @@ export function CampaignVariantsEditor({
   alternativesError,
   hooksError,
 }: {
+  /** Das Textfeld des Hauptanliegens, wird als erster Tab gezeigt. */
+  mainField?: ReactNode;
   initialAlternatives: string[];
   initialHooks: string[];
   issueTextChanged: boolean;
@@ -45,6 +54,7 @@ export function CampaignVariantsEditor({
   const [draft, setDraft] = useState("");
   const [editIndex, setEditIndex] = useState<number | null>(null);
   const [draftError, setDraftError] = useState<string | null>(null);
+  const [active, setActive] = useState(0);
 
   const hasAlternatives = alternatives.some((text) => text.trim().length > 0);
   const hookLimitReached = editIndex === null && hooks.length >= MAX_HOOKS;
@@ -66,6 +76,24 @@ export function CampaignVariantsEditor({
 
   function removeAlternative(index: number) {
     setAlternatives((current) => current.filter((_, i) => i !== index));
+    setActive(0);
+  }
+
+  function addAlternative() {
+    setAlternatives((current) => [...current, ""]);
+    setActive(alternatives.length + 1);
+  }
+
+  const tabId = (tab: number) => `${baseId}-tab-${tab}`;
+  const panelId = (tab: number) => `${baseId}-panel-${tab}`;
+
+  function onTabKeyDown(event: KeyboardEvent<HTMLDivElement>) {
+    if (event.key !== "ArrowRight" && event.key !== "ArrowLeft") return;
+    const count = alternatives.length + 1;
+    const next = (active + (event.key === "ArrowRight" ? 1 : count - 1)) % count;
+    event.preventDefault();
+    setActive(next);
+    document.getElementById(tabId(next))?.focus();
   }
 
   function commitHook() {
@@ -124,8 +152,13 @@ export function CampaignVariantsEditor({
       <fieldset
         className="grid gap-3 rounded-md border border-warmgrau/15 bg-surface/55 p-4"
         disabled={disabled}
+        onInvalidCapture={(event) => {
+          // Ein ungültiges Feld in einem versteckten Tab: Tab öffnen, damit der Browser es zeigen kann.
+          const panel = (event.target as HTMLElement).closest<HTMLElement>("[data-tab-index]");
+          if (panel) setActive(Number(panel.dataset.tabIndex));
+        }}
       >
-        <legend className={`px-1 ${labelClass}`}>Varianten des Anliegens</legend>
+        <legend className={`px-1 ${labelClass}`}>Anliegen und Varianten</legend>
         <p className={helpClass}>
           Damit Büros nicht lauter gleiche Briefe bekommen, nimmt der Briefassistent zufällig
           einen dieser Texte. Gleiche Forderung, anderer Wortlaut.
@@ -140,19 +173,111 @@ export function CampaignVariantsEditor({
           </p>
         )}
 
+        {alternativesError && <p className={errorClass}>{alternativesError}</p>}
+
+        <div
+          role="tablist"
+          aria-label="Anliegen und Varianten"
+          onKeyDown={onTabKeyDown}
+          className="flex items-end gap-1 overflow-x-auto border-b border-warmgrau/20"
+        >
+          <button
+            type="button"
+            role="tab"
+            id={tabId(0)}
+            aria-selected={active === 0}
+            aria-controls={panelId(0)}
+            tabIndex={active === 0 ? 0 : -1}
+            onClick={() => setActive(0)}
+            className={tabClass(active === 0)}
+          >
+            Anliegen
+          </button>
+          {alternatives.map((text, index) => {
+            const tab = index + 1;
+            const length = text.trim().length;
+            const tooShort = length > 0 && length < CAMPAIGN_ALTERNATIVE_MIN;
+            return (
+              <span key={index} className="inline-flex shrink-0 items-center">
+                <button
+                  type="button"
+                  role="tab"
+                  id={tabId(tab)}
+                  aria-selected={active === tab}
+                  aria-controls={panelId(tab)}
+                  tabIndex={active === tab ? 0 : -1}
+                  onClick={() => setActive(tab)}
+                  className={`${tabClass(active === tab)} pr-1 ${tooShort ? "text-airmail-rot" : ""}`}
+                >
+                  Variante {tab}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => removeAlternative(index)}
+                  aria-label={`Variante ${tab} entfernen`}
+                  className="grid min-h-11 min-w-9 place-items-center text-warmgrau/60 transition-colors hover:text-airmail-rot focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-waldgruen"
+                >
+                  <svg
+                    aria-hidden="true"
+                    viewBox="0 0 24 24"
+                    className="size-3.5"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth={2.5}
+                    strokeLinecap="round"
+                  >
+                    <path d="M6 6l12 12M18 6L6 18" />
+                  </svg>
+                </button>
+              </span>
+            );
+          })}
+          {alternatives.length < MAX_ALTERNATIVES && (
+            <button
+              type="button"
+              onClick={addAlternative}
+              aria-label="Variante hinzufügen"
+              title="Variante hinzufügen"
+              className="grid min-h-11 min-w-11 shrink-0 place-items-center text-lg font-semibold text-waldgruen-dark transition-colors hover:text-waldgruen focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-waldgruen"
+            >
+              <span aria-hidden="true">+</span>
+            </button>
+          )}
+        </div>
+
+        <div
+          role="tabpanel"
+          id={panelId(0)}
+          aria-labelledby={tabId(0)}
+          data-tab-index={0}
+          hidden={active !== 0}
+          className="grid gap-2"
+        >
+          {mainField}
+        </div>
+
         {alternatives.map((text, index) => {
+          const tab = index + 1;
           const id = `${baseId}-alt-${index}`;
           const length = text.trim().length;
           const tooShort = length > 0 && length < CAMPAIGN_ALTERNATIVE_MIN;
           return (
-            <div key={index} className="grid gap-2">
+            <div
+              key={index}
+              role="tabpanel"
+              id={panelId(tab)}
+              aria-labelledby={tabId(tab)}
+              data-tab-index={tab}
+              hidden={active !== tab}
+              className="grid gap-2"
+            >
               <label className="font-body text-sm font-semibold text-waldgruen-dark" htmlFor={id}>
-                Variante {index + 1}
+                Variante {tab}
               </label>
               <textarea
                 id={id}
                 name="issueTextAlternative"
-                rows={6}
+                rows={9}
                 maxLength={CAMPAIGN_ALTERNATIVE_MAX}
                 minLength={CAMPAIGN_ALTERNATIVE_MIN}
                 value={text}
@@ -160,40 +285,16 @@ export function CampaignVariantsEditor({
                 aria-describedby={`${id}-count`}
                 className="rounded-md border border-warmgrau/20 bg-surface px-4 py-3 font-body text-base leading-relaxed outline-none focus:border-waldgruen disabled:opacity-60"
               />
-              <div className="flex items-center justify-between gap-3">
-                <p
-                  id={`${id}-count`}
-                  className={`font-body text-xs tabular-nums ${tooShort ? "text-airmail-rot" : "text-warmgrau/60"}`}
-                >
-                  {length} Zeichen
-                  {tooShort ? `, mindestens ${CAMPAIGN_ALTERNATIVE_MIN}` : ""}
-                </p>
-                <button
-                  type="button"
-                  onClick={() => removeAlternative(index)}
-                  className={quietButtonClass}
-                >
-                  Entfernen
-                  <span className="sr-only"> Variante {index + 1}</span>
-                </button>
-              </div>
+              <p
+                id={`${id}-count`}
+                className={`font-body text-xs tabular-nums ${tooShort ? "text-airmail-rot" : "text-warmgrau/60"}`}
+              >
+                {length} Zeichen
+                {tooShort ? `, mindestens ${CAMPAIGN_ALTERNATIVE_MIN}` : ""}
+              </p>
             </div>
           );
         })}
-
-        {alternativesError && <p className={errorClass}>{alternativesError}</p>}
-
-        {alternatives.length < MAX_ALTERNATIVES && (
-          <div>
-            <button
-              type="button"
-              onClick={() => setAlternatives((current) => [...current, ""])}
-              className={secondaryButtonClass}
-            >
-              Variante hinzufügen
-            </button>
-          </div>
-        )}
       </fieldset>
 
       <fieldset

@@ -1,17 +1,16 @@
 import Link from "next/link";
+import Image from "next/image";
 import type { Metadata } from "next";
 import { APP_URL, DEFAULT_OG_IMAGES } from "@/lib/config";
-import { Figure } from "@/components/editorial/Figure";
 import { FAQAccordion } from "@/components/FAQAccordion";
-import { PullQuote } from "@/components/editorial/PullQuote";
 import { FactCallout } from "@/components/editorial/FactCallout";
 
 const TITLE = "Die Treppe der politischen Selbstwirksamkeit";
 const DESCRIPTION =
-  "Wählen alle vier Jahre ist die unterste Stufe. Hier sind elf konkrete Wege, wie du als Bürgerin oder Bürger in Deutschland politisch wirklich etwas bewegst, sortiert nach Aufwand. Vom 1-Klick-Mitzeichnen einer Petition bis zum Gründen einer eigenen Bürgerinitiative.";
+  "Du möchtest ein Anliegen ansprechen oder hast schon einen Brief verschickt? Entdecke elf Möglichkeiten, dich einzubringen, vom ersten Brief bis zur eigenen Bürgerinitiative.";
 const URL_PATH = "/treppe-der-selbstwirksamkeit";
 const PUBLISHED = "2026-05-20";
-const MODIFIED = "2026-10-09";
+const MODIFIED = "2026-11-20";
 
 export const metadata: Metadata = {
   title: `${TITLE} | Brief-nach-Berlin`,
@@ -139,24 +138,16 @@ const steps: Step[] = [
     effort: "10 bis 30 Minuten",
     body: (
       <>
-        <Figure
-          src="/images/img-treppe.webp"
-          width={260}
-          height={175}
-          side="right"
-          rotate="right"
-        />
         <p>
-          Ein persönlicher Brief richtet dein Anliegen an eine konkrete
-          politische Vertretung. Handschrift kann Zeit und Ernsthaftigkeit
-          sichtbar machen. Dass sie grundsätzlich stärker wirkt als eine gute
-          persönliche E-Mail, ist jedoch nicht belegt. Wenn du nicht weißt, an
-          wen genau du schreiben sollst:{" "}
+          Ein persönlicher Brief bringt dein Anliegen zu einer konkreten
+          politischen Vertretung. Er muss nicht perfekt sein. Wichtig ist, dass
+          klar wird, was dich beschäftigt und was du dir wünschst. Wenn du nicht
+          weißt, wer zuständig ist oder wie du anfangen sollst:{" "}
           <Link
             href="/app"
             className="text-waldgruen hover:underline font-semibold"
           >
-            dafür habe ich Brief-nach-Berlin gebaut
+            finde mit Brief-nach-Berlin die richtige Ansprechperson
           </Link>
           .
         </p>
@@ -200,12 +191,10 @@ const steps: Step[] = [
     effort: "ein Termin, meist abends",
     body: (
       <p>
-        Fast jeder Bundestags- und Landtagsabgeordnete bietet einmal im Monat
-        eine Bürgersprechstunde im Wahlkreisbüro an. Termine stehen auf der
-        Website der oder des Abgeordneten oder du rufst im Wahlkreisbüro an.
-        Eine halbe Stunde, gegenüber von einer Person, die in Berlin oder im
-        Landtag mitstimmt. Das ist Demokratie auf Augenhöhe und kostet dich nur
-        die Anfahrt.
+        Schau auf der Website deiner Abgeordneten nach einem Termin oder frag
+        direkt im Wahlkreisbüro. Du kannst an deinen Brief anknüpfen: „Ich habe
+        Ihnen zum Schulweg geschrieben. Kann ich Ihnen die Stelle bei Ihrer
+        nächsten Sprechstunde auf einer Karte zeigen?“
       </p>
     ),
   },
@@ -323,31 +312,79 @@ export default function TreppePage() {
           &larr; Zurück
         </Link>
 
-          <p className="font-typewriter text-sm font-bold tracking-widest uppercase text-waldgruen/60 mb-3">
-            11 Stufen
-          </p>
-          <h1 className="font-body text-3xl md:text-5xl font-bold text-waldgruen-dark tracking-tight mb-6 text-balance">
-            Die Treppe der politischen Selbstwirksamkeit
-          </h1>
+        <p className="font-typewriter text-sm font-bold tracking-widest uppercase text-waldgruen/60 mb-3">
+          11 Stufen
+        </p>
+        <h1 className="font-body text-3xl md:text-5xl font-bold text-waldgruen-dark tracking-tight mb-6 text-balance">
+          Die Treppe der politischen Selbstwirksamkeit
+        </h1>
 
-          <p className="font-handwriting text-xl md:text-2xl text-warmgrau leading-relaxed mb-2 text-pretty">
-            Wählen alle vier Jahre ist nicht das Ende der Geschichte, sondern der
-            Anfang. Hier sind elf konkrete Wege, wie du als Bürgerin oder Bürger
-            in Deutschland politisch wirklich etwas bewegst, sortiert nach Aufwand.
-          </p>
+        <figure className="mb-8 overflow-hidden rounded-2xl shadow-xl shadow-waldgruen/15">
+          <Image
+            src="/images/treppe-nachbarinnen.webp"
+            alt="Zwei Nachbarinnen sitzen auf einer Haustreppe. Eine zeigt ihren Brief, die andere hört ihr zu."
+            width={1248}
+            height={832}
+            priority
+            sizes="(max-width: 672px) 100vw, 672px"
+            className="aspect-[3/2] w-full object-cover"
+          />
+        </figure>
+
+        <p className="font-handwriting text-xl md:text-2xl text-warmgrau leading-relaxed mb-2 text-pretty">
+          Wählen ist ein Anfang. Und wenn dich etwas in deinem Alltag stört,
+          kannst du auch zwischen den Wahlen etwas anstoßen.
+        </p>
 
         <div className="font-body text-warmgrau leading-relaxed space-y-3 mb-14">
           <p>
-            Du musst nicht oben anfangen und du musst nicht alles tun. Such dir
-            den kleinsten Schritt aus, den du gerade wirklich gehen kannst. Aus
-            einem Brief muss keine politische Karriere werden. Aber aus einem
-            abstrakten Ärger wird damit eine konkrete Handlung.
+            Du musst nicht die ganze Treppe gehen. Fang dort an, wo du gerade
+            stehst. Ein Brief kann der erste Schritt sein: Er bringt dein
+            Anliegen zu der Person, die dafür zuständig ist. Danach entscheidest
+            du selbst, ob und wie du weitermachen möchtest.
           </p>
         </div>
 
-        <PullQuote align="right">
-          Such dir die nächste Stufe aus, die du dir zutraust. Dann nimm sie.
-        </PullQuote>
+        <section
+          aria-labelledby="naechster-schritt"
+          className="mb-12 rounded-2xl border border-waldgruen/15 bg-waldgruen/5 p-6 md:p-8"
+        >
+          <h2 id="naechster-schritt" className="font-body text-2xl font-bold text-waldgruen-dark mb-2">
+            Wo stehst du gerade?
+          </h2>
+          <div className="mt-5 grid gap-4 md:grid-cols-2">
+            <div className="rounded-xl bg-creme p-5">
+              <h3 className="font-body font-bold text-waldgruen-dark mb-2">
+                Ich möchte etwas ansprechen
+              </h3>
+              <p className="font-body text-warmgrau leading-relaxed mb-4">
+                Was müsste sich bei dir vor Ort ändern? Schreib den Gedanken
+                erst einmal so auf, wie du ihn einer Nachbarin erzählen würdest.
+              </p>
+              <Link
+                href="/app"
+                className="font-body font-semibold text-waldgruen hover:underline"
+              >
+                Meinen Brief anfangen <span aria-hidden="true">→</span>
+              </Link>
+            </div>
+            <div className="rounded-xl bg-creme p-5">
+              <h3 className="font-body font-bold text-waldgruen-dark mb-2">
+                Ich habe schon geschrieben
+              </h3>
+              <p className="font-body text-warmgrau leading-relaxed mb-4">
+                Wem könntest du davon erzählen? Oder frag im
+                Wahlkreisbüro, wann du dein Anliegen persönlich besprechen kannst.
+              </p>
+              <Link
+                href="#stufe-6"
+                className="font-body font-semibold text-waldgruen hover:underline"
+              >
+                Zur Bürgersprechstunde <span aria-hidden="true">→</span>
+              </Link>
+            </div>
+          </div>
+        </section>
 
         <ol className="space-y-10">
           {steps.map((step) => (
@@ -375,23 +412,9 @@ export default function TreppePage() {
           ))}
         </ol>
 
-        <div className="mt-16 p-8 bg-waldgruen/5 border border-waldgruen/15 rounded-xl hover:bg-waldgruen/10 transition-colors">
-          <h2 className="font-body text-2xl font-bold text-waldgruen-dark mb-4">
-            Wo fängst du an?
-          </h2>
-          <p className="font-body text-warmgrau leading-relaxed mb-6">
-            Wenn du heute eine Stufe nehmen willst, kann Stufe 3 ein gut
-            machbarer Anfang sein. Schreib direkt an die Person, die für dein
-            Anliegen zuständig ist. Brief-nach-Berlin hilft dir, diese Person zu
-            finden und den Brief zu formulieren.
-          </p>
-          <Link
-            href="/app"
-            className="inline-block bg-waldgruen text-creme font-body font-semibold text-base md:text-lg px-7 py-3.5 rounded-xl hover:bg-waldgruen-dark transition-colors shadow-lg shadow-waldgruen/25"
-          >
-            Brief schreiben &rarr;
-          </Link>
-        </div>
+        <Link href="#naechster-schritt" className="mt-8 inline-block font-body font-semibold text-waldgruen hover:underline">
+          Zurück zu meinem nächsten Schritt ↑
+        </Link>
 
         <section className="mt-16">
           <h2 className="font-body text-2xl md:text-3xl font-bold text-waldgruen-dark mb-6">

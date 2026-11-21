@@ -22,7 +22,7 @@ export const SUPPORT_CONTENT = {
   founder: {
     name: FOUNDER_NAME,
     portraitPath: "/images/thomas-portrait.webp",
-    avatarPath: "/images/thomas-avatar.jpg",
+    avatarPath: "/images/thomas-avatar-cutout.png",
     // Avatar ohne Hintergrund (transparente PNG) für die Ecke der Spendenbox im Follow-up.
     cutoutPath: "/images/thomas-cutout.png",
     text:

@@ -68,7 +68,7 @@ export function CampaignReferralCard({ slug }: { slug: string }) {
           alt={SUPPORT_CONTENT.founder.name}
           fill
           sizes="(min-width: 768px) 176px, 128px"
-          className="object-cover object-bottom mix-blend-multiply"
+          className="object-cover object-bottom"
         />
         {AVATAR_EMOJIS.map(({ emoji, className }) => (
           <span

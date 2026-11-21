@@ -8,6 +8,8 @@ import CopyButton from "./CopyButton";
 import { format, type DebugPayload } from "./formatDebug";
 import LinkInfo from "./LinkInfo";
 import ToneScale, { isToneStep } from "./ToneScale";
+import { getPublicCampaignBySlug } from "@/lib/campaigns/repository";
+import { getCampaignIssueTexts } from "@/lib/campaigns/issueVariants";
 
 const NEW_LETTER_CTA = { href: "/", label: "Neuen Brief schreiben", mobileLabel: "Neuer Brief" };
 const NEW_CAMPAIGN_LETTER_CTA = {
@@ -91,8 +93,20 @@ function TextBlock({ text, note }: { text: string; note?: string }) {
   );
 }
 
-function LetterCard({ d }: { d: LetterDebugPayload }) {
-  const preview = d.issueTextPreview ?? "";
+// Kampagnenbriefe mit unverändertem Text tragen nur die Variantennummer im Link.
+// Der Kampagnentext ist öffentlich und wird hier nachgeladen.
+async function loadVariantText(d: LetterDebugPayload): Promise<string | undefined> {
+  if (d.issueVariantIndex === undefined || !d.campaignSlug) return undefined;
+  try {
+    const campaign = await getPublicCampaignBySlug(d.campaignSlug);
+    return campaign ? getCampaignIssueTexts(campaign)[d.issueVariantIndex] : undefined;
+  } catch {
+    return undefined;
+  }
+}
+
+function LetterCard({ d, variantText }: { d: LetterDebugPayload; variantText?: string }) {
+  const preview = d.issueTextPreview ?? variantText ?? "";
   const truncated = preview.length > 0 && preview.length < d.issueTextLength;
   const region = d.recipientRegion ?? d.representativeWahlkreis;
   const recipient = [d.representativeName, d.representativeLevel, region].filter(Boolean);
@@ -108,6 +122,11 @@ function LetterCard({ d }: { d: LetterDebugPayload }) {
           }
         />
       </Section>
+      {d.personalNotePreview && (
+        <Section title="Dein Zusatz (Chips und Text)" action={<CopyAction text={d.personalNotePreview} />}>
+          <TextBlock text={d.personalNotePreview} />
+        </Section>
+      )}
       <Section title="Dein Brief im Überblick">
         <Facts
           items={[
@@ -161,6 +180,8 @@ export default async function DebugPage({
   const payload = decode(d);
   const failed = "error" in payload;
   const isCampaignLetter = !failed && !isVariant(payload) && Boolean(payload.campaignSlug);
+  const variantText =
+    !failed && !isVariant(payload) ? await loadVariantText(payload) : undefined;
 
   return (
     <div className="min-h-screen bg-creme font-body text-warmgrau">
@@ -168,7 +189,7 @@ export default async function DebugPage({
       <main className="mx-auto w-full max-w-[640px] px-4 py-8 sm:py-12">
         <h1 className="font-typewriter text-3xl font-bold text-waldgruen-dark">Deine Eingaben</h1>
         <LinkInfo lastWord="gespeichert.">
-          Diese Seite zeigt nur die Werte, die in deinem E-Mail-Link mitgeschickt wurden. Es wird
+          Diese Seite zeigt die Werte, die in deinem E-Mail-Link mitgeschickt wurden. Von dir wird
           nichts aus einer Datenbank geladen und nichts
         </LinkInfo>
 
@@ -183,7 +204,7 @@ export default async function DebugPage({
           ) : isVariant(payload) ? (
             <VariantCard d={payload} />
           ) : (
-            <LetterCard d={payload} />
+            <LetterCard d={payload} variantText={variantText} />
           )}
         </article>
 

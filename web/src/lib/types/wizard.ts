@@ -123,7 +123,7 @@ export interface GenerateLetterInput {
   fromCampaign?: boolean;
   /**
    * Eigener Satz zur Betroffenheit (nur Kampagne, Text unverändert; serverseitig geprüft).
-   * Wird nur im Prompt genutzt, nie gespeichert oder geloggt.
+   * Wird im Prompt genutzt und als Vorschau nur im Debug-Link mitgegeben, sonst nie gespeichert oder geloggt.
    */
   personalNote?: string;
   /** Kampagne: serverseitig geladener fester Empfänger. */

@@ -18,7 +18,7 @@ import { fetchMdbContext } from "@/lib/enrichment/fetchMdbContext";
 import { sendLetterEmail, prepareLetterEmail } from "@/lib/email/sendLetterEmail";
 import { sendFollowupEmail } from "@/lib/email/sendFollowupEmail";
 import { computeFollowupSlot } from "@/lib/email/computeFollowupSlot";
-import { buildDebugPayload, type LetterRoutingInfo } from "@/lib/email/buildDebugPayload";
+import { buildDebugPayload, ISSUE_TEXT_PREVIEW_MAX, type LetterRoutingInfo } from "@/lib/email/buildDebugPayload";
 import { checkOriginRateLimit, checkRateLimit, hashIdentifier, LIMITS } from "@/lib/rateLimit";
 import { verifyClassToken } from "@/lib/schule/classToken";
 import { isYouthAudience } from "@/lib/schule/youth";
@@ -419,6 +419,16 @@ export async function POST(req: NextRequest) {
           routingInfo ?? undefined,
           letterId,
         );
+        const variantIndex = campaign
+          ? getCampaignIssueTexts(campaign).findIndex((text) => text?.trim() === trimmedIssueText)
+          : -1;
+        if (variantIndex >= 0) {
+          debugPayload.issueVariantIndex = variantIndex;
+          delete debugPayload.issueTextPreview;
+        }
+        if (personalNote) {
+          debugPayload.personalNotePreview = personalNote.slice(0, ISSUE_TEXT_PREVIEW_MAX);
+        }
         const politicianFullName =
           result.selectedRecipient.kind === "rathaus" ||
           result.selectedRecipient.kind === "landesregierung" ||

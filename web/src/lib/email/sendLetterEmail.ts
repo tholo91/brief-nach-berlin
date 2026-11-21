@@ -77,6 +77,13 @@ export interface LetterDebugPayload {
   // Datensparsamer Diagnosekontext. Der vollständige Anliegenstext bleibt aus
   // URL, Mail und Feedback-Metadaten heraus; alte Payloads haben das Feld nicht.
   issueTextPreview?: string;
+  // Kampagnenbriefe mit unverändertem Text: Position in getCampaignIssueTexts
+  // (0 = Haupttext). Ersetzt dann issueTextPreview, /debug lädt den öffentlichen
+  // Kampagnentext selbst nach. Hält den Link kurz.
+  issueVariantIndex?: number;
+  // Zusatztext bzw. Chips aus "Bist du selbst betroffen?" (nur Kampagnen, serverseitig
+  // geprüft). Nur im Debug-Link, damit sich prüfen lässt, ob die KI Details erfindet.
+  personalNotePreview?: string;
 }
 
 export interface SendLetterEmailParams {
@@ -200,6 +207,7 @@ function prepareAdultLetterEmail(args: {
   // Feedback-Token, der später als Review-Metadaten gespeichert werden kann.
   const feedbackPayload = { ...debug };
   delete feedbackPayload.issueTextPreview;
+  delete feedbackPayload.personalNotePreview;
   const feedbackToken = signFeedbackToken(feedbackPayload);
 
   if (recipient.kind === "rathaus") {

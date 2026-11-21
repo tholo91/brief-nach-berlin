@@ -204,7 +204,7 @@ describe("follow-up mail is shorter and calmer", () => {
 
   it("uses the donation body Thomas approved", () => {
     expect(SUPPORT_EMAIL_COPY.de.followupBody).toBe(
-      "Ich baue und betreibe Brief-nach-Berlin allein und ehrenamtlich in meiner Freizeit. Wenn dir das Tool beim Schreiben geholfen hat, freue ich mich über deine Unterstützung. Schon 5 € helfen mir, die laufenden Kosten zu decken.",
+      "Ich baue und betreibe das Projekt allein und ehrenamtlich in meiner Freizeit. Wenn ich dir beim Schreiben geholfen habe, würd ich mich sehr über deine Unterstützung freuen. Schon 5 € helfen, die laufenden Kosten zu decken.",
     );
     for (const locale of ["de", "en", "tr"] as const) {
       expect(SUPPORT_EMAIL_COPY[locale].followupBody).not.toMatch(/\bwir\b/i);

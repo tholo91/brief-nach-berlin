@@ -101,7 +101,7 @@ export const SUPPORT_EMAIL_COPY = {
     compactButton: "Jetzt spenden",
     infoButton: "Mehr Informationen",
     followupBody:
-      "Ich baue und betreibe Brief-nach-Berlin allein und ehrenamtlich in meiner Freizeit. Wenn dir das Tool beim Schreiben geholfen hat, freue ich mich über deine Unterstützung. Schon 5 € helfen mir, die laufenden Kosten zu decken.",
+      "Ich baue und betreibe das Projekt allein und ehrenamtlich in meiner Freizeit. Wenn ich dir beim Schreiben geholfen habe, würd ich mich sehr über deine Unterstützung freuen. Schon 5 € helfen, die laufenden Kosten zu decken.",
     followupStatus: "Gemeinnützig\nüber WE AID",
     followupHeadingMobile: "Damit das Tool kostenlos bleibt",
     followupCostNote:

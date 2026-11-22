@@ -19,7 +19,8 @@ function block(matrix: boolean[][], top: number, left: number): string[] {
 }
 
 describe("createQrMatrix", () => {
-  const url = "https://www.brief-nach-berlin.de/kampagne/beispiel";
+  // Lang genug für Version 10 (57 Module); kleine Versionen deckt qrCodeVersions.test.ts ab.
+  const url = "https://www.brief-nach-berlin.de/schule?k=" + "a".repeat(60);
   const matrix = createQrMatrix(url);
   const size = matrix.length;
 

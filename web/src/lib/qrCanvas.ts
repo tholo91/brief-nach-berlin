@@ -5,43 +5,37 @@ export const fallbackQrLogoUrl = "/images/img-umschlag-icon.webp";
 const defaultCellPixels = 16;
 const quietZoneCells = 4;
 
-// The own encoder in qr-code.ts uses error correction level Q (about 25 % recoverable).
-// The logo backing covers 0.24 * 0.24 = 5.8 % of the whole image, so far below that.
-const logoBackingRatio = 0.24;
-const logoImageRatio = 0.17;
+// The own encoder in qr-code.ts uses error correction level Q (about 25 % of the codewords
+// recoverable). The white logo square covers about 7 to 9 % of the modules, so with margin
+// for print noise and scanning from a distance. It is a whole number of modules (odd, so
+// it sits centered on the module grid) and has a one module white frame around the logo.
+const logoBackingShare = 0.28;
+const logoFrameModules = 1;
 
 export function qrCanvasSize(matrixLength: number, cellPixels: number = defaultCellPixels): number {
   return (matrixLength + quietZoneCells * 2) * cellPixels;
 }
 
-export function qrLogoGeometry(size: number): { backingSize: number; logoSize: number; backingX: number } {
-  const backingSize = Math.round(size * logoBackingRatio);
-  return {
-    backingSize,
-    logoSize: Math.round(size * logoImageRatio),
-    backingX: Math.round((size - backingSize) / 2),
-  };
+function nearestOdd(value: number): number {
+  const lower = 2 * Math.floor((value - 1) / 2) + 1;
+  return value - lower <= lower + 2 - value ? lower : lower + 2;
 }
 
-function roundedRect(
-  context: CanvasRenderingContext2D,
-  x: number,
-  y: number,
-  width: number,
-  height: number,
-  radius: number
-): void {
-  context.beginPath();
-  context.moveTo(x + radius, y);
-  context.lineTo(x + width - radius, y);
-  context.quadraticCurveTo(x + width, y, x + width, y + radius);
-  context.lineTo(x + width, y + height - radius);
-  context.quadraticCurveTo(x + width, y + height, x + width - radius, y + height);
-  context.lineTo(x + radius, y + height);
-  context.quadraticCurveTo(x, y + height, x, y + height - radius);
-  context.lineTo(x, y + radius);
-  context.quadraticCurveTo(x, y, x + radius, y);
-  context.closePath();
+/** Square white field in the center: edge length in modules, odd, scales with the QR size. */
+export function qrLogoBackingModules(matrixLength: number): number {
+  return nearestOdd(matrixLength * logoBackingShare);
+}
+
+export function qrLogoGeometry(
+  matrixLength: number,
+  cellPixels: number = defaultCellPixels
+): { backingSize: number; logoSize: number; backingX: number; logoX: number } {
+  const size = qrCanvasSize(matrixLength, cellPixels);
+  const backingModules = qrLogoBackingModules(matrixLength);
+  const backingSize = backingModules * cellPixels;
+  const logoSize = (backingModules - logoFrameModules * 2) * cellPixels;
+  const backingX = (size - backingSize) / 2;
+  return { backingSize, logoSize, backingX, logoX: backingX + logoFrameModules * cellPixels };
 }
 
 function loadImage(src: string): Promise<HTMLImageElement> {
@@ -56,25 +50,26 @@ function loadImage(src: string): Promise<HTMLImageElement> {
 
 async function drawLogo(
   context: CanvasRenderingContext2D,
-  size: number,
+  matrixLength: number,
+  cellPixels: number,
   logoUrl: string
 ): Promise<void> {
   const image = await loadImage(logoUrl);
-  const { backingSize, logoSize, backingX } = qrLogoGeometry(size);
+  const { backingSize, logoSize, backingX, logoX } = qrLogoGeometry(matrixLength, cellPixels);
 
-  context.fillStyle = "#faf8f5";
-  roundedRect(context, backingX, backingX, backingSize, backingSize, Math.round(backingSize * 0.22));
-  context.fill();
-  context.strokeStyle = "rgba(57, 74, 55, 0.16)";
-  context.lineWidth = Math.max(3, Math.round(size * 0.004));
-  context.stroke();
+  context.fillStyle = "#ffffff";
+  context.fillRect(backingX, backingX, backingSize, backingSize);
 
   const scale = Math.min(logoSize / image.naturalWidth, logoSize / image.naturalHeight);
   const width = Math.round(image.naturalWidth * scale);
   const height = Math.round(image.naturalHeight * scale);
-  const x = Math.round((size - width) / 2);
-  const y = Math.round((size - height) / 2);
-  context.drawImage(image, x, y, width, height);
+  context.drawImage(
+    image,
+    Math.round(logoX + (logoSize - width) / 2),
+    Math.round(logoX + (logoSize - height) / 2),
+    width,
+    height
+  );
 }
 
 /**
@@ -110,7 +105,7 @@ export async function renderQrToCanvas(
     }
   }
 
-  if (logoUrl) await drawLogo(context, size, logoUrl);
+  if (logoUrl) await drawLogo(context, matrix.length, cellPixels, logoUrl);
 }
 
 export function canvasToBlob(canvas: HTMLCanvasElement): Promise<Blob> {

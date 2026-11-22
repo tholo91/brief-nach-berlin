@@ -230,6 +230,7 @@ describe("CampaignShareCard", () => {
     return renderToStaticMarkup(
       createElement(CampaignShareCard, {
         publicUrl,
+        qrUrl: compactUrl,
         shareUrl,
         compactUrl,
         slug: "duisburg-retten",

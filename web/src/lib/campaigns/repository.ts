@@ -463,6 +463,7 @@ export async function getPublicCampaignBySlug(
   return data ? mapCampaign(data as CampaignRow) : null;
 }
 
+/** Aktive und pausierte Kampagnen, damit gedruckte QR-Codes mit Kurzlink auch in einer Pause funktionieren. */
 export async function getActiveCampaignByCompactSlug(
   compactSlug: string,
   db?: RepositoryClient
@@ -474,7 +475,7 @@ export async function getActiveCampaignByCompactSlug(
     .from("campaigns")
     .select("*")
     .eq("compact_slug", normalizedCompactSlug)
-    .eq("status", "active")
+    .in("status", ["active", "paused"])
     .eq("moderation_status", "approved")
     .limit(2);
 

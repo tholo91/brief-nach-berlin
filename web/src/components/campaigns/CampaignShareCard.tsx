@@ -4,6 +4,7 @@ import { ExternalLinkIcon } from "./ExternalLinkIcon";
 
 type CampaignShareCardProps = {
   publicUrl: string;
+  qrUrl: string;
   shareUrl: string;
   compactUrl: string | null;
   slug: string;
@@ -13,6 +14,7 @@ type CampaignShareCardProps = {
 
 export function CampaignShareCard({
   publicUrl,
+  qrUrl,
   shareUrl,
   compactUrl,
   slug,
@@ -61,7 +63,7 @@ export function CampaignShareCard({
         )}
       </div>
       <div className="mt-5 border-t border-warmgrau/12 pt-5">
-        <CampaignQrDownload url={publicUrl} slug={slug} logoUrl={logoUrl} />
+        <CampaignQrDownload url={qrUrl} slug={slug} logoUrl={logoUrl} />
       </div>
     </section>
   );

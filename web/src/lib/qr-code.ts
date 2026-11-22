@@ -1,8 +1,10 @@
 // Hand geschriebener QR-Encoder: Byte-Modus, Fehlerkorrektur Q, feste Maske 0.
 // Es wird die kleinste Version gewählt, in die der Text passt. Die Tabelle unten
 // stammt aus ISO/IEC 18004 (Blöcke, EC-Codewörter je Block, Positionen der
-// Alignment-Muster); alles andere folgt daraus. Version 10 bleibt Byte für Byte
-// wie bisher, größere Versionen kommen nur bei längeren Texten zum Einsatz.
+// Alignment-Muster); alles andere folgt daraus. Kurze Links bekommen die kleinen
+// Versionen 3 bis 6 (29 bis 41 Module): weniger Module heißt größere Module, und
+// die lassen sich vom Plakat aus der Ferne scannen. Die Versionen 10, 12 und 14
+// bleiben Byte für Byte wie bisher.
 interface QrVersionSpec {
   version: number;
   errorCorrectionBlocks: number;
@@ -11,6 +13,10 @@ interface QrVersionSpec {
 }
 
 const VERSIONS: QrVersionSpec[] = [
+  { version: 3, errorCorrectionBlocks: 2, errorCorrectionCodewords: 18, alignmentCenters: [6, 22] },
+  { version: 4, errorCorrectionBlocks: 2, errorCorrectionCodewords: 26, alignmentCenters: [6, 26] },
+  { version: 5, errorCorrectionBlocks: 4, errorCorrectionCodewords: 18, alignmentCenters: [6, 30] },
+  { version: 6, errorCorrectionBlocks: 4, errorCorrectionCodewords: 24, alignmentCenters: [6, 34] },
   { version: 10, errorCorrectionBlocks: 8, errorCorrectionCodewords: 24, alignmentCenters: [6, 28, 50] },
   { version: 12, errorCorrectionBlocks: 10, errorCorrectionCodewords: 26, alignmentCenters: [6, 32, 58] },
   { version: 14, errorCorrectionBlocks: 16, errorCorrectionCodewords: 20, alignmentCenters: [6, 26, 46, 66] },
@@ -27,10 +33,13 @@ interface QrSpec extends QrVersionSpec {
 function buildSpec(entry: QrVersionSpec): QrSpec {
   const { version, errorCorrectionBlocks, errorCorrectionCodewords } = entry;
   // Datenmodule ohne Funktionsmuster (ISO 18004, Annex): Gesamtfläche minus Finder,
-  // Timing, Alignment und Versionsinfo; Rest-Bits (< 8) gehören nicht zu den Codewörtern.
+  // Timing, Alignment und Versionsinfo (ab Version 7); Rest-Bits (< 8) gehören nicht zu den Codewörtern.
   const alignCount = Math.floor(version / 7) + 2;
   const rawModules =
-    (16 * version + 128) * version + 64 - ((25 * alignCount - 10) * alignCount - 55) - 36;
+    (16 * version + 128) * version +
+    64 -
+    ((25 * alignCount - 10) * alignCount - 55) -
+    (version >= 7 ? 36 : 0);
   const rawCodewords = Math.floor(rawModules / 8);
   return {
     ...entry,
@@ -45,9 +54,13 @@ function buildSpec(entry: QrVersionSpec): QrSpec {
 
 const SPECS = VERSIONS.map(buildSpec);
 
-// Moduswahl-Bits (4) + Längenfeld (16 Bit ab Version 10) liegen vor den Nutzdaten.
+// Moduswahl-Bits (4) + Längenfeld (8 Bit bis Version 9, 16 Bit ab Version 10) liegen vor den Nutzdaten.
+function lengthBits(spec: QrSpec): number {
+  return spec.version < 10 ? 8 : 16;
+}
+
 function byteCapacity(spec: QrSpec): number {
-  return Math.floor((spec.dataCodewords * 8 - 4 - 16) / 8);
+  return Math.floor((spec.dataCodewords * 8 - 4 - lengthBits(spec)) / 8);
 }
 
 /** Größte Textlänge in Byte, die noch in einen QR-Code passt. */
@@ -99,7 +112,7 @@ function encodeData(bytes: number[], spec: QrSpec): number[] {
   const bits: number[] = [];
 
   appendBits(bits, 0b0100, 4);
-  appendBits(bits, bytes.length, 16);
+  appendBits(bits, bytes.length, lengthBits(spec));
   for (const byte of bytes) appendBits(bits, byte, 8);
 
   if (bits.length > capacityBits) {
@@ -323,13 +336,16 @@ function drawFunctionPatterns(
   for (let i = 8; i < 15; i += 1) setFunctionModule(modules, functionModules, 8, size - 15 + i, getBit(format, i));
   setFunctionModule(modules, functionModules, 8, size - 8, true);
 
-  const versionInfo = versionBits(version);
-  for (let i = 0; i < 18; i += 1) {
-    const bit = getBit(versionInfo, i);
-    const a = size - 11 + (i % 3);
-    const b = Math.floor(i / 3);
-    setFunctionModule(modules, functionModules, a, b, bit);
-    setFunctionModule(modules, functionModules, b, a, bit);
+  // Versionsinfo gibt es erst ab Version 7.
+  if (version >= 7) {
+    const versionInfo = versionBits(version);
+    for (let i = 0; i < 18; i += 1) {
+      const bit = getBit(versionInfo, i);
+      const a = size - 11 + (i % 3);
+      const b = Math.floor(i / 3);
+      setFunctionModule(modules, functionModules, a, b, bit);
+      setFunctionModule(modules, functionModules, b, a, bit);
+    }
   }
 }
 

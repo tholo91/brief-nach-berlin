@@ -178,6 +178,11 @@ export function CampaignManager({
   const shareUrlFor = campaign.status === "active" ? campaignShortUrl : campaignPublicUrl;
   const compactUrlFor = campaign.status === "active" ? campaignCompactShortUrl : campaignPublicUrl;
   const compactSlug = compactCampaignSlug(campaign.slug);
+  // Der QR-Code nutzt den kürzesten Link: wenig Text heißt grobe Module, die man auch vom Plakat scannt.
+  const qrUrl =
+    campaign.status === "active" || campaign.status === "paused"
+      ? campaignCompactShortUrl(compactSlug)
+      : publicUrl;
   const hasCompactUrl = compactSlug !== campaign.slug;
   const liveSinceLabel = campaign.activatedAt
     ? formatCampaignLiveSince(campaign.activatedAt)
@@ -344,6 +349,7 @@ export function CampaignManager({
 
       <CampaignShareCard
         publicUrl={publicUrl}
+        qrUrl={qrUrl}
         shareUrl={shareUrlFor(campaign.slug)}
         compactUrl={hasCompactUrl ? compactUrlFor(compactSlug) : null}
         slug={campaign.slug}

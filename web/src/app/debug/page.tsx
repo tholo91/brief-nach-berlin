@@ -82,6 +82,13 @@ function CopyAction({ text }: { text: string }) {
   return text ? <CopyButton text={text} label="Text kopieren" /> : null;
 }
 
+function personalHookNote(indexes?: number[]): string | undefined {
+  if (!indexes) return undefined;
+  if (indexes.length === 0) return "Ohne Satzanfang, nur eigener Text.";
+  const list = indexes.map((i) => i + 1).join(" und ");
+  return `Satzanfang ${list} gewählt.`;
+}
+
 function TextBlock({ text, note }: { text: string; note?: string }) {
   return (
     <>
@@ -124,7 +131,7 @@ function LetterCard({ d, variantText }: { d: LetterDebugPayload; variantText?: s
       </Section>
       {d.personalNotePreview && (
         <Section title="Dein Zusatz (Chips und Text)" action={<CopyAction text={d.personalNotePreview} />}>
-          <TextBlock text={d.personalNotePreview} />
+          <TextBlock text={d.personalNotePreview} note={personalHookNote(d.personalHookIndexes)} />
         </Section>
       )}
       <Section title="Dein Brief im Überblick">

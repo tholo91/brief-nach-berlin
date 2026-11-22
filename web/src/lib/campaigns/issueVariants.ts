@@ -120,3 +120,18 @@ export function restoreCampaignIssueDraft(
   if (savedDraft.trim().length > 0) return savedDraft;
   return selectCampaignIssueText(input, random);
 }
+
+// Welche Satzanfänge (Position, 0-basiert) stecken im Zusatztext? Leere Liste:
+// nur eigener Text. Jede Liste ist eine Sprachfassung derselben Satzanfänge.
+export function findPersonalHookIndexes(
+  note: string,
+  hookLists: readonly (readonly string[])[],
+): number[] {
+  const indexes = new Set<number>();
+  for (const hooks of hookLists) {
+    hooks.forEach((hook, index) => {
+      if (hook.trim() && note.includes(hook.trim())) indexes.add(index);
+    });
+  }
+  return [...indexes].sort((a, b) => a - b);
+}

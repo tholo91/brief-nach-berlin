@@ -33,7 +33,7 @@ describe("Kampagnen-Slug im Feedback-Token", () => {
       recipient: getLandesregierungRecipient("HB")!,
       letterText: "Test",
       issueText: "Test",
-      debug: { issueTextPreview: "geheim", personalNotePreview: "privat" } as never,
+      debug: { issueTextPreview: "geheim", personalNotePreview: "privat", personalHookIndexes: [1] } as never,
       campaign: campaign as never,
     });
     return (signFeedbackToken as jest.Mock).mock.calls[0][0];
@@ -44,6 +44,7 @@ describe("Kampagnen-Slug im Feedback-Token", () => {
     expect(payload.campaignSlug).toBe("kampagne-a");
     expect(payload).not.toHaveProperty("issueTextPreview");
     expect(payload).not.toHaveProperty("personalNotePreview");
+    expect(payload.personalHookIndexes).toEqual([1]);
   });
 
   it("enthält kein campaignSlug ohne Kampagne", async () => {

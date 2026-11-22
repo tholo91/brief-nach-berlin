@@ -84,6 +84,9 @@ export interface LetterDebugPayload {
   // Zusatztext bzw. Chips aus "Bist du selbst betroffen?" (nur Kampagnen, serverseitig
   // geprüft). Nur im Debug-Link, damit sich prüfen lässt, ob die KI Details erfindet.
   personalNotePreview?: string;
+  // Gewählte Satzanfänge (Position, 0-basiert), [] = nur eigener Text, fehlt = kein Zusatz.
+  // Kein Nutzertext, bleibt deshalb im Feedback-Token für den Qualitätsvergleich in Reviews.
+  personalHookIndexes?: number[];
 }
 
 export interface SendLetterEmailParams {

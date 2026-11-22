@@ -39,7 +39,8 @@ import { runningCampaign } from "@/lib/campaigns/endDate";
 import { claimAndSendCampaignMilestone } from "@/lib/campaigns/milestoneNotification";
 import { claimAndSendGlobalLetterMilestone } from "@/lib/campaigns/globalLetterMilestoneNotification";
 import { getPublicCampaignBySlug } from "@/lib/campaigns/repository";
-import { getCampaignIssueTexts } from "@/lib/campaigns/issueVariants";
+import { findPersonalHookIndexes, getCampaignIssueTexts } from "@/lib/campaigns/issueVariants";
+import { UI_CATALOG } from "@/lib/i18n/uiCatalog";
 import { buildLetterSignalContext, doesLetterSignalContextMatch } from "@/lib/letterSignals/context";
 import { createGenerationProof, verifyLetterSignalContext } from "@/lib/letterSignals/token";
 import { markLetterSignalGeneratedAction } from "@/lib/actions/letterSignals";
@@ -428,6 +429,14 @@ export async function POST(req: NextRequest) {
         }
         if (personalNote) {
           debugPayload.personalNotePreview = personalNote.slice(0, ISSUE_TEXT_PREVIEW_MAX);
+          // Nur die Position des Satzanfangs, kein Text: landet auch in den Review-Metadaten.
+          const campaignHooks = campaign?.personalHooks?.slice(0, 3) ?? [];
+          debugPayload.personalHookIndexes = findPersonalHookIndexes(
+            personalNote,
+            campaignHooks.length > 0
+              ? [campaignHooks]
+              : Object.values(UI_CATALOG).map((copy) => copy.preferences.personalGenericHooks),
+          );
         }
         const politicianFullName =
           result.selectedRecipient.kind === "rathaus" ||

@@ -49,7 +49,7 @@ Der level-aware E-Mail-Betreff ist dagegen bereits implementiert und getestet; d
 Phase: 05 — EXECUTING
 Plan: 4 of 4
 Status: Phase complete — ready for verification
-Last activity: 2026-11-23 - Completed quick task 261123-p34: Elternseite und Jugendtexte im Wizard auf Englisch und Tuerkisch
+Last activity: 2026-11-23 - Completed quick task 261123-ps6: Restliche Wizard-Texte auf Englisch und Tuerkisch
 
 Progress: [███████░░░] 68%
 
@@ -262,6 +262,7 @@ Recent decisions affecting current work:
 | 261119-tda | Statistik offen + Presse neu: Kernzahlen und Zitate | 2026-11-19 | d68fee2 | [261119-tda-statistik-offen-presse-neu-kernzahlen-un](./quick/261119-tda-statistik-offen-presse-neu-kernzahlen-un/) |
 | 261120-k2m | Schulname im Klassenlink | 2026-11-20 | e0f0a34 | [261120-k2m-schulname-im-klassenlink](./quick/261120-k2m-schulname-im-klassenlink/) |
 | 261123-p34 | Elternseite und Jugendtexte im Wizard auf Englisch und Tuerkisch | 2026-11-23 | 7f7e0ec | [261123-p34-eltern-und-schultexte-auf-englisch-und-t](./quick/261123-p34-eltern-und-schultexte-auf-englisch-und-t/) |
+| 261123-ps6 | Restliche Wizard-Texte (Schulreiter, Erfolgsseite, Empfängerauswahl) auf Englisch und Tuerkisch | 2026-11-23 | 08634af | [261123-ps6-restliche-deutsche-texte-wizard-en-tr](./quick/261123-ps6-restliche-deutsche-texte-wizard-en-tr/) |
 
 ## Session Continuity
 

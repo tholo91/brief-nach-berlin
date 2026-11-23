@@ -243,7 +243,7 @@ export default async function DebugPage({
   const campaign = await loadCampaign(letter?.campaignSlug);
   const variantText = letter ? variantTextOf(letter, campaign) : undefined;
   const share = buildShareTarget(
-    letter?.campaignSlug ? { slug: letter.campaignSlug, title: campaign?.title } : null,
+    campaign ? { slug: campaign.slug, title: campaign.title } : null,
     "participant",
     letter?.selectedLevel === "Land" || letter?.selectedLevel === "Kommune"
       ? letter.selectedLevel

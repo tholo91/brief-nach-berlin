@@ -3,6 +3,7 @@ import "server-only";
 import { createHash, randomBytes } from "node:crypto";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { getServiceRoleClient } from "@/lib/supabase/server";
+import { APP_URL } from "@/lib/config";
 import {
   campaignTokenKindSchema,
   type CampaignTokenKind,
@@ -85,6 +86,30 @@ export async function createCampaignToken(
   }
 
   return { token, record: mapToken(data as CampaignTokenRow) };
+}
+
+// Eigener Verwaltungs-Token nur für den Betreiber. Der Klartext-Link liegt
+// in campaign_tokens.admin_link (043), weil Tokens sonst nur als Hash existieren.
+export async function createCampaignAdminLink(
+  campaignId: string,
+  db?: RepositoryClient
+): Promise<string> {
+  const token = createCampaignTokenValue();
+  const adminLink = `${APP_URL}/kampagne/verwalten?token=${encodeURIComponent(token)}`;
+  const { error } = await client(db)
+    .from("campaign_tokens")
+    .insert({
+      campaign_id: campaignId,
+      kind: "manage",
+      token_hash: hashCampaignToken(token),
+      expires_at: new Date(Date.now() + MANAGE_TOKEN_TTL_SECONDS * 1000).toISOString(),
+      admin_link: adminLink,
+    });
+
+  if (error) {
+    throw new CampaignTokenError(`Campaign admin link create failed: ${error.message}`);
+  }
+  return adminLink;
 }
 
 export async function createCampaignTransferToken(

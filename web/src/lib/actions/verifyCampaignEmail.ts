@@ -7,6 +7,7 @@ import {
   markEmailVerified,
 } from "@/lib/campaigns/repository";
 import {
+  createCampaignAdminLink,
   createCampaignToken,
   getUsableCampaignTokenForCampaign,
   getUsableCampaignToken,
@@ -40,6 +41,14 @@ async function sendPendingManagementAccess(campaign: {
   creatorName: string | null;
 }): Promise<VerifyCampaignEmailResult> {
   await revokeCampaignTokensForCampaign(campaign.id, "manage");
+  try {
+    await createCampaignAdminLink(campaign.id);
+  } catch (error) {
+    console.error(
+      "[verifyCampaignEmail] admin link failed",
+      error instanceof Error ? error.message : "unknown error"
+    );
+  }
   const { token: manageToken, record } = await createCampaignToken(campaign.id, "manage");
   const sent = await sendCampaignCreatorEmail({
     kind: "management_pending",

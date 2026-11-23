@@ -14,6 +14,7 @@ jest.mock("@/lib/campaigns/repository", () => {
   };
 });
 jest.mock("@/lib/campaigns/tokens", () => ({
+  createCampaignAdminLink: jest.fn(),
   createCampaignToken: jest.fn(),
   getUsableCampaignTokenForCampaign: jest.fn(),
   getUsableCampaignToken: jest.fn(),

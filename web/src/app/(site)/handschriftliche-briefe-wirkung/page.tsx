@@ -287,6 +287,7 @@ export default function HandschriftlicheBriefeWirkungPage() {
             <li><Link href="/warum-ein-brief" className="font-body text-waldgruen underline underline-offset-2 hover:text-waldgruen-dark">Warum ein Brief mehr ist als ein Brief</Link></li>
             <li><Link href="/was-tun-gegen-politische-ohnmacht" className="font-body text-waldgruen underline underline-offset-2 hover:text-waldgruen-dark">Was ein erster Brief mit politischer Selbstwirksamkeit zu tun haben kann</Link></li>
             <li><Link href="/ngo-briefkampagne" className="font-body text-waldgruen underline underline-offset-2 hover:text-waldgruen-dark">Wie eine NGO eine Briefkampagne startet</Link></li>
+            <li><Link href="/follower-aktivieren" className="font-body text-waldgruen underline underline-offset-2 hover:text-waldgruen-dark">Follower aktivieren: vom Zuschauen ins Machen</Link></li>
             <li><Link href="/tipps" className="font-body text-waldgruen underline underline-offset-2 hover:text-waldgruen-dark">Tipps für einen persönlichen Brief</Link></li>
           </ul>
         </div>

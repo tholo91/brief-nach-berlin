@@ -8,10 +8,12 @@ export default function CopyButton({
   text,
   label,
   iconOnly = false,
+  fill = false,
 }: {
   text: string;
   label: string;
   iconOnly?: boolean;
+  fill?: boolean;
 }) {
   const [state, setState] = useState<"idle" | "done" | "failed">("idle");
 
@@ -35,7 +37,7 @@ export default function CopyButton({
       title={iconOnly ? label : undefined}
       className={[
         "inline-grid rounded-lg border border-waldgruen text-sm font-semibold transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-waldgruen",
-        iconOnly ? "p-2" : "px-3 py-1.5",
+        iconOnly ? "p-2" : fill ? "w-full justify-items-center px-3 py-2.5" : "px-3 py-1.5",
         done ? "bg-waldgruen text-white" : "text-waldgruen-dark hover:bg-waldgruen hover:text-white",
       ].join(" ")}
     >

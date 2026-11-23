@@ -1,7 +1,9 @@
+import Image from "next/image";
 import Link from "next/link";
 import type { ReactNode } from "react";
 import AppHeader from "@/components/AppHeader";
-import { APP_URL, LETTER_LENGTHS } from "@/lib/config";
+import { LETTER_LENGTHS } from "@/lib/config";
+import { buildShareTarget } from "@/lib/share";
 import type { LetterDebugPayload } from "@/lib/email/sendLetterEmail";
 import type { LetterVariantDebugPayload } from "@/lib/email/variantDebugPayload";
 import CopyButton from "./CopyButton";
@@ -102,14 +104,64 @@ function TextBlock({ text, note }: { text: string; note?: string }) {
 
 // Kampagnenbriefe mit unverändertem Text tragen nur die Variantennummer im Link.
 // Der Kampagnentext ist öffentlich und wird hier nachgeladen.
-async function loadVariantText(d: LetterDebugPayload): Promise<string | undefined> {
-  if (d.issueVariantIndex === undefined || !d.campaignSlug) return undefined;
+async function loadCampaign(slug: string | undefined) {
+  if (!slug) return null;
   try {
-    const campaign = await getPublicCampaignBySlug(d.campaignSlug);
-    return campaign ? getCampaignIssueTexts(campaign)[d.issueVariantIndex] : undefined;
+    return await getPublicCampaignBySlug(slug);
   } catch {
-    return undefined;
+    return null;
   }
+}
+
+function variantTextOf(
+  d: LetterDebugPayload,
+  campaign: Awaited<ReturnType<typeof loadCampaign>>
+): string | undefined {
+  if (d.issueVariantIndex === undefined || !campaign) return undefined;
+  return getCampaignIssueTexts(campaign)[d.issueVariantIndex];
+}
+
+const SHARE_BUTTON =
+  "inline-flex w-full items-center justify-center gap-2 rounded-lg border border-waldgruen px-3 py-2.5 text-sm font-semibold text-waldgruen-dark transition-colors hover:bg-waldgruen hover:text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-waldgruen";
+
+function ShareCard({ share }: { share: ReturnType<typeof buildShareTarget> }) {
+  const channels = [
+    { label: "WhatsApp", href: share.whatsappUrl, icon: "/images/icon-whatsapp.png" },
+    { label: "Telegram", href: share.telegramUrl, icon: "/images/icon-telegram.png" },
+    { label: "E-Mail", href: share.emailUrl, icon: "/images/icon-email.png" },
+  ];
+  return (
+    <aside className="mt-5 rounded-2xl border border-waldgruen/20 bg-white p-5 shadow-sm">
+      <h2 className="font-typewriter text-lg font-bold text-waldgruen-dark">
+        Gefällt dir die Idee? ✉️
+      </h2>
+      <p className="mt-2 text-[15px] leading-relaxed">
+        Ich baue Brief-nach-Berlin allein. Je mehr Leute schreiben, desto schwerer ist es in
+        Berlin zu überhören.
+      </p>
+      <div className="mt-4 grid grid-cols-2 gap-2.5 sm:grid-cols-4">
+        {channels.map((c) => (
+          <a
+            key={c.label}
+            href={c.href}
+            target="_blank"
+            rel="noopener noreferrer"
+            className={SHARE_BUTTON}
+          >
+            <Image src={c.icon} alt="" width={18} height={18} className="size-[18px]" />
+            {c.label}
+          </a>
+        ))}
+        <CopyButton text={share.url} label="Link kopieren" fill />
+      </div>
+      <Link
+        href="/weitersagen"
+        className="mt-4 inline-block rounded px-0.5 py-1 text-sm font-semibold text-waldgruen-dark underline underline-offset-2 transition-colors hover:text-waldgruen focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-waldgruen"
+      >
+        Brief-nach-Berlin weiterempfehlen
+      </Link>
+    </aside>
+  );
 }
 
 function LetterCard({ d, variantText }: { d: LetterDebugPayload; variantText?: string }) {
@@ -187,8 +239,16 @@ export default async function DebugPage({
   const payload = decode(d);
   const failed = "error" in payload;
   const isCampaignLetter = !failed && !isVariant(payload) && Boolean(payload.campaignSlug);
-  const variantText =
-    !failed && !isVariant(payload) ? await loadVariantText(payload) : undefined;
+  const letter = !failed && !isVariant(payload) ? payload : undefined;
+  const campaign = await loadCampaign(letter?.campaignSlug);
+  const variantText = letter ? variantTextOf(letter, campaign) : undefined;
+  const share = buildShareTarget(
+    letter?.campaignSlug ? { slug: letter.campaignSlug, title: campaign?.title } : null,
+    "participant",
+    letter?.selectedLevel === "Land" || letter?.selectedLevel === "Kommune"
+      ? letter.selectedLevel
+      : "Bund"
+  );
 
   return (
     <div className="min-h-screen bg-creme font-body text-warmgrau">
@@ -215,26 +275,7 @@ export default async function DebugPage({
           )}
         </article>
 
-        {!failed && (
-          <aside className="mt-5 rounded-2xl border border-waldgruen/20 bg-white p-5 shadow-sm">
-            <h2 className="font-typewriter text-lg font-bold text-waldgruen-dark">
-              Gefällt dir die Idee? ✉️
-            </h2>
-            <p className="mt-2 text-[15px] leading-relaxed">
-              Ich baue Brief-nach-Berlin allein. Je mehr Leute schreiben, desto schwerer ist es in
-              Berlin zu überhören.
-            </p>
-            <div className="mt-4 flex flex-wrap items-center gap-3">
-              <CopyButton text={APP_URL} label="Link kopieren" />
-              <Link
-                href="/weitersagen"
-                className="rounded-lg px-1 py-1.5 text-sm font-semibold text-waldgruen-dark underline underline-offset-2 transition-colors hover:text-waldgruen focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-waldgruen"
-              >
-                Weitersagen →
-              </Link>
-            </div>
-          </aside>
-        )}
+        {!failed && <ShareCard share={share} />}
 
         <details className="relative mt-6 rounded-2xl border border-warmgrau/15 bg-white/60 p-4">
           <summary className="cursor-pointer rounded pr-12 font-semibold text-warmgrau focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-waldgruen">

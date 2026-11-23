@@ -5,9 +5,10 @@ import { useRouter } from "next/navigation";
 import { VoiceRecorder } from "@/components/audio/VoiceRecorder";
 import { ExpandableTopicChips } from "@/components/topics/ExpandableTopicChips";
 import { useTopicStarters } from "@/components/topics/useTopicStarters";
+import { useLocale, useUiCopy } from "@/components/i18n/LocaleProvider";
 import { WizardForwardIcon } from "@/components/wizard/WizardForwardIcon";
 import { WIZARD_PATH } from "@/lib/config";
-import { ELTERN_MAX_TOPICS, ELTERN_TOPICS } from "@/lib/schule/elternTopics";
+import { ELTERN_MAX_TOPICS, ELTERN_TOPICS_BY_LOCALE } from "@/lib/schule/elternTopics";
 import { ISSUE_TEXT_MAX, ISSUE_TEXT_MIN } from "@/lib/validation/wizardSchemas";
 import { saveHandoff } from "@/lib/wizard-handoff";
 import {
@@ -24,24 +25,16 @@ const KLASSEN = Array.from(
   (_, i) => ELTERN_KLASSE_MIN + i,
 );
 
-const TOPIC_MESSAGES = {
-  limit: "Du kannst höchstens zwei Themen wählen.",
-  "removed-text": "Satzanfang entfernt.",
-  "removed-kept": "Thema entfernt. Deinen bearbeiteten Text habe ich stehen lassen.",
-  added: "Satzanfang eingefügt. Schreib ihn selbst zu Ende.",
-  "added-max": "Zwei Satzanfänge eingefügt. Schreib sie selbst zu Ende.",
-};
-
-const ERROR_MESSAGES = {
-  "text-short": "Schreib noch ein paar Worte zu deinem Anliegen.",
-  "text-long": "Dein Text ist zu lang. Bitte kürze ihn etwas.",
-};
-
 const focusRing =
   "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-waldgruen focus-visible:ring-offset-2";
 
 export function ElternExperience() {
   const router = useRouter();
+  const { locale } = useLocale();
+  const copy = useUiCopy();
+  const form = copy.eltern.form;
+  const topics = ELTERN_TOPICS_BY_LOCALE[locale];
+  const voiceUnavailable = locale === "tr";
   const [klasse, setKlasse] = useState<number | null>(null);
   const [usedVoice, setUsedVoice] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -56,10 +49,10 @@ export function ElternExperience() {
     selectionLimitReached,
   } = useTopicStarters({
     draftKey: ELTERN_DRAFT_KEY,
-    topics: ELTERN_TOPICS,
+    topics,
     maxTopics: ELTERN_MAX_TOPICS,
     maxIssueLength: ISSUE_TEXT_MAX,
-    messages: TOPIC_MESSAGES,
+    messages: form.topicMessages,
   });
 
   useEffect(() => {
@@ -67,9 +60,9 @@ export function ElternExperience() {
   }, [router]);
 
   function continueToWizard() {
-    const result = validateElternSubmit({ klasse, issueText });
+    const result = validateElternSubmit({ klasse, issueText, locale });
     if (!result.ok) {
-      setStatusMessage(ERROR_MESSAGES[result.reason]);
+      setStatusMessage(form.errors[result.reason]);
       textareaRef.current?.focus();
       return;
     }
@@ -97,7 +90,8 @@ export function ElternExperience() {
       <div className="space-y-8 p-5 sm:p-7">
         <div>
           <label htmlFor="eltern-klasse" className="font-typewriter text-base font-bold text-waldgruen-dark sm:text-lg">
-            Klasse deines Kindes <span className="font-body text-sm font-normal text-warmgrau/70">(optional)</span>
+            {form.klasseLabel}{" "}
+            <span className="font-body text-sm font-normal text-warmgrau/70">{form.optionalSuffix}</span>
           </label>
           <select
             id="eltern-klasse"
@@ -108,10 +102,10 @@ export function ElternExperience() {
             }}
             className="mt-3 block min-h-11 w-full rounded-lg border border-waldgruen/25 bg-white px-3 font-body text-base text-warmgrau outline-none transition focus:border-waldgruen focus:ring-2 focus:ring-waldgruen/20 sm:w-56"
           >
-            <option value="">Keine Angabe</option>
+            <option value="">{form.noClass}</option>
             {KLASSEN.map((value) => (
               <option key={value} value={value}>
-                {value}. Klasse
+                {form.optionTemplate.replace("{n}", String(value))}
               </option>
             ))}
           </select>
@@ -121,16 +115,18 @@ export function ElternExperience() {
           <ExpandableTopicChips
             heading={
               <h2 id="eltern-thema-heading" className="font-typewriter text-base font-bold text-waldgruen-dark sm:text-lg">
-                Worum geht es dir?
+                {form.topicsHeading}
               </h2>
             }
             hint={
               <p className="mt-1 font-body text-sm leading-relaxed text-warmgrau/70">
-                Wähl bis zu zwei Themen. Jedes fügt einen Satzanfang ein, den du selbst zu Ende schreibst.
+                {form.topicsHint}
               </p>
             }
             gridId="eltern-thema-chips"
-            topics={ELTERN_TOPICS}
+            topics={topics}
+            expandLabel={form.expandTopics}
+            collapseLabel={form.collapseTopics}
             selectedIds={selectedTopicIds}
             limitReached={selectionLimitReached}
             onToggle={toggleTopic}
@@ -139,10 +135,10 @@ export function ElternExperience() {
 
         <section aria-labelledby="eltern-text-label">
           <h2 className="font-typewriter text-base font-bold text-waldgruen-dark sm:text-lg">
-            <label id="eltern-text-label" htmlFor="eltern-issue-text">Was ist passiert?</label>
+            <label id="eltern-text-label" htmlFor="eltern-issue-text">{form.textLabel}</label>
           </h2>
           <p id="eltern-text-help" className="mt-1 font-body text-sm leading-relaxed text-warmgrau/70">
-            Je konkreter, desto besser: Was, wo, seit wann. Du kannst auch sprechen statt tippen.
+            {form.textHelp}
           </p>
           <div className="relative mt-3">
             <textarea
@@ -153,11 +149,13 @@ export function ElternExperience() {
               rows={7}
               aria-describedby="eltern-text-help eltern-status"
               onChange={(event) => setIssueText(event.target.value)}
-              placeholder="Zum Beispiel: Seit den Herbstferien fällt in der Klasse meines Kindes Mathe fast jede Woche aus."
+              placeholder={form.placeholder}
               className="min-h-44 w-full resize-y rounded-lg border border-dashed border-waldgruen/30 bg-white py-3 pl-4 pr-14 font-body text-base leading-relaxed text-warmgrau outline-none transition placeholder:text-warmgrau/40 focus:border-waldgruen focus:ring-2 focus:ring-waldgruen/20"
             />
             <VoiceRecorder
-              language="de"
+              key={locale}
+              language={locale === "en" ? "en" : "de"}
+              hidden={voiceUnavailable}
               hasText={charCount > 0}
               charCount={charCount}
               minChars={ISSUE_TEXT_MIN}
@@ -178,12 +176,15 @@ export function ElternExperience() {
             onClick={continueToWizard}
             className={`mt-2 inline-flex min-h-12 w-full items-center justify-center gap-3 rounded-lg bg-waldgruen px-6 py-3 font-body text-base font-bold text-creme transition-colors hover:bg-waldgruen-dark ${focusRing}`}
           >
-            Brief entwerfen
+            {form.submit}
             <WizardForwardIcon />
           </button>
           <p className="mt-3 font-body text-sm leading-relaxed text-warmgrau/70">
-            Als Nächstes gibst du deine E-Mail-Adresse und Postleitzahl an und wählst, an wen der Brief geht.
+            {form.nextStep}
           </p>
+          {locale !== "de" && (
+            <p className="mt-2 font-body text-sm leading-relaxed text-warmgrau/70">{copy.language.germanLetterNotice}</p>
+          )}
         </div>
       </div>
     </div>

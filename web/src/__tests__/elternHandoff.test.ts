@@ -20,7 +20,7 @@ import {
   validateElternSubmit,
 } from "@/components/eltern/elternHandoff";
 import { LocaleProvider } from "@/components/i18n/LocaleProvider";
-import { ELTERN_TOPICS } from "@/lib/schule/elternTopics";
+import { ELTERN_TOPICS, ELTERN_TOPICS_BY_LOCALE } from "@/lib/schule/elternTopics";
 import { ISSUE_TEXT_MAX, ISSUE_TEXT_MIN } from "@/lib/validation/wizardSchemas";
 
 const longEnough = "x".repeat(ISSUE_TEXT_MIN);
@@ -70,6 +70,48 @@ describe("elternHandoff", () => {
     const removeItem = jest.fn();
     clearElternDraft({ removeItem });
     expect(removeItem).toHaveBeenCalledWith(ELTERN_DRAFT_KEY);
+  });
+});
+
+describe("elternHandoff locales", () => {
+  it("keeps the German prefix as default and localizes it on request", () => {
+    expect(buildElternPrefix(5, "de")).toBe("Mein Kind geht in die 5. Klasse.");
+    expect(buildElternPrefix(5, "en")).toBe("My child is in grade 5.");
+    expect(buildElternPrefix(5, "tr")).toBe("Çocuğum 5. sınıfa gidiyor.");
+    expect(buildElternPrefix(null, "en")).toBe("I have a child in school.");
+    expect(buildElternPrefix(null, "tr")).toBe("Okula giden bir çocuğum var.");
+  });
+
+  it("falls back to the no-class sentence for invalid classes in every locale", () => {
+    for (const locale of ["de", "en", "tr"] as const) {
+      expect(buildElternPrefix(14, locale)).toBe(buildElternPrefix(null, locale));
+      expect(buildElternPrefix(0, locale)).toBe(buildElternPrefix(null, locale));
+    }
+  });
+
+  it("prefixes in the given locale and keeps the length rules", () => {
+    expect(validateElternSubmit({ klasse: 5, issueText: longEnough, locale: "en" })).toEqual({
+      ok: true,
+      issueText: `My child is in grade 5.\n${longEnough}`,
+    });
+    expect(validateElternSubmit({ klasse: null, issueText: "kurz", locale: "tr" })).toEqual({
+      ok: false,
+      reason: "text-short",
+    });
+    expect(validateElternSubmit({ klasse: 5, issueText: "x".repeat(ISSUE_TEXT_MAX), locale: "tr" })).toEqual({
+      ok: false,
+      reason: "text-long",
+    });
+  });
+
+  it("offers the same topics in every locale", () => {
+    expect(ELTERN_TOPICS_BY_LOCALE.de).toBe(ELTERN_TOPICS);
+    for (const locale of ["en", "tr"] as const) {
+      const topics = ELTERN_TOPICS_BY_LOCALE[locale];
+      expect(topics.map((topic) => [topic.id, topic.emoji])).toEqual(ELTERN_TOPICS.map((topic) => [topic.id, topic.emoji]));
+      for (const topic of topics) expect(topic.issueText.endsWith(": ")).toBe(true);
+      expect(topics.map((topic) => topic.issueText)).not.toEqual(ELTERN_TOPICS.map((topic) => topic.issueText));
+    }
   });
 });
 

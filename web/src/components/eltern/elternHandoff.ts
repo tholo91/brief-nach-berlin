@@ -1,3 +1,5 @@
+import { ELTERN_COPY } from "@/lib/i18n/elternCopy";
+import type { Locale } from "@/lib/i18n/locale";
 import { ISSUE_TEXT_MAX, ISSUE_TEXT_MIN } from "@/lib/validation/wizardSchemas";
 import type { WizardHandoff } from "@/lib/wizard-handoff";
 
@@ -19,10 +21,10 @@ export function clearElternDraft(storage: Pick<Storage, "removeItem">): void {
   storage.removeItem(ELTERN_DRAFT_KEY);
 }
 
-export function buildElternPrefix(klasse: number | null): string {
-  return isElternKlasse(klasse)
-    ? `Mein Kind geht in die ${klasse}. Klasse.`
-    : "Ich habe ein Kind in der Schule.";
+// The prefix is in the visitor's language; the letter prompt always writes German.
+export function buildElternPrefix(klasse: number | null, locale: Locale = "de"): string {
+  const { prefixClass, prefixNoClass } = ELTERN_COPY[locale].form;
+  return isElternKlasse(klasse) ? prefixClass.replace("{n}", String(klasse)) : prefixNoClass;
 }
 
 export type ElternValidation =
@@ -33,10 +35,11 @@ export type ElternValidation =
 export function validateElternSubmit(input: {
   klasse: number | null;
   issueText: string;
+  locale?: Locale;
 }): ElternValidation {
   const own = input.issueText.trim();
   if (own.length < ISSUE_TEXT_MIN) return { ok: false, reason: "text-short" };
-  const issueText = `${buildElternPrefix(input.klasse)}\n${own}`;
+  const issueText = `${buildElternPrefix(input.klasse, input.locale)}\n${own}`;
   if (issueText.length > ISSUE_TEXT_MAX) return { ok: false, reason: "text-long" };
   return { ok: true, issueText };
 }

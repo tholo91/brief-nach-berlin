@@ -8,9 +8,18 @@ type Props = Omit<TopicStarterGridProps, "variant" | "expanded" | "id"> & {
   heading: ReactNode;
   gridId: string;
   hint?: ReactNode;
+  expandLabel?: string;
+  collapseLabel?: string;
 };
 
-export function ExpandableTopicChips({ heading, gridId, hint, ...gridProps }: Props) {
+export function ExpandableTopicChips({
+  heading,
+  gridId,
+  hint,
+  expandLabel = "Alle Themen",
+  collapseLabel = "Weniger",
+  ...gridProps
+}: Props) {
   const [expanded, setExpanded] = useState(false);
 
   return (
@@ -24,7 +33,7 @@ export function ExpandableTopicChips({ heading, gridId, hint, ...gridProps }: Pr
           onClick={() => setExpanded((value) => !value)}
           className="-my-2.5 inline-flex min-h-11 shrink-0 items-center gap-1 rounded-lg pl-2 pr-1 font-body text-sm font-semibold text-waldgruen hover:text-waldgruen-dark focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-waldgruen focus-visible:ring-offset-2 [&[aria-expanded=true]_svg]:rotate-180"
         >
-          {expanded ? "Weniger" : "Alle Themen"}
+          {expanded ? collapseLabel : expandLabel}
           <ChevronIcon />
         </button>
       </div>

@@ -32,6 +32,35 @@ export interface ElternCopy {
   };
   faqHeading: string;
   faqs: { q: string; a: string }[];
+  form: {
+    klasseLabel: string;
+    optionalSuffix: string;
+    noClass: string;
+    /** Option text with the class number as `{n}`. */
+    optionTemplate: string;
+    topicsHeading: string;
+    topicsHint: string;
+    textLabel: string;
+    textHelp: string;
+    /** Example sentence inside the empty textarea. */
+    placeholder: string;
+    submit: string;
+    nextStep: string;
+    expandTopics: string;
+    collapseTopics: string;
+    /** Keys match the messages of useTopicStarters. */
+    topicMessages: {
+      limit: string;
+      "removed-text": string;
+      "removed-kept": string;
+      added: string;
+      "added-max": string;
+    };
+    errors: { "text-short": string; "text-long": string };
+    /** First line of the issue text handed to the wizard, with the class number as `{n}`. */
+    prefixClass: string;
+    prefixNoClass: string;
+  };
 }
 
 const de: ElternCopy = {
@@ -100,6 +129,34 @@ const de: ElternCopy = {
       a: "Nichts. Brief-nach-Berlin ist kostenlos und du brauchst keinen Account. Für den Brief brauchst du nur Papier, einen Umschlag und eine Briefmarke.",
     },
   ],
+  form: {
+    klasseLabel: "Klasse deines Kindes",
+    optionalSuffix: "(optional)",
+    noClass: "Keine Angabe",
+    optionTemplate: "{n}. Klasse",
+    topicsHeading: "Worum geht es dir?",
+    topicsHint: "Wähl bis zu zwei Themen. Jedes fügt einen Satzanfang ein, den du selbst zu Ende schreibst.",
+    textLabel: "Was ist passiert?",
+    textHelp: "Je konkreter, desto besser: Was, wo, seit wann. Du kannst auch sprechen statt tippen.",
+    placeholder: "Zum Beispiel: Seit den Herbstferien fällt in der Klasse meines Kindes Mathe fast jede Woche aus.",
+    submit: "Brief entwerfen",
+    nextStep: "Als Nächstes gibst du deine E-Mail-Adresse und Postleitzahl an und wählst, an wen der Brief geht.",
+    expandTopics: "Alle Themen",
+    collapseTopics: "Weniger",
+    topicMessages: {
+      limit: "Du kannst höchstens zwei Themen wählen.",
+      "removed-text": "Satzanfang entfernt.",
+      "removed-kept": "Thema entfernt. Deinen bearbeiteten Text habe ich stehen lassen.",
+      added: "Satzanfang eingefügt. Schreib ihn selbst zu Ende.",
+      "added-max": "Zwei Satzanfänge eingefügt. Schreib sie selbst zu Ende.",
+    },
+    errors: {
+      "text-short": "Schreib noch ein paar Worte zu deinem Anliegen.",
+      "text-long": "Dein Text ist zu lang. Bitte kürze ihn etwas.",
+    },
+    prefixClass: "Mein Kind geht in die {n}. Klasse.",
+    prefixNoClass: "Ich habe ein Kind in der Schule.",
+  },
 };
 
 const en: ElternCopy = {
@@ -168,6 +225,34 @@ const en: ElternCopy = {
       a: "Nothing. Brief-nach-Berlin is free and you do not need an account. For the letter you only need paper, an envelope and a stamp.",
     },
   ],
+  form: {
+    klasseLabel: "Your child's grade",
+    optionalSuffix: "(optional)",
+    noClass: "Not specified",
+    optionTemplate: "Grade {n}",
+    topicsHeading: "What is it about?",
+    topicsHint: "Choose up to two topics. Each one inserts a sentence start that you finish yourself.",
+    textLabel: "What happened?",
+    textHelp: "The more specific, the better: what, where, since when. You can also speak instead of typing.",
+    placeholder: "For example: Since the autumn break, maths has been cancelled almost every week in my child's class.",
+    submit: "Draft a letter",
+    nextStep: "Next, you enter your email address and postal code and choose who the letter goes to.",
+    expandTopics: "All topics",
+    collapseTopics: "Fewer",
+    topicMessages: {
+      limit: "You can choose two topics at most.",
+      "removed-text": "Sentence start removed.",
+      "removed-kept": "Topic removed. I left your edited text in place.",
+      added: "Sentence start inserted. Finish it in your own words.",
+      "added-max": "Two sentence starts inserted. Finish them in your own words.",
+    },
+    errors: {
+      "text-short": "Write a few more words about your concern.",
+      "text-long": "Your text is too long. Please shorten it a little.",
+    },
+    prefixClass: "My child is in grade {n}.",
+    prefixNoClass: "I have a child in school.",
+  },
 };
 
 const tr: ElternCopy = {
@@ -236,6 +321,34 @@ const tr: ElternCopy = {
       a: "Hiçbir şey. Brief-nach-Berlin ücretsizdir ve hesap gerekmez. Mektup için yalnızca kâğıt, zarf ve pul yeter.",
     },
   ],
+  form: {
+    klasseLabel: "Çocuğunuzun sınıfı",
+    optionalSuffix: "(isteğe bağlı)",
+    noClass: "Belirtilmedi",
+    optionTemplate: "{n}. sınıf",
+    topicsHeading: "Konu nedir?",
+    topicsHint: "En fazla iki konu seçin. Her biri bir cümle başlangıcı ekler, cümleyi kendiniz tamamlarsınız.",
+    textLabel: "Ne oldu?",
+    textHelp: "Ne kadar somut olursa o kadar iyi: ne, nerede, ne zamandan beri.",
+    placeholder: "Örneğin: Sonbahar tatilinden beri çocuğumun sınıfında matematik neredeyse her hafta iptal ediliyor.",
+    submit: "Mektup taslağı oluştur",
+    nextStep: "Sonraki adımda e-posta adresinizi ve posta kodunuzu girer, mektubun kime gideceğini seçersiniz.",
+    expandTopics: "Tüm konular",
+    collapseTopics: "Daha az",
+    topicMessages: {
+      limit: "En fazla iki konu seçebilirsiniz.",
+      "removed-text": "Cümle başlangıcı kaldırıldı.",
+      "removed-kept": "Konu kaldırıldı. Düzenlediğiniz metni olduğu gibi bıraktım.",
+      added: "Cümle başlangıcı eklendi. Cümleyi kendiniz tamamlayın.",
+      "added-max": "İki cümle başlangıcı eklendi. Cümleleri kendiniz tamamlayın.",
+    },
+    errors: {
+      "text-short": "Talebiniz hakkında birkaç kelime daha yazın.",
+      "text-long": "Metniniz çok uzun. Lütfen biraz kısaltın.",
+    },
+    prefixClass: "Çocuğum {n}. sınıfa gidiyor.",
+    prefixNoClass: "Okula giden bir çocuğum var.",
+  },
 };
 
 export const ELTERN_COPY: Record<Locale, ElternCopy> = { de, en, tr };

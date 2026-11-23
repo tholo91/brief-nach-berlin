@@ -25,15 +25,23 @@ jest.mock("next/link", () => ({
   default: ({ children, href }: { children: React.ReactNode; href: string }) =>
     createElement("a", { href }, children),
 }));
-jest.mock("@/components/audio/VoiceRecorder", () => ({ VoiceRecorder: () => null }));
+const mockVoiceProps: { language?: string; hidden?: boolean }[] = [];
+jest.mock("@/components/audio/VoiceRecorder", () => ({
+  VoiceRecorder: (props: { language?: string; hidden?: boolean }) => {
+    mockVoiceProps.push(props);
+    return null;
+  },
+}));
 jest.mock("@/lib/mistral", () => ({}));
 
 import ElternPage from "@/app/(site)/eltern/page";
 import AppHeader from "@/components/AppHeader";
+import { ElternExperience } from "@/components/eltern/ElternExperience";
 import { ElternPageContent } from "@/components/eltern/ElternPageContent";
 import { ELTERN_COPY } from "@/lib/i18n/elternCopy";
 import { resolveClientLocale } from "@/lib/i18n/locale";
 import { UI_CATALOG } from "@/lib/i18n/uiCatalog";
+import { ELTERN_TOPICS_BY_LOCALE } from "@/lib/schule/elternTopics";
 
 type Loc = "de" | "en" | "tr";
 const LOCALES: Loc[] = ["en", "tr"];
@@ -120,9 +128,10 @@ describe("browser language on /eltern", () => {
 });
 
 describe("/eltern page body", () => {
-  // The header CTA is not part of the body (and shares its German text with the form button until the form is localized).
-  const { header: germanHeader, ...germanBody } = ELTERN_COPY.de;
+  // The header CTA is not part of the body.
+  const { header: germanHeader, form: germanForm, ...germanBody } = ELTERN_COPY.de;
   void germanHeader;
+  void germanForm;
   const germanLeaves = leaves(germanBody).map(([, value]) => value).filter((value) => value.length >= 12);
 
   it.each(LOCALES)("shows no German page text in %s", (locale) => {
@@ -131,6 +140,48 @@ describe("/eltern page body", () => {
     expect(text).toContain(ELTERN_COPY[locale].title);
     expect(text).toContain(ELTERN_COPY[locale].faqs[0].q);
     expect(text).toContain(ELTERN_COPY[locale].safety.privacyLink);
+  });
+});
+
+describe("/eltern parent form", () => {
+  it.each(LOCALES)("shows the form in %s without German text", (locale) => {
+    const form = ELTERN_COPY[locale].form;
+    const markup = renderAs(locale, createElement(ElternExperience));
+    const text = visibleText(markup);
+    expect(text).toContain(form.klasseLabel);
+    expect(text).toContain(form.noClass);
+    expect(text).toContain(form.optionTemplate.replace("{n}", "7"));
+    expect(text).toContain(form.topicsHeading);
+    expect(text).toContain(form.topicsHint);
+    expect(text).toContain(form.textLabel);
+    expect(text).toContain(form.placeholder);
+    expect(text).toContain(form.submit);
+    expect(text).toContain(form.nextStep);
+    expect(text).toContain(form.expandTopics);
+    for (const topic of ELTERN_TOPICS_BY_LOCALE[locale]) expect(text).toContain(topic.title.replaceAll("\u00ad", ""));
+    expect(text).toContain(UI_CATALOG[locale].language.germanLetterNotice);
+    const german = leaves(ELTERN_COPY.de.form).map(([, value]) => value).filter((value) => value.length >= 12);
+    for (const leaf of german) expect(text).not.toContain(decode(leaf));
+    for (const topic of ELTERN_TOPICS_BY_LOCALE.de) expect(text).not.toContain(topic.title.replaceAll("\u00ad", ""));
+  });
+
+  it("hides voice input in Turkish and records English for en", () => {
+    mockVoiceProps.length = 0;
+    renderAs("tr", createElement(ElternExperience));
+    expect(mockVoiceProps.at(-1)).toMatchObject({ hidden: true });
+    expect(visibleText(renderAs("tr", createElement(ElternExperience)))).not.toMatch(/sesli|konuş/i);
+    mockVoiceProps.length = 0;
+    renderAs("en", createElement(ElternExperience));
+    expect(mockVoiceProps.at(-1)).toMatchObject({ language: "en" });
+    expect(mockVoiceProps.at(-1)?.hidden).toBeFalsy();
+    mockVoiceProps.length = 0;
+    renderAs("de", createElement(ElternExperience));
+    expect(mockVoiceProps.at(-1)).toMatchObject({ language: "de" });
+  });
+
+  it("shows no letter-language notice in German", () => {
+    const text = visibleText(renderAs("de", createElement(ElternExperience)));
+    expect(text).not.toContain(UI_CATALOG.de.language.germanLetterNotice);
   });
 });
 

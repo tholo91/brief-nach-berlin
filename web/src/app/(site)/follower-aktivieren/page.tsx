@@ -120,7 +120,7 @@ export default function FollowerAktivierenPage() {
           <p>
             Ein Video über Wohnungsnot, ein Post zur Klimapolitik, ein Thread
             über die Pflege. Viele sehen das und fühlen mit. Dann scrollen sie
-            weiter. Es fehlt kein Interesse, es fehlt ein erster Schritt. Eine
+            weiter. Ihnen fehlt ein erster Schritt, der gleich losgeht. Eine
             Demo liegt in einer anderen Stadt, eine Mitgliedschaft ist eine
             große Entscheidung, und eine Petition ist nach dem Klick vorbei.
           </p>
@@ -243,7 +243,7 @@ export default function FollowerAktivierenPage() {
             Organisationen haben dieselbe Lage wie Influencer:innen: Die
             Unterstützer:innen sind da, es fehlt ein Schritt zwischen Klick und
             Mitgliedschaft. Eine Briefkampagne gibt ihnen einen gemeinsamen
-            Anlass und lässt trotzdem jedem Brief seine eigene Stimme. Wie das
+            Anlass, und jede Person schreibt in eigenen Worten. Wie das
             aussieht, steht unter{" "}
             <Link className={linkClass} href="/ngo-briefkampagne">
               NGO-Briefkampagne

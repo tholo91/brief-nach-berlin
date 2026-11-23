@@ -1,5 +1,6 @@
 import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
+import { LocaleProvider } from "@/components/i18n/LocaleProvider";
 import { RathausAdresseButton } from "@/components/wizard/RathausAdresseButton";
 import { buildRathausRecipient } from "@/lib/lookup/rathausRecipient";
 import { lookupPLZWithLevel } from "@/lib/lookup/plzLookup";
@@ -21,7 +22,7 @@ describe("RathausAdresseButton", () => {
       },
     });
     const html = renderToStaticMarkup(
-      createElement(RathausAdresseButton, { recipient })
+      createElement(LocaleProvider, null, createElement(RathausAdresseButton, { recipient }))
     );
 
     expect(html).toContain("Amtliche Postanschrift");
@@ -40,7 +41,7 @@ describe("RathausAdresseButton", () => {
       bundeslandKey: "HE",
     });
     const html = renderToStaticMarkup(
-      createElement(RathausAdresseButton, { recipient })
+      createElement(LocaleProvider, null, createElement(RathausAdresseButton, { recipient }))
     );
 
     expect(html).toContain("Die Postanschrift konnte ich für deine PLZ nicht sicher zuordnen.");
@@ -53,7 +54,7 @@ describe("RathausAdresseButton", () => {
   it("listet bei mehrdeutiger Berliner PLZ die Bezirke mit Adresse", () => {
     const recipient = lookupPLZWithLevel("10245").byLevel.Kommune[0];
     const html = renderToStaticMarkup(
-      createElement(RathausAdresseButton, { recipient })
+      createElement(LocaleProvider, null, createElement(RathausAdresseButton, { recipient }))
     );
 
     expect(html).toContain("Deine PLZ liegt in Friedrichshain-Kreuzberg oder Pankow. Nimm die Adresse deines Bezirks:");
@@ -71,7 +72,7 @@ describe("RathausAdresseButton", () => {
       bezirk: "Pankow",
     });
     const html = renderToStaticMarkup(
-      createElement(RathausAdresseButton, { recipient })
+      createElement(LocaleProvider, null, createElement(RathausAdresseButton, { recipient }))
     );
 
     expect(html).toContain("Bezirksamt Pankow von Berlin");

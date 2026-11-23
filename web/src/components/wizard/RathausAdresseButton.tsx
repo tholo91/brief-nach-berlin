@@ -1,3 +1,4 @@
+import { useUiCopy } from "@/components/i18n/LocaleProvider";
 import type { RathausRecipient } from "@/lib/lookup/rathausRecipient";
 import { rathausSearchUrl } from "@/lib/lookup/recipientEnvelope";
 import { RathausCandidateList, RathausSearchButton } from "./RathausHinweise";
@@ -11,6 +12,7 @@ export function RathausAdresseButton({
   recipient,
   className,
 }: RathausAdresseButtonProps) {
+  const copy = useUiCopy().wizard.rathaus;
   const searchUrl = rathausSearchUrl(recipient);
   const officialAddress =
     recipient.address.source === "official" ? recipient.address : null;
@@ -26,7 +28,7 @@ export function RathausAdresseButton({
     >
       {officialAddress ? (
         <>
-          <p className="font-semibold text-waldgruen-dark">Amtliche Postanschrift</p>
+          <p className="font-semibold text-waldgruen-dark">{copy.officialHeading}</p>
           <address className="not-italic text-warmgrau leading-relaxed">
             {officialAddress.recipientLine ?? recipient.label}
             {officialAddress.streetAddress && (
@@ -39,7 +41,7 @@ export function RathausAdresseButton({
             {officialAddress.postalCode} {officialAddress.city}
           </address>
           <p className="text-xs text-warmgrau/70 leading-relaxed">
-            Quelle:{" "}
+            {copy.sourceLead}{" "}
             <a
               href={officialAddress.sourceUrl}
               target="_blank"
@@ -49,16 +51,16 @@ export function RathausAdresseButton({
             >
               {officialAddress.sourceName}
             </a>
-            , Stand {officialAddress.sourceStand}. Du kannst die Adresse bei Google noch einmal{" "}
+            {copy.googleLead.replace("{date}", () => officialAddress.sourceStand)}{" "}
             <a
               href={searchUrl}
               target="_blank"
               rel="noopener noreferrer"
               className="font-semibold text-waldgruen-dark underline underline-offset-2"
             >
-              hier
+              {copy.googleLink}
             </a>{" "}
-            prüfen.
+            {copy.googleTail}
           </p>
         </>
       ) : recipient.ambiguous && recipient.candidates && recipient.candidates.length > 0 ? (
@@ -68,7 +70,7 @@ export function RathausAdresseButton({
       ) : (
         <>
           <p className="text-warmgrau leading-relaxed">
-            Die Postanschrift konnte ich für deine PLZ nicht sicher zuordnen.
+            {copy.noAddress}
           </p>
           <RathausSearchButton href={searchUrl} className="self-start" />
         </>

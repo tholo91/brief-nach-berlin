@@ -50,6 +50,11 @@ import { emailCopy } from "@/lib/email/mailLocale";
 import { Step3Success } from "@/components/wizard/Step3Success";
 import { WizardShell } from "@/components/wizard/WizardShell";
 import { YouthLetterDraft } from "@/components/wizard/YouthLetterDraft";
+import { formatSourceStand } from "@/lib/formatSourceStand";
+import { RathausAdresseButton } from "@/components/wizard/RathausAdresseButton";
+import { getLandesregierungRecipient } from "@/lib/lookup/landesregierungRecipient";
+import { lookupPLZWithLevel } from "@/lib/lookup/plzLookup";
+import { buildRathausRecipient, type MdbRecipient, type MdlRecipient } from "@/lib/lookup/rathausRecipient";
 import { ELTERN_COPY } from "@/lib/i18n/elternCopy";
 import { YOUTH_COPY } from "@/lib/i18n/youthCopy";
 import { recipientEnvelope } from "@/lib/lookup/recipientEnvelope";
@@ -385,6 +390,178 @@ describe.each(LOCALES)("youth wizard strings in %s", (locale) => {
 
   it("quotes the real mail subject in the inbox hint", () => {
     expect(UI_CATALOG[locale].wizard.success.inboxHint).toContain(emailCopy[locale].subject.standard);
+  });
+});
+
+function mdb(id: number, direct: boolean): MdbRecipient {
+  return {
+    kind: "mdb",
+    id,
+    politicianId: id + 100,
+    firstName: direct ? "Direkt" : "Liste",
+    lastName: "Person",
+    title: null,
+    party: direct ? "SPD" : "CDU",
+    wahlkreisId: 54,
+    wahlkreisName: "Bremen I",
+    level: "Bund",
+    postalAddress: "Platz der Republik 1, 11011 Berlin",
+    isDirect: direct,
+    abgeordnetenwatchUrl: null,
+  };
+}
+
+const bremenSenat = getLandesregierungRecipient("HB")!;
+const bremenMdls: MdlRecipient[] = Array.from({ length: 3 }, (_, index) => ({
+  kind: "mdl",
+  id: index + 1,
+  politicianId: index + 100,
+  firstName: `Vorname${index}`,
+  lastName: `Nachname${index}`,
+  title: null,
+  party: "Partei",
+  wahlkreisId: 1,
+  wahlkreisName: "Bremen",
+  level: "Land",
+  postalAddress: "Bremische Bürgerschaft, 28195 Bremen",
+  isDirect: false,
+  abgeordnetenwatchUrl: null,
+  bundeslandKey: "HB",
+}));
+
+const duisburgRathaus = buildRathausRecipient({
+  gemeindeName: "Duisburg",
+  plz: "47051",
+  bundeslandKey: "NW",
+  officialAddress: {
+    ags: "05112000",
+    streetAddress: "Burgplatz 19",
+    postalCode: "47051",
+    city: "Duisburg",
+    sourceTitle: "Destatis-Anschriftenverzeichnis",
+    sourceUrl: "https://www.destatis.de/anschriften",
+    sourceStand: "31.01.2026",
+  },
+});
+
+function picker(recipients: unknown[], selectedLevel: string, plz: string, extra: Record<string, unknown> = {}) {
+  return createElement(Step3Success, {
+    result: { disambiguationNeeded: true, politicians: recipients },
+    wizardData: { plz, email: "test@example.org", issueText: "Ein Anliegen" },
+    recipients,
+    optionalLandRecipients: [],
+    selectedLevel,
+    ...extra,
+  } as never);
+}
+
+/** German leaves of one catalog group that are long enough to be unmistakable. */
+function germanLeaves(...groups: ("picker" | "alternative" | "rathaus")[]): string[] {
+  return groups.flatMap((group) => leaves(UI_CATALOG.de.wizard[group]).map(([, value]) => value)).filter((value) => value.length >= 12);
+}
+
+describe.each(LOCALES)("recipient pickers and Rathaus box in %s", (locale) => {
+  const wizard = UI_CATALOG[locale].wizard;
+  const pc = wizard.picker;
+  const fillIn = (template: string, values: Record<string, string | number>) =>
+    template.replace(/\{(\w+)\}/g, (match, key: string) => (key in values ? String(values[key]) : match));
+  // Fragments of templates stay checkable: only the static part before the first token is compared.
+  const staticPart = (template: string) => template.split("{")[0].trim();
+  // Recipient labels from data ("Bürgermeisteramt Duisburg") legitimately contain two of the German badge words.
+  const DELIVERED_WORDS = new Set(["Bürgermeisteramt", "Bezirksamt"]);
+  const noGerman = (text: string, ...groups: ("picker" | "alternative" | "rathaus")[]) => {
+    for (const leaf of germanLeaves(...groups)) {
+      if (DELIVERED_WORDS.has(leaf)) continue;
+      expect(text).not.toContain(decode(staticPart(leaf).length >= 12 ? staticPart(leaf) : leaf));
+    }
+  };
+
+  it("localizes the Bund picker with two MdBs", () => {
+    const text = visibleText(renderAs(locale, picker([mdb(1, false), mdb(2, true)], "Bund", "28195")));
+    expect(text).toContain(fillIn(pc.manyTitle, { count: 2, plz: "28195" }));
+    expect(text).toContain(pc.introOneConstituency);
+    expect(text).toContain(pc.directMandate);
+    expect(text).toContain(pc.stateList);
+    expect(text).toContain(fillIn(pc.constituencyLine, { id: 54, name: "Bremen I" }));
+    expect(text).toContain(pc.bundestagToggle);
+    expect(text).toContain(pc.createLetter);
+    expect(text).toContain(pc.termsLead);
+    expect(text).toContain(pc.termsLink);
+    expect(text).toContain(fillIn(pc.selectedLine, { name: "Direkt Person (SPD)" }));
+    // Names, parties and addresses stay as delivered.
+    expect(text).toContain("Direkt Person");
+    expect(text).toContain("SPD");
+    expect(text).not.toContain(pc.later);
+    noGerman(text, "picker");
+  });
+
+  it("opens the free search without a local MdB", () => {
+    const markup = renderAs(locale, picker([], "Bund", "29216"));
+    const text = visibleText(markup);
+    expect(text).toContain(fillIn(pc.introNoLocal, { plz: "29216" }));
+    expect(text).toContain(wizard.alternative.searchBund);
+    expect(text).toContain(wizard.alternative.notFromConstituencyLine);
+    expect(text).toContain(wizard.alternative.notFromConstituency);
+    expect(text).toContain(wizard.alternative.searchLabel);
+    expect(text).toContain(wizard.alternative.placeholderBund);
+    expect(text).toContain(wizard.alternative.hintMinimum);
+    expect(text).toContain(pc.continueWithout);
+    expect(text).toContain(pc.continueHint);
+    expect(markup).toContain(`aria-label="${wizard.alternative.partyAria}"`);
+    noGerman(text, "picker", "alternative");
+  });
+
+  it("localizes the Land picker for the Bremen Senat", () => {
+    const text = visibleText(renderAs(locale, picker([bremenSenat], "Land", "28203", { optionalLandRecipients: bremenMdls })));
+    expect(text).toContain(fillIn(pc.toInstitutionTitle, { article: "den", name: bremenSenat.label }).replace(/\s+/g, " "));
+    expect(text).toContain(fillIn(pc.introGovernment, { institution: pc.institutionSenatPreselected }));
+    expect(text).toContain(pc.badgeSenat);
+    expect(text).toContain(fillIn(pc.senatText, { name: bremenSenat.label }));
+    expect(text).toContain(pc.officialAddress);
+    expect(text).toContain(pc.sourceLink);
+    expect(text).toContain(pc.landtagToggle);
+    // Institution names, offices and addresses stay as delivered.
+    expect(text).toContain("Senat der Freien Hansestadt Bremen");
+    expect(text).toContain("Senatskanzlei Bremen");
+    expect(text).toContain("Am Markt 21");
+    noGerman(text, "picker");
+  });
+
+  it("localizes the Kommune picker and keeps the source as delivered", () => {
+    const text = visibleText(renderAs(locale, picker([duisburgRathaus], "Kommune", "47051")));
+    expect(text).toContain(pc.administrationTitle);
+    expect(text).toContain(pc.introKommune);
+    expect(text).toContain(pc.badgeBuergermeisteramt);
+    expect(text).toContain(pc.officialAddressFrom);
+    expect(text).toContain(fillIn(pc.standSuffix, { date: formatSourceStand("31.01.2026") }));
+    expect(text).toContain("Burgplatz 19");
+    expect(text).toContain("Destatis");
+    noGerman(text, "picker");
+  });
+
+  it("localizes the Rathaus address box in all three states", () => {
+    const rathaus = wizard.rathaus;
+    const official = visibleText(renderAs(locale, createElement(RathausAdresseButton, { recipient: duisburgRathaus })));
+    expect(official).toContain(rathaus.officialHeading);
+    expect(official).toContain(rathaus.sourceLead);
+    expect(official).toContain(fillIn(rathaus.googleLead, { date: "31.01.2026" }));
+    expect(official).toContain(rathaus.googleLink);
+    expect(official).toContain(rathaus.googleTail);
+    expect(official).toContain("Burgplatz 19");
+    noGerman(official, "rathaus");
+
+    const frankfurt = buildRathausRecipient({ gemeindeName: "Frankfurt am Main", plz: "60261", bundeslandKey: "HE" });
+    const fallback = visibleText(renderAs(locale, createElement(RathausAdresseButton, { recipient: frankfurt })));
+    expect(fallback).toContain(rathaus.noAddress);
+    expect(fallback).toContain(rathaus.searchButton);
+    noGerman(fallback, "rathaus");
+
+    const berlin = lookupPLZWithLevel("10245").byLevel.Kommune[0];
+    const districts = visibleText(renderAs(locale, createElement(RathausAdresseButton, { recipient: berlin })));
+    expect(districts).toContain(fillIn(rathaus.districtHint, { list: `Friedrichshain-Kreuzberg ${rathaus.or} Pankow` }));
+    expect(districts).toContain("Bezirksamt Pankow");
+    expect(districts).toContain("Postfach 73 01 13");
+    noGerman(districts, "rathaus");
   });
 });
 

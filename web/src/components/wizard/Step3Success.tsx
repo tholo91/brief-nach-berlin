@@ -48,6 +48,11 @@ import { allowsAlternativeRecipients } from "@/lib/lookup/alternativeRecipients"
 import { AlternativeRecipientPicker } from "./AlternativeRecipientPicker";
 import type { RecipientSearchCard } from "@/lib/lookup/recipientSearch";
 
+/** Fills `{token}` markers of a catalog template; unknown tokens stay as they are. */
+function fill(template: string, values: Record<string, string | number>): string {
+  return template.replace(/\{(\w+)\}/g, (match, key: string) => (key in values ? String(values[key]) : match));
+}
+
 function maskEmail(email: string, fallback: string): string {
   const [local, domain] = email.split("@");
   if (!local || !domain) return fallback;
@@ -134,6 +139,7 @@ export function Step3Success({
   const uiCopy = useUiCopy();
   const youthCopy = uiCopy.youth;
   const wizardCopy = uiCopy.wizard;
+  const pc = wizardCopy.picker;
   const [copySubtitleBefore, copySubtitleAfter] = youthCopy.success.copySubtitle.split("{email}");
   const [readySubtitleBefore, readySubtitleAfter] = wizardCopy.success.readySubtitle.split("{email}");
   // Abgeordneten-Karten (mdb/mdl) und der synthetische Rathaus-Empfänger
@@ -1371,7 +1377,7 @@ export function Step3Success({
     }
     const selectedPoliticianLabel =
       mdbLaterSelected
-        ? "MdB später auswählen"
+        ? pc.later
         : campaignFixedRecipient && campaignFixedSelected
         ? campaignFixedRecipient.label
         : landesminister && ministerSelected
@@ -1388,70 +1394,70 @@ export function Step3Success({
             ? `${selectedPolitician.firstName} ${selectedPolitician.lastName}${selectedPoliticianParty ? ` (${selectedPoliticianParty})` : ""}`
             : null;
     const campaignAttribution = wizardData.campaign?.creatorName?.trim()
-      ? `Die Kampagne von ${wizardData.campaign.creatorName.trim()}`
-      : "Diese Kampagne";
+      ? fill(pc.campaignOf, { name: wizardData.campaign.creatorName.trim() })
+      : pc.campaignThis;
     const campaignTargetLabel =
       campaignTargetCount === 1
-        ? "eine ausgewählte Person"
-        : `${campaignTargetCount} ausgewählte Abgeordnete`;
+        ? pc.targetOne
+        : fill(pc.targetMany, { count: campaignTargetCount });
     const isKommune = selectedLevel === "Kommune" && rathaus !== null;
     const isLand = selectedLevel === "Land";
     const isFixed = selectedLevel === "Fixed" && campaignFixedRecipient !== null;
     const selectionTitle = isFixed
-      ? `Fester Empfänger: ${campaignFixedRecipient.label}`
+      ? fill(pc.fixedTitle, { name: campaignFixedRecipient.label })
       : bundeskanzler
-      ? "An wen soll dein Brief gehen?"
+      ? pc.chooseTitle
       : isKommune
-      ? "Dein Brief geht an die Verwaltung"
+      ? pc.administrationTitle
       : isLand
         ? showLandPersonPicker
-          ? "An wen soll dein Brief gehen?"
+          ? pc.chooseTitle
           : landesminister && ministerSelected
-          ? `Dein Brief geht an ${landesminister.label}`
+          ? fill(pc.toTitle, { name: landesminister.label })
           : landesregierung
             ? landAddressee === "head" && governmentHead
-              ? `Dein Brief geht an ${governmentHead.label}`
-              : `Dein Brief geht an ${landesregierung.article} ${landesregierung.label}`
-            : "Dein Brief geht an die Landesregierung"
+              ? fill(pc.toTitle, { name: governmentHead.label })
+              : fill(pc.toInstitutionTitle, { article: landesregierung.article, name: landesregierung.label })
+            : pc.landesregierungTitle
         : campaignRestricted
-          ? "Wähle ein MdB aus"
+          ? pc.chooseMdbTitle
         : !hasNoLocalMdb && sortedPoliticians.length > 1
-          ? `${sortedPoliticians.length} Abgeordnete für PLZ ${wizardData.plz}`
-          : "Wer vertritt deinen Wahlkreis?";
+          ? fill(pc.manyTitle, { count: sortedPoliticians.length, plz: wizardData.plz })
+          : pc.whoTitle;
     const introCopy = isFixed
-      ? "Dieser Empfänger ist für die Kampagne festgelegt. Deine PLZ verändert die Adresse nicht."
+      ? pc.introFixed
       : bundeskanzler
-      ? "Der Bundeskanzler ist vorausgewählt. Du kannst stattdessen auch ein Mitglied des Bundestags aus deinem Wahlkreis wählen."
+      ? pc.introChancellor
       : isKommune
-      ? "Der kommunale Empfänger ist bereits vorausgewählt."
+      ? pc.introKommune
       : isLand
         ? showLandPersonPicker
-          ? `Wähle ${landesregierung?.institutionKind === "senat" ? "den Senat" : "die Landesregierung"} oder eine Person aus dem Landtag.`
+          ? fill(pc.introLandPick, { institution: landesregierung?.institutionKind === "senat" ? pc.institutionSenatChoose : pc.institutionRegierungChoose })
           : landesminister
-            ? "Das Tool hat die passende Person für dein Thema vorausgewählt. Du kannst auch an die Regierung oder an ein Mitglied des Landtags schreiben."
+            ? pc.introMinister
           : headPreselected
-            ? "Die Regierungsspitze ist vorausgewählt. Du kannst stattdessen an die Landesregierung als Ganzes oder an ein Mitglied des Landtags schreiben."
+            ? pc.introHead
             : governmentHead
-              ? `${landesregierung?.institutionKind === "senat" ? "Der Senat" : "Die Landesregierung"} ist vorausgewählt. Du kannst stattdessen an die Regierungsspitze oder an ein Mitglied des Landtags schreiben.`
-              : "Der institutionelle Empfänger ist bereits vorausgewählt."
+              ? fill(pc.introGovernment, { institution: landesregierung?.institutionKind === "senat" ? pc.institutionSenatPreselected : pc.institutionRegierungPreselected })
+              : pc.introInstitution
         : campaignRestricted
           ? campaignRestrictedNoLocalMatch
-            ? "Filtere nach Partei oder suche nach Name, Wahlkreis und Ausschuss."
+            ? pc.introCampaignSearch
             : selectedPolitician
-              ? "Die passende Person ist bereits vorausgewählt."
-              : "Wähle eine der passenden Personen aus."
+              ? pc.introPersonPreselected
+              : pc.introChoosePerson
         : hasNoLocalMdb
           ? campaignSlug
-            ? `Für die PLZ ${wizardData.plz} wurde kein lokales MdB gefunden. Suche bundesweit nach der Person, an die dein Brief gehen soll.`
-            : `Für die PLZ ${wizardData.plz} wurde kein lokales MdB gefunden. Suche bundesweit nach einer Person oder erstelle einen neutralen Entwurf, den du später adressierst.`
+            ? fill(pc.introNoLocalCampaign, { plz: wizardData.plz })
+            : fill(pc.introNoLocal, { plz: wizardData.plz })
           : wahlkreisGroups.length === 1
-            ? "Dein Wahlkreis wird von folgenden MdBs vertreten. Das MdB mit Direktmandat ist vorausgewählt, du kannst aber auch jemand anderen wählen."
-            : "Deine PLZ liegt an einer Wahlkreis-Grenze. Wähle das MdB, das deinen Wahlkreis vertritt. Das Direktmandat ist je Wahlkreis vorausgewählt.";
+            ? pc.introOneConstituency
+            : pc.introBorder;
 
     const landInstitutionBackLabel =
       landesregierung?.institutionKind === "senat"
-        ? "Zurück zum Senat"
-        : "Zurück zur Landesregierung";
+        ? pc.backToSenat
+        : pc.backToRegierung;
     const closeLandPersonPicker = () => {
       setShowLandPersonPicker(false);
       setShowAlternativePicker(false);
@@ -1489,7 +1495,7 @@ export function Step3Success({
                 >
                   <path d="m15 18-6-6 6-6" />
                 </svg>
-                Ebene ändern
+                {pc.changeLevel}
               </button>
             )}
             {onChangePlz && (
@@ -1514,7 +1520,7 @@ export function Step3Success({
                     <path d="m15 18-6-6 6-6" />
                   </svg>
                 )}
-                PLZ ändern
+                {pc.changePostalCode}
               </button>
             )}
           </div>
@@ -1532,29 +1538,29 @@ export function Step3Success({
             className="mt-4 rounded-xl border border-waldgruen/25 bg-waldgruen/8 p-4 font-body text-sm leading-relaxed text-warmgrau"
           >
             <p className="font-semibold text-waldgruen-dark">
-              {campaignAttribution} richtet sich an {campaignTargetLabel}.
+              {fill(pc.campaignSentence, { attribution: campaignAttribution, target: campaignTargetLabel })}
             </p>
             <p className="mt-1">
               {campaignRestrictedNoLocalMatch
-                ? "Für deine PLZ ist keine Person aus dieser Auswahl direkt zuständig. Wähle eine Person aus der Kampagnenauswahl."
+                ? pc.campaignNoMatch
                 : selectedPolitician
                   ? politicians.length === 1
-                    ? `Für deine PLZ ist ${selectedPolitician.firstName} ${selectedPolitician.lastName} zuständig und bereits ausgewählt.`
-                    : `${selectedPolitician.firstName} ${selectedPolitician.lastName} ist vorausgewählt. Du kannst weitere passende Personen anzeigen.`
-                  : `Für deine PLZ passen ${politicians.length} Personen aus dieser Auswahl.`}
+                    ? fill(pc.campaignOneMatch, { name: `${selectedPolitician.firstName} ${selectedPolitician.lastName}` })
+                    : fill(pc.campaignPreselected, { name: `${selectedPolitician.firstName} ${selectedPolitician.lastName}` })
+                  : fill(pc.campaignMany, { count: politicians.length })}
             </p>
           </div>
         )}
 
         {isAmbiguousKommune && (
           <div role="note" className="mt-4 rounded-xl border border-waldgruen/25 bg-waldgruen/8 p-4 font-body text-sm text-warmgrau leading-relaxed">
-            <p className="font-semibold text-waldgruen-dark">Hinweis zur Zuordnung</p>
+            <p className="font-semibold text-waldgruen-dark">{pc.assignmentTitle}</p>
             {rathaus?.candidates && rathaus.candidates.length > 0 ? (
               <RathausCandidateList candidates={rathaus.candidates} />
             ) : (
               <>
                 <p className="mt-1">
-                  Diese PLZ kann zu mehreren Berliner Bezirken gehören. Die Postanschrift konnte ich für deine PLZ nicht sicher zuordnen.
+                  {pc.berlinDistrictHint} {wizardCopy.rathaus.noAddress}
                 </p>
                 {rathaus && <RathausSearchButton href={rathausSearchUrl(rathaus)} className="mt-2" />}
               </>
@@ -1581,22 +1587,22 @@ export function Step3Success({
             stay one logical radiogroup; a flat index keeps arrow-key nav working
             across groups. */}
         {isFixed && campaignFixedRecipient && (
-          <div role="radiogroup" aria-label="Empfänger auswählen" className="mt-6">
+          <div role="radiogroup" aria-label={pc.chooseRecipientAria} className="mt-6">
             <div role="radio" aria-checked={campaignFixedSelected} tabIndex={0} onClick={() => setCampaignFixedSelected(true)} onKeyDown={(event) => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); setCampaignFixedSelected(true); } }} className="w-full cursor-pointer rounded-lg border-2 border-waldgruen bg-waldgruen/10 p-4 text-left">
-              <span className="inline-block rounded bg-waldgruen/15 px-2 py-0.5 font-body text-[11px] font-semibold uppercase tracking-wide text-waldgruen-dark">Fester Kampagnenempfänger</span>
+              <span className="inline-block rounded bg-waldgruen/15 px-2 py-0.5 font-body text-[11px] font-semibold uppercase tracking-wide text-waldgruen-dark">{pc.fixedBadge}</span>
               {campaignFixedRecipient.organizationName && <p className="mt-2 font-body text-base font-semibold text-warmgrau">{campaignFixedRecipient.organizationName}</p>}
               {campaignFixedRecipient.personName && <p className="font-body text-sm text-warmgrau">{campaignFixedRecipient.personName}</p>}
               <p className="mt-1 font-body text-sm leading-relaxed text-warmgrau">
                 {campaignFixedRecipient.address.street} {campaignFixedRecipient.address.houseNumber}<br />
                 {campaignFixedRecipient.address.postalCode} {campaignFixedRecipient.address.city}
               </p>
-              <p className="mt-2 font-body text-xs text-warmgrau/65">Du kannst aus ganz Deutschland teilnehmen.</p>
+              <p className="mt-2 font-body text-xs text-warmgrau/65">{pc.fixedNote}</p>
             </div>
           </div>
         )}
         {/* Kommune: eine einzige Verwaltungs-Karte statt Abgeordneten-Gruppen */}
         {isKommune && rathaus && (
-          <div role="radiogroup" aria-label="Empfänger auswählen" className="mt-6">
+          <div role="radiogroup" aria-label={pc.chooseRecipientAria} className="mt-6">
             <div
               role="radio"
               aria-checked={rathausSelected}
@@ -1616,7 +1622,7 @@ export function Step3Success({
               ].join(" ")}
             >
               <span className="inline-block font-body text-[11px] font-semibold uppercase tracking-wide text-waldgruen-dark bg-waldgruen/15 px-2 py-0.5 rounded mb-1.5">
-                {rathaus.recipientKind === "bezirksamt" ? "Bezirksamt" : "Bürgermeisteramt"}
+                {rathaus.recipientKind === "bezirksamt" ? pc.badgeBezirksamt : pc.badgeBuergermeisteramt}
               </span>
               <p className="font-body text-base font-semibold text-warmgrau">{rathaus.label}</p>
               {rathaus.address.source === "official" ? (
@@ -1631,7 +1637,7 @@ export function Step3Success({
                     {rathaus.address.postalCode} {rathaus.address.city}
                   </p>
                   <p className="font-body text-xs text-warmgrau/70 mt-2 leading-relaxed">
-                    Amtliche Anschrift von{" "}
+                    {pc.officialAddressFrom}{" "}
                     <a
                       href={rathaus.address.sourceUrl}
                       target="_blank"
@@ -1641,13 +1647,13 @@ export function Step3Success({
                     >
                       {rathaus.address.sourceName}
                     </a>
-                    , Stand {formatSourceStand(rathaus.address.sourceStand)}
+                    {fill(pc.standSuffix, { date: formatSourceStand(rathaus.address.sourceStand) })}
                   </p>
                 </>
               ) : rathaus.ambiguous ? null : (
                 <>
                   <p className="font-body text-xs text-warmgrau/70 mt-2 leading-relaxed">
-                    Die Postanschrift konnte ich für deine PLZ nicht sicher zuordnen.
+                    {wizardCopy.rathaus.noAddress}
                   </p>
                   <RathausSearchButton href={rathausSearchUrl(rathaus)} className="mt-2" />
                 </>
@@ -1657,7 +1663,7 @@ export function Step3Success({
         )}
 
         {isLand && landesminister && (
-          <div role="radiogroup" aria-label="Fachminister:in auswählen" className="mt-6">
+          <div role="radiogroup" aria-label={pc.chooseMinisterAria} className="mt-6">
             <div
               role="radio"
               aria-checked={ministerSelected}
@@ -1699,14 +1705,14 @@ export function Step3Success({
                   ))}
               </p>
               <p className="mt-3 font-body text-sm leading-relaxed text-warmgrau/80">
-                Für dein Thema zuständig in {landesminister.bundeslandName}.
+                {fill(pc.ministerLead, { state: landesminister.bundeslandName })}
               </p>
             </div>
           </div>
         )}
 
         {isLand && landesregierung && (
-          <div role="radiogroup" aria-label="Empfänger auswählen" className="mt-6">
+          <div role="radiogroup" aria-label={pc.chooseRecipientAria} className="mt-6">
             <div
               role="radio"
               aria-checked={landesregierungSelected && landAddressee === "institution"}
@@ -1737,8 +1743,8 @@ export function Step3Success({
             >
               <span className="inline-block font-body text-[11px] font-semibold uppercase tracking-wide text-waldgruen-dark bg-waldgruen/15 px-2 py-0.5 rounded mb-1.5">
                 {landesregierung.institutionKind === "senat"
-                  ? "Senat"
-                  : "Landesregierung"}
+                  ? pc.badgeSenat
+                  : pc.badgeRegierung}
               </span>
               <p className="font-body text-base font-semibold text-warmgrau">
                 {landesregierung.label}
@@ -1753,11 +1759,11 @@ export function Step3Success({
               </p>
               <p className="font-body text-sm text-warmgrau/80 mt-3 leading-relaxed">
                 {landesregierung.institutionKind === "senat"
-                  ? `Dein Brief geht an den ${landesregierung.label}. Er ist für landesweite politische Entscheidungen zuständig.`
-                  : `Dein Brief geht an die Landesregierung von ${landesregierung.bundeslandName}. Sie ist für landesweite politische Entscheidungen zuständig.`}
+                  ? fill(pc.senatText, { name: landesregierung.label })
+                  : fill(pc.regierungText, { state: landesregierung.bundeslandName })}
               </p>
               <p className="font-body text-xs text-warmgrau/70 mt-2 leading-relaxed">
-                Amtliche Anschrift: {" "}
+                {pc.officialAddress} {" "}
                 <a
                   href={landesregierung.address.sourceUrl}
                   target="_blank"
@@ -1765,9 +1771,9 @@ export function Step3Success({
                   title={landesregierung.address.sourceTitle}
                   className="font-semibold text-waldgruen-dark underline underline-offset-2"
                 >
-                  Quelle
+                  {pc.sourceLink}
                 </a>
-                , geprüft am {formatSourceStand(landesregierung.address.sourceStand)}
+                {fill(pc.checkedOn, { date: formatSourceStand(landesregierung.address.sourceStand) })}
               </p>
             </div>
             {governmentHead && (
@@ -1800,7 +1806,7 @@ export function Step3Success({
                 ].join(" ")}
               >
                 <span className="inline-block font-body text-[11px] font-semibold uppercase tracking-wide text-waldgruen-dark bg-waldgruen/15 px-2 py-0.5 rounded mb-1.5">
-                  Regierungschef:in
+                  {pc.headBadge}
                 </span>
                 <p className="font-body text-base font-semibold text-warmgrau">{governmentHead.label}</p>
                 <p className="font-body text-sm text-warmgrau mt-1 leading-relaxed">
@@ -1809,7 +1815,7 @@ export function Step3Success({
                   ))}
                 </p>
                 <p className="font-body text-xs text-warmgrau/70 mt-2 leading-relaxed">
-                  Amtliche Anschrift: <a href={governmentHead.address.sourceUrl} target="_blank" rel="noopener noreferrer" title={governmentHead.address.sourceTitle} className="font-semibold text-waldgruen-dark underline underline-offset-2">Quelle</a>, geprüft am {formatSourceStand(governmentHead.address.sourceStand)}
+                  {pc.officialAddress} <a href={governmentHead.address.sourceUrl} target="_blank" rel="noopener noreferrer" title={governmentHead.address.sourceTitle} className="font-semibold text-waldgruen-dark underline underline-offset-2">{pc.sourceLink}</a>{fill(pc.checkedOn, { date: formatSourceStand(governmentHead.address.sourceStand) })}
                 </p>
               </div>
             )}
@@ -1832,7 +1838,7 @@ export function Step3Success({
                 }}
                 className="mt-4 inline-flex items-center gap-1.5 font-body text-sm font-semibold text-waldgruen underline underline-offset-4 hover:text-waldgruen-dark"
               >
-                Lieber einer Person im Landtag schreiben?
+                {pc.landtagToggle}
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   width="14"
@@ -1857,7 +1863,7 @@ export function Step3Success({
         )}
 
         {bundeskanzler && (
-          <div role="radiogroup" aria-label="Institutionellen Empfänger auswählen" className="mt-6">
+          <div role="radiogroup" aria-label={pc.chooseInstitutionAria} className="mt-6">
             <div
               role="radio"
               aria-checked={bundeskanzlerSelected}
@@ -1881,7 +1887,7 @@ export function Step3Success({
               ].join(" ")}
             >
               <span className="mb-1.5 inline-block rounded bg-waldgruen/15 px-2 py-0.5 font-body text-[11px] font-semibold uppercase tracking-wide text-waldgruen-dark">
-                Bundeskanzler
+                {pc.chancellorBadge}
               </span>
               <p className="font-body text-base font-semibold text-warmgrau">
                 Friedrich Merz
@@ -1894,10 +1900,10 @@ export function Step3Success({
                 ))}
               </p>
               <p className="mt-3 font-body text-sm leading-relaxed text-warmgrau/80">
-                Dein Brief richtet sich an Friedrich Merz in seiner Rolle als Leiter der Bundesregierung.
+                {pc.chancellorRole}
               </p>
               <p className="mt-2 font-body text-xs leading-relaxed text-warmgrau/70">
-                Amtliche Anschrift: {" "}
+                {pc.officialAddress} {" "}
                 <a
                   href={bundeskanzler.address.sourceUrl}
                   target="_blank"
@@ -1908,7 +1914,7 @@ export function Step3Success({
                 >
                   Bundeskanzler.de
                 </a>
-                , geprüft am {formatSourceStand(bundeskanzler.address.sourceStand)}
+                {fill(pc.checkedOn, { date: formatSourceStand(bundeskanzler.address.sourceStand) })}
               </p>
             </div>
           </div>
@@ -1920,24 +1926,24 @@ export function Step3Success({
         <div className="mt-6" id={isLand ? "land-person-picker" : undefined}>
           {isAmbiguousLand && (
             <div role="note" className="mb-5 rounded-xl border border-waldgruen/25 bg-waldgruen/8 p-4 font-body text-sm text-warmgrau leading-relaxed">
-              <p className="font-semibold text-waldgruen-dark">Hinweis zur Zuordnung</p>
+              <p className="font-semibold text-waldgruen-dark">{pc.assignmentTitle}</p>
               <p className="mt-1">
-                Eine PLZ kann mehrere Landtagswahlkreise abdecken. Prüfe über das verlinkte Profil, welcher Wahlkreis zu deiner Wohnadresse gehört, bevor du auswählst.
+                {pc.landConstituencyHint}
               </p>
             </div>
           )}
           {bundeskanzler && (
             <p className="mb-3 font-body text-sm font-semibold text-waldgruen-dark">
-              Oder: ein Mitglied des Bundestags aus deinem Wahlkreis
+              {pc.orBundestagMember}
             </p>
           )}
           {(campaignRestrictedNoLocalMatch || landPersonFilterActive) && (
             <div className="mb-6 grid gap-5">
               <div className="grid gap-2">
                 <p className="font-body text-sm font-semibold text-waldgruen-dark">
-                  Parteien filtern
+                  {pc.filterParties}
                 </p>
-                <div className="flex flex-wrap gap-2" aria-label="Parteien filtern">
+                <div className="flex flex-wrap gap-2" aria-label={pc.filterParties}>
                   {campaignPartyOptions.map((party) => {
                     const active = campaignPartyFilters.includes(party);
                     return (
@@ -1962,7 +1968,7 @@ export function Step3Success({
 
               <label className="grid gap-1.5" htmlFor="campaign-recipient-search">
                 <span className="font-body text-sm font-semibold text-waldgruen-dark">
-                  {landPersonFilterActive ? "MdL suchen" : "MdB suchen"}
+                  {landPersonFilterActive ? pc.searchMdl : pc.searchMdb}
                 </span>
                 <input
                   id="campaign-recipient-search"
@@ -1974,14 +1980,13 @@ export function Step3Success({
                   }}
                   placeholder={
                     landPersonFilterActive
-                      ? "Name, Partei oder Wahlkreis"
-                      : "Name, Partei, Wahlkreis oder Ausschuss"
+                      ? pc.placeholderLand
+                      : pc.placeholderBund
                   }
                   className="rounded-lg border border-warmgrau/30 bg-creme px-4 py-3 font-body text-base text-warmgrau outline-none focus:border-waldgruen focus:ring-2 focus:ring-waldgruen"
                 />
                 <span className="font-body text-sm text-warmgrau/60" aria-live="polite">
-                  {displayedPoliticians.length} von{" "}
-                  {landPersonFilterActive ? politicians.length : campaignTargetCount} Personen
+                  {fill(pc.countOf, { shown: displayedPoliticians.length, total: landPersonFilterActive ? politicians.length : campaignTargetCount })}
                 </span>
               </label>
             </div>
@@ -1998,19 +2003,19 @@ export function Step3Success({
                 className="mb-5 font-body text-sm font-semibold text-waldgruen underline decoration-waldgruen/35 underline-offset-4 hover:text-waldgruen-dark"
               >
                 {showMoreCampaignPoliticians
-                  ? "Weitere passende Abgeordnete ausblenden"
-                  : `Weitere passende Abgeordnete anzeigen (${politicians.length - 1})`}
+                  ? pc.hideMore
+                  : fill(pc.showMore, { count: politicians.length - 1 })}
               </button>
             )}
 
           {displayedPoliticians.length === 0 ? (
             <p className="rounded-lg border border-warmgrau/20 bg-creme px-4 py-5 font-body text-sm text-warmgrau/70">
-              Keine passende Person gefunden. Ändere deine Suche.
+              {pc.noResult}
             </p>
           ) : (
           <div
             role="radiogroup"
-            aria-label="Abgeordnete auswählen"
+            aria-label={pc.chooseMembersAria}
             className="space-y-6"
           >
             {wahlkreisGroups.map((group) => (
@@ -2018,7 +2023,7 @@ export function Step3Success({
               {!campaignRestrictedNoLocalMatch && (
                 <p className="font-body text-xs font-semibold uppercase tracking-wide text-warmgrau/55 mb-2 flex items-center gap-2">
                   <span className="h-px flex-shrink-0 w-3 bg-warmgrau/25" aria-hidden="true" />
-                  {`${isLand && isAmbiguousLand ? "Möglicher Landtagswahlkreis" : isLand ? "Landtagswahlkreis" : "Wahlkreis"} ${group.wahlkreisId} · ${group.wahlkreisName}`}
+                  {`${isLand && isAmbiguousLand ? pc.landConstituencyPossible : isLand ? pc.landConstituencyPrefix : pc.constituencyPrefix} ${group.wahlkreisId} · ${group.wahlkreisName}`}
                 </p>
               )}
               <div
@@ -2042,11 +2047,11 @@ export function Step3Success({
                     <>
                         {p.isDirect ? (
                           <span className="inline-block font-body text-[11px] font-semibold uppercase tracking-wide text-waldgruen-dark bg-waldgruen/15 px-2 py-0.5 rounded mb-1.5">
-                            Direktmandat
+                            {pc.directMandate}
                           </span>
                         ) : (
                           <span className="inline-block font-body text-[11px] font-medium uppercase tracking-wide text-warmgrau/55 bg-warmgrau/10 px-2 py-0.5 rounded mb-1.5">
-                            Landesliste
+                            {pc.stateList}
                           </span>
                         )}
                         <p className="font-body text-base font-semibold text-warmgrau">
@@ -2058,13 +2063,13 @@ export function Step3Success({
                         </p>
                         {campaignRestrictedNoLocalMatch && (
                           <p className="mt-2 font-body text-xs leading-relaxed text-warmgrau/65">
-                            Wahlkreis {p.wahlkreisId} · {p.wahlkreisName}
+                            {fill(pc.constituencyLine, { id: p.wahlkreisId, name: p.wahlkreisName })}
                           </p>
                         )}
                         {campaignRestricted && p.committees?.length ? (
                           <div className="mt-3 border-t border-warmgrau/15 pt-3">
                             <p className="font-body text-[11px] font-semibold uppercase tracking-wide text-warmgrau/55">
-                              Ausschüsse
+                              {pc.committees}
                             </p>
                             <p className="mt-1 font-body text-xs leading-relaxed text-warmgrau/70">
                               {p.committees.join(" · ")}
@@ -2079,7 +2084,7 @@ export function Step3Success({
                             onClick={(e) => e.stopPropagation()}
                             className="inline-flex items-center gap-1 font-body text-xs text-waldgruen hover:text-waldgruen-dark underline underline-offset-2 mt-2"
                           >
-                            Profil auf Abgeordnetenwatch.de
+                            {pc.profileLink}
                             <svg
                               xmlns="http://www.w3.org/2000/svg"
                               width="12"
@@ -2121,7 +2126,7 @@ export function Step3Success({
                   onClick={() => setShowAlternativePicker((current) => !current)}
                   className="font-body text-sm font-semibold text-waldgruen underline underline-offset-4 hover:text-waldgruen-dark"
                 >
-                  Lieber einer anderen Person im Bundestag schreiben?
+                  {pc.bundestagToggle}
                 </button>
               )}
               {showAlternativePicker && (
@@ -2151,9 +2156,9 @@ export function Step3Success({
                       : "border-warmgrau/25 bg-creme text-warmgrau hover:border-waldgruen/45",
                   ].join(" ")}
                 >
-                  Ohne Person fortfahren
+                  {pc.continueWithout}
                   <span className="mt-1 block text-xs font-normal leading-relaxed text-warmgrau/65">
-                    {isYouth ? "Du setzt Name, Anschrift und Anrede vor dem Schreiben selbst ein." : "Du setzt Name, Anschrift und Anrede vor dem Schreiben selbst ein."}
+                    {pc.continueHint}
                   </span>
                 </button>
               )}
@@ -2169,7 +2174,7 @@ export function Step3Success({
                 onClick={() => setShowAlternativePicker((current) => !current)}
                 className="font-body text-sm font-semibold text-waldgruen underline underline-offset-4 hover:text-waldgruen-dark"
               >
-                Nicht dabei? Im ganzen Landtag suchen
+                {pc.landSearchAll}
               </button>
             )}
             {showAlternativePicker && (
@@ -2232,15 +2237,15 @@ export function Step3Success({
                 </span>
               ) : (
                 <>
-                  Brief erstellen
+                  {pc.createLetter}
                   <WizardForwardIcon className="absolute right-5 top-1/2 -translate-y-1/2" />
                 </>
               )}
             </button>
             <p className="text-xs text-warmgrau/60 mt-3 text-center">
-              Du siehst den Entwurf zuerst und kannst ihn anpassen. Anschließend schreibst du ihn von Hand und verschickst ihn per Post. Es gelten die{" "}
+              {pc.termsLead}{" "}
               <Link href="/nutzungsbedingungen" prefetch={false} className="underline hover:text-warmgrau">
-                Nutzungsbedingungen
+                {pc.termsLink}
               </Link>
               .
             </p>
@@ -2254,7 +2259,7 @@ export function Step3Success({
           >
             {selectedPoliticianLabel && (
               <p className="mb-2 truncate text-center font-body text-xs text-warmgrau/65">
-                Ausgewählt: {selectedPoliticianLabel}
+                {fill(pc.selectedLine, { name: selectedPoliticianLabel })}
               </p>
             )}
             <button
@@ -2290,15 +2295,15 @@ export function Step3Success({
                 </span>
               ) : (
                 <>
-                  Brief erstellen
+                  {pc.createLetter}
                   <WizardForwardIcon className="absolute right-5 top-1/2 -translate-y-1/2" />
                 </>
               )}
             </button>
             <p className="mt-2 text-center font-body text-xs text-warmgrau/60">
-              Du passt den Entwurf an, schreibst ihn von Hand und verschickst ihn selbst per Post. Es gelten die{" "}
+              {pc.termsLeadMobile}{" "}
               <Link href="/nutzungsbedingungen" prefetch={false} className="underline hover:text-warmgrau">
-                Nutzungsbedingungen
+                {pc.termsLink}
               </Link>
               .
             </p>

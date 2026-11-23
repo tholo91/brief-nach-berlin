@@ -7,6 +7,130 @@ import type { Locale } from "./locale";
  * templates; keep the token unchanged in every locale (only `{article}`, the German article
  * taken from data, may be dropped in EN/TR).
  */
+type PickerKey =
+  | "later"
+  | "campaignOf"
+  | "campaignThis"
+  | "targetOne"
+  | "targetMany"
+  | "campaignSentence"
+  | "campaignNoMatch"
+  | "campaignOneMatch"
+  | "campaignPreselected"
+  | "campaignMany"
+  | "fixedTitle"
+  | "chooseTitle"
+  | "administrationTitle"
+  | "toTitle"
+  | "toInstitutionTitle"
+  | "landesregierungTitle"
+  | "chooseMdbTitle"
+  | "manyTitle"
+  | "whoTitle"
+  | "introFixed"
+  | "introChancellor"
+  | "introKommune"
+  | "institutionSenatChoose"
+  | "institutionRegierungChoose"
+  | "institutionSenatPreselected"
+  | "institutionRegierungPreselected"
+  | "introLandPick"
+  | "introMinister"
+  | "introHead"
+  | "introGovernment"
+  | "introInstitution"
+  | "introCampaignSearch"
+  | "introPersonPreselected"
+  | "introChoosePerson"
+  | "introNoLocalCampaign"
+  | "introNoLocal"
+  | "introOneConstituency"
+  | "introBorder"
+  | "backToSenat"
+  | "backToRegierung"
+  | "changeLevel"
+  | "changePostalCode"
+  | "assignmentTitle"
+  | "berlinDistrictHint"
+  | "landConstituencyHint"
+  | "orBundestagMember"
+  | "filterParties"
+  | "searchMdl"
+  | "searchMdb"
+  | "placeholderLand"
+  | "placeholderBund"
+  | "countOf"
+  | "hideMore"
+  | "showMore"
+  | "noResult"
+  | "constituencyPrefix"
+  | "landConstituencyPrefix"
+  | "landConstituencyPossible"
+  | "constituencyLine"
+  | "directMandate"
+  | "stateList"
+  | "committees"
+  | "profileLink"
+  | "fixedBadge"
+  | "fixedNote"
+  | "badgeBezirksamt"
+  | "badgeBuergermeisteramt"
+  | "officialAddressFrom"
+  | "standSuffix"
+  | "ministerLead"
+  | "badgeSenat"
+  | "badgeRegierung"
+  | "senatText"
+  | "regierungText"
+  | "officialAddress"
+  | "sourceLink"
+  | "checkedOn"
+  | "headBadge"
+  | "landtagToggle"
+  | "bundestagToggle"
+  | "landSearchAll"
+  | "chancellorBadge"
+  | "chancellorRole"
+  | "continueWithout"
+  | "continueHint"
+  | "createLetter"
+  | "termsLead"
+  | "termsLeadMobile"
+  | "termsLink"
+  | "selectedLine"
+  | "chooseRecipientAria"
+  | "chooseMinisterAria"
+  | "chooseInstitutionAria"
+  | "chooseMembersAria";
+
+type AlternativeKey =
+  | "searchBund"
+  | "searchLand"
+  | "notFromConstituencyLine"
+  | "notFromConstituency"
+  | "partyAria"
+  | "searchLabel"
+  | "placeholderBund"
+  | "placeholderLand"
+  | "hintMinimum"
+  | "loadError"
+  | "empty"
+  | "searching"
+  | "countLine"
+  | "constituencyLine"
+  | "more";
+
+type RathausKey =
+  | "officialHeading"
+  | "sourceLead"
+  | "googleLead"
+  | "googleLink"
+  | "googleTail"
+  | "noAddress"
+  | "searchButton"
+  | "districtHint"
+  | "or";
+
 export interface WizardCopy {
   success: {
     /** Ready line with the masked address as `{email}`. */
@@ -73,6 +197,12 @@ export interface WizardCopy {
     generatingFailedTitle: string;
     generatingRetry: string;
   };
+  /** Recipient picker (Bund, Land, Kommune, campaigns). `{article}` is the German article from data. */
+  picker: Record<PickerKey, string>;
+  /** Free recipient search. */
+  alternative: Record<AlternativeKey, string>;
+  /** Town hall address box. `or` joins the Berlin district list. */
+  rathaus: Record<RathausKey, string>;
 }
 
 const de: WizardCopy = {
@@ -132,6 +262,130 @@ const de: WizardCopy = {
     generatingTitle: "Dein Brief wird geschrieben",
     generatingFailedTitle: "Das hat nicht geklappt",
     generatingRetry: "Noch einmal versuchen",
+  },
+  picker: {
+    later: "MdB später auswählen",
+    campaignOf: "Die Kampagne von {name}",
+    campaignThis: "Diese Kampagne",
+    targetOne: "eine ausgewählte Person",
+    targetMany: "{count} ausgewählte Abgeordnete",
+    campaignSentence: "{attribution} richtet sich an {target}.",
+    campaignNoMatch: "Für deine PLZ ist keine Person aus dieser Auswahl direkt zuständig. Wähle eine Person aus der Kampagnenauswahl.",
+    campaignOneMatch: "Für deine PLZ ist {name} zuständig und bereits ausgewählt.",
+    campaignPreselected: "{name} ist vorausgewählt. Du kannst weitere passende Personen anzeigen.",
+    campaignMany: "Für deine PLZ passen {count} Personen aus dieser Auswahl.",
+    fixedTitle: "Fester Empfänger: {name}",
+    chooseTitle: "An wen soll dein Brief gehen?",
+    administrationTitle: "Dein Brief geht an die Verwaltung",
+    toTitle: "Dein Brief geht an {name}",
+    toInstitutionTitle: "Dein Brief geht an {article} {name}",
+    landesregierungTitle: "Dein Brief geht an die Landesregierung",
+    chooseMdbTitle: "Wähle ein MdB aus",
+    manyTitle: "{count} Abgeordnete für PLZ {plz}",
+    whoTitle: "Wer vertritt deinen Wahlkreis?",
+    introFixed: "Dieser Empfänger ist für die Kampagne festgelegt. Deine PLZ verändert die Adresse nicht.",
+    introChancellor: "Der Bundeskanzler ist vorausgewählt. Du kannst stattdessen auch ein Mitglied des Bundestags aus deinem Wahlkreis wählen.",
+    introKommune: "Der kommunale Empfänger ist bereits vorausgewählt.",
+    institutionSenatChoose: "den Senat",
+    institutionRegierungChoose: "die Landesregierung",
+    institutionSenatPreselected: "Der Senat",
+    institutionRegierungPreselected: "Die Landesregierung",
+    introLandPick: "Wähle {institution} oder eine Person aus dem Landtag.",
+    introMinister: "Das Tool hat die passende Person für dein Thema vorausgewählt. Du kannst auch an die Regierung oder an ein Mitglied des Landtags schreiben.",
+    introHead: "Die Regierungsspitze ist vorausgewählt. Du kannst stattdessen an die Landesregierung als Ganzes oder an ein Mitglied des Landtags schreiben.",
+    introGovernment: "{institution} ist vorausgewählt. Du kannst stattdessen an die Regierungsspitze oder an ein Mitglied des Landtags schreiben.",
+    introInstitution: "Der institutionelle Empfänger ist bereits vorausgewählt.",
+    introCampaignSearch: "Filtere nach Partei oder suche nach Name, Wahlkreis und Ausschuss.",
+    introPersonPreselected: "Die passende Person ist bereits vorausgewählt.",
+    introChoosePerson: "Wähle eine der passenden Personen aus.",
+    introNoLocalCampaign: "Für die PLZ {plz} wurde kein lokales MdB gefunden. Suche bundesweit nach der Person, an die dein Brief gehen soll.",
+    introNoLocal: "Für die PLZ {plz} wurde kein lokales MdB gefunden. Suche bundesweit nach einer Person oder erstelle einen neutralen Entwurf, den du später adressierst.",
+    introOneConstituency: "Dein Wahlkreis wird von folgenden MdBs vertreten. Das MdB mit Direktmandat ist vorausgewählt, du kannst aber auch jemand anderen wählen.",
+    introBorder: "Deine PLZ liegt an einer Wahlkreis-Grenze. Wähle das MdB, das deinen Wahlkreis vertritt. Das Direktmandat ist je Wahlkreis vorausgewählt.",
+    backToSenat: "Zurück zum Senat",
+    backToRegierung: "Zurück zur Landesregierung",
+    changeLevel: "Ebene ändern",
+    changePostalCode: "PLZ ändern",
+    assignmentTitle: "Hinweis zur Zuordnung",
+    berlinDistrictHint: "Diese PLZ kann zu mehreren Berliner Bezirken gehören.",
+    landConstituencyHint: "Eine PLZ kann mehrere Landtagswahlkreise abdecken. Prüfe über das verlinkte Profil, welcher Wahlkreis zu deiner Wohnadresse gehört, bevor du auswählst.",
+    orBundestagMember: "Oder: ein Mitglied des Bundestags aus deinem Wahlkreis",
+    filterParties: "Parteien filtern",
+    searchMdl: "MdL suchen",
+    searchMdb: "MdB suchen",
+    placeholderLand: "Name, Partei oder Wahlkreis",
+    placeholderBund: "Name, Partei, Wahlkreis oder Ausschuss",
+    countOf: "{shown} von {total} Personen",
+    hideMore: "Weitere passende Abgeordnete ausblenden",
+    showMore: "Weitere passende Abgeordnete anzeigen ({count})",
+    noResult: "Keine passende Person gefunden. Ändere deine Suche.",
+    constituencyPrefix: "Wahlkreis",
+    landConstituencyPrefix: "Landtagswahlkreis",
+    landConstituencyPossible: "Möglicher Landtagswahlkreis",
+    constituencyLine: "Wahlkreis {id} · {name}",
+    directMandate: "Direktmandat",
+    stateList: "Landesliste",
+    committees: "Ausschüsse",
+    profileLink: "Profil auf Abgeordnetenwatch.de",
+    fixedBadge: "Fester Kampagnenempfänger",
+    fixedNote: "Du kannst aus ganz Deutschland teilnehmen.",
+    badgeBezirksamt: "Bezirksamt",
+    badgeBuergermeisteramt: "Bürgermeisteramt",
+    officialAddressFrom: "Amtliche Anschrift von",
+    standSuffix: ", Stand {date}",
+    ministerLead: "Für dein Thema zuständig in {state}.",
+    badgeSenat: "Senat",
+    badgeRegierung: "Landesregierung",
+    senatText: "Dein Brief geht an den {name}. Er ist für landesweite politische Entscheidungen zuständig.",
+    regierungText: "Dein Brief geht an die Landesregierung von {state}. Sie ist für landesweite politische Entscheidungen zuständig.",
+    officialAddress: "Amtliche Anschrift:",
+    sourceLink: "Quelle",
+    checkedOn: ", geprüft am {date}",
+    headBadge: "Regierungschef:in",
+    landtagToggle: "Lieber einer Person im Landtag schreiben?",
+    bundestagToggle: "Lieber einer anderen Person im Bundestag schreiben?",
+    landSearchAll: "Nicht dabei? Im ganzen Landtag suchen",
+    chancellorBadge: "Bundeskanzler",
+    chancellorRole: "Dein Brief richtet sich an Friedrich Merz in seiner Rolle als Leiter der Bundesregierung.",
+    continueWithout: "Ohne Person fortfahren",
+    continueHint: "Du setzt Name, Anschrift und Anrede vor dem Schreiben selbst ein.",
+    createLetter: "Brief erstellen",
+    termsLead: "Du siehst den Entwurf zuerst und kannst ihn anpassen. Anschließend schreibst du ihn von Hand und verschickst ihn per Post. Es gelten die",
+    termsLeadMobile: "Du passt den Entwurf an, schreibst ihn von Hand und verschickst ihn selbst per Post. Es gelten die",
+    termsLink: "Nutzungsbedingungen",
+    selectedLine: "Ausgewählt: {name}",
+    chooseRecipientAria: "Empfänger auswählen",
+    chooseMinisterAria: "Fachminister:in auswählen",
+    chooseInstitutionAria: "Institutionellen Empfänger auswählen",
+    chooseMembersAria: "Abgeordnete auswählen",
+  },
+  alternative: {
+    searchBund: "Bundesweit suchen",
+    searchLand: "Im Bundesland suchen",
+    notFromConstituencyLine: "Diese Personen sind nicht aus deinem Wahlkreis.",
+    notFromConstituency: "Nicht aus deinem Wahlkreis",
+    partyAria: "Partei auswählen",
+    searchLabel: "Person suchen",
+    placeholderBund: "Name, Partei, Wahlkreis oder Ausschuss",
+    placeholderLand: "Name, Partei oder Wahlkreis",
+    hintMinimum: "Wähle eine Partei oder gib mindestens zwei Zeichen ein.",
+    loadError: "Die Suche konnte nicht geladen werden. Bitte versuche es erneut.",
+    empty: "Keine passende Person gefunden.",
+    searching: "Suche läuft …",
+    countLine: "{count} von {total} Personen",
+    constituencyLine: "Wahlkreis {id} · {name}",
+    more: "Weitere anzeigen",
+  },
+  rathaus: {
+    officialHeading: "Amtliche Postanschrift",
+    sourceLead: "Quelle:",
+    googleLead: ", Stand {date}. Du kannst die Adresse bei Google noch einmal",
+    googleLink: "hier",
+    googleTail: "prüfen.",
+    noAddress: "Die Postanschrift konnte ich für deine PLZ nicht sicher zuordnen.",
+    searchButton: "Adresse suchen",
+    districtHint: "Deine PLZ liegt in {list}. Nimm die Adresse deines Bezirks:",
+    or: "oder",
   },
 };
 
@@ -193,6 +447,130 @@ const en: WizardCopy = {
     generatingFailedTitle: "That did not work",
     generatingRetry: "Try once more",
   },
+  picker: {
+    later: "Choose a Bundestag member later",
+    campaignOf: "The campaign by {name}",
+    campaignThis: "This campaign",
+    targetOne: "one selected person",
+    targetMany: "{count} selected members of parliament",
+    campaignSentence: "{attribution} is addressed to {target}.",
+    campaignNoMatch: "No person from this selection is directly responsible for your postal code. Choose a person from the campaign selection.",
+    campaignOneMatch: "{name} is responsible for your postal code and already selected.",
+    campaignPreselected: "{name} is preselected. You can show more matching people.",
+    campaignMany: "{count} people from this selection match your postal code.",
+    fixedTitle: "Fixed recipient: {name}",
+    chooseTitle: "Who should your letter go to?",
+    administrationTitle: "Your letter goes to the local administration",
+    toTitle: "Your letter goes to {name}",
+    toInstitutionTitle: "Your letter goes to {name}",
+    landesregierungTitle: "Your letter goes to the state government (Landesregierung)",
+    chooseMdbTitle: "Choose a Bundestag member",
+    manyTitle: "{count} Bundestag members for postal code {plz}",
+    whoTitle: "Who represents your constituency?",
+    introFixed: "This recipient is fixed for the campaign. Your postal code does not change the address.",
+    introChancellor: "The Chancellor (Bundeskanzler) is preselected. You can also choose a member of the Bundestag from your constituency instead.",
+    introKommune: "The local recipient is already preselected.",
+    institutionSenatChoose: "the Senate (Senat)",
+    institutionRegierungChoose: "the state government (Landesregierung)",
+    institutionSenatPreselected: "The Senate (Senat)",
+    institutionRegierungPreselected: "The state government (Landesregierung)",
+    introLandPick: "Choose {institution} or a person from the state parliament (Landtag).",
+    introMinister: "The tool preselected the right person for your topic. You can also write to the government or to a member of the state parliament (Landtag).",
+    introHead: "The head of government is preselected. You can write to the state government as a whole or to a member of the state parliament (Landtag) instead.",
+    introGovernment: "{institution} is preselected. You can write to the head of government or to a member of the state parliament (Landtag) instead.",
+    introInstitution: "The institutional recipient is already preselected.",
+    introCampaignSearch: "Filter by party or search by name, constituency and committee.",
+    introPersonPreselected: "The matching person is already preselected.",
+    introChoosePerson: "Choose one of the matching people.",
+    introNoLocalCampaign: "No local Bundestag member was found for postal code {plz}. Search nationwide for the person your letter should go to.",
+    introNoLocal: "No local Bundestag member was found for postal code {plz}. Search nationwide for a person or create a neutral draft that you address later.",
+    introOneConstituency: "Your constituency is represented by the following Bundestag members. The member with the direct mandate is preselected, but you can choose someone else.",
+    introBorder: "Your postal code lies on a constituency border. Choose the Bundestag member who represents your constituency. The direct mandate is preselected for each constituency.",
+    backToSenat: "Back to the Senate",
+    backToRegierung: "Back to the state government",
+    changeLevel: "Change level",
+    changePostalCode: "Change postal code",
+    assignmentTitle: "Note on the assignment",
+    berlinDistrictHint: "This postal code can belong to several Berlin districts.",
+    landConstituencyHint: "A postal code can cover several state constituencies. Use the linked profile to check which constituency your home address belongs to before you choose.",
+    orBundestagMember: "Or: a member of the Bundestag from your constituency",
+    filterParties: "Filter by party",
+    searchMdl: "Search state parliament members",
+    searchMdb: "Search Bundestag members",
+    placeholderLand: "Name, party or constituency",
+    placeholderBund: "Name, party, constituency or committee",
+    countOf: "{shown} of {total} people",
+    hideMore: "Hide more matching members",
+    showMore: "Show more matching members ({count})",
+    noResult: "No matching person found. Change your search.",
+    constituencyPrefix: "Constituency",
+    landConstituencyPrefix: "State constituency",
+    landConstituencyPossible: "Possible state constituency",
+    constituencyLine: "Constituency {id} · {name}",
+    directMandate: "Direct mandate",
+    stateList: "State list",
+    committees: "Committees",
+    profileLink: "Profile on Abgeordnetenwatch.de",
+    fixedBadge: "Fixed campaign recipient",
+    fixedNote: "You can take part from anywhere in Germany.",
+    badgeBezirksamt: "District office",
+    badgeBuergermeisteramt: "Mayor's office",
+    officialAddressFrom: "Official address from",
+    standSuffix: ", as of {date}",
+    ministerLead: "Responsible for your topic in {state}.",
+    badgeSenat: "Senate",
+    badgeRegierung: "State government",
+    senatText: "Your letter goes to {name}. It is responsible for statewide political decisions.",
+    regierungText: "Your letter goes to the state government of {state}. It is responsible for statewide political decisions.",
+    officialAddress: "Official address:",
+    sourceLink: "Source",
+    checkedOn: ", checked on {date}",
+    headBadge: "Head of government",
+    landtagToggle: "Prefer to write to a person in the state parliament (Landtag)?",
+    bundestagToggle: "Prefer to write to a different person in the Bundestag?",
+    landSearchAll: "Not listed? Search the whole state parliament",
+    chancellorBadge: "Chancellor",
+    chancellorRole: "Your letter is addressed to Friedrich Merz in his role as head of the federal government.",
+    continueWithout: "Continue without a person",
+    continueHint: "You add name, address and salutation yourself before writing.",
+    createLetter: "Create letter",
+    termsLead: "You see the draft first and can adjust it. Then you write it by hand and send it by post. See the",
+    termsLeadMobile: "You adjust the draft, write it by hand and send it by post yourself. See the",
+    termsLink: "terms of use",
+    selectedLine: "Selected: {name}",
+    chooseRecipientAria: "Choose recipient",
+    chooseMinisterAria: "Choose subject minister",
+    chooseInstitutionAria: "Choose institutional recipient",
+    chooseMembersAria: "Choose members of parliament",
+  },
+  alternative: {
+    searchBund: "Search nationwide",
+    searchLand: "Search in the state",
+    notFromConstituencyLine: "These people are not from your constituency.",
+    notFromConstituency: "Not from your constituency",
+    partyAria: "Choose party",
+    searchLabel: "Search for a person",
+    placeholderBund: "Name, party, constituency or committee",
+    placeholderLand: "Name, party or constituency",
+    hintMinimum: "Choose a party or enter at least two characters.",
+    loadError: "The search could not be loaded. Please try again.",
+    empty: "No matching person found.",
+    searching: "Searching …",
+    countLine: "{count} of {total} people",
+    constituencyLine: "Constituency {id} · {name}",
+    more: "Show more",
+  },
+  rathaus: {
+    officialHeading: "Official postal address",
+    sourceLead: "Source:",
+    googleLead: ", as of {date}. You can check the address again",
+    googleLink: "here",
+    googleTail: "on Google.",
+    noAddress: "I could not match the postal address for your postal code with confidence.",
+    searchButton: "Search address",
+    districtHint: "Your postal code lies in {list}. Use the address of your district:",
+    or: "or",
+  },
 };
 
 const tr: WizardCopy = {
@@ -252,6 +630,130 @@ const tr: WizardCopy = {
     generatingTitle: "Mektubunuz yazılıyor",
     generatingFailedTitle: "Bu olmadı",
     generatingRetry: "Bir kez daha deneyin",
+  },
+  picker: {
+    later: "Bundestag milletvekilini sonra seçin",
+    campaignOf: "{name} tarafından başlatılan kampanya",
+    campaignThis: "Bu kampanya",
+    targetOne: "seçilmiş bir kişi",
+    targetMany: "seçilmiş {count} milletvekili",
+    campaignSentence: "{attribution} {target} için hazırlanmıştır.",
+    campaignNoMatch: "Posta kodunuz için bu seçimden doğrudan sorumlu bir kişi yok. Kampanya seçiminden bir kişi seçin.",
+    campaignOneMatch: "Posta kodunuzdan {name} sorumludur ve zaten seçilidir.",
+    campaignPreselected: "{name} önceden seçilidir. Uygun diğer kişileri gösterebilirsiniz.",
+    campaignMany: "Posta kodunuza bu seçimden {count} kişi uyuyor.",
+    fixedTitle: "Sabit alıcı: {name}",
+    chooseTitle: "Mektubunuz kime gitsin?",
+    administrationTitle: "Mektubunuz yerel yönetime gider",
+    toTitle: "Mektubunuz şu alıcıya gider: {name}",
+    toInstitutionTitle: "Mektubunuz şu alıcıya gider: {name}",
+    landesregierungTitle: "Mektubunuz eyalet hükümetine (Landesregierung) gider",
+    chooseMdbTitle: "Bir Bundestag milletvekili seçin",
+    manyTitle: "{plz} posta kodu için {count} milletvekili",
+    whoTitle: "Seçim bölgenizi kim temsil ediyor?",
+    introFixed: "Bu alıcı kampanya için belirlenmiştir. Posta kodunuz adresi değiştirmez.",
+    introChancellor: "Şansölye (Bundeskanzler) önceden seçilidir. Bunun yerine seçim bölgenizden bir Bundestag milletvekilini de seçebilirsiniz.",
+    introKommune: "Yerel alıcı zaten önceden seçilidir.",
+    institutionSenatChoose: "Senato (Senat)",
+    institutionRegierungChoose: "eyalet hükümeti (Landesregierung)",
+    institutionSenatPreselected: "Senato (Senat)",
+    institutionRegierungPreselected: "Eyalet hükümeti (Landesregierung)",
+    introLandPick: "{institution} ya da eyalet meclisinden (Landtag) bir kişi seçin.",
+    introMinister: "Araç, konunuz için uygun kişiyi önceden seçti. Hükümete veya eyalet meclisinin (Landtag) bir üyesine de yazabilirsiniz.",
+    introHead: "Hükümet başkanı önceden seçilidir. Bunun yerine bir bütün olarak eyalet hükümetine veya eyalet meclisinin (Landtag) bir üyesine yazabilirsiniz.",
+    introGovernment: "{institution} önceden seçilidir. Bunun yerine hükümet başkanına veya eyalet meclisinin (Landtag) bir üyesine yazabilirsiniz.",
+    introInstitution: "Kurumsal alıcı zaten önceden seçilidir.",
+    introCampaignSearch: "Partiye göre filtreleyin veya ad, seçim bölgesi ve komisyona göre arayın.",
+    introPersonPreselected: "Uygun kişi zaten önceden seçilidir.",
+    introChoosePerson: "Uygun kişilerden birini seçin.",
+    introNoLocalCampaign: "{plz} posta kodu için yerel bir Bundestag milletvekili bulunamadı. Mektubunuzun gideceği kişiyi ülke genelinde arayın.",
+    introNoLocal: "{plz} posta kodu için yerel bir Bundestag milletvekili bulunamadı. Ülke genelinde bir kişi arayın ya da daha sonra adresleyeceğiniz tarafsız bir taslak oluşturun.",
+    introOneConstituency: "Seçim bölgeniz aşağıdaki Bundestag milletvekilleri tarafından temsil ediliyor. Doğrudan mandatlı milletvekili önceden seçilidir, ama başka birini de seçebilirsiniz.",
+    introBorder: "Posta kodunuz bir seçim bölgesi sınırında yer alıyor. Seçim bölgenizi temsil eden Bundestag milletvekilini seçin. Doğrudan mandat her seçim bölgesinde önceden seçilidir.",
+    backToSenat: "Senatoya geri dön",
+    backToRegierung: "Eyalet hükümetine geri dönün",
+    changeLevel: "Düzeyi değiştirin",
+    changePostalCode: "Posta kodunu değiştirin",
+    assignmentTitle: "Eşleştirme notu",
+    berlinDistrictHint: "Bu posta kodu birden fazla Berlin ilçesine ait olabilir.",
+    landConstituencyHint: "Bir posta kodu birden fazla eyalet seçim bölgesini kapsayabilir. Seçim yapmadan önce, bağlantılı profilden ikamet adresinizin hangi seçim bölgesine ait olduğunu kontrol edin.",
+    orBundestagMember: "Veya: seçim bölgenizden bir Bundestag milletvekili",
+    filterParties: "Partilere göre filtreleyin",
+    searchMdl: "Eyalet milletvekili arayın",
+    searchMdb: "Bundestag milletvekili arayın",
+    placeholderLand: "Ad, parti veya seçim bölgesi",
+    placeholderBund: "Ad, parti, seçim bölgesi veya komisyon",
+    countOf: "{shown} / {total} kişi",
+    hideMore: "Diğer uygun milletvekillerini gizleyin",
+    showMore: "Diğer uygun milletvekillerini gösterin ({count})",
+    noResult: "Uygun kişi bulunamadı. Aramanızı değiştirin.",
+    constituencyPrefix: "Seçim bölgesi",
+    landConstituencyPrefix: "Eyalet seçim bölgesi",
+    landConstituencyPossible: "Olası eyalet seçim bölgesi",
+    constituencyLine: "Seçim bölgesi {id} · {name}",
+    directMandate: "Doğrudan mandat",
+    stateList: "Eyalet listesi",
+    committees: "Komisyonlar",
+    profileLink: "Abgeordnetenwatch.de'de profil",
+    fixedBadge: "Sabit kampanya alıcısı",
+    fixedNote: "Almanya'nın her yerinden katılabilirsiniz.",
+    badgeBezirksamt: "İlçe idaresi",
+    badgeBuergermeisteramt: "Belediye başkanlığı",
+    officialAddressFrom: "Resmi adres, kaynak:",
+    standSuffix: ", {date} itibarıyla",
+    ministerLead: "{state} eyaletinde konunuzdan sorumlu.",
+    badgeSenat: "Senato",
+    badgeRegierung: "Eyalet hükümeti",
+    senatText: "Mektubunuz şu alıcıya gider: {name}. Eyalet genelindeki siyasi kararlardan sorumludur.",
+    regierungText: "Mektubunuz {state} eyalet hükümetine gider. Eyalet genelindeki siyasi kararlardan sorumludur.",
+    officialAddress: "Resmi adres:",
+    sourceLink: "Kaynak",
+    checkedOn: ", {date} tarihinde kontrol edildi",
+    headBadge: "Hükümet başkanı",
+    landtagToggle: "Eyalet meclisindeki (Landtag) bir kişiye yazmayı mı tercih edersiniz?",
+    bundestagToggle: "Bundestag'da başka birine yazmayı mı tercih edersiniz?",
+    landSearchAll: "Listede yok mu? Tüm eyalet meclisinde arayın",
+    chancellorBadge: "Şansölye",
+    chancellorRole: "Mektubunuz, federal hükümetin başkanı rolüyle Friedrich Merz'e yöneliktir.",
+    continueWithout: "Kişi seçmeden devam edin",
+    continueHint: "Yazmadan önce ad, adres ve hitabı kendiniz eklersiniz.",
+    createLetter: "Mektubu oluşturun",
+    termsLead: "Önce taslağı görürsünüz ve düzenleyebilirsiniz. Sonra elle yazar ve postayla gönderirsiniz. Bkz.",
+    termsLeadMobile: "Taslağı düzenler, elle yazar ve kendiniz postayla gönderirsiniz. Bkz.",
+    termsLink: "Kullanım koşulları",
+    selectedLine: "Seçilen: {name}",
+    chooseRecipientAria: "Alıcı seçin",
+    chooseMinisterAria: "Konu bakanını seçin",
+    chooseInstitutionAria: "Kurumsal alıcıyı seçin",
+    chooseMembersAria: "Milletvekillerini seçin",
+  },
+  alternative: {
+    searchBund: "Ülke genelinde arayın",
+    searchLand: "Eyalette arayın",
+    notFromConstituencyLine: "Bu kişiler sizin seçim bölgenizden değil.",
+    notFromConstituency: "Seçim bölgenizden değil",
+    partyAria: "Parti seçin",
+    searchLabel: "Kişi arayın",
+    placeholderBund: "Ad, parti, seçim bölgesi veya komisyon",
+    placeholderLand: "Ad, parti veya seçim bölgesi",
+    hintMinimum: "Bir parti seçin veya en az iki karakter girin.",
+    loadError: "Arama yüklenemedi. Lütfen tekrar deneyin.",
+    empty: "Uygun kişi bulunamadı.",
+    searching: "Aranıyor …",
+    countLine: "{count} / {total} kişi",
+    constituencyLine: "Seçim bölgesi {id} · {name}",
+    more: "Daha fazla gösterin",
+  },
+  rathaus: {
+    officialHeading: "Resmi posta adresi",
+    sourceLead: "Kaynak:",
+    googleLead: ", {date} itibarıyla. Adresi Google'da",
+    googleLink: "buradan",
+    googleTail: "tekrar kontrol edebilirsiniz.",
+    noAddress: "Posta adresini posta kodunuz için güvenilir biçimde eşleştiremedim.",
+    searchButton: "Adres arayın",
+    districtHint: "Posta kodunuz {list} ilçelerinden birinde yer alıyor. İlçenizin adresini kullanın:",
+    or: "veya",
   },
 };
 

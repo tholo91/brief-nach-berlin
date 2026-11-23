@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import { useUiCopy } from "@/components/i18n/LocaleProvider";
 import { formatPartyShort } from "@/lib/formatParty";
 import type {
   RecipientSearchCard,
@@ -21,6 +22,7 @@ export function AlternativeRecipientPicker({
   selectedId,
   onSelect,
 }: AlternativeRecipientPickerProps) {
+  const copy = useUiCopy().wizard.alternative;
   const [party, setParty] = useState("");
   const [query, setQuery] = useState("");
   const [items, setItems] = useState<RecipientSearchCard[]>([]);
@@ -70,18 +72,18 @@ export function AlternativeRecipientPicker({
       <div className="flex items-start justify-between gap-3">
         <div>
           <p className="font-body text-sm font-semibold text-waldgruen-dark">
-            {level === "Bund" ? "Bundesweit suchen" : "Im Bundesland suchen"}
+            {level === "Bund" ? copy.searchBund : copy.searchLand}
           </p>
           <p className="mt-1 font-body text-xs leading-relaxed text-warmgrau/70">
-            Diese Personen sind nicht aus deinem Wahlkreis.
+            {copy.notFromConstituencyLine}
           </p>
         </div>
         <span className="shrink-0 rounded bg-warmgrau/10 px-2 py-1 font-body text-[11px] font-semibold text-warmgrau/65">
-          Nicht aus deinem Wahlkreis
+          {copy.notFromConstituency}
         </span>
       </div>
 
-      <div className="mt-4 flex flex-wrap gap-2" aria-label="Partei auswählen">
+      <div className="mt-4 flex flex-wrap gap-2" aria-label={copy.partyAria}>
         {parties.map((option) => {
           const active = option === party;
           return (
@@ -105,7 +107,7 @@ export function AlternativeRecipientPicker({
 
       <label className="mt-4 grid gap-1.5" htmlFor={`alternative-recipient-${level}`}>
         <span className="font-body text-sm font-semibold text-waldgruen-dark">
-          Person suchen
+          {copy.searchLabel}
         </span>
         <input
           id={`alternative-recipient-${level}`}
@@ -114,8 +116,8 @@ export function AlternativeRecipientPicker({
           onChange={(event) => setQuery(event.target.value)}
           placeholder={
             level === "Bund"
-              ? "Name, Partei, Wahlkreis oder Ausschuss"
-              : "Name, Partei oder Wahlkreis"
+              ? copy.placeholderBund
+              : copy.placeholderLand
           }
           className="rounded-lg border border-warmgrau/30 bg-creme px-4 py-3 font-body text-base text-warmgrau outline-none focus:border-waldgruen focus:ring-2 focus:ring-waldgruen"
         />
@@ -123,12 +125,12 @@ export function AlternativeRecipientPicker({
 
       {!searchReady && !loading && (
         <p className="mt-3 font-body text-sm text-warmgrau/65">
-          Wähle eine Partei oder gib mindestens zwei Zeichen ein.
+          {copy.hintMinimum}
         </p>
       )}
       {error && (
         <p role="alert" className="mt-3 font-body text-sm text-airmail-rot">
-          Die Suche konnte nicht geladen werden. Bitte versuche es erneut.
+          {copy.loadError}
         </p>
       )}
 
@@ -149,7 +151,7 @@ export function AlternativeRecipientPicker({
               ].join(" ")}
             >
               <span className="mb-1.5 inline-block rounded bg-warmgrau/10 px-2 py-0.5 font-body text-[11px] font-semibold uppercase tracking-wide text-warmgrau/60">
-                Nicht aus deinem Wahlkreis
+                {copy.notFromConstituency}
               </span>
               <p className="font-body text-base font-semibold text-warmgrau">
                 {politician.title ? `${politician.title} ` : ""}
@@ -159,7 +161,7 @@ export function AlternativeRecipientPicker({
                 {formatPartyShort(politician.party)}
               </p>
               <p className="mt-2 font-body text-xs leading-relaxed text-warmgrau/65">
-                Wahlkreis {politician.wahlkreisId} · {politician.wahlkreisName}
+                {copy.constituencyLine.replace("{id}", () => String(politician.wahlkreisId)).replace("{name}", () => politician.wahlkreisName)}
               </p>
             </button>
           ))}
@@ -168,13 +170,13 @@ export function AlternativeRecipientPicker({
 
       {searchReady && !loading && !error && items.length === 0 && (
         <p className="mt-3 font-body text-sm text-warmgrau/65">
-          Keine passende Person gefunden.
+          {copy.empty}
         </p>
       )}
 
       {searchReady && (
         <p className="mt-3 font-body text-xs text-warmgrau/60" aria-live="polite">
-          {loading && items.length === 0 ? "Suche läuft …" : `${items.length} von ${total} Personen`}
+          {loading && items.length === 0 ? copy.searching : copy.countLine.replace("{count}", String(items.length)).replace("{total}", String(total))}
         </p>
       )}
 
@@ -185,7 +187,7 @@ export function AlternativeRecipientPicker({
           onClick={() => void load(nextOffset, true)}
           className="mt-3 font-body text-sm font-semibold text-waldgruen underline underline-offset-4 disabled:opacity-50"
         >
-          Weitere anzeigen
+          {copy.more}
         </button>
       )}
     </div>

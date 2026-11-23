@@ -4,10 +4,10 @@ milestone: v1.0
 current_phase: 05
 status: verifying
 stopped_at: Completed 05-04-PLAN.md
-last_updated: "2026-11-20T13:38:06.862Z"
-last_activity: 2026-11-19
+last_updated: "2026-11-23T17:30:11.510Z"
+last_activity: 2026-11-20
 last_activity_desc: Quick 261013-wuq lokal implementiert und geprüft; manueller Release offen
-state_head: e0f0a341250aa4e09d5922eccf7e88ad8b0cf351
+state_head: 7f7e0ec187e20129ef6be969f459121ecce4714d
 progress:
   total_phases: 33
   completed_phases: 4
@@ -49,7 +49,7 @@ Der level-aware E-Mail-Betreff ist dagegen bereits implementiert und getestet; d
 Phase: 05 — EXECUTING
 Plan: 4 of 4
 Status: Phase complete — ready for verification
-Last activity: 2026-11-20 - Completed quick task 261120-k2m: Schulname im Klassenlink
+Last activity: 2026-11-23 - Completed quick task 261123-p34: Elternseite und Jugendtexte im Wizard auf Englisch und Tuerkisch
 
 Progress: [███████░░░] 68%
 
@@ -261,6 +261,7 @@ Recent decisions affecting current work:
 | 261119-u1b | Land-Empfänger: MdL-Bereich unter Regierungs-Karten klappbar, Filter ab 7 MdLs | 2026-11-19 | 0571f41 | [261119-u1b-land-empfaenger-mdl-bereich-klappbar](./quick/261119-u1b-land-empfaenger-mdl-bereich-klappbar/) |
 | 261119-tda | Statistik offen + Presse neu: Kernzahlen und Zitate | 2026-11-19 | d68fee2 | [261119-tda-statistik-offen-presse-neu-kernzahlen-un](./quick/261119-tda-statistik-offen-presse-neu-kernzahlen-un/) |
 | 261120-k2m | Schulname im Klassenlink | 2026-11-20 | e0f0a34 | [261120-k2m-schulname-im-klassenlink](./quick/261120-k2m-schulname-im-klassenlink/) |
+| 261123-p34 | Elternseite und Jugendtexte im Wizard auf Englisch und Tuerkisch | 2026-11-23 | 7f7e0ec | [261123-p34-eltern-und-schultexte-auf-englisch-und-t](./quick/261123-p34-eltern-und-schultexte-auf-englisch-und-t/) |
 
 ## Session Continuity
 

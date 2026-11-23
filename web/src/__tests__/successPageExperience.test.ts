@@ -1,5 +1,8 @@
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
+import { UI_CATALOG } from "@/lib/i18n/uiCatalog";
+
+jest.mock("@/lib/mistral", () => ({}));
 
 describe("success page experience", () => {
   const successSource = readFileSync(
@@ -18,10 +21,14 @@ describe("success page experience", () => {
     join(process.cwd(), "src/components/wizard/LetterSignalCard.tsx"),
     "utf8",
   );
+  // The German success copy moved into the catalog (quick 261123-ps6); these assertions keep
+  // their intent against the sibling copy module, whose German block is the source of truth.
+  const wizardSource = readFileSync(join(process.cwd(), "src/lib/i18n/wizardCopy.ts"), "utf8");
 
   it("keeps the completion state lean and focused", () => {
-    expect(successSource).toContain("Dein Brief ist fertig");
-    expect(successSource).toContain("Brief und nächste Schritte kommen per E-Mail");
+    expect(UI_CATALOG.de.status.letterReady).toBe("Dein Brief ist fertig");
+    expect(successSource).toContain("uiCopy.status.letterReady");
+    expect(wizardSource).toContain("Brief und nächste Schritte kommen per E-Mail");
     expect(successSource).not.toContain("RathausAdresseButton");
     expect(successSource).not.toContain("germanLetterNotice");
     expect(successSource).not.toContain("mt-7 grid gap-2 font-body text-sm text-warmgrau sm:grid-cols-3");
@@ -100,14 +107,15 @@ describe("success page experience", () => {
     expect(successSource).toContain("isNetworkError && (wasHidden || elapsedMs >= 3000)");
     expect(successSource).toContain("letterReady || connectionLost ? (");
     expect(successSource).toContain('letterReady || connectionLost ? "block" : "hidden"');
-    expect(successSource).toContain("Die Verbindung war kurz weg");
-    expect(successSource).toContain("Nach zehn Minuten noch nichts da?");
+    expect(wizardSource).toContain("Die Verbindung war kurz weg");
+    expect(wizardSource).toContain("Nach zehn Minuten noch nichts da?");
     expect(successSource).toContain("{letterReady && !pdfDelivery && (\n              <button");
     expect(successSource).toContain("if (!pdfDelivery && isNetworkError");
   });
 
   it("keeps the postbox action available across breakpoints and moves personalization into the accordion", () => {
-    expect(successSource).toContain("Postfach öffnen");
+    expect(wizardSource).toContain("Postfach öffnen");
+    expect(successSource).toContain("wizardCopy.success.mailAppButton");
     expect(successSource).not.toContain("E-Mail-App öffnen");
     expect(successSource).toContain("divide-x divide-warmgrau/20");
     expect(successSource).toContain('<span className="underline underline-offset-2">So geht es weiter</span>');

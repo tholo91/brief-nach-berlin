@@ -48,9 +48,9 @@ import { allowsAlternativeRecipients } from "@/lib/lookup/alternativeRecipients"
 import { AlternativeRecipientPicker } from "./AlternativeRecipientPicker";
 import type { RecipientSearchCard } from "@/lib/lookup/recipientSearch";
 
-function maskEmail(email: string): string {
+function maskEmail(email: string, fallback: string): string {
   const [local, domain] = email.split("@");
-  if (!local || !domain) return "deine E-Mail-Adresse";
+  if (!local || !domain) return fallback;
   const visible = local.length <= 2 ? local[0] ?? "" : local.slice(0, 2);
   return `${visible}${"•".repeat(Math.max(1, Math.min(5, local.length - visible.length)))}@${domain}`;
 }
@@ -131,8 +131,11 @@ export function Step3Success({
   pdfDelivery = false,
   schoolRecipient,
 }: Step3SuccessProps) {
-  const youthCopy = useUiCopy().youth;
+  const uiCopy = useUiCopy();
+  const youthCopy = uiCopy.youth;
+  const wizardCopy = uiCopy.wizard;
   const [copySubtitleBefore, copySubtitleAfter] = youthCopy.success.copySubtitle.split("{email}");
+  const [readySubtitleBefore, readySubtitleAfter] = wizardCopy.success.readySubtitle.split("{email}");
   // Abgeordneten-Karten (mdb/mdl) und der synthetische Rathaus-Empfänger
   // teilen sich den Step; Kommune zeigt genau eine Verwaltungs-Karte.
   const [showLandPersonPicker, setShowLandPersonPicker] = useState(false);
@@ -931,7 +934,7 @@ export function Step3Success({
             <path d="M4 13 L24 28 L44 13" stroke="currentColor" strokeWidth="2.5" fill="none" strokeLinejoin="round" />
           </svg>
           <h1 className="font-typewriter text-[28px] font-semibold leading-[1.2] text-waldgruen-dark m-0">
-            {isYouth ? youthCopy.success.headline : "Dein Brief ist fertig"}
+            {isYouth ? youthCopy.success.headline : uiCopy.status.letterReady}
           </h1>
         </div>
         <p className="font-body text-base text-warmgrau leading-relaxed mt-3">
@@ -939,26 +942,26 @@ export function Step3Success({
             pdfDelivery ? (
               <>{youthCopy.success.pdfSubtitle}</>
             ) : (
-              <>{copySubtitleBefore}<strong>{maskEmail(wizardData.email)}</strong>{copySubtitleAfter}</>
+              <>{copySubtitleBefore}<strong>{maskEmail(wizardData.email, wizardCopy.success.emailFallback)}</strong>{copySubtitleAfter}</>
             )
           ) : letterReady || connectionLost ? (
-            <>Dein Entwurf kommt an <strong>{maskEmail(wizardData.email)}</strong>. Den Brief schickst du anschließend selbst per Post ab.</>
+            <>{readySubtitleBefore}<strong>{maskEmail(wizardData.email, wizardCopy.success.emailFallback)}</strong>{readySubtitleAfter}</>
           ) : (
             <>
               {isYouth ? (
                 <>{youthCopy.success.loadingLead}<span className="whitespace-nowrap">{youthCopy.success.loadingLast}<LoadingDots value={loadingDots} /></span></>
               ) : (
-                <>Brief und nächste Schritte kommen per E-Mail zu <span className="whitespace-nowrap">dir<LoadingDots value={loadingDots} /></span></>
+                <>{wizardCopy.success.loadingLead}<span className="whitespace-nowrap">{wizardCopy.success.loadingLast}<LoadingDots value={loadingDots} /></span></>
               )}
               {!generationFetchError && (
                 <span className="block mt-1 text-sm">
                   {longWait
                     ? isYouth
                       ? youthCopy.success.waitLong
-                      : "Viele schreiben gerade, dein Brief kommt gleich. Bitte lass diese Seite offen."
+                      : wizardCopy.success.waitLong
                     : isYouth
                       ? youthCopy.success.waitShort
-                      : "Bitte lass diese Seite offen. Lange Briefe können bis zu einer Minute dauern."}
+                      : wizardCopy.success.waitShort}
                 </span>
               )}
             </>
@@ -984,10 +987,10 @@ export function Step3Success({
               className="mt-5 bg-waldgruen/10 border-l-4 border-waldgruen p-4 rounded-r-lg font-body text-sm text-waldgruen/80"
             >
               <p>
-                Die Verbindung war kurz weg, zum Beispiel weil du die App gewechselt hast. Deshalb konnte diese Seite den Versand nicht mehr bestätigen. Dein Brief kommt trotzdem per Mail, schau auch im Spam-Ordner nach.
+                {wizardCopy.success.connectionLost}
               </p>
               <p className="mt-2">
-                Nach zehn Minuten noch nichts da? Schreib mir an{" "}
+                {wizardCopy.success.connectionLostLead}{" "}
                 <a href={`mailto:${FOUNDER_EMAIL}`} className="underline">{FOUNDER_EMAIL}</a>.
               </p>
             </div>
@@ -1001,11 +1004,11 @@ export function Step3Success({
                 rel={isIOS ? undefined : "noopener noreferrer"}
                 className="inline-flex w-full items-center justify-center gap-2 rounded-lg bg-waldgruen px-4 py-3 font-body text-sm font-semibold text-creme transition-[background-color,transform] duration-200 hover:bg-waldgruen-dark active:translate-y-px focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-waldgruen"
               >
-                Postfach öffnen <span aria-hidden="true">→</span>
+                {wizardCopy.success.mailAppButton} <span aria-hidden="true">→</span>
               </a>
             ) : (
               <p className="rounded-lg border border-waldgruen/20 bg-waldgruen/5 px-4 py-3 text-center font-body text-sm leading-relaxed text-waldgruen-dark">
-                Öffne jetzt dein E-Mail-Postfach und suche nach „Dein Brief nach Berlin ist fertig“.
+                {wizardCopy.success.inboxHint}
               </p>
             )}
           </div>

@@ -43,6 +43,7 @@ import { ElternExperience } from "@/components/eltern/ElternExperience";
 import { ElternPageContent } from "@/components/eltern/ElternPageContent";
 import { LetterPdfButton } from "@/components/schule/LetterPdfButton";
 import { Step1Form } from "@/components/wizard/Step1Form";
+import { emailCopy } from "@/lib/email/mailLocale";
 import { Step3Success } from "@/components/wizard/Step3Success";
 import { YouthLetterDraft } from "@/components/wizard/YouthLetterDraft";
 import { ELTERN_COPY } from "@/lib/i18n/elternCopy";
@@ -91,7 +92,7 @@ function renderAs(locale: Loc, element: ReactElement): string {
 // Leaves that may stay identical to German (fixed text without a word to translate).
 const SAME_AS_GERMAN_ALLOWED = new Set<string>(["eltern.form.optionalSuffix", "youth.steps.tone"]);
 
-function collectCatalogChecks(group: "eltern" | "youth") {
+function collectCatalogChecks(group: "eltern" | "youth" | "wizard" | "progress" | "status") {
   describe.each(LOCALES)(`catalog %s: ${group}`, (locale) => {
     const german = new Map(leaves(UI_CATALOG.de[group], group));
     const own = leaves(UI_CATALOG[locale][group], group);
@@ -104,9 +105,11 @@ function collectCatalogChecks(group: "eltern" | "youth") {
       expect(value.trim()).not.toBe("");
       expect(value).not.toMatch(/[—–]/);
       expect(value).not.toMatch(/Brief nach Berlin/);
-      expect([...value.matchAll(/\{\w+\}/g)].map((match) => match[0]).sort()).toEqual(
-        [...(german.get(path) ?? "").matchAll(/\{\w+\}/g)].map((match) => match[0]).sort(),
-      );
+      // {article} is the German article taken from data; EN/TR may drop it.
+      const tokens = (text: string) => [...text.matchAll(/\{\w+\}/g)].map((match) => match[0]).sort();
+      const expected = tokens(german.get(path) ?? "");
+      const actual = tokens(value);
+      expect(actual).toEqual(actual.length < expected.length ? expected.filter((token) => token !== "{article}") : expected);
       if (!SAME_AS_GERMAN_ALLOWED.has(path)) expect(value).not.toBe(german.get(path));
       // Thomas works alone: no "we". Turkish stays formal ("siz").
       if (locale === "en") expect(value).not.toMatch(/\b(we|our|ours|us)\b/i);
@@ -217,7 +220,7 @@ function germanYouthLeaves(): string[] {
     .filter((value) => value.length >= 12);
 }
 
-function step3(options: { youth: boolean; pdfDelivery?: boolean; schoolRecipient?: boolean }) {
+function step3(options: { youth: boolean; pdfDelivery?: boolean; schoolRecipient?: boolean; email?: string }) {
   return createElement(Step3Success, {
     result: {
       success: true,
@@ -228,7 +231,7 @@ function step3(options: { youth: boolean; pdfDelivery?: boolean; schoolRecipient
     wizardData: {
       ...(options.youth ? { audience: "jung", klasse: 8 } : {}),
       plz: "28195",
-      email: "schueler@example.org",
+      email: options.email ?? "schueler@example.org",
       issueText: "Unterricht fällt aus",
     },
     recipients: [],
@@ -307,11 +310,24 @@ describe.each(LOCALES)("youth wizard strings in %s", (locale) => {
     expect(school).toContain("Server reason stays as delivered.");
   });
 
-  it("keeps the adult success page German", () => {
-    const text = visibleText(renderAs(locale, step3({ youth: false })));
-    expect(text).toContain("Dein Brief ist fertig");
-    expect(text).toContain("Dein Entwurf kommt an");
-    expect(text).not.toContain(copy.success.headline);
+  it("localizes the adult success page", () => {
+    const wizard = UI_CATALOG[locale].wizard;
+    const markup = renderAs(locale, step3({ youth: false }));
+    const text = visibleText(markup);
+    const [before, after] = wizard.success.readySubtitle.split("{email}");
+    expect(text).toContain(UI_CATALOG[locale].status.letterReady);
+    expect(markup).toContain(`${before}<strong>sc•••••@example.org</strong>${after}`);
+    expect(text).toContain(wizard.success.inboxHint);
+    // The loading lead and the wait lines only show while the client fetches the letter,
+    // which a static render cannot reach. The catalog checks and the literal check cover them.
+    expect(visibleText(renderAs(locale, step3({ youth: false, email: "test@gmail.com" })))).toContain(wizard.success.mailAppButton);
+    for (const [, leaf] of leaves(UI_CATALOG.de.wizard)) {
+      if (leaf.length >= 12) expect(text).not.toContain(decode(leaf));
+    }
+  });
+
+  it("quotes the real mail subject in the inbox hint", () => {
+    expect(UI_CATALOG[locale].wizard.success.inboxHint).toContain(emailCopy[locale].subject.standard);
   });
 });
 
@@ -352,3 +368,6 @@ describe("/eltern metadata and JSON-LD", () => {
 
 collectCatalogChecks("eltern");
 collectCatalogChecks("youth");
+collectCatalogChecks("wizard");
+collectCatalogChecks("progress");
+collectCatalogChecks("status");

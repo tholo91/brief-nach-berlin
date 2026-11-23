@@ -79,21 +79,22 @@ describe("success page experience", () => {
 
   it("keeps resend controls together on tablet and desktop, stacked on mobile", () => {
     expect(successSource).toContain("sm:grid-cols-[minmax(0,1fr)_auto]");
-    expect(successSource).toContain("Brief erneut senden");
+    expect(UI_CATALOG.de.status.resend).toBe("Brief erneut senden");
+    expect(successSource).toContain("uiCopy.status.resend");
   });
 
   it("treats a lost generation response as a possible email success", () => {
     expect(successSource).toContain("setGenerationMayHaveSucceeded(!pdfDelivery)");
     expect(successSource).toContain("setGenerationMayHaveSucceeded(false)");
-    expect(successSource).toContain("Die Verbindung ist abgebrochen");
-    expect(successSource).toContain("Dein Brief ist sehr wahrscheinlich trotzdem fertig geworden");
-    expect(successSource).toContain("Schau jetzt in dein Postfach und in den Spam-Ordner");
+    expect(wizardSource).toContain("Die Verbindung ist abgebrochen");
+    expect(wizardSource).toContain("Dein Brief ist sehr wahrscheinlich trotzdem fertig geworden");
+    expect(wizardSource).toContain("Schau jetzt in dein Postfach und in den Spam-Ordner");
     expect(successSource).not.toContain("Nach zwei Minuten noch keine E-Mail? Nochmal versuchen");
     expect(successSource).not.toContain("Wenn nach zwei Minuten nichts angekommen ist");
     expect(successSource).toContain("const retryIsSafe = res.status < 500 || errBody?.retrySafe === true");
     expect(successSource).toContain("setGenerationMayHaveSucceeded(!pdfDelivery && !retryIsSafe)");
     expect(successSource).toContain("{!generationMayHaveSucceeded && (");
-    expect(successSource).toContain("Brief konnte nicht erstellt werden");
+    expect(wizardSource).toContain("Brief konnte nicht erstellt werden");
     expect(successSource).not.toContain("Ich beeile mich und melde mich");
   });
 
@@ -118,11 +119,14 @@ describe("success page experience", () => {
     expect(successSource).toContain("wizardCopy.success.mailAppButton");
     expect(successSource).not.toContain("E-Mail-App öffnen");
     expect(successSource).toContain("divide-x divide-warmgrau/20");
-    expect(successSource).toContain('<span className="underline underline-offset-2">So geht es weiter</span>');
+    expect(wizardSource).toContain('stepsToggle: "So geht es weiter"');
+    expect(successSource).toContain('<span className="underline underline-offset-2">{wizardCopy.success.stepsToggle}</span>');
     expect(successSource).toContain('rounded-lg bg-warmgrau/5 p-4');
     expect(successSource).not.toContain("Die vollständige Anleitung findest du auch in deiner E-Mail.");
-    expect(successSource.indexOf("Mach diesen Brief zu deinem Brief.")).toBeGreaterThan(
-      successSource.indexOf("So geht es weiter"),
+    expect(wizardSource).not.toContain("Die vollständige Anleitung findest du auch in deiner E-Mail.");
+    expect(wizardSource).toContain("Mach diesen Brief zu deinem Brief.");
+    expect(successSource.indexOf("wizardCopy.success.reviewTitle")).toBeGreaterThan(
+      successSource.indexOf("wizardCopy.success.stepsToggle"),
     );
   });
 

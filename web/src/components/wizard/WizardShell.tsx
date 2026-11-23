@@ -507,12 +507,12 @@ export function WizardShell() {
         }
       } catch (error) {
         console.error("[wizard] submit threw", error);
-        setErrorMessage("Es ist ein Fehler aufgetreten. Bitte versuche es erneut.");
+        setErrorMessage(copy.wizard.success.genericError);
       } finally {
         setIsSubmitting(false);
       }
     },
-    [locale, navigateToStep, setStepWithoutAnimation, wizardData]
+    [locale, navigateToStep, setStepWithoutAnimation, wizardData, copy.wizard.success.genericError]
   );
 
   const handleStep2bComplete = useCallback(
@@ -599,12 +599,12 @@ export function WizardShell() {
                 >
                   <path d="m15 18-6-6 6-6" />
                 </svg>
-                zurück
+                {copy.progress.back}
               </button>
             )}
           </div>
           {showIndicator && (
-            <div className="flex items-center gap-6" aria-label={`Schritt ${progress} von ${stepLabels.length}`}>
+            <div className="flex items-center gap-6" aria-label={copy.progress.stepOf.replace("{current}", String(progress)).replace("{total}", String(stepLabels.length))}>
               {stepLabels.map((label, i) => {
                 const dotNum = i + 1;
                 const isActive = dotNum === progress;

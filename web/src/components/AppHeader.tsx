@@ -16,10 +16,10 @@ const NGO_NAV_LINKS = [
 ];
 
 const SCHOOL_NAV_LINKS = [
-  { label: "Für Schüler:innen", href: "/schule" },
-  { label: "Für Lehrkräfte", href: "/unterricht" },
-  { label: "Für Eltern", href: "/eltern" },
-];
+  { key: "students", href: "/schule" },
+  { key: "teachers", href: "/unterricht" },
+  { key: "parents", href: "/eltern" },
+] as const;
 
 const SCHOOL_NAV_PATHS = new Set([...SCHOOL_NAV_LINKS.map((link) => link.href), "/mitbestimmen-ohne-wahlrecht", "/projekttag-demokratie"]);
 
@@ -146,7 +146,7 @@ export default function AppHeader({
         </nav>
         {showSchoolNav && (
           <nav
-            aria-label="Für Schulen"
+            aria-label={copy.schoolNav.ariaLabel}
             className="mx-auto flex max-w-5xl items-center gap-x-3 overflow-x-auto px-6 pb-1.5 pt-1 [scrollbar-width:none] sm:gap-x-5 [&::-webkit-scrollbar]:hidden"
           >
             {SCHOOL_NAV_LINKS.map((link) => {
@@ -162,7 +162,7 @@ export default function AppHeader({
                       : "border-transparent text-warmgrau hover:text-waldgruen-dark"
                   }`}
                 >
-                  {link.label}
+                  {copy.schoolNav[link.key]}
                 </Link>
               );
             })}

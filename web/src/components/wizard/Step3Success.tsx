@@ -68,10 +68,10 @@ function LoadingDots({ value }: { value: string }) {
 // the user's final click - they sit here waiting for the letter to be drafted,
 // so a single static spinner feels longer than chunked progress. Timings sum
 // to the LETTER_GEN_MIN_DISPLAY_MS budget below.
-const LETTER_GEN_PHASES: ReadonlyArray<{ at: number; label: string }> = [
-  { at: 0, label: "Empfänger prüfen..." },
-  { at: 1300, label: "Angaben vorbereiten..." },
-  { at: 2600, label: "Brief wird formuliert..." },
+const LETTER_GEN_PHASES: ReadonlyArray<{ at: number; key: "checkingRecipients" | "preparingDetails" | "draftingLetter" }> = [
+  { at: 0, key: "checkingRecipients" },
+  { at: 1300, key: "preparingDetails" },
+  { at: 2600, key: "draftingLetter" },
 ];
 const LETTER_GEN_MIN_DISPLAY_MS = 4000;
 // After this long without a letter, the waiting hint explains the delay
@@ -612,14 +612,12 @@ export function Step3Success({
           // letterText arrives async via /api/generate-letter (see useEffect below)
         }
       } catch {
-        setGenerationError(
-          "Es ist ein Fehler aufgetreten. Bitte versuche es erneut."
-        );
+        setGenerationError(wizardCopy.success.genericError);
       } finally {
         setIsGenerating(false);
       }
     },
-    [currentSelection, wizardData, routingToken]
+    [currentSelection, wizardData, routingToken, wizardCopy.success.genericError]
   );
 
   // Klassenlink: Der Server hat den Empfänger gewählt, es gibt nichts zu bestätigen.
@@ -782,8 +780,8 @@ export function Step3Success({
         // Ohne Mail gibt es keinen zweiten Weg zum Brief: Text bleibt, neuer Versuch per Klick.
         setGenerationFetchError(
           pdfDelivery
-            ? "Die Verbindung war weg. Dein Text ist noch da, du kannst es noch einmal versuchen."
-            : "Beim Erstellen deines Briefes ist ein Fehler aufgetreten."
+            ? wizardCopy.success.fetchErrorPdf
+            : wizardCopy.success.fetchErrorMail
         );
       });
 
@@ -881,17 +879,17 @@ export function Step3Success({
     generatedRecipient?.level ??
     (result && "success" in result && result.success ? result.politicalLevel : "Bund");
   const handwrittenImpactCopy = effectiveLevel === "Bund"
-    ? "Handgeschriebene Briefe werden im Bundestag tatsächlich gelesen und besprochen."
+    ? wizardCopy.success.impactBund
     : effectiveLevel === "Land"
-      ? "Ein persönlicher, handgeschriebener Brief macht dein Anliegen auf Landesebene konkret."
+      ? wizardCopy.success.impactLand
       : effectiveLevel === "Fixed"
-        ? "Ein persönlicher, handgeschriebener Brief macht dein Anliegen beim festen Kampagnenempfänger sichtbar."
-        : "Ein persönlicher, handgeschriebener Brief macht dein Anliegen für die Verwaltung greifbar.";
+        ? wizardCopy.success.impactFixed
+        : wizardCopy.success.impactKommune;
   const addressInstruction = effectiveLevel === "Kommune"
-    ? "Nutze die Suchhilfe, prüfe die vollständige Anschrift und schreib sie auf den Umschlag."
+    ? wizardCopy.success.addressKommune
     : isYouth
-      ? "Die Anschrift steht unter deinem Entwurf."
-      : "Die Adresse findest du im Brief.";
+      ? wizardCopy.success.addressYouth
+      : wizardCopy.success.addressAdult;
   const isSchreibMerzCampaign = wizardData.campaign?.slug === "schreib-merz";
   if (!result) return null;
 
@@ -900,7 +898,7 @@ export function Step3Success({
     return (
       <div>
         <h1 className="font-typewriter text-[28px] font-semibold leading-[1.2] text-waldgruen-dark">
-          Daten nicht verfügbar
+          {wizardCopy.success.levelDataMissing}
         </h1>
         <p className="font-body text-base text-warmgrau leading-relaxed mt-6">
           {result.message}
@@ -1035,7 +1033,7 @@ export function Step3Success({
                 aria-expanded={resendOpen}
                 className="cursor-pointer px-3 font-body text-sm text-warmgrau/55 underline underline-offset-2 transition-colors hover:text-warmgrau/75"
               >
-                Keine E-Mail erhalten?
+                {wizardCopy.success.resendToggle}
               </button>
             )}
             <button
@@ -1047,7 +1045,7 @@ export function Step3Success({
               aria-expanded={stepsOpen}
               className="inline-flex cursor-pointer items-center gap-1.5 px-3 font-body text-sm text-warmgrau/55 transition-colors hover:text-warmgrau/75"
             >
-              <span className="underline underline-offset-2">So geht es weiter</span>
+              <span className="underline underline-offset-2">{wizardCopy.success.stepsToggle}</span>
               <span
                 aria-hidden="true"
                 className={`text-[9px] transition-transform duration-300 ${stepsOpen ? "rotate-180" : ""}`}
@@ -1060,13 +1058,13 @@ export function Step3Success({
         {resendOpen && letterReady && (
           <div className="mt-3 p-4 bg-warmgrau/5 rounded-lg space-y-3">
               <p className="font-body text-sm text-warmgrau leading-relaxed">
-                Prüfe deinen Spam-Ordner. Falls nichts ankommt, überprüfe deine E-Mail-Adresse und sende den Brief erneut.
+                {wizardCopy.success.resendHint}
               </p>
               {resendState !== "sent" && resendState !== "limited" && (
                 <div className="grid gap-3 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-end">
                   <div className="min-w-0">
                     <label htmlFor="resend-email" className="font-body text-xs text-warmgrau/60 mb-1 block">
-                      E-Mail-Adresse
+                      {wizardCopy.success.resendEmailLabel}
                     </label>
                     <input
                       id="resend-email"
@@ -1089,10 +1087,10 @@ export function Step3Success({
                     {resendState === "sending" ? (
                       <span className="flex items-center gap-2">
                         <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="animate-spin" aria-hidden="true"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>
-                        Wird gesendet...
+                        {uiCopy.status.sending}
                       </span>
                     ) : (
-                      "Brief erneut senden"
+                      uiCopy.status.resend
                     )}
                   </button>
                 </div>
@@ -1101,7 +1099,7 @@ export function Step3Success({
                 {resendState === "sent" ? (
                   <p className="font-body text-sm text-waldgruen font-semibold flex items-center gap-1.5">
                     <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>
-                    Brief wurde erneut gesendet
+                    {uiCopy.status.resendSent}
                   </p>
                 ) : resendState === "limited" ? (
                   <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:gap-2.5 rounded-lg bg-waldgruen/5 border border-waldgruen/20 p-3">
@@ -1109,9 +1107,9 @@ export function Step3Success({
                       <circle cx="12" cy="12" r="10"/><path d="M12 8v4"/><path d="M12 16h.01"/>
                     </svg>
                     <div className="space-y-1.5">
-                      <p className="font-body text-sm font-semibold text-waldgruen-dark">Maximal dreimal gesendet</p>
+                      <p className="font-body text-sm font-semibold text-waldgruen-dark">{wizardCopy.success.resendLimitedTitle}</p>
                       <p className="font-body text-sm text-warmgrau leading-relaxed">
-                        {resendLimitMessage ?? "Der Brief wurde jetzt mehrfach gesendet. Bitte prüfe noch einmal deinen Spam-Ordner und die E-Mail-Adresse."}
+                        {resendLimitMessage ?? wizardCopy.success.resendLimitedFallback}
                       </p>
                       <a
                         href={founderFeedbackUrl}
@@ -1119,14 +1117,14 @@ export function Step3Success({
                         rel="noopener noreferrer"
                         className="inline-block font-body text-sm font-semibold text-waldgruen underline underline-offset-2 hover:text-waldgruen-dark"
                       >
-                        Hilfe anfragen
+                        {wizardCopy.success.resendHelp}
                       </a>
                     </div>
                   </div>
                 ) : resendState === "error" ? (
                   <div className="space-y-2">
                     <p className="font-body text-sm text-airmail-rot">
-                      Senden fehlgeschlagen. Bitte lade die Seite neu und versuche es erneut.
+                      {wizardCopy.success.resendFailed}
                     </p>
                     <div className="flex gap-3">
                       <button
@@ -1134,14 +1132,14 @@ export function Step3Success({
                         onClick={() => window.location.reload()}
                         className="font-body text-sm text-waldgruen font-semibold underline underline-offset-2 hover:text-waldgruen-dark transition-colors cursor-pointer"
                       >
-                        Seite neu laden
+                        {wizardCopy.success.reload}
                       </button>
                       <button
                         type="button"
                         onClick={handleResend}
                         className="font-body text-sm text-warmgrau/70 underline underline-offset-2 hover:text-warmgrau transition-colors cursor-pointer"
                       >
-                        Nochmal versuchen
+                        {uiCopy.status.retry}
                       </button>
                     </div>
                   </div>
@@ -1160,12 +1158,12 @@ export function Step3Success({
             >
               <p className="flex items-center gap-2 font-semibold text-waldgruen mb-1">
                 <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>
-                Danke für deine Hilfe!
+                {wizardCopy.success.reportThanks}
               </p>
               <p className="text-waldgruen/80">
                 {generationMayHaveSucceeded
-                  ? "Danke, ich habe die technischen Daten bekommen. Schau jetzt in dein Postfach und in den Spam-Ordner, dort ist dein Brief sehr wahrscheinlich schon."
-                  : "Danke, ich habe die technischen Daten bekommen und schaue mir den Fehler an."}
+                  ? wizardCopy.success.reportThanksMail
+                  : wizardCopy.success.reportThanksError}
               </p>
             </div>
           ) : (
@@ -1175,12 +1173,12 @@ export function Step3Success({
             >
               <p className="font-semibold text-airmail-rot mb-1">
                 {generationMayHaveSucceeded
-                  ? "Die Verbindung ist abgebrochen"
-                  : "Brief konnte nicht erstellt werden"}
+                  ? wizardCopy.success.reportHeadingLost
+                  : wizardCopy.success.reportHeadingFailed}
               </p>
               <p className="text-airmail-rot/80 mb-3">
                 {generationMayHaveSucceeded
-                  ? "Dein Brief ist sehr wahrscheinlich trotzdem fertig geworden und per Mail an dich unterwegs. Schau in dein Postfach und in den Spam-Ordner. Wenn du kurz auf „Fehler melden“ klickst, hilfst du mir sehr, das zu verbessern."
+                  ? wizardCopy.success.reportExplainLost
                   : generationFetchError}
               </p>
               <div className="flex flex-wrap items-center gap-3">
@@ -1198,10 +1196,10 @@ export function Step3Success({
                   {reportState === "sending" ? (
                     <>
                       <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="animate-spin" aria-hidden="true"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>
-                      Wird gemeldet...
+                      {wizardCopy.success.reportSending}
                     </>
                   ) : (
-                    "Fehler melden"
+                    uiCopy.status.reportError
                   )}
                 </button>
                 {!generationMayHaveSucceeded && (
@@ -1210,18 +1208,18 @@ export function Step3Success({
                     onClick={handleGenerationRetry}
                     className="font-semibold text-airmail-rot underline underline-offset-2 hover:text-airmail-rot/80 transition-colors cursor-pointer"
                   >
-                    Nochmal versuchen
+                    {uiCopy.status.retry}
                   </button>
                 )}
               </div>
               <p className="mt-2 text-xs text-airmail-rot/70">
                 {reportState === "failed" ? (
                   <>
-                    Melden hat nicht geklappt. Schreib mir kurz an{" "}
+                    {wizardCopy.success.reportFailedLead}{" "}
                     <a href={`mailto:${FOUNDER_EMAIL}`} className="underline">{FOUNDER_EMAIL}</a>.
                   </>
                 ) : (
-                  "Ein Klick genügt. Schickt mir die Fehlerdaten, damit ich es schnell beheben kann."
+                  wizardCopy.success.reportHint
                 )}
               </p>
             </div>
@@ -1240,10 +1238,10 @@ export function Step3Success({
               {letterReady && (
                 <div className="mb-4 border-l-2 border-waldgruen/35 pl-4">
                   <p className="font-body text-sm font-semibold text-waldgruen-dark">
-                    Mach diesen Brief zu deinem Brief.
+                    {wizardCopy.success.reviewTitle}
                   </p>
                   <p className="mt-1 font-body text-sm leading-relaxed text-warmgrau/75">
-                    Lies dir {isYouth ? "den Entwurf" : "die Mail"} durch und pass Ton, Formulierungen oder einzelne Argumente so an, dass der Brief sich nach dir anfühlt. Der Entwurf ist ein Anfang, die Unterschrift ist deine.
+                    {wizardCopy.success.reviewBody.replace("{draft}", isYouth ? wizardCopy.success.draftYouth : wizardCopy.success.draftMail)}
                   </p>
                 </div>
               )}
@@ -1251,19 +1249,19 @@ export function Step3Success({
                 <li className="flex gap-3">
                   <span className="flex-shrink-0 w-6 h-6 rounded-full bg-waldgruen/15 text-waldgruen font-body text-xs font-bold flex items-center justify-center mt-0.5">1</span>
                   <p className="font-body text-sm text-warmgrau leading-relaxed">
-                    <strong>{isYouth ? "Brief schreiben." : "Brief schreiben."}</strong> {isYouth ? "Schreib deinen Brief von Hand, der Entwurf hilft dir dabei, und bleib bei deinem Schreibstil." : "Schreib den Brief nach dem Entwurf von Hand und pass ihn an deinen Schreibstil an."} {handwrittenImpactCopy}
+                    <strong>{wizardCopy.success.stepWriteTitle}</strong> {isYouth ? wizardCopy.success.stepWriteYouth : wizardCopy.success.stepWriteAdult} {handwrittenImpactCopy}
                   </p>
                 </li>
                 <li className="flex gap-3">
                   <span className="flex-shrink-0 w-6 h-6 rounded-full bg-waldgruen/15 text-waldgruen font-body text-xs font-bold flex items-center justify-center mt-0.5">2</span>
                   <p className="font-body text-sm text-warmgrau leading-relaxed">
-                    <strong>Adresse aufschreiben, Briefmarke drauf, ab zur Post.</strong> {addressInstruction}
+                    <strong>{wizardCopy.success.stepAddressTitle}</strong> {addressInstruction}
                   </p>
                 </li>
                 <li className="flex gap-3">
                   <span className="flex-shrink-0 w-6 h-6 rounded-full bg-waldgruen/15 text-waldgruen font-body text-xs font-bold flex items-center justify-center mt-0.5">3</span>
                   <p className="font-body text-sm text-warmgrau leading-relaxed">
-                    <strong>Weitersagen.</strong> Je mehr Menschen schreiben, desto mehr Gewicht hat jeder einzelne Brief.
+                    <strong>{wizardCopy.success.stepShareTitle}</strong> {wizardCopy.success.stepShareBody}
                   </p>
                 </li>
               </ol>
@@ -1327,7 +1325,7 @@ export function Step3Success({
       return (
         <div className="mx-auto max-w-xl">
           <h1 className="font-typewriter text-[28px] font-semibold leading-[1.2] text-waldgruen-dark">
-            {generationError ? "Das hat nicht geklappt" : "Dein Brief wird geschrieben"}
+            {generationError ? wizardCopy.success.generatingFailedTitle : wizardCopy.success.generatingTitle}
           </h1>
           {generationError ? (
             <>
@@ -1343,7 +1341,7 @@ export function Step3Success({
                 disabled={isGenerating}
                 className="mt-5 w-full cursor-pointer rounded-xl bg-waldgruen px-8 py-4 font-body text-base font-semibold text-creme transition-colors hover:bg-waldgruen-dark disabled:cursor-not-allowed disabled:opacity-60"
               >
-                Noch einmal versuchen
+                {wizardCopy.success.generatingRetry}
               </button>
             </>
           ) : (
@@ -1364,7 +1362,7 @@ export function Step3Success({
                 <path d="M21 12a9 9 0 1 1-6.219-8.56" />
               </svg>
               <span key={genPhase} className="animate-feedback-in">
-                {LETTER_GEN_PHASES[genPhase].label}
+                {uiCopy.status[LETTER_GEN_PHASES[genPhase].key]}
               </span>
             </div>
           )}
@@ -2229,7 +2227,7 @@ export function Step3Success({
                     <path d="M21 12a9 9 0 1 1-6.219-8.56" />
                   </svg>
                   <span key={genPhase} className="animate-feedback-in">
-                    {LETTER_GEN_PHASES[genPhase].label}
+                    {uiCopy.status[LETTER_GEN_PHASES[genPhase].key]}
                   </span>
                 </span>
               ) : (
@@ -2287,7 +2285,7 @@ export function Step3Success({
                     <path d="M21 12a9 9 0 1 1-6.219-8.56" />
                   </svg>
                   <span key={genPhase} className="animate-feedback-in">
-                    {LETTER_GEN_PHASES[genPhase].label}
+                    {uiCopy.status[LETTER_GEN_PHASES[genPhase].key]}
                   </span>
                 </span>
               ) : (

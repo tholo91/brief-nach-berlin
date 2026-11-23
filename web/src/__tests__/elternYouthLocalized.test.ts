@@ -19,6 +19,7 @@ jest.mock("@/components/i18n/LocaleProvider", () => {
 jest.mock("next/navigation", () => ({
   useRouter: () => ({ prefetch: jest.fn(), push: jest.fn() }),
   usePathname: () => usePathname(),
+  useSearchParams: () => new URLSearchParams(),
 }));
 jest.mock("next/link", () => ({
   __esModule: true,
@@ -36,6 +37,8 @@ jest.mock("@/lib/mistral", () => ({}));
 jest.mock("@/lib/actions/selectPolitician", () => ({ selectPoliticianAction: jest.fn() }));
 jest.mock("@/lib/actions/resendLetter", () => ({ resendLetterAction: jest.fn() }));
 jest.mock("@/lib/actions/reportError", () => ({ reportErrorAction: jest.fn() }));
+jest.mock("@/lib/actions/submitWizard", () => ({ submitWizardAction: jest.fn() }));
+jest.mock("@/lib/actions/prefetchRouting", () => ({ prefetchRoutingAction: jest.fn() }));
 
 import ElternPage from "@/app/(site)/eltern/page";
 import AppHeader from "@/components/AppHeader";
@@ -45,6 +48,7 @@ import { LetterPdfButton } from "@/components/schule/LetterPdfButton";
 import { Step1Form } from "@/components/wizard/Step1Form";
 import { emailCopy } from "@/lib/email/mailLocale";
 import { Step3Success } from "@/components/wizard/Step3Success";
+import { WizardShell } from "@/components/wizard/WizardShell";
 import { YouthLetterDraft } from "@/components/wizard/YouthLetterDraft";
 import { ELTERN_COPY } from "@/lib/i18n/elternCopy";
 import { YOUTH_COPY } from "@/lib/i18n/youthCopy";
@@ -92,7 +96,7 @@ function renderAs(locale: Loc, element: ReactElement): string {
 // Leaves that may stay identical to German (fixed text without a word to translate).
 const SAME_AS_GERMAN_ALLOWED = new Set<string>(["eltern.form.optionalSuffix", "youth.steps.tone"]);
 
-function collectCatalogChecks(group: "eltern" | "youth" | "wizard" | "progress" | "status") {
+function collectCatalogChecks(group: "eltern" | "youth" | "wizard" | "progress" | "status" | "schoolNav") {
   describe.each(LOCALES)(`catalog %s: ${group}`, (locale) => {
     const german = new Map(leaves(UI_CATALOG.de[group], group));
     const own = leaves(UI_CATALOG[locale][group], group);
@@ -220,7 +224,7 @@ function germanYouthLeaves(): string[] {
     .filter((value) => value.length >= 12);
 }
 
-function step3(options: { youth: boolean; pdfDelivery?: boolean; schoolRecipient?: boolean; email?: string }) {
+function step3(options: { youth: boolean; pdfDelivery?: boolean; schoolRecipient?: boolean; email?: string; selectedLevel?: string }) {
   return createElement(Step3Success, {
     result: {
       success: true,
@@ -236,6 +240,7 @@ function step3(options: { youth: boolean; pdfDelivery?: boolean; schoolRecipient
     },
     recipients: [],
     optionalLandRecipients: [],
+    ...(options.selectedLevel ? { selectedLevel: options.selectedLevel } : {}),
     pdfDelivery: options.pdfDelivery ?? false,
     ...(options.schoolRecipient
       ? {
@@ -326,6 +331,58 @@ describe.each(LOCALES)("youth wizard strings in %s", (locale) => {
     }
   });
 
+  it.each(["Bund", "Land", "Kommune", "Fixed"])("localizes the steps accordion and resend row for level %s", (level) => {
+    const wizard = UI_CATALOG[locale].wizard.success;
+    const impact = { Bund: wizard.impactBund, Land: wizard.impactLand, Kommune: wizard.impactKommune, Fixed: wizard.impactFixed }[level];
+    const text = visibleText(renderAs(locale, step3({ youth: false, selectedLevel: level })));
+    expect(text).toContain(wizard.resendToggle);
+    expect(text).toContain(wizard.stepsToggle);
+    expect(text).toContain(wizard.reviewTitle);
+    expect(text).toContain(wizard.reviewBody.replace("{draft}", wizard.draftMail));
+    expect(text).toContain(wizard.stepWriteTitle);
+    expect(text).toContain(wizard.stepWriteAdult);
+    expect(text).toContain(impact);
+    expect(text).toContain(wizard.stepAddressTitle);
+    expect(text).toContain(level === "Kommune" ? wizard.addressKommune : wizard.addressAdult);
+    expect(text).toContain(wizard.stepShareTitle);
+    expect(text).toContain(wizard.stepShareBody);
+    for (const [, leaf] of leaves(UI_CATALOG.de.wizard)) {
+      if (leaf.length >= 12) expect(text).not.toContain(decode(leaf));
+    }
+  });
+
+  it("localizes the level data missing state and keeps the server text", () => {
+    const element = createElement(Step3Success, {
+      result: { error: "level_data_missing", level: "Bund", fallbackUrl: "https://example.org", message: "Server text." },
+      wizardData: { plz: "28195", email: "test@example.org", issueText: "Ein Anliegen" },
+      recipients: [],
+      optionalLandRecipients: [],
+    } as never);
+    const text = visibleText(renderAs(locale, element));
+    expect(text).toContain(UI_CATALOG[locale].wizard.success.levelDataMissing);
+    expect(text).toContain("Server text.");
+    expect(text).not.toContain(UI_CATALOG.de.wizard.success.levelDataMissing);
+  });
+
+  it("localizes the wizard shell step label", () => {
+    usePathname.mockReturnValue("/app");
+    const markup = renderAs(locale, createElement(WizardShell));
+    const label = UI_CATALOG[locale].progress.stepOf.replace("{current}", "1").replace("{total}", "3");
+    expect(markup).toContain(`aria-label="${label}"`);
+    expect(markup).not.toContain("Schritt 1 von 3");
+  });
+
+  it("localizes the school tabs in the header", () => {
+    usePathname.mockReturnValue("/unterricht");
+    const markup = renderAs(locale, createElement(AppHeader));
+    const nav = UI_CATALOG[locale].schoolNav;
+    expect(markup).toContain(`aria-label="${nav.ariaLabel}"`);
+    for (const label of [nav.students, nav.teachers, nav.parents]) expect(markup).toContain(`>${label}</a>`);
+    for (const label of Object.values(UI_CATALOG.de.schoolNav)) expect(markup).not.toContain(label);
+    expect(markup).toContain('href="/eltern"');
+    expect(markup).toContain('href="/unterricht"');
+  });
+
   it("quotes the real mail subject in the inbox hint", () => {
     expect(UI_CATALOG[locale].wizard.success.inboxHint).toContain(emailCopy[locale].subject.standard);
   });
@@ -371,3 +428,4 @@ collectCatalogChecks("youth");
 collectCatalogChecks("wizard");
 collectCatalogChecks("progress");
 collectCatalogChecks("status");
+collectCatalogChecks("schoolNav");

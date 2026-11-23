@@ -1,5 +1,6 @@
 import { ELTERN_COPY, type ElternCopy } from "./elternCopy";
 import type { Locale } from "./locale";
+import { YOUTH_COPY, type YouthCopy } from "./youthCopy";
 
 /**
  * Public UI copy for the translated landing page and letter wizard. Values with
@@ -259,6 +260,7 @@ export interface UiCatalog {
     reportError: string;
   };
   eltern: ElternCopy;
+  youth: YouthCopy;
 }
 
 const de: UiCatalog = {
@@ -308,6 +310,7 @@ const de: UiCatalog = {
   progress: { issue: "Dein Anliegen", contact: "PLZ & E-Mail", preferences: "Ton & Länge", back: "Zurück", close: "Schließen" },
   status: { checkingRecipients: "Empfänger prüfen...", preparingDetails: "Angaben vorbereiten...", draftingLetter: "Brief wird formuliert...", letterReady: "Dein Brief ist fertig!", sending: "Wird gesendet...", sent: "Gesendet", resend: "Brief erneut senden", resendSent: "Brief erneut gesendet", retry: "Erneut versuchen", error: "Etwas ist schiefgelaufen.", reportError: "Fehler melden" },
   eltern: ELTERN_COPY.de,
+  youth: YOUTH_COPY.de,
 };
 
 const en: UiCatalog = {
@@ -330,6 +333,7 @@ const en: UiCatalog = {
   progress: { issue: "Your concern", contact: "Postal code & email", preferences: "Tone & length", back: "Back", close: "Close" },
   status: { checkingRecipients: "Checking recipients...", preparingDetails: "Preparing details...", draftingLetter: "Drafting your letter...", letterReady: "Your letter is ready!", sending: "Sending...", sent: "Sent", resend: "Send letter again", resendSent: "Letter sent again", retry: "Try again", error: "Something went wrong.", reportError: "Report an error" },
   eltern: ELTERN_COPY.en,
+  youth: YOUTH_COPY.en,
 };
 
 const tr: UiCatalog = {
@@ -352,6 +356,7 @@ const tr: UiCatalog = {
   progress: { issue: "Talebiniz", contact: "Posta kodu ve e-posta", preferences: "Ton ve uzunluk", back: "Geri", close: "Kapat" },
   status: { checkingRecipients: "Alıcılar kontrol ediliyor...", preparingDetails: "Bilgiler hazırlanıyor...", draftingLetter: "Mektubunuz hazırlanıyor...", letterReady: "Mektubunuz hazır!", sending: "Gönderiliyor...", sent: "Gönderildi", resend: "Mektubu tekrar gönder", resendSent: "Mektup tekrar gönderildi", retry: "Tekrar dene", error: "Bir şeyler ters gitti.", reportError: "Hata bildir" },
   eltern: ELTERN_COPY.tr,
+  youth: YOUTH_COPY.tr,
 };
 
 export const UI_CATALOG: Record<Locale, UiCatalog> = { de, en, tr };

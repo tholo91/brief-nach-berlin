@@ -2,6 +2,7 @@
 
 import { useEffect, useId, useMemo, useState } from "react";
 import { CopyTextButton } from "@/components/CopyTextButton";
+import { useUiCopy } from "@/components/i18n/LocaleProvider";
 import { LetterPdfButton } from "@/components/schule/LetterPdfButton";
 import type { Recipient } from "@/lib/lookup/rathausRecipient";
 import { recipientEnvelope } from "@/lib/lookup/recipientEnvelope";
@@ -9,9 +10,6 @@ import { RathausAdresseButton } from "./RathausAdresseButton";
 
 type VersionKey = "first" | "improved";
 
-export const IMPROVE_CHIPS = ["Kürzer", "Einfachere Wörter", "Klingt mehr nach mir", "Höflicher"] as const;
-
-const IMPROVE_FALLBACK_ERROR = "Das hat nicht geklappt. Versuch es gleich noch einmal.";
 const PDF_DEBOUNCE_MS = 600;
 
 // Ungefähre Zeilenzahl, damit das Textfeld ohne inneres Scrollen den ganzen Brief zeigt.
@@ -31,6 +29,7 @@ export function YouthLetterDraft({
   pdfDelivery?: boolean;
   classToken?: string;
 }) {
+  const copy = useUiCopy().youth.draft;
   const envelope = useMemo(() => (recipient ? recipientEnvelope(recipient) : null), [recipient]);
   const textareaId = useId();
   const requestId = useId();
@@ -67,7 +66,7 @@ export function YouthLetterDraft({
     if (improved || improveState === "loading") return;
     if (changeRequest.trim().length < 5) {
       setImproveState("error");
-      setImproveError("Schreib kurz, was anders werden soll.");
+      setImproveError(copy.tooShort);
       return;
     }
     setImproveState("loading");
@@ -86,7 +85,7 @@ export function YouthLetterDraft({
       const data = (await res.json().catch(() => ({}))) as { letter?: string; error?: string };
       if (!res.ok || !data.letter) {
         setImproveState("error");
-        setImproveError(data.error ?? IMPROVE_FALLBACK_ERROR);
+        setImproveError(data.error ?? copy.fallbackError);
         return;
       }
       setVersions((current) => ({ ...current, improved: data.letter }));
@@ -94,27 +93,27 @@ export function YouthLetterDraft({
       setImproveState("idle");
     } catch {
       setImproveState("error");
-      setImproveError(IMPROVE_FALLBACK_ERROR);
+      setImproveError(copy.fallbackError);
     }
   }
 
   const tabs: { key: VersionKey; label: string }[] = [
-    { key: "first", label: "Erste Fassung" },
-    { key: "improved", label: "Verbesserte Fassung" },
+    { key: "first", label: copy.tabFirst },
+    { key: "improved", label: copy.tabImproved },
   ];
 
   return (
     <section aria-labelledby="youth-draft-heading" className="mt-6">
       <h2 id="youth-draft-heading" className="font-typewriter text-xl font-bold text-waldgruen-dark m-0">
-        Dein Entwurf
+        {copy.heading}
       </h2>
       <p className="mt-1 font-body text-sm leading-relaxed text-warmgrau">
-        Schreib deinen Brief von Hand, der Entwurf hilft dir dabei. Du kannst ihn hier direkt ändern und ein eigenes Erlebnis ergänzen.
-        {!pdfDelivery && " Eine Kopie kommt per Mail."}
+        {copy.intro}
+        {!pdfDelivery && ` ${copy.mailNote}`}
       </p>
 
       {improved && (
-        <div role="tablist" aria-label="Fassungen" className="mt-4 flex gap-1">
+        <div role="tablist" aria-label={copy.versionsLabel} className="mt-4 flex gap-1">
           {tabs.map((tab) => {
             const selected = active === tab.key;
             return (
@@ -152,7 +151,7 @@ export function YouthLetterDraft({
           }}
         />
         <label htmlFor={textareaId} className="sr-only">
-          Dein Brief, du kannst ihn bearbeiten
+          {copy.textareaLabel}
         </label>
         <textarea
           id={textareaId}
@@ -167,30 +166,30 @@ export function YouthLetterDraft({
       </div>
 
       <div className="mt-3 flex flex-wrap items-center gap-3">
-        <CopyTextButton text={activeText} />
-        <span className="font-body text-sm text-warmgrau/80">Tipp ins Blatt, um etwas zu ändern.</span>
+        <CopyTextButton text={activeText} label={copy.copyButton} copiedLabel={copy.copied} />
+        <span className="font-body text-sm text-warmgrau/80">{copy.editHint}</span>
       </div>
 
       <aside className="mt-6 rounded-xl border border-waldgruen/20 bg-waldgruen/5 p-4">
-        <h3 className="m-0 font-body text-base font-semibold text-waldgruen-dark">So wirkt dein Brief</h3>
+        <h3 className="m-0 font-body text-base font-semibold text-waldgruen-dark">{copy.tipsHeading}</h3>
         <ul className="mt-2 mb-0 list-disc space-y-1 pl-5 font-body text-sm leading-relaxed text-warmgrau">
-          <li>Kurz und klar: ein, höchstens zwei Anliegen.</li>
-          <li>Gut begründet: Warum ist es wichtig, und was soll sich ändern?</li>
-          <li>Persönlich: Schreib, was das Thema mit dir zu tun hat.</li>
+          {copy.tips.map((tip) => (
+            <li key={tip}>{tip}</li>
+          ))}
         </ul>
       </aside>
 
       {!improved && (
         <div className="mt-4 rounded-xl border border-warmgrau/25 bg-creme/70 p-4">
-          <h3 className="m-0 font-body text-base font-semibold text-waldgruen-dark">Brief verbessern lassen</h3>
+          <h3 className="m-0 font-body text-base font-semibold text-waldgruen-dark">{copy.improveHeading}</h3>
           <p className="mt-1 font-body text-sm leading-relaxed text-warmgrau">
-            Sag, was anders werden soll und warum. Das geht einmal, danach siehst du beide Fassungen.
+            {copy.improveIntro}
           </p>
           <label htmlFor={requestId} className="mt-3 block font-body text-sm font-semibold text-waldgruen-dark">
-            Was soll anders werden und warum?
+            {copy.improveLabel}
           </label>
           <div className="mt-2 flex flex-wrap gap-2">
-            {IMPROVE_CHIPS.map((chip) => (
+            {copy.chips.map((chip) => (
               <button
                 key={chip}
                 type="button"
@@ -207,7 +206,7 @@ export function YouthLetterDraft({
             onChange={(event) => setChangeRequest(event.target.value)}
             maxLength={1000}
             rows={3}
-            placeholder="Zum Beispiel: Der Brief klingt zu erwachsen. Er soll einfacher und mehr nach mir klingen."
+            placeholder={copy.improvePlaceholder}
             className="mt-2 block w-full rounded-lg border border-warmgrau/30 bg-white p-3 font-body text-base leading-relaxed text-warmgrau focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-waldgruen"
           />
           {improveState === "error" && improveError && (
@@ -222,7 +221,7 @@ export function YouthLetterDraft({
             aria-busy={improveState === "loading"}
             className="mt-3 inline-flex min-h-12 w-full items-center justify-center rounded-lg bg-waldgruen px-4 py-2.5 font-body text-base font-bold text-creme transition-colors hover:bg-waldgruen-dark focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-waldgruen focus-visible:ring-offset-2 disabled:cursor-wait disabled:opacity-70 sm:w-auto"
           >
-            {improveState === "loading" ? "Brief wird verbessert..." : "Brief verbessern"}
+            {improveState === "loading" ? copy.improveLoading : copy.improveIdle}
           </button>
         </div>
       )}
@@ -232,7 +231,7 @@ export function YouthLetterDraft({
       ) : (
         envelope && (
           <div className="mt-4 rounded-xl border border-warmgrau/25 bg-creme/70 p-4">
-            <h3 className="m-0 font-body text-sm font-semibold text-waldgruen-dark">Für den Umschlag</h3>
+            <h3 className="m-0 font-body text-sm font-semibold text-waldgruen-dark">{copy.envelopeHeading}</h3>
             <address className="mt-1 font-body text-base not-italic leading-relaxed text-warmgrau">
               {envelope.lines.map((line) => (
                 <span key={line} className="block">

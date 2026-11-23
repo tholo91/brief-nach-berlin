@@ -111,7 +111,9 @@ describe("YouthLetterDraft", () => {
   } as const;
 
   it("shows the address with the mail note in email mode", () => {
-    const html = renderToStaticMarkup(createElement(YouthLetterDraft, { letterText: "Sehr geehrte Frau Muster", recipient }));
+    const html = renderToStaticMarkup(
+      createElement(LocaleProvider, null, createElement(YouthLetterDraft, { letterText: "Sehr geehrte Frau Muster", recipient }))
+    );
     expect(html).toContain("Für den Umschlag");
     expect(html).toContain("Maria Muster, MdB");
     expect(html).toContain("Eine Kopie kommt per Mail.");
@@ -120,7 +122,11 @@ describe("YouthLetterDraft", () => {
 
   it("offers the PDF instead of the mail on a PDF class link", () => {
     const html = renderToStaticMarkup(
-      createElement(YouthLetterDraft, { letterText: "Sehr geehrte Frau Muster", recipient, pdfDelivery: true })
+      createElement(
+        LocaleProvider,
+        null,
+        createElement(YouthLetterDraft, { letterText: "Sehr geehrte Frau Muster", recipient, pdfDelivery: true })
+      )
     );
     expect(html).toContain("Für den Umschlag");
     expect(html).toContain("PDF wird vorbereitet");

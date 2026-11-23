@@ -1,6 +1,7 @@
 import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 
+import { LocaleProvider } from "@/components/i18n/LocaleProvider";
 import { YouthLetterDraft } from "@/components/wizard/YouthLetterDraft";
 import { showYouthDraft } from "@/components/wizard/youthMode";
 
@@ -20,7 +21,7 @@ describe("showYouthDraft", () => {
 
 describe("YouthLetterDraft", () => {
   const html = renderToStaticMarkup(
-    createElement(YouthLetterDraft, { letterText: "Zeile eins\n\nZeile zwei" })
+    createElement(LocaleProvider, null, createElement(YouthLetterDraft, { letterText: "Zeile eins\n\nZeile zwei" }))
   );
 
   it("shows heading, instruction and the letter text with line breaks", () => {

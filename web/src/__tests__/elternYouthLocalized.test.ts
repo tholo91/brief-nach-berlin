@@ -33,12 +33,21 @@ jest.mock("@/components/audio/VoiceRecorder", () => ({
   },
 }));
 jest.mock("@/lib/mistral", () => ({}));
+jest.mock("@/lib/actions/selectPolitician", () => ({ selectPoliticianAction: jest.fn() }));
+jest.mock("@/lib/actions/resendLetter", () => ({ resendLetterAction: jest.fn() }));
+jest.mock("@/lib/actions/reportError", () => ({ reportErrorAction: jest.fn() }));
 
 import ElternPage from "@/app/(site)/eltern/page";
 import AppHeader from "@/components/AppHeader";
 import { ElternExperience } from "@/components/eltern/ElternExperience";
 import { ElternPageContent } from "@/components/eltern/ElternPageContent";
+import { LetterPdfButton } from "@/components/schule/LetterPdfButton";
+import { Step1Form } from "@/components/wizard/Step1Form";
+import { Step3Success } from "@/components/wizard/Step3Success";
+import { YouthLetterDraft } from "@/components/wizard/YouthLetterDraft";
 import { ELTERN_COPY } from "@/lib/i18n/elternCopy";
+import { YOUTH_COPY } from "@/lib/i18n/youthCopy";
+import { recipientEnvelope } from "@/lib/lookup/recipientEnvelope";
 import { resolveClientLocale } from "@/lib/i18n/locale";
 import { UI_CATALOG } from "@/lib/i18n/uiCatalog";
 import { ELTERN_TOPICS_BY_LOCALE } from "@/lib/schule/elternTopics";
@@ -80,9 +89,9 @@ function renderAs(locale: Loc, element: ReactElement): string {
 }
 
 // Leaves that may stay identical to German (fixed text without a word to translate).
-const SAME_AS_GERMAN_ALLOWED = new Set<string>(["eltern.form.optionalSuffix"]);
+const SAME_AS_GERMAN_ALLOWED = new Set<string>(["eltern.form.optionalSuffix", "youth.steps.tone"]);
 
-function collectCatalogChecks(group: "eltern") {
+function collectCatalogChecks(group: "eltern" | "youth") {
   describe.each(LOCALES)(`catalog %s: ${group}`, (locale) => {
     const german = new Map(leaves(UI_CATALOG.de[group], group));
     const own = leaves(UI_CATALOG[locale][group], group);
@@ -185,6 +194,127 @@ describe("/eltern parent form", () => {
   });
 });
 
+const recipient = {
+  kind: "mdb",
+  id: 1,
+  politicianId: 2,
+  firstName: "Maria",
+  lastName: "Muster",
+  title: null,
+  party: "SPD",
+  wahlkreisId: 3,
+  wahlkreisName: "Bremen",
+  level: "Bund",
+  postalAddress: "Platz der Republik 1, 11011 Berlin",
+  isDirect: true,
+  abgeordnetenwatchUrl: null,
+} as const;
+const letterText = "Sehr geehrte Frau Muster,\n\nan unserer Schule fällt viel Unterricht aus.";
+
+function germanYouthLeaves(): string[] {
+  return leaves(YOUTH_COPY.de)
+    .map(([, value]) => value)
+    .filter((value) => value.length >= 12);
+}
+
+function step3(options: { youth: boolean; pdfDelivery?: boolean; schoolRecipient?: boolean }) {
+  return createElement(Step3Success, {
+    result: {
+      success: true,
+      politician: recipient,
+      politicalLevel: "Bund",
+      letterText,
+    },
+    wizardData: {
+      ...(options.youth ? { audience: "jung", klasse: 8 } : {}),
+      plz: "28195",
+      email: "schueler@example.org",
+      issueText: "Unterricht fällt aus",
+    },
+    recipients: [],
+    optionalLandRecipients: [],
+    pdfDelivery: options.pdfDelivery ?? false,
+    ...(options.schoolRecipient
+      ? {
+          schoolRecipient: {
+            level: "Bund",
+            recipient,
+            selection: { kind: "mdb", politicianId: 2 },
+            reason: "Server reason stays as delivered.",
+          },
+        }
+      : {}),
+  } as never);
+}
+
+describe.each(LOCALES)("youth wizard strings in %s", (locale) => {
+  const copy = YOUTH_COPY[locale];
+
+  it("localizes the class-link step 1 and keeps the locality suffix", () => {
+    const text = visibleText(
+      renderAs(locale, createElement(Step1Form, { onNext: () => {}, isYouth: true, plzLocked: true, defaultValues: { plz: "28195" } })),
+    );
+    expect(text).toContain(copy.classLink.heading);
+    expect(text).toContain(copy.classLink.intro);
+    expect(text).toContain(copy.classLink.postalCodeLine.replace("{plz}", "28195"));
+    for (const leaf of germanYouthLeaves()) expect(text).not.toContain(decode(leaf));
+  });
+
+  it("localizes the draft editor in email and PDF mode", () => {
+    for (const pdfDelivery of [false, true]) {
+      const text = visibleText(renderAs(locale, createElement(YouthLetterDraft, { letterText, recipient, pdfDelivery })));
+      expect(text).toContain(copy.draft.heading);
+      expect(text).toContain(copy.draft.intro);
+      expect(text.includes(copy.draft.mailNote)).toBe(!pdfDelivery);
+      expect(text).toContain(copy.draft.copyButton);
+      expect(text).toContain(copy.draft.tipsHeading);
+      for (const tip of copy.draft.tips) expect(text).toContain(tip);
+      for (const chip of copy.draft.chips) expect(text).toContain(chip);
+      expect(text).toContain(copy.draft.improvePlaceholder);
+      expect(text).toContain(copy.draft.improveIdle);
+      expect(text).toContain(copy.draft.envelopeHeading);
+      // The letter text and the address lines stay as delivered.
+      expect(text).toContain("Sehr geehrte Frau Muster,");
+      expect(text).toContain("Platz der Republik 1");
+      if (pdfDelivery) expect(text).toContain(copy.pdf.preparing);
+      for (const leaf of germanYouthLeaves()) expect(text).not.toContain(decode(leaf));
+    }
+  });
+
+  it("localizes the PDF button", () => {
+    const envelope = recipientEnvelope(recipient);
+    const text = visibleText(renderAs(locale, createElement(LetterPdfButton, { letterText, envelope })));
+    expect(text).toContain(copy.pdf.preparing);
+    expect(text).toContain(copy.pdf.saveHint);
+    for (const leaf of germanYouthLeaves()) expect(text).not.toContain(decode(leaf));
+  });
+
+  it("localizes the youth part of the success page", () => {
+    const email = renderAs(locale, step3({ youth: true }));
+    const [before, after] = copy.success.copySubtitle.split("{email}");
+    expect(visibleText(email)).toContain(copy.success.headline);
+    expect(email).toContain(`${before}<strong>sc•••••@example.org</strong>${after}`);
+
+    const pdf = visibleText(renderAs(locale, step3({ youth: true, pdfDelivery: true })));
+    expect(pdf).toContain(copy.success.pdfSubtitle);
+
+    // The loading line (loadingLead, loadingLast, waitShort, waitLong) only shows while the
+    // client fetches the letter, which a static render cannot reach. The catalog checks cover it.
+
+    const school = visibleText(renderAs(locale, step3({ youth: true, schoolRecipient: true })));
+    expect(school).toContain(copy.success.recipientLead.replace("{name}", "Maria Muster (SPD)"));
+    expect(school).toContain(copy.success.whyHeading);
+    expect(school).toContain("Server reason stays as delivered.");
+  });
+
+  it("keeps the adult success page German", () => {
+    const text = visibleText(renderAs(locale, step3({ youth: false })));
+    expect(text).toContain("Dein Brief ist fertig");
+    expect(text).toContain("Dein Entwurf kommt an");
+    expect(text).not.toContain(copy.success.headline);
+  });
+});
+
 describe("AppHeader on /eltern", () => {
   it.each(LOCALES)("shows the switcher and the %s CTA", (locale) => {
     usePathname.mockReturnValue("/eltern");
@@ -221,3 +351,4 @@ describe("/eltern metadata and JSON-LD", () => {
 });
 
 collectCatalogChecks("eltern");
+collectCatalogChecks("youth");

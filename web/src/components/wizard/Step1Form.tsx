@@ -147,10 +147,10 @@ export function Step1Form({
   return (
     <form onSubmit={handleSubmit(onSubmit)} noValidate>
       <h1 className="font-typewriter text-[28px] font-semibold leading-[1.2] text-waldgruen-dark mb-2">
-        {plzLocked ? "Wohin soll deine Kopie gehen?" : copy.contact.heading}
+        {plzLocked ? copy.youth.classLink.heading : copy.contact.heading}
       </h1>
       <p className="font-body text-sm text-warmgrau/70 mb-8">
-        {plzLocked ? "Deine Lehrkraft hat die Postleitzahl schon eingetragen. An deine E-Mail-Adresse schicke ich dir den Entwurf und die Anschrift." : pdfDelivery ? copy.contact.introYouthPdf : isYouth ? copy.contact.introYouth : copy.contact.intro}
+        {plzLocked ? copy.youth.classLink.intro : pdfDelivery ? copy.contact.introYouthPdf : isYouth ? copy.contact.introYouth : copy.contact.intro}
       </p>
 
       <div className="space-y-4">
@@ -159,7 +159,7 @@ export function Step1Form({
           <div>
             <input type="hidden" {...register("plz")} />
             <p id="plz-hint" className="font-body text-sm font-semibold text-warmgrau" aria-live="polite">
-              {`PLZ ${plzValue} (von deiner Lehrkraft)`}
+              {copy.youth.classLink.postalCodeLine.replace("{plz}", plzValue ?? "")}
               {locality ? <span className="font-normal text-warmgrau/60">{`, ${locality.ort}`}</span> : null}
             </p>
           </div>

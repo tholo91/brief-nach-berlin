@@ -20,6 +20,7 @@ import type { CampaignFixedRecipientRecipient } from "@/lib/lookup/campaignFixed
 import { selectPoliticianAction } from "@/lib/actions/selectPolitician";
 import { resendLetterAction } from "@/lib/actions/resendLetter";
 import { reportErrorAction } from "@/lib/actions/reportError";
+import { useUiCopy } from "@/components/i18n/LocaleProvider";
 import { classifyClientError, type ClientErrorKind } from "@/lib/clientErrorKind";
 import { WEBMAIL_PROVIDERS } from "@/lib/email/emailProviders";
 import { installClientLogBuffer, getClientLogs } from "@/lib/clientLogBuffer";
@@ -130,6 +131,8 @@ export function Step3Success({
   pdfDelivery = false,
   schoolRecipient,
 }: Step3SuccessProps) {
+  const youthCopy = useUiCopy().youth;
+  const [copySubtitleBefore, copySubtitleAfter] = youthCopy.success.copySubtitle.split("{email}");
   // Abgeordneten-Karten (mdb/mdl) und der synthetische Rathaus-Empfänger
   // teilen sich den Step; Kommune zeigt genau eine Verwaltungs-Karte.
   const [showLandPersonPicker, setShowLandPersonPicker] = useState(false);
@@ -928,30 +931,34 @@ export function Step3Success({
             <path d="M4 13 L24 28 L44 13" stroke="currentColor" strokeWidth="2.5" fill="none" strokeLinejoin="round" />
           </svg>
           <h1 className="font-typewriter text-[28px] font-semibold leading-[1.2] text-waldgruen-dark m-0">
-            Dein Brief ist fertig
+            {isYouth ? youthCopy.success.headline : "Dein Brief ist fertig"}
           </h1>
         </div>
         <p className="font-body text-base text-warmgrau leading-relaxed mt-3">
           {youthDraft ? (
             pdfDelivery ? (
-              <>Dein Entwurf steht unten. Speicher ihn als PDF, bevor du die Seite schließt.</>
+              <>{youthCopy.success.pdfSubtitle}</>
             ) : (
-              <>Dein Entwurf steht unten. Eine Kopie kommt an <strong>{maskEmail(wizardData.email)}</strong>.</>
+              <>{copySubtitleBefore}<strong>{maskEmail(wizardData.email)}</strong>{copySubtitleAfter}</>
             )
           ) : letterReady || connectionLost ? (
             <>Dein Entwurf kommt an <strong>{maskEmail(wizardData.email)}</strong>. Den Brief schickst du anschließend selbst per Post ab.</>
           ) : (
             <>
               {isYouth ? (
-                <>Dein Entwurf erscheint gleich <span className="whitespace-nowrap">hier<LoadingDots value={loadingDots} /></span></>
+                <>{youthCopy.success.loadingLead}<span className="whitespace-nowrap">{youthCopy.success.loadingLast}<LoadingDots value={loadingDots} /></span></>
               ) : (
                 <>Brief und nächste Schritte kommen per E-Mail zu <span className="whitespace-nowrap">dir<LoadingDots value={loadingDots} /></span></>
               )}
               {!generationFetchError && (
                 <span className="block mt-1 text-sm">
                   {longWait
-                    ? "Viele schreiben gerade, dein Brief kommt gleich. Bitte lass diese Seite offen."
-                    : "Bitte lass diese Seite offen. Lange Briefe können bis zu einer Minute dauern."}
+                    ? isYouth
+                      ? youthCopy.success.waitLong
+                      : "Viele schreiben gerade, dein Brief kommt gleich. Bitte lass diese Seite offen."
+                    : isYouth
+                      ? youthCopy.success.waitShort
+                      : "Bitte lass diese Seite offen. Lange Briefe können bis zu einer Minute dauern."}
                 </span>
               )}
             </>
@@ -961,9 +968,9 @@ export function Step3Success({
         {schoolRecipient && (
           <div className="mt-5 rounded-lg border-2 border-waldgruen bg-waldgruen/10 p-4">
             <p className="font-body text-base font-semibold text-warmgrau">
-              Dein Brief geht an {describeSchoolRecipient(schoolRecipient.recipient).name}
+              {youthCopy.success.recipientLead.replace("{name}", () => describeSchoolRecipient(schoolRecipient.recipient).name)}
             </p>
-            <p className="mt-3 font-body text-sm font-semibold text-waldgruen-dark">Warum diese Person?</p>
+            <p className="mt-3 font-body text-sm font-semibold text-waldgruen-dark">{youthCopy.success.whyHeading}</p>
             <p className="mt-0.5 font-body text-sm leading-relaxed text-warmgrau/80">{schoolRecipient.reason}</p>
           </div>
         )}

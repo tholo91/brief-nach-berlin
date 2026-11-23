@@ -33,24 +33,13 @@ import { StepLevelSelect } from "./StepLevelSelect";
 import { Step3Success } from "./Step3Success";
 import { isYouthWizard } from "./youthMode";
 import FadeFooterImage from "../FadeFooterImage";
-import { useLocale } from "@/components/i18n/LocaleProvider";
+import { useLocale, useUiCopy } from "@/components/i18n/LocaleProvider";
 import {
   wizardStepDirection,
   type WizardStepDirection,
 } from "@/lib/wizard-navigation";
 
 const PARAM_KEYS = ["plz", "letterLength"] as const;
-
-const STEP_LABELS = [
-  "Dein Anliegen",
-  "PLZ & E-Mail",
-  "Ton & Länge",
-] as const;
-
-const YOUTH_STEP_LABELS = ["Dein Anliegen", "PLZ & E-Mail", "Ton"] as const;
-const YOUTH_PDF_STEP_LABELS = ["Dein Anliegen", "PLZ", "Ton"] as const;
-// PDF-Klassenlink: PLZ kommt aus dem Link, der Schritt entfällt.
-const YOUTH_PDF_LOCKED_STEP_LABELS = ["Dein Anliegen", "Ton"] as const;
 
 function readParamsToData(searchParams: URLSearchParams): Partial<WizardData> {
   const data: Record<string, string> = {};
@@ -113,6 +102,7 @@ export function WizardShell() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const { locale } = useLocale();
+  const copy = useUiCopy();
   const isSuccessPreview =
     process.env.NODE_ENV === "development" &&
     searchParams.get("preview") === "success";
@@ -537,13 +527,15 @@ export function WizardShell() {
   }, []);
 
   const progress = contactStepSkipped ? (step === 1 ? 1 : 2) : stepToProgress(step);
+  const { issue, contact, preferences } = copy.progress;
+  const { tone, postalCode } = copy.youth.steps;
   const stepLabels = contactStepSkipped
-    ? YOUTH_PDF_LOCKED_STEP_LABELS
+    ? [issue, tone]
     : pdfDelivery
-      ? YOUTH_PDF_STEP_LABELS
+      ? [issue, postalCode, tone]
       : isYouthWizard(wizardData)
-        ? YOUTH_STEP_LABELS
-        : STEP_LABELS;
+        ? [issue, contact, tone]
+        : [issue, contact, preferences];
   const showIndicator = step !== 3;
   const showBack = !handoffPending && (step === 2 || step === "2b" || step === "level");
   const campaignContext = wizardData.campaign;

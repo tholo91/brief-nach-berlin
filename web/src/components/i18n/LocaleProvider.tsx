@@ -5,7 +5,7 @@ import {
   DEFAULT_LOCALE,
   isLocale,
   LOCALE_SESSION_KEY,
-  resolveBrowserLocale,
+  resolveClientLocale,
   type Locale,
 } from "@/lib/i18n/locale";
 import { getUiCopy } from "@/lib/i18n/uiCatalog";
@@ -29,11 +29,12 @@ function subscribeToLocale(onChange: () => void): () => void {
 }
 
 function getClientLocale(): Locale {
-  const queryLocale = new URLSearchParams(window.location.search).get("lang");
-  if (isLocale(queryLocale)) return queryLocale;
-
-  const stored = window.sessionStorage.getItem(LOCALE_SESSION_KEY);
-  return isLocale(stored) ? stored : resolveBrowserLocale(window.navigator.languages);
+  return resolveClientLocale({
+    queryLocale: new URLSearchParams(window.location.search).get("lang"),
+    storedLocale: window.sessionStorage.getItem(LOCALE_SESSION_KEY),
+    pathname: window.location.pathname,
+    languages: window.navigator.languages,
+  });
 }
 
 function getServerLocale(): Locale {

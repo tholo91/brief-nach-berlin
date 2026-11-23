@@ -4,6 +4,7 @@ import Link from "next/link";
 import type { ReactNode } from "react";
 import { usePathname } from "next/navigation";
 import { LanguageSwitcher } from "@/components/i18n/LanguageSwitcher";
+import { useUiCopy } from "@/components/i18n/LocaleProvider";
 import { ClassIcon } from "@/components/schule/icons";
 import { useStoredClassToken } from "@/components/schule/useStoredClassToken";
 import { schuleHref } from "@/lib/schule/classLinkStorage";
@@ -31,6 +32,9 @@ const SCHOOL_PAGE_CTAS: Record<string, { href: string; label: string; mobileLabe
   "/unterricht": { href: "#klassenlink", label: "Für meine Klasse starten", mobileLabel: "Klasse starten", icon: <ClassIcon /> },
 };
 
+// Pages with translated content get the language switcher in the header.
+const LANGUAGE_SWITCHER_PATHS = new Set(["/eltern"]);
+
 const CAMPAIGN_TOOL_PATHS = new Set(["starten", "verifizieren", "verwalten"]);
 
 function isPublicCampaignPage(pathname: string | null): boolean {
@@ -46,6 +50,7 @@ export default function AppHeader({
   cta?: { href: string; label: string; mobileLabel: string };
 }) {
   const pathname = usePathname();
+  const copy = useUiCopy();
   // Mit gemerktem Klassenlink führt der Reiter "Für Schüler:innen" zurück in die Klasse.
   const classToken = useStoredClassToken();
   const showCampaignCta = pathname === "/ngo-briefkampagne";
@@ -53,7 +58,13 @@ export default function AppHeader({
   const showManagerSlots = pathname === "/kampagne/verwalten";
   const showSchoolNav = pathname !== null && SCHOOL_NAV_PATHS.has(pathname);
   const showMoreCampaigns = isPublicCampaignPage(pathname);
-  const schoolPageCta = pathname !== null && Object.hasOwn(SCHOOL_PAGE_CTAS, pathname) ? SCHOOL_PAGE_CTAS[pathname] : null;
+  const schoolPageCtaBase = pathname !== null && Object.hasOwn(SCHOOL_PAGE_CTAS, pathname) ? SCHOOL_PAGE_CTAS[pathname] : null;
+  // /eltern is translated; the other school pages lead to German-only pages and stay German.
+  const schoolPageCta =
+    schoolPageCtaBase && pathname === "/eltern"
+      ? { ...schoolPageCtaBase, label: copy.eltern.header.cta, mobileLabel: copy.eltern.header.ctaMobile }
+      : schoolPageCtaBase;
+  const languageSwitcherVisible = showLanguageSwitcher || (pathname !== null && LANGUAGE_SWITCHER_PATHS.has(pathname));
   const pageCta = cta ?? schoolPageCta;
 
   return (
@@ -103,8 +114,8 @@ export default function AppHeader({
           )}
 
           <div className="flex items-center gap-2">
-          {showLanguageSwitcher && <LanguageSwitcher />}
-          {showLanguageSwitcher && <LanguageSwitcher mobile />}
+          {languageSwitcherVisible && <LanguageSwitcher />}
+          {languageSwitcherVisible && <LanguageSwitcher mobile />}
           {showManagerSlots && <span data-app-header-actions className="contents" />}
           {showMoreCampaigns && (
             <Link

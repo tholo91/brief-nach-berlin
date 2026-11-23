@@ -24,3 +24,25 @@ export function resolveBrowserLocale(languages: readonly string[] | undefined): 
   }
   return "en";
 }
+
+// Pages that stay German until a visitor picks a language (?lang= or the switcher).
+// The browser language must not flip them: search engines render with an English
+// browser and would otherwise index the wrong language there.
+const EXPLICIT_LOCALE_ONLY_PATHS = new Set(["/eltern"]);
+
+export function detectsBrowserLocale(pathname: string): boolean {
+  const normalized = pathname.length > 1 ? pathname.replace(/\/+$/, "") : pathname;
+  return !EXPLICIT_LOCALE_ONLY_PATHS.has(normalized);
+}
+
+/** Order: ?lang=, stored choice, browser language (unless the page only follows explicit choices). */
+export function resolveClientLocale(input: {
+  queryLocale: string | null;
+  storedLocale: string | null;
+  pathname: string;
+  languages: readonly string[] | undefined;
+}): Locale {
+  if (isLocale(input.queryLocale)) return input.queryLocale;
+  if (isLocale(input.storedLocale)) return input.storedLocale;
+  return detectsBrowserLocale(input.pathname) ? resolveBrowserLocale(input.languages) : DEFAULT_LOCALE;
+}

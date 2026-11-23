@@ -19,6 +19,7 @@ import {
   clearElternDraft,
   validateElternSubmit,
 } from "@/components/eltern/elternHandoff";
+import { LocaleProvider } from "@/components/i18n/LocaleProvider";
 import { ELTERN_TOPICS } from "@/lib/schule/elternTopics";
 import { ISSUE_TEXT_MAX, ISSUE_TEXT_MIN } from "@/lib/validation/wizardSchemas";
 
@@ -75,7 +76,7 @@ describe("elternHandoff", () => {
 describe("/eltern page", () => {
   it("renders two doors, the form anchor and the unchanged privacy copy", async () => {
     const { default: ElternPage } = await import("@/app/(site)/eltern/page");
-    const html = renderToStaticMarkup(createElement(ElternPage));
+    const html = renderToStaticMarkup(createElement(LocaleProvider, null, createElement(ElternPage)));
     expect(html).toContain("Schreib der Politik, was an der Schule deiner Kinder fehlt.");
     expect(html).toContain("Ich will selbst einen Brief schreiben");
     expect(html).toContain("Mein Kind will Brief-nach-Berlin mit seiner Klasse nutzen");

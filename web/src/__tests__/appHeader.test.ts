@@ -7,10 +7,11 @@ jest.mock("next/navigation", () => ({ usePathname: () => usePathname() }));
 jest.mock("@/components/i18n/LanguageSwitcher", () => ({ LanguageSwitcher: () => null }));
 
 import AppHeader from "@/components/AppHeader";
+import { LocaleProvider } from "@/components/i18n/LocaleProvider";
 
 function renderAt(pathname: string) {
   usePathname.mockReturnValue(pathname);
-  return renderToStaticMarkup(createElement(AppHeader));
+  return renderToStaticMarkup(createElement(LocaleProvider, null, createElement(AppHeader)));
 }
 
 describe("AppHeader", () => {

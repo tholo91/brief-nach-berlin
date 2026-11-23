@@ -1,3 +1,4 @@
+import { ELTERN_COPY, type ElternCopy } from "./elternCopy";
 import type { Locale } from "./locale";
 
 /**
@@ -257,6 +258,7 @@ export interface UiCatalog {
     error: string;
     reportError: string;
   };
+  eltern: ElternCopy;
 }
 
 const de: UiCatalog = {
@@ -305,6 +307,7 @@ const de: UiCatalog = {
   levels: { heading: "Welche Ebene passt zu deinem Anliegen?", noRecommendation: "Die passende Ebene ist nicht eindeutig. Wähle selbst, wohin dein Brief gehen soll.", canChooseAnother: "Du kannst dich trotzdem anders entscheiden.", groupAriaLabel: "Politische Ebene wählen", federal: "Bund", federalExamples: "Bundesgesetze, Rente, Asyl, Mieten, Verteidigung", state: "Land", stateExamples: "Schule, Polizei, Krankenhäuser, Landespolitik", local: "Kommune", localExamples: "Straße, Kita, Müll, Spielplatz, lokale Verwaltung", cityStateHint: "{state} ist Stadt und Bundesland zugleich. Kommunale Anliegen laufen deshalb über die Landesebene.", stateUnavailable: "Für deine PLZ in {region} ist die Landesebene noch nicht verfügbar. Du kannst weiterhin den Bund wählen.", localUnavailable: "Für diese PLZ fehlt noch die Zuordnung zur Kommune.", underState: "In {state} unter Land", chooseRecipients: "Empfänger:in auswählen" },
   progress: { issue: "Dein Anliegen", contact: "PLZ & E-Mail", preferences: "Ton & Länge", back: "Zurück", close: "Schließen" },
   status: { checkingRecipients: "Empfänger prüfen...", preparingDetails: "Angaben vorbereiten...", draftingLetter: "Brief wird formuliert...", letterReady: "Dein Brief ist fertig!", sending: "Wird gesendet...", sent: "Gesendet", resend: "Brief erneut senden", resendSent: "Brief erneut gesendet", retry: "Erneut versuchen", error: "Etwas ist schiefgelaufen.", reportError: "Fehler melden" },
+  eltern: ELTERN_COPY.de,
 };
 
 const en: UiCatalog = {
@@ -326,6 +329,7 @@ const en: UiCatalog = {
   levels: { heading: "Which level suits your concern?", noRecommendation: "The right level is not clear. Choose where you would like your letter to go.", canChooseAnother: "You can still choose differently.", groupAriaLabel: "Choose political level", federal: "Federal", federalExamples: "Federal laws, pensions, asylum, rents, defence", state: "State", stateExamples: "Schools, police, hospitals, state policy", local: "Local", localExamples: "Streets, childcare, litter, playgrounds, local administration", cityStateHint: "{state} is both a city and a state. Local concerns therefore go through the state level.", stateUnavailable: "The state level is not available for your postal code in {region} yet. You can still choose the federal level.", localUnavailable: "The local authority has not been mapped for this postal code yet.", underState: "Under state in {state}", chooseRecipients: "Choose recipients" },
   progress: { issue: "Your concern", contact: "Postal code & email", preferences: "Tone & length", back: "Back", close: "Close" },
   status: { checkingRecipients: "Checking recipients...", preparingDetails: "Preparing details...", draftingLetter: "Drafting your letter...", letterReady: "Your letter is ready!", sending: "Sending...", sent: "Sent", resend: "Send letter again", resendSent: "Letter sent again", retry: "Try again", error: "Something went wrong.", reportError: "Report an error" },
+  eltern: ELTERN_COPY.en,
 };
 
 const tr: UiCatalog = {
@@ -347,6 +351,7 @@ const tr: UiCatalog = {
   levels: { heading: "Talebiniz için hangi düzey uygun?", noRecommendation: "Doğru düzey net değil. Mektubunuzun nereye gitmesini istediğinizi siz seçin.", canChooseAnother: "Yine de farklı bir seçim yapabilirsiniz.", groupAriaLabel: "Siyasi düzeyi seç", federal: "Federal", federalExamples: "Federal yasalar, emeklilik, iltica, kiralar, savunma", state: "Eyalet", stateExamples: "Okullar, polis, hastaneler, eyalet politikası", local: "Yerel", localExamples: "Sokaklar, kreş, çöp, oyun alanı, yerel yönetim", cityStateHint: "{state} hem şehir hem eyalettir. Yerel talepler bu nedenle eyalet düzeyinden gider.", stateUnavailable: "{region} bölgesindeki posta kodunuz için eyalet düzeyi henüz mevcut değil. Federal düzeyi yine de seçebilirsiniz.", localUnavailable: "Bu posta kodu için yerel yönetim eşleştirmesi henüz yok.", underState: "{state} için eyalet altında", chooseRecipients: "Alıcıları seç" },
   progress: { issue: "Talebiniz", contact: "Posta kodu ve e-posta", preferences: "Ton ve uzunluk", back: "Geri", close: "Kapat" },
   status: { checkingRecipients: "Alıcılar kontrol ediliyor...", preparingDetails: "Bilgiler hazırlanıyor...", draftingLetter: "Mektubunuz hazırlanıyor...", letterReady: "Mektubunuz hazır!", sending: "Gönderiliyor...", sent: "Gönderildi", resend: "Mektubu tekrar gönder", resendSent: "Mektup tekrar gönderildi", retry: "Tekrar dene", error: "Bir şeyler ters gitti.", reportError: "Hata bildir" },
+  eltern: ELTERN_COPY.tr,
 };
 
 export const UI_CATALOG: Record<Locale, UiCatalog> = { de, en, tr };

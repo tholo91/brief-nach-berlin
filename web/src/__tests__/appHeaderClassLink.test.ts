@@ -10,11 +10,12 @@ jest.mock("@/components/schule/useStoredClassToken", () => ({
 }));
 
 import AppHeader from "@/components/AppHeader";
+import { LocaleProvider } from "@/components/i18n/LocaleProvider";
 
 describe("AppHeader school tabs with a remembered class link (A1)", () => {
   it("sends the Schüler:innen tab back into the class with ?k", () => {
     useStoredClassToken.mockReturnValue("abc.def");
-    const markup = renderToStaticMarkup(createElement(AppHeader));
+    const markup = renderToStaticMarkup(createElement(LocaleProvider, null, createElement(AppHeader)));
     expect(markup).toContain('href="/schule?k=abc.def"');
     expect(markup).toContain('href="/unterricht"');
     expect(markup).toContain('href="/eltern"');
@@ -22,7 +23,7 @@ describe("AppHeader school tabs with a remembered class link (A1)", () => {
 
   it("keeps the plain /schule link without a remembered link", () => {
     useStoredClassToken.mockReturnValue(null);
-    const markup = renderToStaticMarkup(createElement(AppHeader));
+    const markup = renderToStaticMarkup(createElement(LocaleProvider, null, createElement(AppHeader)));
     expect(markup).toContain('href="/schule"');
     expect(markup).not.toContain("?k=");
   });

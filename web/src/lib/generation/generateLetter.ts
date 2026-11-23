@@ -844,7 +844,9 @@ export async function generateLetter(
           maxTokens,
           frequencyPenalty: 0.3,
           presencePenalty: 0.4,
-        })
+        }),
+        // Kleineres Budget: der erste Aufruf darf schon bis zu 20 s auf 429 gewartet haben.
+        { rateLimitBudgetMs: 10_000 }
       );
       const retryParsed = parseLetterResponse(messageText(retryResponse.choices?.[0]?.message?.content));
       const retryWordCount = countWords(retryParsed.letter);

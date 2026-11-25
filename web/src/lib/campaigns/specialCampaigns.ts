@@ -5,6 +5,7 @@ export type SpecialCampaignRecipientKind = "bundeskanzler";
 
 export type SpecialCampaignTopic = {
   id: string;
+  emoji: string;
   eyebrow: string;
   title: string;
   shortDescription: string;
@@ -37,8 +38,9 @@ export const SCHREIB_MERZ_CAMPAIGN = {
   topics: [
     {
       id: "ausbildung",
+      emoji: "💸",
       eyebrow: "Studium & Ausbildung",
-      title: "BAföG, das zum Leben reicht",
+      title: "BAföG reicht nicht",
       shortDescription:
         "Finanzierung, die gestiegene Kosten abbildet und wirklich ankommt.",
       issueText:
@@ -46,8 +48,9 @@ export const SCHREIB_MERZ_CAMPAIGN = {
     },
     {
       id: "wohnen",
+      emoji: "🏠",
       eyebrow: "Wohnen",
-      title: "Bezahlbare erste Wohnung",
+      title: "WG-Zimmer unbezahlbar",
       shortDescription:
         "Mehr bezahlbarer Wohnraum für Ausbildung, Studium und Berufseinstieg.",
       issueText:
@@ -55,8 +58,9 @@ export const SCHREIB_MERZ_CAMPAIGN = {
     },
     {
       id: "wehrdienst",
+      emoji: "🪖",
       eyebrow: "Sicherheit",
-      title: "Mitreden beim Wehrdienst",
+      title: "Wehrdienst: fragt uns",
       shortDescription:
         "Entscheidungen transparent machen und junge Perspektiven einbeziehen.",
       issueText:
@@ -64,8 +68,9 @@ export const SCHREIB_MERZ_CAMPAIGN = {
     },
     {
       id: "klima",
+      emoji: "🌍",
       eyebrow: "Klima & Zukunft",
-      title: "Planbar statt auf später verschoben",
+      title: "Klima nicht vertagen",
       shortDescription:
         "Verlässliche Klimapolitik, die Kosten und Chancen fair verteilt.",
       issueText:
@@ -73,8 +78,9 @@ export const SCHREIB_MERZ_CAMPAIGN = {
     },
     {
       id: "mobilitaet",
+      emoji: "🚌",
       eyebrow: "Bus & Bahn",
-      title: "Mobil sein, ohne arm zu werden",
+      title: "Bus & Bahn zu teuer",
       shortDescription:
         "Ein verlässliches Deutschlandticket und bessere Verbindungen überall.",
       issueText:
@@ -82,8 +88,9 @@ export const SCHREIB_MERZ_CAMPAIGN = {
     },
     {
       id: "digitales",
+      emoji: "💻",
       eyebrow: "Digitale Bildung & KI",
-      title: "Auf die digitale Zukunft vorbereiten",
+      title: "Schule digital von gestern",
       shortDescription:
         "Zeitgemäße Schulen, digitale Kompetenzen und faire Regeln für KI.",
       issueText:

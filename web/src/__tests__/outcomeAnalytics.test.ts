@@ -36,10 +36,22 @@ describe("analytics privacy filter", () => {
     expect(send("/kampagne/starten")).toEqual({ type: "pageview", url: `${origin}/kampagne/starten` });
   });
 
-  it("strips query and hash and keeps the event type", () => {
-    const path = "/kampagne/mein-slug?utm_source=newsletter#teilen";
+  it("strips hash and unknown query params and keeps the event type", () => {
+    const path = "/kampagne/mein-slug?ref=x&email=a@b.de#teilen";
     expect(send(path)).toEqual({ type: "pageview", url: `${origin}/kampagne/mein-slug` });
     expect(send(path, "event")).toEqual({ type: "event", url: `${origin}/kampagne/mein-slug` });
+  });
+
+  it("keeps only valid utm_source, utm_medium and utm_campaign", () => {
+    const path = "/kampagne/mein-slug?utm_source=newsletter&utm_medium=qr-sticker&utm_campaign=x&t=token#teilen";
+    expect(send(path)).toEqual({
+      type: "pageview",
+      url: `${origin}/kampagne/mein-slug?utm_source=newsletter&utm_medium=qr-sticker&utm_campaign=x`,
+    });
+    expect(send("/kampagne/mein-slug?utm_source=Mail@x.de&utm_medium=a%20b")).toEqual({
+      type: "pageview",
+      url: `${origin}/kampagne/mein-slug`,
+    });
   });
 
   it("strips the e-mail hash from the letter adjustment page", () => {

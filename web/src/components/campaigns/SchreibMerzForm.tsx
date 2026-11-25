@@ -49,6 +49,8 @@ export function SchreibMerzForm() {
   const router = useRouter();
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const [usedVoice, setUsedVoice] = useState(false);
+  // Mikro und Zähler sitzen unten im Feld und wandern mit, wenn es wächst.
+  const [fieldHeight, setFieldHeight] = useState(0);
   const {
     selectedTopicIds,
     issueText,
@@ -68,6 +70,14 @@ export function SchreibMerzForm() {
   useIsoLayoutEffect(() => {
     if (textareaRef.current) fitTextarea(textareaRef.current);
   }, [issueText]);
+
+  useEffect(() => {
+    const el = textareaRef.current;
+    if (!el) return;
+    const observer = new ResizeObserver(() => setFieldHeight(el.offsetHeight));
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
 
   useEffect(() => {
     router.prefetch(WIZARD_PATH);
@@ -142,37 +152,53 @@ export function SchreibMerzForm() {
               value={issueText}
               maxLength={MAX_ISSUE_LENGTH}
               rows={3}
-              aria-describedby="merz-text-help merz-status"
+              aria-describedby="merz-text-help merz-counter merz-status"
               onChange={(event) => {
                 setIssueText(event.target.value);
                 fitTextarea(event.target);
               }}
-              className="block min-h-28 w-full resize-y rounded-xl border border-warmgrau/30 bg-creme py-3 pl-4 pr-14 font-body text-base leading-relaxed text-warmgrau shadow-sm outline-none transition sm:min-h-44 focus:border-waldgruen focus:ring-2 focus:ring-waldgruen"
+              className="block min-h-32 w-full resize-y rounded-xl border border-warmgrau/30 bg-creme pb-12 pl-4 pr-4 pt-3 font-body text-base leading-relaxed text-warmgrau shadow-sm outline-none transition sm:min-h-44 focus:border-waldgruen focus:ring-2 focus:ring-waldgruen"
             />
             {!hasText && (
               <div
                 aria-hidden="true"
-                className="pointer-events-none absolute left-4 right-14 top-3 font-body text-base leading-relaxed text-warmgrau/40"
+                className="pointer-events-none absolute left-4 right-4 top-3 font-body text-base leading-relaxed text-warmgrau/40"
               >
                 {typedPlaceholder.reducedMotion ? PLACEHOLDERS[0] : typedPlaceholder.text}
               </div>
             )}
+            <p
+              id="merz-counter"
+              aria-live="polite"
+              className={
+                hasText
+                  ? "pointer-events-none absolute bottom-3.5 left-4 rounded-md border border-warmgrau/20 bg-creme/80 px-2 py-0.5 font-body text-xs text-warmgrau/50 md:text-sm"
+                  : "sr-only"
+              }
+            >
+              {hasText
+                ? issueText.trim().length < MIN_ISSUE_LENGTH
+                  ? `${issueText.trim().length} von mind. ${MIN_ISSUE_LENGTH} Zeichen`
+                  : `${issueText.trim().length.toLocaleString("de-DE")} Zeichen`
+                : ""}
+            </p>
             <VoiceRecorder
               language="de"
               hasText={hasText}
               charCount={issueText.length}
               minChars={MIN_ISSUE_LENGTH}
-              metaStart={
-                <p id="merz-status" aria-live="polite" className="font-body text-sm font-semibold text-waldgruen-dark">
-                  {statusMessage}
-                </p>
-              }
+              fieldHeight={fieldHeight}
+              pinToBottom
+              hideMetaRow
               onTranscription={(text) => {
                 setUsedVoice(true);
                 setIssueText((prev) => (prev ? `${prev}\n${text}` : text).slice(0, MAX_ISSUE_LENGTH));
               }}
             />
           </div>
+          <p id="merz-status" aria-live="polite" className="font-body text-sm font-semibold text-waldgruen-dark empty:hidden mt-2">
+            {statusMessage}
+          </p>
         </section>
 
         <div>

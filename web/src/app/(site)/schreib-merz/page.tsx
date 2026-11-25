@@ -9,7 +9,7 @@ import { APP_URL } from "@/lib/config";
 
 const TITLE = "Schreib Merz: Dein Brief an den Kanzler";
 const DESCRIPTION =
-  "Merz, wir müssen reden. Erzähl, was dich nervt, und bekomm in 2 Minuten einen Briefentwurf an Friedrich Merz oder deine Abgeordneten. Kostenlos, ohne Account.";
+  "Merz, wir müssen reden! Erzähl, was dich nervt, und bekomm in 2 Minuten einen Briefentwurf an Friedrich Merz oder deine Abgeordneten. Kostenlos, ohne Account.";
 const CANONICAL_URL = `${APP_URL}${SCHREIB_MERZ_CAMPAIGN.path}`;
 
 export const metadata: Metadata = {
@@ -109,18 +109,17 @@ export default function SchreibMerzPage() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, "\\u003c") }}
       />
       <section className="relative overflow-hidden">
-        <div className="relative mx-auto grid w-full max-w-2xl grid-cols-[1fr_auto] items-center gap-x-4 px-5 pb-2 pt-8 sm:pt-14 lg:max-w-6xl lg:grid-cols-[1fr_minmax(0,17rem)] lg:gap-x-16 lg:pb-12 lg:pt-16">
-          <div>
-            <h1 className="font-typewriter text-[1.7rem] font-bold leading-tight tracking-tight text-waldgruen-dark sm:text-[2.6rem]">
+        <div className="relative mx-auto grid w-full max-w-2xl grid-cols-[1fr_auto] gap-x-4 px-5 pb-2 pt-8 sm:pt-14 lg:max-w-6xl lg:grid-cols-[1fr_minmax(0,17rem)] lg:grid-rows-[1fr_auto_1fr] lg:gap-x-16 lg:pb-12 lg:pt-16">
+          <h1 className="col-start-1 row-start-1 self-center lg:self-end font-typewriter text-[1.7rem] font-bold leading-tight tracking-tight text-waldgruen-dark sm:text-[2.6rem]">
               <span className="block">Merz,</span>
               <span className="mt-1 inline-block origin-left -rotate-3 font-handwriting text-[2.7rem] font-bold leading-none tracking-normal text-waldgruen sm:text-7xl">
-                wir müssen reden.
+                wir müssen reden!
               </span>
-            </h1>
-            <p className="mt-4 max-w-[40ch] text-balance font-body text-base leading-snug text-warmgrau sm:mt-6 sm:text-lg">
-              Kommentare scrollt er weg. Einen Brief nicht. Erzähl, was dich nervt, das Tool macht einen Entwurf daraus.
+          </h1>
+            <p className="col-span-2 mt-4 max-w-[46ch] lg:col-span-1 lg:col-start-1 lg:row-start-2 text-pretty font-body text-base leading-snug text-warmgrau sm:mt-6 sm:text-lg">
+              Kommentare scrollt er weg, Briefe nicht. Sag, was nervt, du kriegst den Entwurf.
             </p>
-            <ul className="mt-4 flex flex-wrap gap-x-4 gap-y-1 font-body text-sm font-semibold text-waldgruen">
+            <ul className="col-span-2 mt-4 flex self-start lg:col-span-1 lg:col-start-1 lg:row-start-3 flex-wrap gap-x-4 gap-y-1 font-body text-sm font-semibold text-waldgruen">
               {facts.map((fact) => (
                 <li key={fact} className="inline-flex items-center gap-1.5">
                   <svg aria-hidden="true" className="h-4 w-4" fill="none" viewBox="0 0 20 20">
@@ -130,8 +129,7 @@ export default function SchreibMerzPage() {
                 </li>
               ))}
             </ul>
-          </div>
-          <figure className="relative w-24 rotate-3 self-start sm:w-40 lg:w-full lg:self-center">
+          <figure className="relative col-start-2 row-start-1 w-24 rotate-3 self-start sm:w-40 lg:row-span-3 lg:w-full lg:self-center">
             <div className="overflow-hidden rounded-sm border-4 border-white bg-white shadow-[0_18px_40px_-20px_rgba(27,67,50,0.6)]">
               <div className="relative aspect-[9/10]">
                 <Image

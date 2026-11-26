@@ -104,6 +104,44 @@ function detectIOS(): boolean {
   return /iPad|iPhone|iPod/.test(ua) || (ua.includes("Mac") && "ontouchend" in document);
 }
 
+interface FixedRecipientCardProps {
+  recipient: CampaignFixedRecipientRecipient;
+  selected: boolean;
+  badge: string;
+  note?: string;
+  onSelect: () => void;
+}
+
+// Karte für feste Empfänger: Fixed-Kampagnen und der Ersatz-Empfänger einer Partei-Regel.
+function FixedRecipientCard({ recipient, selected, badge, note, onSelect }: FixedRecipientCardProps) {
+  return (
+    <div
+      role="radio"
+      aria-checked={selected}
+      tabIndex={0}
+      onClick={onSelect}
+      onKeyDown={(event) => {
+        if (event.key === "Enter" || event.key === " ") {
+          event.preventDefault();
+          onSelect();
+        }
+      }}
+      className={`w-full cursor-pointer rounded-lg border-2 p-4 text-left ${
+        selected ? "border-waldgruen bg-waldgruen/10" : "border-waldgruen/20 bg-creme"
+      }`}
+    >
+      <span className="inline-block rounded bg-waldgruen/15 px-2 py-0.5 font-body text-[11px] font-semibold uppercase tracking-wide text-waldgruen-dark">{badge}</span>
+      {recipient.organizationName && <p className="mt-2 font-body text-base font-semibold text-warmgrau">{recipient.organizationName}</p>}
+      {recipient.personName && <p className="font-body text-sm text-warmgrau">{recipient.personName}</p>}
+      <p className="mt-1 font-body text-sm leading-relaxed text-warmgrau">
+        {recipient.address.street} {recipient.address.houseNumber}<br />
+        {recipient.address.postalCode} {recipient.address.city}
+      </p>
+      {note && <p className="mt-2 font-body text-xs text-warmgrau/65">{note}</p>}
+    </div>
+  );
+}
+
 interface Step3SuccessProps {
   result: WizardActionResult | null;
   wizardData: WizardData;
@@ -231,6 +269,10 @@ export function Step3Success({
       result.disambiguationNeeded &&
       result.campaignRestrictedNoLocalMatch
   );
+  const campaignBackupRecipient =
+    result && "disambiguationNeeded" in result && result.disambiguationNeeded
+      ? result.campaignBackupRecipient ?? null
+      : null;
   const campaignTargetCount =
     result && "disambiguationNeeded" in result && result.disambiguationNeeded
       ? result.campaignTargetCount ?? politicians.length
@@ -273,6 +315,11 @@ export function Step3Success({
   const [campaignFixedSelected, setCampaignFixedSelected] = useState<boolean>(
     () => Boolean(campaignFixedRecipient)
   );
+  const [campaignBackupSelected, setCampaignBackupSelected] = useState<boolean>(
+    () => Boolean(campaignBackupRecipient)
+  );
+  const [showBackupAlternatives, setShowBackupAlternatives] = useState(false);
+  const hideBackupAlternatives = Boolean(campaignBackupRecipient) && !showBackupAlternatives;
   const [isGenerating, setIsGenerating] = useState(false);
   const [generationComplete, setGenerationComplete] = useState(false);
   const [generationError, setGenerationError] = useState<string | null>(null);
@@ -390,6 +437,7 @@ export function Step3Success({
   // prefers-reduced-motion (vestibular-disorder safety, WCAG 2.3.3).
   const handleCardSelect = useCallback((politicianId: number) => {
     setSelectedPoliticianId(politicianId);
+    setCampaignBackupSelected(false);
     setMdbLaterSelected(false);
     setRathausSelected(false);
     setLandesregierungSelected(false);
@@ -503,6 +551,7 @@ export function Step3Success({
     // Schulmodus: feste Auswahl vom Server; der Server leitet sie bei der Prüfung ohnehin selbst ab.
     if (schoolRecipient) return schoolRecipient.selection;
     if (campaignFixedRecipient && campaignFixedSelected) return { kind: "campaign_fixed" };
+    if (campaignBackupRecipient && campaignBackupSelected) return { kind: "campaign_fixed" };
     if (landesminister && ministerSelected) {
       return { kind: "landesminister", ressort: landesminister.ressort };
     }
@@ -518,7 +567,7 @@ export function Step3Success({
       return { kind: selectedPolitician.kind, selectedPoliticianId: selectedPolitician.id };
     }
     return null;
-  }, [bundeskanzler, bundeskanzlerSelected, campaignFixedRecipient, campaignFixedSelected, governmentHead, landAddressee, landesminister, ministerSelected, landesregierung, landesregierungSelected, mdbLaterSelected, rathaus, rathausSelected, schoolRecipient, selectedPolitician]);
+  }, [bundeskanzler, bundeskanzlerSelected, campaignBackupRecipient, campaignBackupSelected, campaignFixedRecipient, campaignFixedSelected, governmentHead, landAddressee, landesminister, ministerSelected, landesregierung, landesregierungSelected, mdbLaterSelected, rathaus, rathausSelected, schoolRecipient, selectedPolitician]);
 
   // Group the disambiguation cards by Wahlkreis. sortedPoliticians is already
   // Direkt-first, so insertion order puts the group holding the pre-selected
@@ -1380,6 +1429,8 @@ export function Step3Success({
         ? pc.later
         : campaignFixedRecipient && campaignFixedSelected
         ? campaignFixedRecipient.label
+        : campaignBackupRecipient && campaignBackupSelected
+        ? campaignBackupRecipient.personName ?? campaignBackupRecipient.label
         : landesminister && ministerSelected
         ? landesminister.label
         : bundeskanzler && bundeskanzlerSelected
@@ -1405,6 +1456,8 @@ export function Step3Success({
     const isFixed = selectedLevel === "Fixed" && campaignFixedRecipient !== null;
     const selectionTitle = isFixed
       ? fill(pc.fixedTitle, { name: campaignFixedRecipient.label })
+      : campaignBackupRecipient && campaignBackupSelected
+      ? fill(pc.toTitle, { name: campaignBackupRecipient.personName ?? campaignBackupRecipient.label })
       : bundeskanzler
       ? pc.chooseTitle
       : isKommune
@@ -1426,6 +1479,8 @@ export function Step3Success({
           : pc.whoTitle;
     const introCopy = isFixed
       ? pc.introFixed
+      : campaignBackupRecipient
+      ? pc.campaignBackupHint
       : bundeskanzler
       ? pc.introChancellor
       : isKommune
@@ -1540,6 +1595,7 @@ export function Step3Success({
             <p className="font-semibold text-waldgruen-dark">
               {fill(pc.campaignSentence, { attribution: campaignAttribution, target: campaignTargetLabel })}
             </p>
+            {!campaignBackupRecipient && (
             <p className="mt-1">
               {campaignRestrictedNoLocalMatch
                 ? pc.campaignNoMatch
@@ -1549,6 +1605,7 @@ export function Step3Success({
                     : fill(pc.campaignPreselected, { name: `${selectedPolitician.firstName} ${selectedPolitician.lastName}` })
                   : fill(pc.campaignMany, { count: politicians.length })}
             </p>
+            )}
           </div>
         )}
 
@@ -1588,17 +1645,43 @@ export function Step3Success({
             across groups. */}
         {isFixed && campaignFixedRecipient && (
           <div role="radiogroup" aria-label={pc.chooseRecipientAria} className="mt-6">
-            <div role="radio" aria-checked={campaignFixedSelected} tabIndex={0} onClick={() => setCampaignFixedSelected(true)} onKeyDown={(event) => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); setCampaignFixedSelected(true); } }} className="w-full cursor-pointer rounded-lg border-2 border-waldgruen bg-waldgruen/10 p-4 text-left">
-              <span className="inline-block rounded bg-waldgruen/15 px-2 py-0.5 font-body text-[11px] font-semibold uppercase tracking-wide text-waldgruen-dark">{pc.fixedBadge}</span>
-              {campaignFixedRecipient.organizationName && <p className="mt-2 font-body text-base font-semibold text-warmgrau">{campaignFixedRecipient.organizationName}</p>}
-              {campaignFixedRecipient.personName && <p className="font-body text-sm text-warmgrau">{campaignFixedRecipient.personName}</p>}
-              <p className="mt-1 font-body text-sm leading-relaxed text-warmgrau">
-                {campaignFixedRecipient.address.street} {campaignFixedRecipient.address.houseNumber}<br />
-                {campaignFixedRecipient.address.postalCode} {campaignFixedRecipient.address.city}
-              </p>
-              <p className="mt-2 font-body text-xs text-warmgrau/65">{pc.fixedNote}</p>
-            </div>
+            <FixedRecipientCard
+              recipient={campaignFixedRecipient}
+              selected={campaignFixedSelected}
+              badge={pc.fixedBadge}
+              note={pc.fixedNote}
+              onSelect={() => setCampaignFixedSelected(true)}
+            />
           </div>
+        )}
+        {campaignBackupRecipient && (
+          <>
+            <div role="radiogroup" aria-label={pc.chooseRecipientAria} className="mt-6">
+              <FixedRecipientCard
+                recipient={campaignBackupRecipient}
+                selected={campaignBackupSelected}
+                badge={pc.backupBadge}
+                onSelect={() => {
+                  setCampaignBackupSelected(true);
+                  setSelectedPoliticianId(null);
+                }}
+              />
+            </div>
+            <button
+              type="button"
+              onClick={() => {
+                if (showBackupAlternatives) {
+                  setCampaignBackupSelected(true);
+                  setSelectedPoliticianId(null);
+                }
+                setShowBackupAlternatives((current) => !current);
+              }}
+              aria-expanded={showBackupAlternatives}
+              className="mt-4 font-body text-sm font-semibold text-waldgruen underline decoration-waldgruen/35 underline-offset-4 hover:text-waldgruen-dark"
+            >
+              {showBackupAlternatives ? pc.backupHideMdbs : pc.backupShowMdbs}
+            </button>
+          </>
         )}
         {/* Kommune: eine einzige Verwaltungs-Karte statt Abgeordneten-Gruppen */}
         {isKommune && rathaus && (
@@ -1921,6 +2004,7 @@ export function Step3Success({
         )}
 
         {!isKommune &&
+          !hideBackupAlternatives &&
           (!isLand || showLandPersonPicker) &&
           (politicians.length > 0 || campaignRestricted) && (
         <div className="mt-6" id={isLand ? "land-person-picker" : undefined}>

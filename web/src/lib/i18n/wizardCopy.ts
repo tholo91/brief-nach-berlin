@@ -72,6 +72,10 @@ type PickerKey =
   | "committees"
   | "profileLink"
   | "fixedBadge"
+  | "campaignBackupHint"
+  | "backupBadge"
+  | "backupShowMdbs"
+  | "backupHideMdbs"
   | "fixedNote"
   | "badgeBezirksamt"
   | "badgeBuergermeisteramt"
@@ -328,6 +332,10 @@ const de: WizardCopy = {
     committees: "Ausschüsse",
     profileLink: "Profil auf Abgeordnetenwatch.de",
     fixedBadge: "Fester Kampagnenempfänger",
+    campaignBackupHint: "In deinem Wahlkreis sitzt kein MdB aus dieser Kampagnenauswahl, deshalb geht dein Brief an die für das Anliegen zuständige Stelle.",
+    backupBadge: "Zuständig für das Anliegen",
+    backupShowMdbs: "Lieber an ein MdB aus der Kampagnenauswahl schreiben",
+    backupHideMdbs: "MdB-Auswahl ausblenden",
     fixedNote: "Du kannst aus ganz Deutschland teilnehmen.",
     badgeBezirksamt: "Bezirksamt",
     badgeBuergermeisteramt: "Bürgermeisteramt",
@@ -512,6 +520,10 @@ const en: WizardCopy = {
     committees: "Committees",
     profileLink: "Profile on Abgeordnetenwatch.de",
     fixedBadge: "Fixed campaign recipient",
+    campaignBackupHint: "No Bundestag member from this campaign's selection represents your constituency, so your letter goes to the office responsible for this issue.",
+    backupBadge: "Responsible for this issue",
+    backupShowMdbs: "Write to a Bundestag member from the campaign selection instead",
+    backupHideMdbs: "Hide member selection",
     fixedNote: "You can take part from anywhere in Germany.",
     badgeBezirksamt: "District office",
     badgeBuergermeisteramt: "Mayor's office",
@@ -696,6 +708,10 @@ const tr: WizardCopy = {
     committees: "Komisyonlar",
     profileLink: "Abgeordnetenwatch.de'de profil",
     fixedBadge: "Sabit kampanya alıcısı",
+    campaignBackupHint: "Seçim bölgenizde bu kampanya seçiminden bir Bundestag milletvekili olmadığı için mektubunuz bu konudan sorumlu makama gider.",
+    backupBadge: "Bu konudan sorumlu",
+    backupShowMdbs: "Bunun yerine kampanya seçiminden bir milletvekiline yazın",
+    backupHideMdbs: "Milletvekili seçimini gizleyin",
     fixedNote: "Almanya'nın her yerinden katılabilirsiniz.",
     badgeBezirksamt: "İlçe idaresi",
     badgeBuergermeisteramt: "Belediye başkanlığı",

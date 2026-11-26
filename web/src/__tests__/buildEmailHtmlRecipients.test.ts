@@ -299,11 +299,12 @@ describe("buildEmailHtml — Empfänger-Arten", () => {
     expect(html).toContain("<strong>Bürgermeisteramt Köln</strong><br>");
     expect(html).toContain("Rathaus<br>50667 Köln");
     expect(html).toContain("google.com/search");
-    expect(html).toContain("Destatis</a>, geprüft am 31.01.2026");
+    expect(html).toContain(">Quelle</a> (31.01.2026), <a ");
     expect(html).toContain("https://www.destatis.de/anschriften");
     expect(html).toContain(encodeURIComponent("Bürgermeisteramt Köln Postanschrift"));
     expect(html).not.toContain(encodeURIComponent("Bürgermeisteramt 50667 Köln"));
-    expect(html).toMatch(/<a href="[^"]+"[^>]*>hier<\/a> prüfen/);
+    expect(html).toMatch(/<a href="[^"]+"[^>]*>hier prüfen<\/a>/);
+    expect(html).not.toContain("noch einmal");
     expect(html).toContain("/images/email-variants/email-kommune-rathaus.webp");
     expect(html).toContain("/images/email-variants/email-rathaus-banner.webp");
     expect(html).not.toContain("/images/email-bundestag-banner.png");
@@ -384,7 +385,7 @@ describe("buildEmailHtml — Empfänger-Arten", () => {
 
     expect(html).toContain("<strong>Bezirksamt Pankow von Berlin</strong><br>");
     expect(html).toContain("Postfach 73 01 13<br>13062 Berlin");
-    expect(html).toContain("berlin.de</a>, geprüft am 10.11.2026");
+    expect(html).toContain(">Quelle</a> (10.11.2026)");
     expect(html).toContain("https://www.berlin.de/ba-pankow/");
   });
 

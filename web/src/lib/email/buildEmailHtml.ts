@@ -655,7 +655,7 @@ export function buildEmailHtml(data: SendLetterEmailParams): string {
   const rathausSearchLine =
     isRathaus && rathausSearchUrl
       ? officialRathausAddress
-        ? `<p style="${rathausNoteStyle}">${copy.source} <a href="${escapeHtml(officialRathausAddress.sourceUrl)}" target="_blank" rel="noopener noreferrer" style="color:#b0b0b0;text-decoration:underline;">${escapeHtml(officialRathausAddress.sourceName)}</a>, ${copy.checked} ${escapeHtml(officialRathausAddress.sourceStand)}. ${copy.verifyGoogle} <a href="${rathausSearchUrl}" target="_blank" rel="noopener noreferrer" style="color:#b0b0b0;text-decoration:underline;">${copy.verifyHere}</a> ${copy.verifyEnd}</p>`
+        ? `<p style="${rathausNoteStyle}"><a href="${escapeHtml(officialRathausAddress.sourceUrl)}" target="_blank" rel="noopener noreferrer" title="${escapeHtml(officialRathausAddress.sourceName)}" style="color:#b0b0b0;text-decoration:underline;">${escapeHtml(copy.source.replace(/:$/, ""))}</a> (${escapeHtml(officialRathausAddress.sourceStand)}), <a href="${rathausSearchUrl}" target="_blank" rel="noopener noreferrer" style="color:#b0b0b0;text-decoration:underline;">${copy.verifyGoogle}</a></p>`
         : data.rathausSearch?.address.source === "fallback" && rathausCandidates.length > 0
           ? `<p style="${rathausNoteStyle}">${escapeHtml(copy.ambiguousBezirke(formatBezirkeList(rathausCandidates.map((c) => c.bezirk), copy.conjunctionOr)))}</p>${rathausCandidates
               .map(

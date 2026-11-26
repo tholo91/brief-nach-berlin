@@ -4,10 +4,10 @@ milestone: v1.0
 current_phase: 05
 status: verifying
 stopped_at: Completed 05-04-PLAN.md
-last_updated: "2026-11-23T17:30:11.510Z"
-last_activity: 2026-11-20
+last_updated: "2026-11-26T10:35:25.020Z"
+last_activity: 2026-11-23
 last_activity_desc: Quick 261013-wuq lokal implementiert und geprüft; manueller Release offen
-state_head: 7f7e0ec187e20129ef6be969f459121ecce4714d
+state_head: 3db172d63f83113c967c0b0f074848695d50cba8
 progress:
   total_phases: 33
   completed_phases: 4
@@ -263,6 +263,9 @@ Recent decisions affecting current work:
 | 261120-k2m | Schulname im Klassenlink | 2026-11-20 | e0f0a34 | [261120-k2m-schulname-im-klassenlink](./quick/261120-k2m-schulname-im-klassenlink/) |
 | 261123-p34 | Elternseite und Jugendtexte im Wizard auf Englisch und Tuerkisch | 2026-11-23 | 7f7e0ec | [261123-p34-eltern-und-schultexte-auf-englisch-und-t](./quick/261123-p34-eltern-und-schultexte-auf-englisch-und-t/) |
 | 261123-ps6 | Restliche Wizard-Texte (Schulreiter, Erfolgsseite, Empfängerauswahl) auf Englisch und Tuerkisch | 2026-11-23 | 08634af | [261123-ps6-restliche-deutsche-texte-wizard-en-tr](./quick/261123-ps6-restliche-deutsche-texte-wizard-en-tr/) |
+| 261117-r86 | Kampagnen-Kasten "Bist du selbst betroffen?" mit Aufhängern, Prompt-Block und Messung | 2026-11-18 | 0e6b9f7 | [261117-r86-kampagnen-kasten-bist-du-selbst-betroffe](./quick/261117-r86-kampagnen-kasten-bist-du-selbst-betroffe/) |
+| 261125-dc2 | schreib-merz nach schule-Muster, jugendlicher Ton | 2026-11-25 | b65bcba | [261125-dc2-schreib-merz-nach-schule-muster-jugendli](./quick/261125-dc2-schreib-merz-nach-schule-muster-jugendli/) |
+| 261126-fit | Kampagnen: Partei-Regel und Ersatz-Empfänger (Prien-Backup) | 2026-11-26 | 3db172d | [261126-fit-kampagnen-partei-regel-und-ersatz-empf-n](./quick/261126-fit-kampagnen-partei-regel-und-ersatz-empf-n/) |
 
 ## Session Continuity
 

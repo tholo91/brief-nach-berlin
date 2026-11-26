@@ -78,7 +78,9 @@ Plans:
 
 ## Backlog
 
-### Phase 999.37: Kampagnen: persönlicher Aufhänger im Wizard (IN ARBEIT, Quick 261117-r86)
+### Phase 999.37: Kampagnen: persönlicher Aufhänger im Wizard (ERLEDIGT 2026-11-18, Quick 261117-r86)
+
+**Stand 2026-11-23:** Live seit Commit 0e6b9f7, Migration 041 angewendet, alle aktiven Kampagnen haben Aufhänger. Offen bleibt nur das "Spätere Backlog" unten (Aufhänger durch NGOs auf der Managementseite bearbeiten).
 
 **Neu geschnitten (Grill-Session 2026-11-17), gilt vor dem alten Scope unten:**
 - Kasten "Bist du selbst betroffen?" in `StepPreferences`, nur Kampagne und nur bei unverändertem Text (Haupttext oder Variante).

@@ -25,5 +25,6 @@ All migrations live in `web/supabase/migrations/`. The `000_<timestamp>_*` files
 | `041_campaign_personal_hooks.sql` | Production schema verified 2026-11-18 | Confirmed hook column, three-item limit and both boolean signal columns. CLI history unverified. |
 | `042_daily_letter_counts.sql` | Pending | Apply manually after the service-role counter writer is deployed and previous instances stop serving generation requests. |
 | `043_campaign_tokens_admin_link.sql` | Applied (column live, backfill wrote 21 rows on 2026-11-23) | Adds nullable `campaign_tokens.admin_link`. Filled by `scripts/backfill-campaign-admin-links.ts` and on email verification; link values never committed. |
+| `044_campaign_admin_links_view.sql` | Applied by Thomas in the SQL Editor (2026-11-26) | Verified read-only: service role reads 22 rows with title, slug, status, admin link; anon gets `permission denied`. CLI history not updated. |
 
 The `letter_signals_topic_source_check` constraint was part of the SQL Thomas applied, but its definition was not independently queried. Running SQL in the Supabase Dashboard does not automatically record the file in Supabase CLI migration history; that history remains unverified because the local CLI has no access token. Check the remote migration history before any future `supabase db push`.

@@ -46,6 +46,10 @@ import { createGenerationProof, verifyLetterSignalContext } from "@/lib/letterSi
 import { markLetterSignalGeneratedAction } from "@/lib/actions/letterSignals";
 import { isBundeskanzlerCampaignTarget } from "@/lib/lookup/bundeskanzlerRecipient";
 import { getCampaignFixedRecipient } from "@/lib/lookup/campaignFixedRecipient";
+import {
+  campaignSelectionAllowed,
+  resolveCampaignRecipientRule,
+} from "@/lib/lookup/campaignRecipientRule";
 
 // Client-Auswahl: diskriminierte Union (999.6). Institutionelle Empfänger
 // tragen bewusst KEINE ID; der Server leitet sie aus der PLZ ab (LOCK-5).
@@ -233,7 +237,7 @@ export async function POST(req: NextRequest) {
       getCampaignIssueTexts(campaign).some((text) => text.trim() === trimmedIssueText)
         ? parsedPersonalNote.data
         : undefined;
-    const allowedPoliticianIds = campaign?.targetPoliticianIds ?? [];
+    const campaignRule = resolveCampaignRecipientRule(campaign, data.plz);
     const campaignFixedRecipient = campaign
       ? getCampaignFixedRecipient(campaign)
       : null;
@@ -243,7 +247,7 @@ export async function POST(req: NextRequest) {
     ) {
       return NextResponse.json({ error: "Empfänger nicht gefunden." }, { status: 400 });
     }
-    if (allowedPoliticianIds.length > 0 && selection.kind !== "mdb") {
+    if (!campaignSelectionAllowed(campaignRule, selection.kind)) {
       return NextResponse.json({ error: "Empfänger nicht gefunden." }, { status: 400 });
     }
     if (campaignFixedRecipient && selection.kind !== "campaign_fixed") {
@@ -265,9 +269,9 @@ export async function POST(req: NextRequest) {
         : null;
     const school = resolveSchoolRecipientForRequest(data, verifiedRouting);
     const resolved = resolveRecipientSelection(data.plz, school?.selection ?? selection, {
-      allowedPoliticianIds,
+      allowedPoliticianIds: campaignRule.allowedPoliticianIds,
       campaignSlug: campaign?.slug ?? null,
-      campaignFixedRecipient,
+      campaignFixedRecipient: campaignFixedRecipient ?? campaignRule.backupRecipient,
     });
     if (!resolved.ok) {
       return NextResponse.json({ error: "Empfänger nicht gefunden." }, { status: 400 });

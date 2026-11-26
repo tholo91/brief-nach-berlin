@@ -674,4 +674,111 @@ describe("RecipientSelection server hardening", () => {
     )).resolves.toEqual({ success: true });
     expect(mockedPrepareLetterEmail).toHaveBeenCalledWith(expect.objectContaining({ recipient: head }));
   });
+
+  describe("Partei-Regel mit Ersatz-Empfänger", () => {
+    const partyBackupCampaign = {
+      slug: "demokratiearbeit-finanzieren",
+      targetLevel: "Bund",
+      targetState: null,
+      targetRecipient: null,
+      targetPoliticianIds: [],
+      targetParties: ["CDU/CSU", "SPD"],
+      backupRecipient: {
+        organizationName: "Bundesministerium für Bildung, Familie, Senioren, Frauen und Jugend",
+        personName: "Frau Bundesministerin Karin Prien",
+        role: "Bundesministerin",
+        salutation: "Sehr geehrte Frau Bundesministerin Prien,",
+        street: "Glinkastraße",
+        houseNumber: "24",
+        postalCode: "10117",
+        city: "Berlin",
+        countryCode: "DE",
+      },
+      topic: null,
+    } as const;
+    const campaignInfo = {
+      slug: "demokratiearbeit-finanzieren",
+      title: "Demokratiearbeit finanzieren",
+    };
+
+    it("löst campaign_fixed serverseitig aus der Kampagne auf, wenn die PLZ keinen lokalen Treffer hat", async () => {
+      mockedGetPublicCampaignBySlug.mockResolvedValue(partyBackupCampaign as never);
+
+      await expect(selectPoliticianAction(
+        { ...data, plz: "10243", campaign: campaignInfo },
+        { kind: "campaign_fixed" }
+      )).resolves.toMatchObject({ preCheckOk: true });
+
+      expect(mockedResolveRecipientSelection).toHaveBeenCalledWith(
+        "10243",
+        { kind: "campaign_fixed" },
+        expect.objectContaining({
+          campaignFixedRecipient: buildCampaignFixedRecipient(partyBackupCampaign.backupRecipient),
+        })
+      );
+    });
+
+    it("lehnt campaign_fixed ab, wenn die PLZ einen lokalen Treffer der Parteien hat", async () => {
+      mockedGetPublicCampaignBySlug.mockResolvedValue(partyBackupCampaign as never);
+
+      await expect(selectPoliticianAction(
+        { ...data, plz: "28195", campaign: campaignInfo },
+        { kind: "campaign_fixed" }
+      )).resolves.toEqual({ error: "server_error", message: "Empfänger nicht gefunden." });
+      expect(mockedResolveRecipientSelection).not.toHaveBeenCalled();
+    });
+
+    it("lehnt campaign_fixed ab, wenn die Kampagne keinen Ersatz-Empfänger hat", async () => {
+      mockedGetPublicCampaignBySlug.mockResolvedValue(
+        { ...partyBackupCampaign, backupRecipient: null } as never
+      );
+
+      await expect(selectPoliticianAction(
+        { ...data, plz: "10243", campaign: campaignInfo },
+        { kind: "campaign_fixed" }
+      )).resolves.toEqual({ error: "server_error", message: "Empfänger nicht gefunden." });
+      expect(mockedResolveRecipientSelection).not.toHaveBeenCalled();
+    });
+
+    it("Resend akzeptiert campaign_fixed ohne lokalen Treffer und lehnt es mit lokalem Treffer ab", async () => {
+      const recipient = buildCampaignFixedRecipient(partyBackupCampaign.backupRecipient);
+      const letterText = `${recipient.salutation}\n\nEin fertiger Brief.`;
+      mockedGetPublicCampaignBySlug.mockResolvedValue(partyBackupCampaign as never);
+      mockedResolveRecipientSelection.mockReturnValue({
+        ok: true,
+        recipient,
+        availableCount: 1,
+        relation: "institutional",
+      });
+      mockedBuildResendDebugPayload.mockReturnValue({} as never);
+      mockedPrepareLetterEmail.mockReturnValue({ feedbackToken: "token", params: {} as never });
+      mockedSendLetterEmail.mockResolvedValue({ success: true, messageId: "id" });
+      const proofFor10243 = createGenerationProof({
+        letterId: "11111111-1111-4111-8111-111111111111",
+        issueText: data.issueText,
+        plz: "10243",
+        recipient,
+        letterText,
+        campaignSlug: partyBackupCampaign.slug,
+      });
+
+      await expect(resendLetterAction(
+        { ...data, plz: "10243", campaign: campaignInfo },
+        { kind: "campaign_fixed" },
+        letterText,
+        proofFor10243,
+      )).resolves.toEqual({ success: true });
+
+      jest.clearAllMocks();
+      mockedCheckRateLimit.mockReturnValue({ allowed: true });
+      mockedGetPublicCampaignBySlug.mockResolvedValue(partyBackupCampaign as never);
+      await expect(resendLetterAction(
+        { ...data, plz: "28195", campaign: campaignInfo },
+        { kind: "campaign_fixed" },
+        letterText,
+        proofFor10243,
+      )).resolves.toEqual({ error: "validation", message: "Empfänger nicht gefunden." });
+      expect(mockedResolveRecipientSelection).not.toHaveBeenCalled();
+    });
+  });
 });

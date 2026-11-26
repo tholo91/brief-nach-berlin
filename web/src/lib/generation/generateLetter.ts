@@ -286,6 +286,27 @@ REGELN FÜR DEN FESTEN EMPFÄNGER (nicht verhandelbar):
 - Formuliere die Bitte so, dass der Empfänger im Rahmen seiner tatsächlichen Verantwortung handeln oder Stellung beziehen kann, ohne eine konkrete Kompetenz zu behaupten.
 - Die Anschrift beschreibt nur den Empfänger. Leite daraus niemals Wohnort, Herkunft oder persönliche Betroffenheit der schreibenden Person ab.`;
 
+// Ersatz-Empfänger einer Kampagne: feste Person mit hinterlegter Funktion
+// (z. B. Bundesministerin). Die Funktion kommt nur aus der Kampagnen-Konfiguration.
+function fixedRecipientRoleZustaendigkeitBlock(role: string): string {
+  return `ZUSTÄNDIGKEITSHINWEIS:
+Der Brief richtet sich persönlich an die im <empfaenger>-Block hinterlegte Person in ihrer Funktion: "${role}". Sprich sie in dieser Funktion an und stütze die eine Bitte auf die Verantwortung, die mit dieser Funktion verbunden ist, bei einem Ministeramt auf die Verantwortung ihres Hauses für das Anliegen.
+
+REGELN FÜR DEN FESTEN EMPFÄNGER MIT FUNKTION (nicht verhandelbar):
+- Richte den Brief ausschließlich an diese Person.
+- Der Wahlkreis spielt keine Rolle: Beziehe dich nicht auf einen Wahlkreis und nicht auf die Herkunft der schreibenden Person.
+- Nenne keine Partei und keine Parteibeziehung.
+- Bleibe bei der hinterlegten Funktion und erfinde keine weitere Behörde, Abteilung oder Entscheidungsbefugnis.
+- Die Anschrift beschreibt nur den Empfänger. Leite daraus niemals Wohnort, Herkunft oder persönliche Betroffenheit der schreibenden Person ab.`;
+}
+
+function fixedRecipientRoleBitteLine(role: string): string {
+  return `2. EINE BITTE: genau ein konkretes Verb plus ein konkretes Handlungsobjekt. Keine Aufzählung und keine Wunschliste. Richte die Bitte an die Person in ihrer Funktion als ${role} und knüpfe sie an die Verantwortung, die mit dieser Funktion verbunden ist.`;
+}
+
+const FIXED_CAMPAIGN_RECIPIENT_ROLE_PARTEI_HEADER = `EMPFÄNGER-NEUTRALITÄT:
+Der Brief richtet sich an das Amt und die Verantwortung der hinterlegten Person. Verwende keine parteibezogene Werte-Sprache und benenne keine Partei.`;
+
 const REGIERUNGSCHEF_ZUSTAENDIGKEIT_BLOCK = `ZUSTÄNDIGKEITSHINWEIS:
 Der Brief richtet sich persönlich an die amtierende Regierungsspitze des Bundeslands. Sprich die Person mit der vorgegebenen Anrede an und beziehe dich auf ihre politische Führungsverantwortung für das Land. Erfinde keine persönliche, parteipolitische, ministerielle oder Ausschusszuständigkeit.
 
@@ -405,14 +426,28 @@ export function buildSystemPrompt(input: GenerateLetterInput): string {
 
   let prompt = base;
   if (input.campaignFixedRecipient) {
+    const fixedRole = input.campaignFixedRecipient.role;
     prompt = prompt
-      .replace(BUND_ZUSTAENDIGKEIT_BLOCK, FIXED_CAMPAIGN_RECIPIENT_ZUSTAENDIGKEIT_BLOCK)
+      .replace(
+        BUND_ZUSTAENDIGKEIT_BLOCK,
+        fixedRole
+          ? fixedRecipientRoleZustaendigkeitBlock(fixedRole)
+          : FIXED_CAMPAIGN_RECIPIENT_ZUSTAENDIGKEIT_BLOCK
+      )
       .replace(
         BUND_ANREDE_LINE,
         `- Anrede: exakt "${input.campaignFixedRecipient.salutation}". Verwende keine andere Anrede.`
       )
-      .replace(BUND_BITTE_LINE, FIXED_CAMPAIGN_RECIPIENT_BITTE_LINE)
-      .replace(BUND_PARTEI_HEADER, FIXED_CAMPAIGN_RECIPIENT_PARTEI_HEADER)
+      .replace(
+        BUND_BITTE_LINE,
+        fixedRole ? fixedRecipientRoleBitteLine(fixedRole) : FIXED_CAMPAIGN_RECIPIENT_BITTE_LINE
+      )
+      .replace(
+        BUND_PARTEI_HEADER,
+        fixedRole
+          ? FIXED_CAMPAIGN_RECIPIENT_ROLE_PARTEI_HEADER
+          : FIXED_CAMPAIGN_RECIPIENT_PARTEI_HEADER
+      )
       .replace(`\n${BUND_PARTEI_LIST}`, "")
       .replace(BUND_WAHLKREIS_BLOCK, "")
       .replace(`${BUND_MDB_CONTEXT_BLOCK}\n\n`, "");
@@ -641,6 +676,7 @@ export function buildUserPrompt(
             ? { anschrift: input.campaignFixedRecipient.postalAddress }
             : {}),
           ...(input.landesminister ? { amt: input.landesminister.officeName } : {}),
+          ...(input.campaignFixedRecipient?.role ? { amt: input.campaignFixedRecipient.role } : {}),
           level: institutionalRecipient.level,
         },
       ]

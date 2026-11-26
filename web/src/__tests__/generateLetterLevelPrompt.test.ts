@@ -190,6 +190,56 @@ describe("buildSystemPrompt — Empfängerlogik", () => {
     expect(prompt).not.toContain("ABGEORDNETEN-KONTEXT NUTZEN");
   });
 
+  describe("fester Empfänger mit Funktion (Ersatz-Empfänger)", () => {
+    const roleRecipient = getCampaignFixedRecipient({
+      targetLevel: "Fixed",
+      targetRecipient: {
+        organizationName: "Bundesministerium für Bildung, Familie, Senioren, Frauen und Jugend",
+        personName: "Frau Bundesministerin Karin Prien",
+        role: "Bundesministerin für Bildung, Familie, Senioren, Frauen und Jugend",
+        salutation: "Sehr geehrte Frau Bundesministerin Prien,",
+        street: "Glinkastraße",
+        houseNumber: "24",
+        postalCode: "10117",
+        city: "Berlin",
+        countryCode: "DE",
+      },
+    })!;
+
+    it("nennt Funktion und exakte Anrede und kennt keine Wahlkreisbeziehung", () => {
+      const prompt = buildSystemPrompt(input({
+        level: "Fixed",
+        campaignFixedRecipient: roleRecipient,
+        politicians: [],
+      }));
+
+      expect(prompt).toContain("Bundesministerin für Bildung, Familie, Senioren, Frauen und Jugend");
+      expect(prompt).toContain('Anrede: exakt "Sehr geehrte Frau Bundesministerin Prien,"');
+      expect(prompt).toContain("Verantwortung");
+      expect(prompt).toContain("Der Wahlkreis spielt keine Rolle");
+      expect(prompt).not.toContain("Funktion oder Zuständigkeit.");
+      expect(prompt).not.toContain("ABGEORDNETEN-KONTEXT NUTZEN");
+      expect(prompt).not.toContain("- SPD:");
+    });
+
+    it("ergänzt amt mit der Funktion im empfaenger-Eintrag des User-Prompts", () => {
+      const withRole = buildUserPrompt(input({
+        level: "Fixed",
+        campaignFixedRecipient: roleRecipient,
+        politicians: [],
+      }), 200, 280, 3);
+      expect(withRole).toContain('"amt"');
+      expect(withRole).toContain("Bundesministerin für Bildung, Familie, Senioren, Frauen und Jugend");
+
+      const withoutRole = buildUserPrompt(input({
+        level: "Fixed",
+        campaignFixedRecipient: fixedCampaignRecipient,
+        politicians: [],
+      }), 200, 280, 3);
+      expect(withoutRole).not.toContain('"amt"');
+    });
+  });
+
   it("Regierungschef: nennt die richtige Person und Anrede ohne Parteikontext", () => {
     const prompt = buildSystemPrompt(input({
       level: "Land", landesregierung: regierungschef, politicians: [],

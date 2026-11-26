@@ -20,6 +20,10 @@ import { runningCampaign } from "@/lib/campaigns/endDate";
 import { getPublicCampaignBySlug } from "@/lib/campaigns/repository";
 import { isBundeskanzlerCampaignTarget } from "@/lib/lookup/bundeskanzlerRecipient";
 import { getCampaignFixedRecipient } from "@/lib/lookup/campaignFixedRecipient";
+import {
+  campaignSelectionAllowed,
+  resolveCampaignRecipientRule,
+} from "@/lib/lookup/campaignRecipientRule";
 import { isYouthAudience } from "@/lib/schule/youth";
 import { verifyClassToken } from "@/lib/schule/classToken";
 import { lockWizardToClassToken } from "@/lib/schule/youthContext";
@@ -100,7 +104,7 @@ export async function resendLetterAction(
       return { error: "validation", message: "Diese Kampagne ist aktuell nicht aktiv." };
     }
     const campaign = runningCampaign(activeCampaign, new Date());
-    const allowedPoliticianIds = campaign?.targetPoliticianIds ?? [];
+    const campaignRule = resolveCampaignRecipientRule(campaign, data.plz);
     const campaignFixedRecipient = campaign
       ? getCampaignFixedRecipient(campaign)
       : null;
@@ -110,7 +114,7 @@ export async function resendLetterAction(
     ) {
       return { error: "validation", message: "Empfänger nicht gefunden." };
     }
-    if (allowedPoliticianIds.length > 0 && normalizedSelection.kind !== "mdb") {
+    if (!campaignSelectionAllowed(campaignRule, normalizedSelection.kind)) {
       return { error: "validation", message: "Empfänger nicht gefunden." };
     }
     if (campaignFixedRecipient && normalizedSelection.kind !== "campaign_fixed") {
@@ -145,9 +149,9 @@ export async function resendLetterAction(
     // geladenen festen Kampagnenziel gebaut (LOCK-5).
     const resolved = campaign
       ? resolveRecipientSelection(data.plz, normalizedSelection, {
-          allowedPoliticianIds,
+          allowedPoliticianIds: campaignRule.allowedPoliticianIds,
           campaignSlug: campaign.slug,
-          campaignFixedRecipient,
+          campaignFixedRecipient: campaignFixedRecipient ?? campaignRule.backupRecipient,
         })
       : resolveRecipientSelection(data.plz, normalizedSelection);
     if (!resolved.ok) {

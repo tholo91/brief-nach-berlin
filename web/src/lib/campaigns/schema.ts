@@ -65,6 +65,8 @@ export const campaignFixedRecipientSchema = z.object({
   postalCode: z.string().regex(/^\d{5}$/, "Bitte gib eine gültige 5-stellige Postleitzahl ein."),
   city: z.string().trim().min(2).max(120),
   countryCode: z.literal("DE"),
+  /** Nur für Ersatz-Empfänger: Funktion der Person, z. B. "Bundesministerin für ...". */
+  role: z.string().trim().min(2).max(200).optional(),
 }).superRefine((value, ctx) => {
   if (!value.organizationName && !value.personName) {
     ctx.addIssue({
@@ -295,6 +297,10 @@ export type Campaign = {
   targetState: BundeslandKey | null;
   targetRecipient: CampaignFixedRecipient | null;
   targetPoliticianIds: number[];
+  /** Nur Bund: Parteien, deren MdBs infrage kommen (exakte Politician.party-Strings). */
+  targetParties?: string[];
+  /** Nur Bund: fester Empfänger, wenn die PLZ keinen lokalen MdB aus der Regel hat. */
+  backupRecipient?: CampaignFixedRecipient | null;
   /** Internes, beim Speichern der Kampagne ermitteltes Statistik-Signal. */
   topic?: TopicSignal | null;
   /** Optionales Kampagnenende (ISO). Fehlt oder null: läuft ohne festes Ende. */
@@ -317,6 +323,34 @@ export function isCampaignTargetLocked(
   campaign: Pick<Campaign, "activatedAt">
 ): boolean {
   return campaign.activatedAt !== null;
+}
+
+// Liest Partei-Regel und Ersatz-Empfänger aus der Zeile. Ein Tippfehler im SQL darf
+// die Kampagnenseite nicht lahmlegen: ungültiger Ersatz-Empfänger wird zu null.
+export function parseCampaignPartyRule(row: {
+  target_level?: string | null;
+  target_parties?: unknown;
+  backup_recipient?: unknown;
+}): { targetParties: string[]; backupRecipient: CampaignFixedRecipient | null } {
+  if ((row.target_level ?? "Bund") !== "Bund") {
+    return { targetParties: [], backupRecipient: null };
+  }
+  const targetParties = Array.isArray(row.target_parties)
+    ? row.target_parties
+        .filter((item): item is string => typeof item === "string")
+        .map((item) => item.trim())
+        .filter((item) => item.length > 0)
+    : [];
+  let backupRecipient: CampaignFixedRecipient | null = null;
+  if (row.backup_recipient != null) {
+    const parsed = campaignFixedRecipientSchema.safeParse(row.backup_recipient);
+    if (parsed.success) {
+      backupRecipient = parsed.data;
+    } else {
+      console.error("Ersatz-Empfänger der Kampagne ist ungültig und wird ignoriert.");
+    }
+  }
+  return { targetParties, backupRecipient };
 }
 
 export function parseCampaignTopic(row: {

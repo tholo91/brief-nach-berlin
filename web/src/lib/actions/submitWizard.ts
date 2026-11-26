@@ -45,6 +45,10 @@ import { DEFAULT_LETTER_LENGTH } from "@/lib/config";
 import { getLandesregierungRecipient } from "@/lib/lookup/landesregierungRecipient";
 import { getCampaignFixedRecipient } from "@/lib/lookup/campaignFixedRecipient";
 import {
+  campaignAllowedPoliticianIds,
+  campaignBackupRecipient,
+} from "@/lib/lookup/campaignRecipientRule";
+import {
   getBundeskanzlerRecipient,
   isBundeskanzlerCampaignTarget,
   isBundeskanzlerCampaignSlug,
@@ -156,6 +160,8 @@ export async function submitWizardAction(
           targetState: BundeslandKey | null;
           targetRecipient: CampaignFixedRecipient | null;
           targetPoliticianIds: number[];
+          targetParties: string[];
+          backupRecipient: CampaignFixedRecipient | null;
         }
       | null = null;
     let featuredRecipient: BundeskanzlerRecipient | null = null;
@@ -176,6 +182,8 @@ export async function submitWizardAction(
           targetState: campaign.targetState,
           targetRecipient: campaign.targetRecipient,
           targetPoliticianIds: campaign.targetPoliticianIds,
+          targetParties: campaign.targetParties ?? [],
+          backupRecipient: campaign.backupRecipient ?? null,
         };
       }
       if (!campaignEnded && isBundeskanzlerCampaignSlug(campaign.slug)) {
@@ -197,14 +205,21 @@ export async function submitWizardAction(
     // letter. The expensive steps (AI/email in selectPoliticianAction) stay
     // behind the rate limit below.
     const { wahlkreisIds, politicians: localPoliticians } = lookupPLZ(data.plz);
-    const campaignTargetIds = [...new Set(campaignTarget?.targetPoliticianIds ?? [])];
+    const campaignRule = campaignTarget
+      ? campaignAllowedPoliticianIds(campaignTarget)
+      : { restricted: false, allowedPoliticianIds: [] as number[] };
+    const campaignTargetIds = campaignRule.allowedPoliticianIds;
     const campaignPoliticians = getBundestagPoliticiansByIds(campaignTargetIds);
     const validCampaignTargetIds = new Set(campaignPoliticians.map((politician) => politician.id));
     const localCampaignPoliticians = localPoliticians.filter((politician) =>
       validCampaignTargetIds.has(politician.id)
     );
-    const campaignRestricted = campaignTargetIds.length > 0;
+    const campaignRestricted = campaignRule.restricted;
     const campaignRestrictedNoLocalMatch = campaignRestricted && localCampaignPoliticians.length === 0;
+    const campaignBackup =
+      campaignRestrictedNoLocalMatch && campaignTarget
+        ? campaignBackupRecipient(campaignTarget)
+        : null;
     const politicians = campaignRestricted
       ? localCampaignPoliticians.length > 0
         ? localCampaignPoliticians
@@ -216,6 +231,8 @@ export async function submitWizardAction(
       campaignRestricted,
       campaignRestrictedNoLocalMatch,
       campaignTargetCount: campaignPoliticians.length,
+      backup: Boolean(campaignBackup),
+      partyRule: Boolean(campaignTarget?.targetParties.length),
     });
     if (campaignRestricted && politicians.length === 0) {
       return {
@@ -377,6 +394,7 @@ export async function submitWizardAction(
       politicians,
       ...(campaignRestricted ? { campaignRestricted: true } : {}),
       ...(campaignRestrictedNoLocalMatch ? { campaignRestrictedNoLocalMatch: true } : {}),
+      ...(campaignBackup ? { campaignBackupRecipient: campaignBackup } : {}),
       ...(campaignRestricted ? { campaignTargetCount: campaignPoliticians.length } : {}),
       ...(levelRouting ? { levelRouting } : {}),
       ...(resolvedRoutingToken ? { routingToken: resolvedRoutingToken } : {}),

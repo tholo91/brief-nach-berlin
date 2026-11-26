@@ -191,6 +191,8 @@ export type WizardActionResult =
       campaignRestricted?: boolean;
       campaignRestrictedNoLocalMatch?: boolean;
       campaignTargetCount?: number;
+      /** Ersatz-Empfänger der Kampagne, nur gesetzt wenn die PLZ keinen lokalen Treffer der Regel hat. */
+      campaignBackupRecipient?: CampaignFixedRecipientRecipient;
       featuredRecipient?: BundeskanzlerRecipient;
       /** Nur im Schulmodus: fester Empfänger statt Personenauswahl. */
       schoolRecipient?: SchoolRecipientPayload;

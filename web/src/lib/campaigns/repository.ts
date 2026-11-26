@@ -9,6 +9,7 @@ import {
   createCampaignSchema,
   compactCampaignSlug,
   isCampaignTargetLocked,
+  parseCampaignPartyRule,
   parseCampaignTopic,
   resolveCampaignTarget,
   updateCampaignPublicFieldsSchema,
@@ -47,6 +48,8 @@ type CampaignRow = {
   target_state: string | null;
   target_recipient: unknown;
   target_politician_ids: number[] | null;
+  target_parties?: string[] | null;
+  backup_recipient?: unknown;
   topic_categories?: string[] | null;
   topic_labels?: string[] | null;
   topic_taxonomy_version?: string | null;
@@ -196,6 +199,7 @@ function mapCampaign(row: CampaignRow): Campaign {
     moderationCategories: row.moderation_categories ?? [],
     ...resolveCampaignTarget(row),
     targetPoliticianIds: row.target_politician_ids ?? [],
+    ...parseCampaignPartyRule(row),
     topic: parseCampaignTopic(row),
     endsAt: row.ends_at ?? null,
     milestones:

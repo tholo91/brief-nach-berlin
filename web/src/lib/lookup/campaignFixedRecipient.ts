@@ -10,6 +10,8 @@ export interface CampaignFixedRecipientRecipient {
   organizationName: string | null;
   personName: string | null;
   salutation: string;
+  /** Nur Ersatz-Empfänger: Funktion der Person (Zuständigkeit im Prompt). */
+  role?: string;
   postalAddress: string;
   address: {
     street: string;
@@ -43,6 +45,7 @@ export function buildCampaignFixedRecipient(
     organizationName: recipient.organizationName,
     personName: recipient.personName,
     salutation: recipient.salutation,
+    ...(recipient.role ? { role: recipient.role } : {}),
     postalAddress: campaignFixedRecipientAddressLines(recipient).join(", "),
     address: {
       street: recipient.street,

@@ -10,6 +10,7 @@ jest.mock("@/lib/lookup/plzLookup", () => ({
   lookupPLZWithLevel: jest.fn(),
   buildCoverageHint: jest.fn(() => null),
   getBundestagPoliticiansByIds: jest.fn(),
+  getAllBundestagPoliticians: jest.fn(),
 }));
 jest.mock("@/lib/lookup/levelRouter", () => ({
   routeToLevel: jest.fn(),
@@ -34,7 +35,12 @@ jest.mock("@/lib/rateLimit", () => ({
 }));
 
 import { getPublicCampaignBySlug } from "@/lib/campaigns/repository";
-import { getBundestagPoliticiansByIds, lookupPLZ, lookupPLZWithLevel } from "@/lib/lookup/plzLookup";
+import {
+  getAllBundestagPoliticians,
+  getBundestagPoliticiansByIds,
+  lookupPLZ,
+  lookupPLZWithLevel,
+} from "@/lib/lookup/plzLookup";
 import { routeToLevel } from "@/lib/lookup/levelRouter";
 import { signRoutingToken } from "@/lib/lookup/routingToken";
 import { submitWizardAction } from "@/lib/actions/submitWizard";
@@ -348,6 +354,77 @@ describe("campaign rollout safety", () => {
       campaignTargetCount: 1,
     });
     expect(getBundestagPoliticiansByIds).toHaveBeenCalledWith([campaignPolitician.id, 999999]);
+  });
+
+  describe("party rule with backup recipient", () => {
+    const backupRecipient = {
+      organizationName: "Bundesministerium",
+      personName: "Frau Bundesministerin Karin Prien",
+      role: "Bundesministerin",
+      salutation: "Sehr geehrte Frau Bundesministerin Prien,",
+      street: "Glinkastraße",
+      houseNumber: "24",
+      postalCode: "10117",
+      city: "Berlin",
+      countryCode: "DE" as const,
+    };
+    const coalitionMdb = { ...politician, id: 7, politicianId: 8, party: "SPD" };
+    const otherMdb = { ...politician, id: 9, politicianId: 10, party: "Die Linke" };
+
+    function partyCampaign(): Campaign {
+      return {
+        ...campaign("Bund", null),
+        targetParties: ["SPD"],
+        backupRecipient,
+      };
+    }
+
+    beforeEach(() => {
+      jest.mocked(getAllBundestagPoliticians).mockReturnValue([coalitionMdb, otherMdb]);
+      jest.mocked(getBundestagPoliticiansByIds).mockImplementation((ids) =>
+        [coalitionMdb, otherMdb].filter((p) => ids.includes(p.id))
+      );
+    });
+
+    it("returns the backup recipient when the PLZ has no local party match", async () => {
+      jest.mocked(getPublicCampaignBySlug).mockResolvedValue(partyCampaign());
+      jest.mocked(lookupPLZ).mockReturnValue({ wahlkreisIds: [1], politicians: [otherMdb] });
+
+      const result = await submitWizardAction({
+        ...baseData,
+        campaign: { slug: "sichere-schulwege", title: "Sichere Schulwege" },
+      });
+
+      expect(result).toMatchObject({
+        disambiguationNeeded: true,
+        politicians: [coalitionMdb],
+        campaignRestricted: true,
+        campaignRestrictedNoLocalMatch: true,
+        campaignBackupRecipient: {
+          kind: "campaign_fixed",
+          salutation: "Sehr geehrte Frau Bundesministerin Prien,",
+          role: "Bundesministerin",
+        },
+      });
+    });
+
+    it("omits the backup recipient when a local party MdB exists", async () => {
+      jest.mocked(getPublicCampaignBySlug).mockResolvedValue(partyCampaign());
+      jest.mocked(lookupPLZ).mockReturnValue({ wahlkreisIds: [1], politicians: [coalitionMdb] });
+
+      const result = await submitWizardAction({
+        ...baseData,
+        campaign: { slug: "sichere-schulwege", title: "Sichere Schulwege" },
+      });
+
+      expect(result).toMatchObject({
+        disambiguationNeeded: true,
+        politicians: [coalitionMdb],
+        campaignRestricted: true,
+      });
+      expect(result).not.toHaveProperty("campaignBackupRecipient");
+      expect(result).not.toHaveProperty("campaignRestrictedNoLocalMatch");
+    });
   });
 
   it("continues as a normal letter when the campaign has ended", async () => {

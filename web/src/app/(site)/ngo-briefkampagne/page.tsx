@@ -15,9 +15,9 @@ const TITLE =
   "NGO-Briefkampagne: aus eurem Anliegen viele persönliche Briefe machen | Brief-nach-Berlin";
 const DESCRIPTION =
   "Eine NGO-Briefkampagne macht aus eurem Anliegen viele persönliche Briefe: an Bundestagsabgeordnete, die Landesregierung oder einen festen Empfänger. Ohne Massenmailing und ohne Account.";
-const SOCIAL_TITLE = "Startet eine Briefkampagne für eure Community";
+const SOCIAL_TITLE = "Briefkampagnen für NGOs, Vereine und Initiativen";
 const SOCIAL_DESCRIPTION =
-  "Ihr teilt den Kampagnenlink. Eure Unterstützer:innen schreiben und verschicken ihre eigenen Briefe.";
+  "Erstellt kostenlos eine Kampagnenseite und teilt den Link mit eurer Community.";
 
 export const metadata: Metadata = {
   title: TITLE,

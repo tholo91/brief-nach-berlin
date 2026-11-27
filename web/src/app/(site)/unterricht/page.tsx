@@ -14,9 +14,9 @@ const CANONICAL_URL = `${APP_URL}${URL_PATH}`;
 const TITLE = "Briefe an Abgeordnete im Unterricht";
 const DESCRIPTION =
   "Unterrichtsidee für Klasse 8 bis 10: In 45 Minuten schreiben Schüler:innen echte Briefe an Abgeordnete. Mit Klassenlink, QR-Code, Ablauf und Arbeitsblatt.";
-const SOCIAL_TITLE = "Briefe an Abgeordnete schreiben – mit fertigem Stundenablauf";
+const SOCIAL_TITLE = "Fertiger Stundenablauf für 45 oder 90 Minuten";
 const SOCIAL_DESCRIPTION =
-  "Mit Arbeitsblatt und Klassenlink. Deine Klasse schreibt zu Anliegen, die sie selbst auswählt.";
+  "Mit Arbeitsblatt und Klassenlink. Die Schüler:innen wählen ihr Thema selbst.";
 
 export const metadata: Metadata = {
   title: `${TITLE} | Brief-nach-Berlin`,

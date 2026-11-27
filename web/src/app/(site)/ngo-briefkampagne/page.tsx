@@ -1,7 +1,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import type { Metadata } from "next";
-import { APP_URL, FOUNDER_EMAIL, DEFAULT_OG_IMAGES } from "@/lib/config";
+import { APP_URL, FOUNDER_EMAIL } from "@/lib/config";
 import { FAQAccordion } from "@/components/FAQAccordion";
 import { CampaignBackground } from "@/components/campaigns/CampaignBackground";
 import { CampaignList } from "@/components/campaigns/CampaignList";
@@ -15,23 +15,25 @@ const TITLE =
   "NGO-Briefkampagne: aus eurem Anliegen viele persönliche Briefe machen | Brief-nach-Berlin";
 const DESCRIPTION =
   "Eine NGO-Briefkampagne macht aus eurem Anliegen viele persönliche Briefe: an Bundestagsabgeordnete, die Landesregierung oder einen festen Empfänger. Ohne Massenmailing und ohne Account.";
+const SOCIAL_TITLE = "Startet eine Briefkampagne für eure Community";
+const SOCIAL_DESCRIPTION =
+  "Ihr teilt den Kampagnenlink. Eure Unterstützer:innen schreiben und verschicken ihre eigenen Briefe.";
 
 export const metadata: Metadata = {
   title: TITLE,
   description: DESCRIPTION,
   alternates: { canonical: `${APP_URL}${URL_PATH}` },
   openGraph: {
-    images: DEFAULT_OG_IMAGES,
-    title: TITLE,
-    description: DESCRIPTION,
+    title: SOCIAL_TITLE,
+    description: SOCIAL_DESCRIPTION,
     type: "article",
     locale: "de_DE",
     url: `${APP_URL}${URL_PATH}`,
   },
   twitter: {
     card: "summary_large_image",
-    title: TITLE,
-    description: DESCRIPTION,
+    title: SOCIAL_TITLE,
+    description: SOCIAL_DESCRIPTION,
   },
 };
 

@@ -44,18 +44,21 @@ describe("openGraph-Bild auf öffentlichen Seiten", () => {
     expect(image.alt).toBe(alt);
   });
 
-  it("/schule hat ein eigenes Bild mit Maßen, Größe und Alt-Text", async () => {
-    const dir = join(APP_DIR, "(site)", "schule");
-    const file = join(dir, "opengraph-image.jpg");
-    const meta = await sharp(file).metadata();
+  it.each(["schule", "unterricht", "ngo-briefkampagne"])(
+    "/%s hat ein eigenes Bild mit Maßen, Größe und Alt-Text",
+    async (slug) => {
+      const dir = join(APP_DIR, "(site)", slug);
+      const file = join(dir, "opengraph-image.jpg");
+      const meta = await sharp(file).metadata();
 
-    expect(meta.format).toBe("jpeg");
-    expect(meta.width).toBe(1200);
-    expect(meta.height).toBe(630);
-    expect(statSync(file).size).toBeLessThan(300000);
-    expect(readFileSync(join(dir, "opengraph-image.alt.txt"), "utf8").trim()).not.toBe("");
-    // Setzt die Seite selbst images, unterdrückt das die Datei.
-    expect(existsSync(join(dir, "page.tsx"))).toBe(true);
-    expect(readFileSync(join(dir, "page.tsx"), "utf8")).not.toMatch(/\bimages\s*:/);
-  });
+      expect(meta.format).toBe("jpeg");
+      expect(meta.width).toBe(1200);
+      expect(meta.height).toBe(630);
+      expect(statSync(file).size).toBeLessThan(300000);
+      expect(readFileSync(join(dir, "opengraph-image.alt.txt"), "utf8").trim()).not.toBe("");
+      // Setzt die Seite selbst images, unterdrückt das die Datei.
+      expect(existsSync(join(dir, "page.tsx"))).toBe(true);
+      expect(readFileSync(join(dir, "page.tsx"), "utf8")).not.toMatch(/\bimages\s*:/);
+    },
+  );
 });

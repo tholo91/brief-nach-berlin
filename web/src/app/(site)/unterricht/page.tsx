@@ -6,7 +6,7 @@ import { FAQAccordion } from "@/components/FAQAccordion";
 import { ClassLinkGenerator } from "@/components/schule/ClassLinkGenerator";
 import { ClockIcon, MailIcon, PrinterIcon } from "@/components/schule/icons";
 import { LessonPlanToggle } from "@/components/schule/LessonPlanToggle";
-import { APP_URL, FOUNDER_EMAIL, DEFAULT_OG_IMAGES } from "@/lib/config";
+import { APP_URL, FOUNDER_EMAIL } from "@/lib/config";
 import { COLLECTIVE_ENVELOPE_NOTE, PRECHECK_ITEMS } from "@/lib/schule/lessonPlan";
 
 const URL_PATH = "/unterricht";
@@ -14,20 +14,26 @@ const CANONICAL_URL = `${APP_URL}${URL_PATH}`;
 const TITLE = "Briefe an Abgeordnete im Unterricht";
 const DESCRIPTION =
   "Unterrichtsidee für Klasse 8 bis 10: In 45 Minuten schreiben Schüler:innen echte Briefe an Abgeordnete. Mit Klassenlink, QR-Code, Ablauf und Arbeitsblatt.";
+const SOCIAL_TITLE = "Briefe an Abgeordnete schreiben – mit fertigem Stundenablauf";
+const SOCIAL_DESCRIPTION =
+  "Mit Arbeitsblatt und Klassenlink. Deine Klasse schreibt zu Anliegen, die sie selbst auswählt.";
 
 export const metadata: Metadata = {
   title: `${TITLE} | Brief-nach-Berlin`,
   description: DESCRIPTION,
   alternates: { canonical: CANONICAL_URL },
   openGraph: {
-    images: DEFAULT_OG_IMAGES,
-    title: TITLE,
-    description: DESCRIPTION,
+    title: SOCIAL_TITLE,
+    description: SOCIAL_DESCRIPTION,
     type: "website",
     locale: "de_DE",
     url: CANONICAL_URL,
   },
-  twitter: { card: "summary_large_image", title: TITLE, description: DESCRIPTION },
+  twitter: {
+    card: "summary_large_image",
+    title: SOCIAL_TITLE,
+    description: SOCIAL_DESCRIPTION,
+  },
 };
 
 const CONTACT_MAILTO = `mailto:${FOUNDER_EMAIL}?subject=${encodeURIComponent(

@@ -148,7 +148,7 @@ function buildCampaignHeaderHtml(
   const campaignUrl = `${APP_URL}/kampagne/${encodeURIComponent(campaign.slug)}`;
   const creator = campaign.creatorName?.trim();
   const heading = copy.campaignHeading(creator ? escapeHtml(creator) : undefined);
-  const countText = letterCount && letterCount >= CAMPAIGN_COUNT_MIN ? `${copy.campaignCount(letterCount)} ` : "";
+  const countText = letterCount && letterCount >= CAMPAIGN_COUNT_MIN ? `${copy.campaignCount(letterCount)} ` : `${copy.campaignGrowing} `;
   const text = `<h2 style="margin:0 0 2px;font-family:Georgia,'Times New Roman',serif;font-size:16px;color:#2D5016;font-weight:bold;line-height:1.35;">
                           <a href="${campaignUrl}" target="_blank" rel="noopener noreferrer" style="color:#2D5016;text-decoration:none;">${heading}</a>
                         </h2>
@@ -344,7 +344,7 @@ function getRecruitCopy(data: SendLetterEmailParams): string {
       return "Dein Brief ist ein Anfang. Teile die Kampagne, damit weitere Menschen dem Bundeskanzler mit eigenen Worten schreiben.";
     }
     if (data.recipientKind === "landesregierung") {
-      return "Dein Brief ist ein Anfang. Teile die Kampagne, damit weitere Menschen aus ihrem Bundesland mit eigenen Worten schreiben.";
+      return "Dein Brief ist ein Anfang. Teile die Kampagne, damit weitere Menschen aus deinem Bundesland mit eigenen Worten schreiben.";
     }
     if (data.recipientKind === "campaign_fixed") {
       return "Dein Brief ist ein Anfang. Teile die Kampagne, damit weitere Menschen diesem Empfänger mit eigenen Worten schreiben.";
@@ -353,9 +353,9 @@ function getRecruitCopy(data: SendLetterEmailParams): string {
       return "Dein Brief ist ein Anfang. Teile die Kampagne, damit weitere Menschen vor Ort mit eigenen Worten schreiben.";
     }
     if (data.recipientKind === "mdl") {
-      return "Dein Brief ist ein Anfang. Teile die Kampagne, damit weitere Menschen aus ihrer Region mit eigenen Worten schreiben.";
+      return "Dein Brief ist ein Anfang. Teile die Kampagne, damit weitere Menschen aus deiner Region mit eigenen Worten schreiben.";
     }
-    return "Dein Brief ist ein Anfang. Teile die Kampagne, damit weitere Menschen aus ihrem Wahlkreis mit eigenen Worten schreiben.";
+    return "Dein Brief ist ein Anfang. Teile die Kampagne, damit weitere Menschen aus deinem Wahlkreis mit eigenen Worten schreiben.";
   }
   if (data.recipientKind === "rathaus") {
     return "Dein Brief wirkt. Und er wirkt noch stärker, wenn weitere Stimmen vor Ort dazukommen. Teile Brief-nach-Berlin per…";
